@@ -128,6 +128,18 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
       Object.freeze({ enemyId: 'rattlesnake', role: 'support', angleDeg: 148, radiusTiles: 20.0 }),
     ]),
   }),
+  'wrecked-lighthouse': Object.freeze({
+    arenaLayout: 'shoreline-rifle-fan',
+    miniBossEnemyId: 'ridge-raider',
+    supportEnemyIds: Object.freeze(['claim-jumper', 'phishing-angler', 'honeypot-turret']),
+    previewEnemyIds: Object.freeze(['claim-jumper', 'phishing-angler']),
+    spawnSlots: Object.freeze([
+      Object.freeze({ enemyId: 'claim-jumper', role: 'support', angleDeg: 205, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'honeypot-turret', role: 'support', angleDeg: 245, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'phishing-angler', role: 'support', angleDeg: 290, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'ridge-raider', role: 'mini-boss', angleDeg: 325, radiusTiles: 24.0, miniBoss: true, elite: true }),
+    ]),
+  }),
   'mesa-overlook': Object.freeze({
     arenaLayout: 'switchback-sniper-lane',
     miniBossEnemyId: 'ridge-raider',

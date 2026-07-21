@@ -35,6 +35,16 @@ const ENCOUNTER_VISUAL_PLANS = Object.freeze({
     ],
     terrainHazards: ['shallow-water-slow', 'shoreline-exposure', 'ring-flank-collapse'],
   }),
+  'wrecked-lighthouse': freezePlan({
+    banner: 'WRECKED LIGHTHOUSE CROSSFIRE',
+    telegraphCue: 'the canonical lighthouse beam, broken shoreline marker, and inland rifle glints announce a one-sided coastal crossfire',
+    propClusters: [
+      { id: 'wrecked-litecoin-lighthouse', label: 'Wrecked Litecoin lighthouse', role: 'canonical-landmark' },
+      { id: 'shoreline-spark-line', label: 'Shoreline spark line', role: 'safe-water-edge-read' },
+      { id: 'broken-floor-marker', label: 'Broken floor marker', role: 'inland-approach-cue' },
+    ],
+    terrainHazards: ['shoreline-exposure', 'inland-rifle-fan', 'lighthouse-cover-break'],
+  }),
   'crossroads-trading-post': freezePlan({
     banner: 'WAGON CROSSFIRE',
     telegraphCue: 'wagon circle, lantern line, and signpost split tell the player this is a staged crossfire hub',

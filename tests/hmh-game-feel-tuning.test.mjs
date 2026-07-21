@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 import {
   WAVE2_GAME_FEEL_TARGETS,
+  advanceWave2AutoFireCadence,
   buildWave2GameFeelProfile,
   integrateWave2Movement,
   planWave2Dash,
@@ -36,6 +37,35 @@ test('integrateWave2Movement eases into input and decelerates without instant st
   assert.equal(Number.isFinite(coast.vy), true);
 });
 
+test('integrateWave2Movement responds faster to deliberate direction reversals than straight acceleration', () => {
+  const profile = buildWave2GameFeelProfile();
+  let reversed = integrateWave2Movement(
+    { vx: profile.movement.maxSpeed, vy: 0 },
+    { x: -1, y: 0 },
+    { dtSeconds: 1 / 60, profile },
+  );
+  assert.ok(reversed.vx < profile.movement.maxSpeed * 0.5, 'first reversal frame should shed old-direction momentum quickly');
+  reversed = integrateWave2Movement(reversed, { x: -1, y: 0 }, { dtSeconds: 1 / 60, profile });
+  reversed = integrateWave2Movement(reversed, { x: -1, y: 0 }, { dtSeconds: 1 / 60, profile });
+  assert.ok(reversed.vx < 0, 'hero should face the requested movement direction within three fixed steps');
+  assert.ok(profile.movement.turnResponsivenessMultiplier >= 2);
+});
+
+test('advanceWave2AutoFireCadence preserves fire-rate ticks under low FPS with bounded catch-up', () => {
+  assert.deepEqual(advanceWave2AutoFireCadence({ cooldownSeconds: 0.05, dtSeconds: 0.27, shotsPerSecond: 10 }), {
+    dueShots: 3,
+    cooldownSeconds: 0.08,
+  });
+  assert.deepEqual(advanceWave2AutoFireCadence({ cooldownSeconds: 0.08, dtSeconds: 0.02, shotsPerSecond: 10 }), {
+    dueShots: 0,
+    cooldownSeconds: 0.06,
+  });
+  assert.deepEqual(advanceWave2AutoFireCadence({ cooldownSeconds: 0, dtSeconds: 2, shotsPerSecond: 20 }), {
+    dueShots: 3,
+    cooldownSeconds: 0.05,
+  });
+});
+
 test('planWave2Dash is deterministic and bounded for replay verification', () => {
   const profile = buildWave2GameFeelProfile();
   const a = planWave2Dash({ x: 10, y: 20 }, { x: 3, y: 4 }, { profile, elapsedSeconds: 12.345 });
@@ -65,4 +95,7 @@ test('runtime consumes Wave 2 game-feel profile for live roguelike movement', ()
   assert.match(main, /buildWave2GameFeelProfile/);
   assert.match(main, /integrateWave2Movement/);
   assert.match(main, /WAVE2_GAME_FEEL_PROFILE/);
+  assert.match(main, /advanceWave2AutoFireCadence/);
+  assert.match(main, /combat\.dashFrames = WAVE2_GAME_FEEL_PROFILE\.dash\.durationFrames/);
+  assert.match(main, /WAVE2_GAME_FEEL_PROFILE\.dash\.invulnerabilityFrames/);
 });

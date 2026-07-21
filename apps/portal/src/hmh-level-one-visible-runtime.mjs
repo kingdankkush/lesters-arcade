@@ -353,10 +353,9 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
   prefabStamp('compact-southeast-glow-bank', 'compact-southeast', [
     ...stampObjectsForKeys(JUL9_B_ASSETS.ambient.slice(12), 'ambient', { startX: -5, startY: 1 }),
     { assetKey: JUL9_B_ASSETS.signals[23], use: 'dressing', dx: 0, dy: 5, solid: false },
-    { assetKey: JUL9_B_ASSETS.extraction[3], use: 'landmark', dx: 0, dy: -2, solid: false },
     { assetKey: JUL9_B_ASSETS.river[6], use: 'water', dx: -5, dy: -3, solid: false },
     { assetKey: JUL9_B_ASSETS.river[7], use: 'water', dx: 5, dy: -3, solid: false },
-  ], { label: 'Southeast glow bank', routeBeat: 'extract', anchor: { x: 96, y: 78 }, routeRead: 'water sparks, rapid strips, broken marker, and extraction light complete the southeast waterfront' }),
+  ], { label: 'Southeast glow bank', routeBeat: 'poi', anchor: { x: 96, y: 78 }, routeRead: 'water sparks, rapid strips, and the broken marker frame the lighthouse approach without duplicating its landmark' }),
   prefabStamp('desert-road-salvage-wall', 'desert-approach', [
     { assetKey: 'curated/jul9-fences-barricades-10-concrete-barrier', use: 'boundary', dx: -5, dy: -3, solid: true },
     { assetKey: 'curated/jul9-fences-barricades-12-sandbag-barrier', use: 'boundary', dx: 3, dy: -3, solid: true },

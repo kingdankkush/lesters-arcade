@@ -50,6 +50,32 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
   assert.deepEqual(model.cards[0].rankPips.map((pip) => pip.state), ['filled', 'next', 'empty', 'empty', 'empty']);
 });
 
+test('level-up presentation labels a fresh foundation honestly and shows banked XP toward the next draft', () => {
+  const model = buildUpgradeMenuPresentation({
+    choices: [
+      { ...SAMPLE_CHOICES[0], currentLevel: 0, nextLevel: 1, slotRole: 'continuation', slotLabel: 'START CORE' },
+      { ...SAMPLE_CHOICES[1], slotRole: 'new', slotLabel: 'DIVERSIFY' },
+    ],
+    level: 2,
+    xp: 30,
+    xpToNextLevel: 60,
+  });
+
+  assert.equal(model.cards[0].decisionLabel, 'COMMIT');
+  assert.equal(model.cards[0].slotLabel, 'START CORE');
+  assert.deepEqual(model.xpProgress, {
+    current: 30,
+    required: 60,
+    percent: 50,
+    readyAfterDraft: false,
+    label: 'BANKED 30 / 60 XP',
+  });
+  const banked = buildUpgradeMenuPresentation({ level: 4, xp: 90, xpToNextLevel: 70 });
+  assert.equal(banked.xpProgress.percent, 100);
+  assert.equal(banked.xpProgress.readyAfterDraft, true);
+  assert.equal(banked.xpProgress.label, 'NEXT DRAFT BANKED // 90 XP');
+});
+
 test('legacy gameplay categories map to distinct semantic production icons', () => {
   const model = buildUpgradeMenuPresentation({
     choices: [
@@ -105,6 +131,8 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes("--level-up-description-lines"), true);
   assert.equal(main.includes('level-up-shell'), true);
   assert.equal(main.includes('level-up-slot-label'), true);
+  assert.equal(main.includes('level-up-xp-progress'), true);
+  assert.equal(main.includes('presentation.xpProgress.label'), true);
   assert.equal(main.includes('upgrade-card-tooltip'), true);
   assert.equal(main.includes('badge.append(renderArcadeIcon(card.iconId'), true);
   assert.equal(main.includes("appendText(button, 'p', card.description, 'upgrade-card-desc')"), false);
@@ -113,9 +141,14 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes("if (combat.levelUpPaused) renderLevelUpActionGrid();"), true);
   assert.equal(css.includes('.level-up-shell'), true);
   assert.equal(css.includes('.level-up-slot-label'), true);
+  assert.equal(css.includes('.level-up-xp-progress'), true);
+  assert.equal(css.includes('.level-up-xp-progress-fill'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
   assert.equal(css.includes('.upgrade-card-tooltip'), true);
   assert.match(css, /level-up-overlay\[data-density="spacious"\]/);
+  assert.match(css, /grid-template-rows:\s*auto auto auto minmax\(0, 1fr\) auto/);
+  assert.match(css, /data-density="spacious"[^}]*grid-template-rows:\s*auto auto auto auto auto/s);
+  assert.match(css, /data-layout="portrait-sheet"[^}]*grid-auto-rows:\s*max-content[^}]*align-content:\s*start/s);
   assert.match(css, /level-up-overlay\[data-density="phone"\]/);
   assert.match(css, /var\(--level-up-card-min-height/);
   assert.equal(css.includes('.pause-console-shell'), true);

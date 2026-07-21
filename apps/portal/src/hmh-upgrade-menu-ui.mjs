@@ -186,6 +186,22 @@ function completionLabel(choice) {
   return `RANK ${Math.max(0, nextLevel - 1)} → ${nextLevel}`;
 }
 
+function buildXpProgress(xp, xpToNextLevel) {
+  const current = Math.floor(finiteNonNegative(xp));
+  const required = Math.floor(finiteNonNegative(xpToNextLevel));
+  if (required <= 0) {
+    return Object.freeze({ current, required: 0, percent: 100, readyAfterDraft: false, label: 'MAX LEVEL // XP PAYS SCORE' });
+  }
+  const readyAfterDraft = current >= required;
+  return Object.freeze({
+    current,
+    required,
+    percent: Math.min(100, Math.round((current / required) * 100)),
+    readyAfterDraft,
+    label: readyAfterDraft ? `NEXT DRAFT BANKED // ${current} XP` : `BANKED ${current} / ${required} XP`,
+  });
+}
+
 function buildCard(choice, index, options) {
   const semanticCategory = semanticCategoryForChoice(choice);
   const category = upgradeCategoryStyle(semanticCategory, options);
@@ -217,7 +233,9 @@ function buildCard(choice, index, options) {
     gainLabel: choiceGainLabel(choice),
     effectLabel: choiceGainLabel(choice),
     rarityLabel,
-    decisionLabel: slotRole === 'continuation' ? 'STAY COURSE' : 'DIVERSIFY',
+    decisionLabel: slotRole === 'foundation' || (Number(choice.currentLevel ?? 0) === 0 && choice.slotLabel === 'START CORE')
+      ? 'COMMIT'
+      : slotRole === 'continuation' ? 'STAY COURSE' : 'DIVERSIFY',
     rankLabel: `Rank ${choice.currentLevel ?? 0} → ${choice.nextLevel ?? 1}`,
     completionLabel: completionLabel(choice),
     rankPips,
@@ -236,6 +254,8 @@ export function buildUpgradeMenuPresentation({
   colorblindTags = false,
   lockedPreviews = [],
   level = null,
+  xp = 0,
+  xpToNextLevel = 0,
 } = {}) {
   const cards = freezeArray(choices.map((choice, index) => buildCard(choice, index, { colorblindTags })));
   const lockedPreviewRail = freezeArray(lockedPreviews.map((preview) => ({
@@ -256,6 +276,7 @@ export function buildUpgradeMenuPresentation({
       chrome: LEVEL_UP_CARD_CHROME,
       className: LEVEL_UP_CARD_CHROME.className,
     }),
+    xpProgress: buildXpProgress(xp, xpToNextLevel),
     cards,
     lockedPreviewRail,
     reroll: Object.freeze({

@@ -70,6 +70,14 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
   assert.equal(lighthouse.solid, true);
   assert.equal(lighthouse.interactive, true);
   assert.ok(levelOneCuratedAssetSrc(lighthouse.assetKey));
+  const lighthouseObjects = HMH_LEVEL_ONE_WORLD_V3_OBJECTS.filter((object) => object.sourceZoneId === 'wrecked-lighthouse');
+  assert.equal(lighthouseObjects.filter((object) => object.role === 'landmark').length, 1, 'the canonical wrecked lighthouse should be the only lighthouse landmark');
+  assert.equal(lighthouseObjects.some((object) => object.assetKey.includes('ltc-beacon-pad')), false, 'an extraction beacon must not compete with the lighthouse');
+  const glowBank = lighthouseObjects.filter((object) => object.prefabStampId === 'compact-southeast-glow-bank');
+  assert.equal(glowBank.length, 7, 'the lighter glow bank should retain four sparks, two rapid strips, and one broken marker');
+  assert.equal(glowBank.filter((object) => object.assetKey.includes('water-spark')).length, 4);
+  assert.equal(glowBank.filter((object) => object.assetKey.includes('rapid-strip')).length, 2);
+  assert.equal(glowBank.filter((object) => object.assetKey.includes('broken-floor-marker')).length, 1);
 
   const originalLandmarks = [
     ['world-v3-ghost-saloon-landmark', 'world-v3-landmark/ghost-saloon-square', true],

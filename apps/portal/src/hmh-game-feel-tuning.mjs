@@ -31,6 +31,7 @@ export const WAVE2_GAME_FEEL_TARGETS = freezeDeep({
     maxSpeed: 3.25,
     accelerationSeconds: 0.16,
     decelerationSeconds: 0.12,
+    turnResponsivenessMultiplier: 2.5,
     diagonalClamp: 1,
   },
   dash: {
@@ -84,7 +85,15 @@ export function integrateWave2Movement(velocity = {}, input = {}, { dtSeconds = 
   const maxSpeed = profile.movement.maxSpeed;
   const targetVx = moving ? dir.x * maxSpeed : 0;
   const targetVy = moving ? dir.y * maxSpeed : 0;
-  const timeConstant = moving ? profile.movement.accelerationSeconds : profile.movement.decelerationSeconds;
+  const currentSpeed = Math.hypot(v.vx, v.vy);
+  const alignment = moving && currentSpeed > 1e-6
+    ? (v.vx * dir.x + v.vy * dir.y) / currentSpeed
+    : 1;
+  const reversing = moving && currentSpeed > 0.05 && alignment < -0.2;
+  const baseTimeConstant = moving ? profile.movement.accelerationSeconds : profile.movement.decelerationSeconds;
+  const timeConstant = reversing
+    ? baseTimeConstant / Math.max(1, num(profile.movement.turnResponsivenessMultiplier, 1))
+    : baseTimeConstant;
   const blend = clamp(dt / Math.max(0.001, timeConstant), 0, 1);
   const vx = v.vx + (targetVx - v.vx) * blend;
   const vy = v.vy + (targetVy - v.vy) * blend;
@@ -94,6 +103,28 @@ export function integrateWave2Movement(velocity = {}, input = {}, { dtSeconds = 
     return Object.freeze({ vx: Number((vx * scale).toFixed(4)), vy: Number((vy * scale).toFixed(4)), speed: Number(maxSpeed.toFixed(4)) });
   }
   return Object.freeze({ vx: Number(vx.toFixed(4)), vy: Number(vy.toFixed(4)), speed: Number(speed.toFixed(4)) });
+}
+
+export function advanceWave2AutoFireCadence({
+  cooldownSeconds = 0,
+  dtSeconds = 1 / 60,
+  shotsPerSecond = 1,
+  maxCatchUpShots = 3,
+} = {}) {
+  const interval = 1 / Math.max(0.5, num(shotsPerSecond, 1));
+  const remaining = Math.max(0, num(cooldownSeconds, 0)) - clamp(num(dtSeconds, 1 / 60), 0, 2);
+  if (remaining > 0) {
+    return Object.freeze({ dueShots: 0, cooldownSeconds: Number(remaining.toFixed(4)) });
+  }
+  const uncappedDue = 1 + Math.floor(Math.abs(remaining) / interval + 1e-9);
+  const dueShots = Math.min(Math.max(1, Math.floor(num(maxCatchUpShots, 3))), uncappedDue);
+  const cooldown = uncappedDue > dueShots
+    ? interval
+    : interval - (Math.abs(remaining) - (dueShots - 1) * interval);
+  return Object.freeze({
+    dueShots,
+    cooldownSeconds: Number(Math.max(0.0001, cooldown).toFixed(4)),
+  });
 }
 
 export function planWave2Dash(origin = {}, input = {}, { profile = buildWave2GameFeelProfile(), elapsedSeconds = 0 } = {}) {

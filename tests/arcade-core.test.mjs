@@ -1001,6 +1001,20 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   assert.equal(afterHugeBurst.pausedForLevelUp, true);
 });
 
+test('guided level-up draft distinguishes a fresh core commitment from an owned-tree continuation', () => {
+  const fresh = createRoguelikeRunState({ seed: 91, mode: 'free' });
+  const freshDraft = chooseRoguelikeUpgradeOptions(fresh, { seed: 91 });
+  assert.equal(freshDraft.options[0].currentRank, 0);
+  assert.equal(freshDraft.options[0].slotRole, 'continuation');
+  assert.equal(freshDraft.options[0].slotLabel, 'START CORE');
+
+  const owned = applyRoguelikeSkillUpgrade({ ...fresh, pausedForLevelUp: true }, freshDraft.options[0].id);
+  owned.pausedForLevelUp = true;
+  const continuationDraft = chooseRoguelikeUpgradeOptions(owned, { seed: 92 });
+  assert.equal(continuationDraft.options[0].slotRole, 'continuation');
+  assert.equal(continuationDraft.options[0].slotLabel, 'CONTINUE YOUR BUILD');
+});
+
 test('guided level-up rerolls replace both discarded cards when alternatives exist', () => {
   const run = createRoguelikeRunState({ seed: 91, mode: 'free' });
 
@@ -2158,7 +2172,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-ship-polish-v45'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-ship-polish-v46'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2990,7 +3004,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-ship-polish-v45'), true);
+  assert.equal(smokeScript.includes('hmh-ship-polish-v46'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

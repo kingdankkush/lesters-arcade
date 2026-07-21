@@ -2638,6 +2638,36 @@ html[data-ingame="true"] .arcade-music-player,
   font-size: 0.66rem;
   line-height: 1.25;
 }
+.level-up-xp-progress {
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr);
+  align-items: center;
+  gap: 10px;
+  color: #b9c6e0;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.level-up-xp-progress-track {
+  display: block;
+  height: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(25, 247, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(2, 8, 16, 0.74);
+}
+.level-up-xp-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+  box-shadow: 0 0 8px rgba(69, 255, 138, 0.42);
+}
+.level-up-xp-progress[data-ready="true"] { color: var(--neon-yellow); }
+.level-up-xp-progress[data-ready="true"] .level-up-xp-progress-fill {
+  background: linear-gradient(90deg, var(--neon-yellow), var(--neon-green));
+}
 .level-up-card-stack { display: grid; grid-template-columns: repeat(2, minmax(230px, 1fr)); gap: 10px; }
 .level-up-slot { display: grid; gap: 4px; align-content: stretch; }
 .level-up-slot-label {
@@ -2886,7 +2916,7 @@ html[data-ingame="true"] .arcade-music-player,
 .level-up-overlay[hidden] { display: none; }
 .level-up-overlay .level-up-shell {
   box-sizing: border-box;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   width: 100%;
   max-width: none;
   height: 100%;
@@ -2960,6 +2990,8 @@ html[data-ingame="true"] .arcade-music-player,
 }
 .level-up-overlay[data-layout="portrait-sheet"] .level-up-card-stack {
   grid-template-columns: 1fr;
+  grid-auto-rows: max-content;
+  align-content: start;
 }
 .level-up-overlay[data-compact="true"] .level-up-shell {
   gap: 7px;
@@ -3993,7 +4025,7 @@ body.suggest-landscape.ingame::after {
   overflow: hidden;
 }
 .level-up-overlay[data-density="spacious"] .level-up-shell {
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto;
   align-content: center;
   padding: 22px 24px;
 }

@@ -234,9 +234,31 @@ test('buildCampaignPoiEncounterProfile gives Dry Forest Cave and Oasis Lakeside 
   assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'gas-fee-wisp' && slot.role === 'support'), true);
 });
 
+test('Wrecked Lighthouse stages an authored inland human crossfire around the canonical coast landmark', () => {
+  const profile = buildCampaignPoiEncounterProfile({
+    levelId: 'level-1-crypto-wasteland',
+    activePoi: {
+      id: 'wrecked-lighthouse',
+      title: 'Wrecked Litecoin Lighthouse',
+      phaseHint: 'poi-arena',
+      miniBossId: 'ridge-raider',
+      miniBossTitle: 'Wrecked Keeper',
+      districtId: 'coast',
+    },
+  });
+
+  assert.equal(profile.arenaLayout, 'shoreline-rifle-fan');
+  assert.equal(profile.miniBossEnemyId, 'ridge-raider');
+  assert.equal(profile.visualPlan.banner, 'WRECKED LIGHTHOUSE CROSSFIRE');
+  assert.match(profile.visualPlan.telegraphCue, /lighthouse/i);
+  assert.deepEqual(profile.supportEnemyIds, ['claim-jumper', 'phishing-angler', 'honeypot-turret']);
+  assert.equal(profile.spawnSlots.every((slot) => slot.angleDeg >= 190 && slot.angleDeg <= 330), true);
+  assert.equal(profile.spawnSlots.find((slot) => slot.role === 'mini-boss')?.radiusTiles, 24);
+});
+
 
 test('POI encounter spawn slots are authored outside the player nearfield', () => {
-  for (const poiId of ['rugpull-gulch', 'dry-forest-cave', 'oasis-lakeside']) {
+  for (const poiId of ['rugpull-gulch', 'dry-forest-cave', 'oasis-lakeside', 'wrecked-lighthouse']) {
     const profile = buildCampaignPoiEncounterProfile({
       levelId: 'level-1-crypto-wasteland',
       activePoi: { id: poiId, title: poiId, phaseHint: 'poi-arena', districtId: 'country-road' },

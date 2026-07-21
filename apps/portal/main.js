@@ -38,7 +38,7 @@ import { rollLevelOnePowerUpDrop } from './src/hmh-drop-economy.mjs';
 import { planEnemyAttackPattern } from './src/hmh-attack-patterns.mjs';
 import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
 import { buildGrenadeAimPreview, classifyGrenadeRelease, grenadeAimType, isGrenadeAimCancel } from './src/hmh-grenade-aim.mjs';
-import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
+import { advanceWave2AutoFireCadence, buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
 import {
   applyUpgradeRevive,
   buildUpgradeRuntimePolicy,
@@ -2802,8 +2802,10 @@ function renderLevelUpActionGrid() {
     colorblindTags: gameSettings.colorblindTags,
     lockedPreviews: combat.levelUpLockedPreviews ?? [],
     level: combat.roguelikeRun?.level ?? null,
+    xp: combat.roguelikeRun?.xp ?? 0,
+    xpToNextLevel: combat.roguelikeRun?.xpToNextLevel ?? 0,
   });
-  const signature = `level-up:${presentation.cards.map((card) => `${card.id}:${card.rankLabel}`).join('|')}:rerolls-${presentation.reroll.remaining}:cb-${gameSettings.colorblindTags ? 1 : 0}`;
+  const signature = `level-up:${presentation.cards.map((card) => `${card.id}:${card.rankLabel}`).join('|')}:xp-${presentation.xpProgress.current}-${presentation.xpProgress.required}:rerolls-${presentation.reroll.remaining}:cb-${gameSettings.colorblindTags ? 1 : 0}`;
   if (targetGrid.dataset.signature === signature) {
     refreshLevelUpInteractionState();
     return true;
@@ -2817,6 +2819,14 @@ function renderLevelUpActionGrid() {
   appendText(shellHead, 'strong', presentation.title, 'level-up-title');
   appendText(shellHead, 'p', presentation.instructions, 'level-up-subtitle');
   shell.append(shellHead);
+  const xpProgress = el('div', { className: 'level-up-xp-progress', dataset: { ready: String(presentation.xpProgress.readyAfterDraft) } });
+  appendText(xpProgress, 'span', presentation.xpProgress.label, 'level-up-xp-progress-label');
+  const xpTrack = el('span', { className: 'level-up-xp-progress-track' });
+  const xpFill = el('span', { className: 'level-up-xp-progress-fill' });
+  xpFill.style.width = `${presentation.xpProgress.percent}%`;
+  xpTrack.append(xpFill);
+  xpProgress.append(xpTrack);
+  shell.append(xpProgress);
   const selectionStatus = appendText(shell, 'p', 'RELEASE CONTROLS // CHOICES ARMING', 'level-up-selection-status');
   selectionStatus.setAttribute('aria-live', 'polite');
 
@@ -8578,8 +8588,13 @@ function updateAutoFire(dt) {
   const berserkFire = (combat.powerUpTimers.berserk ?? 0) > 0 ? 1.6 : 1;
   const movingFireRateMultiplier = combat._heroMoving ? (combat.roguelikeRun?.stats?.movingFireRate ?? 1) : 1;
   const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat * berserkFire * movingFireRateMultiplier;
-  combat.autoFireCooldown = (combat.autoFireCooldown ?? 0) - dt;
-  if (combat.autoFireCooldown > 0) return;
+  const fireCadence = advanceWave2AutoFireCadence({
+    cooldownSeconds: combat.autoFireCooldown ?? 0,
+    dtSeconds: dt,
+    shotsPerSecond,
+  });
+  combat.autoFireCooldown = fireCadence.cooldownSeconds;
+  if (fireCadence.dueShots <= 0) return;
   // If the pointer isn't steering aim, lock onto the nearest live enemy so the
   // hero still defends himself while the player just positions.
   if (!combat.pointerActive && gameSettings.autoAimAssist && combat.enemies.length) {
@@ -8598,8 +8613,7 @@ function updateAutoFire(dt) {
       combat.aimMapY = dy / len;
     }
   }
-  shootRoguelike();
-  combat.autoFireCooldown = 1 / Math.max(0.5, shotsPerSecond);
+  for (let shot = 0; shot < fireCadence.dueShots && (combat.clip ?? 0) > 0; shot += 1) shootRoguelike();
 }
 
 function shootRoguelike() {
@@ -9296,9 +9310,9 @@ function updateRoguelikeMovement(dt) {
   const upgradePolicy = currentUpgradeRuntimePolicy();
   combat.dashCooldownRemaining = Math.max(0, (combat.dashCooldownRemaining ?? 0) - dt);
   if (usingKeys && combat.keys.has('control') && combat.dashCooldownRemaining <= 0) {
-    combat.dashFrames = 8;
+    combat.dashFrames = WAVE2_GAME_FEEL_PROFILE.dash.durationFrames;
     combat.dashCooldownRemaining = upgradePolicy.dashCooldownSeconds;
-    combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 8);
+    combat.invulnerableFrames = Math.max(combat.invulnerableFrames, WAVE2_GAME_FEEL_PROFILE.dash.invulnerabilityFrames);
     playSfxCue('dash', 0.035);
   }
   const dashSpeedMultiplier = (combat.dashFrames ?? 0) > 0

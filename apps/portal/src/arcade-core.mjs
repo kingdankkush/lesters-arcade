@@ -3429,7 +3429,8 @@ export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, rero
     chosen.push(optionForSkill(slotASkill, run, {
       index: 0,
       role: 'continuation',
-      label: slotAReason === 'newly-unlocked-dependent-stem' ? 'UNLOCKED!' : 'CONTINUE YOUR BUILD',
+      label: slotAReason === 'newly-unlocked-dependent-stem' ? 'UNLOCKED!'
+        : slotAReason === 'owned-tree-rank-up' ? 'CONTINUE YOUR BUILD' : 'START CORE',
       reason: slotAReason,
     }));
     chosenIds.add(slotASkill.id);
