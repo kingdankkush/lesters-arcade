@@ -1,0 +1,18 @@
+{
+  "name": "hmh-engine-bakeoff",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "bench": "node run-bakeoff.mjs",
+    "test": "node --test shared/*.test.mjs"
+  },
+  "dependencies": {
+    "phaser": "4.2.1",
+    "pixi.js": "8.19.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "playwright": "1.61.1"
+  }
+}

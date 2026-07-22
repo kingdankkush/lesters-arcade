@@ -1,0 +1,1238 @@
+{
+  "capturedAt": "2026-07-22T22:26:32.177Z",
+  "profiles": [
+    {
+      "id": "desktop-normal",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "dpr": 1,
+      "cpuRate": 1,
+      "scale": 1
+    },
+    {
+      "id": "desktop-stress",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "dpr": 1,
+      "cpuRate": 1,
+      "scale": 4
+    },
+    {
+      "id": "mobile-normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "dpr": 2,
+      "cpuRate": 4,
+      "scale": 1
+    },
+    {
+      "id": "mobile-stress",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "dpr": 2,
+      "cpuRate": 4,
+      "scale": 4
+    }
+  ],
+  "counts": {
+    "enemies": 150,
+    "projectiles": 500,
+    "particles": 1500,
+    "props": 300
+  },
+  "summary": {
+    "desktop-normal": {
+      "pixi": {
+        "repeats": 3,
+        "medianFps": 2122.5,
+        "medianP95FrameMs": 0.6999999992549419,
+        "medianP99FrameMs": 0.8000000007450581,
+        "medianStartupMs": 11.400000000372529,
+        "medianHeapBytes": 11404985,
+        "maxCappedFrames": 0,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 734967,
+          "gzipBytes": 208396
+        },
+        "webglRenderer": "WebKit WebGL"
+      },
+      "phaser": {
+        "repeats": 3,
+        "medianFps": 1567.2649102636065,
+        "medianP95FrameMs": 0.900000000372529,
+        "medianP99FrameMs": 1.099999999627471,
+        "medianStartupMs": 15.099999999627471,
+        "medianHeapBytes": 20035955,
+        "maxCappedFrames": 0,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 1392979,
+          "gzipBytes": 372003
+        },
+        "webglRenderer": "WebKit WebGL"
+      }
+    },
+    "desktop-stress": {
+      "pixi": {
+        "repeats": 3,
+        "medianFps": 1693.4576635585688,
+        "medianP95FrameMs": 1,
+        "medianP99FrameMs": 1.5,
+        "medianStartupMs": 14,
+        "medianHeapBytes": 25434960,
+        "maxCappedFrames": 0,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 734967,
+          "gzipBytes": 208396
+        },
+        "webglRenderer": "WebKit WebGL"
+      },
+      "phaser": {
+        "repeats": 3,
+        "medianFps": 538.4730763462829,
+        "medianP95FrameMs": 2.700000001117587,
+        "medianP99FrameMs": 3.200000001117587,
+        "medianStartupMs": 24.199999999254942,
+        "medianHeapBytes": 23504007,
+        "maxCappedFrames": 0,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 1392979,
+          "gzipBytes": 372003
+        },
+        "webglRenderer": "WebKit WebGL"
+      }
+    },
+    "mobile-normal": {
+      "pixi": {
+        "repeats": 3,
+        "medianFps": 932.8600709894384,
+        "medianP95FrameMs": 1.900000000372529,
+        "medianP99FrameMs": 2.699999999254942,
+        "medianStartupMs": 55.5,
+        "medianHeapBytes": 12413208,
+        "maxCappedFrames": 1,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 734967,
+          "gzipBytes": 208396
+        },
+        "webglRenderer": "WebKit WebGL"
+      },
+      "phaser": {
+        "repeats": 3,
+        "medianFps": 330.22988792660783,
+        "medianP95FrameMs": 4.900000000372529,
+        "medianP99FrameMs": 5.599999999627471,
+        "medianStartupMs": 56.70000000111759,
+        "medianHeapBytes": 22308004,
+        "maxCappedFrames": 0,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 1392979,
+          "gzipBytes": 372003
+        },
+        "webglRenderer": "WebKit WebGL"
+      }
+    },
+    "mobile-stress": {
+      "pixi": {
+        "repeats": 3,
+        "medianFps": 205.4418372441338,
+        "medianP95FrameMs": 8.5,
+        "medianP99FrameMs": 10.299999998882413,
+        "medianStartupMs": 65.09999999962747,
+        "medianHeapBytes": 25848152,
+        "maxCappedFrames": 2,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 734967,
+          "gzipBytes": 208396
+        },
+        "webglRenderer": "WebKit WebGL"
+      },
+      "phaser": {
+        "repeats": 3,
+        "medianFps": 114.68692219281532,
+        "medianP95FrameMs": 11.799999998882413,
+        "medianP99FrameMs": 13.799999998882413,
+        "medianStartupMs": 60.69999999925494,
+        "medianHeapBytes": 30294044,
+        "maxCappedFrames": 0,
+        "consoleErrors": 0,
+        "bundle": {
+          "rawBytes": 1392979,
+          "gzipBytes": 372003
+        },
+        "webglRenderer": "WebKit WebGL"
+      }
+    }
+  },
+  "raw": [
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 6.900000000372529,
+      "sampleMs": 4000.199999999255,
+      "frameCount": 9523,
+      "averageFps": 2380.6309684520206,
+      "averageFrameMs": 0.42005670481983143,
+      "p95FrameMs": 0.599999999627471,
+      "p99FrameMs": 0.7999999988824129,
+      "maxFrameMs": 8.199999999254942,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 302,
+      "cappedFrames": 0,
+      "heapUsedBytes": 12102329,
+      "simulationChecksum": 2140956472,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5343.1911,
+      "profile": "desktop-normal",
+      "cpuRate": 1,
+      "scale": 1,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 11.900000000372529,
+      "sampleMs": 4000,
+      "frameCount": 8490,
+      "averageFps": 2122.5,
+      "averageFrameMs": 0.4711425206124853,
+      "p95FrameMs": 0.6999999992549419,
+      "p99FrameMs": 0.8000000007450581,
+      "maxFrameMs": 8.899999998509884,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 301,
+      "cappedFrames": 0,
+      "heapUsedBytes": 11404985,
+      "simulationChecksum": 2168638001,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5113.4187,
+      "profile": "desktop-normal",
+      "cpuRate": 1,
+      "scale": 1,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 11.400000000372529,
+      "sampleMs": 4001.0999999996275,
+      "frameCount": 8413,
+      "averageFps": 2102.671765264748,
+      "averageFrameMs": 0.4755854035420929,
+      "p95FrameMs": 0.6999999992549419,
+      "p99FrameMs": 0.8000000007450581,
+      "maxFrameMs": 9.199999999254942,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 300,
+      "cappedFrames": 0,
+      "heapUsedBytes": 11300801,
+      "simulationChecksum": 2121270613,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5121.7901999999995,
+      "profile": "desktop-normal",
+      "cpuRate": 1,
+      "scale": 1,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 14.5,
+      "sampleMs": 4000.5999999996275,
+      "frameCount": 6270,
+      "averageFps": 1567.2649102636065,
+      "averageFrameMs": 0.6380542264752197,
+      "p95FrameMs": 0.900000000372529,
+      "p99FrameMs": 1.099999999627471,
+      "maxFrameMs": 7.599999999627471,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 302,
+      "cappedFrames": 0,
+      "heapUsedBytes": 20035955,
+      "simulationChecksum": 2140956472,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5199.903399999999,
+      "profile": "desktop-normal",
+      "cpuRate": 1,
+      "scale": 1,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 15.099999999627471,
+      "sampleMs": 4000.199999999255,
+      "frameCount": 6386,
+      "averageFps": 1596.4201789913477,
+      "averageFrameMs": 0.6264015032883268,
+      "p95FrameMs": 0.900000000372529,
+      "p99FrameMs": 1,
+      "maxFrameMs": 8.699999999254942,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 304,
+      "cappedFrames": 0,
+      "heapUsedBytes": 16794731,
+      "simulationChecksum": 2168053401,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5110.820899999999,
+      "profile": "desktop-normal",
+      "cpuRate": 1,
+      "scale": 1,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 16.299999998882413,
+      "sampleMs": 4000.300000000745,
+      "frameCount": 5971,
+      "averageFps": 1492.6380521458111,
+      "averageFrameMs": 0.6699547814437691,
+      "p95FrameMs": 1.099999999627471,
+      "p99FrameMs": 1.300000000745058,
+      "maxFrameMs": 11.099999999627471,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 304,
+      "cappedFrames": 0,
+      "heapUsedBytes": 23394491,
+      "simulationChecksum": 2122764361,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5139.466799999998,
+      "profile": "desktop-normal",
+      "cpuRate": 1,
+      "scale": 1,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 12.900000000372529,
+      "sampleMs": 4000.0999999996275,
+      "frameCount": 6774,
+      "averageFps": 1693.4576635585688,
+      "averageFrameMs": 0.5905078240330126,
+      "p95FrameMs": 1,
+      "p99FrameMs": 1.5,
+      "maxFrameMs": 7,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 300,
+      "cappedFrames": 0,
+      "heapUsedBytes": 25434960,
+      "simulationChecksum": 35688993,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5122.367399999999,
+      "profile": "desktop-stress",
+      "cpuRate": 1,
+      "scale": 4,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 14.199999999254942,
+      "sampleMs": 4000.300000000745,
+      "frameCount": 6672,
+      "averageFps": 1667.8749093814856,
+      "averageFrameMs": 0.5995653477219343,
+      "p95FrameMs": 1,
+      "p99FrameMs": 1.5,
+      "maxFrameMs": 10.199999999254942,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 301,
+      "cappedFrames": 0,
+      "heapUsedBytes": 24992752,
+      "simulationChecksum": 7995515,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5119.361100000002,
+      "profile": "desktop-stress",
+      "cpuRate": 1,
+      "scale": 4,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 14,
+      "sampleMs": 4000.0999999996275,
+      "frameCount": 6842,
+      "averageFps": 1710.4572385691952,
+      "averageFrameMs": 0.584638994446014,
+      "p95FrameMs": 1,
+      "p99FrameMs": 1.5,
+      "maxFrameMs": 9.599999999627471,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 301,
+      "cappedFrames": 0,
+      "heapUsedBytes": 26716240,
+      "simulationChecksum": 4278711229,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5124.2307999999975,
+      "profile": "desktop-stress",
+      "cpuRate": 1,
+      "scale": 4,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 23.09999999962747,
+      "sampleMs": 4002.0999999996275,
+      "frameCount": 2062,
+      "averageFps": 515.2295045101802,
+      "averageFrameMs": 1.9408826382151443,
+      "p95FrameMs": 2.700000001117587,
+      "p99FrameMs": 3.200000001117587,
+      "maxFrameMs": 6.5,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 304,
+      "cappedFrames": 0,
+      "heapUsedBytes": 22085427,
+      "simulationChecksum": 36278366,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5127.761400000003,
+      "profile": "desktop-stress",
+      "cpuRate": 1,
+      "scale": 4,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 24.199999999254942,
+      "sampleMs": 4000.199999999255,
+      "frameCount": 2154,
+      "averageFps": 538.4730763462829,
+      "averageFrameMs": 1.8571030640665065,
+      "p95FrameMs": 2.800000000745058,
+      "p99FrameMs": 3.400000000372529,
+      "maxFrameMs": 5,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 302,
+      "cappedFrames": 0,
+      "heapUsedBytes": 23504007,
+      "simulationChecksum": 8184399,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5132.6206999999995,
+      "profile": "desktop-stress",
+      "cpuRate": 1,
+      "scale": 4,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "dpr": 1
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 24.90000000037253,
+      "sampleMs": 4000,
+      "frameCount": 2177,
+      "averageFps": 544.25,
+      "averageFrameMs": 1.8373909049150208,
+      "p95FrameMs": 2.700000001117587,
+      "p99FrameMs": 3.200000001117587,
+      "maxFrameMs": 4.599999999627471,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 302,
+      "cappedFrames": 0,
+      "heapUsedBytes": 26660591,
+      "simulationChecksum": 4278864388,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5135.891299999996,
+      "profile": "desktop-stress",
+      "cpuRate": 1,
+      "scale": 4,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 55.59999999962747,
+      "sampleMs": 4000.5999999996275,
+      "frameCount": 3732,
+      "averageFps": 932.8600709894384,
+      "averageFrameMs": 1.0719721329045089,
+      "p95FrameMs": 1.900000000372529,
+      "p99FrameMs": 2.699999999254942,
+      "maxFrameMs": 6.799999998882413,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 302,
+      "cappedFrames": 1,
+      "heapUsedBytes": 12479024,
+      "simulationChecksum": 2140956472,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5326.460699999996,
+      "profile": "mobile-normal",
+      "cpuRate": 4,
+      "scale": 1,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 55.19999999925494,
+      "sampleMs": 4000.5,
+      "frameCount": 3859,
+      "averageFps": 964.6294213223347,
+      "averageFrameMs": 1.0366675304483026,
+      "p95FrameMs": 1.700000001117587,
+      "p99FrameMs": 2.300000000745058,
+      "maxFrameMs": 4.799999998882413,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 302,
+      "cappedFrames": 1,
+      "heapUsedBytes": 12413208,
+      "simulationChecksum": 2168430514,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5306.22600000001,
+      "profile": "mobile-normal",
+      "cpuRate": 4,
+      "scale": 1,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 55.5,
+      "sampleMs": 4000,
+      "frameCount": 3636,
+      "averageFps": 909,
+      "averageFrameMs": 1.1001100110011002,
+      "p95FrameMs": 2,
+      "p99FrameMs": 2.799999998882413,
+      "maxFrameMs": 7.400000000372529,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 303,
+      "cappedFrames": 1,
+      "heapUsedBytes": 12283088,
+      "simulationChecksum": 2122366644,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5296.79389999999,
+      "profile": "mobile-normal",
+      "cpuRate": 4,
+      "scale": 1,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 53.20000000111759,
+      "sampleMs": 4001.699999999255,
+      "frameCount": 1601,
+      "averageFps": 400.07996601451833,
+      "averageFrameMs": 2.499500312304344,
+      "p95FrameMs": 3.900000000372529,
+      "p99FrameMs": 4.799999998882413,
+      "maxFrameMs": 7.400000000372529,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 300,
+      "cappedFrames": 0,
+      "heapUsedBytes": 21274684,
+      "simulationChecksum": 2140428641,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5332.4100000000035,
+      "profile": "mobile-normal",
+      "cpuRate": 4,
+      "scale": 1,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 58.30000000074506,
+      "sampleMs": 4006.2999999988824,
+      "frameCount": 1323,
+      "averageFps": 330.22988792660783,
+      "averageFrameMs": 3.0281934996212265,
+      "p95FrameMs": 4.900000000372529,
+      "p99FrameMs": 5.599999999627471,
+      "maxFrameMs": 7.099999999627471,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 299,
+      "cappedFrames": 0,
+      "heapUsedBytes": 22308004,
+      "simulationChecksum": 2169052418,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5356.609800000006,
+      "profile": "mobile-normal",
+      "cpuRate": 4,
+      "scale": 1,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 150,
+        "projectiles": 500,
+        "particles": 1500,
+        "props": 300
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 56.70000000111759,
+      "sampleMs": 4000.2999999988824,
+      "frameCount": 1230,
+      "averageFps": 307.4769392296437,
+      "averageFrameMs": 3.252276422763319,
+      "p95FrameMs": 5.699999999254942,
+      "p99FrameMs": 7.299999998882413,
+      "maxFrameMs": 11.5,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 298,
+      "cappedFrames": 0,
+      "heapUsedBytes": 22354388,
+      "simulationChecksum": 2120509239,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 2450,
+      "navigationToResultMs": 5384.882900000011,
+      "profile": "mobile-normal",
+      "cpuRate": 4,
+      "scale": 1,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 65.09999999962747,
+      "sampleMs": 4005.7999999988824,
+      "frameCount": 569,
+      "averageFps": 142.04403614762563,
+      "averageFrameMs": 7.040070298767807,
+      "p95FrameMs": 12.699999999254942,
+      "p99FrameMs": 15.900000000372529,
+      "maxFrameMs": 19.90000000037253,
+      "framesOver16_7": 2,
+      "framesOver33_3": 0,
+      "fixedSteps": 296,
+      "cappedFrames": 2,
+      "heapUsedBytes": 25393268,
+      "simulationChecksum": 34898459,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5354.574200000003,
+      "profile": "mobile-stress",
+      "cpuRate": 4,
+      "scale": 4,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 75,
+      "sampleMs": 4006,
+      "frameCount": 823,
+      "averageFps": 205.4418372441338,
+      "averageFrameMs": 4.867557715674362,
+      "p95FrameMs": 8.5,
+      "p99FrameMs": 10.299999998882413,
+      "maxFrameMs": 13.100000001490116,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 296,
+      "cappedFrames": 2,
+      "heapUsedBytes": 25848152,
+      "simulationChecksum": 6656486,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5375.229300000006,
+      "profile": "mobile-stress",
+      "cpuRate": 4,
+      "scale": 4,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "pixi.js@8.19.0",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 64.30000000074506,
+      "sampleMs": 4002.9000000003725,
+      "frameCount": 918,
+      "averageFps": 229.3337330435221,
+      "averageFrameMs": 4.360457516340275,
+      "p95FrameMs": 8.200000001117587,
+      "p99FrameMs": 9.899999998509884,
+      "maxFrameMs": 20.5,
+      "framesOver16_7": 1,
+      "framesOver33_3": 0,
+      "fixedSteps": 296,
+      "cappedFrames": 2,
+      "heapUsedBytes": 26259784,
+      "simulationChecksum": 4278191578,
+      "renderer": "kc",
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5318.712800000008,
+      "profile": "mobile-stress",
+      "cpuRate": 4,
+      "scale": 4,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 734967,
+        "gzipBytes": 208396
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 61.79999999888241,
+      "sampleMs": 4001.60000000149,
+      "frameCount": 455,
+      "averageFps": 113.70451819268057,
+      "averageFrameMs": 8.794725274728549,
+      "p95FrameMs": 11.799999998882413,
+      "p99FrameMs": 14.300000000745058,
+      "maxFrameMs": 21.90000000037253,
+      "framesOver16_7": 3,
+      "framesOver33_3": 0,
+      "fixedSteps": 295,
+      "cappedFrames": 0,
+      "heapUsedBytes": 30294044,
+      "simulationChecksum": 34689171,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5367.685400000002,
+      "profile": "mobile-stress",
+      "cpuRate": 4,
+      "scale": 4,
+      "repeat": 0,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 60.69999999925494,
+      "sampleMs": 4006.5999999996275,
+      "frameCount": 468,
+      "averageFps": 116.80726800779802,
+      "averageFrameMs": 8.561111111110316,
+      "p95FrameMs": 11.200000001117587,
+      "p99FrameMs": 12.800000000745058,
+      "maxFrameMs": 13.599999999627471,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 296,
+      "cappedFrames": 0,
+      "heapUsedBytes": 34639760,
+      "simulationChecksum": 6656486,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5385.379799999995,
+      "profile": "mobile-stress",
+      "cpuRate": 4,
+      "scale": 4,
+      "repeat": 1,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    },
+    {
+      "engine": "phaser@4.2.1",
+      "counts": {
+        "enemies": 600,
+        "projectiles": 2000,
+        "particles": 6000,
+        "props": 1200
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "dpr": 2
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+      "startupMs": 60.5,
+      "sampleMs": 4002.199999999255,
+      "frameCount": 459,
+      "averageFps": 114.68692219281532,
+      "averageFrameMs": 8.719389978211884,
+      "p95FrameMs": 12.099999999627471,
+      "p99FrameMs": 13.799999998882413,
+      "maxFrameMs": 14.699999999254942,
+      "framesOver16_7": 0,
+      "framesOver33_3": 0,
+      "fixedSteps": 294,
+      "cappedFrames": 0,
+      "heapUsedBytes": 28593420,
+      "simulationChecksum": 4278049731,
+      "renderer": "initialize",
+      "webglVersion": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+      "webglRenderer": "WebKit WebGL",
+      "renderedObjects": 9800,
+      "navigationToResultMs": 5359.259999999995,
+      "profile": "mobile-stress",
+      "cpuRate": 4,
+      "scale": 4,
+      "repeat": 2,
+      "bundle": {
+        "rawBytes": 1392979,
+        "gzipBytes": 372003
+      },
+      "consoleErrors": []
+    }
+  ],
+  "schema": "hmh-engine-bakeoff-v1",
+  "decision": "pixi.js@8.19.0",
+  "environment": {
+    "os": "Windows 10.0.26200",
+    "cpu": "12th Gen Intel Core i9-12900K",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti",
+    "gpu_driver": "32.0.16.1074",
+    "ram_bytes": 34088476672,
+    "chrome": "150.0.7871.181",
+    "node": "24.17.0",
+    "npm": "11.13.0",
+    "caveat": "Headless Chrome exposed only a generic WebKit WebGL renderer string; use results as a controlled relative comparison, not a retail-device certification."
+  },
+  "derived": {
+    "desktop_normal_fps_ratio": 1.3542700956936538,
+    "desktop_stress_fps_ratio": 3.1449254158615254,
+    "mobile_normal_fps_ratio": 2.8248808030264136,
+    "mobile_stress_fps_ratio": 1.7913274967719373,
+    "raw_bundle_reduction_pct": 47.23775448158227,
+    "gzip_bundle_reduction_pct": 43.98002166649194,
+    "desktop_normal_heap_reduction_pct": 43.077407590504166,
+    "mobile_normal_heap_reduction_pct": 44.35536231748928
+  }
+}
