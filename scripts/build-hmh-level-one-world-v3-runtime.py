@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile Blueprint v3 into a compact browser-consumable runtime module."""
+"""Compile the Blueprint v5 data through the stable v3 compatibility module path."""
 
 from __future__ import annotations
 
@@ -94,7 +94,7 @@ function authoredInBounds(x, y) {
 
 function rawCellAtAuthored(x, y) {
   if (!authoredInBounds(x, y)) {
-    return { terrain: 'X', biome: 'M', elevation: '4', groundNav: '#', route: '.', encounter: '.' };
+    return { terrain: 'X', biome: 'M', elevation: '3', groundNav: '#', route: '.', encounter: '.' };
   }
   return {
     terrain: DATA.layers.terrain[y][x],
@@ -133,8 +133,8 @@ export function levelOneWorldV3WorldBounds() {
 export function levelOneWorldV3ElevationAt(worldX = 0, worldY = 0) {
   const x = Math.round(Number(worldX) || 0) + SPAWN_X;
   const y = Math.round(Number(worldY) || 0) + SPAWN_Y;
-  if (!authoredInBounds(x, y)) return 4;
-  return Math.max(0, Math.min(4, DATA.layers.elevation[y].charCodeAt(x) - 48));
+  if (!authoredInBounds(x, y)) return 3;
+  return Math.max(0, Math.min(3, DATA.layers.elevation[y].charCodeAt(x) - 48));
 }
 
 export function levelOneWorldV3CellAt(worldX = 0, worldY = 0) {

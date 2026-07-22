@@ -19,7 +19,7 @@ import { HMH_LEVEL_ONE_WORLD_V3_LANDMARKS } from '../apps/portal/assets/generate
 test('World v3 builds a bounded deterministic authored object layer with explicit collision truth', () => {
   const objects = HMH_LEVEL_ONE_WORLD_V3_OBJECTS;
   const report = levelOneWorldV3ObjectReport();
-  assert.ok(objects.length >= 150 && objects.length <= 260, `expected a dense but bounded object layer, got ${objects.length}`);
+  assert.ok(objects.length >= 300 && objects.length <= 400, `expected a dense but bounded 150x150 object layer, got ${objects.length}`);
   assert.equal(report.total, objects.length);
   assert.ok(report.solid >= 120);
   assert.equal(new Set(objects.map((object) => object.id)).size, objects.length);
@@ -104,8 +104,10 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
   const pineBridge = HMH_LEVEL_ONE_WORLD_V3_OBJECTS.find((object) => object.id === 'world-v3-pine-creek-timber-bridge');
   assert.ok(pineBridge, 'Pine Creek semantic bridge must have one authored visual overlay');
   assert.equal(pineBridge.assetKey, 'world-v3-infrastructure/pine-creek-timber-bridge');
-  assert.equal(pineBridge.gridX, 27);
-  assert.equal(pineBridge.gridY, -39);
+  const pineBridgeBlueprint = HMH_LEVEL_ONE_WORLD_V3.bridges.find((bridge) => bridge.id === 'pine-creek-wood-bridge');
+  const pineBridgeWorld = authoredCellToWorld(pineBridgeBlueprint.x, pineBridgeBlueprint.y);
+  assert.equal(pineBridge.gridX, pineBridgeWorld.x);
+  assert.equal(pineBridge.gridY, pineBridgeWorld.y);
   assert.equal(pineBridge.solid, false, 'bridge overlay must not alter semantic bridge traversal');
   assert.equal(pineBridge.interactive, false);
   assert.equal(pineBridge.role, 'bridge');
@@ -117,6 +119,7 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
     const center = authoredCellToWorld(poi.x, poi.y);
     const intruders = HMH_LEVEL_ONE_WORLD_V3_OBJECTS.filter((object) => (
       object.solid
+      && object.role !== 'boundary'
       && object.sourceZoneId === poi.id
       && Math.hypot(object.gridX - center.x, object.gridY - center.y) < poi.arenaRadius
     ));
@@ -175,7 +178,9 @@ test('solid World v3 object footprints preserve routes to all critical and optio
 });
 
 test('World v3 boss-yard camera keeps one warehouse landmark while preserving extraction cover', () => {
-  const bossYard = buildLevelOneWorldV3VisibleObjects({ playerX: 79, playerY: -43, window: 18 });
+  const bossAnchor = HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss;
+  const bossWorld = authoredCellToWorld(bossAnchor.x, bossAnchor.y);
+  const bossYard = buildLevelOneWorldV3VisibleObjects({ playerX: bossWorld.x, playerY: bossWorld.y, window: 18 });
   const warehouses = bossYard.filter((object) => object.assetKey === 'wo105-world/extraction-yard-warehouse');
   const containerCover = bossYard.filter((object) => object.assetKey === 'wo105-world/container-cover-line');
 

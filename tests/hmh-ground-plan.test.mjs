@@ -14,12 +14,18 @@ function sampleTiles(width = 200, height = 200) {
   return tiles;
 }
 
+const migrateDesignCoordinate = (value) => Math.round(value * 149 / 99);
+const migratedAuthoredCellToWorld = (x, y) => authoredCellToWorld(
+  migrateDesignCoordinate(x),
+  migrateDesignCoordinate(y),
+);
+
 test('live Level 1 ground plan is backed by the approved Blueprint v3 cell contract', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   assert.equal(plan.worldContractId, HMH_LEVEL_ONE_WORLD_V3.id);
-  assert.equal(plan.width, 100);
-  assert.equal(plan.height, 100);
-  assert.deepEqual(plan.worldBounds, { minX: -8, maxX: 91, minY: -78, maxY: 21, width: 100, height: 100 });
+  assert.equal(plan.width, 150);
+  assert.equal(plan.height, 150);
+  assert.deepEqual(plan.worldBounds, { minX: -12, maxX: 137, minY: -117, maxY: 32, width: 150, height: 150 });
   assert.deepEqual(plan.spawnWorld, { x: 0, y: 0 });
 
   const spawn = plan.zoneAt(0, 0);
@@ -28,13 +34,13 @@ test('live Level 1 ground plan is backed by the approved Blueprint v3 cell contr
   assert.equal(spawn.authoredX, HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.x);
   assert.equal(spawn.authoredY, HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.y);
 
-  const waterWorld = authoredCellToWorld(49, 64);
+  const waterWorld = migratedAuthoredCellToWorld(49, 64);
   const water = plan.zoneAt(waterWorld.x, waterWorld.y);
   assert.equal(water.role, 'water');
   assert.equal(water.groundNav, '#');
   assert.equal(plan.traversalAt(waterWorld.x, waterWorld.y).blocked, true);
 
-  const bridgeWorld = authoredCellToWorld(35, 39);
+  const bridgeWorld = migratedAuthoredCellToWorld(35, 39);
   const bridge = plan.zoneAt(bridgeWorld.x, bridgeWorld.y);
   assert.equal(bridge.role, 'bridge');
   assert.equal(bridge.groundNav, '.');
@@ -57,11 +63,11 @@ test('ground plan assigns every sampled tile to exactly one zone with one textur
   }
 });
 
-test('authored terrain families keep one cohesive material across all 10,000 cells', () => {
+test('authored terrain families keep one cohesive material across all 22,500 cells', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   const materialByTerrain = new Map();
-  for (let authoredY = 0; authoredY < 100; authoredY += 1) {
-    for (let authoredX = 0; authoredX < 100; authoredX += 1) {
+  for (let authoredY = 0; authoredY < plan.height; authoredY += 1) {
+    for (let authoredX = 0; authoredX < plan.width; authoredX += 1) {
       const world = authoredCellToWorld(authoredX, authoredY);
       const here = plan.zoneAt(world.x, world.y);
       if (!materialByTerrain.has(here.terrain)) materialByTerrain.set(here.terrain, new Set());
@@ -70,7 +76,12 @@ test('authored terrain families keep one cohesive material across all 10,000 cel
   }
   assert.equal(materialByTerrain.size, 17);
   assert.equal([...materialByTerrain.values()].every((keys) => keys.size === 1), true);
-  assert.notEqual(plan.zoneAt(0, 0).textureKey, plan.zoneAt(4, 0).textureKey, 'authored asphalt and shoulder materials stay distinct');
+  const spawnTexture = plan.zoneAt(0, 0).textureKey;
+  assert.ok(
+    Array.from({ length: 21 }, (_, index) => plan.zoneAt(index - 10, 0))
+      .some((cell) => cell.groundNav === '.' && cell.textureKey !== spawnTexture),
+    'authored asphalt and shoulder materials stay distinct',
+  );
 });
 
 test('borderInfo is present exactly on cardinal zone boundaries', () => {
@@ -111,8 +122,8 @@ test('ground plan references only certified World v3 terrain materials', () => {
     const asset = plan.textureForKey(textureKey);
     assert.ok(asset, `${textureKey} should resolve through the plan texture lookup`);
     assert.match(asset.src, /^\.\/assets\/generated\/hmh-level-one-world-v3\/materials\//);
-    assert.equal(asset.width, 160);
-    assert.equal(asset.height, 160);
+    assert.equal(asset.width, textureKey.endsWith('/forest-floor') ? 128 : 160);
+    assert.equal(asset.height, textureKey.endsWith('/forest-floor') ? 64 : 160);
     assert.equal(asset.seamMismatchPixels, 0);
   }
 });
@@ -137,8 +148,9 @@ test('spawn road is authored asphalt with passable shoulders and a clear player 
     assert.equal(cell.groundNav, '.');
     assert.equal(cell.terrain, 'A');
   }
-  assert.equal(plan.zoneAt(4, 0).groundNav, '.');
-  assert.notEqual(plan.zoneAt(4, 0).textureKey, plan.zoneAt(0, 0).textureKey);
+  const shoulder = Array.from({ length: 21 }, (_, index) => plan.zoneAt(index - 10, 0))
+    .find((cell) => cell.groundNav === '.' && cell.textureKey !== plan.zoneAt(0, 0).textureKey);
+  assert.ok(shoulder, 'expanded spawn road keeps a passable non-asphalt shoulder');
 });
 
 test('critical path, POIs, and bridge crossings resolve through authored passable ground', () => {
@@ -162,7 +174,7 @@ test('authored lakes, rapids, and fords are ground-plan water instead of walkabl
     [88, 92, '#', 'southern sea outlet'],
     [56, 59, '~', 'optional shallow ford'],
   ]) {
-    const world = authoredCellToWorld(authoredX, authoredY);
+    const world = migratedAuthoredCellToWorld(authoredX, authoredY);
     assert.equal(plan.zoneAt(world.x, world.y).role, 'water', `${label} should be collision-backed water terrain`);
     assert.equal(plan.zoneAt(world.x, world.y).groundNav, nav);
   }

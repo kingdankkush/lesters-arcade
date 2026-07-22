@@ -86,6 +86,16 @@ test('HMH browser performance certificate tracks frame tails and combat occupanc
   assert.equal(perRunRatioFailed.status, 'FAIL');
   assert.equal(perRunRatioFailed.maxSimulation.droppedSimulationRatio, 0.03);
   assert.ok(perRunRatioFailed.failures.includes('simulation-time-dropped-ratio'));
+
+  const stabilizationBaseline = { observedWallClockMs: 16000, droppedSimulationMs: 2400, catchUpFrames: 40 };
+  const windowed = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, ...stabilizationBaseline } } },
+    { frameDeltasMs: [16], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, observedWallClockMs: 76000, droppedSimulationMs: 3500, catchUpFrames: 58 } } },
+  ], { simulationBaseline: stabilizationBaseline });
+  assert.equal(windowed.status, 'PASS');
+  assert.equal(windowed.maxSimulation.observedWallClockMs, 60000);
+  assert.equal(windowed.maxSimulation.droppedSimulationMs, 1100);
+  assert.equal(windowed.maxSimulation.droppedSimulationRatio, 0.0183);
 });
 
 const SESSIONS = [

@@ -299,7 +299,7 @@ const ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES = 24;
 const ROGUELIKE_MIN_BOSS_SPAWN_DISTANCE_TILES = 28;
 const ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES = 96;
 const FIXED_STEP_MS = 1000 / LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps;
-const MAX_FIXED_STEPS_PER_FRAME = 2;
+const MAX_FIXED_STEPS_PER_FRAME = 4;
 function createFixedStepStats() {
   return {
     lastSteps: 0,
@@ -3657,7 +3657,7 @@ function scheduleCombatViewportRelayout(delayMs = 0) {
 }
 
 function fullscreenEnvironment() {
-  const target = dom.officialCombatMount ?? dom.officialGameplay ?? dom.combatCanvas;
+  const target = dom.officialGameplay ?? dom.officialCombatMount ?? dom.combatCanvas;
   const standalone = Boolean(
     window.matchMedia?.('(display-mode: standalone)')?.matches
     || window.navigator?.standalone,
@@ -5739,13 +5739,20 @@ function waitForPlayerReady() {
       resolve();
     };
     let activating = false;
-    const onActivate = async () => {
+    const onActivate = () => {
       if (activating) return;
       activating = true;
-      if (gameSettings.autoEnterFullscreen && !document.fullscreenElement) {
-        await requestCombatFullscreen();
+      try {
+        if (gameSettings.autoEnterFullscreen && !document.fullscreenElement) {
+          void requestCombatFullscreen().catch((error) => {
+            debugRuntimeLog('[HMH] fullscreen entry skipped; run continues in current viewport', error);
+          });
+        }
+      } catch (error) {
+        debugRuntimeLog('[HMH] fullscreen request unavailable; run continues in current viewport', error);
+      } finally {
+        cleanup();
       }
-      cleanup();
     };
     const onKey = (e) => {
       if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
@@ -8548,11 +8555,15 @@ if (tacticalBalanceDebugEnabled) {
         const targetMapY = combat.playerMapY + (Number(dy) || 0);
         const enemy = spawnRoguelikeEnemy(director, {
           spawnLaneRole: String(laneRole),
+          forceEnemyId: String(laneRole) === 'elite' ? 'bandit-captain' : undefined,
           mapX: targetMapX,
           mapY: targetMapY,
           ignoreSpawnBudget: true,
         });
         if (!enemy) return { error: 'debug-spawn-rejected', spawnLaneRole: String(laneRole) };
+        enemy.spawnLaneRole = String(laneRole);
+        enemy.spawnLaneRoleApplied = true;
+        enemy.spawnLaneTelegraph = levelOneSpawnLaneTelegraphForRole(enemy.spawnLaneRole);
         enemy.mapX = targetMapX;
         enemy.mapY = targetMapY;
         const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
@@ -15207,7 +15218,7 @@ function ensureTouchControls(profile) {
   // lives in the gameplay view markup and is shown on all viewports, so the
   // touch layer no longer needs its own pause button.
 
-  document.body.append(layer);
+  (dom.officialGameplay ?? document.body).append(layer);
   touchControlsBuilt = true;
 }
 

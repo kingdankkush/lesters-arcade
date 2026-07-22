@@ -46,3 +46,12 @@ test('WO-74 has a 390px portrait overflow guard for mode and gameplay controls',
   assert.match(css, /\.roguelike-stat-bar/);
   assert.match(css, /overflow-wrap: anywhere/);
 });
+
+test('HMH mobile landscape keeps the combat field, minimap, and essential HUD visible together', () => {
+  const css = repoText('apps/portal/styles.css');
+  assert.match(css, /@media \(max-width: 900px\) and \(max-height: 500px\) and \(orientation: landscape\)/);
+  assert.match(css, /html\[data-ingame="true"\]\[data-device="mobile"\] \.roguelike-stat-bar \{[\s\S]*?position: fixed;[\s\S]*?width: calc\(100vw - 190px\);[\s\S]*?max-height: 82px;/);
+  assert.match(css, /grid-template-columns: repeat\(6, minmax\(0, 1fr\)\)/);
+  assert.match(css, /html\[data-ingame="true"\]\[data-device="mobile"\] \.official-combat-mount \{[\s\S]*?min-height: 100dvh;/);
+  assert.match(css, /\.touch-dash \{ left: -56px; top: 24px;/, 'DASH must not sit under the grenade button');
+});

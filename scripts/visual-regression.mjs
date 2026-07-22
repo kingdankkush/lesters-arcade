@@ -524,22 +524,26 @@ try {
     })()
   `, 10000);
 
+  const migrateV3WorldPoint = (x, y) => ({
+    x: Math.round((x + 8) * 149 / 99) - 12,
+    y: Math.round((y + 78) * 149 / 99) - 117,
+  });
   const compactWorldTour = [
-    { name: 'seed-1337-spawn-road', x: 0, y: 0, prefix: 'curated/jul9-fences-barricades-' },
-    { name: 'seed-1337-ghost-town', x: 16, y: -13, prefix: 'world-v3-landmark/ghost-saloon-square' },
-    { name: 'seed-1337-dry-forest', x: 12, y: -40, prefix: 'world-v3-landmark/dry-forest-cave-mouth' },
-    { name: 'seed-1337-mesa-overlook', x: 30, y: -58, prefix: 'world-v3-landmark/mesa-overlook-outcrop' },
-    { name: 'seed-1337-oasis-lakeside', x: 52, y: -13, requireWater: true },
-    { name: 'seed-1337-crossroads', x: 50, y: -33, prefix: 'world-v3-infrastructure/crossroads-wagon-trading-post' },
-    { name: 'seed-1337-pine-creek-bridge', x: 27, y: -39, prefix: 'world-v3-infrastructure/pine-creek-timber-bridge', requireBridge: true },
-    { name: 'seed-1337-west-river-main-bridge', x: 31, y: -26, requireBridge: true },
-    { name: 'seed-1337-east-river-bridge', x: 44, y: -32, requireBridge: true },
-    { name: 'seed-1337-lake-outlet-farm-bridge', x: 60, y: -3, requireBridge: true, requireWater: true },
-    { name: 'seed-1337-frontier-town', x: 63, y: -26, prefix: 'world-v3-landmark/frontier-town-exchange-hall' },
-    { name: 'seed-1337-wrecked-lighthouse', x: 74, y: 4, prefix: 'curated/jul9-ambient-water-glow-b-' },
-    { name: 'seed-1337-boss-yard', x: 79, y: -43, prefix: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower' },
-    { name: 'seed-1337-extraction', x: 85, y: -39, prefix: 'world-v3-landmark/litecoin-city-threshold-gate' },
-    { name: 'seed-1337-west-boundary', x: -7.5, y: -40, obstaclePrefix: 'world-v3-infrastructure/canyon-boundary-' },
+    { name: 'seed-1337-spawn-road', ...migrateV3WorldPoint(0, 0), prefix: 'curated/jul9-fences-barricades-' },
+    { name: 'seed-1337-ghost-town', ...migrateV3WorldPoint(16, -13), prefix: 'world-v3-landmark/ghost-saloon-square' },
+    { name: 'seed-1337-dry-forest', ...migrateV3WorldPoint(12, -40), prefix: 'world-v3-landmark/dry-forest-cave-mouth' },
+    { name: 'seed-1337-mesa-overlook', ...migrateV3WorldPoint(30, -58), prefix: 'world-v3-landmark/mesa-overlook-outcrop' },
+    { name: 'seed-1337-oasis-lakeside', ...migrateV3WorldPoint(52, -13), requireWater: true },
+    { name: 'seed-1337-crossroads', ...migrateV3WorldPoint(50, -33), prefix: 'world-v3-infrastructure/crossroads-wagon-trading-post' },
+    { name: 'seed-1337-pine-creek-bridge', ...migrateV3WorldPoint(27, -39), prefix: 'world-v3-infrastructure/pine-creek-timber-bridge', requireBridge: true },
+    { name: 'seed-1337-west-river-main-bridge', ...migrateV3WorldPoint(31, -26), requireBridge: true },
+    { name: 'seed-1337-east-river-bridge', ...migrateV3WorldPoint(44, -32), requireBridge: true },
+    { name: 'seed-1337-lake-outlet-farm-bridge', ...migrateV3WorldPoint(60, -3), requireBridge: true, requireWater: true },
+    { name: 'seed-1337-frontier-town', ...migrateV3WorldPoint(63, -26), prefix: 'world-v3-landmark/frontier-town-exchange-hall' },
+    { name: 'seed-1337-wrecked-lighthouse', ...migrateV3WorldPoint(74, 4), prefix: 'curated/jul9-ambient-water-glow-b-' },
+    { name: 'seed-1337-boss-yard', ...migrateV3WorldPoint(79, -43), prefix: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower' },
+    { name: 'seed-1337-extraction', ...migrateV3WorldPoint(85, -39), prefix: 'world-v3-landmark/litecoin-city-threshold-gate' },
+    { name: 'seed-1337-west-boundary', ...migrateV3WorldPoint(-7.5, -40), obstaclePrefix: 'world-v3-infrastructure/canyon-boundary-' },
   ];
   const compactWorldTourPositions = [];
   for (const stop of compactWorldTour) {
@@ -581,7 +585,7 @@ try {
   await runInPage(client, `globalThis.__hmhVisualDebugNudge?.(-4, 0)`);
   await sleep(250);
   const boundaryProbe = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
-  if (!boundaryProbe?.player?.boundaryClamped || boundaryProbe.player.x < -7.581) {
+  if (!boundaryProbe?.player?.boundaryClamped || boundaryProbe.player.x < -11.581) {
     throw new Error(`HMH west world boundary did not retain the complete player footprint: ${JSON.stringify(boundaryProbe)}`);
   }
 

@@ -351,7 +351,8 @@ const PY_COMPILE_FILES = [
   "scripts/build-hmh-wo99-enemy-canon-uplift.py",
   "scripts/build-hmh-level-one-world-blueprint-v3.py",
   "scripts/build-hmh-level-one-world-v3-runtime.py",
-  "scripts/build-hmh-level-one-world-v3-materials.py"
+  "scripts/build-hmh-level-one-world-v3-materials.py",
+  "scripts/hmh_forest_river_atlas.py"
 ];
 
 let failures = 0;

@@ -60,13 +60,32 @@ export function buildHmhPerformanceCertificate(samples = [], {
   maxP95RenderMs = 18,
   maxDroppedSimulationMs = 2500,
   maxDroppedSimulationRatio = 0.02,
+  simulationBaseline = null,
 } = {}) {
   const input = Array.isArray(samples) ? samples : [];
   const frameDeltas = input
     .flatMap((sample) => Array.isArray(sample?.frameDeltasMs) ? sample.frameDeltasMs : [])
     .map((value) => numeric(value, NaN))
     .filter((value) => Number.isFinite(value) && value >= 0);
-  const telemetry = input.map((sample) => sample?.performance).filter(Boolean);
+  const rawTelemetry = input.map((sample) => sample?.performance).filter(Boolean);
+  const baselineObservedMs = numeric(simulationBaseline?.observedWallClockMs, 0);
+  const baselineDroppedMs = numeric(simulationBaseline?.droppedSimulationMs, 0);
+  const baselineCatchUpFrames = numeric(simulationBaseline?.catchUpFrames, 0);
+  const telemetry = rawTelemetry.map((entry) => {
+    const observedWallClockMs = numeric(entry.simulation?.observedWallClockMs, 0);
+    const droppedSimulationMs = numeric(entry.simulation?.droppedSimulationMs, 0);
+    const catchUpFrames = numeric(entry.simulation?.catchUpFrames, 0);
+    const baselineApplies = observedWallClockMs >= baselineObservedMs && droppedSimulationMs >= baselineDroppedMs;
+    return {
+      ...entry,
+      simulation: {
+        ...entry.simulation,
+        observedWallClockMs: Math.max(0, observedWallClockMs - (baselineApplies ? baselineObservedMs : 0)),
+        droppedSimulationMs: Math.max(0, droppedSimulationMs - (baselineApplies ? baselineDroppedMs : 0)),
+        catchUpFrames: Math.max(0, catchUpFrames - (baselineApplies ? baselineCatchUpFrames : 0)),
+      },
+    };
+  });
   const renderP95Values = telemetry.map((entry) => numeric(entry.p95RenderMs, NaN)).filter(Number.isFinite);
   const updateP95Values = telemetry.map((entry) => numeric(entry.p95UpdateMs, NaN)).filter(Number.isFinite);
   const occupancyKeys = ['activeEnemies', 'bossEnemies', 'playerProjectiles', 'enemyProjectiles', 'particles', 'vfxParticles', 'floatingTexts', 'xpGems', 'powerUps', 'totalTrackedObjects'];

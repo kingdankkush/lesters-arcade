@@ -27,6 +27,8 @@ import {
 } from '../assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.mjs';
 import { levelOneWorldV3MaterialByKey } from '../assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-materials.mjs';
 import {
+  forestRiverRuntimeAtlasAssets,
+  forestRiverRuntimeGroundAssetForCell,
   desertApproachRuntimeAtlasAssets,
   desertApproachRuntimeGroundAssetForCell,
   bridgeSupertilePresentationForCell,
@@ -456,7 +458,8 @@ function buildWorldV3GroundPlan(seed) {
     zones,
     textureForKey: textureAssetByKey,
     renderAssetForCell(cell) {
-      return desertApproachRuntimeGroundAssetForCell(cell, { seed });
+      return forestRiverRuntimeGroundAssetForCell(cell, { seed })
+        ?? desertApproachRuntimeGroundAssetForCell(cell, { seed });
     },
     roadPresentationForCell(cell) {
       if (!cell) return null;
@@ -475,7 +478,11 @@ function buildWorldV3GroundPlan(seed) {
       return presentation;
     },
     runtimeAtlasAssets() {
-      return Object.freeze([...desertApproachRuntimeAtlasAssets(), ...roadSupertileRuntimeAtlasAssets()]);
+      return Object.freeze([
+        ...forestRiverRuntimeAtlasAssets(),
+        ...desertApproachRuntimeAtlasAssets(),
+        ...roadSupertileRuntimeAtlasAssets(),
+      ]);
     },
     textureKeys() {
       return Object.freeze(HMH_LEVEL_ONE_WORLD_V3.terrainFamilies.map((family) => family.materialKey));

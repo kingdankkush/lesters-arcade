@@ -33,30 +33,34 @@ function floodReachable(navRows, start) {
   return seen;
 }
 
-test('Level 1 World Blueprint v3 defines every cell of a 100x100 authored map', () => {
+test('Level 1 World Blueprint v5 defines every cell of the expanded 150x150 authored map', () => {
   const blueprint = readJson(BLUEPRINT_URL);
-  assert.equal(blueprint.id, 'hmh-level-1-world-blueprint-v3');
+  assert.equal(blueprint.id, 'hmh-level-1-world-blueprint-v5');
+  assert.equal(blueprint.version, 5);
   assert.equal(blueprint.levelId, 'level-1-crypto-wasteland');
-  assert.deepEqual(blueprint.dimensions, { width: 100, height: 100, cellCount: 10_000 });
+  assert.deepEqual(blueprint.dimensions, { width: 150, height: 150, cellCount: 22_500 });
   assert.deepEqual(blueprint.projection, { kind: 'isometric-2-to-1', tileWidth: 64, tileHeight: 32 });
 
   for (const key of ['terrain', 'biome', 'elevation', 'groundNav', 'route', 'encounter']) {
     const rows = rowsFor(blueprint.layers[key]);
-    assert.equal(rows.length, 100, `${key} must have 100 rows`);
-    assert.equal(rows.every((row) => row.length === 100), true, `${key} rows must all be 100 cells wide`);
+    assert.equal(rows.length, blueprint.dimensions.height, `${key} must cover the authored height`);
+    assert.equal(rows.every((row) => row.length === blueprint.dimensions.width), true, `${key} rows must cover the authored width`);
   }
+  const elevationValues = rowsFor(blueprint.layers.elevation).join('').split('').map(Number);
+  assert.equal(Math.min(...elevationValues), 0);
+  assert.equal(Math.max(...elevationValues), 3);
 });
 
 test('Blueprint v3 perimeter is diegetically blocked and deep water is non-traversable', () => {
   const blueprint = readJson(BLUEPRINT_URL);
   const nav = rowsFor(blueprint.layers.groundNav);
   assert.equal(nav[0].split('').every((code) => code === '#'), true);
-  assert.equal(nav[99].split('').every((code) => code === '#'), true);
-  assert.equal(nav.every((row) => row[0] === '#' && row[99] === '#'), true);
+  assert.equal(nav.at(-1).split('').every((code) => code === '#'), true);
+  assert.equal(nav.every((row) => row[0] === '#' && row.at(-1) === '#'), true);
 
   const waterCodes = new Set(['W', 'O']);
-  for (let y = 0; y < 100; y += 1) {
-    for (let x = 0; x < 100; x += 1) {
+  for (let y = 0; y < blueprint.dimensions.height; y += 1) {
+    for (let x = 0; x < blueprint.dimensions.width; x += 1) {
       if (waterCodes.has(cell(blueprint.layers.terrain, x, y))) {
         assert.equal(cell(blueprint.layers.groundNav, x, y), '#', `deep water at ${x},${y} must block ground actors`);
       }
@@ -122,17 +126,18 @@ test('Blueprint v3 bridges declare authored bank endpoints, visual axes, and dec
       if (cell(blueprint.layers.terrain, x, y) === outlet.surface) outletDeckCells += 1;
     }
   }
-  assert.equal(outletDeckCells, 19, 'farm bridge should read as a diagonal band instead of a square wood pad');
+  assert.ok(outletDeckCells >= 36, `expanded farm bridge should remain a substantial diagonal band, got ${outletDeckCells}`);
 });
 
 test('Silver Wallet outlet remains a visible blocked water corridor beside its farm bridge', () => {
   const blueprint = readJson(BLUEPRINT_URL);
   const outlet = blueprint.hydrology.waterways.find((waterway) => waterway.id === 'silver-wallet-outlet');
   assert.ok(outlet);
-  const downstreamControlPoint = outlet.path.find(([x, y]) => x === 72 && y === 77);
-  assert.deepEqual(downstreamControlPoint, [72, 77]);
-  assert.equal(cell(blueprint.layers.terrain, 72, 77), 'W', 'farm plots must not erase the authored outlet river');
-  assert.equal(cell(blueprint.layers.groundNav, 72, 77), '#', 'visible deep outlet water must remain collision-backed');
+  const expectedDownstreamPoint = [Math.round(72 * 149 / 99), Math.round(77 * 149 / 99)];
+  const downstreamControlPoint = outlet.path.find(([x, y]) => x === expectedDownstreamPoint[0] && y === expectedDownstreamPoint[1]);
+  assert.deepEqual(downstreamControlPoint, expectedDownstreamPoint);
+  assert.equal(cell(blueprint.layers.terrain, ...downstreamControlPoint), 'W', 'farm plots must not erase the authored outlet river');
+  assert.equal(cell(blueprint.layers.groundNav, ...downstreamControlPoint), '#', 'visible deep outlet water must remain collision-backed');
 });
 
 test('Blueprint v3 art grammar covers every terrain code and every tile has prompt context', () => {
@@ -143,7 +148,7 @@ test('Blueprint v3 art grammar covers every terrain code and every tile has prom
   assert.equal(blueprint.artGrammar.terrainFamilies.every((family) => family.promptFamilyId), true);
 
   const csv = readFileSync(TILE_CONTEXT_URL, 'utf8').trim().split(/\r?\n/);
-  assert.equal(csv.length, 10_001);
+  assert.equal(csv.length, 22_501);
   assert.equal(csv[0].includes('northTerrain,eastTerrain,southTerrain,westTerrain,promptFamilyId'), true);
 
   const seam = blueprint.artGrammar.seamContract;

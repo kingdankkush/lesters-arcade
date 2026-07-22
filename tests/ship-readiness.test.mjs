@@ -50,12 +50,21 @@ test('brand tokens load before portal styles and public metadata is truthful', (
   assert.match(html, /verified on-chain publishing remains disabled/i);
 });
 
+test('fixed-step runtime recovers rare long frames without an unbounded catch-up spiral', () => {
+  const main = repoFile('apps/portal/main.js');
+  assert.match(main, /const MAX_FIXED_STEPS_PER_FRAME = 4;/);
+  assert.match(main, /const FIXED_STEP_MS = 1000 \/ LESTER_BLASTER_PERFORMANCE_TARGETS\.targetFps;/);
+});
+
 test('fullscreen auto-entry is persisted and uses the READY user gesture', () => {
   const main = repoFile('apps/portal/main.js');
   assert.match(main, /autoEnterFullscreen: true/);
   assert.match(main, /id: 'auto-fullscreen'/);
   assert.match(main, /waitForPlayerReady/);
-  assert.match(main, /await requestCombatFullscreen\(\)/);
+  assert.match(main, /void requestCombatFullscreen\(\)\.catch\(/, 'READY must not await a fullscreen promise that can remain pending');
+  assert.match(main, /const target = dom\.officialGameplay \?\? dom\.officialCombatMount \?\? dom\.combatCanvas/, 'fullscreen must contain HUD, canvas, and game controls');
+  assert.match(main, /\(dom\.officialGameplay \?\? document\.body\)\.append\(layer\)/, 'touch controls must live inside the fullscreen gameplay subtree');
+  assert.match(main, /finally \{\s*cleanup\(\);\s*\}/, 'fullscreen rejection must never strand the READY overlay');
   assert.match(main, /Add to Home Screen/);
   assert.match(main, /event\.altKey && key === 'enter'/);
 });

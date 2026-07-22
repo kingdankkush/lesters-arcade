@@ -1,4 +1,8 @@
-import { HMH_LEVEL_ONE_WORLD_V3 } from './hmh-level-one-world-v3-runtime.mjs';
+import {
+  HMH_LEVEL_ONE_WORLD_V3,
+  levelOneWorldV3CellAt,
+} from './hmh-level-one-world-v3-runtime.mjs';
+import { HMH_LEVEL_ONE_WORLD_V3_MATERIALS } from '../assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-materials.mjs';
 
 export const TERRAIN_PRESENTATION_OVERLAY_ORDER = Object.freeze([
   'terrain-shadow',
@@ -416,6 +420,129 @@ export function desertApproachRuntimeGroundAssetForCell(cell = {}, { seed = 0 } 
   });
 }
 
+const FOREST_RIVER_ATLAS = HMH_LEVEL_ONE_WORLD_V3_MATERIALS.forestRiverAtlas;
+const FOREST_RIVER_ROLES = Object.freeze(['meadow', 'forest', 'water', 'dirt']);
+const FOREST_RIVER_ROLE_INDEX = new Map(FOREST_RIVER_ROLES.map((role, index) => [role, index]));
+const FOREST_RIVER_TRANSITIONS = Object.freeze({
+  'forest|meadow': Object.freeze({ family: 'meadow-forest', first: 'meadow', row: 0 }),
+  'forest|water': Object.freeze({ family: 'forest-river', first: 'forest', row: 1 }),
+  'dirt|forest': Object.freeze({ family: 'forest-dirt', first: 'forest', row: 2 }),
+});
+const FOREST_CORNER_BITS = Object.freeze([8, 4, 2, 1]);
+const FOREST_HANDLED_DIRECTIONS = Object.freeze(['north', 'east', 'south', 'west']);
+
+export const HMH_FOREST_RIVER_TERRAIN_RUNTIME = Object.freeze({
+  id: FOREST_RIVER_ATLAS.id,
+  status: FOREST_RIVER_ATLAS.status,
+  projection: '2:1 isometric',
+  tileSourceSize: Object.freeze(FOREST_RIVER_ATLAS.tileGeometry),
+  logicalPixelGrid: Object.freeze(FOREST_RIVER_ATLAS.logicalPixelGrid),
+  roles: FOREST_RIVER_ROLES,
+  phaseCount: FOREST_RIVER_ATLAS.phaseCount,
+  baseTiles: FOREST_RIVER_ATLAS.baseTiles,
+  transitionTiles: FOREST_RIVER_ATLAS.transitionTiles,
+  elevationMasters: FOREST_RIVER_ATLAS.elevationMasters,
+  totalTiles: FOREST_RIVER_ATLAS.totalTiles,
+  atlas: Object.freeze({
+    src: FOREST_RIVER_ATLAS.src,
+    width: FOREST_RIVER_ATLAS.width,
+    height: FOREST_RIVER_ATLAS.height,
+    decodedBytes: FOREST_RIVER_ATLAS.decodedBytes,
+    sampling: 'nearest-neighbor',
+  }),
+  elevationMaster: Object.freeze({
+    src: FOREST_RIVER_ATLAS.src,
+    width: 128,
+    height: 96,
+    atlasRect: Object.freeze({ x: 0, y: 832, width: 128, height: 96 }),
+    sampling: 'nearest-neighbor',
+  }),
+  seamTopology: Object.freeze(FOREST_RIVER_ATLAS.seamTopology),
+  performance: Object.freeze({ atlasCount: 1, maxTerrainLayersPerCell: 1, decodedBytes: FOREST_RIVER_ATLAS.decodedBytes }),
+  sourcePolicy: FOREST_RIVER_ATLAS.sourcePolicy,
+});
+
+export function forestRiverRuntimeRoleForCell(cell = {}) {
+  if (cell.terrain === 'G') return 'meadow';
+  if (cell.terrain === 'F') return 'forest';
+  if (cell.terrain === 'W' || cell.terrain === 'w') return 'water';
+  if (cell.terrain === 'D' && cell.biome === 'F') return 'dirt';
+  return null;
+}
+
+function forestAtlasAsset(atlasRect, fields = {}) {
+  return Object.freeze({
+    key: fields.key,
+    role: fields.role,
+    src: FOREST_RIVER_ATLAS.src,
+    width: atlasRect.width,
+    height: atlasRect.height,
+    atlasRect: Object.freeze(atlasRect),
+    sampling: 'nearest-neighbor',
+    source: HMH_FOREST_RIVER_TERRAIN_RUNTIME.id,
+    renderLayers: 1,
+    handledDirections: fields.handledDirections ?? Object.freeze([]),
+    ...fields,
+  });
+}
+
+function forestBaseRect(role, phase) {
+  const index = (FOREST_RIVER_ROLE_INDEX.get(role) ?? 0) * 4 + phase;
+  return { x: index * 128, y: 0, width: 128, height: 64 };
+}
+
+function forestTransitionRect(transition, phase, mask) {
+  return { x: mask * 128, y: (1 + transition.row * 4 + phase) * 64, width: 128, height: 64 };
+}
+
+function forestRoleAtWorldCell(worldX, worldY) {
+  return forestRiverRuntimeRoleForCell(levelOneWorldV3CellAt(worldX, worldY));
+}
+
+export function forestRiverRuntimeAtlasAssets() {
+  return Object.freeze([Object.freeze({
+    key: `${HMH_FOREST_RIVER_TERRAIN_RUNTIME.id}/runtime-atlas`,
+    ...HMH_FOREST_RIVER_TERRAIN_RUNTIME.atlas,
+  })]);
+}
+
+export function forestRiverRuntimeGroundAssetForCell(cell = {}, { seed = 0 } = {}) {
+  const role = forestRiverRuntimeRoleForCell(cell);
+  if (!role) return null;
+  const worldX = Math.round(Number(cell.x ?? cell.worldX) || 0);
+  const worldY = Math.round(Number(cell.y ?? cell.worldY) || 0);
+  const phase = phaseFor(worldX, worldY);
+  const cornerRoles = [
+    forestRoleAtWorldCell(worldX, worldY),
+    forestRoleAtWorldCell(worldX + 1, worldY),
+    forestRoleAtWorldCell(worldX, worldY + 1),
+    forestRoleAtWorldCell(worldX + 1, worldY + 1),
+  ];
+  const pairKey = [...new Set(cornerRoles.filter(Boolean))].sort().join('|');
+  const transition = FOREST_RIVER_TRANSITIONS[pairKey] ?? null;
+  if (!transition) {
+    return forestAtlasAsset(forestBaseRect(role, phase), {
+      key: `${HMH_FOREST_RIVER_TERRAIN_RUNTIME.id}/base-${role}/phase-${phase}`,
+      role,
+      phase,
+      seed: Number(seed) || 0,
+    });
+  }
+  const mask = cornerRoles.reduce(
+    (bits, cornerRole, index) => bits | (cornerRole === transition.first ? FOREST_CORNER_BITS[index] : 0),
+    0,
+  );
+  return forestAtlasAsset(forestTransitionRect(transition, phase, mask), {
+    key: `${HMH_FOREST_RIVER_TERRAIN_RUNTIME.id}/${transition.family}/phase-${phase}/mask-${mask}`,
+    role,
+    phase,
+    mask,
+    transitionFamily: transition.family,
+    handledDirections: FOREST_HANDLED_DIRECTIONS,
+    seed: Number(seed) || 0,
+  });
+}
+
 const ROAD_SUPERTILE_SRC = './assets/generated/hmh-level-one-world-v3/materials/road-supertile-overlays-v1.png';
 const ROAD_SUPERTILE_TILE_WIDTH = 128;
 const ROAD_SUPERTILE_TILE_HEIGHT = 64;
@@ -516,13 +643,35 @@ function bridgeContainsAuthoredCell(bridge, x, y) {
 
 function buildBridgeLookup() {
   const lookup = new Map();
-  for (const bridge of HMH_LEVEL_ONE_WORLD_V3.bridges ?? []) {
+  const bridges = HMH_LEVEL_ONE_WORLD_V3.bridges ?? [];
+  for (const bridge of bridges) {
     const rect = bridge.deckRect;
     if (!rect) continue;
     for (let y = rect.yMin; y <= rect.yMax; y += 1) {
       for (let x = rect.xMin; x <= rect.xMax; x += 1) {
         if (bridgeContainsAuthoredCell(bridge, x, y)) lookup.set(`${x}|${y}`, bridge);
       }
+    }
+  }
+  const width = HMH_LEVEL_ONE_WORLD_V3.dimensions.width;
+  const height = HMH_LEVEL_ONE_WORLD_V3.dimensions.height;
+  const spawn = HMH_LEVEL_ONE_WORLD_V3.anchors.spawn;
+  for (let authoredY = 0; authoredY < height; authoredY += 1) {
+    for (let authoredX = 0; authoredX < width; authoredX += 1) {
+      const key = `${authoredX}|${authoredY}`;
+      if (lookup.has(key)) continue;
+      const cell = levelOneWorldV3CellAt(authoredX - spawn.x, authoredY - spawn.y);
+      if (!cell.isBridge) continue;
+      let nearest = null;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+      for (const bridge of bridges) {
+        const distance = ((authoredX - bridge.x) ** 2) + ((authoredY - bridge.y) ** 2);
+        if (distance < nearestDistance) {
+          nearest = bridge;
+          nearestDistance = distance;
+        }
+      }
+      if (nearest) lookup.set(key, nearest);
     }
   }
   return lookup;

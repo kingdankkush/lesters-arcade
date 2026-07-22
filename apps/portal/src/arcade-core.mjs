@@ -2303,11 +2303,11 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
   mode: 'open-ended-survival',
   eliteBandSeconds: Object.freeze({ start: 20 * 60, end: 25 * 60 }),
   world: Object.freeze({
-    // Blueprint v3 replaces the oversized procedural footprint with the complete
-    // authored 100x100 finite world. The live origin is the authored spawn cell.
-    width: 100,
-    height: 100,
-    traversalTargetPct: 0.8085,
+    // Blueprint v5 expands the complete authored world to 150x150 while
+    // preserving the spawn-centered runtime coordinate contract.
+    width: 150,
+    height: 150,
+    traversalTargetPct: 0.6,
     traversalEfficiency: 0.09,
     traversalBudgetSeconds: 4 * 60,
   }),

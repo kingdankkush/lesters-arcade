@@ -190,13 +190,13 @@ function naturalObjects() {
 }
 
 const ORIGINAL_LANDMARK_SPECS = Object.freeze([
-  Object.freeze({ id: 'world-v3-wrecked-lighthouse-landmark', anchorId: 'wrecked-lighthouse', assetKey: 'world-v3-landmark/wrecked-litecoin-lighthouse', offsetX: 7, offsetY: 0, footprint: Object.freeze({ w: 4.2, h: 3.2 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-wrecked-lighthouse-landmark', anchorId: 'wrecked-lighthouse', assetKey: 'world-v3-landmark/wrecked-litecoin-lighthouse', offsetX: 10, offsetY: 0, footprint: Object.freeze({ w: 4.2, h: 3.2 }), solid: true, zHeight: 4 }),
   Object.freeze({ id: 'world-v3-ghost-saloon-landmark', anchorId: 'ghost-saloon-square', assetKey: 'world-v3-landmark/ghost-saloon-square', offsetX: 8, offsetY: 0, footprint: Object.freeze({ w: 5.0, h: 3.6 }), solid: true, zHeight: 4 }),
-  Object.freeze({ id: 'world-v3-dry-forest-cave-landmark', anchorId: 'dry-forest-cave', assetKey: 'world-v3-landmark/dry-forest-cave-mouth', offsetX: 0, offsetY: -7, footprint: Object.freeze({ w: 5.2, h: 4.0 }), solid: true, zHeight: 4 }),
-  Object.freeze({ id: 'world-v3-mesa-overlook-landmark', anchorId: 'mesa-overlook', assetKey: 'world-v3-landmark/mesa-overlook-outcrop', offsetX: 7, offsetY: -1, footprint: Object.freeze({ w: 5.0, h: 4.0 }), solid: true, zHeight: 3 }),
-  Object.freeze({ id: 'world-v3-frontier-town-hall-landmark', anchorId: 'frontier-town-square', assetKey: 'world-v3-landmark/frontier-town-exchange-hall', offsetX: -2, offsetY: -7, footprint: Object.freeze({ w: 4.8, h: 3.5 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-dry-forest-cave-landmark', anchorId: 'dry-forest-cave', assetKey: 'world-v3-landmark/dry-forest-cave-mouth', offsetX: 0, offsetY: -10, footprint: Object.freeze({ w: 5.2, h: 4.0 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-mesa-overlook-landmark', anchorId: 'mesa-overlook', assetKey: 'world-v3-landmark/mesa-overlook-outcrop', offsetX: 9, offsetY: -1, footprint: Object.freeze({ w: 5.0, h: 4.0 }), solid: true, zHeight: 3 }),
+  Object.freeze({ id: 'world-v3-frontier-town-hall-landmark', anchorId: 'frontier-town-square', assetKey: 'world-v3-landmark/frontier-town-exchange-hall', offsetX: -3, offsetY: -9, footprint: Object.freeze({ w: 4.8, h: 3.5 }), solid: true, zHeight: 4 }),
   Object.freeze({ id: 'world-v3-crossroads-trading-post-landmark', anchorId: 'crossroads-trading-post', assetKey: 'world-v3-infrastructure/crossroads-wagon-trading-post', offsetX: 7, offsetY: 2, footprint: Object.freeze({ w: 5.4, h: 3.8 }), solid: true, zHeight: 4 }),
-  Object.freeze({ id: 'world-v3-rugpull-gulch-landmark', anchorId: 'rugpull-gulch-boss-yard', assetKey: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower', offsetX: -10, offsetY: 4, footprint: Object.freeze({ w: 6.2, h: 4.2 }), drawFootprint: Object.freeze({ w: 5.0, h: 3.4 }), solid: true, zHeight: 5 }),
+  Object.freeze({ id: 'world-v3-rugpull-gulch-landmark', anchorId: 'rugpull-gulch-boss-yard', assetKey: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower', offsetX: -12, offsetY: 5, footprint: Object.freeze({ w: 6.2, h: 4.2 }), drawFootprint: Object.freeze({ w: 5.0, h: 3.4 }), solid: true, zHeight: 5 }),
   Object.freeze({ id: 'world-v3-litecoin-city-threshold-landmark', anchorId: 'extraction', assetKey: 'world-v3-landmark/litecoin-city-threshold-gate', offsetX: 4, offsetY: 0, footprint: Object.freeze({ w: 4.8, h: 3.0 }), solid: false, zHeight: 4 }),
 ]);
 

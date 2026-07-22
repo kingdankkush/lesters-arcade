@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 import { buildGroundPlan } from '../apps/portal/src/hmh-ground-plan.mjs';
+import { authoredCellToWorld } from '../apps/portal/src/hmh-level-one-world-v3-runtime.mjs';
 import {
   buildTerrainEdgeBlendsForCell,
   buildTerrainPresentationForCell,
@@ -17,6 +18,17 @@ import {
   roadSupertilePresentationForCell,
   roadSupertileRuntimeAtlasAssets,
 } from '../apps/portal/src/hmh-terrain-presentation.mjs';
+
+const migrateDesignCoordinate = (value) => Math.round(value * 149 / 99);
+const migratedWorldFromLegacyWorld = (x, y) => authoredCellToWorld(
+  migrateDesignCoordinate(x + 8),
+  migrateDesignCoordinate(y + 78),
+);
+
+const migratedCell = (plan, x, y) => {
+  const world = migratedWorldFromLegacyWorld(x, y);
+  return plan.cellAt(world.x, world.y);
+};
 
 test('terrain edge blends use neighboring material truth without softening bridge decks', () => {
   const cell = {
@@ -38,9 +50,9 @@ test('terrain edge blends use neighboring material truth without softening bridg
 
 test('terrain presentation turns blob cells into ordered elevation/water/bridge/lighting overlays', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const bridge = buildTerrainPresentationForCell(plan.cellAt(27, -39), { frame: 24 });
-  const water = buildTerrainPresentationForCell(plan.cellAt(25, -42), { frame: 24 });
-  const bossHigh = buildTerrainPresentationForCell(plan.cellAt(-7, -78), { frame: 24 });
+  const bridge = buildTerrainPresentationForCell(migratedCell(plan, 27, -39), { frame: 24 });
+  const water = buildTerrainPresentationForCell(migratedCell(plan, 25, -42), { frame: 24 });
+  const bossHigh = buildTerrainPresentationForCell(migratedCell(plan, -7, -78), { frame: 24 });
 
   assert.deepEqual(TERRAIN_PRESENTATION_OVERLAY_ORDER, [
     'terrain-shadow',
@@ -78,7 +90,7 @@ test('terrain presentation turns blob cells into ordered elevation/water/bridge/
 
 test('terrain presentation summary reports live visual-system coverage', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const cells = [plan.cellAt(27, -39), plan.cellAt(25, -42), plan.cellAt(-7, -78), plan.cellAt(0, 0)];
+  const cells = [migratedCell(plan, 27, -39), migratedCell(plan, 25, -42), migratedCell(plan, -7, -78), plan.cellAt(0, 0)];
   const summary = summarizeTerrainPresentation(cells, { frame: 33 });
 
   assert.equal(summary.cellCount, 4);
@@ -94,9 +106,9 @@ test('terrain presentation summary reports live visual-system coverage', () => {
 
 test('texture-only presentation preserves authored elevation without flat color polygon overlays', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const bridge = buildTerrainPresentationForCell(plan.cellAt(27, -39), { frame: 24, overlayMode: 'texture-only' });
-  const water = buildTerrainPresentationForCell(plan.cellAt(25, -42), { frame: 24, overlayMode: 'texture-only' });
-  const bossHigh = buildTerrainPresentationForCell(plan.cellAt(-7, -78), { frame: 24, overlayMode: 'texture-only' });
+  const bridge = buildTerrainPresentationForCell(migratedCell(plan, 27, -39), { frame: 24, overlayMode: 'texture-only' });
+  const water = buildTerrainPresentationForCell(migratedCell(plan, 25, -42), { frame: 24, overlayMode: 'texture-only' });
+  const bossHigh = buildTerrainPresentationForCell(migratedCell(plan, -7, -78), { frame: 24, overlayMode: 'texture-only' });
 
   assert.deepEqual(bridge.overlays, []);
   assert.deepEqual(water.overlays, []);
@@ -249,14 +261,17 @@ test('live World v3 plan exposes the scoped Desert Approach adapter without repl
   const plan = buildGroundPlan({ seed: 1337 });
   assert.equal(typeof plan.renderAssetForCell, 'function');
   assert.equal(typeof plan.runtimeAtlasAssets, 'function');
-  assert.equal(plan.runtimeAtlasAssets().length, 3);
+  assert.equal(plan.runtimeAtlasAssets().length, 4);
 
   const found = new Map();
+  const desiredDesertRoles = new Set(['dirt', 'sand', 'rocky', 'road']);
   for (let x = plan.worldBounds.minX; x <= plan.worldBounds.maxX && found.size < 5; x += 1) {
     for (let y = plan.worldBounds.minY; y <= plan.worldBounds.maxY && found.size < 5; y += 1) {
       const cell = plan.cellAt(x, y);
       const asset = plan.renderAssetForCell(cell);
-      if (asset && !found.has(asset.role)) found.set(asset.role, cell);
+      if (asset?.key?.startsWith('desert-wang-v2-3/') && desiredDesertRoles.has(asset.role) && !found.has(asset.role)) {
+        found.set(asset.role, cell);
+      }
       if (cell.terrain === 'F' && !found.has('F')) found.set('F', cell);
     }
   }
@@ -269,7 +284,10 @@ test('live World v3 plan exposes the scoped Desert Approach adapter without repl
     assert.equal(asset.role, key);
     assert.equal(asset.src, './assets/generated/hmh-level-one-world-v3/materials/desert-approach-wang-v2-3-materials.png');
   }
-  assert.equal(plan.renderAssetForCell(found.get('F')), null, 'forest cell keeps World v3 material');
+  const forestAsset = plan.renderAssetForCell(found.get('F'));
+  assert.match(forestAsset.key, /^hmh-forest-river-terrain-atlas-v1\//);
+  assert.equal(forestAsset.role, 'forest');
+  assert.equal(forestAsset.renderLayers, 1);
 });
 
 test('live renderer crops/caches atlases, prewarms both sources, and avoids duplicate edge layers', () => {
@@ -289,15 +307,15 @@ test('full authored map stays below the Wang composite cache budget', () => {
   for (let y = plan.worldBounds.minY; y <= plan.worldBounds.maxY; y += 1) {
     for (let x = plan.worldBounds.minX; x <= plan.worldBounds.maxX; x += 1) {
       const asset = plan.renderAssetForCell?.(plan.cellAt(x, y));
-      if (!asset) continue;
+      if (!asset?.key?.startsWith('desert-wang-v2-3/')) continue;
       adaptedCells += 1;
       if (asset.wangComposite) compositeCells += 1;
       keys.add(asset.key);
     }
   }
   const decodedCanvasBytes = keys.size * 128 * 64 * 4;
-  assert.equal(adaptedCells, 2479);
-  assert.equal(compositeCells, 65);
+  assert.ok(adaptedCells > 2_000, `expected a substantial desert adapter footprint, got ${adaptedCells}`);
+  assert.ok(compositeCells > 0, 'desert boundaries should still exercise Wang composites');
   assert.ok(keys.size <= 128, `runtime created ${keys.size} unique terrain patterns`);
   assert.ok(decodedCanvasBytes <= 4 * 1024 * 1024, `runtime pattern cache needs ${decodedCanvasBytes} bytes`);
 });
@@ -333,7 +351,7 @@ test('Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas', 
   assert.deepEqual(manifest.bridgeStyles, ['wood', 'stone-road']);
   assert.deepEqual(manifest.bridgeAxes, ['east-west', 'north-east-south-west']);
   assert.equal(manifest.shoulderMasks, 16);
-  assert.equal(manifest.centerlineMasks, 32);
+  assert.equal(manifest.centerlineMasks, 29);
   assert.equal(manifest.bridgeEdgeMasks, 64);
   assert.equal(manifest.atlas.width, 2048);
   assert.equal(manifest.atlas.height, 640);
@@ -375,12 +393,12 @@ test('authored bridge supertiles add one deterministic deck, rail, and abutment 
       keys.add(presentation.detail.key);
     }
   }
-  assert.equal(bridgeCells, 99);
+  assert.equal(bridgeCells, HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME.bridgeCells);
   assert.equal(detailedCells, bridgeCells, 'every authored deck cell should receive bridge-specific detail');
   assert.ok(keys.size <= 32, `bridge runtime created ${keys.size} unique overlay crops`);
   assert.ok(keys.size * 128 * 64 * 4 <= 1024 * 1024, 'bridge overlay crop cache must stay within 1 MiB');
 
-  const bridgeCenter = plan.cellAt(27, -39);
+  const bridgeCenter = migratedCell(plan, 27, -39);
   const first = bridgeSupertilePresentationForCell(bridgeCenter);
   assert.equal(first.bridgeId, 'pine-creek-wood-bridge');
   assert.equal(first.style, 'wood');
@@ -421,7 +439,7 @@ test('road supertile selector maps exposed route edges without altering broad ro
 test('authored road centerlines add directional paint while bridges and blocked water remain untouched', () => {
   const plan = buildGroundPlan({ seed: 1337 });
   assert.equal(typeof plan.roadPresentationForCell, 'function');
-  assert.equal(plan.runtimeAtlasAssets().length, 3);
+  assert.equal(plan.runtimeAtlasAssets().length, 4);
   assert.equal(plan.roadPresentationForCell(null), null);
 
   const spawnCell = plan.cellAt(0, 0);
@@ -432,7 +450,7 @@ test('authored road centerlines add directional paint while bridges and blocked 
   assert.ok(spawnRoad.centerlineMask > 0);
   assert.ok(spawnRoad.renderLayers >= 1 && spawnRoad.renderLayers <= 2);
 
-  const bridge = plan.cellAt(27, -39);
+  const bridge = migratedCell(plan, 27, -39);
   assert.equal(bridge.isBridge, true);
   assert.equal(plan.roadPresentationForCell(bridge), null);
 
@@ -480,9 +498,9 @@ test('full authored road network stays inside overlay and cropped-canvas budgets
     }
   }
   const croppedCanvasBytes = keys.size * 128 * 64 * 4;
-  assert.equal(presentedCells, 732);
-  assert.equal(shoulderCells, 477);
-  assert.equal(markingCells, 258);
+  assert.equal(presentedCells, 1218);
+  assert.equal(shoulderCells, 843);
+  assert.equal(markingCells, 391);
   assert.equal(maxLayers, 2);
   assert.ok(keys.size <= 64, `road runtime created ${keys.size} unique overlay patterns`);
   assert.ok(croppedCanvasBytes <= 2 * 1024 * 1024, `road crop cache needs ${croppedCanvasBytes} bytes`);

@@ -9,12 +9,27 @@ import {
   pointWithinLevelOneBounds,
 } from '../apps/portal/src/arcade-core.mjs';
 
-test('WO-21 Level 1 world dimensions expose finite Blueprint v3 spawn-centered map bounds', () => {
+test('WO-21 Level 1 world dimensions expose finite Blueprint v5 spawn-centered map bounds', () => {
   const world = buildLevelOneRunWorldDimensions();
   assert.equal(world.finite, true);
   assert.equal(world.origin, 'authored-spawn');
-  assert.deepEqual({ minX: world.minX, maxX: world.maxX, minY: world.minY, maxY: world.maxY }, { minX: -8, maxX: 91, minY: -78, maxY: 21 });
+  assert.deepEqual({ width: world.width, height: world.height }, { width: 150, height: 150 });
+  assert.deepEqual({ minX: world.minX, maxX: world.maxX, minY: world.minY, maxY: world.maxY }, { minX: -12, maxX: 137, minY: -117, maxY: 32 });
   assert.ok(world.boundaryInsetTiles >= 3, 'bounds need an inset for future walls/natural edges');
+});
+
+test('default Level 1 minimap derives complete bounds and reveal grid from the expanded world', () => {
+  const world = buildLevelOneRunWorldDimensions();
+  const model = buildLevelOneMinimapModel({
+    world,
+    player: { x: 0, y: 0 },
+    exploration: { visitedCells: [], cellSize: 8, revealRadius: 1 },
+  });
+  assert.deepEqual(model.bounds, { width: 150, height: 150, minX: -12, maxX: 137, minY: -117, maxY: 32 });
+  assert.equal(model.exploration.grid.columns, 19);
+  assert.equal(model.exploration.grid.rows, 19);
+  assert.equal(model.exploration.revealedKeys.has(model.exploration.playerCell.key), true);
+  assert.ok(model.exploration.coveragePct > 0 && model.exploration.coveragePct < 0.1);
 });
 
 test('WO-21 clamps players to the finite Level 1 map rectangle', () => {

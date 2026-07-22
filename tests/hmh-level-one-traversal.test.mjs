@@ -16,6 +16,8 @@ import {
 
 const seed = 1337;
 const plan = buildGroundPlan({ levelId: 'level-1-crypto-wasteland', seed });
+const migrateDesignCell = (value) => Math.round(value * 149 / 99);
+const migratedAuthoredCellToWorld = (x, y) => authoredCellToWorld(migrateDesignCell(x), migrateDesignCell(y));
 
 function path(...points) {
   return [{ path: points.map(([x, y]) => ({ x, y })) }];
@@ -23,8 +25,8 @@ function path(...points) {
 
 test('Level 1 terrain traversal follows the rendered ground plan instead of unrelated procedural biomes', () => {
   const roads = buildLevelOneRoadTileIndex({ roadNetwork: [], groundPlan: plan });
-  const riverPoint = authoredCellToWorld(49, 64);
-  const shorePoint = authoredCellToWorld(50, 76);
+  const riverPoint = migratedAuthoredCellToWorld(49, 64);
+  const shorePoint = migratedAuthoredCellToWorld(50, 76);
   const river = classifyLevelOneTraversal({ groundPlan: plan, roadTileIndex: roads, worldX: riverPoint.x, worldY: riverPoint.y });
   const shore = classifyLevelOneTraversal({ groundPlan: plan, roadTileIndex: roads, worldX: shorePoint.x, worldY: shorePoint.y });
   const townRoad = classifyLevelOneTraversal({ groundPlan: plan, roadTileIndex: roads, worldX: 0, worldY: 0 });
@@ -36,7 +38,7 @@ test('Level 1 terrain traversal follows the rendered ground plan instead of unre
 });
 
 test('bridges and authored roads cross otherwise impassable water', () => {
-  const point = authoredCellToWorld(35, 39);
+  const point = migratedAuthoredCellToWorld(35, 39);
   const roads = buildLevelOneRoadTileIndex({ roadNetwork: [], groundPlan: plan });
   const crossing = classifyLevelOneTraversal({ groundPlan: plan, roadTileIndex: roads, worldX: point.x, worldY: point.y });
 
@@ -47,8 +49,8 @@ test('bridges and authored roads cross otherwise impassable water', () => {
 
 test('named fords and shallow creek tiles are crossable without making deep water walkable', () => {
   const roads = buildLevelOneRoadTileIndex({ roadNetwork: [], groundPlan: plan });
-  const fordPoint = authoredCellToWorld(56, 59);
-  const deepPoint = authoredCellToWorld(49, 64);
+  const fordPoint = migratedAuthoredCellToWorld(56, 59);
+  const deepPoint = migratedAuthoredCellToWorld(49, 64);
   const ford = classifyLevelOneTraversal({ groundPlan: plan, roadTileIndex: roads, worldX: fordPoint.x, worldY: fordPoint.y });
   const deep = classifyLevelOneTraversal({ groundPlan: plan, roadTileIndex: roads, worldX: deepPoint.x, worldY: deepPoint.y });
 
@@ -105,7 +107,7 @@ test('seed 1337 traversal playtest reaches every Blueprint v3 POI without walkin
     const world = authoredCellToWorld(anchor.x, anchor.y);
     assert.ok(visited.has(key(world.x, world.y)), `${anchor.id} should be reachable from spawn`);
   }
-  const deep = authoredCellToWorld(49, 64);
+  const deep = migratedAuthoredCellToWorld(49, 64);
   assert.equal(visited.has(key(deep.x, deep.y)), false, 'deep water must not be traversed during the reachability playtest');
   for (const bridge of HMH_LEVEL_ONE_WORLD_V3.bridges) {
     const world = authoredCellToWorld(bridge.x, bridge.y);

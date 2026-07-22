@@ -6,11 +6,11 @@ browser runtime adapter, per-cell prompt context, and certification visuals.
 """
 
 from __future__ import annotations
-
 import csv
+from collections import Counter, deque
+from copy import deepcopy
 import json
 import math
-from collections import Counter, deque
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -21,8 +21,15 @@ ASSET_DIR = ROOT / "docs" / "game-design" / "assets" / "hmh-level-1-world-bluepr
 BLUEPRINT_PATH = DATA_DIR / "hmh-level-1-world-blueprint-v3.json"
 TILE_CONTEXT_PATH = DATA_DIR / "hmh-level-1-world-blueprint-v3-tile-contexts.csv"
 RUNTIME_MODULE_PATH = ROOT / "apps" / "portal" / "src" / "hmh-level-one-world-v3-runtime.mjs"
-WIDTH = 100
-HEIGHT = 100
+# The proven v3 composition remains the editable design lattice. v5 expands it
+# through one deterministic transform so terrain, traversal, POIs, waterways,
+# bridges, and minimap bounds can never drift onto different coordinate systems.
+DESIGN_WIDTH = 100
+DESIGN_HEIGHT = 100
+WIDTH = DESIGN_WIDTH
+HEIGHT = DESIGN_HEIGHT
+TARGET_WIDTH = 150
+TARGET_HEIGHT = 150
 
 TERRAIN_FAMILIES = [
     {"code": "g", "id": "dry-grass", "title": "Dry prairie grass", "promptFamilyId": "terrain-dry-grass"},
@@ -168,6 +175,72 @@ def set_cells(layer: list[list[str]], cells: list[tuple[int, int]], value: str) 
 
 def layer_rows(layer: list[list[str]]) -> list[str]:
     return ["".join(row) for row in layer]
+
+
+def target_axis(value: int, source_extent: int, target_extent: int) -> int:
+    return round(value * (target_extent - 1) / (source_extent - 1))
+
+
+def target_point(point: list[int] | tuple[int, int]) -> list[int]:
+    return [target_axis(point[0], DESIGN_WIDTH, TARGET_WIDTH), target_axis(point[1], DESIGN_HEIGHT, TARGET_HEIGHT)]
+
+
+def target_radius(value: int) -> int:
+    return max(1, round(value * TARGET_WIDTH / DESIGN_WIDTH))
+
+
+def target_elevation(value: str | int) -> str:
+    return str(min(3, round(int(value) * 3 / 4)))
+
+
+def expand_layer(layer: list[list[str]], *, elevation: bool = False) -> list[list[str]]:
+    expanded: list[list[str]] = []
+    for target_y in range(TARGET_HEIGHT):
+        source_y = round(target_y * (DESIGN_HEIGHT - 1) / (TARGET_HEIGHT - 1))
+        row: list[str] = []
+        for target_x in range(TARGET_WIDTH):
+            source_x = round(target_x * (DESIGN_WIDTH - 1) / (TARGET_WIDTH - 1))
+            value = layer[source_y][source_x]
+            row.append(target_elevation(value) if elevation else value)
+        expanded.append(row)
+    return expanded
+
+
+def expand_metadata(metadata: dict) -> dict:
+    expanded = deepcopy(metadata)
+    for waterway in expanded["waterways"]:
+        waterway["path"] = [target_point(point) for point in waterway["path"]]
+        waterway["elevationProfile"] = [int(target_elevation(value)) for value in waterway["elevationProfile"]]
+    for bridge in expanded["bridges"]:
+        bridge["x"], bridge["y"] = target_point((bridge["x"], bridge["y"]))
+        bridge["entry"] = target_point(bridge["entry"])
+        bridge["exit"] = target_point(bridge["exit"])
+        rect = bridge["deckRect"]
+        bridge["deckRect"] = {
+            "xMin": target_axis(rect["xMin"], DESIGN_WIDTH, TARGET_WIDTH),
+            "xMax": target_axis(rect["xMax"], DESIGN_WIDTH, TARGET_WIDTH),
+            "yMin": target_axis(rect["yMin"], DESIGN_HEIGHT, TARGET_HEIGHT),
+            "yMax": target_axis(rect["yMax"], DESIGN_HEIGHT, TARGET_HEIGHT),
+        }
+    for poi in expanded["pointsOfInterest"]:
+        poi["x"], poi["y"] = target_point((poi["x"], poi["y"]))
+        poi["arenaRadius"] = target_radius(poi["arenaRadius"])
+    for anchor in expanded["criticalPath"]:
+        anchor["x"], anchor["y"] = target_point((anchor["x"], anchor["y"]))
+    for key, path in expanded["paths"].items():
+        expanded["paths"][key] = [target_point(point) for point in path]
+    for path in expanded["routePresentation"]:
+        path["controlPoints"] = [target_point(point) for point in path["controlPoints"]]
+        path["radius"] = target_radius(path["radius"])
+    return expanded
+
+
+def expand_world(layers: dict[str, list[list[str]]], metadata: dict) -> tuple[dict[str, list[list[str]]], dict]:
+    expanded_layers = {
+        key: expand_layer(layer, elevation=key == "elevation")
+        for key, layer in layers.items()
+    }
+    return expanded_layers, expand_metadata(metadata)
 
 
 def reachable(nav: list[list[str]], start: tuple[int, int]) -> set[tuple[int, int]]:
@@ -464,9 +537,9 @@ def build_layers() -> tuple[dict[str, list[list[str]]], dict]:
 
 
 def build_blueprint(layers: dict[str, list[list[str]]], metadata: dict) -> dict:
-    spawn = {"id": "broken-road-spawn", "x": 8, "y": 78}
-    final_boss = {"id": "rugpull-gulch-boss-yard", "x": 87, "y": 35}
-    extraction = {"id": "litecoin-city-threshold", "x": 93, "y": 39}
+    spawn = dict(next(anchor for anchor in metadata["criticalPath"] if anchor["id"] == "broken-road-spawn"))
+    final_boss = dict(next(anchor for anchor in metadata["criticalPath"] if anchor["id"] == "rugpull-gulch-boss-yard"))
+    extraction = dict(next(anchor for anchor in metadata["criticalPath"] if anchor["id"] == "litecoin-city-threshold"))
     reached = reachable(layers["groundNav"], (spawn["x"], spawn["y"]))
     required = [*metadata["criticalPath"], *metadata["pointsOfInterest"], final_boss, extraction]
     unreachable = [item["id"] for item in required if (item["x"], item["y"]) not in reached]
@@ -476,7 +549,7 @@ def build_blueprint(layers: dict[str, list[list[str]]], metadata: dict) -> dict:
     layer_contract = {
         "terrain": {"encoding": "one-character terrain family code", "rows": layer_rows(layers["terrain"])},
         "biome": {"encoding": "one-character biome code", "rows": layer_rows(layers["biome"])},
-        "elevation": {"encoding": "integer elevation band 0-4", "rows": layer_rows(layers["elevation"])},
+        "elevation": {"encoding": "integer elevation band 0-3", "rows": layer_rows(layers["elevation"])},
         "groundNav": {"encoding": ". normal, ~ slow, # blocked", "rows": layer_rows(layers["groundNav"])},
         "route": {"encoding": ". none, M main spine, N north loop, S south loop, T town street, B bridge", "rows": layer_rows(layers["route"])},
         "encounter": {"encoding": ". none; named encounter-zone code", "rows": layer_rows(layers["encounter"])},
@@ -491,15 +564,15 @@ def build_blueprint(layers: dict[str, list[list[str]]], metadata: dict) -> dict:
         "bridges": len(metadata["bridges"]),
     }
     return {
-        "id": "hmh-level-1-world-blueprint-v3",
-        "version": 3,
+        "id": "hmh-level-1-world-blueprint-v5",
+        "version": 5,
         "status": "approved-for-live-runtime-integration",
         "levelId": "level-1-crypto-wasteland",
-        "title": "Level 1 - Crypto Wasteland World Blueprint v3",
+        "title": "Level 1 - Crypto Wasteland World Blueprint v5",
         "dimensions": {"width": WIDTH, "height": HEIGHT, "cellCount": WIDTH * HEIGHT},
         "projection": {"kind": "isometric-2-to-1", "tileWidth": 64, "tileHeight": 32},
-        "coordinateSystem": {"origin": "northwest", "xAxis": "east", "yAxis": "south", "runtimeConversion": "subtract authored spawn (8,78), making the live player spawn world (0,0)"},
-        "designIntent": "A compact handcrafted adventure map with a readable critical spine, two optional loops, natural downhill hydrology, strong landmarks, broad swarm arenas, short cat-and-mouse chokepoints, and diegetic borders.",
+        "coordinateSystem": {"origin": "northwest", "xAxis": "east", "yAxis": "south", "runtimeConversion": f"subtract authored spawn ({spawn['x']},{spawn['y']}), making the live player spawn world (0,0)"},
+        "designIntent": "An expansive handcrafted open-world adventure map with connected forest, desert, beach, river, town, mountain, farm, and coast districts; a readable critical spine; two optional loops; natural downhill hydrology; strong landmarks; broad swarm arenas; short cat-and-mouse chokepoints; and diegetic borders.",
         "canonReconciliation": {
             "preserve": ["level-1-crypto-wasteland", "lester-blaster", "Rug Pull Baron final boss", "Litecoin City as Level 2 destination", "deterministic seed behavior"],
             "replaceInRuntime": ["263x225 world dimensions", "coarse district-cell terrain placement", "random-looking ground scatter"],
@@ -529,7 +602,7 @@ def build_blueprint(layers: dict[str, list[list[str]]], metadata: dict) -> dict:
                 "ground": {"passableCodes": [".", "~"], "blockedCode": "#", "slowCode": "~"},
                 "air": {"ignoresGroundCollision": True, "stillRespectsWorldPerimeter": True},
             },
-            "widthRules": {"mainSpineTiles": 5, "secondaryLoopTiles": 3, "shortChokepointTiles": 2, "bossArenaDiameterTiles": 16},
+            "widthRules": {"mainSpineTiles": 8, "secondaryLoopTiles": 5, "shortChokepointTiles": 3, "bossArenaDiameterTiles": 24},
             "collisionSource": "blueprint metadata, never image pixels",
             "collisionContract": {
                 "sourceOfTruth": "authored-blueprint-metadata",
@@ -663,7 +736,7 @@ def draw_topdown(
             color = colors.get(code, "#ff00ff")
             draw.rectangle((x * cell, header + y * cell, (x + 1) * cell - 1, header + (y + 1) * cell - 1), fill=color)
     draw.text((16, 13), title, font=label_font(20), fill="#f3e6bd")
-    draw.text((16, 35), "100 x 100 authored logical cells | north is up", font=label_font(11), fill="#9fb5c5")
+    draw.text((16, 35), f"{WIDTH} x {HEIGHT} authored logical cells | north is up", font=label_font(11), fill="#9fb5c5")
     # North arrow and map-edge cue.
     draw.line((760, 41, 760, 12), fill="#f3e6bd", width=3)
     draw.polygon([(760, 8), (754, 18), (766, 18)], fill="#f3e6bd")
@@ -724,7 +797,7 @@ def draw_isometric(rows: list[str], labels: list[dict]) -> Image.Image:
             color = TERRAIN_COLORS.get(rows[y][x], "#ff00ff")
             diamond = [(sx, sy), (sx + tile_w // 2, sy + tile_h // 2), (sx, sy + tile_h), (sx - tile_w // 2, sy + tile_h // 2)]
             draw.polygon(diamond, fill=color)
-    draw.text((14, 10), "Level 1 World Blueprint v3 - Isometric Terrain Preview", font=label_font(18), fill="#f3e6bd")
+    draw.text((14, 10), "Level 1 World Blueprint v5 - Isometric Terrain Preview", font=label_font(18), fill="#f3e6bd")
     font = label_font(9)
     for item in labels:
         sx = center_x + (item["x"] - item["y"]) * tile_w // 2
@@ -751,10 +824,10 @@ def write_visuals(blueprint: dict) -> None:
     encounter_colors = {".": "#202630", "G": "#bd744c", "F": "#4e9a64", "M": "#8e93a1", "D": "#d5a050", "L": "#53a4bc", "R": "#d8c766", "T": "#7489b0", "C": "#d9897a", "B": "#bc5dda"}
     encounters = draw_topdown(blueprint["layers"]["encounter"]["rows"], encounter_colors, "Encounter and Landmark Zones", labels)
     hydrology_labels = [
-        {"id": "northwest-source", "title": "NW Spring", "x": 19, "y": 3},
-        {"id": "northeast-source", "title": "NE Spring", "x": 67, "y": 3},
-        {"id": "silver-wallet-lake", "title": "Silver Wallet Lake", "x": 49, "y": 64},
-        {"id": "south-coast-sea", "title": "Outlet to Sea", "x": 88, "y": 92},
+        {"id": "northwest-source", "title": "NW Spring", "x": target_point((19, 3))[0], "y": target_point((19, 3))[1]},
+        {"id": "northeast-source", "title": "NE Spring", "x": target_point((67, 3))[0], "y": target_point((67, 3))[1]},
+        {"id": "silver-wallet-lake", "title": "Silver Wallet Lake", "x": target_point((49, 64))[0], "y": target_point((49, 64))[1]},
+        {"id": "south-coast-sea", "title": "Outlet to Sea", "x": target_point((88, 92))[0], "y": target_point((88, 92))[1]},
     ]
     hydrology = draw_topdown(blueprint["layers"]["terrain"]["rows"], TERRAIN_COLORS, "Hydrology: Mountain Springs to Lake to Southern Sea", hydrology_labels, bridges)
     iso = draw_isometric(blueprint["layers"]["terrain"]["rows"], labels)
@@ -768,7 +841,8 @@ def write_visuals(blueprint: dict) -> None:
         "isometric-preview.png": iso,
     }
     for name, image in outputs.items():
-        image.save(ASSET_DIR / name, optimize=True)
+        preview = image.convert("RGB").quantize(colors=128, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+        preview.save(ASSET_DIR / name, optimize=True)
 
     thumb_w, thumb_h = 500, 535
     contact_rows = math.ceil(len(outputs) / 2)
@@ -779,13 +853,17 @@ def write_visuals(blueprint: dict) -> None:
         x = (index % 2) * thumb_w + (thumb_w - thumb.width) // 2
         y = (index // 2) * thumb_h + (thumb_h - thumb.height) // 2
         contact.paste(thumb, (x, y))
+    contact = contact.quantize(colors=160, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
     contact.save(ASSET_DIR / "blueprint-contact-sheet.png", optimize=True)
 
 
 def main() -> None:
+    global WIDTH, HEIGHT
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     ASSET_DIR.mkdir(parents=True, exist_ok=True)
     layers, metadata = build_layers()
+    layers, metadata = expand_world(layers, metadata)
+    WIDTH, HEIGHT = TARGET_WIDTH, TARGET_HEIGHT
     blueprint = build_blueprint(layers, metadata)
     BLUEPRINT_PATH.write_text(json.dumps(blueprint, indent=2) + "\n", encoding="utf-8")
     write_tile_contexts(blueprint)

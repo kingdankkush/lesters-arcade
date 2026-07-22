@@ -332,7 +332,9 @@ async function main() {
     const firstRunElapsedSeconds = samples[0]?.runElapsedSeconds ?? 0;
     const lastRunElapsedSeconds = samples.at(-1)?.runElapsedSeconds ?? 0;
     const activeRunAdvanceSeconds = (samples.at(-1)?.cumulativeRunSeconds ?? 0) - (samples[0]?.cumulativeRunSeconds ?? 0);
-    const performanceCertificate = buildHmhPerformanceCertificate(samples);
+    const performanceCertificate = buildHmhPerformanceCertificate(samples, {
+      simulationBaseline: samples[0]?.performance?.simulation ?? null,
+    });
     const minimumRunAdvanceSeconds = Math.max(1, Math.floor((durationMs / 1000) * 0.8));
     const leakSuspected = heapGrowthBytes > 32 * 1024 * 1024 && heapGrowthPercent > 35;
     const pass = samples.length >= 2

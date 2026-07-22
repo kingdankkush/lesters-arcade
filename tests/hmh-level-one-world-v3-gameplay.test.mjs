@@ -30,6 +30,9 @@ import {
   levelOneWorldV3CellAt,
 } from '../apps/portal/src/hmh-level-one-world-v3-runtime.mjs';
 
+const migrateDesignCell = (value) => Math.round(value * 149 / 99);
+const migratedAuthoredCellToWorld = (x, y) => authoredCellToWorld(migrateDesignCell(x), migrateDesignCell(y));
+
 test('World v3 maps all six campaign POIs onto approved authored anchors', () => {
   assert.equal(HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS.length, 6);
   for (const entry of HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS) {
@@ -153,29 +156,45 @@ test('Level 1 route pacing raises readable role pressure by completed-POI tier w
 
 test('World v3 district context follows authored biome, route, and POI cells', () => {
   assert.equal(levelOneWorldV3DistrictContextAt(0, 0).districtFamily, 'desert-approach');
-  const ghost = authoredCellToWorld(24, 65);
+  const ghost = migratedAuthoredCellToWorld(24, 65);
   const context = levelOneWorldV3DistrictContextAt(ghost.x, ghost.y);
   assert.equal(context.districtFamily, 'ghost-town');
   assert.equal(context.poiId, 'rugpull-gulch');
   assert.equal(context.source, 'hmh-level-one-world-v3');
 });
 
-test('Level 1 exposes four-plus traversable elevation ranges with readable tactical labels', () => {
+test('Level 1 exposes all four traversable elevation ranges with readable tactical labels', () => {
   assert.ok(LEVEL_ONE_ELEVATION_TACTICAL_BANDS.length >= 4);
-  const samples = [
-    authoredCellToWorld(55, 58),
-    authoredCellToWorld(71, 9),
-    authoredCellToWorld(1, 7),
-    authoredCellToWorld(14, 7),
-    authoredCellToWorld(1, 1),
-  ].map(({ x, y }) => levelOneElevationBandAt(x, y));
-  assert.deepEqual(samples.map((sample) => sample.elevation), [0, 1, 2, 3, 4]);
-  assert.equal(new Set(samples.map((sample) => sample.label)).size, 5);
+  const samples = [];
+  for (let target = 0; target <= 3; target += 1) {
+    let found = null;
+    for (let y = 0; y < HMH_LEVEL_ONE_WORLD_V3.dimensions.height && !found; y += 1) {
+      for (let x = 0; x < HMH_LEVEL_ONE_WORLD_V3.dimensions.width; x += 1) {
+        const world = authoredCellToWorld(x, y);
+        const cell = levelOneWorldV3CellAt(world.x, world.y);
+        if (!cell.blocked && Number(cell.elevation) === target) { found = levelOneElevationBandAt(world.x, world.y); break; }
+      }
+    }
+    assert.ok(found, `missing traversable elevation ${target}`);
+    samples.push(found);
+  }
+  assert.deepEqual(samples.map((sample) => sample.elevation), [0, 1, 2, 3]);
+  assert.equal(new Set(samples.map((sample) => sample.label)).size, 4);
 });
 
 test('elevation traversal makes climbs deliberate, descents fluid, and flat movement neutral', () => {
-  const low = authoredCellToWorld(71, 9);
-  const bench = authoredCellToWorld(1, 7);
+  const worldAt = (target) => {
+    for (let y = 0; y < HMH_LEVEL_ONE_WORLD_V3.dimensions.height; y += 1) {
+      for (let x = 0; x < HMH_LEVEL_ONE_WORLD_V3.dimensions.width; x += 1) {
+        const world = authoredCellToWorld(x, y);
+        const cell = levelOneWorldV3CellAt(world.x, world.y);
+        if (!cell.blocked && Number(cell.elevation) === target) return world;
+      }
+    }
+    throw new Error(`missing elevation ${target}`);
+  };
+  const low = worldAt(1);
+  const bench = worldAt(2);
   const flat = levelOneElevationTraversalProfile({ fromX: low.x, fromY: low.y, toX: low.x + 0.1, toY: low.y });
   const climb = levelOneElevationTraversalProfile({ fromX: low.x, fromY: low.y, toX: bench.x, toY: bench.y });
   const descent = levelOneElevationTraversalProfile({ fromX: bench.x, fromY: bench.y, toX: low.x, toY: low.y });
@@ -190,9 +209,9 @@ test('elevation traversal makes climbs deliberate, descents fluid, and flat move
 });
 
 test('World v3 final boss and extraction use the approved boss yard and road-out anchors', () => {
-  assert.deepEqual(levelOneWorldV3BossPoint(), authoredCellToWorld(87, 35));
+  assert.deepEqual(levelOneWorldV3BossPoint(), authoredCellToWorld(HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss.x, HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss.y));
   const extraction = levelOneWorldV3ExtractionPoint();
-  assert.deepEqual({ x: extraction.worldX, y: extraction.worldY }, authoredCellToWorld(93, 39));
+  assert.deepEqual({ x: extraction.worldX, y: extraction.worldY }, authoredCellToWorld(HMH_LEVEL_ONE_WORLD_V3.anchors.extraction.x, HMH_LEVEL_ONE_WORLD_V3.anchors.extraction.y));
   assert.equal(extraction.source, 'hmh-level-one-world-v3');
   assert.ok(extraction.radiusTiles > 1);
 });
@@ -363,7 +382,7 @@ test('all World v3 bridges retain passable declared deck shapes and reachable ba
         assert.notEqual(HMH_LEVEL_ONE_WORLD_V3.layers.groundNav[y]?.[x], '#', `${bridge.id} deck blocked at ${x},${y}`);
       }
     }
-    assert.equal(deckCells, bridge.shape === 'diagonal-band' ? 19 : (bridge.deckRect.xMax - bridge.deckRect.xMin + 1) * (bridge.deckRect.yMax - bridge.deckRect.yMin + 1));
+    assert.equal(deckCells, bridge.shape === 'diagonal-band' ? 29 : (bridge.deckRect.xMax - bridge.deckRect.xMin + 1) * (bridge.deckRect.yMax - bridge.deckRect.yMin + 1));
     for (const [label, [x, y]] of [['entry', bridge.entry], ['exit', bridge.exit]]) {
       assert.notEqual(HMH_LEVEL_ONE_WORLD_V3.layers.groundNav[y]?.[x], '#', `${bridge.id} ${label} bank blocked`);
     }

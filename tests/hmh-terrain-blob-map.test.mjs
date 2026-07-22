@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import { buildGroundPlan } from '../apps/portal/src/hmh-ground-plan.mjs';
+import { authoredCellToWorld } from '../apps/portal/src/hmh-level-one-world-v3-runtime.mjs';
+
+const migrateDesignCell = (value) => Math.round(value * 149 / 99);
+const migratedWorld = (x, y) => authoredCellToWorld(migrateDesignCell(x + 8), migrateDesignCell(y + 78));
 import {
   buildTerrainBlobCell,
   buildTerrainRenderingCapabilityReport,
@@ -10,8 +14,10 @@ import {
 
 test('terrain blob cell derives 47-blob masks and bridge/water metadata from the authored ground plan', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const bridge = buildTerrainBlobCell(plan, 27, -39);
-  const water = buildTerrainBlobCell(plan, 25, -42);
+  const bridgeWorld = migratedWorld(27, -39);
+  const waterWorld = migratedWorld(25, -42);
+  const bridge = buildTerrainBlobCell(plan, bridgeWorld.x, bridgeWorld.y);
+  const water = buildTerrainBlobCell(plan, waterWorld.x, waterWorld.y);
 
   assert.equal(bridge.zoneId, 'world-v3-wood-bridge-bridge');
   assert.equal(bridge.role, 'bridge');
@@ -33,9 +39,10 @@ test('ground plan serves immutable terrain blob cells from a per-run cache', () 
   assert.equal(typeof plan.cellAt, 'function');
   assert.equal(typeof plan.terrainCellCacheStats, 'function');
 
-  const first = plan.cellAt(27, -39);
-  const second = plan.cellAt(27, -39);
-  const fractional = plan.cellAt(27.2, -39.2);
+  const bridgeWorld = migratedWorld(27, -39);
+  const first = plan.cellAt(bridgeWorld.x, bridgeWorld.y);
+  const second = plan.cellAt(bridgeWorld.x, bridgeWorld.y);
+  const fractional = plan.cellAt(bridgeWorld.x + 0.2, bridgeWorld.y - 0.2);
 
   assert.equal(first, second, 'same tile should return the exact cached object');
   assert.equal(first, fractional, 'rounded equivalent tile should return the exact cached object');
