@@ -31,6 +31,87 @@ const SEMANTIC_CATEGORY_ALIASES = Object.freeze({
   'grenade-radius': 'throwable',
 });
 
+const UPGRADE_TYPE_STYLES = Object.freeze({
+  damage: Object.freeze({ iconId: 'damage', tone: 'red', label: 'Weapon Damage' }),
+  offense: Object.freeze({ iconId: 'damage', tone: 'red', label: 'Weapon Damage' }),
+  'reload-speed': Object.freeze({ iconId: 'reload', tone: 'cyan', label: 'Reload Speed' }),
+  'movement-speed': Object.freeze({ iconId: 'mobility', tone: 'green', label: 'Movement Speed' }),
+  'magazine-size': Object.freeze({ iconId: 'magazine', tone: 'weapon', label: 'Magazine Size' }),
+  'fire-rate': Object.freeze({ iconId: 'fire-rate', tone: 'weapon', label: 'Fire Rate' }),
+  'pickup-magnet': Object.freeze({ iconId: 'magnet', tone: 'gold', label: 'Pickup Range' }),
+  'max-hp': Object.freeze({ iconId: 'health', tone: 'cyan', label: 'Max Health' }),
+  'crit-chance': Object.freeze({ iconId: 'critical-chance', tone: 'gold', label: 'Critical Chance' }),
+  'crit-damage': Object.freeze({ iconId: 'critical-hit', tone: 'red', label: 'Critical Damage' }),
+  'projectile-speed': Object.freeze({ iconId: 'projectile', tone: 'weapon', label: 'Projectile Speed' }),
+  pierce: Object.freeze({ iconId: 'pierce', tone: 'red', label: 'Enemy Piercing' }),
+  'spread-control': Object.freeze({ iconId: 'accuracy', tone: 'cyan', label: 'Weapon Accuracy' }),
+  'grenade-capacity': Object.freeze({ iconId: 'grenade-capacity', tone: 'orange', label: 'Grenade Capacity' }),
+  armor: Object.freeze({ iconId: 'shield', tone: 'cyan', label: 'Damage Reduction' }),
+  defense: Object.freeze({ iconId: 'shield', tone: 'cyan', label: 'Defense' }),
+  'grenade-damage': Object.freeze({ iconId: 'grenade-damage', tone: 'orange', label: 'Grenade Damage' }),
+  'grenade-radius': Object.freeze({ iconId: 'blast-radius', tone: 'orange', label: 'Explosion Radius' }),
+  'xp-gain': Object.freeze({ iconId: 'xp', tone: 'gold', label: 'XP Gain' }),
+  'power-up-luck': Object.freeze({ iconId: 'luck', tone: 'green', label: 'Power-up Luck' }),
+  'dash-cooldown': Object.freeze({ iconId: 'dash', tone: 'green', label: 'Dash Recharge' }),
+  throwable: Object.freeze({ iconId: 'throwable', tone: 'orange', label: 'Grenade Upgrade' }),
+  'dash-distance': Object.freeze({ iconId: 'dash', tone: 'green', label: 'Dash Distance' }),
+  'hp-regen': Object.freeze({ iconId: 'regen', tone: 'cyan', label: 'Health Regeneration' }),
+  'coin-value': Object.freeze({ iconId: 'economy', tone: 'gold', label: 'Litecoin Value' }),
+  'combo-retention': Object.freeze({ iconId: 'combo', tone: 'violet', label: 'Combo Retention' }),
+  weapon: Object.freeze({ iconId: 'weapon', tone: 'weapon', label: 'Weapon Upgrade' }),
+  'weapon-evolution': Object.freeze({ iconId: 'star', tone: 'gold', label: 'Weapon Evolution' }),
+});
+
+const UPGRADE_PRESENTATION_COPY = Object.freeze({
+  'damage-alpha': Object.freeze({ title: 'Litecoin Payload', description: 'Increase the damage dealt by every weapon hit.' }),
+  'reload-hands': Object.freeze({ title: 'LitVM Fast Finality', description: 'Reload every weapon faster after its magazine runs dry.' }),
+  'move-speed': Object.freeze({ title: 'Litecoin Trailblazer', description: 'Increase movement speed for safer routes and faster escapes.' }),
+  'magazine-size': Object.freeze({ title: 'Blockspace Magazine', description: 'Carry more rounds in each magazine before reloading.' }),
+  'rate-of-fire': Object.freeze({ title: 'Hashrate Accelerator', description: 'Increase weapon fire rate while preserving readable recoil.' }),
+  'pickup-radius': Object.freeze({ title: 'Wallet Magnet', description: 'Collect XP shards and Litecoin pickups from farther away.' }),
+  'max-health': Object.freeze({ title: 'Cold Storage Reserve', description: 'Increase maximum health and extend your survival window.' }),
+  'critical-chance': Object.freeze({ title: 'Crit Candle Signal', description: 'Increase the chance that any weapon hit becomes critical.' }),
+  'critical-damage': Object.freeze({ title: 'LitVM Crit Payout', description: 'Increase the damage multiplier applied to critical hits.' }),
+  'projectile-speed': Object.freeze({ title: 'Mempool Velocity', description: 'Make projectiles travel faster and reach moving targets sooner.' }),
+  pierce: Object.freeze({ title: 'Ledger Piercing', description: 'Allow projectiles to pass through additional enemies.' }),
+  'spread-control': Object.freeze({ title: 'LitVM Precision', description: 'Tighten weapon spread for more accurate ranged fire.' }),
+  'grenade-capacity': Object.freeze({ title: 'Crypto Bomb Reserve', description: 'Carry one additional grenade before needing a refill.' }),
+  armor: Object.freeze({ title: 'Cold Wallet Shielding', description: 'Reduce incoming damage from enemies, hazards, and bosses.' }),
+  'grenade-damage': Object.freeze({ title: 'Crypto Bomb Yield', description: 'Increase the damage dealt by every grenade explosion.' }),
+  'grenade-radius': Object.freeze({ title: 'Block Blast Radius', description: 'Increase the area covered by each grenade explosion.' }),
+  'xp-gain': Object.freeze({ title: 'LitVM Learning Curve', description: 'Gain more experience from kills and XP pickups.' }),
+  'power-up-luck': Object.freeze({ title: 'Green Candle Luck', description: 'Improve the chance of finding higher-rarity power-ups.' }),
+  'dash-cooldown': Object.freeze({ title: 'LitVM Dash Finality', description: 'Reduce dash recovery time so the next dodge is ready sooner.' }),
+  'launcher-rig': Object.freeze({ title: 'LitVM Launcher Rig', description: 'Convert grenades to a faster, flatter long-range launcher arc.' }),
+  'dash-distance': Object.freeze({ title: 'Litecoin Gap Runner', description: 'Increase dash distance to clear wider danger zones.' }),
+  'health-regen': Object.freeze({ title: 'Self-Custody Regen', description: 'Regenerate health gradually while the run continues.' }),
+  'coin-value': Object.freeze({ title: 'Hard Money Yield', description: 'Increase the score value of Litecoin and score-cache pickups.' }),
+  'combo-retention': Object.freeze({ title: 'Diamond Hands Combo', description: 'Keep the combo meter active longer between enemy kills.' }),
+  'homing-cluster': Object.freeze({ title: 'LitVM Homing Cluster', description: 'Convert grenades into seekers that target the largest enemy cluster.' }),
+  'block-buster': Object.freeze({ title: 'Block Buster Payload', description: 'Convert grenades into slower heavy blasts with a larger impact.' }),
+  'evolve-settler-rail': Object.freeze({ title: 'Litecoin Rail Dividend', description: 'Evolve the Coin Blaster into piercing Litecoin rail shots.' }),
+  'evolve-hashstorm-overdrive': Object.freeze({ title: 'Hashstorm Overdrive', description: 'Evolve automatic fire into a powerful, readable projectile storm.' }),
+  'evolve-crit-candle': Object.freeze({ title: 'Golden Candle Critchain', description: 'Evolve rail critical hits into golden score-building chains.' }),
+  'evolve-crypto-bomb-orbit': Object.freeze({ title: 'Crypto Bomb Orbit', description: 'Evolve grenades into orbiting protection around your hero.' }),
+  revive: Object.freeze({ title: 'Second Wallet Recovery', description: 'Survive one killing blow and return with emergency health.' }),
+});
+
+export function upgradeTypeStyle(choice = {}) {
+  const rawCategory = String(choice.category ?? 'fallback');
+  const direct = UPGRADE_TYPE_STYLES[rawCategory];
+  if (direct) return direct;
+  const semantic = CATEGORY_STYLES[semanticCategoryForChoice(choice)] ?? CATEGORY_STYLES.fallback;
+  return Object.freeze({ iconId: semantic.iconId, tone: semantic.tone, label: semantic.label });
+}
+
+export function upgradePresentationCopy(choice = {}) {
+  const authored = UPGRADE_PRESENTATION_COPY[choice.id];
+  return Object.freeze({
+    title: authored?.title ?? choice.title ?? 'Unknown Upgrade',
+    description: authored?.description ?? choice.description ?? 'Improve this part of your current build.',
+  });
+}
+
 function semanticCategoryForChoice(choice = {}) {
   const raw = String(choice.category ?? 'fallback');
   return SEMANTIC_CATEGORY_ALIASES[raw] ?? raw;
@@ -205,18 +286,21 @@ function buildXpProgress(xp, xpToNextLevel) {
 function buildCard(choice, index, options) {
   const semanticCategory = semanticCategoryForChoice(choice);
   const category = upgradeCategoryStyle(semanticCategory, options);
+  const type = upgradeTypeStyle(choice);
+  const copy = upgradePresentationCopy(choice);
   const rankPips = buildRankPips(choice);
   const rarity = choice.rarity ?? 'common';
-  const branchLabel = choice.category === 'weapon' ? 'Weapon Branch' : category.label;
-  const tone = choice.presentation?.tone ?? (rarity === 'golden' ? 'gold' : category.tone);
+  const branchLabel = type.label;
+  const tone = choice.presentation?.tone ?? (rarity === 'golden' ? 'gold' : type.tone);
   const rarityLabel = choice.presentation?.label ?? String(rarity).toUpperCase();
   const slotRole = choice.slotRole ?? (index === 0 ? 'continuation' : 'new');
   return Object.freeze({
     id: choice.id,
-    title: choice.title,
-    description: choice.description ?? '',
+    title: copy.title,
+    description: copy.description,
     index,
     category,
+    type,
     branchLabel,
     rarity,
     presentation: choice.presentation ?? Object.freeze({ tone, label: rarity.toUpperCase() }),
@@ -229,7 +313,7 @@ function buildCard(choice, index, options) {
       rarityLabel,
       cornerPips: RARITY_CORNER_PIPS[rarity] ?? 2,
     }),
-    iconId: choice.presentation?.iconId ?? category.iconId,
+    iconId: choice.presentation?.iconId ?? type.iconId,
     gainLabel: choiceGainLabel(choice),
     effectLabel: choiceGainLabel(choice),
     rarityLabel,
@@ -242,9 +326,9 @@ function buildCard(choice, index, options) {
     slotRole,
     slotLabel: choice.slotLabel ?? (index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'),
     slotReason: choice.slotReason ?? null,
-    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'), uiChrome: LEVEL_UP_CARD_CHROME.id, chromeTone: tone }),
-    tooltip: choice.description ?? '',
-    ariaLabel: `${choice.title}. ${branchLabel}. ${choice.description ?? ''}`.trim(),
+    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', type: type.iconId, rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'), uiChrome: LEVEL_UP_CARD_CHROME.id, chromeTone: tone }),
+    tooltip: `${branchLabel}. ${copy.description} ${completionLabel(choice)}.`,
+    ariaLabel: `${copy.title}. ${branchLabel}. ${choiceGainLabel(choice)}. ${copy.description}`.trim(),
   });
 }
 
@@ -265,12 +349,13 @@ export function buildUpgradeMenuPresentation({
   })));
   const remaining = Math.max(0, Number(rerollsRemaining ?? 0) || 0);
   return Object.freeze({
-    version: 'tactical-upgrade-draft-v4',
-    title: 'Choose Your Edge',
-    subtitle: level ? `Level ${level} // build decision` : 'Build decision',
-    instructions: 'Compare the effect, then press 1 or 2.',
+    version: 'liquid-glass-upgrade-draft-v6',
+    title: 'Choose Your Upgrade',
+    subtitle: level ? `Level ${level} // paused build decision` : 'Paused build decision',
+    instructions: 'Compare the stat gain, then select a card or press 1 / 2.',
     shell: Object.freeze({
       layout: 'tactical-two-card-draft',
+      theme: 'liquid-glass',
       accessibility: 'Compact 44px-minimum tap targets with icons, rarity labels, rank pips, and tooltip/ARIA details instead of visible description clutter.',
       cardCount: cards.length,
       chrome: LEVEL_UP_CARD_CHROME,
@@ -282,7 +367,7 @@ export function buildUpgradeMenuPresentation({
     reroll: Object.freeze({
       enabled: remaining > 0,
       remaining,
-      label: `Reroll Both (${remaining})`,
+      label: `Refresh Choices (${remaining} left)`,
     }),
   });
 }

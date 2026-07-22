@@ -2903,7 +2903,7 @@ function renderLevelUpActionGrid() {
   targetGrid.dataset.signature = signature;
   targetGrid.replaceChildren();
 
-  const shell = el('div', { className: presentation.shell.className ?? 'level-up-shell', dataset: { uiChrome: presentation.shell.chrome?.id ?? 'level-up-card-frame' } });
+  const shell = el('div', { className: presentation.shell.className ?? 'level-up-shell', dataset: { uiChrome: presentation.shell.chrome?.id ?? 'level-up-card-frame', uiTheme: presentation.shell.theme ?? 'liquid-glass' } });
   const shellHead = el('div', { className: 'level-up-shell-head' });
   appendText(shellHead, 'span', `LEVEL ${combat.roguelikeRun?.level ?? 1} DRAFT`, 'level-up-kicker');
   appendText(shellHead, 'strong', presentation.title, 'level-up-title');
@@ -2957,9 +2957,6 @@ function renderLevelUpActionGrid() {
     appendText(progressCopy, 'span', card.completionLabel, 'upgrade-card-completion');
     appendText(progressCopy, 'span', card.rankLabel, 'upgrade-card-ranklabel');
     meta.append(progressCopy);
-    const tooltip = el('span', { className: 'upgrade-card-tooltip', textContent: 'ⓘ', title: card.tooltip || card.ariaLabel });
-    tooltip.setAttribute('aria-label', `Upgrade details: ${card.tooltip || card.ariaLabel}`);
-    meta.append(tooltip);
     button.append(meta);
 
     const ranks = el('div', { className: 'upgrade-card-ranks upgrade-card-meter' });
@@ -2971,7 +2968,32 @@ function renderLevelUpActionGrid() {
     button.setAttribute('title', card.ariaLabel);
     button.setAttribute('aria-label', card.ariaLabel);
     bindSafeLevelUpAction(button, () => selectLevelUpUpgrade(card.id));
-    cardWrap.append(button);
+
+    const details = el('details', { className: 'upgrade-card-details' });
+    const tooltipId = `upgrade-details-${card.id}`;
+    const tooltip = el('summary', { className: 'upgrade-card-tooltip', title: `More information about ${card.title}` });
+    tooltip.append(renderArcadeIcon('info', `More information about ${card.title}`));
+    tooltip.setAttribute('aria-label', `More information about ${card.title}`);
+    tooltip.setAttribute('aria-controls', tooltipId);
+    tooltip.setAttribute('aria-expanded', 'false');
+    const tooltipPanel = el('div', { className: 'upgrade-card-tooltip-panel', id: tooltipId });
+    appendText(tooltipPanel, 'strong', card.title, 'upgrade-card-tooltip-title');
+    appendText(tooltipPanel, 'p', card.tooltip || card.ariaLabel, 'upgrade-card-tooltip-copy');
+    appendText(tooltipPanel, 'span', `${card.rankLabel} // ${card.rarityLabel}`, 'upgrade-card-tooltip-meta');
+    details.append(tooltip, tooltipPanel);
+    details.addEventListener('toggle', () => {
+      tooltip.setAttribute('aria-expanded', String(details.open));
+      if (!details.open) return;
+      for (const other of cardStack.querySelectorAll('.upgrade-card-details[open]')) {
+        if (other !== details) other.open = false;
+      }
+    });
+    details.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !details.open) return;
+      details.open = false;
+      tooltip.focus();
+    });
+    cardWrap.append(button, details);
     cardStack.append(cardWrap);
   }
   shell.append(cardStack);
@@ -3025,9 +3047,11 @@ function renderCombatMenuActionGrid() {
     const button = el('button', {
       className: `combat-menu-action pause-console-action ${action.primary ? 'primary-action' : ''} ${action.danger ? 'danger-action' : ''}`,
       type: 'button',
-      dataset: { action: action.id },
+      dataset: { action: action.id, tooltip: action.hint ?? action.label },
     });
     button.disabled = action.enabled === false;
+    button.title = action.hint ?? action.label;
+    button.setAttribute('aria-label', action.hint ? `${action.label}. ${action.hint}` : action.label);
     button.append(renderArcadeIcon(action.icon, action.label));
     const copy = el('span', { className: 'pause-action-copy' });
     appendText(copy, 'strong', action.label, 'pause-action-label');
@@ -3342,6 +3366,8 @@ function clearInactiveCombatOverlay() {
 function syncCombatOverlay() {
   if (combat.levelUpPaused) document.documentElement.dataset.levelUp = 'true';
   else delete document.documentElement.dataset.levelUp;
+  const menuOwnsFocus = !combat.pendingBegin && Boolean(combat.paused || combat.gameOver || combat.levelUpPaused);
+  document.body.classList.toggle('hide-rotate-hint', menuOwnsFocus);
   // Auto-submit a finished ranked run to LitVM the moment the game-over state
   // is reached (no manual "Submit Official Score" step). One wallet confirmation
   // fires automatically. Guarded by gameOverSubmitted so it runs exactly once.
@@ -3536,14 +3562,18 @@ function renderCombatSettingsPanel() {
   const quickCopy = el('p', { className: 'combat-settings-copy', textContent: 'Quick gameplay toggles plus accessibility controls without leaving the run.' });
   const quickGrid = el('div', { className: 'combat-settings-grid' });
   const quickActions = [
-    { id: 'music', label: combat.musicEnabled ? 'Music On' : 'Music Off', run: toggleCombatMusic },
-    { id: 'gore', label: gameSettings.gore ? 'Gore On' : 'Gore Off', run: toggleCombatGoreSetting },
-    { id: 'viewport', label: combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', run: cycleCombatViewport },
-    { id: 'auto-fullscreen', label: gameSettings.autoEnterFullscreen ? 'Auto Fullscreen On' : 'Auto Fullscreen Off', run: toggleAutoEnterFullscreenSetting },
+    { id: 'music', icon: combat.musicEnabled ? 'volume' : 'mute', label: combat.musicEnabled ? 'Music On' : 'Music Off', description: 'Toggle the run soundtrack without muting combat feedback.', run: toggleCombatMusic },
+    { id: 'gore', icon: 'status', label: gameSettings.gore ? 'Gore On' : 'Gore Off', description: 'Toggle blood and impact debris while preserving hit readability.', run: toggleCombatGoreSetting },
+    { id: 'viewport', icon: 'fullscreen', label: combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', description: 'Switch between the focused game view and the browser window.', run: cycleCombatViewport },
+    { id: 'auto-fullscreen', icon: 'settings', label: gameSettings.autoEnterFullscreen ? 'Auto Fullscreen On' : 'Auto Fullscreen Off', description: 'Choose whether READY automatically requests fullscreen.', run: toggleAutoEnterFullscreenSetting },
   ];
   for (const action of quickActions) {
-    const button = el('button', { className: 'combat-menu-action combat-settings-action', type: 'button' });
-    button.textContent = action.label;
+    const button = el('button', { className: 'combat-menu-action combat-settings-action', type: 'button', dataset: { action: action.id, tooltip: action.description } });
+    const copy = el('span', { className: 'combat-settings-action-copy' });
+    copy.append(el('strong', { textContent: action.label }), el('span', { className: 'combat-settings-action-desc', textContent: action.description }));
+    button.append(renderArcadeIcon(action.icon, action.label), copy);
+    button.title = action.description;
+    button.setAttribute('aria-label', `${action.label}. ${action.description}`);
     button.addEventListener('click', () => action.run());
     quickGrid.append(button);
   }
@@ -3566,10 +3596,14 @@ function renderCombatSettingsPanel() {
     'toggle-auto-aim': toggleCombatAutoAimSetting,
   };
   for (const action of accessibility.actions) {
-    const button = el('button', { className: 'combat-menu-action combat-settings-action combat-accessibility-action', type: 'button', dataset: { action: action.id } });
+    const button = el('button', { className: 'combat-menu-action combat-settings-action combat-accessibility-action', type: 'button', dataset: { action: action.id, tooltip: action.description } });
     const label = el('strong', { textContent: action.label });
     const desc = el('span', { className: 'combat-settings-action-desc', textContent: action.description });
-    button.append(label, desc);
+    const copy = el('span', { className: 'combat-settings-action-copy' });
+    copy.append(label, desc);
+    button.append(renderArcadeIcon('status', action.label), copy);
+    button.title = action.description;
+    button.setAttribute('aria-label', `${action.label}. ${action.description}`);
     button.addEventListener('click', () => actionMap[action.id]?.());
     accessibilityGrid.append(button);
   }
@@ -3582,8 +3616,12 @@ function renderCombatSettingsPanel() {
     { id: 'cycle-touch-opacity', label: `Opacity ${Math.round(touchLayout.idleOpacity * 100)}%`, description: `Idle ${Math.round(touchLayout.idleOpacity * 100)}%, touched ${Math.round(touchLayout.activeOpacity * 100)}%.`, run: cycleTouchOpacitySetting },
   ];
   for (const action of touchActions) {
-    const button = el('button', { className: 'combat-menu-action combat-settings-action combat-touch-setting-action', type: 'button', dataset: { action: action.id } });
-    button.append(el('strong', { textContent: action.label }), el('span', { className: 'combat-settings-action-desc', textContent: action.description }));
+    const button = el('button', { className: 'combat-menu-action combat-settings-action combat-touch-setting-action', type: 'button', dataset: { action: action.id, tooltip: action.description } });
+    const copy = el('span', { className: 'combat-settings-action-copy' });
+    copy.append(el('strong', { textContent: action.label }), el('span', { className: 'combat-settings-action-desc', textContent: action.description }));
+    button.append(renderArcadeIcon('control', action.label), copy);
+    button.title = action.description;
+    button.setAttribute('aria-label', `${action.label}. ${action.description}`);
     button.addEventListener('click', () => action.run());
     touchGrid.append(button);
   }

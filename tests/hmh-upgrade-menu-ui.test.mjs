@@ -9,7 +9,10 @@ import {
   canActivateLevelUpChoice,
   isLevelUpInteractionReady,
   upgradeCategoryStyle,
+  upgradePresentationCopy,
+  upgradeTypeStyle,
 } from '../apps/portal/src/hmh-upgrade-menu-ui.mjs';
+import { LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY } from '../apps/portal/src/arcade-core.mjs';
 
 function repoText(relativePath) {
   return readFileSync(new URL(`../${relativePath}`, import.meta.url), 'utf8');
@@ -31,18 +34,19 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
     colorblindTags: true,
   });
 
-  assert.equal(model.version, 'tactical-upgrade-draft-v4');
-  assert.equal(model.title, 'Choose Your Edge');
-  assert.equal(model.instructions, 'Compare the effect, then press 1 or 2.');
+  assert.equal(model.version, 'liquid-glass-upgrade-draft-v6');
+  assert.equal(model.title, 'Choose Your Upgrade');
+  assert.equal(model.instructions, 'Compare the stat gain, then select a card or press 1 / 2.');
+  assert.equal(model.shell.theme, 'liquid-glass');
   assert.equal(model.cards.length, 2);
   assert.equal(model.shell.layout, 'tactical-two-card-draft');
   assert.equal(model.reroll.enabled, true);
-  assert.equal(model.reroll.label, 'Reroll Both (2)');
+  assert.equal(model.reroll.label, 'Refresh Choices (2 left)');
   assert.equal(model.cards[0].slotLabel, 'CONTINUE YOUR BUILD');
   assert.equal(model.cards[1].slotLabel, 'NEW TREE');
   assert.equal(model.cards[0].category.label, 'Offense');
   assert.equal(model.cards[0].category.colorblindTag, 'TONE RED');
-  assert.equal(model.cards[0].tooltip, 'Bullets hit harder.');
+  assert.match(model.cards[0].tooltip, /Weapon Damage\. Bullets hit harder\./);
   assert.equal(model.cards[0].effectLabel, '+8%');
   assert.equal(model.cards[0].rarityLabel, 'COMMON');
   assert.equal(model.cards[0].decisionLabel, 'STAY COURSE');
@@ -85,8 +89,8 @@ test('legacy gameplay categories map to distinct semantic production icons', () 
       { id: 'grenade-capacity', title: 'Nade Pockets', category: 'grenade-capacity' },
     ],
   });
-  assert.deepEqual(model.cards.map((card) => card.iconId), ['offense', 'defense', 'mobility', 'throwable']);
-  assert.deepEqual(model.cards.map((card) => card.branchLabel), ['Offense', 'Defense', 'Mobility', 'Throwable']);
+  assert.deepEqual(model.cards.map((card) => card.iconId), ['damage', 'health', 'mobility', 'grenade-capacity']);
+  assert.deepEqual(model.cards.map((card) => card.branchLabel), ['Weapon Damage', 'Max Health', 'Movement Speed', 'Grenade Capacity']);
 });
 
 test('WO-40 upgrade category style covers all live card categories with production SVG icon IDs', () => {
@@ -100,6 +104,44 @@ test('WO-40 upgrade category style covers all live card categories with producti
     assert.ok(style.label.length > 0, `${category} label`);
   }
   assert.doesNotMatch(source, /⚔|🛡|🥾|💎|🌀|💣|🔥|🔫/);
+});
+
+test('liquid-glass cards pair clear mechanical types with Litecoin and LitVM names', () => {
+  const expected = [
+    ['damage-alpha', 'Litecoin Payload', 'Weapon Damage', 'damage'],
+    ['max-health', 'Cold Storage Reserve', 'Max Health', 'health'],
+    ['armor', 'Cold Wallet Shielding', 'Damage Reduction', 'shield'],
+    ['move-speed', 'Litecoin Trailblazer', 'Movement Speed', 'mobility'],
+    ['critical-chance', 'Crit Candle Signal', 'Critical Chance', 'critical-chance'],
+    ['critical-damage', 'LitVM Crit Payout', 'Critical Damage', 'critical-hit'],
+    ['rate-of-fire', 'Hashrate Accelerator', 'Fire Rate', 'fire-rate'],
+    ['magazine-size', 'Blockspace Magazine', 'Magazine Size', 'magazine'],
+  ];
+  const byId = new Map(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((choice) => [choice.id, choice]));
+  const sprite = repoText('apps/portal/assets/icons/arcade-ui.svg');
+
+  for (const [id, title, typeLabel, iconId] of expected) {
+    const choice = byId.get(id);
+    assert.ok(choice, `${id} exists`);
+    const copy = upgradePresentationCopy(choice);
+    const type = upgradeTypeStyle(choice);
+    assert.equal(copy.title, title);
+    assert.equal(type.label, typeLabel);
+    assert.equal(type.iconId, iconId);
+    assert.match(sprite, new RegExp(`id=["']${iconId}["']`), `${iconId} exists in sprite`);
+  }
+});
+
+test('every live upgrade has readable liquid-glass presentation metadata', () => {
+  const sprite = repoText('apps/portal/assets/icons/arcade-ui.svg');
+  for (const choice of LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY) {
+    const copy = upgradePresentationCopy(choice);
+    const type = upgradeTypeStyle(choice);
+    assert.ok(copy.title.length >= 6, `${choice.id} themed title`);
+    assert.ok(copy.description.length >= 20, `${choice.id} clear description`);
+    assert.notEqual(type.label, 'Augment', `${choice.id} should expose a specific type`);
+    assert.match(sprite, new RegExp(`id=["']${type.iconId}["']`), `${choice.id} icon ${type.iconId} exists`);
+  }
 });
 
 test('WO-40 upgrade menu supports locked previews and mobile-safe shell metadata', () => {
@@ -134,6 +176,9 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes('level-up-xp-progress'), true);
   assert.equal(main.includes('presentation.xpProgress.label'), true);
   assert.equal(main.includes('upgrade-card-tooltip'), true);
+  assert.equal(main.includes('upgrade-card-details'), true);
+  assert.equal(main.includes("el('details'"), true);
+  assert.equal(main.includes("tooltip: action.hint ?? action.label"), true);
   assert.equal(main.includes('badge.append(renderArcadeIcon(card.iconId'), true);
   assert.equal(main.includes("appendText(button, 'p', card.description, 'upgrade-card-desc')"), false);
   assert.equal(main.includes('upgrade-locked-preview-rail'), false);
@@ -145,6 +190,9 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(css.includes('.level-up-xp-progress-fill'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
   assert.equal(css.includes('.upgrade-card-tooltip'), true);
+  assert.equal(css.includes('HMH liquid glass UI v6'), true);
+  assert.match(css, /\.upgrade-card-details[\s\S]*?\.upgrade-card-tooltip-panel/);
+  assert.match(css, /backdrop-filter:\s*blur\(/);
   assert.match(css, /level-up-overlay\[data-density="spacious"\]/);
   assert.match(css, /grid-template-rows:\s*auto auto auto minmax\(0, 1fr\) auto/);
   assert.match(css, /data-density="spacious"[^}]*grid-template-rows:\s*auto auto auto auto auto/s);

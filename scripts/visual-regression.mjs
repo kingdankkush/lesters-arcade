@@ -657,6 +657,31 @@ try {
   await probeLevelUpViewport({ name: 'level-up-tablet-768x1024', width: 768, height: 1024, orientation: 'portraitPrimary', expectedDensity: 'standard' });
   await probeLevelUpViewport({ name: 'level-up-desktop-1920x1080', width: 1920, height: 1080, orientation: 'landscapePrimary', expectedDensity: 'spacious', expectedHeight: 660, expectedTop: 210, mobile: false });
 
+  await runInPage(client, `document.querySelector('.upgrade-card-details > summary')?.click()`);
+  await sleep(180);
+  const levelUpTooltipProbe = await runInPage(client, `
+    (() => {
+      const details = document.querySelector('.upgrade-card-details');
+      const summary = details?.querySelector('summary');
+      const panel = details?.querySelector('.upgrade-card-tooltip-panel');
+      const choices = [...document.querySelectorAll('[data-level-up-choice]')];
+      const panelStyle = panel ? getComputedStyle(panel) : null;
+      return {
+        open: details?.open === true,
+        expanded: summary?.getAttribute('aria-expanded') ?? null,
+        panelVisible: Boolean(panel && panelStyle?.display !== 'none' && panel.getBoundingClientRect().height > 0),
+        panelText: panel?.textContent?.trim() ?? '',
+        secondChoiceEnabled: choices[1]?.disabled === false,
+      };
+    })()
+  `);
+  if (!levelUpTooltipProbe.open || levelUpTooltipProbe.expanded !== 'true' || !levelUpTooltipProbe.panelVisible || levelUpTooltipProbe.panelText.length < 40 || !levelUpTooltipProbe.secondChoiceEnabled) {
+    throw new Error(`HMH level-up tooltip disclosure failed: ${JSON.stringify(levelUpTooltipProbe)}`);
+  }
+  captures.push(await writeEvidenceCapture(client, 'level-up-desktop-tooltip-open'));
+  await runInPage(client, `document.querySelector('.upgrade-card-details[open] > summary')?.click()`);
+  await sleep(100);
+
   await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: '1', code: 'Digit1', windowsVirtualKeyCode: 49 });
   await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: '1', code: 'Digit1', windowsVirtualKeyCode: 49 });
   await sleep(200);
@@ -665,6 +690,140 @@ try {
   await client.send('Emulation.setTouchEmulationEnabled', { enabled: false });
   await client.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
   await sleep(350);
+
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+  await sleep(220);
+  const pauseMenuProbe = await runInPage(client, `
+    (() => {
+      const panel = document.getElementById('combatMenuPanel');
+      const actions = [...(panel?.querySelectorAll('.pause-console-action') ?? [])];
+      const rect = panel?.getBoundingClientRect();
+      const style = panel ? getComputedStyle(panel) : null;
+      return {
+        visible: panel?.hidden === false,
+        state: panel?.dataset.state ?? null,
+        rect: rect ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height } : null,
+        position: style?.position ?? null,
+        opacity: style?.opacity ?? null,
+        visibility: style?.visibility ?? null,
+        actionCount: actions.length,
+        labels: actions.map((action) => action.querySelector('.pause-action-label')?.textContent?.trim() ?? ''),
+        visibleHints: actions.every((action) => (action.querySelector('.pause-action-hint')?.textContent?.trim()?.length ?? 0) > 0),
+        tooltips: actions.every((action) => (action.dataset.tooltip?.trim()?.length ?? 0) > 0),
+        accessibleNames: actions.every((action) => (action.getAttribute('aria-label')?.trim()?.length ?? 0) > 0),
+      };
+    })()
+  `);
+  const pauseMenuInViewport = pauseMenuProbe.rect
+    && pauseMenuProbe.rect.left >= -1
+    && pauseMenuProbe.rect.top >= -1
+    && pauseMenuProbe.rect.right <= 1281
+    && pauseMenuProbe.rect.bottom <= 721;
+  if (!pauseMenuProbe.visible || pauseMenuProbe.state !== 'paused' || pauseMenuProbe.position !== 'fixed' || pauseMenuProbe.opacity === '0' || pauseMenuProbe.visibility !== 'visible' || !pauseMenuInViewport || pauseMenuProbe.actionCount < 4 || !pauseMenuProbe.visibleHints || !pauseMenuProbe.tooltips || !pauseMenuProbe.accessibleNames) {
+    throw new Error(`HMH liquid-glass pause menu failed: ${JSON.stringify(pauseMenuProbe)}`);
+  }
+  captures.push(await writeEvidenceCapture(client, 'pause-menu-desktop-1280x720'));
+
+  await runInPage(client, `document.querySelector('.pause-console-action[data-action="toggle-settings"]')?.click()`);
+  await sleep(160);
+  const desktopSettingsProbe = await runInPage(client, `
+    (() => {
+      const panel = document.getElementById('combatMenuPanel');
+      const settings = document.getElementById('combatSettingsPanel');
+      const actions = [...(settings?.querySelectorAll('.combat-settings-action') ?? [])];
+      const firstGrid = settings?.querySelector('.combat-settings-grid');
+      panel.scrollTop = panel.scrollHeight;
+      return {
+        visible: settings?.hidden === false,
+        actionCount: actions.length,
+        descriptions: actions.every((action) => (action.querySelector('.combat-settings-action-desc')?.textContent?.trim()?.length ?? 0) > 10),
+        icons: actions.every((action) => Boolean(action.querySelector('.arcade-icon'))),
+        tooltips: actions.every((action) => (action.dataset.tooltip?.trim()?.length ?? 0) > 10),
+        accessibleNames: actions.every((action) => (action.getAttribute('aria-label')?.trim()?.length ?? 0) > 10),
+        columns: firstGrid ? getComputedStyle(firstGrid).gridTemplateColumns.split(' ').filter(Boolean).length : 0,
+        scrollable: panel.scrollHeight > panel.clientHeight,
+      };
+    })()
+  `);
+  if (!desktopSettingsProbe.visible || desktopSettingsProbe.actionCount !== 11 || !desktopSettingsProbe.descriptions || !desktopSettingsProbe.icons || !desktopSettingsProbe.tooltips || !desktopSettingsProbe.accessibleNames || desktopSettingsProbe.columns !== 2) {
+    throw new Error(`HMH liquid-glass desktop settings failed: ${JSON.stringify(desktopSettingsProbe)}`);
+  }
+  await sleep(80);
+  captures.push(await writeEvidenceCapture(client, 'pause-settings-desktop-1280x720'));
+  await runInPage(client, `
+    document.querySelector('.pause-console-action[data-action="toggle-settings"]')?.click();
+    document.getElementById('combatMenuPanel').scrollTop = 0;
+  `);
+  await sleep(100);
+
+  await client.send('Emulation.setDeviceMetricsOverride', {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 1,
+    mobile: true,
+    screenOrientation: { type: 'portraitPrimary', angle: 0 },
+  });
+  await client.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  await sleep(220);
+  const mobilePauseProbe = await runInPage(client, `
+    (() => {
+      const panel = document.getElementById('combatMenuPanel');
+      const rect = panel?.getBoundingClientRect();
+      const actions = [...(panel?.querySelectorAll('.pause-console-action') ?? [])];
+      const targets = actions.map((action) => action.getBoundingClientRect());
+      return {
+        rect: rect ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height } : null,
+        actionCount: actions.length,
+        smallestTargetWidth: Math.min(...targets.map((target) => target.width)),
+        smallestTargetHeight: Math.min(...targets.map((target) => target.height)),
+        scrollable: panel.scrollHeight >= panel.clientHeight,
+        rotateHint: getComputedStyle(document.body, '::after').content,
+      };
+    })()
+  `);
+  const mobilePauseInViewport = mobilePauseProbe.rect
+    && mobilePauseProbe.rect.left >= -1
+    && mobilePauseProbe.rect.top >= -1
+    && mobilePauseProbe.rect.right <= 391
+    && mobilePauseProbe.rect.bottom <= 845;
+  if (!mobilePauseInViewport || mobilePauseProbe.actionCount !== 7 || mobilePauseProbe.smallestTargetWidth < 44 || mobilePauseProbe.smallestTargetHeight < 44 || !['none', 'normal'].includes(mobilePauseProbe.rotateHint)) {
+    throw new Error(`HMH liquid-glass mobile pause menu failed: ${JSON.stringify(mobilePauseProbe)}`);
+  }
+  captures.push(await writeEvidenceCapture(client, 'pause-menu-mobile-390x844'));
+
+  await runInPage(client, `document.querySelector('.pause-console-action[data-action="toggle-settings"]')?.click()`);
+  await sleep(160);
+  const mobileSettingsProbe = await runInPage(client, `
+    (() => {
+      const panel = document.getElementById('combatMenuPanel');
+      const settings = document.getElementById('combatSettingsPanel');
+      const actions = [...(settings?.querySelectorAll('.combat-settings-action') ?? [])];
+      const targets = actions.map((action) => action.getBoundingClientRect());
+      const firstGrid = settings?.querySelector('.combat-settings-grid');
+      panel.scrollTop = panel.scrollHeight;
+      return {
+        visible: settings?.hidden === false,
+        actionCount: actions.length,
+        columns: firstGrid ? getComputedStyle(firstGrid).gridTemplateColumns.split(' ').filter(Boolean).length : 0,
+        smallestTargetWidth: Math.min(...targets.map((target) => target.width)),
+        smallestTargetHeight: Math.min(...targets.map((target) => target.height)),
+        descriptions: actions.every((action) => (action.querySelector('.combat-settings-action-desc')?.textContent?.trim()?.length ?? 0) > 10),
+        accessibleNames: actions.every((action) => (action.getAttribute('aria-label')?.trim()?.length ?? 0) > 10),
+      };
+    })()
+  `);
+  if (!mobileSettingsProbe.visible || mobileSettingsProbe.actionCount !== 11 || mobileSettingsProbe.columns !== 1 || mobileSettingsProbe.smallestTargetWidth < 44 || mobileSettingsProbe.smallestTargetHeight < 44 || !mobileSettingsProbe.descriptions || !mobileSettingsProbe.accessibleNames) {
+    throw new Error(`HMH liquid-glass mobile settings failed: ${JSON.stringify(mobileSettingsProbe)}`);
+  }
+  await sleep(80);
+  captures.push(await writeEvidenceCapture(client, 'pause-settings-mobile-390x844'));
+
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+  await client.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await sleep(120);
 
   const antiSlide = await runInPage(client, `
     (() => {
@@ -681,7 +840,7 @@ try {
   if (!antiSlide.canvasWidth || !antiSlide.canvasHeight) throw new Error(`Anti-slide probe could not read canvas dimensions: ${JSON.stringify(antiSlide)}`);
 
   const changed = captures.filter((capture) => capture.status === 'changed');
-  const report = { portalUrl, bootResult, laneRoleProbe, laneRoleLiveEnemies, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, levelUpViewportProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
+  const report = { portalUrl, bootResult, laneRoleProbe, laneRoleLiveEnemies, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, levelUpViewportProbe, levelUpTooltipProbe, pauseMenuProbe, desktopSettingsProbe, mobilePauseProbe, mobileSettingsProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
   await mkdir(currentDir, { recursive: true });
   await writeFile(`${currentDir}/visual-regression-report.json`, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));
