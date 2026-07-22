@@ -1,0 +1,285 @@
+{
+  "schema": "hmh-reboot-legacy-test-retirement-v1",
+  "captured_at_utc": "2026-07-22T21:49:04.313264+00:00",
+  "source_commit": "fa9585be7014db6515c536f9a09fdba5a3a2572f",
+  "summary": {
+    "tests": 1303,
+    "suites": 8,
+    "pass": 1250,
+    "fail": 53,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 17348.5493
+  },
+  "failed_file_count": 36,
+  "classification": "All failures assert presence/coverage/quality of archived isometric or pixel-art binaries. Retained platform contract gate passes 65/65 and the portal build passes.",
+  "policy": "Do not delete these tests blindly. Replace each legacy assertion with an equivalent top-down runtime, art-manifest, readability, or authored-world contract as the corresponding reboot subsystem lands.",
+  "failures": [
+    {
+      "file": "tests/arcade-core.test.mjs",
+      "assertion": "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata (1.0375ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/authored-world-layout.test.mjs",
+      "assertion": "Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract (1.5378ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/combat-vfx.test.mjs",
+      "assertion": "final combat VFX pack ships original spritesheets for readable large effects only (1.5551ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hero-sprite-lock.test.mjs",
+      "assertion": "all playable rosters carry full 8-direction required animation coverage with real frame assets (0.6321ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hero-sprite-lock.test.mjs",
+      "assertion": "playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts (0.3023ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hero-sprite-lock.test.mjs",
+      "assertion": "no playable hero frame keeps the tiny QA triangle/robot placeholder signature (0.2541ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-aaa-wave-promotions.test.mjs",
+      "assertion": "complete PixelLab AAA wave enemies replace old partial runtime kits (1.257ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-art-purge-repair.test.mjs",
+      "assertion": "runtime roster does not ship known QA-green triangle enemy kits after art repair (0.4207ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-authored-setpieces.test.mjs",
+      "assertion": "every authored setpiece template id exists and references repo-owned coherent-world assets (0.9605ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-boss-and-level2-world-art.test.mjs",
+      "assertion": "final boss animation pack covers authored Level 1 and Level 2 bosses with readable combat states (1.2746ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-boss-and-level2-world-art.test.mjs",
+      "assertion": "Level 2 final city world pack ships authored district props and animated setpieces (1.203ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-curated-level-art.test.mjs",
+      "assertion": "curated runtime assets exist, use safe portal-relative paths, and have expected dimensions (0.8289ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-curated-level-kit.test.mjs",
+      "assertion": "curated HMH kit retains only the exact browser runtime set (2.3223ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-encounter-visuals.test.mjs",
+      "assertion": "final setpiece kit ships original POI level-design assets for every authored Level 1 arena (1.5439ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-final-animation-completion.test.mjs",
+      "assertion": "final animation completion pack ships hero polish states for every playable roster (1.6931ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-final-animation-completion.test.mjs",
+      "assertion": "final animation completion pack ships enemy readability states for active bespoke roster keys (0.4112ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-hero-matrix.test.mjs",
+      "assertion": "animated-roster lester compatibility matrix is valid, complete, and runtime-addressable (2.0307ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-hero-matrix.test.mjs",
+      "assertion": "animated-roster lilly compatibility matrix is valid, complete, and runtime-addressable (0.3747ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-aaa-slices.test.mjs",
+      "assertion": "cohesive Level 1 replacement assets exist, follow the theme palette, and replace weak generic roles (1.0514ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-curated-world-contract.test.mjs",
+      "assertion": "every curated Level 1 asset reference resolves to a real generated/source file (1.0185ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-ground.test.mjs",
+      "assertion": "final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore (1.4079ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-ground.test.mjs",
+      "assertion": "Level 1 PixelLab surface zones turn candidate terrain into authored route ground (0.6901ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-ground.test.mjs",
+      "assertion": "SBS Level 1 ground assets exist with 128px tile width and cleaned alpha-compatible PNGs (0.2452ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-sketch-layout.test.mjs",
+      "assertion": "existing sketch asset coverage references only repo-owned coherent-world assets (0.764ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-terrain-polish.test.mjs",
+      "assertion": "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage (1.2772ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-visible-runtime.test.mjs",
+      "assertion": "WO-102 mega-props are real alpha-clean runtime assets and emit visible Level 1 objects (1.0561ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-visible-runtime.test.mjs",
+      "assertion": "generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps (0.3201ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-visible-runtime.test.mjs",
+      "assertion": "WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps (0.3402ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level-one-world-v3-materials.test.mjs",
+      "assertion": "every runtime terrain family resolves to its own shipped material PNG (0.7467ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level3-getaway-art.test.mjs",
+      "assertion": "Level 3 final getaway world pack ships animated authored setpieces for the finale route (1.2248ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-level3-getaway-art.test.mjs",
+      "assertion": "Level 3 final getaway ground pack covers rooftop, glass, train, rail, storm, and speed texture roles (0.3958ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-pickup-icon-pack.test.mjs",
+      "assertion": "P0 pickup icon pack contains disk-real manifest-backed runtime ids (1.7075ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-terrain-presentation.test.mjs",
+      "assertion": "Desert Approach v2.3 ships two compact runtime atlases with certified budgets (0.9855ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-terrain-presentation.test.mjs",
+      "assertion": "Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas (0.4472ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-vfx-ui-chrome.test.mjs",
+      "assertion": "VFX/UI chrome pack covers all art-redo missing VFX and UI chrome runtime ids (1.855ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo109-enemy-redesign-batch.test.mjs",
+      "assertion": "WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with full 8-direction matrices (3.6184ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo110-boss-redo.test.mjs",
+      "assertion": "WO-110 boss redo ships true-scale human phase forms in the 192-256px range (1.7441ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo110-boss-redo.test.mjs",
+      "assertion": "WO-110 boss redo includes super-move telegraphs and death spectacle (0.3583ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo115-enemy-readability-batch.test.mjs",
+      "assertion": "WO-115 batch two completes five Level 1 runtime enemy matrices (1.5181ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo117-world-audio-vfx-ui-polish.test.mjs",
+      "assertion": "WO-117 polish pack ships generated artwork for world, VFX, and UI polish (1.27ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo119-pixellab-aaa-wave.test.mjs",
+      "assertion": "WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime replacement (1.0214ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo119-pixellab-aaa-wave.test.mjs",
+      "assertion": "WO-119 Level 1 PixelLab world assets are present, alpha-clean, and route-integrated (0.1957ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo81-82-79-animation-polish.test.mjs",
+      "assertion": "WO-81/82/79 animation polish certification passes runtime gates (38.5468ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo81-82-79-animation-polish.test.mjs",
+      "assertion": "WO-82 Lit Commando and Lit Valkyrie are certified with no missing direction cells (0.2308ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo90-placeholder-redo.test.mjs",
+      "assertion": "WO-90 certifies all placeholder redo packs and contact sheets (1.0366ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo97-world-assets.test.mjs",
+      "assertion": "WO-97 files exist, have stable dimensions, and animated assets expose sprite-sheet metadata (0.924ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/hmh-wo98-world-assembly.test.mjs",
+      "assertion": "WO-98 placed objects only reference approved WO-97 assets that exist on disk (1.5541ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/scene-templates.test.mjs",
+      "assertion": "Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs (1.0866ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/scene-templates.test.mjs",
+      "assertion": "Level 1 final ambient world assets ship original animated detail loops across biomes (0.319ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/scene-templates.test.mjs",
+      "assertion": "Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops (0.3325ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/scene-templates.test.mjs",
+      "assertion": "Level 1 original polish assets ship forest, water, farm, road, town, and cliff props (0.2571ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/wasteland-debt-collector-art.test.mjs",
+      "assertion": "Wasteland Debt Collector has approved 8-direction production sprite coverage (1.6451ms)",
+      "reason": "retired legacy HMH binary art contract"
+    },
+    {
+      "file": "tests/wave3-art-matrix.test.mjs",
+      "assertion": "Wave 3 art matrix gates full hero state-direction coverage and enemy readability states (43.7234ms)",
+      "reason": "retired legacy HMH binary art contract"
+    }
+  ]
+}

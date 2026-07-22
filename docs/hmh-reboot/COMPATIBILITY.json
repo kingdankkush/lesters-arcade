@@ -1,0 +1,757 @@
+{
+  "schema": "hmh-reboot-compatibility-contract-v1",
+  "captured_at_utc": "2026-07-22T21:42:17.661752+00:00",
+  "source_commit": "fa9585be7014db6515c536f9a09fdba5a3a2572f",
+  "game_id": "lester-blaster",
+  "game_record": {
+    "id": "lester-blaster",
+    "title": "Hard Money Heroes",
+    "cabinet": "RUN-N-GUN CABINET 01",
+    "genre": "Goofy/gritty Web3 satire side-scrolling run-n-gun",
+    "status": "playable",
+    "developer": "Lester's Arcade Core Team",
+    "entryFeeMicroUsdc": 0,
+    "livesPaid": 3,
+    "livesFree": null,
+    "tagline": "Fight through Litecoin City After Dark with sparks-only defaults and optional pre-run gore.",
+    "systemRole": "child-dapp-cartridge",
+    "parentSystem": "Lester's Arcade",
+    "gameplay": {
+      "title": "Hard Money Heroes",
+      "workingTitle": true,
+      "legacyWorkingTitle": "Lester Blaster",
+      "world": "Litecoin City After Dark",
+      "inspiration": "Metal Slug-style score-attack shooter with goofy/gritty Web3 satire in Litecoin City After Dark",
+      "format": "authored three-level side-scrolling campaign that can evolve into survival scoring and boss rotations",
+      "targetAverageRunMinutes": 5,
+      "veteranRunMinutes": [
+        15,
+        20
+      ],
+      "bossIntervalMinutes": [
+        3,
+        5
+      ],
+      "targetRunCadence": {
+        "averageSeconds": 300,
+        "veteranSeconds": [
+          900,
+          1200
+        ],
+        "bossEverySeconds": [
+          180,
+          300
+        ]
+      },
+      "coreMoves": [
+        "run",
+        "jump",
+        "double-jump",
+        "basic-shoot",
+        "basic-melee",
+        "grenade-throw",
+        "crouch",
+        "weapon-swap"
+      ],
+      "pickups": [
+        "health-pack",
+        "grenade-crate",
+        "bonus-life",
+        "block-breaker-shells",
+        "hashstorm-drum",
+        "spread-ltc-chip",
+        "hash-rail-core",
+        "score-multiplier",
+        "shield-cache",
+        "ammo-cache",
+        "ltc-cache",
+        "magnet-surge",
+        "time-dilation",
+        "berserk-candle",
+        "nuke-liquidation",
+        "grenade-pickup"
+      ],
+      "weaponUpgrades": [
+        {
+          "id": "spread-ltc",
+          "title": "Spread LTC",
+          "displayName": "Spread Gun",
+          "type": "upgrade",
+          "rarity": "rare",
+          "damage": 2,
+          "pellets": 5,
+          "fireRatePerSecond": 3.8,
+          "reloadSeconds": 0.9,
+          "range": "short-mid cone",
+          "ammo": "timed upgrade",
+          "animation": "five-coin fan blast with cyan trails",
+          "soundCue": "sfx_spread_ltc_burst",
+          "bestFor": "crowd control and flying swarms",
+          "upgrades": {
+            "rateOfFire": "+12%",
+            "damage": "+pellet damage",
+            "reloadSpeed": "+15%"
+          }
+        },
+        {
+          "id": "hash-rail",
+          "title": "Hash Rail",
+          "displayName": "Rail Gun",
+          "type": "upgrade",
+          "rarity": "rare",
+          "damage": 9,
+          "pierce": true,
+          "fireRatePerSecond": 1.6,
+          "reloadSeconds": 1.8,
+          "range": "long piercing beam",
+          "ammo": "timed upgrade",
+          "animation": "charging rail line, then white/cyan screen streak",
+          "soundCue": "sfx_hash_rail_charge_fire",
+          "bestFor": "armored enemies, bosses, and lane clears",
+          "upgrades": {
+            "rateOfFire": "+8%",
+            "damage": "+beam damage",
+            "reloadSpeed": "+12%"
+          }
+        }
+      ],
+      "healthModel": {
+        "paidLives": 3,
+        "freeLives": null,
+        "iframesMs": 900,
+        "checkpointing": "none in official score mode",
+        "mercyRule": "first thirty seconds cannot spawn armored enemies"
+      },
+      "scoring": {
+        "formula": "survival seconds + distance + kills + boss clears + coins + no-damage bonuses + difficulty tier",
+        "paidOnly": "official leaderboard",
+        "freeMode": "no tracking: practice only"
+      },
+      "bossRoster": [
+        {
+          "id": "rug-pull-baron",
+          "title": "The Rug Pull Baron",
+          "specialty": "tilting rug arena reveals grinding foundry press",
+          "unlockHint": "Level 1 boss"
+        },
+        {
+          "id": "mt-goxzilla",
+          "title": "Mt. Goxzilla",
+          "specialty": "withdrawals-paused beam and offline weak point",
+          "unlockHint": "exchange-ruin kaiju"
+        },
+        {
+          "id": "the-whale",
+          "title": "The Whale",
+          "specialty": "market-dump pressure waves and flooded platforming",
+          "unlockHint": "wave-management boss"
+        },
+        {
+          "id": "sir-fud-bear-king",
+          "title": "Sir FUD, the Bear King",
+          "specialty": "red-candlestick warhammer, goblin summons, burning floor zones",
+          "unlockHint": "bear-market knight"
+        },
+        {
+          "id": "fifty-one-percent-hydra",
+          "title": "The 51% Hydra",
+          "specialty": "mining-rig heads and central consensus node puzzle",
+          "unlockHint": "mechanic-puzzle boss"
+        },
+        {
+          "id": "tetherra-stable-queen",
+          "title": "Tetherra, the Stable Queen",
+          "specialty": "peg-pillar invulnerability and depeg panic fire",
+          "unlockHint": "reserve-pillar boss"
+        },
+        {
+          "id": "the-maximalist",
+          "title": "The Maximalist",
+          "specialty": "corrupted Lester mirror duel using player-like moveset",
+          "unlockHint": "skill-check duel"
+        },
+        {
+          "id": "gas-titan",
+          "title": "Gas Titan (The Congestion)",
+          "specialty": "fee spike floor hazards with low-fee damage windows",
+          "unlockHint": "timing boss"
+        },
+        {
+          "id": "mr-ngmi",
+          "title": "The Influencer (Mr. NGMI)",
+          "specialty": "Sybil Swarm shield, shill beams, sponsored-post bombs",
+          "unlockHint": "Level 2 penthouse boss"
+        },
+        {
+          "id": "quantum-hacker",
+          "title": "The Quantum Hacker",
+          "specialty": "three fork phases, illusions, vault damage race, leaked seed-phrase reveal",
+          "unlockHint": "Level 3 final boss"
+        }
+      ]
+    },
+    "presentation": {
+      "medium": "snes-cartridge",
+      "colorway": "silver-neon-cyan",
+      "cabinetAsset": "./assets/cabinet-lester-blaster.svg",
+      "cartridgeAsset": "./assets/cartridge-lester-blaster.svg",
+      "marquee": "HARD MONEY HEROES"
+    }
+  },
+  "persistence": {
+    "key": "lesters-arcade-save-v1",
+    "version": 2,
+    "run_history_limit": 50,
+    "submitted_session_limit": 1000
+  },
+  "ranked_season_id": "hmh-season-1-2026",
+  "leaderboard_cadences": [
+    "daily",
+    "weekly",
+    "monthly",
+    "yearly",
+    "all-time"
+  ],
+  "settlement_live": false,
+  "settlement_addresses": {
+    "playerProfileRegistry": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+    "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+    "achievementRegistry": "0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53",
+    "arcadePaymentRouter": "0x7c999E9570D44090b9279dbAbE33B361e94bf78B",
+    "lestersArcadeCore": "0x609CBED352699003dec2381a79EFe5090B56F1D2"
+  },
+  "initial_arcade_state_keys": [
+    "cadenceLeaderboards",
+    "games",
+    "globalSessionSequence",
+    "leaderboards",
+    "localScores",
+    "loginEvents",
+    "officialSessions",
+    "payments",
+    "profiles",
+    "sessions",
+    "sessionsByUrlId",
+    "settlements",
+    "systemName",
+    "systemRole",
+    "transactions",
+    "usernames"
+  ],
+  "initial_arcade_state": {
+    "systemName": "Lester's Arcade",
+    "systemRole": "parent-arcade-portal",
+    "games": [
+      {
+        "id": "lester-blaster",
+        "title": "Hard Money Heroes",
+        "cabinet": "RUN-N-GUN CABINET 01",
+        "genre": "Goofy/gritty Web3 satire side-scrolling run-n-gun",
+        "status": "playable",
+        "developer": "Lester's Arcade Core Team",
+        "entryFeeMicroUsdc": 0,
+        "livesPaid": 3,
+        "livesFree": null,
+        "tagline": "Fight through Litecoin City After Dark with sparks-only defaults and optional pre-run gore.",
+        "systemRole": "child-dapp-cartridge",
+        "parentSystem": "Lester's Arcade",
+        "gameplay": {
+          "title": "Hard Money Heroes",
+          "workingTitle": true,
+          "legacyWorkingTitle": "Lester Blaster",
+          "world": "Litecoin City After Dark",
+          "inspiration": "Metal Slug-style score-attack shooter with goofy/gritty Web3 satire in Litecoin City After Dark",
+          "format": "authored three-level side-scrolling campaign that can evolve into survival scoring and boss rotations",
+          "targetAverageRunMinutes": 5,
+          "veteranRunMinutes": [
+            15,
+            20
+          ],
+          "bossIntervalMinutes": [
+            3,
+            5
+          ],
+          "targetRunCadence": {
+            "averageSeconds": 300,
+            "veteranSeconds": [
+              900,
+              1200
+            ],
+            "bossEverySeconds": [
+              180,
+              300
+            ]
+          },
+          "coreMoves": [
+            "run",
+            "jump",
+            "double-jump",
+            "basic-shoot",
+            "basic-melee",
+            "grenade-throw",
+            "crouch",
+            "weapon-swap"
+          ],
+          "pickups": [
+            "health-pack",
+            "grenade-crate",
+            "bonus-life",
+            "block-breaker-shells",
+            "hashstorm-drum",
+            "spread-ltc-chip",
+            "hash-rail-core",
+            "score-multiplier",
+            "shield-cache",
+            "ammo-cache",
+            "ltc-cache",
+            "magnet-surge",
+            "time-dilation",
+            "berserk-candle",
+            "nuke-liquidation",
+            "grenade-pickup"
+          ],
+          "weaponUpgrades": [
+            {
+              "id": "spread-ltc",
+              "title": "Spread LTC",
+              "displayName": "Spread Gun",
+              "type": "upgrade",
+              "rarity": "rare",
+              "damage": 2,
+              "pellets": 5,
+              "fireRatePerSecond": 3.8,
+              "reloadSeconds": 0.9,
+              "range": "short-mid cone",
+              "ammo": "timed upgrade",
+              "animation": "five-coin fan blast with cyan trails",
+              "soundCue": "sfx_spread_ltc_burst",
+              "bestFor": "crowd control and flying swarms",
+              "upgrades": {
+                "rateOfFire": "+12%",
+                "damage": "+pellet damage",
+                "reloadSpeed": "+15%"
+              }
+            },
+            {
+              "id": "hash-rail",
+              "title": "Hash Rail",
+              "displayName": "Rail Gun",
+              "type": "upgrade",
+              "rarity": "rare",
+              "damage": 9,
+              "pierce": true,
+              "fireRatePerSecond": 1.6,
+              "reloadSeconds": 1.8,
+              "range": "long piercing beam",
+              "ammo": "timed upgrade",
+              "animation": "charging rail line, then white/cyan screen streak",
+              "soundCue": "sfx_hash_rail_charge_fire",
+              "bestFor": "armored enemies, bosses, and lane clears",
+              "upgrades": {
+                "rateOfFire": "+8%",
+                "damage": "+beam damage",
+                "reloadSpeed": "+12%"
+              }
+            }
+          ],
+          "healthModel": {
+            "paidLives": 3,
+            "freeLives": null,
+            "iframesMs": 900,
+            "checkpointing": "none in official score mode",
+            "mercyRule": "first thirty seconds cannot spawn armored enemies"
+          },
+          "scoring": {
+            "formula": "survival seconds + distance + kills + boss clears + coins + no-damage bonuses + difficulty tier",
+            "paidOnly": "official leaderboard",
+            "freeMode": "no tracking: practice only"
+          },
+          "bossRoster": [
+            {
+              "id": "rug-pull-baron",
+              "title": "The Rug Pull Baron",
+              "specialty": "tilting rug arena reveals grinding foundry press",
+              "unlockHint": "Level 1 boss"
+            },
+            {
+              "id": "mt-goxzilla",
+              "title": "Mt. Goxzilla",
+              "specialty": "withdrawals-paused beam and offline weak point",
+              "unlockHint": "exchange-ruin kaiju"
+            },
+            {
+              "id": "the-whale",
+              "title": "The Whale",
+              "specialty": "market-dump pressure waves and flooded platforming",
+              "unlockHint": "wave-management boss"
+            },
+            {
+              "id": "sir-fud-bear-king",
+              "title": "Sir FUD, the Bear King",
+              "specialty": "red-candlestick warhammer, goblin summons, burning floor zones",
+              "unlockHint": "bear-market knight"
+            },
+            {
+              "id": "fifty-one-percent-hydra",
+              "title": "The 51% Hydra",
+              "specialty": "mining-rig heads and central consensus node puzzle",
+              "unlockHint": "mechanic-puzzle boss"
+            },
+            {
+              "id": "tetherra-stable-queen",
+              "title": "Tetherra, the Stable Queen",
+              "specialty": "peg-pillar invulnerability and depeg panic fire",
+              "unlockHint": "reserve-pillar boss"
+            },
+            {
+              "id": "the-maximalist",
+              "title": "The Maximalist",
+              "specialty": "corrupted Lester mirror duel using player-like moveset",
+              "unlockHint": "skill-check duel"
+            },
+            {
+              "id": "gas-titan",
+              "title": "Gas Titan (The Congestion)",
+              "specialty": "fee spike floor hazards with low-fee damage windows",
+              "unlockHint": "timing boss"
+            },
+            {
+              "id": "mr-ngmi",
+              "title": "The Influencer (Mr. NGMI)",
+              "specialty": "Sybil Swarm shield, shill beams, sponsored-post bombs",
+              "unlockHint": "Level 2 penthouse boss"
+            },
+            {
+              "id": "quantum-hacker",
+              "title": "The Quantum Hacker",
+              "specialty": "three fork phases, illusions, vault damage race, leaked seed-phrase reveal",
+              "unlockHint": "Level 3 final boss"
+            }
+          ]
+        },
+        "presentation": {
+          "medium": "snes-cartridge",
+          "colorway": "silver-neon-cyan",
+          "cabinetAsset": "./assets/cabinet-lester-blaster.svg",
+          "cartridgeAsset": "./assets/cartridge-lester-blaster.svg",
+          "marquee": "HARD MONEY HEROES"
+        }
+      },
+      {
+        "id": "lilly-pinball",
+        "title": "Lilly's Lightning Pinball",
+        "cabinet": "PINBALL BAY 02",
+        "genre": "Pinball",
+        "status": "coming-soon",
+        "developer": "Future cabinet builder",
+        "entryFeeMicroUsdc": 0,
+        "livesPaid": 3,
+        "livesFree": null,
+        "tagline": "Neo-noir Litecoin pinball with multiball bonus rounds.",
+        "systemRole": "child-dapp-cartridge",
+        "parentSystem": "Lester's Arcade",
+        "presentation": {
+          "medium": "snes-cartridge",
+          "colorway": "violet-neon-yellow",
+          "cabinetAsset": "./assets/cabinet-generic-pinball.svg",
+          "cartridgeAsset": "./assets/cartridge-lilly-pinball.svg",
+          "marquee": "LIGHTNING PINBALL"
+        }
+      },
+      {
+        "id": "block-brawler",
+        "title": "Block Brawler",
+        "cabinet": "BEAT-EM-UP 03",
+        "genre": "Side-scrolling beat-em-up",
+        "status": "coming-soon",
+        "developer": "Future cabinet builder",
+        "entryFeeMicroUsdc": 0,
+        "livesPaid": 3,
+        "livesFree": null,
+        "tagline": "Punch through rug-pull gangs and boss-rush crypto villains.",
+        "systemRole": "child-dapp-cartridge",
+        "parentSystem": "Lester's Arcade",
+        "presentation": {
+          "medium": "snes-cartridge",
+          "colorway": "purple-neon-red",
+          "cabinetAsset": "./assets/cabinet-generic-brawler.svg",
+          "cartridgeAsset": "./assets/cartridge-block-brawler.svg",
+          "marquee": "BLOCK BRAWLER"
+        }
+      },
+      {
+        "id": "mega-lester",
+        "title": "Mega Lester",
+        "cabinet": "PLATFORMER 04",
+        "genre": "Platformer / boss rush",
+        "status": "coming-soon",
+        "developer": "Future cabinet builder",
+        "entryFeeMicroUsdc": 0,
+        "livesPaid": 3,
+        "livesFree": null,
+        "tagline": "Jump, dash, and collect silver power crystals across LitVM sectors.",
+        "systemRole": "child-dapp-cartridge",
+        "parentSystem": "Lester's Arcade",
+        "presentation": {
+          "medium": "snes-cartridge",
+          "colorway": "blue-neon-green",
+          "cabinetAsset": "./assets/cabinet-generic-platformer.svg",
+          "cartridgeAsset": "./assets/cartridge-mega-lester.svg",
+          "marquee": "MEGA LESTER"
+        }
+      },
+      {
+        "id": "chikun",
+        "title": "Chikun's Escape",
+        "cabinet": "FLAPPY CABINET 04",
+        "genre": "One-button flappy-bird arcade with Litecoin coin mechanic",
+        "status": "coming-soon",
+        "publicPlayable": false,
+        "devPlayable": true,
+        "developer": "Louie / LitVM Port Team",
+        "entryFeeMicroUsdc": 0,
+        "livesPaid": 3,
+        "livesFree": null,
+        "tagline": "Tap to flap. Dodge the forks. Stack the silver.",
+        "systemRole": "child-dapp-cartridge",
+        "rankedSeasonId": "chikun-season-preview-1",
+        "cabinetVersion": "0.2.0",
+        "parentSystem": "Lester's Arcade",
+        "presentation": {
+          "medium": "snes-cartridge",
+          "colorway": "gold-neon-cyan",
+          "cabinetAsset": "./assets/cabinet-chikun.svg",
+          "cartridgeAsset": "./assets/cartridge-chikun.svg",
+          "marquee": "CHIKUN"
+        },
+        "desktopCabinetSprite": {
+          "id": "chikun-cabinet",
+          "frameDurationMs": 600,
+          "frames": [
+            {
+              "src": "./assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2",
+              "durationMs": 600
+            },
+            {
+              "src": "./assets/generated/chikun-cabinet/chikun-cabinet-front-right.png?v=transparent-v2",
+              "durationMs": 600
+            },
+            {
+              "src": "./assets/generated/chikun-cabinet/chikun-cabinet-right.png?v=transparent-v2",
+              "durationMs": 600
+            },
+            {
+              "src": "./assets/generated/chikun-cabinet/chikun-cabinet-back.png?v=transparent-v2",
+              "durationMs": 600
+            },
+            {
+              "src": "./assets/generated/chikun-cabinet/chikun-cabinet-left.png?v=transparent-v2",
+              "durationMs": 600
+            },
+            {
+              "src": "./assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2",
+              "durationMs": 600
+            }
+          ]
+        }
+      }
+    ],
+    "profiles": {},
+    "usernames": {},
+    "sessions": {},
+    "localScores": [],
+    "payments": [],
+    "transactions": [],
+    "officialSessions": [],
+    "settlements": [],
+    "loginEvents": [],
+    "globalSessionSequence": 0,
+    "sessionsByUrlId": {},
+    "leaderboards": {
+      "lester-blaster": [],
+      "lilly-pinball": [],
+      "block-brawler": [],
+      "mega-lester": [],
+      "chikun": []
+    },
+    "cadenceLeaderboards": {
+      "lester-blaster": {
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "yearly": {},
+        "all-time": {}
+      },
+      "lilly-pinball": {
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "yearly": {},
+        "all-time": {}
+      },
+      "block-brawler": {
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "yearly": {},
+        "all-time": {}
+      },
+      "mega-lester": {
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "yearly": {},
+        "all-time": {}
+      },
+      "chikun": {
+        "daily": {},
+        "weekly": {},
+        "monthly": {},
+        "yearly": {},
+        "all-time": {}
+      }
+    }
+  },
+  "achievement_ids": [
+    "cabinet-pioneer",
+    "first-paid-run",
+    "first-1000-points",
+    "first-blood",
+    "ten-enemy-kills",
+    "first-grenade-kill",
+    "first-powerup",
+    "beat-level-1-boss",
+    "five-minute-run",
+    "combo-starter",
+    "gas-beast-hunter",
+    "goblin-cleanup",
+    "drone-swatter",
+    "grenade-century",
+    "blade-master",
+    "hash-rail-specialist",
+    "spread-ltc-specialist",
+    "powerup-collector",
+    "score-5000",
+    "score-10000",
+    "boss-breaker",
+    "no-damage-boss",
+    "slums-clear",
+    "foundry-clear",
+    "getaway-clear",
+    "big-combo",
+    "damage-chain",
+    "weapon-collector",
+    "lucky-survivor",
+    "ten-paid-runs",
+    "master-survivor",
+    "score-25000",
+    "score-50000",
+    "no-damage-10-minutes",
+    "all-bosses-scouted",
+    "enemy-reaper-250",
+    "enemy-reaper-500",
+    "grenade-demolitionist",
+    "blade-samurai",
+    "powerup-hoarder",
+    "ranked-regular",
+    "boss-rush-ten",
+    "speed-clear",
+    "hard-fork-hero",
+    "max-combo-30",
+    "two-hundred-ranked-runs",
+    "two-fifty-ranked-runs",
+    "marathon-wallet",
+    "perfect-boss-gauntlet",
+    "arcade-legend-500",
+    "l2-survive-5min",
+    "l2-bridge-exploiter",
+    "l2-whale-slayer",
+    "l2-obfuscator",
+    "l2-51-percent",
+    "l2-ngmi",
+    "l2-no-damage-ngmi"
+  ],
+  "upgrade_tree_ids": [
+    "coin-blaster",
+    "scatter-shotgun",
+    "auto-miner",
+    "spread-ltc",
+    "hash-rail"
+  ],
+  "weapon_evolution_ids": [
+    "evolve-settler-rail",
+    "evolve-hashstorm-overdrive",
+    "evolve-crit-candle",
+    "evolve-crypto-bomb-orbit"
+  ],
+  "retained_exports": {
+    "game_registry": [
+      "getRegisteredGame",
+      "getSharedPlayerProfile",
+      "listRegisteredGames",
+      "registerGame",
+      "submitGameRun"
+    ],
+    "persistence": [
+      "ARCADE_PERSIST_KEY",
+      "ARCADE_PERSIST_VERSION",
+      "RUN_HISTORY_LIMIT",
+      "SUBMITTED_SESSION_LIMIT",
+      "appendRunRecord",
+      "clearActiveSessionCheckpoint",
+      "isSessionSubmitted",
+      "loadArcadeState",
+      "restoreArcadeState",
+      "saveActiveSessionCheckpoint",
+      "saveArcadeState",
+      "snapshotArcadeState"
+    ],
+    "session_integrity": [
+      "CURRENT_RANKED_SEASON_ID",
+      "canonicalSessionJson",
+      "createCanonicalSessionHandle",
+      "createCanonicalSessionIdentity",
+      "createSessionEvidenceState",
+      "finalizeSessionEvidence",
+      "recordSessionEvent",
+      "recordSessionInput",
+      "sha256Hex"
+    ],
+    "settlement": [
+      "LITVM_CONTRACT_ADDRESSES",
+      "SETTLEMENT_LIVE",
+      "ZKLTC_SETTLEMENT_GAS",
+      "buildSettlementPlan",
+      "estimateSettlementGas",
+      "settleRun"
+    ],
+    "leaderboard": [
+      "LEADERBOARD_CADENCES",
+      "getAllCadenceLeaderboards",
+      "getLeaderboard",
+      "periodKeyFor",
+      "periodKeys",
+      "recordCadenceScore"
+    ],
+    "upgrade_runtime": [
+      "applyUpgradeRevive",
+      "buildUpgradeRuntimePolicy",
+      "evolutionScoreMultiplier",
+      "upgradedClipSize"
+    ],
+    "weapon_upgrades": [
+      "WEAPON_UPGRADE_TREES",
+      "computeWeaponUpgrades",
+      "effectiveReloadSeconds",
+      "hasSpecial",
+      "reloadProgress",
+      "validateWeaponUpgrades"
+    ]
+  },
+  "invariants": [
+    "Do not rename game_id lester-blaster.",
+    "Do not mutate persistence version or schema without an explicit migration.",
+    "Do not change ranked season, leaderboard cadence, settlement addresses, scoring/economy, profile, achievement, or upgrade identifiers during renderer reboot.",
+    "Child game may emit adapter messages only; portal remains authority for persistence, wallet, leaderboard, settlement, and profile writes."
+  ]
+}

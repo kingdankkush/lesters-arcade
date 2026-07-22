@@ -1,0 +1,31 @@
+{
+  "schema": "hmh-reboot-asset-archive-record-v1",
+  "source_commit": "fa9585be7014db6515c536f9a09fdba5a3a2572f",
+  "archive": "C:\\Users\\just_\\lesters-arcade-vault\\superseded-art\\hmh-pre-topdown-reboot-v48\\hmh-old-runtime-art-v48.zip",
+  "archive_bytes": 199042332,
+  "archive_sha256": "6024f86c2506afa0c8f255e751d9ae84c6143b2737cc647ac30782273aff82bc",
+  "verified_files": 6194,
+  "verified_payload_bytes": 195091543,
+  "status": "PASS",
+  "branch_cleanup": {
+    "removed_binary_files": 6091,
+    "removed_binary_bytes": 185997232,
+    "retained_manifest_files": 103,
+    "retained_manifest_bytes": 9094311
+  },
+  "restore_sources": [
+    "C:\\Users\\just_\\lesters-arcade-vault\\superseded-art\\hmh-pre-topdown-reboot-v48\\hmh-old-runtime-art-v48.zip",
+    "origin/main"
+  ],
+  "protected_files_retained": 372,
+  "protected_policy": [
+    "shared generated assets",
+    "HMH cabinet key art and Chikun cabinet animation",
+    "achievement badge atlas and profile-avatar art",
+    "parent portal and Chikun assets"
+  ],
+  "restore_commands": [
+    "Extract hmh-old-runtime-art-v48.zip at repository root.",
+    "git restore --source=origin/main -- apps/portal/assets/generated apps/portal/assets/hmh"
+  ]
+}
