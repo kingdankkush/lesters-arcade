@@ -14,18 +14,19 @@ function parseCsp(value) {
     }));
 }
 
-function findSecurityHeader(key) {
+function findSecurityHeader(key, source = null) {
   for (const route of vercelConfig.headers ?? []) {
+    if (source && route.source !== source) continue;
     const header = route.headers?.find((entry) => entry.key.toLowerCase() === key.toLowerCase());
     if (header) return { route, header };
   }
   return null;
 }
 
-test('production Vercel config ships a reviewed Content-Security-Policy', () => {
-  const found = findSecurityHeader('Content-Security-Policy');
-  assert.ok(found, 'Content-Security-Policy header should be configured');
-  assert.equal(found.route.source, '/(.*)');
+test('production Vercel config keeps portal framing closed except for the reboot child', () => {
+  const portalSource = '/((?!hmh-reboot/).*)';
+  const found = findSecurityHeader('Content-Security-Policy', portalSource);
+  assert.ok(found, 'portal Content-Security-Policy header should be configured');
 
   const csp = parseCsp(found.header.value);
   assert.deepEqual(csp.get('default-src'), ["'self'"]);
@@ -33,6 +34,15 @@ test('production Vercel config ships a reviewed Content-Security-Policy', () => 
   assert.deepEqual(csp.get('base-uri'), ["'self'"]);
   assert.deepEqual(csp.get('frame-ancestors'), ["'none'"]);
   assert.equal(csp.has('upgrade-insecure-requests'), true);
+
+  const child = findSecurityHeader('Content-Security-Policy', '/hmh-reboot/(.*)');
+  assert.ok(child, 'reboot child Content-Security-Policy header should be configured');
+  const childCsp = parseCsp(child.header.value);
+  assert.deepEqual(childCsp.get('frame-ancestors'), ["'self'"], 'only the same-origin portal may embed the child');
+  assert.deepEqual(childCsp.get('default-src'), ["'self'"]);
+  assert.deepEqual(childCsp.get('object-src'), ["'none'"]);
+  assert.equal(childCsp.get('script-src').includes("'unsafe-inline'"), false);
+  assert.equal(childCsp.get('style-src').includes("'unsafe-inline'"), false);
 
   const scriptSrc = csp.get('script-src') ?? [];
   assert.equal(scriptSrc.includes("'self'"), true);

@@ -6,7 +6,7 @@
   "outputDirectory": "apps/portal",
   "headers": [
     {
-      "source": "/dist/chunks/(.*)",
+      "source": "/dist/(chunks|hmh-reboot)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -24,12 +24,26 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/hmh-reboot/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://lestersarcade.io; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https://liteforge.rpc.caldera.xyz wss://liteforge.rpc.caldera.xyz https://liteforge.explorer.caldera.xyz https://liteforge.hub.caldera.xyz https://testnet.litvm.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/((?!hmh-reboot/).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
           "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://lestersarcade.io; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https://liteforge.rpc.caldera.xyz wss://liteforge.rpc.caldera.xyz https://liteforge.explorer.caldera.xyz https://liteforge.hub.caldera.xyz https://testnet.litvm.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
-        },
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"

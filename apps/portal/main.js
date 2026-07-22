@@ -12,6 +12,7 @@ function injectVercelWebAnalytics() {
 injectVercelWebAnalytics();
 
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
+import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
@@ -1694,6 +1695,9 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   try { window.dispatchEvent(new Event('eip6963:requestProvider')); } catch { /* older browsers */ }
 }
 let currentSession = null;
+const HMH_REBOOT_ENABLED = true;
+let hmhRebootHost = null;
+let hmhRebootActive = false;
 let lastCompletedSession = null;
 let lastRunResult = null;
 let lastRunScore = 0;
@@ -3445,6 +3449,15 @@ function syncCombatOverlay() {
 }
 
 async function toggleCombatPause(forcePaused) {
+  if (hmhRebootActive) {
+    const nextPaused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
+    combat.paused = nextPaused;
+    if (nextPaused) hmhRebootHost?.pause();
+    else hmhRebootHost?.resume();
+    playSfxCue(nextPaused ? 'pause' : 'resume');
+    syncCombatOverlay();
+    return;
+  }
   if (!combat.active && !combat.gameOver) return;
   combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
   if (!combat.paused) combat.menuSettingsOpen = false;
@@ -3477,6 +3490,7 @@ function toggleCombatShakeSetting() {
   if (!gameSettings.screenShake) combat.shake = 0;
   saveGameSettings();
   applyGameplayAccessibilitySettings();
+  pushHmhRebootSettings();
   playSfxCue('menu-click');
   syncCombatOverlay();
 }
@@ -3484,6 +3498,7 @@ function toggleCombatShakeSetting() {
 function toggleCombatGoreSetting() {
   gameSettings.gore = !gameSettings.gore;
   saveGameSettings();
+  pushHmhRebootSettings();
   playSfxCue('menu-click');
   syncCombatOverlay();
 }
@@ -3493,6 +3508,7 @@ function toggleCombatReduceMotionSetting() {
   if (gameSettings.reduceMotion) combat.shake = 0;
   saveGameSettings();
   applyGameplayAccessibilitySettings();
+  pushHmhRebootSettings();
   playSfxCue('menu-click');
   syncCombatOverlay();
 }
@@ -3501,6 +3517,7 @@ function toggleCombatReduceFlashSetting() {
   gameSettings.reduceFlash = !gameSettings.reduceFlash;
   saveGameSettings();
   applyGameplayAccessibilitySettings();
+  pushHmhRebootSettings();
   playSfxCue('menu-click');
   syncCombatOverlay();
 }
@@ -3509,6 +3526,7 @@ function toggleCombatColorblindTagsSetting() {
   gameSettings.colorblindTags = !gameSettings.colorblindTags;
   saveGameSettings();
   applyGameplayAccessibilitySettings();
+  pushHmhRebootSettings();
   playSfxCue('menu-click');
   renderRoguelikeStatBar();
   syncCombatOverlay();
@@ -3630,6 +3648,16 @@ function renderCombatSettingsPanel() {
 
 async function restartCombatRun() {
   playSfxCue('level-start');
+  if (hmhRebootActive) {
+    hmhRebootHost?.restart();
+    combat.paused = false;
+    combat.gameOver = false;
+    combat.score = 0;
+    combat.kills = 0;
+    combat.elapsedGameSeconds = 0;
+    syncCombatOverlay();
+    return;
+  }
   const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
   if (wasPaid) {
     dom.combatStatus.textContent = SETTLEMENT_LIVE
@@ -3648,6 +3676,8 @@ async function restartCombatRun() {
 
 function toggleCombatMusic() {
   const musicOn = toggleArcadeMusicMute();
+  combat.musicEnabled = musicOn;
+  pushHmhRebootSettings();
   playSfxCue('menu-click');
   spawnText(musicOn ? 'MUSIC ON' : 'MUSIC MUTED', combat.playerX + 24, combat.playerY - 92, musicOn ? '#45ff8a' : '#ff476f');
   syncCombatOverlay();
@@ -3808,6 +3838,10 @@ async function cycleCombatViewport() {
 }
 
 function returnToOfficialGameMenu() {
+  if (hmhRebootActive && combat.active && !combat.gameOver) {
+    void toggleCombatPause();
+    return;
+  }
   // If a run is in progress, "Game Menu" must NOT discard it. Just open the
   // in-game pause overlay (or resume if already paused). Progress is preserved.
   if (combat.active && !combat.gameOver) {
@@ -3823,6 +3857,7 @@ function returnToOfficialGameMenu() {
     return;
   }
   // No active run: behave as a normal return to the pre-match menu.
+  destroyHmhRebootSession();
   if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
@@ -3838,6 +3873,7 @@ function returnToOfficialGameMenu() {
 }
 
 function exitToArcade() {
+  destroyHmhRebootSession();
   if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
@@ -5449,6 +5485,74 @@ function renderOfficialModeSelect() {
   }
 }
 
+function hmhRebootHeroId() {
+  return combat.characterId === 'lit-valkyrie' ? 'female-commando' : 'male-commando';
+}
+
+function hmhRebootSettings() {
+  return {
+    musicEnabled: Boolean(combat.musicEnabled),
+    screenShake: Boolean(gameSettings.screenShake),
+    gore: Boolean(gameSettings.gore),
+    reduceMotion: Boolean(gameSettings.reduceMotion),
+    reduceFlash: Boolean(gameSettings.reduceFlash),
+    colorblindTags: Boolean(gameSettings.colorblindTags),
+  };
+}
+
+function pushHmhRebootSettings() {
+  if (hmhRebootActive) hmhRebootHost?.updateSettings(hmhRebootSettings());
+}
+
+function destroyHmhRebootSession() {
+  hmhRebootHost?.destroy();
+  hmhRebootHost = null;
+  hmhRebootActive = false;
+}
+
+function mountHmhRebootSession() {
+  if (!HMH_REBOOT_ENABLED || !dom.officialCombatMount || !currentSession) return null;
+  if (!hmhRebootHost) {
+    hmhRebootHost = createHmhRebootHost({
+      mount: dom.officialCombatMount,
+      expectedOrigin: window.location.origin,
+      onReady: () => {
+        hmhRebootActive = true;
+        combat.active = true;
+        combat.paused = false;
+        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Top-down reboot runtime connected. Portal session authority remains active.';
+      },
+      onState: (message) => {
+        if (message.type === 'game:state') {
+          combat.score = message.payload.score;
+          combat.kills = message.payload.kills;
+          combat.elapsedGameSeconds = message.payload.elapsedMs / 1000;
+          combat.health = message.payload.health;
+          combat.maxHealth = message.payload.maxHealth;
+          combat.paused = message.payload.paused;
+        } else if (message.type === 'game:game-over') {
+          combat.score = message.payload.score;
+          combat.kills = message.payload.kills;
+          combat.elapsedGameSeconds = message.payload.elapsedMs / 1000;
+          combat.gameOver = true;
+          combat.gameOverReason = message.payload.reason;
+        }
+      },
+      onError: (error) => {
+        console.error('[HMH reboot bridge]', error);
+        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Reboot runtime error: ${error.message}`;
+      },
+    });
+  }
+  hmhRebootActive = true;
+  return hmhRebootHost.mountSession({
+    sessionId: currentSession.urlSessionId ?? currentSession.sessionId,
+    mode: officialSelectedMode === 'ranked' ? 'ranked' : 'free',
+    heroId: hmhRebootHeroId(),
+    settings: hmhRebootSettings(),
+  });
+}
+
 function renderOfficialGameplay() {
   const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
   const game = selectedGame();
@@ -5457,6 +5561,11 @@ function renderOfficialGameplay() {
     if (dom.combatStatus) {
       dom.combatStatus.textContent = "Chikun's Escape vertical slice is running through Cabinet SDK v1. Tap-to-flap scoring feeds the same free/ranked parent session rails.";
     }
+    return;
+  }
+  if (HMH_REBOOT_ENABLED && game.id === 'lester-blaster') {
+    dom.officialGameModeTitle.textContent = `Hard Money Heroes: Top-Down Reboot // ${modeLabel}`;
+    if (dom.officialGameStateCopy && !hmhRebootActive) dom.officialGameStateCopy.textContent = 'Starting isolated PixiJS child runtime…';
     return;
   }
   const level = currentCampaignLevel();
@@ -5679,6 +5788,15 @@ function requestRankedEntry() {
 }
 
 async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID, options = {}) {
+  if (HMH_REBOOT_ENABLED && selectedGameId === 'lester-blaster') {
+    combat.currentCampaignLevelId = levelId;
+    if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
+    setOfficialView('gameplay');
+    mountHmhRebootSession();
+    gameAdapter = createInProcessGameAdapter({ gameId: 'hard-money-heroes' });
+    gameAdapter.start({ mode: officialSelectedMode ?? 'free', characterId: hmhRebootHeroId() });
+    return;
+  }
   // Cabinet clicks normally load HMH first, but direct/deep-linked free runs can
   // reach this path without that click. Never start combat with an empty roster.
   await ensureHMHLoaded();
@@ -13037,6 +13155,12 @@ function isAdaptiveBossThreat(enemy) {
 
 function drawCombatScene(timestamp = 0) {
   const canvas = dom.combatCanvas;
+  if (hmhRebootActive) {
+    combat.lastTimestamp = timestamp;
+    combat.accumulatorMs = 0;
+    requestAnimationFrame(drawCombatScene);
+    return;
+  }
   // Heartbeat gate: when there is no active run and we are not on the game-over
   // screen, the combat canvas is hidden behind menus (splash, cabinet grid,
   // profile, scores, codex). Drawing the scene there burns CPU/battery for

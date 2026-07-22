@@ -1,0 +1,132 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  HMH_BRIDGE_PROTOCOL,
+  HMH_MAX_MESSAGE_BYTES,
+  createBridgeEnvelope,
+  validateChildMessage,
+  validateConnectMessage,
+  validateParentMessage,
+} from '../sdk/hmh-bridge-protocol.mjs';
+
+const settings = Object.freeze({
+  musicEnabled: true,
+  screenShake: true,
+  gore: false,
+  reduceMotion: false,
+  reduceFlash: false,
+  colorblindTags: false,
+});
+
+function parentInit(overrides = {}) {
+  return createBridgeEnvelope({
+    type: 'portal:init',
+    sessionId: 'game-session-000000001',
+    messageId: 'portal-1',
+    payload: { mode: 'free', heroId: 'male-commando', settings, ...overrides },
+  });
+}
+
+test('valid portal init envelope passes exact schema validation', () => {
+  const result = validateParentMessage(parentInit());
+  assert.equal(result.ok, true);
+  assert.equal(result.value.protocol, HMH_BRIDGE_PROTOCOL);
+  assert.equal(result.value.payload.heroId, 'male-commando');
+});
+
+test('unknown and extra parent fields fail closed', () => {
+  const message = parentInit();
+  message.payload.walletAddress = '0x1234';
+  const result = validateParentMessage(message);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /unexpected/i);
+});
+
+test('wrong protocol and unsupported message type fail closed', () => {
+  const wrongProtocol = { ...parentInit(), protocol: 'hmh-bridge/v0' };
+  assert.equal(validateParentMessage(wrongProtocol).ok, false);
+  const wrongType = { ...parentInit(), type: 'portal:wallet-secret' };
+  assert.equal(validateParentMessage(wrongType).ok, false);
+});
+
+test('oversized messages are rejected before payload use', () => {
+  const oversized = parentInit({ heroId: `hero-${'x'.repeat(HMH_MAX_MESSAGE_BYTES)}` });
+  const result = validateParentMessage(oversized);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /size/i);
+});
+
+test('valid child ready envelope passes and wallet-shaped leakage fails', () => {
+  const ready = createBridgeEnvelope({
+    type: 'game:ready',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-1',
+    payload: {
+      runtimeVersion: '0.1.0',
+      renderer: 'pixi.js',
+      capabilities: ['pause', 'settings', 'restart'],
+    },
+  });
+  assert.equal(validateChildMessage(ready).ok, true);
+  ready.payload.wallet = '0x1234';
+  assert.equal(validateChildMessage(ready).ok, false);
+});
+
+test('connect handshake requires exact protocol, nonce, and type', () => {
+  const valid = { protocol: HMH_BRIDGE_PROTOCOL, type: 'portal:connect', nonce: 'nonce-1234567890abcdef' };
+  assert.equal(validateConnectMessage(valid).ok, true);
+  assert.equal(validateConnectMessage({ ...valid, origin: '*' }).ok, false);
+  assert.equal(validateConnectMessage({ ...valid, nonce: 'short' }).ok, false);
+});
+
+test('portal lifecycle and settings commands use bounded exact payloads', () => {
+  for (const type of ['portal:pause', 'portal:resume', 'portal:restart', 'portal:dispose']) {
+    const message = createBridgeEnvelope({ type, sessionId: 'game-session-000000001', messageId: `portal-${type}`, payload: {} });
+    assert.equal(validateParentMessage(message).ok, true, type);
+    message.payload.reason = 'untrusted';
+    assert.equal(validateParentMessage(message).ok, false, `${type} extra field`);
+  }
+  const update = createBridgeEnvelope({
+    type: 'portal:settings',
+    sessionId: 'game-session-000000001',
+    messageId: 'portal-settings',
+    payload: { settings: { ...settings } },
+  });
+  assert.equal(validateParentMessage(update).ok, true);
+  update.payload.settings.gore = 'yes';
+  assert.equal(validateParentMessage(update).ok, false);
+});
+
+test('child state and game-over messages enforce finite bounded telemetry', () => {
+  const state = createBridgeEnvelope({
+    type: 'game:state',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-state-1',
+    payload: { status: 'running', score: 1200, kills: 12, elapsedMs: 5500, health: 82, maxHealth: 100, xp: 40, level: 2, paused: false },
+  });
+  assert.equal(validateChildMessage(state).ok, true);
+  state.payload.score = Number.POSITIVE_INFINITY;
+  assert.equal(validateChildMessage(state).ok, false);
+
+  const gameOver = createBridgeEnvelope({
+    type: 'game:game-over',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-over-1',
+    payload: { score: 4200, kills: 44, elapsedMs: 60000, reason: 'defeated' },
+  });
+  assert.equal(validateChildMessage(gameOver).ok, true);
+  gameOver.payload.reason = '<script>alert(1)</script>';
+  assert.equal(validateChildMessage(gameOver).ok, false);
+});
+
+test('child errors expose only a bounded code and safe message', () => {
+  const error = createBridgeEnvelope({
+    type: 'game:error',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-error-1',
+    payload: { code: 'renderer-init-failed', message: 'WebGL initialization failed.' },
+  });
+  assert.equal(validateChildMessage(error).ok, true);
+  error.payload.stack = 'private stack';
+  assert.equal(validateChildMessage(error).ok, false);
+});

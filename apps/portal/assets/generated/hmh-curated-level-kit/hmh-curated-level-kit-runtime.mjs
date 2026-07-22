@@ -86,6 +86,8 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-post-anchor-work-orders.mjs",
     "apps/portal/src/hmh-profile-parity.mjs",
     "apps/portal/src/hmh-prop-grounding.mjs",
+    "apps/portal/src/hmh-reboot-bridge.mjs",
+    "apps/portal/src/hmh-reboot-host.mjs",
     "apps/portal/src/hmh-run-integrity.mjs",
     "apps/portal/src/hmh-run-simulator.mjs",
     "apps/portal/src/hmh-terrain-blob-map.mjs",

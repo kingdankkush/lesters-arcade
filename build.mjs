@@ -31,7 +31,8 @@ import { statSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const portalDir = resolve(__dirname, 'apps/portal');
-const entry = resolve(portalDir, 'main.js');
+const portalEntry = resolve(portalDir, 'main.js');
+const hmhRebootEntry = resolve(__dirname, 'apps/hmh-reboot/src/main.mjs');
 const outdir = resolve(portalDir, 'dist');
 
 const wantMeta = process.argv.includes('--metafile');
@@ -44,14 +45,21 @@ function human(bytes) {
 }
 
 async function run() {
-  const rawSize = statSync(entry).size;
+  const rawSize = statSync(portalEntry).size;
+  const childRawSize = statSync(hmhRebootEntry).size;
 
   // Clean only our own output dir, never source.
   if (existsSync(outdir)) rmSync(outdir, { recursive: true, force: true });
   mkdirSync(outdir, { recursive: true });
 
   const result = await build({
-    entryPoints: { 'main': entry },
+    entryPoints: {
+      main: portalEntry,
+      'hmh-reboot/game': hmhRebootEntry,
+    },
+    alias: {
+      'pixi.js': resolve(__dirname, 'node_modules/pixi.js/dist/pixi.mjs'),
+    },
     bundle: true,
     splitting: true,        // preserve dynamic import() code-split chunks
     format: 'esm',          // app loads main.js as <script type="module">
@@ -59,7 +67,7 @@ async function run() {
     treeShaking: true,
     target: ['es2020'],
     outdir,
-    entryNames: '[name]',   // stable name: dist/main.js (cache-bust via ?v= query)
+    entryNames: '[dir]/[name]', // stable roots: dist/main.js + dist/hmh-reboot/game.js
     chunkNames: 'chunks/[name]-[hash]',
     assetNames: 'assets/[name]-[hash]',
     legalComments: 'none',
@@ -70,8 +78,11 @@ async function run() {
   });
 
   const outMain = resolve(outdir, 'main.js');
+  const outChild = resolve(outdir, 'hmh-reboot/game.js');
   const minSize = statSync(outMain).size;
+  const childMinSize = statSync(outChild).size;
   const entryDeltaPct = 100 * (minSize / rawSize - 1);
+  const childDeltaPct = 100 * (childMinSize / childRawSize - 1);
 
   if (wantMeta) {
     const { writeFileSync } = await import('node:fs');
@@ -86,6 +97,8 @@ async function run() {
   console.log('\n=== Bundle report ===');
   console.log(`Source main.js:     ${human(rawSize)}`);
   console.log(`Bundled main.js:    ${human(minSize)}  (${entryDeltaPct >= 0 ? '+' : ''}${entryDeltaPct.toFixed(1)}% vs source entry; imports included)`);
+  console.log(`HMH reboot source:  ${human(childRawSize)}`);
+  console.log(`HMH reboot bundle:  ${human(childMinSize)}  (${childDeltaPct >= 0 ? '+' : ''}${childDeltaPct.toFixed(1)}% vs child source; Pixi included/shared)`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
   console.log(`Output dir:         apps/portal/dist/`);
 }
