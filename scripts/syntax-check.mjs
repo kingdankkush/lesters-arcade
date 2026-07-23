@@ -313,6 +313,7 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/input.mjs",
   "apps/hmh-reboot/src/main.mjs",
   "apps/hmh-reboot/src/movement.mjs",
+  "apps/hmh-reboot/src/projectile-physics.mjs",
   "apps/hmh-reboot/src/simulation.mjs",
   "apps/hmh-reboot/src/standalone-session.mjs",
   "apps/hmh-reboot/src/touch-controls.mjs",
@@ -325,6 +326,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-input.test.mjs",
   "tests/hmh-reboot-movement.test.mjs",
   "tests/hmh-reboot-parent-bridge.test.mjs",
+  "tests/hmh-reboot-projectile-physics.test.mjs",
   "tests/hmh-reboot-protocol.test.mjs",
   "tests/hmh-reboot-shell.test.mjs",
   "tests/hmh-reboot-simulation.test.mjs",
@@ -332,6 +334,9 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-touch-controls.test.mjs",
   "tests/hmh-reboot-world-space.test.mjs",
   "scripts/hmh-anchor-candidate-audit.mjs",
+  "scripts/hmh-reboot-projectile-benchmark.mjs",
+  "scripts/hmh-reboot-projectile-fuzz.mjs",
+  "scripts/hmh-reboot-projectile-soak.mjs",
   "scripts/hmh-post-anchor-work-orders.mjs",
   "scripts/syntax-check.mjs"
 ];

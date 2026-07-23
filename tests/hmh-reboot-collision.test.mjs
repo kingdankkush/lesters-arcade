@@ -21,8 +21,11 @@ test('authored collision rejects invisible solids and audits visible geometry in
     visibleAssetId: 'concrete-wall-a',
     minZ: 0,
     maxZ: 80,
+    combatCover: true,
   });
   assert.equal(wall.id, 'wall-a');
+  assert.equal(wall.combatCover, true);
+  assert.throws(() => createStaticBlocker({ id: 'invalid-cover', shape: { type: 'circle', x: 0, y: 0, radius: 5 }, visibleAssetId: 'invalid-cover-art', combatCover: 'high' }), /combatCover/);
   assert.throws(() => createStaticBlocker({ id: 'ghost', shape: { type: 'circle', x: 0, y: 0, radius: 5 } }), /visible/i);
 
   const unbackedAudit = auditCollisionWorld({

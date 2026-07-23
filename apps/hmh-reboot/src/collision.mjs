@@ -104,10 +104,12 @@ export function createStaticBlocker({
   maxZ = Number.POSITIVE_INFINITY,
   curbHeight = 0,
   solid = true,
+  combatCover = false,
 } = {}) {
   if (typeof id !== 'string' || !id) throw new TypeError('blocker.id must be a non-empty string');
   if (typeof visibleAssetId !== 'string' && typeof terrainBoundaryId !== 'string') throw new TypeError('solid blocker requires visible asset or terrain boundary metadata');
   if (typeof solid !== 'boolean') throw new TypeError('blocker.solid must be boolean');
+  if (typeof combatCover !== 'boolean') throw new TypeError('blocker.combatCover must be boolean');
   if (!(typeof minZ === 'number' && !Number.isNaN(minZ)) || !(typeof maxZ === 'number' && !Number.isNaN(maxZ)) || maxZ <= minZ) {
     throw new TypeError('blocker height range must be ordered numbers');
   }
@@ -120,6 +122,7 @@ export function createStaticBlocker({
     maxZ,
     curbHeight: nonNegative(curbHeight, 'blocker.curbHeight'),
     solid,
+    combatCover,
   });
 }
 

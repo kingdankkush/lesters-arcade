@@ -33,6 +33,16 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /createAuthoredGroundQuery\(/);
   assert.match(source, /movementSpeedMultiplierForTransition\(/);
   assert.match(source, /resolveSweptTraversalPath\(/);
+  assert.match(source, /createHurtTarget\(/);
+  assert.match(source, /previousGroundZ/);
+  assert.match(source, /createProjectileState\(/);
+  assert.match(source, /resolveProjectileBatch\(/);
+  assert.match(source, /MAX_ACTIVE_PROJECTILES\s*=\s*128/);
+  assert.match(source, /PROJECTILE_GRID_THRESHOLD\s*=\s*64/);
+  assert.match(source, /new UniformHurtboxGrid\(/);
+  assert.match(source, /projectileTrails/);
+  assert.match(source, /previous:\s*Object\.freeze|previous:/);
+  assert.match(source, /current:\s*Object\.freeze|current:/);
   assert.match(source, /actor\.groundZ\s*=\s*lastGround\.groundZ/);
   assert.match(source, /actor\.z\s*=\s*lastGround\.groundZ/);
   assert.match(source, /visibleAssetId:\s*'graybox-/);
@@ -100,7 +110,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions only the minimal reboot shell for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-07'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-08'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));

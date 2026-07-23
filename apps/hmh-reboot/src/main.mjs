@@ -20,6 +20,12 @@ import {
   resolveEnemyPressure,
   stepPlayerMovement,
 } from './movement.mjs';
+import {
+  UniformHurtboxGrid,
+  createHurtTarget,
+  createProjectileState,
+  resolveProjectileBatch,
+} from './projectile-physics.mjs';
 import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
@@ -33,7 +39,18 @@ import {
   worldToScreen,
 } from './world-space.mjs';
 
-const RUNTIME_VERSION = '0.3.0';
+const RUNTIME_VERSION = '0.4.0';
+const MAX_ACTIVE_PROJECTILES = 128;
+const PROJECTILE_GRID_THRESHOLD = 64;
+const HIT_FEEDBACK_TICKS = 12;
+const SETTLER_CALIBRATION = Object.freeze({
+  id: 'coin-blaster',
+  damage: 3,
+  cadenceTicks: Math.ceil(60 / 2.6),
+  speed: 1200,
+  range: 720,
+  radius: 2,
+});
 const WORLD_BOUNDS = Object.freeze({ minX: 0, minY: 0, maxX: 2048, maxY: 2048, visibleBoundaryId: 'graybox-cliff-ring' });
 const BASE_SURFACE = createElevationSurface({
   id: 'foundation', kind: 'ground', area: { type: 'rect', ...WORLD_BOUNDS },
@@ -77,6 +94,7 @@ const GRAYBOX_BLOCKERS = Object.freeze([
     visibleAssetId: 'graybox-concrete-divider',
     minZ: 0,
     maxZ: 96,
+    combatCover: true,
   }),
   createStaticBlocker({
     id: 'south-boulder',
@@ -84,6 +102,7 @@ const GRAYBOX_BLOCKERS = Object.freeze([
     visibleAssetId: 'graybox-south-boulder',
     minZ: 0,
     maxZ: 72,
+    combatCover: true,
   }),
   createStaticBlocker({
     id: 'north-rail',
@@ -91,6 +110,7 @@ const GRAYBOX_BLOCKERS = Object.freeze([
     visibleAssetId: 'graybox-north-rail',
     minZ: 0,
     maxZ: 54,
+    combatCover: true,
   }),
 ]);
 const COLLISION_AUDIT = auditCollisionWorld({
@@ -133,11 +153,13 @@ async function boot() {
   const debugLabels = new Container();
   const shadow = new Graphics().ellipse(0, 0, 30, 12).fill({ color: 0x000000, alpha: 0.4 });
   const aimLine = new Graphics();
+  const projectileTrails = new Graphics();
+  const projectileImpacts = new Graphics();
   const targetMarker = new Graphics().circle(0, 0, 30).fill({ color: 0xff5c7a, alpha: 0.28 }).stroke({ color: 0xff8ca1, width: 3 });
   const marker = new Graphics().circle(0, 0, 24).fill({ color: 0x49ddff }).stroke({ color: 0xffffff, width: 3 });
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, targetMarker, aimLine, marker, collisionDebug, label);
+  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, targetMarker, aimLine, projectileTrails, projectileImpacts, marker, collisionDebug, label);
   app.stage.addChild(world);
 
   const debugGridEnabled = new URLSearchParams(window.location.search).get('debugGrid') === '1';
@@ -168,6 +190,12 @@ async function boot() {
   let inputController = null;
   let touchController = null;
   let gamepadWasActive = false;
+  let activeProjectiles = [];
+  let projectileSequence = 0;
+  let nextProjectileTick = 0;
+  let droppedProjectiles = 0;
+  let lastProjectileResolution = null;
+  let lastProjectileHit = null;
 
   if (debugOverlay) {
     for (const descriptor of debugOverlay.labels) {
@@ -232,6 +260,8 @@ async function boot() {
     grid.clear();
     collisionGeometry.clear();
     collisionDebug.clear();
+    projectileTrails.clear();
+    projectileImpacts.clear();
     if (debugOverlay && camera) {
       for (const line of debugOverlay.lines) {
         const from = worldToScreen({ ...line.from, z: 0 }, camera, view);
@@ -256,8 +286,24 @@ async function boot() {
       const screen = worldToScreen(renderState, camera, view);
       const target = grayboxEnemies[0];
       if (target) {
-        const targetScreen = worldToScreen({ ...target, z: 0 }, camera, view);
+        const targetScreen = worldToScreen({ ...target, z: target.groundZ ?? 0 }, camera, view);
         targetMarker.position.set(targetScreen.x, targetScreen.y);
+        targetMarker.alpha = target.active ? Math.max(0.35, target.health / target.maxHealth) : 0;
+      }
+      for (const shot of activeProjectiles) {
+        if (!shot.state) continue;
+        const from = worldToScreen(shot.state.previous, camera, view);
+        const to = worldToScreen(shot.state.current, camera, view);
+        projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+          .stroke({ color: 0x49ddff, width: 7, alpha: 0.24 });
+        projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+          .stroke({ color: 0xf4fdff, width: 3, alpha: 0.98 });
+      }
+      if (lastProjectileHit && simulation && simulation.tick - lastProjectileHit.tick <= HIT_FEEDBACK_TICKS) {
+        const impact = worldToScreen(lastProjectileHit.point, camera, view);
+        const age = simulation.tick - lastProjectileHit.tick;
+        projectileImpacts.circle(impact.x, impact.y, 10 + age * 1.7)
+          .stroke({ color: 0xffd166, width: 4, alpha: Math.max(0.2, 1 - age / HIT_FEEDBACK_TICKS) });
       }
       aimLine.clear();
       if (aimIntent) {
@@ -304,6 +350,12 @@ async function boot() {
         stageElement.dataset.surfaceId = lastGround?.surfaceId ?? '';
         stageElement.dataset.groundZ = String(lastGround?.groundZ ?? 0);
         stageElement.dataset.traversal = lastTraversal?.reason ?? '';
+        stageElement.dataset.projectileCount = String(activeProjectiles.length);
+        stageElement.dataset.projectileDrops = String(droppedProjectiles);
+        stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
+        stageElement.dataset.projectileCover = lastProjectileResolution?.resolutions
+          ?.find((resolution) => resolution.coverHit)?.coverHit?.blockerId ?? '';
+        stageElement.dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
       }
     } else {
       marker.position.set(view.width * 0.5, view.height * 0.5);
@@ -328,6 +380,12 @@ async function boot() {
     lastTraversal = null;
     lastGround = null;
     zeroDisplacementFrames = 0;
+    activeProjectiles = [];
+    projectileSequence = 0;
+    nextProjectileTick = 0;
+    droppedProjectiles = 0;
+    lastProjectileResolution = null;
+    lastProjectileHit = null;
   };
 
   const initializeSession = (payload) => {
@@ -343,7 +401,21 @@ async function boot() {
     motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: 240 });
     aimState = createAimState({ autoFireEnabled: true, manualHoldTicks: 8 });
     aimIntent = null;
-    grayboxEnemies = [{ id: 'graybox-target', x: 1280, y: 1024, radius: 30, kind: 'regular', active: true, targetable: true }];
+    grayboxEnemies = [{
+      id: 'graybox-target',
+      x: 1280,
+      y: 1024,
+      previousX: 1280,
+      previousY: 1024,
+      groundZ: queryGround(1280, 1024).groundZ,
+      previousGroundZ: queryGround(1280, 1024).groundZ,
+      radius: 30,
+      kind: 'regular',
+      active: true,
+      targetable: true,
+      health: 120,
+      maxHealth: 120,
+    }];
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: 24, minZ: 0, maxZ: 56 });
     previousGrenade = false;
     previousActor = createActorSpatialState({ ...actor });
@@ -370,6 +442,11 @@ async function boot() {
     });
     simulation.onStep(({ tick, dtSeconds, input: tickInput }) => {
       previousActor = createActorSpatialState({ ...actor });
+      for (const enemy of grayboxEnemies) {
+        enemy.previousX = enemy.x;
+        enemy.previousY = enemy.y;
+        enemy.previousGroundZ = enemy.groundZ;
+      }
       aimIntent = resolveAimIntent(aimState, {
         tick,
         actor: motion,
@@ -411,6 +488,7 @@ async function boot() {
       for (const enemy of grayboxEnemies) {
         const delta = pressure.enemyDeltas.get(enemy.id);
         if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+        enemy.groundZ = queryGround(enemy.x, enemy.y).groundZ;
       }
       lastCollision = resolveSweptCircleMotion({
         body: playerBody,
@@ -459,6 +537,104 @@ async function boot() {
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
       actor.locomotion = motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
+
+      const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active).map((enemy) => createHurtTarget({
+        id: enemy.id,
+        bodyShape: { type: 'circle', radius: enemy.radius },
+        hurtShape: { type: 'capsule', a: { x: 0, y: -8 }, b: { x: 0, y: 8 }, radius: Math.max(8, enemy.radius * 0.72) },
+        previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
+        currentGround: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
+        minZ: 4,
+        maxZ: 60,
+        health: enemy.health,
+      }));
+      const steppedProjectiles = activeProjectiles.map((shot) => {
+        const previous = Object.freeze({ x: shot.x, y: shot.y, z: shot.z });
+        const current = Object.freeze({
+          x: shot.x + shot.vx * dtSeconds,
+          y: shot.y + shot.vy * dtSeconds,
+          z: shot.z,
+        });
+        const state = createProjectileState({
+          id: shot.id,
+          ownerId: 'player',
+          previous,
+          current,
+          radius: SETTLER_CALIBRATION.radius,
+          damage: SETTLER_CALIBRATION.damage,
+          policy: { type: 'stop' },
+        });
+        return {
+          ...shot,
+          x: current.x,
+          y: current.y,
+          z: current.z,
+          remainingRange: shot.remainingRange - Math.hypot(current.x - previous.x, current.y - previous.y),
+          state,
+        };
+      });
+      if (steppedProjectiles.length > 0) {
+        const broadphase = hurtTargets.length >= PROJECTILE_GRID_THRESHOLD
+          ? new UniformHurtboxGrid({ targets: hurtTargets, cellSize: 96 })
+          : null;
+        const batch = resolveProjectileBatch({
+          projectiles: steppedProjectiles.map((shot) => shot.state),
+          targets: hurtTargets,
+          blockers: GRAYBOX_BLOCKERS,
+          broadphase,
+        });
+        lastProjectileResolution = batch;
+        for (const damageEvent of batch.damageEvents) {
+          const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
+          if (!enemy) continue;
+          enemy.health = damageEvent.healthAfter;
+          if (damageEvent.killed) {
+            enemy.active = false;
+            enemy.targetable = false;
+          }
+          lastProjectileHit = { tick, targetId: damageEvent.targetId, point: damageEvent.point };
+        }
+        const terminalIds = new Set(batch.resolutions
+          .filter((resolution) => resolution.hits.length > 0 || resolution.coverHit)
+          .map((resolution) => resolution.projectileId));
+        activeProjectiles = steppedProjectiles.filter((shot) => !terminalIds.has(shot.id)
+          && shot.remainingRange > 0
+          && shot.x >= WORLD_BOUNDS.minX && shot.x <= WORLD_BOUNDS.maxX
+          && shot.y >= WORLD_BOUNDS.minY && shot.y <= WORLD_BOUNDS.maxY);
+      } else {
+        activeProjectiles = [];
+      }
+      if (aimIntent.fire && tick >= nextProjectileTick) {
+        nextProjectileTick = tick + SETTLER_CALIBRATION.cadenceTicks;
+        if (activeProjectiles.length < MAX_ACTIVE_PROJECTILES) {
+          const muzzle = {
+            x: actor.x + aimIntent.direction.x * 28,
+            y: actor.y + aimIntent.direction.y * 28,
+            z: actor.groundZ + 34,
+          };
+          activeProjectiles.push({
+            id: `${SETTLER_CALIBRATION.id}-${String(projectileSequence).padStart(6, '0')}`,
+            x: muzzle.x,
+            y: muzzle.y,
+            z: muzzle.z,
+            vx: aimIntent.direction.x * SETTLER_CALIBRATION.speed,
+            vy: aimIntent.direction.y * SETTLER_CALIBRATION.speed,
+            remainingRange: SETTLER_CALIBRATION.range,
+            state: createProjectileState({
+              id: `${SETTLER_CALIBRATION.id}-${String(projectileSequence).padStart(6, '0')}`,
+              ownerId: 'player',
+              previous: muzzle,
+              current: muzzle,
+              radius: SETTLER_CALIBRATION.radius,
+              damage: SETTLER_CALIBRATION.damage,
+              policy: { type: 'stop' },
+            }),
+          });
+          projectileSequence += 1;
+        } else {
+          droppedProjectiles += 1;
+        }
+      }
     });
     simulation.start();
     app.ticker.start();
