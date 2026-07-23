@@ -1,5 +1,5 @@
 {
-  "actorId": "lit-valkyrie",
+  "actorId": "lilly",
   "classification": "production-art",
   "composition": {
     "independentDirections": true,
@@ -32,11 +32,11 @@
       "frame": {
         "h": 29,
         "w": 66,
-        "x": 856,
-        "y": 710
+        "x": 534,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__south__000",
+      "id": "lilly__shadow__idle__south__000",
       "layer": "shadow",
       "opaquePixels": 1137,
       "pivot": {
@@ -72,11 +72,11 @@
       "frame": {
         "h": 33,
         "w": 54,
-        "x": 676,
-        "y": 710
+        "x": 354,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__south-east__000",
+      "id": "lilly__shadow__idle__south-east__000",
       "layer": "shadow",
       "opaquePixels": 1128,
       "pivot": {
@@ -112,11 +112,11 @@
       "frame": {
         "h": 37,
         "w": 38,
-        "x": 484,
-        "y": 710
+        "x": 162,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__east__000",
+      "id": "lilly__shadow__idle__east__000",
       "layer": "shadow",
       "opaquePixels": 1103,
       "pivot": {
@@ -152,11 +152,11 @@
       "frame": {
         "h": 33,
         "w": 54,
-        "x": 564,
-        "y": 710
+        "x": 242,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__north-east__000",
+      "id": "lilly__shadow__idle__north-east__000",
       "layer": "shadow",
       "opaquePixels": 1124,
       "pivot": {
@@ -192,11 +192,11 @@
       "frame": {
         "h": 29,
         "w": 66,
-        "x": 788,
-        "y": 710
+        "x": 466,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__north__000",
+      "id": "lilly__shadow__idle__north__000",
       "layer": "shadow",
       "opaquePixels": 1137,
       "pivot": {
@@ -232,11 +232,11 @@
       "frame": {
         "h": 33,
         "w": 54,
-        "x": 620,
-        "y": 710
+        "x": 298,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__north-west__000",
+      "id": "lilly__shadow__idle__north-west__000",
       "layer": "shadow",
       "opaquePixels": 1128,
       "pivot": {
@@ -272,11 +272,11 @@
       "frame": {
         "h": 37,
         "w": 38,
-        "x": 524,
-        "y": 710
+        "x": 202,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__west__000",
+      "id": "lilly__shadow__idle__west__000",
       "layer": "shadow",
       "opaquePixels": 1103,
       "pivot": {
@@ -312,11 +312,11 @@
       "frame": {
         "h": 33,
         "w": 54,
-        "x": 732,
-        "y": 710
+        "x": 410,
+        "y": 701
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__shadow__idle__south-west__000",
+      "id": "lilly__shadow__idle__south-west__000",
       "layer": "shadow",
       "opaquePixels": 1124,
       "pivot": {
@@ -344,21 +344,21 @@
     },
     {
       "anchor": {
-        "x": 0.439024,
+        "x": 0.5,
         "y": 0.985714
       },
       "direction": "south",
       "fps": 2,
       "frame": {
         "h": 70,
-        "w": 41,
-        "x": 136,
-        "y": 710
+        "w": 36,
+        "x": 858,
+        "y": 628
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__south__000",
+      "id": "lilly__lower-body__idle__south__000",
       "layer": "lower-body",
-      "opaquePixels": 2274,
+      "opaquePixels": 2104,
       "pivot": {
         "x": 18,
         "y": 69
@@ -368,14 +368,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "a5c7fa76ce0f1d87814eb0bcba1817adc4cd700c4dbba0e7efb49e938042310a",
+      "sourcePixelSha256": "fec061e2cda2a84802a337afea224d7f760cf57a808fb4b00730e750030e7741",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 70,
-        "w": 41,
+        "w": 36,
         "x": 62,
         "y": 77
       },
@@ -384,21 +384,21 @@
     },
     {
       "anchor": {
-        "x": 0.439024,
+        "x": 0.5,
         "y": 0.985294
       },
       "direction": "south",
       "fps": 2,
       "frame": {
         "h": 68,
-        "w": 41,
-        "x": 265,
-        "y": 710
+        "w": 36,
+        "x": 972,
+        "y": 628
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__south__001",
+      "id": "lilly__lower-body__idle__south__001",
       "layer": "lower-body",
-      "opaquePixels": 2250,
+      "opaquePixels": 2083,
       "pivot": {
         "x": 18,
         "y": 67
@@ -408,14 +408,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "1a3bfb7007af21ddc4bd0beab2b12626670bb75e82fbce7a59686667636182a9",
+      "sourcePixelSha256": "525fffe4979febda7604c178d23f35fd2fac9881c8b8c9bb22b081f52c63b6ad",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 68,
-        "w": 41,
+        "w": 36,
         "x": 62,
         "y": 79
       },
@@ -425,39 +425,39 @@
     {
       "anchor": {
         "x": 0.439024,
-        "y": 0.986842
+        "y": 0.986111
       },
       "direction": "south-east",
       "fps": 2,
       "frame": {
-        "h": 76,
+        "h": 72,
         "w": 41,
-        "x": 66,
-        "y": 556
+        "x": 886,
+        "y": 471
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__south-east__000",
+      "id": "lilly__lower-body__idle__south-east__000",
       "layer": "lower-body",
-      "opaquePixels": 2224,
+      "opaquePixels": 2024,
       "pivot": {
         "x": 18,
-        "y": 75
+        "y": 71
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ef376553d6255290cb9c038daf511cb67fba09646e792330cb444d043aa441ba",
+      "sourcePixelSha256": "9781ee003815f4918aa69f49a7106c85ba77017b244f9ab9fc805930ee441627",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 76,
+        "h": 72,
         "w": 41,
         "x": 62,
-        "y": 71
+        "y": 75
       },
       "state": "idle",
       "trimmed": true
@@ -465,39 +465,39 @@
     {
       "anchor": {
         "x": 0.386364,
-        "y": 0.986667
+        "y": 0.985915
       },
       "direction": "south-east",
       "fps": 2,
       "frame": {
-        "h": 75,
+        "h": 71,
         "w": 44,
-        "x": 203,
-        "y": 556
+        "x": 416,
+        "y": 554
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__south-east__001",
+      "id": "lilly__lower-body__idle__south-east__001",
       "layer": "lower-body",
-      "opaquePixels": 2308,
+      "opaquePixels": 2110,
       "pivot": {
         "x": 17,
-        "y": 74
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "f198e86fed4ee41305338e0ff9612d22274731e580a72e444fa2df999a4ba46d",
+      "sourcePixelSha256": "dd4f95c94a0abbe4c13f226c1aa7778ca309159949260debe1b40b8806ab812a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 75,
+        "h": 71,
         "w": 44,
         "x": 63,
-        "y": 72
+        "y": 76
       },
       "state": "idle",
       "trimmed": true
@@ -505,39 +505,39 @@
     {
       "anchor": {
         "x": 0.40625,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 2,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 32,
-        "x": 500,
-        "y": 471
+        "x": 310,
+        "y": 554
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__east__000",
+      "id": "lilly__lower-body__idle__east__000",
       "layer": "lower-body",
-      "opaquePixels": 1705,
+      "opaquePixels": 1575,
       "pivot": {
         "x": 13,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "86d19539552d18572c7e996e54a24b351dfe6cdde8ea12080c7268ae09bc24f3",
+      "sourcePixelSha256": "4e078225a949e11a299f1cf6e6cbadc9578690d33124017f28d80228fb554002",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 32,
         "x": 67,
-        "y": 70
+        "y": 76
       },
       "state": "idle",
       "trimmed": true
@@ -545,158 +545,38 @@
     {
       "anchor": {
         "x": 0.3125,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 2,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 32,
-        "x": 534,
-        "y": 471
+        "x": 344,
+        "y": 554
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__east__001",
+      "id": "lilly__lower-body__idle__east__001",
       "layer": "lower-body",
-      "opaquePixels": 1749,
+      "opaquePixels": 1632,
       "pivot": {
         "x": 10,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "56f285062f8633b366b98cd71cd112cba4be189649194c1bc75f0ad2f1a7ed9f",
+      "sourcePixelSha256": "5314fad728e6c26c08a9f3f9cdcbd5fa84ce9e052d9d6cbaa936b3b7393582dd",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 32,
         "x": 70,
-        "y": 70
-      },
-      "state": "idle",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.456522,
-        "y": 0.987013
-      },
-      "direction": "north-east",
-      "fps": 2,
-      "frame": {
-        "h": 77,
-        "w": 46,
-        "x": 568,
-        "y": 471
-      },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__north-east__000",
-      "layer": "lower-body",
-      "opaquePixels": 2164,
-      "pivot": {
-        "x": 21,
-        "y": 76
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "a4cf1ecf4716ac696b5928f6a3a374a75f497bed7a3d9f462ed4370a40d8a665",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 77,
-        "w": 46,
-        "x": 59,
-        "y": 70
-      },
-      "state": "idle",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.431818,
-        "y": 0.987179
-      },
-      "direction": "north-east",
-      "fps": 2,
-      "frame": {
-        "h": 78,
-        "w": 44,
-        "x": 216,
-        "y": 471
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__north-east__001",
-      "layer": "lower-body",
-      "opaquePixels": 2087,
-      "pivot": {
-        "x": 19,
-        "y": 77
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "ea11ac3263ab1efe2564763de58d4d0ba97f9f6af418a2185c599a7e253883f3",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 78,
-        "w": 44,
-        "x": 61,
-        "y": 69
-      },
-      "state": "idle",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.560976,
-        "y": 0.985915
-      },
-      "direction": "north",
-      "fps": 2,
-      "frame": {
-        "h": 71,
-        "w": 41,
-        "x": 367,
-        "y": 635
-      },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__north__000",
-      "layer": "lower-body",
-      "opaquePixels": 2145,
-      "pivot": {
-        "x": 23,
-        "y": 70
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "c588a79ef2bfb4eb55d37f9ec38a4689af0e54e4ad9a57066f8ae30176bef58d",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 71,
-        "w": 41,
-        "x": 57,
         "y": 76
       },
       "state": "idle",
@@ -704,23 +584,23 @@
     },
     {
       "anchor": {
-        "x": 0.560976,
+        "x": 0.444444,
         "y": 0.986301
       },
-      "direction": "north",
+      "direction": "north-east",
       "fps": 2,
       "frame": {
         "h": 73,
-        "w": 41,
-        "x": 804,
-        "y": 556
+        "w": 45,
+        "x": 608,
+        "y": 471
       },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__north__001",
+      "frameIndex": 0,
+      "id": "lilly__lower-body__idle__north-east__000",
       "layer": "lower-body",
-      "opaquePixels": 2121,
+      "opaquePixels": 1998,
       "pivot": {
-        "x": 23,
+        "x": 20,
         "y": 72
       },
       "rotated": false,
@@ -728,16 +608,136 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "11b9257e3fda84c8742b698386617603fa9446a77b336a8b53cd45cf0e392532",
+      "sourcePixelSha256": "f6d63195f8c07b4cc820214f9ea012a0850961ea80e7db3121fa8fa05a4ba6d9",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 73,
-        "w": 41,
-        "x": 57,
+        "w": 45,
+        "x": 60,
         "y": 74
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.390244,
+        "y": 0.986486
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 74,
+        "w": 41,
+        "x": 53,
+        "y": 471
+      },
+      "frameIndex": 1,
+      "id": "lilly__lower-body__idle__north-east__001",
+      "layer": "lower-body",
+      "opaquePixels": 1916,
+      "pivot": {
+        "x": 16,
+        "y": 73
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "86382fe00b19851925652f1c7376a961e32584f16ed9634fb05928e806082458",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 74,
+        "w": 41,
+        "x": 64,
+        "y": 73
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985714
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 70,
+        "w": 36,
+        "x": 820,
+        "y": 628
+      },
+      "frameIndex": 0,
+      "id": "lilly__lower-body__idle__north__000",
+      "layer": "lower-body",
+      "opaquePixels": 1970,
+      "pivot": {
+        "x": 18,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "5348b525b393a104bc13f3e8bbcd7fd81e172e053a664e74f6179527e2c258f8",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 36,
+        "x": 62,
+        "y": 77
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985915
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 71,
+        "w": 36,
+        "x": 378,
+        "y": 554
+      },
+      "frameIndex": 1,
+      "id": "lilly__lower-body__idle__north__001",
+      "layer": "lower-body",
+      "opaquePixels": 1945,
+      "pivot": {
+        "x": 18,
+        "y": 70
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ed9d0efec61879a16248cdc5c44d0fa485b521d7a0d01ab468302cf2f58fd462",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 71,
+        "w": 36,
+        "x": 62,
+        "y": 76
       },
       "state": "idle",
       "trimmed": true
@@ -752,13 +752,13 @@
       "frame": {
         "h": 73,
         "w": 41,
-        "x": 761,
-        "y": 556
+        "x": 655,
+        "y": 471
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__north-west__000",
+      "id": "lilly__lower-body__idle__north-west__000",
       "layer": "lower-body",
-      "opaquePixels": 2049,
+      "opaquePixels": 1917,
       "pivot": {
         "x": 23,
         "y": 72
@@ -768,7 +768,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cfa5ffcb6a5d5fa725f955b4885cb2c7f84bb5ad66b83e06ca75d0188db8c1dc",
+      "sourcePixelSha256": "e74dbc8317b84c49e5a4745543d36002945ed6906d891dcdfd52508187ad7ee5",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -792,13 +792,13 @@
       "frame": {
         "h": 74,
         "w": 44,
-        "x": 482,
-        "y": 556
+        "x": 96,
+        "y": 471
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__north-west__001",
+      "id": "lilly__lower-body__idle__north-west__001",
       "layer": "lower-body",
-      "opaquePixels": 2123,
+      "opaquePixels": 1995,
       "pivot": {
         "x": 27,
         "y": 73
@@ -808,7 +808,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "afacfa20dd57cff2c92c9b72e05bdf1acac8b0296082f19d65e1d2413b0e976d",
+      "sourcePixelSha256": "e4c3834773606ed7f6d5ac3ea0d8988c96cddd7485b066108f7a1b7bb2dcb5b8",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -832,13 +832,13 @@
       "frame": {
         "h": 71,
         "w": 32,
-        "x": 456,
-        "y": 635
+        "x": 505,
+        "y": 554
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__west__000",
+      "id": "lilly__lower-body__idle__west__000",
       "layer": "lower-body",
-      "opaquePixels": 1644,
+      "opaquePixels": 1629,
       "pivot": {
         "x": 19,
         "y": 70
@@ -848,7 +848,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "36cd24eee36c57d283fbf68fa0f5ba683b9dbedc1a0c4c6ffa91ee7f5109bb84",
+      "sourcePixelSha256": "7e611fbab5b84fd0b58f37b748c44ad901648117eeac2aa7f04519b8e8b36398",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -872,13 +872,13 @@
       "frame": {
         "h": 71,
         "w": 32,
-        "x": 490,
-        "y": 635
+        "x": 539,
+        "y": 554
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__west__001",
+      "id": "lilly__lower-body__idle__west__001",
       "layer": "lower-body",
-      "opaquePixels": 1588,
+      "opaquePixels": 1572,
       "pivot": {
         "x": 22,
         "y": 70
@@ -888,7 +888,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "180e6ab4429d36212278bc766511f1fda7dea8d07bb81c3b66182b95d58bd399",
+      "sourcePixelSha256": "d27de2b58f37533639a246a5dac69df8309400c56d025fbd1753d46e4bbce7f3",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -904,21 +904,21 @@
     },
     {
       "anchor": {
-        "x": 0.543478,
+        "x": 0.555556,
         "y": 0.986111
       },
       "direction": "south-west",
       "fps": 2,
       "frame": {
         "h": 72,
-        "w": 46,
-        "x": 133,
-        "y": 635
+        "w": 45,
+        "x": 929,
+        "y": 471
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__idle__south-west__000",
+      "id": "lilly__lower-body__idle__south-west__000",
       "layer": "lower-body",
-      "opaquePixels": 2183,
+      "opaquePixels": 2113,
       "pivot": {
         "x": 25,
         "y": 71
@@ -928,14 +928,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "d4a0b0ab0b738797e970ab03c66162018a219e3a9114ff0684d5bbf68915410c",
+      "sourcePixelSha256": "e7418b25a1e545fdcffb183c8f7f634c9e067c65ff7cb22863d5997938279665",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 72,
-        "w": 46,
+        "w": 45,
         "x": 55,
         "y": 75
       },
@@ -944,21 +944,21 @@
     },
     {
       "anchor": {
-        "x": 0.568182,
+        "x": 0.609756,
         "y": 0.985915
       },
       "direction": "south-west",
       "fps": 2,
       "frame": {
         "h": 71,
-        "w": 44,
-        "x": 410,
-        "y": 635
+        "w": 41,
+        "x": 462,
+        "y": 554
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__idle__south-west__001",
+      "id": "lilly__lower-body__idle__south-west__001",
       "layer": "lower-body",
-      "opaquePixels": 2097,
+      "opaquePixels": 2023,
       "pivot": {
         "x": 25,
         "y": 70
@@ -968,14 +968,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "33eb9f3500c6acdceb2583642d101ed0c462d9a557a249e85c8fcad3628ebfe6",
+      "sourcePixelSha256": "d35ef7325d5143ea5edb91a7135110fabe2087a07a938dcfea41713ef175d8f4",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 71,
-        "w": 44,
+        "w": 41,
         "x": 55,
         "y": 76
       },
@@ -984,21 +984,21 @@
     },
     {
       "anchor": {
-        "x": 0.439024,
+        "x": 0.5,
         "y": 0.985507
       },
       "direction": "south",
       "fps": 12,
       "frame": {
         "h": 69,
-        "w": 41,
-        "x": 179,
-        "y": 710
+        "w": 36,
+        "x": 896,
+        "y": 628
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__south__000",
+      "id": "lilly__lower-body__run__south__000",
       "layer": "lower-body",
-      "opaquePixels": 2186,
+      "opaquePixels": 2018,
       "pivot": {
         "x": 18,
         "y": 68
@@ -1008,14 +1008,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "425ddd6461ba9c61b3212179a3f648d8dbba8c63c1bbab221e503887a2533bae",
+      "sourcePixelSha256": "097c353d25bbf4a33c2be01aedc2d7a0446086a08e5b60c7c2afc8d81fdc2e0d",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 69,
-        "w": 41,
+        "w": 36,
         "x": 62,
         "y": 78
       },
@@ -1024,21 +1024,21 @@
     },
     {
       "anchor": {
-        "x": 0.465116,
+        "x": 0.526316,
         "y": 0.985294
       },
       "direction": "south",
       "fps": 12,
       "frame": {
         "h": 68,
-        "w": 43,
-        "x": 308,
-        "y": 710
+        "w": 38,
+        "x": 2,
+        "y": 701
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__south__001",
+      "id": "lilly__lower-body__run__south__001",
       "layer": "lower-body",
-      "opaquePixels": 2094,
+      "opaquePixels": 1915,
       "pivot": {
         "x": 20,
         "y": 67
@@ -1048,14 +1048,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "aaed5c01900ebe083a021ef5c906ae03a6a04edabddfb132c025a5de25131641",
+      "sourcePixelSha256": "3d196685c68b7c2655437397948e12f5a590477770a443b1a146a69c43c0b6d6",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 68,
-        "w": 43,
+        "w": 38,
         "x": 60,
         "y": 79
       },
@@ -1064,21 +1064,21 @@
     },
     {
       "anchor": {
-        "x": 0.465116,
+        "x": 0.526316,
         "y": 0.985294
       },
       "direction": "south",
       "fps": 12,
       "frame": {
         "h": 68,
-        "w": 43,
-        "x": 353,
-        "y": 710
+        "w": 38,
+        "x": 42,
+        "y": 701
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__south__002",
+      "id": "lilly__lower-body__run__south__002",
       "layer": "lower-body",
-      "opaquePixels": 2073,
+      "opaquePixels": 1894,
       "pivot": {
         "x": 20,
         "y": 67
@@ -1088,14 +1088,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "09959de8ab7710b0626498ce4a226a7a6db0ca1e4d57e20f11b92fb2c57fc035",
+      "sourcePixelSha256": "08f83b4600055d0945cebb2fa2e3e88a66c6e08e57369eddac1cfda188f97336",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 68,
-        "w": 43,
+        "w": 38,
         "x": 60,
         "y": 79
       },
@@ -1104,21 +1104,21 @@
     },
     {
       "anchor": {
-        "x": 0.439024,
+        "x": 0.5,
         "y": 0.985507
       },
       "direction": "south",
       "fps": 12,
       "frame": {
         "h": 69,
-        "w": 41,
-        "x": 222,
-        "y": 710
+        "w": 36,
+        "x": 934,
+        "y": 628
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__south__003",
+      "id": "lilly__lower-body__run__south__003",
       "layer": "lower-body",
-      "opaquePixels": 2186,
+      "opaquePixels": 2018,
       "pivot": {
         "x": 18,
         "y": 68
@@ -1128,14 +1128,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cd6ee240b07dbf4a5e3bb750a4fd8a28fb0e70b7d9aca7da710183a3efe4c577",
+      "sourcePixelSha256": "75850df1ec0e67b380703b829ffb6ca50830333f11f28a6884378fa284bb230e",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 69,
-        "w": 41,
+        "w": 36,
         "x": 62,
         "y": 78
       },
@@ -1144,21 +1144,21 @@
     },
     {
       "anchor": {
-        "x": 0.439024,
+        "x": 0.473684,
         "y": 0.985294
       },
       "direction": "south",
       "fps": 12,
       "frame": {
         "h": 68,
-        "w": 41,
-        "x": 398,
-        "y": 710
+        "w": 38,
+        "x": 82,
+        "y": 701
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__south__004",
+      "id": "lilly__lower-body__run__south__004",
       "layer": "lower-body",
-      "opaquePixels": 2073,
+      "opaquePixels": 1915,
       "pivot": {
         "x": 18,
         "y": 67
@@ -1168,14 +1168,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "96564c26db0e06b80eb6e5286892b461f9d7b3a318715ccf62f668541174b4ed",
+      "sourcePixelSha256": "316580ffdbb945d05d88dfd5103e26b7a8dddb970389ab7c70765a0bbb0d9a50",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 68,
-        "w": 41,
+        "w": 38,
         "x": 62,
         "y": 79
       },
@@ -1184,21 +1184,21 @@
     },
     {
       "anchor": {
-        "x": 0.439024,
+        "x": 0.473684,
         "y": 0.985294
       },
       "direction": "south",
       "fps": 12,
       "frame": {
         "h": 68,
-        "w": 41,
-        "x": 441,
-        "y": 710
+        "w": 38,
+        "x": 122,
+        "y": 701
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__south__005",
+      "id": "lilly__lower-body__run__south__005",
       "layer": "lower-body",
-      "opaquePixels": 2053,
+      "opaquePixels": 1894,
       "pivot": {
         "x": 18,
         "y": 67
@@ -1208,14 +1208,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e213b70beef91258fb46105fdeeed3e6791cee9e7f2566b4c61629be596b5e4e",
+      "sourcePixelSha256": "8afb4f9bfec55ee7d70eacf966b5599dfd5d5df76deffc66c55fa20e39a11c63",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 68,
-        "w": 41,
+        "w": 38,
         "x": 62,
         "y": 79
       },
@@ -1225,39 +1225,39 @@
     {
       "anchor": {
         "x": 0.404762,
-        "y": 0.986842
+        "y": 0.986111
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 76,
+        "h": 72,
         "w": 42,
-        "x": 109,
-        "y": 556
+        "x": 122,
+        "y": 554
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__south-east__000",
+      "id": "lilly__lower-body__run__south-east__000",
       "layer": "lower-body",
-      "opaquePixels": 2057,
+      "opaquePixels": 1860,
       "pivot": {
         "x": 17,
-        "y": 75
+        "y": 71
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "561324d3ebaf62563c57fe7c6232f6a2c85b2ed1653c2d732180a4f5cda0c778",
+      "sourcePixelSha256": "149fa0529aec475afbc7b37b694c73823460a3e10a6c17c698ec93c5b17843fc",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 76,
+        "h": 72,
         "w": 42,
         "x": 63,
-        "y": 71
+        "y": 75
       },
       "state": "run",
       "trimmed": true
@@ -1265,39 +1265,39 @@
     {
       "anchor": {
         "x": 0.415385,
-        "y": 0.986667
+        "y": 0.985915
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 75,
+        "h": 71,
         "w": 65,
-        "x": 249,
-        "y": 556
+        "x": 2,
+        "y": 628
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__south-east__001",
+      "id": "lilly__lower-body__run__south-east__001",
       "layer": "lower-body",
-      "opaquePixels": 2434,
+      "opaquePixels": 2251,
       "pivot": {
         "x": 27,
-        "y": 74
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "f196f80227a18ca8fcba6f850e674aecadadf60f22b6b9d7a33354ed449b6760",
+      "sourcePixelSha256": "edcbe2f050799d1fac4058ecd77c0a75d168f234f631c70f9e5ee196c4fbce2d",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 75,
+        "h": 71,
         "w": 65,
         "x": 53,
-        "y": 72
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1305,39 +1305,39 @@
     {
       "anchor": {
         "x": 0.442857,
-        "y": 0.986667
+        "y": 0.985915
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 75,
+        "h": 71,
         "w": 70,
-        "x": 316,
-        "y": 556
+        "x": 69,
+        "y": 628
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__south-east__002",
+      "id": "lilly__lower-body__run__south-east__002",
       "layer": "lower-body",
-      "opaquePixels": 2403,
+      "opaquePixels": 2221,
       "pivot": {
         "x": 31,
-        "y": 74
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "3c15094020a515df89b781a7d7c34389f3c18affc1ef07b55cdf97088c732b46",
+      "sourcePixelSha256": "5d0a7fe8507d7961c6a01227b512a1d77a81da9aa46db0fe4255c880c440bb43",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 75,
+        "h": 71,
         "w": 70,
         "x": 49,
-        "y": 72
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1345,39 +1345,39 @@
     {
       "anchor": {
         "x": 0.354167,
-        "y": 0.986842
+        "y": 0.986111
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 76,
+        "h": 72,
         "w": 48,
-        "x": 153,
-        "y": 556
+        "x": 166,
+        "y": 554
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__south-east__003",
+      "id": "lilly__lower-body__run__south-east__003",
       "layer": "lower-body",
-      "opaquePixels": 2306,
+      "opaquePixels": 2110,
       "pivot": {
         "x": 17,
-        "y": 75
+        "y": 71
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ab7a33e8125a746697b9e8eaf89a38afcc05731998266d3233621bcae660343e",
+      "sourcePixelSha256": "b61658641217527209e83617e5c268e09241b1f077fbe3b52d91f1317dffffc7",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 76,
+        "h": 72,
         "w": 48,
         "x": 63,
-        "y": 71
+        "y": 75
       },
       "state": "run",
       "trimmed": true
@@ -1385,39 +1385,39 @@
     {
       "anchor": {
         "x": 0.363636,
-        "y": 0.986667
+        "y": 0.985915
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 75,
+        "h": 71,
         "w": 44,
-        "x": 388,
-        "y": 556
+        "x": 141,
+        "y": 628
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__south-east__004",
+      "id": "lilly__lower-body__run__south-east__004",
       "layer": "lower-body",
-      "opaquePixels": 1881,
+      "opaquePixels": 1682,
       "pivot": {
         "x": 16,
-        "y": 74
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "7c9ad7c631f251be883a6fec0bc89319595f2fd1a00f30f387f1f454cec7d035",
+      "sourcePixelSha256": "c2b071ff6dddf99c5cf6fd87a7ea052bc50097bcc84cfe1e151f0bf2f355caf4",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 75,
+        "h": 71,
         "w": 44,
         "x": 64,
-        "y": 72
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1425,39 +1425,39 @@
     {
       "anchor": {
         "x": 0.369565,
-        "y": 0.986667
+        "y": 0.985915
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 75,
+        "h": 71,
         "w": 46,
-        "x": 434,
-        "y": 556
+        "x": 187,
+        "y": 628
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__south-east__005",
+      "id": "lilly__lower-body__run__south-east__005",
       "layer": "lower-body",
-      "opaquePixels": 1918,
+      "opaquePixels": 1720,
       "pivot": {
         "x": 17,
-        "y": 74
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "95476d6ffa52738433d4716368bf32c9238e539685d31bdb71e9af97c112f440",
+      "sourcePixelSha256": "2f90dd40ea671e7aa95ae0bc6d382bea438bca02264004692db18554e97e2fcd",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 75,
+        "h": 71,
         "w": 46,
         "x": 63,
-        "y": 72
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1465,39 +1465,39 @@
     {
       "anchor": {
         "x": 0.3,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 40,
-        "x": 616,
-        "y": 471
+        "x": 573,
+        "y": 554
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__east__000",
+      "id": "lilly__lower-body__run__east__000",
       "layer": "lower-body",
-      "opaquePixels": 1692,
+      "opaquePixels": 1575,
       "pivot": {
         "x": 12,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "5d57ba8bb9760e3cb465817fd50d5bd268e23485c03bb57637015205ffb22ae5",
+      "sourcePixelSha256": "c6f46f28ab7d7fc7d61bf4bb54e83163dd2e14d84d5b68f8f7d219d54c4735a2",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 40,
         "x": 68,
-        "y": 70
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1505,39 +1505,39 @@
     {
       "anchor": {
         "x": 0.344262,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 61,
-        "x": 658,
-        "y": 471
+        "x": 615,
+        "y": 554
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__east__001",
+      "id": "lilly__lower-body__run__east__001",
       "layer": "lower-body",
-      "opaquePixels": 2278,
+      "opaquePixels": 2148,
       "pivot": {
         "x": 21,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cd0a59c266b8132006ce3a23a76e25a96e9561f6dd71f4f62606ce7878125fa9",
+      "sourcePixelSha256": "ba032d09394c2e230fab622700ce9d2276fb3312386915f5ddd4d0ee4545ceef",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 61,
         "x": 59,
-        "y": 70
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1545,39 +1545,39 @@
     {
       "anchor": {
         "x": 0.391304,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 69,
-        "x": 721,
-        "y": 471
+        "x": 678,
+        "y": 554
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__east__002",
+      "id": "lilly__lower-body__run__east__002",
       "layer": "lower-body",
-      "opaquePixels": 2274,
+      "opaquePixels": 2145,
       "pivot": {
         "x": 27,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "2473e8151e9ba4f83cb07609e033f13a220bc82b49e7c69f48fc2d85d5c9fe12",
+      "sourcePixelSha256": "fbe9785b7b0b7f733e93fb59803765cc7181ceb368089e0327abffb388fe766e",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 69,
         "x": 53,
-        "y": 70
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1585,39 +1585,39 @@
     {
       "anchor": {
         "x": 0.3,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 40,
-        "x": 792,
-        "y": 471
+        "x": 749,
+        "y": 554
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__east__003",
+      "id": "lilly__lower-body__run__east__003",
       "layer": "lower-body",
-      "opaquePixels": 1918,
+      "opaquePixels": 1801,
       "pivot": {
         "x": 12,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "da85891b8e0689eb13f19393228b7c62c5b40b86aa534bd1a21d5267aa6bd7f0",
+      "sourcePixelSha256": "8047f03cbfda376b0c4ec37b6c6944bd18d59dd6914dc2809fc2a1d81ae4d406",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 40,
         "x": 68,
-        "y": 70
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1625,39 +1625,39 @@
     {
       "anchor": {
         "x": 0.344262,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 61,
-        "x": 834,
-        "y": 471
+        "x": 791,
+        "y": 554
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__east__004",
+      "id": "lilly__lower-body__run__east__004",
       "layer": "lower-body",
-      "opaquePixels": 2240,
+      "opaquePixels": 2108,
       "pivot": {
         "x": 21,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "962452a0ef0fdde89068ce583a9105d1a2665c1c3d91032ca78e19e92dab17a2",
+      "sourcePixelSha256": "5190346ee442d963717ee23e0b3b4d0f88fbf2d3a02b55fe9079f8ce83d1d774",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 61,
         "x": 59,
-        "y": 70
+        "y": 76
       },
       "state": "run",
       "trimmed": true
@@ -1665,199 +1665,199 @@
     {
       "anchor": {
         "x": 0.391304,
-        "y": 0.987013
+        "y": 0.985915
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 77,
+        "h": 71,
         "w": 69,
-        "x": 897,
-        "y": 471
+        "x": 854,
+        "y": 554
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__east__005",
+      "id": "lilly__lower-body__run__east__005",
       "layer": "lower-body",
-      "opaquePixels": 2266,
+      "opaquePixels": 2134,
       "pivot": {
         "x": 27,
-        "y": 76
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "a75510961a2cb784854e0c0355496b5ef6515d744964ef32ffcd1ebac77c48fd",
+      "sourcePixelSha256": "88f8edd9f1e4ae4e0979628589aa0f62980bd9eb5761b522f72fe92025570bb5",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
+        "h": 71,
         "w": 69,
         "x": 53,
-        "y": 70
+        "y": 76
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.392157,
-        "y": 0.987013
+        "x": 0.354167,
+        "y": 0.986301
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 77,
-        "w": 51,
-        "x": 968,
+        "h": 73,
+        "w": 48,
+        "x": 698,
         "y": 471
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__north-east__000",
+      "id": "lilly__lower-body__run__north-east__000",
       "layer": "lower-body",
-      "opaquePixels": 2113,
+      "opaquePixels": 1946,
       "pivot": {
-        "x": 20,
-        "y": 76
+        "x": 17,
+        "y": 72
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "8f7cd3688f625050bc777a2bfabca6ed4f502df8635ad08a9acbfd04b01305e2",
+      "sourcePixelSha256": "b11fcfab36fb605b46da13ce0d02b45493d5ea028c7826ce13f8e0afa13e67da",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
-        "w": 51,
-        "x": 60,
-        "y": 70
+        "h": 73,
+        "w": 48,
+        "x": 63,
+        "y": 74
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.404255,
-        "y": 0.987179
+        "x": 0.363636,
+        "y": 0.986486
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 78,
-        "w": 47,
-        "x": 262,
+        "h": 74,
+        "w": 44,
+        "x": 142,
         "y": 471
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__north-east__001",
+      "id": "lilly__lower-body__run__north-east__001",
       "layer": "lower-body",
-      "opaquePixels": 2011,
+      "opaquePixels": 1844,
       "pivot": {
-        "x": 19,
-        "y": 77
+        "x": 16,
+        "y": 73
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "a0e98de26fba9ada03c3e381ec0abfdc0985753eff0b1f449d534df2f65827fa",
+      "sourcePixelSha256": "b8fbe574be529ada4b2aede47a0d169fe0c33ae130c10594d649ef8b86f3ce93",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 78,
-        "w": 47,
-        "x": 61,
-        "y": 69
+        "h": 74,
+        "w": 44,
+        "x": 64,
+        "y": 73
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.395833,
-        "y": 0.987179
+        "x": 0.369565,
+        "y": 0.986486
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 78,
-        "w": 48,
-        "x": 311,
+        "h": 74,
+        "w": 46,
+        "x": 188,
         "y": 471
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__north-east__002",
+      "id": "lilly__lower-body__run__north-east__002",
       "layer": "lower-body",
-      "opaquePixels": 2068,
+      "opaquePixels": 1899,
       "pivot": {
-        "x": 19,
-        "y": 77
+        "x": 17,
+        "y": 73
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "df289f0fdeef91271ed0316c11b51ac42410f0d6292b046eb323493150009310",
+      "sourcePixelSha256": "b67ed6b8db2d5048ffeb9d908ed2319de3259b6077a0ccba005e7b260ba89650",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 78,
-        "w": 48,
-        "x": 61,
-        "y": 69
+        "h": 74,
+        "w": 46,
+        "x": 63,
+        "y": 73
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.444444,
-        "y": 0.987013
+        "x": 0.404762,
+        "y": 0.986301
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 77,
-        "w": 45,
-        "x": 2,
-        "y": 556
+        "h": 73,
+        "w": 42,
+        "x": 748,
+        "y": 471
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__north-east__003",
+      "id": "lilly__lower-body__run__north-east__003",
       "layer": "lower-body",
-      "opaquePixels": 1952,
+      "opaquePixels": 1786,
       "pivot": {
-        "x": 20,
-        "y": 76
+        "x": 17,
+        "y": 72
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "63e61cf46344eb2fa078de01bef2c110330dc48493f7605da80f0d6abe0d1bc8",
+      "sourcePixelSha256": "924653dc01fe317f1170ef241001efd34c6e8e28e220eea7e54dfeeab34d2c8a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 77,
-        "w": 45,
-        "x": 60,
-        "y": 70
+        "h": 73,
+        "w": 42,
+        "x": 63,
+        "y": 74
       },
       "state": "run",
       "trimmed": true
@@ -1865,39 +1865,39 @@
     {
       "anchor": {
         "x": 0.415385,
-        "y": 0.987179
+        "y": 0.986486
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 78,
+        "h": 74,
         "w": 65,
-        "x": 361,
+        "x": 236,
         "y": 471
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__north-east__004",
+      "id": "lilly__lower-body__run__north-east__004",
       "layer": "lower-body",
-      "opaquePixels": 2343,
+      "opaquePixels": 2181,
       "pivot": {
         "x": 27,
-        "y": 77
+        "y": 73
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "076539efe9ea3beff959814b81040ff7504437b7efcfc77246a3ee809ae25630",
+      "sourcePixelSha256": "c8e5c364367446e82890cfa3693491907a6abe0602833c9b3652548a0607303f",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 78,
+        "h": 74,
         "w": 65,
         "x": 53,
-        "y": 69
+        "y": 73
       },
       "state": "run",
       "trimmed": true
@@ -1905,182 +1905,102 @@
     {
       "anchor": {
         "x": 0.442857,
-        "y": 0.987179
+        "y": 0.986486
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 78,
+        "h": 74,
         "w": 70,
-        "x": 428,
+        "x": 303,
         "y": 471
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__north-east__005",
+      "id": "lilly__lower-body__run__north-east__005",
       "layer": "lower-body",
-      "opaquePixels": 2340,
+      "opaquePixels": 2177,
       "pivot": {
         "x": 31,
-        "y": 77
+        "y": 73
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "df67994576b7dda6c5781344b2a74bc194bb004131feb433a63e85e3d87567be",
+      "sourcePixelSha256": "294a5c16bbf2ff9c75e2c3441226305dcadc9122ae3c43f1e495b6a7d8c48d83",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 78,
+        "h": 74,
         "w": 70,
         "x": 49,
-        "y": 69
+        "y": 73
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.560976,
-        "y": 0.986111
+        "x": 0.5,
+        "y": 0.985915
       },
       "direction": "north",
       "fps": 12,
       "frame": {
-        "h": 72,
-        "w": 41,
-        "x": 181,
-        "y": 635
+        "h": 71,
+        "w": 36,
+        "x": 925,
+        "y": 554
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__north__000",
+      "id": "lilly__lower-body__run__north__000",
       "layer": "lower-body",
-      "opaquePixels": 1993,
+      "opaquePixels": 1816,
       "pivot": {
-        "x": 23,
-        "y": 71
+        "x": 18,
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "c20d751f6c26a161dbd596a3585fd53c29e4c222196ff14e63d40d8bac57c601",
+      "sourcePixelSha256": "1c41fa0c2d4e33491afff8ba7f2b8bb745cf0046bf4230c8b1a1e8f8a1d0b09a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 72,
-        "w": 41,
-        "x": 57,
-        "y": 75
+        "h": 71,
+        "w": 36,
+        "x": 62,
+        "y": 76
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.534884,
-        "y": 0.986301
-      },
-      "direction": "north",
-      "fps": 12,
-      "frame": {
-        "h": 73,
-        "w": 43,
-        "x": 941,
-        "y": 556
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__north__001",
-      "layer": "lower-body",
-      "opaquePixels": 1961,
-      "pivot": {
-        "x": 23,
-        "y": 72
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "242667452c0eed1a14fdc99669a3f5ebe48f340e1a6fef073a0bb043d96eae9a",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 73,
-        "w": 43,
-        "x": 57,
-        "y": 74
-      },
-      "state": "run",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.534884,
-        "y": 0.986301
-      },
-      "direction": "north",
-      "fps": 12,
-      "frame": {
-        "h": 73,
-        "w": 43,
-        "x": 2,
-        "y": 635
-      },
-      "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__north__002",
-      "layer": "lower-body",
-      "opaquePixels": 1844,
-      "pivot": {
-        "x": 23,
-        "y": 72
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "eefc8a7ea95a75a2d3ea863b62cf60ab112466bd18ad30602dec25fdc1e2e711",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 73,
-        "w": 43,
-        "x": 57,
-        "y": 74
-      },
-      "state": "run",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.560976,
+        "x": 0.473684,
         "y": 0.986111
       },
       "direction": "north",
       "fps": 12,
       "frame": {
         "h": 72,
-        "w": 41,
-        "x": 224,
-        "y": 635
+        "w": 38,
+        "x": 976,
+        "y": 471
       },
-      "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__north__003",
+      "frameIndex": 1,
+      "id": "lilly__lower-body__run__north__001",
       "layer": "lower-body",
-      "opaquePixels": 1993,
+      "opaquePixels": 1777,
       "pivot": {
-        "x": 23,
+        "x": 18,
         "y": 71
       },
       "rotated": false,
@@ -2088,15 +2008,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "74340f1f906387c05947eb35fec794bfde1126b74d44041afdaaf1ed8e325cfe",
+      "sourcePixelSha256": "48b20374bc0489aea518a7032892155cbcd981f90b4098632e1b444886b957ec",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 72,
-        "w": 41,
-        "x": 57,
+        "w": 38,
+        "x": 62,
         "y": 75
       },
       "state": "run",
@@ -2104,80 +2024,160 @@
     },
     {
       "anchor": {
-        "x": 0.560976,
-        "y": 0.986301
+        "x": 0.473684,
+        "y": 0.986111
       },
       "direction": "north",
       "fps": 12,
       "frame": {
-        "h": 73,
-        "w": 41,
-        "x": 47,
-        "y": 635
+        "h": 72,
+        "w": 38,
+        "x": 2,
+        "y": 554
       },
-      "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__north__004",
+      "frameIndex": 2,
+      "id": "lilly__lower-body__run__north__002",
       "layer": "lower-body",
-      "opaquePixels": 1957,
+      "opaquePixels": 1660,
       "pivot": {
-        "x": 23,
-        "y": 72
+        "x": 18,
+        "y": 71
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ccfdb8ffd7c426af651ef11da3b76a43f7c048157913918cd4644ab854c837ae",
+      "sourcePixelSha256": "c062eeecebbc2220ac2b6af2b0669f55d23acad2b4be5a7ef36f653fd2c13143",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 73,
-        "w": 41,
-        "x": 57,
-        "y": 74
+        "h": 72,
+        "w": 38,
+        "x": 62,
+        "y": 75
       },
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.560976,
-        "y": 0.986301
+        "x": 0.5,
+        "y": 0.985915
       },
       "direction": "north",
       "fps": 12,
       "frame": {
-        "h": 73,
-        "w": 41,
-        "x": 90,
-        "y": 635
+        "h": 71,
+        "w": 36,
+        "x": 963,
+        "y": 554
       },
-      "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__north__005",
+      "frameIndex": 3,
+      "id": "lilly__lower-body__run__north__003",
       "layer": "lower-body",
-      "opaquePixels": 1839,
+      "opaquePixels": 1816,
       "pivot": {
-        "x": 23,
-        "y": 72
+        "x": 18,
+        "y": 70
       },
       "rotated": false,
       "sourcePivot": {
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "f2ec164dd53ec880cf5c3d3a5af860725ef284e068f0828bea9e7d94cd05c9f7",
+      "sourcePixelSha256": "4e83bda811ab66445a88972c840c5428e6b3b942b7a5248e835e088aed995431",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
-        "h": 73,
-        "w": 41,
-        "x": 57,
-        "y": 74
+        "h": 71,
+        "w": 36,
+        "x": 62,
+        "y": 76
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.526316,
+        "y": 0.986111
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 38,
+        "x": 42,
+        "y": 554
+      },
+      "frameIndex": 4,
+      "id": "lilly__lower-body__run__north__004",
+      "layer": "lower-body",
+      "opaquePixels": 1777,
+      "pivot": {
+        "x": 20,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "bc4ce50d1501a71b98f825f87fe1e93e0887fcaa6df98a962afcdc27cffa45c9",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 38,
+        "x": 60,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.526316,
+        "y": 0.986111
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 38,
+        "x": 82,
+        "y": 554
+      },
+      "frameIndex": 5,
+      "id": "lilly__lower-body__run__north__005",
+      "layer": "lower-body",
+      "opaquePixels": 1659,
+      "pivot": {
+        "x": 20,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "093ed5779f83b1d37e8a96bafc3783c5ae847005a3987cd9146c9a799b711210",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 38,
+        "x": 60,
+        "y": 75
       },
       "state": "run",
       "trimmed": true
@@ -2192,13 +2192,13 @@
       "frame": {
         "h": 73,
         "w": 42,
-        "x": 847,
-        "y": 556
+        "x": 792,
+        "y": 471
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__north-west__000",
+      "id": "lilly__lower-body__run__north-west__000",
       "layer": "lower-body",
-      "opaquePixels": 1897,
+      "opaquePixels": 1786,
       "pivot": {
         "x": 25,
         "y": 72
@@ -2208,7 +2208,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "a187ee90b552f4062b602967df2ff0a794e62834376b89e7a7bd35c6bc085c5e",
+      "sourcePixelSha256": "fe71dcd8dfdc32483333fe42b668a497a90b4cc6336b513abdd866d8c9512267",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2232,13 +2232,13 @@
       "frame": {
         "h": 74,
         "w": 65,
-        "x": 528,
-        "y": 556
+        "x": 375,
+        "y": 471
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__north-west__001",
+      "id": "lilly__lower-body__run__north-west__001",
       "layer": "lower-body",
-      "opaquePixels": 2236,
+      "opaquePixels": 2180,
       "pivot": {
         "x": 38,
         "y": 73
@@ -2248,7 +2248,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ce7dbcfc26ca45674f62a37dda9999fdf1c1ed67313c3b0ce412ee0dfe0b9882",
+      "sourcePixelSha256": "bb31add46bd1c1bd3d35afa7ea475de9b4cac8dc5bab7b2ad22adc8d653679c1",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2272,13 +2272,13 @@
       "frame": {
         "h": 74,
         "w": 70,
-        "x": 595,
-        "y": 556
+        "x": 442,
+        "y": 471
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__north-west__002",
+      "id": "lilly__lower-body__run__north-west__002",
       "layer": "lower-body",
-      "opaquePixels": 2221,
+      "opaquePixels": 2175,
       "pivot": {
         "x": 39,
         "y": 73
@@ -2288,7 +2288,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "22f7828d412f5a65b1468a571b85ab5b23af71ed760ee3ea61464bf86558404e",
+      "sourcePixelSha256": "7fb3efe0a898286fee979dcb095ae5477364f229d93dd2badc9e0e8bb65e0b02",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2312,13 +2312,13 @@
       "frame": {
         "h": 73,
         "w": 48,
-        "x": 891,
-        "y": 556
+        "x": 836,
+        "y": 471
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__north-west__003",
+      "id": "lilly__lower-body__run__north-west__003",
       "layer": "lower-body",
-      "opaquePixels": 2048,
+      "opaquePixels": 1946,
       "pivot": {
         "x": 31,
         "y": 72
@@ -2328,7 +2328,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cc6f1e97cdcc7dd7c6062f77ba78b1e998ea52f675757fa69080cb67477c5601",
+      "sourcePixelSha256": "f1d9966554ec4cd5986e06ac5223e4ec0b5aa77966c182daefdc959879f899ad",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2352,13 +2352,13 @@
       "frame": {
         "h": 74,
         "w": 44,
-        "x": 667,
-        "y": 556
+        "x": 514,
+        "y": 471
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__north-west__004",
+      "id": "lilly__lower-body__run__north-west__004",
       "layer": "lower-body",
-      "opaquePixels": 1897,
+      "opaquePixels": 1845,
       "pivot": {
         "x": 28,
         "y": 73
@@ -2368,7 +2368,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "d974e93fad3032a6ac733959ad3d20e5845230f529d9872b4b2907bae3ce72b8",
+      "sourcePixelSha256": "6187a02536f5fc37fc4858109eb3a56f0b018ec73b1a1adb22b569ebea50ee90",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2392,13 +2392,13 @@
       "frame": {
         "h": 74,
         "w": 46,
-        "x": 713,
-        "y": 556
+        "x": 560,
+        "y": 471
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__north-west__005",
+      "id": "lilly__lower-body__run__north-west__005",
       "layer": "lower-body",
-      "opaquePixels": 1911,
+      "opaquePixels": 1897,
       "pivot": {
         "x": 29,
         "y": 73
@@ -2408,7 +2408,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "db15da86506450bee6e7bf4e03c718e18bb3f4927082d08b503fbd1ef89e3ad7",
+      "sourcePixelSha256": "1b3833943d22396d53e3202feb86400089d1e5a68ada196d4cf39046f4f884d2",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2432,13 +2432,13 @@
       "frame": {
         "h": 71,
         "w": 40,
-        "x": 762,
-        "y": 635
+        "x": 468,
+        "y": 628
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__west__000",
+      "id": "lilly__lower-body__run__west__000",
       "layer": "lower-body",
-      "opaquePixels": 1802,
+      "opaquePixels": 1803,
       "pivot": {
         "x": 28,
         "y": 70
@@ -2448,7 +2448,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cb62ea3a8cd6b70d3bbfd805d37a72001806977726caee65107e0cf142b74dc1",
+      "sourcePixelSha256": "ba6e90362653d72b52b8f456e146fff8e6266442c73fe6d6155669b7ca3cde63",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2472,13 +2472,13 @@
       "frame": {
         "h": 71,
         "w": 61,
-        "x": 804,
-        "y": 635
+        "x": 510,
+        "y": 628
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__west__001",
+      "id": "lilly__lower-body__run__west__001",
       "layer": "lower-body",
-      "opaquePixels": 2122,
+      "opaquePixels": 2108,
       "pivot": {
         "x": 40,
         "y": 70
@@ -2488,7 +2488,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ffb29ed2cb9d471be2bc56d6bae9ce706dcd5dec4d75b0e4c595f3b954b0ccd9",
+      "sourcePixelSha256": "f858a6e2afd5e3daacecf672e392b31b75302d7fe3e28119f936f6514bff9a6a",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2512,13 +2512,13 @@
       "frame": {
         "h": 71,
         "w": 69,
-        "x": 867,
-        "y": 635
+        "x": 573,
+        "y": 628
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__west__002",
+      "id": "lilly__lower-body__run__west__002",
       "layer": "lower-body",
-      "opaquePixels": 2149,
+      "opaquePixels": 2133,
       "pivot": {
         "x": 42,
         "y": 70
@@ -2528,7 +2528,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "b86d354262f63e56ad9ce37ee7c9040a5ca3b417cf15c099c4fcca15746713aa",
+      "sourcePixelSha256": "3acf79bb4113985a16b5a190f8046d3d29842a086ec60cdbdcd49ec7463ba549",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2552,13 +2552,13 @@
       "frame": {
         "h": 71,
         "w": 40,
-        "x": 938,
-        "y": 635
+        "x": 644,
+        "y": 628
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__west__003",
+      "id": "lilly__lower-body__run__west__003",
       "layer": "lower-body",
-      "opaquePixels": 1573,
+      "opaquePixels": 1574,
       "pivot": {
         "x": 28,
         "y": 70
@@ -2568,7 +2568,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "bc73f69b1e3fd95db3db7554b5a8d25df0dd40d957b7c43c547c582dfc1e6efc",
+      "sourcePixelSha256": "b8611cfcd6bed9ec15401c1ca5cb92a2ce576e2d290b82093e838632d2f67894",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2592,13 +2592,13 @@
       "frame": {
         "h": 71,
         "w": 61,
-        "x": 2,
-        "y": 710
+        "x": 686,
+        "y": 628
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__west__004",
+      "id": "lilly__lower-body__run__west__004",
       "layer": "lower-body",
-      "opaquePixels": 2180,
+      "opaquePixels": 2149,
       "pivot": {
         "x": 40,
         "y": 70
@@ -2608,7 +2608,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "703cb09cf76314adb999383a7333b31bec7df1b71e221a61adc5ae661601c7f1",
+      "sourcePixelSha256": "68ca1a1554535a845a6cbc4d447e7951ed31f3680a9923cf34c0d2d5a17b14e9",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2632,13 +2632,13 @@
       "frame": {
         "h": 71,
         "w": 69,
-        "x": 65,
-        "y": 710
+        "x": 749,
+        "y": 628
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__west__005",
+      "id": "lilly__lower-body__run__west__005",
       "layer": "lower-body",
-      "opaquePixels": 2171,
+      "opaquePixels": 2140,
       "pivot": {
         "x": 42,
         "y": 70
@@ -2648,7 +2648,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "8f7f900751a3fcfbf7a94072e7f92792e9e723ae46eab4c8d9adfcf719af3430",
+      "sourcePixelSha256": "c69e1b90f43fb71826201376e06e1b55697706db402ad4d2038157b7db2fce7f",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2664,21 +2664,21 @@
     },
     {
       "anchor": {
-        "x": 0.607843,
+        "x": 0.645833,
         "y": 0.986111
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
         "h": 72,
-        "w": 51,
-        "x": 267,
-        "y": 635
+        "w": 48,
+        "x": 216,
+        "y": 554
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__lower-body__run__south-west__000",
+      "id": "lilly__lower-body__run__south-west__000",
       "layer": "lower-body",
-      "opaquePixels": 2182,
+      "opaquePixels": 2108,
       "pivot": {
         "x": 31,
         "y": 71
@@ -2688,14 +2688,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "0d690bed848defaf284345bb276859010dd819fad379be598734568730df1c0d",
+      "sourcePixelSha256": "81149cda3f8da02f71d4833a74f07f2dd4c43a39f7245c3c9e9263a7b86e005d",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 72,
-        "w": 51,
+        "w": 48,
         "x": 49,
         "y": 75
       },
@@ -2704,21 +2704,21 @@
     },
     {
       "anchor": {
-        "x": 0.595745,
+        "x": 0.636364,
         "y": 0.985915
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
         "h": 71,
-        "w": 47,
-        "x": 524,
-        "y": 635
+        "w": 44,
+        "x": 235,
+        "y": 628
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__lower-body__run__south-west__001",
+      "id": "lilly__lower-body__run__south-west__001",
       "layer": "lower-body",
-      "opaquePixels": 1789,
+      "opaquePixels": 1681,
       "pivot": {
         "x": 28,
         "y": 70
@@ -2728,14 +2728,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "40a0597080366f49d856779e8fde02e69127a4936852d4095a5a91cbfeb9e9ef",
+      "sourcePixelSha256": "8dbfd2baa4c17c5359856072920ce15d699a7efffc4dce5383490f39334ef1c2",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 71,
-        "w": 47,
+        "w": 44,
         "x": 52,
         "y": 76
       },
@@ -2744,21 +2744,21 @@
     },
     {
       "anchor": {
-        "x": 0.604167,
+        "x": 0.630435,
         "y": 0.985915
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
         "h": 71,
-        "w": 48,
-        "x": 573,
-        "y": 635
+        "w": 46,
+        "x": 281,
+        "y": 628
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__lower-body__run__south-west__002",
+      "id": "lilly__lower-body__run__south-west__002",
       "layer": "lower-body",
-      "opaquePixels": 1801,
+      "opaquePixels": 1722,
       "pivot": {
         "x": 29,
         "y": 70
@@ -2768,14 +2768,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "181854296aca010e4bc00c070350224e425412ae121b71d912c201ea4d11bcb6",
+      "sourcePixelSha256": "0f881e5b6f1747d7b94a8cc9d22ef0b0cd986dd1196837b170ac60a2894d0aac",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 71,
-        "w": 48,
+        "w": 46,
         "x": 51,
         "y": 76
       },
@@ -2784,21 +2784,21 @@
     },
     {
       "anchor": {
-        "x": 0.555556,
+        "x": 0.595238,
         "y": 0.986111
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
         "h": 72,
-        "w": 45,
-        "x": 320,
-        "y": 635
+        "w": 42,
+        "x": 266,
+        "y": 554
       },
       "frameIndex": 3,
-      "id": "lit-valkyrie__lower-body__run__south-west__003",
+      "id": "lilly__lower-body__run__south-west__003",
       "layer": "lower-body",
-      "opaquePixels": 1935,
+      "opaquePixels": 1861,
       "pivot": {
         "x": 25,
         "y": 71
@@ -2808,14 +2808,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "8ba4287367e20a9aeb8b7f5ac7ce1973772ae2daa15a36021f275c6e3536c78b",
+      "sourcePixelSha256": "75ccffe7c833ff34c87fdbb6df1e6f5b9b58a9dfd6aabb6086e8ab3760a71842",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 72,
-        "w": 45,
+        "w": 42,
         "x": 55,
         "y": 75
       },
@@ -2832,13 +2832,13 @@
       "frame": {
         "h": 71,
         "w": 65,
-        "x": 623,
-        "y": 635
+        "x": 329,
+        "y": 628
       },
       "frameIndex": 4,
-      "id": "lit-valkyrie__lower-body__run__south-west__004",
+      "id": "lilly__lower-body__run__south-west__004",
       "layer": "lower-body",
-      "opaquePixels": 2292,
+      "opaquePixels": 2256,
       "pivot": {
         "x": 38,
         "y": 70
@@ -2848,7 +2848,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e3179fb1c91c849e58bffec169418a9f9aedde2b412d55e4ab594e759da6d170",
+      "sourcePixelSha256": "f49d5cdd50b47a7029e1db06413815a1474d50ee193047096326b4127bc011f2",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2872,13 +2872,13 @@
       "frame": {
         "h": 71,
         "w": 70,
-        "x": 690,
-        "y": 635
+        "x": 396,
+        "y": 628
       },
       "frameIndex": 5,
-      "id": "lit-valkyrie__lower-body__run__south-west__005",
+      "id": "lilly__lower-body__run__south-west__005",
       "layer": "lower-body",
-      "opaquePixels": 2262,
+      "opaquePixels": 2221,
       "pivot": {
         "x": 39,
         "y": 70
@@ -2888,7 +2888,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "50c30ff3c47e7f1bf6ee60aed7c12b2118ca078ddd0e35361316c9bd26d55be2",
+      "sourcePixelSha256": "ee31dda25fad011bde3987b377c6fe44e7933b3a1563b4547fcf6ac296481072",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -2904,23 +2904,23 @@
     },
     {
       "anchor": {
-        "x": 0.508197,
+        "x": 0.482143,
         "y": 0.991736
       },
       "direction": "south",
       "fps": 2,
       "frame": {
         "h": 121,
-        "w": 61,
-        "x": 555,
+        "w": 56,
+        "x": 527,
         "y": 2
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__south__000",
+      "id": "lilly__torso-head__aim__south__000",
       "layer": "torso-head",
-      "opaquePixels": 2646,
+      "opaquePixels": 2662,
       "pivot": {
-        "x": 31,
+        "x": 27,
         "y": 120
       },
       "rotated": false,
@@ -2928,15 +2928,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "206b12c3f4e5bd83e78af90021bbe9b78814d07a039f0504193bd21a3822e3e3",
+      "sourcePixelSha256": "077e247c62697090289c313621583402c7a657b766b9d181c3bd42c90ceacc9f",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 61,
-        "x": 49,
+        "w": 56,
+        "x": 53,
         "y": 26
       },
       "state": "aim",
@@ -2944,23 +2944,23 @@
     },
     {
       "anchor": {
-        "x": 0.508197,
+        "x": 0.482143,
         "y": 0.991736
       },
       "direction": "south",
       "fps": 2,
       "frame": {
         "h": 121,
-        "w": 61,
-        "x": 618,
+        "w": 56,
+        "x": 585,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__south__001",
+      "id": "lilly__torso-head__aim__south__001",
       "layer": "torso-head",
-      "opaquePixels": 2631,
+      "opaquePixels": 2647,
       "pivot": {
-        "x": 31,
+        "x": 27,
         "y": 120
       },
       "rotated": false,
@@ -2968,15 +2968,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "42a6df8dba168768d2f06220b43640f1010b1ff582c95603d9a2257814125cd5",
+      "sourcePixelSha256": "2fcaed43c142836a4ddab0a7a7f95d8420a3cadd6a32031c2e6cd6a218d0df06",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 61,
-        "x": 49,
+        "w": 56,
+        "x": 53,
         "y": 26
       },
       "state": "aim",
@@ -2984,61 +2984,21 @@
     },
     {
       "anchor": {
-        "x": 0.490566,
+        "x": 0.5,
         "y": 0.991736
       },
       "direction": "south-east",
       "fps": 2,
       "frame": {
         "h": 121,
-        "w": 53,
-        "x": 340,
+        "w": 50,
+        "x": 321,
         "y": 2
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__south-east__000",
+      "id": "lilly__torso-head__aim__south-east__000",
       "layer": "torso-head",
-      "opaquePixels": 2390,
-      "pivot": {
-        "x": 26,
-        "y": 120
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "5e017d1087e27f19196a517e724e48c048280f30bede21efacf13fa9405437cb",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 121,
-        "w": 53,
-        "x": 54,
-        "y": 26
-      },
-      "state": "aim",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.480769,
-        "y": 0.991736
-      },
-      "direction": "south-east",
-      "fps": 2,
-      "frame": {
-        "h": 121,
-        "w": 52,
-        "x": 395,
-        "y": 2
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__south-east__001",
-      "layer": "torso-head",
-      "opaquePixels": 2376,
+      "opaquePixels": 2393,
       "pivot": {
         "x": 25,
         "y": 120
@@ -3048,14 +3008,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "9f48ecfd39efbed40363000d26c5b91a9f7ac94dc0311cbb3f2878ad9a79e419",
+      "sourcePixelSha256": "f0b7c570c17f9603e25867bc0ee68b10cc17fe18b7ef2ecdce54f11edda95450",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 52,
+        "w": 50,
         "x": 55,
         "y": 26
       },
@@ -3065,20 +3025,60 @@
     {
       "anchor": {
         "x": 0.5,
+        "y": 0.991736
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 50,
+        "x": 373,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lilly__torso-head__aim__south-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2377,
+      "pivot": {
+        "x": 25,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "53324d007a1eef65341c3f385ee433f2f75045e950c4668fedad8cad1f3403ce",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 50,
+        "x": 55,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.483871,
         "y": 0.991667
       },
       "direction": "east",
       "fps": 2,
       "frame": {
         "h": 120,
-        "w": 30,
-        "x": 914,
+        "w": 31,
+        "x": 869,
         "y": 2
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__east__000",
+      "id": "lilly__torso-head__aim__east__000",
       "layer": "torso-head",
-      "opaquePixels": 1702,
+      "opaquePixels": 1795,
       "pivot": {
         "x": 15,
         "y": 119
@@ -3088,14 +3088,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "18fb4ef7cb0aba67d97afd21f4f096fa70541da5a891f867be0682499c897fd2",
+      "sourcePixelSha256": "d2cbad1cd8332ba53fa6f6ce9643678aa92e6e0440993ae1a645eeabcd3e99de",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 30,
+        "w": 31,
         "x": 65,
         "y": 27
       },
@@ -3104,23 +3104,23 @@
     },
     {
       "anchor": {
-        "x": 0.466667,
+        "x": 0.483871,
         "y": 0.991667
       },
       "direction": "east",
       "fps": 2,
       "frame": {
         "h": 120,
-        "w": 30,
-        "x": 946,
+        "w": 31,
+        "x": 902,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__east__001",
+      "id": "lilly__torso-head__aim__east__001",
       "layer": "torso-head",
-      "opaquePixels": 1727,
+      "opaquePixels": 1791,
       "pivot": {
-        "x": 14,
+        "x": 15,
         "y": 119
       },
       "rotated": false,
@@ -3128,15 +3128,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "2b3f2c10fa5006e10cdda3b18fa23c533c255af8be9f0a9ac0aeb026bcdc986d",
+      "sourcePixelSha256": "55023e48b81d181016fe0ffdbef48aea156e4266d27a18f88a970c28c4e86e7a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 30,
-        "x": 66,
+        "w": 31,
+        "x": 65,
         "y": 27
       },
       "state": "aim",
@@ -3144,21 +3144,21 @@
     },
     {
       "anchor": {
-        "x": 0.490196,
+        "x": 0.510204,
         "y": 0.991597
       },
       "direction": "north-east",
       "fps": 2,
       "frame": {
         "h": 119,
-        "w": 51,
-        "x": 582,
+        "w": 49,
+        "x": 484,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__north-east__000",
+      "id": "lilly__torso-head__aim__north-east__000",
       "layer": "torso-head",
-      "opaquePixels": 2176,
+      "opaquePixels": 2256,
       "pivot": {
         "x": 25,
         "y": 118
@@ -3168,14 +3168,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "1a105fd342c73dc3541e460427279442e333d1459d23bc20fe89d5326ff45e07",
+      "sourcePixelSha256": "77f60947689209ba0fd34962fd42ea2d3ab64d2b9224672dde09757f626f4762",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 119,
-        "w": 51,
+        "w": 49,
         "x": 55,
         "y": 28
       },
@@ -3184,23 +3184,23 @@
     },
     {
       "anchor": {
-        "x": 0.490196,
+        "x": 0.489796,
         "y": 0.991667
       },
       "direction": "north-east",
       "fps": 2,
       "frame": {
         "h": 120,
-        "w": 51,
-        "x": 2,
-        "y": 127
+        "w": 49,
+        "x": 935,
+        "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__north-east__001",
+      "id": "lilly__torso-head__aim__north-east__001",
       "layer": "torso-head",
-      "opaquePixels": 2197,
+      "opaquePixels": 2273,
       "pivot": {
-        "x": 25,
+        "x": 24,
         "y": 119
       },
       "rotated": false,
@@ -3208,15 +3208,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "b3e186085b1737830df9050b3069c18a72a9223ae311e72f53b5b52d2a57befc",
+      "sourcePixelSha256": "4433032ca9b1fb10f099d3f0f80ece3bc1e163493e58eaaeabcbf1c119aa1d05",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 51,
-        "x": 55,
+        "w": 49,
+        "x": 56,
         "y": 27
       },
       "state": "aim",
@@ -3224,23 +3224,23 @@
     },
     {
       "anchor": {
-        "x": 0.491803,
+        "x": 0.517857,
         "y": 0.991525
       },
       "direction": "north",
       "fps": 2,
       "frame": {
         "h": 118,
-        "w": 61,
-        "x": 57,
-        "y": 249
+        "w": 56,
+        "x": 917,
+        "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__north__000",
+      "id": "lilly__torso-head__aim__north__000",
       "layer": "torso-head",
-      "opaquePixels": 2558,
+      "opaquePixels": 2525,
       "pivot": {
-        "x": 30,
+        "x": 29,
         "y": 117
       },
       "rotated": false,
@@ -3248,15 +3248,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "08c1800964c9fdb1c9bd9cd1c7044dc7c07572b45928bdcceebd653beb007326",
+      "sourcePixelSha256": "fa8b3abde4a9fbfb6da304b7b0db0041a159d8b171d3bb80f2de9698110322d8",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 118,
-        "w": 61,
-        "x": 50,
+        "w": 56,
+        "x": 51,
         "y": 29
       },
       "state": "aim",
@@ -3264,63 +3264,23 @@
     },
     {
       "anchor": {
-        "x": 0.491803,
+        "x": 0.517857,
         "y": 0.991525
       },
       "direction": "north",
       "fps": 2,
       "frame": {
         "h": 118,
-        "w": 61,
-        "x": 120,
-        "y": 249
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__north__001",
-      "layer": "torso-head",
-      "opaquePixels": 2564,
-      "pivot": {
-        "x": 30,
-        "y": 117
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "48eea733b9c6cc4be81e8c24db533854e94f3d1ed53fc21800549235227c9c94",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 118,
-        "w": 61,
-        "x": 50,
-        "y": 29
-      },
-      "state": "aim",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.509434,
-        "y": 0.991525
-      },
-      "direction": "north-west",
-      "fps": 2,
-      "frame": {
-        "h": 118,
-        "w": 53,
+        "w": 56,
         "x": 2,
         "y": 249
       },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__north-west__000",
+      "frameIndex": 1,
+      "id": "lilly__torso-head__aim__north__001",
       "layer": "torso-head",
-      "opaquePixels": 2313,
+      "opaquePixels": 2539,
       "pivot": {
-        "x": 27,
+        "x": 29,
         "y": 117
       },
       "rotated": false,
@@ -3328,15 +3288,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "1a0f8ea61e2346b9b27a2beae7fa7a7db7303c7bc666c3ce5970aef840f5f37c",
+      "sourcePixelSha256": "16ea4b065e13ec939598fa5f59700336c959641ff83d777ec6517314ec109c5d",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 118,
-        "w": 53,
-        "x": 53,
+        "w": 56,
+        "x": 51,
         "y": 29
       },
       "state": "aim",
@@ -3344,23 +3304,63 @@
     },
     {
       "anchor": {
-        "x": 0.519231,
-        "y": 0.991597
+        "x": 0.5,
+        "y": 0.991525
       },
       "direction": "north-west",
       "fps": 2,
       "frame": {
-        "h": 119,
-        "w": 52,
-        "x": 635,
+        "h": 118,
+        "w": 50,
+        "x": 865,
         "y": 127
       },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__north-west__001",
+      "frameIndex": 0,
+      "id": "lilly__torso-head__aim__north-west__000",
       "layer": "torso-head",
       "opaquePixels": 2328,
       "pivot": {
-        "x": 27,
+        "x": 25,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "002c230d122faabd28deaae8bda187561b7e908d3d204205705a67fd85126643",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 50,
+        "x": 55,
+        "y": 29
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.510204,
+        "y": 0.991597
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 119,
+        "w": 49,
+        "x": 535,
+        "y": 127
+      },
+      "frameIndex": 1,
+      "id": "lilly__torso-head__aim__north-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2334,
+      "pivot": {
+        "x": 25,
         "y": 118
       },
       "rotated": false,
@@ -3368,15 +3368,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "b8d6376d71be98b772ebefbc7dc0a641fe34cad172148656760dd96020c4cd8c",
+      "sourcePixelSha256": "e1de759e032d5a73efabafc9b51ea5c9dd25cdda398c4cd03352968b8709312f",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 119,
-        "w": 52,
-        "x": 53,
+        "w": 49,
+        "x": 55,
         "y": 28
       },
       "state": "aim",
@@ -3384,61 +3384,21 @@
     },
     {
       "anchor": {
-        "x": 0.5,
+        "x": 0.516129,
         "y": 0.991667
       },
       "direction": "west",
       "fps": 2,
       "frame": {
         "h": 120,
-        "w": 30,
-        "x": 55,
-        "y": 127
+        "w": 31,
+        "x": 986,
+        "y": 2
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__west__000",
+      "id": "lilly__torso-head__aim__west__000",
       "layer": "torso-head",
-      "opaquePixels": 1665,
-      "pivot": {
-        "x": 15,
-        "y": 119
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "398fc4b115eb6b1e11eb541f2ce7c495fa2aa13cb2d878bb2b1df2d33a057f15",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 120,
-        "w": 30,
-        "x": 65,
-        "y": 27
-      },
-      "state": "aim",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.533333,
-        "y": 0.991667
-      },
-      "direction": "west",
-      "fps": 2,
-      "frame": {
-        "h": 120,
-        "w": 30,
-        "x": 87,
-        "y": 127
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__west__001",
-      "layer": "torso-head",
-      "opaquePixels": 1690,
+      "opaquePixels": 1764,
       "pivot": {
         "x": 16,
         "y": 119
@@ -3448,14 +3408,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "0f2be592364611b67f3a4858284eb2b8d9cb56b93f9472a2c9c00a90e804b411",
+      "sourcePixelSha256": "d331b28a0e829f1282abf05ebc2b60ec67b14c41c6d46710ff8de31a8458b9ff",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 30,
+        "w": 31,
         "x": 64,
         "y": 27
       },
@@ -3464,103 +3424,23 @@
     },
     {
       "anchor": {
-        "x": 0.509804,
-        "y": 0.991736
-      },
-      "direction": "south-west",
-      "fps": 2,
-      "frame": {
-        "h": 121,
-        "w": 51,
-        "x": 449,
-        "y": 2
-      },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__aim__south-west__000",
-      "layer": "torso-head",
-      "opaquePixels": 2217,
-      "pivot": {
-        "x": 26,
-        "y": 120
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "b6545651f4da4c7bc8c2d639a778057f7a1e3309b4a0633dcf099bddb6ab48ab",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 121,
-        "w": 51,
-        "x": 54,
-        "y": 26
-      },
-      "state": "aim",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.509804,
-        "y": 0.991736
-      },
-      "direction": "south-west",
-      "fps": 2,
-      "frame": {
-        "h": 121,
-        "w": 51,
-        "x": 502,
-        "y": 2
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__aim__south-west__001",
-      "layer": "torso-head",
-      "opaquePixels": 2208,
-      "pivot": {
-        "x": 26,
-        "y": 120
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "7159632d3e5a5f411d4711e698b7ce4108dc110fc1e538c840f8451f6df47ad7",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 121,
-        "w": 51,
-        "x": 54,
-        "y": 26
-      },
-      "state": "aim",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.508197,
+        "x": 0.53125,
         "y": 0.991667
       },
-      "direction": "south",
-      "fps": 15,
+      "direction": "west",
+      "fps": 2,
       "frame": {
         "h": 120,
-        "w": 61,
-        "x": 488,
+        "w": 32,
+        "x": 2,
         "y": 127
       },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south__000",
+      "frameIndex": 1,
+      "id": "lilly__torso-head__aim__west__001",
       "layer": "torso-head",
-      "opaquePixels": 2617,
+      "opaquePixels": 1774,
       "pivot": {
-        "x": 31,
+        "x": 17,
         "y": 119
       },
       "rotated": false,
@@ -3568,15 +3448,135 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e2c906b331623b5b229ec9d5baed723ef46c3f967346f3b55c0537c7b5b0d6ed",
+      "sourcePixelSha256": "d3895c3ae9317f84be33dbdd1adda2920d5a7f85294510cd106986da5c04b2a4",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 61,
-        "x": 49,
+        "w": 32,
+        "x": 63,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.489796,
+        "y": 0.991736
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 49,
+        "x": 425,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "lilly__torso-head__aim__south-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2349,
+      "pivot": {
+        "x": 24,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "877fb2f476c8690b33c6e7de722d6954744df2e5b2d30af4c40e6fee653cf659",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 49,
+        "x": 56,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.510204,
+        "y": 0.991736
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 49,
+        "x": 476,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lilly__torso-head__aim__south-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2333,
+      "pivot": {
+        "x": 25,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a8de375502ed6f19fe737b390e47a3d8d6727239f31c878989b09c8417746a1a",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 49,
+        "x": 55,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.482143,
+        "y": 0.991667
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 56,
+        "x": 395,
+        "y": 127
+      },
+      "frameIndex": 0,
+      "id": "lilly__torso-head__pistol-fire__south__000",
+      "layer": "torso-head",
+      "opaquePixels": 2636,
+      "pivot": {
+        "x": 27,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "275f4ad289b685c67c215b430fb114eab67aa0c2bd5d9af4fcd17e7c0f160380",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 56,
+        "x": 53,
         "y": 27
       },
       "state": "pistol-fire",
@@ -3584,23 +3584,23 @@
     },
     {
       "anchor": {
-        "x": 0.525424,
+        "x": 0.5,
         "y": 0.99187
       },
       "direction": "south",
       "fps": 15,
       "frame": {
         "h": 123,
-        "w": 59,
+        "w": 54,
         "x": 2,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south__001",
+      "id": "lilly__torso-head__pistol-fire__south__001",
       "layer": "torso-head",
-      "opaquePixels": 2650,
+      "opaquePixels": 2665,
       "pivot": {
-        "x": 31,
+        "x": 27,
         "y": 122
       },
       "rotated": false,
@@ -3608,15 +3608,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cca3a35d759d097178ae6254d89cb85c56719a3288e2c4e36cfe35c23469b248",
+      "sourcePixelSha256": "bd467497ae34b57ca8b7611acf70c3a5ccbaf0dcc78feae1520f29354b59d194",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 123,
-        "w": 59,
-        "x": 49,
+        "w": 54,
+        "x": 53,
         "y": 24
       },
       "state": "pistol-fire",
@@ -3624,23 +3624,23 @@
     },
     {
       "anchor": {
-        "x": 0.516667,
+        "x": 0.490909,
         "y": 0.991803
       },
       "direction": "south",
       "fps": 15,
       "frame": {
         "h": 122,
-        "w": 60,
-        "x": 278,
+        "w": 55,
+        "x": 264,
         "y": 2
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south__002",
+      "id": "lilly__torso-head__pistol-fire__south__002",
       "layer": "torso-head",
-      "opaquePixels": 2662,
+      "opaquePixels": 2671,
       "pivot": {
-        "x": 31,
+        "x": 27,
         "y": 121
       },
       "rotated": false,
@@ -3648,15 +3648,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "9efe8965ec1d578749c04b81b47a6ec3a6c54715766f9714cde8769c36145b85",
+      "sourcePixelSha256": "950fbe3242f37f54d483840db56d141f0c5d010eb3425d3aabbb7d984e8cb2ce",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 122,
-        "w": 60,
-        "x": 49,
+        "w": 55,
+        "x": 53,
         "y": 25
       },
       "state": "pistol-fire",
@@ -3664,23 +3664,23 @@
     },
     {
       "anchor": {
-        "x": 0.490566,
+        "x": 0.5,
         "y": 0.991667
       },
       "direction": "south-east",
       "fps": 15,
       "frame": {
         "h": 120,
-        "w": 53,
-        "x": 380,
+        "w": 50,
+        "x": 292,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south-east__000",
+      "id": "lilly__torso-head__pistol-fire__south-east__000",
       "layer": "torso-head",
-      "opaquePixels": 2340,
+      "opaquePixels": 2347,
       "pivot": {
-        "x": 26,
+        "x": 25,
         "y": 119
       },
       "rotated": false,
@@ -3688,15 +3688,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "1c1d6a47d27348aed4dcd7fb749356d6979ee360dd3adb6a3a74c6553e7dd0f2",
+      "sourcePixelSha256": "be25e37cd58cbddadc9b4d8de88c243ed4210a08552ed4a2238f7c61c6ca0c55",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 53,
-        "x": 54,
+        "w": 50,
+        "x": 55,
         "y": 27
       },
       "state": "pistol-fire",
@@ -3704,21 +3704,21 @@
     },
     {
       "anchor": {
-        "x": 0.490566,
+        "x": 0.509804,
         "y": 0.991803
       },
       "direction": "south-east",
       "fps": 15,
       "frame": {
         "h": 122,
-        "w": 53,
-        "x": 63,
+        "w": 51,
+        "x": 58,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south-east__001",
+      "id": "lilly__torso-head__pistol-fire__south-east__001",
       "layer": "torso-head",
-      "opaquePixels": 2506,
+      "opaquePixels": 2494,
       "pivot": {
         "x": 26,
         "y": 121
@@ -3728,14 +3728,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "5cdc5a0ceee8d67ea8dfaed2b61bed8348330c0a52fb6a8210f49fa19e6eb72f",
+      "sourcePixelSha256": "2000899ea9251a5463ad0267446f11cf7df579ed1209075c8964f4bc41183906",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 122,
-        "w": 53,
+        "w": 51,
         "x": 54,
         "y": 25
       },
@@ -3744,23 +3744,23 @@
     },
     {
       "anchor": {
-        "x": 0.490566,
+        "x": 0.510204,
         "y": 0.991803
       },
       "direction": "south-east",
       "fps": 15,
       "frame": {
         "h": 122,
-        "w": 53,
-        "x": 118,
+        "w": 49,
+        "x": 111,
         "y": 2
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south-east__002",
+      "id": "lilly__torso-head__pistol-fire__south-east__002",
       "layer": "torso-head",
-      "opaquePixels": 2446,
+      "opaquePixels": 2439,
       "pivot": {
-        "x": 26,
+        "x": 25,
         "y": 121
       },
       "rotated": false,
@@ -3768,15 +3768,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "595262410cff511471c4eb4758fcaf4ab41169b5c528ebcfdb6f5248e3be8b18",
+      "sourcePixelSha256": "6e04514b9d38cfceb29dcb882d56f8cc80cd05d3e58359235d823fa72eeea2b1",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 122,
-        "w": 53,
-        "x": 54,
+        "w": 49,
+        "x": 55,
         "y": 25
       },
       "state": "pistol-fire",
@@ -3792,13 +3792,13 @@
       "frame": {
         "h": 120,
         "w": 29,
-        "x": 296,
+        "x": 210,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__east__000",
+      "id": "lilly__torso-head__pistol-fire__east__000",
       "layer": "torso-head",
-      "opaquePixels": 1683,
+      "opaquePixels": 1774,
       "pivot": {
         "x": 13,
         "y": 119
@@ -3808,7 +3808,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "4b73c080eea23a5371762d97aeee350c149637c44a664e2778ea1ddca4a49e23",
+      "sourcePixelSha256": "3014f3325dd3326c238918d16d4f4c432454585026a5c94546025b16da060077",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -3832,13 +3832,13 @@
       "frame": {
         "h": 119,
         "w": 42,
-        "x": 689,
+        "x": 586,
         "y": 127
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__east__001",
+      "id": "lilly__torso-head__pistol-fire__east__001",
       "layer": "torso-head",
-      "opaquePixels": 1891,
+      "opaquePixels": 1949,
       "pivot": {
         "x": 23,
         "y": 118
@@ -3848,7 +3848,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "11404739aa0cb63a6f1075ce6c3e7ceefe2b163a4924fc42c8c84b758ba0d365",
+      "sourcePixelSha256": "5e471eb1f9f23070a2f53cf4541d3a7ef04b268c891e34dd8bee920db90092b7",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -3864,21 +3864,21 @@
     },
     {
       "anchor": {
-        "x": 0.529412,
+        "x": 0.514286,
         "y": 0.991597
       },
       "direction": "east",
       "fps": 15,
       "frame": {
         "h": 119,
-        "w": 34,
-        "x": 733,
+        "w": 35,
+        "x": 630,
         "y": 127
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__east__002",
+      "id": "lilly__torso-head__pistol-fire__east__002",
       "layer": "torso-head",
-      "opaquePixels": 1762,
+      "opaquePixels": 1834,
       "pivot": {
         "x": 18,
         "y": 118
@@ -3888,14 +3888,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "4d129f9ffa7868bc13c1f3149205695f5926a26a6553ec0ccf82ffef2458940a",
+      "sourcePixelSha256": "8d8f34d43ae993e1df2befdb267c7c731838ce25c7d66f55b35ba80dc541aae2",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 119,
-        "w": 34,
+        "w": 35,
         "x": 62,
         "y": 28
       },
@@ -3904,23 +3904,23 @@
     },
     {
       "anchor": {
-        "x": 0.490196,
+        "x": 0.489796,
         "y": 0.991667
       },
       "direction": "north-east",
       "fps": 15,
       "frame": {
         "h": 120,
-        "w": 51,
-        "x": 327,
+        "w": 49,
+        "x": 241,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north-east__000",
+      "id": "lilly__torso-head__pistol-fire__north-east__000",
       "layer": "torso-head",
-      "opaquePixels": 2208,
+      "opaquePixels": 2287,
       "pivot": {
-        "x": 25,
+        "x": 24,
         "y": 119
       },
       "rotated": false,
@@ -3928,15 +3928,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "5fbce79617da36a3651c55739e2c2e0a867641119340c3b63309e47d4e10b6bc",
+      "sourcePixelSha256": "6144b329104be7dc2a7747df7dadb09696d0ad42065b19f14370a1b7f645e92c",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 51,
-        "x": 55,
+        "w": 49,
+        "x": 56,
         "y": 27
       },
       "state": "pistol-fire",
@@ -3944,21 +3944,301 @@
     },
     {
       "anchor": {
-        "x": 0.48,
+        "x": 0.520833,
         "y": 0.991453
       },
       "direction": "north-east",
       "fps": 15,
       "frame": {
         "h": 117,
-        "w": 50,
-        "x": 636,
+        "w": 48,
+        "x": 503,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north-east__001",
+      "id": "lilly__torso-head__pistol-fire__north-east__001",
       "layer": "torso-head",
-      "opaquePixels": 2081,
+      "opaquePixels": 2162,
+      "pivot": {
+        "x": 25,
+        "y": 116
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9fd4a21e62c73448570f6a16c31f663671d2b7a1201d38869914c43dbdfdd6ee",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 117,
+        "w": 48,
+        "x": 55,
+        "y": 30
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.510204,
+        "y": 0.991597
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 119,
+        "w": 49,
+        "x": 667,
+        "y": 127
+      },
+      "frameIndex": 2,
+      "id": "lilly__torso-head__pistol-fire__north-east__002",
+      "layer": "torso-head",
+      "opaquePixels": 2217,
+      "pivot": {
+        "x": 25,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "4785a8fa5f2d1db104e7abb95f05f4de0b99c27ba70997d0e90eb13ac7b655b3",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 49,
+        "x": 55,
+        "y": 28
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.517857,
+        "y": 0.991597
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 119,
+        "w": 56,
+        "x": 770,
+        "y": 127
+      },
+      "frameIndex": 0,
+      "id": "lilly__torso-head__pistol-fire__north__000",
+      "layer": "torso-head",
+      "opaquePixels": 2580,
+      "pivot": {
+        "x": 29,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e7f5331174ba9525f77e14b9dcf80e6981e5e6fdd617a5222c09583db2cd52de",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 56,
+        "x": 51,
+        "y": 28
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991304
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 115,
+        "w": 54,
+        "x": 713,
+        "y": 249
+      },
+      "frameIndex": 1,
+      "id": "lilly__torso-head__pistol-fire__north__001",
+      "layer": "torso-head",
+      "opaquePixels": 2312,
+      "pivot": {
+        "x": 27,
+        "y": 114
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "c2f1f0118238773ed5443b284603802676d813727b24c0d374acc80588256aa4",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 115,
+        "w": 54,
+        "x": 53,
+        "y": 32
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.509091,
+        "y": 0.991379
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 116,
+        "w": 55,
+        "x": 656,
+        "y": 249
+      },
+      "frameIndex": 2,
+      "id": "lilly__torso-head__pistol-fire__north__002",
+      "layer": "torso-head",
+      "opaquePixels": 2444,
+      "pivot": {
+        "x": 28,
+        "y": 115
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d62bcdb052492e1d796aa716343a6ad5501d7ab6a32d0185d854c83d25d9556d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 116,
+        "w": 55,
+        "x": 52,
+        "y": 31
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991597
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 119,
+        "w": 50,
+        "x": 718,
+        "y": 127
+      },
+      "frameIndex": 0,
+      "id": "lilly__torso-head__pistol-fire__north-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2366,
+      "pivot": {
+        "x": 25,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "dfb1db0ee889ac42252bd3c468f5004a4245236ad2456ff70740e6019a88e74e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 50,
+        "x": 55,
+        "y": 28
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991379
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 116,
+        "w": 50,
+        "x": 604,
+        "y": 249
+      },
+      "frameIndex": 1,
+      "id": "lilly__torso-head__pistol-fire__north-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2192,
+      "pivot": {
+        "x": 25,
+        "y": 115
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8e910af5e0bc4f4ad18eb9e0ed1c8b7cede2682ca2fe92c425ed201cdbe7103f",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 116,
+        "w": 50,
+        "x": 55,
+        "y": 31
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.489796,
+        "y": 0.991453
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 117,
+        "w": 49,
+        "x": 553,
+        "y": 249
+      },
+      "frameIndex": 2,
+      "id": "lilly__torso-head__pistol-fire__north-west__002",
+      "layer": "torso-head",
+      "opaquePixels": 2278,
       "pivot": {
         "x": 24,
         "y": 116
@@ -3968,295 +4248,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e06adf9c0c920fee9afbfd40d1b246f6bfc31a5f69339589eeea63d2b4aaa7b9",
+      "sourcePixelSha256": "885f37cf86cfa7d01ba0108c50d047836933f8dc4125de8aba86d7be9d587e6a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 117,
-        "w": 50,
+        "w": 49,
         "x": 56,
-        "y": 30
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.490196,
-        "y": 0.991597
-      },
-      "direction": "north-east",
-      "fps": 15,
-      "frame": {
-        "h": 119,
-        "w": 51,
-        "x": 769,
-        "y": 127
-      },
-      "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north-east__002",
-      "layer": "torso-head",
-      "opaquePixels": 2142,
-      "pivot": {
-        "x": 25,
-        "y": 118
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "aff496a9d64827ffb5d89d0ac8cbcda2922fcbff782f4ea3bddccd0e19b7f7b7",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 119,
-        "w": 51,
-        "x": 55,
-        "y": 28
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.491803,
-        "y": 0.991597
-      },
-      "direction": "north",
-      "fps": 15,
-      "frame": {
-        "h": 119,
-        "w": 61,
-        "x": 877,
-        "y": 127
-      },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north__000",
-      "layer": "torso-head",
-      "opaquePixels": 2605,
-      "pivot": {
-        "x": 30,
-        "y": 118
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "d9eb965cfa8cacd9f3c7523d84f04473fe017b7ec6195c4cc7db4d1beb18d99b",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 119,
-        "w": 61,
-        "x": 50,
-        "y": 28
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.483333,
-        "y": 0.99115
-      },
-      "direction": "north",
-      "fps": 15,
-      "frame": {
-        "h": 113,
-        "w": 60,
-        "x": 860,
-        "y": 249
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north__001",
-      "layer": "torso-head",
-      "opaquePixels": 2348,
-      "pivot": {
-        "x": 29,
-        "y": 112
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "6d4da4d954074901b76b7e88ba985211a393b93883a38d5029b8bdf9380126ad",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 113,
-        "w": 60,
-        "x": 51,
-        "y": 34
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.483333,
-        "y": 0.991379
-      },
-      "direction": "north",
-      "fps": 15,
-      "frame": {
-        "h": 116,
-        "w": 60,
-        "x": 743,
-        "y": 249
-      },
-      "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north__002",
-      "layer": "torso-head",
-      "opaquePixels": 2477,
-      "pivot": {
-        "x": 29,
-        "y": 115
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "0beea983f3b99f892ae9997fcc726cec11f2acbebc46f9ea5543fe3152c4aa68",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 116,
-        "w": 60,
-        "x": 51,
-        "y": 31
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.509434,
-        "y": 0.991597
-      },
-      "direction": "north-west",
-      "fps": 15,
-      "frame": {
-        "h": 119,
-        "w": 53,
-        "x": 822,
-        "y": 127
-      },
-      "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north-west__000",
-      "layer": "torso-head",
-      "opaquePixels": 2357,
-      "pivot": {
-        "x": 27,
-        "y": 118
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "32333020df7fd1feef061a54fee06d97bbfed74573bd7b6f839f326f1faaeae3",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 119,
-        "w": 53,
-        "x": 53,
-        "y": 28
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.509434,
-        "y": 0.991228
-      },
-      "direction": "north-west",
-      "fps": 15,
-      "frame": {
-        "h": 114,
-        "w": 53,
-        "x": 805,
-        "y": 249
-      },
-      "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north-west__001",
-      "layer": "torso-head",
-      "opaquePixels": 2161,
-      "pivot": {
-        "x": 27,
-        "y": 113
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "702e1dd8baec07b7a35eb0aebe2dfe15ce3d43d2d5fc67d2c2d71b203e24c451",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 114,
-        "w": 53,
-        "x": 53,
-        "y": 33
-      },
-      "state": "pistol-fire",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.509434,
-        "y": 0.991453
-      },
-      "direction": "north-west",
-      "fps": 15,
-      "frame": {
-        "h": 117,
-        "w": 53,
-        "x": 688,
-        "y": 249
-      },
-      "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__north-west__002",
-      "layer": "torso-head",
-      "opaquePixels": 2257,
-      "pivot": {
-        "x": 27,
-        "y": 116
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 80,
-        "y": 146
-      },
-      "sourcePixelSha256": "291a7aea0a5277adbfc0f28e7f1678f75a732e82412176f9b8e3b2bcdfff5f08",
-      "sourceSize": {
-        "h": 160,
-        "w": 160
-      },
-      "spriteSourceSize": {
-        "h": 117,
-        "w": 53,
-        "x": 53,
         "y": 30
       },
       "state": "pistol-fire",
@@ -4272,13 +4272,13 @@
       "frame": {
         "h": 120,
         "w": 29,
-        "x": 551,
+        "x": 453,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__west__000",
+      "id": "lilly__torso-head__pistol-fire__west__000",
       "layer": "torso-head",
-      "opaquePixels": 1664,
+      "opaquePixels": 1753,
       "pivot": {
         "x": 16,
         "y": 119
@@ -4288,7 +4288,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "f2b9d752d5860d6e8353fd5c321cbf366013220133d3b816107239b3fc3e3f87",
+      "sourcePixelSha256": "50ccf6a0d29ebc3123a1b38492a8dced639623672c2f20c0f2981a7372957455",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -4312,13 +4312,13 @@
       "frame": {
         "h": 118,
         "w": 42,
-        "x": 416,
+        "x": 287,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__west__001",
+      "id": "lilly__torso-head__pistol-fire__west__001",
       "layer": "torso-head",
-      "opaquePixels": 1745,
+      "opaquePixels": 1877,
       "pivot": {
         "x": 19,
         "y": 117
@@ -4328,7 +4328,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "6a9ade234c2dd2bac9c4af6afdfe9bfddf420605e702131a4794df85a9af33c1",
+      "sourcePixelSha256": "8546255ab99e162b23e0d297901e6b37b239caed21f1812fab734a6a044c0d70",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -4344,23 +4344,23 @@
     },
     {
       "anchor": {
-        "x": 0.470588,
+        "x": 0.485714,
         "y": 0.991597
       },
       "direction": "west",
       "fps": 15,
       "frame": {
         "h": 119,
-        "w": 34,
-        "x": 940,
+        "w": 35,
+        "x": 828,
         "y": 127
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__west__002",
+      "id": "lilly__torso-head__pistol-fire__west__002",
       "layer": "torso-head",
-      "opaquePixels": 1682,
+      "opaquePixels": 1788,
       "pivot": {
-        "x": 16,
+        "x": 17,
         "y": 118
       },
       "rotated": false,
@@ -4368,15 +4368,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "2f5e54094e3dad0a565b0aecc12cbcdf9bd2b9521c67dd9bbcb90e10476ba50f",
+      "sourcePixelSha256": "8f54977dad82f8881f148b694af789edb1b3f4518209af5fe2ba136d175d35cf",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 119,
-        "w": 34,
-        "x": 64,
+        "w": 35,
+        "x": 63,
         "y": 28
       },
       "state": "pistol-fire",
@@ -4384,23 +4384,23 @@
     },
     {
       "anchor": {
-        "x": 0.509804,
+        "x": 0.510204,
         "y": 0.991667
       },
       "direction": "south-west",
       "fps": 15,
       "frame": {
         "h": 120,
-        "w": 51,
-        "x": 435,
+        "w": 49,
+        "x": 344,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south-west__000",
+      "id": "lilly__torso-head__pistol-fire__south-west__000",
       "layer": "torso-head",
-      "opaquePixels": 2186,
+      "opaquePixels": 2307,
       "pivot": {
-        "x": 26,
+        "x": 25,
         "y": 119
       },
       "rotated": false,
@@ -4408,15 +4408,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "81c7722691893e08da914a46d4b203dfd00d9f1fdd90b2d18ecf3e635a420eab",
+      "sourcePixelSha256": "b36b359848402c17e0bb5d3bbf10b09b01985d186364f4d3496c4d2157c672d3",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 51,
-        "x": 54,
+        "w": 49,
+        "x": 55,
         "y": 27
       },
       "state": "pistol-fire",
@@ -4424,23 +4424,23 @@
     },
     {
       "anchor": {
-        "x": 0.52,
+        "x": 0.489796,
         "y": 0.991803
       },
       "direction": "south-west",
       "fps": 15,
       "frame": {
         "h": 122,
-        "w": 50,
-        "x": 173,
+        "w": 49,
+        "x": 162,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south-west__001",
+      "id": "lilly__torso-head__pistol-fire__south-west__001",
       "layer": "torso-head",
-      "opaquePixels": 2308,
+      "opaquePixels": 2437,
       "pivot": {
-        "x": 26,
+        "x": 24,
         "y": 121
       },
       "rotated": false,
@@ -4448,15 +4448,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "05ec50b345720737fefd50dfcd7bf774fafd3e8400b362267b83d86573d028c8",
+      "sourcePixelSha256": "c3b0809d10627e7fc980f288dbc0e0931720fda5fc426de45482eac1c2ecd56a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 122,
-        "w": 50,
-        "x": 54,
+        "w": 49,
+        "x": 56,
         "y": 25
       },
       "state": "pistol-fire",
@@ -4464,23 +4464,23 @@
     },
     {
       "anchor": {
-        "x": 0.509804,
+        "x": 0.489796,
         "y": 0.991803
       },
       "direction": "south-west",
       "fps": 15,
       "frame": {
         "h": 122,
-        "w": 51,
-        "x": 225,
+        "w": 49,
+        "x": 213,
         "y": 2
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__torso-head__pistol-fire__south-west__002",
+      "id": "lilly__torso-head__pistol-fire__south-west__002",
       "layer": "torso-head",
-      "opaquePixels": 2255,
+      "opaquePixels": 2392,
       "pivot": {
-        "x": 26,
+        "x": 24,
         "y": 121
       },
       "rotated": false,
@@ -4488,15 +4488,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "64f501485c08041a3a30d68d6999e071743105ee93867e55a008cac3e33f7462",
+      "sourcePixelSha256": "7f809713db2ed5867769715b3e996c17d7915810a222f14b2225bc1bc70262fa",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 122,
-        "w": 51,
-        "x": 54,
+        "w": 49,
+        "x": 56,
         "y": 25
       },
       "state": "pistol-fire",
@@ -4504,23 +4504,23 @@
     },
     {
       "anchor": {
-        "x": 0.52459,
+        "x": 0.508475,
         "y": 0.991667
       },
       "direction": "south",
       "fps": 10,
       "frame": {
         "h": 120,
-        "w": 61,
-        "x": 178,
+        "w": 59,
+        "x": 94,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__south__000",
+      "id": "lilly__torso-head__hurt__south__000",
       "layer": "torso-head",
-      "opaquePixels": 2670,
+      "opaquePixels": 2707,
       "pivot": {
-        "x": 32,
+        "x": 30,
         "y": 119
       },
       "rotated": false,
@@ -4528,15 +4528,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "d953371b852a6d888c77d5a23fecf98dd5ab8c60a8cfefe124a39e73a6b59d9a",
+      "sourcePixelSha256": "b3db0de5984b38f27404571c3bb12304eb36168c0a3ff568f0a27e8f8680f1cd",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 61,
-        "x": 48,
+        "w": 59,
+        "x": 50,
         "y": 27
       },
       "state": "hurt",
@@ -4552,13 +4552,13 @@
       "frame": {
         "h": 120,
         "w": 53,
-        "x": 241,
+        "x": 155,
         "y": 127
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__south__001",
+      "id": "lilly__torso-head__hurt__south__001",
       "layer": "torso-head",
-      "opaquePixels": 2496,
+      "opaquePixels": 2494,
       "pivot": {
         "x": 26,
         "y": 119
@@ -4568,7 +4568,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "db1f0ed4528eea244cb2425ca29c1f74195bf70cefaa694c9cfa21ccf2de5214",
+      "sourcePixelSha256": "3a875c386997ffb36140203b254e6590cce6b86f1b6428fee28592fa20d5ae9a",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -4584,23 +4584,23 @@
     },
     {
       "anchor": {
-        "x": 0.5,
+        "x": 0.490909,
         "y": 0.991525
       },
       "direction": "south-east",
       "fps": 10,
       "frame": {
         "h": 118,
-        "w": 56,
-        "x": 301,
+        "w": 55,
+        "x": 176,
         "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__south-east__000",
+      "id": "lilly__torso-head__hurt__south-east__000",
       "layer": "torso-head",
-      "opaquePixels": 2722,
+      "opaquePixels": 2712,
       "pivot": {
-        "x": 28,
+        "x": 27,
         "y": 117
       },
       "rotated": false,
@@ -4608,15 +4608,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "05cbf9176f9bced9b5399c092935d938e4843ff47f079b4c21397ad08f21ccd4",
+      "sourcePixelSha256": "a910b4deb9974339909b65db18bc36b9f8c5b747db580a1bcf0fea2137e850b8",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 118,
-        "w": 56,
-        "x": 52,
+        "w": 55,
+        "x": 53,
         "y": 29
       },
       "state": "hurt",
@@ -4624,21 +4624,21 @@
     },
     {
       "anchor": {
-        "x": 0.5,
+        "x": 0.511111,
         "y": 0.991736
       },
       "direction": "south-east",
       "fps": 10,
       "frame": {
         "h": 121,
-        "w": 46,
-        "x": 775,
+        "w": 45,
+        "x": 732,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__south-east__001",
+      "id": "lilly__torso-head__hurt__south-east__001",
       "layer": "torso-head",
-      "opaquePixels": 2159,
+      "opaquePixels": 2185,
       "pivot": {
         "x": 23,
         "y": 120
@@ -4648,14 +4648,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "30cdf75dbd521ac2244c86fb1ffe55e33063b775dcd05b9b3bad6cd0b32fe555",
+      "sourcePixelSha256": "ef99651155aca3f2cf418a04632c8f7ad38179ec1fc45dfc1f7b1148e568fd0f",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 46,
+        "w": 45,
         "x": 57,
         "y": 26
       },
@@ -4672,13 +4672,13 @@
       "frame": {
         "h": 117,
         "w": 43,
-        "x": 460,
+        "x": 331,
         "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__east__000",
+      "id": "lilly__torso-head__hurt__east__000",
       "layer": "torso-head",
-      "opaquePixels": 2141,
+      "opaquePixels": 2175,
       "pivot": {
         "x": 18,
         "y": 116
@@ -4688,7 +4688,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "248539741a0ecac17110669484ff3f406aa3ce13bc9f00fdc1b25be888a4dfe8",
+      "sourcePixelSha256": "0f8a2323c76a9be1cef27c97e45ee7218017ec97fc81729132f345a25b3d4ed4",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -4704,21 +4704,21 @@
     },
     {
       "anchor": {
-        "x": 0.457143,
+        "x": 0.484848,
         "y": 0.991736
       },
       "direction": "east",
       "fps": 10,
       "frame": {
         "h": 121,
-        "w": 35,
-        "x": 681,
+        "w": 33,
+        "x": 643,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__east__001",
+      "id": "lilly__torso-head__hurt__east__001",
       "layer": "torso-head",
-      "opaquePixels": 1808,
+      "opaquePixels": 1951,
       "pivot": {
         "x": 16,
         "y": 120
@@ -4728,14 +4728,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "8c8089c7b8c2180c8cad16bc8a36122d3eace3b16532aab195da5f142b9b783e",
+      "sourcePixelSha256": "38391c165ddc621c4a9bcb58b95a347abc640a49c7436184cca52c012875c50a",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 35,
+        "w": 33,
         "x": 64,
         "y": 26
       },
@@ -4744,23 +4744,23 @@
     },
     {
       "anchor": {
-        "x": 0.454545,
+        "x": 0.44186,
         "y": 0.991453
       },
       "direction": "north-east",
       "fps": 10,
       "frame": {
         "h": 117,
-        "w": 44,
-        "x": 505,
+        "w": 43,
+        "x": 376,
         "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__north-east__000",
+      "id": "lilly__torso-head__hurt__north-east__000",
       "layer": "torso-head",
-      "opaquePixels": 2097,
+      "opaquePixels": 2186,
       "pivot": {
-        "x": 20,
+        "x": 19,
         "y": 116
       },
       "rotated": false,
@@ -4768,15 +4768,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "9ea274809a07d897472c246386c2e938eb818bb34a1d44dc4067cdcf31e01893",
+      "sourcePixelSha256": "07574f675c29ab828ed15a5d8cc47a9e07a5c9020880b7f631badea51cb1fb9d",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 117,
-        "w": 44,
-        "x": 60,
+        "w": 43,
+        "x": 61,
         "y": 30
       },
       "state": "hurt",
@@ -4784,23 +4784,23 @@
     },
     {
       "anchor": {
-        "x": 0.509091,
+        "x": 0.519231,
         "y": 0.991736
       },
       "direction": "north-east",
       "fps": 10,
       "frame": {
         "h": 121,
-        "w": 55,
-        "x": 718,
+        "w": 52,
+        "x": 678,
         "y": 2
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__north-east__001",
+      "id": "lilly__torso-head__hurt__north-east__001",
       "layer": "torso-head",
-      "opaquePixels": 2277,
+      "opaquePixels": 2388,
       "pivot": {
-        "x": 28,
+        "x": 27,
         "y": 120
       },
       "rotated": false,
@@ -4808,15 +4808,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "24cec36163d6df46420ab8e376bc2e1c6c9e5831bc6845a6cc61ef9031f93320",
+      "sourcePixelSha256": "19cc10ed4fdd83dd1f59745b9dda49f644fab32703df2da0b66e9f3dfff876dc",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 55,
-        "x": 52,
+        "w": 52,
+        "x": 53,
         "y": 26
       },
       "state": "hurt",
@@ -4824,21 +4824,21 @@
     },
     {
       "anchor": {
-        "x": 0.47541,
+        "x": 0.491525,
         "y": 0.991525
       },
       "direction": "north",
       "fps": 10,
       "frame": {
         "h": 118,
-        "w": 61,
-        "x": 183,
+        "w": 59,
+        "x": 60,
         "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__north__000",
+      "id": "lilly__torso-head__hurt__north__000",
       "layer": "torso-head",
-      "opaquePixels": 2567,
+      "opaquePixels": 2502,
       "pivot": {
         "x": 29,
         "y": 117
@@ -4848,14 +4848,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "0dd07e64d6e064ed988cc13d23eae5148ce084f60121e46ffe422ae7432bb6ef",
+      "sourcePixelSha256": "b78d7fd18a2ccb7dd29280272df862bf19a816c9ddc1e06bb200efe3651c5877",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 118,
-        "w": 61,
+        "w": 59,
         "x": 51,
         "y": 29
       },
@@ -4872,13 +4872,13 @@
       "frame": {
         "h": 118,
         "w": 53,
-        "x": 246,
+        "x": 121,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__north__001",
+      "id": "lilly__torso-head__hurt__north__001",
       "layer": "torso-head",
-      "opaquePixels": 2493,
+      "opaquePixels": 2516,
       "pivot": {
         "x": 27,
         "y": 117
@@ -4888,7 +4888,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "95aa6caff166354e74f652059eba10cb84a7057908987fd573ed47f5874f0239",
+      "sourcePixelSha256": "86a3473259aa2a45005e3646ae6f43b1a0978a5fcbb273b85fc92290d617e86b",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -4904,21 +4904,21 @@
     },
     {
       "anchor": {
-        "x": 0.508772,
+        "x": 0.517857,
         "y": 0.991667
       },
       "direction": "north-west",
       "fps": 10,
       "frame": {
         "h": 120,
-        "w": 57,
-        "x": 119,
+        "w": 56,
+        "x": 36,
         "y": 127
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__north-west__000",
+      "id": "lilly__torso-head__hurt__north-west__000",
       "layer": "torso-head",
-      "opaquePixels": 2579,
+      "opaquePixels": 2550,
       "pivot": {
         "x": 29,
         "y": 119
@@ -4928,14 +4928,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "c07a95b5aaeb720bf0df6851453de8b090848504bc8a1bb453192695b0b7c31f",
+      "sourcePixelSha256": "ae6e753ac41966752e13a2c6193316254c3299f113303a69baf128818e4d11f6",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 120,
-        "w": 57,
+        "w": 56,
         "x": 51,
         "y": 27
       },
@@ -4944,23 +4944,23 @@
     },
     {
       "anchor": {
-        "x": 0.5,
+        "x": 0.488889,
         "y": 0.991453
       },
       "direction": "north-west",
       "fps": 10,
       "frame": {
         "h": 117,
-        "w": 46,
-        "x": 551,
+        "w": 45,
+        "x": 421,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__north-west__001",
+      "id": "lilly__torso-head__hurt__north-west__001",
       "layer": "torso-head",
-      "opaquePixels": 2189,
+      "opaquePixels": 2217,
       "pivot": {
-        "x": 23,
+        "x": 22,
         "y": 116
       },
       "rotated": false,
@@ -4968,15 +4968,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e14bd55c402426d4ad78e357deed39b9a4f8b3747cdc7083dcf3d707041d7e01",
+      "sourcePixelSha256": "2dc874fdf56cc1182bf4e582e75b7bc3fbd23ca9d0ce79d1d7ca973edf365b10",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 117,
-        "w": 46,
-        "x": 57,
+        "w": 45,
+        "x": 58,
         "y": 30
       },
       "state": "hurt",
@@ -4992,13 +4992,13 @@
       "frame": {
         "h": 121,
         "w": 43,
-        "x": 869,
+        "x": 824,
         "y": 2
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__west__000",
+      "id": "lilly__torso-head__hurt__west__000",
       "layer": "torso-head",
-      "opaquePixels": 1995,
+      "opaquePixels": 2095,
       "pivot": {
         "x": 25,
         "y": 120
@@ -5008,7 +5008,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "6d051a493c9ac1cf42fcd89bbda0714d23e699a082f6648ca5345ee39f311448",
+      "sourcePixelSha256": "5e4cbca89df53948c481b08efe65cd8fdf49bc8313339d678eb6d854026e0930",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5024,23 +5024,23 @@
     },
     {
       "anchor": {
-        "x": 0.542857,
+        "x": 0.515152,
         "y": 0.991453
       },
       "direction": "west",
       "fps": 10,
       "frame": {
         "h": 117,
-        "w": 35,
-        "x": 599,
+        "w": 33,
+        "x": 468,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__west__001",
+      "id": "lilly__torso-head__hurt__west__001",
       "layer": "torso-head",
-      "opaquePixels": 1696,
+      "opaquePixels": 1795,
       "pivot": {
-        "x": 19,
+        "x": 17,
         "y": 116
       },
       "rotated": false,
@@ -5048,15 +5048,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "50634676bdc6fd2cc0c9be8b418894f08495febee63e5d3502b09008e2d63d95",
+      "sourcePixelSha256": "0456c24bc3467e7399a026a5202a4c80be0b03eae5fdc9f02c42718a5875f470",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 117,
-        "w": 35,
-        "x": 61,
+        "w": 33,
+        "x": 63,
         "y": 30
       },
       "state": "hurt",
@@ -5064,21 +5064,21 @@
     },
     {
       "anchor": {
-        "x": 0.545455,
+        "x": 0.55814,
         "y": 0.991736
       },
       "direction": "south-west",
       "fps": 10,
       "frame": {
         "h": 121,
-        "w": 44,
-        "x": 823,
+        "w": 43,
+        "x": 779,
         "y": 2
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__torso-head__hurt__south-west__000",
+      "id": "lilly__torso-head__hurt__south-west__000",
       "layer": "torso-head",
-      "opaquePixels": 2154,
+      "opaquePixels": 2264,
       "pivot": {
         "x": 24,
         "y": 120
@@ -5088,14 +5088,14 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "3d282fe7317b3db9f9577681542795c701ed0ac03ddd7526b2639fc80b5765bc",
+      "sourcePixelSha256": "1398ffc1c5e2ef8155919e9ad0c69488310bdbb9286c3013708ca8525cec41a8",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 121,
-        "w": 44,
+        "w": 43,
         "x": 56,
         "y": 26
       },
@@ -5104,23 +5104,23 @@
     },
     {
       "anchor": {
-        "x": 0.490909,
+        "x": 0.480769,
         "y": 0.991525
       },
       "direction": "south-west",
       "fps": 10,
       "frame": {
         "h": 118,
-        "w": 55,
-        "x": 359,
+        "w": 52,
+        "x": 233,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__torso-head__hurt__south-west__001",
+      "id": "lilly__torso-head__hurt__south-west__001",
       "layer": "torso-head",
-      "opaquePixels": 2283,
+      "opaquePixels": 2387,
       "pivot": {
-        "x": 27,
+        "x": 25,
         "y": 117
       },
       "rotated": false,
@@ -5128,15 +5128,15 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "0529745555bf923c21b692b6d2d97909aeb1eee6766216b5881ac7e412ac5e34",
+      "sourcePixelSha256": "c1a2255183c1b218f8427e07becd5b0273d8caada99ab62e632f11c469bdebc2",
       "sourceSize": {
         "h": 160,
         "w": 160
       },
       "spriteSourceSize": {
         "h": 118,
-        "w": 55,
-        "x": 53,
+        "w": 52,
+        "x": 55,
         "y": 29
       },
       "state": "hurt",
@@ -5152,13 +5152,13 @@
       "frame": {
         "h": 81,
         "w": 15,
-        "x": 73,
-        "y": 471
+        "x": 908,
+        "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__south__000",
+      "id": "lilly__weapon__aim__south__000",
       "layer": "weapon",
-      "opaquePixels": 333,
+      "opaquePixels": 334,
       "pivot": {
         "x": 7,
         "y": 80
@@ -5168,7 +5168,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "782da9da0eef91fed9432d01354aa9d7cdc0e9e493710fab6022fdfe9705f334",
+      "sourcePixelSha256": "667827b5d048d25316f0879b061f5a741c20b35b58e5717cc4258c30f9058c01",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5192,11 +5192,11 @@
       "frame": {
         "h": 81,
         "w": 15,
-        "x": 90,
-        "y": 471
+        "x": 925,
+        "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__south__001",
+      "id": "lilly__weapon__aim__south__001",
       "layer": "weapon",
       "opaquePixels": 333,
       "pivot": {
@@ -5208,7 +5208,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "0a021371e9cfa01ad6c2eb581f2b4466028e81a9ff5e95ca858c2d575b635d99",
+      "sourcePixelSha256": "4359f7598067fdfdf0897e1c0407d32d11737402b11333068bfa3e86e0c2c4b0",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5232,11 +5232,11 @@
       "frame": {
         "h": 84,
         "w": 32,
-        "x": 803,
+        "x": 633,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__south-east__000",
+      "id": "lilly__weapon__aim__south-east__000",
       "layer": "weapon",
       "opaquePixels": 529,
       "pivot": {
@@ -5248,7 +5248,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "a38d94e94f8e5882aa7202f1820ec87fd5b7238687d2887523c45ab714b066ae",
+      "sourcePixelSha256": "42372d1dd400a570901db8728e8b63163fee671c2cd8415d946439f949491416",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5272,11 +5272,11 @@
       "frame": {
         "h": 84,
         "w": 32,
-        "x": 837,
+        "x": 667,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__south-east__001",
+      "id": "lilly__weapon__aim__south-east__001",
       "layer": "weapon",
       "opaquePixels": 529,
       "pivot": {
@@ -5288,7 +5288,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "292fe08cd711c60152cb3bbac1476b18b4dc5809d47edd57754fecdb06308a26",
+      "sourcePixelSha256": "8c99aa38cb684eada4c60aa60f08af5c994f225aa5e2b668179e03d0eb7aace8",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5312,11 +5312,11 @@
       "frame": {
         "h": 89,
         "w": 41,
-        "x": 352,
+        "x": 182,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__east__000",
+      "id": "lilly__weapon__aim__east__000",
       "layer": "weapon",
       "opaquePixels": 619,
       "pivot": {
@@ -5328,7 +5328,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "b4efb0e0a77a063d2030115a9357f98c268753841e67fcd75c1c5c89f354c676",
+      "sourcePixelSha256": "9d2e3575bf269d8a11316d72f3a3df9d38bc80c6fe2fafb0d89e7df3d64a502c",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5352,11 +5352,11 @@
       "frame": {
         "h": 89,
         "w": 41,
-        "x": 395,
+        "x": 225,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__east__001",
+      "id": "lilly__weapon__aim__east__001",
       "layer": "weapon",
       "opaquePixels": 607,
       "pivot": {
@@ -5368,7 +5368,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "a4ceca86a6313e936d10a2790b4eee3f4973815880664c74f7e1663d6c7ffe14",
+      "sourcePixelSha256": "b324d165fc0d46709a239ac87af4b0a5cba914eea1c1798d8e956e829fe2bbf5",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5392,11 +5392,11 @@
       "frame": {
         "h": 100,
         "w": 32,
-        "x": 2,
-        "y": 369
+        "x": 854,
+        "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__north-east__000",
+      "id": "lilly__weapon__aim__north-east__000",
       "layer": "weapon",
       "opaquePixels": 587,
       "pivot": {
@@ -5408,7 +5408,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "597fbc6ed93944ac4e379b926982d9c95ae9433556251956a1091f5c2d825e51",
+      "sourcePixelSha256": "eaad75de0309f562a8adf7c216ca2c932553b930d47b0af85b58b59e83ae0203",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5432,13 +5432,13 @@
       "frame": {
         "h": 100,
         "w": 32,
-        "x": 36,
-        "y": 369
+        "x": 888,
+        "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__north-east__001",
+      "id": "lilly__weapon__aim__north-east__001",
       "layer": "weapon",
-      "opaquePixels": 589,
+      "opaquePixels": 588,
       "pivot": {
         "x": 1,
         "y": 99
@@ -5448,7 +5448,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "3accfcb5bfc6f1ee84fa9bfd63bf91a5a74322fe513091daabdd3c52fa2395aa",
+      "sourcePixelSha256": "85c0aed46ea101534cf4d9bd45b8877ae678e704791d3f5fc122778bd7ce9910",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5472,11 +5472,11 @@
       "frame": {
         "h": 104,
         "w": 15,
-        "x": 956,
+        "x": 803,
         "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__north__000",
+      "id": "lilly__weapon__aim__north__000",
       "layer": "weapon",
       "opaquePixels": 455,
       "pivot": {
@@ -5488,7 +5488,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "71e56776d1fbe83fda528cf75afc3553ede3a8de9ce5c6142f166344d902fc28",
+      "sourcePixelSha256": "113e3ea0a933814e48bd136b7fd979a18000ae1510c64be283370f03f7a710c8",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5512,11 +5512,11 @@
       "frame": {
         "h": 105,
         "w": 15,
-        "x": 922,
+        "x": 769,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__north__001",
+      "id": "lilly__weapon__aim__north__001",
       "layer": "weapon",
       "opaquePixels": 453,
       "pivot": {
@@ -5528,7 +5528,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "cd870c09913ffbdc8ac181796b98028f8e78b0fd3a4da43d52ec4d5bf662e95e",
+      "sourcePixelSha256": "6ed516e036fe81dfd124508a4558855b14643afde0a64745ee24d095714b17d0",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5552,11 +5552,11 @@
       "frame": {
         "h": 100,
         "w": 32,
-        "x": 70,
-        "y": 369
+        "x": 922,
+        "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__north-west__000",
+      "id": "lilly__weapon__aim__north-west__000",
       "layer": "weapon",
       "opaquePixels": 589,
       "pivot": {
@@ -5568,7 +5568,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "9e00f6c7c7f2680f4cc871d8a2393586e85970772375627cf0225044c496e25c",
+      "sourcePixelSha256": "c5aa9e52666946be9556758e03c1018e73c7d87c1dc7da5249192d25ed4cac0b",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5592,11 +5592,11 @@
       "frame": {
         "h": 100,
         "w": 32,
-        "x": 104,
-        "y": 369
+        "x": 956,
+        "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__north-west__001",
+      "id": "lilly__weapon__aim__north-west__001",
       "layer": "weapon",
       "opaquePixels": 589,
       "pivot": {
@@ -5608,7 +5608,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ea1f4e56e1c899aa8760b47ffbb0b5994306a5c06742ebd7de310c1fe2a25978",
+      "sourcePixelSha256": "6bf4e8c4437fd140ff489183db2b47bd4226076d63fb32abf47c2e3e673f1b26",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5632,11 +5632,11 @@
       "frame": {
         "h": 89,
         "w": 42,
-        "x": 438,
+        "x": 268,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__west__000",
+      "id": "lilly__weapon__aim__west__000",
       "layer": "weapon",
       "opaquePixels": 620,
       "pivot": {
@@ -5648,7 +5648,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "edb4fa3cf01ba5a3b6cbe84248660c6752f4b868386524f2283da7a8ca8cd440",
+      "sourcePixelSha256": "e764b994a3a0e905a5f40c001b054f19156859d79cae98c9c8696b83f91af679",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5672,11 +5672,11 @@
       "frame": {
         "h": 89,
         "w": 42,
-        "x": 482,
+        "x": 312,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__west__001",
+      "id": "lilly__weapon__aim__west__001",
       "layer": "weapon",
       "opaquePixels": 609,
       "pivot": {
@@ -5688,7 +5688,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "9621791414409becfee4859b21a49cad265ab9404c0e799577c1d89044fee601",
+      "sourcePixelSha256": "425814fd9b65a6f87ebeae67ee7478effd940c64b970e8be9aaa6903332db9f0",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5712,11 +5712,11 @@
       "frame": {
         "h": 84,
         "w": 32,
-        "x": 871,
+        "x": 701,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__aim__south-west__000",
+      "id": "lilly__weapon__aim__south-west__000",
       "layer": "weapon",
       "opaquePixels": 529,
       "pivot": {
@@ -5728,7 +5728,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "c0fe8076537df4a9f436089de4a9dc2c4d6f3a135a856c27b8b948e8dcadae6b",
+      "sourcePixelSha256": "e50ac31e606135a89429e5ea79c4c2acd47114457e16ae25e1f1e437e6c7a189",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5752,11 +5752,11 @@
       "frame": {
         "h": 84,
         "w": 32,
-        "x": 905,
+        "x": 735,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__aim__south-west__001",
+      "id": "lilly__weapon__aim__south-west__001",
       "layer": "weapon",
       "opaquePixels": 529,
       "pivot": {
@@ -5768,7 +5768,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "1cbd2424b5739588649a8e573c04f9f6f05aad4be55f977adb8ffe6e271aaab8",
+      "sourcePixelSha256": "30bc3613ac453aaaaa1c899013b7256cc67e15f4ea4f59ff7fce20685e8f0e91",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5792,11 +5792,11 @@
       "frame": {
         "h": 81,
         "w": 15,
-        "x": 182,
+        "x": 2,
         "y": 471
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__south__000",
+      "id": "lilly__weapon__pistol-fire__south__000",
       "layer": "weapon",
       "opaquePixels": 332,
       "pivot": {
@@ -5808,7 +5808,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "36b7677d1f6dc251604a9fbccf27f4f4d013c871ea1224d67d82d15a72468b5f",
+      "sourcePixelSha256": "a559cc436b2fb8cb535097b22d4f54ff06e2d3589e6420aad1b14c1a6567cae1",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5832,11 +5832,11 @@
       "frame": {
         "h": 77,
         "w": 15,
-        "x": 49,
-        "y": 556
+        "x": 36,
+        "y": 471
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__south__001",
+      "id": "lilly__weapon__pistol-fire__south__001",
       "layer": "weapon",
       "opaquePixels": 368,
       "pivot": {
@@ -5848,7 +5848,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "f4af1af155f5d4e876aa996b0a74627e6f0590dacdc5baecf526fb68a97f3198",
+      "sourcePixelSha256": "f2f6c6bf9496dea9e9f27c0c5f92117186a796959948edef2af56c3bf274a10e",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5872,11 +5872,11 @@
       "frame": {
         "h": 80,
         "w": 15,
-        "x": 199,
+        "x": 19,
         "y": 471
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__south__002",
+      "id": "lilly__weapon__pistol-fire__south__002",
       "layer": "weapon",
       "opaquePixels": 349,
       "pivot": {
@@ -5888,7 +5888,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e3a7c35d713e237140db0d6507f832050c661a927c57b2bee7ad3b0c2cf63575",
+      "sourcePixelSha256": "19dc47563211d54b5a75679a06b37ccc0e0e7a3d5e2c25d034e7a8baead94463",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5912,11 +5912,11 @@
       "frame": {
         "h": 84,
         "w": 32,
-        "x": 939,
+        "x": 769,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__south-east__000",
+      "id": "lilly__weapon__pistol-fire__south-east__000",
       "layer": "weapon",
       "opaquePixels": 529,
       "pivot": {
@@ -5928,7 +5928,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "0593ac50e70716a214309a551d6db02f1575fff7edb9b3d0981b54583b2dbb8a",
+      "sourcePixelSha256": "017e5e02327f8c5db9cc965c99946b10c1d4707653b831be118a28a474fb4311",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5952,11 +5952,11 @@
       "frame": {
         "h": 81,
         "w": 35,
-        "x": 107,
-        "y": 471
+        "x": 942,
+        "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__south-east__001",
+      "id": "lilly__weapon__pistol-fire__south-east__001",
       "layer": "weapon",
       "opaquePixels": 537,
       "pivot": {
@@ -5968,7 +5968,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ec58dd4487d498fc2d377854454fc9da366a50938bbac22b635505559294748b",
+      "sourcePixelSha256": "0eeb28328880b20d309ca87fd0a1515a412802732f38737210a9577a060f0bea",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -5992,11 +5992,11 @@
       "frame": {
         "h": 83,
         "w": 33,
-        "x": 2,
-        "y": 471
+        "x": 837,
+        "y": 369
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__south-east__002",
+      "id": "lilly__weapon__pistol-fire__south-east__002",
       "layer": "weapon",
       "opaquePixels": 528,
       "pivot": {
@@ -6008,7 +6008,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ad8c85cb75302e05b45c3d90fb4b59e29278d7d194d3fc16492b7654aed4b895",
+      "sourcePixelSha256": "384f0efcf7c364ed74dbc9940257a92f4fe7c513aba03eae3c15e5afac568a6e",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6032,13 +6032,13 @@
       "frame": {
         "h": 89,
         "w": 41,
-        "x": 526,
+        "x": 356,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__east__000",
+      "id": "lilly__weapon__pistol-fire__east__000",
       "layer": "weapon",
-      "opaquePixels": 613,
+      "opaquePixels": 612,
       "pivot": {
         "x": 0,
         "y": 88
@@ -6048,7 +6048,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "4110a24ede1ad45284870465b64149fee743295d2e7c3a04866e457b9f9aa046",
+      "sourcePixelSha256": "b5cc16e1dce31186df3f0f5e55f75ed8394e4e69640535e68153bcd45846d599",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6072,11 +6072,11 @@
       "frame": {
         "h": 89,
         "w": 47,
-        "x": 569,
+        "x": 399,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__east__001",
+      "id": "lilly__weapon__pistol-fire__east__001",
       "layer": "weapon",
       "opaquePixels": 615,
       "pivot": {
@@ -6088,7 +6088,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "85a1b0f31ae9baccda7c4a67be88c1a71f5be800cc501b4e54554cdd637dc0ef",
+      "sourcePixelSha256": "c59a373ec9b6db4ceb494ca57dccdbdf9d95c7046b750c0620f789121c71839a",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6112,11 +6112,11 @@
       "frame": {
         "h": 89,
         "w": 43,
-        "x": 618,
+        "x": 448,
         "y": 369
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__east__002",
+      "id": "lilly__weapon__pistol-fire__east__002",
       "layer": "weapon",
       "opaquePixels": 601,
       "pivot": {
@@ -6128,7 +6128,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "470dbf1e585c35d17d021523268127e3bec2a94c7960ed92662e9cf19f1a62be",
+      "sourcePixelSha256": "1181cebc4badea9d0805704fd3f4af11d750867d29af2cbd1488b822ba257c9f",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6152,11 +6152,11 @@
       "frame": {
         "h": 100,
         "w": 32,
-        "x": 138,
-        "y": 369
+        "x": 990,
+        "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__north-east__000",
+      "id": "lilly__weapon__pistol-fire__north-east__000",
       "layer": "weapon",
       "opaquePixels": 589,
       "pivot": {
@@ -6168,7 +6168,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "03994d59314673f05d36e9120a34490c3ffb6b8277aeaf733ede30424968d4e9",
+      "sourcePixelSha256": "4dd242eccf78b6c9a78961c4a04c1bbe74d735fd74f303f9ad28026ece4b99cb",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6192,13 +6192,13 @@
       "frame": {
         "h": 99,
         "w": 35,
-        "x": 277,
+        "x": 107,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__north-east__001",
+      "id": "lilly__weapon__pistol-fire__north-east__001",
       "layer": "weapon",
-      "opaquePixels": 575,
+      "opaquePixels": 574,
       "pivot": {
         "x": 0,
         "y": 98
@@ -6208,7 +6208,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "f9c8dfc492e298b587fc5588c9501a27dcfc4a5107ef3181ee88c62ec8c91ed7",
+      "sourcePixelSha256": "3279b7de90acccc1868a3753bc2fbbc415881d5b2387ef72eaa3310ba556f2a9",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6232,11 +6232,11 @@
       "frame": {
         "h": 100,
         "w": 33,
-        "x": 172,
+        "x": 2,
         "y": 369
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__north-east__002",
+      "id": "lilly__weapon__pistol-fire__north-east__002",
       "layer": "weapon",
       "opaquePixels": 585,
       "pivot": {
@@ -6248,7 +6248,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "aac8851de023f7b01730bf2b1af73b8c4367a2f2d44ea0c296a396c403955ada",
+      "sourcePixelSha256": "e50a8e8b507efe784e7b890793f8151cdf260f7a1105720f88b4ee22f8c766f2",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6272,11 +6272,11 @@
       "frame": {
         "h": 105,
         "w": 15,
-        "x": 939,
+        "x": 786,
         "y": 249
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__north__000",
+      "id": "lilly__weapon__pistol-fire__north__000",
       "layer": "weapon",
       "opaquePixels": 451,
       "pivot": {
@@ -6288,7 +6288,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "7e293d8d8d144a47caf0f796ae6ad012792bb3f88307113f268908e5d91e3488",
+      "sourcePixelSha256": "3de1c4ce3a7fdd358ff7351fe3eb0f340097c2218e6591302f99e9e84fdc20ad",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6312,11 +6312,11 @@
       "frame": {
         "h": 104,
         "w": 15,
-        "x": 973,
+        "x": 820,
         "y": 249
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__north__001",
+      "id": "lilly__weapon__pistol-fire__north__001",
       "layer": "weapon",
       "opaquePixels": 422,
       "pivot": {
@@ -6328,7 +6328,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "ce28758eda6628bbadb7e07857aea5525a30bf448febc0f0c5e1b2d0200cba4e",
+      "sourcePixelSha256": "371231fc73feec20de4c1870a8bb20d4cd6f411c111bad6e82c4826e0a414b80",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6352,11 +6352,11 @@
       "frame": {
         "h": 104,
         "w": 15,
-        "x": 990,
+        "x": 837,
         "y": 249
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__north__002",
+      "id": "lilly__weapon__pistol-fire__north__002",
       "layer": "weapon",
       "opaquePixels": 446,
       "pivot": {
@@ -6368,7 +6368,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "080f793db1ed4993bc459bf2595b705d051e8c3ba514f6b6fe159c5a9bbb61a2",
+      "sourcePixelSha256": "6b9e3f84e1557a9462f1348fe8cc5e32796315f4790a95c629f5c779da8f58c3",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6392,11 +6392,11 @@
       "frame": {
         "h": 100,
         "w": 32,
-        "x": 207,
+        "x": 37,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__north-west__000",
+      "id": "lilly__weapon__pistol-fire__north-west__000",
       "layer": "weapon",
       "opaquePixels": 589,
       "pivot": {
@@ -6408,7 +6408,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "3dae1ab1002ce0b812a5e887f97a28d46cb92d6eeca5634fbe744fbb928e55df",
+      "sourcePixelSha256": "f9496a678c54c64a49db4ca1c7d7aa88b1c6de94eecadba5afba8abcb773726b",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6432,11 +6432,11 @@
       "frame": {
         "h": 99,
         "w": 36,
-        "x": 314,
+        "x": 144,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__north-west__001",
+      "id": "lilly__weapon__pistol-fire__north-west__001",
       "layer": "weapon",
       "opaquePixels": 576,
       "pivot": {
@@ -6448,7 +6448,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e38ed02869c65bdeab2caebbf19c7d3e529f74bbfe601acbe1f3def053251470",
+      "sourcePixelSha256": "58a24c1992d48b23fd125abc07b87d56ead2181f208025fabef0582f22f76963",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6472,13 +6472,13 @@
       "frame": {
         "h": 100,
         "w": 34,
-        "x": 241,
+        "x": 71,
         "y": 369
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__north-west__002",
+      "id": "lilly__weapon__pistol-fire__north-west__002",
       "layer": "weapon",
-      "opaquePixels": 584,
+      "opaquePixels": 585,
       "pivot": {
         "x": 33,
         "y": 99
@@ -6488,7 +6488,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "9b418a3a1cc28e274aabf146f37d8930fe87aea46f3d6c54dfb03b441b80b054",
+      "sourcePixelSha256": "79ca43e906619fdeac27f65c7d0e4eaa211083d146c0beee2d66d224d6f5f36a",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6512,11 +6512,11 @@
       "frame": {
         "h": 89,
         "w": 42,
-        "x": 663,
+        "x": 493,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__west__000",
+      "id": "lilly__weapon__pistol-fire__west__000",
       "layer": "weapon",
       "opaquePixels": 612,
       "pivot": {
@@ -6528,7 +6528,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "314631f573275b102c5c851180eb256dbf055c103b7203e0eae6b18c19e4103e",
+      "sourcePixelSha256": "7457c41982c6adaa9324c38333846dba00b896df7138a57c0e64f42560d1cc2a",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6552,11 +6552,11 @@
       "frame": {
         "h": 89,
         "w": 48,
-        "x": 707,
+        "x": 537,
         "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__west__001",
+      "id": "lilly__weapon__pistol-fire__west__001",
       "layer": "weapon",
       "opaquePixels": 615,
       "pivot": {
@@ -6568,7 +6568,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "6c03e14120739c4de932609de2bffd5de9d911f3d263579ce9551352522298ff",
+      "sourcePixelSha256": "ac3c33b573407248905b124c6597f109bbf4bb197f8ac662e51b5a4b9123fca0",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6592,13 +6592,13 @@
       "frame": {
         "h": 89,
         "w": 44,
-        "x": 757,
+        "x": 587,
         "y": 369
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__west__002",
+      "id": "lilly__weapon__pistol-fire__west__002",
       "layer": "weapon",
-      "opaquePixels": 602,
+      "opaquePixels": 601,
       "pivot": {
         "x": 43,
         "y": 88
@@ -6608,7 +6608,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "fd0a8bf15584ce75f97c00af194825cee8844ab1aa432ea9997490cb756fc9a1",
+      "sourcePixelSha256": "d5d1a1fd5c3f9b1bb95f01aca5c840eeee79b80b157f00f39b5567835ecd9f82",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6632,13 +6632,13 @@
       "frame": {
         "h": 84,
         "w": 32,
-        "x": 973,
+        "x": 803,
         "y": 369
       },
       "frameIndex": 0,
-      "id": "lit-valkyrie__weapon__pistol-fire__south-west__000",
+      "id": "lilly__weapon__pistol-fire__south-west__000",
       "layer": "weapon",
-      "opaquePixels": 528,
+      "opaquePixels": 529,
       "pivot": {
         "x": 31,
         "y": 83
@@ -6648,7 +6648,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "e6029f030793b1eff930028ce4b779bf3c478132abb42abe38cd4c7ed52412de",
+      "sourcePixelSha256": "94a0ed49daa4fc3a42e98689911430be405bf9363705badf8fac23806fdbef79",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6672,11 +6672,11 @@
       "frame": {
         "h": 81,
         "w": 36,
-        "x": 144,
-        "y": 471
+        "x": 979,
+        "y": 369
       },
       "frameIndex": 1,
-      "id": "lit-valkyrie__weapon__pistol-fire__south-west__001",
+      "id": "lilly__weapon__pistol-fire__south-west__001",
       "layer": "weapon",
       "opaquePixels": 538,
       "pivot": {
@@ -6688,7 +6688,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "c32bb9dd3b3e942bff1a1088dd3e608d9971e4f0ec126f1028725fae646a6374",
+      "sourcePixelSha256": "03b0cccc69a0783f0a02f3762f28001b34743ce4a06cfd35cbbccd58b4d0b679",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6712,11 +6712,11 @@
       "frame": {
         "h": 83,
         "w": 34,
-        "x": 37,
-        "y": 471
+        "x": 872,
+        "y": 369
       },
       "frameIndex": 2,
-      "id": "lit-valkyrie__weapon__pistol-fire__south-west__002",
+      "id": "lilly__weapon__pistol-fire__south-west__002",
       "layer": "weapon",
       "opaquePixels": 527,
       "pivot": {
@@ -6728,7 +6728,7 @@
         "x": 80,
         "y": 146
       },
-      "sourcePixelSha256": "00ec492ef9b30bdc7d877506a835d89763e8b7fa006f4a9f984278a8b654e014",
+      "sourcePixelSha256": "79a985091b5b2356328448dec00949297863779a899700339a1ac96f6106f541",
       "sourceSize": {
         "h": 160,
         "w": 160
@@ -6744,7 +6744,7 @@
     }
   ],
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "image": "./lit-valkyrie-production-pilot-atlas.png",
+  "image": "./lilly-production-pilot-atlas.png",
   "layers": [
     "shadow",
     "lower-body",
@@ -6754,5 +6754,5 @@
   "pipelineId": "hmh-reboot-production-hero-pilot-v1",
   "runtimeAuthority": "projection-only",
   "schemaVersion": 1,
-  "variantId": "plasma-striker"
+  "variantId": "gold-teal-veteran"
 }

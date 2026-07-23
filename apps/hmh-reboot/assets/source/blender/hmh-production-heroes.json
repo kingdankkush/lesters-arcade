@@ -206,6 +206,106 @@
         "metrics": "lit-valkyrie/lit-valkyrie-production-pilot-metrics.json",
         "contactSheet": "lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png"
       }
+    },
+    {
+      "actorId": "lester-original",
+      "variantId": "blue-mask-original",
+      "status": "production-pilot",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "runtimeAuthority": "projection-only",
+      "unlockGate": {
+        "type": "ranked-matches-played",
+        "count": 10,
+        "legacyMigrationAchievementId": "getaway-clear"
+      },
+      "artDirection": {
+        "mustReadAtRuntime": [
+          "blue-mask-white-face-stripe",
+          "large-readable-eyes",
+          "blue-neck-scarf",
+          "ammo-bandolier",
+          "tan-cargo-pants"
+        ]
+      },
+      "materials": {
+        "primary": "lester-blue",
+        "secondary": "cargo-tan",
+        "accent": "bandolier-brass"
+      },
+      "animationClips": ["idle", "run", "aim", "pistol-fire", "hurt"],
+      "layers": ["shadow", "lower-body", "torso-head", "weapon"],
+      "composition": ["shadow", "lower-body", "torso-head", "weapon"],
+      "clips": {
+        "shadow": {"idle": {"frames": 1, "fps": 1}},
+        "lower-body": {
+          "idle": {"frames": 2, "fps": 2},
+          "run": {"frames": 6, "fps": 12}
+        },
+        "torso-head": {
+          "aim": {"frames": 2, "fps": 2},
+          "pistol-fire": {"frames": 3, "fps": 15},
+          "hurt": {"frames": 2, "fps": 10}
+        },
+        "weapon": {
+          "aim": {"frames": 2, "fps": 2},
+          "pistol-fire": {"frames": 3, "fps": 15}
+        }
+      },
+      "output": {
+        "atlas": "lester-original/lester-original-production-pilot-atlas.png",
+        "metadata": "lester-original/lester-original-production-pilot-atlas.json",
+        "metrics": "lester-original/lester-original-production-pilot-metrics.json",
+        "contactSheet": "lester-original/lester-original-production-pilot-contact-sheet.png"
+      }
+    },
+    {
+      "actorId": "lilly",
+      "variantId": "gold-teal-veteran",
+      "status": "production-pilot",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "runtimeAuthority": "projection-only",
+      "unlockGate": {
+        "type": "ranked-matches-played",
+        "count": 20
+      },
+      "artDirection": {
+        "mustReadAtRuntime": [
+          "long-teal-hair",
+          "round-glasses",
+          "gold-teal-tactical-armor",
+          "slim-agile-silhouette"
+        ]
+      },
+      "materials": {
+        "primary": "tactical-black",
+        "secondary": "veteran-gold",
+        "accent": "lilly-teal"
+      },
+      "animationClips": ["idle", "run", "aim", "pistol-fire", "hurt"],
+      "layers": ["shadow", "lower-body", "torso-head", "weapon"],
+      "composition": ["shadow", "lower-body", "torso-head", "weapon"],
+      "clips": {
+        "shadow": {"idle": {"frames": 1, "fps": 1}},
+        "lower-body": {
+          "idle": {"frames": 2, "fps": 2},
+          "run": {"frames": 6, "fps": 12}
+        },
+        "torso-head": {
+          "aim": {"frames": 2, "fps": 2},
+          "pistol-fire": {"frames": 3, "fps": 15},
+          "hurt": {"frames": 2, "fps": 10}
+        },
+        "weapon": {
+          "aim": {"frames": 2, "fps": 2},
+          "pistol-fire": {"frames": 3, "fps": 15}
+        }
+      },
+      "output": {
+        "atlas": "lilly/lilly-production-pilot-atlas.png",
+        "metadata": "lilly/lilly-production-pilot-atlas.json",
+        "metrics": "lilly/lilly-production-pilot-metrics.json",
+        "contactSheet": "lilly/lilly-production-pilot-contact-sheet.png"
+      }
     }
   ]
 }

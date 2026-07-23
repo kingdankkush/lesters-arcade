@@ -11,6 +11,18 @@ export const PRODUCTION_HERO_ASSETS = Object.freeze({
     imageUrl: '/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png',
     metadataUrl: '/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json',
   }),
+  'lester-original': Object.freeze({
+    actorId: 'lester-original',
+    variantId: 'blue-mask-original',
+    imageUrl: '/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png',
+    metadataUrl: '/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.json',
+  }),
+  lilly: Object.freeze({
+    actorId: 'lilly',
+    variantId: 'gold-teal-veteran',
+    imageUrl: '/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png',
+    metadataUrl: '/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.json',
+  }),
 });
 export const PRODUCTION_HERO_ATLAS_IMAGE_URL = PRODUCTION_HERO_ASSETS['lit-commando'].imageUrl;
 export const PRODUCTION_HERO_ATLAS_METADATA_URL = PRODUCTION_HERO_ASSETS['lit-commando'].metadataUrl;

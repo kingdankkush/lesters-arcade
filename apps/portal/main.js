@@ -5486,8 +5486,10 @@ function renderOfficialModeSelect() {
   }
 }
 
+const HMH_REBOOT_HERO_IDS = Object.freeze(['lit-commando', 'lit-valkyrie', 'lester-original', 'lilly']);
+
 function hmhRebootHeroId() {
-  return combat.characterId === 'lit-valkyrie' ? 'female-commando' : 'male-commando';
+  return HMH_REBOOT_HERO_IDS.includes(combat.characterId) ? combat.characterId : 'lit-commando';
 }
 
 function hmhRebootSettings() {

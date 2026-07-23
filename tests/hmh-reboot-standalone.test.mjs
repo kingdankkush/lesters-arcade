@@ -9,6 +9,7 @@ test('standalone development payload uses the same validated canonical init cont
   assert.deepEqual(second, first, 'standalone fallback must be deterministic');
   assert.equal(first.gameId, 'lester-blaster');
   assert.equal(first.mode, 'free');
+  assert.equal(first.heroId, 'lit-commando');
   assert.equal(first.profile.displayName, 'Standalone Developer');
   assert.equal(first.session.rankedEligible, false);
   assert.equal(Number.isInteger(first.session.seed), true);
@@ -19,6 +20,13 @@ test('standalone development payload uses the same validated canonical init cont
     payload: first,
   });
   assert.equal(validateParentMessage(envelope).ok, true);
+});
+
+test('standalone production pilot accepts only the four canonical actor ids', () => {
+  for (const heroId of ['lit-commando', 'lit-valkyrie', 'lester-original', 'lilly']) {
+    assert.equal(createStandaloneInitPayload({ heroId }).heroId, heroId);
+  }
+  assert.throws(() => createStandaloneInitPayload({ heroId: 'max-mempool' }), /unsupported standalone hero/);
 });
 
 test('standalone payload is deeply immutable and exposes no authority fields', () => {

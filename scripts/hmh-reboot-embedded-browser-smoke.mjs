@@ -42,7 +42,7 @@ host.mountSession({
   sessionId: 'embedded-smoke-session-0001',
   gameId: 'lester-blaster',
   mode: 'free',
-  heroId: 'male-commando',
+  heroId: 'lit-commando',
   profile: { displayName: 'Embedded Smoke', locale: 'en' },
   session: { seed: 178913641, buildHash: 'phase17-embedded-smoke', seasonId: 'season-1', rankedEligible: false },
   settings: { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false },

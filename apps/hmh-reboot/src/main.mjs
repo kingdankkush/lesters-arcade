@@ -58,6 +58,7 @@ import {
   createMannequinDisplay,
 } from './mannequin-atlas.mjs';
 import {
+  PRODUCTION_HERO_ASSETS,
   PRODUCTION_HERO_RUNTIME_SCALE,
   createProductionHeroAtlasIndex,
   createProductionHeroDisplay,
@@ -145,7 +146,10 @@ async function boot() {
   const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
   const productionPilotEnabled = runtimeParams.get('productionPilot') === '1';
-  const productionHeroId = runtimeParams.get('productionHero') === 'lit-valkyrie' ? 'lit-valkyrie' : 'lit-commando';
+  const requestedProductionHeroId = runtimeParams.get('productionHero');
+  const productionHeroId = Object.hasOwn(PRODUCTION_HERO_ASSETS, requestedProductionHeroId)
+    ? requestedProductionHeroId
+    : 'lit-commando';
   const productionHeroSelection = productionHeroAsset(productionHeroId);
 
   const world = new Container();
@@ -894,6 +898,10 @@ async function boot() {
 
   const initializeSession = (payload) => {
     stopCurrentSession();
+    const sessionHeroSelection = productionHeroAsset(payload.heroId);
+    if (productionHeroDisplay && sessionHeroSelection.actorId !== productionHeroSelection.actorId) {
+      throw new Error(`Production projection actor mismatch: loaded ${productionHeroSelection.actorId}, session requested ${sessionHeroSelection.actorId}`);
+    }
     sessionPayload = payload;
     settings = { ...payload.settings };
     elapsedMs = 0;
@@ -1757,7 +1765,9 @@ async function boot() {
     bridge.start();
     setStatus('Renderer ready', 'Waiting for portal session…');
   } else {
-    const payload = window.parent === window ? createStandaloneInitPayload() : null;
+    const payload = window.parent === window
+      ? createStandaloneInitPayload({ heroId: productionPilotEnabled ? productionHeroSelection.actorId : 'lit-commando' })
+      : null;
     initializeSession(payload);
     setStatus('Standalone session ready', `${payload.mode.toUpperCase()} // seed ${payload.session.seed} // no portal authority`);
   }

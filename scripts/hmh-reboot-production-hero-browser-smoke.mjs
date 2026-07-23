@@ -6,7 +6,7 @@ import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwrig
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const actorFlag = process.argv.indexOf('--actor');
 const actorId = actorFlag >= 0 ? process.argv[actorFlag + 1] : 'lit-commando';
-if (!['lit-commando', 'lit-valkyrie'].includes(actorId)) throw new Error(`Unsupported production hero smoke actor: ${actorId}`);
+if (!['lit-commando', 'lit-valkyrie', 'lester-original', 'lilly'].includes(actorId)) throw new Error(`Unsupported production hero smoke actor: ${actorId}`);
 const url = `${origin}/hmh-reboot/index.html?debugGrid=1&evidenceSafe=1&productionPilot=1&productionHero=${actorId}`;
 const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-phase20-production-hero/', import.meta.url);
 const reportUrl = new URL(`../.tmp/hmh-reboot-production-hero-browser-${actorId}.json`, import.meta.url);

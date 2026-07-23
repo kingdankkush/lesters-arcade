@@ -1,19 +1,19 @@
 {
-  "actorId": "lit-commando",
-  "atlasSha256": "80700449bab12458dfceb56dc8caeef743af614f9fc14ee90f82a1076b3a828a",
+  "actorId": "lilly",
+  "atlasSha256": "09a90acf922814753af510320149aba79c70f7e79cefb908e354a7570232ce88",
   "atlasSize": {
     "height": 1024,
     "width": 1024
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "cbd9ee8247e2c30cbb4198e49ef699a37bde9c670f6d2e4df3ef0596b7a57062",
+  "contactSheetSha256": "b6d0efd1db242a153878fed4cef91574ca4a8b505deef137292bb3a3c495d578",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 168,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "e3c5eed174cd9298989c9d8e40ff3a9c56737c86929d9ecea9d1308a4e6c7851",
+  "metadataSha256": "486fc3d826897741dcf67f903423450248f7b88910bcce010873f4e353eaf85f",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -25,7 +25,7 @@
     "maxChangedVisiblePixels": 0,
     "maxChannelDelta": 0,
     "maxTotalChannelDelta": 0,
-    "worstFrameId": "lit-commando__shadow__idle__south__000"
+    "worstFrameId": "lilly__shadow__idle__south__000"
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
@@ -34,6 +34,6 @@
   "transparentCornerFailureCount": 0,
   "uniqueAnimatedFrameCount": 160,
   "uniqueFrameIdCount": 168,
-  "variantId": "reserve-vanguard",
+  "variantId": "gold-teal-veteran",
   "weaponSocket": true
 }

@@ -23,7 +23,7 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /window\.location\.origin/);
   assert.doesNotMatch(source, /window\.ethereum|privateKey|settleRun|walletConnector/);
   assert.match(source, /createStandaloneInitPayload/);
-  assert.match(source, /window\.parent === window[\s\S]*?createStandaloneInitPayload\(\)/);
+  assert.match(source, /window\.parent === window[\s\S]*?createStandaloneInitPayload\(\{ heroId:/);
   assert.match(source, /new DeterministicSimulation\([\s\S]*?seed: payload\.session\.seed/);
   assert.match(source, /new InputState\(\)/);
   assert.match(source, /createPlayerMotionState\(/);
@@ -139,7 +139,7 @@ test('opt-in production hero pilot is projection-only and leaves graybox as the 
   assert.match(source, /createProductionHeroAtlasIndex/);
   assert.match(source, /createProductionHeroDisplay/);
   assert.match(source, /runtimeParams\.get\('productionPilot'\) === '1'/);
-  assert.match(source, /runtimeParams\.get\('productionHero'\) === 'lit-valkyrie'/);
+  assert.match(source, /Object\.hasOwn\(PRODUCTION_HERO_ASSETS, requestedProductionHeroId\)/);
   assert.match(source, /fetch\(productionHeroSelection\.metadataUrl/);
   assert.match(source, /Assets\.load\(productionHeroSelection\.imageUrl\)/);
   assert.match(source, /createProductionHeroAtlasIndex\(metadata, productionHeroSelection\)/);
