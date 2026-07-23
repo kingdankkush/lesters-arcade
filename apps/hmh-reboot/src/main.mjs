@@ -4,6 +4,9 @@ import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
+import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
+import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
+import { createEnemyPopulation, createEnemyState, stepEnemyPopulation } from './enemy-simulation.mjs';
 import {
   beginDash,
   createDashState,
@@ -187,12 +190,48 @@ async function boot() {
   const projectileImpacts = new Graphics();
   const grenadeVisuals = new Graphics();
   const combatVisuals = new Graphics();
-  const targetMarker = new Graphics().circle(0, 0, 30).fill({ color: 0xff5c7a, alpha: 0.28 }).stroke({ color: 0xff8ca1, width: 3 });
+  const enemyVisuals = new Container();
+  const enemyTelegraphs = new Graphics();
+  const enemyMarkers = new Map();
   const marker = new Graphics().circle(0, 0, 24).fill({ color: 0x49ddff }).stroke({ color: 0xffffff, width: 3 });
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, targetMarker, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
+  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, enemyVisuals, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
   app.stage.addChild(world);
+
+  const createEnemyMarker = (enemy) => {
+    const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
+    const radius = archetype.radius;
+    const graphic = new Graphics();
+    const beginPolygon = (points) => {
+      graphic.moveTo(points[0].x, points[0].y);
+      for (const point of points.slice(1)) graphic.lineTo(point.x, point.y);
+      graphic.closePath();
+    };
+    if (archetype.visual.silhouette === 'wedge') beginPolygon([{ x: 0, y: -radius }, { x: radius, y: radius }, { x: -radius, y: radius }]);
+    else if (archetype.visual.silhouette === 'diamond') beginPolygon([{ x: 0, y: -radius }, { x: radius, y: 0 }, { x: 0, y: radius }, { x: -radius, y: 0 }]);
+    else if (archetype.visual.silhouette === 'square') graphic.rect(-radius, -radius, radius * 2, radius * 2);
+    else if (archetype.visual.silhouette === 'hexagon') beginPolygon(Array.from({ length: 6 }, (_, index) => ({ x: Math.cos(index * Math.PI / 3) * radius, y: Math.sin(index * Math.PI / 3) * radius })));
+    else if (archetype.visual.silhouette === 'star') beginPolygon(Array.from({ length: 10 }, (_, index) => {
+      const length = index % 2 === 0 ? radius : radius * 0.48;
+      const angle = -Math.PI / 2 + index * Math.PI / 5;
+      return { x: Math.cos(angle) * length, y: Math.sin(angle) * length };
+    }));
+    else graphic.circle(0, 0, radius);
+    graphic.fill({ color: archetype.visual.color, alpha: 0.78 }).stroke({ color: 0xffffff, width: 3, alpha: 0.9 });
+    graphic.label = `prototype-${enemy.archetypeId}`;
+    return graphic;
+  };
+
+  const resetEnemyMarkers = (enemies) => {
+    for (const child of enemyVisuals.removeChildren()) child.destroy();
+    enemyMarkers.clear();
+    for (const enemy of enemies) {
+      const graphic = createEnemyMarker(enemy);
+      enemyMarkers.set(enemy.id, graphic);
+      enemyVisuals.addChild(graphic);
+    }
+  };
 
   const debugGridEnabled = new URLSearchParams(window.location.search).get('debugGrid') === '1';
   const debugOverlay = debugGridEnabled
@@ -221,6 +260,9 @@ async function boot() {
   let aimState = null;
   let aimIntent = null;
   let grayboxEnemies = [];
+  let enemyPopulation = null;
+  let lastEnemyStep = null;
+  let lastEnemyAttack = null;
   let playerBody = null;
   let lastCollision = null;
   let lastTraversal = null;
@@ -349,11 +391,39 @@ async function boot() {
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
-      const target = grayboxEnemies[0];
-      if (target) {
-        const targetScreen = worldToScreen({ ...target, z: target.groundZ ?? 0 }, camera, view);
-        targetMarker.position.set(targetScreen.x, targetScreen.y);
-        targetMarker.alpha = target.active ? Math.max(0.35, target.health / target.maxHealth) : 0;
+      enemyTelegraphs.clear();
+      for (const enemy of grayboxEnemies) {
+        const enemyMarker = enemyMarkers.get(enemy.id);
+        if (!enemyMarker) continue;
+        enemyMarker.visible = enemy.active;
+        if (!enemy.active) continue;
+        const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
+        const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
+        enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
+        enemyMarker.scale.set(camera.zoom);
+        enemyMarker.rotation = Math.atan2(enemy.velocity.y, enemy.velocity.x) + Math.PI / 2;
+        enemyMarker.alpha = Math.max(0.35, enemy.health / enemy.maxHealth);
+        if (enemy.attackPhase !== 'tell' || !enemy.telegraphTarget || !simulation) continue;
+        const targetScreen = worldToScreen({ ...enemy.telegraphTarget, z: enemy.telegraphTarget.groundZ }, camera, view);
+        const tellRatio = Math.max(0, Math.min(1, (enemy.attackPhaseUntilTick - simulation.tick) / archetype.attack.tellTicks));
+        const alpha = 0.38 + (1 - tellRatio) * 0.5;
+        if (archetype.attack.tokenFamily === 'area') {
+          enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 96 * camera.zoom)
+            .fill({ color: archetype.visual.color, alpha: 0.08 })
+            .stroke({ color: archetype.visual.color, width: 4, alpha });
+        } else if (archetype.attack.tokenFamily === 'support') {
+          enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 140 * camera.zoom)
+            .stroke({ color: archetype.visual.color, width: 5, alpha });
+        } else if (archetype.attack.tokenFamily === 'melee') {
+          enemyTelegraphs.circle(enemyScreen.x, enemyScreen.y, archetype.attack.range * camera.zoom)
+            .stroke({ color: archetype.visual.color, width: 4, alpha });
+          enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
+            .stroke({ color: archetype.visual.color, width: 3, alpha });
+        } else {
+          enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
+            .stroke({ color: archetype.visual.color, width: 18 * camera.zoom, alpha: alpha * 0.22, cap: 'round' })
+            .stroke({ color: archetype.visual.color, width: 3, alpha, cap: 'round' });
+        }
       }
       for (const shot of activeProjectiles) {
         if (!shot.state) continue;
@@ -398,6 +468,10 @@ async function boot() {
           } else if (event.type === 'impact') {
             combatVisuals.circle(center.x, center.y, 7 + age * 1.4)
               .stroke({ color: event.color, width: event.critical ? 6 : 3, alpha });
+          } else if (event.type === 'enemy-attack') {
+            combatVisuals.circle(center.x, center.y, 18 + age * 2.2)
+              .fill({ color: event.color, alpha: alpha * 0.12 })
+              .stroke({ color: event.color, width: 5, alpha });
           } else if (event.type === 'dash') {
             const end = worldToScreen({
               x: event.point.x - event.direction.x * 78,
@@ -450,8 +524,10 @@ async function boot() {
       const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
       const dashHud = dashStatus?.active ? 'DASHING' : dashStatus?.ready ? 'DASH READY' : `DASH ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
       const dashAccessible = dashStatus?.active ? 'Dash active' : dashStatus?.ready ? 'Dash ready' : `Dash ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
-      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // K ${runKills}`;
-      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${runKills} defeats`;
+      const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
+      const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
+      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}`;
+      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats`;
       if (dashStatusElement) {
         dashStatusElement.textContent = dashAccessible;
         dashStatusElement.dataset.ready = String(dashStatus?.ready === true);
@@ -465,9 +541,9 @@ async function boot() {
           ? `${combatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
         : combatHud;
-      const halfLabelWidth = label.width * 0.5;
-      const clampedLabelX = Math.min(view.width - halfLabelWidth - 8, Math.max(halfLabelWidth + 8, screen.x));
-      label.position.set(clampedLabelX, screen.y + (narrowDebug ? 54 : 58));
+      const safeLabelX = view.width * 0.5;
+      const safeLabelY = view.width < 600 ? 148 : 32;
+      label.position.set(safeLabelX, safeLabelY);
       if (debugGridEnabled) {
         stageElement.dataset.actorX = renderState.x.toFixed(3);
         stageElement.dataset.actorY = renderState.y.toFixed(3);
@@ -502,6 +578,12 @@ async function boot() {
         stageElement.dataset.projectileCover = lastProjectileResolution?.resolutions
           ?.find((resolution) => resolution.coverHit)?.coverHit?.blockerId ?? '';
         stageElement.dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
+        stageElement.dataset.enemyCount = String(activeEnemyCount);
+        stageElement.dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
+        stageElement.dataset.enemyTells = String(enemyTellCount);
+        stageElement.dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
+        stageElement.dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
+        stageElement.dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
       }
     } else {
       marker.position.set(view.width * 0.5, view.height * 0.5);
@@ -521,6 +603,11 @@ async function boot() {
     aimState = null;
     aimIntent = null;
     grayboxEnemies = [];
+    enemyPopulation = null;
+    lastEnemyStep = null;
+    lastEnemyAttack = null;
+    resetEnemyMarkers([]);
+    enemyTelegraphs.clear();
     playerBody = null;
     lastCollision = null;
     lastTraversal = null;
@@ -563,25 +650,30 @@ async function boot() {
     motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: 240 });
     aimState = createAimState({ autoFireEnabled: true, manualHoldTicks: 8 });
     aimIntent = null;
-    grayboxEnemies = [{
-      id: 'graybox-target',
-      x: 1280,
-      y: 1024,
-      previousX: 1280,
-      previousY: 1024,
-      groundZ: queryGround(1280, 1024).groundZ,
-      previousGroundZ: queryGround(1280, 1024).groundZ,
-      radius: 30,
-      kind: 'regular',
-      active: true,
-      targetable: true,
-      health: 120,
-      maxHealth: 120,
-      armor: 1,
-      shieldCharges: 0,
-      knockbackResistance: 1,
-      collisionBody: createCollisionBody({ id: 'graybox-target', kind: 'regular', radius: 30, minZ: 4, maxZ: 60 }),
-    }];
+    const previewSpawns = Object.freeze({
+      'bagholder-rusher': Object.freeze({ x: 1210, y: 1024 }),
+      forkrunner: Object.freeze({ x: 1040, y: 790 }),
+      'liquidator-agent': Object.freeze({ x: 710, y: 900 }),
+      'whale-enforcer': Object.freeze({ x: 1360, y: 1160 }),
+      'gas-bomber': Object.freeze({ x: 790, y: 1110 }),
+      'validator-cultist': Object.freeze({ x: 1160, y: 770 }),
+    });
+    enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 512 });
+    grayboxEnemies = ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
+      const position = previewSpawns[archetypeId];
+      return createEnemyState({
+        archetypeId,
+        id: `prototype-${String(index + 1).padStart(2, '0')}-${archetypeId}`,
+        x: position.x,
+        y: position.y,
+        groundZ: queryGround(position.x, position.y).groundZ,
+        visualMode: 'prototype',
+      });
+    }).sort((a, b) => a.id.localeCompare(b.id));
+    enemyPopulation.active = grayboxEnemies;
+    enemyPopulation.activeThreat = grayboxEnemies.reduce((sum, enemy) => sum + ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat, 0);
+    enemyPopulation.insertedCount = grayboxEnemies.length;
+    resetEnemyMarkers(grayboxEnemies);
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: 24, minZ: 0, maxZ: 56 });
     previousGrenade = false;
     previousDash = false;
@@ -752,6 +844,17 @@ async function boot() {
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
+
+      lastEnemyStep = stepEnemyPopulation({
+        population: enemyPopulation,
+        player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
+        tick,
+        dtSeconds,
+        blockers: GRAYBOX_BLOCKERS,
+        bounds: WORLD_BOUNDS,
+        queryGround,
+        preservePrevious: true,
+      });
 
       const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createHurtTarget({
         id: enemy.id,
@@ -981,6 +1084,37 @@ async function boot() {
         combatAudio.play('grenade-boom', { volume: 0.16 });
         pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius });
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
+      }
+
+      lastEnemyAttack = stepEnemyAttacks({
+        enemies: grayboxEnemies,
+        player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
+        tick,
+      });
+      for (const event of lastEnemyAttack.events) {
+        pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
+        const resolved = resolveEnemyAttackAgainstPlayer(event, {
+          player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
+          invulnerable: playerInvulnerable,
+          blockers: GRAYBOX_BLOCKERS,
+        });
+        if (!resolved.hit) continue;
+        const directionMagnitude = Math.hypot(actor.x - event.origin.x, actor.y - event.origin.y) || 1;
+        combatHitIntents.push({
+          id: event.attackId,
+          tick,
+          time: 1,
+          targetId: 'player',
+          sourceId: event.enemyId,
+          weaponId: `enemy-${event.archetypeId}`,
+          damage: resolved.damage,
+          criticalChance: 0,
+          criticalMultiplier: 1,
+          armorPiercing: false,
+          direction: { x: (actor.x - event.origin.x) / directionMagnitude, y: (actor.y - event.origin.y) / directionMagnitude },
+          knockback: event.role === 'bruiser' ? 32 : 12,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
+        });
       }
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents);

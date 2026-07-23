@@ -1,0 +1,146 @@
+export const REQUIRED_ENEMY_VISUAL_STATES = Object.freeze(['idle', 'run', 'tell', 'attack', 'hit', 'death']);
+
+function freezeDeep(value) {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  for (const child of Object.values(value)) freezeDeep(child);
+  return Object.freeze(value);
+}
+
+function defineArchetype(definition) {
+  return freezeDeep({
+    ...definition,
+    visual: {
+      prototypeStates: [...REQUIRED_ENEMY_VISUAL_STATES],
+      prototypeComplete: true,
+      productionComplete: false,
+      eliteEnabled: false,
+      ...definition.visual,
+    },
+  });
+}
+
+export const ENEMY_ARCHETYPES = freezeDeep({
+  'bagholder-rusher': defineArchetype({
+    id: 'bagholder-rusher',
+    name: 'Bagholder Rusher',
+    identityForm: 'zombie',
+    faction: 'bad-debt-undead',
+    role: 'rusher',
+    radius: 20,
+    speed: 176,
+    maxHealth: 75,
+    armor: 1,
+    knockbackResistance: 0.8,
+    preferredDistance: 48,
+    costs: { body: 1, threat: 2, ranged: 0, projectile: 0, effect: 1 },
+    attack: { tokenFamily: 'melee', tellTicks: 15, recoveryTicks: 24, damage: 12, range: 72, reserveRange: 150 },
+    movement: { maxCurbHeight: 8, maxDropHeight: 20, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.65 },
+    telegraph: 'Raises both arms and flashes a red chest wedge before lunging.',
+    counterplay: 'Sidestep the straight lunge, Dash through the tell, or stagger the exposed recovery.',
+    visual: { silhouette: 'wedge', color: 0xff5c7a },
+  }),
+  forkrunner: defineArchetype({
+    id: 'forkrunner',
+    name: 'Forkrunner',
+    identityForm: 'human',
+    faction: 'forked-frontier-raiders',
+    role: 'flanker',
+    radius: 18,
+    speed: 220,
+    maxHealth: 58,
+    armor: 1,
+    knockbackResistance: 0.65,
+    preferredDistance: 96,
+    costs: { body: 1, threat: 3, ranged: 0, projectile: 0, effect: 1 },
+    attack: { tokenFamily: 'melee', tellTicks: 12, recoveryTicks: 20, damage: 8, range: 78, reserveRange: 170 },
+    movement: { maxCurbHeight: 10, maxDropHeight: 32, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.82 },
+    telegraph: 'Plants the outside foot and paints a curved cyan entry line before slashing.',
+    counterplay: 'Cut across the arc, use cover to break the route, or punish the short post-slash stop.',
+    visual: { silhouette: 'diamond', color: 0x49ddff },
+  }),
+  'liquidator-agent': defineArchetype({
+    id: 'liquidator-agent',
+    name: 'Liquidator Agent',
+    identityForm: 'human',
+    faction: 'liquidation-authority',
+    role: 'suppressor',
+    radius: 21,
+    speed: 132,
+    maxHealth: 92,
+    armor: 1.12,
+    knockbackResistance: 1,
+    preferredDistance: 420,
+    costs: { body: 1, threat: 4, ranged: 1, projectile: 3, effect: 1 },
+    attack: { tokenFamily: 'ranged', tellTicks: 24, recoveryTicks: 42, damage: 9, range: 640, reserveRange: 760 },
+    movement: { maxCurbHeight: 8, maxDropHeight: 16, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.65 },
+    telegraph: 'Projects a narrow magenta burst lane before firing a three-shot suppression burst.',
+    counterplay: 'Leave the marked lane, force a divider between you, or close during burst recovery.',
+    visual: { silhouette: 'square', color: 0xe26dff },
+  }),
+  'whale-enforcer': defineArchetype({
+    id: 'whale-enforcer',
+    name: 'Whale Enforcer',
+    identityForm: 'human',
+    faction: 'liquidation-authority',
+    role: 'bruiser',
+    radius: 36,
+    speed: 92,
+    maxHealth: 260,
+    armor: 1.45,
+    knockbackResistance: 1.8,
+    preferredDistance: 70,
+    costs: { body: 1, threat: 6, ranged: 0, projectile: 0, effect: 2 },
+    attack: { tokenFamily: 'melee', tellTicks: 30, recoveryTicks: 54, damage: 20, range: 110, reserveRange: 210 },
+    movement: { maxCurbHeight: 8, maxDropHeight: 12, maxAuthoredAscent: 48, shallowWaterMultiplier: 0.5 },
+    telegraph: 'Squares a broad gold shoulder and stamps a visible shove cone before charging.',
+    counterplay: 'Rotate around the shoulder, lead the charge into cover, and punish the long recovery.',
+    visual: { silhouette: 'hexagon', color: 0xffc857 },
+  }),
+  'gas-bomber': defineArchetype({
+    id: 'gas-bomber',
+    name: 'Gas Bomber',
+    identityForm: 'human',
+    faction: 'liquidation-authority',
+    role: 'demolition',
+    radius: 23,
+    speed: 116,
+    maxHealth: 108,
+    armor: 1.08,
+    knockbackResistance: 1.05,
+    preferredDistance: 390,
+    costs: { body: 1, threat: 5, ranged: 1, projectile: 1, effect: 3 },
+    attack: { tokenFamily: 'area', tellTicks: 36, recoveryTicks: 60, damage: 18, range: 520, reserveRange: 680 },
+    movement: { maxCurbHeight: 8, maxDropHeight: 16, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.62 },
+    telegraph: 'Raises a glowing charge and paints its delayed orange landing circle before release.',
+    counterplay: 'Leave the landing circle, redirect the pack through it, or interrupt the raised charge.',
+    visual: { silhouette: 'orb', color: 0xff8c5a },
+  }),
+  'validator-cultist': defineArchetype({
+    id: 'validator-cultist',
+    name: 'Validator Cultist',
+    identityForm: 'zombie',
+    faction: 'bad-debt-undead',
+    role: 'support',
+    radius: 22,
+    speed: 108,
+    maxHealth: 118,
+    armor: 1,
+    knockbackResistance: 1.1,
+    preferredDistance: 460,
+    costs: { body: 1, threat: 5, ranged: 1, projectile: 0, effect: 3 },
+    attack: { tokenFamily: 'support', tellTicks: 45, recoveryTicks: 72, damage: 0, range: 480, reserveRange: 620 },
+    movement: { maxCurbHeight: 8, maxDropHeight: 16, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.7 },
+    telegraph: 'Builds a violet validation ring around the chosen ally before the pulse resolves.',
+    counterplay: 'Break line of sight, eliminate the marked support, or burst the ally before the pulse.',
+    visual: { silhouette: 'star', color: 0xb786ff },
+  }),
+});
+
+export const ENEMY_ARCHETYPE_IDS = Object.freeze(Object.keys(ENEMY_ARCHETYPES));
+
+export function getEnemyArchetype(id) {
+  if (typeof id !== 'string' || !Object.hasOwn(ENEMY_ARCHETYPES, id)) {
+    throw new TypeError(`Unknown enemy archetype: ${String(id)}`);
+  }
+  return ENEMY_ARCHETYPES[id];
+}
