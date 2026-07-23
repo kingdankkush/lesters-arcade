@@ -21,10 +21,21 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.doesNotMatch(source, /window\.ethereum|privateKey|settleRun|walletConnector/);
   assert.match(source, /createStandaloneInitPayload/);
   assert.match(source, /window\.parent === window[\s\S]*?createStandaloneInitPayload\(\)/);
+  assert.match(source, /new DeterministicSimulation\([\s\S]*?seed: payload\.session\.seed/);
+  assert.match(source, /new InputState\(\)/);
+  assert.match(source, /createActorSpatialState\(/);
+  assert.match(source, /createCameraState\(/);
+  assert.match(source, /interpolateSpatialState\(/);
+  assert.match(source, /const handleResize = \(\) => renderWorld\(\)/);
+  assert.doesNotMatch(source, /\.on\('resize', renderWorld\)/);
+  assert.match(source, /simulation\.update\(ticker\.deltaMS/);
+  assert.match(source, /navigator\.getGamepads/);
+  assert.match(source, /visibilitychange/);
+  assert.doesNotMatch(source, /elapsedMs\s*\+=\s*ticker\.deltaMS/);
   assert.match(
     source,
-    /message\.type === 'portal:restart'[\s\S]*?elapsedMs = 0[\s\S]*?app\.ticker\.start\(\)[\s\S]*?statePayload\('running'\)/,
-    'restart must resume the ticker before reporting running state',
+    /message\.type === 'portal:restart'[\s\S]*?initializeSession\(sessionPayload\)[\s\S]*?statePayload\('running'\)/,
+    'restart must rebuild the same canonical seeded session before reporting running state',
   );
 });
 
@@ -56,7 +67,10 @@ test('portal main integrates the reboot host at the official combat mount', asyn
 
 test('portal frame fills the active gameplay viewport without a fixed 72vh dead zone', async () => {
   const css = await read('../apps/portal/styles.css');
+  const childStyles = await read('../apps/portal/hmh-reboot/styles.css');
   assert.match(css, /\.hmh-reboot-frame[\s\S]*?min-height:\s*calc\(100dvh\s*-\s*\d+px\)/);
+  assert.match(childStyles, /touch-action:\s*none/);
+  assert.match(childStyles, /user-select:\s*none/);
 });
 
 test('built child bundle exists after the project build', async () => {
