@@ -24,14 +24,10 @@ import {
   stepDash,
 } from './dash.mjs';
 import {
-  auditCollisionWorld,
   createCollisionBody,
-  createStaticBlocker,
   resolveSweptCircleMotion,
 } from './collision.mjs';
 import {
-  createAuthoredGroundQuery,
-  createElevationSurface,
   movementSpeedMultiplierForTransition,
   resolveSweptTraversalPath,
 } from './elevation.mjs';
@@ -53,6 +49,16 @@ import {
 import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
+import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid } from './prototype-actor-art.mjs';
+import {
+  LEVEL_ONE_WORLD,
+  buildLevelOneMinimapGeometry,
+  createLevelOneGroundQuery,
+  createLevelOneRevealState,
+  getLevelOneDistrictAt,
+  getLevelOneRevealSnapshot,
+  revealLevelOneAt,
+} from './level-one-world.mjs';
 import {
   HMH_WEAPON_DEFINITIONS,
   createWeaponLoadout,
@@ -89,73 +95,12 @@ const WEAPON_COLORS = Object.freeze({
   'auto-miner': 0x83f28f,
   'launcher-rig': 0xc497ff,
 });
-const WORLD_BOUNDS = Object.freeze({ minX: 0, minY: 0, maxX: 2048, maxY: 2048, visibleBoundaryId: 'graybox-cliff-ring' });
-const BASE_SURFACE = createElevationSurface({
-  id: 'foundation', kind: 'ground', area: { type: 'rect', ...WORLD_BOUNDS },
-  groundZ: 0, visibleTerrainId: 'graybox-foundation', priority: 0,
-});
-const GRAYBOX_SURFACES = Object.freeze([
-  createElevationSurface({
-    id: 'south-river', kind: 'water', area: { type: 'rect', minX: 650, minY: 1260, maxX: 1600, maxY: 1440 },
-    groundZ: -18, waterLevel: 6, deepWater: true, visibleTerrainId: 'graybox-south-river', priority: 1,
-  }),
-  createElevationSurface({
-    id: 'south-shallows', kind: 'shallow-water', area: { type: 'rect', minX: 650, minY: 1220, maxX: 820, maxY: 1260 },
-    groundZ: 0, waterLevel: 4, deepWater: false, visibleTerrainId: 'graybox-south-shallows', priority: 2,
-  }),
-  createElevationSurface({
-    id: 'river-bridge-north-ramp', kind: 'ramp', area: { type: 'rect', minX: 1000, minY: 1235, maxX: 1120, maxY: 1265 },
-    fromZ: 0, toZ: 16, axis: 'y', visibleTerrainId: 'graybox-river-bridge-north-ramp', priority: 5,
-  }),
-  createElevationSurface({
-    id: 'river-bridge', kind: 'bridge', area: { type: 'rect', minX: 1000, minY: 1265, maxX: 1120, maxY: 1435 },
-    groundZ: 16, visibleTerrainId: 'graybox-river-bridge', priority: 4,
-  }),
-  createElevationSurface({
-    id: 'river-bridge-south-ramp', kind: 'ramp', area: { type: 'rect', minX: 1000, minY: 1435, maxX: 1120, maxY: 1465 },
-    fromZ: 16, toZ: 0, axis: 'y', visibleTerrainId: 'graybox-river-bridge-south-ramp', priority: 5,
-  }),
-  createElevationSurface({
-    id: 'east-ramp', kind: 'ramp', area: { type: 'rect', minX: 1320, minY: 900, maxX: 1440, maxY: 1100 },
-    fromZ: 0, toZ: 64, axis: 'x', visibleTerrainId: 'graybox-east-ramp', priority: 4,
-  }),
-  createElevationSurface({
-    id: 'east-ledge', kind: 'ledge', area: { type: 'rect', minX: 1440, minY: 850, maxX: 1700, maxY: 1150 },
-    groundZ: 64, oneWayDrop: { x: 0, y: 1 }, visibleTerrainId: 'graybox-east-ledge', priority: 3,
-  }),
-]);
-const queryGround = createAuthoredGroundQuery({ baseSurface: BASE_SURFACE, surfaces: GRAYBOX_SURFACES });
-const GRAYBOX_BLOCKERS = Object.freeze([
-  createStaticBlocker({
-    id: 'concrete-divider',
-    shape: { type: 'polygon', vertices: [{ x: 1160, y: 880 }, { x: 1192, y: 880 }, { x: 1192, y: 1120 }, { x: 1160, y: 1120 }] },
-    visibleAssetId: 'graybox-concrete-divider',
-    minZ: 0,
-    maxZ: 96,
-    combatCover: true,
-  }),
-  createStaticBlocker({
-    id: 'south-boulder',
-    shape: { type: 'circle', x: 1000, y: 1230, radius: 52 },
-    visibleAssetId: 'graybox-south-boulder',
-    minZ: 0,
-    maxZ: 72,
-    combatCover: true,
-  }),
-  createStaticBlocker({
-    id: 'north-rail',
-    shape: { type: 'capsule', a: { x: 860, y: 850 }, b: { x: 1120, y: 850 }, radius: 8 },
-    visibleAssetId: 'graybox-north-rail',
-    minZ: 0,
-    maxZ: 54,
-    combatCover: true,
-  }),
-]);
-const COLLISION_AUDIT = auditCollisionWorld({
-  blockers: GRAYBOX_BLOCKERS,
-  visibleBarriers: GRAYBOX_BLOCKERS.map((blocker) => ({ id: blocker.visibleAssetId, hard: true, collisionBlockerIds: [blocker.id] })),
-});
-if (!COLLISION_AUDIT.ok) throw new Error(`Invalid authored collision world: ${COLLISION_AUDIT.errors.join('; ')}`);
+const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
+const WORLD_SURFACES = LEVEL_ONE_WORLD.surfaces;
+const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
+const queryGround = createLevelOneGroundQuery();
+const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
+const ROUTE_NODE_BY_ID = new Map(LEVEL_ONE_WORLD.routeGraph.nodes.map((node) => [node.id, node]));
 const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
 const sessionElement = document.querySelector('#hmhRebootSession');
@@ -197,39 +142,36 @@ async function boot() {
   const projectileImpacts = new Graphics();
   const grenadeVisuals = new Graphics();
   const combatVisuals = new Graphics();
+  const minimap = new Graphics();
   const enemyVisuals = new Container();
   const enemyTelegraphs = new Graphics();
   const enemyMarkers = new Map();
   const bossTelegraphs = new Graphics();
-  const bossVisual = new Graphics().circle(0, 0, 56).fill({ color: 0xff496c, alpha: 0.86 }).stroke({ color: 0xfff4b8, width: 5 });
+  const bossVisual = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
+    radius: 56,
+    bodyColor: 0xff496c,
+    outlineColor: 0xfff4b8,
+  }));
   bossVisual.visible = false;
-  const marker = new Graphics().circle(0, 0, 24).fill({ color: 0x49ddff }).stroke({ color: 0xffffff, width: 3 });
+  const marker = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
+    radius: 24,
+    bodyColor: 0x49ddff,
+    outlineColor: 0xffffff,
+    weapon: true,
+  }));
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
   world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
-  app.stage.addChild(world);
+  app.stage.addChild(world, minimap);
 
   const createEnemyMarker = (enemy) => {
     const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
-    const radius = archetype.radius;
-    const graphic = new Graphics();
-    const beginPolygon = (points) => {
-      graphic.moveTo(points[0].x, points[0].y);
-      for (const point of points.slice(1)) graphic.lineTo(point.x, point.y);
-      graphic.closePath();
-    };
-    if (archetype.visual.silhouette === 'wedge') beginPolygon([{ x: 0, y: -radius }, { x: radius, y: radius }, { x: -radius, y: radius }]);
-    else if (archetype.visual.silhouette === 'diamond') beginPolygon([{ x: 0, y: -radius }, { x: radius, y: 0 }, { x: 0, y: radius }, { x: -radius, y: 0 }]);
-    else if (archetype.visual.silhouette === 'square') graphic.rect(-radius, -radius, radius * 2, radius * 2);
-    else if (archetype.visual.silhouette === 'hexagon') beginPolygon(Array.from({ length: 6 }, (_, index) => ({ x: Math.cos(index * Math.PI / 3) * radius, y: Math.sin(index * Math.PI / 3) * radius })));
-    else if (archetype.visual.silhouette === 'star') beginPolygon(Array.from({ length: 10 }, (_, index) => {
-      const length = index % 2 === 0 ? radius : radius * 0.48;
-      const angle = -Math.PI / 2 + index * Math.PI / 5;
-      return { x: Math.cos(angle) * length, y: Math.sin(angle) * length };
+    const graphic = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
+      radius: archetype.radius,
+      bodyColor: archetype.visual.color,
+      outlineColor: 0xffffff,
     }));
-    else graphic.circle(0, 0, radius);
-    graphic.fill({ color: archetype.visual.color, alpha: 0.78 }).stroke({ color: 0xffffff, width: 3, alpha: 0.9 });
-    graphic.label = `prototype-${enemy.archetypeId}`;
+    graphic.label = `prototype-human-${enemy.archetypeId}`;
     return graphic;
   };
 
@@ -247,13 +189,19 @@ async function boot() {
   const debugGridEnabled = runtimeParams.get('debugGrid') === '1';
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
-  const authoredSpawnPoints = Object.freeze([
-    Object.freeze({ id: 'frontier-east', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 1880, y: 1024, routeValid: true }),
-    Object.freeze({ id: 'frontier-west', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 180, y: 1024, routeValid: true }),
-    Object.freeze({ id: 'frontier-north', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 1024, y: 180, routeValid: true }),
-    Object.freeze({ id: 'frontier-south', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 1800, y: 1800, routeValid: true }),
-  ]);
-  const spawnPointBlocked = (point) => GRAYBOX_BLOCKERS.some((blocker) => {
+  const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
+  const worldTourId = runtimeParams.get('worldTour');
+  const worldTourSpawns = Object.freeze({
+    ravine: Object.freeze({ x: 3_050, y: 1_500 }),
+    bridge: Object.freeze({ x: 4_700, y: 2_400 }),
+    mining: Object.freeze({ x: 9_200, y: 1_600 }),
+    yard: Object.freeze({ x: 11_000, y: 2_400 }),
+  });
+  const runtimePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
+    ? worldTourSpawns[worldTourId]
+    : LEVEL_ONE_WORLD.player.spawn;
+  const authoredSpawnPoints = LEVEL_ONE_WORLD.spawnPoints;
+  const spawnPointBlocked = (point) => WORLD_BLOCKERS.some((blocker) => {
     const shape = blocker.shape;
     if (shape.type === 'circle') return Math.hypot(point.x - shape.x, point.y - shape.y) <= shape.radius + 24;
     if (shape.type === 'capsule') {
@@ -312,6 +260,7 @@ async function boot() {
   let previousGrenade = false;
   let previousDash = false;
   let previousWeaponNext = false;
+  let lastInputWeaponSlot = 0;
   let previousActor = null;
   let renderActor = null;
   let camera = null;
@@ -338,6 +287,9 @@ async function boot() {
   let runEventSequence = 0;
   let lastAccessibleCombatStatus = '';
   let combatVisualEvents = [];
+  let revealState = createLevelOneRevealState();
+  revealLevelOneAt(revealState, runtimePlayerSpawn);
+  let revealSnapshot = getLevelOneRevealSnapshot(revealState);
   const pushCombatVisualEvent = (event) => {
     if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
     combatVisualEvents.push(Object.freeze({ ...event }));
@@ -359,7 +311,26 @@ async function boot() {
   const renderAuthoredTerrain = (view) => {
     terrainGeometry.clear();
     const colors = { water: 0x176b8a, 'shallow-water': 0x248aa5, bridge: 0x9a774d, ramp: 0x536f56, ledge: 0x415744 };
-    for (const surface of GRAYBOX_SURFACES) {
+    for (const district of LEVEL_ONE_WORLD.districts) {
+      const topLeft = worldToScreen({ x: district.area.minX, y: district.area.minY, z: 0 }, camera, view);
+      const bottomRight = worldToScreen({ x: district.area.maxX, y: district.area.maxY, z: 0 }, camera, view);
+      terrainGeometry.rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y)
+        .fill({ color: district.color, alpha: 0.32 });
+    }
+    for (const route of LEVEL_ONE_WORLD.routes) {
+      const routePoints = route.nodeIds.map((id) => {
+        const node = ROUTE_NODE_BY_ID.get(id);
+        const ground = queryGround(node.x, node.y);
+        return worldToScreen({ x: node.x, y: node.y, z: ground.groundZ }, camera, view);
+      });
+      terrainGeometry.moveTo(routePoints[0].x, routePoints[0].y);
+      for (const routePoint of routePoints.slice(1)) terrainGeometry.lineTo(routePoint.x, routePoint.y);
+      terrainGeometry.stroke({ color: 0x261c17, width: (route.width + 24) * camera.zoom, alpha: 0.78, cap: 'round', join: 'round' });
+      terrainGeometry.moveTo(routePoints[0].x, routePoints[0].y);
+      for (const routePoint of routePoints.slice(1)) terrainGeometry.lineTo(routePoint.x, routePoint.y);
+      terrainGeometry.stroke({ color: route.kind === 'main' ? 0x9d8152 : 0x6f6545, width: route.width * camera.zoom, alpha: route.kind === 'main' ? 0.92 : 0.76, cap: 'round', join: 'round' });
+    }
+    for (const surface of WORLD_SURFACES) {
       const area = surface.area;
       const vertices = area.type === 'rect'
         ? [{ x: area.minX, y: area.minY }, { x: area.maxX, y: area.minY }, { x: area.maxX, y: area.maxY }, { x: area.minX, y: area.maxY }]
@@ -374,11 +345,29 @@ async function boot() {
       terrainGeometry.closePath().fill({ color: colors[surface.kind] ?? 0x415744, alpha: surface.kind === 'water' ? 0.82 : 0.94 })
         .stroke({ color: 0xb4d6c1, width: 2, alpha: 0.72 });
     }
+    for (const landmark of LEVEL_ONE_WORLD.landmarks) {
+      const ground = queryGround(landmark.anchor.x, landmark.anchor.y);
+      const screen = worldToScreen({ ...landmark.anchor, z: ground.groundZ }, camera, view);
+      terrainGeometry.circle(screen.x, screen.y, 30 * camera.zoom)
+        .fill({ color: 0xffd166, alpha: 0.82 }).stroke({ color: 0xfff4b8, width: 4, alpha: 0.94 });
+    }
+    for (const poi of LEVEL_ONE_WORLD.pointsOfInterest) {
+      const ground = queryGround(poi.anchor.x, poi.anchor.y);
+      const screen = worldToScreen({ ...poi.anchor, z: ground.groundZ }, camera, view);
+      terrainGeometry.rect(screen.x - 12 * camera.zoom, screen.y - 12 * camera.zoom, 24 * camera.zoom, 24 * camera.zoom)
+        .fill({ color: 0x83f28f, alpha: 0.88 }).stroke({ color: 0xeaffdd, width: 3, alpha: 0.9 });
+    }
+    for (const hazard of LEVEL_ONE_WORLD.interactions.hazards) {
+      const ground = queryGround(hazard.anchor.x, hazard.anchor.y);
+      const screen = worldToScreen({ ...hazard.anchor, z: ground.groundZ }, camera, view);
+      terrainGeometry.circle(screen.x, screen.y, 52 * camera.zoom)
+        .fill({ color: 0xff5c7a, alpha: 0.12 }).stroke({ color: 0xff5c7a, width: 4, alpha: 0.72 });
+    }
   };
 
   const renderAuthoredCollision = (view) => {
     collisionGeometry.clear();
-    for (const blocker of GRAYBOX_BLOCKERS) {
+    for (const blocker of WORLD_BLOCKERS) {
       const shape = blocker.shape;
       if (shape.type === 'circle') {
         const center = worldToScreen({ x: shape.x, y: shape.y, z: 0 }, camera, view);
@@ -397,6 +386,72 @@ async function boot() {
     const topLeft = worldToScreen({ x: WORLD_BOUNDS.minX, y: WORLD_BOUNDS.minY, z: 0 }, camera, view);
     const bottomRight = worldToScreen({ x: WORLD_BOUNDS.maxX, y: WORLD_BOUNDS.maxY, z: 0 }, camera, view);
     collisionGeometry.rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y).stroke({ color: 0x49ddff, width: 4, alpha: 0.65 });
+  };
+
+  const renderMinimap = (view, renderState) => {
+    minimap.clear();
+    const compact = view.width < 600;
+    const width = Math.min(compact ? 120 : 220, view.width * 0.34);
+    const height = width * (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
+    const originX = view.width - width - 16;
+    const originY = compact && view.height >= 700 ? view.height - height - 300 : 16;
+    if (debugGridEnabled) {
+      stageElement.dataset.minimapWidth = width.toFixed(3);
+      stageElement.dataset.minimapHeight = height.toFixed(3);
+      stageElement.dataset.minimapX = originX.toFixed(3);
+      stageElement.dataset.minimapY = originY.toFixed(3);
+    }
+    const mapPoint = (normalized) => ({ x: originX + normalized.x * width, y: originY + normalized.y * height });
+    minimap.roundRect(originX - 6, originY - 6, width + 12, height + 12, 8)
+      .fill({ color: 0x071522, alpha: 0.92 }).stroke({ color: 0x8dc6d8, width: 2, alpha: 0.85 });
+    for (const district of MINIMAP_GEOMETRY.districts) {
+      const minimum = mapPoint(district.area.min);
+      const maximum = mapPoint(district.area.max);
+      minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y).fill({ color: district.color, alpha: 0.5 });
+    }
+    for (const route of MINIMAP_GEOMETRY.routes) {
+      const points = route.points.map(mapPoint);
+      minimap.moveTo(points[0].x, points[0].y);
+      for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
+      minimap.stroke({ color: route.kind === 'main' ? 0xffd166 : 0xb8a36e, width: route.kind === 'main' ? 3 : 1.5, alpha: 0.82, cap: 'round' });
+    }
+    for (const surface of MINIMAP_GEOMETRY.surfaces.filter((candidate) => ['water', 'shallow-water', 'bridge'].includes(candidate.kind))) {
+      if (surface.area.type !== 'rect') continue;
+      const minimum = mapPoint(surface.area.min);
+      const maximum = mapPoint(surface.area.max);
+      minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y)
+        .fill({ color: surface.kind === 'bridge' ? 0xc49a63 : 0x2591b3, alpha: 0.9 });
+    }
+    for (const cellId of revealSnapshot.revealedCellIds) {
+      const [column, row] = cellId.split(':').map(Number);
+      const cellWidth = width / revealSnapshot.columns;
+      const cellHeight = height / revealSnapshot.rows;
+      minimap.rect(originX + column * cellWidth, originY + row * cellHeight, cellWidth + 0.5, cellHeight + 0.5)
+        .fill({ color: 0xe8f6c9, alpha: 0.08 });
+    }
+    for (const boundary of MINIMAP_GEOMETRY.hardBoundaries) {
+      if (boundary.shape.type === 'capsule') {
+        const a = mapPoint(boundary.shape.a);
+        const b = mapPoint(boundary.shape.b);
+        minimap.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0xd7fbff, width: 1.5, alpha: 0.8, cap: 'round' });
+      } else if (boundary.shape.type === 'polygon') {
+        const points = boundary.shape.points.map(mapPoint);
+        minimap.moveTo(points[0].x, points[0].y);
+        for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
+        minimap.closePath().stroke({ color: 0xd7fbff, width: 1.5, alpha: 0.8 });
+      }
+    }
+    for (const landmark of MINIMAP_GEOMETRY.landmarks) {
+      const center = mapPoint(landmark.point);
+      minimap.circle(center.x, center.y, 2.5).fill({ color: 0xfff06a, alpha: 0.95 });
+    }
+    const normalizedPlayer = {
+      x: (renderState.x - WORLD_BOUNDS.minX) / (WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX),
+      y: (renderState.y - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY),
+    };
+    const player = mapPoint(normalizedPlayer);
+    minimap.circle(player.x, player.y, view.width < 600 ? 4 : 5)
+      .fill({ color: 0x49ddff, alpha: 1 }).stroke({ color: 0xffffff, width: 1.5, alpha: 1 });
   };
 
   const renderWorld = (renderState = renderActor ?? actor) => {
@@ -624,6 +679,7 @@ async function boot() {
       const safeLabelX = view.width * 0.5;
       const safeLabelY = view.width < 600 ? 180 : 32;
       label.position.set(safeLabelX, safeLabelY);
+      renderMinimap(view, renderState);
       if (debugGridEnabled) {
         stageElement.dataset.actorX = renderState.x.toFixed(3);
         stageElement.dataset.actorY = renderState.y.toFixed(3);
@@ -639,6 +695,13 @@ async function boot() {
         stageElement.dataset.projectileDrops = String(droppedProjectiles);
         stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
         stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
+        stageElement.dataset.actorArt = marker.label ?? '';
+        stageElement.dataset.enemyArt = [...enemyMarkers.values()].every((enemyMarker) => enemyMarker.label?.startsWith('prototype-human-'))
+          ? 'prototype-human-graybox'
+          : 'invalid';
+        stageElement.dataset.bossArt = bossVisual.label ?? '';
+        stageElement.dataset.inputWeaponSlot = String(lastInputWeaponSlot);
+        stageElement.dataset.simulationTick = String(simulation?.tick ?? 0);
         stageElement.dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
         stageElement.dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
         stageElement.dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
@@ -676,8 +739,15 @@ async function boot() {
         stageElement.dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
         stageElement.dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
         stageElement.dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
+        stageElement.dataset.worldId = LEVEL_ONE_WORLD.id;
+        stageElement.dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
+        stageElement.dataset.worldHeight = String(WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY);
+        stageElement.dataset.districtId = getLevelOneDistrictAt(renderState.x, renderState.y)?.id ?? '';
+        stageElement.dataset.revealedCells = String(revealSnapshot.revealedCellIds.length);
+        stageElement.dataset.revealTotalCells = String(revealSnapshot.totalCells);
       }
     } else {
+      minimap.clear();
       marker.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
     }
@@ -733,6 +803,10 @@ async function boot() {
     previousGrenade = false;
     previousDash = false;
     previousWeaponNext = false;
+    lastInputWeaponSlot = 0;
+    revealState = createLevelOneRevealState();
+    revealLevelOneAt(revealState, runtimePlayerSpawn);
+    revealSnapshot = getLevelOneRevealSnapshot(revealState);
   };
 
   const initializeSession = (payload) => {
@@ -741,20 +815,20 @@ async function boot() {
     settings = { ...payload.settings };
     elapsedMs = 0;
     simulation = new DeterministicSimulation({ seed: payload.session.seed });
-    actor = createActorSpatialState({ x: 1024, y: 1024, z: 0 });
+    actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });
     lastGround = queryGround(actor.x, actor.y);
     actor.groundZ = lastGround.groundZ;
     actor.z = lastGround.groundZ;
-    motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: 240 });
+    motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: LEVEL_ONE_WORLD.player.maxSpeed });
     aimState = createAimState({ autoFireEnabled: true, manualHoldTicks: 8 });
     aimIntent = null;
     const previewSpawns = Object.freeze({
-      'bagholder-rusher': Object.freeze({ x: 1210, y: 1024 }),
-      forkrunner: Object.freeze({ x: 1040, y: 790 }),
-      'liquidator-agent': Object.freeze({ x: 710, y: 900 }),
-      'whale-enforcer': Object.freeze({ x: 1360, y: 1160 }),
-      'gas-bomber': Object.freeze({ x: 790, y: 1110 }),
-      'validator-cultist': Object.freeze({ x: 1160, y: 770 }),
+      'bagholder-rusher': Object.freeze({ x: 1120, y: 2400 }),
+      forkrunner: Object.freeze({ x: 860, y: 2050 }),
+      'liquidator-agent': Object.freeze({ x: 430, y: 2200 }),
+      'whale-enforcer': Object.freeze({ x: 1260, y: 2700 }),
+      'gas-bomber': Object.freeze({ x: 520, y: 2720 }),
+      'validator-cultist': Object.freeze({ x: 1100, y: 2050 }),
     });
     enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 1024 });
     grayboxEnemies = ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
@@ -773,7 +847,7 @@ async function boot() {
     enemyPopulation.insertedCount = grayboxEnemies.length;
     for (const enemy of grayboxEnemies) enemyPopulation.seenIds.add(enemy.id);
     encounterDirector = createEncounterDirector({ nextSpawnTick: directorDebugEnabled ? 1 : 600, seed: payload.session.seed });
-    const bossSpawn = bossDebugEnabled ? { x: 900, y: 900 } : { x: 1536, y: 1680 };
+    const bossSpawn = bossDebugEnabled ? { x: 1380, y: 2400 } : LEVEL_ONE_WORLD.encounterArenas.at(-1).anchor;
     liquidatorBoss = createLiquidatorBoss({
       id: 'boss-liquidator',
       x: bossSpawn.x,
@@ -782,10 +856,11 @@ async function boot() {
       startTick: bossDebugEnabled ? 1 : 72_000,
     });
     resetEnemyMarkers(grayboxEnemies);
-    playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: 24, minZ: 0, maxZ: 56 });
+    playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: LEVEL_ONE_WORLD.player.radius, minZ: 0, maxZ: 56 });
     previousGrenade = false;
     previousDash = false;
     previousWeaponNext = false;
+    lastInputWeaponSlot = 0;
     weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });
     meleeState = createMeleeState();
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
@@ -818,6 +893,7 @@ async function boot() {
       },
     });
     simulation.onStep(({ tick, dtSeconds, input: tickInput }) => {
+      lastInputWeaponSlot = tickInput.weaponSlot;
       previousActor = createActorSpatialState({ ...actor });
       for (const enemy of grayboxEnemies) {
         enemy.previousX = enemy.x;
@@ -851,7 +927,7 @@ async function boot() {
           start: movementStart,
           delta: dashFrame.delta,
           body: playerBody,
-          blockers: GRAYBOX_BLOCKERS,
+          blockers: WORLD_BLOCKERS,
           bounds: WORLD_BOUNDS,
           queryGround,
           enemies: grayboxEnemies.filter((enemy) => enemy.active),
@@ -913,7 +989,7 @@ async function boot() {
           body: playerBody,
           start: movementStart,
           delta: { x: motion.x - movementStart.x, y: motion.y - movementStart.y },
-          blockers: GRAYBOX_BLOCKERS,
+          blockers: WORLD_BLOCKERS,
           bounds: WORLD_BOUNDS,
           priorZeroDisplacementFrames: zeroDisplacementFrames,
         });
@@ -958,6 +1034,7 @@ async function boot() {
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
+      if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
 
       const viewForDirector = viewport();
       const directorCameraBounds = {
@@ -970,11 +1047,11 @@ async function boot() {
         state: encounterDirector,
         population: enemyPopulation,
         tick,
-        districtId: 'frontier-relay',
+        districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
         player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
         camera: directorCameraBounds,
         spawnPoints: authoredSpawnPoints,
-        nearRewardPoi: false,
+        nearRewardPoi: LEVEL_ONE_WORLD.pointsOfInterest.some((poi) => poi.hook === 'reward' && Math.hypot(actor.x - poi.anchor.x, actor.y - poi.anchor.y) <= 240),
         queryGround,
         isBlocked: spawnPointBlocked,
         isRouteReachable: (point) => point.routeValid === true,
@@ -991,7 +1068,7 @@ async function boot() {
         player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
         tick,
         dtSeconds,
-        blockers: GRAYBOX_BLOCKERS,
+        blockers: WORLD_BLOCKERS,
         bounds: WORLD_BOUNDS,
         queryGround,
         preservePrevious: true,
@@ -1067,7 +1144,7 @@ async function boot() {
         const batch = resolveProjectileBatch({
           projectiles: steppedProjectiles.map((shot) => shot.state),
           targets: hurtTargets,
-          blockers: GRAYBOX_BLOCKERS,
+          blockers: WORLD_BLOCKERS,
           broadphase,
         });
         lastProjectileResolution = batch;
@@ -1076,7 +1153,7 @@ async function boot() {
           const shot = shotById.get(resolution.projectileId);
           for (const hit of resolution.hits) {
             combatHitIntents.push({
-              id: `${shot.attackId}:${hit.targetId}:${hit.kind}`,
+              id: `${shot.id}:${hit.targetId}:${hit.kind}`,
               tick,
               time: hit.time,
               targetId: hit.targetId,
@@ -1186,7 +1263,7 @@ async function boot() {
         direction: aimIntent.direction,
         sourceGroundZ: actor.groundZ,
         targets: meleeTargets,
-        blockers: GRAYBOX_BLOCKERS,
+        blockers: WORLD_BLOCKERS,
       });
       combatHitIntents.push(...meleeFrame.hits);
       if (meleeFrame.attacked) {
@@ -1220,7 +1297,7 @@ async function boot() {
         }
       }
       previousGrenade = tickInput.grenade;
-      const playerInvulnerable = isDashInvulnerable(dashState, tick);
+      const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
       const playerHurtTarget = playerHealth > 0 && !playerInvulnerable ? createHurtTarget({
         id: 'player',
         bodyShape: { type: 'circle', radius: playerBody.radius },
@@ -1235,7 +1312,7 @@ async function boot() {
         tick,
         dtSeconds,
         queryGround,
-        blockers: GRAYBOX_BLOCKERS,
+        blockers: WORLD_BLOCKERS,
         targets: playerHurtTarget ? [...hurtTargets, playerHurtTarget] : hurtTargets,
       });
       for (const detonation of grenadeFrame.detonations) {
@@ -1256,7 +1333,7 @@ async function boot() {
         const resolved = resolveEnemyAttackAgainstPlayer(event, {
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
           invulnerable: playerInvulnerable,
-          blockers: GRAYBOX_BLOCKERS,
+          blockers: WORLD_BLOCKERS,
         });
         if (!resolved.hit) continue;
         const directionMagnitude = Math.hypot(actor.x - event.origin.x, actor.y - event.origin.y) || 1;
@@ -1384,7 +1461,7 @@ async function boot() {
             body: enemy.collisionBody,
             start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
             delta: damageEvent.knockback,
-            blockers: GRAYBOX_BLOCKERS,
+            blockers: WORLD_BLOCKERS,
             bounds: WORLD_BOUNDS,
           });
           const knockbackTraversal = resolveSweptTraversalPath({
@@ -1472,6 +1549,7 @@ async function boot() {
     if (simulation?.state === 'active' || simulation?.state === 'upgrade') simulation.pause();
     app.ticker.stop();
     combatAudio.pause();
+    setStatus(bridge?.initialized ? 'Portal session paused' : 'Standalone session paused', `Paused by ${source}.`);
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: true, source });
       bridge.send('game:state', statePayload('paused'));
@@ -1483,6 +1561,7 @@ async function boot() {
     simulation.resume();
     app.ticker.start();
     combatAudio.resume();
+    setStatus(bridge?.initialized ? 'Portal session connected' : 'Standalone session ready', `Resumed by ${source}.`);
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: false, source });
       bridge.send('game:state', statePayload('running'));
@@ -1520,6 +1599,7 @@ async function boot() {
       gamepadWasActive = false;
     }
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
+    if (debugGridEnabled) stageElement.dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions);
     elapsedMs = simulation.timeMs;
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);

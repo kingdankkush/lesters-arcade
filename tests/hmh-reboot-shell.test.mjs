@@ -17,6 +17,7 @@ test('standalone child HTML exposes only the reboot shell and bundled module', a
 
 test('child runtime uses Pixi and the validated bridge without wallet or settlement authority', async () => {
   const source = await read('../apps/hmh-reboot/src/main.mjs');
+  const worldSource = await read('../apps/hmh-reboot/src/level-one-world.mjs');
   assert.match(source, /from 'pixi\.js'/);
   assert.match(source, /createHmhChildBridge/);
   assert.match(source, /window\.location\.origin/);
@@ -29,10 +30,15 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /stepPlayerMovement\(/);
   assert.match(source, /resolveAimIntent\(/);
   assert.match(source, /createTouchControlAdapter\(/);
+  assert.match(source, /createPrototypeHumanoidDescriptor\(/);
+  assert.match(source, /drawPrototypeHumanoid\(/);
+  assert.doesNotMatch(source, /archetype\.visual\.silhouette\s*===/);
   assert.match(source, /createCollisionBody\(/);
-  assert.match(source, /createStaticBlocker\(/);
+  assert.match(source, /LEVEL_ONE_WORLD/);
+  assert.match(worldSource, /createStaticBlocker\(/);
   assert.match(source, /resolveSweptCircleMotion\(/);
-  assert.match(source, /createAuthoredGroundQuery\(/);
+  assert.match(source, /createLevelOneGroundQuery\(/);
+  assert.match(worldSource, /createAuthoredGroundQuery\(/);
   assert.match(source, /movementSpeedMultiplierForTransition\(/);
   assert.match(source, /resolveSweptTraversalPath\(/);
   assert.match(source, /createHurtTarget\(/);
@@ -67,11 +73,14 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /current:\s*Object\.freeze|current:/);
   assert.match(source, /actor\.groundZ\s*=\s*lastGround\.groundZ/);
   assert.match(source, /actor\.z\s*=\s*lastGround\.groundZ/);
-  assert.match(source, /visibleAssetId:\s*'graybox-/);
+  assert.match(worldSource, /visibleAssetId:\s*`graybox-/);
   assert.match(source, /stageElement\.dataset\.collisionBlocker/);
   assert.match(source, /stageElement\.dataset\.surfaceId/);
   assert.match(source, /stageElement\.dataset\.projectileHit/);
   assert.match(source, /stageElement\.dataset\.weaponId/);
+  assert.match(source, /stageElement\.dataset\.actorArt/);
+  assert.match(source, /stageElement\.dataset\.enemyArt/);
+  assert.match(source, /stageElement\.dataset\.bossArt/);
   assert.match(source, /stageElement\.dataset\.weaponAmmo/);
   assert.match(source, /stageElement\.dataset\.weaponHeat/);
   assert.match(source, /magnitude:\s*event\.recoil/);
@@ -101,6 +110,12 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
     /message\.type === 'portal:restart'[\s\S]*?initializeSession\(sessionPayload\)[\s\S]*?statePayload\('running'\)/,
     'restart must rebuild the same canonical seeded session before reporting running state',
   );
+});
+
+test('runtime gives every projectile hit intent a stable per-projectile identifier', async () => {
+  const source = await read('../apps/hmh-reboot/src/main.mjs');
+  assert.match(source, /id: `\$\{shot\.id\}:\$\{hit\.targetId\}:\$\{hit\.kind\}`/);
+  assert.doesNotMatch(source, /id: `\$\{shot\.attackId\}:\$\{hit\.targetId\}:\$\{hit\.kind\}`/);
 });
 
 test('production build emits a dedicated HMH reboot entry', async () => {
@@ -140,6 +155,16 @@ test('portal frame fills the active gameplay viewport without a fixed 72vh dead 
   assert.match(childStyles, /\.hmh-reboot-dash-status\[data-ready="true"\]/);
 });
 
+test('touch-stick safe labels remain readable at portrait-mobile scale', async () => {
+  const childStyles = await read('../apps/portal/hmh-reboot/styles.css');
+  const labelRule = childStyles.match(/\.hmh-touch-stick::before\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+  assert.match(labelRule, /font-size:\s*0\.72rem/);
+  assert.match(labelRule, /top:\s*6px/);
+  assert.match(labelRule, /color:\s*#f4fbff/);
+  assert.match(labelRule, /background:\s*rgba\(3,\s*15,\s*26,\s*0\.78\)/);
+  assert.match(labelRule, /text-shadow:/);
+});
+
 test('built child bundle exists after the project build', async () => {
   const bundle = new URL('../apps/portal/dist/hmh-reboot/game.js', import.meta.url);
   const info = await stat(bundle);
@@ -148,7 +173,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions only the minimal reboot shell for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-11'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-12'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));

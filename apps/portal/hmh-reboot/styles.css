@@ -94,12 +94,23 @@ body { background: radial-gradient(circle at 50% 25%, #153b50 0%, #071522 46%, #
 .hmh-touch-stick::before {
   content: attr(data-hmh-control);
   position: absolute;
-  top: -18px;
-  color: rgba(210, 243, 255, 0.76);
-  font-size: 0.62rem;
-  font-weight: 800;
+  top: 6px;
+  left: 50%;
+  min-width: 52px;
+  padding: 3px 7px;
+  border: 1px solid rgba(143, 243, 255, 0.55);
+  border-radius: 999px;
+  color: #f4fbff;
+  background: rgba(3, 15, 26, 0.78);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.34);
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1.1;
   letter-spacing: 0.12em;
+  text-align: center;
+  text-shadow: 0 1px 3px #000;
   text-transform: uppercase;
+  transform: translateX(-50%);
 }
 .hmh-touch-stick__knob {
   width: 44%;

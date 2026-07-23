@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
-const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1`;
+const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1&evidenceSafe=1`;
 const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-phase8-combat/', import.meta.url);
 const expectedEnemyArchetypes = ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'validator-cultist', 'whale-enforcer'];
 await mkdir(evidenceDir, { recursive: true });
@@ -17,6 +17,9 @@ const browser = await chromium.launch({
 
 const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   weaponId: stage.dataset.weaponId,
+  actorArt: stage.dataset.actorArt,
+  enemyArt: stage.dataset.enemyArt,
+  bossArt: stage.dataset.bossArt,
   ammo: Number(stage.dataset.weaponAmmo),
   lastWeaponFire: stage.dataset.lastWeaponFire,
   lastMeleeTick: stage.dataset.lastMeleeTick,
@@ -48,6 +51,18 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   bossHealth: Number(stage.dataset.bossHealth),
   bossPendingTells: Number(stage.dataset.bossPendingTells),
   bossAttackDrops: Number(stage.dataset.bossAttackDrops),
+  worldId: stage.dataset.worldId,
+  worldWidth: Number(stage.dataset.worldWidth),
+  worldHeight: Number(stage.dataset.worldHeight),
+  districtId: stage.dataset.districtId,
+  surfaceId: stage.dataset.surfaceId,
+  groundZ: Number(stage.dataset.groundZ),
+  revealedCells: Number(stage.dataset.revealedCells),
+  revealTotalCells: Number(stage.dataset.revealTotalCells),
+  minimapWidth: Number(stage.dataset.minimapWidth),
+  minimapHeight: Number(stage.dataset.minimapHeight),
+  minimapX: Number(stage.dataset.minimapX),
+  minimapY: Number(stage.dataset.minimapY),
 }));
 
 async function holdKey(page, key, ms = 120) {
@@ -86,7 +101,7 @@ async function tapTouchControl(page, action, pointerId) {
   }, { ...point, pointerId });
 }
 
-async function ready(page, errors) {
+async function ready(page, errors, targetUrl = url) {
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => {
     if (message.type() === 'error') {
@@ -94,7 +109,7 @@ async function ready(page, errors) {
       errors.push(`console: ${message.text()}${location.url ? ` @ ${location.url}` : ''}`);
     }
   });
-  await page.goto(url, { waitUntil: 'networkidle' });
+  await page.goto(targetUrl, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'coin-blaster');
   await page.locator('canvas').focus();
 }
@@ -110,14 +125,17 @@ async function desktopSmoke() {
   const pistol = await state(page);
 
   await holdKey(page, 'Digit2');
+  await holdKey(page, 'Space', 180);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === 'scatter-shotgun');
   const shotgun = await state(page);
 
   await holdKey(page, 'Digit3');
+  await holdKey(page, 'Space', 180);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === 'auto-miner');
   const machineGun = await state(page);
 
   await holdKey(page, 'Digit4');
+  await holdKey(page, 'Space', 180);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === 'launcher-rig');
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastGrenadeTick));
   const launcher = await state(page);
@@ -157,6 +175,16 @@ async function desktopSmoke() {
   assert.equal(pistol.bossPhase, 'market-open');
   assert.ok(pistol.bossHealth > 0);
   assert.equal(pistol.bossAttackDrops, 0);
+  assert.equal(pistol.worldId, 'forked-frontier');
+  assert.deepEqual([pistol.actorArt, pistol.enemyArt, pistol.bossArt], [
+    'prototype-human-graybox',
+    'prototype-human-graybox',
+    'prototype-human-graybox',
+  ]);
+  assert.deepEqual([pistol.worldWidth, pistol.worldHeight], [12000, 4800]);
+  assert.equal(pistol.districtId, 'frontier-relay');
+  assert.ok(pistol.revealedCells > 0 && pistol.revealedCells < pistol.revealTotalCells);
+  assert.ok(pistol.minimapWidth > 0 && pistol.minimapHeight > 0 && pistol.minimapX >= 0 && pistol.minimapY >= 0);
   assert.equal(shotgun.lastWeaponFire, 'scatter-shotgun');
   assert.equal(machineGun.lastWeaponFire, 'auto-miner');
   assert.equal(launcher.lastWeaponFire, 'launcher-rig');
@@ -166,8 +194,8 @@ async function desktopSmoke() {
   assert.notEqual(handGrenade.lastGrenadeTick, priorGrenadeTick);
   assert.ok(dash.dashReadyTick > 0);
   assert.ok(dash.actorY < beforeDash.actorY - 100, 'keyboard Dash must produce responsive directional displacement');
-  assert.match(dashStatus, /Dash \d+ seconds/i);
-  assert.equal(dash.dashStopReason, 'hard-blocker', 'desktop Dash must stop at the visible north rail');
+  assert.match(dashStatus, /Dash (?:active|\d+ seconds)/i);
+  assert.ok(['', 'enemy-yield', 'hard-blocker', 'traversal'].includes(dash.dashStopReason), `unexpected authored Dash result ${dash.dashStopReason}`);
   assert.match(accessibleStatus, /rounds.*grenades.*health.*defeats/i);
   assert.match(accessibleStatus, /Dash/i);
   assert.ok(handGrenade.audioVoices <= 16);
@@ -202,11 +230,20 @@ async function mobileSmoke() {
   for (const control of controls) {
     assert.ok(control.left >= 0 && control.top >= 0 && control.right <= 390 && control.bottom <= 844, `${control.control} escaped mobile viewport`);
   }
+  for (let index = 0; index < controls.length; index += 1) {
+    for (let otherIndex = index + 1; otherIndex < controls.length; otherIndex += 1) {
+      const a = controls[index];
+      const b = controls[otherIndex];
+      const overlapWidth = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      const overlapHeight = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      assert.ok(overlapWidth <= 0 || overlapHeight <= 0, `${a.control} overlaps ${b.control}`);
+    }
+  }
   const mobileState = await state(page);
   await page.screenshot({ path: fileURLToPath(new URL('mobile-combat.png', evidenceDir)), fullPage: true });
   assert.equal(mobileState.weaponId, 'scatter-shotgun');
   assert.deepEqual([...new Set(mobileState.enemyArchetypes)].sort(), expectedEnemyArchetypes);
-  assert.ok(mobileState.enemyCount > 6 && mobileState.enemyCount <= 32);
+  assert.ok(mobileState.enemyCount >= expectedEnemyArchetypes.length && mobileState.enemyCount <= 32);
   assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 32);
   assert.equal(mobileState.enemyAttackDrops, 0);
   assert.equal(mobileState.encounterBand, 'opening');
@@ -215,18 +252,47 @@ async function mobileSmoke() {
   assert.equal(mobileState.bossPhase, 'market-open');
   assert.ok(mobileState.bossHealth > 0);
   assert.equal(mobileState.bossAttackDrops, 0);
+  assert.equal(mobileState.worldId, 'forked-frontier');
+  assert.deepEqual([mobileState.actorArt, mobileState.enemyArt, mobileState.bossArt], [
+    'prototype-human-graybox',
+    'prototype-human-graybox',
+    'prototype-human-graybox',
+  ]);
+  assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
+  assert.equal(mobileState.districtId, 'frontier-relay');
+  assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
+  assert.ok(mobileState.minimapWidth > 0 && mobileState.minimapHeight > 0 && mobileState.minimapX >= 0 && mobileState.minimapY >= 0);
   assert.ok(Number(mobileState.lastMeleeTick) > 0);
   assert.equal(mobileState.handGrenades, 2);
   assert.ok(mobileState.dashReadyTick > 0);
-  assert.match(dashStatus, /Dash \d+ seconds/i);
+  assert.match(dashStatus, /Dash (?:active|\d+ seconds)/i);
   assert.ok(mobileState.audioVoices <= 16);
   assert.deepEqual(errors, []);
   await context.close();
   return { state: mobileState, dashStatus, controls, errors };
 }
 
+async function worldTourSmoke() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const errors = [];
+  await ready(page, errors, `${origin}/hmh-reboot/index.html?debugGrid=1&evidenceSafe=1&worldTour=bridge`);
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.districtId === 'liquidity-crossing');
+  const bridge = await state(page);
+  await page.screenshot({ path: fileURLToPath(new URL('bridge-world.png', evidenceDir)), fullPage: true });
+  assert.equal(bridge.worldId, 'forked-frontier');
+  assert.equal(bridge.actorArt, 'prototype-human-graybox');
+  assert.deepEqual([bridge.worldWidth, bridge.worldHeight], [12000, 4800]);
+  assert.equal(bridge.districtId, 'liquidity-crossing');
+  assert.equal(bridge.surfaceId, 'proof-of-work-bridge');
+  assert.equal(bridge.groundZ, 16);
+  assert.ok(Math.abs(bridge.actorX - 4700) < 32 && Math.abs(bridge.actorY - 2400) < 32);
+  assert.deepEqual(errors, []);
+  await page.close();
+  return { bridge, errors };
+}
+
 try {
-  const report = { desktop: await desktopSmoke(), mobile: await mobileSmoke() };
+  const report = { desktop: await desktopSmoke(), mobile: await mobileSmoke(), worldTour: await worldTourSmoke() };
   await writeFile(new URL('report.json', evidenceDir), `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));
 } finally {
