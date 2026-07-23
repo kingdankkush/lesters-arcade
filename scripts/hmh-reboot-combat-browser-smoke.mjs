@@ -43,6 +43,8 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   enemyDecisions: Number(stage.dataset.enemyDecisions),
   enemySafetySteps: Number(stage.dataset.enemySafetySteps),
   enemyAttackDrops: Number(stage.dataset.enemyAttackDrops),
+  enemyDeathVisuals: Number(stage.dataset.enemyDeathVisuals),
+  enemyEliteVisuals: Number(stage.dataset.enemyEliteVisuals),
   encounterBand: stage.dataset.encounterBand,
   directorInsertions: Number(stage.dataset.directorInsertions),
   directorRejections: Number(stage.dataset.directorRejections),
@@ -169,6 +171,7 @@ async function desktopSmoke() {
   assert.ok(pistol.enemyTells > 0);
   assert.ok(pistol.enemySafetySteps > 0 && pistol.enemySafetySteps <= 32);
   assert.equal(pistol.enemyAttackDrops, 0);
+  assert.ok(pistol.enemyEliteVisuals >= 1);
   assert.equal(pistol.encounterBand, 'opening');
   assert.ok(pistol.directorInsertions > 0);
   assert.equal(pistol.bossActive, true);
@@ -178,8 +181,8 @@ async function desktopSmoke() {
   assert.equal(pistol.worldId, 'forked-frontier');
   assert.deepEqual([pistol.actorArt, pistol.enemyArt, pistol.bossArt], [
     'prototype-human-graybox',
-    'prototype-human-graybox',
-    'prototype-human-graybox',
+    'production-vector-enemies-v1',
+    'production-vector-liquidator-v1',
   ]);
   assert.deepEqual([pistol.worldWidth, pistol.worldHeight], [12000, 4800]);
   assert.equal(pistol.districtId, 'frontier-relay');
@@ -246,6 +249,8 @@ async function mobileSmoke() {
   assert.ok(mobileState.enemyCount >= expectedEnemyArchetypes.length && mobileState.enemyCount <= 32);
   assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 32);
   assert.equal(mobileState.enemyAttackDrops, 0);
+  assert.ok(mobileState.enemyDeathVisuals >= 1);
+  assert.ok(mobileState.enemyEliteVisuals >= 1);
   assert.equal(mobileState.encounterBand, 'opening');
   assert.ok(mobileState.directorInsertions > 0);
   assert.equal(mobileState.bossActive, true);
@@ -255,8 +260,8 @@ async function mobileSmoke() {
   assert.equal(mobileState.worldId, 'forked-frontier');
   assert.deepEqual([mobileState.actorArt, mobileState.enemyArt, mobileState.bossArt], [
     'prototype-human-graybox',
-    'prototype-human-graybox',
-    'prototype-human-graybox',
+    'production-vector-enemies-v1',
+    'production-vector-liquidator-v1',
   ]);
   assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
   assert.equal(mobileState.districtId, 'frontier-relay');

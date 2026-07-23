@@ -6,6 +6,12 @@ import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
 import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
+import {
+  createLiquidatorProductionDisplay,
+  createProductionEnemyDisplay,
+  isEliteEnemyProjection,
+  resolveEnemyRuntimeVisualState,
+} from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
 import { createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
 import {
@@ -167,14 +173,12 @@ async function boot() {
   const combatVisuals = new Graphics();
   const minimap = new Graphics();
   const enemyVisuals = new Container();
+  const enemyDeathVisuals = new Container();
   const enemyTelegraphs = new Graphics();
   const enemyMarkers = new Map();
+  const enemyDeathMarkers = new Map();
   const bossTelegraphs = new Graphics();
-  const bossVisual = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
-    radius: 56,
-    bodyColor: 0xff496c,
-    outlineColor: 0xfff4b8,
-  }));
+  const bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
   bossVisual.visible = false;
   const marker = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
     radius: 24,
@@ -220,18 +224,17 @@ async function boot() {
   shadow.visible = !atlasActorEnabled;
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
+  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
   app.stage.addChild(world, minimap);
 
   const createEnemyMarker = (enemy) => {
-    const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
-    const graphic = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
-      radius: archetype.radius,
-      bodyColor: archetype.visual.color,
-      outlineColor: 0xffffff,
-    }));
-    graphic.label = `prototype-human-${enemy.archetypeId}`;
-    return graphic;
+    const eliteProjection = isEliteEnemyProjection(enemy.id);
+    return createProductionEnemyDisplay({
+      archetypeId: enemy.archetypeId,
+      elite: eliteProjection,
+      ContainerClass: Container,
+      GraphicsClass: Graphics,
+    });
   };
 
   const resetEnemyMarkers = (enemies) => {
@@ -242,6 +245,32 @@ async function boot() {
       enemyMarkers.set(enemy.id, graphic);
       enemyVisuals.addChild(graphic);
     }
+  };
+
+  const clearEnemyDeathMarkers = () => {
+    for (const child of enemyDeathVisuals.removeChildren()) child.destroy();
+    enemyDeathMarkers.clear();
+  };
+
+  const queueEnemyDeathVisual = (enemy, tick) => {
+    if (!enemy || enemyDeathMarkers.has(enemy.id)) return;
+    const eliteProjection = isEliteEnemyProjection(enemy.id);
+    const graphic = createProductionEnemyDisplay({
+      archetypeId: enemy.archetypeId,
+      elite: eliteProjection,
+      ContainerClass: Container,
+      GraphicsClass: Graphics,
+    });
+    enemyDeathMarkers.set(enemy.id, {
+      graphic,
+      x: enemy.x,
+      y: enemy.y,
+      groundZ: enemy.groundZ ?? 0,
+      startTick: tick,
+      endTick: tick + 30,
+      elite: eliteProjection,
+    });
+    enemyDeathVisuals.addChild(graphic);
   };
 
   const debugGridEnabled = runtimeParams.get('debugGrid') === '1';
@@ -307,6 +336,8 @@ async function boot() {
   let encounterDirector = null;
   let lastDirectorStep = null;
   let liquidatorBoss = null;
+  let bossHitVisualUntilTick = -1;
+  let bossDeathVisualUntilTick = -1;
   let lastBossStep = null;
   let lastEnemyStep = null;
   let lastEnemyAttack = null;
@@ -555,9 +586,17 @@ async function boot() {
         if (!enemy.active) continue;
         const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
         const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
+        const enemyAngle = Math.atan2(enemy.velocity.y, enemy.velocity.x);
+        const enemyDirection = ((Math.round(enemyAngle / (Math.PI / 4)) % 8) + 8) % 8;
+        enemyMarker.applyPose({
+          state: resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
+          tick: simulation?.tick ?? 0,
+          direction: enemyDirection,
+          elite: isEliteEnemyProjection(enemy.id),
+        });
         enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
         enemyMarker.scale.set(camera.zoom);
-        enemyMarker.rotation = Math.atan2(enemy.velocity.y, enemy.velocity.x) + Math.PI / 2;
+        enemyMarker.rotation = 0;
         enemyMarker.alpha = Math.max(0.35, enemy.health / enemy.maxHealth);
         if (enemy.attackPhase !== 'tell' || !enemy.telegraphTarget || !simulation) continue;
         const targetScreen = worldToScreen({ ...enemy.telegraphTarget, z: enemy.telegraphTarget.groundZ }, camera, view);
@@ -581,8 +620,27 @@ async function boot() {
             .stroke({ color: archetype.visual.color, width: 3, alpha, cap: 'round' });
         }
       }
-      if (liquidatorBoss?.active && simulation?.tick >= liquidatorBoss.startTick) {
+      for (const [enemyId, death] of enemyDeathMarkers) {
+        if ((simulation?.tick ?? 0) >= death.endTick) {
+          enemyDeathVisuals.removeChild(death.graphic);
+          death.graphic.destroy();
+          enemyDeathMarkers.delete(enemyId);
+          continue;
+        }
+        const deathScreen = worldToScreen({ x: death.x, y: death.y, z: death.groundZ }, camera, view);
+        death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: 0, elite: death.elite });
+        death.graphic.position.set(deathScreen.x, deathScreen.y);
+        death.graphic.scale.set(camera.zoom);
+      }
+      const bossVisualTick = simulation?.tick ?? 0;
+      if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
+        bossVisual.applyPose({
+          state: !liquidatorBoss.active ? 'death' : bossVisualTick <= bossHitVisualUntilTick ? 'hit' : liquidatorBoss.pendingAttacks.length > 0 ? 'tell' : 'idle',
+          tick: bossVisualTick,
+          direction: 0,
+          elite: true,
+        });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
         bossVisual.scale.set(camera.zoom);
@@ -783,10 +841,9 @@ async function boot() {
         stageElement.dataset.actorArtActor = productionPilotEnabled ? productionHeroSelection.actorId : pipelinePilotEnabled ? 'neutral-mannequin' : 'prototype-human';
         stageElement.dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
         stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
-        stageElement.dataset.enemyArt = [...enemyMarkers.values()].every((enemyMarker) => enemyMarker.label?.startsWith('prototype-human-'))
-          ? 'prototype-human-graybox'
-          : 'invalid';
-        stageElement.dataset.bossArt = bossVisual.label ?? '';
+        stageElement.dataset.enemyArt = 'production-vector-enemies-v1';
+        stageElement.dataset.bossArt = 'production-vector-liquidator-v1';
+        stageElement.dataset.bossVisualState = bossVisual.visible ? bossVisual.visualState ?? 'idle' : 'hidden';
         stageElement.dataset.inputWeaponSlot = String(lastInputWeaponSlot);
         stageElement.dataset.simulationTick = String(simulation?.tick ?? 0);
         stageElement.dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
@@ -814,6 +871,8 @@ async function boot() {
         stageElement.dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
         stageElement.dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
         stageElement.dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
+        stageElement.dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
+        stageElement.dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
         const encounterSnapshot = getEncounterSnapshot(simulation?.tick ?? 0);
         stageElement.dataset.encounterBand = encounterSnapshot.bandId;
         stageElement.dataset.directorInsertions = String(encounterDirector?.insertedCount ?? 0);
@@ -856,10 +915,13 @@ async function boot() {
     encounterDirector = null;
     lastDirectorStep = null;
     liquidatorBoss = null;
+    bossHitVisualUntilTick = -1;
+    bossDeathVisualUntilTick = -1;
     lastBossStep = null;
     lastEnemyStep = null;
     lastEnemyAttack = null;
     resetEnemyMarkers([]);
+    clearEnemyDeathMarkers();
     enemyTelegraphs.clear();
     bossTelegraphs.clear();
     bossVisual.visible = false;
@@ -930,7 +992,7 @@ async function boot() {
         x: position.x,
         y: position.y,
         groundZ: queryGround(position.x, position.y).groundZ,
-        visualMode: 'prototype',
+        visualMode: 'normal',
       });
     }).sort((a, b) => a.id.localeCompare(b.id));
     enemyPopulation.active = grayboxEnemies;
@@ -1146,7 +1208,7 @@ async function boot() {
         queryGround,
         isBlocked: spawnPointBlocked,
         isRouteReachable: (point) => point.routeValid === true,
-        visualMode: 'prototype',
+        visualMode: 'normal',
       });
       if (lastDirectorStep.inserted) resetEnemyMarkers(grayboxEnemies);
 
@@ -1533,6 +1595,8 @@ async function boot() {
           }
           if (damageEvent.targetId === liquidatorBoss.id) {
             const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.amount, tick });
+            if (bossDamage.runEvent) bossDeathVisualUntilTick = tick + 45;
+            else bossHitVisualUntilTick = tick + 6;
             if (bossDamage.runEvent && bridge?.initialized) {
               bridge.send('game:run-event', {
                 tick,
@@ -1548,6 +1612,7 @@ async function boot() {
           }
           const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
           if (!enemy) continue;
+          enemy.hitUntilTick = tick + 6;
           const knockbackCollision = resolveSweptCircleMotion({
             body: enemy.collisionBody,
             start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
@@ -1570,7 +1635,9 @@ async function boot() {
         }
         let retiredEnemies = false;
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
-          if (!grayboxEnemies.some((enemy) => enemy.id === scoreEvent.enemyId)) continue;
+          const defeatedEnemy = grayboxEnemies.find((enemy) => enemy.id === scoreEvent.enemyId);
+          if (!defeatedEnemy) continue;
+          queueEnemyDeathVisual(defeatedEnemy, tick);
           runKills += 1;
           if (bridge?.initialized) {
             bridge.send('game:run-event', {

@@ -113,8 +113,11 @@ test('scheduled insertion advances timers and burst counters only after a real e
   assert.equal(attemptScheduledEnemyInsertion({ population, schedule, candidate, tick: 10, placementAllowed: false, visualMode: 'prototype' }).reason, 'placement-rejected');
   assert.deepEqual({ next: schedule.nextSpawnTick, burst: schedule.burstRemaining, count: population.active.length }, { next: 10, burst: 2, count: 0 });
 
-  assert.equal(attemptScheduledEnemyInsertion({ population, schedule, candidate, tick: 10, placementAllowed: true, visualMode: 'normal' }).reason, 'visual-incomplete');
-  assert.deepEqual({ next: schedule.nextSpawnTick, burst: schedule.burstRemaining, count: population.active.length }, { next: 10, burst: 2, count: 0 });
+  const productionPopulation = createEnemyPopulation({ capacity: 4, threatCapacity: 8 });
+  const productionSchedule = createEnemySpawnSchedule({ nextSpawnTick: 10, intervalTicks: 60, burstRemaining: 2 });
+  const productionInsertion = attemptScheduledEnemyInsertion({ population: productionPopulation, schedule: productionSchedule, candidate, tick: 10, placementAllowed: true, visualMode: 'normal' });
+  assert.equal(productionInsertion.inserted, true);
+  assert.deepEqual({ next: productionSchedule.nextSpawnTick, burst: productionSchedule.burstRemaining, count: productionPopulation.active.length }, { next: 70, burst: 1, count: 1 });
 
   const tooExpensive = { archetypeId: 'whale-enforcer', id: 'spawn-heavy', x: 140, y: 100, groundZ: 0 };
   assert.equal(attemptScheduledEnemyInsertion({ population, schedule, candidate: tooExpensive, tick: 10, placementAllowed: true, visualMode: 'prototype', threatRemaining: 5 }).reason, 'threat-capacity');
@@ -221,18 +224,19 @@ test('enemy movement samples traversal every tick and cannot enter deep water', 
   assert.ok(blocked > 0);
 });
 
-test('enemy state validates collision identity and fails closed for production visuals', () => {
+test('enemy state validates collision identity and accepts certified production visuals', () => {
   const state = enemy('whale-enforcer', 'human-heavy', 10, 20);
   assert.equal(state.kind, 'regular');
   assert.equal(state.collisionBody.kind, 'regular');
   assert.equal(state.collisionBody.id, 'human-heavy');
   assert.ok(state.collisionBody.radius > 0);
-  assert.throws(() => createEnemyState({ archetypeId: 'bagholder-rusher', id: 'bad', x: 0, y: 0, visualMode: 'normal' }), /production visual coverage/);
+  const productionState = createEnemyState({ archetypeId: 'bagholder-rusher', id: 'production', x: 0, y: 0, visualMode: 'normal' });
+  assert.equal(productionState.archetypeId, 'bagholder-rusher');
   assert.throws(() => createEnemyState({ archetypeId: 'bagholder-rusher', id: '', x: 0, y: 0, visualMode: 'prototype' }), /id/);
   assert.throws(() => createCollisionBody({ id: 'wrong', kind: 'regular', radius: -1 }), /radius/);
 });
 
-test('runtime integrates six prototype roles in deterministic movement, hurtbox, attack, then combat-authority order', () => {
+test('runtime integrates six production roles in deterministic movement, hurtbox, attack, then combat-authority order', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   const movement = source.indexOf('lastEnemyStep = stepEnemyPopulation');
   const hurtboxes = source.indexOf('const hurtTargets =');
@@ -242,7 +246,7 @@ test('runtime integrates six prototype roles in deterministic movement, hurtbox,
   assert.ok(hurtboxes < attacks && attacks < authority);
   assert.match(source, /preservePrevious: true/);
   assert.match(source, /ENEMY_ARCHETYPE_IDS\.map/);
-  assert.match(source, /visualMode: 'prototype'/);
+  assert.match(source, /visualMode: 'normal'/);
   assert.match(source, /resolveEnemyAttackAgainstPlayer\(event/);
   assert.match(source, /stageElement\.dataset\.enemyArchetypes/);
   assert.match(source, /stageElement\.dataset\.enemySafetySteps/);

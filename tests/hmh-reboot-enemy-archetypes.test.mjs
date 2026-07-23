@@ -59,13 +59,13 @@ test('every role has bounded body, threat, attack, movement, and honest counterp
   }
 });
 
-test('prototype silhouettes cover all combat states while production and elite spawning stay gated', () => {
+test('prototype and production silhouettes cover all combat states with elite visuals enabled', () => {
   assert.deepEqual(REQUIRED_ENEMY_VISUAL_STATES, ['idle', 'run', 'tell', 'attack', 'hit', 'death']);
   for (const archetype of Object.values(ENEMY_ARCHETYPES)) {
     assert.deepEqual(archetype.visual.prototypeStates, REQUIRED_ENEMY_VISUAL_STATES, archetype.id);
     assert.equal(archetype.visual.prototypeComplete, true, archetype.id);
-    assert.equal(archetype.visual.productionComplete, false, archetype.id);
-    assert.equal(archetype.visual.eliteEnabled, false, archetype.id);
+    assert.equal(archetype.visual.productionComplete, true, archetype.id);
+    assert.equal(archetype.visual.eliteEnabled, true, archetype.id);
     assert.match(archetype.visual.silhouette, /^(wedge|diamond|square|hexagon|orb|star)$/);
   }
 });

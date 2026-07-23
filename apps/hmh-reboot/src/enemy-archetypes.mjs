@@ -12,8 +12,8 @@ function defineArchetype(definition) {
     visual: {
       prototypeStates: [...REQUIRED_ENEMY_VISUAL_STATES],
       prototypeComplete: true,
-      productionComplete: false,
-      eliteEnabled: false,
+      productionComplete: true,
+      eliteEnabled: true,
       ...definition.visual,
     },
   });
