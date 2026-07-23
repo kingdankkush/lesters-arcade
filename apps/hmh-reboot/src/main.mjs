@@ -58,6 +58,13 @@ import {
   createMannequinDisplay,
 } from './mannequin-atlas.mjs';
 import {
+  PRODUCTION_HERO_ATLAS_IMAGE_URL,
+  PRODUCTION_HERO_ATLAS_METADATA_URL,
+  PRODUCTION_HERO_RUNTIME_SCALE,
+  createProductionHeroAtlasIndex,
+  createProductionHeroDisplay,
+} from './production-hero-atlas.mjs';
+import {
   LEVEL_ONE_WORLD,
   buildLevelOneMinimapGeometry,
   createLevelOneGroundQuery,
@@ -138,6 +145,7 @@ async function boot() {
 
   const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
+  const productionPilotEnabled = runtimeParams.get('productionPilot') === '1';
 
   const world = new Container();
   const backdrop = new Graphics();
@@ -169,8 +177,24 @@ async function boot() {
     outlineColor: 0xffffff,
     weapon: true,
   }));
+  let productionHeroDisplay = null;
+  if (productionPilotEnabled) {
+    const [metadataResponse, atlasTexture] = await Promise.all([
+      fetch(PRODUCTION_HERO_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
+      Assets.load(PRODUCTION_HERO_ATLAS_IMAGE_URL),
+    ]);
+    if (!metadataResponse.ok) throw new Error(`Production hero metadata failed with ${metadataResponse.status}`);
+    productionHeroDisplay = createProductionHeroDisplay({
+      index: createProductionHeroAtlasIndex(await metadataResponse.json()),
+      atlasTexture,
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      TextureClass: Texture,
+      RectangleClass: Rectangle,
+    });
+  }
   let mannequinDisplay = null;
-  if (pipelinePilotEnabled) {
+  if (pipelinePilotEnabled && !productionPilotEnabled) {
     const [metadataResponse, atlasTexture] = await Promise.all([
       fetch(MANNEQUIN_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
       Assets.load(MANNEQUIN_ATLAS_IMAGE_URL),
@@ -185,8 +209,9 @@ async function boot() {
       RectangleClass: Rectangle,
     });
   }
-  const actorVisual = mannequinDisplay?.container ?? marker;
-  shadow.visible = !pipelinePilotEnabled;
+  const actorVisual = productionHeroDisplay?.container ?? mannequinDisplay?.container ?? marker;
+  const atlasActorEnabled = Boolean(productionHeroDisplay || mannequinDisplay);
+  shadow.visible = !atlasActorEnabled;
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
   world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
@@ -664,8 +689,22 @@ async function boot() {
         aimLine.moveTo(screen.x, screen.y).lineTo(aimEnd.x, aimEnd.y).stroke({ color: aimIntent.fire ? 0xffd166 : 0x49ddff, width: 3, alpha: 0.85 });
       }
       shadow.position.set(groundScreen.x, groundScreen.y);
-      actorVisual.position.set(pipelinePilotEnabled ? groundScreen.x : screen.x, pipelinePilotEnabled ? groundScreen.y : screen.y);
-      if (mannequinDisplay && motion) {
+      actorVisual.position.set(atlasActorEnabled ? groundScreen.x : screen.x, atlasActorEnabled ? groundScreen.y : screen.y);
+      if (productionHeroDisplay && motion) {
+        const visualTick = simulation?.tick ?? 0;
+        const pistolFireAge = lastWeaponFire?.weaponId === 'coin-blaster' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
+        const productionAction = pistolFireAge >= 0 && pistolFireAge < 12 ? 'pistol-fire' : 'aim';
+        productionHeroDisplay.applyPose({
+          simulationTick: visualTick,
+          actionTick: productionAction === 'pistol-fire' ? pistolFireAge : visualTick,
+          locomotion: motion.locomotion,
+          legDirection: motion.legDirection,
+          torsoDirection: motion.torsoDirection,
+          action: productionAction,
+        });
+        actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
+        actorVisual.rotation = 0;
+      } else if (mannequinDisplay && motion) {
         mannequinDisplay.applyPose({
           simulationTick: simulation?.tick ?? 0,
           locomotion: motion.locomotion,
@@ -734,8 +773,8 @@ async function boot() {
         stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
         stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
         stageElement.dataset.actorArt = actorVisual.label ?? '';
-        stageElement.dataset.actorArtSource = pipelinePilotEnabled ? 'blender-atlas-v1' : 'pixi-graybox';
-        stageElement.dataset.actorArtLayers = mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
+        stageElement.dataset.actorArtSource = productionPilotEnabled ? 'production-blender-atlas-v1' : pipelinePilotEnabled ? 'blender-atlas-v1' : 'pixi-graybox';
+        stageElement.dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
         stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
         stageElement.dataset.enemyArt = [...enemyMarkers.values()].every((enemyMarker) => enemyMarker.label?.startsWith('prototype-human-'))
           ? 'prototype-human-graybox'

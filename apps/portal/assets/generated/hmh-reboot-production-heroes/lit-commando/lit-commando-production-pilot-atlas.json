@@ -1,0 +1,6758 @@
+{
+  "actorId": "lit-commando",
+  "classification": "production-art",
+  "composition": {
+    "independentDirections": true,
+    "layerOrder": [
+      "shadow",
+      "lower-body",
+      "torso-head",
+      "weapon"
+    ],
+    "weaponSocket": "weapon_socket"
+  },
+  "directions": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "frames": [
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.965517
+      },
+      "direction": "south",
+      "fps": 1,
+      "frame": {
+        "h": 29,
+        "w": 66,
+        "x": 126,
+        "y": 805
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__south__000",
+      "layer": "shadow",
+      "opaquePixels": 1137,
+      "pivot": {
+        "x": 33,
+        "y": 28
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "22262eac1b445580ff8215c79d9ca5f5ef04a8d1c82f5fa8f81863049034d60d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 29,
+        "w": 66,
+        "x": 47,
+        "y": 118
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.969697
+      },
+      "direction": "south-east",
+      "fps": 1,
+      "frame": {
+        "h": 33,
+        "w": 54,
+        "x": 952,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__south-east__000",
+      "layer": "shadow",
+      "opaquePixels": 1128,
+      "pivot": {
+        "x": 27,
+        "y": 32
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8953c5b854aaef89187bd3a4e1d66cb9685bc0ce780995a84a372cc7cec32b75",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 33,
+        "w": 54,
+        "x": 53,
+        "y": 114
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.972973
+      },
+      "direction": "east",
+      "fps": 1,
+      "frame": {
+        "h": 37,
+        "w": 38,
+        "x": 760,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__east__000",
+      "layer": "shadow",
+      "opaquePixels": 1103,
+      "pivot": {
+        "x": 19,
+        "y": 36
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "18a07afde23ef37a9d30e33ac0421c2896449758d4b3b03a6497f9eaa7e13e5b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 37,
+        "w": 38,
+        "x": 61,
+        "y": 110
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.969697
+      },
+      "direction": "north-east",
+      "fps": 1,
+      "frame": {
+        "h": 33,
+        "w": 54,
+        "x": 840,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__north-east__000",
+      "layer": "shadow",
+      "opaquePixels": 1124,
+      "pivot": {
+        "x": 27,
+        "y": 32
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "07b1fc13282bdb9b732af34f674bcddaec304722ad33a3832c7bac3d49287868",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 33,
+        "w": 54,
+        "x": 53,
+        "y": 114
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.965517
+      },
+      "direction": "north",
+      "fps": 1,
+      "frame": {
+        "h": 29,
+        "w": 66,
+        "x": 58,
+        "y": 805
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__north__000",
+      "layer": "shadow",
+      "opaquePixels": 1137,
+      "pivot": {
+        "x": 33,
+        "y": 28
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "0de8e309a1563a6b74381b12702d6e9934f2532efd728f17c99bc00002feec12",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 29,
+        "w": 66,
+        "x": 47,
+        "y": 118
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.969697
+      },
+      "direction": "north-west",
+      "fps": 1,
+      "frame": {
+        "h": 33,
+        "w": 54,
+        "x": 896,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__north-west__000",
+      "layer": "shadow",
+      "opaquePixels": 1128,
+      "pivot": {
+        "x": 27,
+        "y": 32
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "71a51f31e04814ef2c73a159b89aeecead9bf8a9fd112039075570a6f761b646",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 33,
+        "w": 54,
+        "x": 53,
+        "y": 114
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.972973
+      },
+      "direction": "west",
+      "fps": 1,
+      "frame": {
+        "h": 37,
+        "w": 38,
+        "x": 800,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__west__000",
+      "layer": "shadow",
+      "opaquePixels": 1103,
+      "pivot": {
+        "x": 19,
+        "y": 36
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "03ba1eaf1bfd464fe0e23a98d581a4cf94aca7306a21ab561b31f4883823839b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 37,
+        "w": 38,
+        "x": 61,
+        "y": 110
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.969697
+      },
+      "direction": "south-west",
+      "fps": 1,
+      "frame": {
+        "h": 33,
+        "w": 54,
+        "x": 2,
+        "y": 805
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__shadow__idle__south-west__000",
+      "layer": "shadow",
+      "opaquePixels": 1124,
+      "pivot": {
+        "x": 27,
+        "y": 32
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "4d627d31f89e824b369fbaf5e2cb0bf54d5d49e2e35d5cc65dbfdadb9069fc78",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 33,
+        "w": 54,
+        "x": 53,
+        "y": 114
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985714
+      },
+      "direction": "south",
+      "fps": 2,
+      "frame": {
+        "h": 70,
+        "w": 36,
+        "x": 174,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__south__000",
+      "layer": "lower-body",
+      "opaquePixels": 2152,
+      "pivot": {
+        "x": 18,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8d8c693bc48f206f9f532f4248014658dffa3bd9346d95942b68e38b18cda51f",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 36,
+        "x": 62,
+        "y": 77
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985294
+      },
+      "direction": "south",
+      "fps": 2,
+      "frame": {
+        "h": 68,
+        "w": 36,
+        "x": 562,
+        "y": 731
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__south__001",
+      "layer": "lower-body",
+      "opaquePixels": 2133,
+      "pivot": {
+        "x": 18,
+        "y": 67
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8930412381123a6699d09c0b4eae1255997e0d0d7b0fa70f0297e83189c9a42f",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 68,
+        "w": 36,
+        "x": 62,
+        "y": 79
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.452381,
+        "y": 0.986301
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 73,
+        "w": 42,
+        "x": 667,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__south-east__000",
+      "layer": "lower-body",
+      "opaquePixels": 2058,
+      "pivot": {
+        "x": 19,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "6f3fb3fd0544ce69b3df1427ba08df36800b148b448e18f59cadecf2f7a1a2f6",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 42,
+        "x": 61,
+        "y": 74
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.386364,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 44,
+        "x": 395,
+        "y": 582
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__south-east__001",
+      "layer": "lower-body",
+      "opaquePixels": 2141,
+      "pivot": {
+        "x": 17,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "94007e872e946dd807e7cd5b3c5570c578f105794742d8934cd2a187c967ab10",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 44,
+        "x": 63,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.40625,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 32,
+        "x": 236,
+        "y": 582
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__east__000",
+      "layer": "lower-body",
+      "opaquePixels": 1536,
+      "pivot": {
+        "x": 13,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2dd96fdcc974c5a27c9732846d76d99fe5739c15f5271e106a0471891a8c44a6",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 32,
+        "x": 67,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.3125,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 32,
+        "x": 270,
+        "y": 582
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__east__001",
+      "layer": "lower-body",
+      "opaquePixels": 1594,
+      "pivot": {
+        "x": 10,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "abb9348372238b7dc3b4cad76c547467be03c933433d99f4a6f747181e66ebd8",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 32,
+        "x": 70,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.444444,
+        "y": 0.986111
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 45,
+        "x": 304,
+        "y": 582
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__north-east__000",
+      "layer": "lower-body",
+      "opaquePixels": 1980,
+      "pivot": {
+        "x": 20,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "854c2abee628dc418f6968919ffa5d1fff99d466698e730718b59af478741755",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 45,
+        "x": 60,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.404762,
+        "y": 0.986301
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 73,
+        "w": 42,
+        "x": 577,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__north-east__001",
+      "layer": "lower-body",
+      "opaquePixels": 1897,
+      "pivot": {
+        "x": 17,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "56a9f2c3bebde202de74553744c2120d5ad443fa68c14843558841a55e54e650",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 42,
+        "x": 63,
+        "y": 74
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985294
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 68,
+        "w": 36,
+        "x": 524,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__north__000",
+      "layer": "lower-body",
+      "opaquePixels": 1957,
+      "pivot": {
+        "x": 18,
+        "y": 67
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "6c7df1c2f197b6d57a22a879c8759accf992ab5615580c7b529427b70ea7b301",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 68,
+        "w": 36,
+        "x": 62,
+        "y": 79
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985714
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 70,
+        "w": 36,
+        "x": 136,
+        "y": 731
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__north__001",
+      "layer": "lower-body",
+      "opaquePixels": 1954,
+      "pivot": {
+        "x": 18,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "5f4fefd7aa384d11a5a39c7938861a50ebe11655f62aef3af154d01190d855d8",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 36,
+        "x": 62,
+        "y": 77
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.547619,
+        "y": 0.986111
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 42,
+        "x": 351,
+        "y": 582
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__north-west__000",
+      "layer": "lower-body",
+      "opaquePixels": 1899,
+      "pivot": {
+        "x": 23,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "58fdb8e389b06ce3a453a1037466a0cf7a6b25599e55bbe7f9d3ebcab37095e1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 42,
+        "x": 57,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.613636,
+        "y": 0.986301
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 73,
+        "w": 44,
+        "x": 621,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__north-west__001",
+      "layer": "lower-body",
+      "opaquePixels": 1978,
+      "pivot": {
+        "x": 27,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "b64dc96f298f21e79da7707b8f9fc5cae96b568de83d848cd4569f578a5adcb0",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 44,
+        "x": 53,
+        "y": 74
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.59375,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 32,
+        "x": 485,
+        "y": 582
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__west__000",
+      "layer": "lower-body",
+      "opaquePixels": 1591,
+      "pivot": {
+        "x": 19,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d86e9eacddaa7e17da0b32984891f8028327639a0b9426fba7f1dd77d0d477e2",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 32,
+        "x": 61,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.6875,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 32,
+        "x": 519,
+        "y": 582
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__west__001",
+      "layer": "lower-body",
+      "opaquePixels": 1535,
+      "pivot": {
+        "x": 22,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "0f326d61303460a4da899530e35f0bcb7f391a1b9e21ef4fd68896850004f3d4",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 32,
+        "x": 58,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.555556,
+        "y": 0.986301
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 73,
+        "w": 45,
+        "x": 711,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__idle__south-west__000",
+      "layer": "lower-body",
+      "opaquePixels": 2144,
+      "pivot": {
+        "x": 25,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8811e15731999909c297bb3371808044f04ac55591bcc3669a5bc3624bd592d6",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 45,
+        "x": 55,
+        "y": 74
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.595238,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 72,
+        "w": 42,
+        "x": 441,
+        "y": 582
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__idle__south-west__001",
+      "layer": "lower-body",
+      "opaquePixels": 2054,
+      "pivot": {
+        "x": 25,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "344b7a96bace45962b8f0e8d627834c301a7bb611e8d74afc64d9c46df5a7699",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 42,
+        "x": 55,
+        "y": 75
+      },
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985507
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 69,
+        "w": 36,
+        "x": 448,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__south__000",
+      "layer": "lower-body",
+      "opaquePixels": 2068,
+      "pivot": {
+        "x": 18,
+        "y": 68
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "3a91c137a247fc93a545da38f870ecf9cb7b38eb0c5e1d872cfb0d516f6baea1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 69,
+        "w": 36,
+        "x": 62,
+        "y": 78
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.526316,
+        "y": 0.985294
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 68,
+        "w": 38,
+        "x": 600,
+        "y": 731
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__south__001",
+      "layer": "lower-body",
+      "opaquePixels": 1965,
+      "pivot": {
+        "x": 20,
+        "y": 67
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "890c6ab2178f5b82f98fd3afd6388abf4d0759c561862652ce4b8a079c26fb2a",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 68,
+        "w": 38,
+        "x": 60,
+        "y": 79
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.526316,
+        "y": 0.985294
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 68,
+        "w": 38,
+        "x": 640,
+        "y": 731
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__south__002",
+      "layer": "lower-body",
+      "opaquePixels": 1944,
+      "pivot": {
+        "x": 20,
+        "y": 67
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a5518f81f95f139f84830b4a2a1494200cf1db7b8b65db86ef22a61ad8a4586d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 68,
+        "w": 38,
+        "x": 60,
+        "y": 79
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985507
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 69,
+        "w": 36,
+        "x": 486,
+        "y": 731
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__south__003",
+      "layer": "lower-body",
+      "opaquePixels": 2068,
+      "pivot": {
+        "x": 18,
+        "y": 68
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "38b8cd8f37da2eb08d045502d0a443c2ad190450e7f961fde2ce73df0d5c4b56",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 69,
+        "w": 36,
+        "x": 62,
+        "y": 78
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.473684,
+        "y": 0.985294
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 68,
+        "w": 38,
+        "x": 680,
+        "y": 731
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__south__004",
+      "layer": "lower-body",
+      "opaquePixels": 1965,
+      "pivot": {
+        "x": 18,
+        "y": 67
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ca8db9a0090e0bdbfc54b0b910ed5d394ea10d534e87d9226f4aa6fde3527490",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 68,
+        "w": 38,
+        "x": 62,
+        "y": 79
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.473684,
+        "y": 0.985294
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 68,
+        "w": 38,
+        "x": 720,
+        "y": 731
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__south__005",
+      "layer": "lower-body",
+      "opaquePixels": 1945,
+      "pivot": {
+        "x": 18,
+        "y": 67
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "5abb08013e96da637ddf0cabfad3e793d6acebf5abb4d5a58c43a9c9a4cf154a",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 68,
+        "w": 38,
+        "x": 62,
+        "y": 79
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.418605,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 43,
+        "x": 98,
+        "y": 657
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__south-east__000",
+      "layer": "lower-body",
+      "opaquePixels": 1892,
+      "pivot": {
+        "x": 18,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9b9a39c8ab1a828cb2086307d6fe3f88844149568feed347637bdcdf715184e9",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 43,
+        "x": 62,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.415385,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 65,
+        "x": 143,
+        "y": 657
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__south-east__001",
+      "layer": "lower-body",
+      "opaquePixels": 2284,
+      "pivot": {
+        "x": 27,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e56ee499dbd8c720076e77ca1516aa8801385a333ddb06843f945ca66af79182",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 65,
+        "x": 53,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.442857,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 70,
+        "x": 210,
+        "y": 657
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__south-east__002",
+      "layer": "lower-body",
+      "opaquePixels": 2255,
+      "pivot": {
+        "x": 31,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "596635c92ec9c52dc8c24ad71e07b09ed7ed71bc7454395599780b2624e85bca",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 70,
+        "x": 49,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.367347,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 49,
+        "x": 282,
+        "y": 657
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__south-east__003",
+      "layer": "lower-body",
+      "opaquePixels": 2142,
+      "pivot": {
+        "x": 18,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "13fef4dcc1533ce0d574662c92740964cb9fcd9582fa4413df6854db2532839b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 49,
+        "x": 62,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.377778,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 45,
+        "x": 333,
+        "y": 657
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__south-east__004",
+      "layer": "lower-body",
+      "opaquePixels": 1730,
+      "pivot": {
+        "x": 17,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "20f7d895cc248a0a3525b82879ecb5bc6ad45920fa082b50abb0d7dfe7848489",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 45,
+        "x": 63,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.369565,
+        "y": 0.986111
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 46,
+        "x": 380,
+        "y": 657
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__south-east__005",
+      "layer": "lower-body",
+      "opaquePixels": 1767,
+      "pivot": {
+        "x": 17,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "436da60b951b197f968961cd409f2269f43fd200e3309dfe7aa4005c9e10221d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 46,
+        "x": 63,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.3,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 40,
+        "x": 553,
+        "y": 582
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__east__000",
+      "layer": "lower-body",
+      "opaquePixels": 1539,
+      "pivot": {
+        "x": 12,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "812d1c6805d6b04c87431bc31a008130526543b21f792324850fd19f14a9c984",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 40,
+        "x": 68,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.344262,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 61,
+        "x": 595,
+        "y": 582
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__east__001",
+      "layer": "lower-body",
+      "opaquePixels": 2137,
+      "pivot": {
+        "x": 21,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "81d9b3d3dca372b83ae79d7c71022dca49620a6de57cf0813c4c8dda6f8a6879",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 61,
+        "x": 59,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.391304,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 69,
+        "x": 658,
+        "y": 582
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__east__002",
+      "layer": "lower-body",
+      "opaquePixels": 2135,
+      "pivot": {
+        "x": 27,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "c54439d6f0e4f759177d23be6ad14fb2b657e415ea86ff0eeef751f7392248de",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 69,
+        "x": 53,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.3,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 40,
+        "x": 729,
+        "y": 582
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__east__003",
+      "layer": "lower-body",
+      "opaquePixels": 1766,
+      "pivot": {
+        "x": 12,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d0c3b7d00929e859c8d281085420fea8c87b1757dc23031d42ac993df654d957",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 40,
+        "x": 68,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.344262,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 61,
+        "x": 771,
+        "y": 582
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__east__004",
+      "layer": "lower-body",
+      "opaquePixels": 2086,
+      "pivot": {
+        "x": 21,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "4b2be27dc3297928a583fdd8a5ab5297d91b1fe424e4a673651430207edc7327",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 61,
+        "x": 59,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.391304,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 69,
+        "x": 834,
+        "y": 582
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__east__005",
+      "layer": "lower-body",
+      "opaquePixels": 2112,
+      "pivot": {
+        "x": 27,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "048bb4920ee3e7f29e099377150615d5389b31bc0d01ffc8db45583684ec70eb",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 69,
+        "x": 53,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.367347,
+        "y": 0.986111
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 49,
+        "x": 905,
+        "y": 582
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__north-east__000",
+      "layer": "lower-body",
+      "opaquePixels": 1930,
+      "pivot": {
+        "x": 18,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d174e2ae048f440255026d558af184e340d76b90205d230f1b18b6fdb6007bec",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 49,
+        "x": 62,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.377778,
+        "y": 0.986301
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 45,
+        "x": 758,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__north-east__001",
+      "layer": "lower-body",
+      "opaquePixels": 1826,
+      "pivot": {
+        "x": 17,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e66facb8e3d843087fa5a23077c0d7f2d32342926e0d827432de574a6821211a",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 45,
+        "x": 63,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.369565,
+        "y": 0.986301
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 46,
+        "x": 805,
+        "y": 491
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__north-east__002",
+      "layer": "lower-body",
+      "opaquePixels": 1875,
+      "pivot": {
+        "x": 17,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9d6494051486419a746310b68a868d86e6bb94429f5ac8a7e96910244915b9ed",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 46,
+        "x": 63,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.418605,
+        "y": 0.986111
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 43,
+        "x": 956,
+        "y": 582
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__north-east__003",
+      "layer": "lower-body",
+      "opaquePixels": 1767,
+      "pivot": {
+        "x": 18,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "257f2c1d9e712fff1151360e24caf9eb83ec68fd1df1f8ce5236362d84b93fda",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 43,
+        "x": 62,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.415385,
+        "y": 0.986301
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 65,
+        "x": 853,
+        "y": 491
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__north-east__004",
+      "layer": "lower-body",
+      "opaquePixels": 2158,
+      "pivot": {
+        "x": 27,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "5140b896bffba54f1e58ac0772356dcf09a29cb362ebfa1e35b373b87b677ab1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 65,
+        "x": 53,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.442857,
+        "y": 0.986301
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 70,
+        "x": 920,
+        "y": 491
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__north-east__005",
+      "layer": "lower-body",
+      "opaquePixels": 2155,
+      "pivot": {
+        "x": 31,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8a4967bf5cf61f198fe3bcd41c218febf3baa6a7ee1d387aacaa82dc4910d958",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 70,
+        "x": 49,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985507
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 69,
+        "w": 36,
+        "x": 372,
+        "y": 731
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__north__000",
+      "layer": "lower-body",
+      "opaquePixels": 1804,
+      "pivot": {
+        "x": 18,
+        "y": 68
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "192355524aac9a00da75dcae17551472b33fe361a6363f82ef37234e50c7e39d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 69,
+        "w": 36,
+        "x": 62,
+        "y": 78
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.473684,
+        "y": 0.985714
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 70,
+        "w": 38,
+        "x": 212,
+        "y": 731
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__north__001",
+      "layer": "lower-body",
+      "opaquePixels": 1770,
+      "pivot": {
+        "x": 18,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "96b352537c393ab35052210349212e8992bcb74e59e1268c5a02557e22e728d8",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 38,
+        "x": 62,
+        "y": 77
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.473684,
+        "y": 0.985714
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 70,
+        "w": 38,
+        "x": 252,
+        "y": 731
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__north__002",
+      "layer": "lower-body",
+      "opaquePixels": 1652,
+      "pivot": {
+        "x": 18,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8bc4f6d8407cdcafa87446899f721ebb8ee7ab865b7b379e839f02c36531e8cf",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 38,
+        "x": 62,
+        "y": 77
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.985507
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 69,
+        "w": 36,
+        "x": 410,
+        "y": 731
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__north__003",
+      "layer": "lower-body",
+      "opaquePixels": 1804,
+      "pivot": {
+        "x": 18,
+        "y": 68
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "1ab8567ea34716d5692e1b18a9b24b0dc765fe379c01fb0a11e888888b1f8451",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 69,
+        "w": 36,
+        "x": 62,
+        "y": 78
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.526316,
+        "y": 0.985714
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 70,
+        "w": 38,
+        "x": 292,
+        "y": 731
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__north__004",
+      "layer": "lower-body",
+      "opaquePixels": 1770,
+      "pivot": {
+        "x": 20,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "eb71fbe9478d79c8c6aa4dcc1d7cd29a08b3ca6ebf5d2bd037179089beecc8d7",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 38,
+        "x": 60,
+        "y": 77
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.526316,
+        "y": 0.985714
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 70,
+        "w": 38,
+        "x": 332,
+        "y": 731
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__north__005",
+      "layer": "lower-body",
+      "opaquePixels": 1652,
+      "pivot": {
+        "x": 20,
+        "y": 69
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9dae8158bd123365f6ec25a4f78c3de149defba096cec65d4c18c1559f348abc",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 70,
+        "w": 38,
+        "x": 60,
+        "y": 77
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.581395,
+        "y": 0.986111
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 43,
+        "x": 2,
+        "y": 657
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__north-west__000",
+      "layer": "lower-body",
+      "opaquePixels": 1767,
+      "pivot": {
+        "x": 25,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "75024470209dfc025308f160b41ea583dcd5b5d7bc302af06e9aafca7903fc9c",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 43,
+        "x": 55,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.584615,
+        "y": 0.986301
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 65,
+        "x": 2,
+        "y": 582
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__north-west__001",
+      "layer": "lower-body",
+      "opaquePixels": 2155,
+      "pivot": {
+        "x": 38,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2ccced1c8fc8b2f6249d18dd91c661d33fed36feac0d3e0c5f847b0a317755d6",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 65,
+        "x": 42,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.557143,
+        "y": 0.986301
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 70,
+        "x": 69,
+        "y": 582
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__north-west__002",
+      "layer": "lower-body",
+      "opaquePixels": 2150,
+      "pivot": {
+        "x": 39,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "167dd583f1d6ff3330359642004a0bfd01f305100dd20248531a765757b8cd82",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 70,
+        "x": 41,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.632653,
+        "y": 0.986111
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 49,
+        "x": 47,
+        "y": 657
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__north-west__003",
+      "layer": "lower-body",
+      "opaquePixels": 1929,
+      "pivot": {
+        "x": 31,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "542bb706c75218cb52a443534ea7e8415589d470939eb362c4815d9892e38f91",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 49,
+        "x": 49,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.622222,
+        "y": 0.986301
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 45,
+        "x": 141,
+        "y": 582
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__north-west__004",
+      "layer": "lower-body",
+      "opaquePixels": 1825,
+      "pivot": {
+        "x": 28,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "7baf4b1e2cd504e218a774ed9f68d69ffb48230a983bb61b22c755614cb1d82a",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 45,
+        "x": 52,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.630435,
+        "y": 0.986301
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 46,
+        "x": 188,
+        "y": 582
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__north-west__005",
+      "layer": "lower-body",
+      "opaquePixels": 1872,
+      "pivot": {
+        "x": 29,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "22940afac7f14890ffd55334e7f9fbf94602323dda23597009e21bebb1e1e789",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 73,
+        "w": 46,
+        "x": 51,
+        "y": 74
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.7,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 40,
+        "x": 758,
+        "y": 657
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__west__000",
+      "layer": "lower-body",
+      "opaquePixels": 1767,
+      "pivot": {
+        "x": 28,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a27d7c0fa517185b51b764213ca37f1231768695da77d4c27a0b96781938c0b0",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 40,
+        "x": 52,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.655738,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 61,
+        "x": 800,
+        "y": 657
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__west__001",
+      "layer": "lower-body",
+      "opaquePixels": 2085,
+      "pivot": {
+        "x": 40,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a8407a982d5558b431c003fdd4908b72583bd99ae4bdf292b72c2c666c9448dd",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 61,
+        "x": 40,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.608696,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 69,
+        "x": 863,
+        "y": 657
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__west__002",
+      "layer": "lower-body",
+      "opaquePixels": 2110,
+      "pivot": {
+        "x": 42,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "67497eeddcfdc0481a154ec45251e74e010a88b261e9e0800bf93b53dc10ee7d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 69,
+        "x": 38,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.7,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 40,
+        "x": 934,
+        "y": 657
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__west__003",
+      "layer": "lower-body",
+      "opaquePixels": 1538,
+      "pivot": {
+        "x": 28,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d1e87fb40fd885d0557e6779e2c01d487e6f9d52c89138ed7a2a35bf42a7edc1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 40,
+        "x": 52,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.655738,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 61,
+        "x": 2,
+        "y": 731
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__west__004",
+      "layer": "lower-body",
+      "opaquePixels": 2136,
+      "pivot": {
+        "x": 40,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "92ad7825d0f55d016d9dba3e3d97d893914461dbedb755fcab001389a1a22e05",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 61,
+        "x": 40,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.608696,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 69,
+        "x": 65,
+        "y": 731
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__west__005",
+      "layer": "lower-body",
+      "opaquePixels": 2127,
+      "pivot": {
+        "x": 42,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2ea47e3d7ad385d9966b3279a41ebc6b5722f7660b8acc710f8521dc5821d5d2",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 69,
+        "x": 38,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.632653,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 49,
+        "x": 428,
+        "y": 657
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__lower-body__run__south-west__000",
+      "layer": "lower-body",
+      "opaquePixels": 2141,
+      "pivot": {
+        "x": 31,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "545eaa4b69e55f5f61171da92a26721df9fb932169fff606d29f78938231cac3",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 49,
+        "x": 49,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.622222,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 45,
+        "x": 479,
+        "y": 657
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__lower-body__run__south-west__001",
+      "layer": "lower-body",
+      "opaquePixels": 1729,
+      "pivot": {
+        "x": 28,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "47638c972473e4776bfa6af0a214f67b220471b0865c8fa9a35f09c65699ec9f",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 45,
+        "x": 52,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.630435,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 46,
+        "x": 526,
+        "y": 657
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__lower-body__run__south-west__002",
+      "layer": "lower-body",
+      "opaquePixels": 1770,
+      "pivot": {
+        "x": 29,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2aef6c0117fb1167c6dbcf9f168dd9b3a8801df1976983303b9e6b397e4327fd",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 46,
+        "x": 51,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.581395,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 43,
+        "x": 574,
+        "y": 657
+      },
+      "frameIndex": 3,
+      "id": "lit-commando__lower-body__run__south-west__003",
+      "layer": "lower-body",
+      "opaquePixels": 1894,
+      "pivot": {
+        "x": 25,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a43f45a97cd2f8b5fc648946c30deeb1c0713a6712db51252bc670c4ffbcc04b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 43,
+        "x": 55,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.584615,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 65,
+        "x": 619,
+        "y": 657
+      },
+      "frameIndex": 4,
+      "id": "lit-commando__lower-body__run__south-west__004",
+      "layer": "lower-body",
+      "opaquePixels": 2287,
+      "pivot": {
+        "x": 38,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "4171e79b885a30518b4f5f8cf19457db78ebf21d5a85c74ab61e8de6a5106bf4",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 65,
+        "x": 42,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.557143,
+        "y": 0.986111
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 70,
+        "x": 686,
+        "y": 657
+      },
+      "frameIndex": 5,
+      "id": "lit-commando__lower-body__run__south-west__005",
+      "layer": "lower-body",
+      "opaquePixels": 2254,
+      "pivot": {
+        "x": 39,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2e5f42200d487723685fbcead696c8627061affc7d041afea21f8c61fd90db2c",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 72,
+        "w": 70,
+        "x": 41,
+        "y": 75
+      },
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991736
+      },
+      "direction": "south",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 72,
+        "x": 726,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__south__000",
+      "layer": "torso-head",
+      "opaquePixels": 2907,
+      "pivot": {
+        "x": 36,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "682f00f7ebd64296e39b13e197fbad92b7ee2d4a369ccd1b2e7a24c475efa9fb",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 72,
+        "x": 44,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991736
+      },
+      "direction": "south",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 72,
+        "x": 800,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__south__001",
+      "layer": "torso-head",
+      "opaquePixels": 2890,
+      "pivot": {
+        "x": 36,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "b44dc4e00b92abd6204997a87e86a335174b54574e396ae23fc6ad9c30056944",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 72,
+        "x": 44,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508197,
+        "y": 0.991736
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 61,
+        "x": 479,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__south-east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2578,
+      "pivot": {
+        "x": 31,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "28d5d018722e0e3a190b57d17f77be8a7c2fdc1a6891ca288a26492687444350",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 61,
+        "x": 49,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.491803,
+        "y": 0.991736
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 61,
+        "x": 542,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__south-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2571,
+      "pivot": {
+        "x": 30,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "3905b29b2faa4ad46a3e89ebde181a8e40d90f995ea077a5cfeb7d3f68b57ade",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 61,
+        "x": 50,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991667
+      },
+      "direction": "east",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 32,
+        "x": 225,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__east__000",
+      "layer": "torso-head",
+      "opaquePixels": 1845,
+      "pivot": {
+        "x": 16,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "76a34a6cb81ef3b7fb709677d75b06d348ff4a1f67467a05c3a107914e56cd02",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 32,
+        "x": 64,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.483871,
+        "y": 0.991667
+      },
+      "direction": "east",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 31,
+        "x": 259,
+        "y": 128
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__east__001",
+      "layer": "torso-head",
+      "opaquePixels": 1832,
+      "pivot": {
+        "x": 15,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "3e248ab64e70d7dcc64ac4989db61192a8eac2423c0a57ac0be019b2b6deb3ee",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 31,
+        "x": 65,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991667
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 58,
+        "x": 292,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__north-east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2529,
+      "pivot": {
+        "x": 29,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "166597b949d713179acc55dbe16b310473ce5d5e732dbca064de4ba87f4c430f",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 58,
+        "x": 51,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.491525,
+        "y": 0.991667
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 59,
+        "x": 352,
+        "y": 128
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__north-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2556,
+      "pivot": {
+        "x": 29,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ce4011791ad1ababa9cff1a436287d0d19af10b55f7e03be8309330f08376840",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 59,
+        "x": 51,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991597
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 119,
+        "w": 72,
+        "x": 2,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__north__000",
+      "layer": "torso-head",
+      "opaquePixels": 2879,
+      "pivot": {
+        "x": 36,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "f471b0e652e2d6913c7f32621fe2f9a5622cdfd54abf066c34178c4524165457",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 72,
+        "x": 44,
+        "y": 28
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991597
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 119,
+        "w": 72,
+        "x": 76,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__north__001",
+      "layer": "torso-head",
+      "opaquePixels": 2888,
+      "pivot": {
+        "x": 36,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "5f9ef36a61a131121b297855277cd86bdacd87558e30c7a463976e71adbeb4f9",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 72,
+        "x": 44,
+        "y": 28
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.491803,
+        "y": 0.991667
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 61,
+        "x": 413,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__north-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2585,
+      "pivot": {
+        "x": 30,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "0e0e4c0ab35da7583edebd1442474890eee91ae8eaad7875125a860373fd2aa3",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 61,
+        "x": 50,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508197,
+        "y": 0.991667
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 61,
+        "x": 476,
+        "y": 128
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__north-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2616,
+      "pivot": {
+        "x": 31,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d198e209d6ae04a2483b4921d31711d5cc4c59e59a88235ff963f3047d87b8d1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 61,
+        "x": 49,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991667
+      },
+      "direction": "west",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 32,
+        "x": 539,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__west__000",
+      "layer": "torso-head",
+      "opaquePixels": 1818,
+      "pivot": {
+        "x": 16,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e8e0eb24a8d63a0b373d9f3f9a07af0d85e33c03fb8b882e309e557e51d1b8ba",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 32,
+        "x": 64,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.516129,
+        "y": 0.991667
+      },
+      "direction": "west",
+      "fps": 2,
+      "frame": {
+        "h": 120,
+        "w": 31,
+        "x": 573,
+        "y": 128
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__west__001",
+      "layer": "torso-head",
+      "opaquePixels": 1815,
+      "pivot": {
+        "x": 16,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "69282b8e432b8e2e52c997474f5b235186c7e2a44de9bf0c4146e1a1de8f6021",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 31,
+        "x": 64,
+        "y": 27
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991736
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 58,
+        "x": 605,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__aim__south-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2520,
+      "pivot": {
+        "x": 29,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "b01b21104984b0110604814ece3618895d54d93540612c7bbef12a9883aa3240",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 58,
+        "x": 51,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508475,
+        "y": 0.991736
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 121,
+        "w": 59,
+        "x": 665,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__aim__south-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2513,
+      "pivot": {
+        "x": 30,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d55fe3ffacdd725ce3bb1cfbb7fb676cc1c56961e481dbd6937b7786e4286ee0",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 59,
+        "x": 50,
+        "y": 26
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991597
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 119,
+        "w": 72,
+        "x": 404,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__south__000",
+      "layer": "torso-head",
+      "opaquePixels": 2885,
+      "pivot": {
+        "x": 36,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "959ae71bf9635456c5952abfa9e521881c69c362a4ade627672bf55aeed75dac",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 72,
+        "x": 44,
+        "y": 28
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.507042,
+        "y": 0.991935
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 124,
+        "w": 71,
+        "x": 2,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__south__001",
+      "layer": "torso-head",
+      "opaquePixels": 2913,
+      "pivot": {
+        "x": 36,
+        "y": 123
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "cbc0fcd12ea5df5ee13f30ba84403140bf08aa3c9f2e1ea14eed4d1734775725",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 124,
+        "w": 71,
+        "x": 44,
+        "y": 23
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.507042,
+        "y": 0.991803
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 122,
+        "w": 71,
+        "x": 406,
+        "y": 2
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__south__002",
+      "layer": "torso-head",
+      "opaquePixels": 2907,
+      "pivot": {
+        "x": 36,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2b460bca2a183f78ee7643f056b80bffafbe3aaa79dae59f9afa0cdcf0f19317",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 71,
+        "x": 44,
+        "y": 25
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508197,
+        "y": 0.991667
+      },
+      "direction": "south-east",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 61,
+        "x": 818,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__south-east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2538,
+      "pivot": {
+        "x": 31,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "002be08e8882501d6da90fc176ab6ea6150e329503bd8c0cbdde4e1927e35859",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 61,
+        "x": 49,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991803
+      },
+      "direction": "south-east",
+      "fps": 15,
+      "frame": {
+        "h": 122,
+        "w": 60,
+        "x": 162,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__south-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2645,
+      "pivot": {
+        "x": 30,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "30d88c7b8c9f9e34e81e96eebfed4131fa07b0f3b7a456339512ee126f323faa",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 60,
+        "x": 50,
+        "y": 25
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508197,
+        "y": 0.991803
+      },
+      "direction": "south-east",
+      "fps": 15,
+      "frame": {
+        "h": 122,
+        "w": 61,
+        "x": 224,
+        "y": 2
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__south-east__002",
+      "layer": "torso-head",
+      "opaquePixels": 2620,
+      "pivot": {
+        "x": 31,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "37a83da950ae5ad61deb08a3cc6335076c6dffb54666ac8982074422cd690f62",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 61,
+        "x": 49,
+        "y": 25
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.484848,
+        "y": 0.991667
+      },
+      "direction": "east",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 33,
+        "x": 674,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__east__000",
+      "layer": "torso-head",
+      "opaquePixels": 1826,
+      "pivot": {
+        "x": 16,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ea8c497c52d11226dbf974aac928edc7ba4c9b0180cb3a40590f7a721a6264d1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 33,
+        "x": 64,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.525,
+        "y": 0.991597
+      },
+      "direction": "east",
+      "fps": 15,
+      "frame": {
+        "h": 119,
+        "w": 40,
+        "x": 362,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__east__001",
+      "layer": "torso-head",
+      "opaquePixels": 1970,
+      "pivot": {
+        "x": 21,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ffe1270828459935b237c4a8a7cfd2b720d46cad89d17ff464516ad0ae3f24aa",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 40,
+        "x": 59,
+        "y": 28
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.515152,
+        "y": 0.991667
+      },
+      "direction": "east",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 33,
+        "x": 709,
+        "y": 128
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__east__002",
+      "layer": "torso-head",
+      "opaquePixels": 1873,
+      "pivot": {
+        "x": 17,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e68754f47a66370975d609bd814d7b409b10ff8111d15d4aee9c95340537c794",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 33,
+        "x": 63,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991736
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 121,
+        "w": 58,
+        "x": 102,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__north-east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2573,
+      "pivot": {
+        "x": 29,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2ab5e21b8e3d47a01152560c1eef0f9fbea82f10eefffe601c94588695d30581",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 58,
+        "x": 51,
+        "y": 26
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.491228,
+        "y": 0.991379
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 116,
+        "w": 57,
+        "x": 75,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__north-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2395,
+      "pivot": {
+        "x": 28,
+        "y": 115
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "7b90e0764456b626343d28403b16d88867cc1ae12c36236d571e8a00b84a2ae7",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 116,
+        "w": 57,
+        "x": 52,
+        "y": 31
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991525
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 118,
+        "w": 58,
+        "x": 840,
+        "y": 251
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__north-east__002",
+      "layer": "torso-head",
+      "opaquePixels": 2476,
+      "pivot": {
+        "x": 29,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "1ab8695f2d08c9d30aa7fc2ecd1bc27ccea8d832ae229f360ff196e34766b153",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 58,
+        "x": 51,
+        "y": 29
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991667
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 72,
+        "x": 744,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__north__000",
+      "layer": "torso-head",
+      "opaquePixels": 2903,
+      "pivot": {
+        "x": 36,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2310b94b796a9a36978cb8bb4aea8849d6339d09e4bd769432d723543bf3f8b2",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 72,
+        "x": 44,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.492958,
+        "y": 0.991228
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 114,
+        "w": 71,
+        "x": 196,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__north__001",
+      "layer": "torso-head",
+      "opaquePixels": 2774,
+      "pivot": {
+        "x": 35,
+        "y": 113
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "7eb183e50e99acd392a09de503571987105b0a4f0879172d93434f0f44275c72",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 114,
+        "w": 71,
+        "x": 45,
+        "y": 33
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.492958,
+        "y": 0.991453
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 117,
+        "w": 71,
+        "x": 2,
+        "y": 372
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__north__002",
+      "layer": "torso-head",
+      "opaquePixels": 2834,
+      "pivot": {
+        "x": 35,
+        "y": 116
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "3465a889fed69a279a99f70a499b6eae675e9e2fd358fcf39d853964a6fd2e41",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 117,
+        "w": 71,
+        "x": 45,
+        "y": 30
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.491803,
+        "y": 0.991736
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 121,
+        "w": 61,
+        "x": 162,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__north-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2618,
+      "pivot": {
+        "x": 30,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "729f7b1ceceac0557a61a4a3cf52d419d9c92430b20109609f3cc0ba27c631ce",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 61,
+        "x": 50,
+        "y": 26
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991379
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 116,
+        "w": 60,
+        "x": 134,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__north-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2494,
+      "pivot": {
+        "x": 30,
+        "y": 115
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "52462c250ac64f1ffbcc234ecd340c1236d0720f9c67b77894d1f890edb023ec",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 116,
+        "w": 60,
+        "x": 50,
+        "y": 31
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.491803,
+        "y": 0.991525
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 118,
+        "w": 61,
+        "x": 900,
+        "y": 251
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__north-west__002",
+      "layer": "torso-head",
+      "opaquePixels": 2553,
+      "pivot": {
+        "x": 30,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "1e2446661cf4db6a3167d59f3a6bc7698ccf07bae12ccd3d9030b35bf2b61b4c",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 61,
+        "x": 50,
+        "y": 29
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.515152,
+        "y": 0.991667
+      },
+      "direction": "west",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 33,
+        "x": 941,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__west__000",
+      "layer": "torso-head",
+      "opaquePixels": 1816,
+      "pivot": {
+        "x": 17,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "2c0ae1159acf3f2ab2a4a41cc65e1e8449e8c5b535fa48fce41cd3fb8a783389",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 33,
+        "x": 63,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.475,
+        "y": 0.991597
+      },
+      "direction": "west",
+      "fps": 15,
+      "frame": {
+        "h": 119,
+        "w": 40,
+        "x": 478,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__west__001",
+      "layer": "torso-head",
+      "opaquePixels": 1880,
+      "pivot": {
+        "x": 19,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "c96384952082eb664ec70b24d4138eb1578e664deef1bca89a63e3e6678eff1e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 40,
+        "x": 61,
+        "y": 28
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.484848,
+        "y": 0.991667
+      },
+      "direction": "west",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 33,
+        "x": 976,
+        "y": 128
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__west__002",
+      "layer": "torso-head",
+      "opaquePixels": 1828,
+      "pivot": {
+        "x": 16,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8c5d0277d922d9d5e1321917cd26b0e5bcb0900ab273e3f04673d3e86ab7e544",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 33,
+        "x": 64,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991667
+      },
+      "direction": "south-west",
+      "fps": 15,
+      "frame": {
+        "h": 120,
+        "w": 58,
+        "x": 881,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__pistol-fire__south-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2478,
+      "pivot": {
+        "x": 29,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "53c26688c652a396cca6e8c664fad39c493450f7e39fd4ee482a46895c7e79ba",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 58,
+        "x": 51,
+        "y": 27
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508772,
+        "y": 0.991803
+      },
+      "direction": "south-west",
+      "fps": 15,
+      "frame": {
+        "h": 122,
+        "w": 57,
+        "x": 287,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__pistol-fire__south-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2596,
+      "pivot": {
+        "x": 29,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "c6fc5cbb8cb47e3ffab298d3074e9894862857dc33eb8283d6d07c0a8b1cfdaa",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 57,
+        "x": 51,
+        "y": 25
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991803
+      },
+      "direction": "south-west",
+      "fps": 15,
+      "frame": {
+        "h": 122,
+        "w": 58,
+        "x": 346,
+        "y": 2
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__torso-head__pistol-fire__south-west__002",
+      "layer": "torso-head",
+      "opaquePixels": 2561,
+      "pivot": {
+        "x": 29,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "7434c3a78ebd7ce6e95c7d7a34b9622678da7c1d1c33cfe35b57fc52b05705e5",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 58,
+        "x": 51,
+        "y": 25
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.514286,
+        "y": 0.991597
+      },
+      "direction": "south",
+      "fps": 10,
+      "frame": {
+        "h": 119,
+        "w": 70,
+        "x": 222,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__south__000",
+      "layer": "torso-head",
+      "opaquePixels": 2867,
+      "pivot": {
+        "x": 36,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "09609b79758a089a2e652f4ed46941bc7ea8c81359fc1a6fa9b89e46007a4d0c",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 70,
+        "x": 44,
+        "y": 28
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991597
+      },
+      "direction": "south",
+      "fps": 10,
+      "frame": {
+        "h": 119,
+        "w": 66,
+        "x": 294,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__south__001",
+      "layer": "torso-head",
+      "opaquePixels": 2786,
+      "pivot": {
+        "x": 33,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "299b2b17da18b00b4fd2182e76400b2c1d57e41982a3e1b75e951b4ce843e3de",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 66,
+        "x": 47,
+        "y": 28
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.515152,
+        "y": 0.991525
+      },
+      "direction": "south-east",
+      "fps": 10,
+      "frame": {
+        "h": 118,
+        "w": 66,
+        "x": 669,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__south-east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2874,
+      "pivot": {
+        "x": 34,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "7bbf473b2b8f3846c78fe1a3388f6f5d78ed56acc0576e87ed506ef9b9daa44b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 66,
+        "x": 46,
+        "y": 29
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.479167,
+        "y": 0.991736
+      },
+      "direction": "south-east",
+      "fps": 10,
+      "frame": {
+        "h": 121,
+        "w": 48,
+        "x": 2,
+        "y": 128
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__south-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2277,
+      "pivot": {
+        "x": 23,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e3dcdccb658192e9ced9eb297daf9c706659135a47b6a862f1266235af82785e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 48,
+        "x": 57,
+        "y": 26
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.468085,
+        "y": 0.991525
+      },
+      "direction": "east",
+      "fps": 10,
+      "frame": {
+        "h": 118,
+        "w": 47,
+        "x": 520,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2286,
+      "pivot": {
+        "x": 22,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ab753b837c90e7f36b717f9c9f3f93f2cd493e2908ba94cf9a81e611f0c625ff",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 47,
+        "x": 58,
+        "y": 29
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.472222,
+        "y": 0.991803
+      },
+      "direction": "east",
+      "fps": 10,
+      "frame": {
+        "h": 122,
+        "w": 36,
+        "x": 75,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__east__001",
+      "layer": "torso-head",
+      "opaquePixels": 1992,
+      "pivot": {
+        "x": 17,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "694f86a34e1be05c5c0de592cc5b92c264aa0304dfb7929725d4d76c9bdc0797",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 36,
+        "x": 63,
+        "y": 25
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991525
+      },
+      "direction": "north-east",
+      "fps": 10,
+      "frame": {
+        "h": 118,
+        "w": 48,
+        "x": 569,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__north-east__000",
+      "layer": "torso-head",
+      "opaquePixels": 2388,
+      "pivot": {
+        "x": 24,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e26a16fa88e68aff552dfac9aaaba7c545956ce1d36b1bfb11b91d481deae39d",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 48,
+        "x": 56,
+        "y": 29
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.492063,
+        "y": 0.991736
+      },
+      "direction": "north-east",
+      "fps": 10,
+      "frame": {
+        "h": 121,
+        "w": 63,
+        "x": 874,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__north-east__001",
+      "layer": "torso-head",
+      "opaquePixels": 2618,
+      "pivot": {
+        "x": 31,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ad454f73a0a826f9b02ad648e7727d5285f9f1a31c0489868aacebf6a2e74311",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 63,
+        "x": 49,
+        "y": 26
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.485714,
+        "y": 0.991597
+      },
+      "direction": "north",
+      "fps": 10,
+      "frame": {
+        "h": 119,
+        "w": 70,
+        "x": 150,
+        "y": 251
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__north__000",
+      "layer": "torso-head",
+      "opaquePixels": 2921,
+      "pivot": {
+        "x": 34,
+        "y": 118
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "43527234841f2f9d18ccbff455171e76314475ef568a74f9a966fbf374923f2b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 119,
+        "w": 70,
+        "x": 46,
+        "y": 28
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991667
+      },
+      "direction": "north",
+      "fps": 10,
+      "frame": {
+        "h": 120,
+        "w": 66,
+        "x": 606,
+        "y": 128
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__north__001",
+      "layer": "torso-head",
+      "opaquePixels": 2843,
+      "pivot": {
+        "x": 33,
+        "y": 119
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "f9114487b9c7514e81448eae33c8fb2ca06bf25cb430a037fca52a5109f66f03",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 120,
+        "w": 66,
+        "x": 47,
+        "y": 27
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.484848,
+        "y": 0.991736
+      },
+      "direction": "north-west",
+      "fps": 10,
+      "frame": {
+        "h": 121,
+        "w": 66,
+        "x": 939,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__north-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2794,
+      "pivot": {
+        "x": 32,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "8a1d984030dca5f2d9b01f25f062aca112305fc1d913fd86ed9af1c142ba4b3e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 66,
+        "x": 48,
+        "y": 26
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.520833,
+        "y": 0.991525
+      },
+      "direction": "north-west",
+      "fps": 10,
+      "frame": {
+        "h": 118,
+        "w": 48,
+        "x": 619,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__north-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2410,
+      "pivot": {
+        "x": 25,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e03a7f7f12a165c9304820f8b205946ad71ddaf04c5e66ecc4b7c53e78e389e4",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 48,
+        "x": 55,
+        "y": 29
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.531915,
+        "y": 0.991803
+      },
+      "direction": "west",
+      "fps": 10,
+      "frame": {
+        "h": 122,
+        "w": 47,
+        "x": 113,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2168,
+      "pivot": {
+        "x": 25,
+        "y": 121
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9cca3fa6a417aa94cc57ac44c981398993400b181f28a4439a598d8652821268",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 122,
+        "w": 47,
+        "x": 55,
+        "y": 25
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.527778,
+        "y": 0.991525
+      },
+      "direction": "west",
+      "fps": 10,
+      "frame": {
+        "h": 118,
+        "w": 36,
+        "x": 802,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__west__001",
+      "layer": "torso-head",
+      "opaquePixels": 1831,
+      "pivot": {
+        "x": 19,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "d6589546555bf1f397f3f3f6e595e1ea6373aad13903c6c301cf172b45e28a86",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 36,
+        "x": 61,
+        "y": 29
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.991736
+      },
+      "direction": "south-west",
+      "fps": 10,
+      "frame": {
+        "h": 121,
+        "w": 48,
+        "x": 52,
+        "y": 128
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__torso-head__hurt__south-west__000",
+      "layer": "torso-head",
+      "opaquePixels": 2373,
+      "pivot": {
+        "x": 24,
+        "y": 120
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "99389c6847715627ff3f835d0c66c6deacf8e34db9c4d24cc78fb0d5329f8ff5",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 121,
+        "w": 48,
+        "x": 56,
+        "y": 26
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.507937,
+        "y": 0.991525
+      },
+      "direction": "south-west",
+      "fps": 10,
+      "frame": {
+        "h": 118,
+        "w": 63,
+        "x": 737,
+        "y": 251
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__torso-head__hurt__south-west__001",
+      "layer": "torso-head",
+      "opaquePixels": 2638,
+      "pivot": {
+        "x": 32,
+        "y": 117
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "82bea0f44733abc86e92b0022c279bed311a52ff0b60ef88fb8714068e659e77",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 118,
+        "w": 63,
+        "x": 48,
+        "y": 29
+      },
+      "state": "hurt",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.466667,
+        "y": 0.987654
+      },
+      "direction": "south",
+      "fps": 2,
+      "frame": {
+        "h": 81,
+        "w": 15,
+        "x": 417,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__south__000",
+      "layer": "weapon",
+      "opaquePixels": 333,
+      "pivot": {
+        "x": 7,
+        "y": 80
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "782da9da0eef91fed9432d01354aa9d7cdc0e9e493710fab6022fdfe9705f334",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 81,
+        "w": 15,
+        "x": 73,
+        "y": 66
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.466667,
+        "y": 0.987654
+      },
+      "direction": "south",
+      "fps": 2,
+      "frame": {
+        "h": 81,
+        "w": 15,
+        "x": 434,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__south__001",
+      "layer": "weapon",
+      "opaquePixels": 333,
+      "pivot": {
+        "x": 7,
+        "y": 80
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "0a021371e9cfa01ad6c2eb581f2b4466028e81a9ff5e95ca858c2d575b635d99",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 81,
+        "w": 15,
+        "x": 73,
+        "y": 66
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.03125,
+        "y": 0.988095
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 84,
+        "w": 32,
+        "x": 142,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__south-east__000",
+      "layer": "weapon",
+      "opaquePixels": 529,
+      "pivot": {
+        "x": 1,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a38d94e94f8e5882aa7202f1820ec87fd5b7238687d2887523c45ab714b066ae",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 84,
+        "w": 32,
+        "x": 79,
+        "y": 63
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.03125,
+        "y": 0.988095
+      },
+      "direction": "south-east",
+      "fps": 2,
+      "frame": {
+        "h": 84,
+        "w": 32,
+        "x": 176,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__south-east__001",
+      "layer": "weapon",
+      "opaquePixels": 529,
+      "pivot": {
+        "x": 1,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "292fe08cd711c60152cb3bbac1476b18b4dc5809d47edd57754fecdb06308a26",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 84,
+        "w": 32,
+        "x": 79,
+        "y": 63
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.988764
+      },
+      "direction": "east",
+      "fps": 2,
+      "frame": {
+        "h": 89,
+        "w": 41,
+        "x": 704,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__east__000",
+      "layer": "weapon",
+      "opaquePixels": 619,
+      "pivot": {
+        "x": 0,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "b4efb0e0a77a063d2030115a9357f98c268753841e67fcd75c1c5c89f354c676",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 41,
+        "x": 80,
+        "y": 58
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.988764
+      },
+      "direction": "east",
+      "fps": 2,
+      "frame": {
+        "h": 89,
+        "w": 41,
+        "x": 747,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__east__001",
+      "layer": "weapon",
+      "opaquePixels": 607,
+      "pivot": {
+        "x": 0,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "a4ceca86a6313e936d10a2790b4eee3f4973815880664c74f7e1663d6c7ffe14",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 41,
+        "x": 80,
+        "y": 58
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.03125,
+        "y": 0.99
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 100,
+        "w": 32,
+        "x": 354,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__north-east__000",
+      "layer": "weapon",
+      "opaquePixels": 587,
+      "pivot": {
+        "x": 1,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "597fbc6ed93944ac4e379b926982d9c95ae9433556251956a1091f5c2d825e51",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 32,
+        "x": 79,
+        "y": 47
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.03125,
+        "y": 0.99
+      },
+      "direction": "north-east",
+      "fps": 2,
+      "frame": {
+        "h": 100,
+        "w": 32,
+        "x": 388,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__north-east__001",
+      "layer": "weapon",
+      "opaquePixels": 589,
+      "pivot": {
+        "x": 1,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "3accfcb5bfc6f1ee84fa9bfd63bf91a5a74322fe513091daabdd3c52fa2395aa",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 32,
+        "x": 79,
+        "y": 47
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.533333,
+        "y": 0.990385
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 104,
+        "w": 15,
+        "x": 303,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__north__000",
+      "layer": "weapon",
+      "opaquePixels": 455,
+      "pivot": {
+        "x": 8,
+        "y": 103
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "71e56776d1fbe83fda528cf75afc3553ede3a8de9ce5c6142f166344d902fc28",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 104,
+        "w": 15,
+        "x": 72,
+        "y": 43
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.533333,
+        "y": 0.990476
+      },
+      "direction": "north",
+      "fps": 2,
+      "frame": {
+        "h": 105,
+        "w": 15,
+        "x": 269,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__north__001",
+      "layer": "weapon",
+      "opaquePixels": 453,
+      "pivot": {
+        "x": 8,
+        "y": 104
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "cd870c09913ffbdc8ac181796b98028f8e78b0fd3a4da43d52ec4d5bf662e95e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 105,
+        "w": 15,
+        "x": 72,
+        "y": 42
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.96875,
+        "y": 0.99
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 100,
+        "w": 32,
+        "x": 422,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__north-west__000",
+      "layer": "weapon",
+      "opaquePixels": 589,
+      "pivot": {
+        "x": 31,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9e00f6c7c7f2680f4cc871d8a2393586e85970772375627cf0225044c496e25c",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 32,
+        "x": 49,
+        "y": 47
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.96875,
+        "y": 0.99
+      },
+      "direction": "north-west",
+      "fps": 2,
+      "frame": {
+        "h": 100,
+        "w": 32,
+        "x": 456,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__north-west__001",
+      "layer": "weapon",
+      "opaquePixels": 589,
+      "pivot": {
+        "x": 31,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ea1f4e56e1c899aa8760b47ffbb0b5994306a5c06742ebd7de310c1fe2a25978",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 32,
+        "x": 49,
+        "y": 47
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.97619,
+        "y": 0.988764
+      },
+      "direction": "west",
+      "fps": 2,
+      "frame": {
+        "h": 89,
+        "w": 42,
+        "x": 790,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__west__000",
+      "layer": "weapon",
+      "opaquePixels": 620,
+      "pivot": {
+        "x": 41,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "edb4fa3cf01ba5a3b6cbe84248660c6752f4b868386524f2283da7a8ca8cd440",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 42,
+        "x": 39,
+        "y": 58
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.97619,
+        "y": 0.988764
+      },
+      "direction": "west",
+      "fps": 2,
+      "frame": {
+        "h": 89,
+        "w": 42,
+        "x": 834,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__west__001",
+      "layer": "weapon",
+      "opaquePixels": 609,
+      "pivot": {
+        "x": 41,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9621791414409becfee4859b21a49cad265ab9404c0e799577c1d89044fee601",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 42,
+        "x": 39,
+        "y": 58
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.96875,
+        "y": 0.988095
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 84,
+        "w": 32,
+        "x": 210,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__aim__south-west__000",
+      "layer": "weapon",
+      "opaquePixels": 529,
+      "pivot": {
+        "x": 31,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "c0fe8076537df4a9f436089de4a9dc2c4d6f3a135a856c27b8b948e8dcadae6b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 84,
+        "w": 32,
+        "x": 49,
+        "y": 63
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.96875,
+        "y": 0.988095
+      },
+      "direction": "south-west",
+      "fps": 2,
+      "frame": {
+        "h": 84,
+        "w": 32,
+        "x": 244,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__aim__south-west__001",
+      "layer": "weapon",
+      "opaquePixels": 529,
+      "pivot": {
+        "x": 31,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "1cbd2424b5739588649a8e573c04f9f6f05aad4be55f977adb8ffe6e271aaab8",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 84,
+        "w": 32,
+        "x": 49,
+        "y": 63
+      },
+      "state": "aim",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.466667,
+        "y": 0.987654
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 81,
+        "w": 15,
+        "x": 526,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__south__000",
+      "layer": "weapon",
+      "opaquePixels": 332,
+      "pivot": {
+        "x": 7,
+        "y": 80
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "36b7677d1f6dc251604a9fbccf27f4f4d013c871ea1224d67d82d15a72468b5f",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 81,
+        "w": 15,
+        "x": 73,
+        "y": 66
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.466667,
+        "y": 0.987013
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 77,
+        "w": 15,
+        "x": 560,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__south__001",
+      "layer": "weapon",
+      "opaquePixels": 368,
+      "pivot": {
+        "x": 7,
+        "y": 76
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "f4af1af155f5d4e876aa996b0a74627e6f0590dacdc5baecf526fb68a97f3198",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 77,
+        "w": 15,
+        "x": 73,
+        "y": 70
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.466667,
+        "y": 0.9875
+      },
+      "direction": "south",
+      "fps": 15,
+      "frame": {
+        "h": 80,
+        "w": 15,
+        "x": 543,
+        "y": 491
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__south__002",
+      "layer": "weapon",
+      "opaquePixels": 349,
+      "pivot": {
+        "x": 7,
+        "y": 79
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e3a7c35d713e237140db0d6507f832050c661a927c57b2bee7ad3b0c2cf63575",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 80,
+        "w": 15,
+        "x": 73,
+        "y": 67
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.03125,
+        "y": 0.988095
+      },
+      "direction": "south-east",
+      "fps": 15,
+      "frame": {
+        "h": 84,
+        "w": 32,
+        "x": 278,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__south-east__000",
+      "layer": "weapon",
+      "opaquePixels": 529,
+      "pivot": {
+        "x": 1,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "0593ac50e70716a214309a551d6db02f1575fff7edb9b3d0981b54583b2dbb8a",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 84,
+        "w": 32,
+        "x": 79,
+        "y": 63
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.987654
+      },
+      "direction": "south-east",
+      "fps": 15,
+      "frame": {
+        "h": 81,
+        "w": 35,
+        "x": 451,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__south-east__001",
+      "layer": "weapon",
+      "opaquePixels": 537,
+      "pivot": {
+        "x": 0,
+        "y": 80
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ec58dd4487d498fc2d377854454fc9da366a50938bbac22b635505559294748b",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 81,
+        "w": 35,
+        "x": 80,
+        "y": 66
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.987952
+      },
+      "direction": "south-east",
+      "fps": 15,
+      "frame": {
+        "h": 83,
+        "w": 33,
+        "x": 346,
+        "y": 491
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__south-east__002",
+      "layer": "weapon",
+      "opaquePixels": 528,
+      "pivot": {
+        "x": 0,
+        "y": 82
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ad8c85cb75302e05b45c3d90fb4b59e29278d7d194d3fc16492b7654aed4b895",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 83,
+        "w": 33,
+        "x": 80,
+        "y": 64
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.988764
+      },
+      "direction": "east",
+      "fps": 15,
+      "frame": {
+        "h": 89,
+        "w": 41,
+        "x": 878,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__east__000",
+      "layer": "weapon",
+      "opaquePixels": 613,
+      "pivot": {
+        "x": 0,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "4110a24ede1ad45284870465b64149fee743295d2e7c3a04866e457b9f9aa046",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 41,
+        "x": 80,
+        "y": 58
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.988764
+      },
+      "direction": "east",
+      "fps": 15,
+      "frame": {
+        "h": 89,
+        "w": 47,
+        "x": 921,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__east__001",
+      "layer": "weapon",
+      "opaquePixels": 615,
+      "pivot": {
+        "x": 0,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "85a1b0f31ae9baccda7c4a67be88c1a71f5be800cc501b4e54554cdd637dc0ef",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 47,
+        "x": 80,
+        "y": 58
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.988764
+      },
+      "direction": "east",
+      "fps": 15,
+      "frame": {
+        "h": 89,
+        "w": 43,
+        "x": 970,
+        "y": 372
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__east__002",
+      "layer": "weapon",
+      "opaquePixels": 601,
+      "pivot": {
+        "x": 0,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "470dbf1e585c35d17d021523268127e3bec2a94c7960ed92662e9cf19f1a62be",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 43,
+        "x": 80,
+        "y": 58
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.03125,
+        "y": 0.99
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 100,
+        "w": 32,
+        "x": 490,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__north-east__000",
+      "layer": "weapon",
+      "opaquePixels": 589,
+      "pivot": {
+        "x": 1,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "03994d59314673f05d36e9120a34490c3ffb6b8277aeaf733ede30424968d4e9",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 32,
+        "x": 79,
+        "y": 47
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.989899
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 99,
+        "w": 35,
+        "x": 629,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__north-east__001",
+      "layer": "weapon",
+      "opaquePixels": 575,
+      "pivot": {
+        "x": 0,
+        "y": 98
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "f9c8dfc492e298b587fc5588c9501a27dcfc4a5107ef3181ee88c62ec8c91ed7",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 99,
+        "w": 35,
+        "x": 80,
+        "y": 48
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.99
+      },
+      "direction": "north-east",
+      "fps": 15,
+      "frame": {
+        "h": 100,
+        "w": 33,
+        "x": 524,
+        "y": 372
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__north-east__002",
+      "layer": "weapon",
+      "opaquePixels": 585,
+      "pivot": {
+        "x": 0,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "aac8851de023f7b01730bf2b1af73b8c4367a2f2d44ea0c296a396c403955ada",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 33,
+        "x": 80,
+        "y": 47
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.533333,
+        "y": 0.990476
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 105,
+        "w": 15,
+        "x": 286,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__north__000",
+      "layer": "weapon",
+      "opaquePixels": 451,
+      "pivot": {
+        "x": 8,
+        "y": 104
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "7e293d8d8d144a47caf0f796ae6ad012792bb3f88307113f268908e5d91e3488",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 105,
+        "w": 15,
+        "x": 72,
+        "y": 42
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.533333,
+        "y": 0.990385
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 104,
+        "w": 15,
+        "x": 320,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__north__001",
+      "layer": "weapon",
+      "opaquePixels": 422,
+      "pivot": {
+        "x": 8,
+        "y": 103
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "ce28758eda6628bbadb7e07857aea5525a30bf448febc0f0c5e1b2d0200cba4e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 104,
+        "w": 15,
+        "x": 72,
+        "y": 43
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.533333,
+        "y": 0.990385
+      },
+      "direction": "north",
+      "fps": 15,
+      "frame": {
+        "h": 104,
+        "w": 15,
+        "x": 337,
+        "y": 372
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__north__002",
+      "layer": "weapon",
+      "opaquePixels": 446,
+      "pivot": {
+        "x": 8,
+        "y": 103
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "080f793db1ed4993bc459bf2595b705d051e8c3ba514f6b6fe159c5a9bbb61a2",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 104,
+        "w": 15,
+        "x": 72,
+        "y": 43
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.96875,
+        "y": 0.99
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 100,
+        "w": 32,
+        "x": 559,
+        "y": 372
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__north-west__000",
+      "layer": "weapon",
+      "opaquePixels": 589,
+      "pivot": {
+        "x": 31,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "3dae1ab1002ce0b812a5e887f97a28d46cb92d6eeca5634fbe744fbb928e55df",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 32,
+        "x": 49,
+        "y": 47
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.972222,
+        "y": 0.989899
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 99,
+        "w": 36,
+        "x": 666,
+        "y": 372
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__north-west__001",
+      "layer": "weapon",
+      "opaquePixels": 576,
+      "pivot": {
+        "x": 35,
+        "y": 98
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e38ed02869c65bdeab2caebbf19c7d3e529f74bbfe601acbe1f3def053251470",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 99,
+        "w": 36,
+        "x": 45,
+        "y": 48
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.970588,
+        "y": 0.99
+      },
+      "direction": "north-west",
+      "fps": 15,
+      "frame": {
+        "h": 100,
+        "w": 34,
+        "x": 593,
+        "y": 372
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__north-west__002",
+      "layer": "weapon",
+      "opaquePixels": 584,
+      "pivot": {
+        "x": 33,
+        "y": 99
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "9b418a3a1cc28e274aabf146f37d8930fe87aea46f3d6c54dfb03b441b80b054",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 100,
+        "w": 34,
+        "x": 47,
+        "y": 47
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.97619,
+        "y": 0.988764
+      },
+      "direction": "west",
+      "fps": 15,
+      "frame": {
+        "h": 89,
+        "w": 42,
+        "x": 2,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__west__000",
+      "layer": "weapon",
+      "opaquePixels": 612,
+      "pivot": {
+        "x": 41,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "314631f573275b102c5c851180eb256dbf055c103b7203e0eae6b18c19e4103e",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 42,
+        "x": 39,
+        "y": 58
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.979167,
+        "y": 0.988764
+      },
+      "direction": "west",
+      "fps": 15,
+      "frame": {
+        "h": 89,
+        "w": 48,
+        "x": 46,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__west__001",
+      "layer": "weapon",
+      "opaquePixels": 615,
+      "pivot": {
+        "x": 47,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "6c03e14120739c4de932609de2bffd5de9d911f3d263579ce9551352522298ff",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 48,
+        "x": 33,
+        "y": 58
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.977273,
+        "y": 0.988764
+      },
+      "direction": "west",
+      "fps": 15,
+      "frame": {
+        "h": 89,
+        "w": 44,
+        "x": 96,
+        "y": 491
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__west__002",
+      "layer": "weapon",
+      "opaquePixels": 602,
+      "pivot": {
+        "x": 43,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "fd0a8bf15584ce75f97c00af194825cee8844ab1aa432ea9997490cb756fc9a1",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 89,
+        "w": 44,
+        "x": 37,
+        "y": 58
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.96875,
+        "y": 0.988095
+      },
+      "direction": "south-west",
+      "fps": 15,
+      "frame": {
+        "h": 84,
+        "w": 32,
+        "x": 312,
+        "y": 491
+      },
+      "frameIndex": 0,
+      "id": "lit-commando__weapon__pistol-fire__south-west__000",
+      "layer": "weapon",
+      "opaquePixels": 528,
+      "pivot": {
+        "x": 31,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "e6029f030793b1eff930028ce4b779bf3c478132abb42abe38cd4c7ed52412de",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 84,
+        "w": 32,
+        "x": 49,
+        "y": 63
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.972222,
+        "y": 0.987654
+      },
+      "direction": "south-west",
+      "fps": 15,
+      "frame": {
+        "h": 81,
+        "w": 36,
+        "x": 488,
+        "y": 491
+      },
+      "frameIndex": 1,
+      "id": "lit-commando__weapon__pistol-fire__south-west__001",
+      "layer": "weapon",
+      "opaquePixels": 538,
+      "pivot": {
+        "x": 35,
+        "y": 80
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "c32bb9dd3b3e942bff1a1088dd3e608d9971e4f0ec126f1028725fae646a6374",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 81,
+        "w": 36,
+        "x": 45,
+        "y": 66
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.970588,
+        "y": 0.987952
+      },
+      "direction": "south-west",
+      "fps": 15,
+      "frame": {
+        "h": 83,
+        "w": 34,
+        "x": 381,
+        "y": 491
+      },
+      "frameIndex": 2,
+      "id": "lit-commando__weapon__pistol-fire__south-west__002",
+      "layer": "weapon",
+      "opaquePixels": 527,
+      "pivot": {
+        "x": 33,
+        "y": 82
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 80,
+        "y": 146
+      },
+      "sourcePixelSha256": "00ec492ef9b30bdc7d877506a835d89763e8b7fa006f4a9f984278a8b654e014",
+      "sourceSize": {
+        "h": 160,
+        "w": 160
+      },
+      "spriteSourceSize": {
+        "h": 83,
+        "w": 34,
+        "x": 47,
+        "y": 64
+      },
+      "state": "pistol-fire",
+      "trimmed": true
+    }
+  ],
+  "gameplayBodyProfile": "human-medium-collision-v1",
+  "image": "./lit-commando-production-pilot-atlas.png",
+  "layers": [
+    "shadow",
+    "lower-body",
+    "torso-head",
+    "weapon"
+  ],
+  "pipelineId": "hmh-reboot-production-hero-pilot-v1",
+  "runtimeAuthority": "projection-only",
+  "schemaVersion": 1,
+  "variantId": "reserve-vanguard"
+}

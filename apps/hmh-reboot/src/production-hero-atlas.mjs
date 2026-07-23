@@ -1,0 +1,189 @@
+export const PRODUCTION_HERO_ATLAS_IMAGE_URL = '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png';
+export const PRODUCTION_HERO_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json';
+export const PRODUCTION_HERO_RUNTIME_SCALE = 0.58;
+
+const EXPECTED_PIPELINE_ID = 'hmh-reboot-production-hero-pilot-v1';
+const EXPECTED_ACTOR_ID = 'lit-commando';
+const EXPECTED_VARIANT_ID = 'reserve-vanguard';
+const EXPECTED_GAMEPLAY_BODY_PROFILE = 'human-medium-collision-v1';
+const DIRECTION_BY_SIMULATION_INDEX = Object.freeze([
+  'east',
+  'south-east',
+  'south',
+  'south-west',
+  'west',
+  'north-west',
+  'north',
+  'north-east',
+]);
+const REQUIRED_LAYER_ORDER = Object.freeze(['shadow', 'lower-body', 'torso-head', 'weapon']);
+const SIMULATION_HZ = 60;
+
+function frameKey(layer, state, direction, frameIndex) {
+  return `${layer}|${state}|${direction}|${frameIndex}`;
+}
+
+function positiveInteger(value, name) {
+  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
+  return value;
+}
+
+function arraysEqual(left, right) {
+  return Array.isArray(left) && left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+export function directionNameForProductionIndex(index) {
+  if (!Number.isInteger(index)) throw new TypeError('direction index must be an integer');
+  return DIRECTION_BY_SIMULATION_INDEX[((index % 8) + 8) % 8];
+}
+
+export function createProductionHeroAtlasIndex(metadata) {
+  if (metadata?.schemaVersion !== 1) throw new TypeError('production hero atlas schemaVersion 1 is required');
+  if (metadata.pipelineId !== EXPECTED_PIPELINE_ID) throw new TypeError('unexpected production hero pipeline id');
+  if (metadata.actorId !== EXPECTED_ACTOR_ID || metadata.variantId !== EXPECTED_VARIANT_ID) throw new TypeError('unexpected production hero identity');
+  if (metadata.classification !== 'production-art') throw new TypeError('production-art classification is required');
+  if (metadata.runtimeAuthority !== 'projection-only') throw new TypeError('production hero must remain projection-only');
+  if (metadata.gameplayBodyProfile !== EXPECTED_GAMEPLAY_BODY_PROFILE) throw new TypeError('production hero gameplay body profile drifted');
+  if (!arraysEqual(metadata.layers, REQUIRED_LAYER_ORDER)) throw new TypeError('production hero layer order is invalid');
+  if (!arraysEqual(metadata.composition?.layerOrder, REQUIRED_LAYER_ORDER)) throw new TypeError('production hero composition order is invalid');
+  if (metadata.composition?.weaponSocket !== 'weapon_socket' || metadata.composition?.independentDirections !== true) throw new TypeError('production hero composition contract is invalid');
+  if (!Array.isArray(metadata.frames) || metadata.frames.length !== 168) throw new TypeError('production hero pilot requires exactly 168 frames');
+
+  const frameByKey = new Map();
+  for (const source of metadata.frames) {
+    if (!REQUIRED_LAYER_ORDER.includes(source.layer)) throw new TypeError(`unknown production hero layer ${source.layer}`);
+    if (!DIRECTION_BY_SIMULATION_INDEX.includes(source.direction)) throw new TypeError(`unknown production hero direction ${source.direction}`);
+    if (!Number.isInteger(source.frameIndex) || source.frameIndex < 0) throw new TypeError('invalid production hero frame index');
+    if (![source.frame?.x, source.frame?.y, source.frame?.w, source.frame?.h].every(Number.isFinite) || source.frame.w <= 0 || source.frame.h <= 0) throw new TypeError('invalid production hero atlas rectangle');
+    if (![source.anchor?.x, source.anchor?.y].every(Number.isFinite)) throw new TypeError('invalid production hero anchor');
+    const normalized = Object.freeze({
+      ...source,
+      frame: Object.freeze({ ...source.frame }),
+      pivot: Object.freeze({ ...source.pivot }),
+      anchor: Object.freeze({ ...source.anchor }),
+      sourcePivot: Object.freeze({ ...source.sourcePivot }),
+    });
+    const key = frameKey(normalized.layer, normalized.state, normalized.direction, normalized.frameIndex);
+    if (frameByKey.has(key)) throw new TypeError(`duplicate production hero frame ${key}`);
+    frameByKey.set(key, normalized);
+  }
+
+  return Object.freeze({
+    pipelineId: metadata.pipelineId,
+    actorId: metadata.actorId,
+    variantId: metadata.variantId,
+    classification: metadata.classification,
+    runtimeAuthority: metadata.runtimeAuthority,
+    gameplayBodyProfile: metadata.gameplayBodyProfile,
+    image: metadata.image,
+    layerOrder: REQUIRED_LAYER_ORDER,
+    frameByKey,
+  });
+}
+
+function requireFrame(index, layer, state, direction, frameIndex) {
+  const key = frameKey(layer, state, direction, frameIndex);
+  const frame = index.frameByKey.get(key);
+  if (!frame) throw new RangeError(`missing production hero frame ${key}`);
+  return frame;
+}
+
+function animationFrame(tick, fps, frameCount) {
+  return Math.floor(tick * fps / SIMULATION_HZ) % frameCount;
+}
+
+export function resolveProductionHeroPose(index, {
+  simulationTick,
+  actionTick = 0,
+  locomotion,
+  legDirection,
+  torsoDirection,
+  action = 'aim',
+}) {
+  if (!index?.frameByKey || index.pipelineId !== EXPECTED_PIPELINE_ID || index.runtimeAuthority !== 'projection-only') throw new TypeError('production hero atlas index is required');
+  const tick = positiveInteger(simulationTick, 'simulationTick');
+  const resolvedActionTick = positiveInteger(actionTick, 'actionTick');
+  const legName = directionNameForProductionIndex(legDirection);
+  const torsoName = directionNameForProductionIndex(torsoDirection);
+  const moving = locomotion === 'moving';
+  const lowerState = moving ? 'run' : 'idle';
+  const lowerFrame = animationFrame(tick, moving ? 12 : 2, moving ? 6 : 2);
+
+  let torsoState = 'aim';
+  let torsoFrame = animationFrame(tick, 2, 2);
+  let weaponState = 'aim';
+  let weaponFrame = animationFrame(tick, 2, 2);
+  if (action === 'pistol-fire') {
+    torsoState = 'pistol-fire';
+    weaponState = 'pistol-fire';
+    torsoFrame = animationFrame(resolvedActionTick, 15, 3);
+    weaponFrame = torsoFrame;
+  } else if (action === 'hurt') {
+    torsoState = 'hurt';
+    torsoFrame = animationFrame(resolvedActionTick, 10, 2);
+  } else if (action !== 'aim') {
+    throw new RangeError(`unsupported production hero action ${action}`);
+  }
+
+  return Object.freeze([
+    requireFrame(index, 'shadow', 'idle', legName, 0),
+    requireFrame(index, 'lower-body', lowerState, legName, lowerFrame),
+    requireFrame(index, 'torso-head', torsoState, torsoName, torsoFrame),
+    requireFrame(index, 'weapon', weaponState, torsoName, weaponFrame),
+  ]);
+}
+
+export function createProductionHeroDisplay({
+  index,
+  atlasTexture,
+  ContainerClass,
+  SpriteClass,
+  TextureClass,
+  RectangleClass,
+  scale = PRODUCTION_HERO_RUNTIME_SCALE,
+}) {
+  if (!atlasTexture?.source) throw new TypeError('production hero atlas texture source is required');
+  for (const [value, name] of [[ContainerClass, 'ContainerClass'], [SpriteClass, 'SpriteClass'], [TextureClass, 'TextureClass'], [RectangleClass, 'RectangleClass']]) {
+    if (typeof value !== 'function') throw new TypeError(`${name} is required`);
+  }
+  if (!Number.isFinite(scale) || scale <= 0) throw new TypeError('production hero display scale must be positive');
+
+  const container = new ContainerClass();
+  container.label = 'production-hero-atlas';
+  container.scale.set(scale);
+  const textureByFrameId = new Map();
+  const spriteByLayer = new Map();
+
+  function textureFor(frame) {
+    if (!textureByFrameId.has(frame.id)) {
+      textureByFrameId.set(frame.id, new TextureClass({
+        source: atlasTexture.source,
+        frame: new RectangleClass(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h),
+      }));
+    }
+    return textureByFrameId.get(frame.id);
+  }
+
+  for (const layer of index.layerOrder) {
+    const initialState = layer === 'shadow' || layer === 'lower-body' ? 'idle' : 'aim';
+    const initial = requireFrame(index, layer, initialState, 'east', 0);
+    const sprite = new SpriteClass({ texture: textureFor(initial) });
+    sprite.label = `production-hero-${layer}`;
+    sprite.anchor.set(initial.anchor.x, initial.anchor.y);
+    spriteByLayer.set(layer, sprite);
+    container.addChild(sprite);
+  }
+
+  const applyPose = (renderState) => {
+    const frames = resolveProductionHeroPose(index, renderState);
+    for (const frame of frames) {
+      const sprite = spriteByLayer.get(frame.layer);
+      sprite.texture = textureFor(frame);
+      sprite.anchor.set(frame.anchor.x, frame.anchor.y);
+    }
+    container.frameIds = frames.map((frame) => frame.id).join(',');
+    return frames;
+  };
+
+  return Object.freeze({ container, layerOrder: index.layerOrder, applyPose });
+}

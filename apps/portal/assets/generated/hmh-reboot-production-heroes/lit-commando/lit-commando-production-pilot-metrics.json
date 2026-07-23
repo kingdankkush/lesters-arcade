@@ -1,0 +1,39 @@
+{
+  "actorId": "lit-commando",
+  "atlasSha256": "d329d408021080bdc05408d64a31ace926b101513982bf3677dfd9f551478eec",
+  "atlasSize": {
+    "height": 1024,
+    "width": 1024
+  },
+  "blenderVersion": "5.1.2",
+  "boneCount": 14,
+  "contactSheetSha256": "103629bb66f714947be2bd384998ab323df6ba75d63bd5e280f3cd5937312226",
+  "duplicateDecodedFrameGroups": [],
+  "emptyFrameCount": 0,
+  "externalDependencyCount": 0,
+  "frameCount": 168,
+  "gameplayBodyProfile": "human-medium-collision-v1",
+  "metadataSha256": "33f1058efdce0af710a6b68d05fd63aaf70728d366060f58b9936d47011127d2",
+  "reproducibility": "pass",
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 8,
+    "maxChannelDelta": 2,
+    "maxTotalChannelDelta": 32
+  },
+  "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+  "reproducibilityObserved": {
+    "maxChangedVisiblePixels": 0,
+    "maxChannelDelta": 0,
+    "maxTotalChannelDelta": 0,
+    "worstFrameId": "lit-commando__shadow__idle__south__000"
+  },
+  "runtimeAuthority": "projection-only",
+  "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
+  "sourceBlendSha256": "e8238c2ce5b6dbce26ffaf1f74e63d95e8ab6d11cbfd6094ae0ed203e7cedd67",
+  "status": "pass",
+  "transparentCornerFailureCount": 0,
+  "uniqueAnimatedFrameCount": 160,
+  "uniqueFrameIdCount": 168,
+  "variantId": "reserve-vanguard",
+  "weaponSocket": true
+}

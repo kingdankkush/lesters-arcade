@@ -124,11 +124,30 @@ test('opt-in Blender pilot composes render state without replacing the default g
   assert.match(source, /fetch\(MANNEQUIN_ATLAS_METADATA_URL/);
   assert.match(source, /Assets\.load\(MANNEQUIN_ATLAS_IMAGE_URL\)/);
   assert.match(source, /mannequinDisplay\.applyPose\(\{[\s\S]*simulationTick:[\s\S]*locomotion:[\s\S]*legDirection:[\s\S]*torsoDirection:/);
-  assert.match(source, /actorVisual\.position\.set\(pipelinePilotEnabled \? groundScreen\.x : screen\.x, pipelinePilotEnabled \? groundScreen\.y : screen\.y\)/);
+  assert.match(source, /actorVisual\.position\.set\(atlasActorEnabled \? groundScreen\.x : screen\.x, atlasActorEnabled \? groundScreen\.y : screen\.y\)/);
   assert.match(source, /stageElement\.dataset\.actorArtSource/);
   assert.match(atlasSource, /pipeline-pilot-human-atlas/);
   assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
   assert.doesNotMatch(source, /pipelinePilotEnabled[\s\S]{0,120}(?:collision|damage|score|wallet|settlement)\s*=/i);
+});
+
+test('opt-in production hero pilot is projection-only and leaves graybox as the default path', async () => {
+  const source = await read('../apps/hmh-reboot/src/main.mjs');
+  const atlasSource = await read('../apps/hmh-reboot/src/production-hero-atlas.mjs');
+  assert.match(source, /PRODUCTION_HERO_ATLAS_IMAGE_URL/);
+  assert.match(source, /PRODUCTION_HERO_ATLAS_METADATA_URL/);
+  assert.match(source, /PRODUCTION_HERO_RUNTIME_SCALE \* camera\.zoom/);
+  assert.match(source, /createProductionHeroAtlasIndex/);
+  assert.match(source, /createProductionHeroDisplay/);
+  assert.match(source, /runtimeParams\.get\('productionPilot'\) === '1'/);
+  assert.match(source, /fetch\(PRODUCTION_HERO_ATLAS_METADATA_URL/);
+  assert.match(source, /Assets\.load\(PRODUCTION_HERO_ATLAS_IMAGE_URL\)/);
+  assert.match(source, /productionHeroDisplay\.applyPose\(\{[\s\S]*simulationTick:[\s\S]*actionTick:[\s\S]*locomotion:[\s\S]*legDirection:[\s\S]*torsoDirection:[\s\S]*action:/);
+  assert.match(source, /productionHeroDisplay\?\.container \?\? mannequinDisplay\?\.container \?\? marker/);
+  assert.match(source, /stageElement\.dataset\.actorArtSource = productionPilotEnabled \? 'production-blender-atlas-v1'/);
+  assert.match(atlasSource, /runtimeAuthority !== 'projection-only'/);
+  assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
+  assert.doesNotMatch(source, /productionPilotEnabled[\s\S]{0,160}(?:collision|damage|score|wallet|settlement)\s*=/i);
 });
 
 test('runtime gives every projectile hit intent a stable per-projectile identifier', async () => {
