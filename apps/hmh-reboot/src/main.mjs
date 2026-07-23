@@ -6,7 +6,14 @@ import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
 import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
-import { createEnemyPopulation, createEnemyState, stepEnemyPopulation } from './enemy-simulation.mjs';
+import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
+import { createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
+import {
+  applyLiquidatorDamage,
+  createLiquidatorBoss,
+  resolveLiquidatorAttack,
+  stepLiquidatorBoss,
+} from './liquidator-boss.mjs';
 import {
   beginDash,
   createDashState,
@@ -193,10 +200,13 @@ async function boot() {
   const enemyVisuals = new Container();
   const enemyTelegraphs = new Graphics();
   const enemyMarkers = new Map();
+  const bossTelegraphs = new Graphics();
+  const bossVisual = new Graphics().circle(0, 0, 56).fill({ color: 0xff496c, alpha: 0.86 }).stroke({ color: 0xfff4b8, width: 5 });
+  bossVisual.visible = false;
   const marker = new Graphics().circle(0, 0, 24).fill({ color: 0x49ddff }).stroke({ color: 0xffffff, width: 3 });
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, enemyVisuals, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
+  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
   app.stage.addChild(world);
 
   const createEnemyMarker = (enemy) => {
@@ -233,7 +243,34 @@ async function boot() {
     }
   };
 
-  const debugGridEnabled = new URLSearchParams(window.location.search).get('debugGrid') === '1';
+  const runtimeParams = new URLSearchParams(window.location.search);
+  const debugGridEnabled = runtimeParams.get('debugGrid') === '1';
+  const directorDebugEnabled = runtimeParams.get('director') === '1';
+  const bossDebugEnabled = runtimeParams.get('boss') === '1';
+  const authoredSpawnPoints = Object.freeze([
+    Object.freeze({ id: 'frontier-east', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 1880, y: 1024, routeValid: true }),
+    Object.freeze({ id: 'frontier-west', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 180, y: 1024, routeValid: true }),
+    Object.freeze({ id: 'frontier-north', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 1024, y: 180, routeValid: true }),
+    Object.freeze({ id: 'frontier-south', regionId: 'frontier-perimeter', districtId: 'frontier-relay', x: 1800, y: 1800, routeValid: true }),
+  ]);
+  const spawnPointBlocked = (point) => GRAYBOX_BLOCKERS.some((blocker) => {
+    const shape = blocker.shape;
+    if (shape.type === 'circle') return Math.hypot(point.x - shape.x, point.y - shape.y) <= shape.radius + 24;
+    if (shape.type === 'capsule') {
+      const dx = shape.b.x - shape.a.x;
+      const dy = shape.b.y - shape.a.y;
+      const lengthSquared = dx * dx + dy * dy;
+      const projection = lengthSquared > 0 ? Math.max(0, Math.min(1, ((point.x - shape.a.x) * dx + (point.y - shape.a.y) * dy) / lengthSquared)) : 0;
+      return Math.hypot(point.x - (shape.a.x + dx * projection), point.y - (shape.a.y + dy * projection)) <= shape.radius + 24;
+    }
+    let inside = false;
+    for (let index = 0, previous = shape.vertices.length - 1; index < shape.vertices.length; previous = index, index += 1) {
+      const a = shape.vertices[index];
+      const b = shape.vertices[previous];
+      if ((a.y > point.y) !== (b.y > point.y) && point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
+    }
+    return inside;
+  });
   const debugOverlay = debugGridEnabled
     ? buildDebugGridOverlay({ bounds: WORLD_BOUNDS, spacing: 512, queryGround })
     : null;
@@ -261,6 +298,10 @@ async function boot() {
   let aimIntent = null;
   let grayboxEnemies = [];
   let enemyPopulation = null;
+  let encounterDirector = null;
+  let lastDirectorStep = null;
+  let liquidatorBoss = null;
+  let lastBossStep = null;
   let lastEnemyStep = null;
   let lastEnemyAttack = null;
   let playerBody = null;
@@ -392,6 +433,8 @@ async function boot() {
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
       enemyTelegraphs.clear();
+      bossTelegraphs.clear();
+      bossVisual.visible = false;
       for (const enemy of grayboxEnemies) {
         const enemyMarker = enemyMarkers.get(enemy.id);
         if (!enemyMarker) continue;
@@ -423,6 +466,43 @@ async function boot() {
           enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
             .stroke({ color: archetype.visual.color, width: 18 * camera.zoom, alpha: alpha * 0.22, cap: 'round' })
             .stroke({ color: archetype.visual.color, width: 3, alpha, cap: 'round' });
+        }
+      }
+      if (liquidatorBoss?.active && simulation?.tick >= liquidatorBoss.startTick) {
+        const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
+        bossVisual.visible = true;
+        bossVisual.position.set(bossScreen.x, bossScreen.y);
+        bossVisual.scale.set(camera.zoom);
+        bossVisual.alpha = Math.max(0.38, liquidatorBoss.health / liquidatorBoss.maxHealth);
+        for (const pending of liquidatorBoss.pendingAttacks) {
+          const geometry = pending.geometry;
+          const color = pending.attackId.includes('super') ? 0xfff06a : 0xff496c;
+          if (geometry.type === 'line' || geometry.type === 'dash-line') {
+            const from = worldToScreen({ ...geometry.origin, z: liquidatorBoss.groundZ }, camera, view);
+            const to = worldToScreen({ ...geometry.target, z: liquidatorBoss.groundZ }, camera, view);
+            bossTelegraphs.moveTo(from.x, from.y).lineTo(to.x, to.y)
+              .stroke({ color, width: geometry.width * camera.zoom, alpha: 0.18, cap: 'round' })
+              .stroke({ color, width: 4, alpha: 0.9, cap: 'round' });
+          } else if (geometry.type === 'circle' || geometry.type === 'melee') {
+            const center = worldToScreen({ ...geometry.center, z: liquidatorBoss.groundZ }, camera, view);
+            bossTelegraphs.circle(center.x, center.y, geometry.radius * camera.zoom)
+              .fill({ color, alpha: 0.09 }).stroke({ color, width: 4, alpha: 0.9 });
+          } else if (geometry.type === 'ring') {
+            const center = worldToScreen({ ...geometry.center, z: liquidatorBoss.groundZ }, camera, view);
+            bossTelegraphs.circle(center.x, center.y, geometry.outerRadius * camera.zoom).stroke({ color, width: 5, alpha: 0.9 });
+            bossTelegraphs.circle(center.x, center.y, geometry.innerRadius * camera.zoom).stroke({ color, width: 3, alpha: 0.72 });
+          } else if (geometry.type === 'safe-circles') {
+            for (const zone of geometry.zones) {
+              const center = worldToScreen({ ...zone, z: liquidatorBoss.groundZ }, camera, view);
+              bossTelegraphs.circle(center.x, center.y, zone.radius * camera.zoom)
+                .fill({ color: 0x83f28f, alpha: 0.1 }).stroke({ color: 0x83f28f, width: 5, alpha: 0.95 });
+            }
+          } else if (geometry.type === 'summon-sites') {
+            for (const site of geometry.sites) {
+              const center = worldToScreen({ ...site, z: liquidatorBoss.groundZ }, camera, view);
+              bossTelegraphs.circle(center.x, center.y, 36 * camera.zoom).stroke({ color, width: 4, alpha: 0.85 });
+            }
+          }
         }
       }
       for (const shot of activeProjectiles) {
@@ -542,7 +622,7 @@ async function boot() {
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
         : combatHud;
       const safeLabelX = view.width * 0.5;
-      const safeLabelY = view.width < 600 ? 148 : 32;
+      const safeLabelY = view.width < 600 ? 180 : 32;
       label.position.set(safeLabelX, safeLabelY);
       if (debugGridEnabled) {
         stageElement.dataset.actorX = renderState.x.toFixed(3);
@@ -584,6 +664,18 @@ async function boot() {
         stageElement.dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
         stageElement.dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
         stageElement.dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
+        const encounterSnapshot = getEncounterSnapshot(simulation?.tick ?? 0);
+        stageElement.dataset.encounterBand = encounterSnapshot.bandId;
+        stageElement.dataset.directorInsertions = String(encounterDirector?.insertedCount ?? 0);
+        stageElement.dataset.directorRejections = String(encounterDirector?.rejectedCount ?? 0);
+        stageElement.dataset.directorLastReason = lastDirectorStep?.reason ?? '';
+        stageElement.dataset.directorBodyCap = String(encounterSnapshot.bodyCap);
+        stageElement.dataset.directorThreatCap = String(encounterSnapshot.threatCap);
+        stageElement.dataset.bossActive = String(liquidatorBoss?.active === true && (simulation?.tick ?? 0) >= liquidatorBoss.startTick);
+        stageElement.dataset.bossPhase = liquidatorBoss?.phaseId ?? '';
+        stageElement.dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
+        stageElement.dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
+        stageElement.dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
       }
     } else {
       marker.position.set(view.width * 0.5, view.height * 0.5);
@@ -604,10 +696,16 @@ async function boot() {
     aimIntent = null;
     grayboxEnemies = [];
     enemyPopulation = null;
+    encounterDirector = null;
+    lastDirectorStep = null;
+    liquidatorBoss = null;
+    lastBossStep = null;
     lastEnemyStep = null;
     lastEnemyAttack = null;
     resetEnemyMarkers([]);
     enemyTelegraphs.clear();
+    bossTelegraphs.clear();
+    bossVisual.visible = false;
     playerBody = null;
     lastCollision = null;
     lastTraversal = null;
@@ -658,7 +756,7 @@ async function boot() {
       'gas-bomber': Object.freeze({ x: 790, y: 1110 }),
       'validator-cultist': Object.freeze({ x: 1160, y: 770 }),
     });
-    enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 512 });
+    enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 1024 });
     grayboxEnemies = ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
       const position = previewSpawns[archetypeId];
       return createEnemyState({
@@ -673,6 +771,16 @@ async function boot() {
     enemyPopulation.active = grayboxEnemies;
     enemyPopulation.activeThreat = grayboxEnemies.reduce((sum, enemy) => sum + ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat, 0);
     enemyPopulation.insertedCount = grayboxEnemies.length;
+    for (const enemy of grayboxEnemies) enemyPopulation.seenIds.add(enemy.id);
+    encounterDirector = createEncounterDirector({ nextSpawnTick: directorDebugEnabled ? 1 : 600, seed: payload.session.seed });
+    const bossSpawn = bossDebugEnabled ? { x: 900, y: 900 } : { x: 1536, y: 1680 };
+    liquidatorBoss = createLiquidatorBoss({
+      id: 'boss-liquidator',
+      x: bossSpawn.x,
+      y: bossSpawn.y,
+      groundZ: queryGround(bossSpawn.x, bossSpawn.y).groundZ,
+      startTick: bossDebugEnabled ? 1 : 72_000,
+    });
     resetEnemyMarkers(grayboxEnemies);
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: 24, minZ: 0, maxZ: 56 });
     previousGrenade = false;
@@ -783,14 +891,20 @@ async function boot() {
           move: tickInput.move,
           aim: { ...aimIntent.direction, active: true },
         }, { dtSeconds, speedMultiplier: terrainSpeedMultiplier });
+        const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
+          ? [...grayboxEnemies, liquidatorBoss]
+          : grayboxEnemies;
         const pressure = resolveEnemyPressure({
           x: motion.x,
           y: motion.y,
           radius: 24,
           velocity: { x: motion.vx, y: motion.vy },
-        }, grayboxEnemies);
+        }, pressureEnemies);
         motion.x += pressure.playerDelta.x;
         motion.y += pressure.playerDelta.y;
+        const pressureSpeed = Math.hypot(motion.vx, motion.vy);
+        motion.vx = pressure.allowedVelocity.x * pressureSpeed;
+        motion.vy = pressure.allowedVelocity.y * pressureSpeed;
         for (const enemy of grayboxEnemies) {
           const delta = pressure.enemyDeltas.get(enemy.id);
           if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
@@ -845,6 +959,33 @@ async function boot() {
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
 
+      const viewForDirector = viewport();
+      const directorCameraBounds = {
+        minX: camera.x - viewForDirector.width * 0.5 / camera.zoom,
+        minY: camera.y - viewForDirector.height * 0.5 / camera.zoom,
+        maxX: camera.x + viewForDirector.width * 0.5 / camera.zoom,
+        maxY: camera.y + viewForDirector.height * 0.5 / camera.zoom,
+      };
+      lastDirectorStep = stepEncounterDirector({
+        state: encounterDirector,
+        population: enemyPopulation,
+        tick,
+        districtId: 'frontier-relay',
+        player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
+        camera: directorCameraBounds,
+        spawnPoints: authoredSpawnPoints,
+        nearRewardPoi: false,
+        queryGround,
+        isBlocked: spawnPointBlocked,
+        isRouteReachable: (point) => point.routeValid === true,
+        visualMode: 'prototype',
+      });
+      if (lastDirectorStep.inserted) resetEnemyMarkers(grayboxEnemies);
+
+      lastBossStep = liquidatorBoss.active && tick >= liquidatorBoss.startTick
+        ? stepLiquidatorBoss({ boss: liquidatorBoss, tick, player: { x: actor.x, y: actor.y, groundZ: actor.groundZ } })
+        : null;
+
       lastEnemyStep = stepEnemyPopulation({
         population: enemyPopulation,
         player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
@@ -866,6 +1007,16 @@ async function boot() {
         maxZ: 60,
         health: enemy.health,
       }));
+      if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) hurtTargets.push(createHurtTarget({
+        id: liquidatorBoss.id,
+        bodyShape: { type: 'circle', radius: liquidatorBoss.body.radius },
+        hurtShape: { type: 'circle', radius: 48 },
+        previousGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
+        currentGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
+        minZ: 4,
+        maxZ: 92,
+        health: liquidatorBoss.health,
+      }));
       const meleeTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createMeleeTarget({
         id: enemy.id,
         previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
@@ -873,6 +1024,14 @@ async function boot() {
         radius: Math.max(8, enemy.radius * 0.72),
         minZ: 4,
         maxZ: 60,
+      }));
+      if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) meleeTargets.push(createMeleeTarget({
+        id: liquidatorBoss.id,
+        previousGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
+        currentGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
+        radius: 48,
+        minZ: 4,
+        maxZ: 92,
       }));
       const combatHitIntents = [];
 
@@ -1090,6 +1249,7 @@ async function boot() {
         enemies: grayboxEnemies,
         player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
         tick,
+        budgets: getEncounterSnapshot(tick).attackTokens,
       });
       for (const event of lastEnemyAttack.events) {
         pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
@@ -1116,6 +1276,30 @@ async function boot() {
           point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
         });
       }
+      for (const event of lastBossStep?.events ?? []) {
+        if (event.type !== 'attack' && event.type !== 'add-wave') continue;
+        const resolved = resolveLiquidatorAttack({
+          event,
+          player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
+        });
+        if (!resolved.hit) continue;
+        const directionMagnitude = Math.hypot(actor.x - event.origin.x, actor.y - event.origin.y) || 1;
+        combatHitIntents.push({
+          id: event.telegraphId,
+          tick,
+          time: 1,
+          targetId: 'player',
+          sourceId: liquidatorBoss.id,
+          weaponId: `boss-${event.attackId}`,
+          damage: resolved.damage,
+          criticalChance: 0,
+          criticalMultiplier: 1,
+          armorPiercing: false,
+          direction: { x: (actor.x - event.origin.x) / directionMagnitude, y: (actor.y - event.origin.y) / directionMagnitude },
+          knockback: event.attackId.includes('super') ? 36 : 20,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
+        });
+      }
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents);
       if (authoritativeCombatHitIntents.length > 0) {
@@ -1127,6 +1311,14 @@ async function boot() {
           shieldCharges: enemy.shieldCharges,
           knockbackResistance: enemy.knockbackResistance,
         }));
+        if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) combatTargets.push({
+          id: liquidatorBoss.id,
+          health: liquidatorBoss.health,
+          maxHealth: liquidatorBoss.maxHealth,
+          armor: 1,
+          shieldCharges: 0,
+          knockbackResistance: 0.92,
+        });
         if (playerHealth > 0) combatTargets.push({
           id: 'player',
           health: playerHealth,
@@ -1171,6 +1363,21 @@ async function boot() {
             });
             continue;
           }
+          if (damageEvent.targetId === liquidatorBoss.id) {
+            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.amount, tick });
+            if (bossDamage.runEvent && bridge?.initialized) {
+              bridge.send('game:run-event', {
+                tick,
+                sequence: runEventSequence,
+                eventType: 'boss-defeated',
+                value: 1,
+                bossId: liquidatorBoss.id,
+                elapsedTicks: bossDamage.runEvent.data.elapsedTicks,
+              });
+              runEventSequence += 1;
+            }
+            continue;
+          }
           const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
           if (!enemy) continue;
           const knockbackCollision = resolveSweptCircleMotion({
@@ -1193,6 +1400,7 @@ async function boot() {
             lastProjectileHit = { tick, targetId: damageEvent.targetId, point: damageEvent.point };
           }
         }
+        let retiredEnemies = false;
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
           if (!grayboxEnemies.some((enemy) => enemy.id === scoreEvent.enemyId)) continue;
           runKills += 1;
@@ -1205,7 +1413,9 @@ async function boot() {
             });
             runEventSequence += 1;
           }
+          retiredEnemies = retireEnemyFromPopulation(enemyPopulation, scoreEvent.enemyId, { tick, reason: 'defeated' }).retired || retiredEnemies;
         }
+        if (retiredEnemies) resetEnemyMarkers(grayboxEnemies);
         const defeatTransition = playerDefeatController.resolve({
           health: playerHealth,
           kills: runKills,

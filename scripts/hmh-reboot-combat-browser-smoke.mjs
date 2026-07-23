@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
-const url = `${origin}/hmh-reboot/index.html?debugGrid=1`;
+const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1`;
 const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-phase8-combat/', import.meta.url);
 const expectedEnemyArchetypes = ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'validator-cultist', 'whale-enforcer'];
 await mkdir(evidenceDir, { recursive: true });
@@ -40,6 +40,14 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   enemyDecisions: Number(stage.dataset.enemyDecisions),
   enemySafetySteps: Number(stage.dataset.enemySafetySteps),
   enemyAttackDrops: Number(stage.dataset.enemyAttackDrops),
+  encounterBand: stage.dataset.encounterBand,
+  directorInsertions: Number(stage.dataset.directorInsertions),
+  directorRejections: Number(stage.dataset.directorRejections),
+  bossActive: stage.dataset.bossActive === 'true',
+  bossPhase: stage.dataset.bossPhase,
+  bossHealth: Number(stage.dataset.bossHealth),
+  bossPendingTells: Number(stage.dataset.bossPendingTells),
+  bossAttackDrops: Number(stage.dataset.bossAttackDrops),
 }));
 
 async function holdKey(page, key, ms = 120) {
@@ -97,6 +105,8 @@ async function desktopSmoke() {
   await ready(page, errors);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === 'coin-blaster');
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyTells) > 0, null, { timeout: 3000 });
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
   const pistol = await state(page);
 
   await holdKey(page, 'Digit2');
@@ -136,11 +146,17 @@ async function desktopSmoke() {
   await page.screenshot({ path: fileURLToPath(new URL('desktop-combat.png', evidenceDir)), fullPage: true });
 
   assert.equal(pistol.lastWeaponFire, 'coin-blaster');
-  assert.deepEqual([...pistol.enemyArchetypes].sort(), expectedEnemyArchetypes);
-  assert.ok(pistol.enemyCount > 0 && pistol.enemyCount <= 6);
+  assert.deepEqual([...new Set(pistol.enemyArchetypes)].sort(), expectedEnemyArchetypes);
+  assert.ok(pistol.enemyCount > 6 && pistol.enemyCount <= 32);
   assert.ok(pistol.enemyTells > 0);
-  assert.ok(pistol.enemySafetySteps > 0 && pistol.enemySafetySteps <= 6);
+  assert.ok(pistol.enemySafetySteps > 0 && pistol.enemySafetySteps <= 32);
   assert.equal(pistol.enemyAttackDrops, 0);
+  assert.equal(pistol.encounterBand, 'opening');
+  assert.ok(pistol.directorInsertions > 0);
+  assert.equal(pistol.bossActive, true);
+  assert.equal(pistol.bossPhase, 'market-open');
+  assert.ok(pistol.bossHealth > 0);
+  assert.equal(pistol.bossAttackDrops, 0);
   assert.equal(shotgun.lastWeaponFire, 'scatter-shotgun');
   assert.equal(machineGun.lastWeaponFire, 'auto-miner');
   assert.equal(launcher.lastWeaponFire, 'launcher-rig');
@@ -167,6 +183,8 @@ async function mobileSmoke() {
   const errors = [];
   await ready(page, errors);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyTells) > 0, null, { timeout: 3000 });
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
   assert.equal(await page.locator('[data-hmh-control]').count(), 8);
   await tapTouchControl(page, 'weaponNext', 71);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'scatter-shotgun');
@@ -187,10 +205,16 @@ async function mobileSmoke() {
   const mobileState = await state(page);
   await page.screenshot({ path: fileURLToPath(new URL('mobile-combat.png', evidenceDir)), fullPage: true });
   assert.equal(mobileState.weaponId, 'scatter-shotgun');
-  assert.deepEqual([...mobileState.enemyArchetypes].sort(), expectedEnemyArchetypes);
-  assert.ok(mobileState.enemyCount > 0 && mobileState.enemyCount <= 6);
-  assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 6);
+  assert.deepEqual([...new Set(mobileState.enemyArchetypes)].sort(), expectedEnemyArchetypes);
+  assert.ok(mobileState.enemyCount > 6 && mobileState.enemyCount <= 32);
+  assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 32);
   assert.equal(mobileState.enemyAttackDrops, 0);
+  assert.equal(mobileState.encounterBand, 'opening');
+  assert.ok(mobileState.directorInsertions > 0);
+  assert.equal(mobileState.bossActive, true);
+  assert.equal(mobileState.bossPhase, 'market-open');
+  assert.ok(mobileState.bossHealth > 0);
+  assert.equal(mobileState.bossAttackDrops, 0);
   assert.ok(Number(mobileState.lastMeleeTick) > 0);
   assert.equal(mobileState.handGrenades, 2);
   assert.ok(mobileState.dashReadyTick > 0);
