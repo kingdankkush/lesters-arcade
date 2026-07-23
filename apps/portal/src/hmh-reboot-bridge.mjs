@@ -77,8 +77,11 @@ export function createHmhParentBridge({
     state = 'connected';
     iframe.contentWindow.postMessage(connectMessage, origin, [channel.port2]);
     send('portal:init', {
+      gameId: session.gameId,
       mode: session.mode,
       heroId: session.heroId,
+      profile: { ...session.profile },
+      session: { ...session.session },
       settings: { ...session.settings },
     });
   };

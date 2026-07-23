@@ -1,11 +1,14 @@
 export const HMH_BRIDGE_PROTOCOL = 'hmh-bridge/v1';
 export const HMH_MAX_MESSAGE_BYTES = 64 * 1024;
+export const HMH_GAME_ID = 'lester-blaster';
 
 const SESSION_ID_PATTERN = /^[a-z0-9][a-z0-9:_-]{2,127}$/;
 const MESSAGE_ID_PATTERN = /^[a-z0-9][a-z0-9:_-]{0,63}$/;
 const NONCE_PATTERN = /^[A-Za-z0-9_-]{16,128}$/;
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
-const CAPABILITIES = new Set(['pause', 'settings', 'restart', 'resize']);
+const BINDING_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+const CHECKSUM_PATTERN = /^[a-z0-9][a-z0-9:_-]{7,127}$/;
+const CAPABILITIES = new Set(['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements']);
 
 function fail(error) {
   return { ok: false, error };
@@ -63,10 +66,22 @@ function validateBaseEnvelope(input) {
 }
 
 function validatePortalInit(payload) {
-  const keyError = exactKeys(payload, ['mode', 'heroId', 'settings'], 'portal:init payload');
+  const keyError = exactKeys(payload, ['gameId', 'mode', 'heroId', 'profile', 'session', 'settings'], 'portal:init payload');
   if (keyError) return keyError;
+  if (payload.gameId !== HMH_GAME_ID) return 'portal:init gameId is invalid';
   if (payload.mode !== 'free' && payload.mode !== 'ranked') return 'portal:init mode must be free or ranked';
   if (!ID_PATTERN.test(payload.heroId)) return 'portal:init heroId is invalid';
+  const profileError = exactKeys(payload.profile, ['displayName', 'locale'], 'portal:init profile');
+  if (profileError) return profileError;
+  if (typeof payload.profile.displayName !== 'string' || payload.profile.displayName.length < 1 || payload.profile.displayName.length > 64 || /[<>\u0000-\u001f]/.test(payload.profile.displayName)) return 'portal:init displayName is invalid';
+  if (typeof payload.profile.locale !== 'string' || !/^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(payload.profile.locale)) return 'portal:init locale is invalid';
+  const sessionError = exactKeys(payload.session, ['seed', 'buildHash', 'seasonId', 'rankedEligible'], 'portal:init session');
+  if (sessionError) return sessionError;
+  if (!integerInRange(payload.session.seed, 0, 0xffff_ffff)) return 'portal:init seed is invalid';
+  if (typeof payload.session.buildHash !== 'string' || !BINDING_PATTERN.test(payload.session.buildHash)) return 'portal:init buildHash is invalid';
+  if (typeof payload.session.seasonId !== 'string' || !BINDING_PATTERN.test(payload.session.seasonId)) return 'portal:init seasonId is invalid';
+  if (typeof payload.session.rankedEligible !== 'boolean') return 'portal:init rankedEligible must be boolean';
+  if (payload.session.rankedEligible !== (payload.mode === 'ranked')) return 'portal:init ranked eligibility does not match mode';
   return validateSettings(payload.settings);
 }
 
@@ -132,6 +147,48 @@ function validateGameError(payload) {
   return '';
 }
 
+function validateGamePause(payload) {
+  const keyError = exactKeys(payload, ['paused', 'source'], 'game:pause payload');
+  if (keyError) return keyError;
+  if (typeof payload.paused !== 'boolean') return 'game:pause paused must be boolean';
+  if (!new Set(['portal', 'system', 'visibility', 'user']).has(payload.source)) return 'game:pause source is invalid';
+  return '';
+}
+
+function validateGameExit(payload) {
+  const keyError = exactKeys(payload, ['reason'], 'game:exit payload');
+  if (keyError) return keyError;
+  return new Set(['menu', 'restart', 'runtime-error']).has(payload.reason) ? '' : 'game:exit reason is invalid';
+}
+
+function validateRunEvent(payload) {
+  const keyError = exactKeys(payload, ['tick', 'sequence', 'eventType', 'value'], 'game:run-event payload');
+  if (keyError) return keyError;
+  if (!integerInRange(payload.tick, 0, 1_000_000_000)) return 'game:run-event tick is invalid';
+  if (!integerInRange(payload.sequence, 0, 10_000_000)) return 'game:run-event sequence is invalid';
+  if (!ID_PATTERN.test(payload.eventType)) return 'game:run-event eventType is invalid';
+  if (!finiteInRange(payload.value, -1_000_000_000, 1_000_000_000)) return 'game:run-event value is invalid';
+  return '';
+}
+
+function validateScoreResult(payload) {
+  const keyError = exactKeys(payload, ['score', 'kills', 'elapsedMs', 'checksum'], 'game:score-result payload');
+  if (keyError) return keyError;
+  if (!integerInRange(payload.score, 0, 1_000_000_000_000)) return 'game:score-result score is invalid';
+  if (!integerInRange(payload.kills, 0, 10_000_000)) return 'game:score-result kills is invalid';
+  if (!finiteInRange(payload.elapsedMs, 0, 1_000_000_000)) return 'game:score-result elapsedMs is invalid';
+  if (typeof payload.checksum !== 'string' || !CHECKSUM_PATTERN.test(payload.checksum)) return 'game:score-result checksum is invalid';
+  return '';
+}
+
+function validateAchievement(payload) {
+  const keyError = exactKeys(payload, ['achievementId', 'tick'], 'game:achievement payload');
+  if (keyError) return keyError;
+  if (!ID_PATTERN.test(payload.achievementId)) return 'game:achievement achievementId is invalid';
+  if (!integerInRange(payload.tick, 0, 1_000_000_000)) return 'game:achievement tick is invalid';
+  return '';
+}
+
 export function createBridgeEnvelope({ type, sessionId, messageId, payload }) {
   return { protocol: HMH_BRIDGE_PROTOCOL, type, sessionId, messageId, payload };
 }
@@ -164,6 +221,12 @@ export function validateChildMessage(input) {
   if (input.type === 'game:ready') error = validateGameReady(input.payload);
   else if (input.type === 'game:state') error = validateGameState(input.payload);
   else if (input.type === 'game:game-over') error = validateGameOver(input.payload);
+  else if (input.type === 'game:pause') error = validateGamePause(input.payload);
+  else if (input.type === 'game:exit') error = validateGameExit(input.payload);
+  else if (input.type === 'game:run-event') error = validateRunEvent(input.payload);
+  else if (input.type === 'game:score-result') error = validateScoreResult(input.payload);
+  else if (input.type === 'game:achievement') error = validateAchievement(input.payload);
+  else if (input.type === 'game:settings') error = validateSettingsPayload(input.payload);
   else if (input.type === 'game:error') error = validateGameError(input.payload);
   else return fail('unsupported child message type');
   return error ? fail(error) : pass(input);

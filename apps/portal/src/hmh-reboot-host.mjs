@@ -14,22 +14,50 @@ export function createHmhRebootHost({
   onReady = () => {},
   onState = () => {},
   onError = () => {},
+  onExit = () => {},
+  onRunEvent = () => {},
+  onScoreResult = () => {},
+  onAchievement = () => {},
+  onSettings = () => {},
+  readyTimeoutMs = 8000,
+  setTimeoutRef = globalThis.setTimeout,
+  clearTimeoutRef = globalThis.clearTimeout,
 }) {
   if (!mount?.replaceChildren) throw new Error('HMH reboot mount element is required');
+  if (!Number.isFinite(readyTimeoutMs) || readyTimeoutMs <= 0) throw new Error('readyTimeoutMs must be positive');
   const origin = normalizeOrigin(expectedOrigin);
   let activeBridge = null;
   let activeFrame = null;
   let bridgeReady = false;
   let pendingCommands = [];
+  let readyTimer = null;
+
+  const clearReadyTimer = () => {
+    if (readyTimer !== null) clearTimeoutRef(readyTimer);
+    readyTimer = null;
+  };
 
   const routeMessage = (message) => {
-    if (message.type === 'game:ready') onReady(message);
-    else if (message.type === 'game:state' || message.type === 'game:game-over') onState(message);
-    else if (message.type === 'game:error') onError(new Error(`${message.payload.code}: ${message.payload.message}`));
-    else onError(new Error(`unsupported child message type: ${message.type}`));
+    if (message.type === 'game:ready') {
+      clearReadyTimer();
+      onReady(message);
+    } else if (message.type === 'game:state' || message.type === 'game:game-over' || message.type === 'game:pause') onState(message);
+    else if (message.type === 'game:exit') onExit(message);
+    else if (message.type === 'game:run-event') onRunEvent(message);
+    else if (message.type === 'game:score-result') onScoreResult(message);
+    else if (message.type === 'game:achievement') onAchievement(message);
+    else if (message.type === 'game:settings') onSettings(message);
+    else if (message.type === 'game:error') {
+      onError(new Error(`${message.payload.code}: ${message.payload.message}`));
+      destroy();
+    } else {
+      onError(new Error(`unsupported child message type: ${message.type}`));
+      destroy();
+    }
   };
 
   const destroy = () => {
+    clearReadyTimer();
     activeBridge?.destroy();
     activeBridge = null;
     activeFrame = null;
@@ -65,7 +93,10 @@ export function createHmhRebootHost({
       expectedOrigin: origin,
       session,
       onMessage: routeMessage,
-      onProtocolError: onError,
+      onProtocolError: (error) => {
+        onError(error);
+        destroy();
+      },
     });
     iframe.addEventListener('load', () => {
       try {
@@ -84,6 +115,11 @@ export function createHmhRebootHost({
     }, { once: true });
     activeFrame = iframe;
     activeBridge = bridge;
+    readyTimer = setTimeoutRef(() => {
+      readyTimer = null;
+      onError(new Error(`HMH reboot READY timed out after ${readyTimeoutMs}ms`));
+      destroy();
+    }, readyTimeoutMs);
     return iframe;
   };
 

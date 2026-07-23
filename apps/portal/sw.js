@@ -10,11 +10,18 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v3-ship-polish-v48';
+const CACHE_VERSION = 'lesters-arcade-v4-hmh-reboot-04';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
-const PRECACHE_URLS = ['/', '/index.html', '/dist/main.js'];
+const PRECACHE_URLS = [
+  '/',
+  '/index.html',
+  '/dist/main.js',
+  '/hmh-reboot/index.html',
+  '/hmh-reboot/styles.css',
+  '/dist/hmh-reboot/game.js',
+];
 
 const CACHE_FIRST_DESTINATIONS = new Set(['image', 'font', 'audio', 'video']);
 

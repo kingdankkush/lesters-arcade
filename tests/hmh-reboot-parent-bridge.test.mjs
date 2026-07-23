@@ -33,8 +33,11 @@ function fixture({ src = 'https://arcade.test/hmh-reboot/index.html' } = {}) {
     expectedOrigin: 'https://arcade.test',
     session: {
       sessionId: 'game-session-000000001',
+      gameId: 'lester-blaster',
       mode: 'free',
       heroId: 'male-commando',
+      profile: { displayName: 'Guest', locale: 'en' },
+      session: { seed: 1234567890, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false },
       settings: { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false },
     },
     channelFactory: () => ({ port1, port2 }),
@@ -57,6 +60,8 @@ test('parent connects with an exact target origin and transfers one port', () =>
   assert.equal(port1.sent.length, 1);
   assert.equal(validateParentMessage(port1.sent[0]).ok, true);
   assert.equal(port1.sent[0].type, 'portal:init');
+  assert.equal(port1.sent[0].payload.gameId, 'lester-blaster');
+  assert.equal(port1.sent[0].payload.session.seed, 1234567890);
 });
 
 test('parent refuses iframe URLs outside the expected origin', () => {

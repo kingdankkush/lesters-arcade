@@ -27,6 +27,12 @@ function fixture() {
   const ready = [];
   const states = [];
   const errors = [];
+  const exits = [];
+  const runEvents = [];
+  const scoreResults = [];
+  const achievements = [];
+  const settingEvents = [];
+  const timers = [];
   const bridgeFactory = (options) => {
     assert.ok(options.iframe.contentWindow, 'iframe must be attached before bridge creation');
     const bridge = {
@@ -49,14 +55,29 @@ function fixture() {
     onReady: (message) => ready.push(message),
     onState: (message) => states.push(message),
     onError: (error) => errors.push(error),
+    onExit: (message) => exits.push(message),
+    onRunEvent: (message) => runEvents.push(message),
+    onScoreResult: (message) => scoreResults.push(message),
+    onAchievement: (message) => achievements.push(message),
+    onSettings: (message) => settingEvents.push(message),
+    readyTimeoutMs: 5000,
+    setTimeoutRef(callback, delay) {
+      const timer = { callback, delay, cleared: false };
+      timers.push(timer);
+      return timer;
+    },
+    clearTimeoutRef(timer) { timer.cleared = true; },
   });
   const session = {
     sessionId: 'game-session-000000001',
+    gameId: 'lester-blaster',
     mode: 'free',
     heroId: 'male-commando',
+    profile: { displayName: 'Guest', locale: 'en' },
+    session: { seed: 1234567890, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false },
     settings: { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false },
   };
-  return { host, mount, bridges, ready, states, errors, session };
+  return { host, mount, bridges, ready, states, errors, exits, runEvents, scoreResults, achievements, settingEvents, timers, session };
 }
 
 test('host mounts a same-origin sandboxed child frame with no navigation capability', () => {
@@ -78,16 +99,24 @@ test('host mounts a same-origin sandboxed child frame with no navigation capabil
 });
 
 test('host routes only recognized child message types to portal callbacks', () => {
-  const { host, bridges, ready, states, errors, session } = fixture();
+  const { host, bridges, ready, states, errors, exits, runEvents, scoreResults, achievements, settingEvents, session } = fixture();
   host.mountSession(session);
   bridges[0].options.onMessage({ type: 'game:ready' });
   bridges[0].options.onMessage({ type: 'game:state' });
-  bridges[0].options.onMessage({ type: 'game:error', payload: { code: 'renderer-init-failed', message: 'Failed.' } });
-  bridges[0].options.onMessage({ type: 'game:unknown' });
+  bridges[0].options.onMessage({ type: 'game:pause' });
+  bridges[0].options.onMessage({ type: 'game:exit' });
+  bridges[0].options.onMessage({ type: 'game:run-event' });
+  bridges[0].options.onMessage({ type: 'game:score-result' });
+  bridges[0].options.onMessage({ type: 'game:achievement' });
+  bridges[0].options.onMessage({ type: 'game:settings' });
   assert.equal(ready.length, 1);
-  assert.equal(states.length, 1);
-  assert.equal(errors.length, 2);
-  assert.match(errors[1].message, /unsupported/i);
+  assert.equal(states.length, 2);
+  assert.equal(exits.length, 1);
+  assert.equal(runEvents.length, 1);
+  assert.equal(scoreResults.length, 1);
+  assert.equal(achievements.length, 1);
+  assert.equal(settingEvents.length, 1);
+  assert.equal(errors.length, 0);
 });
 
 test('host queues lifecycle commands until load, then forwards them in order', () => {
@@ -105,4 +134,38 @@ test('host queues lifecycle commands until load, then forwards them in order', (
   assert.equal(bridges.length, 2);
   host.destroy();
   assert.equal(bridges[1].destroyed, true);
+});
+
+test('host destroys the child and reports an error when READY times out', () => {
+  const { host, mount, bridges, errors, timers, session } = fixture();
+  host.mountSession(session);
+  assert.equal(timers.length, 1);
+  assert.equal(timers[0].delay, 5000);
+  timers[0].callback();
+  assert.equal(errors.length, 1);
+  assert.match(errors[0].message, /timed out/i);
+  assert.equal(bridges[0].destroyed, true);
+  assert.deepEqual(mount.children, []);
+});
+
+test('game ready clears the startup timeout', () => {
+  const { host, bridges, timers, session } = fixture();
+  host.mountSession(session);
+  bridges[0].options.onMessage({ type: 'game:ready' });
+  assert.equal(timers[0].cleared, true);
+});
+
+test('runtime and protocol errors fail closed by destroying the active child', () => {
+  for (const reportError of [
+    (bridge) => bridge.options.onMessage({ type: 'game:error', payload: { code: 'renderer-init-failed', message: 'Failed.' } }),
+    (bridge) => bridge.options.onProtocolError(new Error('replay rejected')),
+  ]) {
+    const { host, mount, bridges, errors, timers, session } = fixture();
+    host.mountSession(session);
+    reportError(bridges[0]);
+    assert.equal(errors.length, 1);
+    assert.equal(bridges[0].destroyed, true);
+    assert.equal(timers[0].cleared, true);
+    assert.deepEqual(mount.children, []);
+  }
 });

@@ -1,5 +1,6 @@
 import { Application, Container, Graphics, Text } from 'pixi.js';
 import { createHmhChildBridge } from './bridge.mjs';
+import { createStandaloneInitPayload } from './standalone-session.mjs';
 
 const RUNTIME_VERSION = '0.1.0';
 const stageElement = document.querySelector('#hmhRebootStage');
@@ -69,10 +70,14 @@ async function boot() {
   });
 
   if (window.parent !== window) {
+    const handleExitKey = (event) => {
+      if (event.key === 'Escape' && bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
+    };
+    window.addEventListener('keydown', handleExitKey);
     bridge = createHmhChildBridge({
       windowRef: window,
       expectedParentOrigin: window.location.origin,
-      runtimeInfo: { runtimeVersion: RUNTIME_VERSION, renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize'] },
+      runtimeInfo: { runtimeVersion: RUNTIME_VERSION, renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements'] },
       onInit: (payload) => {
         settings = { ...payload.settings };
         setStatus('Portal session connected', `${payload.mode.toUpperCase()} // ${payload.heroId}`);
@@ -81,12 +86,15 @@ async function boot() {
       onMessage: (message) => {
         if (message.type === 'portal:pause') {
           app.ticker.stop();
+          bridge.send('game:pause', { paused: true, source: 'portal' });
           bridge.send('game:state', statePayload('paused'));
         } else if (message.type === 'portal:resume') {
           app.ticker.start();
+          bridge.send('game:pause', { paused: false, source: 'portal' });
           bridge.send('game:state', statePayload('running'));
         } else if (message.type === 'portal:settings') {
           settings = { ...message.payload.settings };
+          bridge.send('game:settings', { settings: { ...settings } });
           bridge.send('game:state', statePayload(app.ticker.started ? 'running' : 'paused'));
         } else if (message.type === 'portal:restart') {
           elapsedMs = 0;
@@ -94,6 +102,7 @@ async function boot() {
           app.ticker.start();
           bridge.send('game:state', statePayload('running'));
         } else if (message.type === 'portal:dispose') {
+          window.removeEventListener('keydown', handleExitKey);
           app.ticker.stop();
           app.destroy(true);
         }
@@ -103,7 +112,9 @@ async function boot() {
     bridge.start();
     setStatus('Renderer ready', 'Waiting for portal session…');
   } else {
-    setStatus('Standalone renderer ready', 'PixiJS 8.19.0 // no portal authority');
+    const payload = window.parent === window ? createStandaloneInitPayload() : null;
+    settings = { ...payload.settings };
+    setStatus('Standalone session ready', `${payload.mode.toUpperCase()} // seed ${payload.session.seed} // no portal authority`);
   }
 }
 

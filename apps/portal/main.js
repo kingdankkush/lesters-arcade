@@ -257,6 +257,7 @@ import {
   AVATAR_RULES,
   validateAvatarFile,
   computeAvatarResize,
+  buildCabinetInitContextFromSession,
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
@@ -5523,7 +5524,9 @@ function mountHmhRebootSession() {
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Top-down reboot runtime connected. Portal session authority remains active.';
       },
       onState: (message) => {
-        if (message.type === 'game:state') {
+        if (message.type === 'game:pause') {
+          combat.paused = message.payload.paused;
+        } else if (message.type === 'game:state') {
           combat.score = message.payload.score;
           combat.kills = message.payload.kills;
           combat.elapsedGameSeconds = message.payload.elapsedMs / 1000;
@@ -5538,17 +5541,61 @@ function mountHmhRebootSession() {
           combat.gameOverReason = message.payload.reason;
         }
       },
+      onExit: () => returnToOfficialGameMenu(),
+      onRunEvent: (message) => {
+        if (!currentSession?.isPaid || !currentSession.evidence) return;
+        recordSessionEvent(currentSession.evidence, {
+          step: message.payload.tick,
+          type: `hmh-reboot:${message.payload.eventType}`,
+          payload: { sequence: message.payload.sequence, value: message.payload.value },
+        });
+      },
+      onScoreResult: (message) => {
+        if (!currentSession?.isPaid || !currentSession.evidence) return;
+        recordSessionEvent(currentSession.evidence, {
+          step: Math.floor(message.payload.elapsedMs / (1000 / 60)),
+          type: 'hmh-reboot:score-candidate',
+          payload: { score: message.payload.score, kills: message.payload.kills, checksum: message.payload.checksum },
+        });
+      },
+      onAchievement: (message) => {
+        if (!currentSession?.isPaid || !currentSession.evidence) return;
+        recordSessionEvent(currentSession.evidence, {
+          step: message.payload.tick,
+          type: 'hmh-reboot:achievement-candidate',
+          payload: { achievementId: message.payload.achievementId },
+        });
+      },
+      onSettings: (message) => debugRuntimeLog('[HMH reboot settings]', message.payload.settings),
       onError: (error) => {
         console.error('[HMH reboot bridge]', error);
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Reboot runtime error: ${error.message}`;
       },
     });
   }
+  const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
+  const initContext = buildCabinetInitContextFromSession(currentSession, {
+    displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest',
+    locale: document.documentElement.lang || navigator.language || 'en',
+    aspect: 'landscape',
+    reducedMotion: Boolean(gameSettings.reduceMotion),
+  });
   hmhRebootActive = true;
   return hmhRebootHost.mountSession({
     sessionId: currentSession.urlSessionId ?? currentSession.sessionId,
-    mode: officialSelectedMode === 'ranked' ? 'ranked' : 'free',
+    gameId: currentSession.gameId,
+    mode: initContext.mode,
     heroId: hmhRebootHeroId(),
+    profile: {
+      displayName: initContext.displayName,
+      locale: initContext.locale,
+    },
+    session: {
+      seed: initContext.seed,
+      buildHash: initContext.buildHash,
+      seasonId: initContext.seasonId,
+      rankedEligible: initContext.rankedEligible,
+    },
     settings: hmhRebootSettings(),
   });
 }

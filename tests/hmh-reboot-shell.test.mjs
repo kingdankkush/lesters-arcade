@@ -19,6 +19,8 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /createHmhChildBridge/);
   assert.match(source, /window\.location\.origin/);
   assert.doesNotMatch(source, /window\.ethereum|privateKey|settleRun|walletConnector/);
+  assert.match(source, /createStandaloneInitPayload/);
+  assert.match(source, /window\.parent === window[\s\S]*?createStandaloneInitPayload\(\)/);
   assert.match(
     source,
     /message\.type === 'portal:restart'[\s\S]*?elapsedMs = 0[\s\S]*?app\.ticker\.start\(\)[\s\S]*?statePayload\('running'\)/,
@@ -45,6 +47,10 @@ test('portal main integrates the reboot host at the official combat mount', asyn
   assert.match(source, /mountHmhRebootSession/);
   assert.match(source, /officialCombatMount/);
   assert.match(source, /window\.location\.origin/);
+  assert.match(source, /buildCabinetInitContextFromSession\(currentSession/);
+  assert.match(source, /message\.type === 'game:pause'/);
+  assert.match(source, /onExit:[\s\S]*?returnToOfficialGameMenu\(\)/);
+  assert.match(source, /onRunEvent:[\s\S]*?recordSessionEvent\(/);
   assert.match(source, /function drawCombatScene[\s\S]*?if \(hmhRebootActive\)[\s\S]*?requestAnimationFrame\(drawCombatScene\)/);
 });
 
@@ -57,4 +63,14 @@ test('built child bundle exists after the project build', async () => {
   const bundle = new URL('../apps/portal/dist/hmh-reboot/game.js', import.meta.url);
   const info = await stat(bundle);
   assert.ok(info.size > 100_000);
+});
+
+test('service worker versions only the minimal reboot shell for offline startup', async () => {
+  const source = await read('../apps/portal/sw.js');
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-04'/);
+  const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
+  for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
+    assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));
+  }
+  assert.doesNotMatch(preCache, /\/assets\//, 'heavy art and audio packages must remain lazy');
 });

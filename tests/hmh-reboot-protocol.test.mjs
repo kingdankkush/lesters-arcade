@@ -23,7 +23,15 @@ function parentInit(overrides = {}) {
     type: 'portal:init',
     sessionId: 'game-session-000000001',
     messageId: 'portal-1',
-    payload: { mode: 'free', heroId: 'male-commando', settings, ...overrides },
+    payload: {
+      gameId: 'lester-blaster',
+      mode: 'free',
+      heroId: 'male-commando',
+      profile: { displayName: 'Guest', locale: 'en' },
+      session: { seed: 1234567890, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false },
+      settings,
+      ...overrides,
+    },
   });
 }
 
@@ -31,7 +39,9 @@ test('valid portal init envelope passes exact schema validation', () => {
   const result = validateParentMessage(parentInit());
   assert.equal(result.ok, true);
   assert.equal(result.value.protocol, HMH_BRIDGE_PROTOCOL);
+  assert.equal(result.value.payload.gameId, 'lester-blaster');
   assert.equal(result.value.payload.heroId, 'male-commando');
+  assert.equal(result.value.payload.session.seed, 1234567890);
 });
 
 test('unknown and extra parent fields fail closed', () => {
@@ -129,4 +139,33 @@ test('child errors expose only a bounded code and safe message', () => {
   assert.equal(validateChildMessage(error).ok, true);
   error.payload.stack = 'private stack';
   assert.equal(validateChildMessage(error).ok, false);
+});
+
+test('child pause exit run score achievement and settings events use exact bounded schemas', () => {
+  const validMessages = [
+    ['game:pause', { paused: true, source: 'user' }],
+    ['game:exit', { reason: 'menu' }],
+    ['game:run-event', { tick: 120, sequence: 4, eventType: 'enemy-defeated', value: 1 }],
+    ['game:score-result', { score: 4200, kills: 44, elapsedMs: 60000, checksum: 'run-0123456789abcdef' }],
+    ['game:achievement', { achievementId: 'first-blood', tick: 120 }],
+    ['game:settings', { settings: { ...settings } }],
+  ];
+  for (const [type, payload] of validMessages) {
+    const message = createBridgeEnvelope({
+      type,
+      sessionId: 'game-session-000000001',
+      messageId: `game-${type}`,
+      payload,
+    });
+    assert.equal(validateChildMessage(message).ok, true, type);
+    message.payload.walletAddress = '0x1234';
+    assert.equal(validateChildMessage(message).ok, false, `${type} rejects extra authority fields`);
+  }
+});
+
+test('portal init rejects wrong game identity and malformed canonical bindings', () => {
+  assert.equal(validateParentMessage(parentInit({ gameId: 'unknown-game' })).ok, false);
+  assert.equal(validateParentMessage(parentInit({ profile: { displayName: '<script>', locale: 'en' } })).ok, false);
+  assert.equal(validateParentMessage(parentInit({ session: { seed: -1, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false } })).ok, false);
+  assert.equal(validateParentMessage(parentInit({ session: { seed: 1, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: 'yes' } })).ok, false);
 });

@@ -31,7 +31,14 @@ const init = createBridgeEnvelope({
   type: 'portal:init',
   sessionId: 'game-session-000000001',
   messageId: 'portal-1',
-  payload: { mode: 'free', heroId: 'male-commando', settings },
+  payload: {
+    gameId: 'lester-blaster',
+    mode: 'free',
+    heroId: 'male-commando',
+    profile: { displayName: 'Guest', locale: 'en' },
+    session: { seed: 1234567890, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false },
+    settings,
+  },
 });
 const connect = { protocol: HMH_BRIDGE_PROTOCOL, type: 'portal:connect', nonce: 'nonce-1234567890abcdef' };
 
@@ -82,6 +89,7 @@ test('child binds transferred port and sends ready only after validated init', (
   assert.equal(bridge.initialized, true);
   assert.equal(initializations.length, 1);
   assert.equal(initializations[0].heroId, 'male-commando');
+  assert.equal(initializations[0].session.seed, 1234567890);
   assert.equal(port.sent.length, 1);
   assert.equal(validateChildMessage(port.sent[0]).ok, true);
   assert.equal(port.sent[0].type, 'game:ready');

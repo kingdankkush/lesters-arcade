@@ -12,14 +12,18 @@ test('Vercel rewrites every SPA deep-link namespace used by the arcade router', 
   }
 });
 
-test('production caching keeps bundled runtime outputs immutable while stable asset URLs revalidate', () => {
+test('production caching keeps hashed chunks immutable and forces stable child bundles to revalidate', () => {
   const headersBySource = new Map((vercel.headers ?? []).map((entry) => [
     entry.source,
     new Map(entry.headers.map((header) => [header.key, header.value])),
   ]));
   assert.equal(
-    headersBySource.get('/dist/(chunks|hmh-reboot)/(.*)')?.get('Cache-Control'),
+    headersBySource.get('/dist/chunks/(.*)')?.get('Cache-Control'),
     'public, max-age=31536000, immutable',
+  );
+  assert.equal(
+    headersBySource.get('/dist/hmh-reboot/(.*)')?.get('Cache-Control'),
+    'public, max-age=0, must-revalidate',
   );
   assert.equal(
     headersBySource.get('/(dist/main.js|assets/.*|styles.css|styles-arcade-polish.css|src/design-tokens.css)')?.get('Cache-Control'),
