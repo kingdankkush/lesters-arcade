@@ -873,7 +873,7 @@ export const LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY = Object.freeze([
   roguelikeSkill({ id: 'grenade-radius', title: 'Blast Radius', stat: 'grenadeRadius', category: 'grenade-radius', maxRank: 4, gate: { playerLevel: 10, requires: [{ skillId: 'grenade-capacity', rank: 1 }] }, ranks: rankStats('grenadeRadius', [14, 11, 9, 7]), description: 'Grenade blasts cover more tiles.' }),
   roguelikeSkill({ id: 'xp-gain', title: 'Wisdom Candles', stat: 'xpGain', category: 'xp-gain', maxRank: 4, gate: { playerLevel: 10 }, ranks: rankStats('xpGain', [12, 9, 7, 5]), description: 'Earn XP faster without adding extra picks.' }),
   roguelikeSkill({ id: 'power-up-luck', title: 'Green Luck', stat: 'luck', category: 'power-up-luck', maxRank: 4, gate: { playerLevel: 10 }, ranks: rankStats('luck', [10, 8, 6, 5]), description: 'Shift drop rarity weights without increasing volume.' }),
-  roguelikeSkill({ id: 'dash-cooldown', title: 'Dash Clock', stat: 'dashCooldown', category: 'dash-cooldown', maxRank: 4, gate: { playerLevel: 10 }, ranks: rankStats('dashCooldown', [10, 8, 6, 5]), description: 'Recover dash sooner.' }),
+  roguelikeSkill({ id: 'dash-cooldown', title: 'Dash Clock', stat: 'dashCooldownSeconds', category: 'dash-cooldown', maxRank: 2, gate: { playerLevel: 10 }, ranks: rankStats('dashCooldownSeconds', [-2, -2]), description: 'Reduce the deterministic Dash cooldown from 10 seconds to 8, then 6.' }),
   unlockSkill({ id: 'launcher-rig', title: 'Launcher Rig', grenadeType: 'launcher-rig', description: 'Switch grenades to a longer, flatter, faster launcher arc.', gate: { playerLevel: 10 } }),
 
   roguelikeSkill({ id: 'dash-distance', title: 'Gap Runner', stat: 'dashDistance', category: 'dash-distance', maxRank: 4, gate: { playerLevel: 15, requires: [{ skillId: 'dash-cooldown', rank: 2 }] }, ranks: rankStats('dashDistance', [12, 9, 7, 5]), description: 'Dash farther through authored routes.' }),
@@ -2242,6 +2242,7 @@ function clampNumber(value, min, max) {
 
 
 const ROGUELIKE_ABSOLUTE_STAT_DEFAULTS = Object.freeze({
+  dashCooldownSeconds: 10,
   grenadeCapacity: 0,
   healthRegen: 0,
   pierce: 0,

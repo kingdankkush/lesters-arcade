@@ -33,6 +33,7 @@ test('WO-27 upgrade tree is a compact ranked base tree with deliberate scarcity'
     assert.ok(Array.isArray(skill.ranks), `${skill.id} needs explicit per-rank stats`);
     assert.equal(skill.ranks.length, skill.maxRank, `${skill.id} ranks length should match maxRank`);
     if (skill.kind === 'unlock') assert.equal(skill.maxRank, 1, `${skill.id} unlocks are one-rank picks`);
+    else if (skill.id === 'dash-cooldown') assert.equal(skill.maxRank, 2, 'Phase 13 Dash exposes exactly two cooldown tiers');
     else assert.ok(skill.maxRank >= 3 && skill.maxRank <= 5, `${skill.id} should be rankable 3-5 times`);
   }
 
@@ -46,6 +47,32 @@ test('WO-27 upgrade tree is a compact ranked base tree with deliberate scarcity'
   const golden = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => skill.kind === 'evolution');
   assert.equal(golden.length >= 4, true, 'WO-45 golden evolutions extend the base tree without counting as base scarcity cards');
   assert.equal(golden.every((skill) => skill.rarity === 'golden' && skill.maxRank === 1), true);
+});
+
+test('Phase 13 retained dash-cooldown skill has exactly two absolute 8s and 6s tiers', () => {
+  const skill = byId('dash-cooldown');
+  assert.equal(skill.maxRank, 2);
+  assert.equal(skill.stat, 'dashCooldownSeconds');
+  assert.equal(skill.gate.playerLevel, 10);
+  assert.deepEqual(skill.ranks, [
+    { rank: 1, stat: 'dashCooldownSeconds', statDelta: -2 },
+    { rank: 2, stat: 'dashCooldownSeconds', statDelta: -2 },
+  ]);
+
+  let run = createRoguelikeRunState({ seed: 13, mode: 'free', campaignLevelNumber: 1 });
+  run.level = 10;
+  assert.equal(run.stats.dashCooldownSeconds, 10);
+  run = applyRoguelikeSkillUpgrade(run, 'dash-cooldown');
+  assert.equal(run.stats.dashCooldownSeconds, 8);
+  const tierTwoDraft = chooseRoguelikeUpgradeOptions(run, { seed: 13_010 });
+  assert.equal(tierTwoDraft.options[0].id, 'dash-cooldown');
+  assert.equal(tierTwoDraft.options[0].slotRole, 'continuation');
+  run = applyRoguelikeSkillUpgrade(run, 'dash-cooldown');
+  assert.equal(run.stats.dashCooldownSeconds, 6);
+  const maxedDraft = chooseRoguelikeUpgradeOptions(run, { seed: 13_011 });
+  assert.equal(maxedDraft.options.some((option) => option.id === 'dash-cooldown'), false);
+  run = applyRoguelikeSkillUpgrade(run, 'dash-cooldown');
+  assert.equal(run.stats.dashCooldownSeconds, 6);
 });
 
 test('WO-73 draft offers exactly 2 legal guided cards with continuation/new slots across 50 seeds', () => {

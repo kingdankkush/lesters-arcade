@@ -306,9 +306,11 @@ export function resolveSweptCircleMotion({
   blockers = [],
   bounds = null,
   priorZeroDisplacementFrames = 0,
+  stopOnFirstContact = false,
 } = {}) {
   if (!body || typeof body.radius !== 'number') throw new TypeError('collision body is required');
   if (!Array.isArray(blockers)) throw new TypeError('blockers must be an array');
+  if (typeof stopOnFirstContact !== 'boolean') throw new TypeError('stopOnFirstContact must be boolean');
   const requested = { x: finite(delta?.x, 'delta.x'), y: finite(delta?.y, 'delta.y') };
   const position = { x: finite(start?.x, 'start.x'), y: finite(start?.y, 'start.y') };
   const z = finite(start?.z ?? 0, 'start.z');
@@ -358,6 +360,10 @@ export function resolveSweptCircleMotion({
     position.x += remaining.x * hit.t + hit.normal.x * CONTACT_SKIN;
     position.y += remaining.y * hit.t + hit.normal.y * CONTACT_SKIN;
     contacts.push(Object.freeze({ blockerId: hit.blockerId, time: hit.t, normal: Object.freeze({ ...hit.normal }) }));
+    if (stopOnFirstContact) {
+      remaining = { x: 0, y: 0 };
+      break;
+    }
     const leftoverScale = 1 - hit.t;
     remaining = { x: remaining.x * leftoverScale, y: remaining.y * leftoverScale };
     const inward = remaining.x * hit.normal.x + remaining.y * hit.normal.y;

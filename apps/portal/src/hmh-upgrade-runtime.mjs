@@ -19,7 +19,11 @@ export function buildUpgradeRuntimePolicy(stats = {}) {
   const criticalChance = positive(stats.criticalChance);
   const criticalDamage = positive(stats.criticalDamage);
   const spreadControl = positive(stats.spreadControl);
-  const dashCooldown = positive(stats.dashCooldown);
+  const hasAbsoluteDashCooldown = Number.isFinite(Number(stats.dashCooldownSeconds)) && Number(stats.dashCooldownSeconds) > 0;
+  const hasLegacyDashCooldown = Number.isFinite(Number(stats.dashCooldown)) && Number(stats.dashCooldown) > 0;
+  const dashCooldownSeconds = hasAbsoluteDashCooldown
+    ? Number(stats.dashCooldownSeconds)
+    : hasLegacyDashCooldown ? 2.2 / Number(stats.dashCooldown) : 10;
 
   return Object.freeze({
     fireRateMultiplier,
@@ -28,7 +32,7 @@ export function buildUpgradeRuntimePolicy(stats = {}) {
     critDamageBonus: round(Math.max(0, criticalDamage - 1), 4),
     spreadMultiplier: 1 / spreadControl,
     additionalPierceTargets: Math.max(0, Math.floor(nonNegative(stats.pierce))),
-    dashCooldownSeconds: round(2.2 / dashCooldown, 2),
+    dashCooldownSeconds: round(dashCooldownSeconds, 2),
     dashDistanceMultiplier: positive(stats.dashDistance),
     healthRegenPerSecond: nonNegative(stats.healthRegen),
     scoreMultiplier: positive(stats.scoreMultiplier),

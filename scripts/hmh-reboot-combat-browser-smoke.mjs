@@ -27,6 +27,12 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   playerHealth: Number(stage.dataset.playerHealth),
   audioVoices: Number(stage.dataset.audioVoices),
   projectileDrops: Number(stage.dataset.projectileDrops),
+  actorX: Number(stage.dataset.actorX),
+  actorY: Number(stage.dataset.actorY),
+  dashReadyTick: Number(stage.dataset.dashReadyTick),
+  dashActive: stage.dataset.dashActive === 'true',
+  dashInvulnerable: stage.dataset.dashInvulnerable === 'true',
+  dashStopReason: stage.dataset.dashStopReason,
 }));
 
 async function holdKey(page, key, ms = 120) {
@@ -67,6 +73,12 @@ async function tapTouchControl(page, action, pointerId) {
 
 async function ready(page, errors) {
   page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') {
+      const location = message.location();
+      errors.push(`console: ${message.text()}${location.url ? ` @ ${location.url}` : ''}`);
+    }
+  });
   await page.goto(url, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'coin-blaster');
   await page.locator('canvas').focus();
@@ -103,6 +115,15 @@ async function desktopSmoke() {
     return stage?.dataset.lastGrenadeTick && stage.dataset.lastGrenadeTick !== prior;
   }, priorGrenadeTick, { timeout: 3000 });
   const handGrenade = await state(page);
+  const beforeDash = await state(page);
+  await page.keyboard.down('KeyW');
+  await page.keyboard.down('Shift');
+  await page.waitForTimeout(180);
+  await page.keyboard.up('Shift');
+  await page.keyboard.up('KeyW');
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.dashReadyTick) > 0);
+  const dash = await state(page);
+  const dashStatus = await page.locator('#hmhRebootDashStatus').textContent();
   const accessibleStatus = await page.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
   await page.screenshot({ path: fileURLToPath(new URL('desktop-combat.png', evidenceDir)), fullPage: true });
 
@@ -114,12 +135,17 @@ async function desktopSmoke() {
   assert.ok(Number(melee.lastMeleeTick) > 0);
   assert.equal(handGrenade.handGrenades, 2);
   assert.notEqual(handGrenade.lastGrenadeTick, priorGrenadeTick);
+  assert.ok(dash.dashReadyTick > 0);
+  assert.ok(dash.actorY < beforeDash.actorY - 100, 'keyboard Dash must produce responsive directional displacement');
+  assert.match(dashStatus, /Dash \d+ seconds/i);
+  assert.equal(dash.dashStopReason, 'hard-blocker', 'desktop Dash must stop at the visible north rail');
   assert.match(accessibleStatus, /rounds.*grenades.*health.*defeats/i);
+  assert.match(accessibleStatus, /Dash/i);
   assert.ok(handGrenade.audioVoices <= 16);
   assert.equal(handGrenade.projectileDrops, 0);
   assert.deepEqual(errors, []);
   await page.close();
-  return { pistol, shotgun, machineGun, launcher, melee, handGrenade, accessibleStatus, errors };
+  return { pistol, shotgun, machineGun, launcher, melee, handGrenade, dash, dashStatus, accessibleStatus, errors };
 }
 
 async function mobileSmoke() {
@@ -134,6 +160,9 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
   await tapTouchControl(page, 'grenade', 73);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.handGrenades) === 2);
+  await tapTouchControl(page, 'dash', 74);
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.dashReadyTick) > 0);
+  const dashStatus = await page.locator('#hmhRebootDashStatus').textContent();
   const controls = await page.locator('[data-hmh-control]').evaluateAll((elements) => elements.map((element) => {
     const rect = element.getBoundingClientRect();
     return { control: element.dataset.hmhControl, left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
@@ -146,10 +175,12 @@ async function mobileSmoke() {
   assert.equal(mobileState.weaponId, 'scatter-shotgun');
   assert.ok(Number(mobileState.lastMeleeTick) > 0);
   assert.equal(mobileState.handGrenades, 2);
+  assert.ok(mobileState.dashReadyTick > 0);
+  assert.match(dashStatus, /Dash \d+ seconds/i);
   assert.ok(mobileState.audioVoices <= 16);
   assert.deepEqual(errors, []);
   await context.close();
-  return { state: mobileState, controls, errors };
+  return { state: mobileState, dashStatus, controls, errors };
 }
 
 try {

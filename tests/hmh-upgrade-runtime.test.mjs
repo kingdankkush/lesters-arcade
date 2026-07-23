@@ -48,7 +48,7 @@ test('runtime policy normalizes every combat-facing upgrade stat', () => {
     criticalDamage: 1.4,
     spreadControl: 1.5,
     pierce: 2,
-    dashCooldown: 1.25,
+    dashCooldownSeconds: 8,
     dashDistance: 1.4,
     healthRegen: 0.5,
     scoreMultiplier: 1.3,
@@ -63,7 +63,7 @@ test('runtime policy normalizes every combat-facing upgrade stat', () => {
   assert.equal(policy.critDamageBonus, 0.4);
   assert.equal(policy.spreadMultiplier, 1 / 1.5);
   assert.equal(policy.additionalPierceTargets, 2);
-  assert.equal(policy.dashCooldownSeconds, 1.76);
+  assert.equal(policy.dashCooldownSeconds, 8);
   assert.equal(policy.dashDistanceMultiplier, 1.4);
   assert.equal(policy.healthRegenPerSecond, 0.5);
   assert.equal(policy.scoreMultiplier, 1.3);
@@ -71,6 +71,13 @@ test('runtime policy normalizes every combat-facing upgrade stat', () => {
   assert.equal(policy.reviveCharges, 1);
   assert.equal(policy.weaponEvolution, 'settler-rail');
   assert.equal(upgradedClipSize(8, policy), 10);
+});
+
+test('Phase 13 Dash policy defaults to 10 seconds and preserves legacy multiplier saves', () => {
+  assert.equal(buildUpgradeRuntimePolicy().dashCooldownSeconds, 10);
+  assert.equal(buildUpgradeRuntimePolicy({ dashCooldownSeconds: 8 }).dashCooldownSeconds, 8);
+  assert.equal(buildUpgradeRuntimePolicy({ dashCooldownSeconds: 6 }).dashCooldownSeconds, 6);
+  assert.equal(buildUpgradeRuntimePolicy({ dashCooldown: 1.25 }).dashCooldownSeconds, 1.76);
 });
 
 test('revive consumes exactly one charge and restores 35 percent health', () => {

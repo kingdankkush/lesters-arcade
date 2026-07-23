@@ -5,6 +5,15 @@ import { createCombatAudio } from './combat-audio.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import {
+  beginDash,
+  createDashState,
+  filterDashInvulnerableHits,
+  getDashStatus,
+  isDashInvulnerable,
+  resolveDashWorldStep,
+  stepDash,
+} from './dash.mjs';
+import {
   auditCollisionWorld,
   createCollisionBody,
   createStaticBlocker,
@@ -141,6 +150,7 @@ const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
 const sessionElement = document.querySelector('#hmhRebootSession');
 const combatStatusElement = document.querySelector('#hmhRebootCombatStatus');
+const dashStatusElement = document.querySelector('#hmhRebootDashStatus');
 
 function setStatus(status, detail = '') {
   if (statusElement) statusElement.textContent = status;
@@ -217,6 +227,7 @@ async function boot() {
   let lastGround = null;
   let zeroDisplacementFrames = 0;
   let previousGrenade = false;
+  let previousDash = false;
   let previousWeaponNext = false;
   let previousActor = null;
   let renderActor = null;
@@ -229,6 +240,8 @@ async function boot() {
   let weaponLoadout = null;
   let meleeState = null;
   let grenadeSystem = null;
+  let dashState = null;
+  let lastDashReady = true;
   let droppedProjectiles = 0;
   let lastProjectileResolution = null;
   let lastProjectileHit = null;
@@ -385,6 +398,17 @@ async function boot() {
           } else if (event.type === 'impact') {
             combatVisuals.circle(center.x, center.y, 7 + age * 1.4)
               .stroke({ color: event.color, width: event.critical ? 6 : 3, alpha });
+          } else if (event.type === 'dash') {
+            const end = worldToScreen({
+              x: event.point.x - event.direction.x * 78,
+              y: event.point.y - event.direction.y * 78,
+              z: event.point.z,
+            }, camera, view);
+            combatVisuals.moveTo(end.x, end.y).lineTo(center.x, center.y)
+              .stroke({ color: 0x8ff3ff, width: 12 - age * 0.5, alpha: alpha * 0.58, cap: 'round' });
+          } else if (event.type === 'dash-ready') {
+            combatVisuals.circle(center.x, center.y, 34 + age * 2.6)
+              .stroke({ color: 0x8ff3ff, width: 4, alpha: alpha * 0.8 });
           }
         }
       }
@@ -423,8 +447,15 @@ async function boot() {
       const activeWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
       const weaponName = activeWeapon ? HMH_WEAPON_DEFINITIONS[activeWeapon.id].displayName : 'NO WEAPON';
       const heatHud = activeWeapon?.heat > 0 ? ` // HEAT ${Math.round(activeWeapon.heat)}${activeWeapon.overheated ? ' HOT' : ''}` : '';
-      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // K ${runKills}`;
-      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${runKills} defeats`;
+      const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
+      const dashHud = dashStatus?.active ? 'DASHING' : dashStatus?.ready ? 'DASH READY' : `DASH ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
+      const dashAccessible = dashStatus?.active ? 'Dash active' : dashStatus?.ready ? 'Dash ready' : `Dash ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
+      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // K ${runKills}`;
+      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${runKills} defeats`;
+      if (dashStatusElement) {
+        dashStatusElement.textContent = dashAccessible;
+        dashStatusElement.dataset.ready = String(dashStatus?.ready === true);
+      }
       if (combatStatusElement && accessibleCombatStatus !== lastAccessibleCombatStatus) {
         combatStatusElement.value = accessibleCombatStatus;
         lastAccessibleCombatStatus = accessibleCombatStatus;
@@ -457,6 +488,10 @@ async function boot() {
         stageElement.dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
         stageElement.dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
         stageElement.dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
+        stageElement.dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
+        stageElement.dataset.dashActive = String(dashStatus?.active === true);
+        stageElement.dataset.dashInvulnerable = String(dashStatus?.invulnerable === true);
+        stageElement.dataset.dashStopReason = dashStatus?.lastStopReason ?? '';
         stageElement.dataset.playerHealth = String(playerHealth);
         stageElement.dataset.audioVoices = String(combatAudio.status().activeVoices);
         stageElement.dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
@@ -495,6 +530,8 @@ async function boot() {
     weaponLoadout = null;
     meleeState = null;
     grenadeSystem = null;
+    dashState = null;
+    lastDashReady = true;
     droppedProjectiles = 0;
     lastProjectileResolution = null;
     lastProjectileHit = null;
@@ -509,6 +546,7 @@ async function boot() {
     runKills = 0;
     runEventSequence = 0;
     previousGrenade = false;
+    previousDash = false;
     previousWeaponNext = false;
   };
 
@@ -546,10 +584,13 @@ async function boot() {
     }];
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: 24, minZ: 0, maxZ: 56 });
     previousGrenade = false;
+    previousDash = false;
     previousWeaponNext = false;
     weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });
     meleeState = createMeleeState();
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
+    dashState = createDashState({ cooldownTier: 0 });
+    lastDashReady = true;
     playerDefeatController = createPlayerDefeatController({ maxHealth: 100 });
     playerHealth = 100;
     runKills = 0;
@@ -591,60 +632,105 @@ async function boot() {
         device: tickInput.aimAssist ? 'gamepad' : 'pointer',
       });
       const movementStart = { x: motion.x, y: motion.y, z: actor.groundZ };
-      const currentGround = queryGround(motion.x, motion.y);
-      const moveMagnitude = Math.hypot(tickInput.move.x, tickInput.move.y);
-      let terrainSpeedMultiplier = 1;
-      if (moveMagnitude > 0.001) {
-        const probeDistance = Math.max(8, motion.maxSpeed * dtSeconds);
-        const probeGround = queryGround(
-          motion.x + tickInput.move.x / moveMagnitude * probeDistance,
-          motion.y + tickInput.move.y / moveMagnitude * probeDistance,
-        );
-        terrainSpeedMultiplier = movementSpeedMultiplierForTransition(currentGround, probeGround, probeDistance);
-      }
-      stepPlayerMovement(motion, {
-        move: tickInput.move,
-        aim: { ...aimIntent.direction, active: true },
-      }, { dtSeconds, speedMultiplier: terrainSpeedMultiplier });
-      const pressure = resolveEnemyPressure({
-        x: motion.x,
-        y: motion.y,
-        radius: 24,
-        velocity: { x: motion.vx, y: motion.vy },
-      }, grayboxEnemies);
-      motion.x += pressure.playerDelta.x;
-      motion.y += pressure.playerDelta.y;
-      for (const enemy of grayboxEnemies) {
-        const delta = pressure.enemyDeltas.get(enemy.id);
-        if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
-        enemy.groundZ = queryGround(enemy.x, enemy.y).groundZ;
-      }
-      lastCollision = resolveSweptCircleMotion({
-        body: playerBody,
-        start: movementStart,
-        delta: { x: motion.x - movementStart.x, y: motion.y - movementStart.y },
-        blockers: GRAYBOX_BLOCKERS,
-        bounds: WORLD_BOUNDS,
-        priorZeroDisplacementFrames: zeroDisplacementFrames,
-      });
-      motion.x = lastCollision.position.x;
-      motion.y = lastCollision.position.y;
-      lastTraversal = resolveSweptTraversalPath({
-        start: movementStart,
-        end: lastCollision.position,
-        queryGround,
-        maxSampleDistance: Math.max(4, playerBody.radius * 0.5),
-      });
-      motion.x = lastTraversal.position.x;
-      motion.y = lastTraversal.position.y;
-      lastGround = lastTraversal.ground;
-      if (!lastTraversal.allowed) {
+      const dashPressed = tickInput.dash && !previousDash;
+      const dashStart = dashPressed
+        ? beginDash(dashState, { tick, direction: tickInput.move, fallbackDirection: aimIntent.direction })
+        : null;
+      previousDash = tickInput.dash;
+      if (dashStart?.started) {
         motion.vx = 0;
         motion.vy = 0;
         motion.recoilVx = 0;
         motion.recoilVy = 0;
+        lastDashReady = false;
       }
-      zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
+      const dashFrame = stepDash(dashState, { tick });
+      if (dashFrame.active) {
+        const dashWorld = resolveDashWorldStep({
+          state: dashState,
+          start: movementStart,
+          delta: dashFrame.delta,
+          body: playerBody,
+          blockers: GRAYBOX_BLOCKERS,
+          bounds: WORLD_BOUNDS,
+          queryGround,
+          enemies: grayboxEnemies.filter((enemy) => enemy.active),
+        });
+        motion.x = dashWorld.position.x;
+        motion.y = dashWorld.position.y;
+        lastCollision = dashWorld.collision;
+        lastTraversal = dashWorld.traversal;
+        lastGround = dashWorld.ground;
+        zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
+        for (const enemy of grayboxEnemies) {
+          const delta = dashWorld.enemyDeltas.get(enemy.id);
+          if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+        }
+        const dashStopped = dashFrame.completed || dashWorld.stopReason !== null;
+        motion.vx = dashStopped ? 0 : (motion.x - movementStart.x) / dtSeconds;
+        motion.vy = dashStopped ? 0 : (motion.y - movementStart.y) / dtSeconds;
+        pushCombatVisualEvent({
+          type: 'dash',
+          tick,
+          point: { x: motion.x, y: motion.y, z: lastGround.groundZ + 24 },
+          direction: { ...dashState.direction },
+        });
+      } else {
+        const currentGround = queryGround(motion.x, motion.y);
+        const moveMagnitude = Math.hypot(tickInput.move.x, tickInput.move.y);
+        let terrainSpeedMultiplier = 1;
+        if (moveMagnitude > 0.001) {
+          const probeDistance = Math.max(8, motion.maxSpeed * dtSeconds);
+          const probeGround = queryGround(
+            motion.x + tickInput.move.x / moveMagnitude * probeDistance,
+            motion.y + tickInput.move.y / moveMagnitude * probeDistance,
+          );
+          terrainSpeedMultiplier = movementSpeedMultiplierForTransition(currentGround, probeGround, probeDistance);
+        }
+        stepPlayerMovement(motion, {
+          move: tickInput.move,
+          aim: { ...aimIntent.direction, active: true },
+        }, { dtSeconds, speedMultiplier: terrainSpeedMultiplier });
+        const pressure = resolveEnemyPressure({
+          x: motion.x,
+          y: motion.y,
+          radius: 24,
+          velocity: { x: motion.vx, y: motion.vy },
+        }, grayboxEnemies);
+        motion.x += pressure.playerDelta.x;
+        motion.y += pressure.playerDelta.y;
+        for (const enemy of grayboxEnemies) {
+          const delta = pressure.enemyDeltas.get(enemy.id);
+          if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+        }
+        lastCollision = resolveSweptCircleMotion({
+          body: playerBody,
+          start: movementStart,
+          delta: { x: motion.x - movementStart.x, y: motion.y - movementStart.y },
+          blockers: GRAYBOX_BLOCKERS,
+          bounds: WORLD_BOUNDS,
+          priorZeroDisplacementFrames: zeroDisplacementFrames,
+        });
+        motion.x = lastCollision.position.x;
+        motion.y = lastCollision.position.y;
+        lastTraversal = resolveSweptTraversalPath({
+          start: movementStart,
+          end: lastCollision.position,
+          queryGround,
+          maxSampleDistance: Math.max(4, playerBody.radius * 0.5),
+        });
+        motion.x = lastTraversal.position.x;
+        motion.y = lastTraversal.position.y;
+        lastGround = lastTraversal.ground;
+        if (!lastTraversal.allowed) {
+          motion.vx = 0;
+          motion.vy = 0;
+          motion.recoilVx = 0;
+          motion.recoilVy = 0;
+        }
+        zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
+      }
+      for (const enemy of grayboxEnemies) enemy.groundZ = queryGround(enemy.x, enemy.y).groundZ;
       for (const contact of lastCollision.contacts) {
         const inwardVelocity = motion.vx * contact.normal.x + motion.vy * contact.normal.y;
         if (inwardVelocity < 0) {
@@ -664,7 +750,7 @@ async function boot() {
       actor.vx = motion.vx;
       actor.vy = motion.vy;
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
-      actor.locomotion = motion.locomotion;
+      actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
 
       const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createHurtTarget({
@@ -872,7 +958,8 @@ async function boot() {
         }
       }
       previousGrenade = tickInput.grenade;
-      const playerHurtTarget = playerHealth > 0 ? createHurtTarget({
+      const playerInvulnerable = isDashInvulnerable(dashState, tick);
+      const playerHurtTarget = playerHealth > 0 && !playerInvulnerable ? createHurtTarget({
         id: 'player',
         bodyShape: { type: 'circle', radius: playerBody.radius },
         hurtShape: { type: 'circle', radius: Math.max(8, playerBody.radius * 0.72) },
@@ -896,7 +983,8 @@ async function boot() {
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
-      if (combatHitIntents.length > 0) {
+      const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents);
+      if (authoritativeCombatHitIntents.length > 0) {
         const combatTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => ({
           id: enemy.id,
           health: enemy.health,
@@ -915,7 +1003,7 @@ async function boot() {
         });
         lastCombatResolution = resolveCombatHits({
           sessionSeed: payload.session.seed,
-          hits: combatHitIntents,
+          hits: authoritativeCombatHitIntents,
           targets: combatTargets,
         });
         for (const enemy of grayboxEnemies) {
@@ -1005,6 +1093,15 @@ async function boot() {
       actor.combat = weaponFrame.events.some((event) => event.type === 'weapon:fire')
         ? 'firing'
         : meleeFrame.attacked ? 'melee' : 'ready';
+      const dashStatusAfterStep = getDashStatus(dashState, tick);
+      if (dashStatusAfterStep.ready && !lastDashReady && dashState.startedTick >= 0) {
+        pushCombatVisualEvent({
+          type: 'dash-ready',
+          tick,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
+        });
+      }
+      lastDashReady = dashStatusAfterStep.ready;
     });
     simulation.start();
     app.ticker.start();
@@ -1088,11 +1185,15 @@ async function boot() {
       aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });
     renderWorld(renderActor);
-    const locomotionPulse = motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;
+    const locomotionPulse = actor.locomotion === 'dash'
+      ? 0.18
+      : motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;
     const combatStretch = actor.combat === 'melee' ? 0.18 : actor.combat === 'firing' ? 0.1 : 0;
     if (!settings.reduceMotion) marker.scale.set(1 + locomotionPulse + combatStretch, 1 - combatStretch * 0.45);
     else marker.scale.set(1);
-    marker.tint = actor.combat === 'melee' ? 0xd7fbff : actor.combat === 'firing' ? 0xffd166 : 0xffffff;
+    marker.tint = actor.locomotion === 'dash'
+      ? 0x8ff3ff
+      : actor.combat === 'melee' ? 0xd7fbff : actor.combat === 'firing' ? 0xffd166 : 0xffffff;
   });
 
   const handleExitKey = (event) => {

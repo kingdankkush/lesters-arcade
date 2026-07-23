@@ -9,6 +9,7 @@ test('standalone child HTML exposes only the reboot shell and bundled module', a
   assert.match(html, /id="hmhRebootStage"/);
   assert.match(html, /id="hmhRebootStatus"/);
   assert.match(html, /id="hmhRebootCombatStatus"[^>]+role="status"[^>]+aria-live="polite"/);
+  assert.match(html, /id="hmhRebootDashStatus"[^>]+role="status"[^>]+aria-live="polite"/);
   assert.match(html, /src="\.\.\/dist\/hmh-reboot\/game\.js"/);
   assert.match(html, /href="\.\/styles\.css"/);
   assert.doesNotMatch(html, /wallet|ethereum|contract/i);
@@ -49,6 +50,12 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /stepGrenadeSystem\(/);
   assert.match(source, /resolveCombatHits\(/);
   assert.match(source, /createCombatAudio\(/);
+  assert.match(source, /createDashState\(/);
+  assert.match(source, /beginDash\(/);
+  assert.match(source, /resolveDashWorldStep\(/);
+  assert.match(source, /isDashInvulnerable\(/);
+  assert.match(source, /previousDash/);
+  assert.match(source, /actor\.locomotion = dashFrame\.active \? 'dash'/);
   assert.match(source, /MAX_ACTIVE_PROJECTILES\s*=\s*128/);
   assert.match(source, /MAX_ACTIVE_GRENADES\s*=\s*16/);
   assert.match(source, /MAX_COMBAT_VISUAL_EVENTS\s*=\s*64/);
@@ -73,6 +80,7 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /bridge\.send\('game:game-over', defeatTransition\.gameOverPayload\)/);
   assert.match(source, /simulation\?\.state === 'game-over' \? 'game-over'/);
   assert.match(source, /stageElement\.dataset\.grenadeCount/);
+  assert.match(source, /stageElement\.dataset\.dashReadyTick/);
   assert.doesNotMatch(source, /SETTLER_CALIBRATION/);
   assert.match(source, /if \(debugGridEnabled\) \{[\s\S]*stageElement\.dataset\.collisionBlocker/);
   assert.match(source, /label\.style\.fontSize/);
@@ -127,6 +135,8 @@ test('portal frame fills the active gameplay viewport without a fixed 72vh dead 
   assert.match(childStyles, /touch-action:\s*none/);
   assert.match(childStyles, /user-select:\s*none/);
   assert.match(childStyles, /\.hmh-touch-button--weaponNext/);
+  assert.match(childStyles, /\.hmh-reboot-dash-status/);
+  assert.match(childStyles, /\.hmh-reboot-dash-status\[data-ready="true"\]/);
 });
 
 test('built child bundle exists after the project build', async () => {
@@ -137,7 +147,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions only the minimal reboot shell for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-08'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-09'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));
