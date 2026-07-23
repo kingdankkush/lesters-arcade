@@ -1,6 +1,9 @@
 import { Application, Container, Graphics, Text } from 'pixi.js';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
+import { createCombatAudio } from './combat-audio.mjs';
+import { createPlayerDefeatController } from './combat-lifecycle.mjs';
+import { resolveCombatHits } from './combat-events.mjs';
 import {
   auditCollisionWorld,
   createCollisionBody,
@@ -14,6 +17,8 @@ import {
   resolveSweptTraversalPath,
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
+import { createGrenadeSystem, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
+import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
 import {
   applyRecoilImpulse,
   createPlayerMotionState,
@@ -30,6 +35,13 @@ import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
 import {
+  HMH_WEAPON_DEFINITIONS,
+  createWeaponLoadout,
+  getActiveWeaponState,
+  selectWeapon,
+  stepWeaponLoadout,
+} from './weapon-system.mjs';
+import {
   buildDebugGridOverlay,
   createActorSpatialState,
   createCameraState,
@@ -39,17 +51,24 @@ import {
   worldToScreen,
 } from './world-space.mjs';
 
-const RUNTIME_VERSION = '0.4.0';
+const RUNTIME_VERSION = '0.5.0';
 const MAX_ACTIVE_PROJECTILES = 128;
+const MAX_ACTIVE_GRENADES = 16;
+const MAX_COMBAT_VISUAL_EVENTS = 64;
 const PROJECTILE_GRID_THRESHOLD = 64;
 const HIT_FEEDBACK_TICKS = 12;
-const SETTLER_CALIBRATION = Object.freeze({
-  id: 'coin-blaster',
-  damage: 3,
-  cadenceTicks: Math.ceil(60 / 2.6),
-  speed: 1200,
-  range: 720,
-  radius: 2,
+const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']);
+const WEAPON_KNOCKBACK = Object.freeze({
+  'coin-blaster': 8,
+  'scatter-shotgun': 18,
+  'auto-miner': 5,
+  'launcher-rig': 24,
+});
+const WEAPON_COLORS = Object.freeze({
+  'coin-blaster': 0xffd166,
+  'scatter-shotgun': 0xff8c5a,
+  'auto-miner': 0x83f28f,
+  'launcher-rig': 0xc497ff,
 });
 const WORLD_BOUNDS = Object.freeze({ minX: 0, minY: 0, maxX: 2048, maxY: 2048, visibleBoundaryId: 'graybox-cliff-ring' });
 const BASE_SURFACE = createElevationSurface({
@@ -121,6 +140,7 @@ if (!COLLISION_AUDIT.ok) throw new Error(`Invalid authored collision world: ${CO
 const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
 const sessionElement = document.querySelector('#hmhRebootSession');
+const combatStatusElement = document.querySelector('#hmhRebootCombatStatus');
 
 function setStatus(status, detail = '') {
   if (statusElement) statusElement.textContent = status;
@@ -155,11 +175,13 @@ async function boot() {
   const aimLine = new Graphics();
   const projectileTrails = new Graphics();
   const projectileImpacts = new Graphics();
+  const grenadeVisuals = new Graphics();
+  const combatVisuals = new Graphics();
   const targetMarker = new Graphics().circle(0, 0, 30).fill({ color: 0xff5c7a, alpha: 0.28 }).stroke({ color: 0xff8ca1, width: 3 });
   const marker = new Graphics().circle(0, 0, 24).fill({ color: 0x49ddff }).stroke({ color: 0xffffff, width: 3 });
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, targetMarker, aimLine, projectileTrails, projectileImpacts, marker, collisionDebug, label);
+  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, targetMarker, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
   app.stage.addChild(world);
 
   const debugGridEnabled = new URLSearchParams(window.location.search).get('debugGrid') === '1';
@@ -168,6 +190,18 @@ async function boot() {
     : null;
 
   let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false };
+  const combatAudio = createCombatAudio({
+    standalone: window.parent === window,
+    musicEnabled: settings.musicEnabled,
+    maxVoices: 16,
+  });
+  const unlockCombatAudio = () => {
+    window.removeEventListener('pointerdown', unlockCombatAudio, true);
+    window.removeEventListener('keydown', unlockCombatAudio, true);
+    void combatAudio.unlock();
+  };
+  window.addEventListener('pointerdown', unlockCombatAudio, { once: true, capture: true });
+  window.addEventListener('keydown', unlockCombatAudio, { once: true, capture: true });
   let elapsedMs = 0;
   let bridge = null;
   let sessionPayload = null;
@@ -183,6 +217,7 @@ async function boot() {
   let lastGround = null;
   let zeroDisplacementFrames = 0;
   let previousGrenade = false;
+  let previousWeaponNext = false;
   let previousActor = null;
   let renderActor = null;
   let camera = null;
@@ -191,11 +226,26 @@ async function boot() {
   let touchController = null;
   let gamepadWasActive = false;
   let activeProjectiles = [];
-  let projectileSequence = 0;
-  let nextProjectileTick = 0;
+  let weaponLoadout = null;
+  let meleeState = null;
+  let grenadeSystem = null;
   let droppedProjectiles = 0;
   let lastProjectileResolution = null;
   let lastProjectileHit = null;
+  let lastCombatResolution = null;
+  let lastWeaponFire = null;
+  let lastMeleeAttack = null;
+  let lastGrenadeDetonation = null;
+  let playerDefeatController = null;
+  let playerHealth = 100;
+  let runKills = 0;
+  let runEventSequence = 0;
+  let lastAccessibleCombatStatus = '';
+  let combatVisualEvents = [];
+  const pushCombatVisualEvent = (event) => {
+    if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
+    combatVisualEvents.push(Object.freeze({ ...event }));
+  };
 
   if (debugOverlay) {
     for (const descriptor of debugOverlay.labels) {
@@ -262,6 +312,8 @@ async function boot() {
     collisionDebug.clear();
     projectileTrails.clear();
     projectileImpacts.clear();
+    grenadeVisuals.clear();
+    combatVisuals.clear();
     if (debugOverlay && camera) {
       for (const line of debugOverlay.lines) {
         const from = worldToScreen({ ...line.from, z: 0 }, camera, view);
@@ -294,10 +346,47 @@ async function boot() {
         if (!shot.state) continue;
         const from = worldToScreen(shot.state.previous, camera, view);
         const to = worldToScreen(shot.state.current, camera, view);
+        const shotColor = WEAPON_COLORS[shot.weaponId] ?? 0x49ddff;
         projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-          .stroke({ color: 0x49ddff, width: 7, alpha: 0.24 });
+          .stroke({ color: shotColor, width: 7, alpha: 0.24 });
         projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
           .stroke({ color: 0xf4fdff, width: 3, alpha: 0.98 });
+      }
+      for (const grenade of grenadeSystem?.active ?? []) {
+        const ground = queryGround(grenade.position.x, grenade.position.y);
+        const grenadeGround = worldToScreen({ x: grenade.position.x, y: grenade.position.y, z: ground.groundZ }, camera, view);
+        const grenadeScreen = worldToScreen(grenade.position, camera, view);
+        const fuseRatio = Math.max(0, Math.min(1, (grenade.detonateTick - (simulation?.tick ?? 0)) / 39));
+        grenadeVisuals.ellipse(grenadeGround.x, grenadeGround.y, 9, 4).fill({ color: 0x000000, alpha: 0.35 });
+        grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, grenade.mode === 'launcher' ? 7 : 6)
+          .fill({ color: grenade.mode === 'launcher' ? WEAPON_COLORS['launcher-rig'] : 0xffd166, alpha: 0.98 })
+          .stroke({ color: 0xffffff, width: 2, alpha: 0.9 });
+        grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, 10 + (1 - fuseRatio) * 5)
+          .stroke({ color: 0xff5c7a, width: 2, alpha: 0.35 + (1 - fuseRatio) * 0.55 });
+      }
+      if (simulation) {
+        combatVisualEvents = combatVisualEvents.filter((event) => simulation.tick - event.tick <= HIT_FEEDBACK_TICKS);
+        for (const event of combatVisualEvents) {
+          const age = simulation.tick - event.tick;
+          const alpha = Math.max(0.08, 1 - age / HIT_FEEDBACK_TICKS);
+          const center = worldToScreen(event.point, camera, view);
+          if (event.type === 'muzzle') {
+            combatVisuals.circle(center.x, center.y, 8 + age * 1.2).fill({ color: event.color, alpha: alpha * 0.72 });
+          } else if (event.type === 'melee') {
+            const facing = worldToScreen({ x: event.point.x + event.direction.x, y: event.point.y + event.direction.y, z: event.point.z }, camera, view);
+            const angle = Math.atan2(facing.y - center.y, facing.x - center.x);
+            combatVisuals.arc(center.x, center.y, 58 * camera.zoom, angle - 0.72, angle + 0.72)
+              .stroke({ color: 0xd7fbff, width: 10, alpha: alpha * 0.68 });
+          } else if (event.type === 'blast') {
+            const radius = event.radius * camera.zoom * (0.38 + age / HIT_FEEDBACK_TICKS * 0.62);
+            combatVisuals.circle(center.x, center.y, radius)
+              .fill({ color: 0xff8c5a, alpha: alpha * 0.18 })
+              .stroke({ color: 0xffd166, width: 6, alpha: alpha * 0.85 });
+          } else if (event.type === 'impact') {
+            combatVisuals.circle(center.x, center.y, 7 + age * 1.4)
+              .stroke({ color: event.color, width: event.critical ? 6 : 3, alpha });
+          }
+        }
       }
       if (lastProjectileHit && simulation && simulation.tick - lastProjectileHit.tick <= HIT_FEEDBACK_TICKS) {
         const impact = worldToScreen(lastProjectileHit.point, camera, view);
@@ -331,11 +420,20 @@ async function boot() {
       const narrowDebug = debugGridEnabled && view.width < 600;
       label.style.fontSize = narrowDebug ? 12 : 18;
       label.style.align = 'center';
-      label.text = aimIntent
+      const activeWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
+      const weaponName = activeWeapon ? HMH_WEAPON_DEFINITIONS[activeWeapon.id].displayName : 'NO WEAPON';
+      const heatHud = activeWeapon?.heat > 0 ? ` // HEAT ${Math.round(activeWeapon.heat)}${activeWeapon.overheated ? ' HOT' : ''}` : '';
+      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // K ${runKills}`;
+      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${runKills} defeats`;
+      if (combatStatusElement && accessibleCombatStatus !== lastAccessibleCombatStatus) {
+        combatStatusElement.value = accessibleCombatStatus;
+        lastAccessibleCombatStatus = accessibleCombatStatus;
+      }
+      label.text = debugGridEnabled
         ? narrowDebug
-          ? `${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
-          : `${runtimeMode}${debugGridEnabled ? ` // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}` : ''}`
-        : 'DETERMINISTIC RUNTIME';
+          ? `${combatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
+          : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
+        : combatHud;
       const halfLabelWidth = label.width * 0.5;
       const clampedLabelX = Math.min(view.width - halfLabelWidth - 8, Math.max(halfLabelWidth + 8, screen.x));
       label.position.set(clampedLabelX, screen.y + (narrowDebug ? 54 : 58));
@@ -353,6 +451,19 @@ async function boot() {
         stageElement.dataset.projectileCount = String(activeProjectiles.length);
         stageElement.dataset.projectileDrops = String(droppedProjectiles);
         stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
+        stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
+        stageElement.dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
+        stageElement.dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
+        stageElement.dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
+        stageElement.dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
+        stageElement.dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
+        stageElement.dataset.playerHealth = String(playerHealth);
+        stageElement.dataset.audioVoices = String(combatAudio.status().activeVoices);
+        stageElement.dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
+        stageElement.dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
+        stageElement.dataset.lastMeleeHits = String(lastMeleeAttack?.hits ?? 0);
+        stageElement.dataset.lastGrenadeReason = lastGrenadeDetonation?.reason ?? '';
+        stageElement.dataset.lastGrenadeTick = lastGrenadeDetonation ? String(lastGrenadeDetonation.tick) : '';
         stageElement.dataset.projectileCover = lastProjectileResolution?.resolutions
           ?.find((resolution) => resolution.coverHit)?.coverHit?.blockerId ?? '';
         stageElement.dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
@@ -381,11 +492,24 @@ async function boot() {
     lastGround = null;
     zeroDisplacementFrames = 0;
     activeProjectiles = [];
-    projectileSequence = 0;
-    nextProjectileTick = 0;
+    weaponLoadout = null;
+    meleeState = null;
+    grenadeSystem = null;
     droppedProjectiles = 0;
     lastProjectileResolution = null;
     lastProjectileHit = null;
+    lastCombatResolution = null;
+    lastWeaponFire = null;
+    lastMeleeAttack = null;
+    lastGrenadeDetonation = null;
+    combatVisualEvents = [];
+    lastAccessibleCombatStatus = '';
+    playerDefeatController = null;
+    playerHealth = 100;
+    runKills = 0;
+    runEventSequence = 0;
+    previousGrenade = false;
+    previousWeaponNext = false;
   };
 
   const initializeSession = (payload) => {
@@ -415,9 +539,21 @@ async function boot() {
       targetable: true,
       health: 120,
       maxHealth: 120,
+      armor: 1,
+      shieldCharges: 0,
+      knockbackResistance: 1,
+      collisionBody: createCollisionBody({ id: 'graybox-target', kind: 'regular', radius: 30, minZ: 4, maxZ: 60 }),
     }];
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: 24, minZ: 0, maxZ: 56 });
     previousGrenade = false;
+    previousWeaponNext = false;
+    weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });
+    meleeState = createMeleeState();
+    grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
+    playerDefeatController = createPlayerDefeatController({ maxHealth: 100 });
+    playerHealth = 100;
+    runKills = 0;
+    runEventSequence = 0;
     previousActor = createActorSpatialState({ ...actor });
     renderActor = actor;
     camera = createCameraState({
@@ -454,13 +590,6 @@ async function boot() {
         targets: grayboxEnemies,
         device: tickInput.aimAssist ? 'gamepad' : 'pointer',
       });
-      if (tickInput.grenade && !previousGrenade) {
-        applyRecoilImpulse(motion, {
-          direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },
-          magnitude: 70,
-        });
-      }
-      previousGrenade = tickInput.grenade;
       const movementStart = { x: motion.x, y: motion.y, z: actor.groundZ };
       const currentGround = queryGround(motion.x, motion.y);
       const moveMagnitude = Math.hypot(tickInput.move.x, tickInput.move.y);
@@ -538,7 +667,7 @@ async function boot() {
       actor.locomotion = motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
 
-      const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active).map((enemy) => createHurtTarget({
+      const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createHurtTarget({
         id: enemy.id,
         bodyShape: { type: 'circle', radius: enemy.radius },
         hurtShape: { type: 'capsule', a: { x: 0, y: -8 }, b: { x: 0, y: 8 }, radius: Math.max(8, enemy.radius * 0.72) },
@@ -548,6 +677,16 @@ async function boot() {
         maxZ: 60,
         health: enemy.health,
       }));
+      const meleeTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createMeleeTarget({
+        id: enemy.id,
+        previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
+        currentGround: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
+        radius: Math.max(8, enemy.radius * 0.72),
+        minZ: 4,
+        maxZ: 60,
+      }));
+      const combatHitIntents = [];
+
       const steppedProjectiles = activeProjectiles.map((shot) => {
         const previous = Object.freeze({ x: shot.x, y: shot.y, z: shot.z });
         const current = Object.freeze({
@@ -558,11 +697,11 @@ async function boot() {
         const state = createProjectileState({
           id: shot.id,
           ownerId: 'player',
-          previous,
-          current,
-          radius: SETTLER_CALIBRATION.radius,
-          damage: SETTLER_CALIBRATION.damage,
-          policy: { type: 'stop' },
+          previous: previous,
+          current: current,
+          radius: shot.radius,
+          damage: shot.damage,
+          policy: shot.policy,
         });
         return {
           ...shot,
@@ -584,15 +723,26 @@ async function boot() {
           broadphase,
         });
         lastProjectileResolution = batch;
-        for (const damageEvent of batch.damageEvents) {
-          const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
-          if (!enemy) continue;
-          enemy.health = damageEvent.healthAfter;
-          if (damageEvent.killed) {
-            enemy.active = false;
-            enemy.targetable = false;
+        const shotById = new Map(steppedProjectiles.map((shot) => [shot.id, shot]));
+        for (const resolution of batch.resolutions) {
+          const shot = shotById.get(resolution.projectileId);
+          for (const hit of resolution.hits) {
+            combatHitIntents.push({
+              id: `${shot.attackId}:${hit.targetId}:${hit.kind}`,
+              tick,
+              time: hit.time,
+              targetId: hit.targetId,
+              sourceId: 'player',
+              weaponId: shot.weaponId,
+              damage: hit.damage,
+              criticalChance: 0.08,
+              criticalMultiplier: 1.75,
+              armorPiercing: false,
+              direction: { x: shot.vx, y: shot.vy },
+              knockback: WEAPON_KNOCKBACK[shot.weaponId] ?? 6,
+              point: hit.point,
+            });
           }
-          lastProjectileHit = { tick, targetId: damageEvent.targetId, point: damageEvent.point };
         }
         const terminalIds = new Set(batch.resolutions
           .filter((resolution) => resolution.hits.length > 0 || resolution.coverHit)
@@ -604,49 +754,272 @@ async function boot() {
       } else {
         activeProjectiles = [];
       }
-      if (aimIntent.fire && tick >= nextProjectileTick) {
-        nextProjectileTick = tick + SETTLER_CALIBRATION.cadenceTicks;
-        if (activeProjectiles.length < MAX_ACTIVE_PROJECTILES) {
-          const muzzle = {
+
+      const directWeaponId = tickInput.weaponSlot > 0 ? WEAPON_ORDER[tickInput.weaponSlot - 1] : null;
+      const nextWeaponPressed = tickInput.weaponNext && !previousWeaponNext;
+      const nextWeaponId = nextWeaponPressed
+        ? WEAPON_ORDER[(WEAPON_ORDER.indexOf(weaponLoadout.activeWeaponId) + 1) % WEAPON_ORDER.length]
+        : null;
+      const requestedWeaponId = directWeaponId ?? nextWeaponId;
+      let switchedWeapon = false;
+      if (requestedWeaponId && requestedWeaponId !== weaponLoadout.activeWeaponId) {
+        selectWeapon(weaponLoadout, requestedWeaponId, { tick });
+        switchedWeapon = true;
+      }
+      previousWeaponNext = tickInput.weaponNext;
+      const weaponFrame = switchedWeapon
+        ? { events: [], activeWeaponId: weaponLoadout.activeWeaponId }
+        : stepWeaponLoadout(weaponLoadout, {
+          tick,
+          fire: aimIntent.fire,
+          direction: aimIntent.direction,
+        });
+      for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:fire')) {
+        lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
+        applyRecoilImpulse(motion, {
+          direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },
+          magnitude: event.recoil,
+        });
+        combatAudio.play(event.weaponId === 'launcher-rig' ? 'grenade' : 'weapon-fire', { volume: event.weaponId === 'scatter-shotgun' ? 0.14 : 0.1 });
+        pushCombatVisualEvent({
+          type: 'muzzle',
+          tick,
+          point: {
             x: actor.x + aimIntent.direction.x * 28,
             y: actor.y + aimIntent.direction.y * 28,
             z: actor.groundZ + 34,
+          },
+          color: WEAPON_COLORS[event.weaponId] ?? 0x49ddff,
+        });
+        if (event.weaponId === 'launcher-rig') {
+          throwGrenade(grenadeSystem, {
+            tick,
+            mode: 'launcher',
+            origin: {
+              x: actor.x + aimIntent.direction.x * 28,
+              y: actor.y + aimIntent.direction.y * 28,
+              z: actor.groundZ + 32,
+            },
+            direction: aimIntent.direction,
+          });
+          continue;
+        }
+        for (const shot of event.shots) {
+          if (activeProjectiles.length >= MAX_ACTIVE_PROJECTILES) {
+            droppedProjectiles += 1;
+            continue;
+          }
+          const muzzle = {
+            x: actor.x + shot.direction.x * 28,
+            y: actor.y + shot.direction.y * 28,
+            z: actor.groundZ + 34,
           };
           activeProjectiles.push({
-            id: `${SETTLER_CALIBRATION.id}-${String(projectileSequence).padStart(6, '0')}`,
+            id: shot.id,
+            attackId: event.attackId,
+            weaponId: event.weaponId,
             x: muzzle.x,
             y: muzzle.y,
             z: muzzle.z,
-            vx: aimIntent.direction.x * SETTLER_CALIBRATION.speed,
-            vy: aimIntent.direction.y * SETTLER_CALIBRATION.speed,
-            remainingRange: SETTLER_CALIBRATION.range,
-            state: createProjectileState({
-              id: `${SETTLER_CALIBRATION.id}-${String(projectileSequence).padStart(6, '0')}`,
-              ownerId: 'player',
-              previous: muzzle,
-              current: muzzle,
-              radius: SETTLER_CALIBRATION.radius,
-              damage: SETTLER_CALIBRATION.damage,
-              policy: { type: 'stop' },
-            }),
+            vx: shot.direction.x * shot.speed,
+            vy: shot.direction.y * shot.speed,
+            radius: shot.radius,
+            damage: shot.damage,
+            policy: shot.policy,
+            remainingRange: shot.range,
           });
-          projectileSequence += 1;
-        } else {
-          droppedProjectiles += 1;
         }
       }
+
+      const meleeFrame = stepMeleeState(meleeState, {
+        tick,
+        trigger: tickInput.melee,
+        origin: { x: actor.x, y: actor.y },
+        direction: aimIntent.direction,
+        sourceGroundZ: actor.groundZ,
+        targets: meleeTargets,
+        blockers: GRAYBOX_BLOCKERS,
+      });
+      combatHitIntents.push(...meleeFrame.hits);
+      if (meleeFrame.attacked) {
+        lastMeleeAttack = { tick, hits: meleeFrame.hits.length };
+        combatAudio.play('melee', { volume: 0.12 });
+        pushCombatVisualEvent({
+          type: 'melee',
+          tick,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
+          direction: { ...aimIntent.direction },
+        });
+      }
+
+      if (tickInput.grenade && !previousGrenade) {
+        const grenadeSpawn = throwGrenade(grenadeSystem, {
+          tick,
+          mode: 'hand',
+          origin: {
+            x: actor.x + aimIntent.direction.x * 20,
+            y: actor.y + aimIntent.direction.y * 20,
+            z: actor.groundZ + 24,
+          },
+          direction: aimIntent.direction,
+        });
+        if (grenadeSpawn.spawned) {
+          combatAudio.play('grenade', { volume: 0.12 });
+          applyRecoilImpulse(motion, {
+            direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },
+            magnitude: 70,
+          });
+        }
+      }
+      previousGrenade = tickInput.grenade;
+      const playerHurtTarget = playerHealth > 0 ? createHurtTarget({
+        id: 'player',
+        bodyShape: { type: 'circle', radius: playerBody.radius },
+        hurtShape: { type: 'circle', radius: Math.max(8, playerBody.radius * 0.72) },
+        previousGround: { x: previousActor.x, y: previousActor.y, z: previousActor.groundZ },
+        currentGround: { x: actor.x, y: actor.y, z: actor.groundZ },
+        minZ: playerBody.minZ,
+        maxZ: playerBody.maxZ,
+        health: playerHealth,
+      }) : null;
+      const grenadeFrame = stepGrenadeSystem(grenadeSystem, {
+        tick,
+        dtSeconds,
+        queryGround,
+        blockers: GRAYBOX_BLOCKERS,
+        targets: playerHurtTarget ? [...hurtTargets, playerHurtTarget] : hurtTargets,
+      });
+      for (const detonation of grenadeFrame.detonations) {
+        lastGrenadeDetonation = { tick, reason: detonation.reason, grenadeId: detonation.grenadeId };
+        combatAudio.play('grenade-boom', { volume: 0.16 });
+        pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius });
+        for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
+      }
+
+      if (combatHitIntents.length > 0) {
+        const combatTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => ({
+          id: enemy.id,
+          health: enemy.health,
+          maxHealth: enemy.maxHealth,
+          armor: enemy.armor,
+          shieldCharges: enemy.shieldCharges,
+          knockbackResistance: enemy.knockbackResistance,
+        }));
+        if (playerHealth > 0) combatTargets.push({
+          id: 'player',
+          health: playerHealth,
+          maxHealth: 100,
+          armor: 1,
+          shieldCharges: 0,
+          knockbackResistance: 1,
+        });
+        lastCombatResolution = resolveCombatHits({
+          sessionSeed: payload.session.seed,
+          hits: combatHitIntents,
+          targets: combatTargets,
+        });
+        for (const enemy of grayboxEnemies) {
+          const state = lastCombatResolution.targets[enemy.id];
+          if (!state) continue;
+          enemy.health = state.health;
+          enemy.shieldCharges = state.shieldCharges;
+          if (state.dead) {
+            enemy.active = false;
+            enemy.targetable = false;
+          }
+        }
+        if (lastCombatResolution.targets.player) playerHealth = lastCombatResolution.targets.player.health;
+        for (const damageEvent of lastCombatResolution.damageEvents) {
+          if (damageEvent.amount <= 0) continue;
+          combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : 'enemy-hit', {
+            volume: damageEvent.critical ? 0.14 : 0.09,
+          });
+          pushCombatVisualEvent({
+            type: 'impact',
+            tick,
+            point: damageEvent.point,
+            critical: damageEvent.critical,
+            color: damageEvent.shielded ? 0x8bb8ff : damageEvent.critical ? 0xfff06a : 0xff8c5a,
+          });
+          if (damageEvent.targetId === 'player') {
+            const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
+            if (magnitude > 0) applyRecoilImpulse(motion, {
+              direction: { x: damageEvent.knockback.x / magnitude, y: damageEvent.knockback.y / magnitude },
+              magnitude,
+            });
+            continue;
+          }
+          const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
+          if (!enemy) continue;
+          const knockbackCollision = resolveSweptCircleMotion({
+            body: enemy.collisionBody,
+            start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
+            delta: damageEvent.knockback,
+            blockers: GRAYBOX_BLOCKERS,
+            bounds: WORLD_BOUNDS,
+          });
+          const knockbackTraversal = resolveSweptTraversalPath({
+            start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
+            end: knockbackCollision.position,
+            queryGround,
+            maxSampleDistance: Math.max(4, enemy.radius * 0.5),
+          });
+          enemy.x = knockbackTraversal.position.x;
+          enemy.y = knockbackTraversal.position.y;
+          enemy.groundZ = knockbackTraversal.ground.groundZ;
+          if (damageEvent.weaponId !== 'litecoin-knife' && damageEvent.weaponId !== 'satoshi-frag') {
+            lastProjectileHit = { tick, targetId: damageEvent.targetId, point: damageEvent.point };
+          }
+        }
+        for (const scoreEvent of lastCombatResolution.scoreEvents) {
+          if (!grayboxEnemies.some((enemy) => enemy.id === scoreEvent.enemyId)) continue;
+          runKills += 1;
+          if (bridge?.initialized) {
+            bridge.send('game:run-event', {
+              tick,
+              sequence: runEventSequence,
+              eventType: 'enemy-defeated',
+              value: 1,
+            });
+            runEventSequence += 1;
+          }
+        }
+        const defeatTransition = playerDefeatController.resolve({
+          health: playerHealth,
+          kills: runKills,
+          elapsedMs: simulation.timeMs,
+        });
+        if (defeatTransition) {
+          simulation.gameOver();
+          app.ticker.stop();
+          combatAudio.pause();
+          setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
+          if (bridge?.initialized) {
+            bridge.send('game:state', defeatTransition.statePayload);
+            bridge.send('game:game-over', defeatTransition.gameOverPayload);
+          }
+        }
+      } else {
+        lastCombatResolution = null;
+      }
+      actor.combat = weaponFrame.events.some((event) => event.type === 'weapon:fire')
+        ? 'firing'
+        : meleeFrame.attacked ? 'melee' : 'ready';
     });
     simulation.start();
     app.ticker.start();
     renderWorld();
   };
 
-  const statePayload = (status = simulation?.state === 'active' ? 'running' : 'paused') => ({
+  const runtimeStatus = () => simulation?.state === 'active'
+    ? 'running'
+    : simulation?.state === 'game-over' ? 'game-over' : 'paused';
+  const statePayload = (status = runtimeStatus()) => ({
     status,
     score: 0,
-    kills: 0,
+    kills: runKills,
     elapsedMs,
-    health: 100,
+    health: playerHealth,
     maxHealth: 100,
     xp: 0,
     level: 1,
@@ -654,8 +1027,10 @@ async function boot() {
   });
 
   const pauseRuntime = (source) => {
+    if (!simulation || (simulation.state !== 'active' && simulation.state !== 'upgrade')) return;
     if (simulation?.state === 'active' || simulation?.state === 'upgrade') simulation.pause();
     app.ticker.stop();
+    combatAudio.pause();
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: true, source });
       bridge.send('game:state', statePayload('paused'));
@@ -663,8 +1038,10 @@ async function boot() {
   };
 
   const resumeRuntime = (source = 'portal') => {
-    if (simulation?.state === 'paused') simulation.resume();
+    if (simulation?.state !== 'paused') return;
+    simulation.resume();
     app.ticker.start();
+    combatAudio.resume();
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: false, source });
       bridge.send('game:state', statePayload('running'));
@@ -711,8 +1088,11 @@ async function boot() {
       aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });
     renderWorld(renderActor);
-    if (!settings.reduceMotion) marker.scale.set(1 + Math.sin(elapsedMs * 0.004) * 0.08);
+    const locomotionPulse = motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;
+    const combatStretch = actor.combat === 'melee' ? 0.18 : actor.combat === 'firing' ? 0.1 : 0;
+    if (!settings.reduceMotion) marker.scale.set(1 + locomotionPulse + combatStretch, 1 - combatStretch * 0.45);
     else marker.scale.set(1);
+    marker.tint = actor.combat === 'melee' ? 0xd7fbff : actor.combat === 'firing' ? 0xffd166 : 0xffffff;
   });
 
   const handleExitKey = (event) => {
@@ -741,8 +1121,9 @@ async function boot() {
           resumeRuntime('portal');
         } else if (message.type === 'portal:settings') {
           settings = { ...message.payload.settings };
+          combatAudio.setMusicEnabled(settings.musicEnabled);
           bridge.send('game:settings', { settings: { ...settings } });
-          bridge.send('game:state', statePayload(simulation?.state === 'active' ? 'running' : 'paused'));
+          bridge.send('game:state', statePayload());
         } else if (message.type === 'portal:restart') {
           initializeSession(sessionPayload);
           marker.scale.set(1);
@@ -750,14 +1131,18 @@ async function boot() {
         } else if (message.type === 'portal:dispose') {
           document.removeEventListener('visibilitychange', handleVisibilityChange);
           window.removeEventListener('keydown', handleExitKey);
+          window.removeEventListener('pointerdown', unlockCombatAudio, true);
+          window.removeEventListener('keydown', unlockCombatAudio, true);
           app.renderer.off('resize', handleResize);
           app.ticker.stop();
+          combatAudio.destroy();
           stopCurrentSession();
           app.destroy(true);
         }
       },
       onProtocolError: (error) => {
         app.ticker.stop();
+        combatAudio.pause();
         setStatus('Bridge protocol error', error.message);
       },
     });

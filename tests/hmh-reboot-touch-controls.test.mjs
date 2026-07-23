@@ -24,11 +24,13 @@ test('independent pointer ids preserve simultaneous movement aim and actions', (
   touch.movePointer(22, { x: 500, y: 240 });
   touch.beginAction(33, 'grenade');
   touch.beginAction(44, 'dash');
+  touch.beginAction(55, 'weaponNext');
   const snapshot = touch.snapshot();
   assert.ok(snapshot.moveX > 0);
   assert.ok(snapshot.aimY < 0);
   assert.equal(snapshot.grenade, true);
   assert.equal(snapshot.dash, true);
+  assert.equal(snapshot.weaponNext, true);
   touch.endPointer(33);
   assert.equal(touch.snapshot().grenade, false);
   assert.ok(touch.snapshot().moveX > 0, 'ending an action pointer must not cancel movement');
@@ -44,7 +46,7 @@ test('lost pointers and cancel-all clear only owned controls without sticky stat
   touch.cancelAll();
   assert.deepEqual(touch.snapshot(), {
     moveX: 0, moveY: 0, aimX: 0, aimY: 0,
-    fire: false, melee: false, grenade: false, dash: false, pause: false,
+    fire: false, melee: false, grenade: false, dash: false, pause: false, weaponNext: false,
   });
 });
 
@@ -113,12 +115,14 @@ test('browser touch adapter owns UI pointers relayouts and clears state on teard
   adapter.elements.aim.emit('pointerdown', event(2, 600, 300));
   adapter.elements.aim.emit('pointermove', event(2, 600, 240));
   adapter.elements.grenade.emit('pointerdown', event(3, 0, 0));
+  adapter.elements.weaponNext.emit('pointerdown', event(5, 0, 0));
   adapter.elements.pause.emit('pointerdown', event(4, 0, 0));
   assert.equal(pauseToggles, 1);
   adapter.elements.pause.emit('pointerup', event(4, 0, 0));
   assert.ok(snapshots.at(-1).moveX > 0);
   assert.ok(snapshots.at(-1).aimY < 0);
   assert.equal(snapshots.at(-1).grenade, true);
+  assert.equal(snapshots.at(-1).weaponNext, true);
   windowRef.emit('pointerup', event(3, 0, 0));
   assert.equal(snapshots.at(-1).grenade, false, 'window release must clear an owned pointer when capture is unavailable');
   assert.ok(prevented >= 5 && stopped >= 5);

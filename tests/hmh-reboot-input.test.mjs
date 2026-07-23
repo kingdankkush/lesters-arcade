@@ -28,6 +28,14 @@ test('keyboard WASD and arrow bindings normalize diagonals into canonical moveme
   assert.deepEqual(input.snapshot({ ...context, nowMs: 23 }).actions.move, { x: -1, y: 0 });
 });
 
+test('keyboard number keys select retained weapon slots deterministically', () => {
+  const input = new InputState();
+  input.setKey('Digit3', true, 10);
+  const snapshot = input.snapshot({ ...context, nowMs: 11 });
+  assert.equal(snapshot.actions.weaponSlot, 3);
+  assert.equal(snapshot.actions.weaponNext, false);
+});
+
 test('pointer screen aim converts through the canonical camera into a normalized world direction', () => {
   const input = new InputState();
   input.setPointer({ screenX: 500, screenY: 300, fire: true }, 100);
@@ -45,7 +53,7 @@ test('touch controls support simultaneous independent movement and aim plus ever
   input.setTouch({
     moveX: -1, moveY: 0,
     aimX: 0, aimY: 1,
-    fire: true, melee: true, grenade: true, dash: true, pause: true,
+    fire: true, melee: true, grenade: true, dash: true, pause: true, weaponNext: true,
   }, 50);
   const { actions, metadata } = input.snapshot({ ...context, nowMs: 55 });
   assert.deepEqual(actions.move, { x: -1, y: 0 });
@@ -54,17 +62,18 @@ test('touch controls support simultaneous independent movement and aim plus ever
   assert.deepEqual({ fire: actions.fire, melee: actions.melee, grenade: actions.grenade, dash: actions.dash, pause: actions.pause }, {
     fire: true, melee: true, grenade: true, dash: true, pause: true,
   });
+  assert.equal(actions.weaponNext, true);
   assert.equal(metadata.lastActiveDevice, 'touch');
 });
 
 test('gamepad mapping applies radial deadzones and standard action buttons', () => {
   const mapped = mapGamepadSnapshot({
     axes: [0.1, 0.1, 0.8, 0],
-    buttons: Array.from({ length: 10 }, (_, index) => ({ pressed: [0, 2, 4, 7, 9].includes(index) })),
+    buttons: Array.from({ length: 16 }, (_, index) => ({ pressed: [0, 2, 4, 7, 9, 15].includes(index) })),
   });
   assert.deepEqual(mapped.move, { x: 0, y: 0 });
   assert.ok(mapped.aim.x > 0.7);
-  assert.deepEqual(mapped.actions, { fire: true, melee: true, grenade: true, dash: true, pause: true });
+  assert.deepEqual(mapped.actions, { fire: true, melee: true, grenade: true, dash: true, pause: true, weaponSlot: 0, weaponNext: true });
 });
 
 test('keyboard pointer touch and gamepad produce parity-equivalent canonical actions', () => {
@@ -134,6 +143,12 @@ test('touch layout respects safe areas and adapts to portrait and landscape rota
     }
   }
   assert.notDeepEqual(portrait.moveStick, landscape.moveStick);
+  const topActionDistance = Math.hypot(
+    portrait.buttons.weaponNext.x - portrait.buttons.pause.x,
+    portrait.buttons.weaponNext.y - portrait.buttons.pause.y,
+  );
+  assert.ok(topActionDistance >= portrait.buttons.weaponNext.radius + portrait.buttons.pause.radius + 8);
+  assert.ok(portrait.buttons.weaponNext.x > portrait.viewport.width - 100);
 });
 
 class FakeEventTarget {

@@ -28,7 +28,7 @@ export function computeStickVector(origin, current, {
   return { x: dx / distance * magnitude, y: dy / distance * magnitude };
 }
 
-const ACTIONS = new Set(['fire', 'melee', 'grenade', 'dash', 'pause']);
+const ACTIONS = new Set(['fire', 'melee', 'grenade', 'dash', 'pause', 'weaponNext']);
 
 export class TouchControlState {
   constructor({ stickRadius = 72, deadZone = 0.12, sensitivity = 1 } = {}) {
@@ -72,7 +72,7 @@ export class TouchControlState {
   snapshot() {
     let move = { x: 0, y: 0 };
     let aim = { x: 0, y: 0 };
-    const actions = { fire: false, melee: false, grenade: false, dash: false, pause: false };
+    const actions = { fire: false, melee: false, grenade: false, dash: false, pause: false, weaponNext: false };
     for (const pointer of this.pointers.values()) {
       if (pointer.type === 'action') actions[pointer.action] = true;
       else {
@@ -186,7 +186,7 @@ export function createTouchControlAdapter({
     listen(element, 'lostpointercapture', end);
   }
 
-  const labels = { fire: 'FIRE', melee: 'MELEE', grenade: 'GRENADE', dash: 'DASH', pause: 'II' };
+  const labels = { fire: 'FIRE', melee: 'MELEE', grenade: 'GRENADE', dash: 'DASH', weaponNext: 'WEAPON', pause: 'II' };
   for (const action of Object.keys(labels)) {
     const element = makeControl(action, labels[action], `hmh-touch-button hmh-touch-button--${action}`);
     listen(element, 'pointerdown', (event) => {

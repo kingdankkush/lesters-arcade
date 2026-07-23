@@ -6,9 +6,9 @@
     "sourceMapMaxCount": 0
   },
   "metrics": {
-    "mainBytes": 1209112,
-    "totalJsBytes": 5400734,
-    "jsFileCount": 24,
+    "mainBytes": 1243627,
+    "totalJsBytes": 6436702,
+    "jsFileCount": 26,
     "sourceMapCount": 0,
     "initialEntrypoints": [
       "dist/main.js"
@@ -38,7 +38,7 @@
     {
       "id": "main-budget",
       "pass": true,
-      "detail": "1.15 MB main bundle"
+      "detail": "1.19 MB main bundle"
     }
   ],
   "summary": {

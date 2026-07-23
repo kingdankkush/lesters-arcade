@@ -36,6 +36,17 @@ body { background: radial-gradient(circle at 50% 25%, #153b50 0%, #071522 46%, #
 .hmh-reboot-kicker { color: #55dfff; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; }
 #hmhRebootStatus { font-size: clamp(0.9rem, 2.8vw, 1.08rem); }
 #hmhRebootSession { color: #aac3d4; font-size: 0.75rem; overflow-wrap: anywhere; }
+.hmh-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 .hmh-touch-controls {
   position: absolute;
@@ -86,6 +97,7 @@ body { background: radial-gradient(circle at 50% 25%, #153b50 0%, #071522 46%, #
 .hmh-touch-button--grenade { border-color: rgba(255, 92, 122, 0.72); }
 .hmh-touch-button--dash { border-color: rgba(73, 221, 255, 0.78); }
 .hmh-touch-button--pause { border-color: rgba(255, 255, 255, 0.48); }
+.hmh-touch-button--weaponNext { border-color: rgba(196, 151, 255, 0.8); background: rgba(70, 39, 112, 0.42); }
 
 @media (hover: none) and (pointer: coarse), (max-width: 900px) {
   .hmh-touch-controls { display: block; }

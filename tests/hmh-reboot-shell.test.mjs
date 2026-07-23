@@ -8,6 +8,7 @@ test('standalone child HTML exposes only the reboot shell and bundled module', a
   const html = await read('../apps/portal/hmh-reboot/index.html');
   assert.match(html, /id="hmhRebootStage"/);
   assert.match(html, /id="hmhRebootStatus"/);
+  assert.match(html, /id="hmhRebootCombatStatus"[^>]+role="status"[^>]+aria-live="polite"/);
   assert.match(html, /src="\.\.\/dist\/hmh-reboot\/game\.js"/);
   assert.match(html, /href="\.\/styles\.css"/);
   assert.doesNotMatch(html, /wallet|ethereum|contract/i);
@@ -37,7 +38,21 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /previousGroundZ/);
   assert.match(source, /createProjectileState\(/);
   assert.match(source, /resolveProjectileBatch\(/);
+  assert.match(source, /createWeaponLoadout\(/);
+  assert.match(source, /stepWeaponLoadout\(/);
+  assert.match(source, /selectWeapon\(/);
+  assert.match(source, /createMeleeState\(/);
+  assert.match(source, /createMeleeTarget\(/);
+  assert.match(source, /stepMeleeState\(/);
+  assert.match(source, /createGrenadeSystem\(/);
+  assert.match(source, /throwGrenade\(/);
+  assert.match(source, /stepGrenadeSystem\(/);
+  assert.match(source, /resolveCombatHits\(/);
+  assert.match(source, /createCombatAudio\(/);
   assert.match(source, /MAX_ACTIVE_PROJECTILES\s*=\s*128/);
+  assert.match(source, /MAX_ACTIVE_GRENADES\s*=\s*16/);
+  assert.match(source, /MAX_COMBAT_VISUAL_EVENTS\s*=\s*64/);
+  assert.match(source, /pushCombatVisualEvent\(/);
   assert.match(source, /PROJECTILE_GRID_THRESHOLD\s*=\s*64/);
   assert.match(source, /new UniformHurtboxGrid\(/);
   assert.match(source, /projectileTrails/);
@@ -48,6 +63,17 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /visibleAssetId:\s*'graybox-/);
   assert.match(source, /stageElement\.dataset\.collisionBlocker/);
   assert.match(source, /stageElement\.dataset\.surfaceId/);
+  assert.match(source, /stageElement\.dataset\.projectileHit/);
+  assert.match(source, /stageElement\.dataset\.weaponId/);
+  assert.match(source, /stageElement\.dataset\.weaponAmmo/);
+  assert.match(source, /stageElement\.dataset\.weaponHeat/);
+  assert.match(source, /magnitude:\s*event\.recoil/);
+  assert.match(source, /createPlayerDefeatController/);
+  assert.match(source, /simulation\.gameOver\(\)/);
+  assert.match(source, /bridge\.send\('game:game-over', defeatTransition\.gameOverPayload\)/);
+  assert.match(source, /simulation\?\.state === 'game-over' \? 'game-over'/);
+  assert.match(source, /stageElement\.dataset\.grenadeCount/);
+  assert.doesNotMatch(source, /SETTLER_CALIBRATION/);
   assert.match(source, /if \(debugGridEnabled\) \{[\s\S]*stageElement\.dataset\.collisionBlocker/);
   assert.match(source, /label\.style\.fontSize/);
   assert.match(source, /view\.width\s*<\s*600/);
@@ -100,6 +126,7 @@ test('portal frame fills the active gameplay viewport without a fixed 72vh dead 
   assert.match(css, /\.hmh-reboot-frame[\s\S]*?min-height:\s*calc\(100dvh\s*-\s*\d+px\)/);
   assert.match(childStyles, /touch-action:\s*none/);
   assert.match(childStyles, /user-select:\s*none/);
+  assert.match(childStyles, /\.hmh-touch-button--weaponNext/);
 });
 
 test('built child bundle exists after the project build', async () => {

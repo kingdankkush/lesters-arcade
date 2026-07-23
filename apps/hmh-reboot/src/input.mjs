@@ -4,9 +4,13 @@ const GAMEPLAY_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD',
   'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
   'Space', 'KeyE', 'KeyF', 'KeyG', 'ShiftLeft', 'ShiftRight', 'Escape',
+  'Digit1', 'Digit2', 'Digit3', 'Digit4',
 ]);
 
-const ACTION_DEFAULTS = Object.freeze({ fire: false, melee: false, grenade: false, dash: false, pause: false });
+const ACTION_DEFAULTS = Object.freeze({
+  fire: false, melee: false, grenade: false, dash: false, pause: false,
+  weaponSlot: 0, weaponNext: false,
+});
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -63,6 +67,8 @@ export function mapGamepadSnapshot(gamepad, { deadzone = 0.2 } = {}) {
       grenade: buttonPressed(buttons, 4),
       dash: buttonPressed(buttons, 0),
       pause: buttonPressed(buttons, 9),
+      weaponSlot: 0,
+      weaponNext: buttonPressed(buttons, 15),
     },
   });
 }
@@ -74,12 +80,15 @@ function keyboardMove(keys) {
 }
 
 function keyboardActions(keys) {
+  const weaponSlot = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].findIndex((code) => keys.has(code)) + 1;
   return {
     fire: keys.has('Space'),
     melee: keys.has('KeyE'),
     grenade: keys.has('KeyF') || keys.has('KeyG'),
     dash: keys.has('ShiftLeft') || keys.has('ShiftRight'),
     pause: keys.has('Escape'),
+    weaponSlot,
+    weaponNext: false,
   };
 }
 
@@ -88,12 +97,16 @@ function hasDirection(direction) {
 }
 
 function actionRecord(value = {}) {
+  const rawWeaponSlot = Number(value.weaponSlot ?? 0);
+  const weaponSlot = Number.isInteger(rawWeaponSlot) && rawWeaponSlot >= 1 && rawWeaponSlot <= 4 ? rawWeaponSlot : 0;
   return {
     fire: bool(value.fire),
     melee: bool(value.melee),
     grenade: bool(value.grenade),
     dash: bool(value.dash),
     pause: bool(value.pause),
+    weaponSlot,
+    weaponNext: bool(value.weaponNext),
   };
 }
 
@@ -217,6 +230,8 @@ export class InputState {
       grenade: sources.some((source) => source.grenade),
       dash: sources.some((source) => source.dash),
       pause: sources.some((source) => source.pause),
+      weaponSlot: sources.find((source) => source.weaponSlot > 0)?.weaponSlot ?? 0,
+      weaponNext: sources.some((source) => source.weaponNext),
     };
     this.sequence += 1;
     return freezeDeep({
@@ -258,6 +273,11 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
     melee: { x: Math.max(safe.left + buttonRadius, buttonBaseX - buttonStep), y: buttonBaseY, radius: buttonRadius },
     grenade: { x: buttonBaseX, y: Math.max(safe.top + buttonRadius, buttonBaseY - buttonStep), radius: buttonRadius },
     dash: { x: Math.max(safe.left + buttonRadius, buttonBaseX - buttonStep), y: Math.max(safe.top + buttonRadius, buttonBaseY - buttonStep), radius: buttonRadius },
+    weaponNext: {
+      x: viewportWidth - safe.right - buttonRadius,
+      y: safe.top + buttonRadius * 3.5,
+      radius: buttonRadius,
+    },
     pause: { x: viewportWidth - safe.right - buttonRadius, y: safe.top + buttonRadius, radius: buttonRadius },
   };
   return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, moveStick, aimStick, buttons });
