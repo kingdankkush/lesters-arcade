@@ -13,6 +13,7 @@ def blender_args() -> argparse.Namespace:
     argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", required=True)
+    parser.add_argument("--actor-id", required=True)
     parser.add_argument("--raw-output", required=True)
     parser.add_argument("--report-output", required=True)
     return parser.parse_args(argv)
@@ -107,7 +108,9 @@ def main() -> None:
     scene.render.image_settings.color_depth = "8"
     scene.render.image_settings.compression = 20
 
-    pilot = manifest["pilots"][0]
+    pilot = next((item for item in manifest["pilots"] if item["actorId"] == args.actor_id), None)
+    if pilot is None:
+        raise RuntimeError(f"Unknown production actor: {args.actor_id}")
     rig = bpy.data.objects.get(manifest["scene"]["armature"])
     if rig is None or rig.type != "ARMATURE":
         raise RuntimeError(f"Missing armature: {manifest['scene']['armature']}")
@@ -120,6 +123,10 @@ def main() -> None:
     layer_counts = {layer: sum(1 for obj in actor_objects if obj.get("hmh_layer") == layer) for layer in pilot["layers"]}
     if any(count == 0 for count in layer_counts.values()):
         raise RuntimeError(f"Missing layer objects: {layer_counts}")
+
+    production_objects = [obj for obj in bpy.data.objects if obj.get("hmh_actor_id")]
+    for obj in production_objects:
+        obj.hide_render = True
 
     rendered = []
     for layer in pilot["layers"]:
@@ -135,6 +142,9 @@ def main() -> None:
                     scene.render.filepath = str(raw_output / filename)
                     bpy.ops.render.render(write_still=True)
                     rendered.append(filename)
+
+    for obj in production_objects:
+        obj.hide_render = True
 
     reset_pose(rig)
     rig.rotation_euler[2] = 0.0

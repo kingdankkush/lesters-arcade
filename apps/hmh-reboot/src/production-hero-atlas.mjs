@@ -1,10 +1,22 @@
-export const PRODUCTION_HERO_ATLAS_IMAGE_URL = '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png';
-export const PRODUCTION_HERO_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json';
+export const PRODUCTION_HERO_ASSETS = Object.freeze({
+  'lit-commando': Object.freeze({
+    actorId: 'lit-commando',
+    variantId: 'reserve-vanguard',
+    imageUrl: '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png',
+    metadataUrl: '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json',
+  }),
+  'lit-valkyrie': Object.freeze({
+    actorId: 'lit-valkyrie',
+    variantId: 'plasma-striker',
+    imageUrl: '/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png',
+    metadataUrl: '/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json',
+  }),
+});
+export const PRODUCTION_HERO_ATLAS_IMAGE_URL = PRODUCTION_HERO_ASSETS['lit-commando'].imageUrl;
+export const PRODUCTION_HERO_ATLAS_METADATA_URL = PRODUCTION_HERO_ASSETS['lit-commando'].metadataUrl;
 export const PRODUCTION_HERO_RUNTIME_SCALE = 0.58;
 
 const EXPECTED_PIPELINE_ID = 'hmh-reboot-production-hero-pilot-v1';
-const EXPECTED_ACTOR_ID = 'lit-commando';
-const EXPECTED_VARIANT_ID = 'reserve-vanguard';
 const EXPECTED_GAMEPLAY_BODY_PROFILE = 'human-medium-collision-v1';
 const DIRECTION_BY_SIMULATION_INDEX = Object.freeze([
   'east',
@@ -37,10 +49,17 @@ export function directionNameForProductionIndex(index) {
   return DIRECTION_BY_SIMULATION_INDEX[((index % 8) + 8) % 8];
 }
 
-export function createProductionHeroAtlasIndex(metadata) {
+export function productionHeroAsset(actorId) {
+  const asset = PRODUCTION_HERO_ASSETS[actorId];
+  if (!asset) throw new TypeError(`unknown approved production hero ${actorId}`);
+  return asset;
+}
+
+export function createProductionHeroAtlasIndex(metadata, expectedAsset = PRODUCTION_HERO_ASSETS['lit-commando']) {
+  const approvedAsset = productionHeroAsset(expectedAsset?.actorId);
   if (metadata?.schemaVersion !== 1) throw new TypeError('production hero atlas schemaVersion 1 is required');
   if (metadata.pipelineId !== EXPECTED_PIPELINE_ID) throw new TypeError('unexpected production hero pipeline id');
-  if (metadata.actorId !== EXPECTED_ACTOR_ID || metadata.variantId !== EXPECTED_VARIANT_ID) throw new TypeError('unexpected production hero identity');
+  if (metadata.actorId !== approvedAsset.actorId || metadata.variantId !== approvedAsset.variantId) throw new TypeError('unexpected production hero identity');
   if (metadata.classification !== 'production-art') throw new TypeError('production-art classification is required');
   if (metadata.runtimeAuthority !== 'projection-only') throw new TypeError('production hero must remain projection-only');
   if (metadata.gameplayBodyProfile !== EXPECTED_GAMEPLAY_BODY_PROFILE) throw new TypeError('production hero gameplay body profile drifted');

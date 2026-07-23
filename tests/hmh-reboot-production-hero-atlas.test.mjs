@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  PRODUCTION_HERO_ASSETS,
   PRODUCTION_HERO_ATLAS_METADATA_URL,
   PRODUCTION_HERO_RUNTIME_SCALE,
   createProductionHeroAtlasIndex,
   directionNameForProductionIndex,
+  productionHeroAsset,
   resolveProductionHeroPose,
 } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
 
@@ -17,14 +19,15 @@ const clips = {
   weapon: { aim: { frames: 2, fps: 2 }, 'pistol-fire': { frames: 3, fps: 15 } },
 };
 
-function metadataFixture() {
+function metadataFixture(actorId = 'lit-commando') {
+  const variantId = actorId === 'lit-valkyrie' ? 'plasma-striker' : 'reserve-vanguard';
   const frames = [];
   for (const layer of LAYERS) {
     for (const [state, clip] of Object.entries(clips[layer])) {
       for (const direction of DIRECTIONS) {
         for (let frameIndex = 0; frameIndex < clip.frames; frameIndex += 1) {
           frames.push({
-            id: `lit-commando__${layer}__${state}__${direction}__${String(frameIndex).padStart(3, '0')}`,
+            id: `${actorId}__${layer}__${state}__${direction}__${String(frameIndex).padStart(3, '0')}`,
             layer,
             state,
             direction,
@@ -42,12 +45,12 @@ function metadataFixture() {
   return {
     schemaVersion: 1,
     pipelineId: 'hmh-reboot-production-hero-pilot-v1',
-    actorId: 'lit-commando',
-    variantId: 'reserve-vanguard',
+    actorId,
+    variantId,
     classification: 'production-art',
     runtimeAuthority: 'projection-only',
     gameplayBodyProfile: 'human-medium-collision-v1',
-    image: './lit-commando-production-pilot-atlas.png',
+    image: `./${actorId}-production-pilot-atlas.png`,
     directions: DIRECTIONS,
     layers: LAYERS,
     composition: { independentDirections: true, weaponSocket: 'weapon_socket', layerOrder: LAYERS },
@@ -57,6 +60,9 @@ function metadataFixture() {
 
 test('production hero atlas constants target selected repository-owned art', () => {
   assert.equal(PRODUCTION_HERO_ATLAS_METADATA_URL, '/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json');
+  assert.equal(PRODUCTION_HERO_ASSETS['lit-valkyrie'].metadataUrl, '/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json');
+  assert.equal(productionHeroAsset('lit-valkyrie').variantId, 'plasma-striker');
+  assert.throws(() => productionHeroAsset('unknown-hero'));
   assert.ok(PRODUCTION_HERO_RUNTIME_SCALE > 0.5 && PRODUCTION_HERO_RUNTIME_SCALE < 0.7);
 });
 
@@ -78,6 +84,12 @@ test('production hero atlas index rejects authority and identity drift', () => {
     invalid[field] = value;
     assert.throws(() => createProductionHeroAtlasIndex(invalid));
   }
+
+  const femaleMetadata = metadataFixture('lit-valkyrie');
+  const female = createProductionHeroAtlasIndex(femaleMetadata, productionHeroAsset('lit-valkyrie'));
+  assert.equal(female.actorId, 'lit-valkyrie');
+  assert.equal(female.variantId, 'plasma-striker');
+  assert.equal(female.frameByKey.size, 168);
 });
 
 test('production direction mapping preserves simulation semantics', () => {

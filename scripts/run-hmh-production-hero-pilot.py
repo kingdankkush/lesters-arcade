@@ -249,7 +249,9 @@ def build_contact_sheet(manifest: dict, pilot: dict, directory: Path, output_dir
     sheet = Image.new("RGBA", (label_width + frame_size[0] * len(manifest["directions"]), header_height + frame_size[1] * len(rows)), (7, 12, 27, 255))
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default()
-    draw.text((18, 16), "HMH PRODUCTION HERO PILOT | LIT COMMANDO | RESERVE VANGUARD", fill=(238, 245, 255, 255), font=font)
+    actor_label = pilot["actorId"].replace("-", " ").upper()
+    variant_label = pilot["variantId"].replace("-", " ").upper()
+    draw.text((18, 16), f"HMH PRODUCTION HERO PILOT | {actor_label} | {variant_label}", fill=(238, 245, 255, 255), font=font)
     draw.text((18, 38), "PROJECTION ONLY | SHARED HUMAN-MEDIUM GAMEPLAY BODY | 8 DIRECTIONS | 4 LAYERS", fill=(127, 220, 255, 255), font=font)
     for direction_index, direction in enumerate(manifest["directions"]):
         draw.text((label_width + direction_index * frame_size[0] + 8, 76), direction.upper(), fill=(173, 190, 222, 255), font=font)
@@ -265,39 +267,27 @@ def build_contact_sheet(manifest: dict, pilot: dict, directory: Path, output_dir
     return path
 
 
-def main() -> None:
-    if not BLENDER.exists():
-        raise RuntimeError(f"Blender not found: {BLENDER}")
-    manifest = read_json(MANIFEST_PATH)
-    required_version = manifest["scene"]["blenderVersion"]
-    actual_version = blender_version()
-    if actual_version != required_version:
-        raise RuntimeError(f"Blender version mismatch: expected {required_version}, got {actual_version}")
-    pilot = manifest["pilots"][0]
-    source_blend = ROOT / manifest["scene"]["sourceBlend"]
-    temp_root = ROOT / manifest["render"]["rawOutputDirectory"]
-    run_a = temp_root / "run-a"
-    run_b = temp_root / "run-b"
-    inspection_path = temp_root / "source-inspection.json"
-    report_a = temp_root / "run-a-report.json"
-    report_b = temp_root / "run-b-report.json"
+def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Path, inspection: dict, actual_version: str) -> dict:
+    actor_temp = temp_root / pilot["actorId"]
+    run_a = actor_temp / "run-a"
+    run_b = actor_temp / "run-b"
+    report_a = actor_temp / "run-a-report.json"
+    report_b = actor_temp / "run-b-report.json"
     output_root = ROOT / manifest["atlas"]["outputDirectory"] / pilot["actorId"]
-    shutil.rmtree(temp_root, ignore_errors=True)
-    shutil.rmtree(output_root, ignore_errors=True)
     run_a.mkdir(parents=True, exist_ok=True)
     run_b.mkdir(parents=True, exist_ok=True)
     output_root.mkdir(parents=True, exist_ok=True)
 
-    run_checked([str(BLENDER), "--background", "--factory-startup", "--python", str(GENERATOR_PATH), "--", "--manifest", str(MANIFEST_PATH), "--source-blend", str(source_blend), "--inspection-output", str(inspection_path)], "source generation")
-    backup = source_blend.with_suffix(source_blend.suffix + "1")
-    if backup.exists():
-        backup.unlink()
     for raw_output, report_output, label in ((run_a, report_a, "render run A"), (run_b, report_b, "render run B")):
-        run_checked([str(BLENDER), "--background", str(source_blend), "--python", str(EXPORTER_PATH), "--", "--manifest", str(MANIFEST_PATH), "--raw-output", str(raw_output), "--report-output", str(report_output)], label)
+        run_checked([
+            str(BLENDER), "--background", str(source_blend), "--python", str(EXPORTER_PATH), "--",
+            "--manifest", str(MANIFEST_PATH), "--actor-id", pilot["actorId"],
+            "--raw-output", str(raw_output), "--report-output", str(report_output),
+        ], f"{pilot['actorId']} {label}")
 
     frames = expected_frames(manifest, pilot)
     if len(frames) != 168:
-        raise RuntimeError(f"Expected 168 frames, got {len(frames)}")
+        raise RuntimeError(f"Expected 168 frames for {pilot['actorId']}, got {len(frames)}")
     frame_size = tuple(manifest["render"]["frameSize"])
     pivot = tuple(manifest["pivot"]["sourcePixels"])
     threshold = manifest["render"]["alphaThreshold"]
@@ -307,14 +297,18 @@ def main() -> None:
     budget = manifest["reproducibilityBudget"]
     exceeded = [key for key in budget if observed[key] > budget[key]]
     if exceeded:
-        raise RuntimeError(f"Reproducibility budget exceeded ({exceeded}): observed={observed} budget={budget}")
+        raise RuntimeError(f"Reproducibility budget exceeded for {pilot['actorId']} ({exceeded}): observed={observed} budget={budget}")
 
-    inspection = read_json(inspection_path)
     report = read_json(report_a)
+    actor_inspection = inspection["actors"].get(pilot["actorId"])
+    if actor_inspection is None:
+        raise RuntimeError(f"Missing source inspection for {pilot['actorId']}")
     if inspection["externalDependencyCount"] != 0 or not inspection["weaponSocket"] or report["frameCount"] != len(frames):
-        raise RuntimeError(f"Source/export inspection failed: inspection={inspection} report={report}")
+        raise RuntimeError(f"Source/export inspection failed for {pilot['actorId']}: inspection={inspection} report={report}")
+    if set(actor_inspection["objectsByLayer"]) != set(pilot["layers"]):
+        raise RuntimeError(f"Actor inspection layers mismatch for {pilot['actorId']}: {actor_inspection}")
     if analysis_a["uniqueAnimatedFrameCount"] != 160:
-        raise RuntimeError(f"Expected 160 unique animated frames, got {analysis_a['uniqueAnimatedFrameCount']}")
+        raise RuntimeError(f"Expected 160 unique animated frames for {pilot['actorId']}, got {analysis_a['uniqueAnimatedFrameCount']}")
 
     atlas_path, metadata_path, atlas_size = build_atlas(manifest, pilot, analysis_a, output_root)
     contact_sheet_path = build_contact_sheet(manifest, pilot, run_a, output_root)
@@ -330,7 +324,39 @@ def main() -> None:
         "contactSheetSha256": sha256_file(contact_sheet_path),
     }
     write_lf_json(metrics_path, metrics)
-    print(json.dumps({"status": "pass", "actorId": pilot["actorId"], "frames": len(frames), "atlas": str(atlas_path.relative_to(ROOT)), "atlasSize": atlas_size, "reproducibilityObserved": observed}, sort_keys=True))
+    return {
+        "status": "pass", "actorId": pilot["actorId"], "frames": len(frames),
+        "atlas": str(atlas_path.relative_to(ROOT)), "atlasSize": atlas_size,
+        "reproducibilityObserved": observed,
+    }
+
+
+def main() -> None:
+    if not BLENDER.exists():
+        raise RuntimeError(f"Blender not found: {BLENDER}")
+    manifest = read_json(MANIFEST_PATH)
+    required_version = manifest["scene"]["blenderVersion"]
+    actual_version = blender_version()
+    if actual_version != required_version:
+        raise RuntimeError(f"Blender version mismatch: expected {required_version}, got {actual_version}")
+    source_blend = ROOT / manifest["scene"]["sourceBlend"]
+    temp_root = ROOT / manifest["render"]["rawOutputDirectory"]
+    inspection_path = temp_root / "source-inspection.json"
+    generated_output_root = ROOT / manifest["atlas"]["outputDirectory"]
+    shutil.rmtree(temp_root, ignore_errors=True)
+    shutil.rmtree(generated_output_root, ignore_errors=True)
+    temp_root.mkdir(parents=True, exist_ok=True)
+
+    run_checked([str(BLENDER), "--background", "--factory-startup", "--python", str(GENERATOR_PATH), "--", "--manifest", str(MANIFEST_PATH), "--source-blend", str(source_blend), "--inspection-output", str(inspection_path)], "source generation")
+    backup = source_blend.with_suffix(source_blend.suffix + "1")
+    if backup.exists():
+        backup.unlink()
+    inspection = read_json(inspection_path)
+    if set(inspection.get("actors", {})) != {pilot["actorId"] for pilot in manifest["pilots"]}:
+        raise RuntimeError(f"Source actor inspection mismatch: {inspection}")
+
+    summaries = [process_pilot(manifest, pilot, source_blend, temp_root, inspection, actual_version) for pilot in manifest["pilots"]]
+    print(json.dumps({"status": "pass", "actors": summaries}, sort_keys=True))
 
 
 if __name__ == "__main__":

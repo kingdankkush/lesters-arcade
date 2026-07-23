@@ -58,11 +58,10 @@ import {
   createMannequinDisplay,
 } from './mannequin-atlas.mjs';
 import {
-  PRODUCTION_HERO_ATLAS_IMAGE_URL,
-  PRODUCTION_HERO_ATLAS_METADATA_URL,
   PRODUCTION_HERO_RUNTIME_SCALE,
   createProductionHeroAtlasIndex,
   createProductionHeroDisplay,
+  productionHeroAsset,
 } from './production-hero-atlas.mjs';
 import {
   LEVEL_ONE_WORLD,
@@ -146,6 +145,8 @@ async function boot() {
   const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
   const productionPilotEnabled = runtimeParams.get('productionPilot') === '1';
+  const productionHeroId = runtimeParams.get('productionHero') === 'lit-valkyrie' ? 'lit-valkyrie' : 'lit-commando';
+  const productionHeroSelection = productionHeroAsset(productionHeroId);
 
   const world = new Container();
   const backdrop = new Graphics();
@@ -180,12 +181,13 @@ async function boot() {
   let productionHeroDisplay = null;
   if (productionPilotEnabled) {
     const [metadataResponse, atlasTexture] = await Promise.all([
-      fetch(PRODUCTION_HERO_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
-      Assets.load(PRODUCTION_HERO_ATLAS_IMAGE_URL),
+      fetch(productionHeroSelection.metadataUrl, { credentials: 'same-origin' }),
+      Assets.load(productionHeroSelection.imageUrl),
     ]);
     if (!metadataResponse.ok) throw new Error(`Production hero metadata failed with ${metadataResponse.status}`);
+    const metadata = await metadataResponse.json();
     productionHeroDisplay = createProductionHeroDisplay({
-      index: createProductionHeroAtlasIndex(await metadataResponse.json()),
+      index: createProductionHeroAtlasIndex(metadata, productionHeroSelection),
       atlasTexture,
       ContainerClass: Container,
       SpriteClass: Sprite,
@@ -774,6 +776,7 @@ async function boot() {
         stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
         stageElement.dataset.actorArt = actorVisual.label ?? '';
         stageElement.dataset.actorArtSource = productionPilotEnabled ? 'production-blender-atlas-v1' : pipelinePilotEnabled ? 'blender-atlas-v1' : 'pixi-graybox';
+        stageElement.dataset.actorArtActor = productionPilotEnabled ? productionHeroSelection.actorId : pipelinePilotEnabled ? 'neutral-mannequin' : 'prototype-human';
         stageElement.dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
         stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
         stageElement.dataset.enemyArt = [...enemyMarkers.values()].every((enemyMarker) => enemyMarker.label?.startsWith('prototype-human-'))

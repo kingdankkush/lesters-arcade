@@ -117,3 +117,54 @@ test('male production pilot emits repository-owned reproducible atlas evidence',
   assert.match(metrics.atlasSha256, /^[0-9a-f]{64}$/);
   assert.match(metrics.metadataSha256, /^[0-9a-f]{64}$/);
 });
+
+test('female production pilot preserves gameplay parity with a distinct Plasma Striker identity', async () => {
+  const manifest = await loadJson(manifestUrl);
+  const male = manifest.pilots.find((pilot) => pilot.actorId === 'lit-commando');
+  const female = manifest.pilots.find((pilot) => pilot.actorId === 'lit-valkyrie');
+  assert.ok(female, 'lit-valkyrie production pilot must exist');
+  assert.equal(female.variantId, 'plasma-striker');
+  assert.equal(female.status, 'production-pilot');
+  assert.equal(female.gameplayBodyProfile, 'human-medium-collision-v1');
+  assert.equal(female.gameplayBodyProfile, male.gameplayBodyProfile);
+  assert.deepEqual(female.layers, male.layers);
+  assert.deepEqual(female.composition, male.composition);
+  assert.deepEqual(female.clips, male.clips);
+  assert.equal(female.runtimeAuthority, 'projection-only');
+  const framesPerDirection = Object.values(female.clips)
+    .flatMap((states) => Object.values(states))
+    .reduce((total, clip) => total + clip.frames, 0);
+  assert.equal(framesPerDirection * manifest.directions.length, 168);
+});
+
+test('female production pilot emits separate repository-owned reproducible atlas evidence', async () => {
+  const manifest = await loadJson(manifestUrl);
+  const female = manifest.pilots.find((pilot) => pilot.actorId === 'lit-valkyrie');
+  const paths = female.output;
+  const atlasUrl = new URL(paths.atlas, outputRoot);
+  const metadataUrl = new URL(paths.metadata, outputRoot);
+  const metricsUrl = new URL(paths.metrics, outputRoot);
+  const sheetUrl = new URL(paths.contactSheet, outputRoot);
+  await Promise.all([access(atlasUrl), access(metadataUrl), access(metricsUrl), access(sheetUrl)]);
+  const metadata = await loadJson(metadataUrl);
+  const metrics = await loadJson(metricsUrl);
+  assert.equal(metadata.actorId, 'lit-valkyrie');
+  assert.equal(metadata.variantId, 'plasma-striker');
+  assert.equal(metadata.gameplayBodyProfile, 'human-medium-collision-v1');
+  assert.equal(metadata.runtimeAuthority, 'projection-only');
+  assert.equal(metadata.frames.length, 168);
+  assert.equal(new Set(metadata.frames.map((frame) => frame.id)).size, 168);
+  assert.equal(metrics.status, 'pass');
+  assert.equal(metrics.frameCount, 168);
+  assert.equal(metrics.uniqueFrameIdCount, 168);
+  assert.equal(metrics.uniqueAnimatedFrameCount, 160);
+  assert.ok(metrics.duplicateDecodedFrameGroups.every((group) => group.frameIds.every((id) => id.includes('__shadow__'))));
+  assert.equal(metrics.externalDependencyCount, 0);
+  assert.equal(metrics.weaponSocket, true);
+  assert.equal(metrics.reproducibility, 'pass');
+  assert.equal(metrics.reproducibilityObserved.maxChangedVisiblePixels, 0);
+  assert.equal(metrics.reproducibilityObserved.maxChannelDelta, 0);
+  assert.equal(metrics.reproducibilityObserved.maxTotalChannelDelta, 0);
+  assert.ok(metrics.atlasSize.width <= 2048);
+  assert.match(metrics.atlasSha256, /^[0-9a-f]{64}$/);
+});

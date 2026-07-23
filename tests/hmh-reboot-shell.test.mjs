@@ -134,14 +134,15 @@ test('opt-in Blender pilot composes render state without replacing the default g
 test('opt-in production hero pilot is projection-only and leaves graybox as the default path', async () => {
   const source = await read('../apps/hmh-reboot/src/main.mjs');
   const atlasSource = await read('../apps/hmh-reboot/src/production-hero-atlas.mjs');
-  assert.match(source, /PRODUCTION_HERO_ATLAS_IMAGE_URL/);
-  assert.match(source, /PRODUCTION_HERO_ATLAS_METADATA_URL/);
+  assert.match(source, /productionHeroAsset/);
   assert.match(source, /PRODUCTION_HERO_RUNTIME_SCALE \* camera\.zoom/);
   assert.match(source, /createProductionHeroAtlasIndex/);
   assert.match(source, /createProductionHeroDisplay/);
   assert.match(source, /runtimeParams\.get\('productionPilot'\) === '1'/);
-  assert.match(source, /fetch\(PRODUCTION_HERO_ATLAS_METADATA_URL/);
-  assert.match(source, /Assets\.load\(PRODUCTION_HERO_ATLAS_IMAGE_URL\)/);
+  assert.match(source, /runtimeParams\.get\('productionHero'\) === 'lit-valkyrie'/);
+  assert.match(source, /fetch\(productionHeroSelection\.metadataUrl/);
+  assert.match(source, /Assets\.load\(productionHeroSelection\.imageUrl\)/);
+  assert.match(source, /createProductionHeroAtlasIndex\(metadata, productionHeroSelection\)/);
   assert.match(source, /productionHeroDisplay\.applyPose\(\{[\s\S]*simulationTick:[\s\S]*actionTick:[\s\S]*locomotion:[\s\S]*legDirection:[\s\S]*torsoDirection:[\s\S]*action:/);
   assert.match(source, /productionHeroDisplay\?\.container \?\? mannequinDisplay\?\.container \?\? marker/);
   assert.match(source, /stageElement\.dataset\.actorArtSource = productionPilotEnabled \? 'production-blender-atlas-v1'/);

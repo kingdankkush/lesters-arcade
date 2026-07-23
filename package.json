@@ -27,6 +27,7 @@
     "assets:hmh:production-hero-pilot": "python scripts/run-hmh-production-hero-pilot.py",
     "smoke:hmh:blender-pilot": "node scripts/hmh-reboot-blender-pilot-browser-smoke.mjs",
     "smoke:hmh:production-hero": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs",
+    "smoke:hmh:production-hero:female": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs --actor lit-valkyrie",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
     "visual:regression": "npm run build && node scripts/visual-regression.mjs",

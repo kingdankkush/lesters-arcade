@@ -139,6 +139,73 @@
         "metrics": "lit-commando/lit-commando-production-pilot-metrics.json",
         "contactSheet": "lit-commando/lit-commando-production-pilot-contact-sheet.png"
       }
+    },
+    {
+      "actorId": "lit-valkyrie",
+      "variantId": "plasma-striker",
+      "status": "production-pilot",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "runtimeAuthority": "projection-only",
+      "layers": [
+        "shadow",
+        "lower-body",
+        "torso-head",
+        "weapon"
+      ],
+      "composition": [
+        "shadow",
+        "lower-body",
+        "torso-head",
+        "weapon"
+      ],
+      "clips": {
+        "shadow": {
+          "idle": {
+            "frames": 1,
+            "fps": 1
+          }
+        },
+        "lower-body": {
+          "idle": {
+            "frames": 2,
+            "fps": 2
+          },
+          "run": {
+            "frames": 6,
+            "fps": 12
+          }
+        },
+        "torso-head": {
+          "aim": {
+            "frames": 2,
+            "fps": 2
+          },
+          "pistol-fire": {
+            "frames": 3,
+            "fps": 15
+          },
+          "hurt": {
+            "frames": 2,
+            "fps": 10
+          }
+        },
+        "weapon": {
+          "aim": {
+            "frames": 2,
+            "fps": 2
+          },
+          "pistol-fire": {
+            "frames": 3,
+            "fps": 15
+          }
+        }
+      },
+      "output": {
+        "atlas": "lit-valkyrie/lit-valkyrie-production-pilot-atlas.png",
+        "metadata": "lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
+        "metrics": "lit-valkyrie/lit-valkyrie-production-pilot-metrics.json",
+        "contactSheet": "lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png"
+      }
     }
   ]
 }

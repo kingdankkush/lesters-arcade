@@ -163,29 +163,40 @@ def main() -> None:
     rig["hmh_gameplay_body_profile"] = manifest["gameplayBodyProfile"]
     rig["hmh_runtime_authority"] = "projection-only"
 
-    pilot = manifest["pilots"][0]
-    actor, variant = find_variant(concept_manifest, pilot["actorId"], pilot["variantId"])
-    collection = bpy.data.collections.new(f"Production__{actor['id']}__{variant['id']}")
-    scene.collection.children.link(collection)
-    concept.add_variant_details(collection, rig, mats, actor["id"], variant["id"], female=False)
-    replace_rifle_with_pistol(concept, collection, rig, mats, actor["id"], variant["id"])
+    objects_by_actor = {}
+    variants_by_actor = {}
+    for pilot in manifest["pilots"]:
+        actor, variant = find_variant(concept_manifest, pilot["actorId"], pilot["variantId"])
+        collection = bpy.data.collections.new(f"Production__{actor['id']}__{variant['id']}")
+        scene.collection.children.link(collection)
+        concept.add_variant_details(
+            collection,
+            rig,
+            mats,
+            actor["id"],
+            variant["id"],
+            female=actor["id"] == "lit-valkyrie",
+        )
+        replace_rifle_with_pistol(concept, collection, rig, mats, actor["id"], variant["id"])
 
-    objects_by_layer = {layer: [] for layer in pilot["layers"]}
-    for obj in collection.objects:
-        if obj.type != "MESH":
-            continue
-        layer = semantic_layer(obj)
-        obj["hmh_layer"] = layer
-        obj["hmh_actor_id"] = actor["id"]
-        obj["hmh_variant_id"] = variant["id"]
-        obj["hmh_runtime_authority"] = "projection-only"
-        objects_by_layer[layer].append(obj.name)
-        if layer == "shadow":
-            concept.attach_to_bone(obj, rig, "root")
+        objects_by_layer = {layer: [] for layer in pilot["layers"]}
+        for obj in collection.objects:
+            if obj.type != "MESH":
+                continue
+            layer = semantic_layer(obj)
+            obj["hmh_layer"] = layer
+            obj["hmh_actor_id"] = actor["id"]
+            obj["hmh_variant_id"] = variant["id"]
+            obj["hmh_runtime_authority"] = "projection-only"
+            objects_by_layer[layer].append(obj.name)
+            if layer == "shadow":
+                concept.attach_to_bone(obj, rig, "root")
 
-    expected_layers = set(pilot["layers"])
-    if set(layer for layer, objects in objects_by_layer.items() if objects) != expected_layers:
-        raise RuntimeError(f"Layer assignment incomplete: {objects_by_layer}")
+        expected_layers = set(pilot["layers"])
+        if set(layer for layer, objects in objects_by_layer.items() if objects) != expected_layers:
+            raise RuntimeError(f"Layer assignment incomplete for {actor['id']}: {objects_by_layer}")
+        objects_by_actor[actor["id"]] = objects_by_layer
+        variants_by_actor[actor["id"]] = variant["id"]
 
     bpy.context.view_layer.objects.active = rig
     rig.select_set(True)
@@ -200,19 +211,25 @@ def main() -> None:
     external_dependencies = concept.external_dependencies()
     bones = sorted(bone.name for bone in rig.data.bones)
     inspection = {
-        "actorId": actor["id"],
-        "variantId": variant["id"],
         "armature": rig.name,
         "bones": bones,
         "weaponSocket": manifest["scene"]["weaponSocket"] in bones,
-        "objectsByLayer": {layer: sorted(objects) for layer, objects in objects_by_layer.items()},
+        "actors": {
+            actor_id: {
+                "actorId": actor_id,
+                "variantId": variants_by_actor[actor_id],
+                "objectsByLayer": {layer: sorted(objects) for layer, objects in layers.items()},
+            }
+            for actor_id, layers in objects_by_actor.items()
+        },
         "externalDependencies": external_dependencies,
         "externalDependencyCount": len(external_dependencies),
         "gameplayBodyProfile": rig["hmh_gameplay_body_profile"],
         "runtimeAuthority": rig["hmh_runtime_authority"],
     }
     write_lf_json(inspection_output, inspection)
-    print(json.dumps({"status": "pass", "sourceBlend": str(source_blend), "objects": sum(len(value) for value in objects_by_layer.values())}, sort_keys=True))
+    object_count = sum(len(objects) for layers in objects_by_actor.values() for objects in layers.values())
+    print(json.dumps({"status": "pass", "sourceBlend": str(source_blend), "actors": sorted(objects_by_actor), "objects": object_count}, sort_keys=True))
 
 
 if __name__ == "__main__":

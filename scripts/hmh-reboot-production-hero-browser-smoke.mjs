@@ -4,9 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
-const url = `${origin}/hmh-reboot/index.html?debugGrid=1&evidenceSafe=1&productionPilot=1`;
+const actorFlag = process.argv.indexOf('--actor');
+const actorId = actorFlag >= 0 ? process.argv[actorFlag + 1] : 'lit-commando';
+if (!['lit-commando', 'lit-valkyrie'].includes(actorId)) throw new Error(`Unsupported production hero smoke actor: ${actorId}`);
+const url = `${origin}/hmh-reboot/index.html?debugGrid=1&evidenceSafe=1&productionPilot=1&productionHero=${actorId}`;
 const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-phase20-production-hero/', import.meta.url);
-const reportUrl = new URL('../.tmp/hmh-reboot-production-hero-browser.json', import.meta.url);
+const reportUrl = new URL(`../.tmp/hmh-reboot-production-hero-browser-${actorId}.json`, import.meta.url);
 await mkdir(evidenceDir, { recursive: true });
 
 const browser = await chromium.launch({
@@ -33,6 +36,7 @@ function collectDiagnostics(page) {
 const readState = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   actorArt: stage.dataset.actorArt,
   actorArtSource: stage.dataset.actorArtSource,
+  actorArtActor: stage.dataset.actorArtActor,
   actorArtLayers: stage.dataset.actorArtLayers,
   frameIds: String(stage.dataset.actorArtFrameIds ?? '').split(',').filter(Boolean),
   simulationTick: Number(stage.dataset.simulationTick),
@@ -43,7 +47,10 @@ const readState = (page) => page.locator('#hmhRebootStage').evaluate((stage) => 
 
 async function ready(page) {
   await page.goto(url, { waitUntil: 'networkidle' });
-  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.actorArt === 'production-hero-atlas');
+  await page.waitForFunction((expectedActor) => {
+    const stage = document.querySelector('#hmhRebootStage');
+    return stage?.dataset.actorArt === 'production-hero-atlas' && stage.dataset.actorArtActor === expectedActor;
+  }, actorId);
   await page.waitForFunction(() => String(document.querySelector('#hmhRebootStage')?.dataset.actorArtFrameIds ?? '').split(',').filter(Boolean).length === 4);
   await page.locator('canvas').focus();
 }
@@ -54,6 +61,8 @@ async function desktopEvidence() {
   await ready(page);
   const initial = await readState(page);
   assert.equal(initial.actorArtSource, 'production-blender-atlas-v1');
+  assert.equal(initial.actorArtActor, actorId);
+  assert.ok(initial.frameIds.every((id) => id.startsWith(`${actorId}__`)));
   assert.equal(initial.actorArtLayers, 'shadow,lower-body,torso-head,weapon');
   const canvas = await page.locator('canvas').boundingBox();
   assert.ok(canvas);
@@ -84,11 +93,11 @@ async function desktopEvidence() {
   assert.ok(fireSamples.some((sample) => sample.frameIds.some((id) => id.includes('__torso-head__pistol-fire__'))), 'production torso fire animation was never selected');
   assert.ok(fireSamples.some((sample) => sample.frameIds.some((id) => id.includes('__weapon__pistol-fire__'))), 'production weapon fire animation was never selected');
 
-  await page.screenshot({ path: fileURLToPath(new URL('production-hero-desktop.png', evidenceDir)), fullPage: true });
+  await page.screenshot({ path: fileURLToPath(new URL(`${actorId}-production-hero-desktop.png`, evidenceDir)), fullPage: true });
   assert.deepEqual(diagnostics.errors, []);
   assert.deepEqual(diagnostics.failedRequests, []);
-  assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith('lit-commando-production-pilot-atlas.json') && response.status === 200));
-  assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith('lit-commando-production-pilot-atlas.png') && response.status === 200));
+  assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith(`${actorId}-production-pilot-atlas.json`) && response.status === 200));
+  assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith(`${actorId}-production-pilot-atlas.png`) && response.status === 200));
   await page.close();
   return { initial, moving, lowerFrames: [...lowerFrames].sort(), torsoDirections: [...torsoDirections], fireSamples, ...diagnostics };
 }
@@ -103,7 +112,7 @@ async function mobileEvidence() {
   assert.equal(controls, 8);
   assert.equal(state.frameIds.length, 4);
   assert.equal(state.actorArt, 'production-hero-atlas');
-  await page.screenshot({ path: fileURLToPath(new URL('production-hero-mobile.png', evidenceDir)), fullPage: true });
+  await page.screenshot({ path: fileURLToPath(new URL(`${actorId}-production-hero-mobile.png`, evidenceDir)), fullPage: true });
   assert.deepEqual(diagnostics.errors, []);
   assert.deepEqual(diagnostics.failedRequests, []);
   await context.close();
