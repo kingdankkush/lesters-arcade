@@ -1,10 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import test from 'node:test';
 
 import { verifyRetirementGate } from '../scripts/hmh-reboot-test-retirement-gate.mjs';
 
-const repoRoot = 'C:\\repo';
+const repoRoot = path.resolve('retirement-gate-fixture-repo');
+const legacyFile = path.join(repoRoot, 'tests', 'legacy-art.test.mjs');
+const differentFile = path.join(repoRoot, 'tests', 'different.test.mjs');
+const runtimeFile = path.join(repoRoot, 'tests', 'runtime.test.mjs');
 const ledger = {
   schema: 'hmh-reboot-legacy-test-retirement-v1',
   failures: [
@@ -21,7 +25,7 @@ function exactEvents() {
     {
       type: 'test:fail',
       name: 'retired binary art contract',
-      file: 'C:\\repo\\tests\\legacy-art.test.mjs',
+      file: legacyFile,
       detailsType: 'test',
       nesting: 0,
     },
@@ -55,7 +59,7 @@ test('retirement gate rejects any extra failure', () => {
   events.splice(1, 0, {
     type: 'test:fail',
     name: 'new runtime regression',
-    file: 'C:\\repo\\tests\\runtime.test.mjs',
+    file: runtimeFile,
     detailsType: 'test',
     nesting: 0,
   });
@@ -80,7 +84,7 @@ test('retirement gate rejects a missing ledger failure', () => {
 
 test('retirement gate matches the failure file as well as its assertion name', () => {
   const events = exactEvents();
-  events[0].file = 'C:\\repo\\tests\\different.test.mjs';
+  events[0].file = differentFile;
 
   const result = verifyRetirementGate({ ledger, events, repoRoot });
   assert.equal(result.ok, false);
