@@ -27,6 +27,21 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /stepPlayerMovement\(/);
   assert.match(source, /resolveAimIntent\(/);
   assert.match(source, /createTouchControlAdapter\(/);
+  assert.match(source, /createCollisionBody\(/);
+  assert.match(source, /createStaticBlocker\(/);
+  assert.match(source, /resolveSweptCircleMotion\(/);
+  assert.match(source, /createAuthoredGroundQuery\(/);
+  assert.match(source, /movementSpeedMultiplierForTransition\(/);
+  assert.match(source, /resolveSweptTraversalPath\(/);
+  assert.match(source, /actor\.groundZ\s*=\s*lastGround\.groundZ/);
+  assert.match(source, /actor\.z\s*=\s*lastGround\.groundZ/);
+  assert.match(source, /visibleAssetId:\s*'graybox-/);
+  assert.match(source, /stageElement\.dataset\.collisionBlocker/);
+  assert.match(source, /stageElement\.dataset\.surfaceId/);
+  assert.match(source, /if \(debugGridEnabled\) \{[\s\S]*stageElement\.dataset\.collisionBlocker/);
+  assert.match(source, /label\.style\.fontSize/);
+  assert.match(source, /view\.width\s*<\s*600/);
+  assert.match(source, /label\.width\s*\*\s*0\.5/);
   assert.match(source, /createActorSpatialState\(/);
   assert.match(source, /createCameraState\(/);
   assert.match(source, /interpolateSpatialState\(/);
@@ -85,7 +100,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions only the minimal reboot shell for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-06'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-07'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));
