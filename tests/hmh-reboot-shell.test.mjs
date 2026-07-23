@@ -23,6 +23,10 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /window\.parent === window[\s\S]*?createStandaloneInitPayload\(\)/);
   assert.match(source, /new DeterministicSimulation\([\s\S]*?seed: payload\.session\.seed/);
   assert.match(source, /new InputState\(\)/);
+  assert.match(source, /createPlayerMotionState\(/);
+  assert.match(source, /stepPlayerMovement\(/);
+  assert.match(source, /resolveAimIntent\(/);
+  assert.match(source, /createTouchControlAdapter\(/);
   assert.match(source, /createActorSpatialState\(/);
   assert.match(source, /createCameraState\(/);
   assert.match(source, /interpolateSpatialState\(/);
@@ -81,7 +85,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions only the minimal reboot shell for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-04'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-06'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));

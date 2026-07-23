@@ -33,6 +33,7 @@ test('pointer screen aim converts through the canonical camera into a normalized
   input.setPointer({ screenX: 500, screenY: 300, fire: true }, 100);
   const snapshot = input.snapshot({ ...context, nowMs: 104 });
   assert.deepEqual(snapshot.actions.aim, { x: 1, y: 0, active: true });
+  assert.equal(snapshot.actions.aimAssist, false);
   assert.equal(snapshot.metadata.aimSource, 'pointer');
   assert.equal(snapshot.actions.fire, true);
   assert.equal(snapshot.metadata.lastActiveDevice, 'keyboard-mouse');
@@ -49,6 +50,7 @@ test('touch controls support simultaneous independent movement and aim plus ever
   const { actions, metadata } = input.snapshot({ ...context, nowMs: 55 });
   assert.deepEqual(actions.move, { x: -1, y: 0 });
   assert.deepEqual(actions.aim, { x: 0, y: 1, active: true });
+  assert.equal(actions.aimAssist, true);
   assert.deepEqual({ fire: actions.fire, melee: actions.melee, grenade: actions.grenade, dash: actions.dash, pause: actions.pause }, {
     fire: true, melee: true, grenade: true, dash: true, pause: true,
   });
@@ -77,8 +79,15 @@ test('keyboard pointer touch and gamepad produce parity-equivalent canonical act
   gamepad.setGamepad({ moveX: 1, moveY: 0, aimX: 0, aimY: -1, fire: true }, 2);
 
   const canonical = (state) => state.snapshot({ ...context, nowMs: 3 }).actions;
-  assert.deepEqual(canonical(keyboard), canonical(touch));
-  assert.deepEqual(canonical(touch), canonical(gamepad));
+  const pointerActions = canonical(keyboard);
+  const touchActions = canonical(touch);
+  const gamepadActions = canonical(gamepad);
+  const gameplay = ({ aimAssist, ...actions }) => actions;
+  assert.deepEqual(gameplay(pointerActions), gameplay(touchActions));
+  assert.deepEqual(gameplay(touchActions), gameplay(gamepadActions));
+  assert.equal(pointerActions.aimAssist, false);
+  assert.equal(touchActions.aimAssist, true);
+  assert.equal(gamepadActions.aimAssist, true);
 });
 
 test('last active device follows the newest source without coupling movement and aim channels', () => {

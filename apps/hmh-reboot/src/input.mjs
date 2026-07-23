@@ -211,6 +211,7 @@ export class InputState {
     const actions = {
       move: { ...move },
       aim,
+      aimAssist: selectedAim?.mode === 'direction',
       fire: sources.some((source) => source.fire),
       melee: sources.some((source) => source.melee),
       grenade: sources.some((source) => source.grenade),

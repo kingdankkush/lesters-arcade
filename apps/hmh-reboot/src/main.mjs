@@ -1,8 +1,16 @@
 import { Application, Container, Graphics, Text } from 'pixi.js';
+import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
+import {
+  applyRecoilImpulse,
+  createPlayerMotionState,
+  resolveEnemyPressure,
+  stepPlayerMovement,
+} from './movement.mjs';
 import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
+import { createTouchControlAdapter } from './touch-controls.mjs';
 import {
   buildDebugGridOverlay,
   createActorSpatialState,
@@ -47,10 +55,12 @@ async function boot() {
   const grid = new Graphics();
   const debugLabels = new Container();
   const shadow = new Graphics().ellipse(0, 0, 30, 12).fill({ color: 0x000000, alpha: 0.4 });
+  const aimLine = new Graphics();
+  const targetMarker = new Graphics().circle(0, 0, 30).fill({ color: 0xff5c7a, alpha: 0.28 }).stroke({ color: 0xff8ca1, width: 3 });
   const marker = new Graphics().circle(0, 0, 24).fill({ color: 0x49ddff }).stroke({ color: 0xffffff, width: 3 });
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, grid, debugLabels, shadow, marker, label);
+  world.addChild(backdrop, grid, debugLabels, shadow, targetMarker, aimLine, marker, label);
   app.stage.addChild(world);
 
   const debugGridEnabled = new URLSearchParams(window.location.search).get('debugGrid') === '1';
@@ -65,11 +75,17 @@ async function boot() {
   let sessionPayload = null;
   let simulation = null;
   let actor = null;
+  let motion = null;
+  let aimState = null;
+  let aimIntent = null;
+  let grayboxEnemies = [];
+  let previousGrenade = false;
   let previousActor = null;
   let renderActor = null;
   let camera = null;
   let input = new InputState();
   let inputController = null;
+  let touchController = null;
   let gamepadWasActive = false;
 
   if (debugOverlay) {
@@ -109,9 +125,32 @@ async function boot() {
     if (renderState && camera) {
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
+      const target = grayboxEnemies[0];
+      if (target) {
+        const targetScreen = worldToScreen({ ...target, z: 0 }, camera, view);
+        targetMarker.position.set(targetScreen.x, targetScreen.y);
+      }
+      aimLine.clear();
+      if (aimIntent) {
+        const aimEnd = worldToScreen({
+          x: renderState.x + aimIntent.direction.x * 96,
+          y: renderState.y + aimIntent.direction.y * 96,
+          z: renderState.z,
+        }, camera, view);
+        aimLine.moveTo(screen.x, screen.y).lineTo(aimEnd.x, aimEnd.y).stroke({ color: aimIntent.fire ? 0xffd166 : 0x49ddff, width: 3, alpha: 0.85 });
+      }
       shadow.position.set(groundScreen.x, groundScreen.y);
       marker.position.set(screen.x, screen.y);
+      marker.rotation = motion ? motion.torsoDirection * (Math.PI / 4) : 0;
+      label.text = aimIntent ? `${aimIntent.source.toUpperCase()} // ${motion?.locomotion.toUpperCase()}` : 'DETERMINISTIC RUNTIME';
       label.position.set(screen.x, screen.y + 58);
+      if (debugGridEnabled) {
+        stageElement.dataset.actorX = renderState.x.toFixed(3);
+        stageElement.dataset.actorY = renderState.y.toFixed(3);
+        stageElement.dataset.targetX = grayboxEnemies[0]?.x.toFixed(3) ?? '';
+        stageElement.dataset.aimSource = aimIntent?.source ?? 'none';
+        stageElement.dataset.firing = String(aimIntent?.fire === true);
+      }
     } else {
       marker.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
@@ -119,11 +158,17 @@ async function boot() {
   };
 
   const stopCurrentSession = () => {
+    touchController?.destroy();
+    touchController = null;
     inputController?.destroy();
     inputController = null;
     if (simulation && simulation.state !== 'exit') simulation.exit();
     previousActor = null;
     renderActor = null;
+    motion = null;
+    aimState = null;
+    aimIntent = null;
+    grayboxEnemies = [];
   };
 
   const initializeSession = (payload) => {
@@ -133,6 +178,11 @@ async function boot() {
     elapsedMs = 0;
     simulation = new DeterministicSimulation({ seed: payload.session.seed });
     actor = createActorSpatialState({ x: 1024, y: 1024, z: 0 });
+    motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: 240 });
+    aimState = createAimState({ autoFireEnabled: true, manualHoldTicks: 8 });
+    aimIntent = null;
+    grayboxEnemies = [{ id: 'graybox-target', x: 1280, y: 1024, radius: 30, kind: 'regular', active: true, targetable: true }];
+    previousGrenade = false;
     previousActor = createActorSpatialState({ ...actor });
     renderActor = actor;
     camera = createCameraState({
@@ -145,8 +195,55 @@ async function boot() {
     input = new InputState();
     gamepadWasActive = false;
     inputController = createBrowserInputController({ input, target: app.canvas, windowRef: window, documentRef: document });
-    simulation.onStep(() => {
+    touchController = createTouchControlAdapter({
+      input,
+      root: stageElement,
+      windowRef: window,
+      documentRef: document,
+      onPause: () => {
+        if (simulation?.state === 'paused') resumeRuntime('user');
+        else pauseRuntime('user');
+      },
+    });
+    simulation.onStep(({ tick, dtSeconds, input: tickInput }) => {
       previousActor = createActorSpatialState({ ...actor });
+      aimIntent = resolveAimIntent(aimState, {
+        tick,
+        actor: motion,
+        input: tickInput,
+        targets: grayboxEnemies,
+        device: tickInput.aimAssist ? 'gamepad' : 'pointer',
+      });
+      if (tickInput.grenade && !previousGrenade) {
+        applyRecoilImpulse(motion, {
+          direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },
+          magnitude: 70,
+        });
+      }
+      previousGrenade = tickInput.grenade;
+      stepPlayerMovement(motion, {
+        move: tickInput.move,
+        aim: { ...aimIntent.direction, active: true },
+      }, { dtSeconds });
+      const pressure = resolveEnemyPressure({
+        x: motion.x,
+        y: motion.y,
+        radius: 24,
+        velocity: { x: motion.vx, y: motion.vy },
+      }, grayboxEnemies);
+      motion.x += pressure.playerDelta.x;
+      motion.y += pressure.playerDelta.y;
+      for (const enemy of grayboxEnemies) {
+        const delta = pressure.enemyDeltas.get(enemy.id);
+        if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+      }
+      actor.x = motion.x;
+      actor.y = motion.y;
+      actor.vx = motion.vx;
+      actor.vy = motion.vy;
+      actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
+      actor.locomotion = motion.locomotion;
+      actor.combat = aimIntent.fire ? 'firing' : 'ready';
     });
     simulation.start();
     app.ticker.start();
@@ -219,8 +316,8 @@ async function boot() {
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);
     followCameraTarget(camera, {
       ...actor,
-      aimX: snapshot.actions.aim.x,
-      aimY: snapshot.actions.aim.y,
+      aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
+      aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });
     renderWorld(renderActor);
     if (!settings.reduceMotion) marker.scale.set(1 + Math.sin(elapsedMs * 0.004) * 0.08);
