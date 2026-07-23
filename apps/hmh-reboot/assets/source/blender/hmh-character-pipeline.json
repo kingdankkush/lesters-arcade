@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "id": "hmh-reboot-character-pipeline-v1",
+  "status": "pipeline-pilot",
+  "tool": {
+    "name": "Blender",
+    "version": "5.1.2",
+    "executable": "D:/Apps/Blender/blender.exe"
+  },
+  "actor": {
+    "id": "neutral-mannequin",
+    "classification": "pipeline-pilot-not-production-art",
+    "heightMeters": 1.8,
+    "anatomy": [
+      "head",
+      "torso",
+      "arm-left",
+      "arm-right",
+      "leg-left",
+      "leg-right"
+    ]
+  },
+  "scene": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-character-template.blend",
+    "renderEngine": "BLENDER_EEVEE",
+    "camera": {
+      "type": "ORTHO",
+      "rotationDegrees": [55, 0, 45],
+      "orthographicScale": 3.2,
+      "target": [0, 0, 0.9]
+    },
+    "transparent": true,
+    "samples": 1,
+    "threads": 1,
+    "randomSeed": 484848,
+    "colorManagement": {
+      "display": "sRGB",
+      "view": "Standard",
+      "look": "None",
+      "exposure": 0,
+      "gamma": 1
+    },
+    "guides": {
+      "groundPlane": "HMH_GroundGuide",
+      "scaleReference": "HMH_ScaleReference",
+      "groundZ": 0
+    }
+  },
+  "rig": {
+    "armature": "HMH_CharacterRig",
+    "rootBone": "root",
+    "bones": [
+      "root",
+      "pelvis",
+      "spine",
+      "chest",
+      "head",
+      "upper_arm.L",
+      "forearm.L",
+      "upper_arm.R",
+      "forearm.R",
+      "thigh.L",
+      "shin.L",
+      "thigh.R",
+      "shin.R",
+      "weapon_socket"
+    ],
+    "sharedHeroProportions": true
+  },
+  "directions": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "directionAnglesDegrees": {
+    "south": 135,
+    "south-east": 180,
+    "east": 225,
+    "north-east": 270,
+    "north": 315,
+    "north-west": 0,
+    "west": 45,
+    "south-west": 90
+  },
+  "layers": [
+    {
+      "id": "shadow",
+      "collection": "HMH_Shadow",
+      "role": "ground-contact-shadow"
+    },
+    {
+      "id": "lower-body",
+      "collection": "HMH_LowerBody",
+      "role": "movement-facing"
+    },
+    {
+      "id": "torso-head",
+      "collection": "HMH_TorsoHead",
+      "role": "aim-facing"
+    },
+    {
+      "id": "weapon",
+      "collection": "HMH_Weapon",
+      "role": "aim-facing-weapon-socket"
+    }
+  ],
+  "optionalLayers": [
+    "coat-hair"
+  ],
+  "clips": {
+    "shadow": {
+      "idle": {
+        "frames": 1,
+        "fps": 1
+      }
+    },
+    "lower-body": {
+      "idle": {
+        "frames": 1,
+        "fps": 1
+      },
+      "run": {
+        "frames": 4,
+        "fps": 12
+      }
+    },
+    "torso-head": {
+      "aim": {
+        "frames": 1,
+        "fps": 1
+      }
+    },
+    "weapon": {
+      "aim": {
+        "frames": 1,
+        "fps": 1
+      }
+    }
+  },
+  "composition": {
+    "lowerBodyState": "run",
+    "upperBodyState": "aim",
+    "independentDirections": true,
+    "weaponSocket": "weapon_socket",
+    "layerOrder": [
+      "shadow",
+      "lower-body",
+      "torso-head",
+      "weapon"
+    ]
+  },
+  "scripts": {
+    "createScene": "scripts/hmh-blender/create-hmh-character-template.py",
+    "export": "scripts/hmh-blender/export-hmh-mannequin.py",
+    "pack": "scripts/build-hmh-blender-atlas.py",
+    "run": "scripts/run-hmh-blender-pipeline.py"
+  },
+  "render": {
+    "frameSize": [128, 128],
+    "fileFormat": "PNG",
+    "colorMode": "RGBA",
+    "colorDepth": 8,
+    "alphaThreshold": 8,
+    "rawOutputDirectory": ".tmp/hmh-reboot-blender/raw",
+    "naming": "{actor}__{layer}__{state}__{direction}__{frame:03d}.png"
+  },
+  "pivot": {
+    "anchor": "bottom-center-ground-contact",
+    "sourcePixels": [64, 104],
+    "maxVariancePx": 0.5
+  },
+  "atlas": {
+    "padding": 2,
+    "powerOfTwo": true,
+    "maxSize": 2048,
+    "outputDirectory": "apps/portal/assets/generated/hmh-reboot-mannequin",
+    "image": "hmh-reboot-mannequin-atlas.png",
+    "metadata": "hmh-reboot-mannequin-atlas.json",
+    "metrics": "hmh-reboot-mannequin-metrics.json",
+    "contactSheet": "hmh-reboot-mannequin-contact-sheet.png"
+  },
+  "palette": {
+    "outline": "#10162A",
+    "suit": "#345D9D",
+    "suitHighlight": "#8CB7FF",
+    "mannequin": "#C9D2DE",
+    "weapon": "#F1D37A",
+    "shadow": "#0B0E1A"
+  },
+  "qa": {
+    "transparentCorners": true,
+    "rejectEmptyFrames": true,
+    "rejectUnexpectedFrameSizes": true,
+    "rejectMissingDirections": true,
+    "rejectMissingLayers": true,
+    "rejectOffPaletteMaterials": true,
+    "paletteDistanceThreshold": 54,
+    "maxOffPaletteRatio": 0.08,
+    "shadowMeanAlphaMin": 32,
+    "shadowMeanAlphaMax": 96,
+    "mobilePreviewScales": [1, 0.75, 0.5]
+  }
+}

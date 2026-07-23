@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "pipelineId": "hmh-reboot-character-pipeline-v1",
+  "status": "pass",
+  "classification": "pipeline-pilot-not-production-art",
+  "frameCount": 64,
+  "missingFrames": [],
+  "unexpectedFrames": [],
+  "maxPivotVariancePx": 0,
+  "transparentCornerFailures": 0,
+  "emptyFrameFailures": 0,
+  "minOpaquePixelsByLayer": {
+    "shadow": 514,
+    "lower-body": 496,
+    "torso-head": 815,
+    "weapon": 292
+  },
+  "meanAlphaByLayer": {
+    "shadow": 75.512,
+    "lower-body": 215.54,
+    "torso-head": 232.46,
+    "weapon": 201.41
+  },
+  "maxFrameWidth": 65,
+  "maxFrameHeight": 85,
+  "maxOffPaletteRatio": 0.00339,
+  "maxOffPaletteRatioBudget": 0.08,
+  "sourceBlendSha256": "51d38902be06fcd5c21d6bf1c88acda676a56b2d40ffb25561b2a2b33111b3ff",
+  "atlasSha256": "bac76730619d9061b678ced96ec90080881d97ca4ae30cfcb7fba9a480b7d1dc",
+  "metadataSha256": "36fdbae8a1c2640f6ce5eab9fb254bc743459efed42767a1e1262b78a7f977ca",
+  "rawFrameSetSha256": "a445781de82f3b54ba2f95186eaa8562609b6e7c7fd4fdea4a37be69e7d8dfb5",
+  "atlasSize": {
+    "width": 512,
+    "height": 512
+  },
+  "contactSheet": "./hmh-reboot-mannequin-contact-sheet.png",
+  "reproducibility": {
+    "status": "pass",
+    "runs": 2,
+    "rawFrameSetSha256": "a445781de82f3b54ba2f95186eaa8562609b6e7c7fd4fdea4a37be69e7d8dfb5",
+    "atlasSha256": "bac76730619d9061b678ced96ec90080881d97ca4ae30cfcb7fba9a480b7d1dc",
+    "metadataSha256": "36fdbae8a1c2640f6ce5eab9fb254bc743459efed42767a1e1262b78a7f977ca"
+  }
+}

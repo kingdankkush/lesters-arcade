@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Text } from 'pixi.js';
+import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
@@ -50,6 +50,13 @@ import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid } from './prototype-actor-art.mjs';
+import {
+  MANNEQUIN_ATLAS_IMAGE_URL,
+  MANNEQUIN_ATLAS_METADATA_URL,
+  MANNEQUIN_RUNTIME_SCALE,
+  createMannequinAtlasIndex,
+  createMannequinDisplay,
+} from './mannequin-atlas.mjs';
 import {
   LEVEL_ONE_WORLD,
   buildLevelOneMinimapGeometry,
@@ -129,6 +136,9 @@ async function boot() {
   app.canvas.setAttribute('aria-label', 'Hard Money Heroes gameplay canvas');
   stageElement.replaceChildren(app.canvas);
 
+  const runtimeParams = new URLSearchParams(window.location.search);
+  const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
+
   const world = new Container();
   const backdrop = new Graphics();
   const terrainGeometry = new Graphics();
@@ -159,9 +169,27 @@ async function boot() {
     outlineColor: 0xffffff,
     weapon: true,
   }));
+  let mannequinDisplay = null;
+  if (pipelinePilotEnabled) {
+    const [metadataResponse, atlasTexture] = await Promise.all([
+      fetch(MANNEQUIN_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
+      Assets.load(MANNEQUIN_ATLAS_IMAGE_URL),
+    ]);
+    if (!metadataResponse.ok) throw new Error(`Mannequin metadata failed with ${metadataResponse.status}`);
+    mannequinDisplay = createMannequinDisplay({
+      index: createMannequinAtlasIndex(await metadataResponse.json()),
+      atlasTexture,
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      TextureClass: Texture,
+      RectangleClass: Rectangle,
+    });
+  }
+  const actorVisual = mannequinDisplay?.container ?? marker;
+  shadow.visible = !pipelinePilotEnabled;
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, marker, collisionDebug, label);
+  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
   app.stage.addChild(world, minimap);
 
   const createEnemyMarker = (enemy) => {
@@ -185,7 +213,6 @@ async function boot() {
     }
   };
 
-  const runtimeParams = new URLSearchParams(window.location.search);
   const debugGridEnabled = runtimeParams.get('debugGrid') === '1';
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
@@ -637,8 +664,19 @@ async function boot() {
         aimLine.moveTo(screen.x, screen.y).lineTo(aimEnd.x, aimEnd.y).stroke({ color: aimIntent.fire ? 0xffd166 : 0x49ddff, width: 3, alpha: 0.85 });
       }
       shadow.position.set(groundScreen.x, groundScreen.y);
-      marker.position.set(screen.x, screen.y);
-      marker.rotation = motion ? motion.torsoDirection * (Math.PI / 4) : 0;
+      actorVisual.position.set(pipelinePilotEnabled ? groundScreen.x : screen.x, pipelinePilotEnabled ? groundScreen.y : screen.y);
+      if (mannequinDisplay && motion) {
+        mannequinDisplay.applyPose({
+          simulationTick: simulation?.tick ?? 0,
+          locomotion: motion.locomotion,
+          legDirection: motion.legDirection,
+          torsoDirection: motion.torsoDirection,
+        });
+        actorVisual.scale.set(MANNEQUIN_RUNTIME_SCALE * camera.zoom);
+        actorVisual.rotation = 0;
+      } else {
+        marker.rotation = motion ? motion.torsoDirection * (Math.PI / 4) : 0;
+      }
       if (debugGridEnabled && playerBody) {
         collisionDebug.circle(groundScreen.x, groundScreen.y, playerBody.radius * camera.zoom).stroke({ color: 0xffd166, width: 2, alpha: 0.9 });
         const contact = lastCollision?.contacts.at(-1);
@@ -695,7 +733,10 @@ async function boot() {
         stageElement.dataset.projectileDrops = String(droppedProjectiles);
         stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
         stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
-        stageElement.dataset.actorArt = marker.label ?? '';
+        stageElement.dataset.actorArt = actorVisual.label ?? '';
+        stageElement.dataset.actorArtSource = pipelinePilotEnabled ? 'blender-atlas-v1' : 'pixi-graybox';
+        stageElement.dataset.actorArtLayers = mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
+        stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
         stageElement.dataset.enemyArt = [...enemyMarkers.values()].every((enemyMarker) => enemyMarker.label?.startsWith('prototype-human-'))
           ? 'prototype-human-graybox'
           : 'invalid';
@@ -748,7 +789,7 @@ async function boot() {
       }
     } else {
       minimap.clear();
-      marker.position.set(view.width * 0.5, view.height * 0.5);
+      actorVisual.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
     }
   };

@@ -112,6 +112,25 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   );
 });
 
+test('opt-in Blender pilot composes render state without replacing the default graybox path', async () => {
+  const source = await read('../apps/hmh-reboot/src/main.mjs');
+  const atlasSource = await read('../apps/hmh-reboot/src/mannequin-atlas.mjs');
+  assert.match(source, /MANNEQUIN_ATLAS_IMAGE_URL/);
+  assert.match(source, /MANNEQUIN_ATLAS_METADATA_URL/);
+  assert.match(source, /MANNEQUIN_RUNTIME_SCALE \* camera\.zoom/);
+  assert.match(source, /createMannequinAtlasIndex/);
+  assert.match(source, /createMannequinDisplay/);
+  assert.match(source, /runtimeParams\.get\('pipelinePilot'\) === '1'/);
+  assert.match(source, /fetch\(MANNEQUIN_ATLAS_METADATA_URL/);
+  assert.match(source, /Assets\.load\(MANNEQUIN_ATLAS_IMAGE_URL\)/);
+  assert.match(source, /mannequinDisplay\.applyPose\(\{[\s\S]*simulationTick:[\s\S]*locomotion:[\s\S]*legDirection:[\s\S]*torsoDirection:/);
+  assert.match(source, /actorVisual\.position\.set\(pipelinePilotEnabled \? groundScreen\.x : screen\.x, pipelinePilotEnabled \? groundScreen\.y : screen\.y\)/);
+  assert.match(source, /stageElement\.dataset\.actorArtSource/);
+  assert.match(atlasSource, /pipeline-pilot-human-atlas/);
+  assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
+  assert.doesNotMatch(source, /pipelinePilotEnabled[\s\S]{0,120}(?:collision|damage|score|wallet|settlement)\s*=/i);
+});
+
 test('runtime gives every projectile hit intent a stable per-projectile identifier', async () => {
   const source = await read('../apps/hmh-reboot/src/main.mjs');
   assert.match(source, /id: `\$\{shot\.id\}:\$\{hit\.targetId\}:\$\{hit\.kind\}`/);
@@ -173,7 +192,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions only the minimal reboot shell for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v4-hmh-reboot-12'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v5-hmh-reboot-19'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js']) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));
