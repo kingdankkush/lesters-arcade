@@ -1,0 +1,32 @@
+{
+  "schema": "hmh-reboot-commando-concept-metrics-v1",
+  "status": "pass",
+  "pipelineId": "hmh-reboot-commando-concepts-v1",
+  "runtimeClassification": "concept-review-only",
+  "gameplayBodyProfile": "human-medium-collision-v1",
+  "conceptCount": 6,
+  "directionCount": 3,
+  "renderCount": 18,
+  "reproducibility": "pass",
+  "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 8,
+    "maxChannelDelta": 2,
+    "maxTotalChannelDelta": 32
+  },
+  "reproducibilityObserved": {
+    "maxChangedVisiblePixels": 2,
+    "maxChannelDelta": 1,
+    "maxTotalChannelDelta": 3
+  },
+  "rawFrameSetSha256": "c302df178651d7a638a11b23466a4dd3d790ad78c9f485f7c77004b375584fe5",
+  "uniqueDecodedFrameCount": 18,
+  "emptyFrameCount": 0,
+  "transparentCornerFailureCount": 0,
+  "externalDependencyCount": 0,
+  "armature": "HMH_CommandoConceptRig",
+  "boneCount": 14,
+  "weaponSocket": true,
+  "sourceBlendSha256": "34692cd843e96ffabd767729997f947c95275497e6cb7f23824091b01c2ed568",
+  "contactSheetSha256": "18d929cfda04d61d57c8b47fab100053f5bc57c295000a853459388ee50e6cda"
+}

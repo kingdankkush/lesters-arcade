@@ -23,6 +23,7 @@
     "assets:atlas": "python scripts/generate-hmh-hd-sprite-atlas.py",
     "assets:hmh:blender-pipeline": "python scripts/run-hmh-blender-pipeline.py",
     "assets:hmh:blender-pipeline:verify": "python scripts/run-hmh-blender-pipeline.py --verify-reproducible",
+    "assets:hmh:commando-concepts": "python scripts/run-hmh-commando-concepts.py",
     "smoke:hmh:blender-pilot": "node scripts/hmh-reboot-blender-pilot-browser-smoke.mjs",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",

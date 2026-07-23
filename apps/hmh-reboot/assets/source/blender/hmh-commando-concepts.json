@@ -1,0 +1,182 @@
+{
+  "schema": "hmh-reboot-commando-concepts-v1",
+  "pipelineId": "hmh-reboot-commando-concepts-v1",
+  "runtimeClassification": "concept-review-only",
+  "gameplayBodyProfile": "human-medium-collision-v1",
+  "directions": [
+    "south",
+    "east",
+    "north"
+  ],
+  "directionAngles": {
+    "south": 45,
+    "east": 135,
+    "north": 225
+  },
+  "render": {
+    "engine": "BLENDER_EEVEE",
+    "frameSize": [
+      256,
+      256
+    ],
+    "transparentFilm": true,
+    "samples": 32,
+    "rawOutputDirectory": ".tmp/hmh-reboot-commando-concepts/raw"
+  },
+  "scene": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-commando-concepts.blend",
+    "generator": "scripts/hmh-blender/create-hmh-commando-concepts.py",
+    "blenderVersion": "5.1.2",
+    "armature": "HMH_CommandoConceptRig",
+    "weaponSocket": "weapon_socket"
+  },
+  "output": {
+    "contactSheet": "docs/hmh-reboot/assets/hmh-commando-concepts.png",
+    "metrics": "docs/hmh-reboot/assets/hmh-commando-concepts-metrics.json"
+  },
+  "palette": {
+    "litecoinBlue": "#345D9D",
+    "litecoinLight": "#8CB7FF",
+    "cyan": "#C9FF6A",
+    "silver": "#C9D2DE",
+    "silverDark": "#6F7B91",
+    "charcoal": "#11151F",
+    "teal": "#3FAE8A",
+    "tealLight": "#7FE8C9",
+    "gold": "#C9A34E",
+    "orange": "#FF9B3D",
+    "skin": "#C98F68",
+    "shadow": "#0B0E1A"
+  },
+  "actors": [
+    {
+      "id": "lit-commando",
+      "displayName": "Litecoin Commando",
+      "role": "starter-tank",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "identityCues": [
+        "silver armor",
+        "Litecoin blue armor",
+        "cyan visor",
+        "broad tank silhouette"
+      ],
+      "variants": [
+        {
+          "id": "reserve-vanguard",
+          "displayName": "Reserve Vanguard",
+          "gameplayBodyProfile": "human-medium-collision-v1",
+          "weaponSocket": "weapon_socket",
+          "silhouette": [
+            "broad twin pauldrons",
+            "compact armored torso",
+            "short orange command scarf"
+          ],
+          "materials": [
+            "silver armor",
+            "Litecoin blue armor",
+            "cyan visor",
+            "orange scarf"
+          ]
+        },
+        {
+          "id": "hashstorm-breacher",
+          "displayName": "Hashstorm Breacher",
+          "gameplayBodyProfile": "human-medium-collision-v1",
+          "weaponSocket": "weapon_socket",
+          "silhouette": [
+            "asymmetric heavy pauldron",
+            "layered chest rig",
+            "reinforced forearm guard"
+          ],
+          "materials": [
+            "charcoal armor",
+            "silver armor",
+            "Litecoin blue armor",
+            "cyan visor"
+          ]
+        },
+        {
+          "id": "frontier-ranger",
+          "displayName": "Frontier Ranger",
+          "gameplayBodyProfile": "human-medium-collision-v1",
+          "weaponSocket": "weapon_socket",
+          "silhouette": [
+            "tall armored collar",
+            "bounded split coat panels",
+            "single blue pauldron"
+          ],
+          "materials": [
+            "silver armor",
+            "charcoal cloth",
+            "Litecoin blue armor",
+            "cyan visor"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lit-valkyrie",
+      "displayName": "Litecoin Valkyrie",
+      "role": "starter-agile",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "identityCues": [
+        "teal plasma armor",
+        "short teal hair",
+        "agile silhouette"
+      ],
+      "variants": [
+        {
+          "id": "plasma-striker",
+          "displayName": "Plasma Striker",
+          "gameplayBodyProfile": "human-medium-collision-v1",
+          "weaponSocket": "weapon_socket",
+          "silhouette": [
+            "short swept teal hair",
+            "angled light pauldrons",
+            "asymmetric hip plate"
+          ],
+          "materials": [
+            "teal plasma armor",
+            "silver armor",
+            "charcoal body suit",
+            "cyan energy trim"
+          ]
+        },
+        {
+          "id": "circuit-valkyrie",
+          "displayName": "Circuit Valkyrie",
+          "gameplayBodyProfile": "human-medium-collision-v1",
+          "weaponSocket": "weapon_socket",
+          "silhouette": [
+            "short teal crest",
+            "winged shoulder fins",
+            "compact tactical waist"
+          ],
+          "materials": [
+            "teal plasma armor",
+            "charcoal body suit",
+            "silver armor",
+            "gold circuit accents"
+          ]
+        },
+        {
+          "id": "aurora-scout",
+          "displayName": "Aurora Scout",
+          "gameplayBodyProfile": "human-medium-collision-v1",
+          "weaponSocket": "weapon_socket",
+          "silhouette": [
+            "short side-swept teal hair",
+            "compact visor crown",
+            "tapered forearm fins"
+          ],
+          "materials": [
+            "teal plasma armor",
+            "Litecoin blue armor",
+            "silver armor",
+            "cyan energy trim"
+          ]
+        }
+      ]
+    }
+  ]
+}
