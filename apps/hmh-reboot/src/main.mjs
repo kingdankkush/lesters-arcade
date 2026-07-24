@@ -1899,6 +1899,7 @@ async function boot() {
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
     if (debugGridEnabled) stageElement.dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions);
+    if (frame.steps > 0) input.consumeBufferedActions(snapshot.sequence);
     if (upgradePending && simulation.state === 'active' && (!progressionPilotEnabled || simulation.tick >= 2)) {
       const progressionSnapshot = getRunProgressionSnapshot(runProgression);
       upgradePending = false;

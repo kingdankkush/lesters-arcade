@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "release": "hmh-aaa-cycle-002",
+  "generatedAt": "2026-07-24T22:24:10Z",
+  "status": "SOURCE_CERTIFIED_PREVIEW_PENDING",
+  "branch": "reboot/hmh-aaa-continuous",
+  "baseCommit": "68c981449f6c62936729f14ec08c4d6f6db57d66",
+  "cycleBaselineCommit": "b2488667db7a634b975484d426b7f8103988a00a",
+  "certifiedCodePatch": {
+    "scope": "git diff --binary 68c981449f6c62936729f14ec08c4d6f6db57d66 -- apps scripts tests package.json",
+    "sha256": "67b68cd8dcaa2c8bebc48f1a4c6bfd3fd3c74f3103538390cb9d96de7d727c1a"
+  },
+  "changes": {
+    "input": [
+      "Fire, melee, grenade, and dash aggregate rising edges are retained for at most 100 ms",
+      "Pending edges survive render frames that admit zero fixed steps",
+      "The first frame with one or more admitted fixed steps acknowledges pending edges",
+      "Keyboard, pointer, touch, and gamepad share the same buffering contract",
+      "Existing reset paths clear all pending actions"
+    ],
+    "authority": [
+      "Input buffering remains outside canonical fixed-step gameplay state",
+      "Replay, RNG, collision, elevation, save, bridge, Web3, Ranked, and settlement authority are unchanged"
+    ],
+    "releaseHarness": [
+      "Deterministic Vercel asset preparation refreshed the curated runtime index for existing portal lifecycle and analytics modules",
+      "A reboot-native action consequence harness verifies same-task down/up events on desktop and mobile",
+      "A production-versus-candidate memory A/B records pre-existing browser retained-memory debt without attributing it to Cycle 002"
+    ]
+  },
+  "tests": {
+    "total": 1619,
+    "passed": 1567,
+    "acceptedLegacyFailures": 52,
+    "unexpectedFailures": 0,
+    "legacyFailureFiles": 35,
+    "focusedInputCombat": "PASS 75/75"
+  },
+  "build": {
+    "gameBundleBytes": 963568,
+    "gameBundleMaxBytes": 1050000,
+    "gameBundleSha256": "33131067b0c913afce71d2c0633254c4ea5b4a3828a0483ba79cf21f52e986a1",
+    "portalMainBytes": 1246613,
+    "portalMainSha256": "df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81",
+    "portalMainBuildContext": "after assets:hmh:curated-level-kit-runtime, matching Vercel vercel:build",
+    "serviceWorkerBytes": 3508,
+    "serviceWorkerSha256": "8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a",
+    "hmhHtmlBytes": 4365,
+    "hmhHtmlSha256": "10a373bccbf59ecfa6a1ec382d91bd9e6b35f0888eb8d2b921b3be67344b0bb1",
+    "portalIndexSha256": "06465ce0e247a3d07c27e384ad845fc2feb2e77a1cf4d5e26d044f607d682184"
+  },
+  "assets": {
+    "status": "PASS",
+    "atlasCount": 4,
+    "runtimeAuthority": "projection-only"
+  },
+  "security": {
+    "status": "PASS",
+    "checks": "5/5",
+    "findings": 0,
+    "sandbox": "3/3",
+    "credentialPatternMatchesInAddedLines": 0
+  },
+  "web3": {
+    "sourceBoundary": "PASS 9/9",
+    "liveReadiness": "PARTIAL 3/4",
+    "blocked": "Required LitVM contracts are undeployed",
+    "transactionsPerformed": false,
+    "deploymentAuthorized": false
+  },
+  "networkAudit": {
+    "status": "PASS",
+    "scenarios": 4,
+    "httpErrors": 0,
+    "fatalRequestFailures": 0,
+    "consoleErrors": 0,
+    "pageErrors": 0
+  },
+  "performance": {
+    "desktopP95FrameMs": 7,
+    "desktopHeapDeltaBytes": -3083853,
+    "mobileP95FrameMs": 7,
+    "mobileHeapDeltaBytes": 11304873,
+    "rebootCombatSoakRetainedHeapDeltaBytes": 618136,
+    "inputBufferCycles": 260000,
+    "inputBufferRetainedHeapDeltaBytes": 2000,
+    "inputBufferRetainedHeapRangeBytes": 3272,
+    "inputBufferPendingActions": 0,
+    "browserHeldActionCandidateDeltaBytes": 10154499,
+    "browserHeldActionProductionDeltaBytes": 10196991,
+    "browserCandidateMinusProductionBytes": -42492,
+    "browserAbsoluteThresholdStatus": "PRE_EXISTING_DEBT_NO_CYCLE_REGRESSION"
+  },
+  "determinism": {
+    "fixedHz": 60,
+    "maxCatchUpSteps": 4,
+    "partitions": [60, 30, 20],
+    "rebootCombatSoakRepeatHash": "6e6820f8f2d9039d8e17aca11c2001b125f10465cc44334bbc842fb1cbe0b830",
+    "droppedTimeMsAt60Fps": 0,
+    "droppedTimeMsAt30Fps": 0,
+    "droppedTimeMsAt20Fps": 0
+  },
+  "browser": {
+    "chrome": "PASS 5/5",
+    "edge": "PASS 5/5",
+    "profiles": ["desktop", "ultrawide", "tablet-landscape", "mobile-portrait", "mobile-landscape"],
+    "touchControlsContained": true,
+    "anchorDeterminism": "PASS",
+    "normalModeErrors": 0
+  },
+  "actionBufferEvidence": {
+    "desktopPointerAmmoBefore": 8,
+    "desktopPointerAmmoAfter": 7,
+    "desktopHandGrenadesBefore": 3,
+    "desktopHandGrenadesAfter": 2,
+    "desktopMeleeTick": 33,
+    "desktopDashReadyTick": 637,
+    "mobileHandGrenadesBefore": 3,
+    "mobileHandGrenadesAfter": 2,
+    "mobileMeleeTick": 32,
+    "mobileDashReadyTick": 637,
+    "browserErrors": 0,
+    "productionHero": "lit-commando"
+  },
+  "production": {
+    "url": "https://lestersarcade.io",
+    "currentDeployment": "dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9",
+    "durableRollbackDeployment": "dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk",
+    "unchanged": true,
+    "promotionAuthorized": false
+  },
+  "preview": {
+    "deployment": null,
+    "artifactVerified": false
+  },
+  "nextGate": "Final exact-index independent reviews, commit/push, exact preview deployment, and byte verification"
+}

@@ -13,6 +13,8 @@ const ACTION_DEFAULTS = Object.freeze({
 });
 
 export const POINTER_AIM_IDLE_MS = 1000;
+export const ACTION_BUFFER_MS = 100;
+const BUFFERED_ACTIONS = Object.freeze(['fire', 'melee', 'grenade', 'dash']);
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -126,6 +128,20 @@ export class InputState {
     this.lastInputAtMs = 0;
     this.resetReason = null;
     this.sequence = 0;
+    this.pendingActions = new Map();
+    this.lastBufferedSnapshot = null;
+  }
+
+  heldActions() {
+    const keyboard = keyboardActions(this.keys);
+    const sources = [keyboard, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
+    return Object.fromEntries(BUFFERED_ACTIONS.map((action) => [action, sources.some((source) => source[action])]));
+  }
+
+  captureActionEdges(before, after, at) {
+    for (const action of BUFFERED_ACTIONS) {
+      if (!before[action] && after[action]) this.pendingActions.set(action, at);
+    }
   }
 
   markDevice(device, atMs) {
@@ -140,14 +156,17 @@ export class InputState {
 
   setKey(code, down, atMs) {
     if (!GAMEPLAY_KEYS.has(code)) return false;
+    const before = this.heldActions();
     const at = this.markDevice('keyboard-mouse', atMs);
     if (down) this.keys.add(code);
     else this.keys.delete(code);
     this.keyboardAt = at;
+    this.captureActionEdges(before, this.heldActions(), at);
     return true;
   }
 
   setPointer({ screenX, screenY, fire = false } = {}, atMs) {
+    const before = this.heldActions();
     const at = this.markDevice('keyboard-mouse', atMs);
     this.pointer = {
       screenX: finite(screenX, 'pointer screenX'),
@@ -155,9 +174,11 @@ export class InputState {
       fire: bool(fire),
     };
     this.pointerAt = at;
+    this.captureActionEdges(before, this.heldActions(), at);
   }
 
   setTouch(value = {}, atMs) {
+    const before = this.heldActions();
     const at = this.markDevice('touch', atMs);
     this.touch = {
       move: normalizeDirection(Number(value.moveX ?? 0), Number(value.moveY ?? 0)),
@@ -165,9 +186,11 @@ export class InputState {
       actions: actionRecord(value),
     };
     this.touchAt = at;
+    this.captureActionEdges(before, this.heldActions(), at);
   }
 
   setGamepad(value = {}, atMs) {
+    const before = this.heldActions();
     const at = this.markDevice('gamepad', atMs);
     this.gamepad = {
       move: normalizeDirection(Number(value.moveX ?? value.move?.x ?? 0), Number(value.moveY ?? value.move?.y ?? 0)),
@@ -175,6 +198,7 @@ export class InputState {
       actions: actionRecord(value.actions ?? value),
     };
     this.gamepadAt = at;
+    this.captureActionEdges(before, this.heldActions(), at);
   }
 
   reset(reason = 'reset', atMs = this.lastInputAtMs) {
@@ -190,10 +214,29 @@ export class InputState {
     this.lastActiveDevice = 'none';
     this.lastInputAtMs = at;
     this.resetReason = String(reason);
+    this.pendingActions.clear();
+    this.lastBufferedSnapshot = null;
+  }
+
+  consumeBufferedActions(sequence) {
+    if (!Number.isInteger(sequence) || sequence !== this.lastBufferedSnapshot?.sequence) {
+      throw new TypeError('buffered action consumption requires the latest snapshot sequence');
+    }
+    for (const [action, bufferedAt] of this.lastBufferedSnapshot.entries) {
+      if (this.pendingActions.get(action) === bufferedAt) this.pendingActions.delete(action);
+    }
+    const consumed = this.lastBufferedSnapshot.entries.length;
+    this.lastBufferedSnapshot = null;
+    return consumed;
   }
 
   snapshot({ actor, camera, viewport, nowMs }) {
     const now = timestamp(nowMs);
+    for (const [action, bufferedAt] of this.pendingActions) {
+      if (now - bufferedAt > ACTION_BUFFER_MS) this.pendingActions.delete(action);
+    }
+    const bufferedEntries = [...this.pendingActions.entries()];
+    const buffered = new Set(bufferedEntries.map(([action]) => action));
     const movementCandidates = [];
     const keyboard = keyboardMove(this.keys);
     if (hasDirection(keyboard)) movementCandidates.push({ value: keyboard, at: this.keyboardAt });
@@ -227,15 +270,16 @@ export class InputState {
       move: { ...move },
       aim,
       aimAssist: selectedAim?.mode === 'direction',
-      fire: sources.some((source) => source.fire),
-      melee: sources.some((source) => source.melee),
-      grenade: sources.some((source) => source.grenade),
-      dash: sources.some((source) => source.dash),
+      fire: buffered.has('fire') || sources.some((source) => source.fire),
+      melee: buffered.has('melee') || sources.some((source) => source.melee),
+      grenade: buffered.has('grenade') || sources.some((source) => source.grenade),
+      dash: buffered.has('dash') || sources.some((source) => source.dash),
       pause: sources.some((source) => source.pause),
       weaponSlot: sources.find((source) => source.weaponSlot > 0)?.weaponSlot ?? 0,
       weaponNext: sources.some((source) => source.weaponNext),
     };
     this.sequence += 1;
+    this.lastBufferedSnapshot = { sequence: this.sequence, entries: bufferedEntries };
     return freezeDeep({
       sequence: this.sequence,
       actions,
@@ -245,6 +289,7 @@ export class InputState {
         lastInputAtMs: this.lastInputAtMs,
         sourceLatencyMs: Math.max(0, now - this.lastInputAtMs),
         resetReason: this.resetReason,
+        bufferedActions: bufferedEntries.map(([action]) => action),
       },
     });
   }

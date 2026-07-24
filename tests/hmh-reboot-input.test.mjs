@@ -9,6 +9,7 @@ import {
   computeTouchControlLayout,
   createBrowserInputController,
 } from '../apps/hmh-reboot/src/input.mjs';
+import { FIXED_STEP_MS, DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
 import { createCameraState } from '../apps/hmh-reboot/src/world-space.mjs';
 
 const context = {
@@ -134,6 +135,71 @@ test('reset clears sticky movement aim and actions after blur visibility or poin
   assert.equal(snapshot.actions.fire, false);
   assert.equal(snapshot.actions.dash, false);
   assert.equal(snapshot.metadata.resetReason, 'visibility-hidden');
+});
+
+test('rapid one-shot combat taps survive a zero-step render frame and are consumed by exactly one fixed tick', () => {
+  const bindings = [
+    ['Space', 'fire'],
+    ['KeyE', 'melee'],
+    ['KeyF', 'grenade'],
+    ['ShiftLeft', 'dash'],
+  ];
+  for (const [code, action] of bindings) {
+    const input = new InputState();
+    const simulation = new DeterministicSimulation();
+    const consumed = [];
+    simulation.onStep(({ input: tickInput }) => consumed.push(tickInput[action]));
+    simulation.start();
+
+    input.setKey(code, true, 1);
+    input.setKey(code, false, 2);
+    const beforeStep = input.snapshot({ ...context, nowMs: 3 });
+    assert.equal(beforeStep.actions[action], true, `${action} tap must remain buffered after release`);
+    assert.equal(simulation.update(FIXED_STEP_MS / 2, beforeStep.actions).steps, 0);
+
+    const admitted = input.snapshot({ ...context, nowMs: 4 });
+    assert.equal(admitted.actions[action], true, `${action} tap must survive a render frame with no fixed step`);
+    assert.equal(simulation.update(FIXED_STEP_MS / 2, admitted.actions).steps, 1);
+    input.consumeBufferedActions(admitted.sequence);
+
+    const afterStep = input.snapshot({ ...context, nowMs: 5 });
+    assert.equal(afterStep.actions[action], false, `${action} tap must clear after the admitted fixed tick`);
+    simulation.update(FIXED_STEP_MS, afterStep.actions);
+    assert.deepEqual(consumed, [true, false], `${action} tap must enter replay authority exactly once`);
+  }
+});
+
+test('unconsumed one-shot combat taps expire after the bounded 100 ms response window', () => {
+  const input = new InputState();
+  input.setKey('ShiftLeft', true, 0);
+  input.setKey('ShiftLeft', false, 1);
+  assert.equal(input.snapshot({ ...context, nowMs: 100 }).actions.dash, true);
+  assert.equal(input.snapshot({ ...context, nowMs: 101 }).actions.dash, false);
+});
+
+test('pointer touch and gamepad rising edges receive the same one-shot action buffering as keyboard', () => {
+  const pointer = new InputState();
+  pointer.setPointer({ screenX: 500, screenY: 300, fire: true }, 1);
+  pointer.setPointer({ screenX: 500, screenY: 300, fire: false }, 2);
+  assert.equal(pointer.snapshot({ ...context, nowMs: 3 }).actions.fire, true);
+
+  for (const device of ['touch', 'gamepad']) {
+    const input = new InputState();
+    const pressed = { fire: true, melee: true, grenade: true, dash: true };
+    if (device === 'touch') {
+      input.setTouch(pressed, 1);
+      input.setTouch({}, 2);
+    } else {
+      input.setGamepad(pressed, 1);
+      input.setGamepad({}, 2);
+    }
+    const actions = input.snapshot({ ...context, nowMs: 3 }).actions;
+    assert.deepEqual(
+      { fire: actions.fire, melee: actions.melee, grenade: actions.grenade, dash: actions.dash },
+      pressed,
+      `${device} taps must retain every buffered combat action`,
+    );
+  }
 });
 
 test('radial normalization removes deadzone drift and caps magnitude at one', () => {

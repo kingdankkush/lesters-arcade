@@ -14,7 +14,7 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - Parent owns wallet, profile, leaderboard, analytics, Ranked evidence, and settlement
 - LitVM contracts require a separate explicit HALT release
 
-## Production baseline preserved for Cycle 001
+## Production baseline preserved
 
 - Source commit: `68c981449f6c62936729f14ec08c4d6f6db57d66`
 - Deployment: `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`
@@ -38,3 +38,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Certification: `RELEASE-CERTIFICATION-AAA-CYCLE-001.md`
   - RED evidence: `RED-EVIDENCE-AAA-CYCLE-001.md`
   - Preview verification: `PREVIEW-VERIFICATION-AAA-CYCLE-001.md`
+- [ ] Cycle 002: bounded one-shot combat input buffering across keyboard, pointer, touch, and gamepad
+  - Status: source certified; preview pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-002.md`
+  - Certification: `RELEASE-CERTIFICATION-AAA-CYCLE-002.md`
+  - RED evidence: `RED-EVIDENCE-AAA-CYCLE-002.md`
+  - Memory audit: `MEMORY-AUDIT-AAA-CYCLE-002.md`
