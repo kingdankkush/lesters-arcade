@@ -99,6 +99,22 @@ Evidence:
 - `.tmp/hmh-aaa-cycle-001/combat-roster-timing.log`
 - `.tmp/hmh-aaa-cycle-001/gates/30-portal-diagnostic.log`
 
+## Preview CI cross-platform failure
+
+The first Vercel preview build failed closed in Linux CI:
+
+```text
+unexpected failure: tests/hmh-soak-explicit-gc.test.mjs :: soak GC helper relaunches the exact script with --expose-gc and propagates status
+```
+
+The test hard-coded a Windows `fileURLToPath` result. GREEN derives the expectation with the host runtime's own `fileURLToPath`, preserving the exact behavior assertion on Windows and Linux.
+
+Evidence:
+
+- `.tmp/hmh-aaa-cycle-001/vercel-preview-deploy.log`
+- `.tmp/hmh-aaa-cycle-001/gates/47-cross-platform-gc-helper.log`
+- `.tmp/hmh-aaa-cycle-001/gates/48-post-preview-release.log`
+
 ## GREEN closure
 
 - Observability unit tests: 6/6.

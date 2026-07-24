@@ -6,8 +6,8 @@
   "branch": "reboot/hmh-aaa-continuous",
   "baseCommit": "68c981449f6c62936729f14ec08c4d6f6db57d66",
   "certifiedCodePatch": {
-    "scope": "git diff --cached --binary -- apps scripts tests package.json",
-    "sha256": "a2b4efda813101c8fa3da53190a499fca076689bab1cb979a190511f072291f3"
+    "scope": "git diff --binary 68c981449f6c62936729f14ec08c4d6f6db57d66 -- apps scripts tests package.json",
+    "sha256": "9468e9a139fed6a3844249e7bf18cc8d270367073ebd4509fcb37cde0ef65999"
   },
   "changes": {
     "observability": [

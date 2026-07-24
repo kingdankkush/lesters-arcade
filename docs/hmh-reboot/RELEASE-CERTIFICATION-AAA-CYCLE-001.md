@@ -14,8 +14,8 @@ It does not deploy contracts, change Web3 authority, promote production, change 
 
 - Branch: `reboot/hmh-aaa-continuous`
 - Base: `68c981449f6c62936729f14ec08c4d6f6db57d66`
-- Code patch scope: `git diff --cached --binary -- apps scripts tests package.json`
-- Code patch SHA-256: `a2b4efda813101c8fa3da53190a499fca076689bab1cb979a190511f072291f3`
+- Code patch scope: `git diff --binary 68c981449f6c62936729f14ec08c4d6f6db57d66 -- apps scripts tests package.json`
+- Code patch SHA-256: `9468e9a139fed6a3844249e7bf18cc8d270367073ebd4509fcb37cde0ef65999`
 
 ## Verification
 

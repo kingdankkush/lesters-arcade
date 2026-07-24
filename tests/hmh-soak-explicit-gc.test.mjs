@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { ensureExplicitGc } from '../scripts/hmh-soak-explicit-gc.mjs';
 
 test('soak GC helper stays in-process when explicit GC is already available', () => {
@@ -32,7 +33,7 @@ test('soak GC helper relaunches the exact script with --expose-gc and propagates
   assert.equal(exitStatus, 7);
   assert.equal(calls.length, 1);
   assert.equal(calls[0][0], 'node');
-  assert.deepEqual(calls[0][1], ['--expose-gc', 'C:\\repo\\soak.mjs']);
+  assert.deepEqual(calls[0][1], ['--expose-gc', fileURLToPath('file:///C:/repo/soak.mjs')]);
   assert.deepEqual(calls[0][2], { stdio: 'inherit', env: { TEST: '1' } });
 });
 

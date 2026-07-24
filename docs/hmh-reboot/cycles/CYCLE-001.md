@@ -38,6 +38,7 @@ Status: **LOCAL CERTIFIED; PREVIEW PENDING**
 ### Release-gate maintenance
 
 - Soaks that measure retained heap now self-relaunch with explicit GC.
+- The GC-helper test derives file-URL paths from the host runtime, preserving Windows/Linux CI parity.
 - Combat browser smoke now matches the authored two-family opening roster and waits on stable pressure/safety evidence.
 - Portal smoke now probes the four active production hero atlases instead of retired generated art.
 - Portal and service-worker cache tokens are `hmh-aaa-cycle-001` / `lesters-arcade-v6-hmh-aaa-cycle-001`.
