@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "release": "hmh-aaa-cycle-001",
+  "generatedAt": "2026-07-24T15:21:22Z",
+  "status": "PREVIEW_VERIFIED_PRODUCTION_APPROVAL_PENDING",
+  "sourceCommit": "33b7a2dd3bffe3b5142e4a6acef093e39b7ca7d3",
+  "branch": "reboot/hmh-aaa-continuous",
+  "deployment": {
+    "id": "dpl_5prnSaryWWHWzd1gEBhr2S26yk2e",
+    "target": "preview",
+    "status": "Ready",
+    "url": "https://lesters-arcade-3faaleg9u-justin-agent-projects.vercel.app",
+    "protectedByVercelSso": true,
+    "verificationMethod": "authenticated vercel curl"
+  },
+  "vercelCi": {
+    "releaseSuite": "PASS 1615/1563/52",
+    "syntax": "PASS 319 JS + 40 Python",
+    "contracts": "PASS",
+    "generatedAssets": "PASS",
+    "build": "PASS"
+  },
+  "artifacts": {
+    "portalIndexSourceSha256": "8cf9e671714f320289bc1967ccfcac286295e61dbb691c8926ab94854505e299",
+    "portalIndexHostedDifference": "Vercel preview feedback toolbar injection only; stripped hash matches source",
+    "hmhIndexSha256": "10a373bccbf59ecfa6a1ec382d91bd9e6b35f0888eb8d2b921b3be67344b0bb1",
+    "hmhGameSha256": "bde4d3e5b9df49760c5944c0d0c84b020656f071eccb48732db8bcdcb604d847",
+    "hmhGameBytes": 962113,
+    "portalMainSha256": "df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81",
+    "portalMainBytes": 1246613,
+    "serviceWorkerSha256": "b6318a84880817a83be6ed3386e457c820c45790c48823bd4ed5a524a4c3205b",
+    "serviceWorkerBytes": 3500
+  },
+  "headers": {
+    "parentUnsafeEval": false,
+    "childUnsafeEval": true,
+    "childFrameAncestors": "self",
+    "parentFrameAncestors": "none",
+    "hmhContentType": "text/html; charset=utf-8",
+    "gameContentType": "application/javascript; charset=utf-8",
+    "serviceWorkerContentType": "application/javascript; charset=utf-8"
+  },
+  "analytics": {
+    "path": "/_vercel/insights/script.js",
+    "status": 200,
+    "contentType": "application/javascript; charset=utf-8",
+    "bytes": 2495
+  },
+  "browserEvidence": {
+    "localExactSourceChromeProfiles": "PASS 5/5",
+    "localExactSourceEdgeProfiles": "PASS 5/5",
+    "gamepadDeltaX": 99.12,
+    "gamepadDeltaY": 0,
+    "previewBrowserNote": "Raw preview is SSO-protected; authenticated artifact and header verification used without weakening project protection"
+  },
+  "production": {
+    "url": "https://lestersarcade.io",
+    "deployment": "dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9",
+    "unchanged": true,
+    "promotionAuthorized": false
+  },
+  "rollback": {
+    "deployment": "dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk",
+    "status": "Ready"
+  },
+  "litvm": {
+    "deploymentAuthorized": false,
+    "transactionsPerformed": false,
+    "status": "HALT"
+  }
+}

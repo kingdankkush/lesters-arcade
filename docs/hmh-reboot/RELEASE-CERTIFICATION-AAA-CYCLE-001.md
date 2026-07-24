@@ -43,7 +43,7 @@ It does not deploy contracts, change Web3 authority, promote production, change 
 
 - HMH game bundle: `962,113` bytes
 - HMH game bundle SHA-256: `bde4d3e5b9df49760c5944c0d0c84b020656f071eccb48732db8bcdcb604d847`
-- Portal main SHA-256: `66f5474a18132e808fcc94b5906ff5609dc3730d4952c2507b4cd6d9738c3d9e`
+- Portal main SHA-256 after the required curated-level generator: `df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81`
 - Service worker SHA-256: `b6318a84880817a83be6ed3386e457c820c45790c48823bd4ed5a524a4c3205b`
 - Portal index SHA-256: `8cf9e671714f320289bc1967ccfcac286295e61dbb691c8926ab94854505e299`
 

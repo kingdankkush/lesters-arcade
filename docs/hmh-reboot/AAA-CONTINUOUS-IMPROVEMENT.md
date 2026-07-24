@@ -33,7 +33,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Cycle index
 
-- [ ] Cycle 001: network/console observability, historical 404 closure, and measured movement/input/camera feel improvements
-  - Status: local certified; exact preview pending
+- [x] Cycle 001: network/console observability, historical 404 closure, and measured movement/input/camera feel improvements
+  - Status: preview verified; production approval pending
   - Certification: `RELEASE-CERTIFICATION-AAA-CYCLE-001.md`
   - RED evidence: `RED-EVIDENCE-AAA-CYCLE-001.md`
+  - Preview verification: `PREVIEW-VERIFICATION-AAA-CYCLE-001.md`

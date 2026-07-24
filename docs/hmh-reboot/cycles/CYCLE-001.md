@@ -1,6 +1,6 @@
 # Cycle 001: Observability and Movement Feel
 
-Status: **LOCAL CERTIFIED; PREVIEW PENDING**
+Status: **PREVIEW VERIFIED; PRODUCTION APPROVAL PENDING**
 
 ## Objective
 
@@ -73,4 +73,4 @@ Key failures before implementation:
 
 ## Release checkpoint
 
-Local certification is complete. Exact-index reviews, branch commit/push, exact preview deployment, and byte verification remain. Production is unchanged and requires explicit approval. LitVM remains behind a separate explicit HALT release.
+Preview deployment `dpl_5prnSaryWWHWzd1gEBhr2S26yk2e` is Ready and artifact-verified. See `PREVIEW-VERIFICATION-AAA-CYCLE-001.md`. Production is unchanged and requires explicit approval for this exact candidate. LitVM remains behind a separate explicit HALT release.
