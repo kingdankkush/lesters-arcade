@@ -1,3 +1,5 @@
+import { isScreenPointVisible } from './runtime-performance.mjs';
+
 function freezeDeep(value) {
   if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
   for (const child of Object.values(value)) freezeDeep(child);
@@ -151,6 +153,14 @@ function mixColor(from, to, amount) {
   return (channel(16) << 16) | (channel(8) << 8) | channel(0);
 }
 
+function screenBoundsVisible(points, view, margin) {
+  if (points.some((point) => isScreenPointVisible(point, view, margin))) return true;
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  return Math.max(...xs) >= -margin && Math.min(...xs) <= view.width + margin
+    && Math.max(...ys) >= -margin && Math.min(...ys) <= view.height + margin;
+}
+
 function drawRoute(layers, points, route, kit) {
   layers.routes.moveTo(points[0].x, points[0].y);
   for (const point of points.slice(1)) layers.routes.lineTo(point.x, point.y);
@@ -234,9 +244,10 @@ function drawInteraction(graphic, center, kit, zoom, pulse, hazard = false) {
   }
 }
 
-export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick }) {
+export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick, performanceProfile }) {
   if (!worldProduction?.layers || !world || !camera || !view) throw new TypeError('world renderer inputs are required');
   if (typeof queryGround !== 'function' || typeof worldToScreen !== 'function') throw new TypeError('world projection functions are required');
+  if (!performanceProfile || !Number.isInteger(performanceProfile.particlesPerHazard)) throw new TypeError('performance profile is required');
   nonNegativeInteger(tick, 'tick');
   clearWorldProductionLayers(worldProduction);
   const layers = worldProduction.layers;
@@ -248,6 +259,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const kit = DISTRICT_PRODUCTION_MATERIALS[district.id];
     const a = project({ x: district.area.minX, y: district.area.minY, z: 0 });
     const b = project({ x: district.area.maxX, y: district.area.maxY, z: 0 });
+    if (!screenBoundsVisible([a, b], view, performanceProfile.worldCullMargin)) continue;
     layers.terrain.rect(a.x, a.y, b.x-a.x, b.y-a.y).fill({ color: kit.groundColor, alpha: 1 });
     const width = b.x-a.x;
     const height = b.y-a.y;
@@ -270,6 +282,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       return project({x:node.x,y:node.y,z:ground.groundZ});
     });
     routePoints.zoom = camera.zoom;
+    if (!screenBoundsVisible(routePoints, view, performanceProfile.worldCullMargin)) continue;
     const firstNode = world.routeGraph.nodes.find((node) => node.id === route.nodeIds[0]);
     drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id]);
   }
@@ -277,6 +290,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   for (const surface of world.surfaces) {
     const vertices=rectVertices(surface.area);
     const points=vertices.map((vertex)=>{const sampled=queryGround(vertex.x,vertex.y); return project({...vertex,z:surface.waterLevel??sampled.groundZ});});
+    if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
     const district=districtAt(vertices[0].x); const shader=shaderByDistrict.get(district.id); const kit=DISTRICT_PRODUCTION_MATERIALS[district.id];
     const palette={water:0x126d91,'shallow-water':0x20a3b8,bridge:0x856e51};
     const districtSurface=surface.kind==='ledge' ? mixColor(kit.groundColor,kit.detailColor,0.24) : mixColor(kit.groundColor,kit.detailColor,0.16);
@@ -287,32 +301,44 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
-  for (const feature of world.blockers) drawBlocker(layers.blockers, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
+  for (const feature of world.blockers) {
+    const shape = feature.shape;
+    const anchors = shape.type === 'circle' ? [shape.center] : shape.type === 'capsule' ? [shape.a, shape.b] : shape.vertices;
+    const points = anchors.map((point) => project({ ...point, z: 0 }));
+    if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
+    drawBlocker(layers.blockers, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
+  }
 
   for (const destructible of world.interactions.destructibles) {
     const ground=queryGround(destructible.anchor.x,destructible.anchor.y); const center=project({...destructible.anchor,z:ground.groundZ}); const s=18*camera.zoom;
+    if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     layers.details.roundRect(center.x-s,center.y-s*0.7,s*2,s*1.4,4).fill({color:0x5c4433,alpha:1}).stroke({color:0xd7a766,width:3});
     layers.details.moveTo(center.x-s,center.y).lineTo(center.x+s,center.y).moveTo(center.x,center.y-s*0.7).lineTo(center.x,center.y+s*0.7).stroke({color:0x2e211a,width:2,alpha:0.7});
   }
   for (const zone of world.interactions.explosiveZones) {
     const ground=queryGround(zone.anchor.x,zone.anchor.y); const center=project({...zone.anchor,z:ground.groundZ}); const s=12*camera.zoom;
+    if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     for(let index=-1;index<=1;index+=1) layers.details.roundRect(center.x+index*s*1.6-s*0.5,center.y-s,s,s*2,3).fill({color:0xa13b31}).stroke({color:0xffbe55,width:2});
   }
 
   for (const landmark of world.landmarks) {
     const ground=queryGround(landmark.anchor.x,landmark.anchor.y); const center=project({...landmark.anchor,z:ground.groundZ}); const kit=LANDMARK_PRODUCTION_KITS[landmark.visualKind]; const glow=shaderByDistrict.get(landmark.districtId).beaconGlow;
+    if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     drawLandmark(layers.landmarks,landmark,kit,center,camera.zoom,glow);
     layers.lighting.circle(center.x,center.y,(44+glow*16)*camera.zoom).fill({color:kit.accentColor,alpha:0.035+glow*0.045});
   }
 
   for (const poi of world.pointsOfInterest) {
     const ground=queryGround(poi.anchor.x,poi.anchor.y); const center=project({...poi.anchor,z:ground.groundZ});
+    if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     drawInteraction(layers.interactions,center,INTERACTION_PRODUCTION_KITS[poi.hook],camera.zoom,0,false);
   }
+  let renderedParticleCount = 0;
   for (const hazard of world.interactions.hazards) {
     const ground=queryGround(hazard.anchor.x,hazard.anchor.y); const center=project({...hazard.anchor,z:ground.groundZ}); const shader=shaderByDistrict.get(hazard.districtId); const kit=INTERACTION_PRODUCTION_KITS[hazard.kind];
+    if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     drawInteraction(layers.interactions,center,kit,camera.zoom,shader.hazardPulse,true);
-    for(const particle of resolveWorldParticleField({id:hazard.id,x:hazard.anchor.x,y:hazard.anchor.y,tick,count:10,radius:52})) {const screen=project({...particle,z:ground.groundZ+particle.size*4}); layers.particles.circle(screen.x,screen.y,particle.size*camera.zoom).fill({color:kit.color,alpha:particle.alpha});}
+    for(const particle of resolveWorldParticleField({id:hazard.id,x:hazard.anchor.x,y:hazard.anchor.y,tick,count:performanceProfile.particlesPerHazard,radius:52})) {const screen=project({...particle,z:ground.groundZ+particle.size*4}); layers.particles.circle(screen.x,screen.y,particle.size*camera.zoom).fill({color:kit.color,alpha:particle.alpha}); renderedParticleCount += 1;}
   }
 
   const vignette=36;
@@ -324,6 +350,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     artId: WORLD_PRODUCTION_ART.id,
     shaderIds: WORLD_PRODUCTION_ART.shaderIds,
     particleCount: world.interactions.hazards.length * 10,
+    renderedParticleCount,
     districtCount: world.districts.length,
     blockerCount: world.blockers.length,
     landmarkCount: world.landmarks.length,

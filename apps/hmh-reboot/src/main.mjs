@@ -62,6 +62,11 @@ import {
   selectRunUpgrade,
 } from './run-progression.mjs';
 import { buildRunResultMessages, getWeb3AdapterStatus } from './run-adapters.mjs';
+import {
+  compactExpiredEventsInPlace,
+  isScreenPointVisible,
+  selectRuntimePerformanceProfile,
+} from './runtime-performance.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid } from './prototype-actor-art.mjs';
 import {
@@ -145,13 +150,19 @@ function setStatus(status, detail = '') {
 
 async function boot() {
   if (!stageElement) throw new Error('HMH reboot stage is missing');
+  const performanceProfile = selectRuntimePerformanceProfile({
+    width: window.innerWidth,
+    devicePixelRatio: window.devicePixelRatio || 1,
+    coarsePointer: window.matchMedia('(pointer: coarse)').matches,
+    reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  });
   const app = new Application();
   await app.init({
     resizeTo: stageElement,
     background: '#071522',
-    antialias: true,
+    antialias: performanceProfile.antialias,
     autoDensity: true,
-    resolution: Math.min(window.devicePixelRatio || 1, 2),
+    resolution: performanceProfile.resolution,
     preference: 'webgl',
     powerPreference: 'high-performance',
   });
@@ -292,6 +303,7 @@ async function boot() {
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
     bridge: Object.freeze({ x: 4_700, y: 2_400 }),
+    hazard: Object.freeze({ x: 3_500, y: 3_100 }),
     hashwood: Object.freeze({ x: 7_000, y: 2_000 }),
     mining: Object.freeze({ x: 9_200, y: 1_600 }),
     yard: Object.freeze({ x: 11_000, y: 2_400 }),
@@ -423,6 +435,7 @@ async function boot() {
       queryGround,
       worldToScreen,
       tick: simulation?.tick ?? 0,
+      performanceProfile,
     });
   };
 
@@ -531,25 +544,34 @@ async function boot() {
       enemyTelegraphs.clear();
       bossTelegraphs.clear();
       bossVisual.visible = false;
+      let animatedEnemyCount = 0;
       for (const enemy of grayboxEnemies) {
         const enemyMarker = enemyMarkers.get(enemy.id);
         if (!enemyMarker) continue;
-        enemyMarker.visible = enemy.active;
-        if (!enemy.active) continue;
+        if (!enemy.active) {
+          enemyMarker.visible = false;
+          continue;
+        }
         const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
         const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
-        const enemyAngle = Math.atan2(enemy.velocity.y, enemy.velocity.x);
-        const enemyDirection = ((Math.round(enemyAngle / (Math.PI / 4)) % 8) + 8) % 8;
-        enemyMarker.applyPose({
-          state: resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
-          tick: simulation?.tick ?? 0,
-          direction: enemyDirection,
-          elite: isEliteEnemyProjection(enemy.id),
-        });
-        enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
-        enemyMarker.scale.set(camera.zoom);
-        enemyMarker.rotation = 0;
-        enemyMarker.alpha = Math.max(0.35, enemy.health / enemy.maxHealth);
+        const markerVisible = isScreenPointVisible(enemyScreen, view, performanceProfile.enemyCullMargin)
+          && animatedEnemyCount < performanceProfile.maxAnimatedEnemies;
+        enemyMarker.visible = markerVisible;
+        if (markerVisible) {
+          animatedEnemyCount += 1;
+          const enemyAngle = Math.atan2(enemy.velocity.y, enemy.velocity.x);
+          const enemyDirection = ((Math.round(enemyAngle / (Math.PI / 4)) % 8) + 8) % 8;
+          enemyMarker.applyPose({
+            state: resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
+            tick: simulation?.tick ?? 0,
+            direction: enemyDirection,
+            elite: isEliteEnemyProjection(enemy.id),
+          });
+          enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
+          enemyMarker.scale.set(camera.zoom);
+          enemyMarker.rotation = 0;
+          enemyMarker.alpha = Math.max(0.35, enemy.health / enemy.maxHealth);
+        }
         if (enemy.attackPhase !== 'tell' || !enemy.telegraphTarget || !simulation) continue;
         const targetScreen = worldToScreen({ ...enemy.telegraphTarget, z: enemy.telegraphTarget.groundZ }, camera, view);
         const tellRatio = Math.max(0, Math.min(1, (enemy.attackPhaseUntilTick - simulation.tick) / archetype.attack.tellTicks));
@@ -580,6 +602,8 @@ async function boot() {
           continue;
         }
         const deathScreen = worldToScreen({ x: death.x, y: death.y, z: death.groundZ }, camera, view);
+        death.graphic.visible = isScreenPointVisible(deathScreen, view, performanceProfile.enemyCullMargin);
+        if (!death.graphic.visible) continue;
         death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: 0, elite: death.elite });
         death.graphic.position.set(deathScreen.x, deathScreen.y);
         death.graphic.scale.set(camera.zoom);
@@ -632,6 +656,7 @@ async function boot() {
         if (!shot.state) continue;
         const from = worldToScreen(shot.state.previous, camera, view);
         const to = worldToScreen(shot.state.current, camera, view);
+        if (!isScreenPointVisible(from, view, 48) && !isScreenPointVisible(to, view, 48)) continue;
         const shotColor = WEAPON_COLORS[shot.weaponId] ?? 0x49ddff;
         projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
           .stroke({ color: shotColor, width: 7, alpha: 0.24 });
@@ -651,11 +676,12 @@ async function boot() {
           .stroke({ color: 0xff5c7a, width: 2, alpha: 0.35 + (1 - fuseRatio) * 0.55 });
       }
       if (simulation) {
-        combatVisualEvents = combatVisualEvents.filter((event) => simulation.tick - event.tick <= HIT_FEEDBACK_TICKS);
+        compactExpiredEventsInPlace(combatVisualEvents, simulation.tick, HIT_FEEDBACK_TICKS);
         for (const event of combatVisualEvents) {
           const age = simulation.tick - event.tick;
           const alpha = Math.max(0.08, 1 - age / HIT_FEEDBACK_TICKS);
           const center = worldToScreen(event.point, camera, view);
+          if (!isScreenPointVisible(center, view, 128)) continue;
           if (event.type === 'muzzle') {
             combatVisuals.circle(center.x, center.y, 8 + age * 1.2).fill({ color: event.color, alpha: alpha * 0.72 });
           } else if (event.type === 'melee') {
@@ -800,8 +826,12 @@ async function boot() {
         stageElement.dataset.worldArt = 'production-vector-world-v1';
         stageElement.dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
         stageElement.dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);
+        stageElement.dataset.worldRenderedParticles = String(worldArtReport?.renderedParticleCount ?? 0);
         stageElement.dataset.worldBlockers = String(worldArtReport?.blockerCount ?? 0);
         stageElement.dataset.worldLandmarks = String(worldArtReport?.landmarkCount ?? 0);
+        stageElement.dataset.performanceProfile = performanceProfile.id;
+        stageElement.dataset.renderResolution = String(performanceProfile.resolution);
+        stageElement.dataset.animatedEnemies = String(animatedEnemyCount);
         const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
         const audioSnapshot = combatAudio.status();
         stageElement.dataset.runScore = String(runSnapshot?.score ?? 0);

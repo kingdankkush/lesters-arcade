@@ -31,6 +31,7 @@
     "smoke:hmh:production-hero:lester": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs --actor lester-original",
     "smoke:hmh:production-hero:lilly": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs --actor lilly",
     "smoke:hmh:cockpit": "node scripts/hmh-reboot-cockpit-browser-smoke.mjs",
+    "smoke:hmh:performance": "node scripts/hmh-reboot-performance-browser-smoke.mjs",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
     "visual:regression": "npm run build && node scripts/visual-regression.mjs",
