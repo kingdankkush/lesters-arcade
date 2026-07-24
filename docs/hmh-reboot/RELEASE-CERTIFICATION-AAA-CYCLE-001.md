@@ -1,12 +1,12 @@
 # HMH AAA Cycle 001 Release Certification
 
-Generated: `2026-07-24T14:56:26Z`
+Generated: `2026-07-24T15:40:48Z`
 
 Status: **LOCAL CERTIFIED; PREVIEW PENDING**
 
 ## Scope
 
-Cycle 001 closes the historical local analytics 404, adds permanent clean/warm network and console observability, fixes direction-dependent movement acceleration, and aligns camera follow with interpolated render state.
+Cycle 001 closes the historical local analytics 404, removes four latent broken retired-art references, adds permanent clean/warm network and console observability, fixes direction-dependent movement acceleration, and aligns camera follow with interpolated render state.
 
 It does not deploy contracts, change Web3 authority, promote production, change save/bridge/session contracts, or replace active artwork.
 
@@ -15,14 +15,14 @@ It does not deploy contracts, change Web3 authority, promote production, change 
 - Branch: `reboot/hmh-aaa-continuous`
 - Base: `68c981449f6c62936729f14ec08c4d6f6db57d66`
 - Code patch scope: `git diff --binary 68c981449f6c62936729f14ec08c4d6f6db57d66 -- apps scripts tests package.json`
-- Code patch SHA-256: `9468e9a139fed6a3844249e7bf18cc8d270367073ebd4509fcb37cde0ef65999`
+- Code patch SHA-256: `88bf1d296e7ff1f7127744c365dee8b2c1c4400a30acbbefeac67c2668990edd`
 
 ## Verification
 
 | Gate | Result |
 |---|---:|
 | Syntax | PASS, 319 JS + 40 Python |
-| Exact release suite | PASS, 1,615 total / 1,563 pass / exact 52 accepted failures |
+| Exact release suite | PASS, 1,616 total / 1,564 pass / exact 52 accepted failures |
 | Build | PASS |
 | Active assets | PASS, 4 atlases / 2,569,321 bytes |
 | Security | PASS, 5/5, zero findings |
@@ -44,8 +44,8 @@ It does not deploy contracts, change Web3 authority, promote production, change 
 - HMH game bundle: `962,113` bytes
 - HMH game bundle SHA-256: `bde4d3e5b9df49760c5944c0d0c84b020656f071eccb48732db8bcdcb604d847`
 - Portal main SHA-256 after the required curated-level generator: `df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81`
-- Service worker SHA-256: `b6318a84880817a83be6ed3386e457c820c45790c48823bd4ed5a524a4c3205b`
-- Portal index SHA-256: `8cf9e671714f320289bc1967ccfcac286295e61dbb691c8926ab94854505e299`
+- Service worker SHA-256: `8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a`
+- Portal index SHA-256: `06465ce0e247a3d07c27e384ad845fc2feb2e77a1cf4d5e26d044f607d682184`
 
 ## Runtime evidence
 
@@ -66,4 +66,4 @@ It does not deploy contracts, change Web3 authority, promote production, change 
 
 ## Remaining release gate
 
-Obtain exact-index gameplay, security, visual, and deployment reviews. Then commit and push the continuation branch, deploy the exact preview, byte-verify it, and stop for production approval.
+Commit and push the post-review gallery correction, deploy and byte-verify a replacement preview, and stop for production approval.

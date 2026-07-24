@@ -115,6 +115,27 @@ Evidence:
 - `.tmp/hmh-aaa-cycle-001/gates/47-cross-platform-gc-helper.log`
 - `.tmp/hmh-aaa-cycle-001/gates/48-post-preview-release.log`
 
+## Late portal-gallery RED
+
+A post-review static audit found four hidden lazy-image references in `apps/portal/index.html` that resolved to missing retired generated HMH drafts. The production app shell hid the legacy gallery, so normal viewport audits did not request them, but the source still violated the active-art and no-broken-reference contracts.
+
+RED evidence:
+
+```text
+AssertionError: ./assets/generated/hmh-lester-hero-sprite-sheet-textfree-web.jpg resolves to a shipped file
+false !== true
+```
+
+GREEN replaces all four retired references with the active Lester, Lilly, Commando, and Valkyrie production contact sheets. The new fail-closed HTML image-reference test passes, all four files return HTTP 200, decode at 1470x2024, and browser evidence records zero errors.
+
+Evidence:
+
+- `.tmp/hmh-aaa-cycle-001/red-lazy-portal-images.log`
+- `.tmp/hmh-aaa-cycle-001/green-lazy-portal-images.log`
+- `.tmp/hmh-aaa-cycle-001/gates/54-portal-production-gallery-browser.log`
+- `.hermes/evidence/hmh-aaa-cycle-001/portal-gallery/report.json`
+- `.hermes/evidence/hmh-aaa-cycle-001/portal-gallery/active-production-heroes.png`
+
 ## GREEN closure
 
 - Observability unit tests: 6/6.

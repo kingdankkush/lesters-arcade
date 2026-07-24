@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "release": "hmh-aaa-cycle-001",
-  "generatedAt": "2026-07-24T14:56:26Z",
+  "generatedAt": "2026-07-24T15:40:48Z",
   "status": "LOCAL_CERTIFIED_PREVIEW_PENDING",
   "branch": "reboot/hmh-aaa-continuous",
   "baseCommit": "68c981449f6c62936729f14ec08c4d6f6db57d66",
   "certifiedCodePatch": {
     "scope": "git diff --binary 68c981449f6c62936729f14ec08c4d6f6db57d66 -- apps scripts tests package.json",
-    "sha256": "9468e9a139fed6a3844249e7bf18cc8d270367073ebd4509fcb37cde0ef65999"
+    "sha256": "88bf1d296e7ff1f7127744c365dee8b2c1c4400a30acbbefeac67c2668990edd"
   },
   "changes": {
     "observability": [
@@ -23,12 +23,13 @@
     "releaseHarness": [
       "All memory-measuring soaks self-relaunch with explicit GC",
       "Combat smoke matches the authored two-family opening and stable pressure/safety contracts",
-      "Portal smoke probes all four active production hero atlases instead of retired generated art"
+      "Portal smoke probes all four active production hero atlases instead of retired generated art",
+      "Every static portal image reference must resolve to a shipped file; the active gallery uses production hero contact sheets"
     ]
   },
   "tests": {
-    "total": 1615,
-    "passed": 1563,
+    "total": 1616,
+    "passed": 1564,
     "acceptedLegacyFailures": 52,
     "unexpectedFailures": 0,
     "legacyFailureFiles": 35
@@ -39,8 +40,8 @@
     "gameBundleSha256": "bde4d3e5b9df49760c5944c0d0c84b020656f071eccb48732db8bcdcb604d847",
     "portalMainSha256": "df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81",
     "portalMainBuildContext": "after assets:hmh:curated-level-kit-runtime, matching Vercel vercel:build",
-    "serviceWorkerSha256": "b6318a84880817a83be6ed3386e457c820c45790c48823bd4ed5a524a4c3205b",
-    "portalIndexSha256": "8cf9e671714f320289bc1967ccfcac286295e61dbb691c8926ab94854505e299"
+    "serviceWorkerSha256": "8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a",
+    "portalIndexSha256": "06465ce0e247a3d07c27e384ad845fc2feb2e77a1cf4d5e26d044f607d682184"
   },
   "assets": {
     "status": "PASS",

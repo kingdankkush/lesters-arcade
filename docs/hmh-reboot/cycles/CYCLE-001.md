@@ -1,6 +1,6 @@
 # Cycle 001: Observability and Movement Feel
 
-Status: **PREVIEW VERIFIED; PRODUCTION APPROVAL PENDING**
+Status: **RECERTIFIED; REPLACEMENT PREVIEW PENDING**
 
 ## Objective
 
@@ -41,7 +41,9 @@ Status: **PREVIEW VERIFIED; PRODUCTION APPROVAL PENDING**
 - The GC-helper test derives file-URL paths from the host runtime, preserving Windows/Linux CI parity.
 - Combat browser smoke now matches the authored two-family opening roster and waits on stable pressure/safety evidence.
 - Portal smoke now probes the four active production hero atlases instead of retired generated art.
-- Portal and service-worker cache tokens are `hmh-aaa-cycle-001` / `lesters-arcade-v6-hmh-aaa-cycle-001`.
+- Portal and service-worker cache tokens are `hmh-aaa-cycle-001` / `lesters-arcade-v7-hmh-aaa-cycle-001-gallery`.
+- Removed four hidden broken references to retired generated HMH drafts and replaced them with the active Lester, Lilly, Commando, and Valkyrie production contact sheets.
+- Added a fail-closed test requiring every static local portal image reference to resolve to a shipped file.
 
 ## RED evidence
 
@@ -58,7 +60,7 @@ Key failures before implementation:
 
 ## Verification
 
-- Exact release suite: 1,615 total, 1,563 passed, exact 52 accepted failures, zero unexpected.
+- Exact release suite: 1,616 total, 1,564 passed, exact 52 accepted failures, zero unexpected.
 - Syntax: 319 JS modules and 40 Python scripts.
 - Assets: four active production atlases, 2,569,321 bytes total.
 - Security: 5/5, zero findings; sandbox 3/3.
@@ -73,4 +75,4 @@ Key failures before implementation:
 
 ## Release checkpoint
 
-Preview deployment `dpl_5prnSaryWWHWzd1gEBhr2S26yk2e` is Ready and artifact-verified. See `PREVIEW-VERIFICATION-AAA-CYCLE-001.md`. Production is unchanged and requires explicit approval for this exact candidate. LitVM remains behind a separate explicit HALT release.
+Preview deployment `dpl_5prnSaryWWHWzd1gEBhr2S26yk2e` was superseded after a late read-only audit found hidden broken retired-art references. The corrected candidate is locally recertified and requires a replacement exact preview. Production is unchanged. LitVM remains behind a separate explicit HALT release.

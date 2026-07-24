@@ -2,7 +2,9 @@
 
 Generated: `2026-07-24T15:21:22Z`
 
-Status: **PREVIEW VERIFIED; PRODUCTION APPROVAL PENDING**
+Status: **SUPERSEDED BY POST-REVIEW GALLERY CORRECTION**
+
+This preview was superseded at `2026-07-24T15:40:48Z` after a late read-only audit found four hidden portal references to missing retired generated HMH assets. It is not a production candidate.
 
 ## Source and deployment
 

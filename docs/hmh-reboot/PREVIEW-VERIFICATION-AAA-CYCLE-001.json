@@ -2,7 +2,9 @@
   "schemaVersion": 1,
   "release": "hmh-aaa-cycle-001",
   "generatedAt": "2026-07-24T15:21:22Z",
-  "status": "PREVIEW_VERIFIED_PRODUCTION_APPROVAL_PENDING",
+  "status": "SUPERSEDED_BY_POST_REVIEW_GALLERY_CORRECTION",
+  "supersededAt": "2026-07-24T15:40:48Z",
+  "supersededReason": "Hidden portal gallery referenced four missing retired generated HMH assets; corrected candidate requires replacement preview",
   "sourceCommit": "33b7a2dd3bffe3b5142e4a6acef093e39b7ca7d3",
   "branch": "reboot/hmh-aaa-continuous",
   "deployment": {

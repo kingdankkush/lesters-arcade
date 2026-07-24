@@ -2099,6 +2099,20 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.hasBeginButton, true);
 });
 
+test('portal HTML local image references resolve to shipped files', () => {
+  const portalHtml = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const localImageSources = [...portalHtml.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)]
+    .map((match) => match[1])
+    .filter((source) => source.startsWith('./'));
+
+  assert.ok(localImageSources.length > 0, 'portal exposes static local image references');
+  for (const source of localImageSources) {
+    const cleanSource = source.split(/[?#]/, 1)[0];
+    const assetPath = fileURLToPath(new URL(`../apps/portal/${cleanSource.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(assetPath), true, `${source} resolves to a shipped file`);
+  }
+});
+
 test('V2 tactical combat spec slows pacing into staged cover, platform, mini-boss, and boss sections', () => {
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.move, 'WASD / Arrow Keys');
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.shoot, 'Left Click');
