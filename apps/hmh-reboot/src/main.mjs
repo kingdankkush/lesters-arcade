@@ -80,6 +80,11 @@ import {
   revealLevelOneAt,
 } from './level-one-world.mjs';
 import {
+  clearWorldProductionLayers,
+  createWorldProductionLayers,
+  renderWorldProductionArt,
+} from './world-production-art.mjs';
+import {
   HMH_WEAPON_DEFINITIONS,
   createWeaponLoadout,
   getActiveWeaponState,
@@ -116,11 +121,9 @@ const WEAPON_COLORS = Object.freeze({
   'launcher-rig': 0xc497ff,
 });
 const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
-const WORLD_SURFACES = LEVEL_ONE_WORLD.surfaces;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 const queryGround = createLevelOneGroundQuery();
 const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
-const ROUTE_NODE_BY_ID = new Map(LEVEL_ONE_WORLD.routeGraph.nodes.map((node) => [node.id, node]));
 const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
 const sessionElement = document.querySelector('#hmhRebootSession');
@@ -160,9 +163,8 @@ async function boot() {
 
   const world = new Container();
   const backdrop = new Graphics();
-  const terrainGeometry = new Graphics();
+  const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics });
   const grid = new Graphics();
-  const collisionGeometry = new Graphics();
   const collisionDebug = new Graphics();
   const debugLabels = new Container();
   const shadow = new Graphics().ellipse(0, 0, 30, 12).fill({ color: 0x000000, alpha: 0.4 });
@@ -224,7 +226,7 @@ async function boot() {
   shadow.visible = !atlasActorEnabled;
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, terrainGeometry, grid, collisionGeometry, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
   app.stage.addChild(world, minimap);
 
   const createEnemyMarker = (enemy) => {
@@ -281,6 +283,7 @@ async function boot() {
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
     bridge: Object.freeze({ x: 4_700, y: 2_400 }),
+    hashwood: Object.freeze({ x: 7_000, y: 2_000 }),
     mining: Object.freeze({ x: 9_200, y: 1_600 }),
     yard: Object.freeze({ x: 11_000, y: 2_400 }),
   });
@@ -397,84 +400,25 @@ async function boot() {
 
   const viewport = () => ({ width: app.screen.width, height: app.screen.height });
 
+  let worldArtReport = null;
   const renderAuthoredTerrain = (view) => {
-    terrainGeometry.clear();
-    const colors = { water: 0x176b8a, 'shallow-water': 0x248aa5, bridge: 0x9a774d, ramp: 0x536f56, ledge: 0x415744 };
-    for (const district of LEVEL_ONE_WORLD.districts) {
-      const topLeft = worldToScreen({ x: district.area.minX, y: district.area.minY, z: 0 }, camera, view);
-      const bottomRight = worldToScreen({ x: district.area.maxX, y: district.area.maxY, z: 0 }, camera, view);
-      terrainGeometry.rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y)
-        .fill({ color: district.color, alpha: 0.32 });
-    }
-    for (const route of LEVEL_ONE_WORLD.routes) {
-      const routePoints = route.nodeIds.map((id) => {
-        const node = ROUTE_NODE_BY_ID.get(id);
-        const ground = queryGround(node.x, node.y);
-        return worldToScreen({ x: node.x, y: node.y, z: ground.groundZ }, camera, view);
-      });
-      terrainGeometry.moveTo(routePoints[0].x, routePoints[0].y);
-      for (const routePoint of routePoints.slice(1)) terrainGeometry.lineTo(routePoint.x, routePoint.y);
-      terrainGeometry.stroke({ color: 0x261c17, width: (route.width + 24) * camera.zoom, alpha: 0.78, cap: 'round', join: 'round' });
-      terrainGeometry.moveTo(routePoints[0].x, routePoints[0].y);
-      for (const routePoint of routePoints.slice(1)) terrainGeometry.lineTo(routePoint.x, routePoint.y);
-      terrainGeometry.stroke({ color: route.kind === 'main' ? 0x9d8152 : 0x6f6545, width: route.width * camera.zoom, alpha: route.kind === 'main' ? 0.92 : 0.76, cap: 'round', join: 'round' });
-    }
-    for (const surface of WORLD_SURFACES) {
-      const area = surface.area;
-      const vertices = area.type === 'rect'
-        ? [{ x: area.minX, y: area.minY }, { x: area.maxX, y: area.minY }, { x: area.maxX, y: area.maxY }, { x: area.minX, y: area.maxY }]
-        : area.vertices;
-      const points = vertices.map((vertex) => {
-        const sampled = queryGround(vertex.x, vertex.y);
-        const z = surface.waterLevel ?? sampled.groundZ;
-        return worldToScreen({ ...vertex, z }, camera, view);
-      });
-      terrainGeometry.moveTo(points[0].x, points[0].y);
-      for (const point of points.slice(1)) terrainGeometry.lineTo(point.x, point.y);
-      terrainGeometry.closePath().fill({ color: colors[surface.kind] ?? 0x415744, alpha: surface.kind === 'water' ? 0.82 : 0.94 })
-        .stroke({ color: 0xb4d6c1, width: 2, alpha: 0.72 });
-    }
-    for (const landmark of LEVEL_ONE_WORLD.landmarks) {
-      const ground = queryGround(landmark.anchor.x, landmark.anchor.y);
-      const screen = worldToScreen({ ...landmark.anchor, z: ground.groundZ }, camera, view);
-      terrainGeometry.circle(screen.x, screen.y, 30 * camera.zoom)
-        .fill({ color: 0xffd166, alpha: 0.82 }).stroke({ color: 0xfff4b8, width: 4, alpha: 0.94 });
-    }
-    for (const poi of LEVEL_ONE_WORLD.pointsOfInterest) {
-      const ground = queryGround(poi.anchor.x, poi.anchor.y);
-      const screen = worldToScreen({ ...poi.anchor, z: ground.groundZ }, camera, view);
-      terrainGeometry.rect(screen.x - 12 * camera.zoom, screen.y - 12 * camera.zoom, 24 * camera.zoom, 24 * camera.zoom)
-        .fill({ color: 0x83f28f, alpha: 0.88 }).stroke({ color: 0xeaffdd, width: 3, alpha: 0.9 });
-    }
-    for (const hazard of LEVEL_ONE_WORLD.interactions.hazards) {
-      const ground = queryGround(hazard.anchor.x, hazard.anchor.y);
-      const screen = worldToScreen({ ...hazard.anchor, z: ground.groundZ }, camera, view);
-      terrainGeometry.circle(screen.x, screen.y, 52 * camera.zoom)
-        .fill({ color: 0xff5c7a, alpha: 0.12 }).stroke({ color: 0xff5c7a, width: 4, alpha: 0.72 });
-    }
+    worldArtReport = renderWorldProductionArt({
+      worldProduction,
+      world: LEVEL_ONE_WORLD,
+      camera,
+      view,
+      queryGround,
+      worldToScreen,
+      tick: simulation?.tick ?? 0,
+    });
   };
 
   const renderAuthoredCollision = (view) => {
-    collisionGeometry.clear();
-    for (const blocker of WORLD_BLOCKERS) {
-      const shape = blocker.shape;
-      if (shape.type === 'circle') {
-        const center = worldToScreen({ x: shape.x, y: shape.y, z: 0 }, camera, view);
-        collisionGeometry.circle(center.x, center.y, shape.radius * camera.zoom).fill({ color: 0x314f61, alpha: 0.95 }).stroke({ color: 0x8dc6d8, width: 2 });
-      } else if (shape.type === 'capsule') {
-        const a = worldToScreen({ ...shape.a, z: 0 }, camera, view);
-        const b = worldToScreen({ ...shape.b, z: 0 }, camera, view);
-        collisionGeometry.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0x8dc6d8, width: shape.radius * 2 * camera.zoom, cap: 'round' });
-      } else {
-        const points = shape.vertices.map((vertex) => worldToScreen({ ...vertex, z: 0 }, camera, view));
-        collisionGeometry.moveTo(points[0].x, points[0].y);
-        for (const point of points.slice(1)) collisionGeometry.lineTo(point.x, point.y);
-        collisionGeometry.closePath().fill({ color: 0x314f61, alpha: 0.95 }).stroke({ color: 0x8dc6d8, width: 2 });
-      }
-    }
+    if (!debugGridEnabled) return;
     const topLeft = worldToScreen({ x: WORLD_BOUNDS.minX, y: WORLD_BOUNDS.minY, z: 0 }, camera, view);
     const bottomRight = worldToScreen({ x: WORLD_BOUNDS.maxX, y: WORLD_BOUNDS.maxY, z: 0 }, camera, view);
-    collisionGeometry.rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y).stroke({ color: 0x49ddff, width: 4, alpha: 0.65 });
+    collisionDebug.rect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y)
+      .stroke({ color: 0x49ddff, width: 3, alpha: 0.5 });
   };
 
   const renderMinimap = (view, renderState) => {
@@ -546,9 +490,8 @@ async function boot() {
   const renderWorld = (renderState = renderActor ?? actor) => {
     const view = viewport();
     backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 });
-    terrainGeometry.clear();
+    clearWorldProductionLayers(worldProduction);
     grid.clear();
-    collisionGeometry.clear();
     collisionDebug.clear();
     projectileTrails.clear();
     projectileImpacts.clear();
@@ -566,10 +509,6 @@ async function boot() {
         const screen = worldToScreen({ x: descriptor.x, y: descriptor.y, z: descriptor.height }, camera, view);
         debugLabels.children[index].position.set(screen.x + 4, screen.y + 4);
       }
-    } else {
-      for (let x = 0; x <= view.width; x += 64) grid.moveTo(x, 0).lineTo(x, view.height);
-      for (let y = 0; y <= view.height; y += 64) grid.moveTo(0, y).lineTo(view.width, y);
-      grid.stroke({ color: 0x1c5267, width: 1, alpha: 0.42 });
     }
     if (renderState && camera) {
       renderAuthoredTerrain(view);
@@ -791,8 +730,9 @@ async function boot() {
       }
       const runtimeMode = `${aimIntent?.source?.toUpperCase() ?? 'NO AIM'} // ${motion?.locomotion?.toUpperCase() ?? 'IDLE'}`;
       const debugContact = lastCollision?.contacts.at(-1)?.blockerId ?? lastTraversal?.reason ?? 'clear';
-      const narrowDebug = debugGridEnabled && view.width < 600;
-      label.style.fontSize = narrowDebug ? 12 : 18;
+      const narrowView = view.width < 600;
+      const narrowDebug = debugGridEnabled && narrowView;
+      label.style.fontSize = narrowView ? 12 : 18;
       label.style.align = 'center';
       const activeWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
       const weaponName = activeWeapon ? HMH_WEAPON_DEFINITIONS[activeWeapon.id].displayName : 'NO WEAPON';
@@ -803,6 +743,7 @@ async function boot() {
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
       const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}`;
+      const compactCombatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}`;
       const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats`;
       if (dashStatusElement) {
         dashStatusElement.textContent = dashAccessible;
@@ -816,7 +757,7 @@ async function boot() {
         ? narrowDebug
           ? `${combatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
-        : combatHud;
+        : narrowView ? compactCombatHud : combatHud;
       const safeLabelX = view.width * 0.5;
       const safeLabelY = view.width < 600 ? 180 : 32;
       label.position.set(safeLabelX, safeLabelY);
@@ -843,6 +784,11 @@ async function boot() {
         stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
         stageElement.dataset.enemyArt = 'production-vector-enemies-v1';
         stageElement.dataset.bossArt = 'production-vector-liquidator-v1';
+        stageElement.dataset.worldArt = 'production-vector-world-v1';
+        stageElement.dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
+        stageElement.dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);
+        stageElement.dataset.worldBlockers = String(worldArtReport?.blockerCount ?? 0);
+        stageElement.dataset.worldLandmarks = String(worldArtReport?.landmarkCount ?? 0);
         stageElement.dataset.bossVisualState = bossVisual.visible ? bossVisual.visualState ?? 'idle' : 'hidden';
         stageElement.dataset.inputWeaponSlot = String(lastInputWeaponSlot);
         stageElement.dataset.simulationTick = String(simulation?.tick ?? 0);

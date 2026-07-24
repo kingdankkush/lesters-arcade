@@ -20,6 +20,11 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   actorArt: stage.dataset.actorArt,
   enemyArt: stage.dataset.enemyArt,
   bossArt: stage.dataset.bossArt,
+  worldArt: stage.dataset.worldArt,
+  worldShader: String(stage.dataset.worldShader || '').split(',').filter(Boolean),
+  worldParticles: Number(stage.dataset.worldParticles),
+  worldBlockers: Number(stage.dataset.worldBlockers),
+  worldLandmarks: Number(stage.dataset.worldLandmarks),
   ammo: Number(stage.dataset.weaponAmmo),
   lastWeaponFire: stage.dataset.lastWeaponFire,
   lastMeleeTick: stage.dataset.lastMeleeTick,
@@ -184,6 +189,9 @@ async function desktopSmoke() {
     'production-vector-enemies-v1',
     'production-vector-liquidator-v1',
   ]);
+  assert.equal(pistol.worldArt, 'production-vector-world-v1');
+  assert.deepEqual(pistol.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
+  assert.deepEqual([pistol.worldParticles, pistol.worldBlockers, pistol.worldLandmarks], [50, 11, 6]);
   assert.deepEqual([pistol.worldWidth, pistol.worldHeight], [12000, 4800]);
   assert.equal(pistol.districtId, 'frontier-relay');
   assert.ok(pistol.revealedCells > 0 && pistol.revealedCells < pistol.revealTotalCells);
@@ -223,6 +231,8 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
   await tapTouchControl(page, 'grenade', 73);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.handGrenades) === 2);
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyDeathVisuals) > 0, null, { timeout: 3000 });
+  const observedDeathVisuals = Number((await page.locator('#hmhRebootStage').getAttribute('data-enemy-death-visuals')) ?? 0);
   await tapTouchControl(page, 'dash', 74);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.dashReadyTick) > 0);
   const dashStatus = await page.locator('#hmhRebootDashStatus').textContent();
@@ -249,7 +259,7 @@ async function mobileSmoke() {
   assert.ok(mobileState.enemyCount >= expectedEnemyArchetypes.length && mobileState.enemyCount <= 32);
   assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 32);
   assert.equal(mobileState.enemyAttackDrops, 0);
-  assert.ok(mobileState.enemyDeathVisuals >= 1);
+  assert.ok(observedDeathVisuals >= 1);
   assert.ok(mobileState.enemyEliteVisuals >= 1);
   assert.equal(mobileState.encounterBand, 'opening');
   assert.ok(mobileState.directorInsertions > 0);
@@ -263,6 +273,9 @@ async function mobileSmoke() {
     'production-vector-enemies-v1',
     'production-vector-liquidator-v1',
   ]);
+  assert.equal(mobileState.worldArt, 'production-vector-world-v1');
+  assert.deepEqual(mobileState.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
+  assert.deepEqual([mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks], [50, 11, 6]);
   assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
   assert.equal(mobileState.districtId, 'frontier-relay');
   assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
@@ -274,7 +287,7 @@ async function mobileSmoke() {
   assert.ok(mobileState.audioVoices <= 16);
   assert.deepEqual(errors, []);
   await context.close();
-  return { state: mobileState, dashStatus, controls, errors };
+  return { state: mobileState, observedDeathVisuals, dashStatus, controls, errors };
 }
 
 async function worldTourSmoke() {
@@ -286,6 +299,9 @@ async function worldTourSmoke() {
   await page.screenshot({ path: fileURLToPath(new URL('bridge-world.png', evidenceDir)), fullPage: true });
   assert.equal(bridge.worldId, 'forked-frontier');
   assert.equal(bridge.actorArt, 'prototype-human-graybox');
+  assert.equal(bridge.worldArt, 'production-vector-world-v1');
+  assert.deepEqual(bridge.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
+  assert.deepEqual([bridge.worldParticles, bridge.worldBlockers, bridge.worldLandmarks], [50, 11, 6]);
   assert.deepEqual([bridge.worldWidth, bridge.worldHeight], [12000, 4800]);
   assert.equal(bridge.districtId, 'liquidity-crossing');
   assert.equal(bridge.surfaceId, 'proof-of-work-bridge');
