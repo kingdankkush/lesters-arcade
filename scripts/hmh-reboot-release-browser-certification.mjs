@@ -162,6 +162,12 @@ async function captureLiveInteraction(profile) {
     await page.goto(`${origin}/hmh-reboot/?${liveQuery}`, { waitUntil: 'networkidle' });
     await rejectAuthenticationPage(page);
     await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick) >= 4);
+    const canvasFocused = await page.locator('#hmhRebootStage canvas').evaluate((target) => {
+      target.tabIndex = 0;
+      target.focus({ preventScroll: true });
+      return document.activeElement === target;
+    });
+    assert.equal(canvasFocused, true, `${profile.name} game canvas did not accept keyboard focus`);
     const before = await page.locator('#hmhRebootStage').evaluate((stage) => ({ tick: Number(stage.dataset.simulationTick), x: Number(stage.dataset.actorX) }));
     await page.keyboard.down('d');
     await page.waitForTimeout(350);

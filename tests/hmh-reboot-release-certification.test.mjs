@@ -28,6 +28,9 @@ test('reboot release certification owns deterministic anchors, responsive geomet
   assert.match(source, /maxChannelDelta <= 2/);
   assert.match(source, /anchor hashes differ/);
   assert.match(source, /combatPilot=1/);
+  assert.match(source, /locator\('#hmhRebootStage canvas'\)/);
+  assert.match(source, /target\.tabIndex = 0/);
+  assert.match(source, /target\.focus\(\{ preventScroll: true \}\)/);
   assert.match(source, /keyboard\.down/);
   assert.match(source, /pauseButton\.click/);
   assert.match(source, /resumeButton\.click/);
