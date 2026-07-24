@@ -1,0 +1,159 @@
+{
+  "schema": "hmh-reboot-release-certification-v1",
+  "checkpoint": "reboot-19",
+  "generated_at_utc": "2026-07-24T05:12:59Z",
+  "branch": "reboot/hmh-topdown-2_5d",
+  "parent_commit": "890500292024e6561dbe9f101a1d633fa95dd517",
+  "status": "PASS",
+  "release_scope": "Public app release with Free mode and truthful local Ranked preview; no claim of live on-chain settlement.",
+  "authority": {
+    "simulation_hz": 60,
+    "max_catch_up_steps": 4,
+    "projection_only_art_and_optimization": true,
+    "wallet_profile_ranked_persistence_and_bridge_authority": "parent portal",
+    "child_wallet_or_contract_authority": false
+  },
+  "aggregate_tests": {
+    "total": 1604,
+    "passed": 1552,
+    "expected_ledgered_failures": 52,
+    "unexpected_failures": 0,
+    "ledger": "docs/hmh-reboot/LEGACY-TEST-RETIREMENT.json",
+    "resolved_legacy_failures_this_checkpoint": 1
+  },
+  "static_and_security": {
+    "javascript_modules": 319,
+    "python_scripts": 40,
+    "security_checks": "5/5",
+    "security_findings": 0,
+    "sandbox_checks": "3/3",
+    "web3_settlement_source_checks": "9/9",
+    "contract_structure": "PASS",
+    "repository_health_strict": "PASS",
+    "cdn_budget_gate": "PASS"
+  },
+  "build_and_payload": {
+    "status": "PASS",
+    "hmh_reboot_bundle_bytes": 961934,
+    "hmh_reboot_bundle_max_bytes": 1050000,
+    "html_bytes": 4365,
+    "css_bytes": 10245,
+    "production_atlas_count": 4,
+    "production_atlas_total_bytes": 2569321,
+    "production_atlas_total_max_bytes": 4194304,
+    "production_atlas_frames_each": 168
+  },
+  "gameplay_corrections": [
+    "canonical portal lifecycle accepts matching game-over and score results exactly once",
+    "Ranked uses the canonical parent session seed",
+    "Play Again creates a fresh tracked Free or Ranked session",
+    "opening roster is authored to bagholder-rusher and forkrunner",
+    "opening movement hold is 120 fixed ticks",
+    "opening attack grace is 480 fixed ticks",
+    "opening enemy health variants enable a readable first defeat before pressure begins",
+    "first projectile sweep includes actor origin to muzzle for point-blank targets",
+    "pointer interaction restores keyboard focus without scrolling",
+    "stale pointer aim expires so auto-target can reacquire enemies",
+    "persisted Ranked previews rehydrate the profile session feed"
+  ],
+  "browser_certification": {
+    "browsers": ["Google Chrome", "Microsoft Edge"],
+    "viewports_each": [
+      "desktop 1440x900",
+      "ultrawide 1920x800",
+      "tablet landscape 1024x768",
+      "mobile portrait 390x844",
+      "mobile landscape 844x390"
+    ],
+    "chrome_anchor_changed_pixels": [0, 0, 0, 0, 0],
+    "edge_anchor_changed_pixels": [0, 0, 0, 0, 0],
+    "maximum_channel_delta": 0,
+    "evidence": {
+      "chrome": ".hermes/evidence/hmh-reboot-19-release/chrome/report.json",
+      "edge": ".hermes/evidence/hmh-reboot-19-release/edge/report.json"
+    },
+    "checks": [
+      "actual game route and production bundle loaded",
+      "Vercel Authentication content rejected",
+      "one canvas and three authored upgrade choices",
+      "zero root overflow",
+      "HUD and modal bounds remain inside every viewport",
+      "all eight touch targets remain inside mobile/tablet viewports",
+      "real keyboard input changes authoritative position",
+      "pause freezes and resume advances the fixed-step tick",
+      "no page or console errors",
+      "service worker contains the reboot bundle"
+    ]
+  },
+  "actor_and_cockpit_browser_smokes": {
+    "lit_commando": "PASS",
+    "lit_valkyrie": "PASS",
+    "lester_original": "PASS",
+    "lilly": "PASS",
+    "cockpit_desktop": "PASS",
+    "cockpit_mobile": "PASS"
+  },
+  "performance": {
+    "status": "PASS",
+    "desktop_p95_frame_ms": 7,
+    "desktop_p99_frame_ms": 7.1,
+    "desktop_heap_delta_bytes": 12679156,
+    "mobile_p95_frame_ms": 7,
+    "mobile_p99_frame_ms": 7.1,
+    "mobile_heap_delta_bytes": 5376477,
+    "browser_errors": 0,
+    "desktop_rendered_hazard_particles": 10,
+    "mobile_rendered_hazard_particles": 6
+  },
+  "wallet_profile_leaderboard_and_session_browser_flow": {
+    "ephemeral_evm_signature": "PASS",
+    "wallet_profile_connection": "PASS",
+    "ranked_preview_preflight_truthful": true,
+    "sample_score": 325,
+    "sample_kills": 2,
+    "sample_duration_seconds": 32,
+    "profile_paid_preview_runs": 1,
+    "profile_xp": 25,
+    "profile_best_score": 325,
+    "run_history_persisted": true,
+    "active_checkpoint_cleared": true,
+    "profile_reload_restored": true,
+    "leaderboard_visible_current_player": true,
+    "failed_app_requests": 0
+  },
+  "web3_live_boundary": {
+    "source_and_settlement_audit": "PASS 9/9",
+    "live_readiness": "PARTIAL 3/4",
+    "passes": [
+      "deterministic replay verifier",
+      "local-cache leaderboard read fallback",
+      "official profile durability"
+    ],
+    "blocked": "on-chain-registry-economy",
+    "blockers": [
+      "GameRegistry cabinet approval path is not live-gated",
+      "SplitConfig/economy settings are not production-approved",
+      "legal, brand, and economy approval is required before real-value launch"
+    ],
+    "transaction_sent_during_certification": false,
+    "on_chain_ranked_claim_permitted": false
+  },
+  "visual_review": {
+    "desktop_live": ".hermes/evidence/hmh-reboot-19-release/chrome/desktop-live.png",
+    "mobile_live": ".hermes/evidence/hmh-reboot-19-release/chrome/mobile-portrait-live.png",
+    "blank_or_missing_layers": false,
+    "clipping_or_overlap_blockers": false,
+    "prohibited_identity_proxies": false,
+    "debug_contamination": false,
+    "release_blockers": []
+  },
+  "asset_gate": {
+    "command": "npm run assets:qa:hmh-reboot",
+    "status": "PASS",
+    "note": "Generic retired isometric-asset assertions are governed by the exact legacy retirement ledger and are not the active reboot roster gate."
+  },
+  "hosted_preview": {
+    "status": "PENDING_EXACT_COMMIT_DEPLOYMENT",
+    "requirement": "Deploy this exact packet, verify artifact hashes and the real game route, then update with immutable deployment evidence."
+  }
+}

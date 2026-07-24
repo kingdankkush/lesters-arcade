@@ -5681,6 +5681,55 @@ function cloneProgress(progress) {
   ]));
 }
 
+function collectProfileOfficialSessions(state, profile) {
+  const bySessionId = new Map();
+  for (const run of state.runHistory ?? []) {
+    if (!run?.sessionId || run.wallet !== profile.wallet) continue;
+    bySessionId.set(run.sessionId, {
+      sessionId: run.sessionId,
+      urlSessionId: run.urlSessionId ?? null,
+      sequenceNumber: run.sequenceNumber ?? null,
+      wallet: run.wallet,
+      gameId: run.gameId,
+      mode: run.mode ?? 'paid',
+      status: run.status ?? 'local-preview-saved',
+      score: Math.max(0, Math.round(Number(run.score) || 0)),
+      runStats: {
+        score: Math.max(0, Math.round(Number(run.score) || 0)),
+        kills: Math.max(0, Math.round(Number(run.kills) || 0)),
+        elapsedSeconds: Math.max(0, Math.round(Number(run.elapsedSeconds) || 0)),
+        surviveSeconds: Math.max(0, Math.round(Number(run.elapsedSeconds) || 0)),
+        characterId: run.characterId ?? null,
+        bossKills: run.bossDefeated ? 1 : 0,
+        killedBy: run.killedBy ?? null,
+      },
+      syncedAt: run.recordedAt ?? null,
+      recordedAt: run.recordedAt ?? null,
+    });
+  }
+  for (const session of state.officialSessions ?? []) {
+    if (!session?.sessionId || session.wallet !== profile.wallet) continue;
+    bySessionId.set(session.sessionId, session);
+  }
+  return [...bySessionId.values()].map((session) => ({
+    ...session,
+    runStats: { ...(session.runStats ?? {}) },
+    parentSync: session.parentSync ? {
+      ...session.parentSync,
+      writeSets: [...(session.parentSync.writeSets ?? [])],
+      scoreClaim: session.parentSync.scoreClaim ? {
+        ...session.parentSync.scoreClaim,
+        runStats: { ...(session.parentSync.scoreClaim.runStats ?? {}) },
+        unlockedAchievements: [...(session.parentSync.scoreClaim.unlockedAchievements ?? [])],
+      } : null,
+      transactionClaim: session.parentSync.transactionClaim ? {
+        ...session.parentSync.transactionClaim,
+        split: { ...(session.parentSync.transactionClaim.split ?? {}) },
+      } : null,
+    } : null,
+  }));
+}
+
 export function buildPlayerArcadeSnapshot(state, wallet) {
   const profile = ensureProfile(state, wallet);
   ensureAllGameProgress(profile);
@@ -5744,25 +5793,7 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
     transactions: (state.transactions ?? [])
       .filter((transaction) => transaction.wallet === profile.wallet)
       .map((transaction) => ({ ...transaction, split: transaction.split ? { ...transaction.split } : null })),
-    officialSessions: (state.officialSessions ?? [])
-      .filter((session) => session.wallet === profile.wallet)
-      .map((session) => ({
-        ...session,
-        runStats: { ...session.runStats },
-        parentSync: session.parentSync ? {
-          ...session.parentSync,
-          writeSets: [...session.parentSync.writeSets],
-          scoreClaim: {
-            ...session.parentSync.scoreClaim,
-            runStats: { ...session.parentSync.scoreClaim.runStats },
-            unlockedAchievements: [...session.parentSync.scoreClaim.unlockedAchievements],
-          },
-          transactionClaim: session.parentSync.transactionClaim ? {
-            ...session.parentSync.transactionClaim,
-            split: { ...session.parentSync.transactionClaim.split },
-          } : null,
-        } : null,
-      })),
+    officialSessions: collectProfileOfficialSessions(state, profile),
     highScores,
     settlements: (state.settlements ?? [])
       .filter((settlement) => settlement.wallet === profile.wallet)

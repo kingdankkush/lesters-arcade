@@ -13,6 +13,7 @@ injectVercelWebAnalytics();
 
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
+import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
@@ -1698,6 +1699,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
 let currentSession = null;
 const HMH_REBOOT_ENABLED = true;
 let hmhRebootHost = null;
+let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
 let lastCompletedSession = null;
 let lastRunResult = null;
@@ -2491,7 +2493,7 @@ function currentCanonicalSessionIdentity() {
     chainId: LITVM_LITEFORGE_NETWORK.chainId,
     scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry,
     seasonId: CURRENT_RANKED_SEASON_ID,
-    seed: combat.roguelikeRun?.seed ?? 0,
+    seed: currentSession.seed ?? currentSession.canonicalContext?.seed ?? 0,
     nonce: currentSession.sessionNonce,
   };
 }
@@ -3436,7 +3438,7 @@ function syncCombatOverlay() {
   if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.levelUpPaused ? `Level ${combat.roguelikeRun?.level ?? 1} Upgrade` : menu.title;
   if (dom.combatMenuCopy) {
     dom.combatMenuCopy.textContent = combat.gameOver
-      ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again starts a fresh ${SETTLEMENT_LIVE ? 'verified session' : 'free local Ranked preview'}.`
+      ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again starts a fresh ${currentSession?.isPaid ? (SETTLEMENT_LIVE ? 'verified Ranked session' : 'local Ranked preview') : 'Free practice run'}.`
       : combat.levelUpPaused
         ? 'The isometric roguelike run is paused. Pick one of two guided augments: continue your build or start a new tree. Reroll refreshes both slots.'
         : menu.copy;
@@ -3650,12 +3652,23 @@ function renderCombatSettingsPanel() {
 async function restartCombatRun() {
   playSfxCue('level-start');
   if (hmhRebootActive) {
-    hmhRebootHost?.restart();
+    const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
+    currentSession = beginTrackedSession({ mode: wasPaid ? 'paid' : 'free' });
+    gameAdapter?.teardown?.();
+    gameAdapter = createInProcessGameAdapter({
+      gameId: 'hard-money-heroes',
+      sessionId: currentSession.sessionId,
+      rankedEligible: currentSession.isPaid,
+    });
+    gameAdapter.start({ mode: currentSession.isPaid ? 'ranked' : 'free', characterId: hmhRebootHeroId() });
     combat.paused = false;
     combat.gameOver = false;
+    combat.gameOverSubmitted = false;
     combat.score = 0;
     combat.kills = 0;
     combat.elapsedGameSeconds = 0;
+    mountHmhRebootSession();
+    renderOfficialRunStatus();
     syncCombatOverlay();
     return;
   }
@@ -4517,7 +4530,7 @@ function renderOfficialCabinets() {
       // Lazy-load the game's art and data manifests the first time the player
       // selects this cabinet. The heavy HMH bundles live in games/<id>/loader.mjs,
       // fetched over HTTP only on demand, so the portal shell stays small.
-      if (cabinet.id === 'hard-money-heroes') {
+      if (cabinet.id === 'hard-money-heroes' && !HMH_REBOOT_ENABLED) {
         card.classList.add('is-loading');
         card.setAttribute('aria-busy', 'true');
         // Only surface the overlay when a real download is happening — repeat
@@ -5510,11 +5523,42 @@ function pushHmhRebootSettings() {
 function destroyHmhRebootSession() {
   hmhRebootHost?.destroy();
   hmhRebootHost = null;
+  hmhRebootLifecycle = null;
+  gameAdapter?.teardown?.();
+  gameAdapter = null;
   hmhRebootActive = false;
+}
+
+function finalizeHmhRebootFreeGameOver() {
+  lastCompletedSession = currentSession;
+  lastRunResult = {
+    score: combat.score,
+    elapsedSeconds: combat.elapsedGameSeconds,
+    acceptedForGlobalLeaderboard: false,
+  };
+  lastRunScore = combat.score;
+  lastRunElapsedSeconds = combat.elapsedGameSeconds;
+  renderOfficialRunStatus();
+  renderGameOverSummary();
+  renderCombatMenuActionGrid();
 }
 
 function mountHmhRebootSession() {
   if (!HMH_REBOOT_ENABLED || !dom.officialCombatMount || !currentSession) return null;
+  if (!hmhRebootLifecycle) {
+    hmhRebootLifecycle = createHmhRebootPortalLifecycle({
+      combat,
+      getSession: () => currentSession,
+      getAdapter: () => gameAdapter,
+      finalizeRanked: () => submitCombatGameOver(),
+      finalizeFree: () => finalizeHmhRebootFreeGameOver(),
+      syncUi: () => syncCombatOverlay(),
+      onError: (error) => {
+        console.error('[HMH reboot lifecycle]', error);
+        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Reboot lifecycle error: ${error.message}`;
+      },
+    });
+  }
   if (!hmhRebootHost) {
     hmhRebootHost = createHmhRebootHost({
       mount: dom.officialCombatMount,
@@ -5525,24 +5569,7 @@ function mountHmhRebootSession() {
         combat.paused = false;
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Top-down reboot runtime connected. Portal session authority remains active.';
       },
-      onState: (message) => {
-        if (message.type === 'game:pause') {
-          combat.paused = message.payload.paused;
-        } else if (message.type === 'game:state') {
-          combat.score = message.payload.score;
-          combat.kills = message.payload.kills;
-          combat.elapsedGameSeconds = message.payload.elapsedMs / 1000;
-          combat.health = message.payload.health;
-          combat.maxHealth = message.payload.maxHealth;
-          combat.paused = message.payload.paused;
-        } else if (message.type === 'game:game-over') {
-          combat.score = message.payload.score;
-          combat.kills = message.payload.kills;
-          combat.elapsedGameSeconds = message.payload.elapsedMs / 1000;
-          combat.gameOver = true;
-          combat.gameOverReason = message.payload.reason;
-        }
-      },
+      onState: (message) => hmhRebootLifecycle?.handleState(message),
       onExit: () => returnToOfficialGameMenu(),
       onRunEvent: (message) => {
         if (!currentSession?.isPaid || !currentSession.evidence) return;
@@ -5553,6 +5580,7 @@ function mountHmhRebootSession() {
         });
       },
       onScoreResult: (message) => {
+        if (!hmhRebootLifecycle?.handleScoreResult(message)) return;
         if (!currentSession?.isPaid || !currentSession.evidence) return;
         recordSessionEvent(currentSession.evidence, {
           step: Math.floor(message.payload.elapsedMs / (1000 / 60)),
@@ -5561,6 +5589,7 @@ function mountHmhRebootSession() {
         });
       },
       onAchievement: (message) => {
+        gameAdapter?.emitAchievement?.(message.payload.achievementId);
         if (!currentSession?.isPaid || !currentSession.evidence) return;
         recordSessionEvent(currentSession.evidence, {
           step: message.payload.tick,
@@ -5842,7 +5871,11 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
     if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
     setOfficialView('gameplay');
     mountHmhRebootSession();
-    gameAdapter = createInProcessGameAdapter({ gameId: 'hard-money-heroes' });
+    gameAdapter = createInProcessGameAdapter({
+      gameId: 'hard-money-heroes',
+      sessionId: currentSession.sessionId,
+      rankedEligible: currentSession.isPaid,
+    });
     gameAdapter.start({ mode: officialSelectedMode ?? 'free', characterId: hmhRebootHeroId() });
     return;
   }

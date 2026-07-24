@@ -12,6 +12,8 @@ const ACTION_DEFAULTS = Object.freeze({
   weaponSlot: 0, weaponNext: false,
 });
 
+export const POINTER_AIM_IDLE_MS = 1000;
+
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
   return value;
@@ -201,7 +203,7 @@ export class InputState {
     const move = movementCandidates[0]?.value ?? { x: 0, y: 0 };
 
     const aimCandidates = [];
-    if (this.pointer) {
+    if (this.pointer && now - this.pointerAt <= POINTER_AIM_IDLE_MS) {
       const target = screenToGround(
         { x: this.pointer.screenX, y: this.pointer.screenY },
         camera,
@@ -301,7 +303,11 @@ export function createBrowserInputController({ input, target, windowRef = global
   listen(target, 'keydown', key(true));
   listen(target, 'keyup', key(false));
   listen(target, 'pointermove', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: (event.buttons & 1) === 1 }, now()));
-  listen(target, 'pointerdown', (event) => { event.preventDefault?.(); input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: event.button === 0 }, now()); });
+  listen(target, 'pointerdown', (event) => {
+    event.preventDefault?.();
+    target.focus?.({ preventScroll: true });
+    input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: event.button === 0 }, now());
+  });
   listen(target, 'pointerup', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: false }, now()));
   listen(target, 'pointercancel', () => input.reset('pointer-cancel', now()));
   listen(target, 'touchcancel', (event) => { event.preventDefault?.(); input.reset('touch-cancel', now()); }, { passive: false });

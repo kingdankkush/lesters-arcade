@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   InputState,
+  POINTER_AIM_IDLE_MS,
   normalizeAxisPair,
   mapGamepadSnapshot,
   computeTouchControlLayout,
@@ -46,6 +48,17 @@ test('pointer screen aim converts through the canonical camera into a normalized
   assert.equal(snapshot.actions.fire, true);
   assert.equal(snapshot.metadata.lastActiveDevice, 'keyboard-mouse');
   assert.equal(snapshot.metadata.sourceLatencyMs, 4);
+});
+
+test('stale pointer aim expires so keyboard auto-target can reacquire enemies', () => {
+  const input = new InputState();
+  input.setPointer({ screenX: 500, screenY: 300, fire: false }, 100);
+  assert.equal(POINTER_AIM_IDLE_MS, 1000);
+  const fresh = input.snapshot({ ...context, nowMs: 100 + POINTER_AIM_IDLE_MS });
+  assert.equal(fresh.actions.aim.active, true);
+  const stale = input.snapshot({ ...context, nowMs: 101 + POINTER_AIM_IDLE_MS });
+  assert.deepEqual(stale.actions.aim, { x: 0, y: 0, active: false });
+  assert.equal(stale.metadata.aimSource, 'none');
 });
 
 test('touch controls support simultaneous independent movement and aim plus every action', () => {
@@ -165,10 +178,14 @@ test('browser controller prevents gameplay scrolling and resets on blur visibili
   documentRef.visibilityState = 'visible';
   const input = new InputState();
   let prevented = 0;
+  let focusCalls = 0;
+  target.focus = () => { focusCalls += 1; };
   const controller = createBrowserInputController({ input, target, windowRef, documentRef, now: () => 10 });
+  target.emit('pointerdown', { clientX: 400, clientY: 300, button: 0, preventDefault: () => { prevented += 1; } });
   target.emit('keydown', { code: 'ArrowUp', preventDefault: () => { prevented += 1; } });
   target.emit('contextmenu', { preventDefault: () => { prevented += 1; } });
-  assert.equal(prevented, 2);
+  assert.equal(prevented, 3);
+  assert.equal(focusCalls, 1);
   windowRef.emit('blur');
   assert.equal(input.snapshot({ ...context, nowMs: 11 }).metadata.resetReason, 'blur');
   documentRef.visibilityState = 'hidden';
@@ -178,4 +195,9 @@ test('browser controller prevents gameplay scrolling and resets on blur visibili
   assert.equal(input.snapshot({ ...context, nowMs: 12 }).metadata.resetReason, 'touch-cancel');
   controller.destroy();
   assert.equal([...target.listeners.values()].every((listeners) => listeners.size === 0), true);
+});
+
+test('runtime canvas is explicitly keyboard-focusable', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /app\.canvas\.tabIndex = 0/);
 });

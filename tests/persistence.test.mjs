@@ -14,7 +14,7 @@ import {
   clearActiveSessionCheckpoint,
   isSessionSubmitted,
 } from '../apps/portal/src/persistence.mjs';
-import { createInitialArcadeState, connectPlayerAccount, setArcadeUsername } from '../apps/portal/src/arcade-core.mjs';
+import { createInitialArcadeState, connectPlayerAccount, setArcadeUsername, buildProfileExperienceV2Model } from '../apps/portal/src/arcade-core.mjs';
 import { recordCadenceScore } from '../apps/portal/src/leaderboard-engine.mjs';
 
 const WALLET = '0x' + 'a'.repeat(40);
@@ -55,6 +55,32 @@ test('snapshot + restore round-trips profiles, usernames, leaderboards, and run 
   assert.equal(fresh.runHistory[0].score, 9000);
   const buckets = fresh.cadenceLeaderboards['lester-blaster']['all-time']['all-time'];
   assert.equal(buckets.some((row) => row.wallet === WALLET && row.score === 9000), true);
+});
+
+test('persisted ranked run history rehydrates the profile session feed and ranked preview count', () => {
+  const state = createInitialArcadeState();
+  connectPlayerAccount(state, WALLET, { handle: 'SessionTester' });
+  appendRunRecord(state, {
+    sessionId: 'game-session-123e4567-e89b-42d3-a456-426614174000',
+    gameId: 'lester-blaster',
+    wallet: WALLET,
+    mode: 'paid',
+    score: 325,
+    elapsedSeconds: 32,
+    kills: 2,
+    characterId: 'lit-commando',
+    bossDefeated: false,
+  });
+  const storage = makeStorage();
+  assert.equal(saveArcadeState(state, storage).ok, true);
+  const restored = createInitialArcadeState();
+  assert.equal(loadArcadeState(restored, storage), true);
+  const model = buildProfileExperienceV2Model(restored, WALLET);
+  assert.equal(model.trophyRoom.summary.totalRankedRuns, 1);
+  assert.equal(model.sessionFeed.rows.length, 1);
+  assert.equal(model.sessionFeed.rows[0].score, 325);
+  assert.equal(model.sessionFeed.rows[0].kills, 2);
+  assert.equal(model.sessionFeed.rows[0].survivalLabel, '0:32');
 });
 
 test('save + load through a storage backend works end to end', () => {

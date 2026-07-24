@@ -14,6 +14,12 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
+import {
+  HMH_OPENING_ENEMY_ARCHETYPE_IDS,
+  HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE,
+  openingEnemyAttacksEnabled,
+  openingEnemyMovementEnabled,
+} from './opening-balance.mjs';
 import { createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
 import {
   applyLiquidatorDamage,
@@ -997,9 +1003,9 @@ async function boot() {
       'validator-cultist': Object.freeze({ x: 1100, y: 2050 }),
     });
     enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 1024 });
-    grayboxEnemies = ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
+    const openingEnemyByArchetypeId = new Map(ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
       const position = previewSpawns[archetypeId];
-      return createEnemyState({
+      const enemy = createEnemyState({
         archetypeId,
         id: `prototype-${String(index + 1).padStart(2, '0')}-${archetypeId}`,
         x: position.x,
@@ -1007,7 +1013,15 @@ async function boot() {
         groundZ: queryGround(position.x, position.y).groundZ,
         visualMode: 'normal',
       });
-    }).sort((a, b) => a.id.localeCompare(b.id));
+      return [archetypeId, enemy];
+    }));
+    grayboxEnemies = HMH_OPENING_ENEMY_ARCHETYPE_IDS.map((archetypeId) => {
+      const enemy = openingEnemyByArchetypeId.get(archetypeId);
+      const openingHealth = HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE[archetypeId];
+      enemy.health = openingHealth;
+      enemy.maxHealth = openingHealth;
+      return enemy;
+    });
     enemyPopulation.active = grayboxEnemies;
     enemyPopulation.activeThreat = grayboxEnemies.reduce((sum, enemy) => sum + ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat, 0);
     enemyPopulation.insertedCount = grayboxEnemies.length;
@@ -1239,16 +1253,20 @@ async function boot() {
         ? stepLiquidatorBoss({ boss: liquidatorBoss, tick, player: { x: actor.x, y: actor.y, groundZ: actor.groundZ } })
         : null;
 
-      lastEnemyStep = stepEnemyPopulation({
-        population: enemyPopulation,
-        player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
-        tick,
-        dtSeconds,
-        blockers: WORLD_BLOCKERS,
-        bounds: WORLD_BOUNDS,
-        queryGround,
-        preservePrevious: true,
-      });
+      if (openingEnemyMovementEnabled(tick)) {
+        lastEnemyStep = stepEnemyPopulation({
+          population: enemyPopulation,
+          player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
+          tick,
+          dtSeconds,
+          blockers: WORLD_BLOCKERS,
+          bounds: WORLD_BOUNDS,
+          queryGround,
+          preservePrevious: true,
+        });
+      } else {
+        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0 });
+      }
 
       const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createHurtTarget({
         id: enemy.id,
@@ -1289,7 +1307,11 @@ async function boot() {
       const combatHitIntents = [];
 
       const steppedProjectiles = activeProjectiles.map((shot) => {
-        const previous = Object.freeze({ x: shot.x, y: shot.y, z: shot.z });
+        const previous = Object.freeze({
+          x: shot.previousX ?? shot.x,
+          y: shot.previousY ?? shot.y,
+          z: shot.previousZ ?? shot.z,
+        });
         const current = Object.freeze({
           x: shot.x + shot.vx * dtSeconds,
           y: shot.y + shot.vy * dtSeconds,
@@ -1306,6 +1328,9 @@ async function boot() {
         });
         return {
           ...shot,
+          previousX: null,
+          previousY: null,
+          previousZ: null,
           x: current.x,
           y: current.y,
           z: current.z,
@@ -1419,6 +1444,9 @@ async function boot() {
             id: shot.id,
             attackId: event.attackId,
             weaponId: event.weaponId,
+            previousX: actor.x,
+            previousY: actor.y,
+            previousZ: actor.groundZ + 30,
             x: muzzle.x,
             y: muzzle.y,
             z: muzzle.z,
@@ -1498,12 +1526,16 @@ async function boot() {
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
-      lastEnemyAttack = stepEnemyAttacks({
-        enemies: grayboxEnemies,
-        player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
-        tick,
-        budgets: getEncounterSnapshot(tick).attackTokens,
-      });
+      if (openingEnemyAttacksEnabled(tick)) {
+        lastEnemyAttack = stepEnemyAttacks({
+          enemies: grayboxEnemies,
+          player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
+          tick,
+          budgets: getEncounterSnapshot(tick).attackTokens,
+        });
+      } else {
+        lastEnemyAttack = Object.freeze({ tick, tokens: Object.freeze([]), events: Object.freeze([]), droppedEvents: 0 });
+      }
       for (const event of lastEnemyAttack.events) {
         pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
         const resolved = resolveEnemyAttackAgainstPlayer(event, {

@@ -175,12 +175,14 @@ test('same-origin framing is allowed while arbitrary framing remains blocked', a
 
 test('portal main integrates the reboot host at the official combat mount', async () => {
   const source = await read('../apps/portal/main.js');
+  const lifecycleSource = await read('../apps/portal/src/hmh-reboot-portal-lifecycle.mjs');
   assert.match(source, /createHmhRebootHost/);
   assert.match(source, /mountHmhRebootSession/);
   assert.match(source, /officialCombatMount/);
   assert.match(source, /window\.location\.origin/);
   assert.match(source, /buildCabinetInitContextFromSession\(currentSession/);
-  assert.match(source, /message\.type === 'game:pause'/);
+  assert.match(source, /onState: \(message\) => hmhRebootLifecycle\?\.handleState\(message\)/);
+  assert.match(lifecycleSource, /message\.type === 'game:pause'/);
   assert.match(source, /onExit:[\s\S]*?returnToOfficialGameMenu\(\)/);
   assert.match(source, /onRunEvent:[\s\S]*?recordSessionEvent\(/);
   assert.match(source, /function drawCombatScene[\s\S]*?if \(hmhRebootActive\)[\s\S]*?requestAnimationFrame\(drawCombatScene\)/);

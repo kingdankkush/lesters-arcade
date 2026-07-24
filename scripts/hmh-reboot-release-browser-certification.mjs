@@ -7,7 +7,10 @@ import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwrig
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const browserExecutable = process.env.HMH_REBOOT_BROWSER_EXECUTABLE ?? String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`;
-const evidenceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.hermes/evidence/hmh-reboot-18-release');
+const evidenceRoot = process.env.HMH_REBOOT_EVIDENCE_ROOT
+  ? path.resolve(process.env.HMH_REBOOT_EVIDENCE_ROOT)
+  : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.hermes/evidence/hmh-reboot-19-release');
+const reportName = process.env.HMH_REBOOT_REPORT_NAME ?? 'report.json';
 const profiles = [
   { name: 'desktop', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, isMobile: false },
   { name: 'ultrawide', viewport: { width: 1920, height: 800 }, deviceScaleFactor: 1, isMobile: false },
@@ -210,7 +213,7 @@ try {
     results.push({ profile: profile.name, anchorHashes: [first.hash, second.hash], anchorDiff, geometry: first.geometry, live });
   }
   const report = { origin, browserExecutable, profiles: results };
-  await writeFile(path.join(evidenceRoot, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
+  await writeFile(path.join(evidenceRoot, reportName), `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));
 } finally {
   await browser.close();

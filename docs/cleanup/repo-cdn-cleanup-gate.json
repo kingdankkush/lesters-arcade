@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-13T16:08:49.488Z",
+  "generatedAt": "2026-07-24T05:12:49.247Z",
   "status": "approval-gated",
   "summary": {
-    "workingTreeBytes": 1424506262,
-    "gitBytes": "1.54 GiB",
-    "assetBytes": 915429877,
+    "workingTreeBytes": 592061868,
+    "gitBytes": "1.83 GiB",
+    "assetBytes": 168216162,
     "cdnCandidateCount": 33,
-    "cdnCandidateBytes": 118489898,
+    "cdnCandidateBytes": 105940018,
     "vaultExists": false,
     "vaultRemoteConfigured": false
   },
@@ -18,48 +18,38 @@
     },
     {
       "path": "apps/portal/assets/hmh-level-editor/runtime-sprite-library.json",
-      "sizeBytes": 6656971,
-      "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 6341689,
+      "sizeBytes": 6656588,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 6321878,
-      "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 6011688,
+      "sizeBytes": 5034321,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/music/rise-to-the-occasion.mp3",
-      "sizeBytes": 5704877,
+      "sizeBytes": 5024911,
       "runtimeReferenced": true
     },
     {
-      "path": "apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 5260483,
+      "path": "apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 4993102,
+      "runtimeReferenced": true
+    },
+    {
+      "path": "apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
+      "sizeBytes": 4919596,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/playlist/adventure-16-bit-arcade-music.mp3",
-      "sizeBytes": 5027503,
+      "sizeBytes": 4560613,
       "runtimeReferenced": true
     },
     {
-      "path": "apps/portal/assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/grassland_2x2.png",
-      "sizeBytes": 5012917,
+      "path": "apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
+      "sizeBytes": 4233395,
       "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/hmh-curated-level-kit/Universal/Ground-textures/grassland_2x2.png",
-      "sizeBytes": 5012917,
-      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/video/arcade-promo-loop.gif",
@@ -67,48 +57,58 @@
       "runtimeReferenced": true
     },
     {
-      "path": "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
-      "sizeBytes": 4106147,
-      "runtimeReferenced": true
-    },
-    {
       "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 3777437,
+      "sizeBytes": 3516073,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3",
-      "sizeBytes": 3767322,
+      "sizeBytes": 3389726,
       "runtimeReferenced": true
     },
     {
-      "path": "apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3692642,
-      "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3616496,
+      "path": "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
+      "sizeBytes": 3366128,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3",
-      "sizeBytes": 3459284,
-      "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3",
-      "sizeBytes": 3437151,
+      "sizeBytes": 3310880,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3432363,
+      "sizeBytes": 3275609,
       "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
       "sizeBytes": 3236543,
+      "runtimeReferenced": true
+    },
+    {
+      "path": "apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 3160029,
+      "runtimeReferenced": true
+    },
+    {
+      "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 3140881,
+      "runtimeReferenced": true
+    },
+    {
+      "path": "apps/portal/assets/video/arcade-splash-loop.mp4",
+      "sizeBytes": 2937102,
+      "runtimeReferenced": true
+    },
+    {
+      "path": "apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
+      "sizeBytes": 2914826,
+      "runtimeReferenced": true
+    },
+    {
+      "path": "apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+      "sizeBytes": 2913681,
       "runtimeReferenced": true
     }
   ],
@@ -123,26 +123,8 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 6341689,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
       "path": "assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 6321878,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
-      "path": "assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 6011688,
+      "sizeBytes": 5034321,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -151,7 +133,7 @@
     },
     {
       "path": "assets/audio/music/rise-to-the-occasion.mp3",
-      "sizeBytes": 5704877,
+      "sizeBytes": 5024911,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -159,8 +141,17 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 5260483,
+      "path": "assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 4993102,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
+      "path": "assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
+      "sizeBytes": 4919596,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -169,7 +160,16 @@
     },
     {
       "path": "assets/audio/playlist/adventure-16-bit-arcade-music.mp3",
-      "sizeBytes": 5027503,
+      "sizeBytes": 4560613,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
+      "path": "assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
+      "sizeBytes": 4233395,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -186,17 +186,8 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
-      "sizeBytes": 4106147,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
       "path": "assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 3777437,
+      "sizeBytes": 3516073,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -205,7 +196,7 @@
     },
     {
       "path": "assets/audio/music/lester-and-lilly-rap-getting-lit.mp3",
-      "sizeBytes": 3767322,
+      "sizeBytes": 3389726,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -213,17 +204,8 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3692642,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
-      "path": "assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3616496,
+      "path": "assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
+      "sizeBytes": 3366128,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -232,16 +214,7 @@
     },
     {
       "path": "assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3",
-      "sizeBytes": 3459284,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
-      "path": "assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3",
-      "sizeBytes": 3437151,
+      "sizeBytes": 3310880,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -250,7 +223,7 @@
     },
     {
       "path": "assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3432363,
+      "sizeBytes": 3275609,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -267,8 +240,8 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 3088772,
+      "path": "assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 3160029,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -276,8 +249,8 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
-      "sizeBytes": 3004994,
+      "path": "assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 3140881,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -294,26 +267,35 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
+      "path": "assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
+      "sizeBytes": 2914826,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
+      "path": "assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+      "sizeBytes": 2913681,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
+      "path": "assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3",
+      "sizeBytes": 2821228,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
       "path": "assets/audio/playlist/litbound-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 2908618,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
-      "path": "assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 2878845,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
-      "path": "assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 2853121,
+      "sizeBytes": 2566855,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -322,7 +304,16 @@
     },
     {
       "path": "assets/audio/playlist/midnight-lit-16-bit-arcade-music-alt.mp3",
-      "sizeBytes": 2800281,
+      "sizeBytes": 2546151,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
+      "path": "assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 2543129,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -331,7 +322,7 @@
     },
     {
       "path": "assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 2691893,
+      "sizeBytes": 2466344,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -339,8 +330,8 @@
       "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
-      "path": "assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music-alt.mp3",
-      "sizeBytes": 2490289,
+      "path": "assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3",
+      "sizeBytes": 2306098,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -349,7 +340,16 @@
     },
     {
       "path": "assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 2457004,
+      "sizeBytes": 2223329,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
+      "path": "assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music-alt.mp3",
+      "sizeBytes": 2132901,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -358,7 +358,7 @@
     },
     {
       "path": "assets/audio/playlist/lit-trigger-16-bit-arcade-music.mp3",
-      "sizeBytes": 2231042,
+      "sizeBytes": 2026072,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -367,7 +367,7 @@
     },
     {
       "path": "assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music.mp3",
-      "sizeBytes": 2012499,
+      "sizeBytes": 1788693,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -376,16 +376,7 @@
     },
     {
       "path": "assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music-alt.mp3",
-      "sizeBytes": 1721581,
-      "runtimeReferenced": true,
-      "action": "cdn-candidate",
-      "destructive": false,
-      "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
-    },
-    {
-      "path": "assets/audio/playlist/midnight-lit-16-bit-arcade-music.mp3",
-      "sizeBytes": 1624498,
+      "sizeBytes": 1594587,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
@@ -402,8 +393,17 @@
       "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
+      "path": "assets/audio/playlist/midnight-lit-16-bit-arcade-music.mp3",
+      "sizeBytes": 1513974,
+      "runtimeReferenced": true,
+      "action": "cdn-candidate",
+      "destructive": false,
+      "requiresApproval": true,
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+    },
+    {
       "path": "assets/audio/music/litvm-testnet-teaser.mp3",
-      "sizeBytes": 1481997,
+      "sizeBytes": 1369382,
       "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
