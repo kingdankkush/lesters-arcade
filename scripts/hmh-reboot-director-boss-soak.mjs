@@ -16,6 +16,9 @@ import {
   simulateLiquidatorDps,
   stepLiquidatorBoss,
 } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { ensureExplicitGc } from './hmh-soak-explicit-gc.mjs';
+
+ensureExplicitGc(import.meta.url);
 
 const sha = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const PLAYER = Object.freeze({ x: 0, y: 0, groundZ: 0 });

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   WORLD_COORDINATES,
@@ -47,19 +48,27 @@ test('depth ordering follows ground y and explicit bias, never physical or visua
 });
 
 test('one ground-contact point and transform interpolation are shared render contracts', () => {
-  const previous = createActorSpatialState({ x: 0, y: 10, z: 2, groundZ: 1, heading: 0 });
-  const current = createActorSpatialState({ x: 20, y: 30, z: 6, groundZ: 3, heading: Math.PI });
+  const previous = createActorSpatialState({ x: 0, y: 10, z: 2, vx: 0, vy: 10, vz: 2, groundZ: 1, heading: 0 });
+  const current = createActorSpatialState({ x: 20, y: 30, z: 6, vx: 20, vy: 30, vz: 6, groundZ: 3, heading: Math.PI });
   assert.deepEqual(getGroundContact(current), { x: 20, y: 30, z: 3 });
   assert.deepEqual(interpolateSpatialState(previous, current, 0.25), {
     x: 5,
     y: 15,
     z: 3,
+    vx: 5,
+    vy: 15,
+    vz: 3,
     groundZ: 1.5,
     visualLiftZ: 0,
     heading: Math.PI * 0.25,
     depthBias: 0,
   });
   assert.throws(() => interpolateSpatialState(previous, current, 1.1), /alpha/i);
+});
+
+test('runtime camera follows the interpolated render actor rather than stepping ahead on authority state', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /followCameraTarget\(camera,\s*\{\s*\.\.\.renderActor,/);
 });
 
 test('world-to-screen and inverse ground-plane transforms share one camera source', () => {

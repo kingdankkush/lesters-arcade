@@ -25,6 +25,15 @@ function moveToward(current, target, maximumDelta) {
   return current + Math.sign(target - current) * maximumDelta;
 }
 
+function moveVectorToward(current, target, maximumDelta) {
+  const deltaX = target.x - current.x;
+  const deltaY = target.y - current.y;
+  const distance = Math.hypot(deltaX, deltaY);
+  if (distance <= maximumDelta || maximumDelta === Infinity) return { ...target };
+  const scale = maximumDelta / distance;
+  return { x: current.x + deltaX * scale, y: current.y + deltaY * scale };
+}
+
 export function quantizeDirection(direction, segments = 8) {
   if (!Number.isInteger(segments) || segments < 2) throw new TypeError('segments must be an integer >= 2');
   const normalized = normalize(direction);
@@ -90,8 +99,13 @@ export function stepPlayerMovement(state, input, {
   const targetVy = requestedMove.y * targetSpeed;
   const responseTime = moveMagnitude > state.movementDeadZone ? state.accelerationTime : state.decelerationTime;
   const maximumDelta = responseTime <= 0 ? Infinity : state.maxSpeed / responseTime * dtSeconds;
-  state.vx = moveToward(state.vx, targetVx, maximumDelta);
-  state.vy = moveToward(state.vy, targetVy, maximumDelta);
+  const nextVelocity = moveVectorToward(
+    { x: state.vx, y: state.vy },
+    { x: targetVx, y: targetVy },
+    maximumDelta,
+  );
+  state.vx = nextVelocity.x;
+  state.vy = nextVelocity.y;
 
   state.x += (state.vx + state.recoilVx) * dtSeconds;
   state.y += (state.vy + state.recoilVy) * dtSeconds;

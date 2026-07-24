@@ -25,6 +25,21 @@ test('player reaches responsive target velocity without diagonal speed gain', ()
   assert.ok(Math.abs(Math.hypot(cardinal.vx, cardinal.vy) - Math.hypot(diagonal.vx, diagonal.vy)) < 1e-9);
 });
 
+test('cardinal and diagonal input share the same fixed-tick acceleration envelope', () => {
+  const cardinal = createPlayerMotionState({ maxSpeed: 240, accelerationTime: 0.08 });
+  const diagonal = createPlayerMotionState({ maxSpeed: 240, accelerationTime: 0.08 });
+  const cardinalInput = { move: { x: 1, y: 0 }, aim: { x: 1, y: 0, active: true } };
+  const diagonalInput = { move: { x: 1, y: 1 }, aim: { x: 1, y: 0, active: true } };
+  for (let tick = 0; tick < 4; tick += 1) {
+    stepPlayerMovement(cardinal, cardinalInput, { dtSeconds: DT });
+    stepPlayerMovement(diagonal, diagonalInput, { dtSeconds: DT });
+    assert.ok(
+      Math.abs(Math.hypot(cardinal.vx, cardinal.vy) - Math.hypot(diagonal.vx, diagonal.vy)) < 1e-9,
+      `tick ${tick + 1} acceleration magnitude must not depend on input direction`,
+    );
+  }
+});
+
 test('direction reversal and release decelerate promptly instead of preserving long momentum', () => {
   const state = createPlayerMotionState({ maxSpeed: 240, accelerationTime: 0.08, decelerationTime: 0.06 });
   step(state, { move: { x: 1, y: 0 }, aim: { x: 1, y: 0, active: true } }, 8);

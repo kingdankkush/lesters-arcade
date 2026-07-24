@@ -34,6 +34,7 @@
     "smoke:hmh:cockpit": "node scripts/hmh-reboot-cockpit-browser-smoke.mjs",
     "smoke:hmh:performance": "node scripts/hmh-reboot-performance-browser-smoke.mjs",
     "certify:hmh:browser": "node scripts/hmh-reboot-release-browser-certification.mjs",
+    "audit:hmh:network": "node scripts/hmh-reboot-network-console-audit.mjs",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
     "visual:regression": "npm run build && node scripts/visual-regression.mjs",

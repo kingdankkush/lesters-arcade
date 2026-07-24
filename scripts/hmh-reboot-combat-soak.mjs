@@ -11,6 +11,9 @@ import {
   getActiveWeaponState,
   stepWeaponLoadout,
 } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import { ensureExplicitGc } from './hmh-soak-explicit-gc.mjs';
+
+ensureExplicitGc(import.meta.url);
 
 const MINUTE_TICKS = 60 * 60;
 const direction = Object.freeze({ x: 1, y: 0 });

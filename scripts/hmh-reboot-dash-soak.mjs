@@ -13,6 +13,9 @@ import {
   stepDash,
 } from '../apps/hmh-reboot/src/dash.mjs';
 import { DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
+import { ensureExplicitGc } from './hmh-soak-explicit-gc.mjs';
+
+ensureExplicitGc(import.meta.url);
 
 const SOAK_TICKS = 20 * 60 * 60;
 const hash = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');

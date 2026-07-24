@@ -39,7 +39,7 @@ async function fetchText(url, attempts = 10) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      if (!response.ok) throw new Error(`${url}: ${response.status} ${response.statusText}`);
       return await response.text();
     } catch (error) {
       lastError = error;
@@ -54,7 +54,7 @@ async function fetchPngSize(url, attempts = 10) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      if (!response.ok) throw new Error(`${url}: ${response.status} ${response.statusText}`);
       const png = Buffer.from(await response.arrayBuffer());
       if (png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') throw new Error(`${url} is not a PNG`);
       return [png.readUInt32BE(16), png.readUInt32BE(20)];
@@ -72,18 +72,6 @@ function assertIncludes(label, source, needle) {
   }
 }
 
-function parseFrozenManifest(label, source) {
-  const marker = 'Object.freeze(';
-  const start = source.indexOf(marker);
-  const end = source.lastIndexOf(');');
-  if (start < 0 || end < start) throw new Error(`${label} does not contain an Object.freeze manifest payload`);
-  return JSON.parse(source.slice(start + marker.length, end));
-}
-
-function portalManifestPath(src) {
-  if (!src) throw new Error('Manifest asset path is missing');
-  return src.replace(/^\.\//, '');
-}
 
 const server = externalRootUrl
   ? null
@@ -99,15 +87,12 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-ship-polish-v48`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-aaa-cycle-001`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
   const isometricWaveManifest = await fetchText(`${portalUrl}assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs`);
   const productionArtManifest = await fetchText(`${portalUrl}assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs`);
-  const productionArt = parseFrozenManifest('HMH production art pass manifest', productionArtManifest);
-  const xpBarFramePath = portalManifestPath(productionArt.ui.find((item) => item.slug === 'xp-bar-frame')?.src);
-  const cabinetFramePath = portalManifestPath(productionArt.cabinet?.frames?.[0]?.src);
 
   for (const marker of [
     'officialConnectButton',
@@ -122,7 +107,7 @@ try {
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
-    'hmh-ship-polish-v48',
+    'hmh-aaa-cycle-001',
   ]) {
     assertIncludes('portal html', html, marker);
   }
@@ -213,11 +198,10 @@ try {
   }
 
   const productionSpriteProbePaths = [
-    'assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-isometric-pixellab-wave-1-contact-sheet.png',
-    'assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/east.png',
-    'assets/generated/hmh-production-art-pass/characters/lester-iso-hero/run/frame-00.png',
-    xpBarFramePath,
-    cabinetFramePath,
+    'assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png',
+    'assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png',
+    'assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png',
+    'assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png',
   ];
   for (const spritePath of productionSpriteProbePaths) {
     const [width, height] = await fetchPngSize(`${portalUrl}${spritePath}`);

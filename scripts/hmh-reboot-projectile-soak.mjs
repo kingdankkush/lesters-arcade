@@ -5,6 +5,9 @@ import {
   createProjectileState,
   resolveProjectileBatch,
 } from '../apps/hmh-reboot/src/projectile-physics.mjs';
+import { ensureExplicitGc } from './hmh-soak-explicit-gc.mjs';
+
+ensureExplicitGc(import.meta.url);
 
 const TICKS = 60 * 60;
 const CAPACITY = 128;

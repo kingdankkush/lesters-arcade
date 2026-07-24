@@ -1911,7 +1911,7 @@ async function boot() {
     elapsedMs = simulation.timeMs;
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);
     followCameraTarget(camera, {
-      ...actor,
+      ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
       aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });

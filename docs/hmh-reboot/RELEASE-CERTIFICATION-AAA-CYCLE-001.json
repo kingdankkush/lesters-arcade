@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "release": "hmh-aaa-cycle-001",
+  "generatedAt": "2026-07-24T14:56:26Z",
+  "status": "LOCAL_CERTIFIED_PREVIEW_PENDING",
+  "branch": "reboot/hmh-aaa-continuous",
+  "baseCommit": "68c981449f6c62936729f14ec08c4d6f6db57d66",
+  "certifiedCodePatch": {
+    "scope": "git diff --cached --binary -- apps scripts tests package.json",
+    "sha256": "a2b4efda813101c8fa3da53190a499fca076689bab1cb979a190511f072291f3"
+  },
+  "changes": {
+    "observability": [
+      "Vercel analytics is injected on lestersarcade.io and vercel.app hosts but skipped on localhost",
+      "Permanent clean/warm portal and HMH network/console/service-worker audit",
+      "Query values are redacted in evidence",
+      "Successful 200/206 media metadata aborts are recorded as expected cancellations; all other failures remain fatal"
+    ],
+    "gameplay": [
+      "Cardinal and diagonal movement share one vector-magnitude acceleration envelope",
+      "Camera follows the interpolated render actor with interpolated velocity"
+    ],
+    "releaseHarness": [
+      "All memory-measuring soaks self-relaunch with explicit GC",
+      "Combat smoke matches the authored two-family opening and stable pressure/safety contracts",
+      "Portal smoke probes all four active production hero atlases instead of retired generated art"
+    ]
+  },
+  "tests": {
+    "total": 1615,
+    "passed": 1563,
+    "acceptedLegacyFailures": 52,
+    "unexpectedFailures": 0,
+    "legacyFailureFiles": 35
+  },
+  "build": {
+    "gameBundleBytes": 962113,
+    "gameBundleMaxBytes": 1050000,
+    "gameBundleSha256": "bde4d3e5b9df49760c5944c0d0c84b020656f071eccb48732db8bcdcb604d847",
+    "portalMainSha256": "66f5474a18132e808fcc94b5906ff5609dc3730d4952c2507b4cd6d9738c3d9e",
+    "serviceWorkerSha256": "b6318a84880817a83be6ed3386e457c820c45790c48823bd4ed5a524a4c3205b",
+    "portalIndexSha256": "8cf9e671714f320289bc1967ccfcac286295e61dbb691c8926ab94854505e299"
+  },
+  "assets": {
+    "status": "PASS",
+    "atlasCount": 4,
+    "atlasTotalBytes": 2569321,
+    "runtimeAuthority": "projection-only"
+  },
+  "security": {
+    "status": "PASS",
+    "checks": "5/5",
+    "findings": 0,
+    "sandbox": "3/3"
+  },
+  "web3": {
+    "sourceBoundary": "PASS 9/9",
+    "liveReadiness": "PARTIAL 3/4",
+    "blocked": "Required LitVM contracts are undeployed",
+    "transactionsPerformed": false,
+    "deploymentAuthorized": false
+  },
+  "networkAudit": {
+    "status": "PASS",
+    "scenarios": 4,
+    "responses": 127,
+    "httpErrors": 0,
+    "fatalRequestFailures": 0,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "historical404Closed": true
+  },
+  "performance": {
+    "desktopP95FrameMs": 7,
+    "desktopHeapDeltaBytes": -8362073,
+    "mobileP95FrameMs": 7,
+    "mobileHeapDeltaBytes": -5968187,
+    "enemySoakAverageTickMsMax": 1.014545,
+    "retainedHeapDeltaMaxBytes": 604512
+  },
+  "determinism": {
+    "fixedHz": 60,
+    "maxCatchUpSteps": 4,
+    "partitions": [60, 30, 20],
+    "projectileHash": "e57ed205",
+    "enemyHash": "ed43da9dd1b81626f923b720d265e0fc8c54035bcc7c501144f633557d5ea1fc",
+    "directorHash": "23fbb5d02e663f5ac50266e954d86992bdd648f9b25ffea46daaae2a37722695",
+    "worldHash": "ba2cb20b51b956b6190026d4e9cb74caf7b8724b53adc349df17aa6c899b42db"
+  },
+  "browser": {
+    "chrome": "PASS 5/5",
+    "edge": "PASS 5/5",
+    "profiles": ["desktop", "ultrawide", "tablet-landscape", "mobile-portrait", "mobile-landscape"],
+    "touchControlsContained": true,
+    "anchorDeterminism": "PASS",
+    "normalModeErrors": 0
+  },
+  "movementEvidence": {
+    "desktopKeyboardRightDeltaX": 75.185,
+    "desktopKeyboardDeltaY": 0,
+    "mobileTouchRightDeltaX": 40.637,
+    "mobileTouchDeltaY": 0,
+    "browserErrors": 0
+  },
+  "production": {
+    "url": "https://lestersarcade.io",
+    "currentDeployment": "dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9",
+    "durableRollbackDeployment": "dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk",
+    "unchanged": true,
+    "promotionAuthorized": false
+  },
+  "nextGate": "Exact-index independent reviews, commit/push, exact preview deployment, and byte verification"
+}

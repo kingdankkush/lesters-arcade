@@ -14,6 +14,9 @@ import {
   revealLevelOneAt,
 } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
+import { ensureExplicitGc } from './hmh-soak-explicit-gc.mjs';
+
+ensureExplicitGc(import.meta.url);
 
 const route = LEVEL_ONE_WORLD.routes.find((candidate) => candidate.id === 'main-route');
 const nodes = new Map(LEVEL_ONE_WORLD.routeGraph.nodes.map((node) => [node.id, node]));

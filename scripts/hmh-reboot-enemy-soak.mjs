@@ -12,6 +12,9 @@ import {
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { createAuthoredGroundQuery, createElevationSurface } from '../apps/hmh-reboot/src/elevation.mjs';
 import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
+import { ensureExplicitGc } from './hmh-soak-explicit-gc.mjs';
+
+ensureExplicitGc(import.meta.url);
 
 const BODY_COUNT = 128;
 const TARGET_TICKS = 3600;

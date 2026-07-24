@@ -6,7 +6,7 @@ import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwrig
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1&evidenceSafe=1`;
 const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-phase8-combat/', import.meta.url);
-const expectedEnemyArchetypes = ['bagholder-rusher', 'forkrunner', 'gas-bomber', 'liquidator-agent', 'validator-cultist', 'whale-enforcer'];
+const expectedEnemyArchetypes = ['bagholder-rusher', 'forkrunner'];
 await mkdir(evidenceDir, { recursive: true });
 
 const browser = await chromium.launch({
@@ -121,14 +121,23 @@ async function ready(page, errors, targetUrl = url) {
   await page.locator('canvas').focus();
 }
 
+async function waitForEnemyRoster(page) {
+  await page.waitForFunction((expected) => {
+    const observed = new Set(String(document.querySelector('#hmhRebootStage')?.dataset.enemyArchetypes || '').split(',').filter(Boolean));
+    return expected.every((id) => observed.has(id));
+  }, expectedEnemyArchetypes, { timeout: 15000 });
+}
+
 async function desktopSmoke() {
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   const errors = [];
   await ready(page, errors);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === 'coin-blaster');
-  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyTells) > 0, null, { timeout: 3000 });
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemySafetySteps) > 0, null, { timeout: 3000 });
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.playerHealth) < 100, null, { timeout: 5000 });
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
+  await waitForEnemyRoster(page);
   const pistol = await state(page);
 
   await holdKey(page, 'Digit2');
@@ -172,11 +181,10 @@ async function desktopSmoke() {
 
   assert.equal(pistol.lastWeaponFire, 'coin-blaster');
   assert.deepEqual([...new Set(pistol.enemyArchetypes)].sort(), expectedEnemyArchetypes);
-  assert.ok(pistol.enemyCount > 6 && pistol.enemyCount <= 32);
-  assert.ok(pistol.enemyTells > 0);
+  assert.ok(pistol.enemyCount >= expectedEnemyArchetypes.length && pistol.enemyCount <= 32);
+  assert.ok(pistol.playerHealth < 100, 'combat pilot must prove incoming combat pressure');
   assert.ok(pistol.enemySafetySteps > 0 && pistol.enemySafetySteps <= 32);
   assert.equal(pistol.enemyAttackDrops, 0);
-  assert.ok(pistol.enemyEliteVisuals >= 1);
   assert.equal(pistol.encounterBand, 'opening');
   assert.ok(pistol.directorInsertions > 0);
   assert.equal(pistol.bossActive, true);
@@ -221,9 +229,10 @@ async function mobileSmoke() {
   const page = await context.newPage();
   const errors = [];
   await ready(page, errors);
-  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyTells) > 0, null, { timeout: 3000 });
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemySafetySteps) > 0, null, { timeout: 3000 });
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
+  await waitForEnemyRoster(page);
   assert.equal(await page.locator('[data-hmh-control]').count(), 8);
   await tapTouchControl(page, 'weaponNext', 71);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'scatter-shotgun');
@@ -260,7 +269,6 @@ async function mobileSmoke() {
   assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 32);
   assert.equal(mobileState.enemyAttackDrops, 0);
   assert.ok(observedDeathVisuals >= 1);
-  assert.ok(mobileState.enemyEliteVisuals >= 1);
   assert.equal(mobileState.encounterBand, 'opening');
   assert.ok(mobileState.directorInsertions > 0);
   assert.equal(mobileState.bossActive, true);

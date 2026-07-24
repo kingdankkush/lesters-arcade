@@ -1,15 +1,8 @@
-// Initialize Vercel Web Analytics without a bundled package import so local
-// PnP/CI build resolution cannot block the portal bundle.
-function injectVercelWebAnalytics() {
-  if (typeof document === 'undefined') return;
-  if (document.querySelector('script[data-vercel-analytics]')) return;
-  const script = document.createElement('script');
-  script.defer = true;
-  script.dataset.vercelAnalytics = 'true';
-  script.src = '/_vercel/insights/script.js';
-  document.head.appendChild(script);
+import { shouldInjectVercelWebAnalytics, injectVercelWebAnalytics } from './src/vercel-analytics.mjs';
+
+if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname: window.location.hostname })) {
+  injectVercelWebAnalytics({ documentRef: document, locationRef: window.location });
 }
-injectVercelWebAnalytics();
 
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
