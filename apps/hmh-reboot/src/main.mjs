@@ -2,6 +2,7 @@ import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Text
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
+import { createCockpitUi } from './cockpit-ui.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -54,6 +55,13 @@ import {
 } from './projectile-physics.mjs';
 import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
+import {
+  createRunProgression,
+  getRunProgressionSnapshot,
+  recordRunDefeat,
+  selectRunUpgrade,
+} from './run-progression.mjs';
+import { buildRunResultMessages, getWeb3AdapterStatus } from './run-adapters.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid } from './prototype-actor-art.mjs';
 import {
@@ -279,6 +287,7 @@ async function boot() {
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
+  const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
@@ -328,8 +337,12 @@ async function boot() {
   window.addEventListener('keydown', unlockCombatAudio, { once: true, capture: true });
   let elapsedMs = 0;
   let bridge = null;
+  let cockpit = null;
   let sessionPayload = null;
   let simulation = null;
+  let runProgression = null;
+  let maxPlayerHealth = 100;
+  let upgradePending = false;
   let actor = null;
   let motion = null;
   let aimState = null;
@@ -759,7 +772,7 @@ async function boot() {
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
         : narrowView ? compactCombatHud : combatHud;
       const safeLabelX = view.width * 0.5;
-      const safeLabelY = view.width < 600 ? 180 : 32;
+      const safeLabelY = view.width < 600 ? 202 : 82;
       label.position.set(safeLabelX, safeLabelY);
       renderMinimap(view, renderState);
       if (debugGridEnabled) {
@@ -789,6 +802,14 @@ async function boot() {
         stageElement.dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);
         stageElement.dataset.worldBlockers = String(worldArtReport?.blockerCount ?? 0);
         stageElement.dataset.worldLandmarks = String(worldArtReport?.landmarkCount ?? 0);
+        const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
+        const audioSnapshot = combatAudio.status();
+        stageElement.dataset.runScore = String(runSnapshot?.score ?? 0);
+        stageElement.dataset.runXp = String(runSnapshot?.xp ?? 0);
+        stageElement.dataset.runLevel = String(runSnapshot?.level ?? 1);
+        stageElement.dataset.runPendingLevels = String(runSnapshot?.pendingLevels ?? 0);
+        stageElement.dataset.musicEnabled = String(audioSnapshot.musicEnabled);
+        stageElement.dataset.musicActive = String(audioSnapshot.musicActive);
         stageElement.dataset.bossVisualState = bossVisual.visible ? bossVisual.visualState ?? 'idle' : 'hidden';
         stageElement.dataset.inputWeaponSlot = String(lastInputWeaponSlot);
         stageElement.dataset.simulationTick = String(simulation?.tick ?? 0);
@@ -893,6 +914,11 @@ async function boot() {
     lastAccessibleCombatStatus = '';
     playerDefeatController = null;
     playerHealth = 100;
+    maxPlayerHealth = 100;
+    runProgression = null;
+    upgradePending = false;
+    cockpit?.hideUpgrade();
+    cockpit?.setPaused(false);
     runKills = 0;
     runEventSequence = 0;
     previousGrenade = false;
@@ -914,6 +940,15 @@ async function boot() {
     settings = { ...payload.settings };
     elapsedMs = 0;
     simulation = new DeterministicSimulation({ seed: payload.session.seed });
+    runProgression = createRunProgression({ seed: payload.session.seed });
+    maxPlayerHealth = 100;
+    upgradePending = false;
+    cockpit?.setSession(payload, getWeb3AdapterStatus({
+      embedded: window.parent !== window,
+      rankedEligible: payload.session.rankedEligible,
+    }));
+    cockpit?.setMusicEnabled(settings.musicEnabled);
+    cockpit?.updateRun(getRunProgressionSnapshot(runProgression));
     actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });
     lastGround = queryGround(actor.x, actor.y);
     actor.groundZ = lastGround.groundZ;
@@ -965,9 +1000,19 @@ async function boot() {
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
     dashState = createDashState({ cooldownTier: 0 });
     lastDashReady = true;
-    playerDefeatController = createPlayerDefeatController({ maxHealth: 100 });
-    playerHealth = 100;
+    playerDefeatController = createPlayerDefeatController({ maxHealth: maxPlayerHealth });
+    playerHealth = maxPlayerHealth;
     runKills = 0;
+    if (progressionPilotEnabled) {
+      const pilotSnapshot = recordRunDefeat(runProgression, {
+        enemyId: 'evidence-progression-pilot',
+        threatCost: 20,
+        tick: 0,
+      });
+      runKills = 1;
+      cockpit?.updateRun(pilotSnapshot);
+      upgradePending = pilotSnapshot.pendingLevels > 0;
+    }
     runEventSequence = 0;
     previousActor = createActorSpatialState({ ...actor });
     renderActor = actor;
@@ -1477,7 +1522,11 @@ async function boot() {
         });
       }
 
-      const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents);
+      const runEffects = getRunProgressionSnapshot(runProgression).effects;
+      const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
+        .map((hit) => hit.sourceId === 'player' && hit.targetId !== 'player'
+          ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier }
+          : hit);
       if (authoritativeCombatHitIntents.length > 0) {
         const combatTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => ({
           id: enemy.id,
@@ -1498,7 +1547,7 @@ async function boot() {
         if (playerHealth > 0) combatTargets.push({
           id: 'player',
           health: playerHealth,
-          maxHealth: 100,
+          maxHealth: maxPlayerHealth,
           armor: 1,
           shieldCharges: 0,
           knockbackResistance: 1,
@@ -1549,8 +1598,6 @@ async function boot() {
                 sequence: runEventSequence,
                 eventType: 'boss-defeated',
                 value: 1,
-                bossId: liquidatorBoss.id,
-                elapsedTicks: bossDamage.runEvent.data.elapsedTicks,
               });
               runEventSequence += 1;
             }
@@ -1585,6 +1632,13 @@ async function boot() {
           if (!defeatedEnemy) continue;
           queueEnemyDeathVisual(defeatedEnemy, tick);
           runKills += 1;
+          const progressionSnapshot = recordRunDefeat(runProgression, {
+            enemyId: defeatedEnemy.id,
+            threatCost: ENEMY_ARCHETYPES[defeatedEnemy.archetypeId].costs.threat,
+            tick,
+          });
+          cockpit?.updateRun(progressionSnapshot);
+          if (progressionSnapshot.pendingLevels > 0) upgradePending = true;
           if (bridge?.initialized) {
             bridge.send('game:run-event', {
               tick,
@@ -1608,8 +1662,16 @@ async function boot() {
           combatAudio.pause();
           setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
           if (bridge?.initialized) {
-            bridge.send('game:state', defeatTransition.statePayload);
-            bridge.send('game:game-over', defeatTransition.gameOverPayload);
+            const runSnapshot = getRunProgressionSnapshot(runProgression);
+            const resultMessages = buildRunResultMessages({
+              seed: sessionPayload.session.seed,
+              score: runSnapshot.score,
+              kills: runKills,
+              elapsedMs: simulation.timeMs,
+            });
+            bridge.send('game:state', statePayload('game-over'));
+            bridge.send('game:score-result', resultMessages.scoreResult);
+            bridge.send('game:game-over', resultMessages.gameOver);
           }
         }
       } else {
@@ -1636,23 +1698,27 @@ async function boot() {
   const runtimeStatus = () => simulation?.state === 'active'
     ? 'running'
     : simulation?.state === 'game-over' ? 'game-over' : 'paused';
-  const statePayload = (status = runtimeStatus()) => ({
-    status,
-    score: 0,
-    kills: runKills,
-    elapsedMs,
-    health: playerHealth,
-    maxHealth: 100,
-    xp: 0,
-    level: 1,
-    paused: status === 'paused',
-  });
+  const statePayload = (status = runtimeStatus()) => {
+    const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
+    return {
+      status,
+      score: runSnapshot?.score ?? 0,
+      kills: runKills,
+      elapsedMs,
+      health: playerHealth,
+      maxHealth: maxPlayerHealth,
+      xp: runSnapshot?.xp ?? 0,
+      level: runSnapshot?.level ?? 1,
+      paused: status === 'paused',
+    };
+  };
 
   const pauseRuntime = (source) => {
-    if (!simulation || (simulation.state !== 'active' && simulation.state !== 'upgrade')) return;
-    if (simulation?.state === 'active' || simulation?.state === 'upgrade') simulation.pause();
+    if (!simulation || simulation.state !== 'active') return;
+    simulation.pause();
     app.ticker.stop();
     combatAudio.pause();
+    cockpit?.setPaused(true);
     setStatus(bridge?.initialized ? 'Portal session paused' : 'Standalone session paused', `Paused by ${source}.`);
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: true, source });
@@ -1665,12 +1731,65 @@ async function boot() {
     simulation.resume();
     app.ticker.start();
     combatAudio.resume();
+    cockpit?.setPaused(false);
     setStatus(bridge?.initialized ? 'Portal session connected' : 'Standalone session ready', `Resumed by ${source}.`);
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: false, source });
       bridge.send('game:state', statePayload('running'));
     }
   };
+
+  const applySelectedUpgrade = (upgradeId) => {
+    if (simulation?.state !== 'upgrade' || !runProgression) return;
+    const before = getRunProgressionSnapshot(runProgression);
+    const selection = selectRunUpgrade(runProgression, upgradeId);
+    const healthGain = selection.effects.maxHealthBonus - before.effects.maxHealthBonus;
+    const grenadeGain = selection.effects.bonusGrenadeCharges - before.effects.bonusGrenadeCharges;
+    if (healthGain > 0) {
+      maxPlayerHealth += healthGain;
+      playerHealth = Math.min(maxPlayerHealth, playerHealth + healthGain);
+      playerDefeatController = createPlayerDefeatController({ maxHealth: maxPlayerHealth });
+    }
+    if (dashState) dashState.cooldownTier = selection.effects.dashCooldownTier;
+    if (grenadeSystem && grenadeGain > 0) grenadeSystem.handCharges += grenadeGain;
+    cockpit?.updateRun(selection.snapshot);
+    if (selection.snapshot.pendingLevels > 0 && selection.snapshot.pendingChoices.length > 0) {
+      cockpit?.showUpgrade(selection.snapshot);
+      return;
+    }
+    cockpit?.hideUpgrade();
+    simulation.leaveUpgrade();
+    combatAudio.resume();
+    app.ticker.start();
+    if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
+  };
+
+  cockpit = createCockpitUi({
+    documentRef: document,
+    onMenuToggle: () => {
+      if (simulation?.state === 'paused') resumeRuntime('user');
+      else pauseRuntime('user');
+    },
+    onMusicToggle: (enabled) => {
+      settings = { ...settings, musicEnabled: enabled };
+      combatAudio.setMusicEnabled(enabled);
+      if (bridge?.initialized) {
+        bridge.send('game:settings', { settings: { ...settings } });
+        bridge.send('game:state', statePayload());
+      }
+    },
+    onResume: () => resumeRuntime('user'),
+    onRestart: () => {
+      if (!sessionPayload) return;
+      initializeSession(sessionPayload);
+      marker.scale.set(1);
+      if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
+    },
+    onExit: () => {
+      if (bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
+    },
+    onSelectUpgrade: applySelectedUpgrade,
+  });
 
   const handleVisibilityChange = () => {
     if (document.visibilityState === 'hidden') pauseRuntime('visibility');
@@ -1705,6 +1824,15 @@ async function boot() {
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
     if (debugGridEnabled) stageElement.dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions);
+    if (upgradePending && simulation.state === 'active' && (!progressionPilotEnabled || simulation.tick >= 2)) {
+      const progressionSnapshot = getRunProgressionSnapshot(runProgression);
+      upgradePending = false;
+      if (progressionSnapshot.pendingLevels > 0 && progressionSnapshot.pendingChoices.length > 0) {
+        simulation.enterUpgrade();
+        combatAudio.pause();
+        cockpit?.showUpgrade(progressionSnapshot);
+      }
+    }
     elapsedMs = simulation.timeMs;
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);
     followCameraTarget(camera, {
@@ -1751,6 +1879,7 @@ async function boot() {
         } else if (message.type === 'portal:settings') {
           settings = { ...message.payload.settings };
           combatAudio.setMusicEnabled(settings.musicEnabled);
+          cockpit?.setMusicEnabled(settings.musicEnabled);
           bridge.send('game:settings', { settings: { ...settings } });
           bridge.send('game:state', statePayload());
         } else if (message.type === 'portal:restart') {
@@ -1765,6 +1894,7 @@ async function boot() {
           app.renderer.off('resize', handleResize);
           app.ticker.stop();
           combatAudio.destroy();
+          cockpit?.destroy();
           stopCurrentSession();
           app.destroy(true);
         }

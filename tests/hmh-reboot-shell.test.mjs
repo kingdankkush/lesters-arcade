@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
 
-test('standalone child HTML exposes only the reboot shell and bundled module', async () => {
+test('standalone child HTML exposes the reboot cockpit and bundled module without wallet APIs', async () => {
   const html = await read('../apps/portal/hmh-reboot/index.html');
   assert.match(html, /id="hmhRebootStage"/);
   assert.match(html, /id="hmhRebootStatus"/);
@@ -12,7 +12,8 @@ test('standalone child HTML exposes only the reboot shell and bundled module', a
   assert.match(html, /id="hmhRebootDashStatus"[^>]+role="status"[^>]+aria-live="polite"/);
   assert.match(html, /src="\.\.\/dist\/hmh-reboot\/game\.js"/);
   assert.match(html, /href="\.\/styles\.css"/);
-  assert.doesNotMatch(html, /wallet|ethereum|contract/i);
+  assert.match(html, /no wallet requested/i);
+  assert.doesNotMatch(html, /window\.ethereum|walletconnect|sendTransaction|contractAddress|privateKey/i);
 });
 
 test('child runtime uses Pixi and the validated bridge without wallet or settlement authority', async () => {
@@ -86,7 +87,9 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /magnitude:\s*event\.recoil/);
   assert.match(source, /createPlayerDefeatController/);
   assert.match(source, /simulation\.gameOver\(\)/);
-  assert.match(source, /bridge\.send\('game:game-over', defeatTransition\.gameOverPayload\)/);
+  assert.match(source, /buildRunResultMessages\(/);
+  assert.match(source, /bridge\.send\('game:score-result', resultMessages\.scoreResult\)/);
+  assert.match(source, /bridge\.send\('game:game-over', resultMessages\.gameOver\)/);
   assert.match(source, /simulation\?\.state === 'game-over' \? 'game-over'/);
   assert.match(source, /stageElement\.dataset\.grenadeCount/);
   assert.match(source, /stageElement\.dataset\.dashReadyTick/);
@@ -95,7 +98,7 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /label\.style\.fontSize/);
   assert.match(source, /view\.width\s*<\s*600/);
   assert.match(source, /const safeLabelX = view\.width \* 0\.5/);
-  assert.match(source, /const safeLabelY = view\.width < 600 \? 180 : 32/);
+  assert.match(source, /const safeLabelY = view\.width < 600 \? 202 : 82/);
   assert.match(source, /createActorSpatialState\(/);
   assert.match(source, /createCameraState\(/);
   assert.match(source, /interpolateSpatialState\(/);

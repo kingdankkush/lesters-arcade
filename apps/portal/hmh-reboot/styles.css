@@ -3,6 +3,12 @@
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #06111d;
   color: #f4fbff;
+  --cyan: #8ff3ff;
+  --cyan-strong: #4ddfff;
+  --gold: #ffd166;
+  --glass: rgba(5, 18, 31, 0.78);
+  --glass-edge: rgba(143, 243, 255, 0.34);
+  --ink-muted: #aac3d4;
 }
 
 * { box-sizing: border-box; }
@@ -16,130 +22,148 @@ html, body, .hmh-reboot-shell {
   -webkit-user-select: none;
 }
 body { background: radial-gradient(circle at 50% 25%, #153b50 0%, #071522 46%, #040a12 100%); }
-.hmh-reboot-shell { position: relative; min-height: 320px; }
+button { font: inherit; }
+button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+[hidden] { display: none !important; }
+.hmh-reboot-shell { position: relative; min-height: 320px; isolation: isolate; }
 .hmh-reboot-stage, .hmh-reboot-stage canvas { display: block; width: 100%; height: 100%; }
+
+.hmh-reboot-status-card,
+.hmh-run-rail,
+.hmh-glass-panel {
+  border: 1px solid var(--glass-edge);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.075), transparent 34%),
+    linear-gradient(155deg, rgba(5, 18, 31, 0.9), rgba(10, 32, 48, 0.66));
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.38), inset 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+}
+
 .hmh-reboot-status-card {
   position: absolute;
+  z-index: 8;
   top: max(14px, env(safe-area-inset-top));
   left: max(14px, env(safe-area-inset-left));
   display: grid;
   gap: 4px;
-  max-width: min(420px, calc(100% - 28px));
-  padding: 12px 16px;
-  border: 1px solid rgba(84, 222, 255, 0.4);
+  width: min(330px, calc(100% - 28px));
+  padding: 12px 14px;
   border-radius: 16px;
-  background: linear-gradient(145deg, rgba(5, 18, 31, 0.88), rgba(11, 30, 45, 0.68));
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), inset 0 1px rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px) saturate(130%);
-  pointer-events: none;
 }
-.hmh-reboot-kicker { color: #55dfff; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; }
-#hmhRebootStatus { font-size: clamp(0.9rem, 2.8vw, 1.08rem); }
-#hmhRebootSession { color: #aac3d4; font-size: 0.75rem; overflow-wrap: anywhere; }
-.hmh-reboot-dash-status {
-  justify-self: start;
-  margin-top: 4px;
-  padding: 4px 9px;
-  border: 1px solid rgba(143, 243, 255, 0.36);
-  border-radius: 999px;
-  color: #b9d3dc;
-  background: linear-gradient(145deg, rgba(8, 29, 44, 0.72), rgba(24, 52, 66, 0.42));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px) saturate(125%);
-  font-size: 0.68rem;
-  font-weight: 850;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.hmh-reboot-dash-status[data-ready="true"] {
-  border-color: rgba(143, 243, 255, 0.9);
-  color: #f1feff;
-  background: linear-gradient(145deg, rgba(21, 88, 108, 0.78), rgba(18, 59, 76, 0.58));
-  box-shadow: 0 0 20px rgba(73, 221, 255, 0.34), inset 0 1px rgba(255, 255, 255, 0.16);
-}
-.hmh-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+.hmh-reboot-kicker,
+.hmh-panel-kicker { color: var(--cyan-strong); font-size: 0.64rem; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; }
+#hmhRebootStatus { font-size: clamp(0.88rem, 2.4vw, 1.03rem); }
+#hmhRebootSession { color: var(--ink-muted); font-size: 0.7rem; overflow-wrap: anywhere; }
+.hmh-adapter-status { margin-top: 2px; color: #82a5b7; font-size: 0.62rem; }
 
-.hmh-touch-controls {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  display: none;
-  pointer-events: none;
+.hmh-command-row { display: flex; gap: 6px; margin-top: 5px; }
+.hmh-command-button,
+.hmh-menu-actions button,
+.hmh-upgrade-choice {
+  border: 1px solid rgba(143, 243, 255, 0.3);
+  color: #edfcff;
+  background: rgba(10, 39, 56, 0.7);
+  box-shadow: inset 0 1px rgba(255,255,255,0.09);
+  cursor: pointer;
 }
-.hmh-touch-stick,
-.hmh-touch-button {
+.hmh-command-button { min-height: 30px; padding: 5px 9px; border-radius: 9px; font-size: 0.65rem; font-weight: 850; text-transform: uppercase; }
+.hmh-command-button:hover,
+.hmh-command-button[aria-pressed="true"] { border-color: rgba(143,243,255,0.75); background: rgba(27, 87, 108, 0.76); }
+
+.hmh-run-rail {
   position: absolute;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(164, 234, 255, 0.5);
-  border-radius: 50%;
-  color: #effbff;
-  background: rgba(7, 24, 39, 0.44);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), 0 8px 24px rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(8px) saturate(135%);
-  pointer-events: auto;
-  touch-action: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.hmh-touch-stick::before {
-  content: attr(data-hmh-control);
-  position: absolute;
-  top: 6px;
+  z-index: 7;
+  top: max(14px, env(safe-area-inset-top));
   left: 50%;
-  min-width: 52px;
-  padding: 3px 7px;
-  border: 1px solid rgba(143, 243, 255, 0.55);
-  border-radius: 999px;
-  color: #f4fbff;
-  background: rgba(3, 15, 26, 0.78);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.34);
-  font-size: 0.72rem;
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-shadow: 0 1px 3px #000;
-  text-transform: uppercase;
+  display: grid;
+  grid-template-columns: auto auto minmax(150px, 240px) auto;
+  gap: 1px;
+  align-items: stretch;
+  padding: 5px;
+  border-radius: 14px;
   transform: translateX(-50%);
 }
-.hmh-touch-stick__knob {
-  width: 44%;
-  height: 44%;
-  border: 2px solid rgba(255, 255, 255, 0.72);
-  border-radius: 50%;
-  background: rgba(73, 221, 255, 0.34);
-  box-shadow: 0 0 18px rgba(73, 221, 255, 0.34);
-}
-.hmh-touch-button {
-  font-size: clamp(0.48rem, 1.8vw, 0.68rem);
-  font-weight: 900;
-  letter-spacing: 0.04em;
-}
-.hmh-touch-button--fire { border-color: rgba(255, 209, 102, 0.75); background: rgba(124, 83, 8, 0.38); }
-.hmh-touch-button--grenade { border-color: rgba(255, 92, 122, 0.72); }
-.hmh-touch-button--dash { border-color: rgba(73, 221, 255, 0.78); }
-.hmh-touch-button--pause { border-color: rgba(255, 255, 255, 0.48); }
-.hmh-touch-button--weaponNext { border-color: rgba(196, 151, 255, 0.8); background: rgba(70, 39, 112, 0.42); }
+.hmh-run-stat { display: grid; align-content: center; min-width: 72px; padding: 5px 11px; border-right: 1px solid rgba(143,243,255,0.14); }
+.hmh-run-stat span { color: #8aafc0; font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.hmh-run-stat strong { color: #fff; font-size: 0.98rem; font-variant-numeric: tabular-nums; }
+.hmh-run-stat--wide { gap: 4px; }
+.hmh-xp-track { width: 100%; height: 5px; overflow: hidden; border-radius: 999px; background: rgba(3,12,20,0.78); }
+.hmh-xp-track i { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gold), #fff0a8); box-shadow: 0 0 12px rgba(255,209,102,0.56); transition: width 180ms ease-out; }
+.hmh-reboot-dash-status { display: grid; place-items: center; min-width: 82px; padding: 5px 9px; border-radius: 9px; color: #bdd0d8; font-size: 0.61rem; font-weight: 900; letter-spacing: 0.07em; text-transform: uppercase; }
+.hmh-reboot-dash-status[data-ready="true"] { color: #f1feff; background: rgba(21, 88, 108, 0.7); box-shadow: 0 0 16px rgba(73, 221, 255, 0.26); }
+
+.hmh-profile-panel { position: absolute; z-index: 10; top: 150px; left: 14px; width: 280px; padding: 16px; border-radius: 16px; }
+.hmh-profile-panel > strong { display: block; margin: 5px 0 12px; font-size: 1.05rem; }
+.hmh-profile-panel dl { display: grid; gap: 8px; margin: 0; }
+.hmh-profile-panel dl div { display: flex; justify-content: space-between; gap: 16px; padding-top: 7px; border-top: 1px solid rgba(143,243,255,0.13); }
+.hmh-profile-panel dt { color: #82a5b7; font-size: 0.66rem; text-transform: uppercase; }
+.hmh-profile-panel dd { margin: 0; color: #effbff; font-size: 0.75rem; font-weight: 800; }
+
+.hmh-modal-layer { position: absolute; z-index: 30; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(1, 7, 12, 0.62); pointer-events: auto; }
+.hmh-menu-panel { width: min(430px, 100%); padding: 24px; border-radius: 22px; }
+.hmh-menu-panel h1,
+.hmh-upgrade-panel h1 { margin: 5px 0 7px; font-size: clamp(1.35rem, 4vw, 2rem); letter-spacing: -0.04em; }
+.hmh-menu-panel p { margin: 0 0 20px; color: var(--ink-muted); line-height: 1.55; }
+.hmh-menu-actions { display: grid; gap: 9px; }
+.hmh-menu-actions button { min-height: 44px; border-radius: 12px; font-weight: 850; }
+.hmh-menu-actions button:hover { border-color: var(--cyan); background: rgba(26, 83, 102, 0.78); }
+.hmh-menu-actions button:disabled { cursor: not-allowed; opacity: 0.42; border-style: dashed; }
+.hmh-menu-actions button:disabled:hover { border-color: rgba(143, 243, 255, 0.3); background: rgba(10, 39, 56, 0.7); }
+
+.hmh-upgrade-layer { align-items: end; }
+.hmh-upgrade-panel { width: min(980px, 100%); padding: 20px; border-radius: 22px 22px 10px 10px; }
+.hmh-upgrade-panel > header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.hmh-upgrade-queue { padding: 6px 10px; border: 1px solid rgba(255,209,102,0.35); border-radius: 999px; color: #fff0b7; font-size: 0.68rem; font-weight: 850; }
+.hmh-upgrade-choices { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
+.hmh-upgrade-choice { display: grid; gap: 7px; min-height: 156px; padding: 15px; border-radius: 16px; text-align: left; }
+.hmh-upgrade-choice:hover { border-color: var(--cyan); transform: translateY(-2px); }
+.hmh-upgrade-choice__branch { color: var(--cyan-strong); font-size: 0.62rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+.hmh-upgrade-choice strong { font-size: 1.04rem; }
+.hmh-upgrade-choice b { color: #fff0b7; font-size: 0.74rem; }
+.hmh-upgrade-choice p { margin: 0; color: var(--ink-muted); font-size: 0.72rem; line-height: 1.45; }
+
+.hmh-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.hmh-touch-controls { position: absolute; inset: 0; z-index: 5; display: none; pointer-events: none; }
+.hmh-touch-stick,
+.hmh-touch-button { position: absolute; display: grid; place-items: center; border: 1px solid rgba(164,234,255,0.5); border-radius: 50%; color: #effbff; background: rgba(7,24,39,0.44); box-shadow: inset 0 1px rgba(255,255,255,0.13), 0 8px 24px rgba(0,0,0,0.24); backdrop-filter: blur(8px) saturate(135%); pointer-events: auto; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.hmh-touch-stick::before { content: attr(data-hmh-control); position: absolute; top: 6px; left: 50%; min-width: 52px; padding: 3px 7px; border: 1px solid rgba(143,243,255,0.55); border-radius: 999px; color: #f4fbff; background: rgba(3,15,26,0.78); box-shadow: 0 3px 12px rgba(0,0,0,0.34); font-size: 0.72rem; font-weight: 900; line-height: 1.1; letter-spacing: 0.12em; text-align: center; text-shadow: 0 1px 3px #000; text-transform: uppercase; transform: translateX(-50%); }
+.hmh-touch-stick__knob { width: 44%; height: 44%; border: 2px solid rgba(255,255,255,0.72); border-radius: 50%; background: rgba(73,221,255,0.34); box-shadow: 0 0 18px rgba(73,221,255,0.34); }
+.hmh-touch-button { font-size: clamp(0.48rem,1.8vw,0.68rem); font-weight: 900; letter-spacing: 0.04em; }
+.hmh-touch-button--fire { border-color: rgba(255,209,102,0.75); background: rgba(124,83,8,0.38); }
+.hmh-touch-button--grenade { border-color: rgba(255,92,122,0.72); }
+.hmh-touch-button--dash { border-color: rgba(73,221,255,0.78); }
+.hmh-touch-button--pause { border-color: rgba(255,255,255,0.48); }
+.hmh-touch-button--weaponNext { border-color: rgba(196,151,255,0.8); background: rgba(70,39,112,0.42); }
 
 @media (hover: none) and (pointer: coarse), (max-width: 900px) {
   .hmh-touch-controls { display: block; }
-  .hmh-reboot-status-card { max-width: min(330px, calc(100% - 100px)); }
+  .hmh-reboot-status-card { width: min(290px, calc(100% - 100px)); }
+  .hmh-run-rail { top: 150px; width: calc(100% - 24px); grid-template-columns: 0.75fr 0.55fr 1.4fr 0.8fr; }
+  .hmh-run-stat { min-width: 0; padding-inline: 7px; }
+  .hmh-run-stat strong { font-size: 0.82rem; }
+  .hmh-profile-panel { top: 190px; }
 }
 
-@media (max-width: 560px) {
-  .hmh-reboot-status-card { padding: 10px 12px; border-radius: 12px; }
+@media (max-width: 600px) {
+  .hmh-reboot-status-card { top: 8px; left: 8px; width: min(282px, calc(100% - 98px)); padding: 9px 10px; border-radius: 12px; }
+  .hmh-command-button { min-height: 27px; padding: 4px 7px; font-size: 0.58rem; }
+  .hmh-adapter-status { display: none; }
+  .hmh-run-rail { top: 136px; width: calc(100% - 16px); padding: 3px; border-radius: 11px; }
+  .hmh-run-stat { padding: 4px 5px; }
+  .hmh-run-stat span { font-size: 0.5rem; }
+  .hmh-run-stat--wide span { white-space: nowrap; }
+  .hmh-reboot-dash-status { min-width: 0; padding-inline: 4px; font-size: 0.52rem; }
+  .hmh-profile-panel { top: 172px; left: 8px; width: min(280px, calc(100% - 16px)); }
+  .hmh-modal-layer { padding: 10px; }
+  .hmh-menu-panel { padding: 19px; }
+  .hmh-upgrade-layer { padding: 0; }
+  .hmh-upgrade-panel { max-height: 80vh; overflow-y: auto; padding: 14px; border-radius: 18px 18px 0 0; }
+  .hmh-upgrade-choices { grid-template-columns: 1fr; gap: 8px; }
+  .hmh-upgrade-choice { min-height: 0; padding: 12px; }
+  .hmh-upgrade-choice p { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }

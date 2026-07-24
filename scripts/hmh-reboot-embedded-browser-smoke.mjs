@@ -90,13 +90,19 @@ try {
     throw new Error(`${error.message}; postReadyDiagnostic=${JSON.stringify({ diagnostic, errors })}`);
   }
   assert.equal(await child.locator('#hmhRebootStatus').textContent(), 'Portal session connected');
+  assert.equal(await child.locator('#hmhProfileName').textContent(), 'Embedded Smoke');
+  assert.match(await child.locator('#hmhAdapterStatus').textContent(), /Portal run tracking · wallet remains parent-owned/);
+  assert.equal(await child.locator('#hmhExitButton').isDisabled(), false);
+  assert.equal(await child.locator('#hmhMusicToggle').getAttribute('aria-pressed'), 'true');
 
   await page.evaluate(() => window.hmhEmbeddedHost.pause());
   await child.waitForFunction(() => document.querySelector('#hmhRebootStatus')?.textContent === 'Portal session paused');
+  assert.equal(await child.locator('#hmhPausePanel').isVisible(), true);
   await page.evaluate(() => window.hmhEmbeddedHost.resume());
   await page.waitForTimeout(500);
   const resumedStatus = await child.locator('#hmhRebootStatus').textContent();
   assert.equal(resumedStatus, 'Portal session connected');
+  assert.equal(await child.locator('#hmhPausePanel').isHidden(), true);
 
   await page.screenshot({ path: fileURLToPath(new URL('embedded-desktop.png', evidenceDir)), fullPage: true });
   const hostReport = await page.evaluate(() => window.hmhEmbeddedReport);
@@ -104,7 +110,7 @@ try {
   assert.ok(hostReport.states >= 1);
   assert.deepEqual(hostReport.errors, []);
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ iframe: { sandbox: await iframe.getAttribute('sandbox'), allow: await iframe.getAttribute('allow') }, host: hostReport, child: { canvas: true, lifecycle: 'pause-resume' }, errors }, null, 2));
+  console.log(JSON.stringify({ iframe: { sandbox: await iframe.getAttribute('sandbox'), allow: await iframe.getAttribute('allow') }, host: hostReport, child: { canvas: true, lifecycle: 'pause-resume', profile: 'Embedded Smoke', adapter: 'portal-parent-owned-wallet' }, errors }, null, 2));
 } finally {
   await browser.close();
   await rm(hostPage, { force: true });

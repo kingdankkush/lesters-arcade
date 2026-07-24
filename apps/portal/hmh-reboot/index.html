@@ -11,12 +11,62 @@
   <body>
     <main id="hmhRebootShell" class="hmh-reboot-shell">
       <div id="hmhRebootStage" class="hmh-reboot-stage" role="img" aria-label="Hard Money Heroes top-down reboot renderer"></div>
+
       <aside class="hmh-reboot-status-card" aria-live="polite">
-        <span class="hmh-reboot-kicker">HMH // TOP-DOWN 2.5D REBOOT</span>
+        <span class="hmh-reboot-kicker">HMH // FORKED FRONTIER</span>
         <strong id="hmhRebootStatus">Starting PixiJS renderer…</strong>
         <span id="hmhRebootSession">Standalone shell</span>
-        <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Dash ready</output>
+        <div class="hmh-command-row" aria-label="Runtime controls">
+          <button id="hmhMusicToggle" class="hmh-command-button" type="button" aria-pressed="true">Music on</button>
+          <button id="hmhMenuToggle" class="hmh-command-button" type="button" aria-controls="hmhPausePanel" aria-expanded="false">Menu</button>
+          <button id="hmhProfileToggle" class="hmh-command-button" type="button" aria-controls="hmhProfilePanel" aria-expanded="false">Pilot</button>
+        </div>
+        <span id="hmhAdapterStatus" class="hmh-adapter-status">Offline run · no wallet requested</span>
       </aside>
+
+      <section class="hmh-run-rail" aria-label="Current run progress">
+        <div class="hmh-run-stat"><span>Score</span><strong id="hmhRunScore">0</strong></div>
+        <div class="hmh-run-stat"><span>Level</span><strong id="hmhRunLevel">1</strong></div>
+        <div class="hmh-run-stat hmh-run-stat--wide">
+          <span><b id="hmhRunXp">0</b> / <b id="hmhRunXpNext">300</b> XP</span>
+          <div class="hmh-xp-track" aria-hidden="true"><i id="hmhRunXpFill"></i></div>
+        </div>
+        <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Dash ready</output>
+      </section>
+
+      <section id="hmhProfilePanel" class="hmh-glass-panel hmh-profile-panel" aria-label="Pilot profile" hidden>
+        <span class="hmh-panel-kicker">Active pilot</span>
+        <strong id="hmhProfileName">Standalone Developer</strong>
+        <dl>
+          <div><dt>Hero</dt><dd id="hmhProfileHero">lit-commando</dd></div>
+          <div><dt>Mode</dt><dd id="hmhProfileMode">free</dd></div>
+          <div><dt>Season</dt><dd id="hmhProfileSeason">standalone</dd></div>
+        </dl>
+      </section>
+
+      <section id="hmhPausePanel" class="hmh-modal-layer" role="dialog" aria-modal="true" aria-labelledby="hmhPauseTitle" hidden>
+        <div class="hmh-glass-panel hmh-menu-panel">
+          <span class="hmh-panel-kicker">Run suspended</span>
+          <h1 id="hmhPauseTitle">Forked Frontier</h1>
+          <p>Pause stops simulation, combat voices, and run time. Portal authority remains connected.</p>
+          <div class="hmh-menu-actions">
+            <button id="hmhResumeButton" type="button">Resume run</button>
+            <button id="hmhRestartButton" type="button">Restart run</button>
+            <button id="hmhExitButton" type="button">Exit to arcade</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="hmhUpgradePanel" class="hmh-modal-layer hmh-upgrade-layer" role="dialog" aria-modal="true" aria-labelledby="hmhUpgradeTitle" hidden>
+        <div class="hmh-glass-panel hmh-upgrade-panel">
+          <header>
+            <div><span class="hmh-panel-kicker">Block confirmed</span><h1 id="hmhUpgradeTitle">Choose one upgrade</h1></div>
+            <span id="hmhUpgradeQueue" class="hmh-upgrade-queue">1 pending</span>
+          </header>
+          <div id="hmhUpgradeChoices" class="hmh-upgrade-choices" role="list"></div>
+        </div>
+      </section>
+
       <output id="hmhRebootCombatStatus" class="hmh-sr-only" role="status" aria-live="polite" aria-atomic="true">Combat ready</output>
     </main>
     <script type="module" src="../dist/hmh-reboot/game.js"></script>
