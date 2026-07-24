@@ -66,3 +66,13 @@ The retirement ledger was reduced from 53 to 52 exact failures. The shell contra
 ## Edge visual capture
 
 One Edge mobile-landscape run failed closed with 10,325 changed pixels. Visual inspection showed identical content; pixel analysis showed broad transient GPU raster variation, including 30 pixels above a one-channel delta. The tolerance was not weakened. A clean rerun passed, followed by a final isolated Edge certification in which all five anchors reproduced exactly. Chrome’s final isolated five-profile certification also reproduced every anchor exactly.
+
+## Production CSP cutover
+
+The first public browser run failed closed after exact artifact verification. The child displayed `Renderer initialization failed` with PixiJS reporting that the environment disallowed `unsafe-eval`. The custom domain was immediately returned to the preserved production deployment.
+
+An initial RED regression required the optional Pixi unsafe-eval adapter. The installed package exports that adapter, but this repository deliberately aliases Pixi to its prebundled single-file distribution. Importing the source adapter bypassed that boundary and pulled an internal dependency graph that Yarn PnP correctly rejected. That approach was removed.
+
+The final RED regression instead requires a narrow production policy: `/hmh-reboot/*` permits same-origin scripts plus `unsafe-eval`, does not permit `unsafe-inline`, and remains same-origin-frame-only; the parent portal must not permit `unsafe-eval` and remains frame-denied. Evidence: `.tmp/reboot-20-csp-scope-red.log`.
+
+The scoped policy passed the focused shell tests, full 1,604-test release gate, 5/5 security audit, 3/3 sandbox suite, build, and active asset QA.

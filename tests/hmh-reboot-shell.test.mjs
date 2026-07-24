@@ -166,11 +166,17 @@ test('production build emits a dedicated HMH reboot entry', async () => {
   assert.match(build, /apps[\\/]hmh-reboot[\\/]src[\\/]main\.mjs|hmh-reboot.*main\.mjs/s);
 });
 
-test('same-origin framing is allowed while arbitrary framing remains blocked', async () => {
+test('same-origin child framing and the Pixi CSP exception remain isolated from the parent portal', async () => {
   const vercel = JSON.parse(await read('../vercel.json'));
-  const csp = vercel.headers.flatMap((rule) => rule.headers).find((header) => header.key === 'Content-Security-Policy')?.value ?? '';
-  assert.match(csp, /frame-ancestors 'self'/);
-  assert.doesNotMatch(csp, /frame-ancestors 'none'/);
+  const childRule = vercel.headers.find((rule) => rule.source === '/hmh-reboot/(.*)');
+  const parentRule = vercel.headers.find((rule) => rule.source === '/((?!hmh-reboot/).*)');
+  const childCsp = childRule?.headers.find((header) => header.key === 'Content-Security-Policy')?.value ?? '';
+  const parentCsp = parentRule?.headers.find((header) => header.key === 'Content-Security-Policy')?.value ?? '';
+  assert.match(childCsp, /script-src 'self' 'unsafe-eval'/);
+  assert.match(childCsp, /frame-ancestors 'self'/);
+  assert.doesNotMatch(childCsp, /script-src[^;]*'unsafe-inline'/);
+  assert.doesNotMatch(parentCsp, /'unsafe-eval'/);
+  assert.match(parentCsp, /frame-ancestors 'none'/);
 });
 
 test('portal main integrates the reboot host at the official combat mount', async () => {

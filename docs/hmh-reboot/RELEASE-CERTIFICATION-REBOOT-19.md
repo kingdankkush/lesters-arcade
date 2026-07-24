@@ -116,6 +116,14 @@ Blocked:
 
 No transaction was sent during certification. The app may launch only with its current truthful local Ranked-preview copy. A live on-chain Ranked claim remains prohibited until a separately authorized contract/economy release passes.
 
+## Production CSP and first-cutover rollback
+
+The first immutable preview, `dpl_75Y49Gu9x1NsRG3VWxjnT67dv6YG`, matched the certified local HTML, bundle, service worker, key art, and combat VFX byte-for-byte. The first custom-domain cutover then exposed a production-only blocker: PixiJS 8.19.0 rejected the child document's strict `script-src 'self'` policy because its runtime program generation requires `unsafe-eval` unless the separate internal adapter graph is bundled.
+
+The public domain was immediately returned to rollback deployment `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk` before further work. The main arcade homepage was reverified with HTTP 200.
+
+The correction permits `unsafe-eval` only on `/hmh-reboot/*`. The child still allows scripts only from `'self'`, rejects `unsafe-inline`, uses `frame-ancestors 'self'`, and has no wallet or settlement authority. The parent portal and every non-HMH route continue to reject `unsafe-eval` and use `frame-ancestors 'none'`. `tests/hmh-reboot-shell.test.mjs` fails closed if this boundary changes. Security remains 5/5 with zero findings, and the sandbox suite remains 3/3.
+
 ## Hosted preview boundary
 
-This certificate covers the exact local release candidate. The next gate is to commit and push this packet, verify the immutable preview’s child bundle and active assets byte-for-byte, confirm the real game route rather than an authentication page, preserve the existing production deployment as rollback, and then promote the exact certified commit under the user’s existing production authorization.
+The corrected exact packet must be committed, deployed, and verified in a real browser under Vercel's production headers before re-promotion. Artifact equality alone is not sufficient. The custom domain remains on the preserved rollback deployment until that live-CSP browser gate passes.

@@ -30,7 +30,16 @@
     "web3_settlement_source_checks": "9/9",
     "contract_structure": "PASS",
     "repository_health_strict": "PASS",
-    "cdn_budget_gate": "PASS"
+    "cdn_budget_gate": "PASS",
+    "production_csp": {
+      "hmh_child_script_policy": "'self' plus 'unsafe-eval' required by PixiJS 8.19.0 runtime program generation",
+      "scope": "/hmh-reboot/* only",
+      "unsafe_inline_allowed_in_child": false,
+      "unsafe_eval_allowed_in_parent": false,
+      "child_frame_ancestors": "'self'",
+      "child_wallet_or_settlement_authority": false,
+      "regression": "tests/hmh-reboot-shell.test.mjs"
+    }
   },
   "build_and_payload": {
     "status": "PASS",
@@ -153,7 +162,12 @@
     "note": "Generic retired isometric-asset assertions are governed by the exact legacy retirement ledger and are not the active reboot roster gate."
   },
   "hosted_preview": {
-    "status": "PENDING_EXACT_COMMIT_DEPLOYMENT",
-    "requirement": "Deploy this exact packet, verify artifact hashes and the real game route, then update with immutable deployment evidence."
+    "first_deployment": "dpl_75Y49Gu9x1NsRG3VWxjnT67dv6YG",
+    "first_deployment_artifacts": "BYTE_IDENTICAL",
+    "first_cutover": "ROLLED_BACK",
+    "first_cutover_blocker": "PixiJS renderer initialization blocked by the production child CSP",
+    "rollback_deployment": "dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk",
+    "corrected_status": "PENDING_SCOPED_CSP_DEPLOYMENT",
+    "requirement": "Deploy the exact scoped-CSP correction, verify the public browser renderer and hashes, then re-promote."
   }
 }
