@@ -299,6 +299,8 @@ async function boot() {
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
+  const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
+  const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
@@ -801,7 +803,7 @@ async function boot() {
       const safeLabelY = view.width < 600 ? 202 : 82;
       label.position.set(safeLabelX, safeLabelY);
       renderMinimap(view, renderState);
-      if (debugGridEnabled) {
+      if (debugGridEnabled || releaseTelemetryEnabled) {
         stageElement.dataset.actorX = renderState.x.toFixed(3);
         stageElement.dataset.actorY = renderState.y.toFixed(3);
         stageElement.dataset.targetX = grayboxEnemies[0]?.x.toFixed(3) ?? '';
@@ -1721,8 +1723,19 @@ async function boot() {
       lastDashReady = dashStatusAfterStep.ready;
     });
     simulation.start();
-    app.ticker.start();
-    renderWorld();
+    if (releaseAnchorEnabled) {
+      const progressionSnapshot = getRunProgressionSnapshot(runProgression);
+      upgradePending = false;
+      simulation.enterUpgrade();
+      combatAudio.pause();
+      cockpit?.showUpgrade(progressionSnapshot);
+      app.ticker.stop();
+      renderActor = actor;
+      renderWorld(actor);
+    } else {
+      app.ticker.start();
+      renderWorld();
+    }
   };
 
   const runtimeStatus = () => simulation?.state === 'active'

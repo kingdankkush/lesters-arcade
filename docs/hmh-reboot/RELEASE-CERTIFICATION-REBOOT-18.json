@@ -1,0 +1,133 @@
+{
+  "schema": "hmh-reboot-release-certification-v1",
+  "checkpoint": "reboot-18",
+  "date": "2026-07-23",
+  "branch": "reboot/hmh-topdown-2_5d",
+  "parent_commit": "fa5c0c55b1c41e16d004cd8c14121d278825fe3d",
+  "status": "PASS",
+  "authority": {
+    "simulation_hz": 60,
+    "max_catch_up_steps": 4,
+    "projection_only_art_and_optimization": true,
+    "wallet_profile_ranked_persistence_and_bridge_authority_unchanged": true
+  },
+  "aggregate_tests": {
+    "total": 1592,
+    "passed": 1539,
+    "expected_ledgered_failures": 53,
+    "unexpected_failures": 0,
+    "ledger": "docs/hmh-reboot/LEGACY-TEST-RETIREMENT.json"
+  },
+  "static_and_security": {
+    "javascript_modules": 319,
+    "python_scripts": 40,
+    "security_checks": "5/5",
+    "sandbox_checks": "3/3",
+    "contract_structure": "PASS",
+    "repository_health_strict": "PASS",
+    "cdn_budget_gate": "PASS"
+  },
+  "build_and_payload": {
+    "hmh_reboot_bundle_bytes": 961218,
+    "hmh_reboot_bundle_max_bytes": 1050000,
+    "html_bytes": 4365,
+    "css_bytes": 10245,
+    "production_atlas_count": 4,
+    "production_atlas_total_bytes": 2569321,
+    "production_atlas_total_max_bytes": 4194304,
+    "production_atlas_frames_each": 168
+  },
+  "browser_certification": {
+    "browsers": [
+      "Google Chrome",
+      "Microsoft Edge"
+    ],
+    "viewports_each": [
+      "desktop 1440x900",
+      "ultrawide 1920x800",
+      "tablet landscape 1024x768",
+      "mobile portrait 390x844",
+      "mobile landscape 844x390"
+    ],
+    "chrome_anchor_diffs": [0, 0, 0, 0, 0],
+    "edge_anchor_diffs": [0, 2, 0, 0, 0],
+    "maximum_edge_channel_delta": 1,
+    "allowed_changed_pixels": 32,
+    "allowed_max_channel_delta": 2,
+    "checks": [
+      "actual game route and bundle loaded",
+      "Vercel Authentication page rejected",
+      "one canvas and three authored upgrade choices",
+      "zero root overflow",
+      "HUD and modal geometry in viewport",
+      "all eight touch targets in viewport on mobile/tablet",
+      "real keyboard movement changed authoritative position",
+      "pause froze the fixed-step tick",
+      "resume advanced the fixed-step tick",
+      "no page or console errors",
+      "service worker contains the reboot bundle"
+    ]
+  },
+  "performance": {
+    "desktop_p95_frame_ms": 7,
+    "desktop_p99_frame_ms": 7.1,
+    "desktop_heap_delta_bytes": -850433,
+    "mobile_p95_frame_ms": 7,
+    "mobile_p99_frame_ms": 7.1,
+    "mobile_heap_delta_bytes": 10407037,
+    "browser_errors": 0,
+    "desktop_rendered_hazard_particles": 10,
+    "mobile_rendered_hazard_particles": 6
+  },
+  "soaks": {
+    "enemy": {
+      "bodies": 128,
+      "ticks": 3600,
+      "partitions": [60, 30, 20],
+      "partition_equal": true,
+      "heap_delta_bytes": 555848,
+      "maximum_average_tick_ms": 0.989003
+    },
+    "combat": "PASS",
+    "projectile": {
+      "status": "PASS",
+      "ticks": 3600,
+      "capacity": 128,
+      "heap_delta_bytes": 267392
+    },
+    "dash": "PASS",
+    "level_one_world": {
+      "status": "PASS",
+      "ticks": 3050,
+      "all_six_districts": true,
+      "partition_equal": true
+    },
+    "director_and_boss": {
+      "status": "PASS",
+      "director_max_bodies": 107,
+      "boss_events": 32,
+      "boss_dropped_events": 0,
+      "heap_delta_bytes": 368856
+    }
+  },
+  "visual_review": {
+    "contact_sheet": ".hermes/evidence/hmh-reboot-18-release/responsive-contact-sheet.png",
+    "blank_or_missing_layers": false,
+    "clipping_or_overlap_blockers": false,
+    "debug_contamination": false,
+    "unsafe_target_text": false,
+    "release_blockers": []
+  },
+  "legacy_asset_gate": {
+    "command": "npm run assets:qa",
+    "status": "RETIRED_FOR_REBOOT_BRANCH",
+    "reason": "It targets 44 legacy atlas pages intentionally archived by the approved reboot asset cleanup.",
+    "archive_record": "docs/hmh-reboot/ASSET-ARCHIVE.json",
+    "active_replacement": "npm run assets:qa:hmh-reboot",
+    "active_replacement_status": "PASS"
+  },
+  "hosted_preview": {
+    "status": "NOT_CERTIFIED_IN_REBOOT_18",
+    "reason": "Preview publication and public route verification belong to reboot-19; HTTP 200 from Vercel Authentication is not accepted."
+  }
+}
