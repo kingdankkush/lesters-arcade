@@ -2,11 +2,12 @@
 
 Generated: `2026-07-24T22:24:10Z`
 
-Status: **SOURCE CERTIFIED, PREVIEW PENDING**
+Status: **PREVIEW VERIFIED, PRODUCTION APPROVAL PENDING**
 
 ## Certified source
 
 - Branch: `reboot/hmh-aaa-continuous`
+- Source commit: `ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170`
 - Cycle baseline: `b2488667db7a634b975484d426b7f8103988a00a`
 - Cumulative production-base code patch SHA-256: `67b68cd8dcaa2c8bebc48f1a4c6bfd3fd3c74f3103538390cb9d96de7d727c1a`
 - Scope: `git diff --binary 68c981449f6c62936729f14ec08c4d6f6db57d66 -- apps scripts tests package.json`
@@ -80,7 +81,8 @@ See `MEMORY-AUDIT-AAA-CYCLE-002.md`.
 
 - Production remains `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`.
 - Durable rollback remains `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk`.
-- No preview has been created for Cycle 002 yet.
+- Preview `dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN` is Ready and artifact-verified.
+- Preview URL: `https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app`
 - No production alias has changed.
 - No LitVM transaction or deployment occurred.
 - Production promotion requires explicit approval for the exact verified Cycle 002 deployment.

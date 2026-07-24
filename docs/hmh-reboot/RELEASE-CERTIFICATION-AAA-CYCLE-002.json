@@ -2,8 +2,9 @@
   "schemaVersion": 1,
   "release": "hmh-aaa-cycle-002",
   "generatedAt": "2026-07-24T22:24:10Z",
-  "status": "SOURCE_CERTIFIED_PREVIEW_PENDING",
+  "status": "PREVIEW_VERIFIED_PRODUCTION_APPROVAL_PENDING",
   "branch": "reboot/hmh-aaa-continuous",
+  "sourceCommit": "ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170",
   "baseCommit": "68c981449f6c62936729f14ec08c4d6f6db57d66",
   "cycleBaselineCommit": "b2488667db7a634b975484d426b7f8103988a00a",
   "certifiedCodePatch": {
@@ -130,8 +131,13 @@
     "promotionAuthorized": false
   },
   "preview": {
-    "deployment": null,
-    "artifactVerified": false
+    "deployment": "dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN",
+    "url": "https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app",
+    "status": "Ready",
+    "artifactVerified": true,
+    "gameBundleMatches": true,
+    "portalMainMatches": true,
+    "serviceWorkerMatches": true
   },
-  "nextGate": "Final exact-index independent reviews, commit/push, exact preview deployment, and byte verification"
+  "nextGate": "Explicit approval to promote exact deployment dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN to production"
 }

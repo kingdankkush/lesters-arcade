@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "release": "hmh-aaa-cycle-002",
+  "verifiedAt": "2026-07-24T22:41:50Z",
+  "status": "PASS",
+  "sourceCommit": "ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170",
+  "deployment": {
+    "id": "dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN",
+    "url": "https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app",
+    "target": "preview",
+    "status": "Ready"
+  },
+  "remoteBuild": {
+    "releaseLedger": {
+      "total": 1619,
+      "passed": 1567,
+      "acceptedLegacyFailures": 52,
+      "unexpectedFailures": 0
+    },
+    "syntax": "PASS 319 JavaScript modules + 40 Python scripts",
+    "contracts": "PASS",
+    "assets": "PASS 74/74 curated references and 76 sliced PNGs"
+  },
+  "artifacts": {
+    "gameBundle": {
+      "path": "/dist/hmh-reboot/game.js",
+      "bytes": 963568,
+      "sha256": "33131067b0c913afce71d2c0633254c4ea5b4a3828a0483ba79cf21f52e986a1",
+      "matchesCertifiedBuild": true
+    },
+    "portalMain": {
+      "path": "/dist/main.js",
+      "bytes": 1246613,
+      "sha256": "df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81",
+      "matchesCertifiedBuild": true
+    },
+    "serviceWorker": {
+      "path": "/sw.js",
+      "bytes": 3508,
+      "sha256": "8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a",
+      "matchesCertifiedBuild": true
+    },
+    "hmhHtml": {
+      "sourceBytes": 4365,
+      "sourceSha256": "10a373bccbf59ecfa6a1ec382d91bd9e6b35f0888eb8d2b921b3be67344b0bb1",
+      "deliveredBytes": 4528,
+      "deliveredSha256": "6356dbdf61668fb8939f6d4dfc18216a02151931f712b100a30c8ed6b5e07d60",
+      "deliveryDelta": "Expected Vercel preview feedback script with this deployment ID; source HTML otherwise identical"
+    },
+    "portalHtml": {
+      "sourceBytes": 37092,
+      "sourceSha256": "06465ce0e247a3d07c27e384ad845fc2feb2e77a1cf4d5e26d044f607d682184",
+      "deliveredBytes": 37255,
+      "deliveredSha256": "50e6b5db81ff23d3926e39b24c18551b5e91a55dbc64832094842418b6107291",
+      "deliveryDelta": "Expected Vercel preview feedback script with this deployment ID; source HTML otherwise identical"
+    }
+  },
+  "headers": {
+    "parentStatus": 200,
+    "hmhStatus": 200,
+    "gameStatus": 200,
+    "hmhUnsafeEval": true,
+    "parentUnsafeEval": false,
+    "gameUnsafeEval": false,
+    "nosniff": true,
+    "hsts": true,
+    "previewNoindex": true
+  },
+  "browserEvidence": {
+    "finalBuiltLocalRuntime": "PASS",
+    "desktopSameTaskFireMeleeGrenadeDash": "PASS",
+    "mobileSameTaskMeleeGrenadeDash": "PASS",
+    "productionHero": "lit-commando",
+    "browserErrors": 0,
+    "gameBundleSha256": "33131067b0c913afce71d2c0633254c4ea5b4a3828a0483ba79cf21f52e986a1"
+  },
+  "production": {
+    "currentDeployment": "dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9",
+    "durableRollbackDeployment": "dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk",
+    "unchanged": true,
+    "promotionAuthorized": false
+  },
+  "litvm": {
+    "transactionsPerformed": false,
+    "deploymentAuthorized": false
+  },
+  "nextGate": "Explicit approval to promote exact deployment dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN to production"
+}

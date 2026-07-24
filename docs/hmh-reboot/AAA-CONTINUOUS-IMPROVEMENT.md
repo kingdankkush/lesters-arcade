@@ -38,9 +38,10 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Certification: `RELEASE-CERTIFICATION-AAA-CYCLE-001.md`
   - RED evidence: `RED-EVIDENCE-AAA-CYCLE-001.md`
   - Preview verification: `PREVIEW-VERIFICATION-AAA-CYCLE-001.md`
-- [ ] Cycle 002: bounded one-shot combat input buffering across keyboard, pointer, touch, and gamepad
-  - Status: source certified; preview pending; production unchanged
+- [x] Cycle 002: bounded one-shot combat input buffering across keyboard, pointer, touch, and gamepad
+  - Status: preview verified; production approval pending; production unchanged
   - Cycle ledger: `cycles/CYCLE-002.md`
   - Certification: `RELEASE-CERTIFICATION-AAA-CYCLE-002.md`
+  - Preview verification: `PREVIEW-VERIFICATION-AAA-CYCLE-002.md`
   - RED evidence: `RED-EVIDENCE-AAA-CYCLE-002.md`
   - Memory audit: `MEMORY-AUDIT-AAA-CYCLE-002.md`

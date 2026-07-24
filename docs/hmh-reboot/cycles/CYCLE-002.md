@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 002
 
 Date: 2026-07-24
-Status: `SOURCE CERTIFIED · PREVIEW PENDING`
+Status: `PREVIEW VERIFIED · PRODUCTION APPROVAL PENDING`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `b2488667db7a634b975484d426b7f8103988a00a`
 
@@ -101,6 +101,7 @@ No service-worker cache identity bump is required. The portal shell and service-
 ## Deployment state
 
 - Production remains the preserved deployment and rollback remains available.
-- Cycle 001 preview remains unpromoted and will be superseded only after Cycle 002 exact-source certification and replacement-preview verification.
+- Cycle 002 preview `dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN` is Ready and byte-verified.
+- Cycle 001 previews are superseded and remain unpromoted.
 - Production promotion requires explicit approval for the exact Cycle 002 deployment.
 - LitVM deployment or transaction activity requires separate explicit HALT approval.
