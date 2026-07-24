@@ -1,37 +1,54 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "release": "hmh-aaa-cycle-001",
-  "generatedAt": "2026-07-24T15:21:22Z",
-  "status": "SUPERSEDED_BY_POST_REVIEW_GALLERY_CORRECTION",
-  "supersededAt": "2026-07-24T15:40:48Z",
-  "supersededReason": "Hidden portal gallery referenced four missing retired generated HMH assets; corrected candidate requires replacement preview",
-  "sourceCommit": "33b7a2dd3bffe3b5142e4a6acef093e39b7ca7d3",
+  "generatedAt": "2026-07-24T15:47:12Z",
+  "status": "PREVIEW_VERIFIED_PRODUCTION_APPROVAL_PENDING",
+  "sourceCommit": "821a97715ff49627cd628d24cc7e2a3066e1382c",
   "branch": "reboot/hmh-aaa-continuous",
   "deployment": {
-    "id": "dpl_5prnSaryWWHWzd1gEBhr2S26yk2e",
+    "id": "dpl_CZoPtPy5uriibhEmpcrnZPsEpD26",
     "target": "preview",
     "status": "Ready",
-    "url": "https://lesters-arcade-3faaleg9u-justin-agent-projects.vercel.app",
+    "url": "https://lesters-arcade-b7n6b9h1f-justin-agent-projects.vercel.app",
     "protectedByVercelSso": true,
     "verificationMethod": "authenticated vercel curl"
   },
+  "supersedes": {
+    "deployment": "dpl_5prnSaryWWHWzd1gEBhr2S26yk2e",
+    "reason": "Hidden portal gallery referenced four missing retired generated HMH assets"
+  },
   "vercelCi": {
-    "releaseSuite": "PASS 1615/1563/52",
+    "releaseSuite": "PASS 1616/1564/52",
     "syntax": "PASS 319 JS + 40 Python",
     "contracts": "PASS",
     "generatedAssets": "PASS",
     "build": "PASS"
   },
   "artifacts": {
-    "portalIndexSourceSha256": "8cf9e671714f320289bc1967ccfcac286295e61dbb691c8926ab94854505e299",
+    "portalIndexSourceSha256": "06465ce0e247a3d07c27e384ad845fc2feb2e77a1cf4d5e26d044f607d682184",
+    "portalIndexBytes": 37092,
     "portalIndexHostedDifference": "Vercel preview feedback toolbar injection only; stripped hash matches source",
     "hmhIndexSha256": "10a373bccbf59ecfa6a1ec382d91bd9e6b35f0888eb8d2b921b3be67344b0bb1",
     "hmhGameSha256": "bde4d3e5b9df49760c5944c0d0c84b020656f071eccb48732db8bcdcb604d847",
     "hmhGameBytes": 962113,
     "portalMainSha256": "df9c811971dfec7ba7b88e2cf4b4c20d216faeffbf814f613daf7f791926ae81",
     "portalMainBytes": 1246613,
-    "serviceWorkerSha256": "b6318a84880817a83be6ed3386e457c820c45790c48823bd4ed5a524a4c3205b",
-    "serviceWorkerBytes": 3500
+    "serviceWorkerSha256": "8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a",
+    "serviceWorkerBytes": 3508,
+    "productionContactSheets": {
+      "lester": "93923817cb7afc7d91655e04892de1bf505f7ace031bf87ef238328c75211a96",
+      "lilly": "b6d0efd1db242a153878fed4cef91574ca4a8b505deef137292bb3a3c495d578",
+      "commando": "cbd9ee8247e2c30cbb4198e49ef699a37bde9c670f6d2e4df3ef0596b7a57062",
+      "valkyrie": "d8abc900f2f566774c74adb9f321fb4c123c40377192fa0c0e9118bec14becf2"
+    }
+  },
+  "gallery": {
+    "staticReferenceTest": "PASS",
+    "hostedStatus": "PASS 4/4 HTTP 200 image/png",
+    "decodedDimensions": "1470x2024 each",
+    "browserErrors": 0,
+    "retiredReferencesPresent": false,
+    "visualReview": "PASS human survivor characters; no proxy art or corruption"
   },
   "headers": {
     "parentUnsafeEval": false,

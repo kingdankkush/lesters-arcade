@@ -2,7 +2,7 @@
 
 Generated: `2026-07-24T15:40:48Z`
 
-Status: **LOCAL CERTIFIED; PREVIEW PENDING**
+Status: **PREVIEW VERIFIED; PRODUCTION APPROVAL PENDING**
 
 ## Scope
 
@@ -66,4 +66,4 @@ It does not deploy contracts, change Web3 authority, promote production, change 
 
 ## Remaining release gate
 
-Commit and push the post-review gallery correction, deploy and byte-verify a replacement preview, and stop for production approval.
+Replacement preview `dpl_CZoPtPy5uriibhEmpcrnZPsEpD26` is exact-artifact verified. Stop for explicit production approval.

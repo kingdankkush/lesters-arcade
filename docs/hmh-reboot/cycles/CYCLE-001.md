@@ -1,6 +1,6 @@
 # Cycle 001: Observability and Movement Feel
 
-Status: **RECERTIFIED; REPLACEMENT PREVIEW PENDING**
+Status: **PREVIEW VERIFIED; PRODUCTION APPROVAL PENDING**
 
 ## Objective
 
@@ -75,4 +75,4 @@ Key failures before implementation:
 
 ## Release checkpoint
 
-Preview deployment `dpl_5prnSaryWWHWzd1gEBhr2S26yk2e` was superseded after a late read-only audit found hidden broken retired-art references. The corrected candidate is locally recertified and requires a replacement exact preview. Production is unchanged. LitVM remains behind a separate explicit HALT release.
+Replacement preview `dpl_CZoPtPy5uriibhEmpcrnZPsEpD26` is Ready and exact-artifact verified. It supersedes `dpl_5prnSaryWWHWzd1gEBhr2S26yk2e`. Production is unchanged and requires explicit approval for this exact candidate. LitVM remains behind a separate explicit HALT release.

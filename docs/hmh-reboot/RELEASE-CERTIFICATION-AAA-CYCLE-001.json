@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "release": "hmh-aaa-cycle-001",
   "generatedAt": "2026-07-24T15:40:48Z",
-  "status": "LOCAL_CERTIFIED_PREVIEW_PENDING",
+  "status": "PREVIEW_VERIFIED_PRODUCTION_APPROVAL_PENDING",
   "branch": "reboot/hmh-aaa-continuous",
   "baseCommit": "68c981449f6c62936729f14ec08c4d6f6db57d66",
   "certifiedCodePatch": {
