@@ -299,6 +299,21 @@ function chooseEarliestHit(hits) {
   return hits.filter(Boolean).sort((a, b) => a.t - b.t || String(a.blockerId).localeCompare(String(b.blockerId)))[0] ?? null;
 }
 
+function clampPositionToBounds(position, radius, bounds) {
+  if (!bounds) return false;
+  const minX = finite(bounds.minX, 'bounds.minX') + radius;
+  const minY = finite(bounds.minY, 'bounds.minY') + radius;
+  const maxX = finite(bounds.maxX, 'bounds.maxX') - radius;
+  const maxY = finite(bounds.maxY, 'bounds.maxY') - radius;
+  if (maxX < minX || maxY < minY) throw new TypeError('bounds must contain the collision body');
+  const clampedX = clamp(position.x, minX, maxX);
+  const clampedY = clamp(position.y, minY, maxY);
+  const changed = clampedX !== position.x || clampedY !== position.y;
+  position.x = clampedX;
+  position.y = clampedY;
+  return changed;
+}
+
 export function resolveSweptCircleMotion({
   body,
   start,
@@ -317,14 +332,7 @@ export function resolveSweptCircleMotion({
   const activeBlockers = blockers.filter((blocker) => blocker?.solid !== false && heightOverlaps(body, z, blocker)).sort((a, b) => a.id.localeCompare(b.id));
   const depenetrations = [];
 
-  if (bounds) {
-    const minX = finite(bounds.minX, 'bounds.minX') + body.radius;
-    const minY = finite(bounds.minY, 'bounds.minY') + body.radius;
-    const maxX = finite(bounds.maxX, 'bounds.maxX') - body.radius;
-    const maxY = finite(bounds.maxY, 'bounds.maxY') - body.radius;
-    position.x = clamp(position.x, minX, maxX);
-    position.y = clamp(position.y, minY, maxY);
-  }
+  clampPositionToBounds(position, body.radius, bounds);
 
   for (let pass = 0; pass < MAX_DEPENETRATION_PASSES; pass += 1) {
     let changed = false;
@@ -336,6 +344,7 @@ export function resolveSweptCircleMotion({
       depenetrations.push(Object.freeze({ blockerId: blocker.id, x: penetration.x, y: penetration.y, normal: Object.freeze({ ...penetration.normal }) }));
       changed = true;
     }
+    if (clampPositionToBounds(position, body.radius, bounds)) changed = true;
     if (!changed) break;
   }
 
@@ -373,6 +382,7 @@ export function resolveSweptCircleMotion({
     }
   }
 
+  clampPositionToBounds(position, body.radius, bounds);
   const actual = { x: position.x - resolvedStart.x, y: position.y - resolvedStart.y };
   const requestedDistance = Math.hypot(requested.x, requested.y);
   const actualDistance = Math.hypot(actual.x, actual.y);

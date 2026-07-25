@@ -144,6 +144,46 @@ test('narrow routes remain passable at exact body clearance and obstacle chains 
   assert.equal(result.contacts[0].blockerId, 'end');
 });
 
+test('depenetration cannot eject a body through the world boundary', () => {
+  const crate = createStaticBlocker({
+    id: 'crate',
+    shape: { type: 'circle', x: 40, y: 200, radius: 30 },
+    visibleAssetId: 'crate-prop',
+  });
+  const bounds = { minX: 0, minY: 0, maxX: 1000, maxY: 1000, visibleBoundaryId: 'world-edge' };
+  const result = move({ x: 24, y: 200, z: 0 }, { x: 0, y: 0 }, [crate], { bounds });
+  assert.ok(result.position.x >= bounds.minX + player.radius - 1e-6, `x=${result.position.x} escaped left boundary`);
+  assert.ok(result.position.y >= bounds.minY + player.radius - 1e-6);
+  assert.ok(result.position.x <= bounds.maxX - player.radius + 1e-6);
+  assert.ok(result.position.y <= bounds.maxY - player.radius + 1e-6);
+});
+
+test('boundary-pinned depenetration slides tangentially toward legal space and stays deterministic', () => {
+  const crate = createStaticBlocker({
+    id: 'crate',
+    shape: { type: 'circle', x: 40, y: 200, radius: 30 },
+    visibleAssetId: 'crate-prop',
+  });
+  const bounds = { minX: 0, minY: 0, maxX: 1000, maxY: 1000, visibleBoundaryId: 'world-edge' };
+  const first = move({ x: 24, y: 195, z: 0 }, { x: 0, y: 0 }, [crate], { bounds });
+  const second = move({ x: 24, y: 195, z: 0 }, { x: 0, y: 0 }, [crate], { bounds });
+  assert.deepEqual(first.position, second.position);
+  assert.ok(first.position.x >= bounds.minX + player.radius - 1e-6, `x=${first.position.x} escaped left boundary`);
+  assert.ok(first.position.y < 195, `y=${first.position.y} did not slide along the boundary away from the blocker`);
+});
+
+test('bounded movement after boundary-adjacent depenetration keeps the final position inside the world', () => {
+  const crate = createStaticBlocker({
+    id: 'crate',
+    shape: { type: 'circle', x: 40, y: 200, radius: 30 },
+    visibleAssetId: 'crate-prop',
+  });
+  const bounds = { minX: 0, minY: 0, maxX: 1000, maxY: 1000, visibleBoundaryId: 'world-edge' };
+  const result = move({ x: 24, y: 200, z: 0 }, { x: -50, y: -30 }, [crate], { bounds });
+  assert.ok(result.position.x >= bounds.minX + player.radius - 1e-6, `x=${result.position.x} escaped left boundary`);
+  assert.ok(result.position.y >= bounds.minY + player.radius - 1e-6);
+});
+
 test('collision telemetry records stalls and repeated zero-displacement frames without mutating inputs', () => {
   const wall = createStaticBlocker({
     id: 'wall',

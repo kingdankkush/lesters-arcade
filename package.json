@@ -105,7 +105,8 @@
     "profile:wo71": "node scripts/hmh-minute12-profile.mjs",
     "upgrades:tree-map": "node scripts/generate-upgrade-tree-map.mjs",
     "vault:status": "node scripts/vault-sync.mjs status",
-    "ship:gate": "node scripts/ship-gate.mjs"
+    "ship:gate": "node scripts/ship-gate.mjs",
+    "smoke:portal:e2e": "node scripts/hmh-reboot-portal-e2e.mjs"
   },
   "keywords": [
     "litecoin",
