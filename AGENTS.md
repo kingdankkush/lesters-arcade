@@ -1,60 +1,138 @@
-# Lester's Arcade Agent Notes
+# Lester's Arcade repository instructions
 
-## Project identity
+## Read order
 
-Lester's Arcade is a retro Litecoin-themed Web3 arcade portal on LitVM. The portal uses EVM wallets for identity, arcade cabinets as integrated dapp games, and a free-vs-paid mode split where paid play is eligible for global leaderboards, achievements, tournaments, and developer revenue splits.
+Before changing code, read:
 
-## Operating rules
+1. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+2. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+3. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+4. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+5. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+6. `docs/hmh-reboot/COMPATIBILITY.json`
 
-- Keep secrets out of files and prompts. Never ask for seed phrases or private keys.
-- Do not deploy contracts, bridge funds, send transactions, post externally, or change accounts without explicit user approval.
-- Prefer local prototypes and testnet-only planning until approval.
-- Preserve the retro 80s/90s arcade aesthetic: CRT glow, pixel art, cabinet UI, neon, coin-slot language, NES/SNES/Neo Geo inspiration.
-- Use LitVM docs as the source of truth for chain details; if docs and guesses conflict, docs win.
+Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
-## Current Hard Money Heroes gameplay pivot
+## Current game direction
 
-As of 2026-06-07, Hard Money Heroes is pivoting from a 2D side-scrolling run-and-gun into an **isometric run-and-gun roguelike / roguelite survival game**. Agents should treat `docs/game-design/hard-money-heroes-design-bible-v2.md` as the accepted content/design canon and `docs/game-design/hard-money-heroes-build-risk-review-v2-1.md` as the active implementation/QA/UX addendum. The original pivot doc remains historical context.
+Hard Money Heroes is a deterministic PixiJS `8.19.0` top-down 2.5D authored roguelike run-and-gun.
 
-Art agents should use **Pixellab API** and other approved design tools to produce the missing isometric assets: isometric tilesets/chunks, 8-way hero/enemy/boss animation coverage, roguelike upgrade UI/icons, and combat VFX. Existing 2D buildings/trees/garbage cans/props can be reused only where they still read correctly from the isometric camera; accepted assets must be repo-local and manifest-ready before runtime integration.
+Preserve:
 
-## Verification
+- Fixed 60 Hz simulation.
+- Maximum four catch-up steps.
+- Game alias `hmh`.
+- Game ID `lester-blaster`.
+- Profile `wo71`.
+- Save schema `2`.
+- Bridge `hmh-bridge/v1`.
+- Maximum bridge message size `65,536` bytes.
+- Parent authority for wallets, profiles, leaderboards, analytics, canonical sessions, official completion, and settlement.
+- Free Mode isolation from Ranked progress.
+- Same-seed deterministic behavior and replay integrity.
+- Current production and rollback until explicit promotion approval.
 
-Run before handoff:
+Active HMH actors must visibly read as human survivors or zombies. Do not use animal, vehicle, robot, mech, or abstract actor proxies. Do not reactivate retired generated/isometric actor art.
+
+Chikun's Escape remains a Coming Soon development cabinet. Its deterministic parent replay and SDK boundary must remain intact. Do not make it public playable without full production and browser certification.
+
+## Git and deployment safety
+
+- Work on `reboot/hmh-aaa-continuous` or a new branch from it.
+- Do not push ordinary work directly to `main`.
+- Do not rewrite or discard unrelated working-tree changes.
+- Do not promote a Vercel deployment without explicit approval for that exact deployment.
+- Do not deploy contracts, send transactions, change authority, or enable real settlement without a separate explicit HALT approval.
+- Do not expose private keys, API credentials, or verifier secrets.
+
+Current Cycle 002 candidate at the time of this instruction:
+
+- Deployable source: `ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170`
+- Preview deployment: `dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN`
+- Preview URL: `https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app`
+- Production remains `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`
+- Rollback remains `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk`
+
+Re-read live Git and deployment state before acting. Do not assume these values remain current in a later session.
+
+## Runtime authority
+
+The HMH child may own input, deterministic simulation, movement, collision, elevation, combat, AI, progression, and render projection.
+
+The HMH child must not:
+
+- Request wallets.
+- Request signatures.
+- Send transactions.
+- Write parent persistence.
+- Grant official achievements or Ranked status.
+- Calculate or authorize settlement.
+- Replace the parent-provided session identity or seed.
+
+Art, interpolation, particles, shaders, audio, animation LOD, and quality tiers are projection-only. They may not change collision, damage, AI, spawning, RNG, progression, evidence, or results.
+
+## Render-layer visual verification
+
+For any render-layer change:
+
+- Run `npm run visual:regression` and inspect both the screenshots and machine-readable comparison metrics. Do not rely on screenshots alone.
+- Verify the ground plane, prop grounding, depth sorting, collision-to-art alignment, actor readability, UI containment, and desktop/mobile framing.
+- Use `npm run visual:accept` only after the visual change is intentional and reviewed.
+- Commit the approved baseline update under `docs/testing/VISUAL_BASELINES/` with the source change that requires it.
+
+## Implementation discipline
+
+- Select one bounded vertical slice from the earliest incomplete master-plan phase.
+- Audit current source, tests, runtime behavior, active art, and performance first.
+- Write RED behavioral coverage before a fix or feature.
+- Implement the smallest coherent deterministic change.
+- Exercise the actual browser/runtime path.
+- Inspect full-resolution desktop and mobile evidence.
+- Measure before optimizing.
+- Keep generated/runtime artifacts and docs consistent.
+- Do not treat a plan, stub, static audit, synthetic wallet, or simulated receipt as a finished feature.
+
+Any runtime, asset, routing, CSP, service-worker, or release-harness change creates a new candidate and requires fresh certification.
+
+## Working commands
+
+Use npm on this Windows checkout:
 
 ```bash
-npm test
+npm install
 npm run check
-npm run contracts:check
+npm run test:release
+npm run build
+npm run assets:qa:hmh-reboot
+npm run design:security-audit
+npm run design:third-party-security
+npm run design:web3-audit
+npm run design:web3-live
+npm run repo:health:strict
+npm run repo:cdn-gate
+npm run docs:links
 ```
 
-### Render-layer visual verification
+`pnpm run build` is blocked on this machine by a parent user-level package-manager declaration. `npm run build` is the verified repository path.
 
-Any change that touches isometric rendering, ground plane math, terrain cache/patterns, prop grounding, obstacle placement, depth sorting, loading/prewarm behavior, canvas camera projection, or `docs/testing/VISUAL_BASELINES/` must also run:
+Serve locally from `apps/portal`, not `apps/portal/dist`:
 
 ```bash
-npm run visual:regression
+cd apps/portal
+python -m http.server 8791 --bind 127.0.0.1
 ```
 
-Use `npm run visual:accept` only when the visual change is intentional. Review the new captures in `docs/testing/VISUAL_BASELINES/hmh-level-1/`, then commit the updated baseline PNGs with the code that changed the render output. Do not rely on screenshots alone: keep or add source-level tests for the math/policy, and use the visual harness as the browser proof that the live canvas still boots, waits through loading, captures seed `1337`, and passes the tight pixel-diff gate.
+Portal URL: `http://127.0.0.1:8791/`
 
-For UI changes, also serve locally and check the browser console. IMPORTANT: `apps/portal/index.html`
-has `<base href="/" />` and uses root-relative asset paths, and Vercel serves the portal from the
-site root (`outputDirectory: apps/portal`). So you MUST serve `apps/portal` itself as the web root —
-NOT the repo root:
+HMH URL: `http://127.0.0.1:8791/hmh-reboot/index.html`
 
-```bash
-cd apps/portal && python -m http.server 8791    # then open http://127.0.0.1:8791/
-```
+## Web3 truth
 
-Serving the repo root and opening `/apps/portal/` will 404 every asset (main.js, styles.css, images),
-because `<base href="/">` resolves them against `/` — the app will appear completely dead with no
-console errors. This is a local-serving artifact only; production (Vercel root) is correct.
+- `SETTLEMENT_LIVE` is false.
+- Local canonical sessions, profiles, cadence leaderboards, and simulated settlement exist.
+- June legacy contracts contain bytecode but do not match the current hardened score ABI.
+- Hardened predicted contracts are undeployed.
+- The browser consumes a verifier attestation but does not produce a trusted attestation.
+- Real wallet, hardened contract, score readback, profile readback, and leaderboard ingestion remain unproven end to end.
 
-## Repo asset hygiene
-
-The repo holds code, tests, contracts, docs, integrated runtime assets (atlases + manifests), QA
-reports, and small SFX/brand art. Raw generation output, reference-art dumps, audio/video masters,
-downloaded ZIPs, and prompt/error logs live in `~/lesters-arcade-vault/` or a gitignored staging
-folder, not in committed `apps/portal/assets/`. Any new asset wave should land as: raw output → vault,
-integrated frames → atlas/runtime manifest, manifest + QA report/contact sheet → repo.
+Never describe local/simulated or source-only Web3 behavior as live settlement.

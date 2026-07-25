@@ -1,325 +1,423 @@
-# 🎮 Lester's Arcade
+# Lester's Arcade
 
-**A Web3-native arcade portal for the LitVM / Litecoin ecosystem, with Hard Money Heroes as the flagship cabinet.**
+A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-bound profiles, canonical game sessions, cadence leaderboards, achievements, and approval-gated Web3 publishing.
 
-Lester's Arcade is the parent dapp: one wallet-connected arcade shell, one player identity, shared profiles, achievements, leaderboards, ranked sessions, and a growing cabinet model for games that can plug into the same platform layer.
+**Repository:** https://github.com/kingdankkush/Lesters-Arcade
 
-🔗 **Live:** [lestersarcade.io](https://lestersarcade.io)  
-🕹️ **Flagship cabinet:** [Hard Money Heroes](#hard-money-heroes)  
-🧪 **Current local gate:** `npm run ship:gate` (automated code/art/security/browser gates plus a strict repo budget)
+**Production:** https://lestersarcade.io
 
-![Hero](https://lestersarcade.io/assets/generated/hmh-key-art/hmh-loading-keyart-1.jpg)
+**Current HMH Cycle 002 preview:** https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app
+
+**Comprehensive Claude/Fable handoff:** [docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md](docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md)
+
+> Production does not yet contain the Cycle 002 candidate. The preview is verified and Ready, but promotion requires explicit approval for the exact deployment. LitVM contract deployment and transaction activity require a separate HALT approval.
 
 ---
 
-## Current status
+## Current game roster
 
-| Area | Status | Notes |
-| --- | --- | --- |
-| Lester's Arcade portal | Live | Wallet-ready arcade shell with cabinet loader, profile surfaces, leaderboards, music, and responsive controls. |
-| Hard Money Heroes | Live, actively polished | Isometric crypto-satire roguelite with a finite authored Level 1 world, compact upgrade UI, free play, and canonical local Ranked preview. |
-| LitVM contracts | Fail-closed preview | Solidity contracts and verification tooling live in `contracts/src/`, but verified settlement is disabled. No deployment, transaction, or real-value economy is implied. |
-| Generated art pipeline | Active | Repo-owned Python/Node pipelines generate hero, enemy, world, UI, VFX, achievement, and certification artifacts. |
-| Level 1 art | Certified | The 23 runtime-spawnable Level 1 actor rows and four playable heroes have complete ship-scope animation coverage. Future-level city actors remain explicit debt. |
-| Device QA | Desktop fallback verified | Device/input matrix passes locally. Real Android/iOS QA is blocked on this Windows host until `adb`/`scrcpy`/iOS bridge tools and devices are attached. |
+| Cabinet | Game ID | State | Summary |
+| --- | --- | --- | --- |
+| Hard Money Heroes | `lester-blaster` | Playable reboot candidate | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
+| Chikun's Escape | `chikun` | Coming Soon, dev harness only | Third-party one-button arcade integration with Cabinet SDK, deterministic parent-seeded replay, fail-closed mode configuration, and cabinet art |
+| Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
+
+---
+
+## Product direction
+
+Lester's Arcade is the parent account and cabinet platform. It owns:
+
+- Wallet discovery and login.
+- Player profiles and character preferences.
+- Free and Ranked mode boundaries.
+- Canonical session IDs, seeds, evidence, and finalization.
+- Official session history.
+- Daily, weekly, monthly, yearly, and all-time leaderboards.
+- Achievements and profile progression.
+- Analytics.
+- Contract reads and player-signed transactions.
+- Settlement policy.
+
+Child games own gameplay simulation and presentation. They do not request wallets, send transactions, grant official progress, or decide settlement.
+
+### Hard Money Heroes vision
+
+The active HMH direction is a deterministic top-down 2.5D roguelike run-and-gun with:
+
+- Precise keyboard/mouse, controller, and touch controls.
+- Authored districts, loops, landmarks, hazards, and boss arenas.
+- Controlled deterministic enemy pressure instead of random scatter.
+- Truthful projectile, collision, elevation, damage, and telegraph behavior.
+- Human survivors and zombies, never animal, vehicle, robot, mech, or abstract actor proxies.
+- Deep weapons, upgrades, build synergies, bosses, achievements, and ethical replayability.
+- Projection-only animation, VFX, audio, interpolation, and quality scaling.
+- 60 FPS desktop and 30 FPS mobile targets with 100+ enemy pressure.
+- Parent-owned profiles, sessions, leaderboards, and future verified LitVM publication.
+
+The controlling roadmap is [.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md](.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md).
+
+---
+
+## Major updates
+
+## Chikun's Escape integration
+
+Chikun entered the project through platform-extensibility work, a third-party source handoff, and Cabinet SDK integration.
+
+Implemented:
+
+- Canonical cabinet manifest and loader.
+- Rotating transparent cabinet artwork.
+- Free and Ranked-preview mode configuration.
+- Fixed 60 Hz deterministic flap simulation.
+- Bounded input evidence.
+- Parent-provided Ranked seed, build hash, and season binding.
+- Canonical replay and result verification.
+- Fail-closed missing mode configuration.
+- Coming Soon public gate with a development-only harness.
+
+Current canonical files:
+
+- `apps/portal/src/chikun-cabinet.mjs`
+- `apps/portal/src/games/chikun/loader.mjs`
+- `apps/portal/games/chikun/game.manifest.json`
+- `apps/portal/games/chikun/main.mjs`
+- `apps/portal/assets/generated/chikun-cabinet/`
+- `apps/portal/assets/generated/chikun-mode-select/`
+
+The historical full React/Supabase source handoff was vaulted out of the active tree and remains inspectable in commit [`51def63a`](https://github.com/kingdankkush/Lesters-Arcade/commit/51def63af5ebbc84bab3b0dd51273d5c805b47b5) and [PR #2](https://github.com/kingdankkush/Lesters-Arcade/pull/2). It must not be restored without reconciling current parent authority, deterministic replay, security, persistence, and bundle constraints.
+
+Chikun remains `playable: false` and `devPlayable: true` until its production game, art, audio, browser, SDK, and public-launch gates are complete.
+
+## Hard Money Heroes reboot
+
+HMH moved away from the older monolithic Canvas/isometric/procedural prototype into a separate deterministic PixiJS child application.
+
+The reboot now includes:
+
+- PixiJS `8.19.0` renderer.
+- Fixed 60 Hz simulation and four-step catch-up cap.
+- Secure same-origin sandboxed iframe host.
+- `hmh-bridge/v1` parent/child protocol with a 65,536-byte cap.
+- Movement, aim, dash, touch, gamepad, collision, and elevation.
+- Weapons, projectile physics, melee, grenades, combat events, lifecycle, and audio.
+- Six enemy families and a deterministic encounter director.
+- Liquidator boss logic.
+- Authored Level 1, The Forked Frontier.
+- Six districts, loops, bridge, water, ramps, ledges, hazards, POIs, minimap, and reveal data.
+- Run progression and cockpit UI.
+- Four approved production hero atlases.
+- Production world and enemy projection layers.
+- Parent-owned profile, session, leaderboard, and settlement integration.
+- Release certification, Chrome/Edge matrices, security gates, network audits, soaks, and artifact-verified previews.
+
+### AAA Cycle 001
+
+Cycle 001 added:
+
+- Hosted-origin-only Vercel Analytics.
+- Permanent fail-closed network and console auditing.
+- Vector-magnitude-bounded acceleration.
+- Velocity interpolation.
+- Projection-only interpolated camera following.
+- Cross-platform retained-memory harness fixes.
+- Updated browser smokes and active production hero references.
+- Removal of broken hidden references to retired actor art.
+
+See [docs/hmh-reboot/cycles/CYCLE-001.md](docs/hmh-reboot/cycles/CYCLE-001.md).
+
+### AAA Cycle 002
+
+Cycle 002 added a bounded 100 ms rising-edge buffer for:
+
+- Fire.
+- Melee.
+- Grenade.
+- Dash.
+
+Rapid press/release actions now survive render frames with zero fixed simulation steps across keyboard, pointer, touch, and gamepad. Pending edges consume once, expire when stale, and remain bounded to one pending edge per action.
+
+Cycle 002 did not change collision, elevation, recoil, saves, replay, wallets, settlement, or parent authority.
+
+See:
+
+- [Cycle 002 record](docs/hmh-reboot/cycles/CYCLE-002.md)
+- [Release certification](docs/hmh-reboot/RELEASE-CERTIFICATION-AAA-CYCLE-002.md)
+- [Preview verification](docs/hmh-reboot/PREVIEW-VERIFICATION-AAA-CYCLE-002.md)
+- [Memory audit](docs/hmh-reboot/MEMORY-AUDIT-AAA-CYCLE-002.md)
+
+---
+
+## Cycle 002 release status
+
+| Gate | Result |
+| --- | --- |
+| Release ledger | 1,619 total, 1,567 passed, exactly 52 accepted legacy failures in 35 files, 0 unexpected |
+| Focused controls/combat | 75/75 |
+| Syntax | 319 JavaScript modules, 40 Python scripts |
+| Chrome | Five viewport profiles passed |
+| Edge | Five viewport profiles passed |
+| Production heroes | Four of four desktop/mobile smokes passed |
+| Security | 5/5, zero findings |
+| Sandbox security | 3/3 |
+| Web3 authority | 9/9 |
+| Network/console | 4/4, zero failures |
+| Performance | Desktop/mobile p95 7 ms |
+| HMH bundle | 963,568 bytes under 1,050,000-byte gate |
+| Input-state soak | 260,000 cycles, bounded pending state, 2,000-byte retained delta |
+| Exact-index reviews | Gameplay, security/Web3, and release evidence all PASS |
+
+A broader browser heap threshold fails against both current production and Cycle 002. Cycle 002 did not regress the matched production baseline, but pre-existing renderer/runtime retained-memory debt remains open.
+
+### Exact candidate
+
+- Deployable source: `ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170`
+- Evidence commit: `af86dfadbd4861d76f56c7198a62739e57ab9543`
+- Preview deployment: `dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN`
+- Preview URL: https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app
+- Production deployment remains: `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`
+- Rollback deployment remains: `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk`
 
 ---
 
 ## Architecture
 
 ```text
-┌─────────────────────────────────────────────┐
-│  Lester's Arcade parent portal              │
-│  • Wallet/profile shell                     │
-│  • Cabinet grid and lazy cabinet loader     │
-│  • Shared achievements and leaderboards     │
-│  • Ranked/free session model                │
-│  • Audio, settings, responsive input        │
-└─────────────────────────────────────────────┘
-             │ select cabinet
-             ▼
-┌─────────────────────────────────────────────┐
-│  Per-cabinet loader                         │
-│  apps/portal/src/games/<id>/loader.mjs      │
-│  returns manifest, entryPoint, adapter      │
-└─────────────────────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────────┐
-│  Cabinet runtime                            │
-│  Hard Money Heroes ships first              │
-└─────────────────────────────────────────────┘
+Browser
+└── Lester's Arcade parent portal
+    ├── Wallet/profile/session/leaderboard authority
+    ├── Local persistence and canonical evidence
+    ├── LitVM chain client, disabled writes by default
+    └── Sandboxed HMH iframe
+        └── PixiJS child runtime
+            ├── Fixed-step simulation
+            ├── Input/movement/collision/elevation
+            ├── Combat/enemies/boss/progression
+            └── Projection-only rendering and audio
 ```
 
-The portal loads the shell first. Cabinet code, art, and manifests are lazy-loaded through each cabinet's loader so future cabinets do not bloat the homepage.
+### Core directories
 
-### Third-party cabinet onboarding
+```text
+apps/
+├── hmh-reboot/              PixiJS HMH child runtime and editable Blender sources
+└── portal/                  Parent portal, child host, profiles, sessions, leaderboards, assets
 
-Any LitVM dev team can onboard a cabinet by:
+contracts/
+├── src/                     Solidity contracts
+├── artifacts/               Compiled artifacts
+├── deploy-config.testnet.json
+└── deployment-record.json   June legacy deployment record
 
-1. Creating `apps/portal/src/games/<game-id>/loader.mjs`
-2. Registering the cabinet in `ARCADE_GAMES` in `apps/portal/src/arcade-core.mjs`
-3. Returning a `{ manifest, entryPoint, adapter }` object from the loader
-4. Passing the sandbox/security and runtime integration checks
+docs/
+├── handoffs/                Agent handoffs
+├── hmh-reboot/              Reboot design, evidence, certificates, cycle records
+├── qa/                      Generated audits
+└── web3/                    LitVM specs, readiness, hardened dry-run manifest
 
-Start with [`sdk/README.md`](sdk/README.md), then use [`docs/THIRD_PARTY_GAME_ONBOARDING.md`](docs/THIRD_PARTY_GAME_ONBOARDING.md) for the full security contract.
+sdk/
+└── hmh-bridge-protocol.mjs  Parent/child protocol contract
 
-### Current cabinets
-
-| Cabinet | ID | Status |
-| --- | --- | --- |
-| Hard Money Heroes | `hard-money-heroes` | 🟢 Live flagship cabinet |
-| Chikun's Escape | `chikun` | 🟡 Loader-ready / coming soon |
-| Lilly's Lightning Pinball | `lilly-pinball` | 🔒 Planned |
-
----
-
-## Hard Money Heroes
-
-**Hard Money Heroes** is an isometric crypto-satire roguelite set in **Litecoin City After Dark**. It began life as a side-scroller and has pivoted into the current Canvas-based isometric survival/run-and-gun cabinet.
-
-### What is playable now
-
-- **Free mode and Ranked preview:** Free is wallet-free practice. Ranked preview records canonical local evidence but sends no transaction while verified settlement is disabled.
-- **Character select:** Lit Commando and Lit Valkyrie are starter heroes. Lester/Lilly progression remains local-preview state until verified settlement is approved.
-- **Finite authored Level 1:** a six-biome Crypto Wasteland/Litecoin City map assembled from deterministic macro-biome, road/trail/water connector, POI, micro-scene, and prefab systems.
-- **Smaller runtime map footprint:** Level 1 runtime dimensions were reduced roughly in half for better loading/framerate while preserving finite bounds and spawn safety.
-- **Compact level-up UI:** upgrade cards now fit inside the gameplay window with icon, title, gain, rank pips, and tooltip/ARIA details instead of visible paragraph/keyword clutter.
-- **Twin-stick-lite controls:** keyboard/mouse on desktop; touch joystick and action controls on mobile/tablet layouts.
-- **Upgrade system:** 60+ roguelike upgrade concepts across offense, defense, mobility, utility, economy, control, throwable, status, and weapon branches.
-- **Combat feedback:** SFX, VFX, hit flash, damage text, screen shake, and central cue planning are wired through runtime certificates.
-
-### World and level art
-
-Recent world-building work moved Level 1 away from generic procedural scatter and toward authored, readable spaces:
-
-- WO-96: finite six-biome macro map plan
-- WO-97: six-biome ground, water, vegetation, building, vehicle, critter, and POI asset families
-- WO-98: deterministic world assembly, road/trail/water network, authored micro-scenes, prefabs, and seed-1337 acceptance tour
-- WO-90: pickup icons, VFX/UI chrome, authored stamp art, and achievement atlas certified runtime-ready
-
-The current direction is **authored handcrafted areas first**, with deterministic systems supporting layout and replayability rather than random decoration.
-
-### Heroes and animation
-
-- Lit Commando and Lit Valkyrie have certified hero coverage through the Wave 3 matrix gates.
-- Lester and Lilly canon references were ingested and turned into runtime-ready matrix artifacts.
-- WO-81/82/79 now certifies animation-principles gates, Lit hero coverage, and ambient motion policy.
-- Animation gates cover anticipation, smear, impact, follow-through, and loop-bob.
-- Ambient motion rules are reduced-motion-safe, textless for signage, and keep critters out of boss locks.
-
-### Enemies and bosses
-
-WO-99 reran the enemy/boss roster against hero canon and current runtime assets.
-
-Certified 8-direction runtime enemies:
-
-- `coyote-pack-runner`
-- `wild-boar`
-- `rattlesnake`
-- `buzzard`
-- `fud-goblin`
-- `paper-hand`
-- `slippage-skater`
-
-Important current distinction:
-
-- The released Level 1 spawn/proxy table is complete: 23/23 rows have full required runtime coverage.
-- Four future-level city actors remain partial and are not counted as Level 1 ship coverage. See `docs/game-design/SHIP_ART_CENSUS_LOCK.md`.
-
-See [`docs/game-design/hmh-wo99-enemy-canon-uplift.md`](docs/game-design/hmh-wo99-enemy-canon-uplift.md).
-
-### Audio and AV
-
-WO-86/87/88/89 certifies the current audio/AV plan:
-
-- Central `HMH_SFX_CUE_REGISTRY` covers runtime cues.
-- WebAudio synth/sample fallback remains the safe runtime layer.
-- AI/external audio candidates must beat fallback in A/B review before commit.
-- Pressure-layered score plan uses five stem concepts: base rain pulse, combat arpeggio, boss brass hit layer, low-health filtered layer, victory release sting.
-- 60-second showcase shot list is defined: spawn, pickup/first hit, pressure layer, boss warning, death burst, victory settle.
-
-See [`docs/game-design/hmh-wo86-89-audio-av.md`](docs/game-design/hmh-wo86-89-audio-av.md).
-
----
-
-## Smart contract foundation
-
-Solidity contracts for LitVM deployment live in [`contracts/src/`](contracts/src/):
-
-| Contract | Purpose |
-| --- | --- |
-| `PlayerProfileRegistry.sol` | Wallet to profile mapping: handle, display name, avatar URI, timestamps. |
-| `GameRegistry.sol` | Operator-managed cabinet registry with per-game fee splits. |
-| `SessionLedger.sol` | EIP-712 signed ranked sessions, entry-fee escrow, close/settle lifecycle. |
-| `AchievementRegistry.sol` | Parent-defined milestone tracking and soulbound achievement model. |
-| `PaymentRouter.sol` | Fee routing to developer, platform, liquidity, and treasury recipients. |
-| `interfaces/IERC20.sol` | Standard ERC20 interface for USDC-style tokens on LitVM. |
-
-See [`contracts/ARCHITECTURE.md`](contracts/ARCHITECTURE.md) for deployment sequence, data flow, security model, fee split, gas reserve model, and upgrade strategy.
-
-### Economy status
-
-The production portal does not send score or economy transactions. Contract fee-split code is dormant testnet infrastructure and remains subject to a separately approved deployment manifest, verifier posture, legal/license decision, and operator sign-off. See `contracts/ARCHITECTURE.md`; do not infer a live economy from repository constants.
-
----
-
-## Verification and quality gates
-
-Current verified local results:
-
-```bash
-npm test              # Full Node test suite
-npm run check         # JavaScript/Python syntax check
-npm run contracts:check
-npm run ship:gate     # complete automated release gate; strict repo budget is last
+scripts/                     Build, QA, browser, asset, contract, and audit tooling
+tests/                       Node and contract-facing regression suites
 ```
 
-Additional project gates used during Hard Money Heroes production:
+### HMH active code
 
-```bash
-npm run assets:qa
-npm run smoke:portal:interactions
-npm run visual:regression
-npm run design:device-input
-npm run design:wo99-enemy-canon
-npm run design:wave3-art
+```text
+apps/hmh-reboot/src/
+├── main.mjs
+├── simulation.mjs
+├── input.mjs
+├── movement.mjs
+├── aim.mjs
+├── dash.mjs
+├── collision.mjs
+├── elevation.mjs
+├── world-space.mjs
+├── weapon-system.mjs
+├── projectile-physics.mjs
+├── melee.mjs
+├── grenades.mjs
+├── enemy-archetypes.mjs
+├── enemy-simulation.mjs
+├── enemy-combat.mjs
+├── encounter-director.mjs
+├── liquidator-boss.mjs
+├── level-one-world.mjs
+├── run-progression.mjs
+├── production-hero-atlas.mjs
+├── enemy-production-art.mjs
+├── world-production-art.mjs
+└── runtime-performance.mjs
 ```
 
-Real-device QA is not claimed on this host. Current local evidence:
+### Parent platform code
 
-- `adb`: missing
-- `scrcpy`: missing
-- `xcrun`: missing
-- iOS bridge: missing
-- desktop/device-input fallback: passing
+```text
+apps/portal/src/
+├── arcade-core.mjs
+├── persistence.mjs
+├── session-integrity.mjs
+├── leaderboard-engine.mjs
+├── hmh-profile-parity.mjs
+├── wallet-auth.mjs
+├── settlement.mjs
+├── litvm-chain-client.mjs
+├── hmh-reboot-host.mjs
+├── hmh-reboot-bridge.mjs
+└── hmh-reboot-portal-lifecycle.mjs
+```
 
 ---
 
-## Run locally
+## Production art
+
+Editable Blender sources:
+
+- `apps/hmh-reboot/assets/source/blender/hmh-character-template.blend`
+- `apps/hmh-reboot/assets/source/blender/hmh-commando-concepts.blend`
+- `apps/hmh-reboot/assets/source/blender/hmh-production-heroes.blend`
+
+Production hero atlases:
+
+- `apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/`
+- `apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/`
+- `apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/`
+- `apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/`
+
+Do not restore retired assets under `apps/portal/assets/generated/hmh-isometric-pixellab/` or use mannequin/prototype actors as final production art.
+
+---
+
+## Profiles, sessions, leaderboards, and Web3
+
+### Functional now
+
+- Local wallet-normalized profiles and preferences.
+- Canonical session IDs, seed, build hash, season, evidence, and envelope hashes.
+- Active session checkpoints and local run history.
+- Free versus Ranked persistence boundaries.
+- Daily, weekly, monthly, yearly, and all-time local leaderboards.
+- Profile run history and local official sessions.
+- Achievement and progression integration.
+- Simulated/local settlement records.
+- Player-signed chain client source for verified score and profile writes.
+
+### Not live end to end
+
+`SETTLEMENT_LIVE` remains `false`.
+
+The June legacy contracts contain bytecode, but the current hardened score ABI cannot decode the legacy score registry. Chain leaderboard reads fail closed. The hardened verifier-based deployment is still an unsigned dry run and its predicted GameRegistry, PlayerProfileRegistry, and ScoreSubmissionRegistry addresses contain no bytecode.
+
+The browser consumes an externally supplied verifier attestation, but the project does not yet contain a trusted production attestation service or controlled signing flow.
+
+Before verified testnet publishing can be called functional:
+
+1. Obtain explicit contract-deployment HALT approval.
+2. Deploy and verify the hardened contracts.
+3. Implement trusted replay/evidence attestation outside the untrusted browser.
+4. Complete a real-wallet LitVM run and read it back into profile, session history, and verified leaderboards.
+5. Prove duplicate, replay, expiry, wrong-chain, user-cancel, and RPC-failure behavior.
+
+Paid settlement additionally requires approved payment asset, fees, splits, vaults, legal/economy decisions, security review, payment/session contracts, and real-wallet testnet certification.
+
+See:
+
+- [HMH Web3 live readiness](docs/web3/hmh-web3-live-readiness.md)
+- [Hardened deployment dry run](docs/web3/hardened-ranked-deployment-manifest.json)
+- [Contract architecture](contracts/ARCHITECTURE.md)
+- [Full Fable handoff](docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md)
+
+---
+
+## Quick start
+
+### Requirements
+
+- Node.js 22 or newer recommended.
+- npm.
+- Python 3 for the local static server and asset scripts.
+- Chrome or Edge for browser certification.
+- Blender 5.1.2 only when rebuilding certified HMH production heroes.
+- Foundry and Slither only for their respective contract gates.
+
+### Install and build
 
 ```bash
-git clone https://github.com/kingdankkush/lesters-arcade.git
-cd lesters-arcade
 npm install
-npm test
-npm run check
-npm run contracts:check
-npm run serve
+npm run build
 ```
 
-Then open:
+On this Windows checkout, use npm. `pnpm run build` is blocked by a parent user-level package-manager declaration, while the repository npm build succeeds.
 
-```text
-http://127.0.0.1:8791/apps/portal/
-```
+### Serve locally
 
-For a production-style static build:
+Serve `apps/portal`, not `apps/portal/dist`:
 
 ```bash
-npm run vercel:build
+cd apps/portal
+python -m http.server 8791 --bind 127.0.0.1
+```
+
+Open:
+
+- Portal: http://127.0.0.1:8791/
+- HMH child: http://127.0.0.1:8791/hmh-reboot/index.html
+
+### Core checks
+
+```bash
+npm run check
+npm run test:release
+npm run build
+npm run assets:qa:hmh-reboot
+npm run design:security-audit
+npm run design:third-party-security
+npm run design:web3-audit
+npm run design:web3-live
+npm run audit:hmh:network
+npm run certify:hmh:browser
+npm run smoke:hmh:cockpit
+npm run smoke:hmh:performance
+npm run smoke:portal
+npm run smoke:portal:interactions
+npm run repo:health:strict
+npm run repo:cdn-gate
+npm run docs:links
 ```
 
 ---
 
-## Repo layout
+## Next priorities
 
-```text
-apps/portal/                         Main arcade portal
-├── index.html                       Portal shell
-├── main.js                          Main runtime and HMH cabinet integration
-├── styles.css                       Base portal/gameplay styling
-├── styles-arcade-polish.css         Additional arcade polish
-├── src/
-│   ├── arcade-core.mjs              Cabinet registry, score data, core game metadata
-│   ├── canonical-actors.mjs         Hero/enemy actor registry and runtime mapping
-│   ├── combat-damage.mjs            Damage types, crits, recovery, labels
-│   ├── combat-physics.mjs           Swept collision, knockback, projectile math
-│   ├── combat-sprite-bridge.mjs     Combat state to animation bridge
-│   ├── device-model.mjs             Desktop/touch input and responsive layout model
-│   ├── hmh-audio-system.mjs         Central SFX registry and mix planner
-│   ├── hmh-wo81-82-79-animation-polish.mjs
-│   ├── hmh-wo86-89-audio-av.mjs
-│   ├── hmh-wo98-world-assembly.mjs
-│   ├── hmh-upgrade-menu-ui.mjs
-│   ├── leaderboard-engine.mjs
-│   ├── settlement.mjs
-│   ├── weapon-upgrades.mjs
-│   └── games/
-│       ├── hmh/loader.mjs           Hard Money Heroes lazy loader
-│       └── chikun/loader.mjs        Chikun lazy loader
-├── assets/
-│   ├── audio/                       Music/SFX manifests and samples
-│   └── generated/                   Generated/runtime art manifests and contact sheets
-
-contracts/src/                       Solidity 0.8.24 LitVM-ready contracts
-scripts/                             Build, audit, design, asset, and report pipelines
-tests/                               Node test suite and runtime regression tests
-docs/                                Design docs, QA reports, plans, onboarding, contracts docs
-```
-
----
-
-## Recent production milestones
-
-| Work order | Status | Summary |
-| --- | --- | --- |
-| WO-90 | Complete | Placeholder redo certified for pickup icons, VFX/UI chrome, stamp art, and achievement atlas. |
-| WO-81/82/79 | Complete | Animation-principles gates, Lit hero coverage, and ambient motion policy certified. |
-| WO-86/87/88/89 | Complete | Audio/AV certification, SFX inventory, pressure-layered stems, AV sync, 60s showcase shot list. |
-| WO-92/93/94 | Complete | Lester/Lilly canon ingestion, hero matrices, and canonical runtime wiring. |
-| WO-95 | Complete | Ranked-match character unlock progression for Lester and Lilly. |
-| WO-96/97/98 | Complete | Finite Level 1 macro plan, world assets, and deterministic world assembly. |
-| WO-99 | Complete | Enemy canon uplift, real buzzard kit wiring, boss debt matrix. |
-| Map scale fix | Complete | Level 1 dimensions reduced roughly half for better performance. |
-| Level-up UI fix | Complete | Compact gameplay-safe upgrade overlay with tooltip/ARIA detail. |
-| Real-device QA | Blocked | Desktop fallback passes; real Android/iOS matrix waits for attached devices and toolchain. |
-
----
-
-## Roadmap
-
-Near-term priorities:
-
-1. **Boss completion:** generate and verify complete 8-direction PixelLab boss kits for Warren Spear Rider, Whale Dumper Boss, Chain Reaper Boss, and Bit Whale Boss.
-2. **Runtime boss integration:** move boss spectacle from debt matrix into live isometric boss encounters with readable telegraphs, phase changes, and arena rules.
-3. **Real-device QA:** attach Android/iOS devices or install the required bridge tools, then run the actual touch/performance matrix.
-4. **Audio candidate bakeoff:** produce or source final SFX/music candidates only if they beat the current WebAudio/sample fallback in A/B review.
-5. **60-second showcase capture:** record the defined WO-89 showcase route once boss/visual/audio polish is stable.
-6. **Additional cabinets:** continue Chikun and Lilly's Lightning Pinball once the parent portal and HMH flagship baseline are stable.
-7. **Approved LitVM deployment:** deploy contracts only after explicit approval, key handling review, and final testnet checklist.
+1. Preserve and, only with approval, promote the exact Cycle 002 candidate.
+2. Continue the earliest incomplete HMH Phase 2 slice: collision/elevation/low-FPS safety, stale aim, focus/device switching, or projection-only camera framing.
+3. Build a permanent portal E2E harness for Free, Ranked preview, wallet reconnect, profiles, scores, sessions, restart, controls, audio, and service-worker behavior.
+4. Investigate pre-existing browser retained-memory debt with matched production controls.
+5. Prepare the hardened verifier deployment and attestation architecture without broadcasting.
+6. Decide how to turn Chikun's development harness and historical source into a production public vertical slice.
+7. Expand HMH combat identities, bosses, authored acts, animation, VFX, audio, build synergies, accessibility, and physical-device QA.
+8. Treat paid settlement as a separate product, economy, legal, and security phase.
 
 ---
 
 ## Safety boundaries
 
-- No real funds, private keys, seed phrases, or secret material in the repo.
-- No contract deployment unless explicitly approved.
-- No paid mode activation without approved LitVM/testnet flow.
-- No external posting, account changes, or production account mutations from automated scripts.
-- Generated art and audio must keep provenance clear and avoid committing raw prompt logs or secret-bearing tool output.
-- Commercial Litecoin-name/logo/Ł-heavy usage should receive explicit brand/legal sign-off before broader public launch.
-
----
-
-## Built with
-
-- JavaScript ES modules
-- HTML Canvas 2D
-- Node test runner
-- Python asset-generation/reporting scripts
-- Solidity 0.8.24
-- ethers.js
-- esbuild
-- Vercel static deployment
-- PixelLab-assisted generated-art pipeline, with repo-owned final artifacts
+- Do not push ordinary work directly to `main`.
+- Do not promote production without approval for the exact deployment.
+- Do not deploy contracts or send LitVM transactions without explicit HALT approval.
+- Do not expose private keys or verifier secrets.
+- Do not let HMH child code request wallets or transact.
+- Do not let Free Mode write Ranked progress.
+- Do not let art, interpolation, particles, audio, or quality tiers alter simulation results.
+- Do not reactivate retired/proxy actor art.
+- Do not claim local or simulated settlement is on-chain settlement.
+- Any runtime source change requires a fresh build, release certificate, exact-index review, preview, and artifact verification.
 
 ---
 
 ## License
 
-This repository is currently marked `UNLICENSED` in `package.json`. Contract source files include SPDX headers where applicable. Add a formal project license before third-party reuse or public contribution workflows.
-
----
-
-*Built for Lester's Arcade, Hard Money Heroes, and the LitVM / Litecoin ecosystem.* ✨
+UNLICENSED. Private project unless the owner explicitly changes repository or licensing policy.
