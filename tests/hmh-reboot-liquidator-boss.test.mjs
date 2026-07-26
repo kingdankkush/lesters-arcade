@@ -15,8 +15,28 @@ import {
   simulateLiquidatorDps,
   stepLiquidatorBoss,
 } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { renderLiquidatorTelegraph } from '../apps/hmh-reboot/src/liquidator-telegraph-renderer.mjs';
 
 const PLAYER = { x: 160, y: 0, groundZ: 0 };
+
+class RecordingGraphics {
+  constructor() {
+    this.calls = [];
+  }
+
+  moveTo(...args) { this.#record('moveTo', args); return this; }
+  lineTo(...args) { this.#record('lineTo', args); return this; }
+  circle(...args) { this.#record('circle', args); return this; }
+  fill(...args) { this.calls.push(['fill', ...args]); return this; }
+  stroke(...args) { this.calls.push(['stroke', ...args]); return this; }
+
+  #record(operation, args) {
+    assert.ok(args.every(Number.isFinite), `${operation} received a non-finite coordinate or radius`);
+    this.calls.push([operation, ...args]);
+  }
+}
+
+const telegraphProjection = (point) => ({ x: point.x * 0.5 + 12, y: point.y * 0.5 - point.z + 18 });
 
 function runTimeline(partition) {
   const boss = createLiquidatorBoss({ id: 'liquidator', x: 0, y: 0, startTick: 0 });
@@ -104,6 +124,41 @@ test('every damaging resolution has visible matching geometry and support adds n
     }
   }
   assert.ok(resolutions.length <= LIQUIDATOR_ATTACK_PLAN.length);
+});
+
+test('every authored boss tell produces visible renderer primitives including Debt Collection melee circles', () => {
+  const boss = createLiquidatorBoss({ id: 'render-liquidator', x: 0, y: 0, startTick: 0 });
+  const tells = [];
+  for (let tick = 1; tick <= 3_600; tick += 1) {
+    tells.push(...stepLiquidatorBoss({ boss, tick, player: PLAYER }).events.filter((event) => event.type === 'tell'));
+  }
+
+  assert.equal(tells.length, LIQUIDATOR_ATTACK_PLAN.length);
+  for (const tell of tells) {
+    const graphics = new RecordingGraphics();
+    const report = renderLiquidatorTelegraph({
+      graphics,
+      pending: tell,
+      groundZ: tell.groundZ,
+      cameraZoom: 1,
+      worldToScreen: telegraphProjection,
+    });
+    assert.ok(report.primitiveCount > 0, `${tell.attackId}/${tell.geometry.type} rendered no warning primitive`);
+    assert.ok(graphics.calls.some(([operation]) => operation === 'stroke'), `${tell.attackId} rendered no visible stroke`);
+  }
+
+  const debtCollection = tells.find((tell) => tell.attackId === 'debt-collection');
+  const graphics = new RecordingGraphics();
+  const report = renderLiquidatorTelegraph({
+    graphics,
+    pending: debtCollection,
+    groundZ: debtCollection.groundZ,
+    cameraZoom: 1,
+    worldToScreen: telegraphProjection,
+  });
+  assert.equal(debtCollection.geometry.type, 'melee-circle');
+  assert.equal(report.primitiveCount, 1);
+  assert.ok(graphics.calls.some(([operation]) => operation === 'circle'));
 });
 
 test('super attacks expose strong safe zones and resolve outside rather than inside them', () => {

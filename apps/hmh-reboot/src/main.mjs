@@ -36,6 +36,7 @@ import {
   resolveLiquidatorAttack,
   stepLiquidatorBoss,
 } from './liquidator-boss.mjs';
+import { renderLiquidatorTelegraph } from './liquidator-telegraph-renderer.mjs';
 import {
   beginDash,
   createDashState,
@@ -841,6 +842,7 @@ async function boot() {
       overlayVisuals.clear();
       bossVisual.visible = false;
       let animatedEnemyCount = 0;
+      let bossTelegraphPrimitiveCount = 0;
       const enemyHealthPips = [];
       for (const enemy of grayboxEnemies) {
         const enemyMarker = enemyMarkers.get(enemy.id);
@@ -943,35 +945,16 @@ async function boot() {
         bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom);
         // Boss health reads from the dedicated bar, never from transparency.
         bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
+        const projectBossTelegraph = (point) => worldToScreen(point, camera, view);
         for (const pending of liquidatorBoss.pendingAttacks) {
-          const geometry = pending.geometry;
-          const color = pending.attackId.includes('super') ? 0xfff06a : 0xff496c;
-          if (geometry.type === 'line' || geometry.type === 'dash-line') {
-            const from = worldToScreen({ ...geometry.origin, z: liquidatorBoss.groundZ }, camera, view);
-            const to = worldToScreen({ ...geometry.target, z: liquidatorBoss.groundZ }, camera, view);
-            bossTelegraphs.moveTo(from.x, from.y).lineTo(to.x, to.y)
-              .stroke({ color, width: geometry.width * camera.zoom, alpha: 0.18, cap: 'round' })
-              .stroke({ color, width: 4, alpha: 0.9, cap: 'round' });
-          } else if (geometry.type === 'circle' || geometry.type === 'melee') {
-            const center = worldToScreen({ ...geometry.center, z: liquidatorBoss.groundZ }, camera, view);
-            bossTelegraphs.circle(center.x, center.y, geometry.radius * camera.zoom)
-              .fill({ color, alpha: 0.09 }).stroke({ color, width: 4, alpha: 0.9 });
-          } else if (geometry.type === 'ring') {
-            const center = worldToScreen({ ...geometry.center, z: liquidatorBoss.groundZ }, camera, view);
-            bossTelegraphs.circle(center.x, center.y, geometry.outerRadius * camera.zoom).stroke({ color, width: 5, alpha: 0.9 });
-            bossTelegraphs.circle(center.x, center.y, geometry.innerRadius * camera.zoom).stroke({ color, width: 3, alpha: 0.72 });
-          } else if (geometry.type === 'safe-circles') {
-            for (const zone of geometry.zones) {
-              const center = worldToScreen({ ...zone, z: liquidatorBoss.groundZ }, camera, view);
-              bossTelegraphs.circle(center.x, center.y, zone.radius * camera.zoom)
-                .fill({ color: 0x83f28f, alpha: 0.1 }).stroke({ color: 0x83f28f, width: 5, alpha: 0.95 });
-            }
-          } else if (geometry.type === 'summon-sites') {
-            for (const site of geometry.sites) {
-              const center = worldToScreen({ ...site, z: liquidatorBoss.groundZ }, camera, view);
-              bossTelegraphs.circle(center.x, center.y, 36 * camera.zoom).stroke({ color, width: 4, alpha: 0.85 });
-            }
-          }
+          const telegraphReport = renderLiquidatorTelegraph({
+            graphics: bossTelegraphs,
+            pending,
+            groundZ: liquidatorBoss.groundZ,
+            cameraZoom: camera.zoom,
+            worldToScreen: projectBossTelegraph,
+          });
+          bossTelegraphPrimitiveCount += telegraphReport.primitiveCount;
         }
       }
       for (const shot of activeProjectiles) {
@@ -1328,6 +1311,8 @@ async function boot() {
         stageElement.dataset.bossPhase = liquidatorBoss?.phaseId ?? '';
         stageElement.dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
         stageElement.dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
+        stageElement.dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
+        stageElement.dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
         stageElement.dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
         stageElement.dataset.worldId = LEVEL_ONE_WORLD.id;
         stageElement.dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);

@@ -67,5 +67,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `2a579cf7`; production unchanged
   - Cycle ledger: `cycles/CYCLE-009.md`
 - [x] Cycle 010: source-ceiling-bounded projectile recovery across authored depressions
-  - Status: local certified; commit pending; production unchanged
+  - Status: committed locally as `774522ad`; production unchanged
   - Cycle ledger: `cycles/CYCLE-010.md`
+- [x] Cycle 011: complete Liquidator telegraph projection for melee and safe-zone geometry
+  - Status: local certified; commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-011.md`

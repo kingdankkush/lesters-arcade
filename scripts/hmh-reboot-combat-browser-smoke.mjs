@@ -57,6 +57,8 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   bossPhase: stage.dataset.bossPhase,
   bossHealth: Number(stage.dataset.bossHealth),
   bossPendingTells: Number(stage.dataset.bossPendingTells),
+  bossPendingAttackIds: String(stage.dataset.bossPendingAttackIds || '').split(',').filter(Boolean),
+  bossTelegraphPrimitives: Number(stage.dataset.bossTelegraphPrimitives),
   bossAttackDrops: Number(stage.dataset.bossAttackDrops),
   worldId: stage.dataset.worldId,
   worldWidth: Number(stage.dataset.worldWidth),
@@ -137,6 +139,9 @@ async function desktopSmoke() {
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.playerHealth) < 100, null, { timeout: 5000 });
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
+  await page.waitForFunction(() => String(document.querySelector('#hmhRebootStage')?.dataset.bossPendingAttackIds || '')
+    .split(',').includes('debt-collection'), null, { timeout: 10000 });
+  const debtCollectionTell = await state(page);
   await waitForEnemyRoster(page);
   const pistol = await state(page);
 
@@ -191,6 +196,9 @@ async function desktopSmoke() {
   assert.equal(pistol.bossPhase, 'market-open');
   assert.ok(pistol.bossHealth > 0);
   assert.equal(pistol.bossAttackDrops, 0);
+  assert.deepEqual(debtCollectionTell.bossPendingAttackIds, ['debt-collection']);
+  assert.equal(debtCollectionTell.bossPendingTells, 1);
+  assert.equal(debtCollectionTell.bossTelegraphPrimitives, 1, 'Debt Collection must draw its melee-circle warning');
   assert.equal(pistol.worldId, 'forked-frontier');
   assert.deepEqual([pistol.actorArt, pistol.enemyArt, pistol.bossArt], [
     'production-hero-atlas',
@@ -221,7 +229,7 @@ async function desktopSmoke() {
   assert.equal(handGrenade.projectileDrops, 0);
   assert.deepEqual(errors, []);
   await page.close();
-  return { pistol, shotgun, machineGun, launcher, melee, handGrenade, dash, dashStatus, accessibleStatus, errors };
+  return { pistol, debtCollectionTell, shotgun, machineGun, launcher, melee, handGrenade, dash, dashStatus, accessibleStatus, errors };
 }
 
 async function mobileSmoke() {
