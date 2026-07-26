@@ -193,9 +193,9 @@ async function desktopSmoke() {
   assert.equal(pistol.bossAttackDrops, 0);
   assert.equal(pistol.worldId, 'forked-frontier');
   assert.deepEqual([pistol.actorArt, pistol.enemyArt, pistol.bossArt], [
-    'prototype-human-graybox',
-    'production-vector-enemies-v1',
-    'production-vector-liquidator-v1',
+    'production-hero-atlas',
+    'production-roster-atlas-v1',
+    'production-roster-atlas-v1',
   ]);
   assert.equal(pistol.worldArt, 'production-vector-world-v1');
   assert.deepEqual(pistol.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
@@ -277,13 +277,13 @@ async function mobileSmoke() {
   assert.equal(mobileState.bossAttackDrops, 0);
   assert.equal(mobileState.worldId, 'forked-frontier');
   assert.deepEqual([mobileState.actorArt, mobileState.enemyArt, mobileState.bossArt], [
-    'prototype-human-graybox',
-    'production-vector-enemies-v1',
-    'production-vector-liquidator-v1',
+    'production-hero-atlas',
+    'production-roster-atlas-v1',
+    'production-roster-atlas-v1',
   ]);
   assert.equal(mobileState.worldArt, 'production-vector-world-v1');
   assert.deepEqual(mobileState.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks], [50, 11, 6]);
+  assert.deepEqual([mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks], [30, 11, 6]);
   assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
   assert.equal(mobileState.districtId, 'frontier-relay');
   assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
@@ -306,7 +306,7 @@ async function worldTourSmoke() {
   const bridge = await state(page);
   await page.screenshot({ path: fileURLToPath(new URL('bridge-world.png', evidenceDir)), fullPage: true });
   assert.equal(bridge.worldId, 'forked-frontier');
-  assert.equal(bridge.actorArt, 'prototype-human-graybox');
+  assert.equal(bridge.actorArt, 'production-hero-atlas');
   assert.equal(bridge.worldArt, 'production-vector-world-v1');
   assert.deepEqual(bridge.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
   assert.deepEqual([bridge.worldParticles, bridge.worldBlockers, bridge.worldLandmarks], [50, 11, 6]);

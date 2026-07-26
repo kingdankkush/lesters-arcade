@@ -6,10 +6,12 @@ import {
   correctMuzzleAim,
   createHurtTarget,
   createProjectileState,
+  planProjectileFlightStep,
   queryProjectileCandidates,
   resolveProjectileBatch,
   resolveProjectilePath,
 } from '../apps/hmh-reboot/src/projectile-physics.mjs';
+import { createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
 function target(id, x, y, options = {}) {
   return createHurtTarget({
@@ -242,46 +244,87 @@ test('invalid projectile policy grid and duplicate target identifiers fail close
   assert.throws(() => resolveProjectilePath({ projectile: projectile('duplicate', { x: 0, y: 0 }, { x: 1, y: 1 }), targets: [target('same', 0, 0), target('same', 2, 0)] }), /duplicate target id/);
 });
 
-test('projectile flight settles downward only: ledge shots connect, uphill shots do not', () => {
+test('projectile flight snaps across authored downward terrain transitions without creating an uphill shot', () => {
   const FLIGHT_HEIGHT = 34;
-  const DESCENT_RATE = 1_200;
-  const SPEED = 900;
+  const SPEED = 1_320;
   const dt = 1 / 60;
 
-  // Mirrors the main.mjs settle rule across a terrain step at x = 100.
   function fire({ shooterGround, targetGround, targetX }) {
     const groundAt = (x) => (x < 100 ? shooterGround : targetGround);
     const enemy = target('step-enemy', targetX, 0, { z: targetGround, maxZ: 60 });
-    let x = 0;
-    let z = shooterGround + FLIGHT_HEIGHT;
-    for (let tick = 0; tick < 40 && x < 400; tick += 1) {
-      const previous = { x, y: 0, z };
-      x += SPEED * dt;
-      const restZ = groundAt(x) + FLIGHT_HEIGHT;
-      z = z <= restZ ? z : Math.max(restZ, z - DESCENT_RATE * dt);
+    let current = { x: 90, y: 0, z: shooterGround + FLIGHT_HEIGHT };
+    let previousGroundZ = shooterGround;
+    for (let tick = 0; tick < 20 && current.x < 400; tick += 1) {
+      const flight = planProjectileFlightStep({
+        previous: current,
+        velocity: { x: SPEED, y: 0 },
+        dtSeconds: dt,
+        previousGroundZ,
+        queryGround: (x) => ({ groundZ: groundAt(x) }),
+        flightHeight: FLIGHT_HEIGHT,
+      });
       const shot = createProjectileState({
-        id: 'p', ownerId: 'hero', previous, current: { x, y: 0, z },
+        id: `p-${tick}`, ownerId: 'hero', previous: flight.previous, current: flight.current,
+        heightTransition: flight.heightTransition,
         radius: 2, damage: 5, policy: { type: 'stop' },
       });
       if (resolveProjectilePath({ projectile: shot, targets: [enemy], blockers: [] }).hits.length > 0) return true;
+      current = flight.current;
+      previousGroundZ = flight.groundZ;
     }
     return false;
   }
 
-  // Firing down off authored high ground must connect with the level below.
-  assert.equal(fire({ shooterGround: 64, targetGround: 0, targetX: 250 }), true, 'ravine-overlook ledge shot');
-  assert.equal(fire({ shooterGround: 48, targetGround: 0, targetX: 250 }), true, 'mining-loader-deck shot');
-  assert.equal(fire({ shooterGround: 16, targetGround: 0, targetX: 250 }), true, 'small step down');
-  assert.equal(fire({ shooterGround: 0, targetGround: 0, targetX: 250 }), true, 'flat ground');
-  // The elevation contract still holds: high ground cannot be shot from below.
-  assert.equal(fire({ shooterGround: 0, targetGround: 64, targetX: 250 }), false, 'must not shoot up onto a ledge');
-  assert.equal(fire({ shooterGround: 0, targetGround: 48, targetX: 250 }), false, 'must not shoot up onto a deck');
+  assert.equal(fire({ shooterGround: 64, targetGround: 0, targetX: 115 }), true, 'fast shot must hit at the ravine ledge base');
+  assert.equal(fire({ shooterGround: 48, targetGround: 0, targetX: 115 }), true, 'fast shot must hit at the loader-deck base');
+  assert.equal(fire({ shooterGround: 0, targetGround: 0, targetX: 115 }), true, 'flat ground remains hittable');
+  assert.equal(fire({ shooterGround: 0, targetGround: 64, targetX: 115 }), false, 'projectiles must never rise onto a ledge');
 });
 
-test('main spawns and advances projectiles at flight height over the ground beneath them', async () => {
+test('sharp terrain drops preserve high-side and low-side contacts within one projectile step', () => {
+  const flight = planProjectileFlightStep({
+    previous: { x: 90, y: 0, z: 98 },
+    velocity: { x: 1_320, y: 0 },
+    dtSeconds: 1 / 60,
+    previousGroundZ: 64,
+    queryGround: (x) => ({ groundZ: x < 100 ? 64 : 0 }),
+    flightHeight: 34,
+  });
+  assert.ok(flight.heightTransition?.time > 0 && flight.heightTransition?.time < 1);
+  const shot = createProjectileState({
+    id: 'edge-shot', ownerId: 'hero', previous: flight.previous, current: flight.current,
+    heightTransition: flight.heightTransition, radius: 2, damage: 5, policy: { type: 'pierce', maxTargets: 2 },
+  });
+  const high = target('high-side', 96, 0, { z: 64, hurtRadius: 2 });
+  const low = target('low-side', 108, 0, { z: 0, hurtRadius: 2 });
+  assert.deepEqual(resolveProjectilePath({ projectile: shot, targets: [low, high] }).hits.map((hit) => hit.targetId), ['high-side', 'low-side']);
+});
+
+test('the real ravine overlook and mining loader deck expose deterministic projectile drop boundaries', () => {
+  const queryGround = createLevelOneGroundQuery();
+  const cases = [
+    { id: 'ravine-overlook', previous: { x: 3_000, y: 1_640, z: 98 }, groundZ: 64 },
+    { id: 'mining-loader-deck', previous: { x: 9_200, y: 1_810, z: 82 }, groundZ: 48 },
+  ];
+  const steps = cases.map((entry) => planProjectileFlightStep({
+    previous: entry.previous,
+    velocity: { x: 0, y: 1_320 },
+    dtSeconds: 1 / 60,
+    previousGroundZ: entry.groundZ,
+    queryGround,
+    flightHeight: 34,
+  }));
+  for (const step of steps) {
+    assert.equal(step.groundZ, 0);
+    assert.equal(step.current.z, 34);
+    assert.ok(step.heightTransition?.time > 0 && step.heightTransition?.time < 1);
+  }
+  assert.equal(steps[0].heightTransition.time, steps[1].heightTransition.time);
+});
+
+test('main routes projectile collision through the ground-transition planner', async () => {
   const { readFile } = await import('node:fs/promises');
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /const restZ = queryGround\(nextX, nextY\)\.groundZ \+ PROJECTILE_FLIGHT_HEIGHT/, 'projectile flight must settle toward ground height');
-  assert.match(source, /shot\.z <= restZ\s*\?\s*shot\.z/, 'projectiles must never rise toward a higher ground band');
-  assert.match(source, /PROJECTILE_DESCENT_RATE/, 'the descent must be rate-bounded rather than a vertical teleport');
+  assert.match(source, /planProjectileFlightStep\(/);
+  assert.match(source, /heightTransition:\s*flight\.heightTransition/);
 });

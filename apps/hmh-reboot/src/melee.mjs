@@ -103,6 +103,7 @@ export const HMH_MELEE_DEFINITION = freezeDeep({
   sweepRadius: 18,
   minZ: 4,
   maxZ: 60,
+  maxDownwardDrop: 64,
   knockback: 18,
 });
 
@@ -170,6 +171,7 @@ export function resolveMeleeAttack({
   direction,
   targets = [],
   blockers = [],
+  downwardDropDirection = null,
   definition = HMH_MELEE_DEFINITION,
 } = {}) {
   if (typeof attackId !== 'string' || !attackId) throw new TypeError('attackId must be a non-empty string');
@@ -177,6 +179,10 @@ export function resolveMeleeAttack({
   if (!Array.isArray(targets) || !Array.isArray(blockers)) throw new TypeError('targets and blockers must be arrays');
   const start = point3(origin, 'melee origin');
   const forward = normalize(direction);
+  const authoredDrop = downwardDropDirection == null ? null : normalize(downwardDropDirection);
+  const downwardReach = authoredDrop && dot(forward, authoredDrop) > EPSILON
+    ? positive(definition.maxDownwardDrop, 'melee maxDownwardDrop')
+    : 0;
   const end = { x: start.x + forward.x * definition.range, y: start.y + forward.y * definition.range };
   const attackStart = { x: start.x, y: start.y };
   const seen = new Set();
@@ -207,7 +213,7 @@ export function resolveMeleeAttack({
       rejections.push(freezeDeep({ targetId: target.id, reason: !inRange ? 'range' : !inArc ? 'angle' : 'volume' }));
       continue;
     }
-    const attackMinZ = start.z + definition.minZ;
+    const attackMinZ = start.z + definition.minZ - downwardReach;
     const attackMaxZ = start.z + definition.maxZ;
     const targetMinZ = contactGround.z + target.minZ;
     const targetMaxZ = contactGround.z + target.maxZ;
@@ -254,6 +260,7 @@ export function stepMeleeState(state, {
   direction,
   targets = [],
   blockers = [],
+  downwardDropDirection = null,
 } = {}) {
   if (!Number.isInteger(tick) || tick < 0) throw new TypeError('tick must be a non-negative integer');
   if (tick <= state.lastTick) throw new TypeError('tick must be monotonic');
@@ -269,6 +276,7 @@ export function stepMeleeState(state, {
     direction,
     targets,
     blockers,
+    downwardDropDirection,
   });
   return freezeDeep({ tick, attacked: true, attack, hits: attack.hits, rejections: attack.rejections });
 }

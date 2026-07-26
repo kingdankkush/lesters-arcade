@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 007
 
 Date: 2026-07-26
-Status: `LOCAL CERTIFIED · COMMIT PENDING · PRODUCTION UNTOUCHED`
+Status: `LOCAL CERTIFIED · COMMITTED 07e884ef · PRODUCTION UNTOUCHED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `807bc9434aefec1ab89623128b12777bfe73ab55`
 
@@ -124,7 +124,7 @@ The reboot visual harness now waits for hero, roster, and prop readiness and cap
 - Browser retained memory is now measured directly by the reboot soak with warmed, GC-stabilized steady-state windows; the final candidate remains within the bounded 64 MiB/150% gate and introduces no unbounded visual-facing cache.
 - Firefox and WebKit are not locally available; Chrome is the certified browser for this candidate.
 - Web3 live readiness remains blocked at on-chain registry/economy approval and does not represent real-wallet hardened E2E readiness.
-- Carried gameplay/world debt not in this art slice remains tracked separately: melee height-lock, ledge-base projectile dead zone, route clipping, and ground-detail-over-road cleanup.
+- The melee height-lock and ledge-base projectile dead zone were resolved and certified in Cycle 008. Route clipping and ground-detail-over-road/water cleanup remain tracked authored-world debt.
 
 ## Deployment state
 

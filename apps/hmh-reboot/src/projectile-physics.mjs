@@ -1,5 +1,7 @@
 const EPSILON = 1e-9;
 const CONTACT_EPSILON = 1e-6;
+const SHARP_GROUND_DROP = 8;
+const GROUND_TRANSITION_SEARCH_STEPS = 16;
 const PROJECTILE_POLICIES = new Set(['stop', 'pierce', 'ricochet', 'splash', 'pellet', 'hitscan']);
 
 function finite(value, name) {
@@ -29,6 +31,13 @@ function point3(value, name) {
 
 function point2(value, name) {
   return Object.freeze({ x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) });
+}
+
+function validateHeightTransition(value) {
+  if (value == null) return null;
+  const time = finite(value.time, 'heightTransition.time');
+  if (time <= EPSILON || time >= 1 - EPSILON) throw new TypeError('heightTransition.time must be inside the projectile step');
+  return Object.freeze({ time });
 }
 
 function normalize(vector, fallbackId = 'vector') {
@@ -111,7 +120,7 @@ export function createHurtTarget({
   });
 }
 
-export function createProjectileState({ id, ownerId, previous, current, radius = 0, damage, policy = { type: 'stop' } } = {}) {
+export function createProjectileState({ id, ownerId, previous, current, heightTransition = null, radius = 0, damage, policy = { type: 'stop' } } = {}) {
   if (typeof id !== 'string' || !id) throw new TypeError('projectile id must be a non-empty string');
   if (typeof ownerId !== 'string' || !ownerId) throw new TypeError('projectile ownerId must be a non-empty string');
   return Object.freeze({
@@ -119,9 +128,57 @@ export function createProjectileState({ id, ownerId, previous, current, radius =
     ownerId,
     previous: point3(previous, 'projectile.previous'),
     current: point3(current, 'projectile.current'),
+    heightTransition: validateHeightTransition(heightTransition),
     radius: nonNegative(radius, 'projectile.radius'),
     damage: positive(damage, 'projectile.damage'),
     policy: validatePolicy(policy),
+  });
+}
+
+export function planProjectileFlightStep({
+  previous,
+  velocity,
+  dtSeconds,
+  previousGroundZ,
+  queryGround,
+  flightHeight,
+} = {}) {
+  const start = point3(previous, 'projectile flight previous');
+  const speed = point2(velocity, 'projectile flight velocity');
+  const dt = positive(dtSeconds, 'projectile flight dtSeconds');
+  const groundZ = finite(previousGroundZ, 'projectile flight previousGroundZ');
+  const height = positive(flightHeight, 'projectile flight flightHeight');
+  if (typeof queryGround !== 'function') throw new TypeError('projectile flight queryGround must be a function');
+  const currentX = start.x + speed.x * dt;
+  const currentY = start.y + speed.y * dt;
+  const nextGroundZ = finite(queryGround(currentX, currentY)?.groundZ, 'projectile flight groundZ');
+  const restZ = nextGroundZ + height;
+  const currentZ = nextGroundZ < groundZ - EPSILON ? Math.min(start.z, restZ) : start.z;
+  let heightTransition = null;
+
+  // A sharp authored ledge is a discontinuous surface, not a long airborne
+  // ramp. Locate that boundary deterministically so collision remains high on
+  // the platform and low immediately after the edge. Small ramp/step changes
+  // keep ordinary linear interpolation; upward terrain never pulls a shot up.
+  if (groundZ - nextGroundZ > SHARP_GROUND_DROP + EPSILON && currentZ < start.z - EPSILON) {
+    let low = 0;
+    let high = 1;
+    for (let index = 0; index < GROUND_TRANSITION_SEARCH_STEPS; index += 1) {
+      const time = (low + high) * 0.5;
+      const sampleX = start.x + (currentX - start.x) * time;
+      const sampleY = start.y + (currentY - start.y) * time;
+      const sampleGroundZ = finite(queryGround(sampleX, sampleY)?.groundZ, 'projectile flight transition groundZ');
+      if (sampleGroundZ < groundZ - SHARP_GROUND_DROP - EPSILON) high = time;
+      else low = time;
+    }
+    if (high > EPSILON && high < 1 - EPSILON) heightTransition = Object.freeze({ time: high });
+  }
+
+  return Object.freeze({
+    previous: start,
+    current: Object.freeze({ x: currentX, y: currentY, z: currentZ }),
+    groundZ: nextGroundZ,
+    heightTransition,
   });
 }
 
@@ -298,6 +355,11 @@ function lerp(first, second, time) {
   return first + (second - first) * time;
 }
 
+function projectileHeightAt(projectile, time) {
+  if (projectile.heightTransition) return time < projectile.heightTransition.time ? projectile.previous.z : projectile.current.z;
+  return lerp(projectile.previous.z, projectile.current.z, time);
+}
+
 function targetShapeAt(target, time) {
   const ground = {
     x: lerp(target.previousGround.x, target.currentGround.x, time),
@@ -333,7 +395,7 @@ function movingTargetHit(projectile, target, timeOffset = 0, timeScale = 1, segm
   const hit = sweepShape(relativeStart, relativeDelta, projectile.radius, localShape, target.id);
   if (!hit) return null;
   const globalTime = timeOffset + hit.time * timeScale;
-  const projectileZ = lerp(projectile.previous.z, projectile.current.z, globalTime);
+  const projectileZ = projectileHeightAt(projectile, globalTime);
   const targetGroundZ = lerp(target.previousGround.z, target.currentGround.z, globalTime);
   if (projectileZ + projectile.radius <= targetGroundZ + target.minZ + EPSILON
     || projectileZ - projectile.radius >= targetGroundZ + target.maxZ - EPSILON) return null;
@@ -359,7 +421,7 @@ function coverHit(projectile, blocker, timeOffset = 0, timeScale = 1, segmentSta
   const hit = sweepShape(start, delta, projectile.radius, blocker.shape, blocker.id);
   if (!hit) return null;
   const globalTime = timeOffset + hit.time * timeScale;
-  const z = lerp(projectile.previous.z, projectile.current.z, globalTime);
+  const z = projectileHeightAt(projectile, globalTime);
   if (z + projectile.radius <= blocker.minZ + EPSILON || z - projectile.radius >= blocker.maxZ - EPSILON) return null;
   return {
     kind: 'cover',

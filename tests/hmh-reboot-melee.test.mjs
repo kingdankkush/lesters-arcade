@@ -92,6 +92,39 @@ test('authored visible cover and elevation bands make melee legality agree with 
   assert.equal(elevated.rejections[0].reason, 'height');
 });
 
+test('authored one-way ledges permit only a bounded downward melee strike through the drop direction', () => {
+  const lowTarget = target('ledge-base', { previous: { x: 40, y: 0, z: 0 } });
+  const downward = attack({
+    origin: { x: 0, y: 0, z: 64 },
+    targets: [lowTarget],
+    downwardDropDirection: { x: 1, y: 0 },
+  });
+  assert.deepEqual(downward.hits.map((hit) => hit.targetId), ['ledge-base']);
+
+  const noAuthoredDrop = attack({ origin: { x: 0, y: 0, z: 64 }, targets: [lowTarget] });
+  assert.equal(noAuthoredDrop.rejections[0].reason, 'height');
+
+  const againstDrop = attack({
+    origin: { x: 0, y: 0, z: 64 },
+    targets: [lowTarget],
+    downwardDropDirection: { x: -1, y: 0 },
+  });
+  assert.equal(againstDrop.rejections[0].reason, 'height');
+
+  const uphill = attack({
+    origin: { x: 0, y: 0, z: 0 },
+    targets: [target('high-ground', { previous: { x: 40, y: 0, z: 64 } })],
+    downwardDropDirection: { x: 1, y: 0 },
+  });
+  assert.equal(uphill.rejections[0].reason, 'height');
+});
+
+test('main derives downward melee permission from the current authored surface', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /downwardDropDirection:\s*lastGround\.oneWayDrop/);
+});
+
 test('melee cooldown is deterministic and emits combat-ready hit intents only on legal attack ticks', () => {
   const state = createMeleeState();
   const args = {

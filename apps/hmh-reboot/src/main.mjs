@@ -68,6 +68,7 @@ import {
   UniformHurtboxGrid,
   createHurtTarget,
   createProjectileState,
+  planProjectileFlightStep,
   resolveProjectileBatch,
 } from './projectile-physics.mjs';
 import { DeterministicSimulation } from './simulation.mjs';
@@ -148,10 +149,6 @@ const LIQUIDATOR_THREAT_COST = 48;
 // Bullets fly at chest height above whatever ground is beneath them, so firing
 // from an authored ledge still connects with targets on the level below.
 const PROJECTILE_FLIGHT_HEIGHT = 34;
-// Downward settle rate in world units per second. Fast enough that a shot off
-// an authored ledge reaches the lower band within a few ticks, slow enough
-// that the tracer reads as a descent rather than a vertical teleport.
-const PROJECTILE_DESCENT_RATE = 1_200;
 
 // Projection-only helper: a stable 0..1 value from a string key. Combat spark
 // and debris fans use it so effects are identical on replay without touching
@@ -1773,24 +1770,21 @@ async function boot() {
           y: shot.previousY ?? shot.y,
           z: shot.previousZ ?? shot.z,
         });
-        const nextX = shot.x + shot.vx * dtSeconds;
-        const nextY = shot.y + shot.vy * dtSeconds;
-        // A bullet settles toward chest height over the ground beneath it, but
-        // only ever downward and at a bounded rate. Descending fixes the ledge
-        // lockout (a constant shooter-relative z sailed over every target on
-        // lower ground, because hurtbox bands are relative to the target's own
-        // ground). Never rising preserves the elevation contract: you still
-        // cannot shoot a target holding high ground from below.
-        const restZ = queryGround(nextX, nextY).groundZ + PROJECTILE_FLIGHT_HEIGHT;
-        const nextZ = shot.z <= restZ
-          ? shot.z
-          : Math.max(restZ, shot.z - PROJECTILE_DESCENT_RATE * dtSeconds);
-        const current = Object.freeze({ x: nextX, y: nextY, z: nextZ });
+        const flight = planProjectileFlightStep({
+          previous,
+          velocity: { x: shot.vx, y: shot.vy },
+          dtSeconds,
+          previousGroundZ: shot.groundZ ?? queryGround(previous.x, previous.y).groundZ,
+          queryGround,
+          flightHeight: PROJECTILE_FLIGHT_HEIGHT,
+        });
+        const current = flight.current;
         const state = createProjectileState({
           id: shot.id,
           ownerId: 'player',
           previous: previous,
           current: current,
+          heightTransition: flight.heightTransition,
           radius: shot.radius,
           damage: shot.damage,
           policy: shot.policy,
@@ -1803,6 +1797,7 @@ async function boot() {
           x: current.x,
           y: current.y,
           z: current.z,
+          groundZ: flight.groundZ,
           remainingRange: shot.remainingRange - Math.hypot(current.x - previous.x, current.y - previous.y),
           state,
         };
@@ -1921,6 +1916,7 @@ async function boot() {
             x: muzzle.x,
             y: muzzle.y,
             z: muzzle.z,
+            groundZ: actor.groundZ,
             vx: shot.direction.x * shot.speed,
             vy: shot.direction.y * shot.speed,
             radius: shot.radius,
@@ -1939,6 +1935,7 @@ async function boot() {
         sourceGroundZ: actor.groundZ,
         targets: meleeTargets,
         blockers: WORLD_BLOCKERS,
+        downwardDropDirection: lastGround.oneWayDrop,
       });
       combatHitIntents.push(...meleeFrame.hits);
       if (meleeFrame.attacked) {

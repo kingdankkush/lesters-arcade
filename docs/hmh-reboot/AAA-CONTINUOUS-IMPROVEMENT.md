@@ -45,3 +45,21 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Preview verification: `PREVIEW-VERIFICATION-AAA-CYCLE-002.md`
   - RED evidence: `RED-EVIDENCE-AAA-CYCLE-002.md`
   - Memory audit: `MEMORY-AUDIT-AAA-CYCLE-002.md`
+- [x] Cycle 003: boundary-safe collision depenetration and permanent parent-portal E2E harness
+  - Status: local certified; production unchanged
+  - Cycle ledger: `cycles/CYCLE-003.md`
+- [x] Cycle 004: combat physics, enemy/boss integrity, progression depth, and deterministic audio/animation readability
+  - Status: local certified; production unchanged
+  - Cycle ledger: `cycles/CYCLE-004.md`
+- [x] Cycle 005: certified production hero projection, combat feedback, world materials, and repaired visual regression
+  - Status: local certified; production unchanged
+  - Cycle ledger: `cycles/CYCLE-005.md`
+- [x] Cycle 006: Blender-authored enemy and Liquidator roster with nonfatal runtime fallbacks
+  - Status: local certified; production unchanged
+  - Cycle ledger: `cycles/CYCLE-006.md`
+- [x] Cycle 007: complete authored hero/enemy/prop/weapon/POI presentation and deterministic runtime integration
+  - Status: committed locally as `07e884ef`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-007.md`
+- [x] Cycle 008: truthful ledge projectile/melee combat and repaired production-art browser smoke
+  - Status: local certified; commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-008.md`
