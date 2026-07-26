@@ -134,21 +134,37 @@ test('opt-in Blender pilot composes render state without replacing the default g
   assert.doesNotMatch(source, /pipelinePilotEnabled[\s\S]{0,120}(?:collision|damage|score|wallet|settlement)\s*=/i);
 });
 
-test('opt-in production hero pilot is projection-only and leaves graybox as the default path', async () => {
+test('the production hero atlas is the projection-only shipped identity with a graybox fallback', async () => {
   const source = await read('../apps/hmh-reboot/src/main.mjs');
   const atlasSource = await read('../apps/hmh-reboot/src/production-hero-atlas.mjs');
   assert.match(source, /productionHeroAsset/);
   assert.match(source, /PRODUCTION_HERO_RUNTIME_SCALE \* camera\.zoom/);
   assert.match(source, /createProductionHeroAtlasIndex/);
   assert.match(source, /createProductionHeroDisplay/);
-  assert.match(source, /runtimeParams\.get\('productionPilot'\) === '1'/);
+  // The production hero atlas is the shipped default identity; `?graybox=1`
+  // keeps the prototype available for regression work only.
+  assert.match(source, /const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled/);
+  assert.match(source, /runtimeParams\.get\('graybox'\) === '1'/);
   assert.match(source, /Object\.hasOwn\(PRODUCTION_HERO_ASSETS, requestedProductionHeroId\)/);
-  assert.match(source, /fetch\(productionHeroSelection\.metadataUrl/);
-  assert.match(source, /Assets\.load\(productionHeroSelection\.imageUrl\)/);
-  assert.match(source, /createProductionHeroAtlasIndex\(metadata, productionHeroSelection\)/);
+  // The atlas is loaded for whichever actor the session requests, not a
+  // boot-time URL default, so a player picking any hero gets that hero.
+  assert.match(source, /fetch\(selection\.metadataUrl/);
+  assert.match(source, /Assets\.load\(selection\.imageUrl\)/);
+  assert.match(source, /createProductionHeroAtlasIndex\(metadata, selection\)/);
   assert.match(source, /productionHeroDisplay\.applyPose\(\{[\s\S]*simulationTick:[\s\S]*actionTick:[\s\S]*locomotion:[\s\S]*legDirection:[\s\S]*torsoDirection:[\s\S]*action:/);
-  assert.match(source, /productionHeroDisplay\?\.container \?\? mannequinDisplay\?\.container \?\? marker/);
-  assert.match(source, /stageElement\.dataset\.actorArtSource = productionPilotEnabled \? 'production-blender-atlas-v1'/);
+  // The atlas loads asynchronously so the shell can signal READY before the
+  // ~650 KB texture decodes; the prototype renders until the swap lands.
+  assert.match(source, /let actorVisual = mannequinDisplay\?\.container \?\? marker/);
+  assert.match(source, /ensureProductionHeroAtlas\(sessionHeroSelection\.actorId\)/);
+  assert.match(source, /loadProductionHeroAtlas\(selection\)\.then\(/);
+  // Art selection must never abort a session: this runs inside the bridge
+  // onInit handler and throwing would skip game:ready.
+  assert.ok(!/Production projection actor mismatch/.test(source));
+  assert.match(source, /world\.addChildAt\(actorVisual, slot\)/);
+  // Art telemetry must reflect what rendered, so a fallback cannot be
+  // reported as production art.
+  assert.match(source, /stageElement\.dataset\.actorArtSource = productionHeroDisplay \? 'production-blender-atlas-v1'/);
+  assert.match(source, /dataset\.actorArtFallbackReason/);
   assert.match(atlasSource, /runtimeAuthority !== 'projection-only'/);
   assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
   assert.doesNotMatch(source, /productionPilotEnabled[\s\S]{0,160}(?:collision|damage|score|wallet|settlement)\s*=/i);

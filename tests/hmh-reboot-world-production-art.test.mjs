@@ -93,7 +93,9 @@ test('particles and shader states are deterministic, bounded, and tick-driven on
 test('world art contract is production, layered, and never gains gameplay authority', () => {
   assert.equal(WORLD_PRODUCTION_ART.classification, 'production-art');
   assert.equal(WORLD_PRODUCTION_ART.runtimeAuthority, 'projection-only');
-  assert.deepEqual(WORLD_PRODUCTION_ART.layers, ['terrain', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting']);
+  // `vignette` is a dedicated normal-blended layer above the additive
+  // lighting pass; drawing the edge darkening into `lighting` lightened it.
+  assert.deepEqual(WORLD_PRODUCTION_ART.layers, ['terrain', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']);
   assert.deepEqual(WORLD_PRODUCTION_ART.shaderIds, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
   const source = read('apps/hmh-reboot/src/main.mjs');
   assert.match(source, /createWorldProductionLayers/);

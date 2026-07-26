@@ -116,6 +116,16 @@ test('portal sends exact selected canonical actor id and reboot uses it only for
   assert.match(portalSource, /function hmhRebootHeroId\(\)[\s\S]*HMH_REBOOT_HERO_IDS\.includes\(combat\.characterId\)[\s\S]*combat\.characterId/);
   assert.match(portalSource, /heroId: hmhRebootHeroId\(\)/);
   assert.match(rebootSource, /const sessionHeroSelection = productionHeroAsset\(payload\.heroId\)/);
-  assert.match(rebootSource, /productionHeroDisplay && sessionHeroSelection\.actorId !== productionHeroSelection\.actorId/);
+  // The reboot loads the atlas for whichever actor the session names. It used
+  // to throw when the session hero differed from the URL default, which ran
+  // inside the bridge onInit handler and would strand the parent by skipping
+  // game:ready — so every hero except lit-commando broke the portal run.
+  assert.match(rebootSource, /ensureProductionHeroAtlas\(sessionHeroSelection\.actorId\)/);
+  assert.doesNotMatch(rebootSource, /Production projection actor mismatch/);
+  // Hero identity stays projection-only: it selects art and nothing else.
   assert.doesNotMatch(rebootSource, /payload\.heroId\s*=|sessionPayload\.heroId\s*=/);
+  const ensureStart = rebootSource.indexOf('const ensureProductionHeroAtlas');
+  const ensureEnd = rebootSource.indexOf('};', rebootSource.indexOf('.catch(', ensureStart));
+  const ensureBlock = rebootSource.slice(ensureStart, ensureEnd);
+  assert.doesNotMatch(ensureBlock, /collision|damage|score|health|seed|wallet|settlement/i);
 });

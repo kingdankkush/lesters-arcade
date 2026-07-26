@@ -220,6 +220,12 @@ function makeDisplay({ kitData, actorId, elite = false, scale = 1, ContainerClas
     poseLayer.y = pose.bob * scale;
     poseLayer.rotation = pose.rotation;
     poseLayer.alpha = pose.alpha;
+    // Face the movement direction. pose.direction was resolved but never
+    // applied, so every enemy permanently faced screen-right and a charging
+    // body was indistinguishable from a retreating one. Octants 3-5 are the
+    // west-facing half; all identity art is drawn in local space, so a
+    // horizontal flip is safe and changes no geometry.
+    poseLayer.scale.x = pose.direction >= 3 && pose.direction <= 5 ? -1 : 1;
     parts.leftLeg.rotation = pose.stride;
     parts.rightLeg.rotation = -pose.stride;
     parts.leftArm.rotation = state === 'attack' ? -pose.recoil : state === 'tell' ? -0.18 : 0;

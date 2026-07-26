@@ -53,7 +53,9 @@ export const INTERACTION_PRODUCTION_KITS = freezeDeep({
 
 export const WORLD_PRODUCTION_ART = artKit({
   id: 'production-vector-world-v1',
-  layers: Object.freeze(['terrain', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting']),
+  // `vignette` is normal-blended and sits above the additive lighting pass so
+  // an edge darkening actually darkens.
+  layers: Object.freeze(['terrain', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']),
   shaderIds: Object.freeze(['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']),
 });
 
@@ -113,6 +115,171 @@ export function resolveWorldParticleField({ id, x, y, tick, count, radius }) {
   }));
 }
 
+// Visible world-space window for a camera, padded by one tile. Every material
+// pass iterates only these cells, so cost tracks screen area rather than the
+// 12,000 x 4,800 world.
+function visibleTileRange({ area, camera, view, cell }) {
+  const halfWidth = view.width / (2 * camera.zoom);
+  const halfHeight = view.height / (2 * camera.zoom);
+  return {
+    startCol: Math.floor(Math.max(area.minX, camera.x - halfWidth - cell) / cell),
+    endCol: Math.ceil(Math.min(area.maxX, camera.x + halfWidth + cell) / cell),
+    startRow: Math.floor(Math.max(area.minY, camera.y - halfHeight - cell) / cell),
+    endRow: Math.ceil(Math.min(area.maxY, camera.y + halfHeight + cell) / cell),
+  };
+}
+
+function insideArea(area, x, y) {
+  return x >= area.minX && x <= area.maxX && y >= area.minY && y <= area.maxY;
+}
+
+// Per-district ground motifs. Each district names its material layers in
+// DISTRICT_PRODUCTION_MATERIALS (packed-earth / relay-traces / signal-pads and
+// so on); these draw them so a district reads as a place rather than a colour
+// field. All marks are seeded from world cell indices, so the pattern is
+// deterministic, world-locked, and identical on replay.
+const DISTRICT_MOTIF_RENDERERS = Object.freeze({
+  // Orthogonal circuit traces with solder nodes.
+  'frontier-relay': ({ details, x, y, seed, zoom, color, span }) => {
+    const run = span * (0.5 + ((seed >>> 4) & 7) / 16);
+    const horizontal = ((seed >>> 9) & 1) === 0;
+    const endX = horizontal ? x + run : x;
+    const endY = horizontal ? y : y + run;
+    details.moveTo(x, y).lineTo(endX, endY).stroke({ color, width: Math.max(1, 1.6 * zoom), alpha: 0.16 });
+    details.circle(endX, endY, Math.max(1.2, 2.4 * zoom)).fill({ color, alpha: 0.22 });
+    if (((seed >>> 11) & 3) === 0) {
+      details.moveTo(endX, endY).lineTo(endX + (horizontal ? 0 : run * 0.4), endY + (horizontal ? run * 0.4 : 0))
+        .stroke({ color, width: Math.max(1, 1.2 * zoom), alpha: 0.12 });
+    }
+  },
+  // Angular fracture strata.
+  'rugpull-ravine': ({ details, x, y, seed, zoom, color, span }) => {
+    const length = span * (0.55 + ((seed >>> 5) & 7) / 14);
+    const lean = (((seed >>> 8) & 15) / 15 - 0.5) * 0.8;
+    const midX = x + length * 0.45 + lean * span * 0.2;
+    details.moveTo(x, y)
+      .lineTo(midX, y + length * 0.42)
+      .lineTo(x + length * lean * 0.6, y + length)
+      .stroke({ color, width: Math.max(1, 2 * zoom), alpha: 0.15 });
+  },
+  // Flow ripples running with the crossing.
+  'liquidity-crossing': ({ details, x, y, seed, zoom, color, span }) => {
+    const width = span * (0.6 + ((seed >>> 6) & 7) / 16);
+    for (let ripple = 0; ripple < 2; ripple += 1) {
+      const offsetY = y + ripple * span * 0.18;
+      details.moveTo(x, offsetY)
+        .bezierCurveTo(x + width * 0.3, offsetY - span * 0.07, x + width * 0.7, offsetY + span * 0.07, x + width, offsetY)
+        .stroke({ color, width: Math.max(1, 1.5 * zoom), alpha: 0.13 - ripple * 0.03 });
+    }
+  },
+  // Concentric root rings.
+  hashwood: ({ details, x, y, seed, zoom, color, span }) => {
+    const rings = 2 + ((seed >>> 7) & 1);
+    for (let ring = 0; ring < rings; ring += 1) {
+      const radius = span * (0.12 + ring * 0.1);
+      details.circle(x, y, radius * zoom)
+        .stroke({ color, width: Math.max(1, 1.4 * zoom), alpha: 0.14 - ring * 0.035 });
+    }
+  },
+  // Ore grid with occasional hazard chevrons.
+  'mining-camp': ({ details, x, y, seed, zoom, color, span }) => {
+    const size = span * (0.3 + ((seed >>> 6) & 3) / 12);
+    details.rect(x, y, size, size * 0.62).stroke({ color, width: Math.max(1, 1.4 * zoom), alpha: 0.14 });
+    if (((seed >>> 12) & 3) === 0) {
+      for (let chevron = 0; chevron < 3; chevron += 1) {
+        const chevronY = y + size * 0.18 * chevron;
+        details.moveTo(x, chevronY).lineTo(x + size * 0.22, chevronY + size * 0.16).lineTo(x + size * 0.44, chevronY)
+          .stroke({ color, width: Math.max(1, 1.6 * zoom), alpha: 0.18 });
+      }
+    }
+  },
+  // Diagonal margin-call warning banding.
+  'liquidation-yard': ({ details, x, y, seed, zoom, color, span }) => {
+    const bandLength = span * (0.5 + ((seed >>> 6) & 7) / 14);
+    const bands = 2 + ((seed >>> 10) & 1);
+    for (let band = 0; band < bands; band += 1) {
+      const offset = band * span * 0.14;
+      details.moveTo(x + offset, y)
+        .lineTo(x + offset - bandLength * 0.5, y + bandLength)
+        .stroke({ color, width: Math.max(1, 2.2 * zoom), alpha: 0.13 });
+    }
+  },
+});
+
+export function drawDistrictMaterial({ layers, district, kit, camera, view, project, tick }) {
+  const details = layers.details;
+  const zoom = camera.zoom;
+
+  // Pass 1 — macro tonal patches. Large soft blocks of a slightly shifted
+  // ground tone so the base plane stops reading as one flat colour.
+  const MACRO_CELL = 760;
+  const macro = visibleTileRange({ area: district.area, camera, view, cell: MACRO_CELL });
+  for (let col = macro.startCol; col <= macro.endCol; col += 1) {
+    for (let row = macro.startRow; row <= macro.endRow; row += 1) {
+      const seed = fnv1a(`${district.id}:macro:${col}:${row}`);
+      const centreX = col * MACRO_CELL + ((seed & 0xff) / 255) * MACRO_CELL;
+      const centreY = row * MACRO_CELL + (((seed >>> 8) & 0xff) / 255) * MACRO_CELL;
+      if (!insideArea(district.area, centreX, centreY)) continue;
+      const screen = project({ x: centreX, y: centreY, z: 0 });
+      const radiusWorld = MACRO_CELL * (0.36 + ((seed >>> 16) & 15) / 40);
+      const radius = radiusWorld * zoom;
+      if (screen.x + radius < 0 || screen.x - radius > view.width) continue;
+      if (screen.y + radius < 0 || screen.y - radius > view.height) continue;
+      const lighter = ((seed >>> 20) & 1) === 0;
+      layers.terrain.circle(screen.x, screen.y, radius)
+        .fill({
+          color: lighter ? mixColor(kit.groundColor, kit.detailColor, 0.16) : mixColor(kit.groundColor, 0x000000, 0.2),
+          alpha: 0.3,
+        });
+    }
+  }
+
+  // Pass 2 — the district motif.
+  const MOTIF_CELL = 300;
+  const motif = DISTRICT_MOTIF_RENDERERS[district.id];
+  if (motif) {
+    const range = visibleTileRange({ area: district.area, camera, view, cell: MOTIF_CELL });
+    for (let col = range.startCol; col <= range.endCol; col += 1) {
+      for (let row = range.startRow; row <= range.endRow; row += 1) {
+        const seed = fnv1a(`${district.id}:motif:${col}:${row}`);
+        if ((seed & 7) === 0) continue; // leave breathing room
+        const worldX = col * MOTIF_CELL + ((seed & 0xff) / 255) * MOTIF_CELL * 0.8;
+        const worldY = row * MOTIF_CELL + (((seed >>> 8) & 0xff) / 255) * MOTIF_CELL * 0.8;
+        if (!insideArea(district.area, worldX, worldY)) continue;
+        const screen = project({ x: worldX, y: worldY, z: 0 });
+        const span = MOTIF_CELL * 0.55 * zoom;
+        if (screen.x + span < 0 || screen.x - span > view.width) continue;
+        if (screen.y + span < 0 || screen.y - span > view.height) continue;
+        motif({ details, x: screen.x, y: screen.y, seed, zoom, color: kit.detailColor, span, tick });
+      }
+    }
+  }
+
+  // Pass 3 — micro scatter: fine grain so the surface holds up close in.
+  const MICRO_CELL = 150;
+  const micro = visibleTileRange({ area: district.area, camera, view, cell: MICRO_CELL });
+  const grainWidth = Math.max(1, zoom * 1.4);
+  for (let col = micro.startCol; col <= micro.endCol; col += 1) {
+    for (let row = micro.startRow; row <= micro.endRow; row += 1) {
+      const seed = fnv1a(`${district.id}:micro:${col}:${row}`);
+      if ((seed & 1) === 0) continue;
+      const worldX = col * MICRO_CELL + ((seed & 0xff) / 255) * MICRO_CELL;
+      const worldY = row * MICRO_CELL + (((seed >>> 8) & 0xff) / 255) * MICRO_CELL;
+      if (!insideArea(district.area, worldX, worldY)) continue;
+      const screen = project({ x: worldX, y: worldY, z: 0 });
+      if (screen.x < -MICRO_CELL || screen.x > view.width + MICRO_CELL) continue;
+      if (screen.y < -MICRO_CELL || screen.y > view.height + MICRO_CELL) continue;
+      const grain = (2 + ((seed >>> 18) & 3)) * zoom;
+      if (((seed >>> 21) & 1) === 0) {
+        details.circle(screen.x, screen.y, grain * 0.5).fill({ color: kit.detailColor, alpha: 0.075 });
+      } else {
+        details.moveTo(screen.x, screen.y).lineTo(screen.x + grain, screen.y + grain * 0.5)
+          .stroke({ color: kit.detailColor, width: grainWidth, alpha: 0.07 });
+      }
+    }
+  }
+}
+
 export function createWorldProductionLayers({ ContainerClass, GraphicsClass }) {
   if (typeof ContainerClass !== 'function' || typeof GraphicsClass !== 'function') throw new TypeError('Pixi classes are required');
   const root = new ContainerClass();
@@ -162,15 +329,48 @@ function screenBoundsVisible(points, view, margin) {
 }
 
 function drawRoute(layers, points, route, kit) {
-  layers.routes.moveTo(points[0].x, points[0].y);
-  for (const point of points.slice(1)) layers.routes.lineTo(point.x, point.y);
-  layers.routes.stroke({ color: 0x130f13, width: (route.width + 32) * points.zoom, alpha: 0.88, cap: 'round', join: 'round' });
-  layers.routes.moveTo(points[0].x, points[0].y);
-  for (const point of points.slice(1)) layers.routes.lineTo(point.x, point.y);
-  layers.routes.stroke({ color: kit.routeColor, width: route.width * points.zoom, alpha: route.kind === 'main' ? 0.96 : 0.82, cap: 'round', join: 'round' });
-  layers.routes.moveTo(points[0].x, points[0].y);
-  for (const point of points.slice(1)) layers.routes.lineTo(point.x, point.y);
-  layers.routes.stroke({ color: kit.detailColor, width: Math.max(1, 3 * points.zoom), alpha: route.kind === 'main' ? 0.38 : 0.22 });
+  const zoom = points.zoom;
+  const trace = () => {
+    layers.routes.moveTo(points[0].x, points[0].y);
+    for (const point of points.slice(1)) layers.routes.lineTo(point.x, point.y);
+  };
+  // Roads used to be a flat slab between two hard black borders. They are now
+  // built up in passes: a soft shoulder that fades into the ground, a worn
+  // verge, the surface, a lighter centre wear band, and dashed lane marks —
+  // so a route reads as a travelled surface rather than a coloured shape.
+  trace();
+  layers.routes.stroke({ color: 0x130f13, width: (route.width + 40) * zoom, alpha: 0.32, cap: 'round', join: 'round' });
+  trace();
+  layers.routes.stroke({ color: 0x130f13, width: (route.width + 22) * zoom, alpha: 0.72, cap: 'round', join: 'round' });
+  trace();
+  layers.routes.stroke({ color: mixColor(kit.routeColor, 0x000000, 0.34), width: (route.width + 8) * zoom, alpha: 0.9, cap: 'round', join: 'round' });
+  trace();
+  layers.routes.stroke({ color: kit.routeColor, width: route.width * zoom, alpha: route.kind === 'main' ? 0.96 : 0.82, cap: 'round', join: 'round' });
+  // Centre wear band: lighter where traffic polishes the surface.
+  trace();
+  layers.routes.stroke({ color: mixColor(kit.routeColor, 0xffffff, 0.16), width: Math.max(2, route.width * 0.42 * zoom), alpha: 0.3, cap: 'round', join: 'round' });
+
+  // Dashed lane marks along each segment, spaced in world units so they stay
+  // locked to the road as the camera moves.
+  const DASH = 46;
+  const GAP = 40;
+  for (let index = 1; index < points.length; index += 1) {
+    const from = points[index - 1];
+    const to = points[index];
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const length = Math.hypot(dx, dy);
+    if (length < 1) continue;
+    const stepX = dx / length;
+    const stepY = dy / length;
+    const stride = (DASH + GAP) * zoom;
+    const dashLength = DASH * zoom;
+    for (let travelled = stride * 0.5; travelled + dashLength < length; travelled += stride) {
+      layers.routes.moveTo(from.x + stepX * travelled, from.y + stepY * travelled)
+        .lineTo(from.x + stepX * (travelled + dashLength), from.y + stepY * (travelled + dashLength))
+        .stroke({ color: kit.detailColor, width: Math.max(1, 2.4 * zoom), alpha: route.kind === 'main' ? 0.32 : 0.18 });
+    }
+  }
 }
 
 function drawBlocker(graphic, feature, kit, camera, worldToScreen) {
@@ -189,7 +389,28 @@ function drawBlocker(graphic, feature, kit, camera, worldToScreen) {
       const x = a.x + (b.x - a.x) * t;
       const y = a.y + (b.y - a.y) * t;
       if (feature.visualKind === 'dense-trees') {
-        graphic.circle(x, y - 8 * camera.zoom, Math.max(9, shape.radius * 0.45 * camera.zoom)).fill({ color: kit.baseColor, alpha: 1 }).stroke({ color: kit.accentColor, width: 2, alpha: 0.62 });
+        // Foliage: a grounded trunk shadow, a layered canopy built from three
+        // offset lobes, and a lit crown — so a treeline reads as volume
+        // rather than a row of flat discs.
+        const canopy = Math.max(9, shape.radius * 0.45 * camera.zoom);
+        const seed = fnv1a(`${feature.id}:${index}`);
+        const lean = (((seed >>> 3) & 15) / 15 - 0.5) * canopy * 0.35;
+        graphic.ellipse(x + canopy * 0.2, y + canopy * 0.45, canopy * 0.85, canopy * 0.32)
+          .fill({ color: 0x03080a, alpha: 0.4 });
+        graphic.roundRect(x - canopy * 0.11, y - canopy * 0.2, canopy * 0.22, canopy * 0.75, canopy * 0.08)
+          .fill({ color: mixColor(kit.baseColor, 0x000000, 0.45), alpha: 0.95 });
+        for (const lobe of [
+          { dx: -canopy * 0.42 + lean, dy: -canopy * 0.34, r: canopy * 0.62, shade: 0.28 },
+          { dx: canopy * 0.40 + lean, dy: -canopy * 0.28, r: canopy * 0.58, shade: 0.14 },
+          { dx: lean, dy: -canopy * 0.72, r: canopy * 0.74, shade: 0 },
+        ]) {
+          graphic.circle(x + lobe.dx, y + lobe.dy, lobe.r)
+            .fill({ color: mixColor(kit.baseColor, 0x000000, lobe.shade), alpha: 1 });
+        }
+        graphic.circle(x + lean - canopy * 0.18, y - canopy * 0.95, canopy * 0.3)
+          .fill({ color: mixColor(kit.baseColor, kit.accentColor, 0.42), alpha: 0.7 });
+        graphic.arc(x + lean, y - canopy * 0.72, canopy * 0.74, Math.PI * 1.12, Math.PI * 1.72)
+          .stroke({ color: kit.accentColor, width: Math.max(1, 1.8 * camera.zoom), alpha: 0.5 });
       } else {
         graphic.roundRect(x - 3, y - 10 * camera.zoom, 6, 20 * camera.zoom, 2).fill({ color: kit.accentColor, alpha: 0.88 });
       }
@@ -199,9 +420,34 @@ function drawBlocker(graphic, feature, kit, camera, worldToScreen) {
     graphic.circle(center.x + 4, center.y + 7, shape.radius * camera.zoom).fill({ color: 0x05070a, alpha: 0.45 });
     graphic.circle(center.x, center.y, shape.radius * camera.zoom).fill({ color: kit.baseColor, alpha: 1 }).stroke({ color: kit.accentColor, width: 3 });
   } else {
-    const points = shape.vertices.map((point) => worldToScreen({ ...point, z }, camera));
-    tracePolygon(graphic, points).fill({ color: kit.baseColor, alpha: 0.98 }).stroke({ color: kit.accentColor, width: 3, alpha: 0.84 });
-    const top = points.reduce((best, point) => point.y < best.y ? point : best, points[0]);
+    // Structures are extruded: a ground footprint, side walls rising to the
+    // roof, a lit roof plate, and trim. A flat polygon gave no sense of a
+    // building occupying space.
+    const height = Math.max(10, Math.min(feature.maxZ ?? 40, 72)) * 0.55 * camera.zoom;
+    const groundPoints = shape.vertices.map((point) => worldToScreen({ ...point, z: 0 }, camera));
+    const roofPoints = groundPoints.map((point) => ({ x: point.x, y: point.y - height }));
+    // Cast shadow on the ground.
+    tracePolygon(graphic, groundPoints.map((point) => ({ x: point.x + height * 0.3, y: point.y + height * 0.16 })))
+      .fill({ color: 0x03070b, alpha: 0.4 });
+    // Side walls: only the edges facing the camera (downward in screen space).
+    for (let index = 0; index < groundPoints.length; index += 1) {
+      const from = groundPoints[index];
+      const to = groundPoints[(index + 1) % groundPoints.length];
+      if (to.x - from.x === 0 && to.y - from.y === 0) continue;
+      const facingCamera = to.x < from.x ? from.y > to.y : to.y >= from.y;
+      if (!facingCamera) continue;
+      const wallShade = Math.abs(to.x - from.x) > Math.abs(to.y - from.y) ? 0.18 : 0.42;
+      tracePolygon(graphic, [
+        { x: from.x, y: from.y },
+        { x: to.x, y: to.y },
+        { x: to.x, y: to.y - height },
+        { x: from.x, y: from.y - height },
+      ]).fill({ color: mixColor(kit.baseColor, 0x000000, wallShade), alpha: 1 });
+    }
+    tracePolygon(graphic, roofPoints)
+      .fill({ color: mixColor(kit.baseColor, 0xffffff, 0.1), alpha: 1 })
+      .stroke({ color: kit.accentColor, width: Math.max(2, 3 * camera.zoom), alpha: 0.86 });
+    const top = roofPoints.reduce((best, point) => point.y < best.y ? point : best, roofPoints[0]);
     graphic.circle(top.x, top.y + 14, 5).fill({ color: kit.accentColor, alpha: 0.92 });
   }
 }
@@ -261,18 +507,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const b = project({ x: district.area.maxX, y: district.area.maxY, z: 0 });
     if (!screenBoundsVisible([a, b], view, performanceProfile.worldCullMargin)) continue;
     layers.terrain.rect(a.x, a.y, b.x-a.x, b.y-a.y).fill({ color: kit.groundColor, alpha: 1 });
-    const width = b.x-a.x;
-    const height = b.y-a.y;
-    for (let index=1; index<=7; index+=1) {
-      const x = a.x + width * index / 8;
-      const offset = ((fnv1a(district.id) >>> index) & 15) * camera.zoom;
-      layers.details.moveTo(x, a.y + offset).lineTo(x - height * 0.12, b.y - offset).stroke({ color: kit.detailColor, width: Math.max(1, camera.zoom * 2), alpha: 0.09 + (index % 3) * 0.035 });
-    }
-    for (let index=0; index<5; index+=1) {
-      const x = a.x + width * (0.12 + index * 0.19);
-      const y = a.y + height * (0.2 + ((fnv1a(`${district.id}:${index}`) % 57) / 100));
-      layers.details.circle(x,y,(8+(index%3)*4)*camera.zoom).stroke({color:kit.detailColor,width:2,alpha:0.18});
-    }
+    drawDistrictMaterial({ layers, district, kit, camera, view, project, tick });
   }
 
   for (const route of world.routes) {
@@ -294,10 +529,70 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const district=districtAt(vertices[0].x); const shader=shaderByDistrict.get(district.id); const kit=DISTRICT_PRODUCTION_MATERIALS[district.id];
     const palette={water:0x126d91,'shallow-water':0x20a3b8,bridge:0x856e51};
     const districtSurface=surface.kind==='ledge' ? mixColor(kit.groundColor,kit.detailColor,0.24) : mixColor(kit.groundColor,kit.detailColor,0.16);
-    tracePolygon(layers.surfaces,points).fill({color:palette[surface.kind]??districtSurface,alpha:surface.kind==='water'?0.92:0.97}).stroke({color:surface.kind.includes('water')?0x84e8ff:kit.detailColor,width:3,alpha:0.8});
+    // Raised surfaces used to draw as a translucent panel with a bright
+    // outline, which read as floating glass over the ground rather than a
+    // step up. Ledges and bridges now get a cast shadow, an opaque deck, a
+    // lit top edge, and a darker leading lip so the height change is legible.
+    const isWater = surface.kind.includes('water');
+    const isRaised = surface.kind === 'ledge' || surface.kind === 'bridge';
+    if (isRaised) {
+      const lift = Math.max(4, 9 * camera.zoom);
+      const shadow = points.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
+      tracePolygon(layers.surfaces, shadow).fill({ color: 0x03070b, alpha: 0.42 });
+    }
+    tracePolygon(layers.surfaces,points)
+      .fill({color:palette[surface.kind]??districtSurface,alpha:isWater?0.92:1})
+      .stroke({color:isWater?0x84e8ff:mixColor(kit.detailColor,0x000000,0.45),width:isRaised?4:3,alpha:isWater?0.8:0.9});
+    if (isRaised && points.length >= 4) {
+      // Lit top edge and shaded front lip.
+      layers.surfaces.moveTo(points[0].x, points[0].y).lineTo(points[1].x, points[1].y)
+        .stroke({ color: mixColor(kit.detailColor, 0xffffff, 0.4), width: Math.max(2, 3 * camera.zoom), alpha: 0.7 });
+      layers.surfaces.moveTo(points[2].x, points[2].y).lineTo(points[3].x, points[3].y)
+        .stroke({ color: 0x05090d, width: Math.max(3, 5 * camera.zoom), alpha: 0.6 });
+    }
     if (surface.kind.includes('water') && surface.area.type==='rect') {
       const a=points[0], b=points[2];
-      for(let line=1;line<=7;line+=1){const y=a.y+(b.y-a.y)*line/8; const shift=(shader.waterShimmer*18+line*7)*camera.zoom; layers.surfaces.moveTo(a.x+shift,y).lineTo(b.x-Math.max(0,20-shift),y).stroke({color:0xbaf5ff,width:Math.max(1,2*camera.zoom),alpha:0.13+shader.waterShimmer*0.18});}
+      // Water used to get 7 shimmer lines spread over a 4,800-unit river —
+      // roughly one line every 600px, so it rendered as a flat slab. Bands are
+      // now spaced in world units and clipped to the visible span, with a
+      // depth gradient, drifting caustics, and lit banks.
+      const BAND = 90;
+      const top = Math.min(a.y, b.y);
+      const bottom = Math.max(a.y, b.y);
+      const left = Math.min(a.x, b.x);
+      const right = Math.max(a.x, b.x);
+      const visibleTop = Math.max(top, -BAND);
+      const visibleBottom = Math.min(bottom, view.height + BAND);
+      // Depth gradient: deeper toward the middle of the channel.
+      const midY = (top + bottom) / 2;
+      const depthBand = Math.max(1, (bottom - top) * 0.5);
+      layers.surfaces.rect(left, midY - depthBand * 0.5, right - left, depthBand)
+        .fill({ color: 0x062b3d, alpha: 0.34 });
+      const step = BAND * camera.zoom;
+      for (let y = Math.ceil(visibleTop / step) * step; y < visibleBottom; y += step) {
+        const phase = shader.waterShimmer * Math.PI * 2 + y * 0.02;
+        const drift = Math.sin(phase) * 26 * camera.zoom;
+        const inset = 18 * camera.zoom;
+        layers.surfaces.moveTo(left + inset + drift, y)
+          .bezierCurveTo(
+            left + (right - left) * 0.35, y - 6 * camera.zoom,
+            left + (right - left) * 0.65, y + 6 * camera.zoom,
+            right - inset + drift, y,
+          )
+          .stroke({ color: 0xbaf5ff, width: Math.max(1, 1.8 * camera.zoom), alpha: 0.1 + shader.waterShimmer * 0.12 });
+        // Short caustic flecks between the long bands.
+        const fleckSeed = fnv1a(`${surface.id ?? 'water'}:${Math.round(y)}`);
+        const fleckX = left + inset + ((fleckSeed & 0xff) / 255) * Math.max(1, right - left - inset * 2);
+        const fleckLength = (10 + ((fleckSeed >>> 9) & 15)) * camera.zoom;
+        layers.surfaces.moveTo(fleckX - drift * 0.6, y + step * 0.5)
+          .lineTo(fleckX - drift * 0.6 + fleckLength, y + step * 0.5)
+          .stroke({ color: 0xe6ffff, width: Math.max(1, 1.4 * camera.zoom), alpha: 0.08 + shader.waterShimmer * 0.1 });
+      }
+      // Lit shorelines top and bottom.
+      for (const edgeY of [top, bottom]) {
+        layers.surfaces.moveTo(left, edgeY).lineTo(right, edgeY)
+          .stroke({ color: 0x9fe8ff, width: Math.max(1, 2.4 * camera.zoom), alpha: 0.32 });
+      }
     }
   }
 
@@ -341,11 +636,22 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     for(const particle of resolveWorldParticleField({id:hazard.id,x:hazard.anchor.x,y:hazard.anchor.y,tick,count:performanceProfile.particlesPerHazard,radius:52})) {const screen=project({...particle,z:ground.groundZ+particle.size*4}); layers.particles.circle(screen.x,screen.y,particle.size*camera.zoom).fill({color:kit.color,alpha:particle.alpha}); renderedParticleCount += 1;}
   }
 
-  const vignette=36;
-  layers.lighting.rect(0,0,view.width,vignette).fill({color:0x071018,alpha:0.18});
-  layers.lighting.rect(0,view.height-vignette,view.width,vignette).fill({color:0x071018,alpha:0.18});
-  layers.lighting.rect(0,0,vignette,view.height).fill({color:0x071018,alpha:0.15});
-  layers.lighting.rect(view.width-vignette,0,vignette,view.height).fill({color:0x071018,alpha:0.15});
+  // The vignette used to draw a dark fill into the additive lighting layer,
+  // where dark *lightens* — it contributed ~(1,3,4)/255 in the wrong
+  // direction and was effectively invisible. It now draws on its own
+  // normal-blended layer, in graduated bands so the frame edge falls off
+  // smoothly instead of showing a hard 36px border.
+  const vignetteDepth=Math.max(48,Math.min(view.width,view.height)*0.14);
+  const BANDS=4;
+  for(let band=0;band<BANDS;band+=1){
+    const inset=vignetteDepth*(band/BANDS);
+    const thickness=vignetteDepth/BANDS;
+    const alpha=0.055+band*0.02;
+    layers.vignette.rect(0,inset,view.width,thickness).fill({color:0x03080e,alpha});
+    layers.vignette.rect(0,view.height-inset-thickness,view.width,thickness).fill({color:0x03080e,alpha});
+    layers.vignette.rect(inset,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
+    layers.vignette.rect(view.width-inset-thickness,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
+  }
   return freezeDeep({
     artId: WORLD_PRODUCTION_ART.id,
     shaderIds: WORLD_PRODUCTION_ART.shaderIds,

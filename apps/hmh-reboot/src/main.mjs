@@ -134,8 +134,28 @@ const PROJECTILE_FLIGHT_HEIGHT = 34;
 // an authored ledge reaches the lower band within a few ticks, slow enough
 // that the tracer reads as a descent rather than a vertical teleport.
 const PROJECTILE_DESCENT_RATE = 1_200;
+
+// Projection-only helper: a stable 0..1 value from a string key. Combat spark
+// and debris fans use it so effects are identical on replay without touching
+// simulation RNG.
+function deterministicUnit(key) {
+  let hash = 2166136261;
+  const text = String(key);
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619) >>> 0;
+  }
+  return hash / 0x1_0000_0000;
+}
 // How long the authored hurt frames stay up after the player takes a hit.
 const PLAYER_HURT_POSE_TICKS = 14;
+// Full-screen damage flash duration, and the health fraction below which the
+// low-health vignette starts bleeding in.
+const PLAYER_DAMAGE_FLASH_TICKS = 10;
+const LOW_HEALTH_VIGNETTE_THRESHOLD = 0.35;
+// Camera shake is projection-only: it offsets rendering and the inverse
+// screen-to-ground transform, never simulation state.
+const SHAKE_DECAY_TICKS = 9;
 const MAX_ACTIVE_GRENADES = 16;
 const MAX_COMBAT_VISUAL_EVENTS = 64;
 const PROJECTILE_GRID_THRESHOLD = 64;
@@ -193,7 +213,14 @@ async function boot() {
 
   const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
-  const productionPilotEnabled = runtimeParams.get('productionPilot') === '1';
+  // The certified four-layer production hero atlas is the shipped player
+  // identity. It used to require ?productionPilot=1, which the portal never
+  // sets, so every real run rendered the prototype graybox — a placeholder
+  // standing in as final production identity. `?graybox=1` keeps the
+  // prototype available for regression work, and a failed atlas load falls
+  // back to it rather than breaking the run.
+  const grayboxRequested = runtimeParams.get('graybox') === '1';
+  const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled;
   const requestedProductionHeroId = runtimeParams.get('productionHero');
   const productionHeroId = Object.hasOwn(PRODUCTION_HERO_ASSETS, requestedProductionHeroId)
     ? requestedProductionHeroId
@@ -213,7 +240,12 @@ async function boot() {
   const grenadeVisuals = new Graphics();
   const combatVisuals = new Graphics();
   const minimap = new Graphics();
+  // Screen-space layer for health pips, the boss bar, damage flash, and the
+  // low-health vignette. Kept out of `world` so it never scrolls or scales.
+  const overlayVisuals = new Graphics();
   const enemyVisuals = new Container();
+  // Enemies must sort by screen depth so a southern body draws in front.
+  enemyVisuals.sortableChildren = true;
   const enemyDeathVisuals = new Container();
   const enemyTelegraphs = new Graphics();
   const enemyMarkers = new Map();
@@ -228,22 +260,28 @@ async function boot() {
     weapon: true,
   }));
   let productionHeroDisplay = null;
-  if (productionPilotEnabled) {
+  let productionHeroLoadError = null;
+  // The hero atlas is a ~650 KB texture plus metadata. Awaiting it before the
+  // shell signals READY pushed embedded boot past the parent's 8s bridge
+  // timeout, so the run is brought up on the prototype actor immediately and
+  // the atlas is swapped in as soon as it decodes. A failure leaves the
+  // prototype in place and is reported through evidence telemetry.
+  const loadProductionHeroAtlas = async (selection) => {
     const [metadataResponse, atlasTexture] = await Promise.all([
-      fetch(productionHeroSelection.metadataUrl, { credentials: 'same-origin' }),
-      Assets.load(productionHeroSelection.imageUrl),
+      fetch(selection.metadataUrl, { credentials: 'same-origin' }),
+      Assets.load(selection.imageUrl),
     ]);
     if (!metadataResponse.ok) throw new Error(`Production hero metadata failed with ${metadataResponse.status}`);
     const metadata = await metadataResponse.json();
-    productionHeroDisplay = createProductionHeroDisplay({
-      index: createProductionHeroAtlasIndex(metadata, productionHeroSelection),
+    return createProductionHeroDisplay({
+      index: createProductionHeroAtlasIndex(metadata, selection),
       atlasTexture,
       ContainerClass: Container,
       SpriteClass: Sprite,
       TextureClass: Texture,
       RectangleClass: Rectangle,
     });
-  }
+  };
   let mannequinDisplay = null;
   if (pipelinePilotEnabled && !productionPilotEnabled) {
     const [metadataResponse, atlasTexture] = await Promise.all([
@@ -260,13 +298,62 @@ async function boot() {
       RectangleClass: Rectangle,
     });
   }
-  const actorVisual = productionHeroDisplay?.container ?? mannequinDisplay?.container ?? marker;
-  const atlasActorEnabled = Boolean(productionHeroDisplay || mannequinDisplay);
+  let actorVisual = mannequinDisplay?.container ?? marker;
+  let atlasActorEnabled = Boolean(mannequinDisplay);
   shadow.visible = !atlasActorEnabled;
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
-  world.addChild(backdrop, worldProduction.root, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, combatVisuals, projectileImpacts, actorVisual, collisionDebug, label);
-  app.stage.addChild(world, minimap);
+  // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
+  // aim vector, which lands on top of the sprite when aiming north.
+  world.addChild(backdrop, worldProduction.root, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, combatVisuals, projectileImpacts, collisionDebug, label);
+  app.stage.addChild(world, overlayVisuals, minimap);
+
+  // The portal never puts a hero in the child URL — it sends the player's
+  // selection in the session payload — so the atlas is loaded for whichever
+  // actor the session actually requests, and re-loaded if a restart changes
+  // it. Loading a boot-time guess would either render the wrong character or
+  // trip the identity guard in initializeSession.
+  let loadedProductionHeroId = null;
+  let requestedProductionHeroActorId = null;
+  let productionHeroLoadToken = 0;
+  const ensureProductionHeroAtlas = (heroId) => {
+    if (!productionPilotEnabled) return;
+    const selection = productionHeroAsset(heroId);
+    if (requestedProductionHeroActorId === selection.actorId) return;
+    requestedProductionHeroActorId = selection.actorId;
+    const token = (productionHeroLoadToken += 1);
+    loadProductionHeroAtlas(selection).then((display) => {
+      // Ignore a stale load: the session may have restarted with another hero,
+      // or the app may have been disposed, while this atlas was in flight.
+      if (!display || token !== productionHeroLoadToken) return;
+      if (app.stage.destroyed || !world.parent) return;
+      const slot = world.getChildIndex(actorVisual);
+      world.removeChild(actorVisual);
+      productionHeroDisplay = display;
+      actorVisual = display.container;
+      atlasActorEnabled = true;
+      shadow.visible = false;
+      loadedProductionHeroId = selection.actorId;
+      world.addChildAt(actorVisual, slot);
+    }).catch((error) => {
+      if (token !== productionHeroLoadToken) return;
+      productionHeroLoadError = String(error?.message ?? error);
+      // A failed *switch* must not leave the previous hero's sprite standing
+      // in for the actor the session actually requested. Fall back to the
+      // prototype, which is identity-neutral.
+      if (productionHeroDisplay) {
+        const slot = world.getChildIndex(actorVisual);
+        world.removeChild(actorVisual);
+        productionHeroDisplay = null;
+        actorVisual = marker;
+        atlasActorEnabled = false;
+        shadow.visible = true;
+        world.addChildAt(actorVisual, slot);
+      }
+      loadedProductionHeroId = null;
+      requestedProductionHeroActorId = null;
+    });
+  };
 
   const createEnemyMarker = (enemy) => {
     const eliteProjection = isEliteEnemyProjection(enemy.id);
@@ -296,6 +383,12 @@ async function boot() {
   const queueEnemyDeathVisual = (enemy, tick) => {
     if (!enemy || enemyDeathMarkers.has(enemy.id)) return;
     const eliteProjection = isEliteEnemyProjection(enemy.id);
+    pushCombatVisualEvent({
+      type: 'kill',
+      tick,
+      point: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 24 },
+      color: ENEMY_ARCHETYPES[enemy.archetypeId]?.visual.color ?? 0xffffff,
+    });
     const graphic = createProductionEnemyDisplay({
       archetypeId: enemy.archetypeId,
       elite: eliteProjection,
@@ -326,9 +419,9 @@ async function boot() {
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
     bridge: Object.freeze({ x: 4_700, y: 2_400 }),
     hazard: Object.freeze({ x: 3_500, y: 3_100 }),
-    hashwood: Object.freeze({ x: 7_000, y: 2_000 }),
+    hashwood: Object.freeze({ x: 7_000, y: 900 }),
     mining: Object.freeze({ x: 9_200, y: 1_600 }),
-    yard: Object.freeze({ x: 11_000, y: 2_400 }),
+    yard: Object.freeze({ x: 11_000, y: 800 }),
   });
   const runtimePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
     ? worldTourSpawns[worldTourId]
@@ -420,6 +513,18 @@ async function boot() {
   let lastWeaponFire = null;
   let lastPlayerHit = null;
   let lastDashDirection = null;
+  let shakeStartTick = -1;
+  let shakeMagnitude = 0;
+  // Combat sparks and debris inherit the active quality tier, so the
+  // reduced-motion profile (0 particles per hazard) emits none.
+  const particleScale = performanceProfile.particlesPerHazard;
+  const triggerCameraShake = (tick, magnitude) => {
+    // A stronger impulse overrides a weaker one still decaying.
+    if (tick === shakeStartTick && magnitude <= shakeMagnitude) return;
+    if (tick - shakeStartTick < SHAKE_DECAY_TICKS && magnitude < shakeMagnitude) return;
+    shakeStartTick = tick;
+    shakeMagnitude = magnitude;
+  };
   let lastMeleeAttack = null;
   let lastGrenadeDetonation = null;
   let playerDefeatController = null;
@@ -567,8 +672,10 @@ async function boot() {
       const screen = worldToScreen(renderState, camera, view);
       enemyTelegraphs.clear();
       bossTelegraphs.clear();
+      overlayVisuals.clear();
       bossVisual.visible = false;
       let animatedEnemyCount = 0;
+      const enemyHealthPips = [];
       for (const enemy of grayboxEnemies) {
         const enemyMarker = enemyMarkers.get(enemy.id);
         if (!enemyMarker) continue;
@@ -594,27 +701,44 @@ async function boot() {
           enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
           enemyMarker.scale.set(camera.zoom);
           enemyMarker.rotation = 0;
-          enemyMarker.alpha = Math.max(0.35, enemy.health / enemy.maxHealth);
+          // Health is shown on a pip below the body. It used to drive alpha,
+          // which made the highest-priority target the hardest one to see and
+          // turned dense fights into overlapping ghosts.
+          enemyMarker.alpha = 1;
+          // Depth: an enemy standing further south must draw in front.
+          enemyMarker.zIndex = enemyScreen.y;
+          const healthRatio = Math.max(0, Math.min(1, enemy.health / enemy.maxHealth));
+          enemyHealthPips.push({ screen: enemyScreen, ratio: healthRatio, radius: enemy.radius, color: archetype.visual.color });
         }
         if (enemy.attackPhase !== 'tell' || !enemy.telegraphTarget || !simulation) continue;
         const targetScreen = worldToScreen({ ...enemy.telegraphTarget, z: enemy.telegraphTarget.groundZ }, camera, view);
         const tellRatio = Math.max(0, Math.min(1, (enemy.attackPhaseUntilTick - simulation.tick) / archetype.attack.tellTicks));
         const alpha = 0.38 + (1 - tellRatio) * 0.5;
+        // Several archetype tell colours sit within a few points of their own
+        // district's ground palette (gas-bomber orange on rugpull-ravine, boss
+        // red on liquidation-yard). A dark contour under every stroke
+        // guarantees the tell separates from whatever it is drawn over.
+        const CONTOUR = { color: 0x080d12, alpha: alpha * 0.72 };
         if (archetype.attack.tokenFamily === 'area') {
           enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 96 * camera.zoom)
             .fill({ color: archetype.visual.color, alpha: 0.08 })
+            .stroke({ ...CONTOUR, width: 10 })
             .stroke({ color: archetype.visual.color, width: 4, alpha });
         } else if (archetype.attack.tokenFamily === 'support') {
           enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 140 * camera.zoom)
+            .stroke({ ...CONTOUR, width: 11 })
             .stroke({ color: archetype.visual.color, width: 5, alpha });
         } else if (archetype.attack.tokenFamily === 'melee') {
           enemyTelegraphs.circle(enemyScreen.x, enemyScreen.y, archetype.attack.range * camera.zoom)
+            .stroke({ ...CONTOUR, width: 10 })
             .stroke({ color: archetype.visual.color, width: 4, alpha });
           enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
+            .stroke({ ...CONTOUR, width: 9 })
             .stroke({ color: archetype.visual.color, width: 3, alpha });
         } else {
           enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
             .stroke({ color: archetype.visual.color, width: 18 * camera.zoom, alpha: alpha * 0.22, cap: 'round' })
+            .stroke({ ...CONTOUR, width: 9, cap: 'round' })
             .stroke({ color: archetype.visual.color, width: 3, alpha, cap: 'round' });
         }
       }
@@ -631,6 +755,9 @@ async function boot() {
         death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: 0, elite: death.elite });
         death.graphic.position.set(deathScreen.x, deathScreen.y);
         death.graphic.scale.set(camera.zoom);
+        // Fade the corpse out instead of hard-deleting it mid-frame.
+        const deathProgress = Math.max(0, Math.min(1, ((simulation?.tick ?? death.startTick) - death.startTick) / Math.max(1, death.endTick - death.startTick)));
+        death.graphic.alpha = 1 - deathProgress * deathProgress;
       }
       const bossVisualTick = simulation?.tick ?? 0;
       if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
@@ -644,7 +771,8 @@ async function boot() {
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
         bossVisual.scale.set(camera.zoom);
-        bossVisual.alpha = Math.max(0.38, liquidatorBoss.health / liquidatorBoss.maxHealth);
+        // Boss health reads from the dedicated bar, never from transparency.
+        bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
         for (const pending of liquidatorBoss.pendingAttacks) {
           const geometry = pending.geometry;
           const color = pending.attackId.includes('super') ? 0xfff06a : 0xff496c;
@@ -707,7 +835,34 @@ async function boot() {
           const center = worldToScreen(event.point, camera, view);
           if (!isScreenPointVisible(center, view, 128)) continue;
           if (event.type === 'muzzle') {
-            combatVisuals.circle(center.x, center.y, 8 + age * 1.2).fill({ color: event.color, alpha: alpha * 0.72 });
+            // Shrink and brighten: a growing circle read as a smoke puff.
+            const flashRadius = Math.max(2, 14 - age * 1.6);
+            combatVisuals.circle(center.x, center.y, flashRadius).fill({ color: 0xffffff, alpha: alpha * 0.55 });
+            combatVisuals.circle(center.x, center.y, flashRadius * 1.7).fill({ color: event.color, alpha: alpha * 0.4 });
+            if (age < 3) {
+              for (let spoke = 0; spoke < 4; spoke += 1) {
+                const angle = (spoke / 4) * Math.PI * 2 + 0.4;
+                combatVisuals.moveTo(center.x, center.y)
+                  .lineTo(center.x + Math.cos(angle) * (18 - age * 4), center.y + Math.sin(angle) * (18 - age * 4))
+                  .stroke({ color: event.color, width: 2, alpha: alpha * 0.7 });
+              }
+            }
+          } else if (event.type === 'kill') {
+            // Kill confirmation: an expanding ring plus a deterministic
+            // debris fan so a defeat reads instantly in a crowded fight.
+            const ringRadius = 10 + age * 3.4;
+            combatVisuals.circle(center.x, center.y, ringRadius)
+              .stroke({ color: 0xffffff, width: Math.max(1, 5 - age * 0.4), alpha: alpha * 0.9 });
+            combatVisuals.circle(center.x, center.y, ringRadius * 0.6)
+              .stroke({ color: event.color, width: 3, alpha: alpha * 0.8 });
+            const shards = particleScale > 0 ? 8 : 0;
+            for (let shard = 0; shard < shards; shard += 1) {
+              const angle = deterministicUnit(`${event.tick}:${event.point.x}:${shard}`) * Math.PI * 2;
+              const reach = 12 + age * 4.5;
+              combatVisuals.moveTo(center.x + Math.cos(angle) * reach * 0.5, center.y + Math.sin(angle) * reach * 0.5)
+                .lineTo(center.x + Math.cos(angle) * reach, center.y + Math.sin(angle) * reach)
+                .stroke({ color: event.color, width: 2, alpha: alpha * 0.85 });
+            }
           } else if (event.type === 'melee') {
             const facing = worldToScreen({ x: event.point.x + event.direction.x, y: event.point.y + event.direction.y, z: event.point.z }, camera, view);
             const angle = Math.atan2(facing.y - center.y, facing.x - center.x);
@@ -721,6 +876,17 @@ async function boot() {
           } else if (event.type === 'impact') {
             combatVisuals.circle(center.x, center.y, 7 + age * 1.4)
               .stroke({ color: event.color, width: event.critical ? 6 : 3, alpha });
+            // Impact sparks. Seeded from the event so the fan is identical on
+            // replay, and scaled by the active performance profile.
+            const sparks = particleScale > 0 ? (event.critical ? 8 : 4) : 0;
+            for (let spark = 0; spark < sparks; spark += 1) {
+              const angle = deterministicUnit(`${event.tick}:${event.point.y}:${spark}`) * Math.PI * 2;
+              const inner = 6 + age * 2;
+              const outer = inner + 7 + age * 1.5;
+              combatVisuals.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner)
+                .lineTo(center.x + Math.cos(angle) * outer, center.y + Math.sin(angle) * outer)
+                .stroke({ color: event.critical ? 0xfff06a : event.color, width: 2, alpha: alpha * 0.9 });
+            }
           } else if (event.type === 'enemy-attack') {
             combatVisuals.circle(center.x, center.y, 18 + age * 2.2)
               .fill({ color: event.color, alpha: alpha * 0.12 })
@@ -837,6 +1003,45 @@ async function boot() {
       const safeLabelX = view.width * 0.5;
       const safeLabelY = view.width < 600 ? 202 : 82;
       label.position.set(safeLabelX, safeLabelY);
+      // Screen-space overlays: enemy health pips, boss bar, damage flash, and
+      // the low-health vignette. All projection-only.
+      for (const pip of enemyHealthPips) {
+        if (pip.ratio >= 1) continue;
+        const width = Math.max(18, pip.radius * 1.9) * camera.zoom;
+        // overlayVisuals sits on the stage and is not shake-offset, so carry
+        // the world offset across or pips detach from their bodies mid-shake.
+        const pipX = pip.screen.x + world.position.x;
+        const y = pip.screen.y + world.position.y + Math.max(14, pip.radius * 0.9) * camera.zoom;
+        overlayVisuals.roundRect(pipX - width / 2, y, width, 4, 2).fill({ color: 0x0a0f14, alpha: 0.72 });
+        overlayVisuals.roundRect(pipX - width / 2, y, width * pip.ratio, 4, 2)
+          .fill({ color: pip.ratio > 0.5 ? 0x8ef5a8 : pip.ratio > 0.25 ? 0xffd166 : 0xff5c7a, alpha: 0.96 });
+      }
+      if (liquidatorBoss?.active && (simulation?.tick ?? 0) >= liquidatorBoss.startTick) {
+        const barWidth = Math.min(420, view.width * 0.52);
+        const barX = view.width / 2 - barWidth / 2;
+        const ratio = Math.max(0, Math.min(1, liquidatorBoss.health / liquidatorBoss.maxHealth));
+        overlayVisuals.roundRect(barX - 2, 22, barWidth + 4, 14, 7).fill({ color: 0x05090d, alpha: 0.82 });
+        overlayVisuals.roundRect(barX, 24, barWidth, 10, 5).fill({ color: 0x1b2733, alpha: 0.95 });
+        overlayVisuals.roundRect(barX, 24, barWidth * ratio, 10, 5).fill({ color: 0xff496c, alpha: 0.98 });
+        // Phase boundaries so the player can read fight progress.
+        for (const marker of [1 / 3, 2 / 3]) {
+          overlayVisuals.rect(barX + barWidth * marker, 24, 2, 10).fill({ color: 0x05090d, alpha: 0.9 });
+        }
+      }
+      const damageAge = lastPlayerHit && simulation ? simulation.tick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
+      if (!settings.reduceFlash && damageAge >= 0 && damageAge < PLAYER_DAMAGE_FLASH_TICKS) {
+        overlayVisuals.rect(0, 0, view.width, view.height)
+          .fill({ color: 0xff3355, alpha: 0.26 * (1 - damageAge / PLAYER_DAMAGE_FLASH_TICKS) });
+      }
+      const healthRatio = maxPlayerHealth > 0 ? playerHealth / maxPlayerHealth : 1;
+      if (healthRatio < LOW_HEALTH_VIGNETTE_THRESHOLD) {
+        const intensity = (1 - healthRatio / LOW_HEALTH_VIGNETTE_THRESHOLD) * 0.3;
+        const band = Math.max(40, Math.min(view.width, view.height) * 0.16);
+        overlayVisuals.rect(0, 0, view.width, band).fill({ color: 0xff2d4f, alpha: intensity * 0.55 });
+        overlayVisuals.rect(0, view.height - band, view.width, band).fill({ color: 0xff2d4f, alpha: intensity * 0.55 });
+        overlayVisuals.rect(0, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
+        overlayVisuals.rect(view.width - band, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
+      }
       renderMinimap(view, renderState);
       if (debugGridEnabled || releaseTelemetryEnabled) {
         stageElement.dataset.actorX = renderState.x.toFixed(3);
@@ -854,8 +1059,11 @@ async function boot() {
         stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
         stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
         stageElement.dataset.actorArt = actorVisual.label ?? '';
-        stageElement.dataset.actorArtSource = productionPilotEnabled ? 'production-blender-atlas-v1' : pipelinePilotEnabled ? 'blender-atlas-v1' : 'pixi-graybox';
-        stageElement.dataset.actorArtActor = productionPilotEnabled ? productionHeroSelection.actorId : pipelinePilotEnabled ? 'neutral-mannequin' : 'prototype-human';
+        // Report what actually rendered, not what was requested: a failed
+        // atlas load falls back to the prototype and must say so.
+        stageElement.dataset.actorArtSource = productionHeroDisplay ? 'production-blender-atlas-v1' : mannequinDisplay ? 'blender-atlas-v1' : 'pixi-graybox';
+        stageElement.dataset.actorArtActor = productionHeroDisplay && loadedProductionHeroId ? loadedProductionHeroId : mannequinDisplay ? 'neutral-mannequin' : 'prototype-human';
+        stageElement.dataset.actorArtFallbackReason = productionHeroLoadError ?? '';
         stageElement.dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
         stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
         stageElement.dataset.enemyArt = 'production-vector-enemies-v1';
@@ -977,6 +1185,10 @@ async function boot() {
     lastWeaponFire = null;
     lastPlayerHit = null;
     lastDashDirection = null;
+    shakeStartTick = -1;
+    shakeMagnitude = 0;
+    world.position.set(0, 0);
+    overlayVisuals.clear();
     lastMeleeAttack = null;
     lastGrenadeDetonation = null;
     combatVisualEvents = [];
@@ -1001,10 +1213,12 @@ async function boot() {
 
   const initializeSession = (payload) => {
     stopCurrentSession();
+    // Art selection must never be able to abort a session: this runs inside
+    // the bridge onInit handler, and throwing here would skip `game:ready`
+    // and strand the parent until its bridge timeout. Request the session's
+    // actor instead; it swaps in when it decodes.
     const sessionHeroSelection = productionHeroAsset(payload.heroId);
-    if (productionHeroDisplay && sessionHeroSelection.actorId !== productionHeroSelection.actorId) {
-      throw new Error(`Production projection actor mismatch: loaded ${productionHeroSelection.actorId}, session requested ${sessionHeroSelection.actorId}`);
-    }
+    ensureProductionHeroAtlas(sessionHeroSelection.actorId);
     sessionPayload = payload;
     settings = { ...payload.settings };
     elapsedMs = 0;
@@ -1573,6 +1787,7 @@ async function boot() {
         lastGrenadeDetonation = { tick, reason: detonation.reason, grenadeId: detonation.grenadeId };
         combatAudio.play('grenade-boom', { volume: 0.16 });
         pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius });
+        triggerCameraShake(tick, 10);
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
@@ -1696,6 +1911,7 @@ async function boot() {
           });
           if (damageEvent.targetId === 'player') {
             lastPlayerHit = { tick, sourceId: damageEvent.sourceId };
+            triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
             if (magnitude > 0) applyRecoilImpulse(motion, {
               direction: { x: damageEvent.knockback.x / magnitude, y: damageEvent.knockback.y / magnitude },
@@ -1705,7 +1921,10 @@ async function boot() {
           }
           if (damageEvent.targetId === liquidatorBoss.id) {
             const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.damageApplied, tick });
-            if (bossDamage.runEvent) bossDeathVisualUntilTick = tick + 45;
+            if (bossDamage.runEvent) {
+              bossDeathVisualUntilTick = tick + 45;
+              triggerCameraShake(tick, 12);
+            }
             else bossHitVisualUntilTick = tick + 6;
             if (bossDamage.runEvent && bridge?.initialized) {
               bridge.send('game:run-event', {
@@ -1852,6 +2071,7 @@ async function boot() {
 
   const pauseRuntime = (source) => {
     if (!simulation || simulation.state !== 'active') return;
+    world.position.set(0, 0);
     simulation.pause();
     app.ticker.stop();
     combatAudio.pause();
@@ -1978,6 +2198,22 @@ async function boot() {
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
       aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });
+    // Shake offsets the render container only. It deliberately does NOT touch
+    // camera.shakeX/Y: those are read back by screenToGround, so shaking the
+    // camera would feed a jittered pointer position into aim resolution and
+    // let a cosmetic accessibility setting change which shots hit. Offsetting
+    // the container keeps the shake strictly in projection.
+    const shakeAge = simulation.tick - shakeStartTick;
+    if (settings.screenShake && !settings.reduceMotion && shakeMagnitude > 0 && shakeAge >= 0 && shakeAge < SHAKE_DECAY_TICKS) {
+      const decay = 1 - shakeAge / SHAKE_DECAY_TICKS;
+      const swing = shakeMagnitude * decay;
+      world.position.set(
+        (deterministicUnit(`shake-x:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
+        (deterministicUnit(`shake-y:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
+      );
+    } else if (world.position.x !== 0 || world.position.y !== 0) {
+      world.position.set(0, 0);
+    }
     renderWorld(renderActor);
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
@@ -2047,7 +2283,7 @@ async function boot() {
     setStatus('Renderer ready', 'Waiting for portal session…');
   } else {
     const payload = window.parent === window
-      ? createStandaloneInitPayload({ heroId: productionPilotEnabled ? productionHeroSelection.actorId : 'lit-commando' })
+      ? createStandaloneInitPayload({ heroId: productionHeroSelection.actorId })
       : null;
     initializeSession(payload);
     setStatus('Standalone session ready', `${payload.mode.toUpperCase()} // seed ${payload.session.seed} // no portal authority`);
