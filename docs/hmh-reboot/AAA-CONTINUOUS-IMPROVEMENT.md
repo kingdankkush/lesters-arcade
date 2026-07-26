@@ -63,3 +63,6 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 008: truthful ledge projectile/melee combat and repaired production-art browser smoke
   - Status: local certified; commit pending; production unchanged
   - Cycle ledger: `cycles/CYCLE-008.md`
+- [x] Cycle 009: road-safe ground motifs, opaque water occlusion, and preserved tangible detail layers
+  - Status: local certified; commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-009.md`

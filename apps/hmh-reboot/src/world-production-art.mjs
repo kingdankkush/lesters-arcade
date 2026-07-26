@@ -55,9 +55,38 @@ export const WORLD_PRODUCTION_ART = artKit({
   id: 'production-vector-world-v1',
   // `vignette` is normal-blended and sits above the additive lighting pass so
   // an edge darkening actually darkens.
-  layers: Object.freeze(['terrain', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']),
+  // Ground motifs sit below routes while tangible detail props stay above
+  // surfaces. Keeping those concerns separate prevents decorative strokes from
+  // crossing roads without burying destructibles or explosive-zone props.
+  layers: Object.freeze(['terrain', 'groundDetails', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']),
   shaderIds: Object.freeze(['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']),
 });
+
+const SURFACE_BASE_PALETTE = Object.freeze({
+  water: 0x126d91,
+  'shallow-water': 0x20a3b8,
+  bridge: 0x856e51,
+});
+
+export function resolveWorldSurfaceBase({ kind, districtId } = {}) {
+  if (typeof kind !== 'string' || kind.length === 0) throw new TypeError('surface kind must be a non-empty string');
+  const kit = DISTRICT_PRODUCTION_MATERIALS[districtId];
+  if (!kit) throw new RangeError(`unknown districtId: ${districtId}`);
+  const isWater = kind.includes('water');
+  const isRaised = kind === 'ledge' || kind === 'bridge';
+  const districtSurface = kind === 'ledge'
+    ? mixColor(kit.groundColor, kit.detailColor, 0.24)
+    : mixColor(kit.groundColor, kit.detailColor, 0.16);
+  return freezeDeep({
+    color: SURFACE_BASE_PALETTE[kind] ?? districtSurface,
+    // Water is the visual occlusion authority over routes beneath it. Shimmer,
+    // caustics, and depth bands add translucency above this opaque base.
+    alpha: 1,
+    strokeColor: isWater ? 0x84e8ff : mixColor(kit.detailColor, 0x000000, 0.45),
+    isWater,
+    isRaised,
+  });
+}
 
 function finiteNumber(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -207,7 +236,7 @@ const DISTRICT_MOTIF_RENDERERS = Object.freeze({
 });
 
 export function drawDistrictMaterial({ layers, district, kit, camera, view, project, tick }) {
-  const details = layers.details;
+  const details = layers.groundDetails;
   const zoom = camera.zoom;
 
   // Pass 1 — macro tonal patches. Large soft blocks of a slightly shifted
@@ -527,22 +556,20 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const points=vertices.map((vertex)=>{const sampled=queryGround(vertex.x,vertex.y); return project({...vertex,z:surface.waterLevel??sampled.groundZ});});
     if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
     const district=districtAt(vertices[0].x); const shader=shaderByDistrict.get(district.id); const kit=DISTRICT_PRODUCTION_MATERIALS[district.id];
-    const palette={water:0x126d91,'shallow-water':0x20a3b8,bridge:0x856e51};
-    const districtSurface=surface.kind==='ledge' ? mixColor(kit.groundColor,kit.detailColor,0.24) : mixColor(kit.groundColor,kit.detailColor,0.16);
+    const surfaceBase=resolveWorldSurfaceBase({kind:surface.kind,districtId:district.id});
     // Raised surfaces used to draw as a translucent panel with a bright
     // outline, which read as floating glass over the ground rather than a
     // step up. Ledges and bridges now get a cast shadow, an opaque deck, a
     // lit top edge, and a darker leading lip so the height change is legible.
-    const isWater = surface.kind.includes('water');
-    const isRaised = surface.kind === 'ledge' || surface.kind === 'bridge';
+    const { isWater, isRaised } = surfaceBase;
     if (isRaised) {
       const lift = Math.max(4, 9 * camera.zoom);
       const shadow = points.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
       tracePolygon(layers.surfaces, shadow).fill({ color: 0x03070b, alpha: 0.42 });
     }
     tracePolygon(layers.surfaces,points)
-      .fill({color:palette[surface.kind]??districtSurface,alpha:isWater?0.92:1})
-      .stroke({color:isWater?0x84e8ff:mixColor(kit.detailColor,0x000000,0.45),width:isRaised?4:3,alpha:isWater?0.8:0.9});
+      .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
+      .stroke({color:surfaceBase.strokeColor,width:isRaised?4:3,alpha:isWater?0.8:0.9});
     if (isRaised && points.length >= 4) {
       // Lit top edge and shaded front lip.
       layers.surfaces.moveTo(points[0].x, points[0].y).lineTo(points[1].x, points[1].y)

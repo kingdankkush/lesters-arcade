@@ -13,6 +13,7 @@ import {
   WORLD_PRODUCTION_ART,
   resolveWorldParticleField,
   resolveWorldShaderState,
+  resolveWorldSurfaceBase,
 } from '../apps/hmh-reboot/src/world-production-art.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -90,12 +91,34 @@ test('particles and shader states are deterministic, bounded, and tick-driven on
   assert.throws(() => resolveWorldParticleField({ id: 'x', x: 0, y: 0, tick: 0, count: 65, radius: 1 }), /count/);
 });
 
+test('water base fully occludes route marks while raised surfaces retain authored district material', () => {
+  const water = resolveWorldSurfaceBase({ kind: 'water', districtId: 'liquidity-crossing' });
+  const shallows = resolveWorldSurfaceBase({ kind: 'shallow-water', districtId: 'liquidity-crossing' });
+  const ledge = resolveWorldSurfaceBase({ kind: 'ledge', districtId: 'rugpull-ravine' });
+
+  assert.deepEqual(water, {
+    color: 0x126d91,
+    alpha: 1,
+    strokeColor: 0x84e8ff,
+    isWater: true,
+    isRaised: false,
+  });
+  assert.deepEqual(shallows, { ...water, color: 0x20a3b8 });
+  assert.equal(ledge.alpha, 1);
+  assert.equal(ledge.isWater, false);
+  assert.equal(ledge.isRaised, true);
+  assertFrozen(water);
+  assertFrozen(ledge);
+  assert.throws(() => resolveWorldSurfaceBase({ kind: '', districtId: 'liquidity-crossing' }), /kind/);
+  assert.throws(() => resolveWorldSurfaceBase({ kind: 'water', districtId: 'missing' }), /districtId/);
+});
+
 test('world art contract is production, layered, and never gains gameplay authority', () => {
   assert.equal(WORLD_PRODUCTION_ART.classification, 'production-art');
   assert.equal(WORLD_PRODUCTION_ART.runtimeAuthority, 'projection-only');
   // `vignette` is a dedicated normal-blended layer above the additive
   // lighting pass; drawing the edge darkening into `lighting` lightened it.
-  assert.deepEqual(WORLD_PRODUCTION_ART.layers, ['terrain', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']);
+  assert.deepEqual(WORLD_PRODUCTION_ART.layers, ['terrain', 'groundDetails', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']);
   assert.deepEqual(WORLD_PRODUCTION_ART.shaderIds, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
   const source = read('apps/hmh-reboot/src/main.mjs');
   assert.match(source, /createWorldProductionLayers/);
@@ -103,4 +126,8 @@ test('world art contract is production, layered, and never gains gameplay author
   assert.match(source, /stageElement\.dataset\.worldArt = 'production-vector-world-v1'/);
   assert.match(source, /stageElement\.dataset\.worldShader/);
   assert.doesNotMatch(source, /worldProduction(?:Layers)?\.(?:collision|damage|health|spawn|score|wallet|settlement|bridge|persistence)\s*=/);
+
+  const worldSource = read('apps/hmh-reboot/src/world-production-art.mjs');
+  assert.match(worldSource, /const details = layers\.groundDetails;/);
+  assert.match(worldSource, /layers\.details\.roundRect\(center\.x-s/);
 });

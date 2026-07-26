@@ -147,8 +147,8 @@ console errors.
 
 ## Known debt
 
-- Route clipping and ground-detail-over-road/water cleanup remain the next
-  authored-world debt. They are not part of this combat slice.
+- Route clipping and ground-detail-over-road/water cleanup were resolved in
+  Cycle 009 with projection-only composition changes.
 - Projectiles intentionally never rise with terrain. A shot that descends into a
   depression can remain visually low after exiting it; gameplay hurtboxes still
   accept that band, but a future projection-only readability pass may improve
