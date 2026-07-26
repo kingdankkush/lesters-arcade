@@ -118,3 +118,19 @@ test('weapon recoil is an explicit impulse while stun suppresses locomotion and 
   assert.equal(state.locomotion, 'moving');
   assert.ok(state.vx > 200);
 });
+
+test('recoil and knockback impulses produce readable displacement that scales with magnitude', async () => {
+  const { createPlayerMotionState, applyRecoilImpulse, stepPlayerMovement } = await import('../apps/hmh-reboot/src/movement.mjs');
+  const travel = (magnitude) => {
+    const state = createPlayerMotionState({ x: 0, y: 0 });
+    applyRecoilImpulse(state, { direction: { x: 1, y: 0 }, magnitude });
+    for (let step = 0; step < 60; step += 1) {
+      stepPlayerMovement(state, { move: { x: 0, y: 0 } }, { dtSeconds: 1 / 60 });
+    }
+    return state.x;
+  };
+  const light = travel(32);
+  const heavy = travel(64);
+  assert.ok(light >= 3, `a 32-unit impulse must be visible, got ${light.toFixed(3)}px`);
+  assert.ok(heavy >= light * 1.8, `impulse response must scale with magnitude (32=${light.toFixed(2)} 64=${heavy.toFixed(2)})`);
+});

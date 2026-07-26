@@ -62,8 +62,38 @@ export const LIQUIDATOR_ATTACK_PLAN = freezeDeep([
   { startTick: 3_420, attackId: 'crash-lane' },
 ]);
 
+// The authored plan ends at 3,420 elapsed ticks. A player below the target DPS
+// would otherwise face a permanently passive boss at full health, so the fight
+// continues on a deterministic endless cadence built from the final-phase
+// attack set. The loop starts only after the certified 3,600-tick window so the
+// authored encounter timeline is unchanged.
+export const LIQUIDATOR_ENDLESS_LOOP_START_TICK = LIQUIDATOR_TARGET_FIGHT_TICKS;
+export const LIQUIDATOR_ENDLESS_CYCLE_TICKS = 1_440;
+export const LIQUIDATOR_ENDLESS_CYCLE = freezeDeep([
+  { offset: 60, attackId: 'crash-lane' },
+  { offset: 300, attackId: 'short-squeeze-burst' },
+  { offset: 540, attackId: 'margin-call-dash' },
+  { offset: 780, attackId: 'liquidation-zone' },
+  { offset: 1_020, attackId: 'bad-debt-summon' },
+  { offset: 1_200, attackId: 'total-liquidation-super' },
+]);
+
 function getPhase(elapsedTick) {
   return LIQUIDATOR_PHASES.find((phase) => elapsedTick >= phase.minTick && elapsedTick <= phase.maxTick) ?? LIQUIDATOR_PHASES.at(-1);
+}
+
+function plannedStarts(elapsedTick) {
+  if (elapsedTick < LIQUIDATOR_ENDLESS_LOOP_START_TICK) {
+    return LIQUIDATOR_ATTACK_PLAN
+      .filter((entry) => entry.startTick === elapsedTick)
+      .map((entry) => ({ attackId: entry.attackId, planKey: String(entry.startTick) }));
+  }
+  const loopTick = elapsedTick - LIQUIDATOR_ENDLESS_LOOP_START_TICK;
+  const cycleIndex = Math.floor(loopTick / LIQUIDATOR_ENDLESS_CYCLE_TICKS);
+  const cycleOffset = loopTick % LIQUIDATOR_ENDLESS_CYCLE_TICKS;
+  return LIQUIDATOR_ENDLESS_CYCLE
+    .filter((entry) => entry.offset === cycleOffset)
+    .map((entry) => ({ attackId: entry.attackId, planKey: `loop${cycleIndex}-${entry.offset}` }));
 }
 
 function geometryFor(definition, boss, target) {
@@ -127,11 +157,11 @@ export function stepLiquidatorBoss({ boss, tick, player } = {}) {
     pushBounded(boss, events, { type: 'arena-change', phaseId: phase.id, tick, elapsedTick, arena: phase.arena });
   }
 
-  const starts = LIQUIDATOR_ATTACK_PLAN.filter((entry) => entry.startTick === elapsedTick);
+  const starts = plannedStarts(elapsedTick);
   for (const plan of starts) {
     const definition = LIQUIDATOR_ATTACK_DEFINITIONS[plan.attackId];
     const target = freezeDeep({ x: player.x, y: player.y });
-    const telegraphId = `${boss.id}:${plan.attackId}:${plan.startTick}`;
+    const telegraphId = `${boss.id}:${plan.attackId}:${plan.planKey}`;
     const pending = {
       attackId: plan.attackId,
       telegraphId,
@@ -148,7 +178,8 @@ export function stepLiquidatorBoss({ boss, tick, player } = {}) {
 
   const remaining = [];
   for (const pending of boss.pendingAttacks) {
-    if (pending.resolveTick !== tick) {
+    // A skipped tick must not strand a lit telegraph forever.
+    if (pending.resolveTick > tick) {
       remaining.push(pending);
       continue;
     }

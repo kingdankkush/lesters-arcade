@@ -241,3 +241,47 @@ test('invalid projectile policy grid and duplicate target identifiers fail close
   assert.throws(() => new UniformHurtboxGrid({ targets: [], cellSize: 0 }), /cellSize/);
   assert.throws(() => resolveProjectilePath({ projectile: projectile('duplicate', { x: 0, y: 0 }, { x: 1, y: 1 }), targets: [target('same', 0, 0), target('same', 2, 0)] }), /duplicate target id/);
 });
+
+test('projectile flight settles downward only: ledge shots connect, uphill shots do not', () => {
+  const FLIGHT_HEIGHT = 34;
+  const DESCENT_RATE = 1_200;
+  const SPEED = 900;
+  const dt = 1 / 60;
+
+  // Mirrors the main.mjs settle rule across a terrain step at x = 100.
+  function fire({ shooterGround, targetGround, targetX }) {
+    const groundAt = (x) => (x < 100 ? shooterGround : targetGround);
+    const enemy = target('step-enemy', targetX, 0, { z: targetGround, maxZ: 60 });
+    let x = 0;
+    let z = shooterGround + FLIGHT_HEIGHT;
+    for (let tick = 0; tick < 40 && x < 400; tick += 1) {
+      const previous = { x, y: 0, z };
+      x += SPEED * dt;
+      const restZ = groundAt(x) + FLIGHT_HEIGHT;
+      z = z <= restZ ? z : Math.max(restZ, z - DESCENT_RATE * dt);
+      const shot = createProjectileState({
+        id: 'p', ownerId: 'hero', previous, current: { x, y: 0, z },
+        radius: 2, damage: 5, policy: { type: 'stop' },
+      });
+      if (resolveProjectilePath({ projectile: shot, targets: [enemy], blockers: [] }).hits.length > 0) return true;
+    }
+    return false;
+  }
+
+  // Firing down off authored high ground must connect with the level below.
+  assert.equal(fire({ shooterGround: 64, targetGround: 0, targetX: 250 }), true, 'ravine-overlook ledge shot');
+  assert.equal(fire({ shooterGround: 48, targetGround: 0, targetX: 250 }), true, 'mining-loader-deck shot');
+  assert.equal(fire({ shooterGround: 16, targetGround: 0, targetX: 250 }), true, 'small step down');
+  assert.equal(fire({ shooterGround: 0, targetGround: 0, targetX: 250 }), true, 'flat ground');
+  // The elevation contract still holds: high ground cannot be shot from below.
+  assert.equal(fire({ shooterGround: 0, targetGround: 64, targetX: 250 }), false, 'must not shoot up onto a ledge');
+  assert.equal(fire({ shooterGround: 0, targetGround: 48, targetX: 250 }), false, 'must not shoot up onto a deck');
+});
+
+test('main spawns and advances projectiles at flight height over the ground beneath them', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /const restZ = queryGround\(nextX, nextY\)\.groundZ \+ PROJECTILE_FLIGHT_HEIGHT/, 'projectile flight must settle toward ground height');
+  assert.match(source, /shot\.z <= restZ\s*\?\s*shot\.z/, 'projectiles must never rise toward a higher ground band');
+  assert.match(source, /PROJECTILE_DESCENT_RATE/, 'the descent must be rate-bounded rather than a vertical teleport');
+});

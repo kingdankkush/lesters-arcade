@@ -41,10 +41,16 @@ test('run progression is deterministic, bounded, and exposes three concrete upgr
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
-test('skill tree has six authored upgrades across meaningful branches and applies only offered choices', () => {
-  assert.equal(Object.keys(RUN_UPGRADE_CATALOG).length, 6);
-  assert.deepEqual(new Set(Object.values(RUN_UPGRADE_CATALOG).map((upgrade) => upgrade.branch)), new Set(['power', 'survival', 'mobility', 'utility']));
+test('skill tree has six core upgrades plus repeatable mastery picks and applies only offered choices', () => {
+  const core = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable !== true);
+  const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
+  assert.equal(core.length, 6);
+  assert.equal(repeatable.length, 2);
+  assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set(['power', 'survival', 'mobility', 'utility']));
   assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => upgrade.title && upgrade.mechanicalLabel && upgrade.maxRank >= 2));
+  // Mastery ranks must stay individually weaker than the core ranks they echo.
+  assert.ok(RUN_UPGRADE_CATALOG['compound-interest'].amount < RUN_UPGRADE_CATALOG['proof-of-work'].amount);
+  assert.ok(RUN_UPGRADE_CATALOG['hardened-wallet'].amount < RUN_UPGRADE_CATALOG['diamond-hands'].amount);
   const state = cloneProgression();
   recordRunDefeat(state, { enemyId: 'whale', threatCost: 20, tick: 1 });
   const offered = getRunProgressionSnapshot(state).pendingChoices;
@@ -108,4 +114,39 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(cockpit, /element\.textContent = String\(text\)/);
   assert.doesNotMatch(cockpit, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
   assert.doesNotMatch(main, /localStorage|window\.ethereum|eth_requestAccounts/);
+});
+
+test('the pending level queue is always drainable — no level awards dead XP', () => {
+  const state = createRunProgression({ seed: 7 });
+  for (let kill = 0; kill < 400; kill += 1) {
+    const snapshot = recordRunDefeat(state, { enemyId: `enemy-${kill}`, threatCost: 3, tick: kill * 10 });
+    let guard = 0;
+    let current = snapshot;
+    while (current.pendingLevels > 0 && current.pendingChoices.length > 0 && guard < 64) {
+      current = selectRunUpgrade(state, current.pendingChoices[0].id).snapshot;
+      guard += 1;
+    }
+    assert.ok(
+      current.pendingLevels === 0 || current.pendingChoices.length > 0,
+      `kill ${kill}: ${current.pendingLevels} pending levels with nothing to spend them on`,
+    );
+  }
+});
+
+test('late-run mastery picks keep offering choices after the authored ranks are exhausted', () => {
+  const state = createRunProgression({ seed: 11 });
+  for (let kill = 0; kill < 400; kill += 1) {
+    let snapshot = recordRunDefeat(state, { enemyId: `enemy-${kill}`, threatCost: 4, tick: kill * 10 });
+    let guard = 0;
+    while (snapshot.pendingLevels > 0 && snapshot.pendingChoices.length > 0 && guard < 64) {
+      snapshot = selectRunUpgrade(state, snapshot.pendingChoices[0].id).snapshot;
+      guard += 1;
+    }
+  }
+  const finalSnapshot = getRunProgressionSnapshot(state);
+  assert.ok(finalSnapshot.level > 18, `expected to pass the authored rank ceiling, got level ${finalSnapshot.level}`);
+  const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
+  assert.ok(repeatable.length >= 2, 'the tree needs repeatable late-run sinks');
+  const totalRepeatableRanks = repeatable.reduce((sum, upgrade) => sum + (state.ranks[upgrade.id] ?? 0), 0);
+  assert.ok(totalRepeatableRanks > 0, 'late levels must actually spend into the mastery picks');
 });

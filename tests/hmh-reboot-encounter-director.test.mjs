@@ -161,3 +161,27 @@ test('runtime consumes the director before enemy movement and exposes bounded te
   assert.match(source, /dataset\.encounterBand/);
   assert.match(source, /dataset\.directorInsertions/);
 });
+
+test('a saturated ranged cap advances the spawn ordinal instead of deadlocking every spawn', () => {
+  const state = createEncounterDirector();
+  const population = createEnemyPopulation();
+  for (let index = 0; index < 8; index += 1) {
+    population.active.push(createEnemyState({
+      archetypeId: 'liquidator-agent',
+      id: `ranged-${index}`,
+      x: 400 + index,
+      y: 0,
+      groundZ: 0,
+      visualMode: 'prototype',
+    }));
+  }
+  state.spawnOrdinal = 2;
+  const ravinePoint = { ...SAFE_POINT, districtId: 'rugpull-ravine' };
+  let inserted = 0;
+  for (let tick = 3_600; tick < 3_700; tick += 1) {
+    const result = stepAt({ tick, state, population, districtId: 'rugpull-ravine', spawnPoints: [ravinePoint] });
+    if (result.inserted) inserted += 1;
+  }
+  assert.ok(state.spawnOrdinal > 2, 'a selection-class rejection must advance the ordinal');
+  assert.ok(inserted >= 1, 'melee spawns must not be blocked by a saturated ranged cap');
+});

@@ -64,7 +64,10 @@ function cloneTarget(target) {
   const armor = positive(target.armor ?? 1, `target ${target.id} armor`);
   const shieldCharges = nonNegative(target.shieldCharges ?? 0, `target ${target.id} shieldCharges`);
   if (!Number.isInteger(shieldCharges)) throw new TypeError(`target ${target.id} shieldCharges must be an integer`);
-  const knockbackResistance = nonNegative(target.knockbackResistance ?? 1, `target ${target.id} knockbackResistance`);
+  // Resistance divides the applied impulse, so zero is not a meaningful
+  // "immovable" value — it would launch the target instead. Like armor, it
+  // must be strictly positive.
+  const knockbackResistance = positive(target.knockbackResistance ?? 1, `target ${target.id} knockbackResistance`);
   return {
     id: target.id,
     health,
@@ -134,7 +137,11 @@ export function resolveCombatHits({ sessionSeed, hits = [], targets = [] } = {})
     const killed = healthBefore > 0 && target.health <= 0;
     if (killed) target.active = false;
     const direction = normalize(hit.direction, hit.id);
-    const knockbackMagnitude = shielded || damageApplied <= 0 ? 0 : (hit.knockback ?? 0) * target.knockbackResistance;
+    // Resistance divides: a heavier, more resistant target must be pushed less
+    // by the same impulse, not more.
+    const knockbackMagnitude = shielded || damageApplied <= 0
+      ? 0
+      : (hit.knockback ?? 0) / Math.max(EPSILON, target.knockbackResistance);
     const damageEvent = freezeDeep({
       type: 'combat:damage',
       hitId: hit.id,

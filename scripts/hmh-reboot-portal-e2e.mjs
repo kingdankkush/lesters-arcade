@@ -192,7 +192,9 @@ if (isMain) {
     process.exit(1);
   }
 
-  const evidenceDir = new URL('../.hermes/evidence/hmh-aaa-cycle-003/portal-e2e/', import.meta.url);
+  const evidenceDir = process.env.PORTAL_E2E_EVIDENCE_DIR
+    ? pathToFileURL(`${path.resolve(process.env.PORTAL_E2E_EVIDENCE_DIR)}/`)
+    : new URL('../.hermes/evidence/portal-e2e/', import.meta.url);
   await mkdir(evidenceDir, { recursive: true });
   const evidencePath = (name) => fileURLToPath(new URL(`${name}.png`, evidenceDir));
 

@@ -87,3 +87,35 @@ test('unknown cues fail closed without allocating voices', () => {
   assert.deepEqual(audio.play('not-a-cue', { now: 1 }), { played: false, reason: 'unknown-cue' });
   assert.equal(FakeAudio.instances.length, 0);
 });
+
+class RejectingAudio extends FakeAudio {
+  play() {
+    this.playCalls += 1;
+    // Codec-unsupported browsers (Ogg on WebKit) reject and never fire onended.
+    return Promise.reject(new Error('NotSupportedError'));
+  }
+}
+
+test('voices whose playback is rejected by the browser do not leak the voice pool', async () => {
+  FakeAudio.instances = [];
+  const audio = createCombatAudio({ AudioCtor: RejectingAudio });
+  for (let index = 0; index < 20; index += 1) {
+    audio.play('player-hit', { now: 1_000 + index * 400, volume: 0.1 });
+  }
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(audio.status().activeVoices, 0, 'rejected playback must release its voice slot');
+  const recovered = audio.play('weapon-fire', { now: 20_000, volume: 0.1 });
+  assert.equal(recovered.played, true, 'combat SFX must not be permanently locked out by rejected voices');
+});
+
+test('stale voices are reaped so a never-ending sample cannot hold a slot forever', () => {
+  FakeAudio.instances = [];
+  const audio = createCombatAudio({ AudioCtor: FakeAudio });
+  for (let index = 0; index < 8; index += 1) {
+    audio.play('grenade-boom', { now: 1_000 + index * 1_000, volume: 0.1 });
+  }
+  const before = audio.status().activeVoices;
+  assert.ok(before > 0);
+  audio.play('weapon-fire', { now: 1_000_000, volume: 0.1 });
+  assert.ok(audio.status().activeVoices < before + 1, 'voices older than the max sample lifetime must be reaped');
+});

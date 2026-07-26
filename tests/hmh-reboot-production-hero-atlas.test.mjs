@@ -143,3 +143,23 @@ test('production pose resolver composes independent locomotion aim fire and hurt
     ['shadow', 'idle'], ['lower-body', 'idle'], ['torso-head', 'hurt'], ['weapon', 'aim'],
   ]);
 });
+
+test('every shipped atlas action state is reachable from the runtime pose selector', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  // 'aim' and 'pistol-fire' were always selectable; 'hurt' shipped 16 atlas
+  // frames that no runtime path could reach until the player-damage hook.
+  for (const action of ['aim', 'pistol-fire', 'hurt']) {
+    assert.ok(source.includes(`'${action}'`), `runtime must be able to select the ${action} pose`);
+  }
+  assert.match(source, /lastPlayerHit = \{ tick/, 'player damage must record a tick for the hurt pose');
+  assert.match(source, /PLAYER_HURT_POSE_TICKS/, 'the hurt pose needs a bounded duration');
+});
+
+test('dash renders moving legs facing the dash direction rather than stale pre-dash facing', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /const dashing = actor\.locomotion === 'dash'/);
+  assert.match(source, /locomotion: dashing \? 'moving' : motion\.locomotion/);
+  assert.match(source, /legDirection: dashing && lastDashDirection \? quantizeDirection\(lastDashDirection, 8\)/);
+});

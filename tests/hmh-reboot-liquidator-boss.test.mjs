@@ -155,3 +155,57 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.ok(source.indexOf('lastBossStep = stepLiquidatorBoss') < source.indexOf('resolveCombatHits'));
   assert.match(source, /eventType:\s*'boss-defeated'/);
 });
+
+test('boss attack plan loops after the authored plan is exhausted instead of going passive', () => {
+  const boss = createLiquidatorBoss({ id: 'loop-liquidator', x: 0, y: 0, startTick: 0 });
+  let lateDamagingResolutions = 0;
+  for (let tick = 1; tick <= 7_200; tick += 1) {
+    const report = stepLiquidatorBoss({ boss, tick, player: { x: 0, y: 0, groundZ: 0 } });
+    for (const event of report.events) {
+      if (event.type === 'attack' && event.damage > 0 && tick > 3_600) lateDamagingResolutions += 1;
+    }
+  }
+  assert.ok(lateDamagingResolutions >= 1, 'boss must keep attacking after the authored plan window');
+  assert.equal(boss.health, boss.maxHealth);
+});
+
+test('pending boss attacks resolve even when their exact resolve tick was not stepped', () => {
+  const boss = createLiquidatorBoss({ id: 'skip-liquidator', x: 0, y: 0, startTick: 0 });
+  let resolved = 0;
+  for (let tick = 1; tick <= 200; tick += 1) {
+    if (tick === 105) continue; // crash-lane resolves at 60 + 45 = 105
+    const report = stepLiquidatorBoss({ boss, tick, player: { x: 0, y: 0, groundZ: 0 } });
+    resolved += report.events.filter((event) => event.type === 'attack').length;
+  }
+  assert.ok(resolved >= 1, 'a skipped resolve tick must not strand the telegraph');
+  assert.equal(boss.pendingAttacks.length, 0);
+});
+
+test('main wires combat damage and score events with fields that actually exist', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.ok(!source.includes('damageEvent.amount'), 'damage events expose damageApplied, not amount');
+  assert.ok(source.includes('damageEvent.damageApplied'), 'main must consume damageApplied');
+  assert.ok(!source.includes('state.dead'), 'combat target clones expose active/health, never dead');
+  const scoreLoop = source.slice(source.indexOf('for (const scoreEvent of'));
+  assert.ok(scoreLoop.includes('liquidatorBoss.id'), 'boss defeat must award score/XP/kill credit in the score loop');
+});
+
+test('combat damage events drive boss damage end to end', async () => {
+  const { resolveCombatHits } = await import('../apps/hmh-reboot/src/combat-events.mjs');
+  const boss = createLiquidatorBoss({ id: 'integration-liquidator', x: 0, y: 0, startTick: 0 });
+  const resolution = resolveCombatHits({
+    sessionSeed: 7,
+    hits: [{
+      id: 'hit-1', targetId: boss.id, sourceId: 'player', weaponId: 'settler-pistol',
+      tick: 5, damage: 40, criticalChance: 0, knockback: 10,
+      direction: { x: 1, y: 0 }, point: { x: 0, y: 0, z: 0 },
+    }],
+    targets: [{ id: boss.id, health: boss.health, maxHealth: boss.maxHealth, armor: 1, shieldCharges: 0, knockbackResistance: 0.92 }],
+  });
+  const damageEvent = resolution.damageEvents[0];
+  assert.ok(Object.hasOwn(damageEvent, 'damageApplied'));
+  assert.ok(!Object.hasOwn(damageEvent, 'amount'));
+  const outcome = applyLiquidatorDamage({ boss, amount: damageEvent.damageApplied, tick: 5 });
+  assert.equal(outcome.defeated, false);
+  assert.equal(boss.health, boss.maxHealth - damageEvent.damageApplied);
+});

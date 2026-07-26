@@ -349,7 +349,10 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   return freezeDeep({
     artId: WORLD_PRODUCTION_ART.id,
     shaderIds: WORLD_PRODUCTION_ART.shaderIds,
-    particleCount: world.interactions.hazards.length * 10,
+    // Report the budget this profile actually allows, not the desktop constant.
+    // Mobile uses 6 per hazard and reduced-motion uses 0, so the hardcoded 10
+    // reported particles that were never spawned.
+    particleCount: world.interactions.hazards.length * performanceProfile.particlesPerHazard,
     renderedParticleCount,
     districtCount: world.districts.length,
     blockerCount: world.blockers.length,

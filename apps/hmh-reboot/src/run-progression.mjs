@@ -65,6 +65,33 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     effect: 'xpMultiplier',
     amount: 0.25,
   },
+  // Late-run mastery sinks. The six authored upgrades hold 17 total ranks, so
+  // without a repeatable tail every level past 18 queued a choice that could
+  // never be spent. These are deliberately weaker per rank than the authored
+  // picks: they keep long runs growing and preserve the offense/defense
+  // decision without out-scaling a focused build.
+  'compound-interest': {
+    id: 'compound-interest',
+    branch: 'power',
+    title: 'Compound Interest',
+    mechanicalLabel: '+3% outgoing damage',
+    description: 'A repeatable mastery pick for long runs. Smaller than a core power rank, but it never runs out.',
+    maxRank: 25,
+    repeatable: true,
+    effect: 'outgoingDamageMultiplier',
+    amount: 0.03,
+  },
+  'hardened-wallet': {
+    id: 'hardened-wallet',
+    branch: 'survival',
+    title: 'Hardened Wallet',
+    mechanicalLabel: '+6 maximum health',
+    description: 'A repeatable mastery pick for long runs. Smaller than a core survival rank, but it never runs out.',
+    maxRank: 25,
+    repeatable: true,
+    effect: 'maxHealthBonus',
+    amount: 6,
+  },
 });
 
 const EFFECT_DEFAULTS = Object.freeze({
@@ -104,6 +131,14 @@ function resolveEffects(state) {
     else effects[upgrade.effect] += upgrade.amount * rank;
   }
   return freezeDeep(effects);
+}
+
+function remainingRankCapacity(state) {
+  let capacity = 0;
+  for (const upgrade of Object.values(RUN_UPGRADE_CATALOG)) {
+    capacity += Math.max(0, upgrade.maxRank - (state.ranks[upgrade.id] ?? 0));
+  }
+  return capacity;
 }
 
 function resolveChoices(state) {
@@ -170,7 +205,10 @@ export function recordRunDefeat(state, { enemyId, threatCost, tick } = {}) {
   let levelsGained = 0;
   while (state.level < 1000 && state.xp >= nextLevelThreshold(state.level)) {
     state.level += 1;
-    state.pendingLevels += 1;
+    // A queued level that no upgrade can absorb would sit in the cockpit
+    // forever as a phantom "pending" count, so the queue is capped at the
+    // remaining rank capacity across the whole tree.
+    if (state.pendingLevels < remainingRankCapacity(state)) state.pendingLevels += 1;
     levelsGained += 1;
   }
   state.lastEvent = { enemyId, tick, scoreGain, xpGain, levelsGained };

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { createStaticBlocker } from '../apps/hmh-reboot/src/collision.mjs';
 import {
+  ENEMY_STRIKE_TICKS,
   MAX_ENEMY_ATTACK_EVENTS,
   resolveEnemyAttackAgainstPlayer,
   stepEnemyAttacks,
@@ -15,7 +16,7 @@ function enemy(archetypeId, id, x, y = 0) {
 
 const player = { id: 'player', x: 0, y: 0, groundZ: 0, radius: 24 };
 
-test('melee attack reserves one token, exposes the full tell, then resolves once into recovery', () => {
+test('melee attack reserves one token, exposes the full tell, then resolves once into the strike pose', () => {
   const rusher = enemy('bagholder-rusher', 'rusher', 50);
   const start = stepEnemyAttacks({ enemies: [rusher], player, tick: 1 });
   assert.equal(start.events.length, 0);
@@ -29,9 +30,16 @@ test('melee attack reserves one token, exposes the full tell, then resolves once
   assert.equal(strike.events[0].enemyId, 'rusher');
   assert.equal(strike.events[0].tokenFamily, 'melee');
   assert.equal(strike.events[0].tellStartedTick, 1);
-  assert.equal(rusher.attackPhase, 'recovery');
+  // The strike pose occupies the front of recovery so the art layer has a real
+  // attack frame; the total tell -> ready cycle length is unchanged.
+  assert.equal(rusher.attackPhase, 'attack');
+  assert.equal(rusher.attackRecoveryUntilTick, 16 + 24);
   assert.equal(resolveEnemyAttackAgainstPlayer(strike.events[0], { player, invulnerable: false }).hit, true);
   assert.equal(stepEnemyAttacks({ enemies: [rusher], player, tick: 17 }).events.length, 0);
+  stepEnemyAttacks({ enemies: [rusher], player, tick: 16 + ENEMY_STRIKE_TICKS });
+  assert.equal(rusher.attackPhase, 'recovery');
+  stepEnemyAttacks({ enemies: [rusher], player, tick: 16 + 24 });
+  assert.equal(rusher.attackPhase, 'ready');
 });
 
 test('locked ranged and area telegraphs remain dodgeable instead of tracking the player after tell start', () => {
@@ -131,4 +139,49 @@ test('enemy combat fails closed on malformed inputs', () => {
   assert.throws(() => stepEnemyAttacks({ enemies: [], player, tick: -1 }), /tick/);
   assert.throws(() => resolveEnemyAttackAgainstPlayer(null, { player }), /event/);
   assert.throws(() => resolveEnemyAttackAgainstPlayer({ damage: 1 }, { player }), /geometry/);
+});
+
+test('a resolved attack passes through a visible strike phase before recovery', () => {
+  const rusher = enemy('bagholder-rusher', 'rusher', 50);
+  for (let tick = 1; tick <= 16; tick += 1) stepEnemyAttacks({ enemies: [rusher], player, tick });
+  assert.equal(rusher.attackPhase, 'attack', 'the strike frame must be observable by the art layer');
+  const readyAt = 16 + 24;
+  let sawRecovery = false;
+  for (let tick = 17; tick <= readyAt; tick += 1) {
+    stepEnemyAttacks({ enemies: [rusher], player, tick });
+    if (rusher.attackPhase === 'recovery') sawRecovery = true;
+  }
+  assert.ok(sawRecovery, 'strike must fall through to recovery');
+  assert.equal(rusher.attackPhase, 'ready', 'total cycle length must be unchanged');
+});
+
+test('simultaneous melee attackers are staggered so one tick cannot stack their damage', () => {
+  const attackers = [
+    enemy('bagholder-rusher', 'rusher-a', 60, 0),
+    enemy('bagholder-rusher', 'rusher-b', -60, 0),
+    enemy('bagholder-rusher', 'rusher-c', 0, 60),
+  ];
+  const resolutionTicks = [];
+  for (let tick = 1; tick <= 120; tick += 1) {
+    const report = stepEnemyAttacks({ enemies: attackers, player, tick, budgets: { melee: 3, ranged: 2, area: 1, support: 1 } });
+    for (const event of report.events) resolutionTicks.push({ tick, id: event.enemyId });
+  }
+  assert.ok(resolutionTicks.length >= 3, 'all three attackers should still get to attack');
+  const firstWave = resolutionTicks.slice(0, 3).map((entry) => entry.tick);
+  assert.equal(new Set(firstWave).size, 3, `simultaneous resolutions at ${firstWave.join(',')} deal unavoidable stacked damage`);
+});
+
+test('enemies in recovery do not hold attack tokens away from ready attackers', async () => {
+  const { allocateAttackTokens } = await import('../apps/hmh-reboot/src/enemy-simulation.mjs');
+  const recovering = enemy('bagholder-rusher', 'recovering', 40);
+  recovering.attackPhase = 'recovery';
+  recovering.attackPhaseUntilTick = 200;
+  const ready = enemy('bagholder-rusher', 'ready-attacker', 60);
+  const tokens = allocateAttackTokens({
+    enemies: [recovering, ready],
+    player,
+    budgets: { melee: 1, ranged: 0, area: 0, support: 0 },
+  });
+  assert.equal(tokens.get('ready-attacker'), 'melee', 'the ready attacker must win the only melee token');
+  assert.equal(tokens.has('recovering'), false);
 });

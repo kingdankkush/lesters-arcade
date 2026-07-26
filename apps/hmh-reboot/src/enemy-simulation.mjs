@@ -106,6 +106,7 @@ export function createEnemyState({
     nextDecisionTick: 1,
     attackPhase: 'ready',
     attackPhaseUntilTick: 0,
+    attackRecoveryUntilTick: 0,
     collisionBody: createCollisionBody({
       id: enemyId,
       kind: 'regular',
@@ -243,6 +244,9 @@ export function allocateAttackTokens({
       return { enemy, archetype, distance };
     })
     .filter(({ archetype, distance }) => distance <= archetype.attack.reserveRange)
+    // An enemy in recovery cannot act on a token, so holding one starves a
+    // ready attacker in range and creates dead air in the encounter.
+    .filter(({ enemy }) => enemy.attackPhase !== 'recovery')
     .sort((a, b) => {
       const aReserved = a.enemy.attackPhase === 'tell' || a.enemy.attackPhase === 'attack' ? 0 : 1;
       const bReserved = b.enemy.attackPhase === 'tell' || b.enemy.attackPhase === 'attack' ? 0 : 1;
@@ -258,16 +262,26 @@ export function allocateAttackTokens({
   return tokens;
 }
 
+// Separation is an overlap correction applied on top of locomotion. Deeply
+// overlapped heavy bodies used to resolve in one tick with a delta ~15x the
+// per-tick walk distance, which reads as a pop rather than a push. The bound
+// keeps the correction convergent but visually continuous; the authoritative
+// simulation always steps at a fixed 1/60, so this stays deterministic.
+export const MAX_ENEMY_SEPARATION_STEP = 6;
+
 export function computeEnemySeparation(enemies, {
   neighborRadius = 96,
   maxNeighbors = 8,
   strength = 0.35,
+  maxStep = MAX_ENEMY_SEPARATION_STEP,
 } = {}) {
   if (!Array.isArray(enemies)) throw new TypeError('enemies must be an array');
   finite(neighborRadius, 'neighborRadius');
   if (neighborRadius <= 0) throw new TypeError('neighborRadius must be positive');
   positiveInteger(maxNeighbors, 'maxNeighbors');
   finite(strength, 'strength');
+  finite(maxStep, 'maxStep');
+  if (maxStep <= 0) throw new TypeError('maxStep must be positive');
   if (strength < 0 || strength > 1) throw new TypeError('strength must be in [0, 1]');
   const ordered = enemies.filter((enemy) => enemy?.active).sort((a, b) => a.id.localeCompare(b.id));
   const deltas = new Map();
@@ -296,6 +310,12 @@ export function computeEnemySeparation(enemies, {
         : stableNormal(enemy.id, neighbor.other.id);
       x += normal.x * overlap * strength;
       y += normal.y * overlap * strength;
+    }
+    const magnitude = Math.hypot(x, y);
+    if (magnitude > maxStep && magnitude > EPSILON) {
+      const scale = maxStep / magnitude;
+      x *= scale;
+      y *= scale;
     }
     deltas.set(enemy.id, Object.freeze({ x, y }));
   }

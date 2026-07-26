@@ -200,3 +200,37 @@ test('invalid weapon and combat inputs fail closed', () => {
     targets: [],
   }), /target/i);
 });
+
+test('knockback resistance reduces knockback instead of amplifying it', async () => {
+  const { resolveCombatHits } = await import('../apps/hmh-reboot/src/combat-events.mjs');
+  const hitFor = (targetId) => ({
+    id: `hit-${targetId}`, targetId, sourceId: 'player', weaponId: 'settler-pistol',
+    tick: 1, damage: 20, criticalChance: 0, knockback: 10,
+    direction: { x: 1, y: 0 }, point: { x: 0, y: 0, z: 0 },
+  });
+  const resolution = resolveCombatHits({
+    sessionSeed: 3,
+    hits: [hitFor('light'), hitFor('heavy')],
+    targets: [
+      { id: 'light', health: 100, maxHealth: 100, armor: 1, shieldCharges: 0, knockbackResistance: 0.5 },
+      { id: 'heavy', health: 100, maxHealth: 100, armor: 1, shieldCharges: 0, knockbackResistance: 2 },
+    ],
+  });
+  const magnitude = (id) => {
+    const event = resolution.damageEvents.find((candidate) => candidate.targetId === id);
+    return Math.hypot(event.knockback.x, event.knockback.y);
+  };
+  assert.ok(magnitude('light') > magnitude('heavy'), `resistant target must move less (light=${magnitude('light')} heavy=${magnitude('heavy')})`);
+});
+
+test('zero knockback resistance is rejected rather than launching the target', () => {
+  assert.throws(() => resolveCombatHits({
+    sessionSeed: 1,
+    hits: [{
+      id: 'h', targetId: 'zero', sourceId: 'player', weaponId: 'settler-pistol',
+      tick: 1, damage: 10, criticalChance: 0, knockback: 10,
+      direction: { x: 1, y: 0 }, point: { x: 0, y: 0, z: 0 },
+    }],
+    targets: [{ id: 'zero', health: 50, maxHealth: 50, armor: 1, shieldCharges: 0, knockbackResistance: 0 }],
+  }), /knockbackResistance/);
+});

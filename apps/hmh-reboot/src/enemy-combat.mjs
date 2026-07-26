@@ -4,6 +4,13 @@ import { traceHeightAwareLineOfSight } from './elevation.mjs';
 
 const EPSILON = 1e-9;
 export const MAX_ENEMY_ATTACK_EVENTS = 64;
+// The strike pose is carved out of the front of recovery, so the total
+// tell -> ready cycle length (and therefore encounter pacing) is unchanged.
+export const ENEMY_STRIKE_TICKS = 6;
+// Same-tick tells from several melee attackers resolve together and stack
+// unavoidable damage. Each additional attacker starting a tell on one tick is
+// pushed back by this many ticks so the player can read and react to them.
+export const ENEMY_TELL_STAGGER_TICKS = 9;
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -91,15 +98,26 @@ export function stepEnemyAttacks({
   const tokenMap = allocateAttackTokens({ enemies: ordered, player: playerPoint, budgets });
   const events = [];
   let droppedEvents = 0;
+  let tellsStartedThisTick = 0;
 
   for (const enemy of ordered) {
     const archetype = getEnemyArchetype(enemy.archetypeId);
     const hasToken = tokenMap.get(enemy.id) === archetype.attack.tokenFamily;
     const distance = Math.hypot(enemy.x - playerPoint.x, enemy.y - playerPoint.y);
 
-    if ((enemy.attackPhase === 'tell' || enemy.attackPhase === 'attack') && !hasToken) {
+    if (enemy.attackPhase === 'tell' && !hasToken) {
       enemy.attackPhase = 'ready';
       enemy.attackPhaseUntilTick = tick;
+      clearTelegraph(enemy);
+      continue;
+    }
+
+    // An enemy that has already committed its strike must still pay the
+    // authored recovery even if it loses its token — dashing out of its
+    // reserve range is exactly how the player earns that punish window.
+    if (enemy.attackPhase === 'attack' && !hasToken) {
+      enemy.attackPhase = 'recovery';
+      enemy.attackPhaseUntilTick = enemy.attackRecoveryUntilTick ?? tick;
       clearTelegraph(enemy);
       continue;
     }
@@ -109,10 +127,18 @@ export function stepEnemyAttacks({
       const event = createAttackEvent(enemy, archetype, tick);
       if (events.length < MAX_ENEMY_ATTACK_EVENTS) events.push(event);
       else droppedEvents += 1;
-      enemy.attackPhase = 'recovery';
-      enemy.attackPhaseUntilTick = tick + archetype.attack.recoveryTicks;
+      const strikeTicks = Math.min(ENEMY_STRIKE_TICKS, archetype.attack.recoveryTicks);
+      enemy.attackPhase = 'attack';
+      enemy.attackPhaseUntilTick = tick + strikeTicks;
+      enemy.attackRecoveryUntilTick = tick + archetype.attack.recoveryTicks;
       clearTelegraph(enemy);
       continue;
+    }
+
+    if (enemy.attackPhase === 'attack') {
+      if (tick < enemy.attackPhaseUntilTick) continue;
+      enemy.attackPhase = 'recovery';
+      enemy.attackPhaseUntilTick = enemy.attackRecoveryUntilTick ?? tick;
     }
 
     if (enemy.attackPhase === 'recovery') {
@@ -125,8 +151,9 @@ export function stepEnemyAttacks({
     if (enemy.attackPhase !== 'ready' || !hasToken || distance > archetype.attack.range) continue;
     enemy.attackPhase = 'tell';
     enemy.attackTellStartedTick = tick;
-    enemy.attackPhaseUntilTick = tick + archetype.attack.tellTicks;
+    enemy.attackPhaseUntilTick = tick + archetype.attack.tellTicks + tellsStartedThisTick * ENEMY_TELL_STAGGER_TICKS;
     enemy.telegraphTarget = Object.freeze({ ...playerPoint });
+    tellsStartedThisTick += 1;
   }
 
   return freezeDeep({

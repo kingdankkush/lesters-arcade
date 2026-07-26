@@ -110,9 +110,15 @@ export function stepPlayerMovement(state, input, {
   state.x += (state.vx + state.recoilVx) * dtSeconds;
   state.y += (state.vy + state.recoilVy) * dtSeconds;
 
-  const recoilDelta = state.recoilDecayTime <= 0 ? Infinity : state.maxSpeed / state.recoilDecayTime * dtSeconds;
-  state.recoilVx = moveToward(state.recoilVx, 0, recoilDelta);
-  state.recoilVy = moveToward(state.recoilVy, 0, recoilDelta);
+  // Decay proportionally to the remaining impulse rather than at a fixed
+  // maxSpeed-derived rate. A flat rate consumed any impulse below ~33 px/s
+  // within a single tick, making every weapon recoil and enemy knockback value
+  // sub-pixel and effectively dead config.
+  const recoilRetention = state.recoilDecayTime <= 0
+    ? 0
+    : Math.max(0, 1 - dtSeconds / state.recoilDecayTime);
+  state.recoilVx = Math.abs(state.recoilVx) <= EPSILON ? 0 : state.recoilVx * recoilRetention;
+  state.recoilVy = Math.abs(state.recoilVy) <= EPSILON ? 0 : state.recoilVy * recoilRetention;
 
   if (moveMagnitude > state.movementDeadZone) state.moveDirection = requestedMove;
   const velocityMagnitude = Math.hypot(state.vx, state.vy);

@@ -13,6 +13,7 @@ import {
   ENEMY_CAPACITY,
   allocateAttackTokens,
   attemptScheduledEnemyInsertion,
+  MAX_ENEMY_SEPARATION_STEP,
   computeEnemySeparation,
   createEnemyPopulation,
   createEnemySpawnSchedule,
@@ -251,4 +252,23 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /stageElement\.dataset\.enemyArchetypes/);
   assert.match(source, /stageElement\.dataset\.enemySafetySteps/);
   assert.doesNotMatch(source, /wallet|settlement|contractAddress|localStorage/);
+});
+
+test('separation push is bounded so overlapping bodies slide apart instead of popping', () => {
+  const heavies = [enemy('whale-enforcer', 'whale-a', 0, 0), enemy('whale-enforcer', 'whale-b', 5, 0)];
+  const { deltas } = computeEnemySeparation(heavies, { neighborRadius: 96, maxNeighbors: 8, strength: 0.35 });
+  for (const heavy of heavies) {
+    const delta = deltas.get(heavy.id);
+    const magnitude = Math.hypot(delta.x, delta.y);
+    assert.ok(magnitude > 0, 'overlapping bodies must still separate');
+    assert.ok(magnitude <= MAX_ENEMY_SEPARATION_STEP + 1e-9, `separation step ${magnitude.toFixed(2)} exceeds the readable per-tick bound`);
+  }
+});
+
+test('separation stays deterministic and symmetric under the bound', () => {
+  const pair = () => [enemy('whale-enforcer', 'whale-a', 0, 0), enemy('whale-enforcer', 'whale-b', 5, 0)];
+  const first = computeEnemySeparation(pair(), { neighborRadius: 96, maxNeighbors: 8, strength: 0.35 });
+  const second = computeEnemySeparation(pair().reverse(), { neighborRadius: 96, maxNeighbors: 8, strength: 0.35 });
+  assert.deepEqual(first.deltas.get('whale-a'), second.deltas.get('whale-a'));
+  assert.deepEqual(first.deltas.get('whale-b'), second.deltas.get('whale-b'));
 });

@@ -43,6 +43,7 @@ import {
 import {
   movementSpeedMultiplierForTransition,
   resolveSweptTraversalPath,
+  traceHeightAwareLineOfSight,
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
 import { createGrenadeSystem, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
@@ -50,6 +51,7 @@ import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs
 import {
   applyRecoilImpulse,
   createPlayerMotionState,
+  quantizeDirection,
   resolveEnemyPressure,
   stepPlayerMovement,
 } from './movement.mjs';
@@ -122,6 +124,18 @@ import {
 
 const RUNTIME_VERSION = '0.5.0';
 const MAX_ACTIVE_PROJECTILES = 128;
+// The archetype table tops out at threat 6; the Liquidator is the run's
+// capstone kill and gets its own authored score/XP weight.
+const LIQUIDATOR_THREAT_COST = 48;
+// Bullets fly at chest height above whatever ground is beneath them, so firing
+// from an authored ledge still connects with targets on the level below.
+const PROJECTILE_FLIGHT_HEIGHT = 34;
+// Downward settle rate in world units per second. Fast enough that a shot off
+// an authored ledge reaches the lower band within a few ticks, slow enough
+// that the tracer reads as a descent rather than a vertical teleport.
+const PROJECTILE_DESCENT_RATE = 1_200;
+// How long the authored hurt frames stay up after the player takes a hit.
+const PLAYER_HURT_POSE_TICKS = 14;
 const MAX_ACTIVE_GRENADES = 16;
 const MAX_COMBAT_VISUAL_EVENTS = 64;
 const PROJECTILE_GRID_THRESHOLD = 64;
@@ -404,6 +418,8 @@ async function boot() {
   let lastProjectileHit = null;
   let lastCombatResolution = null;
   let lastWeaponFire = null;
+  let lastPlayerHit = null;
+  let lastDashDirection = null;
   let lastMeleeAttack = null;
   let lastGrenadeDetonation = null;
   let playerDefeatController = null;
@@ -743,12 +759,25 @@ async function boot() {
       if (productionHeroDisplay && motion) {
         const visualTick = simulation?.tick ?? 0;
         const pistolFireAge = lastWeaponFire?.weaponId === 'coin-blaster' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
-        const productionAction = pistolFireAge >= 0 && pistolFireAge < 12 ? 'pistol-fire' : 'aim';
+        const playerHitAge = lastPlayerHit ? visualTick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
+        // Firing reads over being hit; otherwise the authored hurt frames play.
+        // Without this the hurt state was 16 shipped atlas frames that nothing
+        // could ever select.
+        const productionAction = pistolFireAge >= 0 && pistolFireAge < 12
+          ? 'pistol-fire'
+          : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : 'aim';
+        const productionActionTick = productionAction === 'pistol-fire'
+          ? pistolFireAge
+          : productionAction === 'hurt' ? playerHitAge : visualTick;
+        // During a dash the movement step is skipped, so locomotion and leg
+        // facing would otherwise hold their stale pre-dash values and render
+        // idle legs pointing the wrong way for the whole dash.
+        const dashing = actor.locomotion === 'dash';
         productionHeroDisplay.applyPose({
           simulationTick: visualTick,
-          actionTick: productionAction === 'pistol-fire' ? pistolFireAge : visualTick,
-          locomotion: motion.locomotion,
-          legDirection: motion.legDirection,
+          actionTick: productionActionTick,
+          locomotion: dashing ? 'moving' : motion.locomotion,
+          legDirection: dashing && lastDashDirection ? quantizeDirection(lastDashDirection, 8) : motion.legDirection,
           torsoDirection: motion.torsoDirection,
           action: productionAction,
         });
@@ -946,6 +975,8 @@ async function boot() {
     lastProjectileHit = null;
     lastCombatResolution = null;
     lastWeaponFire = null;
+    lastPlayerHit = null;
+    lastDashDirection = null;
     lastMeleeAttack = null;
     lastGrenadeDetonation = null;
     combatVisualEvents = [];
@@ -1096,6 +1127,14 @@ async function boot() {
         input: tickInput,
         targets: grayboxEnemies,
         device: tickInput.aimAssist ? 'gamepad' : 'pointer',
+        // Enemies already respect cover before they may fire; auto-target and
+        // auto-fire must honour the same rule instead of locking onto — and
+        // emptying a clip into — a target behind a wall.
+        lineOfSight: (candidate) => traceHeightAwareLineOfSight({
+          from: { x: motion.x, y: motion.y, z: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT },
+          to: { x: candidate.x, y: candidate.y, z: candidate.groundZ + PROJECTILE_FLIGHT_HEIGHT },
+          blockers: WORLD_BLOCKERS,
+        }).clear,
       });
       const movementStart = { x: motion.x, y: motion.y, z: actor.groundZ };
       const dashPressed = tickInput.dash && !previousDash;
@@ -1109,6 +1148,7 @@ async function boot() {
         motion.recoilVx = 0;
         motion.recoilVy = 0;
         lastDashReady = false;
+        lastDashDirection = { ...dashState.direction };
       }
       const dashFrame = stepDash(dashState, { tick });
       if (dashFrame.active) {
@@ -1312,11 +1352,19 @@ async function boot() {
           y: shot.previousY ?? shot.y,
           z: shot.previousZ ?? shot.z,
         });
-        const current = Object.freeze({
-          x: shot.x + shot.vx * dtSeconds,
-          y: shot.y + shot.vy * dtSeconds,
-          z: shot.z,
-        });
+        const nextX = shot.x + shot.vx * dtSeconds;
+        const nextY = shot.y + shot.vy * dtSeconds;
+        // A bullet settles toward chest height over the ground beneath it, but
+        // only ever downward and at a bounded rate. Descending fixes the ledge
+        // lockout (a constant shooter-relative z sailed over every target on
+        // lower ground, because hurtbox bands are relative to the target's own
+        // ground). Never rising preserves the elevation contract: you still
+        // cannot shoot a target holding high ground from below.
+        const restZ = queryGround(nextX, nextY).groundZ + PROJECTILE_FLIGHT_HEIGHT;
+        const nextZ = shot.z <= restZ
+          ? shot.z
+          : Math.max(restZ, shot.z - PROJECTILE_DESCENT_RATE * dtSeconds);
+        const current = Object.freeze({ x: nextX, y: nextY, z: nextZ });
         const state = createProjectileState({
           id: shot.id,
           ownerId: 'player',
@@ -1435,10 +1483,12 @@ async function boot() {
             droppedProjectiles += 1;
             continue;
           }
+          // The muzzle sits at the shooter's own chest height; the projectile
+          // settles toward the ground beneath it from there.
           const muzzle = {
             x: actor.x + shot.direction.x * 28,
             y: actor.y + shot.direction.y * 28,
-            z: actor.groundZ + 34,
+            z: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT,
           };
           activeProjectiles.push({
             id: shot.id,
@@ -1446,7 +1496,7 @@ async function boot() {
             weaponId: event.weaponId,
             previousX: actor.x,
             previousY: actor.y,
-            previousZ: actor.groundZ + 30,
+            previousZ: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT,
             x: muzzle.x,
             y: muzzle.y,
             z: muzzle.z,
@@ -1626,14 +1676,14 @@ async function boot() {
           if (!state) continue;
           enemy.health = state.health;
           enemy.shieldCharges = state.shieldCharges;
-          if (state.dead) {
+          if (!state.active || state.health <= 0) {
             enemy.active = false;
             enemy.targetable = false;
           }
         }
         if (lastCombatResolution.targets.player) playerHealth = lastCombatResolution.targets.player.health;
         for (const damageEvent of lastCombatResolution.damageEvents) {
-          if (damageEvent.amount <= 0) continue;
+          if (damageEvent.damageApplied <= 0) continue;
           combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : 'enemy-hit', {
             volume: damageEvent.critical ? 0.14 : 0.09,
           });
@@ -1645,6 +1695,7 @@ async function boot() {
             color: damageEvent.shielded ? 0x8bb8ff : damageEvent.critical ? 0xfff06a : 0xff8c5a,
           });
           if (damageEvent.targetId === 'player') {
+            lastPlayerHit = { tick, sourceId: damageEvent.sourceId };
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
             if (magnitude > 0) applyRecoilImpulse(motion, {
               direction: { x: damageEvent.knockback.x / magnitude, y: damageEvent.knockback.y / magnitude },
@@ -1653,7 +1704,7 @@ async function boot() {
             continue;
           }
           if (damageEvent.targetId === liquidatorBoss.id) {
-            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.amount, tick });
+            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.damageApplied, tick });
             if (bossDamage.runEvent) bossDeathVisualUntilTick = tick + 45;
             else bossHitVisualUntilTick = tick + 6;
             if (bossDamage.runEvent && bridge?.initialized) {
@@ -1692,6 +1743,17 @@ async function boot() {
         }
         let retiredEnemies = false;
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
+          if (scoreEvent.enemyId === liquidatorBoss.id) {
+            runKills += 1;
+            const bossSnapshot = recordRunDefeat(runProgression, {
+              enemyId: scoreEvent.enemyId,
+              threatCost: LIQUIDATOR_THREAT_COST,
+              tick,
+            });
+            cockpit?.updateRun(bossSnapshot);
+            if (bossSnapshot.pendingLevels > 0) upgradePending = true;
+            continue;
+          }
           const defeatedEnemy = grayboxEnemies.find((enemy) => enemy.id === scoreEvent.enemyId);
           if (!defeatedEnemy) continue;
           queueEnemyDeathVisual(defeatedEnemy, tick);

@@ -180,7 +180,14 @@ export function stepEncounterDirector({
   const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed });
   const selectedRole = getEnemyArchetype(selection.archetypeId).role;
   const rangedCount = population.active.reduce((count, enemy) => count + (RANGED_ROLES.has(getEnemyArchetype(enemy.archetypeId).role) ? 1 : 0), 0);
-  if (RANGED_ROLES.has(selectedRole) && rangedCount >= band.budgets.rangedCap) return reject(state, tick, band, 'ranged-cap');
+  if (RANGED_ROLES.has(selectedRole) && rangedCount >= band.budgets.rangedCap) {
+    // Selection is a pure function of spawnOrdinal, so leaving the ordinal in
+    // place would re-pick the same capped role forever and stall every spawn,
+    // melee included. Advance past the capped pick; placement-class rejections
+    // below still retry the same ordinal.
+    state.spawnOrdinal += 1;
+    return reject(state, tick, band, 'ranged-cap');
+  }
 
   const orderedPoints = [...spawnPoints].sort((a, b) => String(a.regionId).localeCompare(String(b.regionId)) || String(a.id).localeCompare(String(b.id)));
   let selectedPoint = null;

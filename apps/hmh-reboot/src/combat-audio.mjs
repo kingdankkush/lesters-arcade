@@ -13,6 +13,9 @@ const SAMPLE_PATHS = Object.freeze({
   'player-hit': '../assets/audio/sfx/player-hit.ogg',
 });
 const MUSIC_PATH = '../assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3';
+// Longest authored combat sample is well under a second; anything still held
+// after this is a voice that will never report completion.
+export const MAX_VOICE_LIFETIME_MS = 4_000;
 
 function clampMaxVoices(value) {
   const numeric = Number(value);
@@ -36,8 +39,17 @@ export function createCombatAudio({
   const lastPlayed = new Map();
   let voices = [];
 
-  const cleanup = () => {
-    voices = voices.filter((voice) => !voice.audio.ended && !voice.stopped);
+  // A voice only ever released on `ended` or an explicit steal. A rejected
+  // play() (for example an unsupported codec) fires neither, so those voices
+  // were immortal and could fill the pool with priority-protected slots until
+  // weapon, melee, and hit audio went permanently silent. Age-reaping bounds
+  // the pool even when a voice never reports completion.
+  const cleanup = (now = null) => {
+    voices = voices.filter((voice) => {
+      if (voice.audio.ended || voice.stopped) return false;
+      if (now !== null && Number.isFinite(voice.startedAt) && now - voice.startedAt > MAX_VOICE_LIFETIME_MS) return false;
+      return true;
+    });
   };
 
   const stopVoice = (voice) => {
@@ -61,7 +73,7 @@ export function createCombatAudio({
     if (paused) return Object.freeze({ played: false, reason: 'paused' });
     const samplePath = SAMPLE_PATHS[cue];
     if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) return Object.freeze({ played: false, reason: 'unknown-cue' });
-    cleanup();
+    cleanup(now);
     const plan = resolveHmhSfxCuePlan(cue, {
       requestedVolume: volume,
       now,
@@ -101,8 +113,17 @@ export function createCombatAudio({
     lastPlayed.set(cue, now);
     try {
       const playResult = audio.play();
-      if (playResult?.catch) playResult.catch(() => {});
-    } catch {}
+      if (playResult?.catch) {
+        playResult.catch(() => {
+          // Rejected playback never fires `ended`; release the slot now.
+          voice.stopped = true;
+          cleanup();
+        });
+      }
+    } catch {
+      voice.stopped = true;
+      cleanup();
+    }
     return Object.freeze({ played: true, reason: allocation.reason, voiceId, cue });
   };
 
