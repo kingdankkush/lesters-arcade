@@ -73,5 +73,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `c66e2b74`; production unchanged
   - Cycle ledger: `cycles/CYCLE-011.md`
 - [x] Cycle 012: mobile HUD, minimap, touch-control, and combat-status composition
-  - Status: local certified; commit pending; production unchanged
+  - Status: committed locally as `43f11925`; production unchanged
   - Cycle ledger: `cycles/CYCLE-012.md`
+- [x] Cycle 013: four rotating production hero selectors, mobile carousel, and deterministic selector-asset QA
+  - Status: local certified; commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-013.md`

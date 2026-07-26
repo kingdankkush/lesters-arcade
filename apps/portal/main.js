@@ -13,6 +13,7 @@ import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
+import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-reboot-hero-selector-atlas.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
 import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame, selectAnimatedEnemySet } from './src/combat-sprite-bridge.mjs';
 
@@ -1940,12 +1941,16 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
       image = el('canvas', { className: 'cabinet-rotation-frame', ariaHidden: 'true' });
       image.width = region.width;
       image.height = region.height;
+      image.dataset.ready = 'false';
       const atlas = loadImageAsset(region.src);
-      const drawRegion = () => image.getContext('2d')?.drawImage(
-        atlas,
-        region.x, region.y, region.width, region.height,
-        0, 0, region.width, region.height,
-      );
+      const drawRegion = () => {
+        image.getContext('2d')?.drawImage(
+          atlas,
+          region.x, region.y, region.width, region.height,
+          0, 0, region.width, region.height,
+        );
+        image.dataset.ready = 'true';
+      };
       if (imageReady(atlas)) drawRegion();
       else atlas.addEventListener('load', drawRegion, { once: true });
     } else {
@@ -1989,6 +1994,20 @@ function heroRotationSprite(characterId) {
   // what spawns. Do not fall Lit Valkyrie through to Lilly or any hero through to
   // QA/generated placeholders.
   const rosterKey = HERO_LOCKED_ROSTER[characterId] ?? characterId;
+  if (HMH_REBOOT_ENABLED) {
+    const production = HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[characterId]
+      ?? HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[rosterKey];
+    if (production) {
+      return {
+        id: production.actorId,
+        animation: 'production-rotation',
+        frames: production.frames.map((src, index) => ({ src, direction: HMH_REBOOT_HERO_SELECTOR_ATLAS.directions[index] })),
+        frameDurationMs: production.frameDurationMs,
+        className: `hero-character-rotator hmh-reboot-selector-${production.actorId}`,
+        displayScale: 1.28,
+      };
+    }
+  }
   const entry = hmh('HMH_ANIMATED_ROSTER')?.[rosterKey] ?? hmh('HMH_ANIMATED_ROSTER')?.[characterId];
   const animations = entry?.animations ?? {};
   // Prefer walk (best for hero showcase), then idle, then run, then shoot.
@@ -4308,7 +4327,15 @@ function syncRouteForView(step) {
 function setOfficialView(step) {
   officialAppStep = step;
   syncRouteForView(step);
+  document.documentElement.style.overflowAnchor = step === 'character-select' ? 'none' : '';
+  document.documentElement.style.scrollBehavior = step === 'character-select' ? 'auto' : '';
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   render();
+  window.scrollTo(0, 0);
+  window.requestAnimationFrame(() => {
+    if (step === 'character-select') dom.officialCharacterSelect?.scrollIntoView({ block: 'start', inline: 'nearest' });
+    else window.scrollTo(0, 0);
+  });
   // When entering the global boards or a profile, pull the latest on-chain data
   // so other players' runs (and this player's runs from other devices) show up.
   // Best-effort + async: the view renders immediately from local state, then
@@ -5761,8 +5788,7 @@ async function startOfficialMode(mode) {
   if (connectedWallet && state.profiles[connectedWallet] && selectedGameId === 'lester-blaster') {
     combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
   }
-  officialAppStep = selectedGameId === 'lester-blaster' ? 'character-select' : 'gameplay';
-  render();
+  setOfficialView(selectedGameId === 'lester-blaster' ? 'character-select' : 'gameplay');
 }
 
 // Ranked PRE-FLIGHT modal. Returns Promise<boolean> — true when the wallet is on

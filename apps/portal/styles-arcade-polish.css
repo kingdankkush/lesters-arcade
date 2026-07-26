@@ -1760,3 +1760,71 @@
 #officialApp[data-step="leaderboards"] .arcade-music-player {
   display: none;
 }
+.hero-carousel-hint {
+  display: none;
+}
+@media (min-width: 701px) {
+  #officialApp[data-step="character-select"] .arcade-music-player {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-carousel-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 6px 0 10px;
+    color: #9fe9ff;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .hero-carousel-hint span {
+    color: #ffe84d;
+    font-size: 1.1rem;
+  }
+  #officialCharacterRoster.character-roster {
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: min(86vw, 340px);
+    align-items: stretch;
+    gap: 14px;
+    margin-inline: -12px;
+    padding: 4px 12px 18px;
+    overflow-x: auto;
+    overflow-y: visible;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 12px;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: thin;
+  }
+  #officialCharacterRoster .hero-card {
+    min-width: 0;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+  #officialCharacterRoster .hero-card-stage {
+    min-height: 168px;
+  }
+  #officialCharacterRoster .hero-card-inner {
+    padding: 16px;
+    gap: 10px;
+  }
+  #officialCharacterRoster .hero-card-bio {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+  #officialCharacterRoster .hero-stats {
+    gap: 7px;
+    margin-top: 8px;
+    padding-top: 10px;
+  }
+  #officialCharacterRoster .hero-cta {
+    margin-top: 10px;
+  }
+}

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { PRODUCTION_HERO_ASSETS, createProductionHeroAtlasIndex } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
 import { ENEMY_ROSTER_ACTORS, createEnemyRosterAtlasIndex, enemyRosterAsset } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
 import { AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, createAuthoredPropAtlasIndex } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from '../apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs';
 import { readRgbaPng } from './sprite-qa.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -17,6 +19,7 @@ const maxHeroAtlasTotalBytes = 12 * 1024 * 1024;
 const maxRosterAtlasBytes = 2 * 1024 * 1024;
 const maxRosterAtlasTotalBytes = 10 * 1024 * 1024;
 const maxPropAtlasBytes = 512 * 1024;
+const maxSelectorAtlasBytes = 512 * 1024;
 
 function portalPath(url) {
   const normalized = url.replace(/^\//u, '').replace(/^(?:\.\.\/)+/u, '');
@@ -77,6 +80,22 @@ for (const asset of Object.values(PRODUCTION_HERO_ASSETS)) {
 assert.equal(heroReports.length, 4, 'four production hero atlases are required');
 assert.ok(heroAtlasTotalBytes <= maxHeroAtlasTotalBytes, 'production hero atlas total exceeds budget');
 
+const selectorMetadataPath = path.join(portalRoot, 'assets', 'generated', 'hmh-reboot-hero-selector', 'hmh-reboot-hero-selector-atlas.json');
+const selectorMetadata = JSON.parse(readFileSync(selectorMetadataPath, 'utf8'));
+const selectorImagePath = portalPath(HMH_REBOOT_HERO_SELECTOR_ATLAS.image);
+const selectorPngReport = validatePng(selectorImagePath, 'hmh-reboot-hero-selector');
+const selectorSha256 = createHash('sha256').update(readFileSync(selectorImagePath)).digest('hex');
+assert.equal(selectorMetadata.pipelineId, 'hmh-reboot-hero-selector-atlas-v1');
+assert.equal(selectorMetadata.runtimeAuthority, 'projection-only');
+assert.equal(selectorMetadata.frameCount, 32);
+assert.equal(selectorMetadata.imageSha256, selectorSha256);
+assert.equal(selectorMetadata.imageBytes, selectorPngReport.imageBytes);
+assert.equal(selectorPngReport.png.width, HMH_REBOOT_HERO_SELECTOR_ATLAS.atlasSize.width);
+assert.equal(selectorPngReport.png.height, HMH_REBOOT_HERO_SELECTOR_ATLAS.atlasSize.height);
+assert.ok(selectorPngReport.imageBytes <= maxSelectorAtlasBytes, 'hero selector atlas exceeds maxSelectorAtlasBytes');
+assert.equal(Object.keys(HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes).length, 4);
+assert.ok(Object.values(HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes).every((hero) => hero.frames.length === 8));
+
 const rosterReports = [];
 let rosterAtlasTotalBytes = 0;
 for (const actorId of ENEMY_ROSTER_ACTORS) {
@@ -116,14 +135,17 @@ const summary = {
   status: 'pass',
   gate: 'hmh-reboot-production-assets-v2',
   heroAtlasCount: heroReports.length,
+  selectorAtlasCount: 1,
   rosterAtlasCount: rosterReports.length,
   propAtlasCount: 1,
   propAssetCount: propIndex.frameById.size,
   heroAtlasTotalBytes,
+  selectorAtlasBytes: selectorPngReport.imageBytes,
   rosterAtlasTotalBytes,
   propAtlasBytes: propPngReport.imageBytes,
-  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes },
+  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes },
   heroReports,
+  selectorReport: { imageBytes: selectorPngReport.imageBytes, width: selectorPngReport.png.width, height: selectorPngReport.png.height, frames: selectorMetadata.frameCount, sha256: selectorSha256 },
   rosterReports,
   propReport: { imageBytes: propPngReport.imageBytes, width: propPngReport.png.width, height: propPngReport.png.height, assets: propMetadata.assetCount },
 };

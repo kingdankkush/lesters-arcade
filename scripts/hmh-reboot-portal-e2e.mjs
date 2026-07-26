@@ -4,6 +4,7 @@ import { createReadStream, existsSync, statSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { readHeroSelectorEvidence } from './hmh-reboot-hero-selector-browser-contract.mjs';
 
 export const PORTAL_E2E_FLOW_SCHEMA = 'hmh-reboot-portal-e2e-flows-v1';
 
@@ -208,6 +209,7 @@ if (isMain) {
 
   const results = [];
   const consoleErrors = [];
+  let heroSelectorEvidence = null;
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
   page.on('pageerror', (error) => consoleErrors.push(`page: ${error.message}`));
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(`console: ${message.text()}`); });
@@ -284,8 +286,10 @@ if (isMain) {
     await page.waitForSelector('#officialArcadeFloor:not([hidden])');
     await page.locator('#officialCabinetGrid .official-cabinet-card.playable').first().click();
     await page.waitForSelector('#officialModeSelect:not([hidden])');
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await page.click('#officialFreeModeButton');
     await page.waitForSelector('#officialCharacterSelect:not([hidden])');
+    heroSelectorEvidence = await readHeroSelectorEvidence(page);
     await page.locator('#officialCharacterRoster .hero-card.active').first().click();
     await page.waitForSelector('#officialLevelIntro:not([hidden])');
     await page.click('#officialBeginLevelButton');
@@ -325,7 +329,7 @@ if (isMain) {
       assert.equal(await page.locator('#officialCombatMount #combatCanvas').count(), 0, 'legacy canvas must not mount for reboot runs');
       await assertRendererAnimating('guest-free-run');
       await page.screenshot({ path: evidencePath('02-guest-free-run'), fullPage: false });
-      return { profile: 'Guest' };
+      return { profile: 'Guest', heroSelector: heroSelectorEvidence };
     });
 
     await runFlow('pause-resume', async () => {
