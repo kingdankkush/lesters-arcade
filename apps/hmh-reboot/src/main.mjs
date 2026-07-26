@@ -15,6 +15,13 @@ import {
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
 import {
+  ENEMY_ROSTER_ACTORS,
+  ENEMY_ROSTER_RUNTIME_SCALE,
+  createEnemyRosterAtlasIndex,
+  createEnemyRosterDisplay,
+  enemyRosterAsset,
+} from './enemy-roster-atlas.mjs';
+import {
   HMH_OPENING_ENEMY_ARCHETYPE_IDS,
   HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE,
   openingEnemyAttacksEnabled,
@@ -220,6 +227,11 @@ async function boot() {
   // prototype available for regression work, and a failed atlas load falls
   // back to it rather than breaking the run.
   const grayboxRequested = runtimeParams.get('graybox') === '1';
+  // Authored enemy/boss sprite atlases. `?vectorEnemies=1` keeps the older
+  // vector projection for regression comparison.
+  const enemyRosterEnabled = runtimeParams.get('vectorEnemies') !== '1' && !grayboxRequested;
+  // The boss renders larger than the rank-and-file roster.
+  const BOSS_ROSTER_RUNTIME_SCALE = 0.86;
   const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled;
   const requestedProductionHeroId = runtimeParams.get('productionHero');
   const productionHeroId = Object.hasOwn(PRODUCTION_HERO_ASSETS, requestedProductionHeroId)
@@ -251,7 +263,7 @@ async function boot() {
   const enemyMarkers = new Map();
   const enemyDeathMarkers = new Map();
   const bossTelegraphs = new Graphics();
-  const bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
+  let bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
   bossVisual.visible = false;
   const marker = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
     radius: 24,
@@ -355,15 +367,102 @@ async function boot() {
     });
   };
 
-  const createEnemyMarker = (enemy) => {
-    const eliteProjection = isEliteEnemyProjection(enemy.id);
+  // Authored Blender roster atlases, loaded once per actor and shared by every
+  // body of that archetype. Until an atlas resolves (or if it fails) the
+  // existing vector projection renders, so a run never blocks on art.
+  const enemyRosterIndexes = new Map();
+  const enemyRosterTextures = new Map();
+  const enemyRosterRequested = new Set();
+  const enemyRosterFailed = new Set();
+  let enemyRosterLoadError = null;
+
+  const requestEnemyRosterAtlas = (archetypeId) => {
+    // `enemyRosterFailed` is never cleared: this is reached from the render
+    // path, so retrying a 404 would issue a fetch every frame forever.
+    if (!enemyRosterEnabled || enemyRosterRequested.has(archetypeId) || enemyRosterFailed.has(archetypeId)) return;
+    if (!ENEMY_ROSTER_ACTORS.includes(archetypeId)) return;
+    enemyRosterRequested.add(archetypeId);
+    const asset = enemyRosterAsset(archetypeId);
+    Promise.all([
+      fetch(asset.metadataUrl, { credentials: 'same-origin' }).then((response) => {
+        if (!response.ok) throw new Error(`roster metadata ${response.status}`);
+        return response.json();
+      }),
+      Assets.load(asset.imageUrl),
+    ]).then(([metadata, texture]) => {
+      // Validate and build one display before publishing to the shared maps.
+      // Publishing first meant a bad atlas threw from inside resetEnemyMarkers
+      // after the old markers were already destroyed, leaving every enemy
+      // permanently invisible behind a swallowed exception.
+      const index = createEnemyRosterAtlasIndex(metadata, archetypeId);
+      createEnemyRosterDisplay({
+        index,
+        atlasTexture: texture,
+        ContainerClass: Container,
+        SpriteClass: Sprite,
+        TextureClass: Texture,
+        RectangleClass: Rectangle,
+      }).destroy({ children: true });
+      enemyRosterIndexes.set(archetypeId, index);
+      enemyRosterTextures.set(archetypeId, texture);
+      // Rebuild live bodies so the authored art appears without a restart.
+      if (grayboxEnemies.length > 0) resetEnemyMarkers(grayboxEnemies);
+      if (archetypeId === 'the-liquidator') {
+        // The boss previously proxied whale-enforcer poses; it now has its own
+        // authored crown-rig silhouette.
+        const slot = world.getChildIndex(bossVisual);
+        const wasVisible = bossVisual.visible;
+        world.removeChild(bossVisual);
+        bossVisual.destroy({ children: true });
+        bossVisual = createEnemyRosterDisplay({
+          index: enemyRosterIndexes.get(archetypeId),
+          atlasTexture: texture,
+          ContainerClass: Container,
+          SpriteClass: Sprite,
+          TextureClass: Texture,
+          RectangleClass: Rectangle,
+          scale: 1,
+        });
+        bossVisual.rosterScale = BOSS_ROSTER_RUNTIME_SCALE;
+        bossVisual.visible = wasVisible;
+        world.addChildAt(bossVisual, slot);
+      }
+    }).catch((error) => {
+      enemyRosterLoadError = `${archetypeId}: ${String(error?.message ?? error)}`;
+      enemyRosterIndexes.delete(archetypeId);
+      enemyRosterTextures.delete(archetypeId);
+      enemyRosterFailed.add(archetypeId);
+    });
+  };
+
+  const createRosterOrVectorDisplay = (archetypeId, eliteProjection) => {
+    const index = enemyRosterIndexes.get(archetypeId);
+    const texture = enemyRosterTextures.get(archetypeId);
+    if (index && texture) {
+      const display = createEnemyRosterDisplay({
+        index,
+        atlasTexture: texture,
+        ContainerClass: Container,
+        SpriteClass: Sprite,
+        TextureClass: Texture,
+        RectangleClass: Rectangle,
+        scale: 1,
+      });
+      // The render pass multiplies by camera zoom, so carry the authored
+      // runtime scale rather than baking it into the container.
+      display.rosterScale = ENEMY_ROSTER_RUNTIME_SCALE;
+      return display;
+    }
+    requestEnemyRosterAtlas(archetypeId);
     return createProductionEnemyDisplay({
-      archetypeId: enemy.archetypeId,
+      archetypeId,
       elite: eliteProjection,
       ContainerClass: Container,
       GraphicsClass: Graphics,
     });
   };
+
+  const createEnemyMarker = (enemy) => createRosterOrVectorDisplay(enemy.archetypeId, isEliteEnemyProjection(enemy.id));
 
   const resetEnemyMarkers = (enemies) => {
     for (const child of enemyVisuals.removeChildren()) child.destroy();
@@ -389,12 +488,7 @@ async function boot() {
       point: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 24 },
       color: ENEMY_ARCHETYPES[enemy.archetypeId]?.visual.color ?? 0xffffff,
     });
-    const graphic = createProductionEnemyDisplay({
-      archetypeId: enemy.archetypeId,
-      elite: eliteProjection,
-      ContainerClass: Container,
-      GraphicsClass: Graphics,
-    });
+    const graphic = createRosterOrVectorDisplay(enemy.archetypeId, eliteProjection);
     enemyDeathMarkers.set(enemy.id, {
       graphic,
       x: enemy.x,
@@ -699,7 +793,7 @@ async function boot() {
             elite: isEliteEnemyProjection(enemy.id),
           });
           enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
-          enemyMarker.scale.set(camera.zoom);
+          enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);
           enemyMarker.rotation = 0;
           // Health is shown on a pip below the body. It used to drive alpha,
           // which made the highest-priority target the hardest one to see and
@@ -754,13 +848,14 @@ async function boot() {
         if (!death.graphic.visible) continue;
         death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: 0, elite: death.elite });
         death.graphic.position.set(deathScreen.x, deathScreen.y);
-        death.graphic.scale.set(camera.zoom);
+        death.graphic.scale.set((death.graphic.rosterScale ?? 1) * camera.zoom);
         // Fade the corpse out instead of hard-deleting it mid-frame.
         const deathProgress = Math.max(0, Math.min(1, ((simulation?.tick ?? death.startTick) - death.startTick) / Math.max(1, death.endTick - death.startTick)));
         death.graphic.alpha = 1 - deathProgress * deathProgress;
       }
       const bossVisualTick = simulation?.tick ?? 0;
-      if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
+      if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick - 600) requestEnemyRosterAtlas('the-liquidator');
+    if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
         bossVisual.applyPose({
           state: !liquidatorBoss.active ? 'death' : bossVisualTick <= bossHitVisualUntilTick ? 'hit' : liquidatorBoss.pendingAttacks.length > 0 ? 'tell' : 'idle',
@@ -770,7 +865,7 @@ async function boot() {
         });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
-        bossVisual.scale.set(camera.zoom);
+        bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom);
         // Boss health reads from the dedicated bar, never from transparency.
         bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
         for (const pending of liquidatorBoss.pendingAttacks) {
@@ -1066,8 +1161,12 @@ async function boot() {
         stageElement.dataset.actorArtFallbackReason = productionHeroLoadError ?? '';
         stageElement.dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
         stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
-        stageElement.dataset.enemyArt = 'production-vector-enemies-v1';
-        stageElement.dataset.bossArt = 'production-vector-liquidator-v1';
+        // Report the art actually in use: the authored roster only applies to
+        // archetypes whose atlas has resolved.
+        stageElement.dataset.enemyArt = enemyRosterIndexes.size > 0 ? 'production-roster-atlas-v1' : 'production-vector-enemies-v1';
+        stageElement.dataset.bossArt = enemyRosterIndexes.has('the-liquidator') ? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1';
+        stageElement.dataset.enemyRosterLoaded = [...enemyRosterIndexes.keys()].sort().join(',');
+        stageElement.dataset.enemyRosterError = enemyRosterLoadError ?? '';
         stageElement.dataset.worldArt = 'production-vector-world-v1';
         stageElement.dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
         stageElement.dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);

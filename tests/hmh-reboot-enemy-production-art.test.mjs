@@ -105,7 +105,10 @@ test('runtime projects production enemy and boss art without mutating combat aut
   assert.match(source, /bossDeathVisualUntilTick = tick \+ 45/);
   assert.match(source, /bossHitVisualUntilTick = tick \+ 6/);
   assert.match(source, /stageElement\.dataset\.bossVisualState/);
-  assert.match(source, /stageElement\.dataset\.enemyArt = 'production-vector-enemies-v1'/);
-  assert.match(source, /stageElement\.dataset\.bossArt = 'production-vector-liquidator-v1'/);
+  // Enemies and the boss now render from authored Blender roster atlases when
+  // those resolve, and fall back to this vector projection otherwise, so the
+  // art telemetry reports whichever actually rendered.
+  assert.match(source, /dataset\.enemyArt = enemyRosterIndexes\.size > 0 \? 'production-roster-atlas-v1' : 'production-vector-enemies-v1'/);
+  assert.match(source, /dataset\.bossArt = enemyRosterIndexes\.has\('the-liquidator'\) \? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1'/);
   assert.doesNotMatch(source, /(?:enemyMarker|bossVisual)\.(?:damage|health|collision|score|wallet|settlement)\s*=/);
 });

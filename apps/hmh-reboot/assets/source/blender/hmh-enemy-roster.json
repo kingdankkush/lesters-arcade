@@ -1,0 +1,241 @@
+{
+  "schema": 1,
+  "pipelineId": "hmh-reboot-enemy-roster-v1",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "gameplayBodyProfile": "authored-archetype-collision-v1",
+  "notes": [
+    "Every actor here must read as a human survivor or a zombie. Collision radius, damage, AI and spawn behaviour come from enemy-archetypes.mjs and are never derived from this file.",
+    "Actors share one rig and one body builder; identity comes from proportions, palette and a single silhouette prop so the roster stays coherent and reproducible."
+  ],
+  "directions": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "directionAngles": {
+    "south": 0,
+    "south-east": 45,
+    "east": 90,
+    "north-east": 135,
+    "north": 180,
+    "north-west": 225,
+    "west": 270,
+    "south-west": 315
+  },
+  "render": {
+    "engine": "BLENDER_EEVEE",
+    "frameSize": [
+      128,
+      128
+    ],
+    "transparentFilm": true,
+    "rawOutputDirectory": ".tmp/hmh-reboot-enemy-roster",
+    "alphaThreshold": 8,
+    "cameraOrthoScale": 2.15,
+    "exposure": -0.15,
+    "cameraTargetZ": 0.86
+  },
+  "pivot": {
+    "x": 64,
+    "y": 116
+  },
+  "atlas": {
+    "padding": 2,
+    "maxSize": 2048
+  },
+  "scene": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.blend",
+    "armature": "HMH_Enemy_Rig",
+    "collection": "HMH_Enemy_Roster"
+  },
+  "clips": {
+    "idle": {
+      "frames": 2,
+      "fps": 3
+    },
+    "run": {
+      "frames": 6,
+      "fps": 12
+    },
+    "tell": {
+      "frames": 2,
+      "fps": 6
+    },
+    "attack": {
+      "frames": 3,
+      "fps": 14
+    },
+    "hit": {
+      "frames": 2,
+      "fps": 12
+    },
+    "death": {
+      "frames": 4,
+      "fps": 10
+    }
+  },
+  "actors": [
+    {
+      "actorId": "bagholder-rusher",
+      "identityForm": "zombie",
+      "silhouette": "wedge",
+      "build": {
+        "height": 1.0,
+        "shoulders": 1.0,
+        "bulk": 0.95,
+        "stoop": 0.22
+      },
+      "palette": {
+        "skin": "#7fae82",
+        "primary": "#5c3340",
+        "secondary": "#8f4257",
+        "accent": "#ff5c7a",
+        "boot": "#2a1e26"
+      },
+      "prop": {
+        "kind": "chest-wedge",
+        "accent": "#ff5c7a"
+      }
+    },
+    {
+      "actorId": "forkrunner",
+      "identityForm": "human",
+      "silhouette": "diamond",
+      "build": {
+        "height": 0.94,
+        "shoulders": 0.88,
+        "bulk": 0.78,
+        "stoop": 0.05
+      },
+      "palette": {
+        "skin": "#d9a882",
+        "primary": "#173f4d",
+        "secondary": "#1f6272",
+        "accent": "#49ddff",
+        "boot": "#101f26"
+      },
+      "prop": {
+        "kind": "back-satchel",
+        "accent": "#49ddff"
+      }
+    },
+    {
+      "actorId": "liquidator-agent",
+      "identityForm": "human",
+      "silhouette": "square",
+      "build": {
+        "height": 1.02,
+        "shoulders": 1.0,
+        "bulk": 0.9,
+        "stoop": 0.0
+      },
+      "palette": {
+        "skin": "#c79a78",
+        "primary": "#2f2145",
+        "secondary": "#4a3168",
+        "accent": "#e26dff",
+        "boot": "#191128"
+      },
+      "prop": {
+        "kind": "shoulder-rifle",
+        "accent": "#e26dff"
+      }
+    },
+    {
+      "actorId": "whale-enforcer",
+      "identityForm": "zombie",
+      "silhouette": "hexagon",
+      "build": {
+        "height": 1.16,
+        "shoulders": 1.35,
+        "bulk": 1.42,
+        "stoop": 0.14
+      },
+      "palette": {
+        "skin": "#6f9c78",
+        "primary": "#4a3a1d",
+        "secondary": "#6d552a",
+        "accent": "#ffc857",
+        "boot": "#241c10"
+      },
+      "prop": {
+        "kind": "shoulder-plate",
+        "accent": "#ffc857"
+      }
+    },
+    {
+      "actorId": "gas-bomber",
+      "identityForm": "zombie",
+      "silhouette": "orb",
+      "build": {
+        "height": 0.92,
+        "shoulders": 1.05,
+        "bulk": 1.24,
+        "stoop": 0.3
+      },
+      "palette": {
+        "skin": "#87a86a",
+        "primary": "#43301f",
+        "secondary": "#6b4a2c",
+        "accent": "#ff8c5a",
+        "boot": "#221810"
+      },
+      "prop": {
+        "kind": "back-canister",
+        "accent": "#ff8c5a"
+      }
+    },
+    {
+      "actorId": "validator-cultist",
+      "identityForm": "human",
+      "silhouette": "star",
+      "build": {
+        "height": 1.0,
+        "shoulders": 0.9,
+        "bulk": 0.86,
+        "stoop": 0.08
+      },
+      "palette": {
+        "skin": "#cfa98d",
+        "primary": "#2b1d47",
+        "secondary": "#452a6d",
+        "accent": "#b786ff",
+        "boot": "#170f26"
+      },
+      "prop": {
+        "kind": "hand-staff",
+        "accent": "#b786ff"
+      }
+    },
+    {
+      "actorId": "the-liquidator",
+      "identityForm": "zombie",
+      "silhouette": "crown",
+      "boss": true,
+      "build": {
+        "height": 1.42,
+        "shoulders": 1.72,
+        "bulk": 1.8,
+        "stoop": 0.1
+      },
+      "palette": {
+        "skin": "#5e8570",
+        "primary": "#3a1128",
+        "secondary": "#6d1f3f",
+        "accent": "#ff496c",
+        "boot": "#1d0a14"
+      },
+      "prop": {
+        "kind": "crown-rig",
+        "accent": "#ff496c"
+      },
+      "cameraOrthoScale": 3.1
+    }
+  ]
+}

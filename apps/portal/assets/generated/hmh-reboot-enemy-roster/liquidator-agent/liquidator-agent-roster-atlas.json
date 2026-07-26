@@ -1,0 +1,4440 @@
+{
+  "actorId": "liquidator-agent",
+  "boss": false,
+  "classification": "production-art",
+  "directions": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "frames": [
+    {
+      "anchor": {
+        "x": 0.22449,
+        "y": 0.989691
+      },
+      "direction": "east",
+      "fps": 14,
+      "frame": {
+        "h": 97,
+        "w": 49,
+        "x": 391,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__east__000",
+      "opaquePixels": 1520,
+      "pivot": {
+        "x": 11,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "b455fe2e6fef3400e2131b91cfb90bb38758e622faf422d4d259c9a89df434f4",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.177778,
+        "y": 0.989011
+      },
+      "direction": "east",
+      "fps": 14,
+      "frame": {
+        "h": 91,
+        "w": 45,
+        "x": 767,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__east__001",
+      "opaquePixels": 1250,
+      "pivot": {
+        "x": 8,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "34312a78978b1178e22cb635bb1dcee1d3d2f77a341e75dab2914e92efb273a9",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.26087,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 14,
+      "frame": {
+        "h": 92,
+        "w": 46,
+        "x": 528,
+        "y": 298
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__east__002",
+      "opaquePixels": 1159,
+      "pivot": {
+        "x": 12,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4ebd975a83f0c832f6fe542e2fa09f6ac4655f7792e43a4cfac7e5e9b975674b",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.581818,
+        "y": 0.989474
+      },
+      "direction": "north-east",
+      "fps": 14,
+      "frame": {
+        "h": 95,
+        "w": 55,
+        "x": 266,
+        "y": 103
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__north-east__000",
+      "opaquePixels": 1761,
+      "pivot": {
+        "x": 32,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "47721df3e1062822e806b7c0f40d98be6220d9c289d8075c074ca6c31c3d066e",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.56,
+        "y": 0.989362
+      },
+      "direction": "north-east",
+      "fps": 14,
+      "frame": {
+        "h": 94,
+        "w": 50,
+        "x": 418,
+        "y": 201
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__north-east__001",
+      "opaquePixels": 1788,
+      "pivot": {
+        "x": 28,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "d9b1414bc576742f3d97a2966923742d6a6d57c32a9bcb865b666c604b1b5990",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.452381,
+        "y": 0.989583
+      },
+      "direction": "north-east",
+      "fps": 14,
+      "frame": {
+        "h": 96,
+        "w": 42,
+        "x": 2,
+        "y": 103
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__north-east__002",
+      "opaquePixels": 1588,
+      "pivot": {
+        "x": 19,
+        "y": 95
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7205bc301638e28b22e8fad6135cacaa7376027da6afa4bffec2cdbc1271eb67",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.522388,
+        "y": 0.989474
+      },
+      "direction": "north-west",
+      "fps": 14,
+      "frame": {
+        "h": 95,
+        "w": 67,
+        "x": 323,
+        "y": 103
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__north-west__000",
+      "opaquePixels": 1897,
+      "pivot": {
+        "x": 35,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "62132ffcfcfb5e7b8d0691105615409217953c3ff1ffae5e49a3dc982addcf6d",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.548387,
+        "y": 0.989362
+      },
+      "direction": "north-west",
+      "fps": 14,
+      "frame": {
+        "h": 94,
+        "w": 62,
+        "x": 470,
+        "y": 201
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__north-west__001",
+      "opaquePixels": 1846,
+      "pivot": {
+        "x": 34,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7be87acc8676446078f55ff9deddb963f54f18e7baf804a118f2c0c61c2384f4",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.627451,
+        "y": 0.988889
+      },
+      "direction": "north-west",
+      "fps": 14,
+      "frame": {
+        "h": 90,
+        "w": 51,
+        "x": 366,
+        "y": 487
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__north-west__002",
+      "opaquePixels": 1623,
+      "pivot": {
+        "x": 32,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "db641d4b9f73c22f32ac21931b270efeabfae121d8257774afcbf04d7def50c6",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989899
+      },
+      "direction": "north",
+      "fps": 14,
+      "frame": {
+        "h": 99,
+        "w": 72,
+        "x": 2,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__north__000",
+      "opaquePixels": 1879,
+      "pivot": {
+        "x": 36,
+        "y": 98
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "25a4bb2139c68ae7ee2106991ea08cfe7d0195c2001480c4ce25cff789161cd5",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989474
+      },
+      "direction": "north",
+      "fps": 14,
+      "frame": {
+        "h": 95,
+        "w": 68,
+        "x": 392,
+        "y": 103
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__north__001",
+      "opaquePixels": 1860,
+      "pivot": {
+        "x": 34,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fad8622e1d31d8a5151c664a45c97b88ec9aab85c3e00f10db14e9b7a0fe3337",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989796
+      },
+      "direction": "north",
+      "fps": 14,
+      "frame": {
+        "h": 98,
+        "w": 56,
+        "x": 146,
+        "y": 2
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__north__002",
+      "opaquePixels": 1729,
+      "pivot": {
+        "x": 28,
+        "y": 97
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c272055d216c31ea490851c67367631a03772da4d98b6747a1f026c110ead5d2",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.477612,
+        "y": 0.98913
+      },
+      "direction": "south-east",
+      "fps": 14,
+      "frame": {
+        "h": 92,
+        "w": 67,
+        "x": 576,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__south-east__000",
+      "opaquePixels": 1544,
+      "pivot": {
+        "x": 32,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1e3a3944c4ed91dd4a804f2756e6e23d4ff2eca94c235a0e6b598baf1453ce20",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.451613,
+        "y": 0.988506
+      },
+      "direction": "south-east",
+      "fps": 14,
+      "frame": {
+        "h": 87,
+        "w": 62,
+        "x": 715,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__south-east__001",
+      "opaquePixels": 1649,
+      "pivot": {
+        "x": 28,
+        "y": 86
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "edf930878c1f971db8206b65effe1e5277b4b09ee90bfaa3b6e290e1df63a71e",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.372549,
+        "y": 0.989362
+      },
+      "direction": "south-east",
+      "fps": 14,
+      "frame": {
+        "h": 94,
+        "w": 51,
+        "x": 534,
+        "y": 201
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__south-east__002",
+      "opaquePixels": 1748,
+      "pivot": {
+        "x": 19,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "53a8b64157b5c088b216fcd37e5326f6790bc0ec7a077d93169f1f926f917ad5",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.418182,
+        "y": 0.98913
+      },
+      "direction": "south-west",
+      "fps": 14,
+      "frame": {
+        "h": 92,
+        "w": 55,
+        "x": 645,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__south-west__000",
+      "opaquePixels": 1434,
+      "pivot": {
+        "x": 23,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ba3a42d7cc464af47d78fe8b30a23818304a09c9680e94f3918fede89b480d58",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.44,
+        "y": 0.988506
+      },
+      "direction": "south-west",
+      "fps": 14,
+      "frame": {
+        "h": 87,
+        "w": 50,
+        "x": 779,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__south-west__001",
+      "opaquePixels": 1568,
+      "pivot": {
+        "x": 22,
+        "y": 86
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "65fbf416ed0803048a3afb0ae814ed67d43b029e6c9a64d2d4046878e4e93d87",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.547619,
+        "y": 0.989362
+      },
+      "direction": "south-west",
+      "fps": 14,
+      "frame": {
+        "h": 94,
+        "w": 42,
+        "x": 587,
+        "y": 201
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__south-west__002",
+      "opaquePixels": 1720,
+      "pivot": {
+        "x": 23,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "711f8734840aee421fa3c51481636846654598cad1b47a0541777af0e9c2d9a8",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.987013
+      },
+      "direction": "south",
+      "fps": 14,
+      "frame": {
+        "h": 77,
+        "w": 72,
+        "x": 343,
+        "y": 670
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__south__000",
+      "opaquePixels": 1442,
+      "pivot": {
+        "x": 36,
+        "y": 76
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "2d2d509a5d6fe0199277dcead4e5648802ed3d5d3edc9123fa8749a1ff76f74f",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988372
+      },
+      "direction": "south",
+      "fps": 14,
+      "frame": {
+        "h": 86,
+        "w": 68,
+        "x": 831,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__south__001",
+      "opaquePixels": 1608,
+      "pivot": {
+        "x": 34,
+        "y": 85
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "b266e9c085e9cdff04bb2dab65bc75a031c5852212ed93309ff47a3f1d74796b",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989474
+      },
+      "direction": "south",
+      "fps": 14,
+      "frame": {
+        "h": 95,
+        "w": 56,
+        "x": 462,
+        "y": 103
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__south__002",
+      "opaquePixels": 1830,
+      "pivot": {
+        "x": 28,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "aaf2f7e2591539198649813128cb59f385507cba5e1e2ebfe70521c831d25460",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.77551,
+        "y": 0.989691
+      },
+      "direction": "west",
+      "fps": 14,
+      "frame": {
+        "h": 97,
+        "w": 49,
+        "x": 442,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__attack__west__000",
+      "opaquePixels": 1482,
+      "pivot": {
+        "x": 38,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7a822a4b944e46043597aac109a74c9117474f809ee98bb29fdf97f9663ae6b5",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.822222,
+        "y": 0.989011
+      },
+      "direction": "west",
+      "fps": 14,
+      "frame": {
+        "h": 91,
+        "w": 45,
+        "x": 814,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__attack__west__001",
+      "opaquePixels": 1234,
+      "pivot": {
+        "x": 37,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "dabaaaac8461a9935b5a2d1975f07733c860e6f95a35cc9a7232b648d8d990ec",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.73913,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 14,
+      "frame": {
+        "h": 92,
+        "w": 46,
+        "x": 702,
+        "y": 298
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__attack__west__002",
+      "opaquePixels": 1144,
+      "pivot": {
+        "x": 34,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "d4dfe024358c00f365c1f76fc973969d93ff71d084ca3af92dc6c9c7adc4fa23",
+      "state": "attack",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.186047,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 10,
+      "frame": {
+        "h": 92,
+        "w": 43,
+        "x": 750,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__east__000",
+      "opaquePixels": 1092,
+      "pivot": {
+        "x": 8,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "cf4ead0ad5dedad5aecdd8f645e7f006d7aad09bfe1ee9da3e34ab3b99481199",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.415094,
+        "y": 0.988095
+      },
+      "direction": "east",
+      "fps": 10,
+      "frame": {
+        "h": 84,
+        "w": 53,
+        "x": 188,
+        "y": 670
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__east__001",
+      "opaquePixels": 1430,
+      "pivot": {
+        "x": 22,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "0ce3ce2706d19233cbf63c6157c18e908e7a8646cbe1a519cc3f649cf44f3ed7",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.571429,
+        "y": 0.986111
+      },
+      "direction": "east",
+      "fps": 10,
+      "frame": {
+        "h": 72,
+        "w": 70,
+        "x": 946,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__east__002",
+      "opaquePixels": 1548,
+      "pivot": {
+        "x": 40,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1af4d296dbd34a6ced8e31ca71cb108b4f4d03c8e257566ea021fe9bce2fb8f7",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.859375,
+        "y": 0.985075
+      },
+      "direction": "east",
+      "fps": 10,
+      "frame": {
+        "h": 67,
+        "w": 64,
+        "x": 129,
+        "y": 758
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__east__003",
+      "opaquePixels": 1393,
+      "pivot": {
+        "x": 55,
+        "y": 66
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "17936ac47f7f94f88dd99d2f5d0ce16e014eaa43d2a2576e224a2b7f8ffa0d82",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989247
+      },
+      "direction": "north-east",
+      "fps": 10,
+      "frame": {
+        "h": 93,
+        "w": 46,
+        "x": 891,
+        "y": 201
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__north-east__000",
+      "opaquePixels": 1691,
+      "pivot": {
+        "x": 23,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "62ec4d911958b723044fdee51d4aaae058a56e78f352c7efb4716c33be8aac53",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.488372,
+        "y": 0.989247
+      },
+      "direction": "north-east",
+      "fps": 10,
+      "frame": {
+        "h": 93,
+        "w": 43,
+        "x": 939,
+        "y": 201
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__north-east__001",
+      "opaquePixels": 2007,
+      "pivot": {
+        "x": 21,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9e58b60842ad56bf38fe469784823810a3f2781c79ae39077ea3744f2b2870bf",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.563636,
+        "y": 0.986667
+      },
+      "direction": "north-east",
+      "fps": 10,
+      "frame": {
+        "h": 75,
+        "w": 55,
+        "x": 555,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__north-east__002",
+      "opaquePixels": 1829,
+      "pivot": {
+        "x": 31,
+        "y": 74
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "e1f238ad0405898f8c8542f451a417eaea0626f4b1f23848c3084079fa3751f6",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.788462,
+        "y": 0.95082
+      },
+      "direction": "north-east",
+      "fps": 10,
+      "frame": {
+        "h": 61,
+        "w": 52,
+        "x": 301,
+        "y": 758
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__north-east__003",
+      "opaquePixels": 1372,
+      "pivot": {
+        "x": 41,
+        "y": 58
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1c60a19624f139a42eaa6678d22c128d6d2fec5fe1593c54d1917abd635dc04b",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.589286,
+        "y": 0.98913
+      },
+      "direction": "north-west",
+      "fps": 10,
+      "frame": {
+        "h": 92,
+        "w": 56,
+        "x": 795,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__north-west__000",
+      "opaquePixels": 1745,
+      "pivot": {
+        "x": 33,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "23ab62ced44ec8093fa0f16127d9acf2d9e6d834a58e337e8962c61e0f6d0cc3",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.568627,
+        "y": 0.989247
+      },
+      "direction": "north-west",
+      "fps": 10,
+      "frame": {
+        "h": 93,
+        "w": 51,
+        "x": 2,
+        "y": 298
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__north-west__001",
+      "opaquePixels": 2051,
+      "pivot": {
+        "x": 29,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7b14c86957eacb09d9b91119866b8c0848255b8c2c7861c1987b3e3bd3f245bf",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.413793,
+        "y": 0.986667
+      },
+      "direction": "north-west",
+      "fps": 10,
+      "frame": {
+        "h": 75,
+        "w": 58,
+        "x": 612,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__north-west__002",
+      "opaquePixels": 1902,
+      "pivot": {
+        "x": 24,
+        "y": 74
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "14e4a4120f751f514c6760b1eb9b9ea0296fcaf20a198acec9a22dd899353b4a",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.196429,
+        "y": 0.983051
+      },
+      "direction": "north-west",
+      "fps": 10,
+      "frame": {
+        "h": 59,
+        "w": 56,
+        "x": 355,
+        "y": 758
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__north-west__003",
+      "opaquePixels": 1458,
+      "pivot": {
+        "x": 11,
+        "y": 58
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "83b47ffd769d95c525b0a2f830a146373751d8239adeca0322d01c25d4c83c3f",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989583
+      },
+      "direction": "north",
+      "fps": 10,
+      "frame": {
+        "h": 96,
+        "w": 62,
+        "x": 46,
+        "y": 103
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__north__000",
+      "opaquePixels": 1806,
+      "pivot": {
+        "x": 31,
+        "y": 95
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9fbcd08175152fcddc97e349eba85b088a12299b98adc751dce8278516fa3b6a",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.490566,
+        "y": 0.989796
+      },
+      "direction": "north",
+      "fps": 10,
+      "frame": {
+        "h": 98,
+        "w": 53,
+        "x": 204,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__north__001",
+      "opaquePixels": 2045,
+      "pivot": {
+        "x": 26,
+        "y": 97
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f0484ecdc3f232aa5d4bd005753c85b900fe5ea45cfe64258830866a0c50ae47",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.488372,
+        "y": 0.95122
+      },
+      "direction": "north",
+      "fps": 10,
+      "frame": {
+        "h": 82,
+        "w": 43,
+        "x": 298,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__north__002",
+      "opaquePixels": 1841,
+      "pivot": {
+        "x": 21,
+        "y": 78
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "681eb6c5ea3e921b8abde87f34d699830b68ab1fa397d569e239475305848402",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.83871
+      },
+      "direction": "north",
+      "fps": 10,
+      "frame": {
+        "h": 62,
+        "w": 38,
+        "x": 261,
+        "y": 758
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__north__003",
+      "opaquePixels": 1289,
+      "pivot": {
+        "x": 19,
+        "y": 52
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "81560e60f74348c479e7a52e45eb52ffd153e9a1de9f9888835a15beb6eebd6e",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.410714,
+        "y": 0.98913
+      },
+      "direction": "south-east",
+      "fps": 10,
+      "frame": {
+        "h": 92,
+        "w": 56,
+        "x": 853,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__south-east__000",
+      "opaquePixels": 1746,
+      "pivot": {
+        "x": 23,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4715a333f0289d0b718df4b6691fd95af6551ed41918eb1a6ef1ccc1921d3bf9",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.431373,
+        "y": 0.987013
+      },
+      "direction": "south-east",
+      "fps": 10,
+      "frame": {
+        "h": 77,
+        "w": 51,
+        "x": 417,
+        "y": 670
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__south-east__001",
+      "opaquePixels": 1203,
+      "pivot": {
+        "x": 22,
+        "y": 76
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4b3878049452839f81c9eec6a13a8bd3552f18d7419d068fdab47399f719d3c1",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.586207,
+        "y": 0.986301
+      },
+      "direction": "south-east",
+      "fps": 10,
+      "frame": {
+        "h": 73,
+        "w": 58,
+        "x": 784,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__south-east__002",
+      "opaquePixels": 1296,
+      "pivot": {
+        "x": 34,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "37d984dcfe638772caa02113939eb5e32770399d86e5e3d7e530d678356071e7",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.803571,
+        "y": 0.986667
+      },
+      "direction": "south-east",
+      "fps": 10,
+      "frame": {
+        "h": 75,
+        "w": 56,
+        "x": 672,
+        "y": 670
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__south-east__003",
+      "opaquePixels": 1321,
+      "pivot": {
+        "x": 45,
+        "y": 74
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "8eeac228625fbcd3239ed692aadb48f09f1d7ae8620f585f3fc4e825e15fee8e",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.98913
+      },
+      "direction": "south-west",
+      "fps": 10,
+      "frame": {
+        "h": 92,
+        "w": 46,
+        "x": 911,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__south-west__000",
+      "opaquePixels": 1675,
+      "pivot": {
+        "x": 23,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "57d5d9727d67b95ff106a6f3a30a762ca8c54a56d35cda3da99efe1efe1e10a9",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.511628,
+        "y": 0.987013
+      },
+      "direction": "south-west",
+      "fps": 10,
+      "frame": {
+        "h": 77,
+        "w": 43,
+        "x": 470,
+        "y": 670
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__south-west__001",
+      "opaquePixels": 1165,
+      "pivot": {
+        "x": 22,
+        "y": 76
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "88c174af2cc28e9e2c4ccccb9ad8409b59a871e77b3b032839454ef4290269d0",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.436364,
+        "y": 0.986301
+      },
+      "direction": "south-west",
+      "fps": 10,
+      "frame": {
+        "h": 73,
+        "w": 55,
+        "x": 844,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__south-west__002",
+      "opaquePixels": 1357,
+      "pivot": {
+        "x": 24,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "cd1f2f7ccd6d70f8cc0aa63de4d56a7518a6fccb78f7597703025e95aba06ed3",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.211538,
+        "y": 0.986667
+      },
+      "direction": "south-west",
+      "fps": 10,
+      "frame": {
+        "h": 75,
+        "w": 52,
+        "x": 730,
+        "y": 670
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__south-west__003",
+      "opaquePixels": 1373,
+      "pivot": {
+        "x": 11,
+        "y": 74
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5869a96ca287662d35f6e642bdcf254f90c456f744891bee3cbf3b27ac0d5422",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.98913
+      },
+      "direction": "south",
+      "fps": 10,
+      "frame": {
+        "h": 92,
+        "w": 62,
+        "x": 959,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__south__000",
+      "opaquePixels": 1751,
+      "pivot": {
+        "x": 31,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "764602adcfad83d8c2a6f2732a1e67a5c9d7f1f5edf9b1495029ab719a4f1655",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.509434,
+        "y": 0.985915
+      },
+      "direction": "south",
+      "fps": 10,
+      "frame": {
+        "h": 71,
+        "w": 53,
+        "x": 74,
+        "y": 758
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__south__001",
+      "opaquePixels": 1016,
+      "pivot": {
+        "x": 27,
+        "y": 70
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "0485b2d98e6dad6553f4736fea75d4dabaf7e30e799f65ea8888f490b082a37e",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.511628,
+        "y": 0.986301
+      },
+      "direction": "south",
+      "fps": 10,
+      "frame": {
+        "h": 73,
+        "w": 43,
+        "x": 901,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__south__002",
+      "opaquePixels": 1107,
+      "pivot": {
+        "x": 22,
+        "y": 72
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "211ae73ed90ae4b7d4cfe5436627a5ba2a22781d2ebd0d04d760426f2c9f7f5b",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.987013
+      },
+      "direction": "south",
+      "fps": 10,
+      "frame": {
+        "h": 77,
+        "w": 38,
+        "x": 515,
+        "y": 670
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__south__003",
+      "opaquePixels": 1107,
+      "pivot": {
+        "x": 19,
+        "y": 76
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c9b32fb2ffc12f08817511e6726953cf1e5714bbd6c37c3e62ad3e1d924c011d",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.813953,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 10,
+      "frame": {
+        "h": 92,
+        "w": 43,
+        "x": 2,
+        "y": 393
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__death__west__000",
+      "opaquePixels": 1066,
+      "pivot": {
+        "x": 35,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "cf58eab5d5d60a3b8f27b3fdef2545ceb3f8e5cb152f69e9e85e9cfbd84c5eb0",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.584906,
+        "y": 0.988095
+      },
+      "direction": "west",
+      "fps": 10,
+      "frame": {
+        "h": 84,
+        "w": 53,
+        "x": 243,
+        "y": 670
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__death__west__001",
+      "opaquePixels": 1539,
+      "pivot": {
+        "x": 31,
+        "y": 83
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "05d83114090c05662305b910d001b5056cf72ab153da964b06fae16c17c3ae10",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.428571,
+        "y": 0.986111
+      },
+      "direction": "west",
+      "fps": 10,
+      "frame": {
+        "h": 72,
+        "w": 70,
+        "x": 2,
+        "y": 758
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__death__west__002",
+      "opaquePixels": 1705,
+      "pivot": {
+        "x": 30,
+        "y": 71
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "11bee9e2544877d7d67462d01f0e06cd05f0e9e3f7bc33643203ab9b7413a9d1",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.140625,
+        "y": 0.985075
+      },
+      "direction": "west",
+      "fps": 10,
+      "frame": {
+        "h": 67,
+        "w": 64,
+        "x": 195,
+        "y": 758
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__death__west__003",
+      "opaquePixels": 1546,
+      "pivot": {
+        "x": 9,
+        "y": 66
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f28b49733be60c9a1ca73625f017b92aec8cca5e5d46faba3d13933e4766ed56",
+      "state": "death",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.26,
+        "y": 0.988889
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 90,
+        "w": 50,
+        "x": 419,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__east__000",
+      "opaquePixels": 1146,
+      "pivot": {
+        "x": 13,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "926631d9e824b72dff87a0291a43d8807aab8af801fa7b2a61eabd74d660f95e",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.295455,
+        "y": 0.989796
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 98,
+        "w": 44,
+        "x": 259,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__east__001",
+      "opaquePixels": 1287,
+      "pivot": {
+        "x": 13,
+        "y": 97
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "035f3c3b7ab9e078f8ff4ae5b2600cecdf157802a1e1d057a3ed2de3518002c7",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.354167,
+        "y": 0.988889
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 90,
+        "w": 48,
+        "x": 471,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__north-east__000",
+      "opaquePixels": 1599,
+      "pivot": {
+        "x": 17,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f4d68b846ba219589bdefdfc4247fc63b4f9eb0c13d665f129e618d6b7c47105",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989691
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 56,
+        "x": 493,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__north-east__001",
+      "opaquePixels": 1768,
+      "pivot": {
+        "x": 28,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9e495fff741567f4e5b2532820f02cd8a42fdd2afdf696c3e260f2b43d513111",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989691
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 54,
+        "x": 551,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__north-west__000",
+      "opaquePixels": 1898,
+      "pivot": {
+        "x": 27,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "a52d74f4449dc8161da7326359f51354894539177ce7e2c532e269face991b17",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.735849,
+        "y": 0.988889
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 90,
+        "w": 53,
+        "x": 521,
+        "y": 487
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__north-west__001",
+      "opaquePixels": 1575,
+      "pivot": {
+        "x": 39,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c62b1f371879d8d8015af84fc6aa22d5874c7bd6fff1949fb63a886e82911ca6",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989691
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 60,
+        "x": 607,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__north__000",
+      "opaquePixels": 1825,
+      "pivot": {
+        "x": 30,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "6b4406d6855df73fdc02bd2d931a08d62b6c36110a11e12166c8ff99b9020c9c",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.508772,
+        "y": 0.989247
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 93,
+        "w": 57,
+        "x": 55,
+        "y": 298
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__north__001",
+      "opaquePixels": 1741,
+      "pivot": {
+        "x": 29,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1742a538c3fa512c2e57ac4cad677c8ea96108aa0e6c741d3a6f69ee551788b6",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988636
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 54,
+        "x": 942,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__south-east__000",
+      "opaquePixels": 1584,
+      "pivot": {
+        "x": 27,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4819d2a070c0fc483fd285e1775530534aa7b7bf916558553a68f1480d6256b4",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.264151,
+        "y": 0.989474
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 53,
+        "x": 520,
+        "y": 103
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__south-east__001",
+      "opaquePixels": 1540,
+      "pivot": {
+        "x": 14,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7c7e56e9f5c07f3c4c003fb3ca5c4a7532d6d267f82e26746806ffc479f59736",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.645833,
+        "y": 0.989474
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 48,
+        "x": 575,
+        "y": 103
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__south-west__000",
+      "opaquePixels": 1510,
+      "pivot": {
+        "x": 31,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "b2c5519a52e8e04e5f07d9eac33331461fb92e43bb78e88ab5c9fa2c5a102e5e",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988636
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 56,
+        "x": 2,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__south-west__001",
+      "opaquePixels": 1624,
+      "pivot": {
+        "x": 28,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f6abd7925e25557a5b006b707e6cd3111f6fb2efccf33e10efabc87851c96b63",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989011
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 91,
+        "w": 60,
+        "x": 861,
+        "y": 393
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__south__000",
+      "opaquePixels": 1655,
+      "pivot": {
+        "x": 30,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fe782193e9543d245a123208e9edf14673173d5e65771e127b3c4d3a285a376f",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989011
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 91,
+        "w": 58,
+        "x": 923,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__south__001",
+      "opaquePixels": 1847,
+      "pivot": {
+        "x": 29,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "47ab56dbb5e721605a64b0b8e75fa1c031b62c98c92705a542431616f44c1e26",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.74,
+        "y": 0.989796
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 98,
+        "w": 50,
+        "x": 305,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__west__000",
+      "opaquePixels": 1335,
+      "pivot": {
+        "x": 37,
+        "y": 97
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "071a5ae997f9d1d7779596bfc09b47e6aafbeb6cf95c164224c431dd56aa1005",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.704545,
+        "y": 0.989011
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 91,
+        "w": 44,
+        "x": 2,
+        "y": 487
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__west__001",
+      "opaquePixels": 1160,
+      "pivot": {
+        "x": 31,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1c01d3afb4056f2eafb8b1710db94ebcfa345977be2271e3d7ca614c3e56753c",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.162791,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 3,
+      "frame": {
+        "h": 92,
+        "w": 43,
+        "x": 47,
+        "y": 393
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__east__000",
+      "opaquePixels": 1089,
+      "pivot": {
+        "x": 7,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "0bfa6fe36ff85853e1b4c37696af514f6fc6adc1c67f66497048d7f55d9a414b",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.204545,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 3,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 92,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__east__001",
+      "opaquePixels": 1087,
+      "pivot": {
+        "x": 9,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "b87c9a18899d09cbb293c6af62e9eb303d9ab46f04561cf8e337cf46271fe699",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.454545,
+        "y": 0.989247
+      },
+      "direction": "north-east",
+      "fps": 3,
+      "frame": {
+        "h": 93,
+        "w": 44,
+        "x": 114,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__north-east__000",
+      "opaquePixels": 1685,
+      "pivot": {
+        "x": 20,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "0540e92bfe275b530b10ea62aca88caf4c7a13860c91df238b737ce21335999d",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.477273,
+        "y": 0.989362
+      },
+      "direction": "north-east",
+      "fps": 3,
+      "frame": {
+        "h": 94,
+        "w": 44,
+        "x": 631,
+        "y": 201
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__north-east__001",
+      "opaquePixels": 1659,
+      "pivot": {
+        "x": 21,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "100cf0a5bd8d05af053358180a2ea8a74eda28cbe64fa9733e03bb33819d77ba",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.62963,
+        "y": 0.989247
+      },
+      "direction": "north-west",
+      "fps": 3,
+      "frame": {
+        "h": 93,
+        "w": 54,
+        "x": 160,
+        "y": 298
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__north-west__000",
+      "opaquePixels": 1738,
+      "pivot": {
+        "x": 34,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "53203112621466533b36d47171948a833a7ff3b635c6aad0520c8d5de84d0b05",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.611111,
+        "y": 0.989011
+      },
+      "direction": "north-west",
+      "fps": 3,
+      "frame": {
+        "h": 91,
+        "w": 54,
+        "x": 48,
+        "y": 487
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__north-west__001",
+      "opaquePixels": 1708,
+      "pivot": {
+        "x": 33,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4cb50f51e27726c8fe4d84c7eb4cfb2cebefe1314d0e02f71450132b0990da5d",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989583
+      },
+      "direction": "north",
+      "fps": 3,
+      "frame": {
+        "h": 96,
+        "w": 58,
+        "x": 110,
+        "y": 103
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__north__000",
+      "opaquePixels": 1805,
+      "pivot": {
+        "x": 29,
+        "y": 95
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4e3ad9fd22fc857ac453fcd30b862378acd82776b77a0bc037a3d3badc681de7",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989583
+      },
+      "direction": "north",
+      "fps": 3,
+      "frame": {
+        "h": 96,
+        "w": 58,
+        "x": 170,
+        "y": 103
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__north__001",
+      "opaquePixels": 1771,
+      "pivot": {
+        "x": 29,
+        "y": 95
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fb2657cde665274fbaf7ac6c456381147c076474d72196dd5f4459778a51927a",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.37037,
+        "y": 0.989011
+      },
+      "direction": "south-east",
+      "fps": 3,
+      "frame": {
+        "h": 91,
+        "w": 54,
+        "x": 104,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__south-east__000",
+      "opaquePixels": 1713,
+      "pivot": {
+        "x": 20,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c041ca2d25304805310b51074c83f55c74d1ccd32f1341e336d0b448a33ac81b",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.388889,
+        "y": 0.98913
+      },
+      "direction": "south-east",
+      "fps": 3,
+      "frame": {
+        "h": 92,
+        "w": 54,
+        "x": 138,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__south-east__001",
+      "opaquePixels": 1739,
+      "pivot": {
+        "x": 21,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "43767fc3a3ab70ffee056b970aa6ad8ff5407811708a2d2efcc09adf5ef6b1b6",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989011
+      },
+      "direction": "south-west",
+      "fps": 3,
+      "frame": {
+        "h": 91,
+        "w": 44,
+        "x": 160,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__south-west__000",
+      "opaquePixels": 1664,
+      "pivot": {
+        "x": 24,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "19e05b587d654dc596abb9a1fd24158ae540002385cef092b3512d306f9b61a8",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.522727,
+        "y": 0.98913
+      },
+      "direction": "south-west",
+      "fps": 3,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 194,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__south-west__001",
+      "opaquePixels": 1694,
+      "pivot": {
+        "x": 23,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ac3ae00d5c34eff70aef1d60033d42d6a65fc79b65caa768bf427bcd6d518621",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989011
+      },
+      "direction": "south",
+      "fps": 3,
+      "frame": {
+        "h": 91,
+        "w": 58,
+        "x": 206,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__south__000",
+      "opaquePixels": 1753,
+      "pivot": {
+        "x": 29,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "62531e4b26d2799464f672fca4886be05ac1d38652892655b4edddd07283d923",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989247
+      },
+      "direction": "south",
+      "fps": 3,
+      "frame": {
+        "h": 93,
+        "w": 58,
+        "x": 216,
+        "y": 298
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__south__001",
+      "opaquePixels": 1783,
+      "pivot": {
+        "x": 29,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "daf242aa841a30d5adf868e6aa11643f24ea0d333d7512ca4100ca0d027ec432",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.837209,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 3,
+      "frame": {
+        "h": 92,
+        "w": 43,
+        "x": 240,
+        "y": 393
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__idle__west__000",
+      "opaquePixels": 1106,
+      "pivot": {
+        "x": 36,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "0f5bcb7ab7c022a03ef0e21ef26b4c6d60b5c24761fab7b42801b522f11bcd5c",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.795455,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 3,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 285,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__idle__west__001",
+      "opaquePixels": 1087,
+      "pivot": {
+        "x": 35,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ad1a5f541548d5323b8b841212293cb066896ea3f251bf6bc4ba0f028a56cae4",
+      "state": "idle",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.159091,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 331,
+        "y": 393
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__east__000",
+      "opaquePixels": 1211,
+      "pivot": {
+        "x": 7,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "829f617599da34187033a93c011bf7645c00e2eda5933989a14be0783fef1294",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.315789,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 57,
+        "x": 377,
+        "y": 393
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__east__001",
+      "opaquePixels": 1380,
+      "pivot": {
+        "x": 18,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "52f8c3422d53e127939006f166b8048afe8fefdd9470d6d94bc1d297adfe89cd",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.4,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 65,
+        "x": 436,
+        "y": 393
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__east__002",
+      "opaquePixels": 1417,
+      "pivot": {
+        "x": 26,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c7167107938a6f23253af8186b784ac67d49ea8c9e38d5d591a75d9bccebab6b",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.159091,
+        "y": 0.98913
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 503,
+        "y": 393
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__east__003",
+      "opaquePixels": 1127,
+      "pivot": {
+        "x": 7,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "3e54a81baee030c1ece75a1c0293d5a0a07e1de9e4f1d7460b63fe5fa2c07f95",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.315789,
+        "y": 0.989247
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 93,
+        "w": 57,
+        "x": 276,
+        "y": 298
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__east__004",
+      "opaquePixels": 1458,
+      "pivot": {
+        "x": 18,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5515c4ce3afac5a77595ad04624cf80a37d1473b742c48a791e552509bc68fd4",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.4,
+        "y": 0.989247
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 93,
+        "w": 65,
+        "x": 335,
+        "y": 298
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__east__005",
+      "opaquePixels": 1487,
+      "pivot": {
+        "x": 26,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7c224f3c304c9c848eb846d6faf4730ace95414b11e69e2853c219d4f6d69985",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989362
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 94,
+        "w": 46,
+        "x": 677,
+        "y": 201
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__north-east__000",
+      "opaquePixels": 1677,
+      "pivot": {
+        "x": 23,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "8d3f493bff1167fc7087818ba30fdc26578f8dd1533b67df127a7e5f25ac0eec",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.425532,
+        "y": 0.989474
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 47,
+        "x": 625,
+        "y": 103
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__north-east__001",
+      "opaquePixels": 1632,
+      "pivot": {
+        "x": 20,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9c105431b7a2311690e83990cc8a3888b4b88b89db235dc3ae61b43ea31bcdc7",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.446429,
+        "y": 0.989474
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 56,
+        "x": 674,
+        "y": 103
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__north-east__002",
+      "opaquePixels": 1650,
+      "pivot": {
+        "x": 25,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fbdb2bc08fcf42d6f18aef86a7424833eb2bc3e5c08d9eb6c20b930ea470e454",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989362
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 94,
+        "w": 46,
+        "x": 725,
+        "y": 201
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__north-east__003",
+      "opaquePixels": 1741,
+      "pivot": {
+        "x": 23,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5588a7c597809f775ae50394e5cb5523e0d265bfc5e35858a0ff150085b56dd9",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989474
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 55,
+        "x": 732,
+        "y": 103
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__north-east__004",
+      "opaquePixels": 1663,
+      "pivot": {
+        "x": 30,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "300975e1e6f6e5ca4d7a061730f7f24057ccb459a4d5c4c6af32e801158d42b6",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989474
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 55,
+        "x": 789,
+        "y": 103
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__north-east__005",
+      "opaquePixels": 1677,
+      "pivot": {
+        "x": 30,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "051a7d11b16d4d2853e06f021ab6e60f7f217d0530e4563601a16ba6df839974",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.596491,
+        "y": 0.989362
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 94,
+        "w": 57,
+        "x": 773,
+        "y": 201
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__north-west__000",
+      "opaquePixels": 1796,
+      "pivot": {
+        "x": 34,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "06807bffb1159443628f7fe06687a0c728ff312103b3d559c8e729efd1cd8c90",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989474
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 66,
+        "x": 846,
+        "y": 103
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__north-west__001",
+      "opaquePixels": 1714,
+      "pivot": {
+        "x": 36,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f15286de09728d53daa1e5234551b1e0dd73e695769a154b7c840db4ddfc2c04",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989474
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 66,
+        "x": 914,
+        "y": 103
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__north-west__002",
+      "opaquePixels": 1728,
+      "pivot": {
+        "x": 36,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "b2bbe29514609cc2fc241902491e16168e51449b37e78604d714e96b5844285f",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.596491,
+        "y": 0.989362
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 94,
+        "w": 57,
+        "x": 832,
+        "y": 201
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__north-west__003",
+      "opaquePixels": 1732,
+      "pivot": {
+        "x": 34,
+        "y": 93
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5aabc753f63fe5fb54b9a7415318dc5c75d3d688e81e3d088f17f2d566dd5b3e",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.642857,
+        "y": 0.989474
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 56,
+        "x": 2,
+        "y": 201
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__north-west__004",
+      "opaquePixels": 1684,
+      "pivot": {
+        "x": 36,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7d0aea4cb2b35d21a502787e4d44101d798a3bec01965f24b864cd2143a16d14",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.590164,
+        "y": 0.989474
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 61,
+        "x": 60,
+        "y": 201
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__north-west__005",
+      "opaquePixels": 1705,
+      "pivot": {
+        "x": 36,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "35f7436039eb5419debc82ce4c67449f7e293a251aeeb15718d71d2d17e53d92",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989474
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 62,
+        "x": 123,
+        "y": 201
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__north__000",
+      "opaquePixels": 1745,
+      "pivot": {
+        "x": 31,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "56ec1d48abcff8f7f5dcb11b4f89ce5932a6908b22fa9e4307ae876c4740eeec",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.416667,
+        "y": 0.989691
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 60,
+        "x": 669,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__north__001",
+      "opaquePixels": 1731,
+      "pivot": {
+        "x": 25,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "09d3d64c982379c50060927902a916eaa5a27b239268fcbee08d3dea0f752e27",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.416667,
+        "y": 0.989691
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 60,
+        "x": 731,
+        "y": 2
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__north__002",
+      "opaquePixels": 1719,
+      "pivot": {
+        "x": 25,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "13405cca20a2effb7cfaa91cfffa81531156abe0b3e6b3f41c055ce88acbb0ca",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989474
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 95,
+        "w": 62,
+        "x": 187,
+        "y": 201
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__north__003",
+      "opaquePixels": 1745,
+      "pivot": {
+        "x": 31,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "6efac021f371a779f8c1228888b166ef8510dc44b2313851e2ac13ca6c677a20",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.583333,
+        "y": 0.989691
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 60,
+        "x": 793,
+        "y": 2
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__north__004",
+      "opaquePixels": 1729,
+      "pivot": {
+        "x": 35,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ca67a142f6f374ec37220c419a3276c2b27c34ee08630547596df668075dd0c5",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.583333,
+        "y": 0.989691
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 97,
+        "w": 60,
+        "x": 855,
+        "y": 2
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__north__005",
+      "opaquePixels": 1717,
+      "pivot": {
+        "x": 35,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "3ade4a1877d9573021cf096d4744eb3dc178fbc0da3eb0cc60ae62b014c85162",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.403509,
+        "y": 0.988764
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 89,
+        "w": 57,
+        "x": 728,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__south-east__000",
+      "opaquePixels": 1706,
+      "pivot": {
+        "x": 23,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7f438d3b4cfc13e5e9d649ed6b9556e33d2b2ac532cc5fdfab2947c6185e3faf",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.454545,
+        "y": 0.988636
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 66,
+        "x": 60,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__south-east__001",
+      "opaquePixels": 1539,
+      "pivot": {
+        "x": 30,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4d96aba36f9fd4e4a0fffdbd10094f603b1c5aa6fc148db5689763e88432ee3c",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.454545,
+        "y": 0.988636
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 66,
+        "x": 128,
+        "y": 580
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__south-east__002",
+      "opaquePixels": 1559,
+      "pivot": {
+        "x": 30,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c536a369dd2537ca67ef1b97b8320f19ff4e86668ee2bf3df9e252a0bdfaf185",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.403509,
+        "y": 0.988764
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 89,
+        "w": 57,
+        "x": 787,
+        "y": 487
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__south-east__003",
+      "opaquePixels": 1700,
+      "pivot": {
+        "x": 23,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fad8a6e5a0dbccd91f4e2d8cf627bd7d966594e6110b2e7b984dd6a24265d1b3",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.357143,
+        "y": 0.988636
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 56,
+        "x": 196,
+        "y": 580
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__south-east__004",
+      "opaquePixels": 1578,
+      "pivot": {
+        "x": 20,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f15f8bd87a3f35ee1f4530d53d3acd989c8eabc9c33b529759cf7d1eaa057621",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.409836,
+        "y": 0.988636
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 61,
+        "x": 254,
+        "y": 580
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__south-east__005",
+      "opaquePixels": 1555,
+      "pivot": {
+        "x": 25,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5762a83fca445f76d62c14a8b623109743a47ff57d6afcbfbf0e61d422b24c0d",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988764
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 89,
+        "w": 46,
+        "x": 846,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__south-west__000",
+      "opaquePixels": 1629,
+      "pivot": {
+        "x": 23,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "a45495eb97420bf37fd12e6c0350c73a602eda86c0a1005e03774f94e344dc89",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.574468,
+        "y": 0.988636
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 47,
+        "x": 317,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__south-west__001",
+      "opaquePixels": 1478,
+      "pivot": {
+        "x": 27,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "2bb43d8c9cfc936b2b7934c9337f6555ffb61f9bcff7010182637ee533c2f76e",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.553571,
+        "y": 0.988636
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 56,
+        "x": 366,
+        "y": 580
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__south-west__002",
+      "opaquePixels": 1456,
+      "pivot": {
+        "x": 31,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "3dec04ece85b33d8cd2894d42369eef0233a4f4428351f1057add7a62221dfd7",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988764
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 89,
+        "w": 46,
+        "x": 894,
+        "y": 487
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__south-west__003",
+      "opaquePixels": 1634,
+      "pivot": {
+        "x": 23,
+        "y": 88
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ae0a4e8031276118a9211e81cc11281bc219b7f41baf9c7e38da6a3e4137f4db",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.454545,
+        "y": 0.988636
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 55,
+        "x": 424,
+        "y": 580
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__south-west__004",
+      "opaquePixels": 1530,
+      "pivot": {
+        "x": 25,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ad1ba9ee16e34e223605bd0fc8fc988ebbad13f68c4a88fc10588f3a0b73fcf7",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.454545,
+        "y": 0.988636
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 55,
+        "x": 481,
+        "y": 580
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__south-west__005",
+      "opaquePixels": 1553,
+      "pivot": {
+        "x": 25,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ab29474979e748cbb77038ae790f1671c2f3a0ee766ca9e6a5822171de6f9063",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988636
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 62,
+        "x": 538,
+        "y": 580
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__south__000",
+      "opaquePixels": 1694,
+      "pivot": {
+        "x": 31,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "e20b2170c54107a0c2b698f6da0becb464d3ce3a967c5a5f17addf0741635f3f",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.583333,
+        "y": 0.988372
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 86,
+        "w": 60,
+        "x": 901,
+        "y": 580
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__south__001",
+      "opaquePixels": 1590,
+      "pivot": {
+        "x": 35,
+        "y": 85
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "129162b61d5baca6a8f55d99662c37ef83e5d0af9fd69c392ebf66d0c2ff634c",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.583333,
+        "y": 0.988372
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 86,
+        "w": 60,
+        "x": 2,
+        "y": 670
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__south__002",
+      "opaquePixels": 1544,
+      "pivot": {
+        "x": 35,
+        "y": 85
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "06e98a94c47e90aab93f7605a4cf8cb43d55cdbfca801a23f7beb7eda73c8359",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.988636
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 62,
+        "x": 602,
+        "y": 580
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__south__003",
+      "opaquePixels": 1693,
+      "pivot": {
+        "x": 31,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "a1ccd490e15551f2374de37dbae718fc88b1ad7a56eaf446125fea26b7fc5ac9",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.416667,
+        "y": 0.988372
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 86,
+        "w": 60,
+        "x": 64,
+        "y": 670
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__south__004",
+      "opaquePixels": 1610,
+      "pivot": {
+        "x": 25,
+        "y": 85
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "852ff24b354d70c8e55f076d3e56c96e555b1cb0c4492265a97b6175cabcf5ea",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.416667,
+        "y": 0.988372
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 86,
+        "w": 60,
+        "x": 126,
+        "y": 670
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__south__005",
+      "opaquePixels": 1555,
+      "pivot": {
+        "x": 25,
+        "y": 85
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "87a08a6aeeb72f7fd535f3b0b8fcfbc9f82a501e1ba56460ccca129c94b936ca",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.840909,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 549,
+        "y": 393
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__run__west__000",
+      "opaquePixels": 1135,
+      "pivot": {
+        "x": 37,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9c5beb3d61726a9fc720830dc9d1863a24cc0de15efe88cbaf9234d2edda4dc2",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.684211,
+        "y": 0.989247
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 93,
+        "w": 57,
+        "x": 402,
+        "y": 298
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__run__west__001",
+      "opaquePixels": 1466,
+      "pivot": {
+        "x": 39,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "85acc0a427f76deb3bad672d7ba3c11bd0fb0cfe5e4fe08683731497a8b0ef25",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.6,
+        "y": 0.989247
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 93,
+        "w": 65,
+        "x": 461,
+        "y": 298
+      },
+      "frameIndex": 2,
+      "id": "liquidator-agent__body__run__west__002",
+      "opaquePixels": 1494,
+      "pivot": {
+        "x": 39,
+        "y": 92
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1a8b3373adc6cd49a982bae5592c61fc5af9b0776b3f6b9e2b11b46d351af4b3",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.840909,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 44,
+        "x": 595,
+        "y": 393
+      },
+      "frameIndex": 3,
+      "id": "liquidator-agent__body__run__west__003",
+      "opaquePixels": 1219,
+      "pivot": {
+        "x": 37,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9486caf3dc37d64c41b3bbfa442d30b1923582e363c13a518c8537d31eb265fb",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.684211,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 57,
+        "x": 641,
+        "y": 393
+      },
+      "frameIndex": 4,
+      "id": "liquidator-agent__body__run__west__004",
+      "opaquePixels": 1390,
+      "pivot": {
+        "x": 39,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "a8c284c5476e5594de1868412f659f0d21f6f000623a3533c5425e35ea85aa57",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.6,
+        "y": 0.98913
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 92,
+        "w": 65,
+        "x": 700,
+        "y": 393
+      },
+      "frameIndex": 5,
+      "id": "liquidator-agent__body__run__west__005",
+      "opaquePixels": 1427,
+      "pivot": {
+        "x": 39,
+        "y": 91
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9ded32287d4e6ef7f01d5b45d5791f2a0230fe5dde92cd165b797c0a141b3645",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.3125,
+        "y": 0.989011
+      },
+      "direction": "east",
+      "fps": 6,
+      "frame": {
+        "h": 91,
+        "w": 48,
+        "x": 266,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__east__000",
+      "opaquePixels": 1221,
+      "pivot": {
+        "x": 15,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "dd2916f3c69e3ef1dfbd3eb2b019a73b032ff1bac482ed15d0fb74d7156b0d7d",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.34,
+        "y": 0.988889
+      },
+      "direction": "east",
+      "fps": 6,
+      "frame": {
+        "h": 90,
+        "w": 50,
+        "x": 576,
+        "y": 487
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__east__001",
+      "opaquePixels": 1249,
+      "pivot": {
+        "x": 17,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fb3754d8f37e5773c3b48717c0e74bcb0a47102b2383a2a9e0f7bcee03271484",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.454545,
+        "y": 0.989691
+      },
+      "direction": "north-east",
+      "fps": 6,
+      "frame": {
+        "h": 97,
+        "w": 33,
+        "x": 917,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__north-east__000",
+      "opaquePixels": 1473,
+      "pivot": {
+        "x": 15,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "8221d3436daea3e8e79cb62d55b177933619e2476a469a2cb28197f6cd300689",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.46875,
+        "y": 0.989796
+      },
+      "direction": "north-east",
+      "fps": 6,
+      "frame": {
+        "h": 98,
+        "w": 32,
+        "x": 357,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__north-east__001",
+      "opaquePixels": 1464,
+      "pivot": {
+        "x": 15,
+        "y": 97
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4183a6ff4e6ac3447554e3197215dfe06afdffd6afa0962fe3fab42cc92ac833",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.680851,
+        "y": 0.988636
+      },
+      "direction": "north-west",
+      "fps": 6,
+      "frame": {
+        "h": 88,
+        "w": 47,
+        "x": 666,
+        "y": 580
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__north-west__000",
+      "opaquePixels": 1505,
+      "pivot": {
+        "x": 32,
+        "y": 87
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4bd6e81b58acaac35bb534bf2502e382a624bd92535e71a8704ce8e08ebffa1b",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.673913,
+        "y": 0.988889
+      },
+      "direction": "north-west",
+      "fps": 6,
+      "frame": {
+        "h": 90,
+        "w": 46,
+        "x": 628,
+        "y": 487
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__north-west__001",
+      "opaquePixels": 1513,
+      "pivot": {
+        "x": 31,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "16d4ff2cab9416d3b8597b8828fc4feb69d18842448bf7705349c04699ddce41",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989899
+      },
+      "direction": "north",
+      "fps": 6,
+      "frame": {
+        "h": 99,
+        "w": 34,
+        "x": 76,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__north__000",
+      "opaquePixels": 1458,
+      "pivot": {
+        "x": 17,
+        "y": 98
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "767a2f5d2310105055ae35f7b826f062318b2a9ab69dea6606bf5ab4c087b671",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989899
+      },
+      "direction": "north",
+      "fps": 6,
+      "frame": {
+        "h": 99,
+        "w": 32,
+        "x": 112,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__north__001",
+      "opaquePixels": 1469,
+      "pivot": {
+        "x": 16,
+        "y": 98
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "832ac19c5c1a206ee9d342ee3e9d5fe78d855694edade910fd9c77a3c0aea6d7",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.319149,
+        "y": 0.989474
+      },
+      "direction": "south-east",
+      "fps": 6,
+      "frame": {
+        "h": 95,
+        "w": 47,
+        "x": 251,
+        "y": 201
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__south-east__000",
+      "opaquePixels": 1641,
+      "pivot": {
+        "x": 15,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "894bbffedf803d77e286bc47a70d9ace3cb4ccedb2870dec962e43d23b902ed7",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.326087,
+        "y": 0.989474
+      },
+      "direction": "south-east",
+      "fps": 6,
+      "frame": {
+        "h": 95,
+        "w": 46,
+        "x": 300,
+        "y": 201
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__south-east__001",
+      "opaquePixels": 1636,
+      "pivot": {
+        "x": 15,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fbf5115019827780f46976c44e8840f50a0c91b98ee4c8a19b0d67e15e8ecbcb",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989474
+      },
+      "direction": "south-west",
+      "fps": 6,
+      "frame": {
+        "h": 95,
+        "w": 33,
+        "x": 348,
+        "y": 201
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__south-west__000",
+      "opaquePixels": 1595,
+      "pivot": {
+        "x": 18,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "d58ce7b4a4544ba2d8b75470be6ffe6b66e8d0c94ac1a1a0ef1643b060114961",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.545455,
+        "y": 0.989474
+      },
+      "direction": "south-west",
+      "fps": 6,
+      "frame": {
+        "h": 95,
+        "w": 33,
+        "x": 383,
+        "y": 201
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__south-west__001",
+      "opaquePixels": 1565,
+      "pivot": {
+        "x": 18,
+        "y": 94
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "8ec568e46db9136fc6932d9859db89cdb1dd6992d555aece46d49138e03521a8",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989583
+      },
+      "direction": "south",
+      "fps": 6,
+      "frame": {
+        "h": 96,
+        "w": 34,
+        "x": 230,
+        "y": 103
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__south__000",
+      "opaquePixels": 1568,
+      "pivot": {
+        "x": 17,
+        "y": 95
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "fd16579507fb260ad46d1fb9abf545ef651192c659175255ba6e785d1debd98a",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.5,
+        "y": 0.989691
+      },
+      "direction": "south",
+      "fps": 6,
+      "frame": {
+        "h": 97,
+        "w": 32,
+        "x": 952,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__south__001",
+      "opaquePixels": 1569,
+      "pivot": {
+        "x": 16,
+        "y": 96
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "776f561e5e513181e2d1f7b9413a6167ea104673f948df8f11a8aa30d4791be8",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.6875,
+        "y": 0.989011
+      },
+      "direction": "west",
+      "fps": 6,
+      "frame": {
+        "h": 91,
+        "w": 48,
+        "x": 316,
+        "y": 487
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__tell__west__000",
+      "opaquePixels": 1235,
+      "pivot": {
+        "x": 33,
+        "y": 90
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "880e20543c72d5569b6df25d70f640e4100fd2c7520bb829091886b3a80cb6b6",
+      "state": "tell",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.66,
+        "y": 0.988889
+      },
+      "direction": "west",
+      "fps": 6,
+      "frame": {
+        "h": 90,
+        "w": 50,
+        "x": 676,
+        "y": 487
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__tell__west__001",
+      "opaquePixels": 1270,
+      "pivot": {
+        "x": 33,
+        "y": 89
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c4ec9b7a5f15bc72ee540132c763a8c8d5259e90ce3549e02c57d71e3cc23f87",
+      "state": "tell",
+      "trimmed": true
+    }
+  ],
+  "gameplayBodyProfile": "authored-archetype-collision-v1",
+  "identityForm": "human",
+  "image": "./liquidator-agent-roster-atlas.png",
+  "pipelineId": "hmh-reboot-enemy-roster-v1",
+  "runtimeAuthority": "projection-only",
+  "schemaVersion": 1,
+  "silhouette": "square",
+  "states": [
+    "idle",
+    "run",
+    "tell",
+    "attack",
+    "hit",
+    "death"
+  ]
+}

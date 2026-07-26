@@ -108,7 +108,9 @@
     "ship:gate": "node scripts/ship-gate.mjs",
     "smoke:portal:e2e": "node scripts/hmh-reboot-portal-e2e.mjs",
     "visual:reboot": "node scripts/hmh-reboot-visual-regression.mjs",
-    "visual:reboot:accept": "node scripts/hmh-reboot-visual-regression.mjs --accept"
+    "visual:reboot:accept": "node scripts/hmh-reboot-visual-regression.mjs --accept",
+    "assets:hmh:enemy-roster": "python scripts/run-hmh-enemy-roster-pipeline.py",
+    "assets:hmh:enemy-roster:verify": "python scripts/run-hmh-enemy-roster-pipeline.py --verify-reproducible"
   },
   "keywords": [
     "litecoin",
