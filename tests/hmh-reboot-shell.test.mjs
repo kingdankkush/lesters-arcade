@@ -94,11 +94,11 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /stageElement\.dataset\.grenadeCount/);
   assert.match(source, /stageElement\.dataset\.dashReadyTick/);
   assert.doesNotMatch(source, /SETTLER_CALIBRATION/);
-  assert.match(source, /if \(debugGridEnabled\) \{[\s\S]*stageElement\.dataset\.collisionBlocker/);
+  assert.match(source, /if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{[\s\S]*stageElement\.dataset\.collisionBlocker/);
   assert.match(source, /label\.style\.fontSize/);
-  assert.match(source, /view\.width\s*<\s*600/);
-  assert.match(source, /const safeLabelX = view\.width \* 0\.5/);
-  assert.match(source, /const safeLabelY = view\.width < 600 \? 202 : 82/);
+  assert.match(source, /computeHudMinimapLayout/);
+  assert.match(source, /computeCombatStatusLayout/);
+  assert.match(source, /label\.position\.set\(combatStatusLayout\.x, combatStatusLayout\.y\)/);
   assert.match(source, /createActorSpatialState\(/);
   assert.match(source, /createCameraState\(/);
   assert.match(source, /interpolateSpatialState\(/);

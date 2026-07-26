@@ -131,6 +131,64 @@ async function assertTouchGeometry(page, profile) {
   return controls;
 }
 
+function overlapArea(first, second) {
+  const width = Math.max(0, Math.min(first.right, second.right) - Math.max(first.left, second.left));
+  const height = Math.max(0, Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top));
+  return width * height;
+}
+
+function assertNoVisibleOverlap(first, second, label) {
+  const area = overlapArea(first, second);
+  assert.ok(area <= 1, `${label} overlap area ${area.toFixed(2)}px²`);
+  return area;
+}
+
+async function assertTouchComposition(page, profile, controls) {
+  if (!profile.isMobile) return null;
+  const composition = await page.locator('#hmhRebootStage').evaluate((stage) => {
+    const rectFor = (selector) => {
+      const element = document.querySelector(selector);
+      const rect = element?.getBoundingClientRect();
+      return rect && getComputedStyle(element).display !== 'none'
+        ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom }
+        : null;
+    };
+    const width = innerWidth;
+    const height = innerHeight;
+    const worldWidth = Number(stage.dataset.worldWidth);
+    const worldHeight = Number(stage.dataset.worldHeight);
+    const telemetryWidth = Number(stage.dataset.minimapWidth);
+    const telemetryHeight = Number(stage.dataset.minimapHeight);
+    const telemetryX = Number(stage.dataset.minimapX);
+    const telemetryY = Number(stage.dataset.minimapY);
+    const compact = width < 600;
+    const fallbackWidth = Math.min(compact ? 120 : 220, width * 0.34);
+    const fallbackHeight = fallbackWidth * worldHeight / worldWidth;
+    const minimap = [telemetryWidth, telemetryHeight, telemetryX, telemetryY].every(Number.isFinite)
+      && telemetryWidth > 0 && telemetryHeight > 0
+      ? { left: telemetryX - 6, top: telemetryY - 6, right: telemetryX + telemetryWidth + 6, bottom: telemetryY + telemetryHeight + 6 }
+      : {
+          left: width - fallbackWidth - 22,
+          top: (compact && height >= 700 ? height - fallbackHeight - 306 : 10),
+          right: width - 10,
+          bottom: (compact && height >= 700 ? height - 294 : 22 + fallbackHeight),
+        };
+    return {
+      status: rectFor('.hmh-reboot-status-card'),
+      runRail: rectFor('.hmh-run-rail'),
+      minimap,
+    };
+  });
+  if (composition.status) assertNoVisibleOverlap(composition.status, composition.runRail, `${profile.name} status/run rail`);
+  for (const control of controls) {
+    assertNoVisibleOverlap(control, composition.runRail, `${profile.name} ${control.name}/run rail`);
+    if (control.name === 'pause' || control.name === 'weaponNext') {
+      assertNoVisibleOverlap(control, composition.minimap, `${profile.name} ${control.name}/minimap`);
+    }
+  }
+  return composition;
+}
+
 async function captureAnchor(profile, pass) {
   const page = await browser.newPage({ viewport: profile.viewport, deviceScaleFactor: profile.deviceScaleFactor, isMobile: profile.isMobile, hasTouch: profile.isMobile });
   const errors = [];
@@ -185,10 +243,11 @@ async function captureLiveInteraction(profile) {
     await resumeButton.click();
     await page.waitForFunction((tick) => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick) > tick, pausedTick);
     const touchControls = await assertTouchGeometry(page, profile);
+    const touchComposition = await assertTouchComposition(page, profile, touchControls);
     const image = await page.screenshot({ type: 'png' });
     await writeFile(path.join(evidenceRoot, `${profile.name}-live.png`), image);
     assert.deepEqual(errors, [], `${profile.name} live errors`);
-    return { before, after, pausedTick, touchControls, liveHash: digest(image) };
+    return { before, after, pausedTick, touchControls, touchComposition, liveHash: digest(image) };
   } finally {
     await page.close();
   }

@@ -140,7 +140,7 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (hover: none) and (pointer: coarse), (max-width: 900px) {
   .hmh-touch-controls { display: block; }
   .hmh-reboot-status-card { width: min(290px, calc(100% - 100px)); }
-  .hmh-run-rail { top: 150px; width: calc(100% - 24px); grid-template-columns: 0.75fr 0.55fr 1.4fr 0.8fr; }
+  .hmh-run-rail { top: 165px; width: calc(100% - 24px); grid-template-columns: 0.75fr 0.55fr 1.4fr 0.8fr; }
   .hmh-run-stat { min-width: 0; padding-inline: 7px; }
   .hmh-run-stat strong { font-size: 0.82rem; }
   .hmh-profile-panel { top: 190px; }
@@ -163,6 +163,46 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .hmh-upgrade-choices { grid-template-columns: 1fr; gap: 8px; }
   .hmh-upgrade-choice { min-height: 0; padding: 12px; }
   .hmh-upgrade-choice p { display: none; }
+}
+
+@media (max-width: 900px) and (max-height: 520px) and (orientation: landscape) {
+  .hmh-reboot-status-card {
+    top: 8px;
+    left: 8px;
+    display: block;
+    width: auto;
+    padding: 4px 6px;
+    border-radius: 10px;
+  }
+  .hmh-reboot-kicker,
+  #hmhRebootStatus,
+  #hmhRebootSession,
+  .hmh-adapter-status { display: none; }
+  .hmh-command-row { margin: 0; }
+  .hmh-command-button { min-height: 38px; padding: 4px 7px; font-size: 0.56rem; }
+  .hmh-run-rail {
+    top: 8px;
+    left: 210px;
+    width: min(380px, calc(100% - 452px));
+    padding: 3px;
+    border-radius: 11px;
+    transform: none;
+  }
+  .hmh-run-stat { min-width: 0; padding: 3px 5px; }
+  .hmh-run-stat span { font-size: 0.48rem; }
+  .hmh-run-stat strong { font-size: 0.76rem; }
+  .hmh-reboot-dash-status { min-width: 0; padding: 3px 4px; font-size: 0.48rem; }
+}
+
+@media (max-width: 700px) and (max-height: 520px) and (orientation: landscape) {
+  .hmh-run-rail { left: 190px; width: calc(100% - 422px); }
+  .hmh-run-stat:first-child { display: none; }
+}
+
+@media (max-width: 620px) and (max-height: 520px) and (orientation: landscape) {
+  .hmh-reboot-status-card { display: none; }
+  .hmh-run-rail { left: 8px; width: calc(100% - 250px); }
+  .hmh-run-stat:first-child { display: grid; }
 }
 
 @media (prefers-reduced-motion: reduce) {

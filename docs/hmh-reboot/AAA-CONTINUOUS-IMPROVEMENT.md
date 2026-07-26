@@ -70,5 +70,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `774522ad`; production unchanged
   - Cycle ledger: `cycles/CYCLE-010.md`
 - [x] Cycle 011: complete Liquidator telegraph projection for melee and safe-zone geometry
-  - Status: local certified; commit pending; production unchanged
+  - Status: committed locally as `c66e2b74`; production unchanged
   - Cycle ledger: `cycles/CYCLE-011.md`
+- [x] Cycle 012: mobile HUD, minimap, touch-control, and combat-status composition
+  - Status: local certified; commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-012.md`

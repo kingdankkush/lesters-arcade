@@ -9,6 +9,7 @@ import {
   computeTouchControlLayout,
   createBrowserInputController,
 } from '../apps/hmh-reboot/src/input.mjs';
+import { computeCombatStatusLayout, computeHudMinimapLayout } from '../apps/hmh-reboot/src/hud-layout.mjs';
 import { FIXED_STEP_MS, DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
 import { createCameraState } from '../apps/hmh-reboot/src/world-space.mjs';
 
@@ -228,6 +229,34 @@ test('touch layout respects safe areas and adapts to portrait and landscape rota
   );
   assert.ok(topActionDistance >= portrait.buttons.weaponNext.radius + portrait.buttons.pause.radius + 8);
   assert.ok(portrait.buttons.weaponNext.x > portrait.viewport.width - 100);
+});
+
+test('landscape touch utility buttons stay left of the authored minimap exclusion zone', () => {
+  for (const viewport of [{ width: 1_024, height: 768 }, { width: 844, height: 390 }]) {
+    const touch = computeTouchControlLayout(viewport);
+    const minimap = computeHudMinimapLayout({ ...viewport, worldWidth: 10_000, worldHeight: 4_000 });
+    for (const action of ['pause', 'weaponNext']) {
+      const button = touch.buttons[action];
+      assert.ok(
+        button.x + button.radius <= minimap.outer.left - 8,
+        `${viewport.width}x${viewport.height} ${action} overlaps minimap exclusion`,
+      );
+    }
+    if (viewport.height <= 520) assert.equal(minimap.width, 140);
+  }
+});
+
+test('touch landscape combat status clears top chrome while desktop and portrait retain their layouts', () => {
+  const phoneLandscape = computeCombatStatusLayout({ width: 844, height: 390, touchUiEnabled: true });
+  const tabletLandscape = computeCombatStatusLayout({ width: 1_024, height: 768, touchUiEnabled: true });
+  const phonePortrait = computeCombatStatusLayout({ width: 390, height: 844, touchUiEnabled: true });
+  const desktop = computeCombatStatusLayout({ width: 1_440, height: 900, touchUiEnabled: false });
+  assert.deepEqual(
+    [phoneLandscape.compact, phoneLandscape.y, tabletLandscape.compact, tabletLandscape.y],
+    [true, 76, true, 240],
+  );
+  assert.deepEqual([phonePortrait.multiline, phonePortrait.y], [true, 202]);
+  assert.deepEqual([desktop.compact, desktop.multiline, desktop.y, desktop.fontSize], [false, false, 82, 18]);
 });
 
 class FakeEventTarget {

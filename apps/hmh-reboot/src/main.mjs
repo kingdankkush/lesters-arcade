@@ -3,6 +3,7 @@ import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
+import { computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -212,6 +213,7 @@ async function boot() {
     coarsePointer: window.matchMedia('(pointer: coarse)').matches,
     reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   });
+  const touchUiEnabled = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 900;
   const app = new Application();
   await app.init({
     resizeTo: stageElement,
@@ -737,16 +739,19 @@ async function boot() {
 
   const renderMinimap = (view, renderState) => {
     minimap.clear();
-    const compact = view.width < 600;
-    const width = Math.min(compact ? 120 : 220, view.width * 0.34);
-    const height = width * (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
-    const originX = view.width - width - 16;
-    const originY = compact && view.height >= 700 ? view.height - height - 300 : 16;
-    if (debugGridEnabled) {
+    const minimapLayout = computeHudMinimapLayout({
+      width: view.width,
+      height: view.height,
+      worldWidth: WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX,
+      worldHeight: WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY,
+    });
+    const { width, height, x: originX, y: originY } = minimapLayout;
+    if (debugGridEnabled || releaseTelemetryEnabled) {
       stageElement.dataset.minimapWidth = width.toFixed(3);
       stageElement.dataset.minimapHeight = height.toFixed(3);
       stageElement.dataset.minimapX = originX.toFixed(3);
       stageElement.dataset.minimapY = originY.toFixed(3);
+      stageElement.dataset.minimapCompactLandscape = String(minimapLayout.compactLandscape);
     }
     const mapPoint = (normalized) => ({ x: originX + normalized.x * width, y: originY + normalized.y * height });
     minimap.roundRect(originX - 6, originY - 6, width + 12, height + 12, 8)
@@ -797,7 +802,7 @@ async function boot() {
       y: (renderState.y - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY),
     };
     const player = mapPoint(normalizedPlayer);
-    minimap.circle(player.x, player.y, view.width < 600 ? 4 : 5)
+    minimap.circle(player.x, player.y, minimapLayout.compactPortrait ? 4 : 5)
       .fill({ color: 0x49ddff, alpha: 1 }).stroke({ color: 0xffffff, width: 1.5, alpha: 1 });
   };
 
@@ -1153,9 +1158,9 @@ async function boot() {
       }
       const runtimeMode = `${aimIntent?.source?.toUpperCase() ?? 'NO AIM'} // ${motion?.locomotion?.toUpperCase() ?? 'IDLE'}`;
       const debugContact = lastCollision?.contacts.at(-1)?.blockerId ?? lastTraversal?.reason ?? 'clear';
-      const narrowView = view.width < 600;
-      const narrowDebug = debugGridEnabled && narrowView;
-      label.style.fontSize = narrowView ? 12 : 18;
+      const combatStatusLayout = computeCombatStatusLayout({ width: view.width, height: view.height, touchUiEnabled });
+      const narrowDebug = debugGridEnabled && combatStatusLayout.multiline;
+      label.style.fontSize = combatStatusLayout.fontSize;
       label.style.align = 'center';
       const activeWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
       const weaponName = activeWeapon ? HMH_WEAPON_DEFINITIONS[activeWeapon.id].displayName : 'NO WEAPON';
@@ -1167,6 +1172,7 @@ async function boot() {
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
       const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}`;
       const compactCombatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}`;
+      const landscapeCombatHud = `HP ${playerHealth} // AMMO ${activeWeapon?.ammoInClip ?? 0} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}`;
       const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats`;
       if (dashStatusElement) {
         dashStatusElement.textContent = dashAccessible;
@@ -1177,13 +1183,13 @@ async function boot() {
         lastAccessibleCombatStatus = accessibleCombatStatus;
       }
       label.text = debugGridEnabled
-        ? narrowDebug
+        ? combatStatusLayout.compact
+          ? `${landscapeCombatHud}\n${runtimeMode}`
+          : narrowDebug
           ? `${combatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
-        : narrowView ? compactCombatHud : combatHud;
-      const safeLabelX = view.width * 0.5;
-      const safeLabelY = view.width < 600 ? 202 : 82;
-      label.position.set(safeLabelX, safeLabelY);
+        : combatStatusLayout.compact ? landscapeCombatHud : combatStatusLayout.multiline ? compactCombatHud : combatHud;
+      label.position.set(combatStatusLayout.x, combatStatusLayout.y);
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
       for (const pip of enemyHealthPips) {

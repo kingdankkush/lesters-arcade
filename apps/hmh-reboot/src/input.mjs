@@ -1,4 +1,5 @@
 import { screenToGround } from './world-space.mjs';
+import { COMPACT_LANDSCAPE_MINIMAP_WIDTH, isCompactLandscape } from './hud-layout.mjs';
 
 const GAMEPLAY_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD',
@@ -315,17 +316,23 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
   const buttonStep = buttonRadius * 2.25;
   const buttonBaseY = Math.max(safe.top + buttonRadius, aimStick.y - radius - margin - buttonRadius);
   const buttonBaseX = Math.min(viewportWidth - safe.right - buttonRadius, aimStick.x + radius * 0.55);
+  const landscape = viewportWidth > viewportHeight;
+  const compactLandscape = isCompactLandscape({ width: viewportWidth, height: viewportHeight });
+  const minimapWidth = Math.min(compactLandscape ? COMPACT_LANDSCAPE_MINIMAP_WIDTH : 220, viewportWidth * 0.34);
+  const utilityButtonX = landscape
+    ? Math.max(safe.left + buttonRadius, viewportWidth - minimapWidth - 22 - margin - buttonRadius)
+    : viewportWidth - safe.right - buttonRadius;
   const buttons = {
     fire: { x: buttonBaseX, y: buttonBaseY, radius: buttonRadius },
     melee: { x: Math.max(safe.left + buttonRadius, buttonBaseX - buttonStep), y: buttonBaseY, radius: buttonRadius },
     grenade: { x: buttonBaseX, y: Math.max(safe.top + buttonRadius, buttonBaseY - buttonStep), radius: buttonRadius },
     dash: { x: Math.max(safe.left + buttonRadius, buttonBaseX - buttonStep), y: Math.max(safe.top + buttonRadius, buttonBaseY - buttonStep), radius: buttonRadius },
     weaponNext: {
-      x: viewportWidth - safe.right - buttonRadius,
+      x: utilityButtonX,
       y: safe.top + buttonRadius * 3.5,
       radius: buttonRadius,
     },
-    pause: { x: viewportWidth - safe.right - buttonRadius, y: safe.top + buttonRadius, radius: buttonRadius },
+    pause: { x: utilityButtonX, y: safe.top + buttonRadius, radius: buttonRadius },
   };
   return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, moveStick, aimStick, buttons });
 }
