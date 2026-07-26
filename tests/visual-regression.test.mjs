@@ -8,6 +8,7 @@ import { planHmhFixedStepFrame } from '../apps/portal/src/session-analytics.mjs'
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
 const browserSoakScript = readFileSync(new URL('../scripts/hmh-browser-soak.mjs', import.meta.url), 'utf8');
+const legacyBrowserSoakScript = readFileSync(new URL('../scripts/hmh-legacy-browser-soak.mjs', import.meta.url), 'utf8');
 const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-65 visual regression harness is command-wired and captures real HMH canvas frames', () => {
@@ -76,34 +77,36 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
   assert.match(visualScript, /docs\/testing\/VISUAL_BASELINES/);
 });
 
-test('browser soak crosses the READY gate and proves active combat time advances', () => {
+test('browser soak targets the current Pixi reboot and proves authored runtime time advances', () => {
   assert.equal(packageJson.scripts['test:soak'], 'npm run build && node scripts/hmh-browser-soak.mjs --minutes=30');
-  assert.match(browserSoakScript, /Input\.dispatchKeyEvent[^]*code: 'Space'/);
-  assert.match(browserSoakScript, /data-stat="survived"/);
-  assert.match(browserSoakScript, /runElapsedSeconds/);
-  assert.match(browserSoakScript, /activeRunAdvanceSeconds >= minimumRunAdvanceSeconds/);
-  assert.match(browserSoakScript, /querySelector\('#levelUpOverlay'\)/);
-  assert.match(browserSoakScript, /dataset\.armed === 'true'/);
-  assert.match(browserSoakScript, /code: 'Digit1'/);
-  assert.match(browserSoakScript, /levelUpSelections/);
-  assert.match(browserSoakScript, /\.run-it-back-button/);
-  assert.match(browserSoakScript, /runRestarts/);
-  assert.match(browserSoakScript, /__hmhVisualDebugPerformance/);
-  assert.match(browserSoakScript, /__hmhSoakStressBossSwarm/);
-  assert.match(browserSoakScript, /stressSetup/);
-  assert.match(browserSoakScript, /STRESS_STABILIZATION_MS/);
+  assert.equal(packageJson.scripts['test:soak:legacy'], 'npm run build && node scripts/hmh-legacy-browser-soak.mjs --minutes=30');
+  assert.match(legacyBrowserSoakScript, /hmh-legacy-browser-soak\.json/);
+  assert.match(legacyBrowserSoakScript, /legacy-soak/);
+  assert.doesNotMatch(legacyBrowserSoakScript, /'hmh-browser-soak\.json'/);
+  assert.match(browserSoakScript, /hmh-reboot\/\?\$\{REBOOT_QUERY\}/);
+  assert.match(browserSoakScript, /#hmhRebootStage/);
+  assert.match(browserSoakScript, /acquireRunLock/);
+  assert.match(browserSoakScript, /HMH reboot soak already running as PID/);
+  assert.match(browserSoakScript, /dataset\.simulationTick/);
+  assert.match(browserSoakScript, /production-blender-atlas-v1/);
+  assert.match(browserSoakScript, /production-roster-atlas-v1/);
+  assert.match(browserSoakScript, /dataset\.authoredPropStatus === 'ready'/);
   assert.match(browserSoakScript, /frameDeltasMs/);
-  assert.match(browserSoakScript, /buildHmhPerformanceCertificate/);
-  assert.match(browserSoakScript, /performanceCertificate\.status === 'PASS'/);
-  assert.match(mainSource, /const occupancy = \{/);
-  assert.match(mainSource, /animation: \{ \.\.\.combat\.enemyRenderStats \}/);
-  assert.match(mainSource, /entry\.kind === 'enemy'/);
-  assert.doesNotMatch(mainSource, /draw: \(\) => drawSingleEnemy\(ctx, enemy/);
-  assert.match(mainSource, /function setupHmhSoakStressBossSwarm/);
-  assert.match(mainSource, /spawnLevelOneBossBeat\(stressBeat, director\)/);
-  assert.match(mainSource, /attackTimer: 90 \+ \(\(index \* 37\) % 240\)/);
-  assert.match(mainSource, /const stressDurabilityMultiplier = 20/);
-  assert.match(mainSource, /__hmhSoakStressBossSwarm/);
+  assert.match(browserSoakScript, /minimumTickAdvance/);
+  assert.match(browserSoakScript, /#hmhRestartButton/);
+  assert.match(browserSoakScript, /cumulativeTickAdvance/);
+  assert.match(browserSoakScript, /runRestarts/);
+  assert.match(browserSoakScript, /force-restart-after-seconds/);
+  assert.match(browserSoakScript, /heapGrowthBytes/);
+  assert.match(browserSoakScript, /heapAfterGc/);
+  assert.match(browserSoakScript, /steadyStateRetainedHeap/);
+  assert.match(browserSoakScript, /retainedHeapGrowthBytes/);
+  assert.match(browserSoakScript, /gcPauseMs/);
+  assert.match(browserSoakScript, /consoleIssues/);
+  assert.match(browserSoakScript, /networkIssues/);
+  assert.match(browserSoakScript, /runtime: 'hmh-reboot'/);
+  assert.doesNotMatch(browserSoakScript, /data-stat="survived"/);
+  assert.doesNotMatch(browserSoakScript, /__hmhSoakStressBossSwarm/);
 });
 
 test('crowded boss combat keeps a bounded player locator above particles', () => {

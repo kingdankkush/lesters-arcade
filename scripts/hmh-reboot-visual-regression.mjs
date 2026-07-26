@@ -249,8 +249,13 @@ if (isMain) {
       // capture is a race between the prototype and the production actor —
       // exactly the magnitude the per-cell bound is tuned to fail on.
       await page.waitForFunction(() => {
-        const source = document.querySelector('#hmhRebootStage')?.dataset.actorArtSource;
-        return source === 'production-blender-atlas-v1' || source === 'pixi-graybox';
+        const stage = document.querySelector('#hmhRebootStage');
+        const actor = stage?.dataset.actorArtSource;
+        const enemies = stage?.dataset.enemyArt;
+        const props = stage?.dataset.authoredPropStatus;
+        return actor === 'production-blender-atlas-v1'
+          && enemies === 'production-roster-atlas-v1'
+          && props === 'ready';
       }, undefined, { timeout: 30_000 });
       // evidenceSafe + telemetry publishes the authoritative tick, so captures
       // are pinned to simulation state rather than wall-clock timing.

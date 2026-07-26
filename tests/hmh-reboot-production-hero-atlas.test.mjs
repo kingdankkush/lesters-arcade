@@ -147,13 +147,31 @@ test('production pose resolver composes independent locomotion aim fire and hurt
 test('every shipped atlas action state is reachable from the runtime pose selector', async () => {
   const { readFile } = await import('node:fs/promises');
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  // 'aim' and 'pistol-fire' were always selectable; 'hurt' shipped 16 atlas
-  // frames that no runtime path could reach until the player-damage hook.
-  for (const action of ['aim', 'pistol-fire', 'hurt']) {
+  // Every authored action now has a real simulation event selector. These
+  // strings are only a reachability guard; the next test resolves real atlas
+  // frames and verifies non-looping cadence.
+  for (const action of ['aim', 'pistol-fire', 'hurt', 'dash', 'melee', 'grenade', 'death']) {
     assert.ok(source.includes(`'${action}'`), `runtime must be able to select the ${action} pose`);
   }
   assert.match(source, /lastPlayerHit = \{ tick/, 'player damage must record a tick for the hurt pose');
   assert.match(source, /PLAYER_HURT_POSE_TICKS/, 'the hurt pose needs a bounded duration');
+});
+
+test('generated hero actions resolve authored non-looping body clips and hold death', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const selection = productionHeroAsset('lit-commando');
+  const metadata = JSON.parse(await readFile(new URL('../apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json', import.meta.url), 'utf8'));
+  const index = createProductionHeroAtlasIndex(metadata, selection);
+  for (const action of ['dash', 'melee', 'grenade']) {
+    const pose = resolveProductionHeroPose(index, { simulationTick: 0, actionTick: 0, locomotion: 'idle', legDirection: 2, torsoDirection: 2, action });
+    assert.deepEqual(pose.slice(1).map((frame) => frame.state), [action, action, action]);
+  }
+  const death = resolveProductionHeroPose(index, { simulationTick: 100_000, actionTick: 100_000, locomotion: 'idle', legDirection: 2, torsoDirection: 2, action: 'death' });
+  for (const frame of death.slice(1)) {
+    const clip = index.clipByKey.get(`${frame.layer}|death|east`);
+    assert.equal(frame.frameIndex, clip.frameCount - 1, `${frame.layer} death must hold its final frame`);
+    assert.equal(clip.loop, false);
+  }
 });
 
 test('dash renders moving legs facing the dash direction rather than stale pre-dash facing', async () => {

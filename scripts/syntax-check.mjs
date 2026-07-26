@@ -186,6 +186,8 @@ const NODE_CHECK_FILES = [
   "scripts/smoke-portal-flow.mjs",
   "scripts/smoke-portal-interactions.mjs",
   "scripts/visual-regression.mjs",
+  "scripts/hmh-browser-soak.mjs",
+  "scripts/hmh-legacy-browser-soak.mjs",
   "tests/visual-regression.test.mjs",
   "scripts/smoke-pixellab-calibration-browser.mjs",
   "scripts/repo-cleanup-audit.mjs",
@@ -338,6 +340,17 @@ const NODE_CHECK_FILES = [
   "scripts/hmh-reboot-projectile-fuzz.mjs",
   "scripts/hmh-reboot-projectile-soak.mjs",
   "scripts/hmh-post-anchor-work-orders.mjs",
+  "apps/hmh-reboot/src/cockpit-ui.mjs",
+  "apps/hmh-reboot/src/production-hero-atlas.mjs",
+  "apps/hmh-reboot/src/enemy-roster-atlas.mjs",
+  "apps/hmh-reboot/src/authored-prop-atlas.mjs",
+  "scripts/hmh-reboot-production-asset-qa.mjs",
+  "scripts/hmh-reboot-visual-regression.mjs",
+  "tests/hmh-reboot-visual-regression.test.mjs",
+  "tests/hmh-reboot-production-hero-atlas.test.mjs",
+  "tests/hmh-reboot-enemy-roster-atlas.test.mjs",
+  "tests/hmh-reboot-authored-prop-atlas.test.mjs",
+  "tests/hmh-reboot-cycle-007-art.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 
@@ -382,7 +395,16 @@ const PY_COMPILE_FILES = [
   "scripts/build-hmh-level-one-world-blueprint-v3.py",
   "scripts/build-hmh-level-one-world-v3-runtime.py",
   "scripts/build-hmh-level-one-world-v3-materials.py",
-  "scripts/hmh_forest_river_atlas.py"
+  "scripts/hmh_forest_river_atlas.py",
+  "scripts/hmh-blender/create-hmh-production-hero-pilot.py",
+  "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
+  "scripts/run-hmh-production-hero-pilot.py",
+  "scripts/hmh-blender/create-hmh-enemy-roster.py",
+  "scripts/hmh-blender/export-hmh-enemy-roster.py",
+  "scripts/run-hmh-enemy-roster-pipeline.py",
+  "scripts/hmh-blender/create-hmh-authored-props.py",
+  "scripts/hmh-blender/export-hmh-authored-props.py",
+  "scripts/run-hmh-authored-props-pipeline.py"
 ];
 
 let failures = 0;

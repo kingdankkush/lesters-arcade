@@ -36,13 +36,13 @@ function assertActorArtifacts(manifest, entry) {
   assert.equal(metadata.variantId, entry.variantId);
   assert.equal(metadata.gameplayBodyProfile, manifest.gameplayBodyProfile);
   assert.equal(metadata.runtimeAuthority, 'projection-only');
-  assert.equal(metadata.frames.length, 168);
-  assert.equal(new Set(metadata.frames.map((frame) => frame.id)).size, 168);
+  assert.equal(metadata.frames.length, 648);
+  assert.equal(new Set(metadata.frames.map((frame) => frame.id)).size, 648);
   assert.equal(metrics.actorId, entry.actorId);
   assert.equal(metrics.status, 'pass');
   assert.equal(metrics.reproducibility, 'pass');
-  assert.equal(metrics.frameCount, 168);
-  assert.equal(metrics.uniqueAnimatedFrameCount, 160);
+  assert.equal(metrics.frameCount, 648);
+  assert.equal(metrics.uniqueAnimatedFrameCount, 640);
   assert.equal(metrics.emptyFrameCount, 0);
   assert.equal(metrics.transparentCornerFailureCount, 0);
   assert.equal(metrics.externalDependencyCount, 0);
@@ -85,8 +85,8 @@ test('production manifest locks canonical Lester and Lilly identities and ranked
     'gold-teal-tactical-armor',
     'slim-agile-silhouette',
   ]);
-  assert.equal(lester.animationClips.length, 5);
-  assert.equal(lilly.animationClips.length, 5);
+  assert.equal(lester.animationClips.length, 9);
+  assert.equal(lilly.animationClips.length, 9);
   assert.deepEqual(lester.animationClips, lilly.animationClips);
   assert.notDeepEqual(lester.materials, lilly.materials);
 });

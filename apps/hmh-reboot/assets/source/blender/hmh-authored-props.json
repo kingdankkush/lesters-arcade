@@ -1,0 +1,392 @@
+{
+  "schema": "hmh-authored-props-v1",
+  "pipelineId": "hmh-reboot-authored-props-v1",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "notes": "Repo-owned low-poly Blender gameplay props. No downloaded pixels, external meshes, or runtime authority.",
+  "render": {
+    "engine": "BLENDER_EEVEE",
+    "frameSize": [
+      128,
+      128
+    ],
+    "transparentFilm": true,
+    "rawOutputDirectory": ".tmp/hmh-reboot-authored-props",
+    "cameraOrthoScale": 2.4,
+    "cameraPitchDegrees": 55,
+    "cameraTargetZ": 0.65,
+    "alphaThreshold": 8,
+    "exposure": -0.3
+  },
+  "scene": {
+    "collection": "HMH_Authored_Props",
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-authored-props.blend"
+  },
+  "atlas": {
+    "outputDirectory": "apps/portal/assets/generated/hmh-reboot-authored-props",
+    "padding": 3,
+    "maxSize": 1024
+  },
+  "assets": [
+    {
+      "assetId": "coin-blaster",
+      "category": "weapon",
+      "shape": "pistol",
+      "palette": {
+        "primary": "#d6b04f",
+        "secondary": "#263642",
+        "accent": "#fff1a8"
+      },
+      "runtimeScale": 0.52
+    },
+    {
+      "assetId": "scatter-shotgun",
+      "category": "weapon",
+      "shape": "shotgun",
+      "palette": {
+        "primary": "#8a4c32",
+        "secondary": "#222b33",
+        "accent": "#ff8c5a"
+      },
+      "runtimeScale": 0.58
+    },
+    {
+      "assetId": "auto-miner",
+      "category": "weapon",
+      "shape": "minigun",
+      "palette": {
+        "primary": "#2d5b49",
+        "secondary": "#202a2e",
+        "accent": "#83f28f"
+      },
+      "runtimeScale": 0.6
+    },
+    {
+      "assetId": "launcher-rig",
+      "category": "weapon",
+      "shape": "launcher",
+      "palette": {
+        "primary": "#584078",
+        "secondary": "#202632",
+        "accent": "#c497ff"
+      },
+      "runtimeScale": 0.62
+    },
+    {
+      "assetId": "bonus-life",
+      "category": "pickup",
+      "shape": "life-token",
+      "palette": {
+        "primary": "#376a8a",
+        "secondary": "#d6e5ef",
+        "accent": "#49ddff"
+      },
+      "runtimeScale": 0.78
+    },
+    {
+      "assetId": "hash-rail-core",
+      "category": "pickup",
+      "shape": "rail-core",
+      "palette": {
+        "primary": "#d9f8ff",
+        "secondary": "#2e65a6",
+        "accent": "#49ddff"
+      },
+      "runtimeScale": 0.76
+    },
+    {
+      "assetId": "time-dilation",
+      "category": "pickup",
+      "shape": "hourglass",
+      "palette": {
+        "primary": "#3555a8",
+        "secondary": "#d4efff",
+        "accent": "#b786ff"
+      },
+      "runtimeScale": 0.86
+    },
+    {
+      "assetId": "berserk-candle",
+      "category": "pickup",
+      "shape": "candle",
+      "palette": {
+        "primary": "#dce5da",
+        "secondary": "#a83242",
+        "accent": "#52f58c"
+      },
+      "runtimeScale": 0.9
+    },
+    {
+      "assetId": "nuke-liquidation",
+      "category": "pickup",
+      "shape": "nuke",
+      "palette": {
+        "primary": "#bd3147",
+        "secondary": "#232a33",
+        "accent": "#ffc857"
+      },
+      "runtimeScale": 0.88
+    },
+    {
+      "assetId": "proof-of-work",
+      "category": "power-up",
+      "shape": "damage-chip",
+      "palette": {
+        "primary": "#a4323f",
+        "secondary": "#2a2028",
+        "accent": "#ff5c7a"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "diamond-hands",
+      "category": "power-up",
+      "shape": "health-chip",
+      "palette": {
+        "primary": "#34734c",
+        "secondary": "#213027",
+        "accent": "#83f28f"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "gas-optimization",
+      "category": "power-up",
+      "shape": "dash-chip",
+      "palette": {
+        "primary": "#2b7580",
+        "secondary": "#1e2930",
+        "accent": "#8ff3ff"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "cold-storage",
+      "category": "power-up",
+      "shape": "grenade-chip",
+      "palette": {
+        "primary": "#60427b",
+        "secondary": "#262030",
+        "accent": "#c497ff"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "block-reward",
+      "category": "power-up",
+      "shape": "rate-chip",
+      "palette": {
+        "primary": "#9b642d",
+        "secondary": "#2a2620",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "validator-training",
+      "category": "power-up",
+      "shape": "reload-chip",
+      "palette": {
+        "primary": "#315c78",
+        "secondary": "#202a31",
+        "accent": "#49ddff"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "compound-interest",
+      "category": "power-up",
+      "shape": "damage-chip",
+      "palette": {
+        "primary": "#6c3c78",
+        "secondary": "#251d2b",
+        "accent": "#e26dff"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "hardened-wallet",
+      "category": "power-up",
+      "shape": "health-chip",
+      "palette": {
+        "primary": "#4f6840",
+        "secondary": "#20291f",
+        "accent": "#ffc857"
+      },
+      "runtimeScale": 0.44
+    },
+    {
+      "assetId": "relay-console",
+      "category": "world-prop",
+      "shape": "console",
+      "districts": [
+        "frontier-relay"
+      ],
+      "palette": {
+        "primary": "#344a5a",
+        "secondary": "#182630",
+        "accent": "#49ddff"
+      },
+      "runtimeScale": 1.4
+    },
+    {
+      "assetId": "salvage-crate",
+      "category": "world-prop",
+      "shape": "crate",
+      "districts": [
+        "frontier-relay",
+        "rugpull-ravine"
+      ],
+      "palette": {
+        "primary": "#74563a",
+        "secondary": "#30291f",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 1.25
+    },
+    {
+      "assetId": "proof-pylon",
+      "category": "world-prop",
+      "shape": "pylon",
+      "districts": [
+        "liquidity-crossing"
+      ],
+      "palette": {
+        "primary": "#3c6472",
+        "secondary": "#25373e",
+        "accent": "#8ff3ff"
+      },
+      "runtimeScale": 1.05
+    },
+    {
+      "assetId": "bridge-bollard",
+      "category": "world-prop",
+      "shape": "bollard",
+      "districts": [
+        "liquidity-crossing"
+      ],
+      "palette": {
+        "primary": "#765f43",
+        "secondary": "#2a2825",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 1.05
+    },
+    {
+      "assetId": "hashwood-stump",
+      "category": "world-prop",
+      "shape": "stump",
+      "districts": [
+        "hashwood"
+      ],
+      "palette": {
+        "primary": "#59412d",
+        "secondary": "#263824",
+        "accent": "#83f28f"
+      },
+      "runtimeScale": 1.1
+    },
+    {
+      "assetId": "crystal-cluster",
+      "category": "world-prop",
+      "shape": "crystal",
+      "districts": [
+        "hashwood",
+        "mining-camp"
+      ],
+      "palette": {
+        "primary": "#31577c",
+        "secondary": "#263342",
+        "accent": "#b786ff"
+      },
+      "runtimeScale": 1.1
+    },
+    {
+      "assetId": "ore-cart",
+      "category": "world-prop",
+      "shape": "ore-cart",
+      "districts": [
+        "mining-camp"
+      ],
+      "palette": {
+        "primary": "#66543f",
+        "secondary": "#25282b",
+        "accent": "#ffc857"
+      },
+      "runtimeScale": 1.15
+    },
+    {
+      "assetId": "loader-barrel",
+      "category": "world-prop",
+      "shape": "barrel",
+      "districts": [
+        "mining-camp",
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#4b4f56",
+        "secondary": "#24262a",
+        "accent": "#ff8c5a"
+      },
+      "runtimeScale": 1.05
+    },
+    {
+      "assetId": "rugpull-barricade",
+      "category": "world-prop",
+      "shape": "barricade",
+      "districts": [
+        "rugpull-ravine"
+      ],
+      "palette": {
+        "primary": "#754733",
+        "secondary": "#30241f",
+        "accent": "#ff5c7a"
+      },
+      "runtimeScale": 1.05
+    },
+    {
+      "assetId": "warning-beacon",
+      "category": "world-prop",
+      "shape": "beacon",
+      "districts": [
+        "rugpull-ravine",
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#4d4441",
+        "secondary": "#242426",
+        "accent": "#ff5c7a"
+      },
+      "runtimeScale": 1.05
+    },
+    {
+      "assetId": "liquidation-terminal",
+      "category": "world-prop",
+      "shape": "terminal",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#4b2940",
+        "secondary": "#231722",
+        "accent": "#ff496c"
+      },
+      "runtimeScale": 1.4
+    },
+    {
+      "assetId": "fuel-drum",
+      "category": "world-prop",
+      "shape": "fuel-drum",
+      "districts": [
+        "liquidation-yard",
+        "frontier-relay"
+      ],
+      "palette": {
+        "primary": "#6d2937",
+        "secondary": "#2a2024",
+        "accent": "#ffc857"
+      },
+      "runtimeScale": 1.05
+    }
+  ]
+}

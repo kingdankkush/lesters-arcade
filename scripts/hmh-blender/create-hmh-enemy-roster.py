@@ -39,7 +39,7 @@ def hex_rgba(value: str, alpha: float = 1.0):
     return tuple(int(value[index:index + 2], 16) / 255 for index in (0, 2, 4)) + (alpha,)
 
 
-def material(name: str, color: str, *, metallic: float = 0.0, emission: float = 0.0):
+def material(name: str, color: str, *, metallic: float = 0.0, emission: float = 0.0, roughness: float | None = None):
     existing = bpy.data.materials.get(name)
     if existing:
         return existing
@@ -49,7 +49,7 @@ def material(name: str, color: str, *, metallic: float = 0.0, emission: float = 
     mat.use_nodes = True
     node = mat.node_tree.nodes.get("Principled BSDF")
     node.inputs["Base Color"].default_value = rgba
-    node.inputs["Roughness"].default_value = 0.38 if metallic else 0.74
+    node.inputs["Roughness"].default_value = roughness if roughness is not None else (0.38 if metallic else 0.74)
     node.inputs["Metallic"].default_value = metallic
     if emission:
         node.inputs["Emission Color"].default_value = rgba
@@ -175,11 +175,16 @@ def build_actor(actor: dict, rig, collection) -> dict:
     shoulders = build["shoulders"]
     bulk = build["bulk"]
 
-    skin = material(f"{actor_id}_skin", palette["skin"])
-    primary = material(f"{actor_id}_primary", palette["primary"])
-    secondary = material(f"{actor_id}_secondary", palette["secondary"])
-    accent = material(f"{actor_id}_accent", palette["accent"], emission=0.55)
-    boot = material(f"{actor_id}_boot", palette["boot"])
+    policy = actor.get("materialPolicy", {})
+    skin = material(
+        f"{actor_id}_skin", palette["skin"],
+        metallic=policy.get("skinMetallic", 0.0),
+        roughness=policy.get("skinRoughness", 0.86),
+    )
+    primary = material(f"{actor_id}_primary", palette["primary"], roughness=policy.get("identityRoughness", 0.8))
+    secondary = material(f"{actor_id}_secondary", palette["secondary"], roughness=policy.get("identityRoughness", 0.8))
+    accent = material(f"{actor_id}_accent", palette["accent"], emission=0.55, roughness=policy.get("accentRoughness", 0.62))
+    boot = material(f"{actor_id}_boot", palette["boot"], roughness=policy.get("identityRoughness", 0.8))
 
     parts = []
     # Torso and hips carry the bulk; the shoulder width is what reads at a
@@ -240,6 +245,55 @@ def build_actor(actor: dict, rig, collection) -> dict:
     else:
         raise RuntimeError(f"Unknown prop kind: {kind}")
 
+    # Boss phases carry real authored silhouette changes rather than runtime
+    # tint-only proxies. These objects are hidden selectively by the exporter.
+    phase_visuals = actor.get("phaseVisuals", {})
+    if phase_visuals:
+        market = phase_visuals["market-open"]
+        market_mat = material(f"{actor_id}_phase_market", market["accent"], emission=0.64, roughness=0.6)
+        market_badge = cylinder(
+            f"{actor_id}_Phase_MarketCoin", (0.0, -0.24, 1.22 * height), 0.20, 0.075,
+            market_mat, collection, rig, "chest", actor_id, rotation=(math.radians(90), 0.0, 0.0),
+        )
+        market_badge["hmh_phase"] = "market-open"
+        parts.append(market_badge)
+        for index, x in enumerate((-0.10, 0.0, 0.10)):
+            tick = cube(
+                f"{actor_id}_Phase_MarketTick_{index}", (x, -0.29, (1.18 + index * 0.04) * height),
+                (0.025, 0.025, 0.07 + index * 0.02), market_mat, collection, rig, "chest", actor_id, bevel=0.015,
+            )
+            tick["hmh_phase"] = "market-open"
+            parts.append(tick)
+        margin = phase_visuals["margin-call"]
+        margin_mat = material(f"{actor_id}_phase_margin", margin["accent"], emission=0.72, roughness=0.58)
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            phase_obj = cone(
+                f"{actor_id}_Phase_MarginSpike_{side}",
+                (sign * 0.44 * shoulders, 0.0, 1.43 * height),
+                0.10, 0.46, margin_mat, collection, rig, "chest", actor_id,
+                rotation=(0.0, math.radians(sign * 54), 0.0),
+            )
+            phase_obj["hmh_phase"] = "margin-call"
+            parts.append(phase_obj)
+        total = phase_visuals["total-liquidation"]
+        total_mat = material(f"{actor_id}_phase_total", total["accent"], emission=0.9, roughness=0.5)
+        for index in range(8):
+            angle = math.radians(index * 45)
+            phase_obj = cone(
+                f"{actor_id}_Phase_LiquidationRay_{index}",
+                (math.sin(angle) * 0.42, 0.12 + math.cos(angle) * 0.18, 1.31 * height + math.cos(angle) * 0.20),
+                0.055, 0.38, total_mat, collection, rig, "chest", actor_id,
+                rotation=(math.radians(90), angle, 0.0),
+            )
+            phase_obj["hmh_phase"] = "total-liquidation"
+            parts.append(phase_obj)
+        total_core = sphere(
+            f"{actor_id}_Phase_LiquidationCore", (0.0, -0.27, 1.22 * height), (0.20, 0.10, 0.20),
+            total_mat, collection, rig, "chest", actor_id,
+        )
+        total_core["hmh_phase"] = "total-liquidation"
+        parts.append(total_core)
+
     # Zombies get a visible identity cue distinct from the living survivors.
     if actor["identityForm"] == "zombie":
         parts.append(cube(f"{actor_id}_Ident_Ribs", (0.0, -0.14, 1.14 * height), (0.11 * shoulders, 0.02, 0.07), skin,
@@ -294,7 +348,7 @@ def build_lighting(manifest: dict):
     # in the same projection.
     target_z = manifest["render"].get("cameraTargetZ", 0.0)
     camera.location = (0.0, -3.05, 3.05 + target_z)
-    camera.rotation_euler = (math.radians(45), 0.0, 0.0)
+    camera.rotation_euler = (math.radians(manifest["render"]["cameraPitchDegrees"]), 0.0, 0.0)
     scene.collection.objects.link(camera)
     scene.camera = camera
 
@@ -311,7 +365,11 @@ def main() -> None:
     rig = build_rig(manifest["scene"]["armature"])
     move_to_collection(rig, collection)
 
-    built = [build_actor(actor, rig, collection) for actor in manifest["actors"]]
+    built = []
+    for actor in manifest["actors"]:
+        actor_with_policy = dict(actor)
+        actor_with_policy["materialPolicy"] = manifest.get("materialPolicy", {})
+        built.append(build_actor(actor_with_policy, rig, collection))
 
     blend_path = Path(args.source_blend).resolve()
     blend_path.parent.mkdir(parents=True, exist_ok=True)

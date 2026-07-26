@@ -88,46 +88,51 @@ def shelf_pack(records: list[dict], padding: int, max_size: int):
     raise RuntimeError(f"Enemy frames exceed max atlas size {max_size}")
 
 
-def analyse(actor_id: str, manifest: dict, raw_dir: Path) -> list[dict]:
+def analyse(actor: dict, manifest: dict, raw_dir: Path) -> list[dict]:
+    actor_id = actor["actorId"]
     threshold = manifest["render"]["alphaThreshold"]
     frame_size = tuple(manifest["render"]["frameSize"])
     pivot = (manifest["pivot"]["x"], manifest["pivot"]["y"])
     records = []
     empty = []
     hashes = defaultdict(list)
-    for state, clip in manifest["clips"].items():
-        for direction in manifest["directions"]:
-            for frame_index in range(clip["frames"]):
-                filename = f"{actor_id}__body__{state}__{direction}__{frame_index:03d}.png"
-                path = raw_dir / filename
-                if not path.exists():
-                    raise RuntimeError(f"Missing rendered frame: {filename}")
-                image = canonical_rgba(Image.open(path))
-                if image.size != frame_size:
-                    raise RuntimeError(f"Unexpected dimensions for {filename}: {image.size}")
-                bbox = alpha_bbox(image, threshold)
-                frame_id = f"{actor_id}__body__{state}__{direction}__{frame_index:03d}"
-                if bbox is None:
-                    empty.append(frame_id)
-                    continue
-                x0, y0, x1, y1 = bbox
-                x0 = min(x0, pivot[0])
-                y0 = min(y0, pivot[1])
-                x1 = max(x1, pivot[0] + 1)
-                y1 = max(y1, pivot[1] + 1)
-                digest = hashlib.sha256(image.tobytes()).hexdigest()
-                hashes[digest].append(frame_id)
-                records.append({
-                    "id": frame_id,
-                    "filename": filename,
-                    "state": state,
-                    "direction": direction,
-                    "frameIndex": frame_index,
-                    "fps": clip["fps"],
-                    "image": image,
-                    "bbox": (x0, y0, x1, y1),
-                    "sourcePixelSha256": digest,
-                })
+    phases = list(actor.get("phaseVisuals", {})) or [None]
+    for boss_phase in phases:
+        for state, clip in manifest["clips"].items():
+            for direction in manifest["directions"]:
+                for frame_index in range(clip["frames"]):
+                    phase_token = f"__{boss_phase}" if boss_phase else ""
+                    filename = f"{actor_id}__body{phase_token}__{state}__{direction}__{frame_index:03d}.png"
+                    path = raw_dir / filename
+                    if not path.exists():
+                        raise RuntimeError(f"Missing rendered frame: {filename}")
+                    image = canonical_rgba(Image.open(path))
+                    if image.size != frame_size:
+                        raise RuntimeError(f"Unexpected dimensions for {filename}: {image.size}")
+                    bbox = alpha_bbox(image, threshold)
+                    frame_id = filename.removesuffix(".png")
+                    if bbox is None:
+                        empty.append(frame_id)
+                        continue
+                    x0, y0, x1, y1 = bbox
+                    x0 = min(x0, pivot[0])
+                    y0 = min(y0, pivot[1])
+                    x1 = max(x1, pivot[0] + 1)
+                    y1 = max(y1, pivot[1] + 1)
+                    digest = hashlib.sha256(image.tobytes()).hexdigest()
+                    hashes[digest].append(frame_id)
+                    records.append({
+                        "id": frame_id,
+                        "filename": filename,
+                        "phase": boss_phase,
+                        "state": state,
+                        "direction": direction,
+                        "frameIndex": frame_index,
+                        "fps": clip["fps"],
+                        "image": image,
+                        "bbox": (x0, y0, x1, y1),
+                        "sourcePixelSha256": digest,
+                    })
     if empty:
         raise RuntimeError(f"{actor_id}: empty frames {empty[:6]}")
     duplicates = [{"sha256": digest, "frameIds": ids} for digest, ids in sorted(hashes.items()) if len(ids) > 1]
@@ -153,6 +158,7 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
         opaque = sum(1 for value in crop.getchannel("A").tobytes() if value > manifest["render"]["alphaThreshold"])
         frames.append({
             "id": record["id"],
+            "phase": record["phase"],
             "state": record["state"],
             "direction": record["direction"],
             "frameIndex": record["frameIndex"],
@@ -184,6 +190,7 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
         "image": f"./{atlas_path.name}",
         "directions": manifest["directions"],
         "states": list(manifest["clips"].keys()),
+        "phases": list(actor.get("phaseVisuals", {})),
         "frames": frames,
     }
     metadata_path = output_dir / f"{actor['actorId']}-roster-atlas.json"
@@ -192,7 +199,7 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
     # Contact sheet: a flat strip of the south-facing frames per state, for
     # human review of silhouette and identity.
     sheet_frames = [record for record in records if record["direction"] == "south"]
-    sheet_frames.sort(key=lambda item: (item["state"], item["frameIndex"]))
+    sheet_frames.sort(key=lambda item: (item["phase"] or "", item["state"], item["frameIndex"]))
     cell = manifest["render"]["frameSize"][0]
     sheet = Image.new("RGBA", (cell * max(len(sheet_frames), 1), cell), (10, 14, 20, 255))
     for index, record in enumerate(sheet_frames):
@@ -235,6 +242,9 @@ def main() -> None:
             "--source-blend", str(blend_path),
             "--inspection-output", str(ROOT / ".tmp" / "hmh-enemy-roster-scene.json"),
         ], "enemy roster scene build")
+        backup = blend_path.with_suffix(blend_path.suffix + "1")
+        if backup.exists():
+            backup.unlink()
 
     if not args.skip_render:
         run_checked([
@@ -248,7 +258,7 @@ def main() -> None:
 
     results = []
     for actor in manifest["actors"]:
-        records = analyse(actor["actorId"], manifest, raw_dir)
+        records = analyse(actor, manifest, raw_dir)
         results.append(build_atlas(actor, manifest, records, OUTPUT_ROOT / actor["actorId"]))
 
     if args.verify_reproducible:
@@ -265,7 +275,7 @@ def main() -> None:
             "--report-output", str(ROOT / ".tmp" / "hmh-enemy-roster-render-verify.json"),
         ], "enemy roster verification render")
         for actor in manifest["actors"]:
-            records = analyse(actor["actorId"], manifest, raw_dir)
+            records = analyse(actor, manifest, raw_dir)
             build_atlas(actor, manifest, records, OUTPUT_ROOT / actor["actorId"])
         second_pass = {
             path.name: hashlib.sha256(path.read_bytes()).hexdigest()

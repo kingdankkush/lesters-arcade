@@ -20,7 +20,9 @@ import {
   createEnemyRosterAtlasIndex,
   createEnemyRosterDisplay,
   enemyRosterAsset,
+  resolveEnemyVisualDirection,
 } from './enemy-roster-atlas.mjs';
+
 import {
   HMH_OPENING_ENEMY_ARCHETYPE_IDS,
   HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE,
@@ -98,6 +100,15 @@ import {
   createProductionHeroDisplay,
   productionHeroAsset,
 } from './production-hero-atlas.mjs';
+import {
+  AUTHORED_PROP_ATLAS_IMAGE_URL,
+  AUTHORED_PROP_ATLAS_METADATA_URL,
+  buildAuthoredPointOfInterestPlacements,
+  buildAuthoredWorldPropPlacements,
+  createAuthoredHeldWeaponDisplay,
+  createAuthoredPropAtlasIndex,
+  createAuthoredPropDisplay,
+} from './authored-prop-atlas.mjs';
 import {
   LEVEL_ONE_WORLD,
   buildLevelOneMinimapGeometry,
@@ -242,6 +253,11 @@ async function boot() {
   const world = new Container();
   const backdrop = new Graphics();
   const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics });
+  const authoredPropLayer = new Container();
+  authoredPropLayer.label = 'authored-prop-layer';
+  authoredPropLayer.sortableChildren = true;
+  const heldWeaponLayer = new Container();
+  heldWeaponLayer.label = 'authored-held-weapon-layer';
   const grid = new Graphics();
   const collisionDebug = new Graphics();
   const debugLabels = new Container();
@@ -261,6 +277,9 @@ async function boot() {
   const enemyDeathVisuals = new Container();
   const enemyTelegraphs = new Graphics();
   const enemyMarkers = new Map();
+  // Projection-only facing history. Never attach visual state to deterministic
+  // enemy entities or it can leak into replay/evidence serialization.
+  const enemyVisualFacing = new Map();
   const enemyDeathMarkers = new Map();
   const bossTelegraphs = new Graphics();
   let bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
@@ -317,8 +336,54 @@ async function boot() {
   label.anchor.set(0.5);
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, combatVisuals, projectileImpacts, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, minimap);
+
+  const authoredPropPlacements = Object.freeze([
+    ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: 0x484d4807, countPerDistrict: 8 }),
+    ...buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
+  ]);
+  let authoredPropDisplay = null;
+  let authoredHeldWeaponDisplay = null;
+  let authoredPropLoadError = null;
+  Promise.all([
+    fetch(AUTHORED_PROP_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
+    Assets.load(AUTHORED_PROP_ATLAS_IMAGE_URL),
+  ]).then(async ([metadataResponse, atlasTexture]) => {
+    if (!metadataResponse.ok) throw new Error(`Authored prop metadata failed with ${metadataResponse.status}`);
+    const propIndex = createAuthoredPropAtlasIndex(await metadataResponse.json());
+    const display = createAuthoredPropDisplay({
+      index: propIndex,
+      atlasTexture,
+      placements: authoredPropPlacements,
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      TextureClass: Texture,
+      RectangleClass: Rectangle,
+    });
+    const heldWeaponDisplay = createAuthoredHeldWeaponDisplay({
+      index: propIndex,
+      atlasTexture,
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      TextureClass: Texture,
+      RectangleClass: Rectangle,
+    });
+    if (app.stage.destroyed || !world.parent) return;
+    authoredPropDisplay = display;
+    authoredHeldWeaponDisplay = heldWeaponDisplay;
+    authoredPropLayer.addChild(display.container);
+    heldWeaponLayer.addChild(heldWeaponDisplay.container);
+    stageElement.dataset.authoredPropStatus = 'ready';
+    stageElement.dataset.authoredPropCount = String(authoredPropPlacements.length);
+  }).catch((error) => {
+    authoredPropLoadError = error;
+    stageElement.dataset.authoredPropStatus = 'fallback';
+    stageElement.dataset.authoredPropError = String(error?.message ?? error);
+    // Existing vector POIs and world materials remain live if generated art is
+    // unavailable; a visual asset failure must never terminate a run.
+    console.warn('[HMH] Authored prop atlas fallback active', error);
+  });
 
   // The portal never puts a hero in the child URL — it sends the player's
   // selection in the session payload — so the atlas is loaded for whichever
@@ -497,6 +562,7 @@ async function boot() {
       startTick: tick,
       endTick: tick + 30,
       elite: eliteProjection,
+      direction: enemyVisualFacing.get(enemy.id)?.direction ?? 0,
     });
     enemyDeathVisuals.addChild(graphic);
   };
@@ -620,6 +686,7 @@ async function boot() {
     shakeMagnitude = magnitude;
   };
   let lastMeleeAttack = null;
+  let lastGrenadeThrow = null;
   let lastGrenadeDetonation = null;
   let playerDefeatController = null;
   let playerHealth = 100;
@@ -761,6 +828,14 @@ async function boot() {
     }
     if (renderState && camera) {
       renderAuthoredTerrain(view);
+      authoredPropDisplay?.render({
+        camera,
+        view,
+        worldToScreen,
+        queryGround,
+        tick: simulation?.tick ?? 0,
+        cullMargin: performanceProfile.worldCullMargin ?? 220,
+      });
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
@@ -775,6 +850,7 @@ async function boot() {
         if (!enemyMarker) continue;
         if (!enemy.active) {
           enemyMarker.visible = false;
+          enemyVisualFacing.delete(enemy.id);
           continue;
         }
         const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
@@ -784,8 +860,9 @@ async function boot() {
         enemyMarker.visible = markerVisible;
         if (markerVisible) {
           animatedEnemyCount += 1;
-          const enemyAngle = Math.atan2(enemy.velocity.y, enemy.velocity.x);
-          const enemyDirection = ((Math.round(enemyAngle / (Math.PI / 4)) % 8) + 8) % 8;
+          const facingState = enemyVisualFacing.get(enemy.id) ?? { direction: 0 };
+          enemyVisualFacing.set(enemy.id, facingState);
+          const enemyDirection = resolveEnemyVisualDirection(facingState, enemy.velocity);
           enemyMarker.applyPose({
             state: resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
             tick: simulation?.tick ?? 0,
@@ -846,7 +923,7 @@ async function boot() {
         const deathScreen = worldToScreen({ x: death.x, y: death.y, z: death.groundZ }, camera, view);
         death.graphic.visible = isScreenPointVisible(deathScreen, view, performanceProfile.enemyCullMargin);
         if (!death.graphic.visible) continue;
-        death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: 0, elite: death.elite });
+        death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: death.direction, elite: death.elite });
         death.graphic.position.set(deathScreen.x, deathScreen.y);
         death.graphic.scale.set((death.graphic.rosterScale ?? 1) * camera.zoom);
         // Fade the corpse out instead of hard-deleting it mid-frame.
@@ -862,6 +939,7 @@ async function boot() {
           tick: bossVisualTick,
           direction: 0,
           elite: true,
+          phase: liquidatorBoss.phaseId,
         });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
@@ -1017,23 +1095,47 @@ async function boot() {
       }
       shadow.position.set(groundScreen.x, groundScreen.y);
       actorVisual.position.set(atlasActorEnabled ? groundScreen.x : screen.x, atlasActorEnabled ? groundScreen.y : screen.y);
+      if (authoredHeldWeaponDisplay && weaponLoadout) {
+        const heldWeapon = getActiveWeaponState(weaponLoadout);
+        const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
+        const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
+        const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
+        const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
+        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom });
+      }
+      if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
       if (productionHeroDisplay && motion) {
         const visualTick = simulation?.tick ?? 0;
         const pistolFireAge = lastWeaponFire?.weaponId === 'coin-blaster' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
         const playerHitAge = lastPlayerHit ? visualTick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
-        // Firing reads over being hit; otherwise the authored hurt frames play.
-        // Without this the hurt state was 16 shipped atlas frames that nothing
-        // could ever select.
-        const productionAction = pistolFireAge >= 0 && pistolFireAge < 12
-          ? 'pistol-fire'
-          : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : 'aim';
-        const productionActionTick = productionAction === 'pistol-fire'
-          ? pistolFireAge
-          : productionAction === 'hurt' ? playerHitAge : visualTick;
-        // During a dash the movement step is skipped, so locomotion and leg
-        // facing would otherwise hold their stale pre-dash values and render
-        // idle legs pointing the wrong way for the whole dash.
+        const meleeAge = lastMeleeAttack ? visualTick - lastMeleeAttack.tick : Number.POSITIVE_INFINITY;
+        const grenadeAge = lastGrenadeThrow ? visualTick - lastGrenadeThrow.tick : Number.POSITIVE_INFINITY;
         const dashing = actor.locomotion === 'dash';
+        // Full-body actions are authored and selected by actual simulation
+        // events. Death is terminal; melee and grenade windups outrank fire,
+        // and dash uses its own compact silhouette instead of fake run legs.
+        const productionAction = playerHealth <= 0
+          ? 'death'
+          : meleeAge >= 0 && meleeAge < 20
+            ? 'melee'
+            : grenadeAge >= 0 && grenadeAge < 24
+              ? 'grenade'
+              : dashing
+                ? 'dash'
+                : pistolFireAge >= 0 && pistolFireAge < 12
+                  ? 'pistol-fire'
+                  : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : 'aim';
+        const productionActionTick = productionAction === 'death'
+          ? Math.max(0, visualTick - (lastPlayerHit?.tick ?? visualTick))
+          : productionAction === 'melee'
+            ? meleeAge
+            : productionAction === 'grenade'
+              ? grenadeAge
+              : productionAction === 'dash'
+                ? Math.max(0, dashState?.activeUntilTick ? 18 - Math.max(0, dashState.activeUntilTick - visualTick) : 0)
+                : productionAction === 'pistol-fire'
+                  ? pistolFireAge
+                  : productionAction === 'hurt' ? playerHitAge : visualTick;
         productionHeroDisplay.applyPose({
           simulationTick: visualTick,
           actionTick: productionActionTick,
@@ -1042,6 +1144,10 @@ async function boot() {
           torsoDirection: motion.torsoDirection,
           action: productionAction,
         });
+        const externalWeaponAuthoritative = Boolean(authoredHeldWeaponDisplay)
+          && !['melee', 'grenade', 'death'].includes(productionAction);
+        productionHeroDisplay.setLayerVisible('weapon', !externalWeaponAuthoritative);
+        if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
         actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
         actorVisual.rotation = 0;
       } else if (mannequinDisplay && motion) {
@@ -1263,6 +1369,7 @@ async function boot() {
     lastEnemyAttack = null;
     resetEnemyMarkers([]);
     clearEnemyDeathMarkers();
+    enemyVisualFacing.clear();
     enemyTelegraphs.clear();
     bossTelegraphs.clear();
     bossVisual.visible = false;
@@ -1289,6 +1396,7 @@ async function boot() {
     world.position.set(0, 0);
     overlayVisuals.clear();
     lastMeleeAttack = null;
+    lastGrenadeThrow = null;
     lastGrenadeDetonation = null;
     combatVisualEvents = [];
     lastAccessibleCombatStatus = '';
@@ -1856,6 +1964,7 @@ async function boot() {
           direction: aimIntent.direction,
         });
         if (grenadeSpawn.spawned) {
+          lastGrenadeThrow = { tick, grenadeId: grenadeSpawn.grenade?.id ?? null };
           combatAudio.play('grenade', { volume: 0.12 });
           applyRecoilImpulse(motion, {
             direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },

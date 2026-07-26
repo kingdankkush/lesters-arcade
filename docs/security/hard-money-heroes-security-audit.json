@@ -1,7 +1,7 @@
 {
   "version": "wo-39-security-audit-v1",
   "scope": {
-    "filesScanned": 569,
+    "filesScanned": 575,
     "directories": [
       "apps\\portal",
       "scripts",

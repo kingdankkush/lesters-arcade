@@ -1,3 +1,5 @@
+import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
+
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
   if (!element) throw new Error(`HMH cockpit element #${id} is missing`);
@@ -113,6 +115,9 @@ export function createCockpitUi({
         button.className = 'hmh-upgrade-choice';
         button.dataset.upgradeId = choice.id;
         button.setAttribute('role', 'listitem');
+        const icon = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__icon' });
+        icon.setAttribute('aria-hidden', 'true');
+        icon.style.backgroundImage = `url("${authoredPropItemUrl(choice.id)}")`;
         const branch = createSafeTextElement(documentRef, 'span', {
           className: 'hmh-upgrade-choice__branch',
           text: `${choice.branch} · rank ${choice.nextRank}/${choice.maxRank}`,
@@ -120,7 +125,7 @@ export function createCockpitUi({
         const title = createSafeTextElement(documentRef, 'strong', { text: choice.title });
         const mechanical = createSafeTextElement(documentRef, 'b', { text: choice.mechanicalLabel });
         const description = createSafeTextElement(documentRef, 'p', { text: choice.description });
-        button.append(branch, title, mechanical, description);
+        button.append(icon, branch, title, mechanical, description);
         listen(button, 'click', () => onSelectUpgrade(choice.id));
         elements.upgradeChoices.append(button);
       }

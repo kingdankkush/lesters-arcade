@@ -65,25 +65,33 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
   }
 
   const byKey = new Map();
-  const frameCounts = new Map();
+  const clipByKey = new Map();
+  const phases = metadata.phases?.length ? metadata.phases : [null];
   for (const frame of metadata.frames) {
-    const key = `${frame.state}|${frame.direction}|${frame.frameIndex}`;
+    const phase = frame.phase ?? null;
+    const phaseToken = phase ?? 'default';
+    const key = `${phaseToken}|${frame.state}|${frame.direction}|${frame.frameIndex}`;
+    if (byKey.has(key)) throw new TypeError(`duplicate roster frame ${key}`);
     byKey.set(key, frame);
-    const countKey = `${frame.state}|${frame.direction}`;
-    frameCounts.set(countKey, (frameCounts.get(countKey) ?? 0) + 1);
+    const countKey = `${phaseToken}|${frame.state}|${frame.direction}`;
+    const clip = clipByKey.get(countKey) ?? { frameCount: 0, fps: frame.fps };
+    if (!Number.isFinite(frame.fps) || frame.fps <= 0 || clip.fps !== frame.fps) throw new TypeError(`invalid roster cadence ${countKey}`);
+    clip.frameCount = Math.max(clip.frameCount, frame.frameIndex + 1);
+    clipByKey.set(countKey, clip);
   }
 
-  // Every state the runtime can select must exist for every direction, or a
-  // pose lookup would fall through to a missing frame at runtime.
-  for (const state of ENEMY_ROSTER_STATES) {
-    for (const direction of ENEMY_ROSTER_DIRECTIONS) {
-      const count = frameCounts.get(`${state}|${direction}`) ?? 0;
-      if (count === 0) throw new TypeError(`roster ${metadata.actorId} is missing ${state}/${direction}`);
-      // Indices must be contiguous 0..count-1, or a lookup would resolve to
-      // undefined and throw from the render path every frame.
-      for (let frameIndex = 0; frameIndex < count; frameIndex += 1) {
-        if (!byKey.has(`${state}|${direction}|${frameIndex}`)) {
-          throw new TypeError(`roster ${metadata.actorId} has a frame gap at ${state}/${direction}/${frameIndex}`);
+  // Every state the runtime can select must exist for every direction and
+  // every authored boss phase, or a pose lookup would fail in the render path.
+  for (const phase of phases) {
+    const phaseToken = phase ?? 'default';
+    for (const state of ENEMY_ROSTER_STATES) {
+      for (const direction of ENEMY_ROSTER_DIRECTIONS) {
+        const clip = clipByKey.get(`${phaseToken}|${state}|${direction}`);
+        if (!clip) throw new TypeError(`roster ${metadata.actorId} is missing ${phaseToken}/${state}/${direction}`);
+        for (let frameIndex = 0; frameIndex < clip.frameCount; frameIndex += 1) {
+          if (!byKey.has(`${phaseToken}|${state}|${direction}|${frameIndex}`)) {
+            throw new TypeError(`roster ${metadata.actorId} has a frame gap at ${phaseToken}/${state}/${direction}/${frameIndex}`);
+          }
         }
       }
     }
@@ -95,29 +103,51 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
     boss: Boolean(metadata.boss),
     states: Object.freeze([...ENEMY_ROSTER_STATES]),
     directions: Object.freeze([...ENEMY_ROSTER_DIRECTIONS]),
+    phases: Object.freeze([...phases]),
     frameCount: metadata.frames.length,
-    frameFor(state, direction, frameIndex) {
-      const count = frameCounts.get(`${state}|${direction}`) ?? 1;
-      const wrapped = ((Math.trunc(frameIndex) % count) + count) % count;
-      return byKey.get(`${state}|${direction}|${wrapped}`);
+    frameFor(state, direction, frameIndex, phase = phases[0]) {
+      const phaseToken = phase ?? 'default';
+      const clip = clipByKey.get(`${phaseToken}|${state}|${direction}`);
+      if (!clip) return undefined;
+      const wrapped = ((Math.trunc(frameIndex) % clip.frameCount) + clip.frameCount) % clip.frameCount;
+      return byKey.get(`${phaseToken}|${state}|${direction}|${wrapped}`);
     },
-    frameCountFor(state, direction) {
-      return frameCounts.get(`${state}|${direction}`) ?? 1;
+    clipFor(state, direction, phase = phases[0]) {
+      return clipByKey.get(`${phase ?? 'default'}|${state}|${direction}`);
+    },
+    frameCountFor(state, direction, phase = phases[0]) {
+      return clipByKey.get(`${phase ?? 'default'}|${state}|${direction}`)?.frameCount ?? 1;
+    },
+    fpsFor(state, direction, phase = phases[0]) {
+      return clipByKey.get(`${phase ?? 'default'}|${state}|${direction}`)?.fps ?? 1;
     },
   });
 }
 
-export function resolveEnemyRosterPose(index, { state, tick, direction }) {
+export function resolveEnemyVisualDirection(state, velocity, epsilon = 0.5) {
+  if (!state || typeof state !== 'object') throw new TypeError('enemy visual facing state is required');
+  const x = Number(velocity?.x ?? 0);
+  const y = Number(velocity?.y ?? 0);
+  if (Number.isFinite(x) && Number.isFinite(y) && Math.hypot(x, y) > epsilon) {
+    const angle = Math.atan2(y, x);
+    state.direction = ((Math.round(angle / (Math.PI / 4)) % 8) + 8) % 8;
+  } else if (!Number.isInteger(state.direction)) {
+    state.direction = 0;
+  }
+  return state.direction;
+}
+
+export function resolveEnemyRosterPose(index, { state, tick, direction, phase = index?.phases?.[0] ?? null }) {
   if (!index || typeof index.frameFor !== 'function') throw new TypeError('roster index is required');
   const resolvedState = ENEMY_ROSTER_STATES.includes(state) ? state : 'idle';
   const directionName = directionNameForRosterIndex(Number.isInteger(direction) ? direction : 0);
   const simulationTick = Number.isFinite(tick) ? Math.max(0, Math.trunc(tick)) : 0;
-  const count = index.frameCountFor(resolvedState, directionName);
+  const count = index.frameCountFor(resolvedState, directionName, phase);
+  const fps = index.fpsFor(resolvedState, directionName, phase);
+  const authoredFrame = Math.floor(simulationTick * fps / 60);
   // Death holds its final frame instead of looping, so a corpse settles.
-  const frameIndex = resolvedState === 'death'
-    ? Math.min(count - 1, Math.floor(simulationTick / 4))
-    : Math.floor(simulationTick / 4) % count;
-  return index.frameFor(resolvedState, directionName, frameIndex);
+  const frameIndex = resolvedState === 'death' ? Math.min(count - 1, authoredFrame) : authoredFrame % count;
+  return index.frameFor(resolvedState, directionName, frameIndex, phase);
 }
 
 export function createEnemyRosterDisplay({
@@ -152,21 +182,24 @@ export function createEnemyRosterDisplay({
     return textureByFrameId.get(frame.id);
   };
 
-  const initial = index.frameFor('idle', 'south', 0);
+  const initialPhase = index.phases[0];
+  const initial = index.frameFor('idle', 'south', 0, initialPhase);
   const sprite = new SpriteClass({ texture: textureFor(initial) });
   sprite.label = `roster-body-${index.actorId}`;
   sprite.anchor.set(initial.anchor.x, initial.anchor.y);
   container.addChild(sprite);
 
   container.visualState = 'idle';
-  container.applyPose = ({ state = 'idle', tick = 0, direction = 0, elite = false } = {}) => {
-    const frame = resolveEnemyRosterPose(index, { state, tick, direction });
+  container.visualPhase = initialPhase;
+  container.applyPose = ({ state = 'idle', tick = 0, direction = 0, elite = false, phase = initialPhase } = {}) => {
+    const frame = resolveEnemyRosterPose(index, { state, tick, direction, phase });
     sprite.texture = textureFor(frame);
     sprite.anchor.set(frame.anchor.x, frame.anchor.y);
     // Elites read as a brighter tint rather than a different body, so the
     // silhouette contract is unchanged.
     sprite.tint = elite ? 0xfff0c0 : 0xffffff;
     container.visualState = frame.state;
+    container.visualPhase = frame.phase ?? null;
     return frame;
   };
   container.applyPose({ state: 'idle', tick: 0, direction: 0 });

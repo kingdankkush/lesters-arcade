@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "release": "hmh-aaa-cycle-007",
+  "generatedAt": "2026-07-26T11:52:09Z",
+  "status": "LOCAL_CERTIFIED_COMMIT_PENDING",
+  "branch": "reboot/hmh-aaa-continuous",
+  "baseCommit": "807bc9434aefec1ab89623128b12777bfe73ab55",
+  "sourceCommit": null,
+  "exactIndex": {
+    "status": "PENDING_STAGING",
+    "scope": "git diff --cached --binary | sha256sum",
+    "sha256": null,
+    "recordingPolicy": "Freeze after this certificate and all intended files are staged; record in commit message and final handoff to avoid self-reference."
+  },
+  "tests": {
+    "total": 1690,
+    "passed": 1638,
+    "acceptedLegacyFailures": 52,
+    "unexpectedFailures": 0,
+    "focusedCycle007": "PASS 35/35",
+    "productionArtContracts": "PASS 10/10"
+  },
+  "build": {
+    "gameBundleBytes": 992376,
+    "gameBundleMaxBytes": 1050000,
+    "gameBundleSha256": "9f98baf9a5ffad3dbb393a064421a641d9631ccc7a5c424947cab7dac8ea1379"
+  },
+  "syntax": {
+    "javascriptModules": 332,
+    "pythonScripts": 49,
+    "status": "PASS"
+  },
+  "assets": {
+    "status": "PASS",
+    "runtimeAuthority": "projection-only",
+    "blenderVersion": "5.1.2",
+    "heroAtlases": 4,
+    "heroFrames": 2592,
+    "heroAtlasBytes": 10461922,
+    "rosterAtlases": 7,
+    "rosterFrames": 1368,
+    "rosterAtlasBytes": 4671584,
+    "liquidatorPhases": ["market-open", "margin-call", "total-liquidation"],
+    "propAtlases": 1,
+    "propAssets": 29,
+    "propAtlasBytes": 57080,
+    "propUniqueSourceFrames": 29,
+    "duplicatePropFrames": 0,
+    "reproducibility": "PASS"
+  },
+  "visual": {
+    "status": "PASS",
+    "scenes": 8,
+    "humanInspection": true,
+    "acceptedIntentionalScene": "hashwood-foliage-desktop",
+    "finalCandidateStabilityPasses": 2,
+    "browserErrors": 0
+  },
+  "browser": {
+    "status": "PASS",
+    "engine": "Google Chrome",
+    "profiles": ["desktop", "ultrawide", "tablet-landscape", "mobile-portrait", "mobile-landscape"],
+    "portalE2EImplementedFlows": 6,
+    "portalE2EFailures": 0,
+    "consoleErrors": 0
+  },
+  "networkAudit": {
+    "status": "PASS",
+    "scenarios": 4,
+    "httpErrors": 0,
+    "requestFailures": 0,
+    "consoleErrors": 0,
+    "pageErrors": 0
+  },
+  "performance": {
+    "status": "PASS",
+    "desktopP95FrameMs": 7,
+    "desktopMaxFrameMs": 14,
+    "mobileP95FrameMs": 7,
+    "mobileMaxFrameMs": 20.9,
+    "browserErrors": 0
+  },
+  "soak": {
+    "status": "PASS",
+    "durationMinutes": 30.011,
+    "samples": 60,
+    "runtime": "hmh-reboot",
+    "medianFps": 143.92,
+    "p95FrameMs": 7,
+    "tickAdvance": 95570,
+    "minimumTickAdvance": 86400,
+    "runRestarts": 1,
+    "maxEnemies": 120,
+    "maxAnimatedEnemies": 96,
+    "bossObserved": true,
+    "steadyStateRetainedHeapGrowthBytes": 27422415,
+    "steadyStateRetainedHeapGrowthPercent": 26.72,
+    "domNodesStart": 78,
+    "domNodesEnd": 78,
+    "maxGcPauseMs": 100.5,
+    "consoleIssues": 0,
+    "networkIssues": 0,
+    "legacyCabinetHarnessPreservedAs": "test:soak:legacy"
+  },
+  "security": {
+    "status": "PASS",
+    "checks": "5/5",
+    "findings": 0,
+    "sandbox": "3/3"
+  },
+  "web3": {
+    "sourceBoundary": "PASS 9/9",
+    "liveReadiness": "PARTIAL 3/4",
+    "blockedGate": "on-chain-registry-economy",
+    "transactionsPerformed": false,
+    "deploymentAuthorized": false,
+    "settlementLive": false
+  },
+  "repository": {
+    "healthStrict": "PASS",
+    "docsLinks": "PASS 8/8",
+    "cdnGate": "PASS_APPROVAL_GATED_NO_DESTRUCTIVE_ACTION",
+    "rawRenderCachesRemoved": true,
+    "blenderBackupsRemoved": true
+  },
+  "production": {
+    "unchanged": true,
+    "promotionAuthorized": false,
+    "deploymentPerformed": false
+  },
+  "litvm": {
+    "unchanged": true,
+    "transactionPerformed": false,
+    "deploymentAuthorized": false
+  },
+  "nextGate": "Exact-index adversarial review, then bounded local commit without push"
+}

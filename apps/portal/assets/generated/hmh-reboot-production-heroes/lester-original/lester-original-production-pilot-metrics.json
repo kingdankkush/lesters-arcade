@@ -1,19 +1,19 @@
 {
   "actorId": "lester-original",
-  "atlasSha256": "0fbc4e9d286d76872d7b8ab4edc504f582e0be6d1d42ac5e8f8bd7282274b33f",
+  "atlasSha256": "15b35233432164f23dfc5cccf6a7f7e5f2570cd7021d636bc0c871aacb3fab15",
   "atlasSize": {
-    "height": 1024,
-    "width": 1024
+    "height": 2048,
+    "width": 2048
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "93923817cb7afc7d91655e04892de1bf505f7ace031bf87ef238328c75211a96",
+  "contactSheetSha256": "6f3666004e8efc4a78973401b325ffb9cf6e830b813773bf59c9879fc384a528",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
-  "frameCount": 168,
+  "frameCount": 648,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "8665e69683fb4f588fb5aafb42b6ee94084ed1bd65bd2b8f5e60a591e330eb9b",
+  "metadataSha256": "acaa2fa7c4fb056bc0dbcbfb1ae85aaff4c5f0788e61d2e54e703a841692582a",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -29,11 +29,11 @@
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "4015e76990d73a7c29f735c34317b63e879f816f8735aae71e198a00543b876e",
+  "sourceBlendSha256": "426e0fcfb391545d39ea38776dc5c77ee3b5d7696119ca6157fb709f6762ddf8",
   "status": "pass",
   "transparentCornerFailureCount": 0,
-  "uniqueAnimatedFrameCount": 160,
-  "uniqueFrameIdCount": 168,
+  "uniqueAnimatedFrameCount": 640,
+  "uniqueFrameIdCount": 648,
   "variantId": "blue-mask-original",
   "weaponSocket": true
 }

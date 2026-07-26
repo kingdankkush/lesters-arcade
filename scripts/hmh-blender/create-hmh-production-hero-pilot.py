@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 
 import bpy
+from mathutils import Vector
 
 
 def blender_args() -> argparse.Namespace:
@@ -222,6 +223,14 @@ def main() -> None:
     scene.render.resolution_y = frame_height
     scene.view_settings.exposure = manifest["render"]["exposure"]
     scene.camera.data.ortho_scale = manifest["render"]["cameraOrthoScale"]
+    # Keep every gameplay atlas on one declared camera contract. The concept
+    # scene uses a diagonal azimuth, so derive the camera height from the
+    # manifest pitch while preserving the approved target and XY framing.
+    camera_pitch = math.radians(manifest["render"]["cameraPitchDegrees"])
+    camera_target = Vector((0.0, 0.0, 1.0))
+    horizontal = math.hypot(scene.camera.location.x, scene.camera.location.y)
+    scene.camera.location.z = camera_target.z + horizontal / math.tan(camera_pitch)
+    scene.camera.rotation_euler = (camera_target - scene.camera.location).to_track_quat("-Z", "Y").to_euler()
     scene.render.filepath = ""
 
     rig = concept.create_rig()

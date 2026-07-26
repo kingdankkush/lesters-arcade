@@ -7,8 +7,8 @@ const syntaxSource = readFileSync(new URL('../scripts/syntax-check.mjs', import.
 
 test('WO-67 AGENTS documents render-layer visual verification policy', () => {
   assert.match(agents, /Render-layer visual verification/);
-  assert.match(agents, /npm run visual:regression/);
-  assert.match(agents, /npm run visual:accept/);
+  assert.match(agents, /npm run visual:reboot/);
+  assert.match(agents, /npm run visual:reboot:accept/);
   assert.match(agents, /ground plane|ground-plane/);
   assert.match(agents, /prop grounding/);
   assert.match(agents, /depth sort|depth sorting/);

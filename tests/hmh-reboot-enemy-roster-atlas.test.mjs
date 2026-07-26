@@ -48,8 +48,10 @@ test('every roster atlas is present, projection-only, and complete', async () =>
     // Index construction throws on any missing state/direction, so reaching
     // here already proves full coverage; assert the frame count as evidence.
     assert.equal(index.frameCount, metadata.frames.length);
-    // 6 states x 8 directions x authored frame counts = 152 per actor.
-    assert.equal(index.frameCount, 152, `${actorId} frame count regressed`);
+    // Rank-and-file actors carry one 152-frame set. The boss carries the same
+    // complete set for each of three authored phase silhouettes.
+    assert.equal(index.frameCount, actorId === 'the-liquidator' ? 456 : 152, `${actorId} frame count regressed`);
+    if (actorId === 'the-liquidator') assert.deepEqual([...index.phases], ['market-open', 'margin-call', 'total-liquidation']);
   }
 });
 
@@ -59,7 +61,7 @@ test('a roster index rejects foreign or gameplay-authoritative metadata', async 
   assert.throws(() => createEnemyRosterAtlasIndex({ ...metadata, runtimeAuthority: 'gameplay' }, 'forkrunner'), /projection-only/);
   assert.throws(() => createEnemyRosterAtlasIndex(metadata, 'whale-enforcer'), /mismatch/);
   const missingState = { ...metadata, frames: metadata.frames.filter((frame) => frame.state !== 'death') };
-  assert.throws(() => createEnemyRosterAtlasIndex(missingState, 'forkrunner'), /missing death/);
+  assert.throws(() => createEnemyRosterAtlasIndex(missingState, 'forkrunner'), /missing.*death.*south/);
 });
 
 test('pose resolution is deterministic, wraps loops, and holds the death frame', async () => {
@@ -70,7 +72,8 @@ test('pose resolution is deterministic, wraps loops, and holds the death frame',
   assert.equal(first.direction, 'south', 'simulation index 2 is south, matching the hero mapping');
 
   const runCount = index.frameCountFor('run', 'south');
-  const wrapped = resolveEnemyRosterPose(index, { state: 'run', tick: 40 + runCount * 4, direction: 2 });
+  const runFps = index.fpsFor('run', 'south');
+  const wrapped = resolveEnemyRosterPose(index, { state: 'run', tick: 40 + runCount * 60 / runFps, direction: 2 });
   assert.equal(wrapped.id, first.id, 'run must loop');
 
   const lateDeath = resolveEnemyRosterPose(index, { state: 'death', tick: 100_000, direction: 0 });

@@ -1,0 +1,829 @@
+{
+  "schemaVersion": 1,
+  "pipelineId": "hmh-reboot-authored-props-v1",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "image": "./hmh-authored-props-atlas.png",
+  "cameraPitchDegrees": 55,
+  "assetCount": 29,
+  "categories": [
+    "pickup",
+    "power-up",
+    "weapon",
+    "world-prop"
+  ],
+  "frames": [
+    {
+      "id": "auto-miner",
+      "assetId": "auto-miner",
+      "category": "weapon",
+      "shape": "minigun",
+      "itemUrl": "./items/auto-miner.png",
+      "districts": [],
+      "runtimeScale": 0.6,
+      "frame": {
+        "x": 97,
+        "y": 163,
+        "w": 57,
+        "h": 22
+      },
+      "pivot": {
+        "x": 18,
+        "y": 18
+      },
+      "anchor": {
+        "x": 0.315789,
+        "y": 0.818182
+      },
+      "opaquePixels": 890,
+      "sourcePixelSha256": "9926345a096b03bc2cd96b39a19b6dd0bbb6c05201f96ac7a3a36955fe2c8cc3",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "berserk-candle",
+      "assetId": "berserk-candle",
+      "category": "pickup",
+      "shape": "candle",
+      "itemUrl": "./items/berserk-candle.png",
+      "districts": [],
+      "runtimeScale": 0.9,
+      "frame": {
+        "x": 147,
+        "y": 3,
+        "w": 20,
+        "h": 38
+      },
+      "pivot": {
+        "x": 10,
+        "y": 34
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.894737
+      },
+      "opaquePixels": 606,
+      "sourcePixelSha256": "5d206d797a74ea3b991a0d4542ef2377b973e44a7e84e6b571425fc2b5404d88",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "block-reward",
+      "assetId": "block-reward",
+      "category": "power-up",
+      "shape": "rate-chip",
+      "itemUrl": "./items/block-reward.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 3,
+        "y": 52,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "179a6076c33617da2c5ed9ff9091a27b20b5da9eb6f8df83f102e6da068c5b97",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "bonus-life",
+      "assetId": "bonus-life",
+      "category": "pickup",
+      "shape": "life-token",
+      "itemUrl": "./items/bonus-life.png",
+      "districts": [],
+      "runtimeScale": 0.78,
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 52,
+        "h": 46
+      },
+      "pivot": {
+        "x": 26,
+        "y": 42
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.913043
+      },
+      "opaquePixels": 1489,
+      "sourcePixelSha256": "4df301a2f301cec7f78caa45996b87eea11ffa832a1cbde2c89e0f9c01343ec2",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "bridge-bollard",
+      "assetId": "bridge-bollard",
+      "category": "world-prop",
+      "shape": "bollard",
+      "itemUrl": "./items/bridge-bollard.png",
+      "districts": [
+        "liquidity-crossing"
+      ],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 52,
+        "y": 52,
+        "w": 26,
+        "h": 34
+      },
+      "pivot": {
+        "x": 13,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 640,
+      "sourcePixelSha256": "c7196852fa7d2ccce782d08005626a53e5682272f9bc3ad78e3ec913fcbfbeda",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "coin-blaster",
+      "assetId": "coin-blaster",
+      "category": "weapon",
+      "shape": "pistol",
+      "itemUrl": "./items/coin-blaster.png",
+      "districts": [],
+      "runtimeScale": 0.52,
+      "frame": {
+        "x": 47,
+        "y": 163,
+        "w": 47,
+        "h": 23
+      },
+      "pivot": {
+        "x": 14,
+        "y": 19
+      },
+      "anchor": {
+        "x": 0.297872,
+        "y": 0.826087
+      },
+      "opaquePixels": 531,
+      "sourcePixelSha256": "3f9d6db824b96a3592ede06d66407dbd1161a4b44d110e757af9640a0bddfd57",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "cold-storage",
+      "assetId": "cold-storage",
+      "category": "power-up",
+      "shape": "grenade-chip",
+      "itemUrl": "./items/cold-storage.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 81,
+        "y": 52,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "1dea901f4e530d6609cb8de179d8ec2b2d9aeb6e9ef011bb04357dc19bd4e861",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "compound-interest",
+      "assetId": "compound-interest",
+      "category": "power-up",
+      "shape": "damage-chip",
+      "itemUrl": "./items/compound-interest.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 130,
+        "y": 52,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "6ad6a95e99ef95ee8e9e4d87b95b283301ca9db8baa533a8e37cf988c287765b",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "crystal-cluster",
+      "assetId": "crystal-cluster",
+      "category": "world-prop",
+      "shape": "crystal",
+      "itemUrl": "./items/crystal-cluster.png",
+      "districts": [
+        "hashwood",
+        "mining-camp"
+      ],
+      "runtimeScale": 1.1,
+      "frame": {
+        "x": 81,
+        "y": 126,
+        "w": 44,
+        "h": 32
+      },
+      "pivot": {
+        "x": 22,
+        "y": 28
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.875
+      },
+      "opaquePixels": 748,
+      "sourcePixelSha256": "07a787f3ee53633b5bc9667fddcc9c66e62be8281b541ad7ded2807d32cc835e",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "diamond-hands",
+      "assetId": "diamond-hands",
+      "category": "power-up",
+      "shape": "health-chip",
+      "itemUrl": "./items/diamond-hands.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 179,
+        "y": 52,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "70dea02cd5fbc11cff55b726462fd18d9d974726af0b2c7669f5554e5bfe1a56",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "fuel-drum",
+      "assetId": "fuel-drum",
+      "category": "world-prop",
+      "shape": "fuel-drum",
+      "itemUrl": "./items/fuel-drum.png",
+      "districts": [
+        "liquidation-yard",
+        "frontier-relay"
+      ],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 3,
+        "y": 89,
+        "w": 38,
+        "h": 34
+      },
+      "pivot": {
+        "x": 19,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1128,
+      "sourcePixelSha256": "d57d06170d4329c023be4912cafd6b72daa056015220ffdf5e08195f08b31af9",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "gas-optimization",
+      "assetId": "gas-optimization",
+      "category": "power-up",
+      "shape": "dash-chip",
+      "itemUrl": "./items/gas-optimization.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 44,
+        "y": 89,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "53b36c6b314d9f59fa3688aedbe42c500b93bade12f46e62983d3730b9acf024",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "hardened-wallet",
+      "assetId": "hardened-wallet",
+      "category": "power-up",
+      "shape": "health-chip",
+      "itemUrl": "./items/hardened-wallet.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 93,
+        "y": 89,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "64bb126a8e23961d754912c48c9bd0c91b0dfb11838bd8c463f797f1897fb2c3",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "hash-rail-core",
+      "assetId": "hash-rail-core",
+      "category": "pickup",
+      "shape": "rail-core",
+      "itemUrl": "./items/hash-rail-core.png",
+      "districts": [],
+      "runtimeScale": 0.76,
+      "frame": {
+        "x": 170,
+        "y": 3,
+        "w": 62,
+        "h": 37
+      },
+      "pivot": {
+        "x": 31,
+        "y": 33
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.891892
+      },
+      "opaquePixels": 927,
+      "sourcePixelSha256": "03c8a0332e54051f291469cf1635275faca15cc008271e86b06a4e0fd5a7619e",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "hashwood-stump",
+      "assetId": "hashwood-stump",
+      "category": "world-prop",
+      "shape": "stump",
+      "itemUrl": "./items/hashwood-stump.png",
+      "districts": [
+        "hashwood"
+      ],
+      "runtimeScale": 1.1,
+      "frame": {
+        "x": 128,
+        "y": 126,
+        "w": 38,
+        "h": 29
+      },
+      "pivot": {
+        "x": 19,
+        "y": 25
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.862069
+      },
+      "opaquePixels": 983,
+      "sourcePixelSha256": "4a8fd980a1a61442b57ea04e975a200836a2fdc78bf9ceb5fe21d63442ed3c9f",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "launcher-rig",
+      "assetId": "launcher-rig",
+      "category": "weapon",
+      "shape": "launcher",
+      "itemUrl": "./items/launcher-rig.png",
+      "districts": [],
+      "runtimeScale": 0.62,
+      "frame": {
+        "x": 169,
+        "y": 126,
+        "w": 59,
+        "h": 29
+      },
+      "pivot": {
+        "x": 23,
+        "y": 25
+      },
+      "anchor": {
+        "x": 0.389831,
+        "y": 0.862069
+      },
+      "opaquePixels": 1242,
+      "sourcePixelSha256": "47bf2b6cdb42503e5e1b838a3d20d6c8f1599f039d0801d876c52bffe5858aa6",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "liquidation-terminal",
+      "assetId": "liquidation-terminal",
+      "category": "world-prop",
+      "shape": "terminal",
+      "itemUrl": "./items/liquidation-terminal.png",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "runtimeScale": 1.4,
+      "frame": {
+        "x": 101,
+        "y": 192,
+        "w": 24,
+        "h": 15
+      },
+      "pivot": {
+        "x": 12,
+        "y": 11
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.733333
+      },
+      "opaquePixels": 358,
+      "sourcePixelSha256": "dd93112459a316182d08a90b8e94dcef06a311e9285cf88e0b375310cd5a953f",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "loader-barrel",
+      "assetId": "loader-barrel",
+      "category": "world-prop",
+      "shape": "barrel",
+      "itemUrl": "./items/loader-barrel.png",
+      "districts": [
+        "mining-camp",
+        "liquidation-yard"
+      ],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 142,
+        "y": 89,
+        "w": 38,
+        "h": 34
+      },
+      "pivot": {
+        "x": 19,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1128,
+      "sourcePixelSha256": "fcd9c28b730f1f92f112647c24ace68154892ab086fe849429614349f171448b",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "nuke-liquidation",
+      "assetId": "nuke-liquidation",
+      "category": "pickup",
+      "shape": "nuke",
+      "itemUrl": "./items/nuke-liquidation.png",
+      "districts": [],
+      "runtimeScale": 0.88,
+      "frame": {
+        "x": 58,
+        "y": 3,
+        "w": 22,
+        "h": 42
+      },
+      "pivot": {
+        "x": 11,
+        "y": 38
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.904762
+      },
+      "opaquePixels": 786,
+      "sourcePixelSha256": "ad3e014e55ac0d86b313e7833ca8fb210e041776ac82a0159884839a599095e4",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "ore-cart",
+      "assetId": "ore-cart",
+      "category": "world-prop",
+      "shape": "ore-cart",
+      "itemUrl": "./items/ore-cart.png",
+      "districts": [
+        "mining-camp"
+      ],
+      "runtimeScale": 1.15,
+      "frame": {
+        "x": 3,
+        "y": 163,
+        "w": 41,
+        "h": 26
+      },
+      "pivot": {
+        "x": 19,
+        "y": 22
+      },
+      "anchor": {
+        "x": 0.463415,
+        "y": 0.846154
+      },
+      "opaquePixels": 863,
+      "sourcePixelSha256": "5b2d7a84dd0b3e42bec5694ec8110b02073e2caabb6e02ecda7a329b5fd7158d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "proof-of-work",
+      "assetId": "proof-of-work",
+      "category": "power-up",
+      "shape": "damage-chip",
+      "itemUrl": "./items/proof-of-work.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 183,
+        "y": 89,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "067ae8fd21bbdf6f8ae54e47eee85b8afb5ae878fe9d4dc285cc8c13950a1d19",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "proof-pylon",
+      "assetId": "proof-pylon",
+      "category": "world-prop",
+      "shape": "pylon",
+      "itemUrl": "./items/proof-pylon.png",
+      "districts": [
+        "liquidity-crossing"
+      ],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 83,
+        "y": 3,
+        "w": 28,
+        "h": 42
+      },
+      "pivot": {
+        "x": 14,
+        "y": 38
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.904762
+      },
+      "opaquePixels": 1078,
+      "sourcePixelSha256": "2c8e6458b924f17cf6148aabbd87dd0c52a6f8c327254c7c618c34514a22b662",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "relay-console",
+      "assetId": "relay-console",
+      "category": "world-prop",
+      "shape": "console",
+      "itemUrl": "./items/relay-console.png",
+      "districts": [
+        "frontier-relay"
+      ],
+      "runtimeScale": 1.4,
+      "frame": {
+        "x": 128,
+        "y": 192,
+        "w": 24,
+        "h": 15
+      },
+      "pivot": {
+        "x": 12,
+        "y": 11
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.733333
+      },
+      "opaquePixels": 358,
+      "sourcePixelSha256": "0066a1ca28d27415b3d692152e74ec76add02bd7dc958e4d236d703eabb045ac",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "rugpull-barricade",
+      "assetId": "rugpull-barricade",
+      "category": "world-prop",
+      "shape": "barricade",
+      "itemUrl": "./items/rugpull-barricade.png",
+      "districts": [
+        "rugpull-ravine"
+      ],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 157,
+        "y": 163,
+        "w": 52,
+        "h": 22
+      },
+      "pivot": {
+        "x": 26,
+        "y": 18
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.818182
+      },
+      "opaquePixels": 619,
+      "sourcePixelSha256": "2d41bb100af1a3106baedfb41ec1eae8e243d922bc70e324c00a990b505683c9",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "salvage-crate",
+      "assetId": "salvage-crate",
+      "category": "world-prop",
+      "shape": "crate",
+      "itemUrl": "./items/salvage-crate.png",
+      "districts": [
+        "frontier-relay",
+        "rugpull-ravine"
+      ],
+      "runtimeScale": 1.25,
+      "frame": {
+        "x": 72,
+        "y": 192,
+        "w": 26,
+        "h": 18
+      },
+      "pivot": {
+        "x": 13,
+        "y": 14
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.777778
+      },
+      "opaquePixels": 464,
+      "sourcePixelSha256": "ac538c7530fa1b0a3944e5a06038071c8fd360b4349f6d490cfaf5d61c566f7d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "scatter-shotgun",
+      "assetId": "scatter-shotgun",
+      "category": "weapon",
+      "shape": "shotgun",
+      "itemUrl": "./items/scatter-shotgun.png",
+      "districts": [],
+      "runtimeScale": 0.58,
+      "frame": {
+        "x": 3,
+        "y": 192,
+        "w": 66,
+        "h": 20
+      },
+      "pivot": {
+        "x": 27,
+        "y": 19
+      },
+      "anchor": {
+        "x": 0.409091,
+        "y": 0.95
+      },
+      "opaquePixels": 735,
+      "sourcePixelSha256": "d3e3d19c33bc8ed526dccb889f04aea54a851ead98bcf1d3153c443f4b2115ea",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "time-dilation",
+      "assetId": "time-dilation",
+      "category": "pickup",
+      "shape": "hourglass",
+      "itemUrl": "./items/time-dilation.png",
+      "districts": [],
+      "runtimeScale": 0.86,
+      "frame": {
+        "x": 114,
+        "y": 3,
+        "w": 30,
+        "h": 41
+      },
+      "pivot": {
+        "x": 15,
+        "y": 37
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.902439
+      },
+      "opaquePixels": 767,
+      "sourcePixelSha256": "52fbdcc57b7118f2e5d5ee77de22b48a3a58e3cef6c8826eeaed97ac246ca139",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "validator-training",
+      "assetId": "validator-training",
+      "category": "power-up",
+      "shape": "reload-chip",
+      "itemUrl": "./items/validator-training.png",
+      "districts": [],
+      "runtimeScale": 0.44,
+      "frame": {
+        "x": 3,
+        "y": 126,
+        "w": 46,
+        "h": 34
+      },
+      "pivot": {
+        "x": 23,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 1246,
+      "sourcePixelSha256": "6ed75bab8937fa96bed17fa55514bcb28fe4f3e7c3e210c51e1da50f9dca2053",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "warning-beacon",
+      "assetId": "warning-beacon",
+      "category": "world-prop",
+      "shape": "beacon",
+      "itemUrl": "./items/warning-beacon.png",
+      "districts": [
+        "rugpull-ravine",
+        "liquidation-yard"
+      ],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 52,
+        "y": 126,
+        "w": 26,
+        "h": 34
+      },
+      "pivot": {
+        "x": 13,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 640,
+      "sourcePixelSha256": "a5c6717fdad5939626d6a810d0672d866d90d8011e3ba2195136b41cd7ea1fd2",
+      "rotated": false,
+      "trimmed": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "hmh-authored-props-metrics-v1",
+  "status": "pass",
+  "pipelineId": "hmh-reboot-authored-props-v1",
+  "blenderVersion": "5.1.2",
+  "runtimeAuthority": "projection-only",
+  "assetCount": 29,
+  "uniqueSourceFrames": 29,
+  "duplicateFrames": 0,
+  "emptyFrames": 0,
+  "transparentCornerFailures": 0,
+  "reproducibleVerified": true,
+  "atlasSize": {
+    "width": 256,
+    "height": 256
+  },
+  "sourceBlendSha256": "0fb6499ffe0b154a2db4ae2f2a18a86e6b33e3fd8a96a586f40f642964767ec4",
+  "manifestSha256": "ea978c101bfe8990b08480972cc80d01f35e8602a7b4d0f2135f597090c4e744",
+  "atlasSha256": "91350b6ce292f42bf36d100eac68bb66b309996f2468dc788cc362862f129d96",
+  "metadataSha256": "4d68fe818f03bef8d18959c636efc884aafe4362a01a62dc6fd411a1157b361c",
+  "contactSheetSha256": "067776b9d95ee8d6eb2bbc4f293e2f66e973bcddeee332ab141d53932d25c743"
+}

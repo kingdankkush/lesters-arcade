@@ -4,12 +4,14 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-2. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-3. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-4. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-5. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-6. `docs/hmh-reboot/COMPATIBILITY.json`
+1. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+2. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+3. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+4. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+5. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
+6. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+7. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+8. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
@@ -45,11 +47,10 @@ Chikun's Escape remains a Coming Soon development cabinet. Its deterministic par
 - Do not deploy contracts, send transactions, change authority, or enable real settlement without a separate explicit HALT approval.
 - Do not expose private keys, API credentials, or verifier secrets.
 
-Current Cycle 002 candidate at the time of this instruction:
+Current Cycle 006 source baseline at the time of this instruction:
 
-- Deployable source: `ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170`
-- Preview deployment: `dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN`
-- Preview URL: `https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app`
+- Branch and remote source: `807bc9434aefec1ab89623128b12777bfe73ab55`
+- Cycle 006 preview verification remained pending at handoff
 - Production remains `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`
 - Rollback remains `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk`
 
@@ -75,9 +76,9 @@ Art, interpolation, particles, shaders, audio, animation LOD, and quality tiers 
 
 For any render-layer change:
 
-- Run `npm run visual:regression` and inspect both the screenshots and machine-readable comparison metrics. Do not rely on screenshots alone.
+- Run `npm run visual:reboot` and inspect both the screenshots and machine-readable comparison metrics. Do not rely on screenshots alone.
 - Verify the ground plane, prop grounding, depth sorting, collision-to-art alignment, actor readability, UI containment, and desktop/mobile framing.
-- Use `npm run visual:accept` only after the visual change is intentional and reviewed.
+- Use `npm run visual:reboot:accept` only after the visual change is intentional and reviewed.
 - Commit the approved baseline update under `docs/testing/VISUAL_BASELINES/` with the source change that requires it.
 
 ## Implementation discipline

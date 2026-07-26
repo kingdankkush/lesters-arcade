@@ -39,7 +39,8 @@
     "alphaThreshold": 8,
     "cameraOrthoScale": 2.15,
     "exposure": -0.15,
-    "cameraTargetZ": 0.86
+    "cameraTargetZ": 0.86,
+    "cameraPitchDegrees": 55
   },
   "pivot": {
     "x": 64,
@@ -235,7 +236,27 @@
         "kind": "crown-rig",
         "accent": "#ff496c"
       },
-      "cameraOrthoScale": 3.1
+      "cameraOrthoScale": 3.1,
+      "phaseVisuals": {
+        "market-open": {
+          "accent": "#ff496c",
+          "silhouetteCue": "crown-rig"
+        },
+        "margin-call": {
+          "accent": "#ffc857",
+          "silhouetteCue": "margin-spikes"
+        },
+        "total-liquidation": {
+          "accent": "#e26dff",
+          "silhouetteCue": "liquidation-halo"
+        }
+      }
     }
-  ]
+  ],
+  "materialPolicy": {
+    "skinRoughness": 0.86,
+    "skinMetallic": 0.0,
+    "identityRoughness": 0.8,
+    "accentRoughness": 0.62
+  }
 }

@@ -44,7 +44,8 @@
     "rawOutputDirectory": ".tmp/hmh-reboot-production-hero-pilot",
     "alphaThreshold": 8,
     "cameraOrthoScale": 2.75,
-    "exposure": -0.45
+    "exposure": -0.45,
+    "cameraPitchDegrees": 55
   },
   "pivot": {
     "sourcePixels": [
@@ -106,6 +107,26 @@
           "run": {
             "frames": 6,
             "fps": 12
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
           }
         },
         "torso-head": {
@@ -120,6 +141,26 @@
           "hurt": {
             "frames": 2,
             "fps": 10
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
           }
         },
         "weapon": {
@@ -130,6 +171,26 @@
           "pistol-fire": {
             "frames": 3,
             "fps": 15
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
           }
         }
       },
@@ -138,7 +199,18 @@
         "metadata": "lit-commando/lit-commando-production-pilot-atlas.json",
         "metrics": "lit-commando/lit-commando-production-pilot-metrics.json",
         "contactSheet": "lit-commando/lit-commando-production-pilot-contact-sheet.png"
-      }
+      },
+      "animationClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ]
     },
     {
       "actorId": "lit-valkyrie",
@@ -173,6 +245,26 @@
           "run": {
             "frames": 6,
             "fps": 12
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
           }
         },
         "torso-head": {
@@ -187,6 +279,26 @@
           "hurt": {
             "frames": 2,
             "fps": 10
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
           }
         },
         "weapon": {
@@ -197,6 +309,26 @@
           "pistol-fire": {
             "frames": 3,
             "fps": 15
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
           }
         }
       },
@@ -205,7 +337,18 @@
         "metadata": "lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
         "metrics": "lit-valkyrie/lit-valkyrie-production-pilot-metrics.json",
         "contactSheet": "lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png"
-      }
+      },
+      "animationClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ]
     },
     {
       "actorId": "lester-original",
@@ -232,23 +375,129 @@
         "secondary": "cargo-tan",
         "accent": "bandolier-brass"
       },
-      "animationClips": ["idle", "run", "aim", "pistol-fire", "hurt"],
-      "layers": ["shadow", "lower-body", "torso-head", "weapon"],
-      "composition": ["shadow", "lower-body", "torso-head", "weapon"],
+      "animationClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ],
+      "layers": [
+        "shadow",
+        "lower-body",
+        "torso-head",
+        "weapon"
+      ],
+      "composition": [
+        "shadow",
+        "lower-body",
+        "torso-head",
+        "weapon"
+      ],
       "clips": {
-        "shadow": {"idle": {"frames": 1, "fps": 1}},
+        "shadow": {
+          "idle": {
+            "frames": 1,
+            "fps": 1
+          }
+        },
         "lower-body": {
-          "idle": {"frames": 2, "fps": 2},
-          "run": {"frames": 6, "fps": 12}
+          "idle": {
+            "frames": 2,
+            "fps": 2
+          },
+          "run": {
+            "frames": 6,
+            "fps": 12
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
+          }
         },
         "torso-head": {
-          "aim": {"frames": 2, "fps": 2},
-          "pistol-fire": {"frames": 3, "fps": 15},
-          "hurt": {"frames": 2, "fps": 10}
+          "aim": {
+            "frames": 2,
+            "fps": 2
+          },
+          "pistol-fire": {
+            "frames": 3,
+            "fps": 15
+          },
+          "hurt": {
+            "frames": 2,
+            "fps": 10
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
+          }
         },
         "weapon": {
-          "aim": {"frames": 2, "fps": 2},
-          "pistol-fire": {"frames": 3, "fps": 15}
+          "aim": {
+            "frames": 2,
+            "fps": 2
+          },
+          "pistol-fire": {
+            "frames": 3,
+            "fps": 15
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
+          }
         }
       },
       "output": {
@@ -281,23 +530,129 @@
         "secondary": "veteran-gold",
         "accent": "lilly-teal"
       },
-      "animationClips": ["idle", "run", "aim", "pistol-fire", "hurt"],
-      "layers": ["shadow", "lower-body", "torso-head", "weapon"],
-      "composition": ["shadow", "lower-body", "torso-head", "weapon"],
+      "animationClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ],
+      "layers": [
+        "shadow",
+        "lower-body",
+        "torso-head",
+        "weapon"
+      ],
+      "composition": [
+        "shadow",
+        "lower-body",
+        "torso-head",
+        "weapon"
+      ],
       "clips": {
-        "shadow": {"idle": {"frames": 1, "fps": 1}},
+        "shadow": {
+          "idle": {
+            "frames": 1,
+            "fps": 1
+          }
+        },
         "lower-body": {
-          "idle": {"frames": 2, "fps": 2},
-          "run": {"frames": 6, "fps": 12}
+          "idle": {
+            "frames": 2,
+            "fps": 2
+          },
+          "run": {
+            "frames": 6,
+            "fps": 12
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
+          }
         },
         "torso-head": {
-          "aim": {"frames": 2, "fps": 2},
-          "pistol-fire": {"frames": 3, "fps": 15},
-          "hurt": {"frames": 2, "fps": 10}
+          "aim": {
+            "frames": 2,
+            "fps": 2
+          },
+          "pistol-fire": {
+            "frames": 3,
+            "fps": 15
+          },
+          "hurt": {
+            "frames": 2,
+            "fps": 10
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
+          }
         },
         "weapon": {
-          "aim": {"frames": 2, "fps": 2},
-          "pistol-fire": {"frames": 3, "fps": 15}
+          "aim": {
+            "frames": 2,
+            "fps": 2
+          },
+          "pistol-fire": {
+            "frames": 3,
+            "fps": 15
+          },
+          "dash": {
+            "frames": 4,
+            "fps": 15,
+            "loop": false
+          },
+          "melee": {
+            "frames": 5,
+            "fps": 15,
+            "loop": false
+          },
+          "grenade": {
+            "frames": 5,
+            "fps": 12,
+            "loop": false
+          },
+          "death": {
+            "frames": 6,
+            "fps": 8,
+            "loop": false
+          }
         }
       },
       "output": {

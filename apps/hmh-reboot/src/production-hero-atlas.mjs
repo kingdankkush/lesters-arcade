@@ -47,6 +47,10 @@ function frameKey(layer, state, direction, frameIndex) {
   return `${layer}|${state}|${direction}|${frameIndex}`;
 }
 
+function clipKey(layer, state, direction) {
+  return `${layer}|${state}|${direction}`;
+}
+
 function positiveInteger(value, name) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
   return value;
@@ -78,9 +82,10 @@ export function createProductionHeroAtlasIndex(metadata, expectedAsset = PRODUCT
   if (!arraysEqual(metadata.layers, REQUIRED_LAYER_ORDER)) throw new TypeError('production hero layer order is invalid');
   if (!arraysEqual(metadata.composition?.layerOrder, REQUIRED_LAYER_ORDER)) throw new TypeError('production hero composition order is invalid');
   if (metadata.composition?.weaponSocket !== 'weapon_socket' || metadata.composition?.independentDirections !== true) throw new TypeError('production hero composition contract is invalid');
-  if (!Array.isArray(metadata.frames) || metadata.frames.length !== 168) throw new TypeError('production hero pilot requires exactly 168 frames');
+  if (!Array.isArray(metadata.frames) || metadata.frames.length < 168) throw new TypeError('production hero atlas requires complete authored frame coverage');
 
   const frameByKey = new Map();
+  const clipByKey = new Map();
   for (const source of metadata.frames) {
     if (!REQUIRED_LAYER_ORDER.includes(source.layer)) throw new TypeError(`unknown production hero layer ${source.layer}`);
     if (!DIRECTION_BY_SIMULATION_INDEX.includes(source.direction)) throw new TypeError(`unknown production hero direction ${source.direction}`);
@@ -97,6 +102,11 @@ export function createProductionHeroAtlasIndex(metadata, expectedAsset = PRODUCT
     const key = frameKey(normalized.layer, normalized.state, normalized.direction, normalized.frameIndex);
     if (frameByKey.has(key)) throw new TypeError(`duplicate production hero frame ${key}`);
     frameByKey.set(key, normalized);
+    const keyForClip = clipKey(normalized.layer, normalized.state, normalized.direction);
+    const clip = clipByKey.get(keyForClip) ?? { fps: normalized.fps, loop: normalized.loop !== false, frameCount: 0 };
+    if (!Number.isFinite(normalized.fps) || normalized.fps <= 0 || clip.fps !== normalized.fps) throw new TypeError(`invalid production hero clip cadence ${keyForClip}`);
+    clip.frameCount = Math.max(clip.frameCount, normalized.frameIndex + 1);
+    clipByKey.set(keyForClip, clip);
   }
 
   return Object.freeze({
@@ -109,6 +119,7 @@ export function createProductionHeroAtlasIndex(metadata, expectedAsset = PRODUCT
     image: metadata.image,
     layerOrder: REQUIRED_LAYER_ORDER,
     frameByKey,
+    clipByKey: new Map([...clipByKey].map(([key, clip]) => [key, Object.freeze({ ...clip })])),
   });
 }
 
@@ -119,8 +130,19 @@ function requireFrame(index, layer, state, direction, frameIndex) {
   return frame;
 }
 
-function animationFrame(tick, fps, frameCount) {
-  return Math.floor(tick * fps / SIMULATION_HZ) % frameCount;
+export function clipFor(index, layer, state, direction) {
+  const clip = index.clipByKey.get(clipKey(layer, state, direction));
+  if (!clip) throw new RangeError(`missing production hero clip ${layer}|${state}|${direction}`);
+  return clip;
+}
+
+function animationFrame(tick, clip) {
+  const frame = Math.floor(tick * clip.fps / SIMULATION_HZ);
+  return clip.loop ? frame % clip.frameCount : Math.min(frame, clip.frameCount - 1);
+}
+
+function frameFor(index, layer, state, direction, tick) {
+  return requireFrame(index, layer, state, direction, animationFrame(tick, clipFor(index, layer, state, direction)));
 }
 
 export function resolveProductionHeroPose(index, {
@@ -137,30 +159,37 @@ export function resolveProductionHeroPose(index, {
   const legName = directionNameForProductionIndex(legDirection);
   const torsoName = directionNameForProductionIndex(torsoDirection);
   const moving = locomotion === 'moving';
-  const lowerState = moving ? 'run' : 'idle';
-  const lowerFrame = animationFrame(tick, moving ? 12 : 2, moving ? 6 : 2);
+  const fullBodyActions = new Set(['dash', 'melee', 'grenade', 'death']);
+  if (fullBodyActions.has(action)) {
+    return Object.freeze([
+      requireFrame(index, 'shadow', 'idle', legName, 0),
+      frameFor(index, 'lower-body', action, legName, resolvedActionTick),
+      frameFor(index, 'torso-head', action, torsoName, resolvedActionTick),
+      frameFor(index, 'weapon', action, torsoName, resolvedActionTick),
+    ]);
+  }
 
+  const lowerState = moving ? 'run' : 'idle';
+  const lower = frameFor(index, 'lower-body', lowerState, legName, tick);
   let torsoState = 'aim';
-  let torsoFrame = animationFrame(tick, 2, 2);
   let weaponState = 'aim';
-  let weaponFrame = animationFrame(tick, 2, 2);
+  let actionCadenceTick = tick;
   if (action === 'pistol-fire') {
     torsoState = 'pistol-fire';
     weaponState = 'pistol-fire';
-    torsoFrame = animationFrame(resolvedActionTick, 15, 3);
-    weaponFrame = torsoFrame;
+    actionCadenceTick = resolvedActionTick;
   } else if (action === 'hurt') {
     torsoState = 'hurt';
-    torsoFrame = animationFrame(resolvedActionTick, 10, 2);
+    actionCadenceTick = resolvedActionTick;
   } else if (action !== 'aim') {
     throw new RangeError(`unsupported production hero action ${action}`);
   }
 
   return Object.freeze([
     requireFrame(index, 'shadow', 'idle', legName, 0),
-    requireFrame(index, 'lower-body', lowerState, legName, lowerFrame),
-    requireFrame(index, 'torso-head', torsoState, torsoName, torsoFrame),
-    requireFrame(index, 'weapon', weaponState, torsoName, weaponFrame),
+    lower,
+    frameFor(index, 'torso-head', torsoState, torsoName, actionCadenceTick),
+    frameFor(index, 'weapon', weaponState, torsoName, weaponState === 'aim' ? tick : actionCadenceTick),
   ]);
 }
 
@@ -216,5 +245,11 @@ export function createProductionHeroDisplay({
     return frames;
   };
 
-  return Object.freeze({ container, layerOrder: index.layerOrder, applyPose });
+  const setLayerVisible = (layer, visible) => {
+    const sprite = spriteByLayer.get(layer);
+    if (!sprite) throw new RangeError(`unknown production hero layer ${layer}`);
+    sprite.visible = Boolean(visible);
+  };
+
+  return Object.freeze({ container, layerOrder: index.layerOrder, applyPose, setLayerVisible });
 }

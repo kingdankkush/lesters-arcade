@@ -155,18 +155,26 @@ def main() -> None:
         # silhouette is never clipped by the shared camera.
         camera.data.ortho_scale = actor.get("cameraOrthoScale", default_ortho)
         stoop = actor["build"]["stoop"]
+        phases = list(actor.get("phaseVisuals", {})) or [None]
         count = 0
-        for state, clip in manifest["clips"].items():
-            for direction in manifest["directions"]:
-                rig.rotation_euler[2] = math.radians(manifest["directionAngles"][direction])
-                for frame_index in range(clip["frames"]):
-                    apply_pose(rig, state, frame_index, clip["frames"], stoop)
-                    bpy.context.view_layer.update()
-                    filename = f"{actor_id}__body__{state}__{direction}__{frame_index:03d}.png"
-                    scene.render.filepath = str(raw_output / filename)
-                    bpy.ops.render.render(write_still=True)
-                    rendered.append(filename)
-                    count += 1
+        for boss_phase in phases:
+            for obj in all_actor_objects:
+                same_actor = obj.get("hmh_actor_id") == actor_id
+                phase_tag = obj.get("hmh_phase")
+                phase_visible = phase_tag is None or phase_tag == boss_phase
+                obj.hide_render = not (same_actor and phase_visible)
+            for state, clip in manifest["clips"].items():
+                for direction in manifest["directions"]:
+                    rig.rotation_euler[2] = math.radians(manifest["directionAngles"][direction])
+                    for frame_index in range(clip["frames"]):
+                        apply_pose(rig, state, frame_index, clip["frames"], stoop)
+                        bpy.context.view_layer.update()
+                        phase_token = f"__{boss_phase}" if boss_phase else ""
+                        filename = f"{actor_id}__body{phase_token}__{state}__{direction}__{frame_index:03d}.png"
+                        scene.render.filepath = str(raw_output / filename)
+                        bpy.ops.render.render(write_still=True)
+                        rendered.append(filename)
+                        count += 1
         per_actor[actor_id] = count
 
     for obj in all_actor_objects:

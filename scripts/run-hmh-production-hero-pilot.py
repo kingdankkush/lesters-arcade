@@ -66,6 +66,7 @@ def expected_frames(manifest: dict, pilot: dict) -> list[dict]:
                         "direction": direction,
                         "frameIndex": frame_index,
                         "fps": clip["fps"],
+                        "loop": clip.get("loop", True),
                     })
     return frames
 
@@ -207,7 +208,7 @@ def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -
         pivot_x = source_pivot[0] - x0
         pivot_y = source_pivot[1] - y0
         metadata_frames.append({
-            "id": frame["id"], "layer": frame["layer"], "state": frame["state"], "direction": frame["direction"], "frameIndex": frame["frameIndex"], "fps": frame["fps"],
+            "id": frame["id"], "layer": frame["layer"], "state": frame["state"], "direction": frame["direction"], "frameIndex": frame["frameIndex"], "fps": frame["fps"], "loop": frame["loop"],
             "frame": {"x": atlas_x, "y": atlas_y, "w": width, "h": height}, "rotated": False, "trimmed": True,
             "sourceSize": {"w": manifest["render"]["frameSize"][0], "h": manifest["render"]["frameSize"][1]},
             "spriteSourceSize": {"x": x0, "y": y0, "w": width, "h": height},
@@ -244,6 +245,12 @@ def build_contact_sheet(manifest: dict, pilot: dict, directory: Path, output_dir
     rows += [(f"RUN {index + 1}/6", "run", index, "aim", index % 2, "aim", index % 2) for index in range(6)]
     rows += [(f"PISTOL FIRE {index + 1}/3", "idle", index % 2, "pistol-fire", index, "pistol-fire", index) for index in range(3)]
     rows += [(f"HURT {index + 1}/2", "idle", index, "hurt", index, "aim", index) for index in range(2)]
+    # Action contact rows make the new authored coverage human-inspectable
+    # without expanding the sheet to every intermediate frame.
+    for state in ("dash", "melee", "grenade", "death"):
+        count = pilot["clips"]["torso-head"][state]["frames"]
+        for index in sorted({0, count // 2, count - 1}):
+            rows.append((f"{state.upper()} {index + 1}/{count}", state, index, state, index, state, index))
     label_width = 190
     header_height = 104
     sheet = Image.new("RGBA", (label_width + frame_size[0] * len(manifest["directions"]), header_height + frame_size[1] * len(rows)), (7, 12, 27, 255))
@@ -286,8 +293,13 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
         ], f"{pilot['actorId']} {label}")
 
     frames = expected_frames(manifest, pilot)
-    if len(frames) != 168:
-        raise RuntimeError(f"Expected 168 frames for {pilot['actorId']}, got {len(frames)}")
+    declared_frame_count = sum(
+        clip["frames"] * len(manifest["directions"])
+        for layer in pilot["layers"]
+        for clip in pilot["clips"][layer].values()
+    )
+    if len(frames) != declared_frame_count:
+        raise RuntimeError(f"Manifest frame contract drifted for {pilot['actorId']}: {len(frames)} != {declared_frame_count}")
     frame_size = tuple(manifest["render"]["frameSize"])
     pivot = tuple(manifest["pivot"]["sourcePixels"])
     threshold = manifest["render"]["alphaThreshold"]
@@ -307,8 +319,15 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
         raise RuntimeError(f"Source/export inspection failed for {pilot['actorId']}: inspection={inspection} report={report}")
     if set(actor_inspection["objectsByLayer"]) != set(pilot["layers"]):
         raise RuntimeError(f"Actor inspection layers mismatch for {pilot['actorId']}: {actor_inspection}")
-    if analysis_a["uniqueAnimatedFrameCount"] != 160:
-        raise RuntimeError(f"Expected 160 unique animated frames for {pilot['actorId']}, got {analysis_a['uniqueAnimatedFrameCount']}")
+    expected_animated_frames = len(frames) - sum(
+        clip["frames"] * len(manifest["directions"])
+        for clip in pilot["clips"]["shadow"].values()
+    )
+    if analysis_a["uniqueAnimatedFrameCount"] != expected_animated_frames:
+        raise RuntimeError(
+            f"Expected {expected_animated_frames} unique animated frames for {pilot['actorId']}, "
+            f"got {analysis_a['uniqueAnimatedFrameCount']}"
+        )
 
     atlas_path, metadata_path, atlas_size = build_atlas(manifest, pilot, analysis_a, output_root)
     contact_sheet_path = build_contact_sheet(manifest, pilot, run_a, output_root)
