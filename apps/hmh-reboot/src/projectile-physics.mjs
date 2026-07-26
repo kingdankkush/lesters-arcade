@@ -142,25 +142,32 @@ export function planProjectileFlightStep({
   previousGroundZ,
   queryGround,
   flightHeight,
+  flightCeilingZ = null,
 } = {}) {
   const start = point3(previous, 'projectile flight previous');
   const speed = point2(velocity, 'projectile flight velocity');
   const dt = positive(dtSeconds, 'projectile flight dtSeconds');
   const groundZ = finite(previousGroundZ, 'projectile flight previousGroundZ');
   const height = positive(flightHeight, 'projectile flight flightHeight');
+  const ceilingZ = finite(flightCeilingZ ?? start.z, 'projectile flight flightCeilingZ');
+  if (ceilingZ < start.z - EPSILON) throw new TypeError('projectile flight flightCeilingZ must not be below the current projectile height');
   if (typeof queryGround !== 'function') throw new TypeError('projectile flight queryGround must be a function');
   const currentX = start.x + speed.x * dt;
   const currentY = start.y + speed.y * dt;
   const nextGroundZ = finite(queryGround(currentX, currentY)?.groundZ, 'projectile flight groundZ');
-  const restZ = nextGroundZ + height;
-  const currentZ = nextGroundZ < groundZ - EPSILON ? Math.min(start.z, restZ) : start.z;
+  const restZ = Math.min(nextGroundZ + height, ceilingZ);
+  const descending = restZ < start.z - EPSILON;
+  const recovering = nextGroundZ > groundZ + EPSILON && restZ > start.z + EPSILON;
+  const currentZ = descending || recovering ? restZ : start.z;
   let heightTransition = null;
 
-  // A sharp authored ledge is a discontinuous surface, not a long airborne
-  // ramp. Locate that boundary deterministically so collision remains high on
-  // the platform and low immediately after the edge. Small ramp/step changes
-  // keep ordinary linear interpolation; upward terrain never pulls a shot up.
-  if (groundZ - nextGroundZ > SHARP_GROUND_DROP + EPSILON && currentZ < start.z - EPSILON) {
+  // A sharp authored boundary is a discontinuous surface, not a long airborne
+  // ramp. Locate it deterministically so collision uses the correct height on
+  // each side. Recovery is capped at the immutable source flight ceiling, so
+  // a low-origin projectile never gains uphill authority.
+  const sharpDrop = groundZ - nextGroundZ > SHARP_GROUND_DROP + EPSILON && currentZ < start.z - EPSILON;
+  const sharpRecovery = nextGroundZ - groundZ > SHARP_GROUND_DROP + EPSILON && currentZ > start.z + EPSILON;
+  if (sharpDrop || sharpRecovery) {
     let low = 0;
     let high = 1;
     for (let index = 0; index < GROUND_TRANSITION_SEARCH_STEPS; index += 1) {
@@ -168,7 +175,10 @@ export function planProjectileFlightStep({
       const sampleX = start.x + (currentX - start.x) * time;
       const sampleY = start.y + (currentY - start.y) * time;
       const sampleGroundZ = finite(queryGround(sampleX, sampleY)?.groundZ, 'projectile flight transition groundZ');
-      if (sampleGroundZ < groundZ - SHARP_GROUND_DROP - EPSILON) high = time;
+      const crossedBoundary = sharpDrop
+        ? sampleGroundZ < groundZ - SHARP_GROUND_DROP - EPSILON
+        : sampleGroundZ > groundZ + SHARP_GROUND_DROP + EPSILON;
+      if (crossedBoundary) high = time;
       else low = time;
     }
     if (high > EPSILON && high < 1 - EPSILON) heightTransition = Object.freeze({ time: high });
@@ -178,6 +188,7 @@ export function planProjectileFlightStep({
     previous: start,
     current: Object.freeze({ x: currentX, y: currentY, z: currentZ }),
     groundZ: nextGroundZ,
+    flightCeilingZ: ceilingZ,
     heightTransition,
   });
 }

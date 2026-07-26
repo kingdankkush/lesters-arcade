@@ -322,9 +322,134 @@ test('the real ravine overlook and mining loader deck expose deterministic proje
   assert.equal(steps[0].heightTransition.time, steps[1].heightTransition.time);
 });
 
+test('projectiles recover from depressions only up to their immutable source flight ceiling', () => {
+  const FLIGHT_HEIGHT = 34;
+  const flightCeilingZ = 34;
+  const groundAt = (x) => (x < 100 ? 0 : x < 200 ? -24 : 0);
+  const farBankTarget = target('far-bank-high-min', 230, 0, { z: 0, minZ: 20, maxZ: 60, hurtRadius: 5 });
+  let current = { x: 90, y: 0, z: flightCeilingZ };
+  let previousGroundZ = 0;
+  let farBankHit = false;
+  const samples = [];
+
+  for (let tick = 0; tick < 6; tick += 1) {
+    const flight = planProjectileFlightStep({
+      previous: current,
+      velocity: { x: 30, y: 0 },
+      dtSeconds: 1,
+      previousGroundZ,
+      queryGround: (x) => ({ groundZ: groundAt(x) }),
+      flightHeight: FLIGHT_HEIGHT,
+      flightCeilingZ,
+    });
+    const shot = createProjectileState({
+      id: `depression-${tick}`,
+      ownerId: 'hero',
+      previous: flight.previous,
+      current: flight.current,
+      heightTransition: flight.heightTransition,
+      radius: 2,
+      damage: 5,
+      policy: { type: 'stop' },
+    });
+    farBankHit ||= resolveProjectilePath({ projectile: shot, targets: [farBankTarget] }).hits.length > 0;
+    samples.push({ x: flight.current.x, z: flight.current.z, groundZ: flight.groundZ, transition: flight.heightTransition });
+    current = flight.current;
+    previousGroundZ = flight.groundZ;
+  }
+
+  assert.equal(samples[0].z, 10, 'the shot still drops to the authored depression flight band');
+  assert.equal(samples[3].z, flightCeilingZ, 'the shot recovers at the far bank instead of remaining stuck low');
+  assert.ok(samples[3].transition?.time > 0 && samples[3].transition?.time < 1, 'sharp recovery uses the authored terrain boundary');
+  assert.equal(farBankHit, true, 'legal source-height recovery reaches a higher-minZ far-bank target');
+
+  const lowOrigin = planProjectileFlightStep({
+    previous: { x: 190, y: 0, z: 10 },
+    velocity: { x: 30, y: 0 },
+    dtSeconds: 1,
+    previousGroundZ: -24,
+    queryGround: (x) => ({ groundZ: groundAt(x) }),
+    flightHeight: FLIGHT_HEIGHT,
+    flightCeilingZ: 10,
+  });
+  assert.equal(lowOrigin.current.z, 10, 'a projectile fired low must not gain uphill authority');
+  assert.equal(lowOrigin.heightTransition, null);
+  assert.throws(() => planProjectileFlightStep({
+    previous: { x: 190, y: 0, z: 10 },
+    velocity: { x: 30, y: 0 },
+    dtSeconds: 1,
+    previousGroundZ: -24,
+    queryGround: (x) => ({ groundZ: groundAt(x) }),
+    flightHeight: FLIGHT_HEIGHT,
+    flightCeilingZ: 9,
+  }), /flightCeilingZ/);
+});
+
+test('sharp depression recovery preserves low-side and far-bank contacts within one projectile step', () => {
+  const flight = planProjectileFlightStep({
+    previous: { x: 190, y: 0, z: 10 },
+    velocity: { x: 30, y: 0 },
+    dtSeconds: 1,
+    previousGroundZ: -24,
+    queryGround: (x) => ({ groundZ: x < 200 ? -24 : 0 }),
+    flightHeight: 34,
+    flightCeilingZ: 34,
+  });
+  assert.equal(flight.current.z, 34);
+  assert.ok(flight.heightTransition?.time > 0 && flight.heightTransition?.time < 1);
+
+  const shot = createProjectileState({
+    id: 'recovery-edge-shot',
+    ownerId: 'hero',
+    previous: flight.previous,
+    current: flight.current,
+    heightTransition: flight.heightTransition,
+    radius: 2,
+    damage: 5,
+    policy: { type: 'pierce', maxTargets: 2 },
+  });
+  const low = target('water-side-low', 196, 0, { z: -24, minZ: 4, maxZ: 60, hurtRadius: 2 });
+  const high = target('bank-side-high', 210, 0, { z: 0, minZ: 20, maxZ: 60, hurtRadius: 2 });
+  assert.deepEqual(resolveProjectilePath({ projectile: shot, targets: [high, low] }).hits.map((hit) => hit.targetId), [
+    'water-side-low',
+    'bank-side-high',
+  ]);
+});
+
+test('the authored liquidity river recovers a projectile to its source flight ceiling on the far bank', () => {
+  const queryGround = createLevelOneGroundQuery();
+  const FLIGHT_HEIGHT = 34;
+  const flightCeilingZ = queryGround(4_490, 2_000).groundZ + FLIGHT_HEIGHT;
+  let current = { x: 4_490, y: 2_000, z: flightCeilingZ };
+  let previousGroundZ = queryGround(current.x, current.y).groundZ;
+  let enteredRiver = false;
+
+  for (let tick = 0; tick < 30; tick += 1) {
+    const flight = planProjectileFlightStep({
+      previous: current,
+      velocity: { x: 1_320, y: 0 },
+      dtSeconds: 1 / 60,
+      previousGroundZ,
+      queryGround,
+      flightHeight: FLIGHT_HEIGHT,
+      flightCeilingZ,
+    });
+    if (flight.groundZ === -24) enteredRiver = true;
+    current = flight.current;
+    previousGroundZ = flight.groundZ;
+  }
+
+  assert.equal(enteredRiver, true);
+  assert.equal(current.x, 5_150);
+  assert.equal(current.z, flightCeilingZ);
+  assert.equal(previousGroundZ, 0);
+});
+
 test('main routes projectile collision through the ground-transition planner', async () => {
   const { readFile } = await import('node:fs/promises');
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /planProjectileFlightStep\(/);
   assert.match(source, /heightTransition:\s*flight\.heightTransition/);
+  assert.match(source, /flightCeilingZ:\s*shot\.flightCeilingZ/);
+  assert.match(source, /flightCeilingZ:\s*muzzle\.z/);
 });

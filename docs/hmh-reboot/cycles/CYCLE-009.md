@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 009
 
 Date: 2026-07-26
-Status: `LOCAL CERTIFIED · COMMIT PENDING · PRODUCTION UNTOUCHED`
+Status: `COMMITTED LOCALLY · PRODUCTION UNTOUCHED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `d061ac3f` — Cycle 008 truthful ledge combat
 
@@ -144,9 +144,8 @@ This cycle changes only Pixi projection composition. It does not alter:
 
 ## Known debt
 
-- Projectiles intentionally never rise with terrain after a downward transition.
-  A shot can remain visually low after leaving a depression; gameplay remains
-  legal, but a future projection-only tracer pass may improve the read.
+- Projectile depression recovery was resolved in Cycle 010 with an immutable
+  source flight ceiling and deterministic far-bank boundary planning.
 - Firefox and WebKit are not locally available; Chrome remains the certified
   browser.
 - Broader world art remains authored-material rather than authored-texture in

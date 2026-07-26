@@ -1777,6 +1777,7 @@ async function boot() {
           previousGroundZ: shot.groundZ ?? queryGround(previous.x, previous.y).groundZ,
           queryGround,
           flightHeight: PROJECTILE_FLIGHT_HEIGHT,
+          flightCeilingZ: shot.flightCeilingZ,
         });
         const current = flight.current;
         const state = createProjectileState({
@@ -1917,6 +1918,7 @@ async function boot() {
             y: muzzle.y,
             z: muzzle.z,
             groundZ: actor.groundZ,
+            flightCeilingZ: muzzle.z,
             vx: shot.direction.x * shot.speed,
             vy: shot.direction.y * shot.speed,
             radius: shot.radius,
