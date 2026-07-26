@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 const root = new URL('../', import.meta.url);
@@ -104,6 +106,50 @@ test('Cycle 007 general asset QA owns heroes, enemy roster and authored props', 
   assert.match(source, /ENEMY_ROSTER_ACTORS/);
   assert.match(source, /AUTHORED_PROP_ASSETS|hmh-authored-props/);
   assert.match(source, /sourcePixelSha256/);
+});
+
+test('Cycle 007 Blender pipelines exclusively own their shared generation paths', async () => {
+  const lockSource = await readFile(new URL('../scripts/hmh_pipeline_lock.py', import.meta.url), 'utf8');
+  for (const marker of ['exclusive_pipeline_lock', 'pid_is_alive', 'already running as PID', 'lock_dir.mkdir', 'shutil.rmtree']) {
+    assert.match(lockSource, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  for (const script of [
+    'run-hmh-production-hero-pilot.py',
+    'run-hmh-enemy-roster-pipeline.py',
+    'run-hmh-authored-props-pipeline.py',
+  ]) {
+    const source = await readFile(new URL(`../scripts/${script}`, import.meta.url), 'utf8');
+    assert.match(source, /from hmh_pipeline_lock import exclusive_pipeline_lock/);
+    assert.match(source, /with exclusive_pipeline_lock\(/);
+  }
+
+  const lockUrl = new URL('../.tmp/hmh-pipeline-lock-contract-test.lock/', import.meta.url);
+  const lockPath = fileURLToPath(lockUrl);
+  const exercise = [
+    'import sys',
+    'from pathlib import Path',
+    "sys.path.insert(0, 'scripts')",
+    'from hmh_pipeline_lock import exclusive_pipeline_lock',
+    `with exclusive_pipeline_lock(Path(${JSON.stringify(lockPath)}), 'contract test'):`,
+    '    pass',
+  ].join('\n');
+  await rm(lockUrl, { force: true, recursive: true });
+  try {
+    await mkdir(lockUrl, { recursive: true });
+    await writeFile(new URL('pid', lockUrl), `${process.pid}\n`, 'utf8');
+    const contender = spawnSync('python', ['-c', exercise], { cwd: fileURLToPath(root), encoding: 'utf8' });
+    assert.notEqual(contender.status, 0, 'a live pipeline owner must reject a contender');
+    assert.match(contender.stderr, new RegExp(`already running as PID ${process.pid}`));
+
+    await rm(lockUrl, { force: true, recursive: true });
+    await mkdir(lockUrl, { recursive: true });
+    await writeFile(new URL('pid', lockUrl), '99999999\n', 'utf8');
+    const recovered = spawnSync('python', ['-c', exercise], { cwd: fileURLToPath(root), encoding: 'utf8' });
+    assert.equal(recovered.status, 0, recovered.stderr);
+    assert.equal(existsSync(lockUrl), false, 'a recovered pipeline lock must be released');
+  } finally {
+    await rm(lockUrl, { force: true, recursive: true });
+  }
 });
 
 test('Cycle 007 runtime can select all authored hero actions and boss phases', async () => {

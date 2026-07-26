@@ -10,6 +10,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from hmh_pipeline_lock import exclusive_pipeline_lock
+
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / 'apps/hmh-reboot/assets/source/blender/hmh-authored-props.json'
 EXPECTED_BLENDER_VERSION = 'Blender 5.1.2'
@@ -171,4 +173,6 @@ def main() -> None:
     print(json.dumps({k:metrics[k] for k in ('status','assetCount','uniqueSourceFrames','reproducibleVerified','atlasSize')},sort_keys=True))
 
 
-if __name__=='__main__': main()
+if __name__=='__main__':
+    with exclusive_pipeline_lock(ROOT/'.tmp/hmh-authored-props-pipeline.lock', 'HMH authored prop pipeline'):
+        main()

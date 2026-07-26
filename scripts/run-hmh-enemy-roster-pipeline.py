@@ -21,6 +21,8 @@ from pathlib import Path
 
 from PIL import Image
 
+from hmh_pipeline_lock import exclusive_pipeline_lock
+
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "apps" / "hmh-reboot" / "assets" / "source" / "blender" / "hmh-enemy-roster.json"
 OUTPUT_ROOT = ROOT / "apps" / "portal" / "assets" / "generated" / "hmh-reboot-enemy-roster"
@@ -301,4 +303,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with exclusive_pipeline_lock(ROOT / ".tmp" / "hmh-enemy-roster-pipeline.lock", "HMH enemy roster pipeline"):
+        main()

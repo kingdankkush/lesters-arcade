@@ -11,6 +11,8 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFont
 
+from hmh_pipeline_lock import exclusive_pipeline_lock
+
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json"
@@ -380,7 +382,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     try:
-        main()
+        with exclusive_pipeline_lock(ROOT / ".tmp" / "hmh-production-hero-pipeline.lock", "HMH production hero pipeline"):
+            main()
     except Exception as error:
         print(f"HMH production hero pilot failed: {error}", file=sys.stderr)
         raise
