@@ -6,6 +6,7 @@ import {
   AUTHORED_PROP_ASSETS,
   AUTHORED_PROP_PIPELINE_ID,
   authoredPropItemUrl,
+  buildAuthoredDistrictLandmarkPlacements,
   buildAuthoredPointOfInterestPlacements,
   buildAuthoredWorldPropPlacements,
   createAuthoredHeldWeaponDisplay,
@@ -59,6 +60,31 @@ test('authored world dressing and gameplay POIs are deterministic and bounded', 
   assert.deepEqual(new Set(pointsOfInterest.map((placement) => placement.assetId)), new Set([...AUTHORED_PROP_ASSETS.weapons, ...AUTHORED_PROP_ASSETS.pickups]));
   assert.deepEqual(pointsOfInterest.map(({ pointOfInterestId, hook, x, y }) => ({ pointOfInterestId, hook, x, y })), LEVEL_ONE_WORLD.pointsOfInterest.map((point) => ({ pointOfInterestId: point.id, hook: point.hook, x: point.anchor.x, y: point.anchor.y })));
   assert.ok(pointsOfInterest.every((placement) => placement.category === 'point-of-interest' && placement.runtimeAuthority === 'projection-only'));
+});
+
+test('district landmark clusters stay near visual anchors and clear the playable center', () => {
+  const first = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
+  const second = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
+  assert.deepEqual(first, second);
+  assert.equal(first.length, 48);
+  const byDistrict = new Map();
+  for (const placement of first) {
+    const placements = byDistrict.get(placement.districtId) ?? [];
+    placements.push(placement);
+    byDistrict.set(placement.districtId, placements);
+  }
+  assert.equal(byDistrict.size, 6);
+  for (const placements of byDistrict.values()) {
+    assert.equal(placements.length, 8);
+    assert.ok(placements.every((placement) => placement.category === 'district-landmark'));
+    assert.ok(placements.every((placement) => placement.runtimeAuthority === 'projection-only'));
+    assert.ok(placements.every((placement) => placement.scale >= 1.25 && placement.scale <= 2));
+    assert.ok(placements.every((placement) => placement.anchorDistance >= 140 && placement.anchorDistance <= 530));
+    assert.equal(placements.filter((placement) => placement.mobileOnly).length, 2);
+  }
+  assert.ok(first.every((placement) => placement.x >= 0 && placement.x <= 12_000));
+  assert.ok(first.every((placement) => placement.y >= 0 && placement.y <= 4_800));
+  assert.equal(new Set(first.map((placement) => placement.id)).size, first.length);
 });
 
 test('authored prop display creates real sprites, culls, grounds, and never changes placement data', async () => {

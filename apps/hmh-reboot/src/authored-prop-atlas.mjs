@@ -19,6 +19,25 @@ const DISTRICTS = Object.freeze([
   Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon'] }),
 ]);
 
+const DISTRICT_LANDMARKS = Object.freeze([
+  Object.freeze({ id: 'frontier-relay', x: 780, y: 2_400, propIds: ['relay-console', 'salvage-crate', 'fuel-drum'] }),
+  Object.freeze({ id: 'rugpull-ravine', x: 3_050, y: 1_500, propIds: ['rugpull-barricade', 'salvage-crate', 'warning-beacon'] }),
+  Object.freeze({ id: 'liquidity-crossing', x: 4_700, y: 2_400, propIds: ['proof-pylon', 'bridge-bollard'] }),
+  Object.freeze({ id: 'hashwood', x: 7_000, y: 900, propIds: ['hashwood-stump', 'crystal-cluster'] }),
+  Object.freeze({ id: 'mining-camp', x: 9_200, y: 1_600, propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster'] }),
+  Object.freeze({ id: 'liquidation-yard', x: 11_000, y: 800, propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon'] }),
+]);
+const LANDMARK_OFFSETS = Object.freeze([
+  Object.freeze({ x: -350, y: -350, scale: 1.6 }),
+  Object.freeze({ x: 350, y: 350, scale: 1.4 }),
+  Object.freeze({ x: -350, y: 350, scale: 1.8 }),
+  Object.freeze({ x: 350, y: -350, scale: 1.5 }),
+  Object.freeze({ x: -420, y: -260, scale: 1.9 }),
+  Object.freeze({ x: 420, y: 260, scale: 1.4 }),
+  Object.freeze({ x: -100, y: -100, scale: 1.3, mobileOnly: true }),
+  Object.freeze({ x: 100, y: 100, scale: 1.3, mobileOnly: true }),
+]);
+
 function freezeDeep(value) {
   if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
   for (const child of Object.values(value)) freezeDeep(child);
@@ -66,6 +85,29 @@ export function buildAuthoredWorldPropPlacements({ worldId, seed, countPerDistri
         districtId: district.id,
         x: Number(x.toFixed(3)),
         y: Number(y.toFixed(3)),
+        runtimeAuthority: 'projection-only',
+      }));
+    }
+  }
+  return Object.freeze(placements);
+}
+
+export function buildAuthoredDistrictLandmarkPlacements({ worldId } = {}) {
+  if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored landmark world ${String(worldId)}`);
+  const placements = [];
+  for (const district of DISTRICT_LANDMARKS) {
+    for (let index = 0; index < LANDMARK_OFFSETS.length; index += 1) {
+      const offset = LANDMARK_OFFSETS[index];
+      placements.push(freezeDeep({
+        id: `landmark:${district.id}:${String(index).padStart(2, '0')}`,
+        assetId: district.propIds[index % district.propIds.length],
+        category: 'district-landmark',
+        districtId: district.id,
+        x: district.x + offset.x,
+        y: district.y + offset.y,
+        scale: offset.scale,
+        mobileOnly: offset.mobileOnly === true,
+        anchorDistance: Number(Math.hypot(offset.x, offset.y).toFixed(3)),
         runtimeAuthority: 'projection-only',
       }));
     }
@@ -183,7 +225,14 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
 
   const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160 } = {}) => {
     let visibleCount = 0;
+    const visibleByCategory = {};
+    let onscreenCount = 0;
+    const onscreenByCategory = {};
     for (const entry of entries) {
+      if (entry.placement.mobileOnly && view.width > 600) {
+        entry.sprite.visible = false;
+        continue;
+      }
       const ground = queryGround(entry.placement.x, entry.placement.y);
       const pickupBob = entry.placement.category === 'pickup'
         ? 8 + Math.sin((tick + seededUnit(0, entry.placement.id) * 60) / 16) * 5
@@ -193,11 +242,23 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
       entry.sprite.visible = visible;
       if (!visible) continue;
       visibleCount += 1;
+      visibleByCategory[entry.placement.category] = (visibleByCategory[entry.placement.category] ?? 0) + 1;
+      const onscreen = screen.x >= 0 && screen.x <= view.width && screen.y >= 0 && screen.y <= view.height;
+      if (onscreen) {
+        onscreenCount += 1;
+        onscreenByCategory[entry.placement.category] = (onscreenByCategory[entry.placement.category] ?? 0) + 1;
+      }
       entry.sprite.position.set(screen.x, screen.y);
-      entry.sprite.scale.set(entry.frame.runtimeScale * camera.zoom);
+      entry.sprite.scale.set(entry.frame.runtimeScale * (entry.placement.scale ?? 1) * camera.zoom);
       entry.sprite.zIndex = screen.y;
     }
-    return Object.freeze({ placementCount: entries.length, visibleCount });
+    return Object.freeze({
+      placementCount: entries.length,
+      visibleCount,
+      visibleByCategory: Object.freeze(visibleByCategory),
+      onscreenCount,
+      onscreenByCategory: Object.freeze(onscreenByCategory),
+    });
   };
   return Object.freeze({ container, entries: Object.freeze(entries), render });
 }

@@ -282,6 +282,11 @@ if (isMain) {
       if (settledTick !== observedTick) {
         throw new Error(`scene ${scene.id} did not settle before capture (${observedTick} -> ${settledTick})`);
       }
+      const landmarkVisible = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.authoredLandmarkVisible ?? Number.NaN));
+      const minimumVisibleLandmarks = scene.viewport.width <= 600 ? 2 : 3;
+      if (!Number.isFinite(landmarkVisible) || landmarkVisible < minimumVisibleLandmarks) {
+        throw new Error(`scene ${scene.id} has ${String(landmarkVisible)} visible district landmarks; expected at least ${minimumVisibleLandmarks}`);
+      }
       // Capture the renderer canvas only, so DOM chrome (cockpit rail, pause
       // panel) cannot mask a change in the rendered world.
       const screenshot = await page.locator('#hmhRebootStage canvas').screenshot();

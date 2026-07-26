@@ -106,6 +106,7 @@ import {
 import {
   AUTHORED_PROP_ATLAS_IMAGE_URL,
   AUTHORED_PROP_ATLAS_METADATA_URL,
+  buildAuthoredDistrictLandmarkPlacements,
   buildAuthoredPointOfInterestPlacements,
   buildAuthoredWorldPropPlacements,
   createAuthoredHeldWeaponDisplay,
@@ -341,6 +342,7 @@ async function boot() {
 
   const authoredPropPlacements = Object.freeze([
     ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: 0x484d4807, countPerDistrict: 8 }),
+    ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
     ...buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
   ]);
   let authoredPropDisplay = null;
@@ -831,7 +833,7 @@ async function boot() {
     }
     if (renderState && camera) {
       renderAuthoredTerrain(view);
-      authoredPropDisplay?.render({
+      const authoredPropReport = authoredPropDisplay?.render({
         camera,
         view,
         worldToScreen,
@@ -839,6 +841,10 @@ async function boot() {
         tick: simulation?.tick ?? 0,
         cullMargin: performanceProfile.worldCullMargin ?? 220,
       });
+      if (releaseTelemetryEnabled || debugGridEnabled) {
+        stageElement.dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
+        stageElement.dataset.authoredLandmarkVisible = String(authoredPropReport?.onscreenByCategory?.['district-landmark'] ?? 0);
+      }
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
