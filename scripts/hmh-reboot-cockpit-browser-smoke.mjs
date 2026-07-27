@@ -106,6 +106,9 @@ async function inspect(name, viewport) {
   await page.screenshot({ path: pathFor(`${name}-pause-settings`), fullPage: true });
   await page.click('#hmhRestartButton');
   await page.waitForFunction(() => document.querySelector('#hmhPausePanel')?.hidden === true);
+  await page.waitForSelector('#hmhUpgradePanel:not([hidden])');
+  await page.locator('.hmh-upgrade-choice').first().click();
+  await page.waitForFunction(() => document.querySelector('#hmhUpgradePanel')?.hidden === true);
   await page.click('#hmhMenuToggle');
   await page.waitForSelector('#hmhPausePanel:not([hidden])');
   assert.equal(await page.locator('#hmhSettingReduceMotion').isChecked(), true);

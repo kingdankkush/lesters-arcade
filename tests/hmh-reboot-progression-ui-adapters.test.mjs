@@ -132,6 +132,20 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.doesNotMatch(main, /localStorage|window\.ethereum|eth_requestAccounts/);
 });
 
+test('cockpit browser restart settles the fresh progression pilot upgrade before reopening pause', () => {
+  const smoke = fs.readFileSync(path.join(root, 'scripts/hmh-reboot-cockpit-browser-smoke.mjs'), 'utf8');
+  const restart = smoke.indexOf("await page.click('#hmhRestartButton')");
+  const waitForUpgrade = smoke.indexOf("await page.waitForSelector('#hmhUpgradePanel:not([hidden])')", restart);
+  const selectUpgrade = smoke.indexOf("await page.locator('.hmh-upgrade-choice').first().click()", waitForUpgrade);
+  const waitForUpgradeClose = smoke.indexOf("document.querySelector('#hmhUpgradePanel')?.hidden === true", selectUpgrade);
+  const reopenPause = smoke.indexOf("await page.click('#hmhMenuToggle')", waitForUpgradeClose);
+  assert.ok(restart >= 0, 'browser smoke must exercise Restart');
+  assert.ok(waitForUpgrade > restart, 'browser smoke must wait for the restarted progression pilot upgrade');
+  assert.ok(selectUpgrade > waitForUpgrade, 'browser smoke must select the restarted upgrade');
+  assert.ok(waitForUpgradeClose > selectUpgrade, 'browser smoke must wait for the restarted upgrade modal to close');
+  assert.ok(reopenPause > waitForUpgradeClose, 'browser smoke must reopen Pause only after upgrade selection settles');
+});
+
 test('the pending level queue is always drainable — no level awards dead XP', () => {
   const state = createRunProgression({ seed: 7 });
   for (let kill = 0; kill < 400; kill += 1) {

@@ -94,5 +94,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `3ab3ad71`; production unchanged
   - Cycle ledger: `cycles/CYCLE-018.md`
 - [x] Cycle 019: repair deterministic combat soak and add isolated 30-minute desktop/mobile browser profiles
-  - Status: included in this local cycle commit; production unchanged
+  - Status: committed locally as `c98861a2`; production unchanged
   - Cycle ledger: `cycles/CYCLE-019.md`
+- [x] Cycle 020: eliminate the post-restart cockpit certification race and restore deploy-build manifest reproducibility
+  - Status: local certification in progress; production unchanged
+  - Cycle ledger: `cycles/CYCLE-020.md`

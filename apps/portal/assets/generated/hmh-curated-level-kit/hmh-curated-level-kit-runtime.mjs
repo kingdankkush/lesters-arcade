@@ -37,6 +37,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/game-registry.mjs",
     "apps/portal/src/games/chikun/loader.mjs",
     "apps/portal/src/games/hmh/loader.mjs",
+    "apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs",
     "apps/portal/src/gore-system.mjs",
     "apps/portal/src/hmh-ambient-life.mjs",
     "apps/portal/src/hmh-anchor-set.mjs",
