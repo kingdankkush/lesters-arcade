@@ -164,6 +164,31 @@ const UPGRADE_TREES = freezeDeep({
     damage: [{ flatBonus: 0.5 }, { flatBonus: 1 }, { flatBonus: 2, special: 'tracer-rounds' }],
     reloadSpeed: [{ multiplier: 1.25 }, { multiplier: 1.56 }, { multiplier: 1.95, special: 'drum-mag' }],
   },
+  // The launcher was the only carryable weapon with no upgrade path at all.
+  'launcher-rig': {
+    rateOfFire: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.42, special: 'twin-tube' }],
+    damage: [{ flatBonus: 2 }, { flatBonus: 5 }, { flatBonus: 8, special: 'shaped-charge' }],
+    reloadSpeed: [{ multiplier: 1.2 }, { multiplier: 1.45 }, { multiplier: 1.7, special: 'bandolier' }],
+  },
+});
+
+// Tier-three capstones. Before this, five of these tags were inert: a player
+// spent three tiers and received only the numeric bonus, with the named
+// capability doing nothing at all.
+const SPECIAL_EFFECTS = freezeDeep({
+  // Rounds punch through a target and keep going.
+  'armor-piercing': { policy: { type: 'pierce', maxTargets: 2 } },
+  // Shells detonate on impact.
+  explosive: { policy: { type: 'splash', radius: 58 } },
+  'shaped-charge': { policy: { type: 'splash', radius: 128 } },
+  // Both barrels at once: more pellets across the same arc.
+  'double-barrel': { pelletCountBonus: 6 },
+  'twin-tube': { pelletCountBonus: 1, spreadRadiansOverride: Math.PI * 7 / 180 },
+  // Flatter, faster rounds that reach further.
+  'tracer-rounds': { projectileSpeedMultiplier: 1.35, rangeMultiplier: 1.25, projectileTag: 'tracer-round' },
+  // A fast three-round burst, then the normal cadence gap.
+  'burst-fire': { burstCount: 3, burstIntervalTicks: 4 },
+  bandolier: { clipSize: 7 },
 });
 
 function tierNode(tree, branch, value) {
@@ -199,9 +224,33 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   if (specials.includes('extended-mag')) clipSize = 12;
   if (specials.includes('quad-shell')) clipSize = 4;
   if (specials.includes('drum-mag')) clipSize = 180;
+
+  let pelletCount = definition.pelletCount;
+  let spreadRadians = definition.spreadRadians;
+  let projectileSpeed = definition.projectileSpeed;
+  let range = definition.range;
+  let specialPolicy = null;
+  let specialTag = null;
+  let burstCount = 1;
+  let burstIntervalTicks = 0;
+  for (const special of specials) {
+    const effect = SPECIAL_EFFECTS[special];
+    if (!effect) continue;
+    if (effect.policy) specialPolicy = effect.policy;
+    if (effect.pelletCountBonus) pelletCount += effect.pelletCountBonus;
+    if (effect.spreadRadiansOverride !== undefined) spreadRadians = effect.spreadRadiansOverride;
+    if (effect.projectileSpeedMultiplier) projectileSpeed *= effect.projectileSpeedMultiplier;
+    if (effect.rangeMultiplier) range *= effect.rangeMultiplier;
+    if (effect.projectileTag) specialTag = effect.projectileTag;
+    if (effect.burstCount) burstCount = effect.burstCount;
+    if (effect.burstIntervalTicks) burstIntervalTicks = effect.burstIntervalTicks;
+    if (effect.clipSize) clipSize = effect.clipSize;
+  }
+
+  // The evolution keeps priority over a capstone policy: it is the rarer award.
   const projectilePolicy = evolutionId === 'settler-rail'
     ? freezeDeep({ type: 'pierce', maxTargets: 3 })
-    : definition.policy;
+    : specialPolicy ?? definition.policy;
   return freezeDeep({
     weaponId,
     damage: definition.damage + damageFlatBonus,
@@ -212,7 +261,13 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     reloadTicks: Math.max(1, Math.ceil(definition.reloadSeconds * TICKS_PER_SECOND / reloadMultiplier)),
     clipSize,
     specials,
-    projectileTag: evolutionId ? evolution.projectileTag : null,
+    pelletCount,
+    spreadRadians,
+    projectileSpeed,
+    range,
+    burstCount,
+    burstIntervalTicks,
+    projectileTag: evolutionId ? evolution.projectileTag : specialTag,
     projectilePolicy,
     heatPerShot: (definition.heatPerShot ?? 0) * (specials.includes('overheat-reduction') ? 0.72 : 1),
     maxHeat: definition.maxHeat ?? 0,
@@ -233,6 +288,7 @@ function createPerWeaponState(id) {
     heat: 0,
     overheated: false,
     heatUpdatedTick: 0,
+    burstRemaining: 0,
   };
 }
 
@@ -347,22 +403,22 @@ function startReload(weapon, progression, tick, events) {
   }));
 }
 
-function spreadOffsets(definition, state, attackId) {
-  const count = definition.pelletCount;
+function spreadOffsets(profile, state, attackId) {
+  const count = profile.pelletCount;
   if (count === 1) {
-    if (definition.spreadRadians === 0) return [0];
-    return [(seededUnit(state.seed, `${attackId}:spread`) - 0.5) * definition.spreadRadians];
+    if (profile.spreadRadians === 0) return [0];
+    return [(seededUnit(state.seed, `${attackId}:spread`) - 0.5) * profile.spreadRadians];
   }
-  const interval = definition.spreadRadians / Math.max(1, count - 1);
+  const interval = profile.spreadRadians / Math.max(1, count - 1);
   return Array.from({ length: count }, (_, index) => {
-    const base = -definition.spreadRadians * 0.5 + interval * index;
+    const base = -profile.spreadRadians * 0.5 + interval * index;
     const jitter = (seededUnit(state.seed, `${attackId}:pellet:${index}`) - 0.5) * interval * 0.32;
     return base + jitter;
   });
 }
 
 function buildShots({ definition, progression, state, direction, attackId }) {
-  return Object.freeze(spreadOffsets(definition, state, attackId).map((angleOffset, pelletIndex) => {
+  return Object.freeze(spreadOffsets(progression, state, attackId).map((angleOffset, pelletIndex) => {
     const shotDirection = rotate(direction, angleOffset);
     const id = `${attackId}:${String(pelletIndex).padStart(2, '0')}`;
     return freezeDeep({
@@ -374,8 +430,8 @@ function buildShots({ definition, progression, state, direction, attackId }) {
       pelletIndex,
       angleOffset,
       direction: shotDirection,
-      speed: definition.projectileSpeed,
-      range: definition.range,
+      speed: progression.projectileSpeed,
+      range: progression.range,
       radius: definition.projectileRadius,
       damage: progression.damage,
       policy: progression.projectilePolicy,
@@ -410,7 +466,18 @@ export function stepWeaponLoadout(state, {
   state.sequence += 1;
   const shots = buildShots({ definition, progression, state, direction: normalizedDirection, attackId });
   weapon.ammoInClip -= 1;
-  weapon.nextFireTick = tick + progression.cadenceTicks;
+  if (progression.burstCount > 1) {
+    const remaining = weapon.burstRemaining > 0 ? weapon.burstRemaining - 1 : progression.burstCount - 1;
+    weapon.burstRemaining = remaining;
+    // Out of ammo mid-burst ends the burst rather than stranding the counter.
+    weapon.nextFireTick = remaining > 0 && weapon.ammoInClip > 0
+      ? tick + progression.burstIntervalTicks
+      : tick + progression.cadenceTicks;
+    if (remaining <= 0 || weapon.ammoInClip <= 0) weapon.burstRemaining = 0;
+  } else {
+    weapon.burstRemaining = 0;
+    weapon.nextFireTick = tick + progression.cadenceTicks;
+  }
   if (progression.heatPerShot > 0) {
     weapon.heat = Math.min(progression.maxHeat, weapon.heat + progression.heatPerShot);
   }

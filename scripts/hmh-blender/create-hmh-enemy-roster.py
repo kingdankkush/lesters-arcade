@@ -352,7 +352,8 @@ def build_lighting(manifest: dict):
         scene.view_settings.exposure = manifest["render"]["exposure"]
 
     key = bpy.data.lights.new("HMH_Enemy_Key", type="AREA")
-    key.energy = 235
+    key.energy = 300
+    key.color = (0.56, 0.72, 1.0)
     key.size = 5.0
     key_obj = bpy.data.objects.new("HMH_Enemy_Key", key)
     key_obj.location = (2.6, -3.4, 4.4)
@@ -360,7 +361,8 @@ def build_lighting(manifest: dict):
     scene.collection.objects.link(key_obj)
 
     fill = bpy.data.lights.new("HMH_Enemy_Fill", type="AREA")
-    fill.energy = 95
+    fill.energy = 120
+    fill.color = (0.32, 0.65, 1.0)
     fill.size = 6.0
     fill_obj = bpy.data.objects.new("HMH_Enemy_Fill", fill)
     fill_obj.location = (-3.2, -2.2, 2.6)
@@ -368,7 +370,8 @@ def build_lighting(manifest: dict):
     scene.collection.objects.link(fill_obj)
 
     rim = bpy.data.lights.new("HMH_Enemy_Rim", type="AREA")
-    rim.energy = 165
+    rim.energy = 210
+    rim.color = (0.65, 1.0, 0.82)
     rim.size = 4.0
     rim_obj = bpy.data.objects.new("HMH_Enemy_Rim", rim)
     rim_obj.location = (0.4, 3.6, 3.4)

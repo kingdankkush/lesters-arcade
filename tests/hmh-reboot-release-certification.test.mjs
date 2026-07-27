@@ -37,7 +37,7 @@ test('reboot release certification owns deterministic anchors, responsive geomet
   assert.match(source, /visualViewport/);
   assert.match(source, /scrollWidth/);
   assert.match(source, /\[data-hmh-control\]/);
-  assert.match(source, /touch control count/);
+  assert.match(source, /touch control set/);
   assert.match(source, /Vercel Authentication/i);
   assert.match(source, /dist\/hmh-reboot\/game\.js/);
   assert.match(source, /sw\.js/);

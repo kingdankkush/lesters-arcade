@@ -1,5 +1,35 @@
 export const COMPACT_LANDSCAPE_MAX_HEIGHT = 520;
 export const COMPACT_LANDSCAPE_MINIMAP_WIDTH = 140;
+// The minimap's distance from the viewport edge, and the padding of its frame.
+// Exported so touch controls can derive the same exclusion zone rather than
+// re-guessing it with a margin that silently drifts out of agreement.
+export const MINIMAP_EDGE_GUTTER = 16;
+export const MINIMAP_OUTER_PADDING = 6;
+export const MINIMAP_MAX_WIDTH = 220;
+export const COMPACT_PORTRAIT_MINIMAP_WIDTH = 120;
+export const MINIMAP_WIDTH_FRACTION = 0.34;
+
+export function minimapWidthFor({ width, height } = {}) {
+  const viewportWidth = finite(width, 'viewport width');
+  const viewportHeight = finite(height, 'viewport height');
+  // Must mirror computeHudMinimapLayout exactly, including the compact-portrait
+  // branch — an earlier version omitted it and the two silently disagreed.
+  const compactPortrait = viewportWidth < 600 && viewportHeight >= viewportWidth;
+  const compactLandscape = isCompactLandscape({ width: viewportWidth, height: viewportHeight });
+  const widthCap = compactLandscape
+    ? COMPACT_LANDSCAPE_MINIMAP_WIDTH
+    : compactPortrait
+      ? COMPACT_PORTRAIT_MINIMAP_WIDTH
+      : MINIMAP_MAX_WIDTH;
+  return Math.min(widthCap, viewportWidth * MINIMAP_WIDTH_FRACTION);
+}
+
+export function minimapExclusionLeft({ width, height } = {}) {
+  return finite(width, 'viewport width')
+    - minimapWidthFor({ width, height })
+    - MINIMAP_EDGE_GUTTER
+    - MINIMAP_OUTER_PADDING;
+}
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -31,11 +61,11 @@ export function computeHudMinimapLayout({ width, height, worldWidth, worldHeight
   const widthCap = compactLandscape
     ? COMPACT_LANDSCAPE_MINIMAP_WIDTH
     : compactPortrait
-      ? 120
-      : 220;
-  const mapWidth = Math.min(widthCap, viewportWidth * 0.34);
+      ? COMPACT_PORTRAIT_MINIMAP_WIDTH
+      : MINIMAP_MAX_WIDTH;
+  const mapWidth = Math.min(widthCap, viewportWidth * MINIMAP_WIDTH_FRACTION);
   const mapHeight = mapWidth * authoredWorldHeight / authoredWorldWidth;
-  const originX = viewportWidth - mapWidth - 16;
+  const originX = viewportWidth - mapWidth - MINIMAP_EDGE_GUTTER;
   const originY = compactPortrait && viewportHeight >= 700
     ? viewportHeight - mapHeight - 300
     : 16;
@@ -48,10 +78,10 @@ export function computeHudMinimapLayout({ width, height, worldWidth, worldHeight
     x: originX,
     y: originY,
     outer: {
-      left: originX - 6,
-      top: originY - 6,
-      right: originX + mapWidth + 6,
-      bottom: originY + mapHeight + 6,
+      left: originX - MINIMAP_OUTER_PADDING,
+      top: originY - MINIMAP_OUTER_PADDING,
+      right: originX + mapWidth + MINIMAP_OUTER_PADDING,
+      bottom: originY + mapHeight + MINIMAP_OUTER_PADDING,
     },
   });
 }

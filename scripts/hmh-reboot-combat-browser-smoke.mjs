@@ -251,19 +251,22 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
   await waitForEnemyRoster(page);
-  assert.equal(await page.locator('[data-hmh-control]').count(), 8);
-  await tapTouchControl(page, 'weaponNext', 71);
+  // Cycle 025: the touch layout is movement, aim, power and pause. Weapon
+  // switching, melee and dash are still live mechanics but are keyboard or
+  // gamepad actions now, so they are driven that way here rather than dropped.
+  assert.equal(await page.locator('[data-hmh-control]').count(), 4);
+  await page.keyboard.press('Digit2');
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'scatter-shotgun');
-  await tapTouchControl(page, 'melee', 72);
+  await page.keyboard.press('KeyE');
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
-  await tapTouchControl(page, 'grenade', 73);
+  await tapTouchControl(page, 'power', 73);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.handGrenades) === 2);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.activeGrenadeWarnings) > 0);
   const mobileGrenadeWarning = await state(page);
   await page.screenshot({ path: fileURLToPath(new URL('mobile-grenade-warning.png', evidenceDir)), fullPage: true });
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyDeathVisuals) > 0, null, { timeout: 3000 });
   const observedDeathVisuals = Number((await page.locator('#hmhRebootStage').getAttribute('data-enemy-death-visuals')) ?? 0);
-  await tapTouchControl(page, 'dash', 74);
+  await page.keyboard.press('ShiftLeft');
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.dashReadyTick) > 0);
   const dashStatus = await page.locator('#hmhRebootDashStatus').textContent();
   const controls = await page.locator('[data-hmh-control]').evaluateAll((elements) => elements.map((element) => {

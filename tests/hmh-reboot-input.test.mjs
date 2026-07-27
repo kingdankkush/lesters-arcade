@@ -223,25 +223,30 @@ test('touch layout respects safe areas and adapts to portrait and landscape rota
     }
   }
   assert.notDeepEqual(portrait.moveStick, landscape.moveStick);
-  const topActionDistance = Math.hypot(
-    portrait.buttons.weaponNext.x - portrait.buttons.pause.x,
-    portrait.buttons.weaponNext.y - portrait.buttons.pause.y,
+  // The mobile control set is movement, aim, one power action and pause; the
+  // remaining two buttons must still not overlap each other.
+  const actionDistance = Math.hypot(
+    portrait.buttons.power.x - portrait.buttons.pause.x,
+    portrait.buttons.power.y - portrait.buttons.pause.y,
   );
-  assert.ok(topActionDistance >= portrait.buttons.weaponNext.radius + portrait.buttons.pause.radius + 8);
-  assert.ok(portrait.buttons.weaponNext.x > portrait.viewport.width - 100);
+  assert.ok(actionDistance >= portrait.buttons.power.radius + portrait.buttons.pause.radius + 8);
+  assert.ok(portrait.buttons.power.x > portrait.viewport.width - 100, 'power stays under the aiming thumb');
 });
 
 test('landscape touch utility buttons stay left of the authored minimap exclusion zone', () => {
   for (const viewport of [{ width: 1_024, height: 768 }, { width: 844, height: 390 }]) {
     const touch = computeTouchControlLayout(viewport);
     const minimap = computeHudMinimapLayout({ ...viewport, worldWidth: 10_000, worldHeight: 4_000 });
-    for (const action of ['pause', 'weaponNext']) {
-      const button = touch.buttons[action];
-      assert.ok(
-        button.x + button.radius <= minimap.outer.left - 8,
-        `${viewport.width}x${viewport.height} ${action} overlaps minimap exclusion`,
-      );
-    }
+    assert.ok(
+      touch.buttons.pause.x + touch.buttons.pause.radius <= minimap.outer.left - 8,
+      `${viewport.width}x${viewport.height} pause overlaps minimap exclusion`,
+    );
+    // Power is right-anchored, so it clears the minimap vertically instead.
+    const power = touch.buttons.power;
+    assert.ok(
+      power.y - power.radius >= minimap.outer.bottom + 8,
+      `${viewport.width}x${viewport.height} power overlaps minimap exclusion`,
+    );
     if (viewport.height <= 520) assert.equal(minimap.width, 140);
   }
 });

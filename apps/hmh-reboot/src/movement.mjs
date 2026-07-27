@@ -50,6 +50,12 @@ export function createPlayerMotionState({
   maxSpeed = 240,
   accelerationTime = 0.08,
   decelerationTime = 0.06,
+  // Reversing used to take the same time as starting from a standstill, which
+  // is what made hard direction changes feel sluggish in a twin-stick fight.
+  // Turning is now resolved faster the more the input opposes current
+  // velocity. Top speed, acceleration from rest, and every collision and
+  // damage value are unchanged.
+  turnAccelerationTime = 0.045,
   heading = 0,
   movementDeadZone = 0.01,
   aimDeadZone = 0.01,
@@ -63,6 +69,7 @@ export function createPlayerMotionState({
     maxSpeed: nonNegative(maxSpeed, 'maxSpeed'),
     accelerationTime: nonNegative(accelerationTime, 'accelerationTime'),
     decelerationTime: nonNegative(decelerationTime, 'decelerationTime'),
+    turnAccelerationTime: nonNegative(turnAccelerationTime, 'turnAccelerationTime'),
     recoilDecayTime: nonNegative(recoilDecayTime, 'recoilDecayTime'),
     movementDeadZone: nonNegative(movementDeadZone, 'movementDeadZone'),
     aimDeadZone: nonNegative(aimDeadZone, 'aimDeadZone'),
@@ -97,7 +104,18 @@ export function stepPlayerMovement(state, input, {
   const targetSpeed = state.maxSpeed * speedMultiplier;
   const targetVx = requestedMove.x * targetSpeed;
   const targetVy = requestedMove.y * targetSpeed;
-  const responseTime = moveMagnitude > state.movementDeadZone ? state.accelerationTime : state.decelerationTime;
+  let responseTime = state.decelerationTime;
+  if (moveMagnitude > state.movementDeadZone) {
+    responseTime = state.accelerationTime;
+    const currentSpeed = Math.hypot(state.vx, state.vy);
+    if (currentSpeed > EPSILON) {
+      // 0 when the input matches current heading, 1 on a full reversal.
+      const alignment = (requestedMove.x * state.vx + requestedMove.y * state.vy) / (moveMagnitude * currentSpeed);
+      const opposition = Math.min(1, Math.max(0, (1 - alignment) * 0.5));
+      const turnTime = state.turnAccelerationTime ?? state.accelerationTime;
+      responseTime = state.accelerationTime + (turnTime - state.accelerationTime) * opposition;
+    }
+  }
   const maximumDelta = responseTime <= 0 ? Infinity : state.maxSpeed / responseTime * dtSeconds;
   const nextVelocity = moveVectorToward(
     { x: state.vx, y: state.vy },

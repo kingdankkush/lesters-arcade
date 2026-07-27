@@ -1049,10 +1049,30 @@ async function boot() {
         const to = worldToScreen(shot.state.current, camera, view);
         if (!isScreenPointVisible(from, view, 48) && !isScreenPointVisible(to, view, 48)) continue;
         const shotColor = WEAPON_COLORS[shot.weaponId] ?? 0x49ddff;
-        projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-          .stroke({ color: shotColor, width: 7, alpha: 0.24 });
-        projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-          .stroke({ color: 0xf4fdff, width: 3, alpha: 0.98 });
+        // Upgraded rounds must be legible as upgraded. A tracer draws a longer,
+        // hotter streak with a leading spark so the tier-three capstone is
+        // visible in play rather than only in the upgrade panel.
+        if (shot.projectileTag === 'tracer-round') {
+          const dx = to.x - from.x;
+          const dy = to.y - from.y;
+          const tail = { x: from.x - dx * 0.85, y: from.y - dy * 0.85 };
+          projectileTrails.moveTo(tail.x, tail.y).lineTo(to.x, to.y)
+            .stroke({ color: 0xffb347, width: 9, alpha: 0.2 });
+          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+            .stroke({ color: 0xffd166, width: 4, alpha: 0.95 });
+          projectileTrails.circle(to.x, to.y, 3.2).fill({ color: 0xfff6d5, alpha: 0.95 });
+        } else if (shot.policy?.type === 'pierce') {
+          // Piercing rounds read as a hard, bright lance.
+          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+            .stroke({ color: 0xc497ff, width: 8, alpha: 0.26 });
+          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+            .stroke({ color: 0xf6ecff, width: 2.5, alpha: 1 });
+        } else {
+          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+            .stroke({ color: shotColor, width: 7, alpha: 0.24 });
+          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
+            .stroke({ color: 0xf4fdff, width: 3, alpha: 0.98 });
+        }
       }
       let activeGrenadeWarnings = 0;
       let activeGrenadeWarningRadius = 0;
@@ -2087,6 +2107,7 @@ async function boot() {
             radius: shot.radius,
             damage: shot.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
             policy: shot.policy,
+            projectileTag: shot.projectileTag ?? null,
             remainingRange: shot.range,
           });
         }

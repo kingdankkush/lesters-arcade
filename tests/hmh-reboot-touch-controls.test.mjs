@@ -110,19 +110,19 @@ test('browser touch adapter owns UI pointers relayouts and clears state on teard
     preventDefault: () => { prevented += 1; },
     stopPropagation: () => { stopped += 1; },
   });
+  // Drag tracking lives on the window surface, not on the stick element: a
+  // thumb that leaves the stick radius must keep steering.
   adapter.elements.move.emit('pointerdown', event(1, 100, 300));
-  adapter.elements.move.emit('pointermove', event(1, 150, 300));
+  windowRef.emit('pointermove', event(1, 150, 300));
   adapter.elements.aim.emit('pointerdown', event(2, 600, 300));
-  adapter.elements.aim.emit('pointermove', event(2, 600, 240));
-  adapter.elements.grenade.emit('pointerdown', event(3, 0, 0));
-  adapter.elements.weaponNext.emit('pointerdown', event(5, 0, 0));
+  windowRef.emit('pointermove', event(2, 600, 240));
+  adapter.elements.power.emit('pointerdown', event(3, 0, 0));
   adapter.elements.pause.emit('pointerdown', event(4, 0, 0));
   assert.equal(pauseToggles, 1);
   adapter.elements.pause.emit('pointerup', event(4, 0, 0));
   assert.ok(snapshots.at(-1).moveX > 0);
   assert.ok(snapshots.at(-1).aimY < 0);
   assert.equal(snapshots.at(-1).grenade, true);
-  assert.equal(snapshots.at(-1).weaponNext, true);
   windowRef.emit('pointerup', event(3, 0, 0));
   assert.equal(snapshots.at(-1).grenade, false, 'window release must clear an owned pointer when capture is unavailable');
   assert.ok(prevented >= 5 && stopped >= 5);

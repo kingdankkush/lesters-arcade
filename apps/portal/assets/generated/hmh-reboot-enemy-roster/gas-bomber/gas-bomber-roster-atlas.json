@@ -28,7 +28,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__east__000",
-      "opaquePixels": 2188,
+      "opaquePixels": 2187,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -39,7 +39,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "112983f51ad9ee1867be21362d8259752c6a62b6958e58eac2f61a6583095ba2",
+      "sourcePixelSha256": "d6f26a4d9d392f4ac66dff09ee77cb671b77ece52ff450348507347b6fd65d9d",
       "state": "attack",
       "trimmed": true
     },
@@ -69,7 +69,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2d12104885fc9a495605c0862eba65ca4830c76e86d4450ee45e585632a2f446",
+      "sourcePixelSha256": "f956b7f98cf42a9d28fc933ca15f2e7bc2f7336e3fc76242b3da0725d27a2e52",
       "state": "attack",
       "trimmed": true
     },
@@ -99,7 +99,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "af25162aa821872bf12b6cfde407edfaca2d5c2950dfa2af603dd81939aedaa7",
+      "sourcePixelSha256": "7d034582487d297a23e6b48eae0aaa6c3869efdeedb4a475d05b27163fb4a753",
       "state": "attack",
       "trimmed": true
     },
@@ -129,7 +129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8341d6f88e4f7e52b6c571b875be09be724835e4e7f3ca66ad36db0630fde5be",
+      "sourcePixelSha256": "97a6f7f7d99547e35169901a2dfd40f73ea415b6c042c0fe3c560ccc6bcbd662",
       "state": "attack",
       "trimmed": true
     },
@@ -159,7 +159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2313df2b9492693e85bb45f1c73c74ae0f46e760c1e850ee6be09ebf927603ae",
+      "sourcePixelSha256": "24738d3d04cca6697e1b71491cffd85a79e1110185e191350ac1420908fad450",
       "state": "attack",
       "trimmed": true
     },
@@ -178,7 +178,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__north-east__002",
-      "opaquePixels": 2355,
+      "opaquePixels": 2354,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -189,7 +189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e76d84507bcb15a3c8b8dfb5d77a4bafce1edcc46e451497c60a62ca8a965b0b",
+      "sourcePixelSha256": "cc3c96803f8ae5873bef1e9ffd78a8d3efe3fb7379a3746fdea95d0972ec017f",
       "state": "attack",
       "trimmed": true
     },
@@ -219,7 +219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6b0e54c8716195a1aab83aaeee023fc21503f6ea1477cb1c693b960ffd160a8f",
+      "sourcePixelSha256": "16084e85022cf77b5e3967a7c7f0b4bf071f8bf10015c6b3bdb14f5289a7dabc",
       "state": "attack",
       "trimmed": true
     },
@@ -238,7 +238,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__north-west__001",
-      "opaquePixels": 2629,
+      "opaquePixels": 2627,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -249,7 +249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "97174d98c94d0aec3846b11416944f297fca33dcef9509de848f9a7897388501",
+      "sourcePixelSha256": "b3589b7efc893e199aa9329b08d17fc761f7507483fbd14887099ab1c99a9bff",
       "state": "attack",
       "trimmed": true
     },
@@ -268,7 +268,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__north-west__002",
-      "opaquePixels": 2328,
+      "opaquePixels": 2327,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -279,7 +279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "df31af043e9d40ffcf2ad42bba2c7454b7df72985aa8224edad30e7b22e11fef",
+      "sourcePixelSha256": "790f90aab9e170e8949cc03ec59c75e8707eefe8ade1599a0214df9f18eaa0b2",
       "state": "attack",
       "trimmed": true
     },
@@ -298,7 +298,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__north__000",
-      "opaquePixels": 2705,
+      "opaquePixels": 2704,
       "phase": null,
       "pivot": {
         "x": 35,
@@ -309,7 +309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d1117d72b70b792f47b9e0b263f5db8d12b8175c9cce68d42fbf3491864a7424",
+      "sourcePixelSha256": "8d06740abe0a72ce3b446aa892d05dd898959fe9ceb683166b74ee45483091dd",
       "state": "attack",
       "trimmed": true
     },
@@ -328,7 +328,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__north__001",
-      "opaquePixels": 2709,
+      "opaquePixels": 2706,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -339,7 +339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "64614a7fd6e1b2d468e7113bda7b9505828dea0b753bb2d061485165e31315e0",
+      "sourcePixelSha256": "f9b35d6cf5ade7f59383c6adf9a2d292d165f850a7a76a40620b5d4dc5215b85",
       "state": "attack",
       "trimmed": true
     },
@@ -369,7 +369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "64c47d1b99526aa79e8fd6847514ad95d47c63217033798bc6bd617aad0e0c5d",
+      "sourcePixelSha256": "59036a50e5497c8bd765831cbf0347ab91576113b006df375cd2e8210da3afff",
       "state": "attack",
       "trimmed": true
     },
@@ -388,7 +388,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__south-east__000",
-      "opaquePixels": 2454,
+      "opaquePixels": 2453,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -399,7 +399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4eb7c6e4941dc177a404a0609df3b9c6d9f19a428cadc705e44f8e6a7f536962",
+      "sourcePixelSha256": "eb91898124704aa377947e39882477515d858db1eae78a82efa53e5a6ef8ec29",
       "state": "attack",
       "trimmed": true
     },
@@ -418,7 +418,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__south-east__001",
-      "opaquePixels": 2448,
+      "opaquePixels": 2446,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -429,7 +429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ae035985304726d0325303ee5d1de41ac6074fcc0118ebbeaf7439a1634f2465",
+      "sourcePixelSha256": "bb4045c4c48d47c5f93cede6a501f66a9d3fe91314a695d2719c9623df4114ee",
       "state": "attack",
       "trimmed": true
     },
@@ -459,7 +459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "01febfdea449ad38c35b1eb81e25501f93e42405b8392352c5168d68d60a9f7f",
+      "sourcePixelSha256": "e5fe28f26e9d98695eb1509397500224bd26253a61f18b447c94176616d929be",
       "state": "attack",
       "trimmed": true
     },
@@ -478,7 +478,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__south-west__000",
-      "opaquePixels": 2345,
+      "opaquePixels": 2344,
       "phase": null,
       "pivot": {
         "x": 12,
@@ -489,7 +489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "27b11faabba6d1d0192e46294f73072a32ace4f664d2b43bf47f011003414436",
+      "sourcePixelSha256": "66cc04b8a13b76185ca5f24ed1a93d346252a9ad7062c4963f81add6ca8f2283",
       "state": "attack",
       "trimmed": true
     },
@@ -519,7 +519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "44550c90e106008c5b4f19551b3aac72eaf17e9b06172f3e48eb2164d2eb034e",
+      "sourcePixelSha256": "02ef03621ad1a89c4848887645153691e21daa0eebe58f01d1d464c11b491a31",
       "state": "attack",
       "trimmed": true
     },
@@ -549,7 +549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0de173d22325b0f89c716b29a40ade5e0946bc3c1f7c7b14cfa775f511cdcf74",
+      "sourcePixelSha256": "ea1b9f5fbb83c1c99d761d31717061573b6c2baa5c81a6158f133e22a9e648a9",
       "state": "attack",
       "trimmed": true
     },
@@ -568,7 +568,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__south__000",
-      "opaquePixels": 2410,
+      "opaquePixels": 2409,
       "phase": null,
       "pivot": {
         "x": 35,
@@ -579,7 +579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "05e5181069d936c9b1a0bd5769b27f7fa45386880a8e7153ee475ca1c530d0c4",
+      "sourcePixelSha256": "d8ef6bcf7687fafe7cf0010d4814836a518ed083e538d495870600c346eb87e3",
       "state": "attack",
       "trimmed": true
     },
@@ -598,7 +598,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__south__001",
-      "opaquePixels": 2467,
+      "opaquePixels": 2466,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -609,7 +609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8bad8fafaefb878579156ad2e6155d162bcea17c5e7313b076b0de4e208c9635",
+      "sourcePixelSha256": "a481408258928e29d3df1ce07741a965f97ffd02bbbf297442a75c60f3cc6dce",
       "state": "attack",
       "trimmed": true
     },
@@ -639,7 +639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7950f45ba385d9dabc79d7dab6295fedf010d07a452e55803a664bc1b9725684",
+      "sourcePixelSha256": "1193dcdcc22eeff8b06a8820ebe2cdf91e32c8058b3049daa07dca60680115e1",
       "state": "attack",
       "trimmed": true
     },
@@ -669,7 +669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4af0a6744944db5735ea6331a412068e27bca32b18ba05d66b3532a42be56de0",
+      "sourcePixelSha256": "74d332583c1c97a39c92993ac0405ae1aa03f56150199ed61be380eb152fbf44",
       "state": "attack",
       "trimmed": true
     },
@@ -699,7 +699,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b97b136e8aff615448bedb4e38d5c243e3dec0d2e70b242907a7197d4e5e49ec",
+      "sourcePixelSha256": "e801011a4a1d808049a442906b7cbc49bd86a63d4c6ccb178bf1dc50ed331119",
       "state": "attack",
       "trimmed": true
     },
@@ -718,7 +718,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__west__002",
-      "opaquePixels": 1763,
+      "opaquePixels": 1761,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -729,7 +729,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "75cd1ccf6b64cfb1137f8bf700523782097b1458aaa4615b7f7cfec71beda1c4",
+      "sourcePixelSha256": "c4175fac45696960eeedf0e5f23141fbb59834ca7897bdfd423f870fe2f84496",
       "state": "attack",
       "trimmed": true
     },
@@ -748,7 +748,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__east__000",
-      "opaquePixels": 1694,
+      "opaquePixels": 1693,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -759,7 +759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "22f66070245e8214c92bd938bdb7a237a16eb9b5ae2342a25d0fb17221d4f594",
+      "sourcePixelSha256": "213b7c0c608bfe1272677919b496ba7d79f3edbfac590dcb65997d7f93e98cd6",
       "state": "death",
       "trimmed": true
     },
@@ -789,7 +789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c7ab8bd3eda0f7ee115b9a9e52d6d2aef78c21e1af0a5a60bad6d3dbd9e16603",
+      "sourcePixelSha256": "9368518df771a9331c703f2dd44b1f02f9908dac9b7a909a52c6f37f18865934",
       "state": "death",
       "trimmed": true
     },
@@ -819,7 +819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c21454732f45d690d35f23da32b1bfca529d63bd7d8c3604370dc1cc48bb7a91",
+      "sourcePixelSha256": "d20e8b047877d3c303614e04c585c6b006cde0326c011dd7c5782b436c907a65",
       "state": "death",
       "trimmed": true
     },
@@ -838,7 +838,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__east__003",
-      "opaquePixels": 2175,
+      "opaquePixels": 2174,
       "phase": null,
       "pivot": {
         "x": 50,
@@ -849,7 +849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "731bf6ac56ea388263c2a72eef945f92de5bc9b2fa2d3ed3ab02dbb6a27aa55d",
+      "sourcePixelSha256": "d9f2a881f21fce77585ccf4f5f27be245b12e442a7ac1db9981f0c3596bccc0a",
       "state": "death",
       "trimmed": true
     },
@@ -879,7 +879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a284bb529a75eaf3e48aed3e479363c160888e02e30534b722e1ed4b623993b7",
+      "sourcePixelSha256": "38fe801c09956da57874156823692e550780da3b6255cfab83a3a8e9f78d2276",
       "state": "death",
       "trimmed": true
     },
@@ -898,7 +898,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__north-east__001",
-      "opaquePixels": 2448,
+      "opaquePixels": 2445,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -909,7 +909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ed90d05f75ce34e4e8d6d47cbaf8adfc13df2341dc84ff2784df5852f0f0d1c3",
+      "sourcePixelSha256": "d1b40aae97726db84fe6666726b32d149528fe60692cc50ae7001a4a167b301f",
       "state": "death",
       "trimmed": true
     },
@@ -939,7 +939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3e81a5834fb111e1cdde08fc85ced4ee7d008e4dcc2514fd3e01914c5cfbd26b",
+      "sourcePixelSha256": "2ed5546d2a5c91b98f04f3de6a154c802e414f955d52a2a12bf498217fdcdd93",
       "state": "death",
       "trimmed": true
     },
@@ -969,7 +969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f98aba03e92a44abda7d0332cf5a626fac575b7218ed795d14624c1b7e92a0b9",
+      "sourcePixelSha256": "ef1dd461731e5e9c4acf9415901a18dfd1704bd0ce658a1f7c1272f705f9a54a",
       "state": "death",
       "trimmed": true
     },
@@ -999,7 +999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5c069dd41db70af91ce5012745654863ec21896a1a49d065012db08a7c0bdca2",
+      "sourcePixelSha256": "b04e6fc3db4d4ed5cb4e187db1f6f6440f7ab699a6e5c09da7dfc12063d846c8",
       "state": "death",
       "trimmed": true
     },
@@ -1018,7 +1018,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__north-west__001",
-      "opaquePixels": 2505,
+      "opaquePixels": 2504,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1029,7 +1029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6b3e93a9f3626bb7307ba4935405812969b73d57f696bf9dd37f114f273ae5fa",
+      "sourcePixelSha256": "a0477b6afa44f049f11d5ae1d3188ef0c9d145dc3c5f0e35163484610a4ad655",
       "state": "death",
       "trimmed": true
     },
@@ -1048,7 +1048,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__north-west__002",
-      "opaquePixels": 2119,
+      "opaquePixels": 2118,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -1059,7 +1059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "91df51ff25a84a364697a6a76d238e19c88d155c1156c0dc9e6ed33efb9e2dcd",
+      "sourcePixelSha256": "155bdae563d4d62880d8145686a87daf8f6054a8014c7ee07300c26c09a45361",
       "state": "death",
       "trimmed": true
     },
@@ -1089,7 +1089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2ca7eefc7af392d75f4bb11e7496a96c4091086ae39acabde8f63e2803a088bb",
+      "sourcePixelSha256": "96c927359aff90a2f59b190627bec07833f867f02f8a9f60fdc674878ee8397f",
       "state": "death",
       "trimmed": true
     },
@@ -1119,7 +1119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a75bd9456e78c296dec15f68b6e54b7e8cb84809230a82ac013f2cc6e2fc06bc",
+      "sourcePixelSha256": "0aecd9c3029ac62963bb8cbe645c5d1107f5958b4d29d5f2b0b6a1f3c3c27ac5",
       "state": "death",
       "trimmed": true
     },
@@ -1138,7 +1138,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__north__001",
-      "opaquePixels": 2574,
+      "opaquePixels": 2573,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -1149,7 +1149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c0b302e3034e8177adac6a5a911ebe90f6367f5b922570d00aa8954af3b250f0",
+      "sourcePixelSha256": "4dded3ede9ef2b6cce0673a495bd7c1dfd61cfa8363746eb00967b742ee1fa9a",
       "state": "death",
       "trimmed": true
     },
@@ -1168,7 +1168,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__north__002",
-      "opaquePixels": 1998,
+      "opaquePixels": 1997,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1179,7 +1179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "30b7ff5ad18d6bdd9d7612840b5b9843971295ec361ef0bed64677ff38f13d29",
+      "sourcePixelSha256": "6becaac3762e43b4f05acb2668b1390a3ecc53feb5b994526002778a12cc9af7",
       "state": "death",
       "trimmed": true
     },
@@ -1198,7 +1198,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__north__003",
-      "opaquePixels": 1344,
+      "opaquePixels": 1343,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1209,7 +1209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4801e2b8c03d1cc8fbd1ea508508bcdd0fa85ed7f135f8c5410620d8b4a54f07",
+      "sourcePixelSha256": "d2d21bfe39dc4133659ba7398ac75a550750433f8069978db62adbfd56e63f59",
       "state": "death",
       "trimmed": true
     },
@@ -1239,7 +1239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3fa9fa65fcf497474dff87b58038549aa6dcafac8cbb0f0bdaa70db9bf6cbd38",
+      "sourcePixelSha256": "5f0c483104a36fe7b83785c037095f935261563b1a8c0a46cdc925774626f085",
       "state": "death",
       "trimmed": true
     },
@@ -1269,7 +1269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ccffac95e6eaee3542db1632ce4b60bdc1f25002f6bd7897ffd83f030fb6cc4c",
+      "sourcePixelSha256": "0a16a193f4142a6817492dbc538bd5e3accd80ba4aa8bb5f047e605c80593feb",
       "state": "death",
       "trimmed": true
     },
@@ -1288,7 +1288,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__south-east__002",
-      "opaquePixels": 2187,
+      "opaquePixels": 2186,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -1299,7 +1299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a738f74674e81711fc0ca6fa9a9785d77a5ee375bfe60e52c30bbb1ae3f97a2a",
+      "sourcePixelSha256": "c61d7bb2a8965eb1f1ba3b60662526719856d9ccef61b1e3b96b5042e461e518",
       "state": "death",
       "trimmed": true
     },
@@ -1329,7 +1329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "89267ae678d6f0d5ad63c6895b7093ccb4723912417621e841d7f52c7a0bd099",
+      "sourcePixelSha256": "f1f21c85573082dd4a45571529258727648db9d758e11aab672c62fa71c1d27b",
       "state": "death",
       "trimmed": true
     },
@@ -1359,7 +1359,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0d614695637172275fdd4e32c8644437a52ddac4a4e8d1855aed4c01efda3c81",
+      "sourcePixelSha256": "d55a4fe9e386b56c66fdc3f83fb4936a1794a662b3ffef93f0f27a1268729a71",
       "state": "death",
       "trimmed": true
     },
@@ -1378,7 +1378,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__south-west__001",
-      "opaquePixels": 1996,
+      "opaquePixels": 1995,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1389,7 +1389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "89d3a04d1d5befcca11cb7269214fd3f70c0855e83a735acfc2bd34d1426f2bc",
+      "sourcePixelSha256": "15096572d36a4fe2541a51aeb76bf9d881932e994c989478bcc771d4fe33e8c5",
       "state": "death",
       "trimmed": true
     },
@@ -1419,7 +1419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5dc687a7b2e0c014e72d43c40b8180fce7153b101615dac9e3eff0deddd98616",
+      "sourcePixelSha256": "74e0b2eaac7f7504b5cb1bb15a723a17565e04598636a41285d80babd9b4ac12",
       "state": "death",
       "trimmed": true
     },
@@ -1449,7 +1449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7fac91e76bfaae0468c7bd79ed54f3f35156e9177b53b8a31825aec63f5e3f10",
+      "sourcePixelSha256": "c8d5924839afe9c1586584c0f00e0ae7b95f4b6bc03ecf5ca638f41e47dde8b8",
       "state": "death",
       "trimmed": true
     },
@@ -1479,7 +1479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "68738276e7dc7e246a440f506110890ac840853f805150cd9731c16a9d0e21c4",
+      "sourcePixelSha256": "af627a4dfce0088f0e88dd1a31ecacc310c10ae411097183a144dfedfed3bc93",
       "state": "death",
       "trimmed": true
     },
@@ -1509,7 +1509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9b3d4a22eeda5d91700788174ac1b56905e74e59adcd24d14383450882850679",
+      "sourcePixelSha256": "4e8b5c6348efc23f3e33defddd905754b917e0a6a13bcee755b2ff7a85270561",
       "state": "death",
       "trimmed": true
     },
@@ -1539,7 +1539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "578af438a45ca1645633ac01ca2b83e9afbfc2fa8a636e996d8a84575724eb74",
+      "sourcePixelSha256": "5aeda437d669085ce2281f88607e28042a2fc8d39cf89af0fce94176e479f68f",
       "state": "death",
       "trimmed": true
     },
@@ -1569,7 +1569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8d25c71927fc81c9056f239996909dbdcef21270a2deeaf06b1f9dd985593152",
+      "sourcePixelSha256": "18d166d3d4146ed1196c140d5d36c33ff254ee982de5f147a901efca7968d8fe",
       "state": "death",
       "trimmed": true
     },
@@ -1599,7 +1599,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "848256d375d2d4c63b1e330c97f89469d7d81c3fdf9e0d7d2278240a13900511",
+      "sourcePixelSha256": "fb5b122ce1bf219e72f6760fbc5cd8d65f5ba42d6706048da221d32241d13647",
       "state": "death",
       "trimmed": true
     },
@@ -1629,7 +1629,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "276368b499180e528662492dac0f5ac8267a12233efffc99ad907406be621a52",
+      "sourcePixelSha256": "3fa931ee905a4825e74acc0ac7572b916add625d640550554233d45fdafc0fcd",
       "state": "death",
       "trimmed": true
     },
@@ -1659,7 +1659,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "71f13aa0a7e5a9a8857ae13663dc10d6ee41e01bbd36c5220377e4cf1ff539aa",
+      "sourcePixelSha256": "e30f66ebd1677dae01d481f610e65a2190bf5a8359018f2f23b240c1b3b694c3",
       "state": "death",
       "trimmed": true
     },
@@ -1678,7 +1678,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__west__003",
-      "opaquePixels": 2373,
+      "opaquePixels": 2370,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -1689,7 +1689,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "913cae3100ee7f24ef9429ad58f11ba637db39be7e032b658fef7f4a8f1ef71f",
+      "sourcePixelSha256": "f6f9edcad7e9ab238614c93c4a9f22fb9d47e406c746685ad75f551c0b92e1ee",
       "state": "death",
       "trimmed": true
     },
@@ -1708,7 +1708,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__east__000",
-      "opaquePixels": 1825,
+      "opaquePixels": 1824,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1719,7 +1719,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c78ebcd1678c72aebfc32641c723e8731d1cc5b99b947c0a56dd1cc50322fc36",
+      "sourcePixelSha256": "4c384a9c21b8c7ed5e8dce1843d791f672858d4d3d257bdb9d901ddff2b79925",
       "state": "hit",
       "trimmed": true
     },
@@ -1738,7 +1738,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__east__001",
-      "opaquePixels": 1939,
+      "opaquePixels": 1938,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1749,7 +1749,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "20547e36fe4c92b544be4732c37cdc3dd98eb8232c46178499faab3e01546a89",
+      "sourcePixelSha256": "4b173c9be2c2d3fe0a09dd8ec9c2bb334c57beefda2dd467c1c87e6d3678a6c8",
       "state": "hit",
       "trimmed": true
     },
@@ -1779,7 +1779,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a88c154f5b16ec9d669a0ba65df8f1e22428a554629d7619e8776b01c582b4a0",
+      "sourcePixelSha256": "8b77b463c14f81853a3172455d96362c6f456b69374f076fb531248c3c41794a",
       "state": "hit",
       "trimmed": true
     },
@@ -1809,7 +1809,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f7c3592aae8af91054fb7a11fd90a084ee6a1effbf945a74ca33163b3c1df90",
+      "sourcePixelSha256": "db166753123d1adbf490bddbfe6567219fe88f30a93e0d1e3416cc333563c19a",
       "state": "hit",
       "trimmed": true
     },
@@ -1839,7 +1839,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fdff4666c1b2e51bedaa8c117f5c974aadab62134a4926618c5719029abaed43",
+      "sourcePixelSha256": "5d1b8a67e173607a1f99e1edfcacec2f92dc7b8ee3779b820e17a52bbe77a474",
       "state": "hit",
       "trimmed": true
     },
@@ -1858,7 +1858,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__north-west__001",
-      "opaquePixels": 2312,
+      "opaquePixels": 2310,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -1869,7 +1869,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "16e230ed34931735e9f054eb15ed2ad8e0c3a3e32c1aadba99a5c6379afe107c",
+      "sourcePixelSha256": "cf79d4a0ee2f3a99fea220dbebbfee18f76eb7e2ac67799663dfbc8481a146ad",
       "state": "hit",
       "trimmed": true
     },
@@ -1899,7 +1899,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9a7634d4dc1da6e68029a1cd544901a11194198cba71a54b78e5533e8934e63b",
+      "sourcePixelSha256": "d6fddc18ee5186bc7a83fd83f1fbd28d3306938a3686516dae0c99a03d4ae93c",
       "state": "hit",
       "trimmed": true
     },
@@ -1929,7 +1929,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a1d8afa4be917ebd72d9390eec10d52f6fed9e8554187e475c1754f907cf97e2",
+      "sourcePixelSha256": "6eb7ef43ab3b85ec9f5a6d275817bba3e3428316efa668afe4c13f9269d72f46",
       "state": "hit",
       "trimmed": true
     },
@@ -1948,7 +1948,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__south-east__000",
-      "opaquePixels": 2456,
+      "opaquePixels": 2455,
       "phase": null,
       "pivot": {
         "x": 20,
@@ -1959,7 +1959,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "af1f7fb682a44756c951a2e6de2c22f118aa3dfab4cb265da6d8596abb57ce45",
+      "sourcePixelSha256": "7676cec7f3f8e98b6430caf1a8b001ceaaf22fe4de1cb628a0daabeeb682e1b7",
       "state": "hit",
       "trimmed": true
     },
@@ -1978,7 +1978,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__south-east__001",
-      "opaquePixels": 2317,
+      "opaquePixels": 2316,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1989,7 +1989,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "eebcb7426e13d4bab4cae41ae1332c651551b9a0f93d4426e2ab1131c3114156",
+      "sourcePixelSha256": "232873dbb108762b7ca68fadc4e57a5b4cc501422133e5d877f69f68085f3525",
       "state": "hit",
       "trimmed": true
     },
@@ -2019,7 +2019,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fb166595c5c53ebd4b8558b8218681d48f531f69f299a4bc56c29e8654f721ab",
+      "sourcePixelSha256": "d544552098f8747d143156305ed50267e60a31ff9aa9872cb24475324dca259a",
       "state": "hit",
       "trimmed": true
     },
@@ -2038,7 +2038,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__south-west__001",
-      "opaquePixels": 2608,
+      "opaquePixels": 2607,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -2049,7 +2049,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f8635d625ca2db5805280893f6c32cc6b44371464f2ecf4e59b4f2affbb8abe",
+      "sourcePixelSha256": "22a5087d86f69b785aa040a4eefdcff5e98b1968fe02db3ee2c7985d57b8aef4",
       "state": "hit",
       "trimmed": true
     },
@@ -2068,7 +2068,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__south__000",
-      "opaquePixels": 2585,
+      "opaquePixels": 2583,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -2079,7 +2079,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f6402a7434ed6ffedf6648c8737aa578ace048b7e79fba638b297c04cfb2a6de",
+      "sourcePixelSha256": "94cab62f76430693ee7a45cc0af96dc107a72b784a8bef4e7e37bd063ec7fc57",
       "state": "hit",
       "trimmed": true
     },
@@ -2109,7 +2109,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "905cbc8ca7abbb12958db81ac51f830e90150bf891ffbf9ecad85ec131099270",
+      "sourcePixelSha256": "2917c6469e240bede06e95b4de3133761eb96f59651c8abc857a406725487f8f",
       "state": "hit",
       "trimmed": true
     },
@@ -2139,7 +2139,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7df0c3c7d6414667089cd3d98602e62fc5256598aa9bf8708eea0ac1dad47a6c",
+      "sourcePixelSha256": "34ed2182cf4477aede2324f217ef6007907f9f533976782e0fa1d52653f7abe4",
       "state": "hit",
       "trimmed": true
     },
@@ -2158,7 +2158,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__west__001",
-      "opaquePixels": 1810,
+      "opaquePixels": 1809,
       "phase": null,
       "pivot": {
         "x": 2,
@@ -2169,7 +2169,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ba203bd0b2653d0ee102ee839fff65e864bc242db33d0327b5d7b068ddad87b2",
+      "sourcePixelSha256": "377af60562ced3794823f3496e3d0fab1b98e492c094095305bbb28abe1b6604",
       "state": "hit",
       "trimmed": true
     },
@@ -2188,7 +2188,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__east__000",
-      "opaquePixels": 1688,
+      "opaquePixels": 1687,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -2199,7 +2199,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7da75ee2758596475d59f54bbf9051f18c5d0f3dedd767211be281db1d0677a9",
+      "sourcePixelSha256": "7435223899d71b2a7148dc9f274aa990a194105836be975862c9d8cb6eab5520",
       "state": "idle",
       "trimmed": true
     },
@@ -2218,7 +2218,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__east__001",
-      "opaquePixels": 1700,
+      "opaquePixels": 1699,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -2229,7 +2229,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a65bf31dc71f1e95b3a3c3f4ffacd6bb4929306b994eebc017279b8e08532bc5",
+      "sourcePixelSha256": "424c3062b2ef9a51a4cf37eef550f59dcd2c3531fed8c063d95d23d48127cb48",
       "state": "idle",
       "trimmed": true
     },
@@ -2259,7 +2259,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "42c3561e834bc7edcded79432f4ba7f1f7da2690eaa0b00fbd8fcf8b48cf6e29",
+      "sourcePixelSha256": "c0d1627b17ebfce35e5f546d6a1b8dc086d3d82ae18cb86e560f2c4196c7a14b",
       "state": "idle",
       "trimmed": true
     },
@@ -2278,7 +2278,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__north-east__001",
-      "opaquePixels": 2420,
+      "opaquePixels": 2419,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -2289,7 +2289,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "48dc594fcbb17067d22db52ff5b636e9c6eea948a1f4466c3f82b105caf34126",
+      "sourcePixelSha256": "72c08c352e78abbc369e4f9c1c3eab2d02b5c7032653183b21e4e895ad6f289c",
       "state": "idle",
       "trimmed": true
     },
@@ -2319,7 +2319,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dfcf948601d80569159637ddd384b28f4135dd2e401d4faa92ec5abf67c1a01c",
+      "sourcePixelSha256": "edbeb3d5a3c1c5e16f5c331fdf8c95e4807b7c5773eee35a5339090015985a05",
       "state": "idle",
       "trimmed": true
     },
@@ -2338,7 +2338,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__north-west__001",
-      "opaquePixels": 2418,
+      "opaquePixels": 2416,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2349,7 +2349,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b0772dead838b89c9f43bbe131c7fa2a766b9224119ab96fdbe0e81c5d8c7107",
+      "sourcePixelSha256": "356880c5d3bd3f54c0602f79e47e3005da1a424b70a4eff28dedda67dbb510be",
       "state": "idle",
       "trimmed": true
     },
@@ -2379,26 +2379,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a9398e99e03f89b739b5afd5575edb007f8b6a5f0db26713f5a03da8a4c403fc",
+      "sourcePixelSha256": "ee8f6fabeeeac6c17239dbdb2d1dff5deecaac44c1c026fcb1efb5d8a655f7d7",
       "state": "idle",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.294872,
+        "x": 0.298701,
         "y": 0.380282
       },
       "direction": "north",
       "fps": 3,
       "frame": {
         "h": 71,
-        "w": 78,
+        "w": 77,
         "x": 723,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__north__001",
-      "opaquePixels": 2573,
+      "opaquePixels": 2571,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -2409,7 +2409,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f1ce389b037cd1e22ff1a42e8ff8373b48f6809ce3223bbfdcee422d7f7b090d",
+      "sourcePixelSha256": "2aa9c58f28d3863b37c2eff9000b16a2de3e7a7298fcc812dfc8e2609394cc23",
       "state": "idle",
       "trimmed": true
     },
@@ -2439,7 +2439,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5ac31712177ad9e26e22fa2cf6d7fd75c67f8ce8bb608d0447618a968d901607",
+      "sourcePixelSha256": "01c73c6b088f6e52dff292f2f642644aeb64dffcf068db4b5942e3b36ad5e024",
       "state": "idle",
       "trimmed": true
     },
@@ -2453,7 +2453,7 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 803,
+        "x": 802,
         "y": 315
       },
       "frameIndex": 1,
@@ -2469,7 +2469,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f008f3e7c2a37fbda6478875412ab664a1f05dce290db279c451593928e0ab42",
+      "sourcePixelSha256": "7dc3f367882eb6c825c420c2f1ddcf43dd9810dfc991d4fe77735e14f23b7885",
       "state": "idle",
       "trimmed": true
     },
@@ -2499,7 +2499,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8edeb77b095ff8a606a59bebc9d46fd76e7109497e66e619441ad9dccaa61c7a",
+      "sourcePixelSha256": "67df83f137f5a7eec8cf4ffbd375d14dbad4d46545c9b19733bb680f18d62388",
       "state": "idle",
       "trimmed": true
     },
@@ -2513,12 +2513,12 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 863,
+        "x": 862,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__south-west__001",
-      "opaquePixels": 2516,
+      "opaquePixels": 2514,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2529,7 +2529,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6662b5ff08dc5fd6e1af2504899830375fdc7786d44cfc4ea85aa7de7d74b813",
+      "sourcePixelSha256": "f633d6f0929f5080f7326ea1247ef1a2406c5fa067ca4f0dbac02e27aa289bc9",
       "state": "idle",
       "trimmed": true
     },
@@ -2559,7 +2559,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1708518d80e4b0b3c9cdf730689ec754c4f01b471e4329347e8171abf4042666",
+      "sourcePixelSha256": "a68f8180afaa1f692a89ec25ebe4bad10c5c99e83e2080e4338ea343c0962d19",
       "state": "idle",
       "trimmed": true
     },
@@ -2573,12 +2573,12 @@
       "frame": {
         "h": 71,
         "w": 76,
-        "x": 923,
+        "x": 922,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__south__001",
-      "opaquePixels": 2605,
+      "opaquePixels": 2604,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -2589,7 +2589,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "535f6887eaa50702399b0b495c16a153428138e5d81497a0640f205d5afd6c3b",
+      "sourcePixelSha256": "a9c7fc07d4939a5c00693e5e384b5e21904599d25578a0eeb2322759f9e76467",
       "state": "idle",
       "trimmed": true
     },
@@ -2619,7 +2619,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ee330cd4e3eab073bdb33cc6a8cf63447dde7df7be20c544b305f8df87185cea",
+      "sourcePixelSha256": "9067c3c8994008e924ede565324430c67eda8fdb143f53177c68082c802eed3b",
       "state": "idle",
       "trimmed": true
     },
@@ -2638,7 +2638,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__west__001",
-      "opaquePixels": 1700,
+      "opaquePixels": 1698,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -2649,7 +2649,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1cb1eedb9c0254acf67cb8c58b851d116848a3121ab107ee142bd8fa14691b76",
+      "sourcePixelSha256": "5fe3b3867e46ef4afbcab542b6e15305401ff13cf9aafa7222db32ef233e3fa4",
       "state": "idle",
       "trimmed": true
     },
@@ -2679,7 +2679,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bfc352f73821134c6eb28cc84fb675ff61000e35fce79527814a4fb5fb41ea2e",
+      "sourcePixelSha256": "7452ae6161bd3f826b7ac788130f56c29862739d4a1b146da826710f4da1bf0a",
       "state": "run",
       "trimmed": true
     },
@@ -2698,7 +2698,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__east__001",
-      "opaquePixels": 2069,
+      "opaquePixels": 2068,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -2709,7 +2709,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "423c238d453dc1067fd67aec47069016de40be873654b9bd0c8974263b097607",
+      "sourcePixelSha256": "410b293c0bdecfeced70caabf148862a6ef002b6d3efacc842cf2fe3be6e09a8",
       "state": "run",
       "trimmed": true
     },
@@ -2728,7 +2728,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__east__002",
-      "opaquePixels": 2225,
+      "opaquePixels": 2224,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -2739,7 +2739,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "650b0da565d6e0616884c55f51bfdd111483ffd586d06dcfe60c9991a9c3e8fb",
+      "sourcePixelSha256": "a621519695d061e58a5cb92bc1c634b65f526d3291f3c4ea0c2ff60bda402422",
       "state": "run",
       "trimmed": true
     },
@@ -2769,7 +2769,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f3e8c94bf03dcccbbbfaf436d89892af6734f0cd34be591d028dd818c96f12b",
+      "sourcePixelSha256": "bfca4c15513e348e2520f52e127d863538e052c0da3db819e2c05cf758b849a6",
       "state": "run",
       "trimmed": true
     },
@@ -2799,7 +2799,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f1e5860a76ed11a4f5e209fcc0a8e91426cf32303fb3008cbceef706cb102515",
+      "sourcePixelSha256": "5c82949516c799e89edf46baa3160fb4b4bc90d24d925fd0f3f4ba69618bcb61",
       "state": "run",
       "trimmed": true
     },
@@ -2829,7 +2829,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f1d38c038758338868541f0109985e4b16eb2feb019a1c7ccfa5ef78a373f3b6",
+      "sourcePixelSha256": "138b035287201af7e0ff3773b9a55b6de84cf5e9ef586cc0b3e7a028c0f71b10",
       "state": "run",
       "trimmed": true
     },
@@ -2859,7 +2859,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "efb279289c54958d26ca92f6dc12a3fd5f632c713935bea6363a2bcd9851ba5f",
+      "sourcePixelSha256": "3ddc97d09a75d325d47076c50af0d23bb6f6f5024538963ddcdd168a51214ed7",
       "state": "run",
       "trimmed": true
     },
@@ -2889,7 +2889,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "eff171f1fdd7a27c3afb7a5a113294fa577c584c3c5576cf3f33bb935fbf7cea",
+      "sourcePixelSha256": "75758bd0f0e88cee3d6f5cc0be8a09dc476fbc9611d51099d61c75955069255e",
       "state": "run",
       "trimmed": true
     },
@@ -2919,7 +2919,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "47b61c1d31ecb0335a800c3b8825742368bee74866f538028136412e33654c16",
+      "sourcePixelSha256": "c3e1169c4b4ed27e1fadb8c4106aae1dd4ba912883964653ad19226557a29d04",
       "state": "run",
       "trimmed": true
     },
@@ -2949,7 +2949,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "709558b667010f62190fe41e998e5d36131543b807084dc7bf8e8921e27cdc26",
+      "sourcePixelSha256": "87a19c2067047c1c60efd04c6f83cdfa3f699d25660b900234aaba5f4048693b",
       "state": "run",
       "trimmed": true
     },
@@ -2979,7 +2979,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ffb3122ada63057e3d46ce31c51310b462337de3d84d7c07941fc61a4f48fbe9",
+      "sourcePixelSha256": "663bbf033739e13f08855deca8bd6c080c2490acce2bcf033f6b8dce2bade4e9",
       "state": "run",
       "trimmed": true
     },
@@ -3009,7 +3009,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a7aaeabb5491ff21d2de1d9bdb934624cb06e9f0d5b9860f0bd79d23b64ba921",
+      "sourcePixelSha256": "c09a06cddfdf1cb5b2a860a214269d7fba26afad1a8c22ce07500fbdebe85799",
       "state": "run",
       "trimmed": true
     },
@@ -3039,7 +3039,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "aedfb29e1680c8aeb7979854c48aaf02b0e15357255d0a82f9f1d3b91e23477d",
+      "sourcePixelSha256": "346012d0c743c29a8841a33c77b83fb99ba6f4e439d005aef2dbf8acfd4b2228",
       "state": "run",
       "trimmed": true
     },
@@ -3069,7 +3069,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "032debdc70ac4fc732db70da6e0bf1d0cf312fb55a3e2e326748557bfb0fc649",
+      "sourcePixelSha256": "07efe78c397960c957a86cdea486bb3b57a7cc0f1fdfa83213f92bda1a337fb1",
       "state": "run",
       "trimmed": true
     },
@@ -3099,7 +3099,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "395d8a9b0c8d8c2ffb68a4e310cfd468e7afdc1e13ac6a2891c848e5da64b8c0",
+      "sourcePixelSha256": "03f981a5429fec1d9b04ecd2c9ff50122d7b1b6834fb20f502be6930f3d913b9",
       "state": "run",
       "trimmed": true
     },
@@ -3129,7 +3129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c0226c6a70ec7b78e7ce253fcd7d6269c37ad720a8e4b220552a74fc71f71faf",
+      "sourcePixelSha256": "f7cfa3a69d5551ef34af8f095137773cfe634f58afe706acd8366dc66bb7342f",
       "state": "run",
       "trimmed": true
     },
@@ -3148,7 +3148,7 @@
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__north-west__004",
-      "opaquePixels": 2486,
+      "opaquePixels": 2485,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -3159,7 +3159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ad872fa4a97e366c6aaaa8c0e275e7ab782aa0efcb1427765362c747e2727f41",
+      "sourcePixelSha256": "710b97639182aa7617e2882839e3b2a730bf0f7d2ddfcafbf6bcdd5161a1d5d8",
       "state": "run",
       "trimmed": true
     },
@@ -3178,7 +3178,7 @@
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__north-west__005",
-      "opaquePixels": 2515,
+      "opaquePixels": 2514,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3189,7 +3189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ec40ce360a799abb7e8a82c48c20afdda46e0f107b90b7f7386cb99d11c4b6d0",
+      "sourcePixelSha256": "a8c828fb2b033d328f3a3400d908feb919eff45b698d872a960cd3a3d7a5f4b3",
       "state": "run",
       "trimmed": true
     },
@@ -3208,7 +3208,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__north__000",
-      "opaquePixels": 2690,
+      "opaquePixels": 2689,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3219,7 +3219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cd1abcc5d0c8a4a284eb0fff0d261e2da8bfa14c3cadca395f41c20cce527b4b",
+      "sourcePixelSha256": "3b21ec84f70199bb974f2b0747896b041a1b079fe3e3387098b64dcca10148c4",
       "state": "run",
       "trimmed": true
     },
@@ -3249,7 +3249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "71fee13441c99c0d0fa6eb8c40cc6be1fbddc9dcf0612533de85546950b775d6",
+      "sourcePixelSha256": "e6a105e106ecbb86e8b87d97b05149994167faa8d062d193ce7914831975f2d1",
       "state": "run",
       "trimmed": true
     },
@@ -3279,7 +3279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9c93b8ae78af720a1670622e54e20f162e36fb4b7c1e2b8a107019934851141e",
+      "sourcePixelSha256": "bdd84e642dfd3a357422b016eef060a292429dadadfc6b88fa28ada57c488167",
       "state": "run",
       "trimmed": true
     },
@@ -3298,7 +3298,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__north__003",
-      "opaquePixels": 2690,
+      "opaquePixels": 2689,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3309,7 +3309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fbbb7e06c9cc5696b1f18af1e4565acb86c194ca817ae9104c202bc120d82658",
+      "sourcePixelSha256": "33760922c19a2fa5757e7292c976c0609690bbce2413f00b46aa5af32713f630",
       "state": "run",
       "trimmed": true
     },
@@ -3339,7 +3339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cf3446c57f79b96e845ba9b90130b705867720948a278828a1c7d08bed17cfa5",
+      "sourcePixelSha256": "235dfcff9ff2d1a31ddc3297bd4c73580d4007556269cd01764e4c16f084e1bd",
       "state": "run",
       "trimmed": true
     },
@@ -3369,7 +3369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f692e788862d741d7f069034f62b536272ee23ab315dfe631cc212d35a00ae6a",
+      "sourcePixelSha256": "b2bfdf12fdf4b38d971dc47a2b72d21d6fed7c7ceb804401725298f03a3a371b",
       "state": "run",
       "trimmed": true
     },
@@ -3399,7 +3399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fe0e59cd3e6bf937fe133eeb6436cb40f4e664ff61af9be5766a218b8ec1d8ae",
+      "sourcePixelSha256": "3a39fa63d7d26939f359316df775424e450db7dd7e61959d6fcaaee0f2797046",
       "state": "run",
       "trimmed": true
     },
@@ -3418,7 +3418,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__south-east__001",
-      "opaquePixels": 2455,
+      "opaquePixels": 2453,
       "phase": null,
       "pivot": {
         "x": 30,
@@ -3429,7 +3429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5c9c3b6171971c1b982291eb467f054cff1bbe73ce02d81877f22465dc1c192a",
+      "sourcePixelSha256": "37cb96cae6895236b6b7a42882f356c851c925dd6e3a19c7c4f60ba055419456",
       "state": "run",
       "trimmed": true
     },
@@ -3448,7 +3448,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__south-east__002",
-      "opaquePixels": 2570,
+      "opaquePixels": 2568,
       "phase": null,
       "pivot": {
         "x": 30,
@@ -3459,7 +3459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e6d90e1d950ceea82e84395eb3026e7e48b44ceaa4ee5c6098ca4a5205a251bb",
+      "sourcePixelSha256": "eea66b05930ab1319f72dc869e35acb8c4e1cb1539a38073c1d0234549f6e1f4",
       "state": "run",
       "trimmed": true
     },
@@ -3489,7 +3489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ea5fc08d37e10072ea261fafd28ca9370377364a17ae561cdc84306ad1928f82",
+      "sourcePixelSha256": "a101552a8a5321d996069ea70adf12d6289c4279ee64e45f18702691c103cb9f",
       "state": "run",
       "trimmed": true
     },
@@ -3519,7 +3519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4fa0c139f5d425755f273845f22a368ef03591e2b8ce60f008182099af7ad2ae",
+      "sourcePixelSha256": "a62a887d33a84c70b3c22c2dc6fb9b13ac7c62b6fa482c58ba781f1b6913c547",
       "state": "run",
       "trimmed": true
     },
@@ -3549,7 +3549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9738661a92c8c500a24ab1f5958f8536b004dd8f2cea7f6f937c56e982753fd6",
+      "sourcePixelSha256": "3b9649600f482eb744d45d12c2d85e571799a18562815d56814bdaf83e3721dd",
       "state": "run",
       "trimmed": true
     },
@@ -3579,7 +3579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d8af740a2b0bb5b842597e5b236039ad741ee10ca915fd5d00f0e1697a50a620",
+      "sourcePixelSha256": "16df764e3b127c18f0cfadbbd60019e937a21be88d02514daf479568ca5427e1",
       "state": "run",
       "trimmed": true
     },
@@ -3609,7 +3609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d43c782fcd73eac63c27921317bebeae399dcc116751ec394a8c9f76951ad4f3",
+      "sourcePixelSha256": "509fa75b244139d4d15c68a6dba1694f159d184eea96406f270d1cf2ea35db2c",
       "state": "run",
       "trimmed": true
     },
@@ -3639,7 +3639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e88461acec235af174d343ae58c4cf2b68be38a388a8ea572b44e140d56288eb",
+      "sourcePixelSha256": "01f086130271f6f6ae4fc9a70278c54154d668dd918b9a528626c570948996cc",
       "state": "run",
       "trimmed": true
     },
@@ -3669,7 +3669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "692db93c73f60df7d5954339da69af0d4c682e0fc517ed6512b528f62909eac1",
+      "sourcePixelSha256": "d0ac246018e6ee87bae617328c4e2e002bfc92fa974aba63623ee48446a0c8cd",
       "state": "run",
       "trimmed": true
     },
@@ -3699,7 +3699,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6df1c86f4a323417ad31420ea340b810822fcf641765d8137cb033edeabbc787",
+      "sourcePixelSha256": "de2abc54c902ce4f94d3cc1aa1f971f8e5d4f819acc1ae0f69150269c350577c",
       "state": "run",
       "trimmed": true
     },
@@ -3729,7 +3729,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1e51b0e3ae6983a14796b869a8bc492d769b16195f946f3fa49a1976690b80f1",
+      "sourcePixelSha256": "89f70abc0bd4ef44644786581e6aed1a256bdaaa6561f9c2fe1deb48e71cd5e4",
       "state": "run",
       "trimmed": true
     },
@@ -3759,7 +3759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "463b0d40f0c59bb217bc4c112722b2e1e8a7c16ec70a2e086c43e8aebaa4bf77",
+      "sourcePixelSha256": "45904d2932e329542f992f3d81b2ed745df6a62c171b60d837a5f989a5c7f871",
       "state": "run",
       "trimmed": true
     },
@@ -3778,7 +3778,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__south__001",
-      "opaquePixels": 2447,
+      "opaquePixels": 2446,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -3789,7 +3789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0db28ef6d42e1f4c4d3aaa7d0bc9e7a74b1afd7ab45d9cb716d7e5b4b8a4737f",
+      "sourcePixelSha256": "b497b1db9a5da39b6dcdbf5a84990974b6fa49d7d93896ee39abda5dc6f9b5e3",
       "state": "run",
       "trimmed": true
     },
@@ -3808,7 +3808,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__south__002",
-      "opaquePixels": 2458,
+      "opaquePixels": 2457,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -3819,7 +3819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3727b55d278d4b5dbd605ae020a3ec3d37b8cd0432c7af496e8972dc906a8114",
+      "sourcePixelSha256": "554ba1dff02b4f0ad336b78fdf4dfc939f68a1753c0842ce9414fdf409151bed",
       "state": "run",
       "trimmed": true
     },
@@ -3849,7 +3849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f88ac290315b1837b9d3176f7cf0961c1d785a8d10b06247b4069e755f65669e",
+      "sourcePixelSha256": "f061d910fccaf617b7b3f8d99eb07e715f103e987c14dfb788caf7786548c972",
       "state": "run",
       "trimmed": true
     },
@@ -3879,7 +3879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4d5adc98ceec869f8cc8189b1447930f440312d1ed79c53495468395e73e14c3",
+      "sourcePixelSha256": "ae7a14350725ec0eb38defd46394c36a5292875c85a896bd18c8a6ea7ee77041",
       "state": "run",
       "trimmed": true
     },
@@ -3909,7 +3909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a40f320c3bdc536c8d5815458a86cc7a6d9f9dc9114126e1e30691e6bbcbd7e0",
+      "sourcePixelSha256": "02ea8a16cd16d5a2eab9a9bd136c5bfcfef383f2306977c0652032c4b6617e49",
       "state": "run",
       "trimmed": true
     },
@@ -3939,7 +3939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2b7a4d7af61a1ef7d7005dc503397f8452ad0cbb0dab1c68d4807ad6eb7dfc56",
+      "sourcePixelSha256": "81f1e43b44a60fb222854fc0e7812fffe7049a287d8733a1f49951374b9326df",
       "state": "run",
       "trimmed": true
     },
@@ -3969,7 +3969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ba392c55b13e0c9d8f236b6e877fa8c59cd0ac69032171b7544c0bc01cb8f000",
+      "sourcePixelSha256": "b6abbe725ebef01817586b3a0ebf0b80e31b9e8334b3aeaf4323089fee624840",
       "state": "run",
       "trimmed": true
     },
@@ -3999,7 +3999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "eccb279fdf40c5afb9b46d74d4f3f2f1af2f5f03ad4e3b57f4a14cbae1974dd3",
+      "sourcePixelSha256": "6ca6e60dea2d62416639d8b9d9dc2c7c911de1ade5c93c74dd61f0ff31002d67",
       "state": "run",
       "trimmed": true
     },
@@ -4029,7 +4029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8b9cca6400873cba32e1fc5de41708b6375acb4eca1422c4ebf415c42b68fdcf",
+      "sourcePixelSha256": "f6088d24b74213c424f7146c04180851d5cecf869d8810f628434ca707a7593b",
       "state": "run",
       "trimmed": true
     },
@@ -4059,7 +4059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6d6adff3c9b8ef47ea3043362d18c3dd795474f4e3587797b9a50ba59fd68938",
+      "sourcePixelSha256": "585a51e5cc63675e21550f256ca2cb74f84156ac5f4e28150fb6ff5eb17302ee",
       "state": "run",
       "trimmed": true
     },
@@ -4089,7 +4089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1ae7a5772203a5c2c7433f1e292fbbe44885958428a7c268e45befef899b2b61",
+      "sourcePixelSha256": "ff91b08a4a8fd721bb8ff604886fce71ffe5b67d985648107c7edc9efa0136d6",
       "state": "run",
       "trimmed": true
     },
@@ -4119,7 +4119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fbab662ec8eaa7cb28505f72a288a103fdfc00c20f3ad1f2d2d7d70f8b07f859",
+      "sourcePixelSha256": "3b02407e38d4cbd16d9208a2bdd9dc31582b34de6bb752dca3d59f4c0fc2d219",
       "state": "tell",
       "trimmed": true
     },
@@ -4149,7 +4149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c1474bb04489ac4ee1cb0bf500bcf4025330a22313c5f52ac054aba9653fa8f4",
+      "sourcePixelSha256": "40d75ab35f04764cebc252d9dbecf0cb1565ecaaab56d2a51a0a43e6114020c7",
       "state": "tell",
       "trimmed": true
     },
@@ -4179,7 +4179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a49151031401a6caff7c1092978c6f249ed5e59f2bb7d70c86b1ca06d01d4fd0",
+      "sourcePixelSha256": "4aadc937f17956fa2858028106be5a8b3d41dbbfcecf3ccc8d7caca3598968ad",
       "state": "tell",
       "trimmed": true
     },
@@ -4209,7 +4209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3cfb8864574403d608d529b83abdcffb9ed52cdb6f8c85bfee35a3037d90fa37",
+      "sourcePixelSha256": "4f31c6c1e5820f1abf4b3fd20c63d4e71dcaa076d38c84534d99491b26ff0caa",
       "state": "tell",
       "trimmed": true
     },
@@ -4239,7 +4239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "11027726ba915c69ad72f794a1458d2d57d77461284ee7778650311f7746c583",
+      "sourcePixelSha256": "d4214d556ca1fc7a036cf9ea1fe9d18cfed46ff6408699d74ecf2ed94de60044",
       "state": "tell",
       "trimmed": true
     },
@@ -4258,7 +4258,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__north-west__001",
-      "opaquePixels": 2325,
+      "opaquePixels": 2324,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -4269,7 +4269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ae683f287706043487d860fc32ec73481df89e066ff53258a4e6c8768bf1f1bf",
+      "sourcePixelSha256": "67713531f50476d7c61732567f6a1fafa70c22aadce0259a8d4f3b2efcb595c3",
       "state": "tell",
       "trimmed": true
     },
@@ -4288,7 +4288,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__north__000",
-      "opaquePixels": 2324,
+      "opaquePixels": 2322,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -4299,7 +4299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c7e7050f1e6f86d2434a1bfe9e6af64559eb9dd7f7bc9619b9706f684598b6df",
+      "sourcePixelSha256": "0a4a45afd77ca3de611b40570cf7f03fa83b13c6dac3036c034aad82ca2eb459",
       "state": "tell",
       "trimmed": true
     },
@@ -4329,7 +4329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0d47ca3547789efe09cb853c34c0ee9db6c6c65fd9d16b7b13d7cc6414352f5e",
+      "sourcePixelSha256": "b9ee85d5a37aabc61c1cdca9dce66641c943f20a17e6951854b456adb932f110",
       "state": "tell",
       "trimmed": true
     },
@@ -4359,7 +4359,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9258760c1200c28d60a79dc04accf7a59db33e3e40dcfd0054b66aead58bc239",
+      "sourcePixelSha256": "84ec8f55d25f6b73baf7da788d987772dc57854925f9e4c991e791e59f87b9e2",
       "state": "tell",
       "trimmed": true
     },
@@ -4389,7 +4389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6c351b98f51bd97a1f5165c5990d7f13c0b30b62b4ea69a979d632ec2c55543a",
+      "sourcePixelSha256": "5959a46a5f61ba40a5434de6bf711e26308121d8f2c88c9dc04e0deada3ec1c6",
       "state": "tell",
       "trimmed": true
     },
@@ -4419,7 +4419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "adb3ff7d2cd3bb132495a0276912fd2c5b0bbe8708bffd7e9cd2aa0eecba4678",
+      "sourcePixelSha256": "93a07c33a1b39e762f7d66f63528b6392393212c28e0b428dad78133afbff7da",
       "state": "tell",
       "trimmed": true
     },
@@ -4449,7 +4449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1a6393e3d1bb379a5494ae3bc737415f52d93823be8e069d591363995089bf19",
+      "sourcePixelSha256": "c45a5871a1ef998e296034de9164679e7dfdd2d20c455b5bd6853f0a2581cccc",
       "state": "tell",
       "trimmed": true
     },
@@ -4479,7 +4479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "db19a789257b06eeb01545614a864dd0071c9b9dc90d4acf2cc128a3ea4d1019",
+      "sourcePixelSha256": "c696caef4faa169b19c0166f479fdb1956898b05d849612e9b21ef43a5e3dfcb",
       "state": "tell",
       "trimmed": true
     },
@@ -4509,7 +4509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9ec1a93936a7ccce84cae98c8694fdc399e2c3187ed87a3bb60aff6a11a9e8db",
+      "sourcePixelSha256": "2d933e477635e5229c81ecec73980b036db378a0374dc6860aca1dabe8da2deb",
       "state": "tell",
       "trimmed": true
     },
@@ -4528,7 +4528,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__west__000",
-      "opaquePixels": 2017,
+      "opaquePixels": 2015,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -4539,7 +4539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d133838d197e798fdbf13227d36c1c8216fe69fc622efafe59cdbc409c608e80",
+      "sourcePixelSha256": "3033859bb28576073fb39e87e9fad74aaaa5a456cb406030aef3bbfe69025c95",
       "state": "tell",
       "trimmed": true
     },
@@ -4558,7 +4558,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__west__001",
-      "opaquePixels": 1937,
+      "opaquePixels": 1935,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -4569,7 +4569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8b82b20b225696c6d114a38c26428ea921c9120799bf29b614fe2557990a0db9",
+      "sourcePixelSha256": "18f1bb8f6436307020016ceb3f9fa3ea173600e5195a876e3450da75f9cae0c5",
       "state": "tell",
       "trimmed": true
     }

@@ -121,7 +121,12 @@ async function assertTouchGeometry(page, profile) {
     const rect = node.getBoundingClientRect();
     return { name: node.dataset.hmhControl, left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
   }));
-  assert.equal(controls.length, 8, `${profile.name} touch control count`);
+  // Cycle 025 reduced the mobile control set to movement, aim, power and pause.
+  assert.deepEqual(
+    controls.map((control) => control.name).sort(),
+    ['aim', 'move', 'pause', 'power'],
+    `${profile.name} touch control set`,
+  );
   for (const control of controls) {
     assert.ok(control.left >= -1, `${profile.name} ${control.name} left clipped`);
     assert.ok(control.top >= -1, `${profile.name} ${control.name} top clipped`);
@@ -182,9 +187,8 @@ async function assertTouchComposition(page, profile, controls) {
   if (composition.status) assertNoVisibleOverlap(composition.status, composition.runRail, `${profile.name} status/run rail`);
   for (const control of controls) {
     assertNoVisibleOverlap(control, composition.runRail, `${profile.name} ${control.name}/run rail`);
-    if (control.name === 'pause' || control.name === 'weaponNext') {
-      assertNoVisibleOverlap(control, composition.minimap, `${profile.name} ${control.name}/minimap`);
-    }
+    // Every remaining control must clear the minimap, not just the utility row.
+    assertNoVisibleOverlap(control, composition.minimap, `${profile.name} ${control.name}/minimap`);
   }
   return composition;
 }

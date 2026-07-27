@@ -1,5 +1,8 @@
 import { screenToGround } from './world-space.mjs';
-import { COMPACT_LANDSCAPE_MINIMAP_WIDTH, isCompactLandscape } from './hud-layout.mjs';
+import { minimapExclusionLeft } from './hud-layout.mjs';
+
+// Gap kept between the pause button and the minimap frame.
+const MINIMAP_CLEARANCE = 8;
 
 const GAMEPLAY_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD',
@@ -307,32 +310,56 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
     left: Math.max(0, finite(safeInsets.left ?? 0, 'safe left')),
   };
   const shortEdge = Math.min(viewportWidth, viewportHeight);
-  const radius = Math.max(36, Math.min(64, shortEdge * 0.12));
-  const margin = Math.max(12, radius * 0.35);
-  const floorY = viewportHeight - safe.bottom - margin - radius;
-  const moveStick = { x: safe.left + margin + radius, y: floorY, radius };
-  const aimStick = { x: viewportWidth - safe.right - margin - radius, y: floorY, radius };
-  const buttonRadius = Math.max(22, radius * 0.42);
-  const buttonStep = buttonRadius * 2.25;
-  const buttonBaseY = Math.max(safe.top + buttonRadius, aimStick.y - radius - margin - buttonRadius);
-  const buttonBaseX = Math.min(viewportWidth - safe.right - buttonRadius, aimStick.x + radius * 0.55);
-  const landscape = viewportWidth > viewportHeight;
-  const compactLandscape = isCompactLandscape({ width: viewportWidth, height: viewportHeight });
-  const minimapWidth = Math.min(compactLandscape ? COMPACT_LANDSCAPE_MINIMAP_WIDTH : 220, viewportWidth * 0.34);
-  const utilityButtonX = landscape
-    ? Math.max(safe.left + buttonRadius, viewportWidth - minimapWidth - 22 - margin - buttonRadius)
-    : viewportWidth - safe.right - buttonRadius;
+  // Device playtest: eight controls crowded a phone screen and the movement
+  // stick could not be worked reliably. The mobile layout is now movement,
+  // aim, one power action, and pause. Firing is automatic when a target is in
+  // range (see `createAimState` autofire), so a fire button was redundant.
+  const radius = Math.max(38, Math.min(72, shortEdge * 0.15));
+  const margin = Math.max(14, radius * 0.34);
+  const buttonRadius = Math.max(26, radius * 0.56);
+
+  const usableBottom = viewportHeight - safe.bottom;
+  const floorY = Math.min(
+    usableBottom - margin - radius,
+    viewportHeight - radius,
+  );
+  const moveStick = {
+    x: Math.max(safe.left + margin + radius, radius),
+    y: Math.max(radius, floorY),
+    radius,
+  };
+  const aimStick = {
+    x: Math.min(viewportWidth - safe.right - margin - radius, viewportWidth - radius),
+    y: moveStick.y,
+    radius,
+  };
+
+  // Power sits above the aim stick, inside thumb reach without overlapping it.
+  const powerY = Math.max(
+    safe.top + buttonRadius,
+    Math.min(aimStick.y - radius - margin - buttonRadius, viewportHeight - buttonRadius),
+  );
+  const powerX = Math.min(
+    viewportWidth - safe.right - margin - buttonRadius,
+    viewportWidth - buttonRadius,
+  );
+
+  // Pause sits in the gutter between the two sticks. Browser-verified: the top
+  // row is not available on a phone — the status card owns the top-left and the
+  // minimap the top-right, and on a short portrait screen the two meet, so a
+  // pause button placed up there is rendered but not touchable.
+  const gutterCentre = (moveStick.x + radius + (aimStick.x - radius)) / 2;
+  // Defensive clamp: whatever the gutter works out to, pause may never intrude
+  // on the minimap's exclusion zone, taken from the HUD module itself so the
+  // two cannot drift apart.
+  const exclusionLeft = minimapExclusionLeft({ width: viewportWidth, height: viewportHeight });
+  const pauseX = Math.max(
+    safe.left + buttonRadius,
+    Math.min(gutterCentre, exclusionLeft - MINIMAP_CLEARANCE - buttonRadius, viewportWidth - buttonRadius),
+  );
   const buttons = {
-    fire: { x: buttonBaseX, y: buttonBaseY, radius: buttonRadius },
-    melee: { x: Math.max(safe.left + buttonRadius, buttonBaseX - buttonStep), y: buttonBaseY, radius: buttonRadius },
-    grenade: { x: buttonBaseX, y: Math.max(safe.top + buttonRadius, buttonBaseY - buttonStep), radius: buttonRadius },
-    dash: { x: Math.max(safe.left + buttonRadius, buttonBaseX - buttonStep), y: Math.max(safe.top + buttonRadius, buttonBaseY - buttonStep), radius: buttonRadius },
-    weaponNext: {
-      x: utilityButtonX,
-      y: safe.top + buttonRadius * 3.5,
-      radius: buttonRadius,
-    },
-    pause: { x: utilityButtonX, y: safe.top + buttonRadius, radius: buttonRadius },
+    power: { x: powerX, y: powerY, radius: buttonRadius },
+    pause: { x: pauseX, y: moveStick.y, radius: buttonRadius },
   };
   return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, moveStick, aimStick, buttons });
 }

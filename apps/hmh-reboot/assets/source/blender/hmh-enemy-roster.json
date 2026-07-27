@@ -38,7 +38,7 @@
     "rawOutputDirectory": ".tmp/hmh-reboot-enemy-roster",
     "alphaThreshold": 8,
     "cameraOrthoScale": 2.35,
-    "exposure": -0.35,
+    "exposure": -0.45,
     "cameraTargetZ": 0.86,
     "cameraPitchDegrees": 55
   },

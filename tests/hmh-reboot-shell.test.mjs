@@ -217,7 +217,7 @@ test('portal frame fills the active gameplay viewport without a fixed 72vh dead 
   assert.match(css, /\.hmh-reboot-frame[\s\S]*?min-height:\s*calc\(100dvh\s*-\s*\d+px\)/);
   assert.match(childStyles, /touch-action:\s*none/);
   assert.match(childStyles, /user-select:\s*none/);
-  assert.match(childStyles, /\.hmh-touch-button--weaponNext/);
+  assert.match(childStyles, /\.hmh-touch-button--power/);
   assert.match(childStyles, /\.hmh-reboot-dash-status/);
   assert.match(childStyles, /\.hmh-reboot-dash-status\[data-ready="true"\]/);
 });
