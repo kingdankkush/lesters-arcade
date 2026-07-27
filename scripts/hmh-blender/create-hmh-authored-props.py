@@ -128,14 +128,22 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_Grip', (-0.12, 0.0, 0.40), (0.10, 0.12, 0.25), secondary, asset_id))
         add(cube(f'{asset_id}_Sight', (0.12, -0.19, 0.82), (0.14, 0.06, 0.06), accent, asset_id))
     elif shape == 'life-token':
-        add(sphere(f'{asset_id}_Head', (0.0, 0.0, 0.70), (0.32, 0.27, 0.30), primary, asset_id))
-        add(cube(f'{asset_id}_Mask', (0.0, -0.25, 0.72), (0.23, 0.035, 0.09), secondary, asset_id))
-        add(torus(f'{asset_id}_Halo', (0.0, 0.02, 0.82), 0.43, 0.035, accent, asset_id, rotation=(math.radians(78), 0.0, 0.0)))
+        # A med kit with a bold cross on its lid. The previous sphere-and-halo
+        # read as a featureless circle from above, which is the single most
+        # important pickup in the game to identify instantly.
+        add(cube(f'{asset_id}_Case', (0.0, 0.0, 0.42), (0.46, 0.40, 0.26), primary, asset_id))
+        add(cube(f'{asset_id}_Lid', (0.0, 0.0, 0.60), (0.48, 0.42, 0.06), secondary, asset_id))
+        add(cube(f'{asset_id}_CrossBar', (0.0, 0.0, 0.66), (0.30, 0.10, 0.05), accent, asset_id))
+        add(cube(f'{asset_id}_CrossStem', (0.0, 0.0, 0.66), (0.10, 0.30, 0.05), accent, asset_id))
+        add(cube(f'{asset_id}_Handle', (0.0, -0.34, 0.56), (0.16, 0.05, 0.08), secondary, asset_id))
     elif shape == 'rail-core':
-        add(cone(f'{asset_id}_Top', (0.0, 0.0, 0.88), 0.30, 0.55, primary, asset_id))
-        add(cone(f'{asset_id}_Bottom', (0.0, 0.0, 0.34), 0.30, 0.55, primary, asset_id, rotation=(math.pi, 0.0, 0.0)))
-        add(sphere(f'{asset_id}_Core', (0.0, -0.03, 0.61), (0.18, 0.18, 0.18), accent, asset_id))
-        add(cylinder(f'{asset_id}_Rail', (0.0, 0.0, 0.61), 0.035, 1.12, secondary, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        # Ribbed ammo cell: a squat ringed cylinder with a lit terminal cap.
+        # The old double cone read as a diamond, indistinguishable from the
+        # other cone-shaped power-ups at gameplay scale.
+        add(cylinder(f'{asset_id}_Cell', (0.0, 0.0, 0.50), 0.34, 0.66, primary, asset_id))
+        for z in (0.30, 0.50, 0.70):
+            add(torus(f'{asset_id}_Rib_{int(z * 100)}', (0.0, 0.0, z), 0.35, 0.035, secondary, asset_id))
+        add(cylinder(f'{asset_id}_Cap', (0.0, 0.0, 0.90), 0.17, 0.16, accent, asset_id))
     elif shape == 'hourglass':
         add(cone(f'{asset_id}_Upper', (0.0, 0.0, 0.82), 0.28, 0.45, primary, asset_id, rotation=(math.pi, 0.0, 0.0)))
         add(cone(f'{asset_id}_Lower', (0.0, 0.0, 0.38), 0.28, 0.45, primary, asset_id))
@@ -143,15 +151,23 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_Base', (0.0, 0.0, 0.16), (0.36, 0.24, 0.055), secondary, asset_id))
         add(sphere(f'{asset_id}_Sand', (0.0, -0.05, 0.60), (0.09, 0.09, 0.13), accent, asset_id))
     elif shape == 'candle':
-        add(cylinder(f'{asset_id}_Wax', (0.0, 0.0, 0.48), 0.18, 0.62, primary, asset_id))
-        add(cone(f'{asset_id}_FlameOuter', (0.0, 0.0, 0.98), 0.18, 0.40, secondary, asset_id))
-        add(cone(f'{asset_id}_FlameInner', (0.0, -0.08, 0.99), 0.09, 0.28, accent, asset_id))
+        # Wide dish holder gives the candle a ringed footprint distinct from
+        # the bomb's solid circle and the cell's ribbed barrel.
+        add(cylinder(f'{asset_id}_Dish', (0.0, 0.0, 0.14), 0.40, 0.10, secondary, asset_id))
+        add(torus(f'{asset_id}_DishRim', (0.0, 0.0, 0.18), 0.40, 0.05, secondary, asset_id))
+        add(cylinder(f'{asset_id}_Wax', (0.0, 0.0, 0.52), 0.18, 0.62, primary, asset_id))
+        add(cone(f'{asset_id}_FlameOuter', (0.0, 0.0, 1.00), 0.16, 0.38, accent, asset_id))
+        add(cone(f'{asset_id}_FlameInner', (0.0, -0.06, 1.02), 0.08, 0.26, accent, asset_id))
     elif shape == 'nuke':
-        add(cylinder(f'{asset_id}_Body', (0.0, 0.0, 0.62), 0.20, 0.68, primary, asset_id))
-        add(cone(f'{asset_id}_Nose', (0.0, 0.0, 1.10), 0.20, 0.34, accent, asset_id))
-        for angle in (0, 120, 240):
+        # Round bomb with four radial fins: a circular footprint broken by
+        # spokes, which cannot be confused with a cone or a cell from above.
+        add(sphere(f'{asset_id}_Core', (0.0, 0.0, 0.52), (0.40, 0.40, 0.38), primary, asset_id))
+        add(cylinder(f'{asset_id}_Fuse', (0.0, 0.0, 0.94), 0.05, 0.26, secondary, asset_id))
+        add(sphere(f'{asset_id}_Spark', (0.0, 0.0, 1.10), (0.11, 0.11, 0.11), accent, asset_id))
+        for angle in (45, 135, 225, 315):
             r = math.radians(angle)
-            add(cube(f'{asset_id}_Fin_{angle}', (math.sin(r) * 0.22, math.cos(r) * 0.22, 0.28), (0.06, 0.18, 0.18), secondary, asset_id, rotation=(0.0, 0.0, r)))
+            add(cube(f'{asset_id}_Fin_{angle}', (math.sin(r) * 0.40, math.cos(r) * 0.40, 0.30),
+                     (0.07, 0.20, 0.16), secondary, asset_id, rotation=(0.0, 0.0, r)))
     elif shape.endswith('-chip'):
         add(cylinder(f'{asset_id}_Chip', (0.0, 0.0, 0.62), 0.42, 0.12, primary, asset_id, rotation=(math.radians(90), 0.0, 0.0), vertices=8))
         add(torus(f'{asset_id}_Ring', (0.0, -0.08, 0.62), 0.30, 0.045, accent, asset_id, rotation=(math.radians(90), 0.0, 0.0)))
