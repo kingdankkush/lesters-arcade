@@ -6,11 +6,15 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Current HMH Cycle 002 preview:** https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app
+**Current HMH production source:** `a81f1c8f830f3339ebb568de166c108e58f695d3` (Cycle 021)
 
-**Comprehensive Claude/Fable handoff:** [docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md](docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md)
+**Immutable production deployment:** https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
 
-> Production does not yet contain the Cycle 002 candidate. The preview is verified and Ready, but promotion requires explicit approval for the exact deployment. LitVM contract deployment and transaction activity require a separate HALT approval.
+**Immutable Cycle 021 preview:** https://lesters-arcade-fgzvqbcjk-justin-agent-projects.vercel.app
+
+**Current Claude continuation handoff:** [docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md](docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md)
+
+> `lestersarcade.io` now serves the Cycle 021 bundle. Public desktop, ultrawide, tablet, mobile portrait, mobile landscape, cockpit, and collectible routes were reverified after promotion. `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
 ---
 
@@ -112,72 +116,53 @@ The reboot now includes:
 - Parent-owned profile, session, leaderboard, and settlement integration.
 - Release certification, Chrome/Edge matrices, security gates, network audits, soaks, and artifact-verified previews.
 
-### AAA Cycle 001
+### AAA cycles 001-021
 
-Cycle 001 added:
+The bounded cycle ledger is the authoritative implementation history. Highlights:
 
-- Hosted-origin-only Vercel Analytics.
-- Permanent fail-closed network and console auditing.
-- Vector-magnitude-bounded acceleration.
-- Velocity interpolation.
-- Projection-only interpolated camera following.
-- Cross-platform retained-memory harness fixes.
-- Updated browser smokes and active production hero references.
-- Removal of broken hidden references to retired actor art.
+- Cycles 001-003: observability, fixed-step input buffering, collision safety, and permanent portal E2E coverage.
+- Cycles 004-006: deterministic combat/boss integrity, progression depth, production hero art, and the authored human/zombie enemy roster.
+- Cycles 007-010: complete authored art integration, ledge combat correction, world composition, and bounded projectile recovery.
+- Cycles 011-015: truthful Liquidator telegraphs, responsive mobile HUD, four animated hero selectors, district landmarks, and nine deterministic authored-POI collectibles.
+- Cycles 016-018: grenade danger warnings, responsive upgrade disclosures, and truthful pause/settings/current-build presentation.
+- Cycles 019-020: isolated 30-minute desktop/mobile soaks, restart-race correction, deploy-build reproducibility, and final local release certification.
+- Cycle 021: deterministic projection-only district landmark signals, reduced-motion enforcement, deployment input hardening, and public production promotion.
 
-See [docs/hmh-reboot/cycles/CYCLE-001.md](docs/hmh-reboot/cycles/CYCLE-001.md).
-
-### AAA Cycle 002
-
-Cycle 002 added a bounded 100 ms rising-edge buffer for:
-
-- Fire.
-- Melee.
-- Grenade.
-- Dash.
-
-Rapid press/release actions now survive render frames with zero fixed simulation steps across keyboard, pointer, touch, and gamepad. Pending edges consume once, expire when stale, and remain bounded to one pending edge per action.
-
-Cycle 002 did not change collision, elevation, recoil, saves, replay, wallets, settlement, or parent authority.
-
-See:
-
-- [Cycle 002 record](docs/hmh-reboot/cycles/CYCLE-002.md)
-- [Release certification](docs/hmh-reboot/RELEASE-CERTIFICATION-AAA-CYCLE-002.md)
-- [Preview verification](docs/hmh-reboot/PREVIEW-VERIFICATION-AAA-CYCLE-002.md)
-- [Memory audit](docs/hmh-reboot/MEMORY-AUDIT-AAA-CYCLE-002.md)
+See [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md) and [Cycle 021](docs/hmh-reboot/cycles/CYCLE-021.md).
 
 ---
 
-## Cycle 002 release status
+## Current Cycle 021 production status
 
 | Gate | Result |
 | --- | --- |
-| Release ledger | 1,619 total, 1,567 passed, exactly 52 accepted legacy failures in 35 files, 0 unexpected |
-| Focused controls/combat | 75/75 |
-| Syntax | 319 JavaScript modules, 40 Python scripts |
-| Chrome | Five viewport profiles passed |
-| Edge | Five viewport profiles passed |
-| Production heroes | Four of four desktop/mobile smokes passed |
-| Security | 5/5, zero findings |
-| Sandbox security | 3/3 |
-| Web3 authority | 9/9 |
-| Network/console | 4/4, zero failures |
-| Performance | Desktop/mobile p95 7 ms |
-| HMH bundle | 963,568 bytes under 1,050,000-byte gate |
-| Input-state soak | 260,000 cycles, bounded pending state, 2,000-byte retained delta |
-| Exact-index reviews | Gameplay, security/Web3, and release evidence all PASS |
+| Source | `a81f1c8f830f3339ebb568de166c108e58f695d3` |
+| Cycle 021 commit diff SHA-256 | `7239e8c66ec7275bbf556c59de999fa8a7d35893aa0a6817aeffad7fa080daeb` |
+| Release ledger | 1,721 total, 1,669 passing, exactly 52 accepted legacy failures, 0 unexpected |
+| Syntax | 332 JavaScript modules and 49 Python scripts |
+| Deterministic visual regression | 8/8 unchanged; reduced motion verified with 0 animated signals |
+| Public browser matrix | Desktop, ultrawide, tablet landscape, mobile portrait, and mobile landscape PASS |
+| Public cockpit | Desktop, tablet, mobile portrait, and short landscape PASS |
+| Public collectibles | All nine effects, reset, timed expiry, portrait, and landscape PASS |
+| Network/console | Four scenarios; zero HTTP, request, console, or page errors |
+| Performance | Desktop/mobile p95 7 ms / 7 ms |
+| HMH bundle | 1,012,139 / 1,050,000 bytes |
+| HMH bundle SHA-256 | `7e6938dbad83dd1b36d71cc2cdc03008f36b30213754b2fb36bc13d4643492da` |
+| Security | 5/5; sandbox 3/3; settlement boundary 9/9 |
+| Web3 live readiness | PARTIAL 3/4; hardened publication remains blocked |
 
-A broader browser heap threshold fails against both current production and Cycle 002. Cycle 002 did not regress the matched production baseline, but pre-existing renderer/runtime retained-memory debt remains open.
+### Production identities verified 2026-07-27
 
-### Exact candidate
+- Public domain: https://lestersarcade.io
+- GitHub production deployment record: `5626423782`
+- Immutable production URL: https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
+- GitHub preview deployment record: `5626388771`
+- Immutable preview URL: https://lesters-arcade-fgzvqbcjk-justin-agent-projects.vercel.app
+- Current service worker: 3,508 bytes; SHA-256 `8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a`
+- Immediate previous production source: `9ff359eaf28b81a792a10a41b0d59db5f9ae5440`
+- Immediate previous immutable production URL: https://lesters-arcade-g242ggtb8-justin-agent-projects.vercel.app
 
-- Deployable source: `ab8eecdbe7ec40e3451ef8b10f58ae3095a3a170`
-- Evidence commit: `af86dfadbd4861d76f56c7198a62739e57ab9543`
-- Preview deployment: `dpl_7jXSC1fjXSPtnAzEkzZx97CgTNXN`
-- Preview URL: https://lesters-arcade-ck25dqelb-justin-agent-projects.vercel.app
-- Production deployment remains: `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`
-- Rollback deployment remains: `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk`
+The Vercel CLI is currently unavailable locally, so Vercel `dpl_...` identifiers and rollback status must be resolved through an authenticated Vercel session or dashboard before any future production action.
 
 ---
 
@@ -247,6 +232,11 @@ apps/hmh-reboot/src/
 ├── liquidator-boss.mjs
 ├── level-one-world.mjs
 ├── run-progression.mjs
+├── collectible-system.mjs
+├── liquidator-telegraph-renderer.mjs
+├── authored-prop-atlas.mjs
+├── combat-audio.mjs
+├── hud-layout.mjs
 ├── production-hero-atlas.mjs
 ├── enemy-production-art.mjs
 ├── world-production-art.mjs
@@ -380,7 +370,9 @@ npm run design:web3-live
 npm run audit:hmh:network
 npm run certify:hmh:browser
 npm run smoke:hmh:cockpit
+npm run smoke:hmh:collectibles
 npm run smoke:hmh:performance
+npm run visual:reboot
 npm run smoke:portal
 npm run smoke:portal:interactions
 npm run repo:health:strict
@@ -392,14 +384,14 @@ npm run docs:links
 
 ## Next priorities
 
-1. Preserve and, only with approval, promote the exact Cycle 002 candidate.
-2. Continue the earliest incomplete HMH Phase 2 slice: collision/elevation/low-FPS safety, stale aim, focus/device switching, or projection-only camera framing.
-3. Build a permanent portal E2E harness for Free, Ranked preview, wallet reconnect, profiles, scores, sessions, restart, controls, audio, and service-worker behavior.
-4. Investigate pre-existing browser retained-memory debt with matched production controls.
-5. Prepare the hardened verifier deployment and attestation architecture without broadcasting.
-6. Decide how to turn Chikun's development harness and historical source into a production public vertical slice.
-7. Expand HMH combat identities, bosses, authored acts, animation, VFX, audio, build synergies, accessibility, and physical-device QA.
-8. Treat paid settlement as a separate product, economy, legal, and security phase.
+1. Complete hands-on production acceptance with keyboard/mouse and a real controller.
+2. Complete real-phone portrait/landscape acceptance for touch ergonomics, audio balance, thermal behavior, reduced motion, and motion comfort.
+3. Resolve and record the current/previous Vercel `dpl_...` identifiers and verify the immediate rollback path; the local Vercel CLI is missing.
+4. Update the final release certificate and deployment runbook from their pre-Cycle-021 wording to a post-production closeout record.
+5. Add branch protection and CI or preserve the current manual exact-index, preview, soak, and public-verification discipline.
+6. Keep hardened verifier/attestation and LitVM deployment work blocked until a separate explicit HALT approval.
+7. Treat any HMH runtime change as Cycle 022: RED coverage, full local gates, exact-index review, immutable preview, human acceptance, and separate production approval.
+8. Decide whether Chikun's development harness should become a production public vertical slice.
 
 ---
 
