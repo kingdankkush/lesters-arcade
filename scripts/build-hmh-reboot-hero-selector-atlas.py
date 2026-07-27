@@ -35,6 +35,35 @@ def png_bytes(image: Image.Image) -> bytes:
     return stream.getvalue()
 
 
+def module_bytes(manifest: dict) -> bytes:
+    module_json = json.dumps({
+        key: manifest[key]
+        for key in [
+            'schemaVersion',
+            'pipelineId',
+            'classification',
+            'runtimeAuthority',
+            'gameplayAuthority',
+            'image',
+            'imageBytes',
+            'imageSha256',
+            'atlasSize',
+            'frameSize',
+            'frameCount',
+            'directions',
+            'heroes',
+        ]
+    }, separators=(',', ':'))
+    return (
+        'function freezeDeep(value) {\n'
+        '  if (!value || typeof value !== \'object\' || Object.isFrozen(value)) return value;\n'
+        '  for (const child of Object.values(value)) freezeDeep(child);\n'
+        '  return Object.freeze(value);\n'
+        '}\n\n'
+        f'export const HMH_REBOOT_HERO_SELECTOR_ATLAS = freezeDeep({module_json});\n'
+    ).encode('utf-8')
+
+
 def build(repo_root: Path) -> tuple[bytes, bytes, bytes]:
     source_root = repo_root / 'apps/portal/assets/generated/hmh-reboot-production-heroes'
     output_url = '/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png'
@@ -120,16 +149,47 @@ def build(repo_root: Path) -> tuple[bytes, bytes, bytes]:
         'sources': sources,
     }
     json_data = (json.dumps(manifest, indent=2) + '\n').encode('utf-8')
-    module_json = json.dumps({key: manifest[key] for key in ['schemaVersion', 'pipelineId', 'classification', 'runtimeAuthority', 'gameplayAuthority', 'image', 'imageBytes', 'imageSha256', 'atlasSize', 'frameSize', 'frameCount', 'directions', 'heroes']}, separators=(',', ':'))
-    module_data = (
-        'function freezeDeep(value) {\n'
-        '  if (!value || typeof value !== \'object\' || Object.isFrozen(value)) return value;\n'
-        '  for (const child of Object.values(value)) freezeDeep(child);\n'
-        '  return Object.freeze(value);\n'
-        '}\n\n'
-        f'export const HMH_REBOOT_HERO_SELECTOR_ATLAS = freezeDeep({module_json});\n'
-    ).encode('utf-8')
+    module_data = module_bytes(manifest)
     return image_data, json_data, module_data
+
+
+def check_outputs(outputs: list[Path], payloads: tuple[bytes, bytes, bytes], repo_root: Path) -> list[str]:
+    image_path, metadata_path, module_path = outputs
+    drift = []
+
+    if not image_path.exists():
+        drift.append(str(image_path.relative_to(repo_root)))
+        tracked_image_data = None
+    else:
+        tracked_image_data = image_path.read_bytes()
+        try:
+            expected_pixels = Image.open(io.BytesIO(payloads[0])).convert('RGBA')
+            tracked_pixels = Image.open(io.BytesIO(tracked_image_data)).convert('RGBA')
+            if expected_pixels.size != tracked_pixels.size or expected_pixels.tobytes() != tracked_pixels.tobytes():
+                drift.append(str(image_path.relative_to(repo_root)))
+        except Exception:
+            drift.append(str(image_path.relative_to(repo_root)))
+
+    expected_manifest = json.loads(payloads[1])
+    if tracked_image_data is not None:
+        expected_manifest['imageBytes'] = len(tracked_image_data)
+        expected_manifest['imageSha256'] = sha256_bytes(tracked_image_data)
+
+    if not metadata_path.exists():
+        drift.append(str(metadata_path.relative_to(repo_root)))
+    else:
+        try:
+            tracked_manifest = json.loads(metadata_path.read_text(encoding='utf-8'))
+            if tracked_manifest != expected_manifest:
+                drift.append(str(metadata_path.relative_to(repo_root)))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            drift.append(str(metadata_path.relative_to(repo_root)))
+
+    expected_module_data = module_bytes(expected_manifest)
+    if not module_path.exists() or module_path.read_bytes() != expected_module_data:
+        drift.append(str(module_path.relative_to(repo_root)))
+
+    return list(dict.fromkeys(drift))
 
 
 def main() -> None:
@@ -144,7 +204,7 @@ def main() -> None:
     ]
     payloads = build(repo_root)
     if args.check:
-        drift = [str(path.relative_to(repo_root)) for path, payload in zip(outputs, payloads) if not path.exists() or path.read_bytes() != payload]
+        drift = check_outputs(outputs, payloads, repo_root)
         if drift:
             raise SystemExit('selector atlas drift: ' + ', '.join(drift))
         print(json.dumps({'status': 'PASS', 'pipelineId': PIPELINE_ID, 'files': len(outputs)}))

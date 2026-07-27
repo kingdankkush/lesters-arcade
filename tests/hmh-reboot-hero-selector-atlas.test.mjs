@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
@@ -50,7 +52,7 @@ test('selector atlas is a frozen projection-only four-hero eight-direction manif
   }
 });
 
-test('selector atlas bytes match provenance metadata and deterministic builder output', () => {
+test('selector atlas tracked bytes match provenance and deterministic builder pixels', () => {
   const image = readFileSync(IMAGE);
   const metadata = JSON.parse(readFileSync(METADATA, 'utf8'));
   assert.equal(sha256(image), metadata.imageSha256);
@@ -66,4 +68,58 @@ test('selector atlas bytes match provenance metadata and deterministic builder o
   });
   assert.equal(check.status, 0, check.stderr || check.stdout);
   assert.match(check.stdout, /"status": "PASS"/);
+});
+
+test('selector atlas checker accepts pixel-identical PNG re-encoding with truthful provenance', () => {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'hmh-selector-atlas-check-'));
+  try {
+    const metadata = JSON.parse(readFileSync(METADATA, 'utf8'));
+    const relativePaths = [
+      'scripts/build-hmh-reboot-hero-selector-atlas.py',
+      'apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png',
+      'apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json',
+      'apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs',
+      ...metadata.sources.flatMap((source) => [source.metadata, source.image]),
+    ];
+    for (const relativePath of relativePaths) {
+      const sourcePath = join(ROOT, relativePath);
+      const destinationPath = join(tempRoot, relativePath);
+      mkdirSync(dirname(destinationPath), { recursive: true });
+      cpSync(sourcePath, destinationPath);
+    }
+
+    const imagePath = join(tempRoot, 'apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png');
+    const metadataPath = join(tempRoot, 'apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json');
+    const modulePath = join(tempRoot, 'apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs');
+    const originalImage = readFileSync(imagePath);
+    const reencode = spawnSync('python', [
+      '-c',
+      'from PIL import Image; import sys; p=sys.argv[1]; im=Image.open(p).convert("RGBA"); im.save(p, format="PNG", optimize=False, compress_level=0)',
+      imagePath,
+    ], { encoding: 'utf8' });
+    assert.equal(reencode.status, 0, reencode.stderr || reencode.stdout);
+
+    const reencodedImage = readFileSync(imagePath);
+    assert.notEqual(sha256(reencodedImage), sha256(originalImage));
+    const reencodedSha256 = sha256(reencodedImage);
+    const reencodedBytes = reencodedImage.length;
+
+    metadata.imageSha256 = reencodedSha256;
+    metadata.imageBytes = reencodedBytes;
+    writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
+
+    const moduleSource = readFileSync(modulePath, 'utf8')
+      .replace(`"imageBytes":${originalImage.length}`, `"imageBytes":${reencodedBytes}`)
+      .replace(HMH_REBOOT_HERO_SELECTOR_ATLAS.imageSha256, reencodedSha256);
+    writeFileSync(modulePath, moduleSource);
+
+    const check = spawnSync('python', ['scripts/build-hmh-reboot-hero-selector-atlas.py', '--check'], {
+      cwd: tempRoot,
+      encoding: 'utf8',
+    });
+    assert.equal(check.status, 0, check.stderr || check.stdout);
+    assert.match(check.stdout, /"status": "PASS"/);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
 });
