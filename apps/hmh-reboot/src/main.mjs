@@ -1697,6 +1697,9 @@ async function boot() {
         }).clear,
       });
       const movementStart = { x: motion.x, y: motion.y, z: actor.groundZ };
+      // Resolved before movement: the mobility upgrades feed the movement step,
+      // and this was previously declared further down the same tick.
+      const runEffects = getRunProgressionSnapshot(runProgression).effects;
       const dashPressed = tickInput.dash && !previousDash;
       const dashStart = dashPressed
         ? beginDash(dashState, { tick, direction: tickInput.move, fallbackDirection: aimIntent.direction })
@@ -1756,7 +1759,12 @@ async function boot() {
         stepPlayerMovement(motion, {
           move: tickInput.move,
           aim: { ...aimIntent.direction, active: true },
-        }, { dtSeconds, speedMultiplier: terrainSpeedMultiplier * (collectibleSnapshot?.speedMultiplier ?? 1) });
+        }, {
+          dtSeconds,
+          speedMultiplier: terrainSpeedMultiplier
+            * (collectibleSnapshot?.speedMultiplier ?? 1)
+            * runEffects.moveSpeedMultiplier,
+        });
         const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
           ? [...grayboxEnemies, liquidatorBoss]
           : grayboxEnemies;
@@ -2243,7 +2251,6 @@ async function boot() {
         });
       }
 
-      const runEffects = getRunProgressionSnapshot(runProgression).effects;
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
         .map((hit) => hit.sourceId === 'player' && hit.targetId !== 'player'
           ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier }

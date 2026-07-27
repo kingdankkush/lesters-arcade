@@ -39,7 +39,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8336924cb79914c179577c368a6a52b5c84298a74ea6f3b0ddc094b72a66f0e5",
+      "sourcePixelSha256": "ce817c38a4bed0fdf96ed7eb3c6a8d2ac41ed81a9b2fea86373543c8b8633494",
       "state": "attack",
       "trimmed": true
     },
@@ -69,7 +69,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c803cf0f253551494c0bca7edb675352d18087e30fb92a295ab902631538967e",
+      "sourcePixelSha256": "0c7d774df841c6e9088ece34b765b95b54429d8d6e5d97ccbbf294a2d831e4bc",
       "state": "attack",
       "trimmed": true
     },
@@ -88,7 +88,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__east__002",
-      "opaquePixels": 1310,
+      "opaquePixels": 1309,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -99,7 +99,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2c870451ed3b58923d6ef7b04376182c5abe5dd3261a4a1abe92d96bcdaf781d",
+      "sourcePixelSha256": "a6dd5424c19b17d567d129ed601e289ba933f51e4b26471c8f88b6e2511f6efe",
       "state": "attack",
       "trimmed": true
     },
@@ -118,7 +118,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__north-east__000",
-      "opaquePixels": 1951,
+      "opaquePixels": 1947,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -129,7 +129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b813f8ea8e5f6e4c8ca28744e06fef6da9b2cb42843284cfe57fd9c52e3c15fc",
+      "sourcePixelSha256": "2d11b5cde8ce7b906d0a7fdf9181189699be915a4d7509386131debaa34e4111",
       "state": "attack",
       "trimmed": true
     },
@@ -148,7 +148,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__north-east__001",
-      "opaquePixels": 1973,
+      "opaquePixels": 1968,
       "phase": null,
       "pivot": {
         "x": 19,
@@ -159,7 +159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c6bca727a6130edc4a82e509da629f1f0e3ca4097d44f40d823c0b996b5ba2cb",
+      "sourcePixelSha256": "065965c0c7c7841f3ffc229e090eb70a02b60aa479f68e8834409189353a7fcb",
       "state": "attack",
       "trimmed": true
     },
@@ -189,7 +189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "93bf4f95176fc5fa518c6a3623581e4664c26ff7c1f9a03b6d4dc9ef15715747",
+      "sourcePixelSha256": "8702609f5d38042d4a59cf91cddc58dd47bd785d988098ccf4ee30010adb5964",
       "state": "attack",
       "trimmed": true
     },
@@ -208,7 +208,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__north-west__000",
-      "opaquePixels": 2009,
+      "opaquePixels": 2006,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -219,7 +219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f57b588e6d8e9add3158aa4cc041aed6e9568a7749e36095228f049c6016502",
+      "sourcePixelSha256": "9ad0a26930410e26e59f6fce465fa97457ac00905b3b7cbd41070ac64975dece",
       "state": "attack",
       "trimmed": true
     },
@@ -238,7 +238,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__north-west__001",
-      "opaquePixels": 1977,
+      "opaquePixels": 1973,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -249,7 +249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7a8d8f64c3f69900f056171ca3cd4dcda678265e3140a12c080b9da218e84820",
+      "sourcePixelSha256": "216c8ffe540a2c5d6c3079fb855d9a611d2cf14864acac219103707b0502ba9f",
       "state": "attack",
       "trimmed": true
     },
@@ -268,7 +268,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__north-west__002",
-      "opaquePixels": 1710,
+      "opaquePixels": 1705,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -279,7 +279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a714acb063d98fbb7c46c5a7bdc5594165b024a8f9e4042c1cb09c941b7d0927",
+      "sourcePixelSha256": "b686a222fde7b71c11e983fb943284c632361212e1c20a4cfceeb3f2986f19aa",
       "state": "attack",
       "trimmed": true
     },
@@ -298,7 +298,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__north__000",
-      "opaquePixels": 2027,
+      "opaquePixels": 2026,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -309,7 +309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "40c61399d8815a533d1f9b75d4ea8ebecfd30637e9b8e72afa954b7a7700707a",
+      "sourcePixelSha256": "16a02cdb74d863d91729e3e8feb37dee9e10b05a5604bab74ddc7c31b457fd87",
       "state": "attack",
       "trimmed": true
     },
@@ -323,12 +323,12 @@
       "frame": {
         "h": 74,
         "w": 78,
-        "x": 771,
+        "x": 770,
         "y": 84
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__north__001",
-      "opaquePixels": 2019,
+      "opaquePixels": 2018,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -339,7 +339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "295a9250a12ada2559422e6493b90f8b56426caf7fd76b0cecb1d2417abd420e",
+      "sourcePixelSha256": "80a2f93cd73081b39e89e50b46143c6871e2789c58efd8fad6c27e6df2154289",
       "state": "attack",
       "trimmed": true
     },
@@ -358,7 +358,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__north__002",
-      "opaquePixels": 1841,
+      "opaquePixels": 1840,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -369,7 +369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c39b11977193272aae073120f238d61fb37ec629decdb43af109cfe6177e9754",
+      "sourcePixelSha256": "de270ea8f65b03007608fb61d1ebf364a9680637dc11e698e1353c8d422e5b43",
       "state": "attack",
       "trimmed": true
     },
@@ -388,7 +388,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__south-east__000",
-      "opaquePixels": 1636,
+      "opaquePixels": 1633,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -399,7 +399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2998b49588705f9d349d7844bf6dbb9dbdb35e82f33515fe9f80e961840036ed",
+      "sourcePixelSha256": "f6091e0c5f4f6068fe3ea2d843c1d4ec36ab980e32630d17762db483715563d6",
       "state": "attack",
       "trimmed": true
     },
@@ -418,7 +418,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__south-east__001",
-      "opaquePixels": 1761,
+      "opaquePixels": 1757,
       "phase": null,
       "pivot": {
         "x": 19,
@@ -429,7 +429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "65e3b3553c104526ac7bf08c110fa239303ed8cff38eacf938aea8864ed7e1b2",
+      "sourcePixelSha256": "723a1af09b6f45d8546e73153edf17bcefcdd6d35c47c60106a345aa046ac0ca",
       "state": "attack",
       "trimmed": true
     },
@@ -448,7 +448,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__south-east__002",
-      "opaquePixels": 1872,
+      "opaquePixels": 1865,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -459,7 +459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3c957949e6b13bd32050132a38bdc788353edb386fce84eb2a89d5b2bc68bff2",
+      "sourcePixelSha256": "d83ab40de5b25986b5cbdde26afce3165a204de7c622fe4ddce9afacb10754b1",
       "state": "attack",
       "trimmed": true
     },
@@ -478,7 +478,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__south-west__000",
-      "opaquePixels": 1613,
+      "opaquePixels": 1610,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -489,7 +489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0140657d476bcce7fb8c546695b4509cb489f80b4f8733f46c3d4c4759a16db1",
+      "sourcePixelSha256": "1136fed2b852570fe5b318106ac4cac92bb019c41a6955f1d7cf799f2a6ad3ae",
       "state": "attack",
       "trimmed": true
     },
@@ -508,7 +508,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__south-west__001",
-      "opaquePixels": 1752,
+      "opaquePixels": 1748,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -519,7 +519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8b1098c6015203035edaa38dd0fef61e7a5237d260b1981b0cb7bca0d93c7c01",
+      "sourcePixelSha256": "2b5cb241473f5a3cc3cbc2d3f7962cd74ba47999c4e63ee7830781329e1a10a3",
       "state": "attack",
       "trimmed": true
     },
@@ -538,7 +538,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__south-west__002",
-      "opaquePixels": 1871,
+      "opaquePixels": 1869,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -549,7 +549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "67708bd20581dd902fb0ae1eee13d0b79f66f63ecc58997b1549704fd19dd76f",
+      "sourcePixelSha256": "cbe70708a612d61b4038cf7294ae9e1bcf6d1b790c8c6e75df7f480879e3e677",
       "state": "attack",
       "trimmed": true
     },
@@ -579,7 +579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3bd4ffbca498f1fcab68c0a7ba719dfb9c25920290c4fb09f2e83b1869ad5165",
+      "sourcePixelSha256": "74c65f20ba0315827a8e3bc2ecdeec36aa4781e1b54e95b99d0b4a981cf242be",
       "state": "attack",
       "trimmed": true
     },
@@ -598,7 +598,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__south__001",
-      "opaquePixels": 1811,
+      "opaquePixels": 1810,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -609,7 +609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3106017c9cdf82592bb9709b268196ee10dbc5c92a8acef0f54137120bbc6045",
+      "sourcePixelSha256": "491d3c6c0b57be87a4c8c0df28a8a54588800289aa09637e30f3f4342db11725",
       "state": "attack",
       "trimmed": true
     },
@@ -628,7 +628,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__south__002",
-      "opaquePixels": 2013,
+      "opaquePixels": 2012,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -639,7 +639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3b53030d10abddc1bf531c1c88abf056cf091bcc2125e5b45e2480d6860d92ce",
+      "sourcePixelSha256": "e59e95b30f8dbf8a268860841d96eb169ff192899f42d27d7bfb4725075f7210",
       "state": "attack",
       "trimmed": true
     },
@@ -658,7 +658,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__west__000",
-      "opaquePixels": 1588,
+      "opaquePixels": 1587,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -669,7 +669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c4382da88a57d4490e8495d971e42b5bde39f929120c43b7d286f83d27efa67d",
+      "sourcePixelSha256": "a6bb38b8068a755cc3c2a92722db87a59e0145fbc1fb71c893b412e8966a4166",
       "state": "attack",
       "trimmed": true
     },
@@ -699,7 +699,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "68c0657c011ff073c37b7868d062c9b13c33cb85efa80b1f45f25e1e3883790b",
+      "sourcePixelSha256": "9843b3f0afd950e1d5c38f229812ca73772b5449ab7e057222cfec9d9b102539",
       "state": "attack",
       "trimmed": true
     },
@@ -729,7 +729,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2d5779269220296864d4f075c235d86c042a48976c1c3730f6ec0890871fb03e",
+      "sourcePixelSha256": "0c39a6032144040e30b976f534a432434c84ad4c1efd238b66d9370281f2121c",
       "state": "attack",
       "trimmed": true
     },
@@ -748,7 +748,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__east__000",
-      "opaquePixels": 1194,
+      "opaquePixels": 1193,
       "phase": null,
       "pivot": {
         "x": 2,
@@ -759,7 +759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "89c54948306828878996b4ee947ad9126883cc05381e7296b9b2cd809cc490d8",
+      "sourcePixelSha256": "7a823be71b208ba43fb0d8d4642aaae98a92f5003e8a6f2a5b900a97c5480744",
       "state": "death",
       "trimmed": true
     },
@@ -789,7 +789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dc22b6f8dc7f0998deba1cd95246cf24d13efcc4da22813aac9537dc997c394d",
+      "sourcePixelSha256": "0a2d5eefa3ace0174a87d118b69fe1f6945ef01fee73807ec1753f2a4c962d6f",
       "state": "death",
       "trimmed": true
     },
@@ -808,7 +808,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__east__002",
-      "opaquePixels": 1536,
+      "opaquePixels": 1535,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -819,7 +819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0756b82a12e1d8ebba8d388e049cadccbec961773c1103adfe2bb9ef3f5949c1",
+      "sourcePixelSha256": "8fb5c6c1f04818851fbd126026945ffa422ea89ff54f648a4edaa7fdf19ac5c3",
       "state": "death",
       "trimmed": true
     },
@@ -838,7 +838,7 @@
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__east__003",
-      "opaquePixels": 1591,
+      "opaquePixels": 1590,
       "phase": null,
       "pivot": {
         "x": 43,
@@ -849,7 +849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7c0778efe970831e64c6e2c3c96ce39374df3b78e4368b8e077b877b20886cc8",
+      "sourcePixelSha256": "6125d98077b46b8b79ced81716b0e6fe65e2ea5421a9df98a038e90de2a027a5",
       "state": "death",
       "trimmed": true
     },
@@ -868,7 +868,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__north-east__000",
-      "opaquePixels": 1875,
+      "opaquePixels": 1874,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -879,7 +879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dce8a97df4ea0c9d1041f1a70ffef82b089a2681f67d98b0eb3995cec863dc0f",
+      "sourcePixelSha256": "aaf516781a47d132f4101fdace85ebbf1304feb43e5fdb2d893d9bd9f7c46059",
       "state": "death",
       "trimmed": true
     },
@@ -898,7 +898,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__north-east__001",
-      "opaquePixels": 1913,
+      "opaquePixels": 1912,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -909,7 +909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "127104627054750b6c34ed24348d90d0d763fe6ed075b16127c4888465732801",
+      "sourcePixelSha256": "8efb407454e4aecb8b63d66c1bcb1d99bf4ca0c0f2001333e1b36e951346c826",
       "state": "death",
       "trimmed": true
     },
@@ -939,7 +939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d8ae61f5aa401fbe6d1c04ef86baefd0a04a8a6b057dcae1225bb94b57991360",
+      "sourcePixelSha256": "f29eea7ef7a715207d2b49b7299af7e1f29c8b401a7a3ce364aecfe5657dba77",
       "state": "death",
       "trimmed": true
     },
@@ -969,7 +969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "76157da62d6966a2db22ee6410f7a193237ba624d05a7f94702852febe69a1c5",
+      "sourcePixelSha256": "b0c75bf0f4e937516e24672b2cf36e53163137208d2a87d5b5078a48ea597989",
       "state": "death",
       "trimmed": true
     },
@@ -988,7 +988,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__north-west__000",
-      "opaquePixels": 1879,
+      "opaquePixels": 1875,
       "phase": null,
       "pivot": {
         "x": 9,
@@ -999,7 +999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d8199049c081e21834db201124e32d3f42fbce55d3ac900bcb983d715b49be20",
+      "sourcePixelSha256": "f3183d412d3ef1f054b863f79d18b24f2a4fce87b360a444934359adcc112f4a",
       "state": "death",
       "trimmed": true
     },
@@ -1029,7 +1029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f4b0ebb07a5776bc9024d9330de3fd8f2a629b670aec466192d2202d281f9d64",
+      "sourcePixelSha256": "89f0fe0b89bcbb9477d3cbfa85a318ebbcfc7413330b451f8080693460640402",
       "state": "death",
       "trimmed": true
     },
@@ -1059,7 +1059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bc6bbb5badc18fbc4ca4b3ae2e21faf6a853eaca8bc751c6149c85cec9b69cf9",
+      "sourcePixelSha256": "9c816f4c3be4789a782263c057302fc61f15a5a09d083ea6f62a43777d4d4a40",
       "state": "death",
       "trimmed": true
     },
@@ -1089,7 +1089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "523e479a7b6083f1c4a4cffd89b09e0b5bc171a910829f388a85dbf8745882da",
+      "sourcePixelSha256": "e6ed3223651f1d3f1c0df2e540903d7a07ef70cf2da2d09dbc8d836280f66109",
       "state": "death",
       "trimmed": true
     },
@@ -1119,7 +1119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9a1f0f07cc01de76f664000a8b96a02e79f97f61d59f26292d663a68c70c924c",
+      "sourcePixelSha256": "881fad676688f6a337bc565215f12adbceb203abd4b870b80b0b5c951d12fd89",
       "state": "death",
       "trimmed": true
     },
@@ -1133,7 +1133,7 @@
       "frame": {
         "h": 74,
         "w": 51,
-        "x": 851,
+        "x": 850,
         "y": 84
       },
       "frameIndex": 1,
@@ -1149,7 +1149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2ef001cc785a6d8570f313301b1852fff9b3b2934f1be3fa8caa4b7744c6478d",
+      "sourcePixelSha256": "e6e675b4ae79bde672db6ad20855c12c3ea4e8de5d5be39a0292a69eb95cece0",
       "state": "death",
       "trimmed": true
     },
@@ -1179,7 +1179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7174a2ae439a6ec4d73805f7cade60f2ab02d93da676764fef4e45106b5e7635",
+      "sourcePixelSha256": "e667555954eccba357a6c2194e8eb63db9dd73920928eb2a3167e5c335d31062",
       "state": "death",
       "trimmed": true
     },
@@ -1209,7 +1209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c82959e1faea55094d6e08b7537dec91435922b39fd9191132d61169d39a4b44",
+      "sourcePixelSha256": "bb34af3455ad7d7c13bb70c7cfc8ace10d6c25bc38e16eae4e55f3b2d972992b",
       "state": "death",
       "trimmed": true
     },
@@ -1228,7 +1228,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__south-east__000",
-      "opaquePixels": 1854,
+      "opaquePixels": 1850,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -1239,7 +1239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "49e44a1ee6f9341a397b09b49d1112843ffc7012c25567234fd7e3576eba6eab",
+      "sourcePixelSha256": "c2d134dafd64dde90a14296912f2283501bc64d62ddd500b49b72ed257fc32aa",
       "state": "death",
       "trimmed": true
     },
@@ -1269,7 +1269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6920eb72d7da6702d0e38ae92b72532159c2777176de15eb29d7d0609da2e6c8",
+      "sourcePixelSha256": "ef564967c599844ef32dfb7902a006bc3a35882f68b5f58608b5910b093fa845",
       "state": "death",
       "trimmed": true
     },
@@ -1299,7 +1299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8dcbbb5627d8604c7b36700b3194f8e128ddaa9bfb493afd177617423f1e0ab1",
+      "sourcePixelSha256": "9aaf7ae22a329abc8c400165f346cbf50cfcb427306298c5bb30fa705c02e3d9",
       "state": "death",
       "trimmed": true
     },
@@ -1329,7 +1329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3a3b1181318a025a3368885dc89f1b362bf2e7527a9282c0a6ee3275acf9713e",
+      "sourcePixelSha256": "f23851e3fa5dc59bba23a0bfa22b0e7e1ccc5631d94b6a00c90ce625bf70ff10",
       "state": "death",
       "trimmed": true
     },
@@ -1348,7 +1348,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__south-west__000",
-      "opaquePixels": 1853,
+      "opaquePixels": 1850,
       "phase": null,
       "pivot": {
         "x": 9,
@@ -1359,7 +1359,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bbe0082c0ca02ee6495b931eb7b1e7466df1c1f795691ba5a04e9778c85fcfc3",
+      "sourcePixelSha256": "680d6ee24e8b0c012400e68adf27c57a32f908133a3faeed3e2cd08c082e9b22",
       "state": "death",
       "trimmed": true
     },
@@ -1389,7 +1389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e6b8e4654c26d808ef05b0e257cd1321ef47be6d97ec2697e65c03235185dcf4",
+      "sourcePixelSha256": "a868f580bf9bd3a79c1e463711c6c17410fdd0a582b1a87204b26c5497977ef3",
       "state": "death",
       "trimmed": true
     },
@@ -1408,7 +1408,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__south-west__002",
-      "opaquePixels": 1539,
+      "opaquePixels": 1538,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1419,7 +1419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9f479b6d1a492cd364bbc0a345d12da2db7fa27d2a0cdc76359e82805c598ce7",
+      "sourcePixelSha256": "5b0630978ebef71dfe0217e9474c07d3e15e54795dcf283e8aee46825f25cf33",
       "state": "death",
       "trimmed": true
     },
@@ -1449,7 +1449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a596e3caee7584fe7dc3422afae2f2076385daa899880914a2e3fb1b13bbf641",
+      "sourcePixelSha256": "b2b2148eb8d62a41174de5db7be6bde830a984e4d2584194872e761592cb25a6",
       "state": "death",
       "trimmed": true
     },
@@ -1479,7 +1479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "162bcb3ac3bdb9a20c601054b6f17b52b2a7c16aa71e89cc27b7d61ad1000a0b",
+      "sourcePixelSha256": "dcca083ea0f10193dc0d897c11749cba304e6b39ce4b853e059c43b2427d94df",
       "state": "death",
       "trimmed": true
     },
@@ -1498,7 +1498,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__south__001",
-      "opaquePixels": 1491,
+      "opaquePixels": 1490,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -1509,7 +1509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d8c23e284844a62ec0d90da0c177b9075bc7cc0f4ceb743b4ef25079426b7f4d",
+      "sourcePixelSha256": "53890669f073cae962b6cc0e9a9127703890e8059d8c5356efbb6f283d45905b",
       "state": "death",
       "trimmed": true
     },
@@ -1539,7 +1539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4f5bd2c7890755ee3225585bdf81dcf4a146745ab8cf0ae0786c5dc5a750eb16",
+      "sourcePixelSha256": "972da84ae87ab3aa40df026ab098a1ccd4f71e1f700fac28c40ece61d299baf6",
       "state": "death",
       "trimmed": true
     },
@@ -1569,7 +1569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c5586ba17247c84a0e6f25a09cb854cda4d300749b0039be165800dbfcdeb0b2",
+      "sourcePixelSha256": "747984c19aae306544867b66801bbe2cf27c3149033689d3febae3429213d62e",
       "state": "death",
       "trimmed": true
     },
@@ -1599,7 +1599,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "113f1d7169b16496ca0831937318769fe12cc7acaec0508224247285883f60af",
+      "sourcePixelSha256": "191e76db2429cb442b12238381898896b0b3418c55bd440031edafe29da63fc0",
       "state": "death",
       "trimmed": true
     },
@@ -1618,7 +1618,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__west__001",
-      "opaquePixels": 1450,
+      "opaquePixels": 1449,
       "phase": null,
       "pivot": {
         "x": 9,
@@ -1629,7 +1629,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "488f11099738ae517f958f3269885b97f19fe3a876f32710966770f3ca7a1cef",
+      "sourcePixelSha256": "bdbc2569ad9f3eea3e485e7b4aa35822d0f7e7fb78953779133714d752a0d74b",
       "state": "death",
       "trimmed": true
     },
@@ -1648,7 +1648,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__west__002",
-      "opaquePixels": 1621,
+      "opaquePixels": 1620,
       "phase": null,
       "pivot": {
         "x": 12,
@@ -1659,7 +1659,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ef4335e6ee26ed334a7e0afe793747eed93234cda84210c742202a0798fdba70",
+      "sourcePixelSha256": "b267ea0407e98a6b993736c4b7f0fc3b9b9ec9b9d7f6bcaa1a403c859e684fd3",
       "state": "death",
       "trimmed": true
     },
@@ -1689,7 +1689,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ac14d439cb765a547df3f0a62f622aacdf550e9d36c51160fb6eca5f537cb8c0",
+      "sourcePixelSha256": "fb32439b7e20e136d4ba2082af3ad8e3647b3fde5c9e9488285e12faac4cf464",
       "state": "death",
       "trimmed": true
     },
@@ -1719,7 +1719,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6922ab0c8a3af0b29a557f4e61fb41bc91446fd3477d112e1fec10c340cf83c8",
+      "sourcePixelSha256": "47ce8ee5b316bfe4fc38b945d55b87c42cc5570524c711422af1c222469da691",
       "state": "hit",
       "trimmed": true
     },
@@ -1738,7 +1738,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__hit__east__001",
-      "opaquePixels": 1447,
+      "opaquePixels": 1446,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -1749,7 +1749,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "caa54aac5c1e48944e868107ca5dccb7ad845c01ddeb9c2e39d8332ab59e2efe",
+      "sourcePixelSha256": "498acd81fa285b3fe46991bebbc3bdfcad21ecd101b1d9e5bacb8efd2e0b78c8",
       "state": "hit",
       "trimmed": true
     },
@@ -1779,7 +1779,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b082d40850a5114ff9dd4bbc4bcda20ff544ab794bb3e342cac17cb2f8a43eff",
+      "sourcePixelSha256": "aa98a6c2b5494a1cdd72662541665878d2f5aaeafea76c127d328ed705cecd57",
       "state": "hit",
       "trimmed": true
     },
@@ -1798,7 +1798,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__hit__north-east__001",
-      "opaquePixels": 1993,
+      "opaquePixels": 1990,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -1809,7 +1809,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5a3c9310df92f53729bcd0ec22ad7f7ca37ba68cc09e64ec48b1355e4f58303d",
+      "sourcePixelSha256": "eaaf9d0c40278db5e737edba97ecc6429c55d6a8263024fce41ec6ac7949c0b7",
       "state": "hit",
       "trimmed": true
     },
@@ -1828,7 +1828,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__hit__north-west__000",
-      "opaquePixels": 2047,
+      "opaquePixels": 2042,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -1839,7 +1839,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "85e490bfa0042897178cf5d995aabd5a14988722a17eee2ffe1f1b4d3c46a59a",
+      "sourcePixelSha256": "b73fbfb82a9480fda1730494c99c65c690aac804df58c878c0dc714cab8f2ffc",
       "state": "hit",
       "trimmed": true
     },
@@ -1869,7 +1869,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ea0341d3eebf722ed2366d8b7ac5feb364cda5ab76ae03cb40cab2f281a397a3",
+      "sourcePixelSha256": "3c42a534ef32cac89c78343718b4783266dec20478b6147de78ef48a324b75ae",
       "state": "hit",
       "trimmed": true
     },
@@ -1899,7 +1899,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c1e8adf69405ef022d0d55e13c0d58c09e5cd7b9c547a6a93c0a20e7540eaf76",
+      "sourcePixelSha256": "77add98a61677b0c68ffbd8e842c283a0bfa7e6b1f8c05c1ec73cdda6d981b73",
       "state": "hit",
       "trimmed": true
     },
@@ -1918,7 +1918,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__hit__north__001",
-      "opaquePixels": 1935,
+      "opaquePixels": 1934,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -1929,7 +1929,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d5943c954aa9ac9481e9b8dfbf7306c7fb8d1e5324578e89132de0773730f544",
+      "sourcePixelSha256": "c26a0b2212d884febad3a571b4bbe8729ebe9f884f722e8f473ac341c47a0d07",
       "state": "hit",
       "trimmed": true
     },
@@ -1948,7 +1948,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__hit__south-east__000",
-      "opaquePixels": 1748,
+      "opaquePixels": 1744,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -1959,7 +1959,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "aaea0af12a52109ed33d2538485943a6a3506b0abbe6c6d38b4c01c227a975c6",
+      "sourcePixelSha256": "dc7bd7c2d1fd604ea744e9b19a43cf330ff167ba28d025f2bf60cc0adc956ba4",
       "state": "hit",
       "trimmed": true
     },
@@ -1978,7 +1978,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__hit__south-east__001",
-      "opaquePixels": 1777,
+      "opaquePixels": 1776,
       "phase": null,
       "pivot": {
         "x": 1,
@@ -1989,7 +1989,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f50c1b5964950410686795e73c8448c7544df250a24e42c1612b056806145458",
+      "sourcePixelSha256": "4480ca818e8c472cd11280440e78a6d49df0ed84c825d34ee23cd79de775810e",
       "state": "hit",
       "trimmed": true
     },
@@ -2008,7 +2008,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__hit__south-west__000",
-      "opaquePixels": 1710,
+      "opaquePixels": 1707,
       "phase": null,
       "pivot": {
         "x": 2,
@@ -2019,7 +2019,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d10fccee3495f4bd8e5d828448de234493b49ad9560a4936c887c6aaf18c941f",
+      "sourcePixelSha256": "f8fabbe4fa612659de8b8c9762b38e11c31654500aa967c11a870de2c761d9ce",
       "state": "hit",
       "trimmed": true
     },
@@ -2038,7 +2038,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__hit__south-west__001",
-      "opaquePixels": 1902,
+      "opaquePixels": 1900,
       "phase": null,
       "pivot": {
         "x": 20,
@@ -2049,7 +2049,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bdcbaf4156a6422a570cc3a77d57514ead7e66573bff2f45bdb711ef2d4ced2b",
+      "sourcePixelSha256": "759a2244eb94380037ba864ebf241623e84bd51975f531356f55d191cee5e167",
       "state": "hit",
       "trimmed": true
     },
@@ -2063,12 +2063,12 @@
       "frame": {
         "h": 74,
         "w": 66,
-        "x": 904,
+        "x": 903,
         "y": 84
       },
       "frameIndex": 0,
       "id": "forkrunner__body__hit__south__000",
-      "opaquePixels": 1909,
+      "opaquePixels": 1908,
       "phase": null,
       "pivot": {
         "x": 12,
@@ -2079,7 +2079,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "27cc04b10cec3dd0a9ba7dddd42471762eb0b6ba31954fe0b8bc79f3a9fa7591",
+      "sourcePixelSha256": "52150ba692267f94a58fabedc9f49e51ab8dc337852a5598397c96fe91bbb2ba",
       "state": "hit",
       "trimmed": true
     },
@@ -2109,7 +2109,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "effd9d72c2d364e88b218b51390394b538696498c6df8b1cd3d894061ccd3304",
+      "sourcePixelSha256": "fa43eb23dfd2e9b5d7d09ef85ab4cbb4871e4c476e87cc8bcbba001dd17fb15e",
       "state": "hit",
       "trimmed": true
     },
@@ -2139,7 +2139,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c0a40c7a07cb49b46bfa6c6ce7862c8ae1337257cc97edb448ef42b823f189b8",
+      "sourcePixelSha256": "c80d277ac1a4612f95367caec0747c8ac64641a2aa56d7813550e9560ada9433",
       "state": "hit",
       "trimmed": true
     },
@@ -2169,7 +2169,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b84434ace855de3a768f6ce38eb958494e71c952aaa849a7dc16c1f8901613f0",
+      "sourcePixelSha256": "48bc80cde863b15bbc94a48c10411dfd1cb169c5bf679a49e50e123e77b798a8",
       "state": "hit",
       "trimmed": true
     },
@@ -2199,7 +2199,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9ba932410932d7917c88c590fee5d9e0a179a97d9bc206f59e5c76498159b005",
+      "sourcePixelSha256": "f9ccd8c1b716cb8a3ad113751f701ff127d3e682af0e7d5953829032c8b229d6",
       "state": "idle",
       "trimmed": true
     },
@@ -2218,7 +2218,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__east__001",
-      "opaquePixels": 1204,
+      "opaquePixels": 1203,
       "phase": null,
       "pivot": {
         "x": 2,
@@ -2229,7 +2229,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1923f95c082809a3f30fbadd88c710cf37e9391a28fc2acccfd3e319bfefbdb1",
+      "sourcePixelSha256": "9037d898a7ed8efbe3c57e253903a324d6daa5c9c0e690019289d750d8b42917",
       "state": "idle",
       "trimmed": true
     },
@@ -2259,7 +2259,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e466995a1cf5af2673fbabbc7b61bc9de079f939a2b2026c6f220a069ee04e9f",
+      "sourcePixelSha256": "deb2435b24bb404633bc1c0faa4672b81ae44e0754c750ac4ed9bf3a820eb601",
       "state": "idle",
       "trimmed": true
     },
@@ -2289,7 +2289,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "69e308b7daee75ae6a7eea16dd2816b2c21af99bd0863d5f1a24b1414470453d",
+      "sourcePixelSha256": "f98a32fec2ac6fb84f25877d4ecc5ce8880545e77326bd5b62075a1a49866f11",
       "state": "idle",
       "trimmed": true
     },
@@ -2319,7 +2319,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b668166f653446e70139e76dd1dd39f5d0141f09e1be8aeb890c5ce1d75df16c",
+      "sourcePixelSha256": "6623d07eb3cf434c5f37a80109beefa3cc0d2bcf4af286c5fb9db2f8b141d8ac",
       "state": "idle",
       "trimmed": true
     },
@@ -2349,7 +2349,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2713bcb77320f8a1e44c2456591e92905791cd5a7738693c77d19cf985120dba",
+      "sourcePixelSha256": "28b7b91456e1372772eb956dbd15ee6e8bc2b7a2ec575d0cac0aa2357ee248b5",
       "state": "idle",
       "trimmed": true
     },
@@ -2368,7 +2368,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__north__000",
-      "opaquePixels": 1944,
+      "opaquePixels": 1941,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2379,7 +2379,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "68f539072badf2b6c9bc70b2ad5680c39b8cdba367f6981e05d0a4e7fe134896",
+      "sourcePixelSha256": "a2f01560a98cfa344340b2793763fdac20c484b7e83eb08b7fe5937b3ba0f212",
       "state": "idle",
       "trimmed": true
     },
@@ -2398,7 +2398,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__north__001",
-      "opaquePixels": 1895,
+      "opaquePixels": 1893,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2409,7 +2409,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ed719675be2e84500a82c27be8d1f7b41001519f70e4dd4235ff1b221c218c7f",
+      "sourcePixelSha256": "7a2ac0f1f78f8c248b78a3d3b99edd3b0a38d0994e5af1a46c8e198798f446eb",
       "state": "idle",
       "trimmed": true
     },
@@ -2439,7 +2439,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4ed17905a7d9a6341a5f4b2305639516b95c464e4ada8504840b13912c85bb50",
+      "sourcePixelSha256": "54455e484b534056994e4b31dc73545d5aa31f0493757c5e4f7bbcd75911949f",
       "state": "idle",
       "trimmed": true
     },
@@ -2469,7 +2469,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "604966ebf543d50dbf6ebc87bfa8a399dab3f925985b2cf48edd97271ed66524",
+      "sourcePixelSha256": "7e2cf1a9609f41ceb893bc968ce07cb69fbe0ef11e4aad57647868f1b80434f6",
       "state": "idle",
       "trimmed": true
     },
@@ -2488,7 +2488,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__south-west__000",
-      "opaquePixels": 1830,
+      "opaquePixels": 1829,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -2499,7 +2499,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "583ae609539f49319372fda1272fc4e8c930031420a7ad696638cd696d4dc07d",
+      "sourcePixelSha256": "f37439b1ed649f6e77bd2bfdfc66cf11d3894710ee3ff5deaa2f487df5449f19",
       "state": "idle",
       "trimmed": true
     },
@@ -2529,7 +2529,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cf68858aa604807b4e0356c56fa2ddf20e1bccb774291c9812a27b74c5289b09",
+      "sourcePixelSha256": "c9a1c371eec1bf4ab9d1dedb47fd100806e95e91d3ae55fa2e9e0c2b31e0d4be",
       "state": "idle",
       "trimmed": true
     },
@@ -2548,7 +2548,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__south__000",
-      "opaquePixels": 1936,
+      "opaquePixels": 1935,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2559,7 +2559,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dace5c8552863bbb697a650563835143a3e5c1177fab1bd85d88e16f0a2c1e97",
+      "sourcePixelSha256": "aae34ab779965ed31b8241f5883bfe7c0b02548a5d00bffaef9131885eb8f19a",
       "state": "idle",
       "trimmed": true
     },
@@ -2589,7 +2589,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f92ee022fb6d19808b4751eb1817737627e403189a3e9c99df61b6e6ce3047a",
+      "sourcePixelSha256": "3737f6f36119077713da6c18de19a5d65d4fa90b2f1171cd5da98559eedf320f",
       "state": "idle",
       "trimmed": true
     },
@@ -2619,7 +2619,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1c2c6b2aaf35d63b472268b948c5647ec6fb6069c765dc7ec3e8b34cde90836a",
+      "sourcePixelSha256": "dd0583c3b4dd183725db28e2e78bac29a237dd097b5cc5bdbbc49ac4a67c62e2",
       "state": "idle",
       "trimmed": true
     },
@@ -2649,7 +2649,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f9f791e4c98630184f0cda56ca2e5bf125dc8c5d9f48c19edc3692aca61e21f5",
+      "sourcePixelSha256": "7290ad1060c70afd0a20bca8cbb57d6bdea49aadd6a43edb67e56c38230d72dd",
       "state": "idle",
       "trimmed": true
     },
@@ -2679,7 +2679,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ff222d2aa89d9e238b09d22eb1db59ac0c10b72fe8e0a80bd5041d53b90574c1",
+      "sourcePixelSha256": "8d70763e7f71a5e9633893025e42dd035e7fb7cd3ff4da785d75e3d9c0ef227a",
       "state": "run",
       "trimmed": true
     },
@@ -2709,7 +2709,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "806d307b291c78c13ca2839fb5323b7d978e15f40dac17c18502d83e2fcc4588",
+      "sourcePixelSha256": "55c99cee4e7001dca1e0c3173197df634d02a3df2f577f380a651305f9882f2a",
       "state": "run",
       "trimmed": true
     },
@@ -2739,7 +2739,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "13f1355289cf912da55d0433b8facda7f6630f4f6580a8702503351d76f49b3e",
+      "sourcePixelSha256": "b115c15a43aad3c8c8a2d22905d274bcae9d85a383a51aa46e0487e325bd6bea",
       "state": "run",
       "trimmed": true
     },
@@ -2769,7 +2769,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dd30530ed8bc0ca5f9ef5585b8c4cca90c89ed0a765c53cd8a088ff7bd733782",
+      "sourcePixelSha256": "aa55934365f92dad813b33b6d2035ab608f5dd7d7e6f67530e0962f969672481",
       "state": "run",
       "trimmed": true
     },
@@ -2788,7 +2788,7 @@
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__east__004",
-      "opaquePixels": 1624,
+      "opaquePixels": 1622,
       "phase": null,
       "pivot": {
         "x": 1,
@@ -2799,7 +2799,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2e53188abd1eec670c13fcdbbf947bdbb6cbf2f4af4c179242824bf358d2337e",
+      "sourcePixelSha256": "44af65c5aa4857ade8c893ec74b9966a627f7021d38630b21c3443b07bc5263d",
       "state": "run",
       "trimmed": true
     },
@@ -2818,7 +2818,7 @@
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__east__005",
-      "opaquePixels": 1728,
+      "opaquePixels": 1726,
       "phase": null,
       "pivot": {
         "x": 4,
@@ -2829,7 +2829,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ec01ac800025fcb5546b4db56f5672a95eb024e907f62467c3aa25f8e732dced",
+      "sourcePixelSha256": "b08bc5217ffb6175dd4dad2c03d99874bed8889d6929c5cee3874ef80edea8d0",
       "state": "run",
       "trimmed": true
     },
@@ -2848,7 +2848,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__north-east__000",
-      "opaquePixels": 1942,
+      "opaquePixels": 1937,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -2859,7 +2859,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0864baeb755a5369107b0318eadd64d778fe20a4e59d8da6d3e3c109049fdd11",
+      "sourcePixelSha256": "3615569b7dc00ee8933c921cfa1af0bf522788dc0b741c82b96d138f5b435ebe",
       "state": "run",
       "trimmed": true
     },
@@ -2878,7 +2878,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__north-east__001",
-      "opaquePixels": 1883,
+      "opaquePixels": 1882,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -2889,7 +2889,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "585cf24f135a504ea317e3f2713739692734edc4b57bf2a1c7da040c5f7f5e1d",
+      "sourcePixelSha256": "d318d64b47b0ca49fe50c1366a7f03b4986753f42c6ebb87580c6976ee205280",
       "state": "run",
       "trimmed": true
     },
@@ -2908,7 +2908,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__north-east__002",
-      "opaquePixels": 1893,
+      "opaquePixels": 1892,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -2919,7 +2919,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e452752d1bd852ca64675fcf9a4d9b9f85cf3ece7e3af2cd00921cef58943749",
+      "sourcePixelSha256": "7066b0b6b9316375daaaf5c652063ec02fbddbf6889c3e64a3d6ce839a57a9b9",
       "state": "run",
       "trimmed": true
     },
@@ -2938,7 +2938,7 @@
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__north-east__003",
-      "opaquePixels": 1978,
+      "opaquePixels": 1973,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -2949,7 +2949,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8ee6bcad5b04cfe6a9bdfaa2d4931ecb072632f9a02172a82be73195eb59d3bc",
+      "sourcePixelSha256": "c7c58eb76662ecc19fc54c9553ebad19631f209e36d953b4d7afc83869ea8605",
       "state": "run",
       "trimmed": true
     },
@@ -2968,7 +2968,7 @@
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__north-east__004",
-      "opaquePixels": 1942,
+      "opaquePixels": 1941,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -2979,7 +2979,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8dd6f817dd1f0ed3b4aa1e3e8fd4bd121ab23ab66bd1260dbd8afd1b2593687c",
+      "sourcePixelSha256": "c599f4875d773590cc2c15fb63218c77666f46cd46daf6dc5cfc288134425513",
       "state": "run",
       "trimmed": true
     },
@@ -2998,7 +2998,7 @@
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__north-east__005",
-      "opaquePixels": 1914,
+      "opaquePixels": 1913,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -3009,7 +3009,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1b339a5152ac576dbdc05bf42e6d257132098459a12c2db7cdd75aa73f70d225",
+      "sourcePixelSha256": "adfdde67f7f46e7e8f8aa70d504170f4d43fb70fb56ca7a10ef43e566e5c79cc",
       "state": "run",
       "trimmed": true
     },
@@ -3028,7 +3028,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__north-west__000",
-      "opaquePixels": 1977,
+      "opaquePixels": 1974,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -3039,7 +3039,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ccea7de8cfa0d288db35afb506da09d5b36470bc93b320a9de74018a0299b0e1",
+      "sourcePixelSha256": "9557d0aabfff1292c5a021168047a059878a15f1afa7f29dfa145b362a365f11",
       "state": "run",
       "trimmed": true
     },
@@ -3058,7 +3058,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__north-west__001",
-      "opaquePixels": 1938,
+      "opaquePixels": 1937,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -3069,7 +3069,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "72e2fd83a75df5c5d28b360ccb143575904eb5464fd00fab78db36d2228afdec",
+      "sourcePixelSha256": "7b0e227222aacecbdf807a1014614d9e4528dfdea529a3f3e420772a2e43d790",
       "state": "run",
       "trimmed": true
     },
@@ -3088,7 +3088,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__north-west__002",
-      "opaquePixels": 1910,
+      "opaquePixels": 1909,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3099,7 +3099,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b20b580c64de12b910459f1b8475950f70c2147e763902cc51c800011b8c5fbb",
+      "sourcePixelSha256": "5e013349cdff2be85ced58a2fafb099a43b1dc4dbb499b4dce26de06bf5f5373",
       "state": "run",
       "trimmed": true
     },
@@ -3118,7 +3118,7 @@
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__north-west__003",
-      "opaquePixels": 1941,
+      "opaquePixels": 1938,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -3129,7 +3129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9c1f8b70153b36537520b9e1c9b4eb31872bffdfa3d40b593eb7a8d30b858a78",
+      "sourcePixelSha256": "fc698b64395cdabc67a4e8188e06be95c7f4769eaf5d4ddfaf6444de31fea6cc",
       "state": "run",
       "trimmed": true
     },
@@ -3159,7 +3159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "392ea69731c4f7224bcedc50107667f9f7a79b2fb470f47d9a333c8728224f65",
+      "sourcePixelSha256": "3336d458bae02ff2d672bef3a5270af452f1a2af1068858018297fd666b278c7",
       "state": "run",
       "trimmed": true
     },
@@ -3189,7 +3189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c2d531d2957bed7fd214fef9d88532d032139798342ad74caab91361c518e1e5",
+      "sourcePixelSha256": "b6aa2067d8ca7e4d017cebf7c6f454204ad5b3726440ef2e4da1f38582de9df4",
       "state": "run",
       "trimmed": true
     },
@@ -3219,7 +3219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7afc24d6eb4e00358d8d84af344bdbb849fe879afecff8a7fa8f421105f1ffc6",
+      "sourcePixelSha256": "fda2dffea66af27928f073845e7e2208f7bc14190b580490e5aac2c0eab2c3c7",
       "state": "run",
       "trimmed": true
     },
@@ -3249,7 +3249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "77493139ba716e7d0496779a4839b0f397144f2a57dd386a4fcabc488436b3a7",
+      "sourcePixelSha256": "fda7069a5f91dcda865e3774295d696df41d52db6e73d9dac68005a3dcd88dcb",
       "state": "run",
       "trimmed": true
     },
@@ -3279,7 +3279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cf4b8dabaa644e5c8882d8f0d4fcb9a572a9dcfd4f7d6d355d21760e6e405747",
+      "sourcePixelSha256": "1da3dcb1248d78f643fd5dbcef91154d50f20f2933e077280b252f9e2516cb3c",
       "state": "run",
       "trimmed": true
     },
@@ -3309,7 +3309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f0245f90ccf20134b6aa2c8e0351fd5fad0d4f6f4347abc6f2ff760bea4e5093",
+      "sourcePixelSha256": "75cc34b70580392c1b4731ea973e7505a497baff191743dd55c2ab3c18b91d7e",
       "state": "run",
       "trimmed": true
     },
@@ -3339,7 +3339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c0f3a72b5232eb41be756ab64f80007c478a34639d4e40c681842ffba1d50f5f",
+      "sourcePixelSha256": "69719f4eede31525b9940d7d3cb75675c476ea719be2f2061aa7c015140183e8",
       "state": "run",
       "trimmed": true
     },
@@ -3369,7 +3369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "31e13339023e5a62febb1b085400230e20ac8b92a1d85acbf423cfb2289a9efd",
+      "sourcePixelSha256": "30c7917a73a5bd0ff798ae54311654d52a26844bad137d9f01916e17007804c4",
       "state": "run",
       "trimmed": true
     },
@@ -3388,7 +3388,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__south-east__000",
-      "opaquePixels": 1795,
+      "opaquePixels": 1791,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -3399,7 +3399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7f772e37a987e29f961bf72b6aabb5a7ee436de5fdcd0c8e34e0e1ad0f482440",
+      "sourcePixelSha256": "c200a87a63809c750818b58ce254537049114952a474f924246a09253f944e67",
       "state": "run",
       "trimmed": true
     },
@@ -3418,7 +3418,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__south-east__001",
-      "opaquePixels": 1765,
+      "opaquePixels": 1764,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -3429,7 +3429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ef17c35abd226eee65ddead0dabe4d183f964038c5a419a38b06ecdc9aba5e5e",
+      "sourcePixelSha256": "3c5111496b0f0c423b538753c1e67a9250570134856fa44eae81f776cc12c5fc",
       "state": "run",
       "trimmed": true
     },
@@ -3448,7 +3448,7 @@
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__south-east__002",
-      "opaquePixels": 1821,
+      "opaquePixels": 1820,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -3459,7 +3459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5f7902adff94b2eb999f9c291913c9cbf348fcf6e0c2d8b02dc37f4e5284179a",
+      "sourcePixelSha256": "29e493eb854655815c6f99b3660e517e11bbdce34e7d27f309d38c8b99f3a6ee",
       "state": "run",
       "trimmed": true
     },
@@ -3478,7 +3478,7 @@
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__south-east__003",
-      "opaquePixels": 1791,
+      "opaquePixels": 1787,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -3489,7 +3489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "29e2e97e56f47d703416da00e514f60c7b9e68bc722eaebef07727bc058d0a4a",
+      "sourcePixelSha256": "652e43419a2468ca5fcb36c6dc472c10184f4591d86831f2e7466846687adc51",
       "state": "run",
       "trimmed": true
     },
@@ -3508,7 +3508,7 @@
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__south-east__004",
-      "opaquePixels": 1669,
+      "opaquePixels": 1668,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -3519,7 +3519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2b1c686b597b8955bc1fd26f878073ce8100b392bf0a9260cc78f73d1bcbdf6e",
+      "sourcePixelSha256": "52ee1d76838a9075ff4496cd5daeddfa11eaa569f28e4b6822e28314d193efd2",
       "state": "run",
       "trimmed": true
     },
@@ -3538,7 +3538,7 @@
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__south-east__005",
-      "opaquePixels": 1699,
+      "opaquePixels": 1698,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -3549,7 +3549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b2d0b363d6a2e09d2035366eb45d2dd4d02be36f12cac8e9a3ff08ed98f424fa",
+      "sourcePixelSha256": "b8bcb6c373809a29a64fe0af51c22a66912da95f80d3a59bacf6802eb95b72ba",
       "state": "run",
       "trimmed": true
     },
@@ -3568,7 +3568,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__south-west__000",
-      "opaquePixels": 1788,
+      "opaquePixels": 1785,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -3579,7 +3579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "66eaa7113c9fff6a8f2cf27c6e84e4e459bc35edefec362449b338ccaa64bd01",
+      "sourcePixelSha256": "9e8c922c3cf6f54a76d42776e606eabf27b53abba724b580a1762aa30aa2b438",
       "state": "run",
       "trimmed": true
     },
@@ -3609,7 +3609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ae58761f02578eec28d6ff33b56480d7168fd4ccaaee4b7d314cb480e73a25eb",
+      "sourcePixelSha256": "34bd6a0fcb915169ee9c493d74b42505f93760b7188357f1238daf1ff925eb52",
       "state": "run",
       "trimmed": true
     },
@@ -3639,7 +3639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a8d5dc3b2af12170f54e07ec4991b4d4b53796e4c6149b0b728ef0a742d58dca",
+      "sourcePixelSha256": "5a1928ce160efe724bc26833711ef7af58732f9fbe12940736c29c947a530310",
       "state": "run",
       "trimmed": true
     },
@@ -3658,7 +3658,7 @@
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__south-west__003",
-      "opaquePixels": 1794,
+      "opaquePixels": 1791,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -3669,7 +3669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f9943cfb4dc4e82354e151b5041b2bfe8405495b1c8f1a01037beb151177cfaf",
+      "sourcePixelSha256": "49cbd1a4bb18271797a2af9f8f5954566264bb2d35d8cde10abaa1be033de1a5",
       "state": "run",
       "trimmed": true
     },
@@ -3699,7 +3699,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d81f400ce9850bb3ce77de9eaf51336733cdb312fa02a2bddea64edaa3ff714e",
+      "sourcePixelSha256": "8ad3d277df7549748c0a7548199ee49be94ac77a2fbb9582b22848586ebdc667",
       "state": "run",
       "trimmed": true
     },
@@ -3729,7 +3729,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0fc2f6d7396b66ee94765e8d17aa4ca7f13151ed010f56b70cd8680f12e39a6f",
+      "sourcePixelSha256": "914fa65c04d0acee7aad47d4703bf0f72edd97a5adfc30c01812cda44c237b2b",
       "state": "run",
       "trimmed": true
     },
@@ -3759,7 +3759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f319aecd8514e6640d78aa5f645722f33a7f6404af60a3e9a2c2cc9a80e7d462",
+      "sourcePixelSha256": "01b57a97bb04ef96325bb277f6c8eb1bc39816515bfea84765ffc2a662263bf1",
       "state": "run",
       "trimmed": true
     },
@@ -3789,7 +3789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ea4ce05af35856f1e00b59db7ceb7ae9b14d9a482d4c447c6287467240aa9cce",
+      "sourcePixelSha256": "7956cba010a6555c028aa1c315c8caebc1bb727e5904589ac36783a866b5ca3a",
       "state": "run",
       "trimmed": true
     },
@@ -3819,7 +3819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "10d8ab0164f3d45c43251124a25f70b97d46fcc4c77f2439d697396174ff9be6",
+      "sourcePixelSha256": "64b2d2de9f0e59ba2810dead0c74353a807ff7f43afb4c82b2f9ee3e4368173c",
       "state": "run",
       "trimmed": true
     },
@@ -3849,7 +3849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "52248e791787df2ac28783212fb1c7d44929600eb0ee796b926dd44e498fe027",
+      "sourcePixelSha256": "1f1e19be5c16de3bff5e4231d753e85778cb9b82fa8c71b816800118c07aead2",
       "state": "run",
       "trimmed": true
     },
@@ -3879,7 +3879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c5f34bab68ad1336b7d594c6d1832d50626c78c10a056b7e11ed7b8cdb11c8ae",
+      "sourcePixelSha256": "ae5951e93e88e88a0e2bcb544470c95a4e191acb03979f0e28613b4851cd2f0f",
       "state": "run",
       "trimmed": true
     },
@@ -3909,7 +3909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "83d2bb94cbf0f64bf7663efe7aad50268bc29769bacaf3c0a3e1e5fb6e381833",
+      "sourcePixelSha256": "6746ce6da0f952574b9023667f57442a429996253cf1d8c68dd7de058aa6035b",
       "state": "run",
       "trimmed": true
     },
@@ -3928,7 +3928,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__west__000",
-      "opaquePixels": 1219,
+      "opaquePixels": 1218,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -3939,7 +3939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b6202ade62b4e0895bb75cef55bb7e6e9bfe1183824bb98ab12ac2704a415fc3",
+      "sourcePixelSha256": "72ea392bdb2178a4b6ab74f3682d75a13e0121597220a8aea0d1f87db570bc92",
       "state": "run",
       "trimmed": true
     },
@@ -3969,7 +3969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2df61c1760d8f8fe0053884feacf69de9c14d2c17640c9f13ed203af96130540",
+      "sourcePixelSha256": "b21a026b3bc2d135ff543d06c20684df60aa655def38a421811fe2f82d120368",
       "state": "run",
       "trimmed": true
     },
@@ -3999,7 +3999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "602e8c4609b2853185ae75891725f9ba0b390d1a4b43a31abebcf9ddbe69fb53",
+      "sourcePixelSha256": "00cd6184916463a85b81839d3cd412a65a5fe271c5da18adabe87bc0ac436ed3",
       "state": "run",
       "trimmed": true
     },
@@ -4018,7 +4018,7 @@
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__west__003",
-      "opaquePixels": 1335,
+      "opaquePixels": 1334,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -4029,7 +4029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d524e66409a8205a021627f3ce14bc212adcdf9605be9e1b1c330984e7719f20",
+      "sourcePixelSha256": "793009adf5c4788fb2f5a38b422c67273075e2442ac157539a1e4faa597a1028",
       "state": "run",
       "trimmed": true
     },
@@ -4059,7 +4059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0ead441e7e919f345e978e1d835922e9c3f9fb7e466b2679bc915737397381fb",
+      "sourcePixelSha256": "04745349d5e7c2da4cd45a1b094effa4ac89c637ae99c6cdb22f7038f94f3e47",
       "state": "run",
       "trimmed": true
     },
@@ -4089,7 +4089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8d350be67cfeff82de35980628ba34d2327210f39887419f99d5fe546d63feeb",
+      "sourcePixelSha256": "1d2a9497f6769cbb4624baf4321a154a7e7f0e9d5f75ab3c31c214567572ab49",
       "state": "run",
       "trimmed": true
     },
@@ -4119,7 +4119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ccf2378d5ab71abc6ca8f8d15c01af6d7677da55a36bc40e08e6e152a1927637",
+      "sourcePixelSha256": "05e00d3f199a6f876ca530c609ccfe22fa47a03df75de2bb5004cdc483a35a8d",
       "state": "tell",
       "trimmed": true
     },
@@ -4149,7 +4149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8345969ec5caddce22c4886842385067f5017b5645d8808f9a0417e30e983112",
+      "sourcePixelSha256": "871d36264951079dc1b0e0c70e58c84c07948a9e9d329e078feb80b3753adef4",
       "state": "tell",
       "trimmed": true
     },
@@ -4179,7 +4179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a88b065733d08ad9fe004dca3e256c6c8d664601aa98c372017393c3ea44a774",
+      "sourcePixelSha256": "c41ff9e02d347db80ba75a01c55ccee893f7434a73f538101421c4309bb64f0c",
       "state": "tell",
       "trimmed": true
     },
@@ -4209,7 +4209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "675f222d09c690dd0fce891c6846004ad18cbb3704a43f83862eccb859663fb5",
+      "sourcePixelSha256": "ba736b4ed4eaa8d25e2efdba5ea6bf2c07def9ec9d7cd792b9b78f645856ac4c",
       "state": "tell",
       "trimmed": true
     },
@@ -4228,7 +4228,7 @@
       },
       "frameIndex": 0,
       "id": "forkrunner__body__tell__north-west__000",
-      "opaquePixels": 1634,
+      "opaquePixels": 1633,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -4239,7 +4239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0c1a472b8d3de2556029bf8421464994964914cb3203399a65905227f3f18ecf",
+      "sourcePixelSha256": "eb473ea7f5ed23a3739f3b1edee80afbe589f22678765033f15fe26f0385016c",
       "state": "tell",
       "trimmed": true
     },
@@ -4258,7 +4258,7 @@
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__north-west__001",
-      "opaquePixels": 1612,
+      "opaquePixels": 1611,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -4269,7 +4269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "459b1270724bd513235151737515bf46cd5235aabe2b76eae64f82282a7b1fb0",
+      "sourcePixelSha256": "5d38e06b10884f0ed67738ec79abce4f69fa2b58962b3137f49185d20c07533d",
       "state": "tell",
       "trimmed": true
     },
@@ -4299,7 +4299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "45174a1689803b5f05edf3d980fd98d0fde97d2ed3f1a0b0cbc57716d55fe200",
+      "sourcePixelSha256": "db3020d427bf984ed76aa0bb2be0eff78bde287fa1149ae9a6d395d3f554daad",
       "state": "tell",
       "trimmed": true
     },
@@ -4329,7 +4329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7fabca0d83621748811a2d44d052e857c59460a5f6be08a0eb92b2244ddef6b6",
+      "sourcePixelSha256": "1aeed924161e57eeb0d69d39af70c8608a087e9f4cedb3baa265a74f11f441a5",
       "state": "tell",
       "trimmed": true
     },
@@ -4359,29 +4359,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4fc5d38be818528b09491aa17f7ffd5967619c10f4d7ca6144875e48afe054a5",
+      "sourcePixelSha256": "53cdf8d2b90343184b391f648cd10bff3761290b3dd5da489203d8a8008286eb",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.078947,
+        "x": 0.054054,
         "y": 0.413333
       },
       "direction": "south-east",
       "fps": 6,
       "frame": {
         "h": 75,
-        "w": 38,
+        "w": 37,
         "x": 604,
         "y": 84
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__south-east__001",
-      "opaquePixels": 1691,
+      "opaquePixels": 1689,
       "phase": null,
       "pivot": {
-        "x": 3,
+        "x": 2,
         "y": 31
       },
       "rotated": false,
@@ -4389,7 +4389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5d1427437e75bddf9ae7d07600a916ed14d8d002667541ec86fb2a3d77408399",
+      "sourcePixelSha256": "fe97cc76a683c61e298dfa71956741941dd1a5af0626a2e2be7421fac6fbe029",
       "state": "tell",
       "trimmed": true
     },
@@ -4419,7 +4419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "260d3514ddce1f76bcec43a5c22cb69bb1c1e9c74e9237306ec3523d38a2d235",
+      "sourcePixelSha256": "e659e272b56fb36560e5630bd0500647fbe201919803e0f7ef6d5bed2b282198",
       "state": "tell",
       "trimmed": true
     },
@@ -4433,7 +4433,7 @@
       "frame": {
         "h": 75,
         "w": 37,
-        "x": 644,
+        "x": 643,
         "y": 84
       },
       "frameIndex": 1,
@@ -4449,7 +4449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f50ecdcec35f9bac141fd6b5efaa6b0f7d5aa7166e861fd2749c5812e87103a",
+      "sourcePixelSha256": "45f8fbf4da72fde9b17aa554728a603b8f42162c71b8df0d8b86f667c928c359",
       "state": "tell",
       "trimmed": true
     },
@@ -4463,7 +4463,7 @@
       "frame": {
         "h": 75,
         "w": 40,
-        "x": 683,
+        "x": 682,
         "y": 84
       },
       "frameIndex": 0,
@@ -4479,7 +4479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4c7bf9c8658b709d3aef77104358894d33d69bfd77daff0ca4d0ed07748571af",
+      "sourcePixelSha256": "33f01d1bc56ef4852088ee72d330614fb9065a7fef4d1ea77c5eec9e88b3f470",
       "state": "tell",
       "trimmed": true
     },
@@ -4493,7 +4493,7 @@
       "frame": {
         "h": 75,
         "w": 44,
-        "x": 725,
+        "x": 724,
         "y": 84
       },
       "frameIndex": 1,
@@ -4509,7 +4509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "179282f34fe048703cf1dd046bbbce14c29e6ab63f6562ace47da293bb034a30",
+      "sourcePixelSha256": "15ecba85ac1d54bb3a7a663621908e03603b9785e26cf19ffaf475e30530052b",
       "state": "tell",
       "trimmed": true
     },
@@ -4539,7 +4539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c96477b95a1869a1002971f556139232f5e139acd0a126cde3946688426b5565",
+      "sourcePixelSha256": "ca9a067f95324f3276f3d6b0cc9ce45af8f010b1c2a2a41134585f772c23bfa4",
       "state": "tell",
       "trimmed": true
     },
@@ -4569,7 +4569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4e9d9cb97a40e370f6a1e5794e55bed46458a476589bcb7ff7dbe7ac3f9e7d71",
+      "sourcePixelSha256": "f795fde7eeef31017832e57616e346b42accd8d48e01105cfeb7a40fa4724089",
       "state": "tell",
       "trimmed": true
     }

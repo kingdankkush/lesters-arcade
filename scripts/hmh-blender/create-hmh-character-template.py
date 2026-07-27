@@ -8,6 +8,31 @@ from pathlib import Path
 import bpy
 from mathutils import Vector
 
+# --- shared art direction -------------------------------------------------
+# Every authored-asset pipeline reads the same rig so heroes, enemies and props
+# light identically. See scripts/hmh-blender/hmh-light-rig.json.
+import json as _rig_json
+from pathlib import Path as _RigPath
+
+
+def load_shared_light_rig():
+    path = _RigPath(__file__).resolve().parent / "hmh-light-rig.json"
+    rig = _rig_json.loads(path.read_text(encoding="utf-8"))
+    if rig.get("id") != "hmh-shared-light-rig-v1":
+        raise SystemExit("unexpected light rig id: " + str(rig.get("id")))
+    return rig
+
+
+def shared_light_channels(family):
+    rig = load_shared_light_rig()
+    energy = rig["energy"][family]
+    return [
+        (channel, tuple(rig["colors"][channel]), energy[channel])
+        for channel in ("key", "fill", "rim")
+    ]
+
+
+
 SCENE_TEMPLATE_ID = "hmh_character_template"
 
 
@@ -231,10 +256,14 @@ def create_camera_and_lights(manifest: dict) -> None:
     point_at(camera, target)
     scene.camera = camera
 
+    _placement = {
+        "key": ((4.0, -4.0, 6.0), 4.0),
+        "fill": ((-4.0, -2.5, 4.0), 5.0),
+        "rim": ((0.0, 4.0, 5.5), 3.0),
+    }
     lights = [
-        ("HMH_Key", (4.0, -4.0, 6.0), 900.0, 4.0, (0.78, 0.88, 1.0)),
-        ("HMH_Fill", (-4.0, -2.5, 4.0), 520.0, 5.0, (0.45, 0.64, 1.0)),
-        ("HMH_Rim", (0.0, 4.0, 5.5), 720.0, 3.0, (1.0, 0.74, 0.36)),
+        (f"HMH_{channel.capitalize()}", _placement[channel][0], energy, _placement[channel][1], color)
+        for channel, color, energy in shared_light_channels("hero")
     ]
     for name, location, energy, size, color in lights:
         data = bpy.data.lights.new(f"{name}Data", type="AREA")

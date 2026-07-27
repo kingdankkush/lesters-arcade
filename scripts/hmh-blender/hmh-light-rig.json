@@ -1,0 +1,45 @@
+{
+  "id": "hmh-shared-light-rig-v1",
+  "note": "Single source of truth for the art direction shared by every authored-asset pipeline. Heroes, the enemy roster and the authored props each used to carry their own rig: the rim light was warm orange on heroes, green on enemies and cyan on props, and the fill was cool on two families and warm on the third. Rendered together in one world they read as three different games.",
+  "runtimeAuthority": "projection-only",
+  "contract": "COLOUR is the shared contract and is identical for every family. ENERGY is per-family on purpose: the three scenes are built at different object scales with different cameras, so one shared key/fill/rim ratio does not expose them alike. A first version did share the ratios, and the 0.58 fill it imposed on the props (whose own fill was 0.32 of key) washed the contrast out of every pickup and weapon. Each family therefore keeps the exposure it was tuned at; only the hues moved. Prop fill energy is scaled by the Rec.709 luminance ratio between the old warm fill and the shared cool fill, so switching hue did not silently darken the props.",
+  "direction": {
+    "key": "cool blue-white, high and camera-left",
+    "fill": "deeper blue, low and camera-right, never warm",
+    "rim": "warm gold, behind, the single warm accent that separates a silhouette from the ground"
+  },
+  "colors": {
+    "key": [
+      0.78,
+      0.88,
+      1.0
+    ],
+    "fill": [
+      0.45,
+      0.64,
+      1.0
+    ],
+    "rim": [
+      1.0,
+      0.78,
+      0.42
+    ]
+  },
+  "energy": {
+    "hero": {
+      "key": 560,
+      "fill": 340,
+      "rim": 480
+    },
+    "enemy": {
+      "key": 300,
+      "fill": 120,
+      "rim": 210
+    },
+    "prop": {
+      "key": 428,
+      "fill": 164,
+      "rim": 226
+    }
+  }
+}

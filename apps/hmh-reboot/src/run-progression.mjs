@@ -81,6 +81,29 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     effect: 'outgoingDamageMultiplier',
     amount: 0.03,
   },
+  // The mobility branch held a single upgrade capped at two ranks, so a player
+  // who wanted a mobility build ran out of anything to pick almost immediately.
+  'hot-wallet': {
+    id: 'hot-wallet',
+    branch: 'mobility',
+    title: 'Hot Wallet',
+    mechanicalLabel: '+6% movement speed',
+    description: 'Raise sustained movement speed for the current run. Collision, hitboxes and enemy authority are unchanged.',
+    maxRank: 3,
+    effect: 'moveSpeedMultiplier',
+    amount: 0.06,
+  },
+  'layer-two': {
+    id: 'layer-two',
+    branch: 'mobility',
+    title: 'Layer Two',
+    mechanicalLabel: '+2% movement speed',
+    description: 'A repeatable mastery pick for long runs. Smaller than a core mobility rank, but it never runs out.',
+    maxRank: 25,
+    repeatable: true,
+    effect: 'moveSpeedMultiplier',
+    amount: 0.02,
+  },
   'hardened-wallet': {
     id: 'hardened-wallet',
     branch: 'survival',
@@ -101,6 +124,7 @@ const EFFECT_DEFAULTS = Object.freeze({
   bonusGrenadeCharges: 0,
   scoreMultiplier: 1,
   xpMultiplier: 1,
+  moveSpeedMultiplier: 1,
 });
 
 function validSeed(value) {

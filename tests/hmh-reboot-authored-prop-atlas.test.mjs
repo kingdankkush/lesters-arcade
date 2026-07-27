@@ -13,6 +13,8 @@ import {
   createAuthoredPropAtlasIndex,
   createAuthoredPropDisplay,
   resolveAuthoredLandmarkSignal,
+  AUTHORED_PROP_ASSET_COUNT,
+  AUTHORED_PROP_ASSET_IDS,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
@@ -45,7 +47,10 @@ test('authored prop metadata is complete, projection-only, and provenance-bearin
   const index = createAuthoredPropAtlasIndex(metadata);
   assert.equal(index.pipelineId, AUTHORED_PROP_PIPELINE_ID);
   assert.equal(index.runtimeAuthority, 'projection-only');
-  assert.equal(index.frameById.size, 29);
+  // Pinned to the declared roster, not a literal, so adding a prop does not
+  // require editing a number in two places.
+  assert.equal(index.frameById.size, AUTHORED_PROP_ASSET_COUNT);
+  assert.equal(new Set(AUTHORED_PROP_ASSET_IDS).size, AUTHORED_PROP_ASSET_COUNT, 'prop ids must be unique');
   for (const assetId of Object.values(AUTHORED_PROP_ASSETS).flat()) {
     const frame = index.frameFor(assetId);
     assert.equal(frame.assetId, assetId);

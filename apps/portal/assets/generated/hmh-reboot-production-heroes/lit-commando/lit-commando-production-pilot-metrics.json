@@ -1,19 +1,19 @@
 {
   "actorId": "lit-commando",
-  "atlasSha256": "ce6f731eb1073a759842fb3b76b1df5f01738d4fbf0ada6d8168eb17cf13effc",
+  "atlasSha256": "0bc131b7d20c1b62a89ac37c1576ced737cceb26ddae9b5616f7831a892474a7",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "07288b23d32942715b656427faa2741cc6d2591c0f661098403ce32922a86224",
+  "contactSheetSha256": "5e040eb640d0f10eb189b9b33019d6efe7609ac155bde236faacea9e7eb61007",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "57649dae3a1b633de5047480c360869a8f941d306736b1f59c5a39288c74728e",
+  "metadataSha256": "dd17f76d38cafe0571ae502d44b3fcbac986ac17ee0dbad6f49e78bb73da51ca",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -29,7 +29,7 @@
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "426e0fcfb391545d39ea38776dc5c77ee3b5d7696119ca6157fb709f6762ddf8",
+  "sourceBlendSha256": "763ebde925b284dc703e96384c0009725ad4d5d016a8acf0bf5e586fc7be6133",
   "status": "pass",
   "transparentCornerFailureCount": 0,
   "uniqueAnimatedFrameCount": 640,

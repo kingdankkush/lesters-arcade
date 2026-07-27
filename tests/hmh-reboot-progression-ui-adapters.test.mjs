@@ -41,16 +41,19 @@ test('run progression is deterministic, bounded, and exposes three concrete upgr
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
-test('skill tree has six core upgrades plus repeatable mastery picks and applies only offered choices', () => {
+test('skill tree has seven core upgrades plus repeatable mastery picks and applies only offered choices', () => {
   const core = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable !== true);
   const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
-  assert.equal(core.length, 6);
-  assert.equal(repeatable.length, 2);
+  // Seven core: the mobility branch gained a movement-speed pick, which was
+  // the only branch with a single upgrade capped at two ranks.
+  assert.equal(core.length, 7);
+  assert.equal(repeatable.length, 3);
   assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set(['power', 'survival', 'mobility', 'utility']));
   assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => upgrade.title && upgrade.mechanicalLabel && upgrade.maxRank >= 2));
   // Mastery ranks must stay individually weaker than the core ranks they echo.
   assert.ok(RUN_UPGRADE_CATALOG['compound-interest'].amount < RUN_UPGRADE_CATALOG['proof-of-work'].amount);
   assert.ok(RUN_UPGRADE_CATALOG['hardened-wallet'].amount < RUN_UPGRADE_CATALOG['diamond-hands'].amount);
+  assert.ok(RUN_UPGRADE_CATALOG['layer-two'].amount < RUN_UPGRADE_CATALOG['hot-wallet'].amount);
   const state = cloneProgression();
   recordRunDefeat(state, { enemyId: 'whale', threatCost: 20, tick: 1 });
   const offered = getRunProgressionSnapshot(state).pendingChoices;

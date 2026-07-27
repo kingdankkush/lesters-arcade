@@ -6,7 +6,7 @@ export const AUTHORED_PROP_ITEM_ROOT = '/assets/generated/hmh-reboot-authored-pr
 export const AUTHORED_PROP_ASSETS = Object.freeze({
   weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
   pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
-  powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet']),
+  powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two']),
   worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum']),
 });
 
@@ -63,8 +63,16 @@ function seededUnit(seed, key) {
   return (hash >>> 0) / 0x1_0000_0000;
 }
 
+export const AUTHORED_PROP_ASSET_IDS = Object.freeze([
+  ...AUTHORED_PROP_ASSETS.weapons,
+  ...AUTHORED_PROP_ASSETS.pickups,
+  ...AUTHORED_PROP_ASSETS.powerUps,
+  ...AUTHORED_PROP_ASSETS.worldProps,
+]);
+export const AUTHORED_PROP_ASSET_COUNT = AUTHORED_PROP_ASSET_IDS.length;
+
 export function authoredPropItemUrl(assetId) {
-  if (![...AUTHORED_PROP_ASSETS.weapons, ...AUTHORED_PROP_ASSETS.pickups, ...AUTHORED_PROP_ASSETS.powerUps, ...AUTHORED_PROP_ASSETS.worldProps].includes(assetId)) {
+  if (!AUTHORED_PROP_ASSET_IDS.includes(assetId)) {
     throw new TypeError(`unknown authored prop ${String(assetId)}`);
   }
   return `${AUTHORED_PROP_ITEM_ROOT}/${assetId}.png`;
@@ -177,7 +185,12 @@ export function buildAuthoredPointOfInterestPlacements(pointsOfInterest) {
 export function createAuthoredPropAtlasIndex(metadata) {
   if (metadata?.schemaVersion !== 1 || metadata.pipelineId !== AUTHORED_PROP_PIPELINE_ID) throw new TypeError('invalid authored prop atlas metadata');
   if (metadata.classification !== 'production-art' || metadata.runtimeAuthority !== 'projection-only') throw new TypeError('authored prop atlas authority drifted');
-  if (!Array.isArray(metadata.frames) || metadata.frames.length !== 29) throw new TypeError('authored prop atlas requires 29 certified assets');
+  // Derived from the declared roster rather than a literal: a hard-coded 29
+  // meant every added prop broke this guard with a message naming the old
+  // count, which reads as corruption rather than as "the roster grew".
+  if (!Array.isArray(metadata.frames) || metadata.frames.length !== AUTHORED_PROP_ASSET_COUNT) {
+    throw new TypeError(`authored prop atlas requires ${AUTHORED_PROP_ASSET_COUNT} certified assets, found ${metadata?.frames?.length ?? 0}`);
+  }
   const frameById = new Map();
   for (const frame of metadata.frames) {
     if (frameById.has(frame.assetId)) throw new TypeError(`duplicate authored prop ${frame.assetId}`);

@@ -19,6 +19,31 @@ import sys
 
 import bpy
 
+# --- shared art direction -------------------------------------------------
+# Every authored-asset pipeline reads the same rig so heroes, enemies and props
+# light identically. See scripts/hmh-blender/hmh-light-rig.json.
+import json as _rig_json
+from pathlib import Path as _RigPath
+
+
+def load_shared_light_rig():
+    path = _RigPath(__file__).resolve().parent / "hmh-light-rig.json"
+    rig = _rig_json.loads(path.read_text(encoding="utf-8"))
+    if rig.get("id") != "hmh-shared-light-rig-v1":
+        raise SystemExit("unexpected light rig id: " + str(rig.get("id")))
+    return rig
+
+
+def shared_light_channels(family):
+    rig = load_shared_light_rig()
+    energy = rig["energy"][family]
+    return [
+        (channel, tuple(rig["colors"][channel]), energy[channel])
+        for channel in ("key", "fill", "rim")
+    ]
+
+
+
 
 def blender_args() -> argparse.Namespace:
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -351,9 +376,10 @@ def build_lighting(manifest: dict):
     if hasattr(scene, "view_settings"):
         scene.view_settings.exposure = manifest["render"]["exposure"]
 
+    _channels = dict((name, (color, energy)) for name, color, energy in shared_light_channels("enemy"))
     key = bpy.data.lights.new("HMH_Enemy_Key", type="AREA")
-    key.energy = 300
-    key.color = (0.56, 0.72, 1.0)
+    key.energy = _channels["key"][1]
+    key.color = _channels["key"][0]
     key.size = 5.0
     key_obj = bpy.data.objects.new("HMH_Enemy_Key", key)
     key_obj.location = (2.6, -3.4, 4.4)
@@ -361,8 +387,8 @@ def build_lighting(manifest: dict):
     scene.collection.objects.link(key_obj)
 
     fill = bpy.data.lights.new("HMH_Enemy_Fill", type="AREA")
-    fill.energy = 120
-    fill.color = (0.32, 0.65, 1.0)
+    fill.energy = _channels["fill"][1]
+    fill.color = _channels["fill"][0]
     fill.size = 6.0
     fill_obj = bpy.data.objects.new("HMH_Enemy_Fill", fill)
     fill_obj.location = (-3.2, -2.2, 2.6)
@@ -370,8 +396,8 @@ def build_lighting(manifest: dict):
     scene.collection.objects.link(fill_obj)
 
     rim = bpy.data.lights.new("HMH_Enemy_Rim", type="AREA")
-    rim.energy = 210
-    rim.color = (0.65, 1.0, 0.82)
+    rim.energy = _channels["rim"][1]
+    rim.color = _channels["rim"][0]
     rim.size = 4.0
     rim_obj = bpy.data.objects.new("HMH_Enemy_Rim", rim)
     rim_obj.location = (0.4, 3.6, 3.4)
@@ -426,3 +452,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -9,6 +9,7 @@ import { ENEMY_ROSTER_ACTORS, createEnemyRosterAtlasIndex, enemyRosterAsset } fr
 import { AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, createAuthoredPropAtlasIndex } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from '../apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs';
 import { readRgbaPng } from './sprite-qa.mjs';
+import { AUTHORED_PROP_ASSET_COUNT } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
@@ -124,7 +125,9 @@ const propImagePath = portalPath(AUTHORED_PROP_ATLAS_IMAGE_URL);
 const propMetadata = JSON.parse(readFileSync(portalPath(AUTHORED_PROP_ATLAS_METADATA_URL), 'utf8'));
 const propPngReport = validatePng(propImagePath, 'hmh-authored-props');
 const propIndex = createAuthoredPropAtlasIndex(propMetadata);
-assert.equal(propMetadata.assetCount, 29, 'hmh-authored-props asset count');
+// Pinned to the runtime's declared roster rather than a literal, so the gate
+// tracks the prop set instead of needing an edit each time one is added.
+assert.equal(propMetadata.assetCount, AUTHORED_PROP_ASSET_COUNT, 'hmh-authored-props asset count');
 assert.ok(propPngReport.imageBytes <= maxPropAtlasBytes, 'hmh-authored-props atlas exceeds maxPropAtlasBytes');
 const propMetrics = JSON.parse(readFileSync(path.join(path.dirname(propImagePath), 'hmh-authored-props-metrics.json'), 'utf8'));
 assert.equal(propMetrics.status, 'pass', 'hmh-authored-props metrics status');

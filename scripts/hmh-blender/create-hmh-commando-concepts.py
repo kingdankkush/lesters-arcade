@@ -9,6 +9,30 @@ import sys
 import bpy
 from mathutils import Vector
 
+# --- shared art direction -------------------------------------------------
+# Every authored-asset pipeline reads the same rig so heroes, enemies and props
+# light identically. See scripts/hmh-blender/hmh-light-rig.json.
+import json as _rig_json
+from pathlib import Path as _RigPath
+
+
+def load_shared_light_rig():
+    path = _RigPath(__file__).resolve().parent / "hmh-light-rig.json"
+    rig = _rig_json.loads(path.read_text(encoding="utf-8"))
+    if rig.get("id") != "hmh-shared-light-rig-v1":
+        raise SystemExit("unexpected light rig id: " + str(rig.get("id")))
+    return rig
+
+
+def shared_light_channels(family):
+    rig = load_shared_light_rig()
+    energy = rig["energy"][family]
+    return [
+        (channel, tuple(rig["colors"][channel]), energy[channel])
+        for channel in ("key", "fill", "rim")
+    ]
+
+
 
 def blender_args() -> argparse.Namespace:
     argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
@@ -270,10 +294,17 @@ def configure_scene(manifest):
     camera.rotation_euler = (Vector((0, 0, 1.0)) - camera.location).to_track_quat("-Z", "Y").to_euler()
     scene.camera = camera
 
+    _placement = {
+        "key": ((2.5, -3.2, 4.8), 3.0),
+        "fill": ((-3.5, -1.0, 3.0), 2.6),
+        "rim": ((2.0, 3.5, 4.0), 2.2),
+    }
     lights = [
-        ("Key", "AREA", (2.5, -3.2, 4.8), 560, (0.56, 0.72, 1.0), 3.0),
-        ("Fill", "AREA", (-3.5, -1.0, 3.0), 340, (0.32, 0.65, 1.0), 2.6),
-        ("Rim", "AREA", (2.0, 3.5, 4.0), 480, (0.65, 1.0, 0.82), 2.2),
+        (
+            channel.capitalize(), "AREA", _placement[channel][0],
+            energy, color, _placement[channel][1],
+        )
+        for channel, color, energy in shared_light_channels("hero")
     ]
     for name, light_type, location, energy, color, size in lights:
         light_data = bpy.data.lights.new(name, light_type)

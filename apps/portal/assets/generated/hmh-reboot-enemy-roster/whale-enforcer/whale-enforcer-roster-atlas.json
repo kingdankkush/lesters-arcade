@@ -28,7 +28,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__attack__east__000",
-      "opaquePixels": 2815,
+      "opaquePixels": 2814,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -39,7 +39,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bbab59dfb3da3d428ace0e0ea15a13ee3cefb9f575330cd3020e232e6b79d058",
+      "sourcePixelSha256": "0897890e35fa50aad8cce42bbdd99f7da635379d1340c07ad7a4e176077ef162",
       "state": "attack",
       "trimmed": true
     },
@@ -69,7 +69,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5303c237f670693674bdce104b1fa56343c8a17296bae0b58a62ae860d09afac",
+      "sourcePixelSha256": "5a101c360f7e14ab62ee1f7c4f5e09ec82cc4cbe74609e29996dbc21ade2b8cb",
       "state": "attack",
       "trimmed": true
     },
@@ -99,7 +99,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9667458b2e18d671dbf2a158e9c6f2dcebfc9ffc705acf3047c09bad327a2b88",
+      "sourcePixelSha256": "37c2503324927d0de4160836357b7b25199c81163aba28c4e134062eea5b7bde",
       "state": "attack",
       "trimmed": true
     },
@@ -129,7 +129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ed8431256d0e1a9749a554ca1b1584b210a10a34b5ec1bea9adb85f871b728a8",
+      "sourcePixelSha256": "8d4129ee28590393459a2c541c69bd8668ad9c577354d5f3e303cb19a8b0b4a2",
       "state": "attack",
       "trimmed": true
     },
@@ -148,7 +148,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__attack__north-east__001",
-      "opaquePixels": 3947,
+      "opaquePixels": 3946,
       "phase": null,
       "pivot": {
         "x": 30,
@@ -159,7 +159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1bbfec09611fd54d83afa47ab06b117d89e978dcf126b6beeb8e16064c7c70e3",
+      "sourcePixelSha256": "10d482bcdead2d49e755767bc9ed0413afb5e406b98a6292508db53da1b44b3c",
       "state": "attack",
       "trimmed": true
     },
@@ -189,7 +189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2ed7085077c5d15e9efedc3987ff54e60fa567c695823c7ca9a756e25228be6f",
+      "sourcePixelSha256": "cc530f5afaa0154009b05eddbf4e67ec3326197e2cb7e03660eb450a48a22aca",
       "state": "attack",
       "trimmed": true
     },
@@ -208,7 +208,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__attack__north-west__000",
-      "opaquePixels": 3987,
+      "opaquePixels": 3986,
       "phase": null,
       "pivot": {
         "x": 25,
@@ -219,7 +219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "94c467d7a756371129d8a5f9a869d2eb2c56b227b795ed56bfcca8df3cbc7cce",
+      "sourcePixelSha256": "3c0fd046360ce5a23ada27ea2b1621d8ab1d65f14c63e4b976a7cf6284dabfc4",
       "state": "attack",
       "trimmed": true
     },
@@ -238,7 +238,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__attack__north-west__001",
-      "opaquePixels": 4010,
+      "opaquePixels": 4008,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -249,7 +249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3b3acbccc2db03fc1e561205d8e45089f2f56ca46c07dbf52daf7b9f6471cc3c",
+      "sourcePixelSha256": "e9716097193603b1327be4af0020410c481af05e936da1b93fb0e66829c0e35c",
       "state": "attack",
       "trimmed": true
     },
@@ -268,7 +268,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__attack__north-west__002",
-      "opaquePixels": 3656,
+      "opaquePixels": 3654,
       "phase": null,
       "pivot": {
         "x": 25,
@@ -279,7 +279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e65a5c44ac0a8bd108fbd041fc2bfc902763c3e1c8678450af8834223bb34f9b",
+      "sourcePixelSha256": "81cabfa1d909dc2c62cccc47ce2abad8a3ec1cfc49f20bd5123bef5d51c2e486",
       "state": "attack",
       "trimmed": true
     },
@@ -309,7 +309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b6110c95c44c7340590c002f5e9748c8e5b042637b856dbb98f98bd1610e82d7",
+      "sourcePixelSha256": "d41ffe475aa6b4e444791bdcb58a2ab7d85205c7ab311f66b3de25090f8670a9",
       "state": "attack",
       "trimmed": true
     },
@@ -328,7 +328,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__attack__north__001",
-      "opaquePixels": 4145,
+      "opaquePixels": 4144,
       "phase": null,
       "pivot": {
         "x": 40,
@@ -339,7 +339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "980a164e39964d84a423653dc445daf996e6073f9b55a46fbaaedee7092cdf53",
+      "sourcePixelSha256": "2061d839a53dc6dbf92ffbae0ce35a6503b050e738265502469721d51188121d",
       "state": "attack",
       "trimmed": true
     },
@@ -358,7 +358,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__attack__north__002",
-      "opaquePixels": 4016,
+      "opaquePixels": 4015,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -369,7 +369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "580633cde73c0d10690be2895fea65b870cf775b85dae7de4408e7a633df9539",
+      "sourcePixelSha256": "973c2423b423edeba5b47f3363ce4842dfda67c673f54e2ca7ab5222e9bea38c",
       "state": "attack",
       "trimmed": true
     },
@@ -388,7 +388,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__attack__south-east__000",
-      "opaquePixels": 3008,
+      "opaquePixels": 3007,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -399,7 +399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1264e35866acbbea0ebe548114b7083e08f2cbd6b4546d70eea1a30c8e993114",
+      "sourcePixelSha256": "6da87a711008bc6015b3b52600535b177b53bbfba57ed0434987d09bd4e99558",
       "state": "attack",
       "trimmed": true
     },
@@ -429,7 +429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7e1f272665fe2543e0840ddeb2012be6867d7d40f370e8459fd1ed97218f8e40",
+      "sourcePixelSha256": "a3eaa649a4c4d79991d4ec6dff79c9ce427392060d9656c383504d78fcfe2d46",
       "state": "attack",
       "trimmed": true
     },
@@ -448,7 +448,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__attack__south-east__002",
-      "opaquePixels": 3998,
+      "opaquePixels": 3997,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -459,7 +459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2da3a96292eb90cf361936a9f8f3f2138d144ac6dcf5e2e5d17a94ad8dc47e4a",
+      "sourcePixelSha256": "63d5e9f6ebc3d72580bbfda33114e3bc67e3d5be0cfb282d2f9d22040518bcb5",
       "state": "attack",
       "trimmed": true
     },
@@ -489,7 +489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0980bdd24d5f7e383d17a8768e140dd21fb35da7c4341158e7f792037c45ec1c",
+      "sourcePixelSha256": "92440c401c03a57291784e6b241f1b5b72b6a5aede6ffa694901bc2968f4c80a",
       "state": "attack",
       "trimmed": true
     },
@@ -508,7 +508,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__attack__south-west__001",
-      "opaquePixels": 3354,
+      "opaquePixels": 3351,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -519,7 +519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "44390f866ccaa713e1b597a78ea4749d53b38465f8b3583f5c2021afc503f329",
+      "sourcePixelSha256": "c282d295ad50f5f9f3c3797803e222af0ea1659d33e865e49abdb3b60354cbc0",
       "state": "attack",
       "trimmed": true
     },
@@ -549,7 +549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dd323c11be9f1ff214c17e6ab7ec60a92ae5669dd6c2d5320eb53fcb97575ca0",
+      "sourcePixelSha256": "fc7552f1c9921d103090b656c564f440b816450972dd7cbbb8b1e032e6465b98",
       "state": "attack",
       "trimmed": true
     },
@@ -579,7 +579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1afe672a76b6c4985e4e2dd3f444b62cc6e422e056fe3ff0d332233e6ae53de0",
+      "sourcePixelSha256": "69fe1368c84547290f8f30e7ff5e498d49cbf0c717f9535ff35c2a9094a227bc",
       "state": "attack",
       "trimmed": true
     },
@@ -598,7 +598,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__attack__south__001",
-      "opaquePixels": 3715,
+      "opaquePixels": 3714,
       "phase": null,
       "pivot": {
         "x": 40,
@@ -609,7 +609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f37bc4a038d1099b4410bef5750c3496b528959559b0a7f29f2ed68c01744edb",
+      "sourcePixelSha256": "f52a1c145fb9effee6b128cebc1f7a0e188a94e3db7c6ea8a285b5875cdc9a15",
       "state": "attack",
       "trimmed": true
     },
@@ -628,7 +628,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__attack__south__002",
-      "opaquePixels": 4252,
+      "opaquePixels": 4251,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -639,7 +639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3bdd7da84249f0ea93086bee5cfe7022b94f46c7c211c074ff99142bb71a81cf",
+      "sourcePixelSha256": "e4e92a9741091767dfdb7164f01305255f12d3b7c3216d585f8973250656b150",
       "state": "attack",
       "trimmed": true
     },
@@ -669,7 +669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d06d7f51f8aa2cf7241bf28366c05753247695437cc03b3d9d2357f3209d598a",
+      "sourcePixelSha256": "a2a19749fa1ed871fe4d47878f53318a2af6c9a07c2b08c0b0522ea7371d56d7",
       "state": "attack",
       "trimmed": true
     },
@@ -699,7 +699,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2104ff6309b02e8c2cbe3534a0258aa5fd7da4dd8dbe7bed68ee00978fe95ec7",
+      "sourcePixelSha256": "6a4788c3880abce55d2ecc21b23bd4bd1059c72f3e5403886fc5fd3d19e7624a",
       "state": "attack",
       "trimmed": true
     },
@@ -729,7 +729,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "57628340246c6dbe60807314680c4274326f050fc6e97c88656658e2f061ba7c",
+      "sourcePixelSha256": "a5e996f7d5015df6cad55bff5133472e04b9cdf488615c06bc020b60c4c238f6",
       "state": "attack",
       "trimmed": true
     },
@@ -748,7 +748,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__death__east__000",
-      "opaquePixels": 2023,
+      "opaquePixels": 2022,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -759,7 +759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c09f7486b8592d4e0b06a1362c4b7c77390e099b87427bdf2adfe0ec165620d8",
+      "sourcePixelSha256": "143fd2a12359c64160b83dff8d679f3769e3dbcef50bfdb907b32c46494a0c12",
       "state": "death",
       "trimmed": true
     },
@@ -789,7 +789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6f5322cbdef9015544c6e24e7fe256efb87da4d23ef2a31caf937013ebbec4fc",
+      "sourcePixelSha256": "4be059841a4e610d4ae5fc70184369f714a3531f99ffbfe0e24081d8ab90c06b",
       "state": "death",
       "trimmed": true
     },
@@ -819,7 +819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ceaab9fbd6c231dcb54771cc8a0c57e8058d433a9c0a485372158e108b2b9850",
+      "sourcePixelSha256": "5ef624a7b7bff9fb5f5cc37f1557ca0c1262e717ff3ac3bf79761b777e65cc84",
       "state": "death",
       "trimmed": true
     },
@@ -849,7 +849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2af36bb7b7c2c7f01f14a87ab49884639418cecc1ec8781d34434881a285aed1",
+      "sourcePixelSha256": "893e19bc5693c2cc5474ac2c11f697ca3120eec51341b9d0f00f29b828f36530",
       "state": "death",
       "trimmed": true
     },
@@ -879,7 +879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b584a1563fdd13a8bb7bfb258f58d8b264d80ebe8344b19065e4e03744ff6dc7",
+      "sourcePixelSha256": "7da2b36be1b4da047e79dfda1438bfa2541e252f490c77926420aeb1a5f58234",
       "state": "death",
       "trimmed": true
     },
@@ -898,7 +898,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__death__north-east__001",
-      "opaquePixels": 4227,
+      "opaquePixels": 4226,
       "phase": null,
       "pivot": {
         "x": 21,
@@ -909,7 +909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "331722f26f0a442a3897f84c1c088c8c843fbda67f85aa1f9f9274a76cea7e7e",
+      "sourcePixelSha256": "04889c452e5f3323ca2ef5abba87165e2fbab651b1063e013a5daaa1332cea9e",
       "state": "death",
       "trimmed": true
     },
@@ -939,7 +939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cf093e380516ee871ee72aa27691a355aa1f5b4a55bc5a08d72e7e2e97acfa22",
+      "sourcePixelSha256": "34b9a64010487d0ba3d01b7891d1a90d1248e9c5a2c402ec30bc808e69bb07a2",
       "state": "death",
       "trimmed": true
     },
@@ -969,7 +969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e82908c647f9e559b1f71d6864b035be77458fb10773ace67ce32cfb3855ee6f",
+      "sourcePixelSha256": "0498ab1bd28dd6f623e111e6749d9b0e34d7b74ab3ee27f0a8b9149d7da49796",
       "state": "death",
       "trimmed": true
     },
@@ -988,7 +988,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__death__north-west__000",
-      "opaquePixels": 3877,
+      "opaquePixels": 3876,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -999,7 +999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f8b6e523bf675b549c8512fe736e20ab5a4940d8cd61a02f100c2800dc27f44e",
+      "sourcePixelSha256": "c1ddfd579cb4ecaf0a7c31c93c800d0c1c63f36eadb5a37edc80a0eccd202d70",
       "state": "death",
       "trimmed": true
     },
@@ -1018,7 +1018,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__death__north-west__001",
-      "opaquePixels": 4275,
+      "opaquePixels": 4274,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -1029,7 +1029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "638937b7bd022635d2b8e4509fb951bd0cf087886bfd8ecacc8b2f04683ba1c4",
+      "sourcePixelSha256": "836e6548cc3e4348448bf383944e6863f8bc72f5a86d953dba94d49663ee8c52",
       "state": "death",
       "trimmed": true
     },
@@ -1048,7 +1048,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__death__north-west__002",
-      "opaquePixels": 3641,
+      "opaquePixels": 3640,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -1059,7 +1059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2de1ef693406586d7483de5ebf4fef7a4ca5a018b8c87320135d810ec377ad84",
+      "sourcePixelSha256": "b1a777882d0d9b53cce5971bfaeab36a4c18ad0bab6db047f422814897757c8c",
       "state": "death",
       "trimmed": true
     },
@@ -1089,7 +1089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "eac699903299da8609f608f93c42c0113f65223bb99314a856a9208a0f37fd46",
+      "sourcePixelSha256": "7b3e849da9cf2686edf5b79bfc8b047b657ccf45a90c1aafd95e09e3a0977936",
       "state": "death",
       "trimmed": true
     },
@@ -1119,7 +1119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "390f24bfe7eaa377f4becedea19d95992891105415c53e330cc3d364c057180c",
+      "sourcePixelSha256": "c0d7309e106fd8f5499fdcac8585d2211525e146634642bbbaf4f4dba2f12eca",
       "state": "death",
       "trimmed": true
     },
@@ -1138,7 +1138,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__death__north__001",
-      "opaquePixels": 4245,
+      "opaquePixels": 4242,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -1149,7 +1149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cacaf8590d5bf7df8237307b21d94f81aa1d94d34ae75b69a6e1c263cee04783",
+      "sourcePixelSha256": "12215562d8678118289f7e2f3733eedc02a9af5541022722c34102e4e86cbdbf",
       "state": "death",
       "trimmed": true
     },
@@ -1168,7 +1168,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__death__north__002",
-      "opaquePixels": 3575,
+      "opaquePixels": 3574,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -1179,7 +1179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1c3404f53b2d2a05b9a7e38c69da58139937cf5100b8208ac08919aa9d210df9",
+      "sourcePixelSha256": "7cab9d0a5a2bf5a243bdef6aee9b63e489491bedc13f5b3d8a2c4a2cd91f960c",
       "state": "death",
       "trimmed": true
     },
@@ -1209,7 +1209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f3ef5e7a2f83f922dcd67cc7d26cab138fe018fbd8af4f5169dcf64dd4af01d0",
+      "sourcePixelSha256": "3b56dec49c2724c448fc42e164286963a1cbae3f061eed0075ff18be2cf7dc81",
       "state": "death",
       "trimmed": true
     },
@@ -1239,7 +1239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1ced559ed33908dc7da093757ad853b87d236015a8fdfea985c91084ee4d2127",
+      "sourcePixelSha256": "1b804bc1402080a45a280c5da632d8b0cf9a13acef556836814d28fc6c7f4db0",
       "state": "death",
       "trimmed": true
     },
@@ -1269,7 +1269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4390e139e0ca319506a70433bd6b263e6df73373a5a6e10b54a824e63d2b4b33",
+      "sourcePixelSha256": "0cb61d08b2a40ecebd725999de4c2aec63b5e57b6034cf65192136ad7e86bbb6",
       "state": "death",
       "trimmed": true
     },
@@ -1299,7 +1299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6fa1bb60efb9ee3b8d852ad5d7db5c5a050ead4473e1299b1f9380b723b6e625",
+      "sourcePixelSha256": "06d6d4cc27796e69f7531efd486f8d22d7d5bb8d65651c2e7db52d350b89b270",
       "state": "death",
       "trimmed": true
     },
@@ -1329,7 +1329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9ca8b8a9b9da5f951552f2fc5cb69aaa9ff3d33a3f50412ab9ad32ddd4ec6ece",
+      "sourcePixelSha256": "9bfaa4c4b8e102a804e0d94e519a6aed982a77b938e14e699702340b59026338",
       "state": "death",
       "trimmed": true
     },
@@ -1359,7 +1359,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cbcdb2f79eac6046e7ce7c8df34b241812fddab8db6a308bab95cdbd710ab883",
+      "sourcePixelSha256": "e6391253fa2fe2efcbd01602116996bc6bed3b0e27ae50565e59e5c140a31474",
       "state": "death",
       "trimmed": true
     },
@@ -1389,7 +1389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5a63aa1f2dc5ab01c380499b65d8b2c34e0b8245a29226175f8e8a81307b3db1",
+      "sourcePixelSha256": "6c012816f72f249319299711f79990602a12f77fea86cbdc72a95e6011115ea3",
       "state": "death",
       "trimmed": true
     },
@@ -1419,7 +1419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "19636d5f07523d94170c396a0fb34fa12d4e6a2259c2080b06b94f7052129474",
+      "sourcePixelSha256": "6cf6087cc4a7f5af1fdf5e71ec371014e3e171bb308d7ea63586fbd7958d1c44",
       "state": "death",
       "trimmed": true
     },
@@ -1449,7 +1449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "39406c43e4ee8bf1a3d7029b1ba863b65f728f8b598bc7477f68ad7ea311a6bc",
+      "sourcePixelSha256": "22bf30f491f20de9d41033cd13f8bea9c23440a8cd3e8adf2816c4022daa622b",
       "state": "death",
       "trimmed": true
     },
@@ -1468,7 +1468,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__death__south__000",
-      "opaquePixels": 4071,
+      "opaquePixels": 4070,
       "phase": null,
       "pivot": {
         "x": 37,
@@ -1479,7 +1479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7830f1415b6ce5e1610730d552eb47c8a8f7de746c5ded52e3d9896abdf469a4",
+      "sourcePixelSha256": "c92e077b8e1d4e1e3eab55af25a830524cf255028523ab501279be962234d1e7",
       "state": "death",
       "trimmed": true
     },
@@ -1509,7 +1509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a13c0d803cc1a1df885b1d0657c1674a0a793502e697f66f79ad13349a774d01",
+      "sourcePixelSha256": "cbdf1c5b9ac22bd7cf9e525e7efcc98ad979ed17af18891f9168c6b536ab60ba",
       "state": "death",
       "trimmed": true
     },
@@ -1528,7 +1528,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__death__south__002",
-      "opaquePixels": 2861,
+      "opaquePixels": 2860,
       "phase": null,
       "pivot": {
         "x": 25,
@@ -1539,7 +1539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "968d0432063f09cb76bc4f254d2517f6b83e02c2df4cbcaaf922d19d50892a91",
+      "sourcePixelSha256": "4e1cdb9ad38a5bf59f00f373135fdc023ac2e68ec6f91dd59bbecd56fd972504",
       "state": "death",
       "trimmed": true
     },
@@ -1558,7 +1558,7 @@
       },
       "frameIndex": 3,
       "id": "whale-enforcer__body__death__south__003",
-      "opaquePixels": 3443,
+      "opaquePixels": 3442,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -1569,7 +1569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6ab9e0cab9e9e4ba307c33c61472adca5d8fdad3df2c681a0bfc911e450ca7f2",
+      "sourcePixelSha256": "a3b0e58ef473b83a826970e4080351d569afd6c05aed69facf4e85e068c1928a",
       "state": "death",
       "trimmed": true
     },
@@ -1599,7 +1599,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "31c74e52f2c9c43b2045c8ec77d8a8bff108f3fd188c28ffb9bb41dba05d2eae",
+      "sourcePixelSha256": "efb96cba7d4c29d9b3a3c55f6878f0f130a6723f1b89d17a22c08c8fbcddb4ee",
       "state": "death",
       "trimmed": true
     },
@@ -1618,7 +1618,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__death__west__001",
-      "opaquePixels": 3006,
+      "opaquePixels": 3005,
       "phase": null,
       "pivot": {
         "x": 30,
@@ -1629,7 +1629,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b20fbfc1a18965f004d99f9886488dfa70db2a16c2f853673dc1523ab88eeaa9",
+      "sourcePixelSha256": "35753705f1963c7f5db376cab495f7cacf633b801a4f6207a6fdb355bf4a88ac",
       "state": "death",
       "trimmed": true
     },
@@ -1648,7 +1648,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__death__west__002",
-      "opaquePixels": 3306,
+      "opaquePixels": 3305,
       "phase": null,
       "pivot": {
         "x": 33,
@@ -1659,7 +1659,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "65a4d76c440b86ef1b46b53ae259576fa7244ff6fcb8eb67a7ed2e53a0212ba2",
+      "sourcePixelSha256": "737da44aeceb2411c6a3180901238f161dc7f0b889a275d047ab2b991f706233",
       "state": "death",
       "trimmed": true
     },
@@ -1689,7 +1689,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "26c5bea5e770dd16a34ae80040b0dab9aee300e810048491414f2e4963bc67a9",
+      "sourcePixelSha256": "dbbb0ac88ea3de9e59e0e5bfc749d926ab954ea41d70d58666f28ad2a8f83feb",
       "state": "death",
       "trimmed": true
     },
@@ -1708,7 +1708,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__hit__east__000",
-      "opaquePixels": 2312,
+      "opaquePixels": 2311,
       "phase": null,
       "pivot": {
         "x": 1,
@@ -1719,7 +1719,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "92365626ce750d6053ab10b4166a62e6c9ab7b19bb6397152182f2d98ecce889",
+      "sourcePixelSha256": "ff491cd8bbe862956f8486c161a68a39ca04ec6966334291f1025c05912b0141",
       "state": "hit",
       "trimmed": true
     },
@@ -1749,7 +1749,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9fa6cc571c967a3b66a40e341c8a4ee1c1d8e9f535e261fecf8bc0de76dd253f",
+      "sourcePixelSha256": "d6d84eb1f1d6b6f195059fad6132c343a8ff411e9d3b9cb6fd0008604878f8fb",
       "state": "hit",
       "trimmed": true
     },
@@ -1779,7 +1779,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "09cc3c46664430a014c82a68452c31b043d30549796a47d473482d28d4ba58ac",
+      "sourcePixelSha256": "99287436de978f2d14e20eb23a33c6c72f301466af759dadaab4bc0e96904c99",
       "state": "hit",
       "trimmed": true
     },
@@ -1809,7 +1809,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "39fcbba1628734eb3419dd4a098c933ba5840b4ed587fa3ef99b3bdec07ce0ce",
+      "sourcePixelSha256": "d0958a7bf36043c8192683201dc4b2f821387f2d55ed465b6be6ea442ae1b993",
       "state": "hit",
       "trimmed": true
     },
@@ -1828,7 +1828,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__hit__north-west__000",
-      "opaquePixels": 4179,
+      "opaquePixels": 4176,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -1839,7 +1839,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7beb8a4e6d079554064121f345372134de46e2300344a7173fca2330531393a4",
+      "sourcePixelSha256": "a7f611b8b8b2538df4b298109164373afb94f17b6325320c422f0fbe4bca361e",
       "state": "hit",
       "trimmed": true
     },
@@ -1858,7 +1858,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__hit__north-west__001",
-      "opaquePixels": 3507,
+      "opaquePixels": 3505,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -1869,7 +1869,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "61d94c150cfc0d56742787669ef0ce190f2b41c32b3d7053aa9e51ecdcd713d6",
+      "sourcePixelSha256": "ba664ce62c5e13adb8f74af5270c55d06a7c9cbe79f44ade22e0f4648388bd64",
       "state": "hit",
       "trimmed": true
     },
@@ -1899,7 +1899,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fad8c81c4e17835632be53c485a54e63f19354446a0e36ded18dd25b2fcf945a",
+      "sourcePixelSha256": "575c187a9999b1b6893916e8f7ac68e93bfc8415e1ef3c50ac938de08cc203de",
       "state": "hit",
       "trimmed": true
     },
@@ -1918,7 +1918,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__hit__north__001",
-      "opaquePixels": 4312,
+      "opaquePixels": 4311,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -1929,7 +1929,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d29d3fb6ee32cb51574dfe6c8ccb02676dec1ce46f19ccea15c45352b547866b",
+      "sourcePixelSha256": "7d113f5c0f6c665ec77d5326f3699514cc2630a807b54075c947a319fdf4d1c9",
       "state": "hit",
       "trimmed": true
     },
@@ -1948,7 +1948,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__hit__south-east__000",
-      "opaquePixels": 3889,
+      "opaquePixels": 3888,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -1959,7 +1959,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7150115d40c8a4c80d517045506b4ca4672414015ea57da7fdc2dfc671973850",
+      "sourcePixelSha256": "a9b9976b16622bdf4d055b127987ee20b58e0aa2dff49d4d8e7521aa33e1b6c5",
       "state": "hit",
       "trimmed": true
     },
@@ -1989,7 +1989,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f5e7f03054280d2a326be73e73f5b70d9a98c5bc4723e488b667c69619cca24e",
+      "sourcePixelSha256": "b74934753a71da6ae58e701c1722a0f6e3e494e3e490e86525ec9784c41b7e2d",
       "state": "hit",
       "trimmed": true
     },
@@ -2019,7 +2019,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "74c3fe56d761239f3abce75b93601cd6d2c0c7925146abd981f40d8e328287c7",
+      "sourcePixelSha256": "bd5b5d47892501a3d8f91db2ec0257695e7f16c2fc4abb43f4fe1ef562afd6be",
       "state": "hit",
       "trimmed": true
     },
@@ -2038,7 +2038,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__hit__south-west__001",
-      "opaquePixels": 3830,
+      "opaquePixels": 3829,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -2049,7 +2049,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3add618cc9f3cf740cb1d8bf27a0662756b6e69b9061dec5dbd7588343170007",
+      "sourcePixelSha256": "45d067168dd24d80445995011dc0d4865550b989acfe1180240c0364690fe217",
       "state": "hit",
       "trimmed": true
     },
@@ -2079,7 +2079,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4bc34338f5c224e301beb4de410c4cfb7119dda76513faedfcbbb7264b7b19e4",
+      "sourcePixelSha256": "ead8cde60e9f52914c2a82634c06e6bba295ca1493075bd8a656abe78508e9b1",
       "state": "hit",
       "trimmed": true
     },
@@ -2098,7 +2098,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__hit__south__001",
-      "opaquePixels": 4036,
+      "opaquePixels": 4035,
       "phase": null,
       "pivot": {
         "x": 33,
@@ -2109,7 +2109,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5cd7591dfc33f00ba1b247020183f824850f71cca4cb78edd830d661bd471c94",
+      "sourcePixelSha256": "7d05b943e3a832c350bb8c86360ecfae17404f75cb4c0e60e1d9b1a08bb7d42a",
       "state": "hit",
       "trimmed": true
     },
@@ -2139,7 +2139,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7ec328fb7f24b51911a8ba554209b7b5004b500fb3a4b24d6e5a74aeedca66f1",
+      "sourcePixelSha256": "32082c0f1cb5f9e0b36e1b6a2a5c1022c64e3e88b40d9ca4ff2aa8f4b10b345c",
       "state": "hit",
       "trimmed": true
     },
@@ -2158,7 +2158,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__hit__west__001",
-      "opaquePixels": 2453,
+      "opaquePixels": 2451,
       "phase": null,
       "pivot": {
         "x": 2,
@@ -2169,7 +2169,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9cfd5aba4225666452140e3a9ad29f54c28911b22f06830b820c71b35bbb98e8",
+      "sourcePixelSha256": "fd45e23e7f50b7afc2ea35bd55641ecf722ad90e4e819589f31a0a98508b361b",
       "state": "hit",
       "trimmed": true
     },
@@ -2199,7 +2199,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b942b33e74a7688acd278567c295eac1f735a50b7ab1bc1b867a3a40d826b92c",
+      "sourcePixelSha256": "27a38c0cfe922c1424abe951a3f99cc6cbc142e99a86787082d8e8aeca4c6073",
       "state": "idle",
       "trimmed": true
     },
@@ -2229,7 +2229,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "332dc6bd19087cc57395ce8ad3238926eec68acad1099f5864ffc29bc349b09f",
+      "sourcePixelSha256": "c9c5a7a4917fee3575c9fe6699081d9b58e862d85a86f563c7bbb655c7780b15",
       "state": "idle",
       "trimmed": true
     },
@@ -2259,7 +2259,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "66ef376238d389622b6ca3ae23002405edfa0128e1c8413b5785327b2b5ab164",
+      "sourcePixelSha256": "2e1a479a31621ac382546537074694d94da9efcdb7d0bf4bae0cfdb74bd65907",
       "state": "idle",
       "trimmed": true
     },
@@ -2289,7 +2289,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "518d347c8840317fdf2209d4031f585dee21042a4a1710a64f13c74442fe2467",
+      "sourcePixelSha256": "26cc8e7336e13e8bfcd058166111470dc7a6847b1118bc5f8b94ae0d32f60c89",
       "state": "idle",
       "trimmed": true
     },
@@ -2308,7 +2308,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__idle__north-west__000",
-      "opaquePixels": 3915,
+      "opaquePixels": 3914,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -2319,7 +2319,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f6a5bf0f67721dce5a6e995d06bc6397e721f9070a75885aa39bcca4db8657de",
+      "sourcePixelSha256": "5dad71111e14aea4cddda6c3f23fdd3ebe4cf3f1d7f6395cb42d51fb79e57222",
       "state": "idle",
       "trimmed": true
     },
@@ -2349,7 +2349,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b005c33d402363e301799dbaa781a9e97b86d2600c2f7292adda5c761a8a8e3f",
+      "sourcePixelSha256": "23ec4d5dbfde8cebd8e84ae9240f37c27f8b3bbd3a01c7e1decb787940932bdf",
       "state": "idle",
       "trimmed": true
     },
@@ -2379,7 +2379,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e034a359d0975e6fd8f236ac2c86be78a1c7ffa5115079ee2733d7d12141aa6a",
+      "sourcePixelSha256": "77da16b6ec75d8b68ebd7dd2b4bf9ea8e8c34dd26f7a1a160a6abee283a0fc39",
       "state": "idle",
       "trimmed": true
     },
@@ -2409,7 +2409,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0ba709acb20cafb1cf615f48ea2f241e834cdb16ca66c9aff462e49170a1df03",
+      "sourcePixelSha256": "938a7a944e90cefe78ccf6bb2777a2e3acc101445d4a046dd039f3fcff9595f8",
       "state": "idle",
       "trimmed": true
     },
@@ -2428,7 +2428,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__idle__south-east__000",
-      "opaquePixels": 3800,
+      "opaquePixels": 3798,
       "phase": null,
       "pivot": {
         "x": 19,
@@ -2439,7 +2439,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "81fa14e4894ccf2fca33f53513d537f2af66e2d7f284cbdc9190df0d8a8b9383",
+      "sourcePixelSha256": "8b4da8b1cb68ad5cf6403cfe89a9f305acef29c42c4bd06ae48241896a909dfe",
       "state": "idle",
       "trimmed": true
     },
@@ -2469,7 +2469,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b214328feec5ede832e19aa513548d2384ef25f12075474a905f38bc7d774bb4",
+      "sourcePixelSha256": "d0678f5311d7e8753a24c3ef7452215576c532b040071dcc443b825b076f9c63",
       "state": "idle",
       "trimmed": true
     },
@@ -2488,7 +2488,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__idle__south-west__000",
-      "opaquePixels": 3801,
+      "opaquePixels": 3800,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -2499,7 +2499,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b4a8038e0664f7a8ad5e4e2cac1914ea3c7ed9ab4c533fc8e1a48c10b5682023",
+      "sourcePixelSha256": "30abecfce812329705b7a61e7c760d7fa00ba5022338ad087f7d3920ac595de3",
       "state": "idle",
       "trimmed": true
     },
@@ -2529,7 +2529,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "47e1fa183d9865c110190c9650a6b2b425a15ac1e3a59e4439f0b597b5ff1b4c",
+      "sourcePixelSha256": "043356c41ffdf950843c17b2d555620ce6df38870715d4160d02c90e850c4dc0",
       "state": "idle",
       "trimmed": true
     },
@@ -2548,7 +2548,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__idle__south__000",
-      "opaquePixels": 4072,
+      "opaquePixels": 4071,
       "phase": null,
       "pivot": {
         "x": 35,
@@ -2559,7 +2559,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bc21cc22cf527035c4ee598228807a5cff6756feb33bcbe18c72b92d543824bc",
+      "sourcePixelSha256": "c0bc52e370f5bd5e74a40f763d3c8ef60bdc1a1a159f0a3d7b9bae8475dcd5ac",
       "state": "idle",
       "trimmed": true
     },
@@ -2578,7 +2578,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__idle__south__001",
-      "opaquePixels": 4135,
+      "opaquePixels": 4133,
       "phase": null,
       "pivot": {
         "x": 35,
@@ -2589,7 +2589,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "61a116e35138479054d66393ec60f4c88fdd2d51cdba2fb11636b95c14df9d0c",
+      "sourcePixelSha256": "f5468dcadb04329c81311cfd95023b3baf18e19569322f07905c66ed96725e6e",
       "state": "idle",
       "trimmed": true
     },
@@ -2619,7 +2619,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "93ae16a225cae227e001e85897704ab241a44eed61255128d2f8f204380e5bad",
+      "sourcePixelSha256": "70075d6482711cf0c157c37936cb82c2bc41fdaa3d0d242ea1f4af0f95a0e89c",
       "state": "idle",
       "trimmed": true
     },
@@ -2649,7 +2649,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e457380714e0a87969b8c53d1bc568fce21a63f0e212858f819bd147604e8adc",
+      "sourcePixelSha256": "3d6cdbf46756e9051b26bdb8df614c06851814a91fd91158dd860b4489955550",
       "state": "idle",
       "trimmed": true
     },
@@ -2679,7 +2679,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "de4532d4063a2641f8acb1151a9aa65230b95ea54ce78af51a9e74c5b16444af",
+      "sourcePixelSha256": "6d64bb495de4ef6f95ffeea956b08cb020cb38d060e27abc6da34bf232382c7d",
       "state": "run",
       "trimmed": true
     },
@@ -2709,7 +2709,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fc233e47799cb23367fae148fbd172a3c255402009324be690eb7eb57b764ff5",
+      "sourcePixelSha256": "6066ba8738cca32adc5ce5ab3189e4010ac34b0dcc58e1e7c393492ceb1d63c9",
       "state": "run",
       "trimmed": true
     },
@@ -2739,7 +2739,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1456f27a0e126b94dd520b2b3411521716cbc5606e252ff143f4692f1782ad3f",
+      "sourcePixelSha256": "532ec60c94be15085a54182ce297107949f959d3e4d0700d95a2fd940d08ec48",
       "state": "run",
       "trimmed": true
     },
@@ -2769,7 +2769,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a2f637dbdf1defaed98cde951f9f02b8d8edd86ce76acc5a49f500228bcc6268",
+      "sourcePixelSha256": "deb99acd23b16a647050434e5f82727364619fb0942e7ad60bff3b1362a3eb90",
       "state": "run",
       "trimmed": true
     },
@@ -2799,7 +2799,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "829d7bf940594df38d75cb87166442650bec018bf585adf9c2e3d4b082746d09",
+      "sourcePixelSha256": "bac27ecb042700739c8fa71a3cc60f1e20621b183bb38d42279b914d61dc94f8",
       "state": "run",
       "trimmed": true
     },
@@ -2829,7 +2829,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "67f72a65ea9cbd94a6aef40b5f4dc1470c85bdb79f1e6e5b8a75b0d12806b105",
+      "sourcePixelSha256": "9151fd354fa27833b6a835113d43986c9ab97d866914112ac3e0adf4564cc4b4",
       "state": "run",
       "trimmed": true
     },
@@ -2848,7 +2848,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__run__north-east__000",
-      "opaquePixels": 4007,
+      "opaquePixels": 4006,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -2859,7 +2859,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a71d39b296cb97d0840d6cae587cd4f0e1a9a9142d136df66911deec5e610fba",
+      "sourcePixelSha256": "2be65347cb8e133cdc9c0f369ab0c7d59293d594b3ffb881297a121851e1dd63",
       "state": "run",
       "trimmed": true
     },
@@ -2889,7 +2889,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "626a2230ba10581ecc7335afc1ea4841ed614125ea38242614a7b3636b80919f",
+      "sourcePixelSha256": "e70bacb0a4627a41a63c5692b1615f5ace1e2ce5441858e7bdea51b56d5d9d4b",
       "state": "run",
       "trimmed": true
     },
@@ -2919,7 +2919,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "77213dde49b40720b0d109d087dc57ae5bc7d1402677712b298b24814bd3a1bf",
+      "sourcePixelSha256": "f61c39ccf00b97b839e75e40bed18689127d1d122f28c8279fd37adbfa45a2ef",
       "state": "run",
       "trimmed": true
     },
@@ -2938,7 +2938,7 @@
       },
       "frameIndex": 3,
       "id": "whale-enforcer__body__run__north-east__003",
-      "opaquePixels": 4131,
+      "opaquePixels": 4130,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -2949,7 +2949,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "93c02893806fd75e209c21877ae19f63f3fc4f958744b4bc5ae366716ebc5b9c",
+      "sourcePixelSha256": "50dfa14d4e8c69db3335607c6a009d9deec577b67ef18efa6fe7d97b20c93300",
       "state": "run",
       "trimmed": true
     },
@@ -2968,7 +2968,7 @@
       },
       "frameIndex": 4,
       "id": "whale-enforcer__body__run__north-east__004",
-      "opaquePixels": 4087,
+      "opaquePixels": 4086,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -2979,7 +2979,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "83b455587af2ee95ee12808034ff37a37eea3ff755406ec500f323e91fa48d86",
+      "sourcePixelSha256": "6fda350e2f3aeac40cdef13744b3edb21b0cf2a62b4d42b2a9f48ce4c68fbb5a",
       "state": "run",
       "trimmed": true
     },
@@ -2998,7 +2998,7 @@
       },
       "frameIndex": 5,
       "id": "whale-enforcer__body__run__north-east__005",
-      "opaquePixels": 4099,
+      "opaquePixels": 4098,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -3009,7 +3009,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "929ca93f2668baea1bb973c6529618e1eece622300c133fbeed64de7f2d29d0a",
+      "sourcePixelSha256": "6a1711c0fef51f135da52cad121ba65e91222765ced3c05c52a5a8303493cc56",
       "state": "run",
       "trimmed": true
     },
@@ -3028,7 +3028,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__run__north-west__000",
-      "opaquePixels": 4132,
+      "opaquePixels": 4131,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -3039,7 +3039,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dd1e12fa3d7c2dcf21f66c8153de8e5f94590512f7cf0f49931866cf073e4e18",
+      "sourcePixelSha256": "35d82a8f6682365c55eb7ee9f4d25ce05b5cd8d179e2654f59743c2b0ce31ef6",
       "state": "run",
       "trimmed": true
     },
@@ -3069,7 +3069,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "398bc9631616a3543359873c61c3d48d17f0363b6c5a4c06265128aa712675bb",
+      "sourcePixelSha256": "21b215e4ea8360eb7942e925e41e3009240872060b1fa93325fb263d41183359",
       "state": "run",
       "trimmed": true
     },
@@ -3099,7 +3099,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8708ddcdbc811a4688e4f37da22ea4162f3ae4a09a317ac9d3484058d52e80cf",
+      "sourcePixelSha256": "8b5dd5e6afdcb06b95bc197de9125ce82d1dea5ae8a17beaa3efdb2cd7e2a488",
       "state": "run",
       "trimmed": true
     },
@@ -3118,7 +3118,7 @@
       },
       "frameIndex": 3,
       "id": "whale-enforcer__body__run__north-west__003",
-      "opaquePixels": 4007,
+      "opaquePixels": 4006,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -3129,7 +3129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d2eb7ef10d594b4ee80dc47072b64ea38cb3b9c9764d317225c89b789bee4b40",
+      "sourcePixelSha256": "a73e74fedfbabcd195d894e583196454adfe70028951e53747674faf05f4a966",
       "state": "run",
       "trimmed": true
     },
@@ -3159,7 +3159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a902cbbb1e64e1eab68dadcf1e1c0a84e6b43a7aa9608958b0f136bade447990",
+      "sourcePixelSha256": "7405d7d22a4e05bb85c227c4d7d2c525166037d81f7c9c24b056d7a7080bfd6c",
       "state": "run",
       "trimmed": true
     },
@@ -3189,7 +3189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e2ad995e213449e1c654036097f8eb24f72efa553f7764c2bf79e87a736839b7",
+      "sourcePixelSha256": "bfc14493078803fc8b035826d0271f4695602f0685e9facf65003a0ad3f91c79",
       "state": "run",
       "trimmed": true
     },
@@ -3219,7 +3219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ba0efb17eddf5f4158ff6b9efed7cac8ead127b76ae8b53602ca6791b9b2bc26",
+      "sourcePixelSha256": "9e1382f1b16c49daddf0f6dc4e1e842d3ed9d1524aecf5410ea1a921aecb535f",
       "state": "run",
       "trimmed": true
     },
@@ -3249,7 +3249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5f79e4259f45e174627acb5d73c9bdc912e99a0a1243a32ecf68a56d4ff34055",
+      "sourcePixelSha256": "bff85a8b209757d21d28c1d4d5414477b9e983b6a6ed4c46b5744fc865d255c4",
       "state": "run",
       "trimmed": true
     },
@@ -3279,7 +3279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f4d992ab5679e3966a0112d3b6dd28a9a0c316228163aff507e5cc3ce13bd04",
+      "sourcePixelSha256": "9505fb6a16b9a3e2a8a49a9b98ced7d1961af724c172e7d9f537d256b20dae2e",
       "state": "run",
       "trimmed": true
     },
@@ -3309,7 +3309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "aa4fbca1f601a7a485e2c6027ca2fb061616c304946c86a7f9e190e3be3c22a1",
+      "sourcePixelSha256": "ca64826faaf1e0ec8e0c855d0d3b374da594b85a004af22d907f33e8a5d11c2c",
       "state": "run",
       "trimmed": true
     },
@@ -3328,7 +3328,7 @@
       },
       "frameIndex": 4,
       "id": "whale-enforcer__body__run__north__004",
-      "opaquePixels": 4223,
+      "opaquePixels": 4222,
       "phase": null,
       "pivot": {
         "x": 41,
@@ -3339,7 +3339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1dcb908961e47f647277efcbdc2a21e68f294af2db37096f68afe7bfb3a8ba54",
+      "sourcePixelSha256": "6716055e481545116f74d8c04b53e299d6f0ac6daede2cbae61fc54967b5ec22",
       "state": "run",
       "trimmed": true
     },
@@ -3358,7 +3358,7 @@
       },
       "frameIndex": 5,
       "id": "whale-enforcer__body__run__north__005",
-      "opaquePixels": 4071,
+      "opaquePixels": 4070,
       "phase": null,
       "pivot": {
         "x": 41,
@@ -3369,7 +3369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "92696dc89d74aeda79f2be6fc4c081afc6c01a9d1826da388f5a2511f1ac5dd6",
+      "sourcePixelSha256": "58537283404d6751df4972dfc9360e4c70dc4f3f86af8988e38de741a9435af1",
       "state": "run",
       "trimmed": true
     },
@@ -3399,7 +3399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1f4e0b122bf63141470dba906ab38f7cbb78ea9c4fc109bcbd29326a04be1c3e",
+      "sourcePixelSha256": "011002489d98fc2ad9207dd49f743634bd416e0a680ff8a444286b29a18208b1",
       "state": "run",
       "trimmed": true
     },
@@ -3418,7 +3418,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__run__south-east__001",
-      "opaquePixels": 3532,
+      "opaquePixels": 3531,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -3429,7 +3429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f7bfba6b6e26890e69b988b24e10698fa91cf26a2ca334d6d4619253cb6978e0",
+      "sourcePixelSha256": "34e306a0ad2135f8ef19e43880aa167aa6b61223f2465528d3b244711b62aa7e",
       "state": "run",
       "trimmed": true
     },
@@ -3448,7 +3448,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__run__south-east__002",
-      "opaquePixels": 3643,
+      "opaquePixels": 3642,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -3459,7 +3459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2e56ef38919c3a4233db620d8e4180092db02964bd9cf48adad018162b791f25",
+      "sourcePixelSha256": "2cee6e8526af9cf5eb2d74e7260f281ed02c1305feec3f69fb0f6d1c9c0a8821",
       "state": "run",
       "trimmed": true
     },
@@ -3489,7 +3489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "04c65145a29790264c2330a5989d160af40d8d69cd7f112b274c1d514bb5c01a",
+      "sourcePixelSha256": "de7d4e3268b85246287e3e2f959c656ecbe824cd01034dd7467f804602a28b0b",
       "state": "run",
       "trimmed": true
     },
@@ -3508,7 +3508,7 @@
       },
       "frameIndex": 4,
       "id": "whale-enforcer__body__run__south-east__004",
-      "opaquePixels": 3325,
+      "opaquePixels": 3324,
       "phase": null,
       "pivot": {
         "x": 9,
@@ -3519,7 +3519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "92753f0dcb215d3cfea3f098b3d97d90ed6753a7637317f3b3397132d1a27a56",
+      "sourcePixelSha256": "10b115a8bcecf3910a8c7c1945303820f03929285ed4e23f2b8bb63d7a73f2b7",
       "state": "run",
       "trimmed": true
     },
@@ -3538,7 +3538,7 @@
       },
       "frameIndex": 5,
       "id": "whale-enforcer__body__run__south-east__005",
-      "opaquePixels": 3377,
+      "opaquePixels": 3376,
       "phase": null,
       "pivot": {
         "x": 19,
@@ -3549,7 +3549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "69a19665bdb630475a8730326317ff82278cb153c1a4c7fbd64287f7829701f8",
+      "sourcePixelSha256": "0cb5b32a37f3dd625a0aa1d38511c2522e00140d4d5507c35bffda2e480c622a",
       "state": "run",
       "trimmed": true
     },
@@ -3568,7 +3568,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__run__south-west__000",
-      "opaquePixels": 3559,
+      "opaquePixels": 3557,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -3579,7 +3579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "824f0ffd41067bfd2d3ee79d9fcdfc01a8b6d0a2d7c577b9f7f3fd82a0e26bc9",
+      "sourcePixelSha256": "15b62604593518963d1d7abde0b0349e94fc1fa307c7d343cd9ea9932611fb0f",
       "state": "run",
       "trimmed": true
     },
@@ -3609,7 +3609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ba11eaa3cec40e68b790ea6f152c1cc5621c69de42eaa9a46d96d462bca1dac6",
+      "sourcePixelSha256": "01a3825973b714cfa717a59c0db9d27ccd02fcf8b9e0205407e2fc80edf3f814",
       "state": "run",
       "trimmed": true
     },
@@ -3639,7 +3639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "40ba73550959c79311476e89c375035fcf5670f5dfc81252544851a97c6cd01e",
+      "sourcePixelSha256": "1b0884f67ab4b8e3dafafad3045af410a9c8cf52976f3a2dbf3f518008a79022",
       "state": "run",
       "trimmed": true
     },
@@ -3658,7 +3658,7 @@
       },
       "frameIndex": 3,
       "id": "whale-enforcer__body__run__south-west__003",
-      "opaquePixels": 3592,
+      "opaquePixels": 3590,
       "phase": null,
       "pivot": {
         "x": 24,
@@ -3669,7 +3669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "93b36686a989c0c09fbfb9d726177567f0a7d578fc4340a0400e133f48bc9a76",
+      "sourcePixelSha256": "74255c0ba31726d59ddc8aab2d004c179773edfa470d899b5b179a0ce076ef4c",
       "state": "run",
       "trimmed": true
     },
@@ -3688,7 +3688,7 @@
       },
       "frameIndex": 4,
       "id": "whale-enforcer__body__run__south-west__004",
-      "opaquePixels": 3530,
+      "opaquePixels": 3529,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -3699,7 +3699,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ef41a451664683a11033c8d8b51dc6d61eff34c39d2c54194a29c1cfc00a4852",
+      "sourcePixelSha256": "cfc4ecbd6576a757b487cf818ed073cfba639e04a2925d8252d336fe661b2fcc",
       "state": "run",
       "trimmed": true
     },
@@ -3718,7 +3718,7 @@
       },
       "frameIndex": 5,
       "id": "whale-enforcer__body__run__south-west__005",
-      "opaquePixels": 3641,
+      "opaquePixels": 3640,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -3729,7 +3729,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0a8e99760b0a7e20216b74f4d410fdeb83e1203fec63f0925dd8b67c27ef1119",
+      "sourcePixelSha256": "f87e008895984383769d2e4b32884905dbcf4ceefb0414889803051abf77ab6b",
       "state": "run",
       "trimmed": true
     },
@@ -3759,7 +3759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7ba27bc210bc0b36e159f3250f545d8edb914079193708702f294b02725252c9",
+      "sourcePixelSha256": "34432ebb479c1488b992ce2bb6afd833f50098439a58f83bad932eb50f46486e",
       "state": "run",
       "trimmed": true
     },
@@ -3778,7 +3778,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__run__south__001",
-      "opaquePixels": 3856,
+      "opaquePixels": 3854,
       "phase": null,
       "pivot": {
         "x": 41,
@@ -3789,7 +3789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ad7e6cdf5a3535ca65533d3ffe9cb02e568abc6739e26e2c89ea303cf9e47286",
+      "sourcePixelSha256": "5a434d29bd98c92d6cac5f30f69a828f57a93f3d761dcd480a027f95985c007b",
       "state": "run",
       "trimmed": true
     },
@@ -3808,7 +3808,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__run__south__002",
-      "opaquePixels": 3866,
+      "opaquePixels": 3864,
       "phase": null,
       "pivot": {
         "x": 41,
@@ -3819,7 +3819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9f9545ff582d910161edae256c639481b6ab057a902bc51573c295a0bed67a9a",
+      "sourcePixelSha256": "95e6bd49795f33188f87bf8729c8175beff612139bc1249850aa378106f2969b",
       "state": "run",
       "trimmed": true
     },
@@ -3849,7 +3849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3be9232452cb09cac6049e0f3b99c47fb6aecef51beae8979e107ea39475ac19",
+      "sourcePixelSha256": "2a05f97e57f2b486878cc631f4a4f0f7c2b21d3edf4a8cba96b04bd6cb781586",
       "state": "run",
       "trimmed": true
     },
@@ -3868,7 +3868,7 @@
       },
       "frameIndex": 4,
       "id": "whale-enforcer__body__run__south__004",
-      "opaquePixels": 3853,
+      "opaquePixels": 3852,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -3879,7 +3879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8e24b473b4511cd668a3c631c323555ff8e39069f25d3e75488a946079be0fc9",
+      "sourcePixelSha256": "2d5a85990c4026186460b426dc5fc9d99ae2776abca4510d0873dbfa47f2f427",
       "state": "run",
       "trimmed": true
     },
@@ -3898,7 +3898,7 @@
       },
       "frameIndex": 5,
       "id": "whale-enforcer__body__run__south__005",
-      "opaquePixels": 3862,
+      "opaquePixels": 3861,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -3909,7 +3909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "719b5ad465fd86627c5d2386545a5680cd44d4043c28abe7bdb8ccf27cfa5e70",
+      "sourcePixelSha256": "46aa1cf5743f7551716570127ef95187e1895702f1ff6edd3b817b2e737ad100",
       "state": "run",
       "trimmed": true
     },
@@ -3939,7 +3939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fffd9d4697b9b864f06e0e1937c3e88787296f6c9e83922eddaa9919bcf5b7ab",
+      "sourcePixelSha256": "97c8116fb2d1b133c8a3f44d60ff64316b64da0d734121c47b228f48989d99b0",
       "state": "run",
       "trimmed": true
     },
@@ -3958,7 +3958,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__run__west__001",
-      "opaquePixels": 2875,
+      "opaquePixels": 2858,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3969,7 +3969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2f9ee4e306ec134ee5b5c57198667cff4e93f54fcffc2e0f84e95babf0a3610f",
+      "sourcePixelSha256": "c3bfb740b76d8ae14b68c7a57fbe9b1649c167d1d18b5f721944437d3fa87d29",
       "state": "run",
       "trimmed": true
     },
@@ -3988,7 +3988,7 @@
       },
       "frameIndex": 2,
       "id": "whale-enforcer__body__run__west__002",
-      "opaquePixels": 3041,
+      "opaquePixels": 3024,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -3999,7 +3999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4408f314125d6d0ab71554dc88ce0215c5dfb10d1a14e36b1c59637baaa06631",
+      "sourcePixelSha256": "38a24789a7716a12928c40ba3d2273a1d799d3258d8debd0dc03e3d7fca16d05",
       "state": "run",
       "trimmed": true
     },
@@ -4029,7 +4029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "92e29fbf9578142f35a6d6367e11fd28177bafb3a614c28d0325ca12b377e0db",
+      "sourcePixelSha256": "a4b9cbdb2bb6d052dc050e8f7517baa84269b6d31d3c6fd0f4e6d69450fb67bf",
       "state": "run",
       "trimmed": true
     },
@@ -4048,7 +4048,7 @@
       },
       "frameIndex": 4,
       "id": "whale-enforcer__body__run__west__004",
-      "opaquePixels": 2652,
+      "opaquePixels": 2636,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -4059,7 +4059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8b1a72cd5704435aaef196aadf1b67e1e85c897e2c223a87ff1f08f189c78c7e",
+      "sourcePixelSha256": "65c4d1be9dc7862f2f7a4ecb2a20eedf4dbdb6935bbd3af5cfd3fdcbf6c4feac",
       "state": "run",
       "trimmed": true
     },
@@ -4078,7 +4078,7 @@
       },
       "frameIndex": 5,
       "id": "whale-enforcer__body__run__west__005",
-      "opaquePixels": 2836,
+      "opaquePixels": 2820,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -4089,7 +4089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3e8f90c6291acfa0027ba305a848a1da41b1de7696369a288341f955c419d98b",
+      "sourcePixelSha256": "6e8dcecf2298509a0d9d70755a2d7df5544839bb177a224197de947755783dcb",
       "state": "run",
       "trimmed": true
     },
@@ -4119,7 +4119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5c14bff43e06a71b5fa203870e6783002d94856de620d97defdec861886aca9a",
+      "sourcePixelSha256": "06490f7eae48832c8c8cc46ef756f62347c593258a78550a5beedbb369d8638e",
       "state": "tell",
       "trimmed": true
     },
@@ -4138,7 +4138,7 @@
       },
       "frameIndex": 1,
       "id": "whale-enforcer__body__tell__east__001",
-      "opaquePixels": 2701,
+      "opaquePixels": 2698,
       "phase": null,
       "pivot": {
         "x": 9,
@@ -4149,7 +4149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "036b20cb560df3da9f59885dbc33c8e5bd69e6e7a00230520f385405a8a7b22b",
+      "sourcePixelSha256": "c31fcc447709c27079ca3d41b42a79531f26654613b8b7889f33fa04208c826f",
       "state": "tell",
       "trimmed": true
     },
@@ -4179,7 +4179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cbdf3b661d07cf16dc622dcb03d5b009c7b84b63fb6f89ce373a5ae03b2facb8",
+      "sourcePixelSha256": "d2728e62cda176a3fa3163da61770ed46f7e310859dd0ec1a80c10ba5a8567e0",
       "state": "tell",
       "trimmed": true
     },
@@ -4209,7 +4209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b765c8503160d9cce449dd6451cc3db14dd69430da616567972337351bf1d03c",
+      "sourcePixelSha256": "3311aae9c099de6e039f332c89bbe45305fb3be6bc1998a2815ef2abababb73b",
       "state": "tell",
       "trimmed": true
     },
@@ -4239,7 +4239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "783f8121e9f4949cc210a561c9ea9bad8e90f864f0ba256091ec8e13b5b792ed",
+      "sourcePixelSha256": "69369623edc0c6577a53835b3506f0c6111f2b52185264a08dddda6aff002149",
       "state": "tell",
       "trimmed": true
     },
@@ -4269,7 +4269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "79bcb3dbab3b56c5a69a99523877b561b0618aad1a2dfbc4c5eb8998200b918f",
+      "sourcePixelSha256": "5f0d3ec9945928878a77ddfd1bd2276b5ee2f3e369cd1b5b9a2b8df8648ae4b0",
       "state": "tell",
       "trimmed": true
     },
@@ -4288,7 +4288,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__tell__north__000",
-      "opaquePixels": 3271,
+      "opaquePixels": 3268,
       "phase": null,
       "pivot": {
         "x": 19,
@@ -4299,7 +4299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c3c2c1377a296539e6d1f58022bcb2bdd1bcb77a8f1965897ac553463bdaceb2",
+      "sourcePixelSha256": "2b4d8e470d4a1c081019ab3626f28b242841f5e579cde38cca877fa20aaf0bdd",
       "state": "tell",
       "trimmed": true
     },
@@ -4329,7 +4329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4a5320cf489d42af409fcc1f86a8ef16dd24b9bdf06be0a6789a10965671fd7a",
+      "sourcePixelSha256": "071b46f3a471b9a64dca5965494c3434532b07e87741b8f43bc7969bac0a47d7",
       "state": "tell",
       "trimmed": true
     },
@@ -4348,7 +4348,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__tell__south-east__000",
-      "opaquePixels": 3707,
+      "opaquePixels": 3705,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -4359,7 +4359,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bba00b1861a0f4601d9f9ac5c2de31ff28f59206a6b758ffcc4db1ce6a958f01",
+      "sourcePixelSha256": "fd4c8b9011c25c0a554317e0cb7e5d7f7fb28556062f62a91accf33314b54386",
       "state": "tell",
       "trimmed": true
     },
@@ -4389,7 +4389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7275669db0ea324841b65d9b69f755adccdfbd9503d44617050540a243a207ef",
+      "sourcePixelSha256": "8ab5341410ac5edc30781a1a267e489052bfcbd55eb9e3019c58815d3e14d359",
       "state": "tell",
       "trimmed": true
     },
@@ -4408,7 +4408,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__tell__south-west__000",
-      "opaquePixels": 3706,
+      "opaquePixels": 3705,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -4419,7 +4419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "70f98d3bd0d8f7d0c6bf0fa3085d479a70c616577d437db0959f227471a0d237",
+      "sourcePixelSha256": "fdbb683f178f39b377634e5dd025b0ceae53d724165a3d171bcc07021d295ba0",
       "state": "tell",
       "trimmed": true
     },
@@ -4449,7 +4449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cb1c6a26bea164a09973db2b7762cc5544f9916b50c7d509dafad59a16acb6c9",
+      "sourcePixelSha256": "10c73f87c7b2a46b2dafebaae157f46472a13df93e3e3f55a0b20d8e3237c51e",
       "state": "tell",
       "trimmed": true
     },
@@ -4479,7 +4479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8b78a9549031daf852d85d414ea1214435aedc8192b5666c5cd85e202be95903",
+      "sourcePixelSha256": "11bdea7fbc8ea13c55ceb84566461ef386d4840588a177284438ba3d60ab1760",
       "state": "tell",
       "trimmed": true
     },
@@ -4509,7 +4509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5db97ceee7549e129e1c284c72026d33abced2b15e5e0a8772aee7102612b1b5",
+      "sourcePixelSha256": "878ac8b6843f64fcc77279c02c5bff949133f6ac86d2366465835dfc54cbd0b3",
       "state": "tell",
       "trimmed": true
     },
@@ -4528,7 +4528,7 @@
       },
       "frameIndex": 0,
       "id": "whale-enforcer__body__tell__west__000",
-      "opaquePixels": 2587,
+      "opaquePixels": 2586,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -4539,7 +4539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e7405c5bbd715d45e65b9e42079cabe193ae980ce11eef3094224a47ac61dbdb",
+      "sourcePixelSha256": "0f82ee14118030b45279d4911093e65dd8598383cbfd88d7e6ceb225d6f7727e",
       "state": "tell",
       "trimmed": true
     },
@@ -4569,7 +4569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b1cff02fea6c6a7d65f6345a2df752ffe8e7947de19666fe83d97c655e912f90",
+      "sourcePixelSha256": "4eb3ff5588deb012d036a4fe00f0e8fdde8f07aa034dab4ee020a996c8022ddb",
       "state": "tell",
       "trimmed": true
     }
