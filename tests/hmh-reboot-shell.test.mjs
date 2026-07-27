@@ -98,7 +98,8 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /label\.style\.fontSize/);
   assert.match(source, /computeHudMinimapLayout/);
   assert.match(source, /computeCombatStatusLayout/);
-  assert.match(source, /label\.position\.set\(combatStatusLayout\.x, combatStatusLayout\.y\)/);
+  assert.match(source, /const combatStatusX = combatStatusLayout\.compact && activePowerupLabels\.length > 0[\s\S]*?view\.width \* 0\.25[\s\S]*?combatStatusLayout\.x/);
+  assert.match(source, /label\.position\.set\(combatStatusX, combatStatusLayout\.y\)/);
   assert.match(source, /createActorSpatialState\(/);
   assert.match(source, /createCameraState\(/);
   assert.match(source, /interpolateSpatialState\(/);

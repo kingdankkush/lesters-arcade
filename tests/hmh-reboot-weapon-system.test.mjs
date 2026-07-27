@@ -5,6 +5,7 @@ import {
   HMH_WEAPON_EVOLUTIONS,
   applyWeaponProgression,
   createWeaponLoadout,
+  refillWeaponLoadout,
   selectWeapon,
   stepWeaponLoadout,
 } from '../apps/hmh-reboot/src/weapon-system.mjs';
@@ -233,4 +234,24 @@ test('zero knockback resistance is rejected rather than launching the target', (
     }],
     targets: [{ id: 'zero', health: 50, maxHealth: 50, armor: 1, shieldCharges: 0, knockbackResistance: 0 }],
   }), /knockbackResistance/);
+});
+
+test('weapon-cache refill restores bounded state and can select without consuming the fixed tick', () => {
+  const state = createWeaponLoadout({ weaponIds: ['coin-blaster', 'auto-miner'], activeWeaponId: 'coin-blaster' });
+  fireAt(state, 0);
+  const auto = state.weapons['auto-miner'];
+  auto.ammoInClip = 0;
+  auto.heat = 80;
+  auto.overheated = true;
+  auto.reloadStartedTick = 0;
+  auto.reloadCompleteTick = 99;
+  const event = refillWeaponLoadout(state, { tick: 1, weaponId: 'auto-miner', select: true });
+  assert.equal(event.type, 'weapon:pickup-refill');
+  assert.equal(state.activeWeaponId, 'auto-miner');
+  assert.equal(auto.ammoInClip, HMH_WEAPON_DEFINITIONS['auto-miner'].clipSize);
+  assert.equal(auto.heat, 0);
+  assert.equal(auto.overheated, false);
+  assert.equal(auto.reloadStartedTick, null);
+  assert.equal(state.lastTick, 0);
+  assert.doesNotThrow(() => stepWeaponLoadout(state, { tick: 1, fire: false, direction }));
 });

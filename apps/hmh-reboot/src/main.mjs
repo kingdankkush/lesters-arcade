@@ -2,6 +2,7 @@ import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Text
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
+import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
 import { computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
@@ -57,7 +58,7 @@ import {
   traceHeightAwareLineOfSight,
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
-import { createGrenadeSystem, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
+import { createGrenadeSystem, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
 import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
 import {
   applyRecoilImpulse,
@@ -131,6 +132,7 @@ import {
   HMH_WEAPON_DEFINITIONS,
   createWeaponLoadout,
   getActiveWeaponState,
+  refillWeaponLoadout,
   selectWeapon,
   stepWeaponLoadout,
 } from './weapon-system.mjs';
@@ -340,10 +342,11 @@ async function boot() {
   world.addChild(backdrop, worldProduction.root, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, minimap);
 
+  const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
   const authoredPropPlacements = Object.freeze([
     ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: 0x484d4807, countPerDistrict: 8 }),
     ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
-    ...buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
+    ...authoredPointOfInterestPlacements,
   ]);
   let authoredPropDisplay = null;
   let authoredHeldWeaponDisplay = null;
@@ -576,6 +579,8 @@ async function boot() {
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
   const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
+  const collectibleHealthPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleHealthPilot') === '1';
+  const collectibleAmmoPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleAmmoPilot') === '1';
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
@@ -584,6 +589,10 @@ async function boot() {
     hashwood: Object.freeze({ x: 7_000, y: 900 }),
     mining: Object.freeze({ x: 9_200, y: 1_600 }),
     yard: Object.freeze({ x: 11_000, y: 800 }),
+    ...Object.fromEntries(authoredPointOfInterestPlacements.map((placement) => [
+      `collectible-${placement.pointOfInterestId}`,
+      Object.freeze({ x: placement.x, y: placement.y }),
+    ])),
   });
   const runtimePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
     ? worldTourSpawns[worldTourId]
@@ -692,6 +701,9 @@ async function boot() {
   let lastGrenadeDetonation = null;
   let playerDefeatController = null;
   let playerHealth = 100;
+  let collectibleState = null;
+  let collectibleSnapshot = null;
+  let lastCollectibleEvent = null;
   let runKills = 0;
   let runEventSequence = 0;
   let lastAccessibleCombatStatus = '';
@@ -840,6 +852,7 @@ async function boot() {
         queryGround,
         tick: simulation?.tick ?? 0,
         cullMargin: performanceProfile.worldCullMargin ?? 220,
+        hiddenPlacementIds: collectibleState?.collectedIds ?? null,
       });
       if (releaseTelemetryEnabled || debugGridEnabled) {
         stageElement.dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
@@ -1011,6 +1024,12 @@ async function boot() {
                   .stroke({ color: event.color, width: 2, alpha: alpha * 0.7 });
               }
             }
+          } else if (event.type === 'pickup') {
+            const ringRadius = 16 + age * 2.6;
+            combatVisuals.circle(center.x, center.y, ringRadius)
+              .stroke({ color: event.color, width: Math.max(2, 6 - age * 0.4), alpha: alpha * 0.9 });
+            combatVisuals.rect(center.x - 7, center.y - 7, 14, 14)
+              .stroke({ color: 0xffffff, width: 3, alpha: alpha * 0.8 });
           } else if (event.type === 'kill') {
             // Kill confirmation: an expanding ring plus a deterministic
             // debris fan so a defeat reads instantly in a crowded fight.
@@ -1176,10 +1195,13 @@ async function boot() {
       const dashAccessible = dashStatus?.active ? 'Dash active' : dashStatus?.ready ? 'Dash ready' : `Dash ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
-      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}`;
-      const compactCombatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}`;
-      const landscapeCombatHud = `HP ${playerHealth} // AMMO ${activeWeapon?.ammoInClip ?? 0} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}`;
-      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats`;
+      const activePowerupIds = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId) ?? [];
+      const activePowerupLabels = collectibleSnapshot?.activeEffects.map((effect) => `${effect.effectId.toUpperCase()} ${Math.max(0, Math.ceil((effect.expiresTick - collectibleSnapshot.tick) / 60))}S`) ?? [];
+      const powerupHud = activePowerupLabels.length > 0 ? ` // POWER ${activePowerupLabels.join('+')}` : '';
+      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
+      const compactCombatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
+      const landscapeCombatHud = `HP ${playerHealth} // AMMO ${activeWeapon?.ammoInClip ?? 0} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
+      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats${activePowerupIds.length > 0 ? `, active powerups ${activePowerupIds.join(', ')}` : ''}`;
       if (dashStatusElement) {
         dashStatusElement.textContent = dashAccessible;
         dashStatusElement.dataset.ready = String(dashStatus?.ready === true);
@@ -1195,7 +1217,10 @@ async function boot() {
           ? `${combatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
         : combatStatusLayout.compact ? landscapeCombatHud : combatStatusLayout.multiline ? compactCombatHud : combatHud;
-      label.position.set(combatStatusLayout.x, combatStatusLayout.y);
+      const combatStatusX = combatStatusLayout.compact && activePowerupLabels.length > 0
+        ? view.width * 0.25
+        : combatStatusLayout.x;
+      label.position.set(combatStatusX, combatStatusLayout.y);
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
       for (const pip of enemyHealthPips) {
@@ -1295,6 +1320,12 @@ async function boot() {
         stageElement.dataset.dashInvulnerable = String(dashStatus?.invulnerable === true);
         stageElement.dataset.dashStopReason = dashStatus?.lastStopReason ?? '';
         stageElement.dataset.playerHealth = String(playerHealth);
+        stageElement.dataset.collectibleCount = String(collectibleSnapshot?.collectedCount ?? 0);
+        stageElement.dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
+        stageElement.dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
+        stageElement.dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
+        stageElement.dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
+        stageElement.dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
         stageElement.dataset.audioVoices = String(combatAudio.status().activeVoices);
         stageElement.dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
         stageElement.dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
@@ -1396,6 +1427,9 @@ async function boot() {
     lastAccessibleCombatStatus = '';
     playerDefeatController = null;
     playerHealth = 100;
+    collectibleState = null;
+    collectibleSnapshot = null;
+    lastCollectibleEvent = null;
     maxPlayerHealth = 100;
     runProgression = null;
     upgradePending = false;
@@ -1488,12 +1522,16 @@ async function boot() {
     previousWeaponNext = false;
     lastInputWeaponSlot = 0;
     weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });
+    if (collectibleAmmoPilotEnabled) weaponLoadout.weapons['coin-blaster'].ammoInClip = 1;
     meleeState = createMeleeState();
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
     dashState = createDashState({ cooldownTier: 0 });
+    collectibleState = createCollectibleState({ placements: authoredPointOfInterestPlacements });
+    collectibleSnapshot = getCollectibleSnapshot(collectibleState, { tick: 0 });
+    lastCollectibleEvent = null;
     lastDashReady = true;
     playerDefeatController = createPlayerDefeatController({ maxHealth: maxPlayerHealth });
-    playerHealth = maxPlayerHealth;
+    playerHealth = collectibleHealthPilotEnabled ? 70 : maxPlayerHealth;
     runKills = 0;
     if (progressionPilotEnabled) {
       const pilotSnapshot = recordRunDefeat(runProgression, {
@@ -1611,7 +1649,7 @@ async function boot() {
         stepPlayerMovement(motion, {
           move: tickInput.move,
           aim: { ...aimIntent.direction, active: true },
-        }, { dtSeconds, speedMultiplier: terrainSpeedMultiplier });
+        }, { dtSeconds, speedMultiplier: terrainSpeedMultiplier * (collectibleSnapshot?.speedMultiplier ?? 1) });
         const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
           ? [...grayboxEnemies, liquidatorBoss]
           : grayboxEnemies;
@@ -1760,6 +1798,46 @@ async function boot() {
         maxZ: 92,
       }));
       const combatHitIntents = [];
+      const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
+      collectibleSnapshot = collectibleFrame.snapshot;
+      for (const event of collectibleFrame.events) {
+        lastCollectibleEvent = event;
+        if (event.type !== 'collectible:collected') continue;
+        const placement = authoredPointOfInterestPlacements.find((candidate) => candidate.id === event.placementId);
+        if (event.kind === 'heal') {
+          playerHealth = Math.min(maxPlayerHealth, playerHealth + event.amount);
+        } else if (event.kind === 'weapon-cache') {
+          refillWeaponLoadout(weaponLoadout, { tick, weaponId: event.weaponId, select: true });
+        } else if (event.kind === 'ammo-refill') {
+          refillWeaponLoadout(weaponLoadout, { tick });
+        } else if (event.kind === 'nuke') {
+          rechargeHandGrenades(grenadeSystem, { tick, amount: 1 });
+          for (const target of hurtTargets) {
+            combatHitIntents.push({
+              id: `${event.id}:${target.id}`,
+              tick,
+              time: 0,
+              targetId: target.id,
+              sourceId: 'player',
+              weaponId: 'nuke-liquidation',
+              damage: event.damage,
+              criticalChance: 0,
+              criticalMultiplier: 1,
+              armorPiercing: true,
+              direction: { x: 1, y: 0 },
+              knockback: 0,
+              point: { x: target.currentGround.x, y: target.currentGround.y, z: target.currentGround.z + target.minZ },
+            });
+          }
+        }
+        combatAudio.play('pickup', { volume: 0.16 });
+        if (placement) pushCombatVisualEvent({
+          type: 'pickup',
+          tick,
+          point: { x: placement.x, y: placement.y, z: queryGround(placement.x, placement.y).groundZ + 20 },
+          color: event.kind === 'heal' ? 0x83f28f : event.kind === 'nuke' ? 0xff6b86 : 0xfff06a,
+        });
+      }
 
       const steppedProjectiles = activeProjectiles.map((shot) => {
         const previous = Object.freeze({
@@ -1889,6 +1967,7 @@ async function boot() {
               z: actor.groundZ + 32,
             },
             direction: aimIntent.direction,
+            damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
           });
           continue;
         }
@@ -1919,7 +1998,7 @@ async function boot() {
             vx: shot.direction.x * shot.speed,
             vy: shot.direction.y * shot.speed,
             radius: shot.radius,
-            damage: shot.damage,
+            damage: shot.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
             policy: shot.policy,
             remainingRange: shot.range,
           });
@@ -1936,7 +2015,7 @@ async function boot() {
         blockers: WORLD_BLOCKERS,
         downwardDropDirection: lastGround.oneWayDrop,
       });
-      combatHitIntents.push(...meleeFrame.hits);
+      combatHitIntents.push(...meleeFrame.hits.map((hit) => ({ ...hit, damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1) })));
       if (meleeFrame.attacked) {
         lastMeleeAttack = { tick, hits: meleeFrame.hits.length };
         combatAudio.play('melee', { volume: 0.12 });
@@ -1958,6 +2037,7 @@ async function boot() {
             z: actor.groundZ + 24,
           },
           direction: aimIntent.direction,
+          damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
         });
         if (grenadeSpawn.spawned) {
           lastGrenadeThrow = { tick, grenadeId: grenadeSpawn.grenade?.id ?? null };

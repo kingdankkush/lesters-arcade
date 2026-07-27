@@ -286,6 +286,29 @@ export function selectWeapon(state, weaponId, { tick } = {}) {
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick });
 }
 
+export function refillWeaponLoadout(state, { tick, weaponId = null, select = false, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick <= state.lastTick) throw new TypeError('weapon pickup must precede the current weapon step');
+  const weaponIds = weaponId === null ? Object.keys(state.weapons).sort() : [String(weaponId)];
+  for (const id of weaponIds) {
+    const weapon = state.weapons[id];
+    if (!weapon) throw new TypeError(`unknown weapon ${id}`);
+    const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
+    weapon.ammoInClip = progression.clipSize;
+    weapon.reloadStartedTick = null;
+    weapon.reloadCompleteTick = null;
+    weapon.heat = 0;
+    weapon.overheated = false;
+    weapon.heatUpdatedTick = tick;
+  }
+  const previousWeaponId = state.activeWeaponId;
+  if (select && weaponId !== null) {
+    state.activeWeaponId = String(weaponId);
+    state.switchReadyTick = tick + state.switchTicks;
+  }
+  return freezeDeep({ type: 'weapon:pickup-refill', tick, weaponIds, previousWeaponId, activeWeaponId: state.activeWeaponId });
+}
+
 function completeReloads(state, tick, progressionByWeapon, events) {
   for (const id of Object.keys(state.weapons).sort()) {
     const weapon = state.weapons[id];

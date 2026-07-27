@@ -11,6 +11,7 @@ const SAMPLE_PATHS = Object.freeze({
   'grenade-boom': '../assets/audio/sfx/grenade.ogg',
   'enemy-hit': '../assets/audio/sfx/enemy-hit.ogg',
   'player-hit': '../assets/audio/sfx/player-hit.ogg',
+  pickup: '../assets/audio/sfx/pickup.ogg',
 });
 const MUSIC_PATH = '../assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3';
 // Longest authored combat sample is well under a second; anything still held

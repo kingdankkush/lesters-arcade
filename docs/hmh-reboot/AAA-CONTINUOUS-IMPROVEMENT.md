@@ -79,5 +79,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `b50d5aac`; production unchanged
   - Cycle ledger: `cycles/CYCLE-013.md`
 - [x] Cycle 014: responsive district landmark clusters and truthful onscreen prop coverage
-  - Status: local certified; commit pending; production unchanged
+  - Status: committed locally as `c56ee2f6`; production unchanged
   - Cycle ledger: `cycles/CYCLE-014.md`
+- [x] Cycle 015: deterministic authored-POI collectibles, bounded resources, timed effects, HUD, audio, and VFX
+  - Status: local certified; commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-015.md`

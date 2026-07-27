@@ -104,17 +104,27 @@ export function createGrenadeState({
   };
 }
 
-export function createGrenadeSystem({ capacity = 16, handCharges = 3 } = {}) {
+export function createGrenadeSystem({ capacity = 16, handCharges = 3, maxHandCharges = 5 } = {}) {
   if (!Number.isInteger(capacity) || capacity <= 0) throw new TypeError('grenade capacity must be a positive integer');
   if (!Number.isInteger(handCharges) || handCharges < 0) throw new TypeError('handCharges must be a non-negative integer');
+  if (!Number.isInteger(maxHandCharges) || maxHandCharges < handCharges) throw new TypeError('maxHandCharges must be an integer at or above handCharges');
   return {
     capacity,
     handCharges,
+    maxHandCharges,
     active: [],
     sequence: 0,
     droppedSpawns: 0,
     lastStepTick: -1,
   };
+}
+
+export function rechargeHandGrenades(system, { tick, amount = 1 } = {}) {
+  if (!Number.isInteger(tick) || tick < 0) throw new TypeError('tick must be a non-negative integer');
+  if (!Number.isInteger(amount) || amount <= 0) throw new TypeError('grenade recharge amount must be a positive integer');
+  const previousCharges = system.handCharges;
+  system.handCharges = Math.min(system.maxHandCharges, system.handCharges + amount);
+  return freezeDeep({ type: 'grenade:pickup-refill', tick, amount: system.handCharges - previousCharges, handCharges: system.handCharges });
 }
 
 export function throwGrenade(system, {
@@ -123,10 +133,12 @@ export function throwGrenade(system, {
   origin,
   direction,
   ownerId = 'player',
+  damageMultiplier = 1,
 } = {}) {
   if (!Number.isInteger(tick) || tick < 0) throw new TypeError('tick must be a non-negative integer');
   if (tick < system.lastStepTick) throw new TypeError('grenade spawn tick cannot precede the last simulation step');
   if (!['hand', 'launcher'].includes(mode)) throw new TypeError('grenade mode must be hand or launcher');
+  positive(damageMultiplier, 'damageMultiplier');
   if (system.active.length >= system.capacity) {
     system.droppedSpawns += 1;
     return freezeDeep({ spawned: false, reason: 'capacity', tick, mode });
@@ -146,6 +158,7 @@ export function throwGrenade(system, {
     velocity: { x: forward.x * horizontalSpeed, y: forward.y * horizontalSpeed, z: verticalSpeed },
     spawnTick: tick,
     detonateTick: tick + HMH_GRENADE_DEFINITION.fuseTicks,
+    damage: HMH_GRENADE_DEFINITION.damage * damageMultiplier,
   });
   system.active.push(grenade);
   if (mode === 'hand') system.handCharges -= 1;

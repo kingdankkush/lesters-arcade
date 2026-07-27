@@ -6,6 +6,7 @@ import {
   HMH_GRENADE_DEFINITION,
   createGrenadeState,
   createGrenadeSystem,
+  rechargeHandGrenades,
   resolveGrenadeBlast,
   stepGrenadeSystem,
   throwGrenade,
@@ -188,4 +189,20 @@ test('grenade stepping is deterministic across equivalent systems and fails clos
   assert.throws(() => stepGrenadeSystem(a, { tick: 20, queryGround: flatGround }), /monotonic/i);
   assert.throws(() => throwGrenade(a, { tick: 21, mode: 'invalid', origin: { x: 0, y: 0, z: 0 }, direction: { x: 1, y: 0 } }), /mode/i);
   assert.throws(() => createGrenadeSystem({ capacity: 0 }), /capacity/i);
+});
+
+test('pickup recharge is capped and grenade damage multiplier snapshots at spawn', () => {
+  const system = createGrenadeSystem({ capacity: 4, handCharges: 1, maxHandCharges: 2 });
+  const recharge = rechargeHandGrenades(system, { tick: 0, amount: 4 });
+  assert.equal(recharge.amount, 1);
+  assert.equal(system.handCharges, 2);
+  const result = throwGrenade(system, {
+    tick: 0,
+    mode: 'hand',
+    origin: { x: 0, y: 0, z: 20 },
+    direction: { x: 1, y: 0 },
+    damageMultiplier: 2,
+  });
+  assert.equal(result.spawned, true);
+  assert.equal(system.active[0].damage, HMH_GRENADE_DEFINITION.damage * 2);
 });

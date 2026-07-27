@@ -223,12 +223,16 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
     return { placement, frame, sprite };
   });
 
-  const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160 } = {}) => {
+  const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160, hiddenPlacementIds = null } = {}) => {
     let visibleCount = 0;
     const visibleByCategory = {};
     let onscreenCount = 0;
     const onscreenByCategory = {};
     for (const entry of entries) {
+      if (hiddenPlacementIds?.has(entry.placement.id)) {
+        entry.sprite.visible = false;
+        continue;
+      }
       if (entry.placement.mobileOnly && view.width > 600) {
         entry.sprite.visible = false;
         continue;
