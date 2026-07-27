@@ -1,4 +1,4 @@
-import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
+import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
@@ -16,6 +16,12 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
+import {
+  TERRAIN_MATERIAL_IDS,
+  createTerrainTileRegistry,
+  terrainManifestUrl,
+  terrainTileAsset,
+} from './terrain-tile-atlas.mjs';
 import {
   ENEMY_ROSTER_ACTORS,
   ENEMY_ROSTER_RUNTIME_SCALE,
@@ -245,6 +251,9 @@ async function boot() {
   // Authored enemy/boss sprite atlases. `?vectorEnemies=1` keeps the older
   // vector projection for regression comparison.
   const enemyRosterEnabled = runtimeParams.get('vectorEnemies') !== '1' && !grayboxRequested;
+  // Authored terrain materials. `?flatTerrain=1` restores the flat colour
+  // fills for regression comparison.
+  const terrainTilesEnabled = runtimeParams.get('flatTerrain') !== '1';
   // The boss renders larger than the rank-and-file roster.
   const BOSS_ROSTER_RUNTIME_SCALE = 0.86;
   const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled;
@@ -256,7 +265,7 @@ async function boot() {
 
   const world = new Container();
   const backdrop = new Graphics();
-  const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics });
+  const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics, TilingSpriteClass: TilingSprite });
   const authoredPropLayer = new Container();
   authoredPropLayer.label = 'authored-prop-layer';
   authoredPropLayer.sortableChildren = true;
@@ -342,6 +351,7 @@ async function boot() {
   // aim vector, which lands on top of the sprite when aiming north.
   world.addChild(backdrop, worldProduction.root, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, minimap);
+
 
   const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
   const authoredPropPlacements = Object.freeze([
@@ -442,6 +452,34 @@ async function boot() {
   // Authored Blender roster atlases, loaded once per actor and shared by every
   // body of that archetype. Until an atlas resolves (or if it fails) the
   // existing vector projection renders, so a run never blocks on art.
+  const terrainTiles = createTerrainTileRegistry({ TilingSpriteClass: TilingSprite });
+  let terrainTileLoadError = null;
+  const loadTerrainTiles = () => {
+    if (!terrainTilesEnabled) return;
+    fetch(terrainManifestUrl(), { credentials: 'same-origin' })
+      .then((response) => {
+        if (!response.ok) throw new Error(`terrain manifest ${response.status}`);
+        return response.json();
+      })
+      .then((manifest) => {
+        terrainTiles.setManifest(manifest);
+        return Promise.all(TERRAIN_MATERIAL_IDS.map((materialId) => Assets
+          .load(terrainTileAsset(materialId).imageUrl)
+          .then((texture) => terrainTiles.register(materialId, texture))
+          .catch((error) => {
+            terrainTiles.markFailed(materialId);
+            terrainTileLoadError = `${materialId}: ${String(error?.message ?? error)}`;
+          })));
+      })
+      .catch((error) => {
+        terrainTileLoadError = String(error?.message ?? error);
+      });
+  };
+
+  // Terrain materials load independently of the run: the world renders on flat
+  // colour until they arrive and keeps rendering if they never do.
+  loadTerrainTiles();
+
   const enemyRosterIndexes = new Map();
   const enemyRosterTextures = new Map();
   const enemyRosterRequested = new Set();
@@ -761,6 +799,7 @@ async function boot() {
       worldToScreen,
       tick: simulation?.tick ?? 0,
       performanceProfile,
+      terrainTiles,
     });
   };
 
@@ -1333,6 +1372,9 @@ async function boot() {
         stageElement.dataset.bossArt = enemyRosterIndexes.has('the-liquidator') ? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1';
         stageElement.dataset.enemyRosterLoaded = [...enemyRosterIndexes.keys()].sort().join(',');
         stageElement.dataset.enemyRosterError = enemyRosterLoadError ?? '';
+        stageElement.dataset.terrainTiles = terrainTiles.ready ? 'authored-tiles-v1' : 'flat-colour-fallback';
+        stageElement.dataset.terrainTilesLoaded = terrainTiles.loadedIds.join(',');
+        stageElement.dataset.terrainTilesError = terrainTileLoadError ?? '';
         stageElement.dataset.worldArt = 'production-vector-world-v1';
         stageElement.dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
         stageElement.dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);

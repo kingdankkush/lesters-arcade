@@ -1,0 +1,144 @@
+{
+  "classification": "production-art",
+  "materials": [
+    {
+      "bytes": 111988,
+      "file": "./bridge-deck.png",
+      "id": "bridge-deck",
+      "size": 256
+    },
+    {
+      "bytes": 92659,
+      "file": "./crushed-ore.png",
+      "id": "crushed-ore",
+      "size": 256
+    },
+    {
+      "bytes": 97847,
+      "file": "./forest-floor.png",
+      "id": "forest-floor",
+      "size": 256
+    },
+    {
+      "bytes": 82798,
+      "file": "./industrial-slab.png",
+      "id": "industrial-slab",
+      "size": 256
+    },
+    {
+      "bytes": 106310,
+      "file": "./ledge-top.png",
+      "id": "ledge-top",
+      "size": 256
+    },
+    {
+      "bytes": 98865,
+      "file": "./packed-earth.png",
+      "id": "packed-earth",
+      "size": 256
+    },
+    {
+      "bytes": 94237,
+      "file": "./red-rock.png",
+      "id": "red-rock",
+      "size": 256
+    },
+    {
+      "bytes": 123652,
+      "file": "./road.png",
+      "id": "road",
+      "size": 256
+    },
+    {
+      "bytes": 73580,
+      "file": "./shallow-water.png",
+      "id": "shallow-water",
+      "size": 256
+    },
+    {
+      "bytes": 70949,
+      "file": "./water.png",
+      "id": "water",
+      "size": 256
+    },
+    {
+      "bytes": 94289,
+      "file": "./wet-bank.png",
+      "id": "wet-bank",
+      "size": 256
+    }
+  ],
+  "pipelineId": "hmh-terrain-tiles-v1",
+  "runtimeAuthority": "projection-only",
+  "schemaVersion": 1,
+  "seamStatistics": {
+    "bridge-deck": {
+      "interiorX": 6.445,
+      "interiorY": 7.954,
+      "wrapX": 4.783,
+      "wrapY": 1.701
+    },
+    "crushed-ore": {
+      "interiorX": 6.124,
+      "interiorY": 6.704,
+      "wrapX": 7.533,
+      "wrapY": 8.043
+    },
+    "forest-floor": {
+      "interiorX": 4.051,
+      "interiorY": 4.353,
+      "wrapX": 4.323,
+      "wrapY": 6.09
+    },
+    "industrial-slab": {
+      "interiorX": 2.139,
+      "interiorY": 2.301,
+      "wrapX": 1.383,
+      "wrapY": 1.504
+    },
+    "ledge-top": {
+      "interiorX": 5.118,
+      "interiorY": 5.805,
+      "wrapX": 7.109,
+      "wrapY": 7.811
+    },
+    "packed-earth": {
+      "interiorX": 3.698,
+      "interiorY": 4.139,
+      "wrapX": 4.577,
+      "wrapY": 5.276
+    },
+    "red-rock": {
+      "interiorX": 3.385,
+      "interiorY": 3.661,
+      "wrapX": 4.143,
+      "wrapY": 5.75
+    },
+    "road": {
+      "interiorX": 7.029,
+      "interiorY": 8.201,
+      "wrapX": 7.871,
+      "wrapY": 8.469
+    },
+    "shallow-water": {
+      "interiorX": 1.362,
+      "interiorY": 1.458,
+      "wrapX": 0.482,
+      "wrapY": 0.796
+    },
+    "water": {
+      "interiorX": 1.521,
+      "interiorY": 1.564,
+      "wrapX": 0.948,
+      "wrapY": 0.633
+    },
+    "wet-bank": {
+      "interiorX": 3.177,
+      "interiorY": 3.625,
+      "wrapX": 4.595,
+      "wrapY": 5.685
+    }
+  },
+  "seamlessVerified": true,
+  "tileSize": 256
+}
