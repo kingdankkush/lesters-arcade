@@ -640,6 +640,25 @@ async function boot() {
   let sessionPayload = null;
   let simulation = null;
   let runProgression = null;
+  const PAUSE_SETTING_KEYS = new Set(['musicEnabled', 'screenShake', 'reduceMotion', 'reduceFlash']);
+  const syncRuntimeSettings = (nextSettings, { notify = false } = {}) => {
+    settings = { ...nextSettings };
+    if (sessionPayload) sessionPayload = { ...sessionPayload, settings: { ...settings } };
+    combatAudio.setMusicEnabled(settings.musicEnabled);
+    cockpit?.setSettings(settings);
+    stageElement.dataset.settingMusic = String(settings.musicEnabled);
+    stageElement.dataset.settingScreenShake = String(settings.screenShake);
+    stageElement.dataset.settingReduceMotion = String(settings.reduceMotion);
+    stageElement.dataset.settingReduceFlash = String(settings.reduceFlash);
+    if (notify && bridge?.initialized) {
+      bridge.send('game:settings', { settings: { ...settings } });
+      bridge.send('game:state', statePayload());
+    }
+  };
+  const applyPauseSetting = (key, enabled) => {
+    if (!PAUSE_SETTING_KEYS.has(key)) throw new TypeError(`unsupported pause setting ${String(key)}`);
+    syncRuntimeSettings({ ...settings, [key]: Boolean(enabled) }, { notify: true });
+  };
   let maxPlayerHealth = 100;
   let upgradePending = false;
   let actor = null;
@@ -1479,7 +1498,7 @@ async function boot() {
     const sessionHeroSelection = productionHeroAsset(payload.heroId);
     ensureProductionHeroAtlas(sessionHeroSelection.actorId);
     sessionPayload = payload;
-    settings = { ...payload.settings };
+    syncRuntimeSettings(payload.settings);
     elapsedMs = 0;
     simulation = new DeterministicSimulation({ seed: payload.session.seed });
     runProgression = createRunProgression({ seed: payload.session.seed });
@@ -1489,7 +1508,6 @@ async function boot() {
       embedded: window.parent !== window,
       rankedEligible: payload.session.rankedEligible,
     }));
-    cockpit?.setMusicEnabled(settings.musicEnabled);
     cockpit?.updateRun(getRunProgressionSnapshot(runProgression));
     actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });
     lastGround = queryGround(actor.x, actor.y);
@@ -2435,14 +2453,8 @@ async function boot() {
       if (simulation?.state === 'paused') resumeRuntime('user');
       else pauseRuntime('user');
     },
-    onMusicToggle: (enabled) => {
-      settings = { ...settings, musicEnabled: enabled };
-      combatAudio.setMusicEnabled(enabled);
-      if (bridge?.initialized) {
-        bridge.send('game:settings', { settings: { ...settings } });
-        bridge.send('game:state', statePayload());
-      }
-    },
+    onMusicToggle: (enabled) => applyPauseSetting('musicEnabled', enabled),
+    onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
     onResume: () => resumeRuntime('user'),
     onRestart: () => {
       if (!sessionPayload) return;
@@ -2559,11 +2571,7 @@ async function boot() {
         } else if (message.type === 'portal:resume') {
           resumeRuntime('portal');
         } else if (message.type === 'portal:settings') {
-          settings = { ...message.payload.settings };
-          combatAudio.setMusicEnabled(settings.musicEnabled);
-          cockpit?.setMusicEnabled(settings.musicEnabled);
-          bridge.send('game:settings', { settings: { ...settings } });
-          bridge.send('game:state', statePayload());
+          syncRuntimeSettings(message.payload.settings, { notify: true });
         } else if (message.type === 'portal:restart') {
           initializeSession(sessionPayload);
           marker.scale.set(1);

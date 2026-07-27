@@ -77,13 +77,47 @@ async function inspect(name, viewport) {
   await page.waitForSelector('#hmhPausePanel:not([hidden])');
   assert.equal(await page.locator('#hmhExitButton').isDisabled(), true);
   assert.equal(await page.locator('#hmhExitButton').textContent(), 'Arcade exit unavailable');
-  await page.screenshot({ path: pathFor(`${name}-pause`), fullPage: true });
+  const pausePanelBox = await page.locator('.hmh-menu-panel').boundingBox();
+  assert.ok(pausePanelBox && pausePanelBox.x >= 0 && pausePanelBox.y >= 0 && pausePanelBox.x + pausePanelBox.width <= viewport.width && pausePanelBox.y + pausePanelBox.height <= viewport.height, `${name} pause panel escaped the viewport`);
+  const actionBoxes = await page.locator('.hmh-menu-actions button').evaluateAll((nodes) => nodes.map((node) => {
+    const box = node.getBoundingClientRect();
+    return { top: box.top, bottom: box.bottom, height: box.height };
+  }));
+  assert.ok(actionBoxes.every((box) => box.top >= 0 && box.bottom <= viewport.height && box.height >= 44), `${name} pause actions are clipped: ${JSON.stringify(actionBoxes)}`);
+  const settingIds = ['hmhSettingMusic', 'hmhSettingScreenShake', 'hmhSettingReduceMotion', 'hmhSettingReduceFlash'];
+  const settingsInputs = page.locator('.hmh-setting-toggle input');
+  assert.equal(await settingsInputs.count(), settingIds.length);
+  const buildText = (await page.locator('#hmhBuildSummary').innerText()).trim();
+  assert.match(buildText, /Rank 1\/3/);
+  assert.match(buildText, /Validator Training|Gas Optimization|Block Reward/);
+  assert.equal(await page.locator('#hmhSettingMusic').isChecked(), false);
+  if (viewport.width <= 900) {
+    const settingRows = await page.locator('.hmh-setting-toggle').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().height));
+    assert.ok(settingRows.every((height) => height >= 44), `${name} has a settings row under 44px: ${settingRows.join(', ')}`);
+  }
+  await page.locator('#hmhSettingReduceMotion').check();
+  await page.locator('#hmhSettingReduceFlash').check();
+  await page.waitForFunction(() => {
+    const stage = document.querySelector('#hmhRebootStage');
+    return stage?.dataset.settingReduceMotion === 'true' && stage.dataset.settingReduceFlash === 'true';
+  });
+  assert.equal(await page.locator('#hmhPausePanel').getAttribute('hidden'), null);
+  const settingsBeforeRestart = await page.locator('.hmh-setting-toggle input').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.id, node.checked])));
+  await page.screenshot({ path: pathFor(`${name}-pause-settings`), fullPage: true });
+  await page.click('#hmhRestartButton');
+  await page.waitForFunction(() => document.querySelector('#hmhPausePanel')?.hidden === true);
+  await page.click('#hmhMenuToggle');
+  await page.waitForSelector('#hmhPausePanel:not([hidden])');
+  assert.equal(await page.locator('#hmhSettingReduceMotion').isChecked(), true);
+  assert.equal(await page.locator('#hmhSettingReduceFlash').isChecked(), true);
+  assert.equal(await page.locator('#hmhSettingMusic').isChecked(), false);
+  const settingsAfterRestart = await page.locator('.hmh-setting-toggle input').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.id, node.checked])));
   await page.click('#hmhResumeButton');
   await page.waitForFunction(() => document.querySelector('#hmhPausePanel')?.hidden === true);
   await page.waitForTimeout(100);
   assert.deepEqual(errors, []);
   await page.close();
-  return { choices, disclosure, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, errors };
+  return { choices, disclosure, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, buildText, settings: { beforeRestart: settingsBeforeRestart, afterRestart: settingsAfterRestart }, errors };
 }
 
 const result = {

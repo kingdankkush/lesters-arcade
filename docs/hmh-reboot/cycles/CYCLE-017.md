@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 017
 
 Date: 2026-07-26
-Status: `LOCAL CERTIFIED · INCLUDED IN THIS CYCLE COMMIT · PRODUCTION UNTOUCHED`
+Status: `LOCAL CERTIFIED · COMMITTED c07b6e8e · PRODUCTION UNTOUCHED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `6292cc57` — `feat(hmh): show grenade danger radius`
 

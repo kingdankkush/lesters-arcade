@@ -49,6 +49,34 @@
           <span class="hmh-panel-kicker">Run suspended</span>
           <h1 id="hmhPauseTitle">Forked Frontier</h1>
           <p>Pause stops simulation, combat voices, and run time. Portal authority remains connected.</p>
+          <div class="hmh-pause-grid">
+            <section aria-labelledby="hmhSettingsTitle">
+              <h2 id="hmhSettingsTitle">Run settings</h2>
+              <div class="hmh-settings-grid">
+                <label class="hmh-setting-toggle">
+                  <input id="hmhSettingMusic" type="checkbox">
+                  <span><strong>Music</strong><small>Arcade soundtrack</small></span>
+                </label>
+                <label class="hmh-setting-toggle">
+                  <input id="hmhSettingScreenShake" type="checkbox">
+                  <span><strong>Screen shake</strong><small>Impact camera motion</small></span>
+                </label>
+                <label class="hmh-setting-toggle">
+                  <input id="hmhSettingReduceMotion" type="checkbox">
+                  <span><strong>Reduced motion</strong><small>Calmer actor and camera motion</small></span>
+                </label>
+                <label class="hmh-setting-toggle">
+                  <input id="hmhSettingReduceFlash" type="checkbox">
+                  <span><strong>Reduced flash</strong><small>Steady combat warnings</small></span>
+                </label>
+              </div>
+            </section>
+            <section aria-labelledby="hmhBuildTitle">
+              <h2 id="hmhBuildTitle">Current build</h2>
+              <p id="hmhBuildEmpty" class="hmh-build-empty">No upgrades acquired yet.</p>
+              <ul id="hmhBuildSummary" class="hmh-build-summary" aria-label="Acquired run upgrades"></ul>
+            </section>
+          </div>
           <div class="hmh-menu-actions">
             <button id="hmhResumeButton" type="button">Resume run</button>
             <button id="hmhRestartButton" type="button">Restart run</button>

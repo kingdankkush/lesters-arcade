@@ -96,7 +96,7 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   const css = fs.readFileSync(path.join(root, 'apps/portal/hmh-reboot/styles.css'), 'utf8');
   const main = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/main.mjs'), 'utf8');
   const cockpit = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/cockpit-ui.mjs'), 'utf8');
-  for (const id of ['hmhRunScore', 'hmhRunLevel', 'hmhRunXpFill', 'hmhMusicToggle', 'hmhMenuToggle', 'hmhProfileToggle', 'hmhPausePanel', 'hmhUpgradePanel', 'hmhUpgradeChoices', 'hmhAdapterStatus']) {
+  for (const id of ['hmhRunScore', 'hmhRunLevel', 'hmhRunXpFill', 'hmhMusicToggle', 'hmhMenuToggle', 'hmhProfileToggle', 'hmhPausePanel', 'hmhUpgradePanel', 'hmhUpgradeChoices', 'hmhAdapterStatus', 'hmhSettingMusic', 'hmhSettingScreenShake', 'hmhSettingReduceMotion', 'hmhSettingReduceFlash', 'hmhBuildEmpty', 'hmhBuildSummary']) {
     assert.match(html, new RegExp(`id="${id}"`));
   }
   assert.match(html, /aria-controls="hmhPausePanel"/);
@@ -105,6 +105,12 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /:focus-visible/);
   assert.match(css, /@media[^{}]*max-width:\s*600px/);
+  assert.match(css, /\.hmh-setting-toggle[^}]*min-height:\s*52px/);
+  assert.match(css, /max-height:\s*520px[\s\S]*\.hmh-setting-toggle[^}]*min-height:\s*44px/);
+  assert.match(main, /PAUSE_SETTING_KEYS = new Set\(\['musicEnabled', 'screenShake', 'reduceMotion', 'reduceFlash'\]\)/);
+  assert.match(main, /syncRuntimeSettings\(\{ \.\.\.settings, \[key\]: Boolean\(enabled\) \}, \{ notify: true \}\)/);
+  assert.match(main, /sessionPayload = \{ \.\.\.sessionPayload, settings: \{ \.\.\.settings \} \}/);
+  assert.match(main, /stageElement\.dataset\.settingReduceMotion/);
   assert.match(main, /createRunProgression/);
   assert.match(main, /recordRunDefeat/);
   assert.match(main, /selectRunUpgrade/);
@@ -115,6 +121,10 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(cockpit, /option\.append\(button, detail\)/);
   assert.match(cockpit, /detail\.append\(summary, description\)/);
   assert.match(cockpit, /summary\.setAttribute\('aria-expanded'/);
+  assert.match(cockpit, /RUN_UPGRADE_CATALOG/);
+  assert.match(cockpit, /className: 'hmh-build-rank'/);
+  assert.match(cockpit, /onSettingToggle\(key, enabled\)/);
+  assert.doesNotMatch(html, /hmhSettingGore|hmhSettingColorblind/);
   assert.match(css, /\.hmh-upgrade-details summary[^}]*min-height:\s*44px/);
   assert.doesNotMatch(css, /\.hmh-upgrade-choice p\s*\{[^}]*display:\s*none/);
   assert.doesNotMatch(cockpit, /button\.append\([^)]*description/);

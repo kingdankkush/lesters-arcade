@@ -88,5 +88,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `6292cc57`; production unchanged
   - Cycle ledger: `cycles/CYCLE-016.md`
 - [x] Cycle 017: sibling upgrade disclosures and desktop/tablet/portrait/landscape responsive choice polish
-  - Status: included in this local cycle commit; production unchanged
+  - Status: committed locally as `c07b6e8e`; production unchanged
   - Cycle ledger: `cycles/CYCLE-017.md`
+- [x] Cycle 018: truthful pause settings, current-build ranks, restart persistence, and responsive actions
+  - Status: included in this local cycle commit; production unchanged
+  - Cycle ledger: `cycles/CYCLE-018.md`

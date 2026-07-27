@@ -1,4 +1,5 @@
 import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
+import { RUN_UPGRADE_CATALOG } from './run-progression.mjs';
 
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
@@ -10,7 +11,13 @@ function integerText(value) {
   return Math.max(0, Math.round(Number(value) || 0)).toLocaleString('en-US');
 }
 
-const SAFE_DYNAMIC_TAGS = new Set(['button', 'div', 'details', 'summary', 'span', 'strong', 'b', 'p']);
+const SAFE_DYNAMIC_TAGS = new Set(['button', 'div', 'details', 'summary', 'span', 'strong', 'b', 'p', 'li']);
+const PAUSE_SETTING_KEYS = Object.freeze({
+  musicEnabled: 'hmhSettingMusic',
+  screenShake: 'hmhSettingScreenShake',
+  reduceMotion: 'hmhSettingReduceMotion',
+  reduceFlash: 'hmhSettingReduceFlash',
+});
 
 function createSafeTextElement(documentRef, tagName, { className = '', text = '' } = {}) {
   if (!SAFE_DYNAMIC_TAGS.has(tagName)) throw new TypeError('cockpit dynamic element tag is not allowed');
@@ -24,6 +31,7 @@ export function createCockpitUi({
   documentRef = document,
   onMenuToggle = () => {},
   onMusicToggle = () => {},
+  onSettingToggle = () => {},
   onResume = () => {},
   onRestart = () => {},
   onExit = () => {},
@@ -48,6 +56,9 @@ export function createCockpitUi({
     resume: required(documentRef, 'hmhResumeButton'),
     restart: required(documentRef, 'hmhRestartButton'),
     exit: required(documentRef, 'hmhExitButton'),
+    settings: Object.fromEntries(Object.entries(PAUSE_SETTING_KEYS).map(([key, id]) => [key, required(documentRef, id)])),
+    buildEmpty: required(documentRef, 'hmhBuildEmpty'),
+    buildSummary: required(documentRef, 'hmhBuildSummary'),
     upgradePanel: required(documentRef, 'hmhUpgradePanel'),
     upgradeQueue: required(documentRef, 'hmhUpgradeQueue'),
     upgradeChoices: required(documentRef, 'hmhUpgradeChoices'),
@@ -63,6 +74,7 @@ export function createCockpitUi({
     musicEnabled = !musicEnabled;
     elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
     elements.music.setAttribute('aria-pressed', String(musicEnabled));
+    elements.settings.musicEnabled.checked = musicEnabled;
     onMusicToggle(musicEnabled);
   });
   listen(elements.menu, 'click', () => onMenuToggle());
@@ -74,6 +86,19 @@ export function createCockpitUi({
   listen(elements.resume, 'click', () => onResume());
   listen(elements.restart, 'click', () => onRestart());
   listen(elements.exit, 'click', () => onExit());
+  for (const [key, input] of Object.entries(elements.settings)) {
+    listen(input, 'change', () => {
+      const enabled = Boolean(input.checked);
+      if (key === 'musicEnabled') {
+        musicEnabled = enabled;
+        elements.music.textContent = enabled ? 'Music on' : 'Music off';
+        elements.music.setAttribute('aria-pressed', String(enabled));
+        onMusicToggle(enabled);
+      } else {
+        onSettingToggle(key, enabled);
+      }
+    });
+  }
 
   return Object.freeze({
     updateRun(snapshot) {
@@ -83,6 +108,19 @@ export function createCockpitUi({
       elements.xpNext.textContent = integerText(snapshot?.xpForNextLevel);
       const progress = Math.max(0, Math.min(1, Number(snapshot?.xpProgress) || 0));
       elements.xpFill.style.width = `${(progress * 100).toFixed(2)}%`;
+      const ranked = Object.entries(snapshot?.ranks ?? {})
+        .filter(([id, rank]) => Object.hasOwn(RUN_UPGRADE_CATALOG, id) && Number.isInteger(rank) && rank > 0);
+      elements.buildSummary.replaceChildren();
+      for (const [id, rank] of ranked) {
+        const upgrade = RUN_UPGRADE_CATALOG[id];
+        const row = createSafeTextElement(documentRef, 'li', { className: 'hmh-build-rank' });
+        const title = createSafeTextElement(documentRef, 'strong', { text: upgrade.title });
+        const detail = createSafeTextElement(documentRef, 'span', { text: `Rank ${rank}/${upgrade.maxRank} · ${upgrade.mechanicalLabel}` });
+        row.append(title, detail);
+        elements.buildSummary.append(row);
+      }
+      elements.buildEmpty.hidden = ranked.length > 0;
+      elements.buildSummary.hidden = ranked.length === 0;
     },
     setSession(payload, adapterStatus) {
       elements.profileName.textContent = payload.profile.displayName;
@@ -95,6 +133,13 @@ export function createCockpitUi({
     },
     setMusicEnabled(enabled) {
       musicEnabled = Boolean(enabled);
+      elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
+      elements.music.setAttribute('aria-pressed', String(musicEnabled));
+      elements.settings.musicEnabled.checked = musicEnabled;
+    },
+    setSettings(nextSettings = {}) {
+      for (const [key, input] of Object.entries(elements.settings)) input.checked = Boolean(nextSettings[key]);
+      musicEnabled = Boolean(nextSettings.musicEnabled);
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));
     },
