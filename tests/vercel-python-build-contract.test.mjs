@@ -20,7 +20,7 @@ test('Vercel installs the pinned Pillow dependency required by asset provenance 
     config.installCommand,
     /^npm install && uv pip install --python "\$\(command -v python\)" --target \.vercel-python --no-cache -r requirements-vercel\.txt$/u,
   );
-  assert.equal(config.buildCommand, 'PYTHONPATH=.vercel-python npm run vercel:build');
+  assert.equal(config.buildCommand, 'PYTHONPATH="$PWD/.vercel-python" npm run vercel:build');
   assert.match(readFileSync(GITIGNORE, 'utf8'), /^\.vercel-python\/$/mu);
 });
 
