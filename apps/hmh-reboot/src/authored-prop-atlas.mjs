@@ -37,6 +37,13 @@ const LANDMARK_OFFSETS = Object.freeze([
   Object.freeze({ x: -100, y: -100, scale: 1.3, mobileOnly: true }),
   Object.freeze({ x: 100, y: 100, scale: 1.3, mobileOnly: true }),
 ]);
+const LANDMARK_SIGNAL_KITS = Object.freeze({
+  'relay-console': Object.freeze({ id: 'relay-scan', color: 0x5cffe2, periodTicks: 96, radiusScale: 0.3 }),
+  'proof-pylon': Object.freeze({ id: 'proof-pulse', color: 0x8feaff, periodTicks: 72, radiusScale: 0.26 }),
+  'warning-beacon': Object.freeze({ id: 'warning-sweep', color: 0xffb34d, periodTicks: 54, radiusScale: 0.22 }),
+  'crystal-cluster': Object.freeze({ id: 'crystal-shimmer', color: 0x7dff8c, periodTicks: 108, radiusScale: 0.34 }),
+  'liquidation-terminal': Object.freeze({ id: 'margin-signal', color: 0xff5d8f, periodTicks: 84, radiusScale: 0.28 }),
+});
 
 function freezeDeep(value) {
   if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
@@ -113,6 +120,26 @@ export function buildAuthoredDistrictLandmarkPlacements({ worldId } = {}) {
     }
   }
   return Object.freeze(placements);
+}
+
+export function resolveAuthoredLandmarkSignal({ placement, tick, reduceMotion = false } = {}) {
+  if (placement?.category !== 'district-landmark' || placement.runtimeAuthority !== 'projection-only') return null;
+  if (!Number.isInteger(tick) || tick < 0) return null;
+  const kit = LANDMARK_SIGNAL_KITS[placement.assetId];
+  if (!kit) return null;
+  const phaseOffset = seededUnit(0x484d4821, placement.id) * Math.PI * 2;
+  const pulse = reduceMotion
+    ? 0.5
+    : (Math.sin((tick / kit.periodTicks) * Math.PI * 2 + phaseOffset) + 1) / 2;
+  return freezeDeep({
+    id: kit.id,
+    color: kit.color,
+    pulse: Number(pulse.toFixed(6)),
+    alpha: Number((0.16 + pulse * 0.34).toFixed(6)),
+    radiusScale: Number((kit.radiusScale * (0.88 + pulse * 0.12)).toFixed(6)),
+    animated: !reduceMotion,
+    runtimeAuthority: 'projection-only',
+  });
 }
 
 const POINT_OF_INTEREST_ASSET_BY_ID = Object.freeze({
@@ -198,14 +225,18 @@ export function createAuthoredHeldWeaponDisplay({ index, atlasTexture, Container
   return Object.freeze({ container, sprite });
 }
 
-export function createAuthoredPropDisplay({ index, atlasTexture, placements, ContainerClass, SpriteClass, TextureClass, RectangleClass } = {}) {
+export function createAuthoredPropDisplay({ index, atlasTexture, placements, ContainerClass, SpriteClass, TextureClass, RectangleClass, GraphicsClass } = {}) {
   if (!index?.frameById || !atlasTexture?.source) throw new TypeError('authored prop index and texture are required');
-  for (const [value, name] of [[ContainerClass, 'ContainerClass'], [SpriteClass, 'SpriteClass'], [TextureClass, 'TextureClass'], [RectangleClass, 'RectangleClass']]) {
+  for (const [value, name] of [[ContainerClass, 'ContainerClass'], [SpriteClass, 'SpriteClass'], [TextureClass, 'TextureClass'], [RectangleClass, 'RectangleClass'], [GraphicsClass, 'GraphicsClass']]) {
     if (typeof value !== 'function') throw new TypeError(`${name} is required`);
   }
   const container = new ContainerClass();
   container.label = 'authored-prop-atlas';
   container.sortableChildren = true;
+  const effects = new GraphicsClass();
+  effects.label = 'authored-landmark-signals';
+  effects.zIndex = -1_000_000;
+  container.addChild(effects);
   const textureById = new Map();
   const entries = placements.map((placement) => {
     const frame = index.frameFor(placement.assetId);
@@ -223,11 +254,16 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
     return { placement, frame, sprite };
   });
 
-  const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160, hiddenPlacementIds = null } = {}) => {
+  const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160, hiddenPlacementIds = null, reduceMotion = false } = {}) => {
+    effects.clear();
     let visibleCount = 0;
     const visibleByCategory = {};
     let onscreenCount = 0;
     const onscreenByCategory = {};
+    let signalVisibleCount = 0;
+    let animatedSignalVisibleCount = 0;
+    let signalOnscreenCount = 0;
+    let animatedSignalOnscreenCount = 0;
     for (const entry of entries) {
       if (hiddenPlacementIds?.has(entry.placement.id)) {
         entry.sprite.visible = false;
@@ -253,8 +289,24 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
         onscreenByCategory[entry.placement.category] = (onscreenByCategory[entry.placement.category] ?? 0) + 1;
       }
       entry.sprite.position.set(screen.x, screen.y);
-      entry.sprite.scale.set(entry.frame.runtimeScale * (entry.placement.scale ?? 1) * camera.zoom);
+      const spriteScale = entry.frame.runtimeScale * (entry.placement.scale ?? 1) * camera.zoom;
+      entry.sprite.scale.set(spriteScale);
+      entry.sprite.alpha = 1;
       entry.sprite.zIndex = screen.y;
+      const signal = resolveAuthoredLandmarkSignal({ placement: entry.placement, tick, reduceMotion });
+      if (signal) {
+        const signalX = screen.x;
+        const signalY = screen.y - entry.frame.frame.h * spriteScale * 0.58;
+        const radius = Math.max(7, entry.frame.frame.w * spriteScale * signal.radiusScale);
+        effects.circle(signalX, signalY, radius)
+          .stroke({ color: signal.color, width: Math.max(1.5, 2.4 * camera.zoom), alpha: signal.alpha });
+        effects.circle(signalX, signalY, Math.max(2, radius * 0.11))
+          .fill({ color: signal.color, alpha: Math.min(0.82, signal.alpha + 0.22) });
+        signalVisibleCount += 1;
+        if (signal.animated) animatedSignalVisibleCount += 1;
+        if (onscreen) signalOnscreenCount += 1;
+        if (signal.animated && onscreen) animatedSignalOnscreenCount += 1;
+      }
     }
     return Object.freeze({
       placementCount: entries.length,
@@ -262,7 +314,11 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
       visibleByCategory: Object.freeze(visibleByCategory),
       onscreenCount,
       onscreenByCategory: Object.freeze(onscreenByCategory),
+      signalVisibleCount,
+      animatedSignalVisibleCount,
+      signalOnscreenCount,
+      animatedSignalOnscreenCount,
     });
   };
-  return Object.freeze({ container, entries: Object.freeze(entries), render });
+  return Object.freeze({ container, effects, entries: Object.freeze(entries), render });
 }

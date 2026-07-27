@@ -41,7 +41,7 @@ idle, walk-or-fly, attack-tell, attack, melee-counter, hit, death, optional-gore
 | evil-banker | Evil Banker | idle, walk, run, jump, attack | attack-tell, melee-counter, hit, death, optional-gore-overlay | attack-tell, melee-counter, hit, death, optional-gore-overlay | none |
 | warren-spear-rider | Warren Spear Rider | idle, walk, run, jump, attack | attack-tell, melee-counter, hit, death, optional-gore-overlay | attack-tell, melee-counter, hit, death, optional-gore-overlay | none |
 | crypto-bro | Crypto Bro | idle, walk, run, jump, attack | attack-tell, melee-counter, hit, death, optional-gore-overlay | attack-tell, melee-counter, hit, death, optional-gore-overlay | none |
-| gas-beast | Gas Beast | idle, walk, run, jump, attack | attack-tell, melee-counter, hit, death, optional-gore-overlay | attack-tell, melee-counter, hit, death, optional-gore-overlay | none |
+| gas-beast | Gas-Tax Zombie Brute | idle, walk, run, jump, attack | attack-tell, melee-counter, hit, death, optional-gore-overlay | attack-tell, melee-counter, hit, death, optional-gore-overlay | none |
 
 ## Recommendations
 

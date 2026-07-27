@@ -99,6 +99,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 020: eliminate the post-restart cockpit certification race and restore deploy-build manifest reproducibility
   - Status: committed locally as `8842077c`; production unchanged
   - Cycle ledger: `cycles/CYCLE-020.md`
+- [x] Cycle 021: deterministic projection-only district landmark signals with reduced-motion and onscreen browser gates
+  - Status: local certified; immutable preview and production verification pending
+  - Cycle ledger: `cycles/CYCLE-021.md`
 
 ## Final local candidate
 
@@ -107,3 +110,10 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - Full source-range SHA-256: `38343b8cd71ef543ba10e83d86d50f8ec7ec91d8dc158f269ec165f927b40e7a`
 - Certificate: `RELEASE-CERTIFICATION-AAA-FINAL-CANDIDATE.md`
 - Deployment and rollback: `DEPLOYMENT-ROLLBACK-RUNBOOK-AAA-FINAL-CANDIDATE.md`
+
+## Current continuation candidate
+
+- Status: Cycle 021 local automation and visual review certified; eligible for immutable preview
+- Baseline source: `9ff359eaf28b81a792a10a41b0d59db5f9ae5440`
+- Cycle ledger: `cycles/CYCLE-021.md`
+- Settlement: disabled; hardened Web3 remains outside this release

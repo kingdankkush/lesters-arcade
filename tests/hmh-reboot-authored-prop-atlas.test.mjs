@@ -12,6 +12,7 @@ import {
   createAuthoredHeldWeaponDisplay,
   createAuthoredPropAtlasIndex,
   createAuthoredPropDisplay,
+  resolveAuthoredLandmarkSignal,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
@@ -27,6 +28,13 @@ class FakeContainer {
 }
 class FakeSprite {
   constructor({ texture }) { this.texture = texture; this.anchor = new FakePoint(); this.position = new FakePoint(); this.scale = new FakePoint(); this.visible = true; }
+}
+class FakeGraphics {
+  constructor() { this.commands = []; this.visible = true; }
+  clear() { this.commands = []; return this; }
+  circle(...args) { this.commands.push(['circle', ...args]); return this; }
+  stroke(options) { this.commands.push(['stroke', options]); return this; }
+  fill(options) { this.commands.push(['fill', options]); return this; }
 }
 class FakeTexture { constructor(options) { Object.assign(this, options); } }
 class FakeRectangle { constructor(x, y, width, height) { Object.assign(this, { x, y, width, height }); } }
@@ -87,12 +95,44 @@ test('district landmark clusters stay near visual anchors and clear the playable
   assert.equal(new Set(first.map((placement) => placement.id)).size, first.length);
 });
 
+test('district landmark signals are deterministic, bounded, projection-only, and reduced-motion safe', () => {
+  const placements = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
+  const signaled = placements.filter((placement) => resolveAuthoredLandmarkSignal({ placement, tick: 0 }) !== null);
+  assert.ok(signaled.length >= 12, 'all six districts need multiple animated signal anchors');
+  assert.equal(new Set(signaled.map((placement) => placement.districtId)).size, 6);
+
+  let changed = 0;
+  for (const placement of signaled) {
+    const first = resolveAuthoredLandmarkSignal({ placement, tick: 0 });
+    const repeated = resolveAuthoredLandmarkSignal({ placement, tick: 0 });
+    const later = resolveAuthoredLandmarkSignal({ placement, tick: 37 });
+    assert.deepEqual(first, repeated);
+    assert.equal(first.runtimeAuthority, 'projection-only');
+    assert.equal(Object.isFrozen(first), true);
+    assert.ok(first.pulse >= 0 && first.pulse <= 1);
+    assert.ok(first.alpha >= 0.16 && first.alpha <= 0.62);
+    assert.ok(first.radiusScale >= 0.18 && first.radiusScale <= 0.42);
+    if (first.pulse !== later.pulse) changed += 1;
+
+    const reduced = resolveAuthoredLandmarkSignal({ placement, tick: 37, reduceMotion: true });
+    assert.equal(reduced.animated, false);
+    assert.equal(reduced.pulse, 0.5);
+  }
+  assert.equal(changed, signaled.length, 'every signaled landmark must react to simulation tick');
+  assert.equal(resolveAuthoredLandmarkSignal({ placement: placements[0], tick: -1 }), null, 'invalid ticks fail closed');
+  assert.equal(resolveAuthoredLandmarkSignal({ placement: { ...placements[0], category: 'world-prop' }, tick: 20 }), null);
+});
+
 test('authored prop display creates real sprites, culls, grounds, and never changes placement data', async () => {
   const index = createAuthoredPropAtlasIndex(await loadMetadata());
-  const placements = Object.freeze([...buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 7, countPerDistrict: 1 }), ...buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest)]);
+  const placements = Object.freeze([
+    ...buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 7, countPerDistrict: 1 }),
+    ...buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' }),
+    ...buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
+  ]);
   const before = JSON.stringify(placements);
-  const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle });
-  assert.equal(display.entries.length, 15);
+  const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
+  assert.equal(display.entries.length, 63);
   const report = display.render({
     camera: { zoom: 1 },
     view: { width: 12_000, height: 4_800 },
@@ -100,10 +140,39 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
     queryGround: () => ({ groundZ: 0 }),
     tick: 42,
   });
-  assert.equal(report.placementCount, 15);
+  assert.equal(report.placementCount, 63);
   assert.ok(report.visibleCount > 0);
+  assert.ok(report.signalVisibleCount >= 12);
+  assert.equal(report.animatedSignalVisibleCount, report.signalVisibleCount);
+  assert.equal(report.animatedSignalOnscreenCount, report.signalOnscreenCount);
+  assert.ok(display.effects.commands.length > 0, 'visible landmark signals must draw real effect geometry');
   assert.equal(JSON.stringify(placements), before, 'render projection cannot mutate deterministic placements');
   assert.ok(display.entries.every((entry) => entry.sprite.productionAssetId === entry.placement.assetId));
+
+  const reduced = display.render({
+    camera: { zoom: 1 },
+    view: { width: 12_000, height: 4_800 },
+    worldToScreen: (point) => ({ x: point.x, y: point.y - point.z }),
+    queryGround: () => ({ groundZ: 0 }),
+    tick: 79,
+    reduceMotion: true,
+  });
+  assert.ok(reduced.signalVisibleCount >= 12);
+  assert.equal(reduced.animatedSignalVisibleCount, 0);
+  assert.equal(reduced.animatedSignalOnscreenCount, 0);
+});
+
+test('runtime wires reduced motion and animated landmark telemetry into the renderer', async () => {
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /GraphicsClass: Graphics/);
+  assert.match(source, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0/);
+  assert.match(source, /dataset\.authoredLandmarkAnimated/);
+  const smoke = await readFile(new URL('../scripts/hmh-reboot-cockpit-browser-smoke.mjs', import.meta.url), 'utf8');
+  assert.match(smoke, /evidenceSafe=1&telemetry=1&progressionPilot=1/);
+  assert.match(smoke, /stage\?\.dataset\.authoredLandmarkAnimated === '0'/);
+  const visual = await readFile(new URL('../scripts/hmh-reboot-visual-regression.mjs', import.meta.url), 'utf8');
+  assert.match(visual, /emulateMedia\(\{ reducedMotion: 'reduce' \}\)/);
+  assert.match(visual, /reducedMotionEvidence/);
 });
 
 test('held weapon display can select all four authored weapons', async () => {

@@ -1,6 +1,10 @@
 node_modules
 .git
 .vercel
+.vercel-python
+.hermes
+.tmp
+*.blend1
 .env
 .env.*
 npm-debug.log*

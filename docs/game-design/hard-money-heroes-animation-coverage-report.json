@@ -207,7 +207,7 @@
     },
     "gasBeast": {
       "id": "gas-beast",
-      "title": "Gas Beast",
+      "title": "Gas-Tax Zombie Brute",
       "availableAnimatedStates": [
         "idle",
         "walk",

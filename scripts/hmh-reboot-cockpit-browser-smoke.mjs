@@ -18,7 +18,7 @@ async function inspect(name, viewport) {
   const errors = [];
   page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
   page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
-  await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&progressionPilot=1`, { waitUntil: 'networkidle' });
+  await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&telemetry=1&progressionPilot=1`, { waitUntil: 'networkidle' });
   await page.waitForSelector('#hmhUpgradePanel:not([hidden])');
   const choices = await page.locator('.hmh-upgrade-choice').evaluateAll((nodes) => nodes.map((node) => ({ id: node.dataset.upgradeId, text: node.textContent.trim() })));
   assert.equal(choices.length, 3);
@@ -117,7 +117,10 @@ async function inspect(name, viewport) {
   const settingsAfterRestart = await page.locator('.hmh-setting-toggle input').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.id, node.checked])));
   await page.click('#hmhResumeButton');
   await page.waitForFunction(() => document.querySelector('#hmhPausePanel')?.hidden === true);
-  await page.waitForTimeout(100);
+  await page.waitForFunction(() => {
+    const stage = document.querySelector('#hmhRebootStage');
+    return stage?.dataset.authoredLandmarkAnimated === '0';
+  });
   assert.deepEqual(errors, []);
   await page.close();
   return { choices, disclosure, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, buildText, settings: { beforeRestart: settingsBeforeRestart, afterRestart: settingsAfterRestart }, errors };

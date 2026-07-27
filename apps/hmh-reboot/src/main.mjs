@@ -366,6 +366,7 @@ async function boot() {
       SpriteClass: Sprite,
       TextureClass: Texture,
       RectangleClass: Rectangle,
+      GraphicsClass: Graphics,
     });
     const heldWeaponDisplay = createAuthoredHeldWeaponDisplay({
       index: propIndex,
@@ -873,10 +874,12 @@ async function boot() {
         tick: simulation?.tick ?? 0,
         cullMargin: performanceProfile.worldCullMargin ?? 220,
         hiddenPlacementIds: collectibleState?.collectedIds ?? null,
+        reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
       });
       if (releaseTelemetryEnabled || debugGridEnabled) {
         stageElement.dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
         stageElement.dataset.authoredLandmarkVisible = String(authoredPropReport?.onscreenByCategory?.['district-landmark'] ?? 0);
+        stageElement.dataset.authoredLandmarkAnimated = String(authoredPropReport?.animatedSignalOnscreenCount ?? 0);
       }
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);

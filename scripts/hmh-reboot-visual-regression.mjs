@@ -236,6 +236,7 @@ if (isMain) {
   });
 
   const results = [];
+  let reducedMotionEvidence = null;
   try {
     for (const scene of VISUAL_SCENES) {
       const page = await browser.newPage({ viewport: { ...scene.viewport }, deviceScaleFactor: 1 });
@@ -283,9 +284,13 @@ if (isMain) {
         throw new Error(`scene ${scene.id} did not settle before capture (${observedTick} -> ${settledTick})`);
       }
       const landmarkVisible = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.authoredLandmarkVisible ?? Number.NaN));
+      const landmarkAnimated = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.authoredLandmarkAnimated ?? Number.NaN));
       const minimumVisibleLandmarks = scene.viewport.width <= 600 ? 2 : 3;
       if (!Number.isFinite(landmarkVisible) || landmarkVisible < minimumVisibleLandmarks) {
         throw new Error(`scene ${scene.id} has ${String(landmarkVisible)} visible district landmarks; expected at least ${minimumVisibleLandmarks}`);
+      }
+      if (!Number.isFinite(landmarkAnimated) || landmarkAnimated < 1) {
+        throw new Error(`scene ${scene.id} has ${String(landmarkAnimated)} animated district landmark signals onscreen; expected at least 1`);
       }
       // Capture the renderer canvas only, so DOM chrome (cockpit rail, pause
       // panel) cannot mask a change in the rendered world.
@@ -325,6 +330,24 @@ if (isMain) {
       });
       await page.close();
     }
+    const reducedPage = await browser.newPage({ viewport: { ...VISUAL_SCENES[0].viewport }, deviceScaleFactor: 1 });
+    await reducedPage.emulateMedia({ reducedMotion: 'reduce' });
+    await reducedPage.goto(`${origin}/hmh-reboot/index.html?${VISUAL_SCENES[0].query}`, { waitUntil: 'domcontentloaded' });
+    await reducedPage.waitForFunction(() => {
+      const stage = document.querySelector('#hmhRebootStage');
+      return stage?.dataset.authoredPropStatus === 'ready'
+        && Number(stage.dataset.authoredLandmarkVisible) >= 3
+        && stage.dataset.authoredLandmarkAnimated === '0';
+    }, undefined, { timeout: 30_000 });
+    reducedMotionEvidence = await reducedPage.evaluate(() => {
+      const stage = document.querySelector('#hmhRebootStage');
+      return {
+        sceneId: 'frontier-relay-desktop',
+        landmarkVisible: Number(stage?.dataset.authoredLandmarkVisible),
+        animatedSignals: Number(stage?.dataset.authoredLandmarkAnimated),
+      };
+    });
+    await reducedPage.close();
   } finally {
     await browser.close();
     server.close();
@@ -337,6 +360,7 @@ if (isMain) {
     accepted: accept,
     baselineDir: path.relative(repoRoot, baselineDir).replaceAll('\\', '/'),
     currentDir: path.relative(repoRoot, currentDir).replaceAll('\\', '/'),
+    reducedMotionEvidence,
     results,
   }, null, 2));
 
