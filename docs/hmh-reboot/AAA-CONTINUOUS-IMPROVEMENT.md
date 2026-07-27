@@ -97,5 +97,13 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `c98861a2`; production unchanged
   - Cycle ledger: `cycles/CYCLE-019.md`
 - [x] Cycle 020: eliminate the post-restart cockpit certification race and restore deploy-build manifest reproducibility
-  - Status: local certification in progress; production unchanged
+  - Status: committed locally as `8842077c`; production unchanged
   - Cycle ledger: `cycles/CYCLE-020.md`
+
+## Final local candidate
+
+- Status: automation certified; human and immutable-preview acceptance pending; production unchanged
+- Certified source: `8842077c16e6725997ca8e64a61cecb139d67a9e`
+- Full source-range SHA-256: `38343b8cd71ef543ba10e83d86d50f8ec7ec91d8dc158f269ec165f927b40e7a`
+- Certificate: `RELEASE-CERTIFICATION-AAA-FINAL-CANDIDATE.md`
+- Deployment and rollback: `DEPLOYMENT-ROLLBACK-RUNBOOK-AAA-FINAL-CANDIDATE.md`
