@@ -8,9 +8,13 @@ import process from 'node:process';
 
 const ROOT = process.cwd();
 const PORTAL_ROOT = path.join(ROOT, 'apps', 'portal');
-const REPORT_JSON = path.join(ROOT, 'docs', 'testing', 'hmh-browser-soak.json');
-const REPORT_MD = path.join(ROOT, 'docs', 'testing', 'hmh-browser-soak.md');
-const PARTIAL_JSON = path.join(ROOT, 'docs', 'testing', 'hmh-browser-soak.partial.json');
+const profileArg = process.argv.find((arg) => arg.startsWith('--profile='));
+const profile = profileArg?.split('=')[1] ?? 'desktop';
+if (!['desktop', 'mobile'].includes(profile)) throw new Error('--profile must be desktop or mobile');
+const reportSuffix = profile === 'mobile' ? '-mobile' : '';
+const REPORT_JSON = path.join(ROOT, 'docs', 'testing', `hmh-browser-soak${reportSuffix}.json`);
+const REPORT_MD = path.join(ROOT, 'docs', 'testing', `hmh-browser-soak${reportSuffix}.md`);
+const PARTIAL_JSON = path.join(ROOT, 'docs', 'testing', `hmh-browser-soak${reportSuffix}.partial.json`);
 const CAPTURE_DIR = path.join(ROOT, 'docs', 'testing', 'VISUAL_BASELINES', 'current', 'soak');
 const CHROME_CANDIDATES = [
   process.env.CHROME_BIN,
@@ -196,6 +200,7 @@ async function readSample(client) {
       heapUsed: performance.memory?.usedJSHeapSize ?? null,
       heapTotal: performance.memory?.totalJSHeapSize ?? null,
       domNodes: document.getElementsByTagName('*').length,
+      touchControls: document.querySelectorAll('[data-hmh-control]').length,
       canvasVisible: Boolean(canvas && canvas.width > 0 && canvas.height > 0),
       simulationTick: Number(stage?.dataset.simulationTick ?? NaN),
       actorX: Number(stage?.dataset.actorX ?? NaN),
@@ -220,12 +225,12 @@ async function readSample(client) {
 async function main() {
   await mkdir(path.dirname(REPORT_JSON), { recursive: true });
   await mkdir(CAPTURE_DIR, { recursive: true });
-  const lockDir = path.join(ROOT, '.tmp', 'hmh-reboot-soak.lock');
+  const lockDir = path.join(ROOT, '.tmp', `hmh-reboot-soak-${profile}.lock`);
   await mkdir(path.dirname(lockDir), { recursive: true });
   await acquireRunLock(lockDir);
   const serverPort = await freePort();
   const debugPort = await freePort();
-  const profileDir = path.join(ROOT, '.tmp', `chrome-reboot-soak-${process.pid}`);
+  const profileDir = path.join(ROOT, '.tmp', `chrome-reboot-soak-${profile}-${process.pid}`);
   let server;
   let chrome;
   let client;
@@ -261,7 +266,11 @@ async function main() {
     await client.send('Runtime.enable');
     await client.send('Page.enable');
     await client.send('Network.enable');
-    await client.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+    const profileMetrics = profile === 'mobile'
+      ? { width: 390, height: 844, deviceScaleFactor: 1.25, mobile: true }
+      : { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false };
+    await client.send('Emulation.setDeviceMetricsOverride', profileMetrics);
+    await client.send('Emulation.setTouchEmulationEnabled', { enabled: profile === 'mobile', maxTouchPoints: profile === 'mobile' ? 5 : 1 });
     await client.send('Page.navigate', { url: `http://127.0.0.1:${serverPort}/hmh-reboot/?${REBOOT_QUERY}` });
     await waitFor(client, `(() => {
       const stage = document.querySelector('#hmhRebootStage');
@@ -271,7 +280,7 @@ async function main() {
         && stage?.dataset.authoredPropStatus === 'ready';
     })()`);
     await evaluate(client, `(() => { const canvas = document.querySelector('#hmhRebootStage canvas'); canvas.tabIndex = 0; canvas.focus(); return document.activeElement === canvas; })()`);
-    await capture(client, 'reboot-soak-start.png');
+    await capture(client, `reboot-soak-${profile}-start.png`);
 
     const soakStarted = Date.now();
     const movement = [['d', 'KeyD'], ['s', 'KeyS'], ['a', 'KeyA'], ['w', 'KeyW']];
@@ -337,13 +346,13 @@ async function main() {
       }
       previousTick = sample.simulationTick;
       samples.push({ atSeconds: Number(((Date.now() - soakStarted) / 1000).toFixed(2)), ...sample });
-      await writeFile(PARTIAL_JSON, `${JSON.stringify({ status: 'RUNNING', startedAt: startedAt.toISOString(), requestedMinutes: minutes, sampleCount: samples.length, lastSample: sample }, null, 2)}\n`);
+      await writeFile(PARTIAL_JSON, `${JSON.stringify({ status: 'RUNNING', profile, startedAt: startedAt.toISOString(), requestedMinutes: minutes, sampleCount: samples.length, lastSample: sample }, null, 2)}\n`);
       sampleIndex += 1;
       const delay = Math.max(0, sampleIntervalMs - 1_350);
       if (delay) await sleep(Math.min(delay, Math.max(0, durationMs - (Date.now() - soakStarted))));
     }
 
-    await capture(client, 'reboot-soak-end.png');
+    await capture(client, `reboot-soak-${profile}-end.png`);
     await evaluate(client, 'globalThis.gc?.(); true');
     await sleep(500);
     const afterGc = await evaluate(client, `({
@@ -380,6 +389,7 @@ async function main() {
     if (retainedHeapGrowthBytes > MAX_HEAP_GROWTH_BYTES && retainedHeapGrowthPercent > MAX_HEAP_GROWTH_PERCENT) failures.push(`steady-state retained heap grew ${retainedHeapGrowthBytes} bytes (${retainedHeapGrowthPercent.toFixed(2)}%)`);
     if (samples.at(-1).domNodes - samples[0].domNodes > MAX_DOM_GROWTH) failures.push(`DOM grew by ${samples.at(-1).domNodes - samples[0].domNodes} nodes`);
     if (samples.some((sample) => !sample.canvasVisible)) failures.push('reboot canvas became unavailable');
+    if (profile === 'mobile' && samples.some((sample) => sample.touchControls < 8)) failures.push('mobile touch chrome became unavailable');
     if (samples.some((sample) => sample.actorArt !== 'production-blender-atlas-v1' || sample.enemyArt !== 'production-roster-atlas-v1' || sample.authoredProps !== 'ready')) failures.push('authored asset readiness drifted');
     if (Math.max(...samples.map((sample) => sample.enemyCount)) < 1) failures.push('combat pilot never reported an active enemy');
     if (consoleIssues.length) failures.push(`${consoleIssues.length} browser console issue(s)`);
@@ -388,6 +398,8 @@ async function main() {
     const report = {
       schemaVersion: 3,
       runtime: 'hmh-reboot',
+      profile,
+      viewport: profileMetrics,
       startedAt: startedAt.toISOString(),
       completedAt: new Date().toISOString(),
       requestedMinutes: minutes,
@@ -430,10 +442,10 @@ async function main() {
       samples,
     };
     await writeFile(REPORT_JSON, `${JSON.stringify(report, null, 2)}\n`);
-    await writeFile(REPORT_MD, `# HMH Reboot Browser Soak\n\n- Status: **${report.status}**\n- Runtime: \`${report.runtime}\`\n- Requested: ${report.requestedMinutes} minutes\n- Actual: ${report.actualMinutes} minutes\n- Samples: ${report.sampleCount}\n- Median FPS: ${report.medianFps}\n- P95 frame: ${report.frameTimeMs.p95} ms\n- Simulation advance: ${report.simulation.tickAdvance} ticks (minimum ${report.simulation.minimumTickAdvance})\n- Run restarts: ${report.simulation.runRestarts}\n- Maximum enemies: ${report.occupancy.maxEnemies}\n- Authored props: ${report.authoredAssets.authoredProps} (${report.authoredAssets.authoredPropCount})\n- Raw heap growth: ${report.heapGrowthBytes} bytes (${report.heapGrowthPercent}%)\n- Steady-state retained heap growth: ${report.steadyStateRetainedHeap.growthBytes} bytes (${report.steadyStateRetainedHeap.growthPercent}%)\n- Maximum forced-GC pause: ${report.steadyStateRetainedHeap.maxGcPauseMs} ms\n- Console issues: ${report.consoleIssues.length}\n- Network issues: ${report.networkIssues.length}\n- Failures: ${report.failures.length ? report.failures.join('; ') : 'none'}\n`);
+    await writeFile(REPORT_MD, `# HMH Reboot Browser Soak\n\n- Status: **${report.status}**\n- Runtime: \`${report.runtime}\`\n- Profile: \`${report.profile}\` (${report.viewport.width}×${report.viewport.height})\n- Requested: ${report.requestedMinutes} minutes\n- Actual: ${report.actualMinutes} minutes\n- Samples: ${report.sampleCount}\n- Median FPS: ${report.medianFps}\n- P95 frame: ${report.frameTimeMs.p95} ms\n- Simulation advance: ${report.simulation.tickAdvance} ticks (minimum ${report.simulation.minimumTickAdvance})\n- Run restarts: ${report.simulation.runRestarts}\n- Maximum enemies: ${report.occupancy.maxEnemies}\n- Authored props: ${report.authoredAssets.authoredProps} (${report.authoredAssets.authoredPropCount})\n- Raw heap growth: ${report.heapGrowthBytes} bytes (${report.heapGrowthPercent}%)\n- Steady-state retained heap growth: ${report.steadyStateRetainedHeap.growthBytes} bytes (${report.steadyStateRetainedHeap.growthPercent}%)\n- Maximum forced-GC pause: ${report.steadyStateRetainedHeap.maxGcPauseMs} ms\n- Console issues: ${report.consoleIssues.length}\n- Network issues: ${report.networkIssues.length}\n- Failures: ${report.failures.length ? report.failures.join('; ') : 'none'}\n`);
     await rm(PARTIAL_JSON, { force: true });
     if (failures.length) throw new Error(`HMH reboot soak failed: ${failures.join('; ')}`);
-    console.log(JSON.stringify({ status: report.status, runtime: report.runtime, actualMinutes: report.actualMinutes, sampleCount: report.sampleCount, medianFps: report.medianFps, p95FrameMs: report.frameTimeMs.p95, tickAdvance: report.simulation.tickAdvance, maxEnemies: report.occupancy.maxEnemies, heapGrowthBytes: report.heapGrowthBytes }));
+    console.log(JSON.stringify({ status: report.status, runtime: report.runtime, profile: report.profile, actualMinutes: report.actualMinutes, sampleCount: report.sampleCount, medianFps: report.medianFps, p95FrameMs: report.frameTimeMs.p95, tickAdvance: report.simulation.tickAdvance, maxEnemies: report.occupancy.maxEnemies, heapGrowthBytes: report.heapGrowthBytes }));
   } finally {
     client?.close();
     if (chrome && chrome.exitCode === null) {
@@ -451,7 +463,7 @@ async function main() {
 }
 
 main().catch(async (error) => {
-  await writeFile(PARTIAL_JSON, `${JSON.stringify({ status: 'FAIL', failedAt: new Date().toISOString(), error: error.stack ?? String(error) }, null, 2)}\n`).catch(() => {});
+  await writeFile(PARTIAL_JSON, `${JSON.stringify({ status: 'FAIL', profile, failedAt: new Date().toISOString(), error: error.stack ?? String(error) }, null, 2)}\n`).catch(() => {});
   console.error(error.stack ?? error.message);
   process.exitCode = 1;
 });

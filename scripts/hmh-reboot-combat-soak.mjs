@@ -89,7 +89,7 @@ function meleeMinute() {
 }
 
 function grenadeMinute() {
-  const system = createGrenadeSystem({ capacity: 16, handCharges: 500 });
+  const system = createGrenadeSystem({ capacity: 16, handCharges: 500, maxHandCharges: 500 });
   for (let index = 0; index < 20; index += 1) {
     throwGrenade(system, { tick: 0, mode: index % 2 === 0 ? 'hand' : 'launcher', origin: { x: 0, y: index * 3, z: 24 }, direction });
   }

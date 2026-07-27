@@ -91,5 +91,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `c07b6e8e`; production unchanged
   - Cycle ledger: `cycles/CYCLE-017.md`
 - [x] Cycle 018: truthful pause settings, current-build ranks, restart persistence, and responsive actions
-  - Status: included in this local cycle commit; production unchanged
+  - Status: committed locally as `3ab3ad71`; production unchanged
   - Cycle ledger: `cycles/CYCLE-018.md`
+- [x] Cycle 019: repair deterministic combat soak and add isolated 30-minute desktop/mobile browser profiles
+  - Status: included in this local cycle commit; production unchanged
+  - Cycle ledger: `cycles/CYCLE-019.md`

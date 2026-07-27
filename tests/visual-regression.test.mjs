@@ -8,6 +8,7 @@ import { planHmhFixedStepFrame } from '../apps/portal/src/session-analytics.mjs'
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
 const browserSoakScript = readFileSync(new URL('../scripts/hmh-browser-soak.mjs', import.meta.url), 'utf8');
+const combatSoakScript = readFileSync(new URL('../scripts/hmh-reboot-combat-soak.mjs', import.meta.url), 'utf8');
 const legacyBrowserSoakScript = readFileSync(new URL('../scripts/hmh-legacy-browser-soak.mjs', import.meta.url), 'utf8');
 const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
@@ -78,7 +79,8 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
 });
 
 test('browser soak targets the current Pixi reboot and proves authored runtime time advances', () => {
-  assert.equal(packageJson.scripts['test:soak'], 'npm run build && node scripts/hmh-browser-soak.mjs --minutes=30');
+  assert.equal(packageJson.scripts['test:soak'], 'npm run build && node scripts/hmh-browser-soak.mjs --profile=desktop --minutes=30');
+  assert.equal(packageJson.scripts['test:soak:mobile'], 'npm run build && node scripts/hmh-browser-soak.mjs --profile=mobile --minutes=30');
   assert.equal(packageJson.scripts['test:soak:legacy'], 'npm run build && node scripts/hmh-legacy-browser-soak.mjs --minutes=30');
   assert.match(legacyBrowserSoakScript, /hmh-legacy-browser-soak\.json/);
   assert.match(legacyBrowserSoakScript, /legacy-soak/);
@@ -105,6 +107,12 @@ test('browser soak targets the current Pixi reboot and proves authored runtime t
   assert.match(browserSoakScript, /consoleIssues/);
   assert.match(browserSoakScript, /networkIssues/);
   assert.match(browserSoakScript, /runtime: 'hmh-reboot'/);
+  assert.match(browserSoakScript, /--profile=/);
+  assert.match(browserSoakScript, /profile === 'mobile'/);
+  assert.match(browserSoakScript, /Emulation\.setTouchEmulationEnabled/);
+  assert.match(browserSoakScript, /mobile touch chrome became unavailable/);
+  assert.match(browserSoakScript, /hmh-browser-soak\$\{reportSuffix\}\.json/);
+  assert.match(combatSoakScript, /handCharges:\s*500,\s*maxHandCharges:\s*500/);
   assert.doesNotMatch(browserSoakScript, /data-stat="survived"/);
   assert.doesNotMatch(browserSoakScript, /__hmhSoakStressBossSwarm/);
 });
