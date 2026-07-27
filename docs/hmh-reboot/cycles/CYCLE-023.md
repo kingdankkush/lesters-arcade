@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 023
 
 Date: `2026-07-27`
-Status: `LOCAL GATES PASSED · PUSHED`
+Status: `LOCAL GATES PASSED · PUSHED · PREVIEW DEPLOYED · PRODUCTION NOT PROMOTED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `70cf778b`
 
@@ -81,6 +81,23 @@ reconciliation belongs with the same slice.
 
 ## Deployment
 
-Pushed to `reboot/hmh-aaa-continuous`, which auto-deploys to production.
-Human physical-device acceptance from the Cycle 021 handoff remains
+Pushed to `reboot/hmh-aaa-continuous` as `85265f42`. Vercel built a **Preview**
+deployment (GitHub record `5628927633`, state `success`,
+`https://lesters-arcade-7pg5z6e35-justin-agent-projects.vercel.app`).
+
+**Production was NOT promoted.** After ~10 minutes of polling, only a Preview
+record exists for this commit and `https://lestersarcade.io` still serves the
+Cycle 021 bundle (1,012,139 bytes, `7e6938db…`). Pushing this branch does not
+automatically promote to production — an earlier assumption in this session
+that it did was wrong, inferred from prior commits that happen to carry both
+Preview and Production records.
+
+Promotion therefore remains a separate, manual step requiring Vercel dashboard
+or authenticated CLI access, neither of which exists in this checkout. This is
+the same P0 gap recorded in the Cycle 021 handoff.
+
+The preview URL cannot be byte-verified from here either: unauthenticated it
+returns Vercel's SSO login page, not the deployment.
+
+Human physical-device acceptance from the Cycle 021 handoff also remains
 outstanding and is not satisfied by automated viewport certification.
