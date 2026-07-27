@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "npm install && uv pip install --system --no-cache -r requirements-vercel.txt",
-  "buildCommand": "npm run vercel:build",
+  "installCommand": "npm install && uv pip install --target .vercel-python --no-cache -r requirements-vercel.txt",
+  "buildCommand": "PYTHONPATH=.vercel-python npm run vercel:build",
   "outputDirectory": "apps/portal",
   "headers": [
     {
