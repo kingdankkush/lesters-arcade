@@ -16,6 +16,6 @@ test('Vercel installs the pinned Pillow dependency required by asset provenance 
   assert.deepEqual(requirements, ['Pillow==12.2.0']);
   assert.match(
     config.installCommand,
-    /^npm install && python -m pip install --disable-pip-version-check --no-cache-dir -r requirements-vercel\.txt$/u,
+    /^npm install && uv pip install --system --no-cache -r requirements-vercel\.txt$/u,
   );
 });
