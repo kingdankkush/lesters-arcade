@@ -100,7 +100,7 @@ def build(repo_root: Path) -> tuple[bytes, bytes, bytes]:
                 crop = source_atlas.crop((rect['x'], rect['y'], rect['x'] + rect['w'], rect['y'] + rect['h']))
                 composed.alpha_composite(crop, (destination['x'], destination['y']))
             alpha = composed.getchannel('A')
-            opaque_pixels = sum(1 for value in alpha.get_flattened_data() if value > 0)
+            opaque_pixels = sum(1 for value in alpha.tobytes() if value > 0)
             if opaque_pixels <= 0 or alpha.getbbox() is None:
                 raise ValueError(f'{actor_id}/{direction}: blank composite')
             x = column * FRAME_SIZE
