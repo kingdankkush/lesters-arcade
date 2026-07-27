@@ -22,6 +22,31 @@ async function inspect(name, viewport) {
   await page.waitForSelector('#hmhUpgradePanel:not([hidden])');
   const choices = await page.locator('.hmh-upgrade-choice').evaluateAll((nodes) => nodes.map((node) => ({ id: node.dataset.upgradeId, text: node.textContent.trim() })));
   assert.equal(choices.length, 3);
+  const details = page.locator('.hmh-upgrade-details');
+  assert.equal(await details.count(), 3);
+  let disclosure;
+  if (viewport.width <= 600) {
+    const firstDetails = details.first();
+    const summary = firstDetails.locator('summary');
+    const summaryBox = await summary.boundingBox();
+    assert.ok(summaryBox && summaryBox.height >= 44, `mobile upgrade details target is only ${summaryBox?.height ?? 0}px tall`);
+    assert.equal(await summary.getAttribute('aria-expanded'), 'false');
+    assert.equal(await page.locator('.hmh-upgrade-choice').first().isEnabled(), true);
+    await summary.click();
+    await page.waitForFunction(() => document.querySelector('.hmh-upgrade-details summary')?.getAttribute('aria-expanded') === 'true');
+    assert.equal(await firstDetails.locator('p').isVisible(), true);
+    assert.equal(await page.locator('#hmhUpgradePanel').getAttribute('hidden'), null);
+    const panelBox = await page.locator('.hmh-upgrade-panel').boundingBox();
+    assert.ok(panelBox && panelBox.x >= 0 && panelBox.y >= 0 && panelBox.x + panelBox.width <= viewport.width && panelBox.y + panelBox.height <= viewport.height, 'open mobile upgrade details escaped the viewport');
+    disclosure = { summaryHeight: summaryBox.height, expanded: true, panelBox, text: (await firstDetails.locator('p').textContent()).trim() };
+    await page.screenshot({ path: pathFor(`${name}-upgrade-detail`), fullPage: true });
+  } else {
+    const openStates = await details.evaluateAll((nodes) => nodes.map((node) => ({ open: node.open, text: node.querySelector('p')?.textContent.trim() })));
+    assert.ok(openStates.every((entry) => entry.open && entry.text));
+    disclosure = { openStates };
+  }
+  const upgradePanelBox = await page.locator('.hmh-upgrade-panel').boundingBox();
+  assert.ok(upgradePanelBox && upgradePanelBox.x >= 0 && upgradePanelBox.y >= 0 && upgradePanelBox.x + upgradePanelBox.width <= viewport.width && upgradePanelBox.y + upgradePanelBox.height <= viewport.height, `${name} upgrade panel escaped the viewport`);
   await page.screenshot({ path: pathFor(`${name}-upgrade`), fullPage: true });
   await page.locator('.hmh-upgrade-choice').first().click();
   await page.waitForFunction(() => document.querySelector('#hmhUpgradePanel')?.hidden === true);
@@ -58,12 +83,14 @@ async function inspect(name, viewport) {
   await page.waitForTimeout(100);
   assert.deepEqual(errors, []);
   await page.close();
-  return { choices, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, errors };
+  return { choices, disclosure, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, errors };
 }
 
 const result = {
   desktop: await inspect('desktop', { width: 1440, height: 900 }),
+  tablet: await inspect('tablet', { width: 768, height: 1024 }),
   mobile: await inspect('mobile', { width: 390, height: 844 }),
+  landscape: await inspect('landscape', { width: 844, height: 390 }),
 };
 await browser.close();
 console.log(JSON.stringify(result, null, 2));

@@ -85,5 +85,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `0f44ee9e`; production unchanged
   - Cycle ledger: `cycles/CYCLE-015.md`
 - [x] Cycle 016: truthful projection-only grenade blast-radius warnings with desktop/mobile evidence
-  - Status: included in this local cycle commit; production unchanged
+  - Status: committed locally as `6292cc57`; production unchanged
   - Cycle ledger: `cycles/CYCLE-016.md`
+- [x] Cycle 017: sibling upgrade disclosures and desktop/tablet/portrait/landscape responsive choice polish
+  - Status: included in this local cycle commit; production unchanged
+  - Cycle ledger: `cycles/CYCLE-017.md`

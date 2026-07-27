@@ -112,6 +112,12 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(main, /progressionPilotEnabled = evidenceSafeEnabled && runtimeParams\.get\('progressionPilot'\) === '1'/);
   assert.match(cockpit, /SAFE_DYNAMIC_TAGS/);
   assert.match(cockpit, /element\.textContent = String\(text\)/);
+  assert.match(cockpit, /option\.append\(button, detail\)/);
+  assert.match(cockpit, /detail\.append\(summary, description\)/);
+  assert.match(cockpit, /summary\.setAttribute\('aria-expanded'/);
+  assert.match(css, /\.hmh-upgrade-details summary[^}]*min-height:\s*44px/);
+  assert.doesNotMatch(css, /\.hmh-upgrade-choice p\s*\{[^}]*display:\s*none/);
+  assert.doesNotMatch(cockpit, /button\.append\([^)]*description/);
   assert.doesNotMatch(cockpit, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
   assert.doesNotMatch(main, /localStorage|window\.ethereum|eth_requestAccounts/);
 });

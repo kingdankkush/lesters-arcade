@@ -10,7 +10,7 @@ function integerText(value) {
   return Math.max(0, Math.round(Number(value) || 0)).toLocaleString('en-US');
 }
 
-const SAFE_DYNAMIC_TAGS = new Set(['button', 'span', 'strong', 'b', 'p']);
+const SAFE_DYNAMIC_TAGS = new Set(['button', 'div', 'details', 'summary', 'span', 'strong', 'b', 'p']);
 
 function createSafeTextElement(documentRef, tagName, { className = '', text = '' } = {}) {
   if (!SAFE_DYNAMIC_TAGS.has(tagName)) throw new TypeError('cockpit dynamic element tag is not allowed');
@@ -109,12 +109,14 @@ export function createCockpitUi({
       elements.upgradePanel.hidden = false;
       elements.upgradeQueue.textContent = `${snapshot.pendingLevels} pending`;
       elements.upgradeChoices.replaceChildren();
+      const compactUpgradeLayout = documentRef.defaultView?.matchMedia?.('(max-width: 600px)').matches ?? false;
       for (const choice of snapshot.pendingChoices) {
+        const option = createSafeTextElement(documentRef, 'div', { className: 'hmh-upgrade-option' });
+        option.setAttribute('role', 'listitem');
         const button = createSafeTextElement(documentRef, 'button');
         button.type = 'button';
         button.className = 'hmh-upgrade-choice';
         button.dataset.upgradeId = choice.id;
-        button.setAttribute('role', 'listitem');
         const icon = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__icon' });
         icon.setAttribute('aria-hidden', 'true');
         icon.style.backgroundImage = `url("${authoredPropItemUrl(choice.id)}")`;
@@ -124,10 +126,23 @@ export function createCockpitUi({
         });
         const title = createSafeTextElement(documentRef, 'strong', { text: choice.title });
         const mechanical = createSafeTextElement(documentRef, 'b', { text: choice.mechanicalLabel });
-        const description = createSafeTextElement(documentRef, 'p', { text: choice.description });
-        button.append(icon, branch, title, mechanical, description);
+        button.append(icon, branch, title, mechanical);
         listen(button, 'click', () => onSelectUpgrade(choice.id));
-        elements.upgradeChoices.append(button);
+
+        const detail = createSafeTextElement(documentRef, 'details', { className: 'hmh-upgrade-details' });
+        detail.open = !compactUpgradeLayout;
+        const summary = createSafeTextElement(documentRef, 'summary', {
+          text: detail.open ? 'Hide details' : 'Upgrade details',
+        });
+        summary.setAttribute('aria-expanded', String(detail.open));
+        const description = createSafeTextElement(documentRef, 'p', { text: choice.description });
+        listen(detail, 'toggle', () => {
+          summary.setAttribute('aria-expanded', String(detail.open));
+          summary.textContent = detail.open ? 'Hide details' : 'Upgrade details';
+        });
+        detail.append(summary, description);
+        option.append(button, detail);
+        elements.upgradeChoices.append(option);
       }
       elements.upgradeChoices.querySelector('button')?.focus({ preventScroll: true });
     },
