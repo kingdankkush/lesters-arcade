@@ -30,6 +30,9 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   lastMeleeTick: stage.dataset.lastMeleeTick,
   lastMeleeHits: Number(stage.dataset.lastMeleeHits),
   grenadeCount: Number(stage.dataset.grenadeCount),
+  activeGrenadeWarnings: Number(stage.dataset.activeGrenadeWarnings),
+  activeGrenadeWarningRadius: Number(stage.dataset.activeGrenadeWarningRadius),
+  activeGrenadeWarningUrgent: Number(stage.dataset.activeGrenadeWarningUrgent),
   handGrenades: Number(stage.dataset.handGrenades),
   lastGrenadeReason: stage.dataset.lastGrenadeReason,
   lastGrenadeTick: stage.dataset.lastGrenadeTick,
@@ -167,6 +170,9 @@ async function desktopSmoke() {
 
   const priorGrenadeTick = melee.lastGrenadeTick;
   await holdKey(page, 'KeyG');
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.activeGrenadeWarnings) > 0);
+  const grenadeWarning = await state(page);
+  await page.screenshot({ path: fileURLToPath(new URL('desktop-grenade-warning.png', evidenceDir)), fullPage: true });
   await page.waitForFunction((prior) => {
     const stage = document.querySelector('#hmhRebootStage');
     return stage?.dataset.lastGrenadeTick && stage.dataset.lastGrenadeTick !== prior;
@@ -217,6 +223,10 @@ async function desktopSmoke() {
   assert.equal(launcher.lastWeaponFire, 'launcher-rig');
   assert.match(launcher.lastGrenadeReason, /impact|fuse/);
   assert.ok(Number(melee.lastMeleeTick) > 0);
+  assert.ok(grenadeWarning.grenadeCount > 0);
+  assert.equal(grenadeWarning.activeGrenadeWarnings, grenadeWarning.grenadeCount, 'every live grenade needs one truthful warning');
+  assert.equal(grenadeWarning.activeGrenadeWarningRadius, 92, 'warning radius must match the authoritative Satoshi Frag radius');
+  assert.equal(handGrenade.activeGrenadeWarnings, 0, 'warning must retire with the detonated grenade');
   assert.equal(handGrenade.handGrenades, 2);
   assert.notEqual(handGrenade.lastGrenadeTick, priorGrenadeTick);
   assert.ok(dash.dashReadyTick > 0);
@@ -229,7 +239,7 @@ async function desktopSmoke() {
   assert.equal(handGrenade.projectileDrops, 0);
   assert.deepEqual(errors, []);
   await page.close();
-  return { pistol, debtCollectionTell, shotgun, machineGun, launcher, melee, handGrenade, dash, dashStatus, accessibleStatus, errors };
+  return { pistol, debtCollectionTell, shotgun, machineGun, launcher, melee, grenadeWarning, handGrenade, dash, dashStatus, accessibleStatus, errors };
 }
 
 async function mobileSmoke() {
@@ -248,6 +258,9 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
   await tapTouchControl(page, 'grenade', 73);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.handGrenades) === 2);
+  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.activeGrenadeWarnings) > 0);
+  const mobileGrenadeWarning = await state(page);
+  await page.screenshot({ path: fileURLToPath(new URL('mobile-grenade-warning.png', evidenceDir)), fullPage: true });
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyDeathVisuals) > 0, null, { timeout: 3000 });
   const observedDeathVisuals = Number((await page.locator('#hmhRebootStage').getAttribute('data-enemy-death-visuals')) ?? 0);
   await tapTouchControl(page, 'dash', 74);
@@ -297,13 +310,15 @@ async function mobileSmoke() {
   assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
   assert.ok(mobileState.minimapWidth > 0 && mobileState.minimapHeight > 0 && mobileState.minimapX >= 0 && mobileState.minimapY >= 0);
   assert.ok(Number(mobileState.lastMeleeTick) > 0);
+  assert.equal(mobileGrenadeWarning.activeGrenadeWarnings, mobileGrenadeWarning.grenadeCount);
+  assert.equal(mobileGrenadeWarning.activeGrenadeWarningRadius, 92);
   assert.equal(mobileState.handGrenades, 2);
   assert.ok(mobileState.dashReadyTick > 0);
   assert.match(dashStatus, /Dash (?:active|\d+ seconds)/i);
   assert.ok(mobileState.audioVoices <= 16);
   assert.deepEqual(errors, []);
   await context.close();
-  return { state: mobileState, observedDeathVisuals, dashStatus, controls, errors };
+  return { state: mobileState, grenadeWarning: mobileGrenadeWarning, observedDeathVisuals, dashStatus, controls, errors };
 }
 
 async function worldTourSmoke() {

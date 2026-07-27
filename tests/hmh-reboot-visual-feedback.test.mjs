@@ -66,6 +66,16 @@ test('visual effects respect the active performance profile', async () => {
   assert.match(source, /particleScale > 0 \? \(event\.critical \? 8 : 4\) : 0/, 'sparks degrade with the quality tier');
 });
 
+test('live grenades project their authoritative blast radius as an accessibility-safe danger warning', async () => {
+  const source = await readMain();
+  assert.match(source, /buildGrenadeDangerProjection/);
+  assert.match(source, /reduceFlash:\s*settings\.reduceFlash/);
+  assert.match(source, /warning\.boundary\.map/);
+  assert.match(source, /worldToScreen\(point, camera, view\)/);
+  assert.match(source, /activeGrenadeWarnings/);
+  assert.match(source, /activeGrenadeWarningRadius/);
+});
+
 test('enemies face their movement direction instead of a fixed side', async () => {
   const source = await readFile(new URL('../apps/hmh-reboot/src/enemy-production-art.mjs', import.meta.url), 'utf8');
   assert.match(source, /poseLayer\.scale\.x = pose\.direction >= 3 && pose\.direction <= 5 \? -1 : 1/);

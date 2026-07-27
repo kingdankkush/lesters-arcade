@@ -59,6 +59,7 @@ import {
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
 import { createGrenadeSystem, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
+import { buildGrenadeDangerProjection } from './grenade-vfx.mjs';
 import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
 import {
   applyRecoilImpulse,
@@ -992,8 +993,28 @@ async function boot() {
         projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
           .stroke({ color: 0xf4fdff, width: 3, alpha: 0.98 });
       }
+      let activeGrenadeWarnings = 0;
+      let activeGrenadeWarningRadius = 0;
+      let activeGrenadeWarningUrgent = 0;
       for (const grenade of grenadeSystem?.active ?? []) {
         const ground = queryGround(grenade.position.x, grenade.position.y);
+        const warning = buildGrenadeDangerProjection({
+          grenade,
+          tick: simulation?.tick ?? grenade.spawnTick,
+          groundZ: ground.groundZ,
+          reduceFlash: settings.reduceFlash,
+        });
+        const warningBoundary = warning.boundary.map((point) => worldToScreen(point, camera, view));
+        const warningPoints = warningBoundary.flatMap((point) => [point.x, point.y]);
+        const warningColor = grenade.mode === 'launcher' ? WEAPON_COLORS['launcher-rig'] : 0xff5c7a;
+        const pulseAlpha = settings.reduceFlash ? 1 : 0.82 + warning.pulseOffset * 0.18;
+        grenadeVisuals.poly(warningPoints, true)
+          .fill({ color: warningColor, alpha: warning.fillAlpha })
+          .stroke({ color: warningColor, width: warning.strokeWidth, alpha: warning.strokeAlpha * pulseAlpha });
+        activeGrenadeWarnings += 1;
+        activeGrenadeWarningRadius = Math.max(activeGrenadeWarningRadius, warning.blastRadius);
+        if (warning.urgent) activeGrenadeWarningUrgent += 1;
+
         const grenadeGround = worldToScreen({ x: grenade.position.x, y: grenade.position.y, z: ground.groundZ }, camera, view);
         const grenadeScreen = worldToScreen(grenade.position, camera, view);
         const fuseRatio = Math.max(0, Math.min(1, (grenade.detonateTick - (simulation?.tick ?? 0)) / 39));
@@ -1314,6 +1335,9 @@ async function boot() {
         stageElement.dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
         stageElement.dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
         stageElement.dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
+        stageElement.dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
+        stageElement.dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
+        stageElement.dataset.activeGrenadeWarningUrgent = String(activeGrenadeWarningUrgent);
         stageElement.dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
         stageElement.dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
         stageElement.dataset.dashActive = String(dashStatus?.active === true);
