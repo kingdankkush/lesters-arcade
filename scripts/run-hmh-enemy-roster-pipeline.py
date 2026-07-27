@@ -93,8 +93,16 @@ def shelf_pack(records: list[dict], padding: int, max_size: int):
 def analyse(actor: dict, manifest: dict, raw_dir: Path) -> list[dict]:
     actor_id = actor["actorId"]
     threshold = manifest["render"]["alphaThreshold"]
-    frame_size = tuple(manifest["render"]["frameSize"])
-    pivot = (manifest["pivot"]["x"], manifest["pivot"]["y"])
+    default_size = manifest["render"]["frameSize"]
+    # The boss renders three phase silhouettes, so it carries three times the
+    # frames and gets its own frame size to stay inside the atlas budget.
+    frame_size = tuple(actor.get("frameSize", default_size))
+    # The pivot is authored against the default frame; scale it so an actor
+    # rendered at another size keeps the same ground contact.
+    pivot = (
+        round(manifest["pivot"]["x"] * frame_size[0] / default_size[0]),
+        round(manifest["pivot"]["y"] * frame_size[1] / default_size[1]),
+    )
     records = []
     empty = []
     hashes = defaultdict(list)
@@ -134,6 +142,7 @@ def analyse(actor: dict, manifest: dict, raw_dir: Path) -> list[dict]:
                         "image": image,
                         "bbox": (x0, y0, x1, y1),
                         "sourcePixelSha256": digest,
+                        "pivot": pivot,
                     })
     if empty:
         raise RuntimeError(f"{actor_id}: empty frames {empty[:6]}")
@@ -150,7 +159,7 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
     padding = manifest["atlas"]["padding"]
     atlas_size, placements = shelf_pack(records, padding, manifest["atlas"]["maxSize"])
     atlas = Image.new("RGBA", (atlas_size, atlas_size), (0, 0, 0, 0))
-    pivot = (manifest["pivot"]["x"], manifest["pivot"]["y"])
+    pivot = records[0]["pivot"] if records else (manifest["pivot"]["x"], manifest["pivot"]["y"])
     frames = []
     for record in sorted(records, key=lambda item: item["id"]):
         x0, y0, x1, y1 = record["bbox"]

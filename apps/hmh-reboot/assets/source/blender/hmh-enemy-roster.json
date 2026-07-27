@@ -31,14 +31,14 @@
   "render": {
     "engine": "BLENDER_EEVEE",
     "frameSize": [
-      128,
-      128
+      160,
+      160
     ],
     "transparentFilm": true,
     "rawOutputDirectory": ".tmp/hmh-reboot-enemy-roster",
     "alphaThreshold": 8,
-    "cameraOrthoScale": 2.15,
-    "exposure": -0.15,
+    "cameraOrthoScale": 2.35,
+    "exposure": -0.35,
     "cameraTargetZ": 0.86,
     "cameraPitchDegrees": 55
   },
@@ -236,7 +236,7 @@
         "kind": "crown-rig",
         "accent": "#ff496c"
       },
-      "cameraOrthoScale": 3.1,
+      "cameraOrthoScale": 3.35,
       "phaseVisuals": {
         "market-open": {
           "accent": "#ff496c",
@@ -250,7 +250,11 @@
           "accent": "#e26dff",
           "silhouetteCue": "liquidation-halo"
         }
-      }
+      },
+      "frameSize": [
+        128,
+        128
+      ]
     }
   ],
   "materialPolicy": {

@@ -3,65 +3,65 @@
   "actors": [
     {
       "actorId": "bagholder-rusher",
-      "atlasBytes": 432074,
+      "atlasBytes": 651182,
       "atlasSize": 1024,
-      "contactSheetBytes": 53803,
+      "contactSheetBytes": 77776,
       "frameCount": 152,
-      "metadataBytes": 98459,
+      "metadataBytes": 98488,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "forkrunner",
-      "atlasBytes": 392218,
+      "atlasBytes": 594231,
       "atlasSize": 1024,
-      "contactSheetBytes": 45557,
+      "contactSheetBytes": 66624,
       "frameCount": 152,
-      "metadataBytes": 97565,
+      "metadataBytes": 97645,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "liquidator-agent",
-      "atlasBytes": 463032,
+      "atlasBytes": 672068,
       "atlasSize": 1024,
-      "contactSheetBytes": 53133,
+      "contactSheetBytes": 77759,
       "frameCount": 152,
-      "metadataBytes": 98461,
+      "metadataBytes": 98516,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "whale-enforcer",
-      "atlasBytes": 657109,
-      "atlasSize": 1024,
-      "contactSheetBytes": 76760,
+      "atlasBytes": 956204,
+      "atlasSize": 2048,
+      "contactSheetBytes": 110319,
       "frameCount": 152,
-      "metadataBytes": 98206,
+      "metadataBytes": 98403,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "gas-bomber",
-      "atlasBytes": 469506,
+      "atlasBytes": 715318,
       "atlasSize": 1024,
-      "contactSheetBytes": 53149,
+      "contactSheetBytes": 79873,
       "frameCount": 152,
-      "metadataBytes": 97654,
+      "metadataBytes": 97676,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "validator-cultist",
-      "atlasBytes": 469143,
+      "atlasBytes": 679355,
       "atlasSize": 1024,
-      "contactSheetBytes": 58043,
+      "contactSheetBytes": 82236,
       "frameCount": 152,
-      "metadataBytes": 98746,
+      "metadataBytes": 98679,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "the-liquidator",
-      "atlasBytes": 1788502,
+      "atlasBytes": 1827863,
       "atlasSize": 2048,
-      "contactSheetBytes": 171840,
+      "contactSheetBytes": 168798,
       "frameCount": 456,
-      "metadataBytes": 305897,
+      "metadataBytes": 305684,
       "uniqueSourceFrames": 456
     }
   ],
@@ -70,6 +70,6 @@
   "pipelineId": "hmh-reboot-enemy-roster-v1",
   "reproducibleVerified": true,
   "status": "pass",
-  "totalAtlasBytes": 4671584,
+  "totalAtlasBytes": 6096221,
   "totalFrames": 1368
 }

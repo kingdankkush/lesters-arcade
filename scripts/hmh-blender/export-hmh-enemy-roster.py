@@ -122,8 +122,9 @@ def main() -> None:
     raw_output.mkdir(parents=True, exist_ok=True)
 
     scene = bpy.context.scene
-    scene.render.resolution_x = manifest["render"]["frameSize"][0]
-    scene.render.resolution_y = manifest["render"]["frameSize"][1]
+    default_frame_size = manifest["render"]["frameSize"]
+    scene.render.resolution_x = default_frame_size[0]
+    scene.render.resolution_y = default_frame_size[1]
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = True
     scene.render.image_settings.file_format = "PNG"
@@ -154,6 +155,11 @@ def main() -> None:
         # Oversized actors (the boss) frame at their own ortho scale so the
         # silhouette is never clipped by the shared camera.
         camera.data.ortho_scale = actor.get("cameraOrthoScale", default_ortho)
+        # The boss carries three phase silhouettes, so it renders three times
+        # the frames. Its own frame size keeps that atlas inside budget.
+        actor_frame_size = actor.get("frameSize", default_frame_size)
+        scene.render.resolution_x = actor_frame_size[0]
+        scene.render.resolution_y = actor_frame_size[1]
         stoop = actor["build"]["stoop"]
         phases = list(actor.get("phaseVisuals", {})) or [None]
         count = 0

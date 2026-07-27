@@ -193,8 +193,22 @@ def build_actor(actor: dict, rig, collection) -> dict:
                       primary, collection, rig, "chest", actor_id))
     parts.append(cube(f"{actor_id}_Pelvis", (0.0, 0.0, 0.94 * height), (0.15 * bulk, 0.12 * bulk, 0.12 * height),
                       secondary, collection, rig, "pelvis", actor_id))
-    parts.append(sphere(f"{actor_id}_Head", (0.0, 0.0, 1.56 * height), (0.115, 0.115, 0.13), skin,
+    # Head: skull, brow ridge, jaw and recessed eye sockets. A bare sphere read
+    # as a featureless ball at gameplay scale, which is most of why the roster
+    # looked undetailed.
+    parts.append(sphere(f"{actor_id}_Head", (0.0, 0.0, 1.56 * height), (0.118, 0.115, 0.132), skin,
                         collection, rig, "head", actor_id))
+    parts.append(cube(f"{actor_id}_Brow", (0.0, -0.085, 1.60 * height), (0.098, 0.035, 0.028),
+                      skin, collection, rig, "head", actor_id, bevel=0.012))
+    parts.append(cube(f"{actor_id}_Jaw", (0.0, -0.052, 1.49 * height), (0.082, 0.062, 0.042),
+                      skin, collection, rig, "head", actor_id, bevel=0.016))
+    for eye_side in (-1.0, 1.0):
+        parts.append(cube(f"{actor_id}_EyeSocket_{'L' if eye_side > 0 else 'R'}",
+                          (eye_side * 0.046, -0.098, 1.565 * height), (0.028, 0.018, 0.020),
+                          boot, collection, rig, "head", actor_id, bevel=0.006))
+    # Hair/hood mass gives the silhouette a top profile instead of a dome.
+    parts.append(sphere(f"{actor_id}_Crown", (0.0, 0.022, 1.60 * height), (0.116, 0.108, 0.088),
+                        secondary, collection, rig, "head", actor_id))
     # Two arms and two legs, always: the roster contract requires recognizable
     # biological anatomy even on grayboxes.
     for side, sign in (("L", 1.0), ("R", -1.0)):
@@ -202,10 +216,31 @@ def build_actor(actor: dict, rig, collection) -> dict:
                           (0.055 * bulk, 0.055 * bulk, 0.13 * height), skin, collection, rig, f"upper_arm.{side}", actor_id))
         parts.append(cube(f"{actor_id}_Forearm_{side}", (sign * 0.46 * shoulders, 0.0, 1.02 * height),
                           (0.048 * bulk, 0.048 * bulk, 0.12 * height), skin, collection, rig, f"forearm.{side}", actor_id))
+        # Hands and shoulder caps: limbs previously ended in flat stumps.
+        parts.append(cube(f"{actor_id}_Hand_{side}", (sign * 0.52 * shoulders, 0.0, 0.90 * height),
+                          (0.045 * bulk, 0.040 * bulk, 0.052 * height), boot, collection, rig, f"forearm.{side}",
+                          actor_id, bevel=0.018))
+        parts.append(sphere(f"{actor_id}_Shoulder_{side}", (sign * 0.24 * shoulders, 0.0, 1.34 * height),
+                            (0.072 * bulk, 0.070 * bulk, 0.068 * bulk), primary, collection, rig, "chest", actor_id))
         parts.append(cube(f"{actor_id}_Thigh_{side}", (sign * 0.12, 0.0, 0.66 * height),
                           (0.068 * bulk, 0.068 * bulk, 0.20 * height), secondary, collection, rig, f"thigh.{side}", actor_id))
         parts.append(cube(f"{actor_id}_Shin_{side}", (sign * 0.13, 0.0, 0.26 * height),
                           (0.058 * bulk, 0.058 * bulk, 0.20 * height), boot, collection, rig, f"shin.{side}", actor_id))
+        # Boots read the ground contact; a leg ending in a flat cube did not.
+        parts.append(cube(f"{actor_id}_Boot_{side}", (sign * 0.13, -0.030, 0.075 * height),
+                          (0.066 * bulk, 0.086 * bulk, 0.052 * height), boot, collection, rig, f"shin.{side}",
+                          actor_id, bevel=0.02))
+
+    parts.append(cube(f"{actor_id}_Belt", (0.0, 0.0, 1.02 * height),
+                      (0.163 * bulk, 0.128 * bulk, 0.030 * height), boot, collection, rig, "pelvis",
+                      actor_id, bevel=0.012))
+    parts.append(cube(f"{actor_id}_Buckle", (0.0, -0.118 * bulk, 1.02 * height),
+                      (0.036, 0.020, 0.030), accent, collection, rig, "pelvis", actor_id, bevel=0.008))
+    for strap in (-1.0, 1.0):
+        parts.append(cube(f"{actor_id}_Harness_{'L' if strap > 0 else 'R'}",
+                          (strap * 0.072 * shoulders, -0.128 * bulk, 1.24 * height),
+                          (0.030, 0.016, 0.185 * height), secondary, collection, rig, "chest",
+                          actor_id, bevel=0.008))
 
     # One silhouette prop per family. This is the read-at-a-glance cue that
     # separates roles in a crowded fight.
@@ -311,13 +346,13 @@ def build_lighting(manifest: dict):
     world = bpy.data.worlds.new("HMH_Enemy_World")
     world.use_nodes = True
     world.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.03, 0.04, 1.0)
-    world.node_tree.nodes["Background"].inputs[1].default_value = 0.55
+    world.node_tree.nodes["Background"].inputs[1].default_value = 0.42
     scene.world = world
     if hasattr(scene, "view_settings"):
         scene.view_settings.exposure = manifest["render"]["exposure"]
 
     key = bpy.data.lights.new("HMH_Enemy_Key", type="AREA")
-    key.energy = 330
+    key.energy = 235
     key.size = 5.0
     key_obj = bpy.data.objects.new("HMH_Enemy_Key", key)
     key_obj.location = (2.6, -3.4, 4.4)
@@ -325,7 +360,7 @@ def build_lighting(manifest: dict):
     scene.collection.objects.link(key_obj)
 
     fill = bpy.data.lights.new("HMH_Enemy_Fill", type="AREA")
-    fill.energy = 120
+    fill.energy = 95
     fill.size = 6.0
     fill_obj = bpy.data.objects.new("HMH_Enemy_Fill", fill)
     fill_obj.location = (-3.2, -2.2, 2.6)
@@ -333,7 +368,7 @@ def build_lighting(manifest: dict):
     scene.collection.objects.link(fill_obj)
 
     rim = bpy.data.lights.new("HMH_Enemy_Rim", type="AREA")
-    rim.energy = 190
+    rim.energy = 165
     rim.size = 4.0
     rim_obj = bpy.data.objects.new("HMH_Enemy_Rim", rim)
     rim_obj.location = (0.4, 3.6, 3.4)
