@@ -35,6 +35,7 @@
     "smoke:hmh:production-hero:lilly": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs --actor lilly",
     "smoke:hmh:cockpit": "node scripts/hmh-reboot-cockpit-browser-smoke.mjs",
     "smoke:hmh:collectibles": "node scripts/hmh-reboot-collectible-browser-smoke.mjs",
+    "smoke:hmh:enemy-details": "node scripts/hmh-reboot-enemy-detail-browser-smoke.mjs",
     "smoke:hmh:performance": "node scripts/hmh-reboot-performance-browser-smoke.mjs",
     "certify:hmh:browser": "node scripts/hmh-reboot-release-browser-certification.mjs",
     "audit:hmh:network": "node scripts/hmh-reboot-network-console-audit.mjs",

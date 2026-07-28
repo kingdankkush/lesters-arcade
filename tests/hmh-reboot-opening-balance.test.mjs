@@ -23,8 +23,9 @@ test('default run gives the player a two-second movement read and eight-second a
 
 test('reboot runtime gates enemy movement and attacks through opening balance policy', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /openingEnemyMovementEnabled\(tick\)/);
-  assert.match(source, /openingEnemyAttacksEnabled\(tick\)/);
-  assert.match(source, /HMH_OPENING_ENEMY_ARCHETYPE_IDS\.map/);
+  assert.match(source, /!rosterPreviewEnabled && openingEnemyMovementEnabled\(tick\)/);
+  assert.match(source, /!rosterPreviewEnabled && openingEnemyAttacksEnabled\(tick\)/);
+  assert.match(source, /const initialEnemyArchetypeIds = rosterPreviewEnabled \? ENEMY_ARCHETYPE_IDS : HMH_OPENING_ENEMY_ARCHETYPE_IDS/);
+  assert.match(source, /initialEnemyArchetypeIds\.map/);
   assert.match(source, /HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE\[archetypeId\]/);
 });

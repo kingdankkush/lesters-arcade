@@ -255,9 +255,11 @@ async function mobileSmoke() {
   // switching, melee and dash are still live mechanics but are keyboard or
   // gamepad actions now, so they are driven that way here rather than dropped.
   assert.equal(await page.locator('[data-hmh-control]').count(), 4);
-  await page.keyboard.press('Digit2');
+  // Hold synthetic keys across at least one fixed simulation step; an
+  // instantaneous Playwright press can complete between 60 Hz samples.
+  await holdKey(page, 'Digit2');
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'scatter-shotgun');
-  await page.keyboard.press('KeyE');
+  await holdKey(page, 'KeyE');
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
   await tapTouchControl(page, 'power', 73);
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.handGrenades) === 2);
@@ -266,7 +268,7 @@ async function mobileSmoke() {
   await page.screenshot({ path: fileURLToPath(new URL('mobile-grenade-warning.png', evidenceDir)), fullPage: true });
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyDeathVisuals) > 0, null, { timeout: 3000 });
   const observedDeathVisuals = Number((await page.locator('#hmhRebootStage').getAttribute('data-enemy-death-visuals')) ?? 0);
-  await page.keyboard.press('ShiftLeft');
+  await holdKey(page, 'ShiftLeft');
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.dashReadyTick) > 0);
   const dashStatus = await page.locator('#hmhRebootDashStatus').textContent();
   const controls = await page.locator('[data-hmh-control]').evaluateAll((elements) => elements.map((element) => {

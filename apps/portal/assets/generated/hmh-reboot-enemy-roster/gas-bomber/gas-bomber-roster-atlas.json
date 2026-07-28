@@ -15,20 +15,20 @@
   "frames": [
     {
       "anchor": {
-        "x": 0.113636,
+        "x": 0.108696,
         "y": 0.435897
       },
       "direction": "east",
       "fps": 14,
       "frame": {
         "h": 78,
-        "w": 44,
-        "x": 292,
+        "w": 46,
+        "x": 302,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__east__000",
-      "opaquePixels": 2186,
+      "opaquePixels": 2315,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -39,26 +39,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fd75157ad7286085c85d377b9da6cab7cb23ff590032920524550557649dbf2d",
+      "sourcePixelSha256": "8131b4257b6d49eed5116dcbbcd431b0089121ee70628a6a8efec21bc7994efb",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.157895,
+        "x": 0.146341,
         "y": 0.362319
       },
       "direction": "east",
       "fps": 14,
       "frame": {
         "h": 69,
-        "w": 38,
-        "x": 351,
+        "w": 41,
+        "x": 410,
         "y": 461
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__east__001",
-      "opaquePixels": 1839,
+      "opaquePixels": 1998,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -69,26 +69,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cb2d4b7bf4144fa402e416820c9a58ee78ca8ebc6d666f27bbbd05145e61c76b",
+      "sourcePixelSha256": "aadad0c491497afcacd508fae3749569b9054c9b66a218b1f274133f9ffa5488",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.216216,
+        "x": 0.190476,
         "y": 0.380282
       },
       "direction": "east",
       "fps": 14,
       "frame": {
         "h": 71,
-        "w": 37,
+        "w": 42,
         "x": 666,
         "y": 241
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__east__002",
-      "opaquePixels": 1765,
+      "opaquePixels": 1972,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -99,7 +99,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "126aeb16774deba7c47de8264aa7f0b8acd50d133ee53932d106060004e2723d",
+      "sourcePixelSha256": "b1aafa226cf9793ee17d653b5622c67707f7bd25104cf77a7b67bc787b72a087",
       "state": "attack",
       "trimmed": true
     },
@@ -113,12 +113,12 @@
       "frame": {
         "h": 71,
         "w": 76,
-        "x": 705,
+        "x": 710,
         "y": 241
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__north-east__000",
-      "opaquePixels": 2501,
+      "opaquePixels": 2547,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -129,7 +129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9d66292a00cfc5e1c7936fe949cb8b829ce5da8fbca0a8f32d2f38a3835f42b1",
+      "sourcePixelSha256": "b8758ba054d2fa4290520b3025032ca96475cd3a7d5deff1cb3ab4544c28cf4b",
       "state": "attack",
       "trimmed": true
     },
@@ -148,7 +148,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__north-east__001",
-      "opaquePixels": 2573,
+      "opaquePixels": 2686,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -159,7 +159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bd9dfea0e196395e56c65fe01b366562b28fcdb833b100c353baa8cc1cc926c8",
+      "sourcePixelSha256": "1ff74ec0ebea1a01e860080d7f41641a2a83cb9ef5fb6b2ddeec6954e1649769",
       "state": "attack",
       "trimmed": true
     },
@@ -173,12 +173,12 @@
       "frame": {
         "h": 71,
         "w": 57,
-        "x": 783,
+        "x": 788,
         "y": 241
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__north-east__002",
-      "opaquePixels": 2354,
+      "opaquePixels": 2495,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -189,7 +189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dc6043112b9f2a5657c8049399e3405c440a68d319241b9ab44740307bc38afd",
+      "sourcePixelSha256": "61c2128862cbcba7e75410aed7655f5e86e506714cf5316d3e11b65830dcd567",
       "state": "attack",
       "trimmed": true
     },
@@ -203,12 +203,12 @@
       "frame": {
         "h": 71,
         "w": 76,
-        "x": 842,
+        "x": 847,
         "y": 241
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__north-west__000",
-      "opaquePixels": 2642,
+      "opaquePixels": 2688,
       "phase": null,
       "pivot": {
         "x": 12,
@@ -219,7 +219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "adb9aa7ddc13ca8627978fd5b826f04beff57b1a33c0c033e7da393806feb0c0",
+      "sourcePixelSha256": "4f2d4391135f5a4ab679141eba7d7805372ef0f3688cecaa9926d17d2f94f0ab",
       "state": "attack",
       "trimmed": true
     },
@@ -238,7 +238,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__north-west__001",
-      "opaquePixels": 2627,
+      "opaquePixels": 2739,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -249,7 +249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "31a62810d90ad19bc97b0a39fccfbeaf257378161b4b2b462721f4db243801ae",
+      "sourcePixelSha256": "37f17b28778ee068b29ae664fee1c84a57c9a1bb14143d9be265e21c745c41dd",
       "state": "attack",
       "trimmed": true
     },
@@ -263,12 +263,12 @@
       "frame": {
         "h": 71,
         "w": 57,
-        "x": 920,
+        "x": 925,
         "y": 241
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__north-west__002",
-      "opaquePixels": 2327,
+      "opaquePixels": 2470,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -279,7 +279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b907eb213d4f168058365d5df2cbe9e8ffcf0a6ec0078e1d4150c6235e1748ed",
+      "sourcePixelSha256": "f61bc51b48df9f53974ca814f26f6282e4f5d7ec7c7e16168b08adeff07eaff4",
       "state": "attack",
       "trimmed": true
     },
@@ -293,12 +293,12 @@
       "frame": {
         "h": 73,
         "w": 102,
-        "x": 380,
+        "x": 436,
         "y": 89
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__north__000",
-      "opaquePixels": 2703,
+      "opaquePixels": 2897,
       "phase": null,
       "pivot": {
         "x": 35,
@@ -309,7 +309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8889982505df2ca0fc0939f32f148545ec2b883abc8f0049f2c0a3ba33d7be9b",
+      "sourcePixelSha256": "481cbbe09e76bc3d50ec2415c5c16f42ec519b8655181d49011d0d07e2d0fab6",
       "state": "attack",
       "trimmed": true
     },
@@ -323,12 +323,12 @@
       "frame": {
         "h": 73,
         "w": 94,
-        "x": 484,
+        "x": 540,
         "y": 89
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__north__001",
-      "opaquePixels": 2705,
+      "opaquePixels": 2844,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -339,37 +339,37 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ab4185e37bed778877169529ebd119569553a4b45e21b9a918a6753ba7fac06e",
+      "sourcePixelSha256": "83835b92f7d5bdae1f408c373aec953c807c0dc8feedd3ad9d74ae748f535ee0",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
         "x": 0.283784,
-        "y": 0.371429
+        "y": 0.380282
       },
       "direction": "north",
       "fps": 14,
       "frame": {
-        "h": 70,
+        "h": 71,
         "w": 74,
-        "x": 357,
-        "y": 388
+        "x": 2,
+        "y": 315
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__north__002",
-      "opaquePixels": 2509,
+      "opaquePixels": 2615,
       "phase": null,
       "pivot": {
         "x": 21,
-        "y": 26
+        "y": 27
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4f3bbd292fb0854d1d2af6efb1a396b04d0ecce73cbff73a6c7d054396caa509",
+      "sourcePixelSha256": "ba01c6f1753a8263b19c918dec612b34dffbff822923aac94bc366fe2c828bd9",
       "state": "attack",
       "trimmed": true
     },
@@ -383,12 +383,12 @@
       "frame": {
         "h": 76,
         "w": 76,
-        "x": 618,
+        "x": 636,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__south-east__000",
-      "opaquePixels": 2452,
+      "opaquePixels": 2573,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -399,7 +399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6e325f46669e4b5c0afe86edaedf7e5d34eee9d6a1fc26a9dd9d372363b34110",
+      "sourcePixelSha256": "18bb32afd7faa6246f4180692e73f068bbfd58115cf8d779ad28f9f9ac282ed7",
       "state": "attack",
       "trimmed": true
     },
@@ -413,12 +413,12 @@
       "frame": {
         "h": 67,
         "w": 71,
-        "x": 652,
+        "x": 732,
         "y": 533
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__south-east__001",
-      "opaquePixels": 2446,
+      "opaquePixels": 2560,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -429,7 +429,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8f607c0dbd2a68bd449113fa0908a86eb2e97d6af50d65338d77750efb346e4a",
+      "sourcePixelSha256": "4445e0e4832f2e19b32dcdb53f73f640c0377f13f84a5fbf54c5865acf4974bd",
       "state": "attack",
       "trimmed": true
     },
@@ -448,7 +448,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__south-east__002",
-      "opaquePixels": 2511,
+      "opaquePixels": 2562,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -459,7 +459,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4046f108781ede3af1c15bf563c6ecfd07aac98fe1075080adb822908eb821e1",
+      "sourcePixelSha256": "543381f080ed8d51128e2da6cf7b48827bb3e94e23e94055b835855de3285783",
       "state": "attack",
       "trimmed": true
     },
@@ -473,12 +473,12 @@
       "frame": {
         "h": 76,
         "w": 76,
-        "x": 696,
+        "x": 714,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__south-west__000",
-      "opaquePixels": 2344,
+      "opaquePixels": 2460,
       "phase": null,
       "pivot": {
         "x": 12,
@@ -489,7 +489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b15a985bd5eb867bc4f2b806fee742d47fad425bb6dbfa73e93f62474fca3f58",
+      "sourcePixelSha256": "0e7adaec56efdc47354dc80ca64e4d8e8c2b9c97998547f12a6644caeec7a600",
       "state": "attack",
       "trimmed": true
     },
@@ -503,12 +503,12 @@
       "frame": {
         "h": 67,
         "w": 71,
-        "x": 725,
+        "x": 805,
         "y": 533
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__south-west__001",
-      "opaquePixels": 2398,
+      "opaquePixels": 2504,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -519,7 +519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3c2a72b219636aaee010d37ee4c9cf05fe15eb8fa7da8c85e4340fba74900bb3",
+      "sourcePixelSha256": "137f871dd458fad1107fa4479c06b1862edc6bff1de7e5a14930f011194bd2b4",
       "state": "attack",
       "trimmed": true
     },
@@ -538,7 +538,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__south-west__002",
-      "opaquePixels": 2542,
+      "opaquePixels": 2594,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -549,7 +549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ebb01ded9b76a137c29c94ac9874132ef4782675c29c06d298d03f975633415a",
+      "sourcePixelSha256": "68eb3016461431100769a4f3c00ace36e8e06a3aa4400e44a4a8a74f9b8b0bd6",
       "state": "attack",
       "trimmed": true
     },
@@ -563,12 +563,12 @@
       "frame": {
         "h": 63,
         "w": 102,
-        "x": 606,
+        "x": 683,
         "y": 603
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__south__000",
-      "opaquePixels": 2409,
+      "opaquePixels": 2583,
       "phase": null,
       "pivot": {
         "x": 35,
@@ -579,7 +579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "53390e109fa22ee71de37e71abd33bf06994ea73ca75d822d7a7f6342e5dd442",
+      "sourcePixelSha256": "a654e3aac94fca9bb45a329903cf534efd453a9faa55ebb76cf29a81b8d25857",
       "state": "attack",
       "trimmed": true
     },
@@ -593,12 +593,12 @@
       "frame": {
         "h": 66,
         "w": 94,
-        "x": 2,
+        "x": 79,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__south__001",
-      "opaquePixels": 2466,
+      "opaquePixels": 2640,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -609,7 +609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "dca325d5cb608f5ea5ceac59f5cf2776a27e9f8f6a8f3599966e34948badcb62",
+      "sourcePixelSha256": "d37c703f28aa8c095b8141e93185dceeadc36eac855987c0659b45817a620af2",
       "state": "attack",
       "trimmed": true
     },
@@ -623,12 +623,12 @@
       "frame": {
         "h": 73,
         "w": 74,
-        "x": 580,
+        "x": 636,
         "y": 89
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__south__002",
-      "opaquePixels": 2648,
+      "opaquePixels": 2828,
       "phase": null,
       "pivot": {
         "x": 21,
@@ -639,29 +639,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "beab504ac3d00f1b7ab9de865fabba708cb22aff984f3b8f1070c1d3fef2f3c2",
+      "sourcePixelSha256": "1a1c3549ad53f9cc9420988d0fdfc9075e34e9fabbb5bf57ba647fa1bd44b4d3",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.159091,
+        "x": 0.195652,
         "y": 0.435897
       },
       "direction": "west",
       "fps": 14,
       "frame": {
         "h": 78,
-        "w": 44,
-        "x": 338,
+        "w": 46,
+        "x": 350,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__attack__west__000",
-      "opaquePixels": 2142,
+      "opaquePixels": 2281,
       "phase": null,
       "pivot": {
-        "x": 7,
+        "x": 9,
         "y": 34
       },
       "rotated": false,
@@ -669,29 +669,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a8b620a8d0a8b296ab2a9a4b66ad22473cf39cb7cfe509b1a73949e488f0b259",
+      "sourcePixelSha256": "024aa006012881d9508ee5aab6fb028803a9ac48cb309b200ceaf00b52ac3ecf",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.073171,
         "y": 0.362319
       },
       "direction": "west",
       "fps": 14,
       "frame": {
         "h": 69,
-        "w": 38,
-        "x": 391,
+        "w": 41,
+        "x": 453,
         "y": 461
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__attack__west__001",
-      "opaquePixels": 1828,
+      "opaquePixels": 1988,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 3,
         "y": 25
       },
       "rotated": false,
@@ -699,29 +699,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1f16c928e494860e0a4e3a02da3e508eeec18194106bacbca12b5bee97282878",
+      "sourcePixelSha256": "2809e5878f650cf53de6c32238c6f82ea1ae78079020dfe07711bf257acf1700",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.047619,
         "y": 0.380282
       },
       "direction": "west",
       "fps": 14,
       "frame": {
         "h": 71,
-        "w": 40,
-        "x": 979,
-        "y": 241
+        "w": 42,
+        "x": 78,
+        "y": 315
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__attack__west__002",
-      "opaquePixels": 1760,
+      "opaquePixels": 1968,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 2,
         "y": 27
       },
       "rotated": false,
@@ -729,26 +729,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bbf33681eefa5503fca24b6182bd31167c54fe899a9a0185e3d98359fa2af61b",
+      "sourcePixelSha256": "bd16122158c37363bc3524b5e808a4cdf52e945c6e39d1dcbc0ecf2766bdd20b",
       "state": "attack",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.189189,
+        "x": 0.170732,
         "y": 0.380282
       },
       "direction": "east",
       "fps": 10,
       "frame": {
         "h": 71,
-        "w": 37,
-        "x": 2,
+        "w": 41,
+        "x": 122,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__east__000",
-      "opaquePixels": 1693,
+      "opaquePixels": 1884,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -759,7 +759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7d83d56af3c0daf0e27abfc9bec44e5f817e928f6bb82fc13d3124ae8c8fc94a",
+      "sourcePixelSha256": "26e275975fc9b81bbc0f7fac3032b5d046109dbd136eb81f06abd9f64c2f477e",
       "state": "death",
       "trimmed": true
     },
@@ -773,12 +773,12 @@
       "frame": {
         "h": 63,
         "w": 47,
-        "x": 710,
+        "x": 787,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__east__001",
-      "opaquePixels": 1824,
+      "opaquePixels": 1965,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -789,7 +789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "24e0fa5d4b1ce36d23d417bb83718ec238db7a39ee335565ff47470af2fe10d9",
+      "sourcePixelSha256": "98d6bcde8fc1bd937170dcc90df9d81cab11cf5a5eddbd33059092ce24b44ab3",
       "state": "death",
       "trimmed": true
     },
@@ -803,12 +803,12 @@
       "frame": {
         "h": 56,
         "w": 71,
-        "x": 172,
-        "y": 671
+        "x": 222,
+        "y": 672
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__east__002",
-      "opaquePixels": 1958,
+      "opaquePixels": 2052,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -819,7 +819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7e9b734f4253f2ee89eabbf472d69b5a86865755256ed20721d82cafb7bd7309",
+      "sourcePixelSha256": "3f9340a2640d160d42a2627059e796253528aaf0ebe76d51edfa4b4ffb76419a",
       "state": "death",
       "trimmed": true
     },
@@ -833,12 +833,12 @@
       "frame": {
         "h": 50,
         "w": 76,
-        "x": 372,
-        "y": 671
+        "x": 422,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__east__003",
-      "opaquePixels": 2174,
+      "opaquePixels": 2213,
       "phase": null,
       "pivot": {
         "x": 50,
@@ -849,7 +849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "57610e58e41ac6b87ea7e545c8143c953731e069f51c5015d984cc29f06f010f",
+      "sourcePixelSha256": "4efc357f9cb0878b09a3898362cfac8e3a6a8ae8047c3e534f868c8623e1962d",
       "state": "death",
       "trimmed": true
     },
@@ -863,12 +863,12 @@
       "frame": {
         "h": 71,
         "w": 63,
-        "x": 41,
+        "x": 165,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__north-east__000",
-      "opaquePixels": 2502,
+      "opaquePixels": 2630,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -879,7 +879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7b5d4c0bf963d3317b2b7fc010bce534c3c865e4766c2ee93cbabd8906e09a14",
+      "sourcePixelSha256": "511fd15a23e4d21c9d697bca477cdefa393e8b80d448ed3352cc2249677322f3",
       "state": "death",
       "trimmed": true
     },
@@ -893,12 +893,12 @@
       "frame": {
         "h": 69,
         "w": 54,
-        "x": 431,
+        "x": 496,
         "y": 461
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__north-east__001",
-      "opaquePixels": 2444,
+      "opaquePixels": 2532,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -909,7 +909,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "eeb81a10f7a532d9fa0d480a0b206ab4355a50b74def105d103b5f033cf8d0ca",
+      "sourcePixelSha256": "76e12b8ad903b7526b64193023968083de8299aac94cefa386d64119a804b5e7",
       "state": "death",
       "trimmed": true
     },
@@ -923,12 +923,12 @@
       "frame": {
         "h": 57,
         "w": 57,
-        "x": 52,
-        "y": 671
+        "x": 102,
+        "y": 672
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__north-east__002",
-      "opaquePixels": 2064,
+      "opaquePixels": 2136,
       "phase": null,
       "pivot": {
         "x": 20,
@@ -939,7 +939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6184287648a34b489f7309a8184d229d658b3f2a770cc58d4d1c6de531d84fa9",
+      "sourcePixelSha256": "c889950b596a0fbfd5a57f0eca8e6049519d4ce4602bd28652adb9bc878cd9ff",
       "state": "death",
       "trimmed": true
     },
@@ -953,12 +953,12 @@
       "frame": {
         "h": 47,
         "w": 50,
-        "x": 674,
-        "y": 671
+        "x": 724,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__north-east__003",
-      "opaquePixels": 1643,
+      "opaquePixels": 1678,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -969,7 +969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "287982829c65bc7d7b80ed2f515cf74364aae4f8e4a1a5211f1f2093c037b1a5",
+      "sourcePixelSha256": "a6dcfb4f8e15ed11948c842d913278e34d247e11f53d077795754c559613a287",
       "state": "death",
       "trimmed": true
     },
@@ -983,12 +983,12 @@
       "frame": {
         "h": 71,
         "w": 63,
-        "x": 106,
+        "x": 230,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__north-west__000",
-      "opaquePixels": 2501,
+      "opaquePixels": 2632,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -999,7 +999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "33f54808a6957df2cfd0867d45ec926d3e2ce88163da466f0a466219db993c59",
+      "sourcePixelSha256": "679db874761ab12813d2ca77f09b9683c00e382a7acc2b9b93f67fa0cab87ee4",
       "state": "death",
       "trimmed": true
     },
@@ -1013,12 +1013,12 @@
       "frame": {
         "h": 69,
         "w": 56,
-        "x": 487,
+        "x": 552,
         "y": 461
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__north-west__001",
-      "opaquePixels": 2504,
+      "opaquePixels": 2593,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1029,7 +1029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "142a9aa93ece5fc4e632926742da1d21c064f83bf103ebce190800cf151a9cb4",
+      "sourcePixelSha256": "44763962e1057770cec18cd3ee4ec222bc3c3518f7ae0971b357f4048b0f90ec",
       "state": "death",
       "trimmed": true
     },
@@ -1043,12 +1043,12 @@
       "frame": {
         "h": 57,
         "w": 59,
-        "x": 111,
-        "y": 671
+        "x": 161,
+        "y": 672
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__north-west__002",
-      "opaquePixels": 2117,
+      "opaquePixels": 2190,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -1059,7 +1059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6454b7536b99c067ccc46e8ec1d8edcfaff5d2741f705395aa62521fbf05209e",
+      "sourcePixelSha256": "48c7c95c2613ccfd2caed20c7dbe97aaa29b09385a49e3a8c97ea9f0a67c2bd6",
       "state": "death",
       "trimmed": true
     },
@@ -1073,12 +1073,12 @@
       "frame": {
         "h": 47,
         "w": 56,
-        "x": 726,
-        "y": 671
+        "x": 776,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__north-west__003",
-      "opaquePixels": 1706,
+      "opaquePixels": 1741,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -1089,7 +1089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4d56cbc3ba480ef28c75f11db1de9f182a9d590f87e849f7c375c162549e6ce0",
+      "sourcePixelSha256": "01717be6accb2dd40132a73f1e977ff79fa7af8b4467d29d2996e97673a4e865",
       "state": "death",
       "trimmed": true
     },
@@ -1103,12 +1103,12 @@
       "frame": {
         "h": 71,
         "w": 84,
-        "x": 171,
+        "x": 295,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__north__000",
-      "opaquePixels": 2644,
+      "opaquePixels": 2729,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -1119,7 +1119,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3d5874cc6c8d1a378c9a2a4a0c5279fb79527abc75b8a3f16254150805fae3c5",
+      "sourcePixelSha256": "b540358b9fba09f25d7bde7f5513585def3a20c508569236842abb2b2a137928",
       "state": "death",
       "trimmed": true
     },
@@ -1133,12 +1133,12 @@
       "frame": {
         "h": 71,
         "w": 65,
-        "x": 257,
+        "x": 381,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__north__001",
-      "opaquePixels": 2572,
+      "opaquePixels": 2666,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -1149,7 +1149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "728d8b517fef3984ba47c684db7ee52ceb13865b47779da724f4a4f09fd92f68",
+      "sourcePixelSha256": "3af3a62c7abe45916d1fdf647816975015ca71a624bfd5c936e0b31bac7923cc",
       "state": "death",
       "trimmed": true
     },
@@ -1163,12 +1163,12 @@
       "frame": {
         "h": 58,
         "w": 48,
-        "x": 940,
-        "y": 603
+        "x": 2,
+        "y": 672
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__north__002",
-      "opaquePixels": 1997,
+      "opaquePixels": 2105,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1179,7 +1179,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "21173ad4f803680a46576b71e64a238c1e42cf46e733351e5865220598316f1d",
+      "sourcePixelSha256": "40fc5c92c11a13b1939edee6b0dfb0a7ca8eb720f181b864ecc2e40c324ca091",
       "state": "death",
       "trimmed": true
     },
@@ -1193,12 +1193,12 @@
       "frame": {
         "h": 45,
         "w": 48,
-        "x": 784,
-        "y": 671
+        "x": 834,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__north__003",
-      "opaquePixels": 1343,
+      "opaquePixels": 1440,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1209,7 +1209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "364d0dfb4097fc4d8dd6d26c7d8edf2a029f06803bc3ce69bdfc3de3805e06fa",
+      "sourcePixelSha256": "298e1033a0e5a866cd15e7ed8fc66dfe75d8adcf7df318e2e83c90d1a153b067",
       "state": "death",
       "trimmed": true
     },
@@ -1223,12 +1223,12 @@
       "frame": {
         "h": 70,
         "w": 63,
-        "x": 433,
+        "x": 500,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__south-east__000",
-      "opaquePixels": 2497,
+      "opaquePixels": 2594,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -1239,7 +1239,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a325850bc9d9cb25b3ba900fb2825f6862bd1d675f55a209bb79534aa9a69749",
+      "sourcePixelSha256": "f8b096c180ce63f198a8373c027b2b6428f3ab26886a76109efadd48dc866041",
       "state": "death",
       "trimmed": true
     },
@@ -1253,12 +1253,12 @@
       "frame": {
         "h": 65,
         "w": 55,
-        "x": 493,
+        "x": 570,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__south-east__001",
-      "opaquePixels": 2081,
+      "opaquePixels": 2156,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -1269,7 +1269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8417f394c56d12cd3f9d83a73c7075b6f90a5f512daccfd76c397c3c7e4e78f2",
+      "sourcePixelSha256": "ca823fc8b4ce9270b51bf16dccba2d3960bccfbfb4d86c23a78a1076570008cd",
       "state": "death",
       "trimmed": true
     },
@@ -1283,12 +1283,12 @@
       "frame": {
         "h": 61,
         "w": 65,
-        "x": 809,
+        "x": 886,
         "y": 603
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__south-east__002",
-      "opaquePixels": 2186,
+      "opaquePixels": 2199,
       "phase": null,
       "pivot": {
         "x": 28,
@@ -1299,7 +1299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3e3f9bc9e821c64303bbef6b60d91da7b1cabd6b56d34b115bc817840eb081bc",
+      "sourcePixelSha256": "1d5f4958b42a7b87b3cfd2d65afa6defa43e1115fb23566a9bf42fdf9c70371d",
       "state": "death",
       "trimmed": true
     },
@@ -1313,12 +1313,12 @@
       "frame": {
         "h": 50,
         "w": 68,
-        "x": 450,
-        "y": 671
+        "x": 500,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__south-east__003",
-      "opaquePixels": 2030,
+      "opaquePixels": 2036,
       "phase": null,
       "pivot": {
         "x": 40,
@@ -1329,7 +1329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7f23c23978c8e3497f36900cac96676540073b85266c6d6a37bc615f148fbcca",
+      "sourcePixelSha256": "39de2db3ce6619fa97d5bb3f06b9835126dbfc46549d8a7ed09bb072c10b91a8",
       "state": "death",
       "trimmed": true
     },
@@ -1343,12 +1343,12 @@
       "frame": {
         "h": 70,
         "w": 63,
-        "x": 498,
+        "x": 565,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__south-west__000",
-      "opaquePixels": 2496,
+      "opaquePixels": 2586,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -1359,7 +1359,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4e6ebeeb31663c07bfc79d43e67fb6e90c2ea7d08eec8b2f39a8dcbecdb04fb3",
+      "sourcePixelSha256": "d0d25fc6726ede21213825c1c73249cc04f4973f2175104fe7dd6f864f2ae837",
       "state": "death",
       "trimmed": true
     },
@@ -1373,12 +1373,12 @@
       "frame": {
         "h": 65,
         "w": 54,
-        "x": 550,
+        "x": 627,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__south-west__001",
-      "opaquePixels": 1994,
+      "opaquePixels": 2080,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1389,7 +1389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "10956caf56ff690989442aa098d80ee6c4bf18079b981faa8d342e4a0870bb60",
+      "sourcePixelSha256": "fabd4cf699dde91e6ab00d0116df11f87389f41edae554462bc7a17cbc79a632",
       "state": "death",
       "trimmed": true
     },
@@ -1403,12 +1403,12 @@
       "frame": {
         "h": 61,
         "w": 62,
-        "x": 876,
+        "x": 953,
         "y": 603
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__south-west__002",
-      "opaquePixels": 2029,
+      "opaquePixels": 2047,
       "phase": null,
       "pivot": {
         "x": 5,
@@ -1419,7 +1419,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4f19b4f00c9c363de758775481fd9cde640160c872d1c85421994d62648ce900",
+      "sourcePixelSha256": "727e513e3e2111a7c012ca092fb0def8371467cc17a1f7c372f1bb0a29ebdfa5",
       "state": "death",
       "trimmed": true
     },
@@ -1433,12 +1433,12 @@
       "frame": {
         "h": 50,
         "w": 67,
-        "x": 520,
-        "y": 671
+        "x": 570,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__south-west__003",
-      "opaquePixels": 2072,
+      "opaquePixels": 2090,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -1449,7 +1449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "02dc24f52ad6cfe74f076550b3f462b81a65b9f38bbb7076a87c71896580b8a6",
+      "sourcePixelSha256": "bfe3d44e2265a452dc9e68f2ec923dfc62b7b6f41da3a6bce1cf067843c1ce96",
       "state": "death",
       "trimmed": true
     },
@@ -1463,12 +1463,12 @@
       "frame": {
         "h": 70,
         "w": 84,
-        "x": 563,
+        "x": 630,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__south__000",
-      "opaquePixels": 2603,
+      "opaquePixels": 2778,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -1479,7 +1479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c07ca508195d523bf6a8c4c24ebe2fa2e6e8eae3083525ebc7e34896b7309ec1",
+      "sourcePixelSha256": "2514a615ed0b82bb8fe15de6c9b53df6f80e0fb0ca68fc57e56cc0d5a0cfe624",
       "state": "death",
       "trimmed": true
     },
@@ -1493,12 +1493,12 @@
       "frame": {
         "h": 66,
         "w": 65,
-        "x": 98,
+        "x": 175,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__south__001",
-      "opaquePixels": 2174,
+      "opaquePixels": 2317,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -1509,7 +1509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2c77797b11d8384199881fb8590d03ab87e176bebdf8a2901c757646ed4f4b0d",
+      "sourcePixelSha256": "19946bd3c995b8e9a73c21d2ec73b3b38ccee087e80feb4f4253bb781f387f3d",
       "state": "death",
       "trimmed": true
     },
@@ -1523,12 +1523,12 @@
       "frame": {
         "h": 58,
         "w": 48,
-        "x": 2,
-        "y": 671
+        "x": 52,
+        "y": 672
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__south__002",
-      "opaquePixels": 1721,
+      "opaquePixels": 1789,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1539,7 +1539,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2bf94035e9a69afc80ad7057d0c50aa1e6b59a9716db60ff4ce916a1b0093529",
+      "sourcePixelSha256": "3419c06b96c9e09b2209453df89b166ec0145ef4b28604f73027b541ef3f4eab",
       "state": "death",
       "trimmed": true
     },
@@ -1553,12 +1553,12 @@
       "frame": {
         "h": 51,
         "w": 48,
-        "x": 322,
-        "y": 671
+        "x": 372,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__south__003",
-      "opaquePixels": 1458,
+      "opaquePixels": 1462,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1569,29 +1569,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8259b27590d955fc2eea9155f1a7468fcb84a6c839944ff75cb244ce286add46",
+      "sourcePixelSha256": "4900953c04e757ec25b7f06e90c380912013550cad36ad8de4804c254e2b3976",
       "state": "death",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.04878,
         "y": 0.380282
       },
       "direction": "west",
       "fps": 10,
       "frame": {
         "h": 71,
-        "w": 39,
-        "x": 324,
+        "w": 41,
+        "x": 448,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__death__west__000",
-      "opaquePixels": 1692,
+      "opaquePixels": 1882,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 2,
         "y": 27
       },
       "rotated": false,
@@ -1599,7 +1599,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b0c190bd07fc6779786d972c4c76868ab79caaadb2ecf53b2a888d71ebf7834f",
+      "sourcePixelSha256": "5fa2d1677a64abe9965d2e3e68cbfd494b886f7e6ed6b74763958ddd6f736895",
       "state": "death",
       "trimmed": true
     },
@@ -1613,12 +1613,12 @@
       "frame": {
         "h": 63,
         "w": 48,
-        "x": 759,
+        "x": 836,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__death__west__001",
-      "opaquePixels": 1876,
+      "opaquePixels": 2018,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -1629,7 +1629,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "aeadf40b962077f72251de52bc01c64f1894b194398e0f8fe51b562a89bd03bd",
+      "sourcePixelSha256": "642dd721d64e4239114ed2123bd005e6fa45dd1fcbc7a6c87218aa07bd901623",
       "state": "death",
       "trimmed": true
     },
@@ -1643,12 +1643,12 @@
       "frame": {
         "h": 56,
         "w": 75,
-        "x": 245,
-        "y": 671
+        "x": 295,
+        "y": 672
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__death__west__002",
-      "opaquePixels": 2044,
+      "opaquePixels": 2143,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -1659,7 +1659,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2dab4083e6b3a4f43cb0e20eeaa3503ba77b9dfcb052b9ec1b3ad29d747763ef",
+      "sourcePixelSha256": "fc4d80e7fb8d4bfe05cbbced65187a9afbbdca3c76a09ddd7005edb14a43b820",
       "state": "death",
       "trimmed": true
     },
@@ -1673,12 +1673,12 @@
       "frame": {
         "h": 50,
         "w": 83,
-        "x": 589,
-        "y": 671
+        "x": 639,
+        "y": 672
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__death__west__003",
-      "opaquePixels": 2370,
+      "opaquePixels": 2409,
       "phase": null,
       "pivot": {
         "x": 0,
@@ -1689,26 +1689,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f4f4479cd4bb2e6068b75cfc4df8c4c853b3f4dc511086df4f9effd12c146e99",
+      "sourcePixelSha256": "2d947fd879724e92433480e9e557f06c38026512a72b739d75c3a93ce7022105",
       "state": "death",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.162162,
+        "x": 0.15,
         "y": 0.371429
       },
       "direction": "east",
       "fps": 12,
       "frame": {
         "h": 70,
-        "w": 37,
-        "x": 649,
+        "w": 40,
+        "x": 716,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__east__000",
-      "opaquePixels": 1824,
+      "opaquePixels": 1960,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1719,7 +1719,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7fe6289b3c76bcc880e24473b913296e19e0a06d8807695da02835faab62f182",
+      "sourcePixelSha256": "31a875f9083757d1bcb6e7b279372a5967b2b7f751a9c0a7aca03a74128addcf",
       "state": "hit",
       "trimmed": true
     },
@@ -1733,12 +1733,12 @@
       "frame": {
         "h": 77,
         "w": 40,
-        "x": 438,
+        "x": 452,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__east__001",
-      "opaquePixels": 1938,
+      "opaquePixels": 2046,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1749,26 +1749,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1bf329078a100451c145dac51a1008e2d15ee1ca7dc2e650f9e1e25dcbe5edfe",
+      "sourcePixelSha256": "c09c512567c9e4f384e5bdcbadbd809c2bd9dc7208fc0aa9bdb4e83f0568804d",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.23913,
+        "x": 0.203704,
         "y": 0.362319
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
         "h": 69,
-        "w": 46,
-        "x": 545,
+        "w": 54,
+        "x": 610,
         "y": 461
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__north-east__000",
-      "opaquePixels": 2285,
+      "opaquePixels": 2465,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -1779,7 +1779,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "124b1c39bfbb3ec0611cde98b0345d974f435cadf584c3f763a4efc3b3a20812",
+      "sourcePixelSha256": "ee9ea3640d42191b36f4a1e14956ba14f33ba71b80498221a51953276be44e66",
       "state": "hit",
       "trimmed": true
     },
@@ -1793,12 +1793,12 @@
       "frame": {
         "h": 76,
         "w": 75,
-        "x": 774,
+        "x": 792,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__north-east__001",
-      "opaquePixels": 2681,
+      "opaquePixels": 2811,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -1809,7 +1809,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "04262503314d16dec2b2e54ff785f32d7e83a8cfa5eed8b32f58c1104c603fbc",
+      "sourcePixelSha256": "f15c6329f2be9acaeacc4740250abfdda13c9b8f9ff7947a03c0f08f6d77c4a2",
       "state": "hit",
       "trimmed": true
     },
@@ -1823,12 +1823,12 @@
       "frame": {
         "h": 76,
         "w": 74,
-        "x": 851,
+        "x": 869,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__north-west__000",
-      "opaquePixels": 2703,
+      "opaquePixels": 2810,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -1839,29 +1839,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "011c7ee5c682c34827e0c2459a3d9b659e23b1ea3860d7a0d281b53519f3a6a5",
+      "sourcePixelSha256": "7de2e45988f8c7136a49cfb107ecbb2ab618858323d7a4a5e502c985380c1b41",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.073171,
+        "x": 0.22449,
         "y": 0.371429
       },
       "direction": "north-west",
       "fps": 12,
       "frame": {
         "h": 70,
-        "w": 41,
-        "x": 688,
+        "w": 49,
+        "x": 758,
         "y": 388
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__north-west__001",
-      "opaquePixels": 2310,
+      "opaquePixels": 2492,
       "phase": null,
       "pivot": {
-        "x": 3,
+        "x": 11,
         "y": 26
       },
       "rotated": false,
@@ -1869,7 +1869,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "92fd95443ad2e02376bed0b2c761a48e3f9e01b7791be5d9be63250940d90631",
+      "sourcePixelSha256": "ede9aaeb8896de2067a68966f3fe3d285cc4b1e23c08b44352c7c6e1ec0f003a",
       "state": "hit",
       "trimmed": true
     },
@@ -1888,7 +1888,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__north__000",
-      "opaquePixels": 2750,
+      "opaquePixels": 2866,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -1899,7 +1899,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "290fb550e6da396b3c8f853a3b8e15d5e60b3dee325800660528491be28631e9",
+      "sourcePixelSha256": "bf13a48c214ca1ec07fa6946ccdcd8295a62b454abc534b7de04a54398eaddde",
       "state": "hit",
       "trimmed": true
     },
@@ -1918,7 +1918,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__north__001",
-      "opaquePixels": 2678,
+      "opaquePixels": 2812,
       "phase": null,
       "pivot": {
         "x": 20,
@@ -1929,7 +1929,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "729021ccc771407caf844ed805ca5ab848725c7962aa118cc0318ffe9ff3ecf6",
+      "sourcePixelSha256": "0e3c33f4605b64328ee5377377ef4244e16a41093f6cbaa21e4b606bf43ac598",
       "state": "hit",
       "trimmed": true
     },
@@ -1943,12 +1943,12 @@
       "frame": {
         "h": 67,
         "w": 74,
-        "x": 798,
+        "x": 878,
         "y": 533
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__south-east__000",
-      "opaquePixels": 2455,
+      "opaquePixels": 2567,
       "phase": null,
       "pivot": {
         "x": 20,
@@ -1959,26 +1959,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fdf1a057eb78f568c4499e4cc15a00e6bcb2bd989b6a05479822f98aed13c7be",
+      "sourcePixelSha256": "fe2b76dfd4358e696e044e3f2f6713765d9b0ad4838e48903a2cd8320ea3dc04",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.146341,
+        "x": 0.122449,
         "y": 0.413333
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
         "h": 75,
-        "w": 41,
-        "x": 927,
+        "w": 49,
+        "x": 945,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__south-east__001",
-      "opaquePixels": 2316,
+      "opaquePixels": 2472,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -1989,29 +1989,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ee620cba93ab6239fd8a19556e11362f2d8264fe87b65399eaf9de112c5bfe27",
+      "sourcePixelSha256": "242f2f0f259b573661cb24345e3315c9451ea35da03103e49c74b9577ec0e9ba",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.065217,
+        "x": 0.203704,
         "y": 0.413333
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
         "h": 75,
-        "w": 46,
-        "x": 970,
-        "y": 2
+        "w": 54,
+        "x": 2,
+        "y": 89
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__south-west__000",
-      "opaquePixels": 2310,
+      "opaquePixels": 2477,
       "phase": null,
       "pivot": {
-        "x": 3,
+        "x": 11,
         "y": 31
       },
       "rotated": false,
@@ -2019,7 +2019,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "aaedb17e67fb75d89d31734fc4a2713869e7dbf75b805f6aa4e618d47bdf2142",
+      "sourcePixelSha256": "0dfcdeb9938a15bac42109c1c0cf845817d6c4c6d248c1222e0192625d541615",
       "state": "hit",
       "trimmed": true
     },
@@ -2033,12 +2033,12 @@
       "frame": {
         "h": 67,
         "w": 75,
-        "x": 874,
-        "y": 533
+        "x": 2,
+        "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__south-west__001",
-      "opaquePixels": 2606,
+      "opaquePixels": 2713,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -2049,7 +2049,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "634603f84d45a19ba86ab35186233ec18899345235f18fddf093e945f3d40c27",
+      "sourcePixelSha256": "18fb8c150d110d20e06ead4007c4714e5df8a3eed8c3c950e97df0002f0f1bdb",
       "state": "hit",
       "trimmed": true
     },
@@ -2063,12 +2063,12 @@
       "frame": {
         "h": 71,
         "w": 79,
-        "x": 365,
+        "x": 491,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__south__000",
-      "opaquePixels": 2582,
+      "opaquePixels": 2759,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -2079,7 +2079,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "aed78ef04038b4792206409f00aede551192892191a1d4a2294ccb36451f5aa8",
+      "sourcePixelSha256": "084688a038976b34c28abac26f39b5eb93e70e2e09c97b364862fd38fffb728a",
       "state": "hit",
       "trimmed": true
     },
@@ -2093,12 +2093,12 @@
       "frame": {
         "h": 71,
         "w": 78,
-        "x": 446,
+        "x": 572,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__south__001",
-      "opaquePixels": 2662,
+      "opaquePixels": 2845,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -2109,29 +2109,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f191b8b47c77cbf287e723da3cbb0b7c78d934f7fe7a56d23489e13f71717d91",
+      "sourcePixelSha256": "9ccda97eca13ee274bc7bcfd57d3c6687683b96783b0465bb9b7c3c09159e30e",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.05,
         "y": 0.428571
       },
       "direction": "west",
       "fps": 12,
       "frame": {
         "h": 77,
-        "w": 38,
-        "x": 480,
+        "w": 40,
+        "x": 494,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__hit__west__000",
-      "opaquePixels": 1893,
+      "opaquePixels": 2053,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 2,
         "y": 33
       },
       "rotated": false,
@@ -2139,7 +2139,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b3eb02387ff935366434d286b0b7ea09ab2633cf46b0ab74b5b55e8c535ab703",
+      "sourcePixelSha256": "a06e023741ec787feaf116cc0470ee2ff7097603a3bacabce78a44adf80fc253",
       "state": "hit",
       "trimmed": true
     },
@@ -2153,12 +2153,12 @@
       "frame": {
         "h": 70,
         "w": 40,
-        "x": 731,
+        "x": 809,
         "y": 388
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__hit__west__001",
-      "opaquePixels": 1808,
+      "opaquePixels": 1942,
       "phase": null,
       "pivot": {
         "x": 2,
@@ -2169,26 +2169,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2350d539e77e3179187b1229c9299df5c7d13df6b1daa55a67e589c1f765c6d7",
+      "sourcePixelSha256": "cf36672bb9d7c38cec0e3f399db750567a53cb3e4c2e078639d2b71837b2f9c3",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.162162,
+        "x": 0.146341,
         "y": 0.380282
       },
       "direction": "east",
       "fps": 3,
       "frame": {
         "h": 71,
-        "w": 37,
-        "x": 526,
+        "w": 41,
+        "x": 652,
         "y": 315
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__east__000",
-      "opaquePixels": 1687,
+      "opaquePixels": 1881,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -2199,26 +2199,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "52fb5a65428bb9da7dfb65de472ff479e464f34e8211a2fc96e3a641f591e194",
+      "sourcePixelSha256": "1546cbfff8041ee437345c9888f5a0d32d63573ffce885de95c024a9c894a3d1",
       "state": "idle",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.194444,
+        "x": 0.170732,
         "y": 0.380282
       },
       "direction": "east",
       "fps": 3,
       "frame": {
         "h": 71,
-        "w": 36,
-        "x": 565,
+        "w": 41,
+        "x": 695,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__east__001",
-      "opaquePixels": 1699,
+      "opaquePixels": 1906,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -2229,7 +2229,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2b92e877220e5ed0aad69454244f9ac5ef8e06c045787f924c6d1970472e823c",
+      "sourcePixelSha256": "ad11844ed89352b81ba41473b299fb72333c97934498c3b154baffc89c4230db",
       "state": "idle",
       "trimmed": true
     },
@@ -2248,7 +2248,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__north-east__000",
-      "opaquePixels": 2460,
+      "opaquePixels": 2588,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -2259,7 +2259,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bdd338fe99748f2e15031e4daeb47c95580f8625216065b3acc6f3b2b64bd531",
+      "sourcePixelSha256": "068fad936d4bbe76ea9665937634b59681fb7254edaaf3cc55f98a83ffbdc547",
       "state": "idle",
       "trimmed": true
     },
@@ -2273,12 +2273,12 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 603,
+        "x": 738,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__north-east__001",
-      "opaquePixels": 2417,
+      "opaquePixels": 2543,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -2289,7 +2289,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "607685d67ba07c3d805e90fc8f88fa6a0a250eaa69134fe0848daca15e4953f1",
+      "sourcePixelSha256": "abebdef64cc2cc5f1d3a2d8c4f486ae8ff5951b53924abc844cd214872454351",
       "state": "idle",
       "trimmed": true
     },
@@ -2308,7 +2308,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__north-west__000",
-      "opaquePixels": 2461,
+      "opaquePixels": 2590,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -2319,7 +2319,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6d062e03d79c9e5483451fbe37fbf5fbbb35f18de2fda5ba36c3b0864ea1f837",
+      "sourcePixelSha256": "70eada37be091d018a074d57b62665d3283771fa22cba0b0b50ba702325fc976",
       "state": "idle",
       "trimmed": true
     },
@@ -2333,12 +2333,12 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 663,
+        "x": 798,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__north-west__001",
-      "opaquePixels": 2416,
+      "opaquePixels": 2542,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2349,7 +2349,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8a8efcc3cb83e6ac9fc5bee3b27f3c69b0858473cb8b0be459ea47912e41c467",
+      "sourcePixelSha256": "ef70accc4d699b3ac6e5b0736b18cda4e92c5410e821c0b9aee4b730acc5bd91",
       "state": "idle",
       "trimmed": true
     },
@@ -2368,7 +2368,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__north__000",
-      "opaquePixels": 2619,
+      "opaquePixels": 2687,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -2379,7 +2379,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a60b909ed020ed3e820129fe948a90b84a7e247211e67e79118142d6e8817605",
+      "sourcePixelSha256": "01907ea7be4f0c113905805f010124aceef03129baa31ad661d8c90f99da854b",
       "state": "idle",
       "trimmed": true
     },
@@ -2393,12 +2393,12 @@
       "frame": {
         "h": 71,
         "w": 77,
-        "x": 723,
+        "x": 858,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__north__001",
-      "opaquePixels": 2570,
+      "opaquePixels": 2643,
       "phase": null,
       "pivot": {
         "x": 23,
@@ -2409,7 +2409,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c1ab3a06c07ab9e1a4bf0574dfe543a700dae93f4585220577fb46df81b80981",
+      "sourcePixelSha256": "5335263bab70d2b5a6e023962d5877787c5908f187a7c55b9a2ce6367ef5df11",
       "state": "idle",
       "trimmed": true
     },
@@ -2423,12 +2423,12 @@
       "frame": {
         "h": 70,
         "w": 58,
-        "x": 773,
+        "x": 851,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__south-east__000",
-      "opaquePixels": 2474,
+      "opaquePixels": 2543,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -2439,7 +2439,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "19f8db468c62affae1085deaff590b3160ffd7dad41d797f1fddb0d7038c8abc",
+      "sourcePixelSha256": "396945f00e33b3991be2b39e57dd5ee2b8c7bfe3c6aa54d148dc3234789c32df",
       "state": "idle",
       "trimmed": true
     },
@@ -2453,12 +2453,12 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 802,
+        "x": 937,
         "y": 315
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__south-east__001",
-      "opaquePixels": 2510,
+      "opaquePixels": 2578,
       "phase": null,
       "pivot": {
         "x": 11,
@@ -2469,7 +2469,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1b76a6b71eff785828829b28854d81d29004aa75ac925c214c3152c56d91209a",
+      "sourcePixelSha256": "d459ac79eac82d52b3b24dbe9da6b4722d6de586218ee20085162faf2cf4947e",
       "state": "idle",
       "trimmed": true
     },
@@ -2483,12 +2483,12 @@
       "frame": {
         "h": 70,
         "w": 58,
-        "x": 833,
+        "x": 911,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__south-west__000",
-      "opaquePixels": 2476,
+      "opaquePixels": 2535,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -2499,7 +2499,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c7b4fd3d1b81e1239f1d0b35fff5e4af12168b34d7bcc7c09f9dffd107517ec4",
+      "sourcePixelSha256": "f9980faf983833c3a27d130a6859c7fa3a77cedf0ea3ed4ad03ad678d6b42f90",
       "state": "idle",
       "trimmed": true
     },
@@ -2513,12 +2513,12 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 862,
-        "y": 315
+        "x": 2,
+        "y": 388
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__south-west__001",
-      "opaquePixels": 2513,
+      "opaquePixels": 2574,
       "phase": null,
       "pivot": {
         "x": 15,
@@ -2529,7 +2529,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c5f7dce7bdaf43fc184bd5afd2df32c53b3acee5d7bcca22fa7b23cfacb61880",
+      "sourcePixelSha256": "803fce08fa8b6fbd9ba43c51a54d8271f9a05c08bc81ed29ec83c50bce3f76a1",
       "state": "idle",
       "trimmed": true
     },
@@ -2543,12 +2543,12 @@
       "frame": {
         "h": 69,
         "w": 76,
-        "x": 593,
+        "x": 666,
         "y": 461
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__south__000",
-      "opaquePixels": 2572,
+      "opaquePixels": 2746,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -2559,7 +2559,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1190ba223fff64f5601074168fa8d5bb3e840a126a0b50110d6bd5912564dc3b",
+      "sourcePixelSha256": "c89431e57a0128f73e6bbca4cdf052a773a33a0f638cc1c970ef90b9280a605a",
       "state": "idle",
       "trimmed": true
     },
@@ -2573,12 +2573,12 @@
       "frame": {
         "h": 71,
         "w": 76,
-        "x": 922,
-        "y": 315
+        "x": 62,
+        "y": 388
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__south__001",
-      "opaquePixels": 2604,
+      "opaquePixels": 2774,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -2589,29 +2589,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bb53d2e70835a1957aebb37aa0f937ea56a56f0dc646a1065eb8d5d08e1ffe20",
+      "sourcePixelSha256": "43983f5c9290f99161ad816204be24df78b79bf6e4efed457d48f9dfd8a02512",
       "state": "idle",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.073171,
         "y": 0.380282
       },
       "direction": "west",
       "fps": 3,
       "frame": {
         "h": 71,
-        "w": 38,
-        "x": 2,
+        "w": 41,
+        "x": 140,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__idle__west__000",
-      "opaquePixels": 1689,
+      "opaquePixels": 1884,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 3,
         "y": 27
       },
       "rotated": false,
@@ -2619,29 +2619,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d0b19c9ca44426430a65652487795e36c3d67202a30099208adfc5c578d3454f",
+      "sourcePixelSha256": "d701d5c23a205b4bacf27985e0492941d10f7059da55d79db00abe9e7a991860",
       "state": "idle",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.04878,
         "y": 0.380282
       },
       "direction": "west",
       "fps": 3,
       "frame": {
         "h": 71,
-        "w": 39,
-        "x": 42,
+        "w": 41,
+        "x": 183,
         "y": 388
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__idle__west__001",
-      "opaquePixels": 1697,
+      "opaquePixels": 1906,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 2,
         "y": 27
       },
       "rotated": false,
@@ -2649,7 +2649,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2b1bfe782500583fae9788e608edb6d9deaca06812b65fe3ea3b80ab6bb8b3b2",
+      "sourcePixelSha256": "e0a7c70a396092f34e59efda70273890479da30b0f88c2ed7a3a6d60746112bd",
       "state": "idle",
       "trimmed": true
     },
@@ -2663,12 +2663,12 @@
       "frame": {
         "h": 70,
         "w": 50,
-        "x": 893,
+        "x": 971,
         "y": 388
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__east__000",
-      "opaquePixels": 1860,
+      "opaquePixels": 2033,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -2679,7 +2679,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7d25a30cb45d9d20d41b4e08338a532d91fee8eb28e414405f0028f3c455147e",
+      "sourcePixelSha256": "499fd712a9662841ae761548298874cbd01df0dd3f583a32f376b70dc1cb5b2a",
       "state": "run",
       "trimmed": true
     },
@@ -2693,12 +2693,12 @@
       "frame": {
         "h": 70,
         "w": 51,
-        "x": 945,
-        "y": 388
+        "x": 2,
+        "y": 461
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__east__001",
-      "opaquePixels": 2067,
+      "opaquePixels": 2235,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -2709,7 +2709,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1df34ae5df7ade98d9a38ce169e8d180f560a0545723cc68bde13f89a6784785",
+      "sourcePixelSha256": "41e06bc97e3531cf845810a4be6af979df01335f4fedef00c62d345a95100009",
       "state": "run",
       "trimmed": true
     },
@@ -2723,12 +2723,12 @@
       "frame": {
         "h": 70,
         "w": 80,
-        "x": 2,
+        "x": 55,
         "y": 461
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__east__002",
-      "opaquePixels": 2223,
+      "opaquePixels": 2391,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -2739,26 +2739,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8da7337d851df47f6fad673ff9ae06197d0a1a36336b36131d503b61d827a965",
+      "sourcePixelSha256": "3734fec63d90ac2b14a0a2d7095a8f829d0f3cc0820b9505b263a222bb06ea4d",
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.157895,
+        "x": 0.146341,
         "y": 0.371429
       },
       "direction": "east",
       "fps": 12,
       "frame": {
         "h": 70,
-        "w": 38,
-        "x": 84,
+        "w": 41,
+        "x": 137,
         "y": 461
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__east__003",
-      "opaquePixels": 1709,
+      "opaquePixels": 1882,
       "phase": null,
       "pivot": {
         "x": 6,
@@ -2769,7 +2769,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "806fed7845377cafc3f4f045126ab58c43f49be71b4a415aa491e1769941aca4",
+      "sourcePixelSha256": "c30b73a5dba32ec64f1b2b0b277de08cb2a9cf9cb2fc3aaedcf28aa4fa0d066f",
       "state": "run",
       "trimmed": true
     },
@@ -2783,12 +2783,12 @@
       "frame": {
         "h": 71,
         "w": 62,
-        "x": 83,
+        "x": 226,
         "y": 388
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__east__004",
-      "opaquePixels": 2320,
+      "opaquePixels": 2438,
       "phase": null,
       "pivot": {
         "x": 4,
@@ -2799,7 +2799,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fee1618e0c70188018c36a451de5464ae1a402364357eede2551e36b109fef7d",
+      "sourcePixelSha256": "d75fa4a8a358c4c95d761b12c1725d9be71e4d5d0db2cb22998f88bde5898725",
       "state": "run",
       "trimmed": true
     },
@@ -2813,12 +2813,12 @@
       "frame": {
         "h": 71,
         "w": 71,
-        "x": 147,
+        "x": 290,
         "y": 388
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__east__005",
-      "opaquePixels": 2468,
+      "opaquePixels": 2586,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -2829,7 +2829,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "38c0cbc29bcda578e00d1ff06daf43518a82f46faecc9d8b4155c2765fc9421b",
+      "sourcePixelSha256": "799faf9563bc3c8f0fb70eaa7052b3b7126697fe9ddca1863bf615fe994688d2",
       "state": "run",
       "trimmed": true
     },
@@ -2848,7 +2848,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__north-east__000",
-      "opaquePixels": 2537,
+      "opaquePixels": 2660,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -2859,7 +2859,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ab608cc57e8d73fa963744196659ac92327dd7a001b42588c28d222e14e0c5e1",
+      "sourcePixelSha256": "70842630a465785fb5b90537a9c31b43ffefe246c3f7054a3c9b6e0be0e4eb82",
       "state": "run",
       "trimmed": true
     },
@@ -2873,12 +2873,12 @@
       "frame": {
         "h": 73,
         "w": 61,
-        "x": 656,
+        "x": 712,
         "y": 89
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__north-east__001",
-      "opaquePixels": 2485,
+      "opaquePixels": 2596,
       "phase": null,
       "pivot": {
         "x": 7,
@@ -2889,7 +2889,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0c79b34ad2757151d46c30dc094f45579db7816a82bad478e116c8710c13828a",
+      "sourcePixelSha256": "8f7e3aaef3d84386fb72b775dae3cc76fd94f96877032010cae244c7f59600f7",
       "state": "run",
       "trimmed": true
     },
@@ -2903,12 +2903,12 @@
       "frame": {
         "h": 73,
         "w": 68,
-        "x": 719,
+        "x": 775,
         "y": 89
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__north-east__002",
-      "opaquePixels": 2514,
+      "opaquePixels": 2625,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -2919,7 +2919,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cd8da894b35d3c320aa380490cec08a722ca15e95089013f01664ec87b96e039",
+      "sourcePixelSha256": "9fe49fc9c6e648724c4fcee59556dd43710f49ba6504d5e7837e2a83cc7fe386",
       "state": "run",
       "trimmed": true
     },
@@ -2938,7 +2938,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__north-east__003",
-      "opaquePixels": 2643,
+      "opaquePixels": 2766,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -2949,7 +2949,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f4fa158934acaf0375ff4ffbc0f9aa31d48556ebdc3ce89d7a9148f9f4b28643",
+      "sourcePixelSha256": "a227b2ea3d4c82c5d5b2ba2b9fb77a3b255aa78e26e09ed91c25b6231dff2f88",
       "state": "run",
       "trimmed": true
     },
@@ -2963,12 +2963,12 @@
       "frame": {
         "h": 73,
         "w": 77,
-        "x": 789,
+        "x": 845,
         "y": 89
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__north-east__004",
-      "opaquePixels": 2654,
+      "opaquePixels": 2769,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -2979,7 +2979,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "120f8d518d9816fd9d28b53cae1794606b4dd83c6955e1020c776568f5d3c978",
+      "sourcePixelSha256": "ddaad564daeab03420ec7b8f00b62b0389f5b64bfe99317f1784751737da6c02",
       "state": "run",
       "trimmed": true
     },
@@ -2993,12 +2993,12 @@
       "frame": {
         "h": 73,
         "w": 77,
-        "x": 868,
+        "x": 924,
         "y": 89
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__north-east__005",
-      "opaquePixels": 2542,
+      "opaquePixels": 2657,
       "phase": null,
       "pivot": {
         "x": 29,
@@ -3009,7 +3009,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1ba6454599b3a431c47b330a04b79720a5313b08c2d54cf809a89c009359e520",
+      "sourcePixelSha256": "4ed5e2cd70e23e15161ece00bf36c142e5439e563bf6fb5365da37b94753bcfa",
       "state": "run",
       "trimmed": true
     },
@@ -3028,7 +3028,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__north-west__000",
-      "opaquePixels": 2643,
+      "opaquePixels": 2771,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3039,7 +3039,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0571ad00bf80dcfa133272322e55e9a40d0798695629e6ffba5d7680a5ea1dd6",
+      "sourcePixelSha256": "65584f4ef968347201062019b5c303f45f505bed8260a8258c8b5f5e7fa27057",
       "state": "run",
       "trimmed": true
     },
@@ -3058,7 +3058,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__north-west__001",
-      "opaquePixels": 2654,
+      "opaquePixels": 2771,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -3069,7 +3069,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "38cf6a1885e56947aa72cefc76044ee3bb243bebe22c58c05cde85477f46f7c3",
+      "sourcePixelSha256": "3dc2ef6b9d723f76fa5ede50b324202ba164fa9b69484c8b38332522c2527e03",
       "state": "run",
       "trimmed": true
     },
@@ -3088,7 +3088,7 @@
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__north-west__002",
-      "opaquePixels": 2542,
+      "opaquePixels": 2659,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -3099,7 +3099,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1b551732ee321bf46704dd7c61cc098bfeb302fb9aa55791238f897e5bc4c138",
+      "sourcePixelSha256": "9a69ab175e7e9fba372b8a06f981b036384eddc9a0a48219b90a06ade1223763",
       "state": "run",
       "trimmed": true
     },
@@ -3118,7 +3118,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__north-west__003",
-      "opaquePixels": 2538,
+      "opaquePixels": 2666,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3129,7 +3129,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e851eac282a4ceee8ee51208cc0b936c4354e5f9a867670aafa36f73e2638944",
+      "sourcePixelSha256": "2670b52396f8a47eb7c873699c1b463770f1d76713c3f72e281696bc71623cbd",
       "state": "run",
       "trimmed": true
     },
@@ -3148,7 +3148,7 @@
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__north-west__004",
-      "opaquePixels": 2485,
+      "opaquePixels": 2596,
       "phase": null,
       "pivot": {
         "x": 22,
@@ -3159,7 +3159,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8bb038dd6aff2238147dca0f7a9c6c9fc217b743eacb82c36597eeae2d1f7da8",
+      "sourcePixelSha256": "3b74fa29e9e36c49d953f8e23e860326dde1eab88363a2c688106d8f5b0850d7",
       "state": "run",
       "trimmed": true
     },
@@ -3178,7 +3178,7 @@
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__north-west__005",
-      "opaquePixels": 2514,
+      "opaquePixels": 2625,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3189,7 +3189,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f81d5eed2e32a5f58b0e0c9b25130bef4625d4fdb50bf4d76f07960c017d2c39",
+      "sourcePixelSha256": "1e228f27e6b48616e7548965e27e5c7d5113e87ded81f99ba48d2c63390bffd7",
       "state": "run",
       "trimmed": true
     },
@@ -3208,7 +3208,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__north__000",
-      "opaquePixels": 2687,
+      "opaquePixels": 2779,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3219,7 +3219,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "10c3f448094afa331bf6397ca242351a30f6b54319288eeb1b783c0884c4e92f",
+      "sourcePixelSha256": "32e13d9fb677c2f7caa7f9ac620514f24bb6a87009c9e259991bb4831d6d66a7",
       "state": "run",
       "trimmed": true
     },
@@ -3233,12 +3233,12 @@
       "frame": {
         "h": 75,
         "w": 80,
-        "x": 2,
+        "x": 58,
         "y": 89
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__north__001",
-      "opaquePixels": 2614,
+      "opaquePixels": 2730,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3249,7 +3249,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "56eacc08b654efc9e6925c496fd521ee28d8b645a9b2302d6f771f04713e317a",
+      "sourcePixelSha256": "b1c4439d38b7b362d1b623241a72f41bd1020f274c185da003512cd1add97da1",
       "state": "run",
       "trimmed": true
     },
@@ -3263,12 +3263,12 @@
       "frame": {
         "h": 75,
         "w": 80,
-        "x": 84,
+        "x": 140,
         "y": 89
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__north__002",
-      "opaquePixels": 2479,
+      "opaquePixels": 2595,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3279,7 +3279,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0b7c11a57dfa4137d17d71a38414211df5557cc133b855f4163cf43db7cc9bf7",
+      "sourcePixelSha256": "a4dcb86cded20415d8cf184f25e62dd5eecf55d891aeeca0687304fad06a05e2",
       "state": "run",
       "trimmed": true
     },
@@ -3298,7 +3298,7 @@
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__north__003",
-      "opaquePixels": 2687,
+      "opaquePixels": 2779,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3309,7 +3309,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d78a70a5badc1a6d47d01b8c9d14f90c621446b23872891373cce4fa8d0bc11e",
+      "sourcePixelSha256": "0078bff53f9e1203cd5793ac1d68869e3ad6155133e54eb10bebcebe4307f7a3",
       "state": "run",
       "trimmed": true
     },
@@ -3323,12 +3323,12 @@
       "frame": {
         "h": 75,
         "w": 80,
-        "x": 166,
+        "x": 222,
         "y": 89
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__north__004",
-      "opaquePixels": 2615,
+      "opaquePixels": 2732,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -3339,7 +3339,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ad13d355d2f030fd261c94c9e0a54455a4723e661271bb12e18ee7c7a53c21b9",
+      "sourcePixelSha256": "4801f722f2691b0e70b85bb47cf61b3568100b6213db331b214f88c0ba014ec0",
       "state": "run",
       "trimmed": true
     },
@@ -3353,12 +3353,12 @@
       "frame": {
         "h": 75,
         "w": 80,
-        "x": 248,
+        "x": 304,
         "y": 89
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__north__005",
-      "opaquePixels": 2479,
+      "opaquePixels": 2596,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -3369,7 +3369,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "50c0842aac847cb72cde003e1d2b6f12ff3cbc37aa190417904f3ee9734007a8",
+      "sourcePixelSha256": "947df4fa6b75a758aab09ac61befbc245184ccad798db1850da456b60083d0fa",
       "state": "run",
       "trimmed": true
     },
@@ -3383,12 +3383,12 @@
       "frame": {
         "h": 69,
         "w": 64,
-        "x": 671,
+        "x": 744,
         "y": 461
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__south-east__000",
-      "opaquePixels": 2445,
+      "opaquePixels": 2544,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -3399,37 +3399,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "70ae4f0d884eb161174bfc83e4fc16f75576e95b7432d7996b56ca42aafa2c71",
-      "state": "run",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.384615,
-        "y": 0.352941
-      },
-      "direction": "south-east",
-      "fps": 12,
-      "frame": {
-        "h": 68,
-        "w": 78,
-        "x": 935,
-        "y": 461
-      },
-      "frameIndex": 1,
-      "id": "gas-bomber__body__run__south-east__001",
-      "opaquePixels": 2453,
-      "phase": null,
-      "pivot": {
-        "x": 30,
-        "y": 24
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "c05e024385a2ef24159714ebe1909a0ce7c1e931f10cb8249ba91bb02c292e12",
+      "sourcePixelSha256": "38880395c23bc4ad95da3585e0371e0de2fee944573ff733ea8ac9cfc548d5cb",
       "state": "run",
       "trimmed": true
     },
@@ -3446,9 +3416,9 @@
         "x": 2,
         "y": 533
       },
-      "frameIndex": 2,
-      "id": "gas-bomber__body__run__south-east__002",
-      "opaquePixels": 2568,
+      "frameIndex": 1,
+      "id": "gas-bomber__body__run__south-east__001",
+      "opaquePixels": 2454,
       "phase": null,
       "pivot": {
         "x": 30,
@@ -3459,7 +3429,37 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c3d7b010c65fbaa8db61327b2c7e2a449cd1ea699c3cda39abbe17fa3dc21788",
+      "sourcePixelSha256": "bcc36f514d81ef7e886420c549197b498916e5e96c9dca6b21da91dc3ff9584b",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.384615,
+        "y": 0.352941
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 68,
+        "w": 78,
+        "x": 82,
+        "y": 533
+      },
+      "frameIndex": 2,
+      "id": "gas-bomber__body__run__south-east__002",
+      "opaquePixels": 2569,
+      "phase": null,
+      "pivot": {
+        "x": 30,
+        "y": 24
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "9c7afcf87a50f1b5467beba8b3a52ff3986e5fb981aa834ea8bc4772a3edc7dc",
       "state": "run",
       "trimmed": true
     },
@@ -3473,12 +3473,12 @@
       "frame": {
         "h": 69,
         "w": 64,
-        "x": 737,
+        "x": 810,
         "y": 461
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__south-east__003",
-      "opaquePixels": 2423,
+      "opaquePixels": 2522,
       "phase": null,
       "pivot": {
         "x": 18,
@@ -3489,7 +3489,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0a96723fb5959ca3a7d3b1251c603e02490661fc6c3ec4ff6f50bd98565c9516",
+      "sourcePixelSha256": "39f358faf5214dd6cc6ee178a4bfc28a20e8655a5e59fa6b3eff63ab9a3b8a5e",
       "state": "run",
       "trimmed": true
     },
@@ -3503,12 +3503,12 @@
       "frame": {
         "h": 68,
         "w": 53,
-        "x": 82,
+        "x": 162,
         "y": 533
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__south-east__004",
-      "opaquePixels": 2323,
+      "opaquePixels": 2442,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -3519,7 +3519,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c207a3894e37374b9f580bff50bfb153999e5472b906de72ecb78013eb502ddb",
+      "sourcePixelSha256": "165db646194b9e4b958baf17431f5285faf75ecb540d5b2c6f61ac28844bb7e8",
       "state": "run",
       "trimmed": true
     },
@@ -3533,12 +3533,12 @@
       "frame": {
         "h": 68,
         "w": 62,
-        "x": 137,
+        "x": 217,
         "y": 533
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__south-east__005",
-      "opaquePixels": 2383,
+      "opaquePixels": 2502,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -3549,7 +3549,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "87e5a486c47011cc637b3a40bb802f0db1ddcff558dd5dfe82a62bb58100c1e4",
+      "sourcePixelSha256": "d637c5fcf7af355a3faba7b9022c3e37afc7e7de3076a61121a2d99e85f429a2",
       "state": "run",
       "trimmed": true
     },
@@ -3563,12 +3563,12 @@
       "frame": {
         "h": 69,
         "w": 64,
-        "x": 803,
+        "x": 876,
         "y": 461
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__south-west__000",
-      "opaquePixels": 2423,
+      "opaquePixels": 2517,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3579,7 +3579,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7955c16f8ab0a8135cb74ba11659f9c0f209d7c28114757f6c03d9f4269fd9c9",
+      "sourcePixelSha256": "2a58717c8aeda89f5ed34714079b50174afa2340269f74ed4d32e94359ae3544",
       "state": "run",
       "trimmed": true
     },
@@ -3593,12 +3593,12 @@
       "frame": {
         "h": 68,
         "w": 53,
-        "x": 201,
+        "x": 281,
         "y": 533
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__south-west__001",
-      "opaquePixels": 2324,
+      "opaquePixels": 2437,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -3609,7 +3609,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "df315e10389dd2a817b34c3ceb7d6f42d87c26daf9a2a6c4adb6b125c9714b4d",
+      "sourcePixelSha256": "c614722badda4173afdbb2334be42bea111a4ed7f1073875fedf59cfabb58363",
       "state": "run",
       "trimmed": true
     },
@@ -3623,12 +3623,12 @@
       "frame": {
         "h": 68,
         "w": 62,
-        "x": 256,
+        "x": 336,
         "y": 533
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__south-west__002",
-      "opaquePixels": 2382,
+      "opaquePixels": 2495,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -3639,7 +3639,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c15fb2c805306eee542c808dc9044c82a432b0701602c486f9dc36a51043a033",
+      "sourcePixelSha256": "5c3f52d5a12107781be57e2de313714a9f13a9ef560850dabcd6c61ec61d8e3c",
       "state": "run",
       "trimmed": true
     },
@@ -3653,12 +3653,12 @@
       "frame": {
         "h": 69,
         "w": 64,
-        "x": 869,
+        "x": 942,
         "y": 461
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__south-west__003",
-      "opaquePixels": 2445,
+      "opaquePixels": 2539,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3669,37 +3669,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "de66544224200f537e5bc9373f8782c910231605f975e26f087f91cf845b5f68",
-      "state": "run",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.205128,
-        "y": 0.352941
-      },
-      "direction": "south-west",
-      "fps": 12,
-      "frame": {
-        "h": 68,
-        "w": 78,
-        "x": 320,
-        "y": 533
-      },
-      "frameIndex": 4,
-      "id": "gas-bomber__body__run__south-west__004",
-      "opaquePixels": 2453,
-      "phase": null,
-      "pivot": {
-        "x": 16,
-        "y": 24
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "4510dd3e71b9659371d26ade2137ed921284afc65d9b7bb70f22d04fb295eb20",
+      "sourcePixelSha256": "4f8b477e6c1b329945b57bc4254c64fb8577b64959b20293446626191cd2f2f6",
       "state": "run",
       "trimmed": true
     },
@@ -3716,9 +3686,9 @@
         "x": 400,
         "y": 533
       },
-      "frameIndex": 5,
-      "id": "gas-bomber__body__run__south-west__005",
-      "opaquePixels": 2566,
+      "frameIndex": 4,
+      "id": "gas-bomber__body__run__south-west__004",
+      "opaquePixels": 2454,
       "phase": null,
       "pivot": {
         "x": 16,
@@ -3729,7 +3699,37 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cdb4a47c190ab00fd421191966adb4db264cd89007de8afb27dfb51207968452",
+      "sourcePixelSha256": "7198c59802d81116ce5fae19d9a6c5edcf0005541c2220ab320b25cc4682901f",
+      "state": "run",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.205128,
+        "y": 0.352941
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 68,
+        "w": 78,
+        "x": 480,
+        "y": 533
+      },
+      "frameIndex": 5,
+      "id": "gas-bomber__body__run__south-west__005",
+      "opaquePixels": 2567,
+      "phase": null,
+      "pivot": {
+        "x": 16,
+        "y": 24
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "eda581f6301590d552b1351768d3bbaf15f83d7ad84204877941ae0f4dc730dc",
       "state": "run",
       "trimmed": true
     },
@@ -3743,12 +3743,12 @@
       "frame": {
         "h": 68,
         "w": 84,
-        "x": 480,
+        "x": 560,
         "y": 533
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__south__000",
-      "opaquePixels": 2513,
+      "opaquePixels": 2690,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3759,7 +3759,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "21101741d6b2a7d775c558f149ec39fd684de2267bdb9829bb7d931aa515671e",
+      "sourcePixelSha256": "85d1c6ec6d3b465995c70a2af5e5c426886404a303fefd79ca40580a50ef75e3",
       "state": "run",
       "trimmed": true
     },
@@ -3773,12 +3773,12 @@
       "frame": {
         "h": 66,
         "w": 80,
-        "x": 165,
+        "x": 242,
         "y": 603
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__south__001",
-      "opaquePixels": 2446,
+      "opaquePixels": 2579,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -3789,7 +3789,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5bc4dac704ed64e2acc1756945390dcf39b8e66755ac44d7ec0fcb03bd4811fb",
+      "sourcePixelSha256": "e7abeffcc32893e56513a31a810b7d741c054437a158cbaec74a9d08a688816b",
       "state": "run",
       "trimmed": true
     },
@@ -3803,12 +3803,12 @@
       "frame": {
         "h": 66,
         "w": 80,
-        "x": 247,
+        "x": 324,
         "y": 603
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__south__002",
-      "opaquePixels": 2457,
+      "opaquePixels": 2590,
       "phase": null,
       "pivot": {
         "x": 34,
@@ -3819,7 +3819,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d679365a9e2a6feb581e41747763840411f391fbfa842a2793626fcf5b7dc0df",
+      "sourcePixelSha256": "f5273664beca2eb15ed92963e3550e80dd90fd1397b68733ecb918bd03f5e49f",
       "state": "run",
       "trimmed": true
     },
@@ -3833,12 +3833,12 @@
       "frame": {
         "h": 68,
         "w": 84,
-        "x": 566,
+        "x": 646,
         "y": 533
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__south__003",
-      "opaquePixels": 2513,
+      "opaquePixels": 2690,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3849,7 +3849,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e70483b805b968faa9f9b6a8852374d59768afd57425732cbb66028cf01107af",
+      "sourcePixelSha256": "feefde86bb95596956e5ebe1662e491095b0bc34f7cb76b23e253ae4500bc105",
       "state": "run",
       "trimmed": true
     },
@@ -3863,12 +3863,12 @@
       "frame": {
         "h": 66,
         "w": 80,
-        "x": 329,
+        "x": 406,
         "y": 603
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__south__004",
-      "opaquePixels": 2445,
+      "opaquePixels": 2578,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3879,7 +3879,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b031e99304607cbec0d020b8d52f8d8ba1ef933817a971e620f0ac302d024f04",
+      "sourcePixelSha256": "3e95cdecc9aaf9e667921ad3859ffd1ea0158bc9194ae9c1e72c669c93aeae97",
       "state": "run",
       "trimmed": true
     },
@@ -3893,12 +3893,12 @@
       "frame": {
         "h": 66,
         "w": 80,
-        "x": 411,
+        "x": 488,
         "y": 603
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__south__005",
-      "opaquePixels": 2455,
+      "opaquePixels": 2588,
       "phase": null,
       "pivot": {
         "x": 14,
@@ -3909,29 +3909,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1649d7f1f21bf9aee5a3799d3691bf315bfce98a3e9d5b3b268d8ca371d60390",
+      "sourcePixelSha256": "bc6dec9e14b25457b7c7149bfd7ce9517cc8abd9e144bb66c89e722c50eddf1e",
       "state": "run",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.073171,
         "y": 0.371429
       },
       "direction": "west",
       "fps": 12,
       "frame": {
         "h": 70,
-        "w": 38,
-        "x": 124,
+        "w": 41,
+        "x": 180,
         "y": 461
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__run__west__000",
-      "opaquePixels": 1710,
+      "opaquePixels": 1884,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 3,
         "y": 26
       },
       "rotated": false,
@@ -3939,7 +3939,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d68ce1e0b5bae5a1d2fd8dee0363de5227a42da04dd44cac91fa84c3303477a4",
+      "sourcePixelSha256": "26aaa9114f9cbc562d212f54e9ca315b49fc982878ed6f5501464d7c30ab3c1b",
       "state": "run",
       "trimmed": true
     },
@@ -3953,12 +3953,12 @@
       "frame": {
         "h": 71,
         "w": 62,
-        "x": 220,
+        "x": 363,
         "y": 388
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__run__west__001",
-      "opaquePixels": 2319,
+      "opaquePixels": 2435,
       "phase": null,
       "pivot": {
         "x": 26,
@@ -3969,7 +3969,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6e88a284f38ddba4e30b653c5db8b4b3e2e4e43ef5828bc014fdcd8bed0f869d",
+      "sourcePixelSha256": "c0d9ef245ae8215dac89f1f3eea3675d1fa156eab1c37a5b3a2c133beaa0026f",
       "state": "run",
       "trimmed": true
     },
@@ -3983,12 +3983,12 @@
       "frame": {
         "h": 71,
         "w": 71,
-        "x": 284,
+        "x": 427,
         "y": 388
       },
       "frameIndex": 2,
       "id": "gas-bomber__body__run__west__002",
-      "opaquePixels": 2467,
+      "opaquePixels": 2583,
       "phase": null,
       "pivot": {
         "x": 32,
@@ -3999,7 +3999,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d6a482f3815b837a853105b6cb45ceec703a934912da70c500c2f19bb936ec8f",
+      "sourcePixelSha256": "d14986c09b05d5312c2f7786874def058145d34a47808a342808212a5b3a0e35",
       "state": "run",
       "trimmed": true
     },
@@ -4013,12 +4013,12 @@
       "frame": {
         "h": 70,
         "w": 50,
-        "x": 164,
+        "x": 223,
         "y": 461
       },
       "frameIndex": 3,
       "id": "gas-bomber__body__run__west__003",
-      "opaquePixels": 1861,
+      "opaquePixels": 2035,
       "phase": null,
       "pivot": {
         "x": 12,
@@ -4029,7 +4029,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "27550515fc7f94506e733bc400685a4f1fdb1c099ad356bf38de1047eb508b83",
+      "sourcePixelSha256": "52bb8a2b8705fb28726f84428ca7735b06bdca87101409d12b06c282b4541772",
       "state": "run",
       "trimmed": true
     },
@@ -4043,12 +4043,12 @@
       "frame": {
         "h": 70,
         "w": 51,
-        "x": 216,
+        "x": 275,
         "y": 461
       },
       "frameIndex": 4,
       "id": "gas-bomber__body__run__west__004",
-      "opaquePixels": 2068,
+      "opaquePixels": 2233,
       "phase": null,
       "pivot": {
         "x": 13,
@@ -4059,7 +4059,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "eb9d0441a3af962718c99d5680cb816fb61f2788856c188eade9bd28f2099c16",
+      "sourcePixelSha256": "d486557ec428e295830f98de519af070cc417e2638d3d5fe800e38d7eef80c8a",
       "state": "run",
       "trimmed": true
     },
@@ -4073,12 +4073,12 @@
       "frame": {
         "h": 70,
         "w": 80,
-        "x": 269,
+        "x": 328,
         "y": 461
       },
       "frameIndex": 5,
       "id": "gas-bomber__body__run__west__005",
-      "opaquePixels": 2224,
+      "opaquePixels": 2389,
       "phase": null,
       "pivot": {
         "x": 31,
@@ -4089,7 +4089,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "31c8e91c2f2bbdff9cb930a20864d4da46136e62a3bb3c8280da0e1f724469d0",
+      "sourcePixelSha256": "fefe70235472a4cc58b59f3e35e654e6c120ddb4a8a03fffd3ef83357fcdea5e",
       "state": "run",
       "trimmed": true
     },
@@ -4108,7 +4108,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__east__000",
-      "opaquePixels": 2016,
+      "opaquePixels": 2191,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -4119,26 +4119,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "740b75adc6065b96b817647bd0af01913ae653b7defad993ecca90760f9dcff4",
+      "sourcePixelSha256": "ce177231a3b17bee46035e039142e0017b76b6f75a73a11109917230487f6ed7",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.2,
+        "x": 0.181818,
         "y": 0.482353
       },
       "direction": "east",
       "fps": 6,
       "frame": {
         "h": 85,
-        "w": 40,
+        "w": 44,
         "x": 2,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__east__001",
-      "opaquePixels": 1939,
+      "opaquePixels": 2121,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -4149,7 +4149,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0b57506d8afc5c66451155a4fbdeb6acc6d6f3c5cc76cf9293c8e5d17fdcf08f",
+      "sourcePixelSha256": "127a5cc97fb54ea12eb4de553cf52560a3496cedfa61d40054f167799ba47bc1",
       "state": "tell",
       "trimmed": true
     },
@@ -4163,12 +4163,12 @@
       "frame": {
         "h": 79,
         "w": 52,
-        "x": 184,
+        "x": 194,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__north-east__000",
-      "opaquePixels": 2330,
+      "opaquePixels": 2442,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -4179,26 +4179,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "49fdb3a6fc784415ac2e702badc7ced3da56a860e3c46dba04bf04134b05020d",
+      "sourcePixelSha256": "09b0359f0e23f056ba3f0c9a57f9fa29c941ab3b54889ba56d8cd021f6555ec0",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.085106,
+        "x": 0.083333,
         "y": 0.482353
       },
       "direction": "north-east",
       "fps": 6,
       "frame": {
         "h": 85,
-        "w": 47,
-        "x": 44,
+        "w": 48,
+        "x": 48,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__north-east__001",
-      "opaquePixels": 2323,
+      "opaquePixels": 2460,
       "phase": null,
       "pivot": {
         "x": 4,
@@ -4209,7 +4209,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "92252f1ddd33c4470d92938b619d70cc88b12a2d8af92161650fa32f43f4446c",
+      "sourcePixelSha256": "fbef1fbaa8c411362065cbaf9eeae946f258b9c723afd49edc49c8d77779e553",
       "state": "tell",
       "trimmed": true
     },
@@ -4223,12 +4223,12 @@
       "frame": {
         "h": 79,
         "w": 52,
-        "x": 238,
+        "x": 248,
         "y": 2
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__north-west__000",
-      "opaquePixels": 2328,
+      "opaquePixels": 2445,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -4239,29 +4239,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e314e4f3048ae008484dc3659407de05954940eb197b05cdf0b100073a525898",
+      "sourcePixelSha256": "226068aeb063343f0e0f12bb4d41ac7a2d191f715b9adbcd4965241f20122eeb",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.234043,
+        "x": 0.25,
         "y": 0.482353
       },
       "direction": "north-west",
       "fps": 6,
       "frame": {
         "h": 85,
-        "w": 47,
-        "x": 93,
+        "w": 48,
+        "x": 98,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__north-west__001",
-      "opaquePixels": 2323,
+      "opaquePixels": 2464,
       "phase": null,
       "pivot": {
-        "x": 11,
+        "x": 12,
         "y": 41
       },
       "rotated": false,
@@ -4269,7 +4269,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0202318f195efbae30dc0007d33256a63c9bf810c17e590e0f35c918d09a56be",
+      "sourcePixelSha256": "adcf4b974b354c66be9859572472e46bcb5aa6df7a7c61338897cee33221542f",
       "state": "tell",
       "trimmed": true
     },
@@ -4283,12 +4283,12 @@
       "frame": {
         "h": 75,
         "w": 48,
-        "x": 330,
+        "x": 386,
         "y": 89
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__north__000",
-      "opaquePixels": 2322,
+      "opaquePixels": 2450,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -4299,7 +4299,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "02ad699838bd0f5e155012f017df6daa61c6291754430551204df3b908fe6ed2",
+      "sourcePixelSha256": "11dcab21ae9db4196849f4ff9103e453de18a27d5f5356d3385e21b7ea1f7a8e",
       "state": "tell",
       "trimmed": true
     },
@@ -4313,12 +4313,12 @@
       "frame": {
         "h": 78,
         "w": 52,
-        "x": 384,
+        "x": 398,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__north__001",
-      "opaquePixels": 2388,
+      "opaquePixels": 2528,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -4329,7 +4329,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c48ad0fe41885d974f322423155a6f5eca7a4a276b13f2ade60473c25189ac8c",
+      "sourcePixelSha256": "1d57caba0729596579c237df126406fba89d38caca09348a91d73d5c0f36dcd4",
       "state": "tell",
       "trimmed": true
     },
@@ -4348,7 +4348,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__south-east__000",
-      "opaquePixels": 2271,
+      "opaquePixels": 2385,
       "phase": null,
       "pivot": {
         "x": 3,
@@ -4359,26 +4359,26 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "99a6d4968d68b2fda0f11547bd462dd234be5921118b5d29e4c3280d4edfba95",
+      "sourcePixelSha256": "ab4be3bfa269d319944b70e89792140303f2ee4c3f78d156995f676df44f7d79",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.085106,
+        "x": 0.083333,
         "y": 0.428571
       },
       "direction": "south-east",
       "fps": 6,
       "frame": {
         "h": 77,
-        "w": 47,
-        "x": 520,
+        "w": 48,
+        "x": 536,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__south-east__001",
-      "opaquePixels": 2284,
+      "opaquePixels": 2404,
       "phase": null,
       "pivot": {
         "x": 4,
@@ -4389,7 +4389,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3f4a578052cdb7ffe943fa959337f8a0ea32213c2bdaf7dd5893e174f94e4d48",
+      "sourcePixelSha256": "74e53ba081c2f5c25565efad1cfd5d7cb41d017960faa60d7e1738229a2478fb",
       "state": "tell",
       "trimmed": true
     },
@@ -4408,7 +4408,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__south-west__000",
-      "opaquePixels": 2272,
+      "opaquePixels": 2383,
       "phase": null,
       "pivot": {
         "x": 17,
@@ -4419,29 +4419,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "478d375f012ef1527baeb972c4e00b86d833e765d8ed0f57b86376e0f8aada32",
+      "sourcePixelSha256": "93e43033e99e80be44f1308654b5e1c1ca59fc36621f48c0894bee479919a857",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.234043,
+        "x": 0.25,
         "y": 0.428571
       },
       "direction": "south-west",
       "fps": 6,
       "frame": {
         "h": 77,
-        "w": 47,
-        "x": 569,
+        "w": 48,
+        "x": 586,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__south-west__001",
-      "opaquePixels": 2284,
+      "opaquePixels": 2399,
       "phase": null,
       "pivot": {
-        "x": 11,
+        "x": 12,
         "y": 33
       },
       "rotated": false,
@@ -4449,7 +4449,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ea4702def8c8f07c943e18229b5d02a3b701282e1a0dba097806bcfd055d9298",
+      "sourcePixelSha256": "807c5078ae6b9bf949c11c183b342ebea42a8b3d1a0e74c116d9f500d8e52df1",
       "state": "tell",
       "trimmed": true
     },
@@ -4468,7 +4468,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__south__000",
-      "opaquePixels": 2130,
+      "opaquePixels": 2305,
       "phase": null,
       "pivot": {
         "x": 8,
@@ -4479,7 +4479,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3232c62c9620b87af2fe0b0cb410a4d9164557901b1f0008b2249479a2d203b1",
+      "sourcePixelSha256": "0e4cb6e81f3e36e24395a9f1bfac7309bb744e74231e7774365b8193d45599bd",
       "state": "tell",
       "trimmed": true
     },
@@ -4498,7 +4498,7 @@
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__south__001",
-      "opaquePixels": 2302,
+      "opaquePixels": 2477,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -4509,7 +4509,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b918f770b19200097104079b0dba360f91a4b0426a8800bc124c541cad03b2b8",
+      "sourcePixelSha256": "4f24da73c82d55a35ae01318350b234b013a77f3fa230b8d769be28561667817",
       "state": "tell",
       "trimmed": true
     },
@@ -4528,7 +4528,7 @@
       },
       "frameIndex": 0,
       "id": "gas-bomber__body__tell__west__000",
-      "opaquePixels": 2014,
+      "opaquePixels": 2191,
       "phase": null,
       "pivot": {
         "x": 10,
@@ -4539,29 +4539,29 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "fcc305b4228445e8012b66e66bd4462fbe800f7f51750293a7a18f31c38c781b",
+      "sourcePixelSha256": "fd32ce098b38ffee186fcb234c74d32e908d89092dbc6b6aba812ab14cd34f09",
       "state": "tell",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
+        "x": 0.090909,
         "y": 0.482353
       },
       "direction": "west",
       "fps": 6,
       "frame": {
         "h": 85,
-        "w": 40,
-        "x": 142,
+        "w": 44,
+        "x": 148,
         "y": 2
       },
       "frameIndex": 1,
       "id": "gas-bomber__body__tell__west__001",
-      "opaquePixels": 1935,
+      "opaquePixels": 2117,
       "phase": null,
       "pivot": {
-        "x": 0,
+        "x": 4,
         "y": 41
       },
       "rotated": false,
@@ -4569,7 +4569,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ee6b5ab2466fb94745c672aa416c28a96178865ccf33d7579ade1338a886b777",
+      "sourcePixelSha256": "f25b459ccaf3b54be7dd4be450d8faa1d0f9b35a14384faebeba579233c37957",
       "state": "tell",
       "trimmed": true
     }

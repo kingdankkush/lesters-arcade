@@ -11,6 +11,8 @@ const evidenceRoot = process.env.HMH_REBOOT_EVIDENCE_ROOT
   ? path.resolve(process.env.HMH_REBOOT_EVIDENCE_ROOT)
   : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.hermes/evidence/hmh-reboot-19-release');
 const reportName = process.env.HMH_REBOOT_REPORT_NAME ?? 'report.json';
+const candidateBundlePath = fileURLToPath(new URL('../apps/portal/dist/hmh-reboot/game.js', import.meta.url));
+const portalAssetsRootPath = fileURLToPath(new URL('../apps/portal/assets/', import.meta.url));
 const profiles = [
   { name: 'desktop', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, isMobile: false },
   { name: 'ultrawide', viewport: { width: 1920, height: 800 }, deviceScaleFactor: 1, isMobile: false },
@@ -27,6 +29,33 @@ const browser = await chromium.launch({
   headless: true,
   args: ['--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl'],
 });
+
+async function openCandidatePage(profile) {
+  const context = await browser.newContext({
+    viewport: profile.viewport,
+    deviceScaleFactor: profile.deviceScaleFactor,
+    isMobile: profile.isMobile,
+    hasTouch: profile.isMobile,
+    serviceWorkers: 'block',
+  });
+  const page = await context.newPage();
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Network.enable');
+  await cdp.send('Network.setCacheDisabled', { cacheDisabled: true });
+  const candidate = { candidateBundleRequests: 0 };
+  await page.route('**/dist/hmh-reboot/game.js', (route) => {
+    candidate.candidateBundleRequests += 1;
+    return route.fulfill({ path: candidateBundlePath, contentType: 'text/javascript', headers: { 'Cache-Control': 'no-store' } });
+  });
+  await page.route('https://lestersarcade.io/assets/**', (route) => {
+    const relativePath = decodeURIComponent(new URL(route.request().url()).pathname.slice('/assets/'.length));
+    const root = path.resolve(portalAssetsRootPath);
+    const localPath = path.resolve(root, relativePath);
+    if (!relativePath || relativePath.includes('..') || !localPath.startsWith(`${root}${path.sep}`)) return route.abort('blockedbyclient');
+    return route.fulfill({ path: localPath, headers: { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' } });
+  });
+  return { context, page, candidate };
+}
 
 function digest(bytes) {
   return createHash('sha256').update(bytes).digest('hex');
@@ -194,12 +223,17 @@ async function assertTouchComposition(page, profile, controls) {
 }
 
 async function captureAnchor(profile, pass) {
-  const page = await browser.newPage({ viewport: profile.viewport, deviceScaleFactor: profile.deviceScaleFactor, isMobile: profile.isMobile, hasTouch: profile.isMobile });
+  const { context, page, candidate } = await openCandidatePage(profile);
   const errors = [];
   page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
-  page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
+  page.on('response', (response) => {
+    if (response.status() >= 400) errors.push(`http ${response.status()}: ${response.url()}`);
+  });
+  page.on('console', (message) => {
+    if (message.type() === 'error' && !message.text().startsWith('Failed to load resource:')) errors.push(`console: ${message.text()}`);
+  });
   try {
-    await page.goto(`${origin}/hmh-reboot/?${anchorQuery}`, { waitUntil: 'networkidle' });
+    await page.goto(`${origin}/hmh-reboot/?${anchorQuery}&candidate=${Date.now()}`, { waitUntil: 'networkidle' });
     await rejectAuthenticationPage(page);
     await page.waitForSelector('#hmhUpgradePanel:not([hidden])');
     await page.evaluate(() => document.fonts.ready);
@@ -209,19 +243,25 @@ async function captureAnchor(profile, pass) {
     await writeFile(path.join(evidenceRoot, `${profile.name}-anchor-pass-${pass}.png`), image);
     if (pass === 1) await writeFile(path.join(evidenceRoot, `${profile.name}-anchor.png`), image);
     assert.deepEqual(errors, [], `${profile.name} anchor errors`);
+    assert.equal(candidate.candidateBundleRequests, 1, `${profile.name} anchor did not execute the current candidate bundle exactly once`);
     return { hash: digest(image), geometry, image };
   } finally {
-    await page.close();
+    await context.close();
   }
 }
 
 async function captureLiveInteraction(profile) {
-  const page = await browser.newPage({ viewport: profile.viewport, deviceScaleFactor: profile.deviceScaleFactor, isMobile: profile.isMobile, hasTouch: profile.isMobile });
+  const { context, page, candidate } = await openCandidatePage(profile);
   const errors = [];
   page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
-  page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
+  page.on('response', (response) => {
+    if (response.status() >= 400) errors.push(`http ${response.status()}: ${response.url()}`);
+  });
+  page.on('console', (message) => {
+    if (message.type() === 'error' && !message.text().startsWith('Failed to load resource:')) errors.push(`console: ${message.text()}`);
+  });
   try {
-    await page.goto(`${origin}/hmh-reboot/?${liveQuery}`, { waitUntil: 'networkidle' });
+    await page.goto(`${origin}/hmh-reboot/?${liveQuery}&candidate=${Date.now()}`, { waitUntil: 'networkidle' });
     await rejectAuthenticationPage(page);
     await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick) >= 4);
     const canvasFocused = await page.locator('#hmhRebootStage canvas').evaluate((target) => {
@@ -251,9 +291,10 @@ async function captureLiveInteraction(profile) {
     const image = await page.screenshot({ type: 'png' });
     await writeFile(path.join(evidenceRoot, `${profile.name}-live.png`), image);
     assert.deepEqual(errors, [], `${profile.name} live errors`);
+    assert.equal(candidate.candidateBundleRequests, 1, `${profile.name} live run did not execute the current candidate bundle exactly once`);
     return { before, after, pausedTick, touchControls, touchComposition, liveHash: digest(image) };
   } finally {
-    await page.close();
+    await context.close();
   }
 }
 

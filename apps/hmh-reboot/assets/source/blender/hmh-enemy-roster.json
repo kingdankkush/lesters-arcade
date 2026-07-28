@@ -124,6 +124,11 @@
       "prop": {
         "kind": "back-satchel",
         "accent": "#49ddff"
+      },
+      "detailKit": {
+        "kind": "forkrunner-forearm-forks",
+        "frontReadable": true,
+        "minimumAuthoredParts": 10
       }
     },
     {
@@ -190,6 +195,11 @@
       "prop": {
         "kind": "back-canister",
         "accent": "#ff8c5a"
+      },
+      "detailKit": {
+        "kind": "gas-bomber-respirator-rig",
+        "frontReadable": true,
+        "minimumAuthoredParts": 11
       }
     },
     {

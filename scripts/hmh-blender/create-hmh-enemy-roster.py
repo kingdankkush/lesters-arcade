@@ -192,6 +192,93 @@ def build_rig(name: str):
     return rig
 
 
+def build_role_detail_kit(actor: dict, rig, collection, *, height: float, shoulders: float,
+                          bulk: float, accent, secondary, boot) -> list:
+    """Build role-specific, front-readable silhouette equipment.
+
+    These objects are rigged projection only. Gameplay radius, damage and AI
+    remain owned by enemy-archetypes.mjs.
+    """
+    detail = actor.get("detailKit")
+    if not detail:
+        return []
+    actor_id = actor["actorId"]
+    kind = detail["kind"]
+    parts = []
+
+    if kind == "forkrunner-forearm-forks":
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            bone = f"forearm.{side}"
+            parts.append(cube(
+                f"{actor_id}_Detail_ForearmGuard_{side}",
+                (sign * 0.48 * shoulders, -0.035, 1.01 * height),
+                (0.070 * bulk, 0.058 * bulk, 0.12 * height), secondary,
+                collection, rig, bone, actor_id, bevel=0.018,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_ForkCrossbar_{side}",
+                (sign * 0.52 * shoulders, -0.105, 0.85 * height),
+                (0.073, 0.028, 0.020), accent,
+                collection, rig, bone, actor_id, bevel=0.008,
+            ))
+            for tine_index, offset in enumerate((-0.040, 0.0, 0.040)):
+                parts.append(cylinder(
+                    f"{actor_id}_Detail_ForkTine_{side}_{tine_index}",
+                    (sign * 0.52 * shoulders + offset, -0.115, 0.70 * height),
+                    0.014, 0.30 * height, accent,
+                    collection, rig, bone, actor_id,
+                ))
+    elif kind == "gas-bomber-respirator-rig":
+        parts.append(sphere(
+            f"{actor_id}_Detail_Respirator", (0.0, -0.125, 1.53 * height),
+            (0.102, 0.058, 0.078), accent, collection, rig, "head", actor_id,
+        ))
+        parts.append(cube(
+            f"{actor_id}_Detail_MaskPlate", (0.0, -0.172, 1.53 * height),
+            (0.072, 0.018, 0.054), secondary, collection, rig, "head", actor_id, bevel=0.012,
+        ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cylinder(
+                f"{actor_id}_Detail_Filter_{side}",
+                (sign * 0.112, -0.160, 1.50 * height), 0.045, 0.080, accent,
+                collection, rig, "head", actor_id, rotation=(math.radians(90), 0.0, 0.0),
+            ))
+            parts.append(cylinder(
+                f"{actor_id}_Detail_BeltBomb_{side}",
+                (sign * 0.205 * bulk, -0.165 * bulk, 1.01 * height), 0.055, 0.14 * height, accent,
+                collection, rig, "pelvis", actor_id,
+            ))
+            parts.append(cone(
+                f"{actor_id}_Detail_BeltBombCap_{side}",
+                (sign * 0.205 * bulk, -0.165 * bulk, 1.105 * height), 0.036, 0.070, accent,
+                collection, rig, "pelvis", actor_id,
+            ))
+        parts.append(cone(
+            f"{actor_id}_Detail_HazardBadge", (0.0, -0.164 * bulk, 1.25 * height),
+            0.080, 0.055, accent, collection, rig, "chest", actor_id,
+            rotation=(math.radians(90), 0.0, 0.0),
+        ))
+        parts.append(cylinder(
+            f"{actor_id}_Detail_HoseUpper", (0.145, -0.145, 1.33 * height),
+            0.018, 0.31 * height, secondary, collection, rig, "chest", actor_id,
+            rotation=(0.0, math.radians(-12), 0.0),
+        ))
+        parts.append(cylinder(
+            f"{actor_id}_Detail_HoseLower", (0.175, -0.145, 1.13 * height),
+            0.018, 0.14 * height, secondary, collection, rig, "chest", actor_id,
+            rotation=(0.0, math.radians(18), 0.0),
+        ))
+    else:
+        raise RuntimeError(f"Unknown detail kit: {kind}")
+
+    minimum = detail["minimumAuthoredParts"]
+    if len(parts) < minimum:
+        raise RuntimeError(f"{actor_id} detail kit {kind} built {len(parts)} parts; minimumAuthoredParts={minimum}")
+    for obj in parts:
+        obj["hmh_detail_kit"] = kind
+    return parts
+
+
 def build_actor(actor: dict, rig, collection) -> dict:
     actor_id = actor["actorId"]
     build = actor["build"]
@@ -305,6 +392,12 @@ def build_actor(actor: dict, rig, collection) -> dict:
     else:
         raise RuntimeError(f"Unknown prop kind: {kind}")
 
+    detail_parts = build_role_detail_kit(
+        actor, rig, collection, height=height, shoulders=shoulders, bulk=bulk,
+        accent=accent, secondary=secondary, boot=boot,
+    )
+    parts.extend(detail_parts)
+
     # Boss phases carry real authored silhouette changes rather than runtime
     # tint-only proxies. These objects are hidden selectively by the exporter.
     phase_visuals = actor.get("phaseVisuals", {})
@@ -361,7 +454,14 @@ def build_actor(actor: dict, rig, collection) -> dict:
 
     for obj in parts:
         obj.hide_render = True
-    return {"actorId": actor_id, "objectCount": len(parts), "identityForm": actor["identityForm"], "prop": kind}
+    return {
+        "actorId": actor_id,
+        "objectCount": len(parts),
+        "identityForm": actor["identityForm"],
+        "prop": kind,
+        "detailKit": actor.get("detailKit", {}).get("kind"),
+        "detailPartCount": len(detail_parts),
+    }
 
 
 def build_lighting(manifest: dict):

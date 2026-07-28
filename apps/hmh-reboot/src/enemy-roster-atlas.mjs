@@ -8,7 +8,7 @@
  */
 
 export const ENEMY_ROSTER_PIPELINE_ID = 'hmh-reboot-enemy-roster-v1';
-export const ENEMY_ROSTER_RUNTIME_SCALE = 0.42;
+export const ENEMY_ROSTER_RUNTIME_SCALE = 0.50;
 // Compass names present in the atlas metadata.
 export const ENEMY_ROSTER_DIRECTIONS = Object.freeze([
   'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west',

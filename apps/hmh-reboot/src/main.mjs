@@ -616,6 +616,7 @@ async function boot() {
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
+  const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams.get('rosterPreview') === '1';
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
   const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
@@ -1392,6 +1393,8 @@ async function boot() {
         stageElement.dataset.bossArt = enemyRosterIndexes.has('the-liquidator') ? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1';
         stageElement.dataset.enemyRosterLoaded = [...enemyRosterIndexes.keys()].sort().join(',');
         stageElement.dataset.enemyRosterError = enemyRosterLoadError ?? '';
+        stageElement.dataset.rosterPreview = String(rosterPreviewEnabled);
+        stageElement.dataset.rosterPreviewAutoFire = String(aimState?.autoFireEnabled === true);
         stageElement.dataset.terrainTiles = terrainTiles.ready ? 'authored-tiles-v1' : 'flat-colour-fallback';
         stageElement.dataset.terrainTilesLoaded = terrainTiles.loadedIds.join(',');
         stageElement.dataset.terrainTilesError = terrainTileLoadError ?? '';
@@ -1579,7 +1582,7 @@ async function boot() {
     actor.groundZ = lastGround.groundZ;
     actor.z = lastGround.groundZ;
     motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: LEVEL_ONE_WORLD.player.maxSpeed });
-    aimState = createAimState({ autoFireEnabled: true, manualHoldTicks: 8 });
+    aimState = createAimState({ autoFireEnabled: !rosterPreviewEnabled, manualHoldTicks: 8 });
     aimIntent = null;
     const previewSpawns = Object.freeze({
       'bagholder-rusher': Object.freeze({ x: 1120, y: 2400 }),
@@ -1589,9 +1592,20 @@ async function boot() {
       'gas-bomber': Object.freeze({ x: 520, y: 2720 }),
       'validator-cultist': Object.freeze({ x: 1100, y: 2050 }),
     });
+    const rosterPreviewOffsets = Object.freeze({
+      'bagholder-rusher': Object.freeze({ x: -120, y: -80 }),
+      forkrunner: Object.freeze({ x: 0, y: -100 }),
+      'liquidator-agent': Object.freeze({ x: 120, y: -80 }),
+      'whale-enforcer': Object.freeze({ x: -120, y: 140 }),
+      'gas-bomber': Object.freeze({ x: 0, y: 160 }),
+      'validator-cultist': Object.freeze({ x: 120, y: 140 }),
+    });
     enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 1024 });
     const openingEnemyByArchetypeId = new Map(ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
-      const position = previewSpawns[archetypeId];
+      const offset = rosterPreviewOffsets[archetypeId];
+      const position = rosterPreviewEnabled
+        ? { x: runtimePlayerSpawn.x + offset.x, y: runtimePlayerSpawn.y + offset.y }
+        : previewSpawns[archetypeId];
       const enemy = createEnemyState({
         archetypeId,
         id: `prototype-${String(index + 1).padStart(2, '0')}-${archetypeId}`,
@@ -1602,18 +1616,24 @@ async function boot() {
       });
       return [archetypeId, enemy];
     }));
-    grayboxEnemies = HMH_OPENING_ENEMY_ARCHETYPE_IDS.map((archetypeId) => {
+    const initialEnemyArchetypeIds = rosterPreviewEnabled ? ENEMY_ARCHETYPE_IDS : HMH_OPENING_ENEMY_ARCHETYPE_IDS;
+    grayboxEnemies = initialEnemyArchetypeIds.map((archetypeId) => {
       const enemy = openingEnemyByArchetypeId.get(archetypeId);
       const openingHealth = HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE[archetypeId];
-      enemy.health = openingHealth;
-      enemy.maxHealth = openingHealth;
+      if (Number.isFinite(openingHealth)) {
+        enemy.health = openingHealth;
+        enemy.maxHealth = openingHealth;
+      }
       return enemy;
     });
     enemyPopulation.active = grayboxEnemies;
     enemyPopulation.activeThreat = grayboxEnemies.reduce((sum, enemy) => sum + ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat, 0);
     enemyPopulation.insertedCount = grayboxEnemies.length;
     for (const enemy of grayboxEnemies) enemyPopulation.seenIds.add(enemy.id);
-    encounterDirector = createEncounterDirector({ nextSpawnTick: directorDebugEnabled ? 1 : 600, seed: payload.session.seed });
+    encounterDirector = createEncounterDirector({
+      nextSpawnTick: rosterPreviewEnabled ? Number.MAX_SAFE_INTEGER : directorDebugEnabled ? 1 : 600,
+      seed: payload.session.seed,
+    });
     const bossSpawn = bossDebugEnabled ? { x: 1380, y: 2400 } : LEVEL_ONE_WORLD.encounterArenas.at(-1).anchor;
     liquidatorBoss = createLiquidatorBoss({
       id: 'boss-liquidator',
@@ -1841,27 +1861,29 @@ async function boot() {
         maxX: camera.x + viewForDirector.width * 0.5 / camera.zoom,
         maxY: camera.y + viewForDirector.height * 0.5 / camera.zoom,
       };
-      lastDirectorStep = stepEncounterDirector({
-        state: encounterDirector,
-        population: enemyPopulation,
-        tick,
-        districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
-        player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
-        camera: directorCameraBounds,
-        spawnPoints: authoredSpawnPoints,
-        nearRewardPoi: LEVEL_ONE_WORLD.pointsOfInterest.some((poi) => poi.hook === 'reward' && Math.hypot(actor.x - poi.anchor.x, actor.y - poi.anchor.y) <= 240),
-        queryGround,
-        isBlocked: spawnPointBlocked,
-        isRouteReachable: (point) => point.routeValid === true,
-        visualMode: 'normal',
-      });
+      lastDirectorStep = rosterPreviewEnabled
+        ? Object.freeze({ inserted: false, reason: 'roster-preview', tick, bandId: getEncounterSnapshot(tick).bandId })
+        : stepEncounterDirector({
+          state: encounterDirector,
+          population: enemyPopulation,
+          tick,
+          districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
+          player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
+          camera: directorCameraBounds,
+          spawnPoints: authoredSpawnPoints,
+          nearRewardPoi: LEVEL_ONE_WORLD.pointsOfInterest.some((poi) => poi.hook === 'reward' && Math.hypot(actor.x - poi.anchor.x, actor.y - poi.anchor.y) <= 240),
+          queryGround,
+          isBlocked: spawnPointBlocked,
+          isRouteReachable: (point) => point.routeValid === true,
+          visualMode: 'normal',
+        });
       if (lastDirectorStep.inserted) resetEnemyMarkers(grayboxEnemies);
 
       lastBossStep = liquidatorBoss.active && tick >= liquidatorBoss.startTick
         ? stepLiquidatorBoss({ boss: liquidatorBoss, tick, player: { x: actor.x, y: actor.y, groundZ: actor.groundZ } })
         : null;
 
-      if (openingEnemyMovementEnabled(tick)) {
+      if (!rosterPreviewEnabled && openingEnemyMovementEnabled(tick)) {
         lastEnemyStep = stepEnemyPopulation({
           population: enemyPopulation,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
@@ -2191,7 +2213,7 @@ async function boot() {
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
-      if (openingEnemyAttacksEnabled(tick)) {
+      if (!rosterPreviewEnabled && openingEnemyAttacksEnabled(tick)) {
         lastEnemyAttack = stepEnemyAttacks({
           enemies: grayboxEnemies,
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
