@@ -12,7 +12,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Immutable Cycle 021 preview:** https://lesters-arcade-fgzvqbcjk-justin-agent-projects.vercel.app
 
-> **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`](docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md)
+> **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`](docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md)
 
 > `lestersarcade.io` now serves the Cycle 021 bundle. Public desktop, ultrawide, tablet, mobile portrait, mobile landscape, cockpit, and collectible routes were reverified after promotion. `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -54,6 +54,8 @@ The active HMH direction is a deterministic top-down 2.5D roguelike run-and-gun 
 - Controlled deterministic enemy pressure instead of random scatter.
 - Truthful projectile, collision, elevation, damage, and telegraph behavior.
 - Human survivors and zombies, never animal, vehicle, robot, mech, or abstract actor proxies.
+- Reference-faithful detailed Blender characters derived from approved illustrated sheets and combat sprites.
+- Ordinary enemies at comparable human scale, with forgiving projectile hurtboxes tuned in separate deterministic gameplay cycles.
 - Deep weapons, upgrades, build synergies, bosses, achievements, and ethical replayability.
 - Projection-only animation, VFX, audio, interpolation, and quality scaling.
 - 60 FPS desktop and 30 FPS mobile targets with 100+ enemy pressure.
@@ -116,7 +118,7 @@ The reboot now includes:
 - Parent-owned profile, session, leaderboard, and settlement integration.
 - Release certification, Chrome/Edge matrices, security gates, network audits, soaks, and artifact-verified previews.
 
-### AAA cycles 001-027
+### AAA cycles 001-028
 
 The bounded cycle ledger is the authoritative implementation history. Highlights:
 
@@ -131,8 +133,9 @@ The bounded cycle ledger is the authoritative implementation history. Highlights
 - Cycle 025: four-control mobile layout plus five deterministic weapon capstones.
 - Cycle 026: one shared light rig, mobility upgrades, and clearer current-build progression.
 - Cycle 027: Forkrunner/Gas Bomber role equipment, collision-readable enemy projection scale, stable desktop/mobile roster preview, and current-candidate browser certification.
+- Cycle 028: user-reference model contract for all four heroes, a 48-part Lester combat rebuild, reproducible four-hero atlas/selector regeneration, and corrected production-hero mobile/asset certification rails.
 
-See [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 027](docs/hmh-reboot/cycles/CYCLE-027.md), and the [current Claude handoff](docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md).
+See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 028](docs/hmh-reboot/cycles/CYCLE-028.md), and the [current Claude handoff](docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md).
 
 ---
 
@@ -172,14 +175,14 @@ The Vercel CLI is currently unavailable locally, so Vercel `dpl_...` identifiers
 
 This is source/preview truth only. It is **not** the production deployment.
 
-| Gate | Cycle 027 continuation result |
+| Gate | Cycle 028 continuation result |
 | --- | --- |
 | Branch | `reboot/hmh-aaa-continuous` |
-| Certified source | `4c0066371423cd752ac48d2c39c66e275635934d` |
-| Exact commit patch SHA-256 | `6dcd1ec317d4e1234ce1a3d79d4e2b465f9c5f67f8245d9108aa1200be8b7ea5` |
-| Release ledger | 1,773 total, 1,721 passing, exactly 52 accepted legacy failures, 0 unexpected |
-| Authored enemy pipeline | 7 actors, 1,368 frames, 0 duplicates, reproducible |
-| Enemy-detail browser gate | Desktop and 390x844 mobile PASS; six production families visibly framed |
+| Certified runtime/art source | `fe8153f08c42500a57cce96f907ce5c117f0f8bc` |
+| Exact commit patch SHA-256 | `e7baade05a4f1876a8449ab3c82f3638670166e7a7526c83362c2bd14b6de6ca` |
+| Release ledger | 1,777 total, 1,725 passing, exactly 52 accepted legacy failures, 0 unexpected |
+| Authored hero pipeline | 4 actors, 2,592 frames, exact A/B reproducibility |
+| Lester reference model | 48 authored parts; desktop and 390x844 mobile PASS |
 | Local candidate browser matrix | Desktop, ultrawide, tablet, mobile portrait, and mobile landscape PASS |
 | Performance | Desktop/mobile p95 7 ms / 7 ms |
 | HMH bundle | 1,021,358 / 1,050,000 bytes |

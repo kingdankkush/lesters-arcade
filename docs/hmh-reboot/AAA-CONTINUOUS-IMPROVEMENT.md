@@ -120,6 +120,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 027: Forkrunner/Gas Bomber role equipment, enemy projection scale, stable roster preview, and current-candidate browser rails
   - Status: committed on continuation as `4c006637`; production unchanged
   - Cycle ledger: `cycles/CYCLE-027.md`
+- [x] Cycle 028: user-reference four-hero model contract and 48-part Lester combat rebuild
+  - Status: committed on continuation as `fe8153f0`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-028.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -131,9 +134,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 027 automation, deterministic authored-art verification, and desktop/mobile visual review certified
-- Cycle 027 source: `4c0066371423cd752ac48d2c39c66e275635934d`
-- Exact Cycle 027 commit patch SHA-256: `6dcd1ec317d4e1234ce1a3d79d4e2b465f9c5f67f8245d9108aa1200be8b7ea5`
-- Current handoff: `../handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
+- Status: Cycle 028 automation, deterministic authored-art verification, and desktop/mobile visual review certified
+- Cycle 028 runtime/art source: `fe8153f08c42500a57cce96f907ce5c117f0f8bc`
+- Exact Cycle 028 commit patch SHA-256: `e7baade05a4f1876a8449ab3c82f3638670166e7a7526c83362c2bd14b6de6ca`
+- Current handoff: `../handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`
 - Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
 - Settlement: disabled; hardened Web3 remains outside this release

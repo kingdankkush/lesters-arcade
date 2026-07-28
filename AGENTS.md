@@ -4,17 +4,19 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md` — **current**; carries the standing visual/gameplay brief, verified Cycle 027 source, remaining work, gate battery, and pipeline traps
-2. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
-3. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-4. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-5. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-6. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-7. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-8. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
-9. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-10. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-11. `docs/hmh-reboot/COMPATIBILITY.json`
+1. `docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md` — **current**; carries the user-reference hero brief, verified Cycle 028 source, remaining model/hitbox work, full gates, and pipeline traps
+2. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
+3. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
+4. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
+5. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
+6. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+7. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+8. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+9. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+10. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
+11. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+12. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+13. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
@@ -39,6 +41,8 @@ Preserve:
 
 Active HMH actors must visibly read as human survivors or zombies. Do not use animal, vehicle, robot, mech, or abstract actor proxies. Do not reactivate retired generated/isometric actor art.
 
+Playable characters must follow `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`: reference-faithful detailed Blender models, ordinary enemies at comparable human scale, and hitbox changes isolated into measured deterministic gameplay cycles.
+
 Chikun's Escape remains a Coming Soon development cabinet. Its deterministic parent replay and SDK boundary must remain intact. Do not make it public playable without full production and browser certification.
 
 ## Git and deployment safety
@@ -53,8 +57,8 @@ Chikun's Escape remains a Coming Soon development cabinet. Its deterministic par
 Current certified continuation and production baseline at the time of this instruction:
 
 - Continuation branch: `reboot/hmh-aaa-continuous`
-- Cycle 027 source: `4c0066371423cd752ac48d2c39c66e275635934d`
-- Cycle 027 exact commit patch SHA-256: `6dcd1ec317d4e1234ce1a3d79d4e2b465f9c5f67f8245d9108aa1200be8b7ea5`
+- Cycle 028 runtime/art source: `fe8153f08c42500a57cce96f907ce5c117f0f8bc`
+- Cycle 028 exact commit patch SHA-256: `e7baade05a4f1876a8449ab3c82f3638670166e7a7526c83362c2bd14b6de6ca`
 - Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
 - Production deployment remains https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
 - `SETTLEMENT_LIVE=false`
