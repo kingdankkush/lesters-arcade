@@ -5055,3 +5055,11 @@ html[data-touch="true"] .combat-menu-panel {
 html[data-touch="true"] .hmh-reboot-frame {
   min-height: calc(100dvh - 12px);
 }
+
+/* An embedded cabinet renders its own on-screen controls. The portal's touch
+   layer must never sit on top of them: two live joysticks on one phone screen
+   is what a device playtest reported. This is a CSS backstop so the handover
+   holds even if the device profile has not been recomputed since the cabinet
+   mounted. */
+html[data-embedded-cabinet] .touch-controls,
+html[data-embedded-cabinet] #touchControls { display: none !important; }

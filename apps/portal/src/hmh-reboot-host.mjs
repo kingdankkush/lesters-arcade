@@ -56,8 +56,20 @@ export function createHmhRebootHost({
     }
   };
 
+  // An embedded cabinet owns its own on-screen controls. Without this flag the
+  // portal kept rendering its own touch joystick and buttons on top of the
+  // iframe, so a phone player saw two complete sets of controls and the
+  // parent's set did nothing for the game actually running.
+  const claimInputOwnership = (owned) => {
+    const root = documentRef.documentElement;
+    if (!root?.dataset) return;
+    if (owned) root.dataset.embeddedCabinet = 'hmh-reboot';
+    else delete root.dataset.embeddedCabinet;
+  };
+
   const destroy = () => {
     clearReadyTimer();
+    claimInputOwnership(false);
     activeBridge?.destroy();
     activeBridge = null;
     activeFrame = null;
@@ -87,6 +99,7 @@ export function createHmhRebootHost({
     iframe.setAttribute('allowfullscreen', '');
     iframe.dataset.runtime = 'hmh-reboot';
     mount.replaceChildren(iframe);
+    claimInputOwnership(true);
 
     const bridge = bridgeFactory({
       iframe,

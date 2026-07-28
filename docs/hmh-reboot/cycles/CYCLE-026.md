@@ -160,3 +160,50 @@ message reports the real count instead of naming a stale one.
 Pushing produces a Vercel **Preview** deployment only. Production promotion
 requires the Vercel dashboard or an authenticated CLI, neither of which exists
 in this checkout, and requires explicit approval regardless.
+
+---
+
+## Addendum: two sets of controls on mobile
+
+Reported from the device: *"There are two sets of controls on mobile."*
+Confirmed and fixed.
+
+**Cause.** The reboot runs in a sandboxed iframe hosted by the portal
+(`hmh-reboot-host.mjs`). The portal builds its own floating joystick and action
+buttons for the legacy cabinet in `ensureTouchControls()` on any touch device,
+and that layer is `position: fixed; inset: 0; z-index: 60` — it covers the whole
+page, iframe included. So a phone player got the portal's control set stacked on
+top of the reboot's MOVE/AIM/POWER set, and the portal's set drove nothing,
+because the game actually running was inside the iframe.
+
+Neither set was broken on its own, which is why every existing gate passed: the
+child harness loads the child directly and never sees the parent's layer, and
+the portal gates only checked its own.
+
+**Fix — the embedded runtime owns input while it is mounted.** The host sets
+`documentElement.dataset.embeddedCabinet = 'hmh-reboot'` on mount and deletes it
+on destroy. The portal's `ensureTouchControls()` bails out and the
+`show-touch-controls` body class is withheld while that flag is present. A CSS
+backstop (`html[data-embedded-cabinet] .touch-controls { display: none }`)
+covers the window between mount and the next `applyDeviceProfile()`, which only
+runs on resize and orientation change — without it the duplicate survived until
+the player rotated the phone.
+
+Ownership is released on destroy, so the legacy cabinet keeps its controls.
+
+**Verified in a real browser** at 390x844 with the true gameplay condition
+(`data-ingame="true"` plus the body class):
+
+| State | Portal touch layer |
+| --- | --- |
+| gameplay, no cabinet mounted | `display: block` — the duplicate |
+| cabinet owns input | `display: none` — one set, the child's |
+| cabinet destroyed | `display: block` — legacy unaffected |
+
+`tests/hmh-reboot-single-control-surface.test.mjs` covers the mount/destroy
+handover against the real host API, both portal gates, the CSS backstop, and
+that the child still builds exactly one overlay.
+
+Gates re-run: `test:release` 1766/1714/52/0, `certify:hmh:browser`,
+`visual:reboot` 8/8, `smoke:hmh:mobile-controls` 4/4, portal E2E,
+security 5/5, web3 9/9, p95 7ms/7ms.

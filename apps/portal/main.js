@@ -15273,7 +15273,7 @@ function applyDeviceProfile() {
   root.dataset.orientation = profile.orientation;
   root.dataset.touch = profile.isTouch ? 'true' : 'false';
   root.style.setProperty('--hud-scale', String(profile.hudScale));
-  document.body.classList.toggle('show-touch-controls', profile.showTouchControls);
+  document.body.classList.toggle('show-touch-controls', profile.showTouchControls && !embeddedCabinetOwnsInput());
   document.body.classList.toggle('suggest-landscape', profile.suggestLandscape);
   applyGameplayAccessibilitySettings();
   ensureTouchControls(profile);
@@ -15304,8 +15304,14 @@ function setFloatingTouchOrigin(base, clientX, clientY) {
   base.style.bottom = 'auto';
 }
 
+// True while an embedded cabinet iframe is mounted. That runtime renders its
+// own controls, so the portal must not render a second set over the top.
+function embeddedCabinetOwnsInput() {
+  return Boolean(document.documentElement?.dataset?.embeddedCabinet);
+}
+
 function ensureTouchControls(profile) {
-  if (!profile.showTouchControls) {
+  if (!profile.showTouchControls || embeddedCabinetOwnsInput()) {
     document.getElementById('touchControls')?.style.setProperty('display', 'none');
     return;
   }
