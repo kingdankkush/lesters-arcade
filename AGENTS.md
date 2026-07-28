@@ -4,16 +4,17 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md` — **current**; carries the standing visual/gameplay brief, the gate battery, and the pipeline traps
-2. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-3. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-4. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-5. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-6. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-7. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
-8. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-9. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-10. `docs/hmh-reboot/COMPATIBILITY.json`
+1. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md` — **current**; carries the standing visual/gameplay brief, verified Cycle 027 source, remaining work, gate battery, and pipeline traps
+2. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
+3. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
+4. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+5. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+6. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+7. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+8. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
+9. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+10. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+11. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
@@ -49,12 +50,14 @@ Chikun's Escape remains a Coming Soon development cabinet. Its deterministic par
 - Do not deploy contracts, send transactions, change authority, or enable real settlement without a separate explicit HALT approval.
 - Do not expose private keys, API credentials, or verifier secrets.
 
-Current Cycle 006 source baseline at the time of this instruction:
+Current certified continuation and production baseline at the time of this instruction:
 
-- Branch and remote source: `807bc9434aefec1ab89623128b12777bfe73ab55`
-- Cycle 006 preview verification remained pending at handoff
-- Production remains `dpl_AvXkk8eXSGzX4jcviDNzVSsr9ap9`
-- Rollback remains `dpl_3ku2fQ42yybTB5bWoZgifX9AnAPk`
+- Continuation branch: `reboot/hmh-aaa-continuous`
+- Cycle 027 source: `4c0066371423cd752ac48d2c39c66e275635934d`
+- Cycle 027 exact commit patch SHA-256: `6dcd1ec317d4e1234ce1a3d79d4e2b465f9c5f67f8245d9108aa1200be8b7ea5`
+- Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
+- Production deployment remains https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
+- `SETTLEMENT_LIVE=false`
 
 Re-read live Git and deployment state before acting. Do not assume these values remain current in a later session.
 

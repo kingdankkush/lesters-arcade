@@ -100,12 +100,30 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed locally as `8842077c`; production unchanged
   - Cycle ledger: `cycles/CYCLE-020.md`
 - [x] Cycle 021: deterministic projection-only district landmark signals with reduced-motion and onscreen browser gates
-  - Status: local certified; immutable preview and production verification pending
+  - Status: promoted to production from `a81f1c8f`; production remains this Cycle 021 source
   - Cycle ledger: `cycles/CYCLE-021.md`
+- [x] Cycle 022: authored terrain materials for readable gameplay surfaces
+  - Status: committed on continuation as `70cf778b`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-022.md`
+- [x] Cycle 023: identifiable pickup and POI models
+  - Status: committed on continuation as `85265f42`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-023.md`
+- [x] Cycle 024: detailed character/enemy body geometry under one shared projection policy
+  - Status: committed on continuation as `1455bd78`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-024.md`
+- [x] Cycle 025: four-control mobile layout and five deterministic weapon capstones
+  - Status: committed on continuation as `77f81c70`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-025.md`
+- [x] Cycle 026: shared art light rig, mobility upgrades, and clearer current-build progression
+  - Status: committed on continuation as `6804fa99`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-026.md`
+- [x] Cycle 027: Forkrunner/Gas Bomber role equipment, enemy projection scale, stable roster preview, and current-candidate browser rails
+  - Status: committed on continuation as `4c006637`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-027.md`
 
-## Final local candidate
+## Cycle 020 final local candidate (historical)
 
-- Status: automation certified; human and immutable-preview acceptance pending; production unchanged
+- Status: automation certified before Cycles 021-027; superseded as continuation source
 - Certified source: `8842077c16e6725997ca8e64a61cecb139d67a9e`
 - Full source-range SHA-256: `38343b8cd71ef543ba10e83d86d50f8ec7ec91d8dc158f269ec165f927b40e7a`
 - Certificate: `RELEASE-CERTIFICATION-AAA-FINAL-CANDIDATE.md`
@@ -113,7 +131,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 021 local automation and visual review certified; eligible for immutable preview
-- Baseline source: `9ff359eaf28b81a792a10a41b0d59db5f9ae5440`
-- Cycle ledger: `cycles/CYCLE-021.md`
+- Status: Cycle 027 automation, deterministic authored-art verification, and desktop/mobile visual review certified
+- Cycle 027 source: `4c0066371423cd752ac48d2c39c66e275635934d`
+- Exact Cycle 027 commit patch SHA-256: `6dcd1ec317d4e1234ce1a3d79d4e2b465f9c5f67f8245d9108aa1200be8b7ea5`
+- Current handoff: `../handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
+- Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
 - Settlement: disabled; hardened Web3 remains outside this release

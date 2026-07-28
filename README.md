@@ -12,7 +12,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Immutable Cycle 021 preview:** https://lesters-arcade-fgzvqbcjk-justin-agent-projects.vercel.app
 
-**Current Claude continuation handoff:** [docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md](docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md)
+> **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`](docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md)
 
 > `lestersarcade.io` now serves the Cycle 021 bundle. Public desktop, ultrawide, tablet, mobile portrait, mobile landscape, cockpit, and collectible routes were reverified after promotion. `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -116,7 +116,7 @@ The reboot now includes:
 - Parent-owned profile, session, leaderboard, and settlement integration.
 - Release certification, Chrome/Edge matrices, security gates, network audits, soaks, and artifact-verified previews.
 
-### AAA cycles 001-021
+### AAA cycles 001-027
 
 The bounded cycle ledger is the authoritative implementation history. Highlights:
 
@@ -125,10 +125,14 @@ The bounded cycle ledger is the authoritative implementation history. Highlights
 - Cycles 007-010: complete authored art integration, ledge combat correction, world composition, and bounded projectile recovery.
 - Cycles 011-015: truthful Liquidator telegraphs, responsive mobile HUD, four animated hero selectors, district landmarks, and nine deterministic authored-POI collectibles.
 - Cycles 016-018: grenade danger warnings, responsive upgrade disclosures, and truthful pause/settings/current-build presentation.
-- Cycles 019-020: isolated 30-minute desktop/mobile soaks, restart-race correction, deploy-build reproducibility, and final local release certification.
-- Cycle 021: deterministic projection-only district landmark signals, reduced-motion enforcement, deployment input hardening, and public production promotion.
+- Cycles 019-021: isolated desktop/mobile soaks, restart-race correction, deploy-build reproducibility, animated district signals, and Cycle 021 production promotion.
+- Cycles 022-023: authored terrain materials and instantly identifiable pickup/POI models.
+- Cycle 024: shared projection and detailed character/enemy body geometry.
+- Cycle 025: four-control mobile layout plus five deterministic weapon capstones.
+- Cycle 026: one shared light rig, mobility upgrades, and clearer current-build progression.
+- Cycle 027: Forkrunner/Gas Bomber role equipment, collision-readable enemy projection scale, stable desktop/mobile roster preview, and current-candidate browser certification.
 
-See [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md) and [Cycle 021](docs/hmh-reboot/cycles/CYCLE-021.md).
+See [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 027](docs/hmh-reboot/cycles/CYCLE-027.md), and the [current Claude handoff](docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md).
 
 ---
 
@@ -163,6 +167,24 @@ See [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEME
 - Immediate previous immutable production URL: https://lesters-arcade-g242ggtb8-justin-agent-projects.vercel.app
 
 The Vercel CLI is currently unavailable locally, so Vercel `dpl_...` identifiers and rollback status must be resolved through an authenticated Vercel session or dashboard before any future production action.
+
+## Current continuation status
+
+This is source/preview truth only. It is **not** the production deployment.
+
+| Gate | Cycle 027 continuation result |
+| --- | --- |
+| Branch | `reboot/hmh-aaa-continuous` |
+| Certified source | `4c0066371423cd752ac48d2c39c66e275635934d` |
+| Exact commit patch SHA-256 | `6dcd1ec317d4e1234ce1a3d79d4e2b465f9c5f67f8245d9108aa1200be8b7ea5` |
+| Release ledger | 1,773 total, 1,721 passing, exactly 52 accepted legacy failures, 0 unexpected |
+| Authored enemy pipeline | 7 actors, 1,368 frames, 0 duplicates, reproducible |
+| Enemy-detail browser gate | Desktop and 390x844 mobile PASS; six production families visibly framed |
+| Local candidate browser matrix | Desktop, ultrawide, tablet, mobile portrait, and mobile landscape PASS |
+| Performance | Desktop/mobile p95 7 ms / 7 ms |
+| HMH bundle | 1,021,358 / 1,050,000 bytes |
+| Security and network | Zero security findings; four network scenarios with zero failures |
+| Production promotion | Not performed; Cycle 021 remains live |
 
 ---
 
@@ -371,6 +393,8 @@ npm run audit:hmh:network
 npm run certify:hmh:browser
 npm run smoke:hmh:cockpit
 npm run smoke:hmh:collectibles
+npm run smoke:hmh:enemy-details
+npm run smoke:hmh:mobile-controls
 npm run smoke:hmh:performance
 npm run visual:reboot
 npm run smoke:portal
@@ -384,14 +408,16 @@ npm run docs:links
 
 ## Next priorities
 
-1. Complete hands-on production acceptance with keyboard/mouse and a real controller.
-2. Complete real-phone portrait/landscape acceptance for touch ergonomics, audio balance, thermal behavior, reduced motion, and motion comfort.
-3. Resolve and record the current/previous Vercel `dpl_...` identifiers and verify the immediate rollback path; the local Vercel CLI is missing.
-4. Update the final release certificate and deployment runbook from their pre-Cycle-021 wording to a post-production closeout record.
-5. Add branch protection and CI or preserve the current manual exact-index, preview, soak, and public-verification discipline.
-6. Keep hardened verifier/attestation and LitVM deployment work blocked until a separate explicit HALT approval.
-7. Treat any HMH runtime change as Cycle 022: RED coverage, full local gates, exact-index review, immutable preview, human acceptance, and separate production approval.
-8. Decide whether Chikun's development harness should become a production public vertical slice.
+1. Continue role-specific model geometry for Bagholder Rusher, Liquidator Agent, Whale Enforcer, Cultist and boss without changing hitboxes.
+2. Replace remaining simple buildings, trees, crates and landmark props with authored modular assets, then close the prop reproducibility tolerance gap.
+3. Add secondary motion and combat readability to hero/enemy clips: recoil, cloth/strap follow-through, hit reactions and boss phase poses.
+4. Improve combat and movement feel through test-first weapon tuning, acceleration/deceleration review, melee reach clarity, grenade cadence and progression/build balance.
+5. Run real keyboard/mouse, controller and real-phone acceptance for touch ergonomics, audio balance, thermal behavior, reduced motion and motion comfort.
+6. Harden portal E2E at actual mobile viewport sizes, not desktop-only emulation.
+7. Resolve current/previous Vercel `dpl_...` identifiers and verify rollback before any future production request.
+8. Add branch protection/CI or preserve the current manual exact-index, preview, soak and public-verification discipline.
+9. Keep hardened verifier/attestation and LitVM deployment work blocked until separate explicit HALT approval.
+10. Decide whether Chikun's development harness should become a production public vertical slice.
 
 ---
 
