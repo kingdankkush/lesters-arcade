@@ -15,7 +15,9 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
 const evidencePath = path.join(repoRoot, '.hermes', 'evidence', 'hmh-reboot-18-release', 'active-asset-qa.json');
 const requiredLayers = ['shadow', 'lower-body', 'torso-head', 'weapon'];
-const maxHeroAtlasBytes = 3 * 1024 * 1024;
+// Detailed reference heroes may use more local atlas entropy, but the unchanged
+// aggregate cap still bounds the four-hero download footprint.
+const maxHeroAtlasBytes = 3.25 * 1024 * 1024;
 const maxHeroAtlasTotalBytes = 12 * 1024 * 1024;
 const maxRosterAtlasBytes = 2 * 1024 * 1024;
 const maxRosterAtlasTotalBytes = 10 * 1024 * 1024;

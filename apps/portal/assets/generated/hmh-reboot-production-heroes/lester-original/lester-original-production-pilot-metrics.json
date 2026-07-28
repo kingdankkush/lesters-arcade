@@ -1,19 +1,19 @@
 {
   "actorId": "lester-original",
-  "atlasSha256": "31b6400156b8ddce88191a50e71a6b6c40fc4c422b82d274bb8c3306644653a2",
+  "atlasSha256": "88dbf40e82b0ff58aa0f93403cf0ea747fb15f5efc93777ab29dd15baa194b50",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "21b4efed4b629a3a8a64ec7953debe43d924e552ca8e079ae19b5675db82114e",
+  "contactSheetSha256": "cde1029572e76dc66f82a33f61ead3431dcd14becb877493abbee839f9b439e6",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "64d1c09e757c91d0e3b0c4c6de1f6f90bf957cbba6106fe6c5956e42e84114b3",
+  "metadataSha256": "580e882d4124cf2cea252214040d7a7447c9b8cdcdef847857e17e7594c2de43",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -29,7 +29,7 @@
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "763ebde925b284dc703e96384c0009725ad4d5d016a8acf0bf5e586fc7be6133",
+  "sourceBlendSha256": "bbff2dd407d34fa8c86e133efc8bad2671b532137b370fc4ff06ec4d67efe3ca",
   "status": "pass",
   "transparentCornerFailureCount": 0,
   "uniqueAnimatedFrameCount": 640,

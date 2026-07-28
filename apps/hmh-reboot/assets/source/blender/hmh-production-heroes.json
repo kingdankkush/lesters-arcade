@@ -61,7 +61,8 @@
     "blenderVersion": "5.1.2",
     "armature": "HMH_ProductionHeroRig",
     "weaponSocket": "weapon_socket",
-    "conceptManifest": "apps/hmh-reboot/assets/source/blender/hmh-commando-concepts.json"
+    "conceptManifest": "apps/hmh-reboot/assets/source/blender/hmh-commando-concepts.json",
+    "referenceModelManifest": "apps/hmh-reboot/assets/source/blender/hmh-reference-character-models.json"
   },
   "atlas": {
     "outputDirectory": "apps/portal/assets/generated/hmh-reboot-production-heroes",
@@ -77,6 +78,7 @@
     {
       "actorId": "lit-commando",
       "variantId": "reserve-vanguard",
+      "modelSpecId": "lit-commando-rambo-v1",
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
@@ -215,6 +217,7 @@
     {
       "actorId": "lit-valkyrie",
       "variantId": "plasma-striker",
+      "modelSpecId": "lit-valkyrie-rambo-v1",
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
@@ -353,6 +356,7 @@
     {
       "actorId": "lester-original",
       "variantId": "blue-mask-original",
+      "modelSpecId": "lester-reference-combat-v1",
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
@@ -510,6 +514,7 @@
     {
       "actorId": "lilly",
       "variantId": "gold-teal-veteran",
+      "modelSpecId": "lilly-reference-combat-v1",
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",

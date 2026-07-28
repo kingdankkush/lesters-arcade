@@ -172,9 +172,9 @@ test('Cycle 007 gives one weapon renderer authority at a time', async () => {
   assert.match(runtime, /authoredHeldWeaponDisplay\.container\.visible = externalWeaponAuthoritative/);
 });
 
-test('Cycle 007 updates repository visual policy to the active reboot gate', async () => {
+test('repository visual policy points to a dated current HMH cycle handoff and the active reboot gate', async () => {
   const agents = await readFile(new URL('../AGENTS.md', import.meta.url), 'utf8');
   assert.match(agents, /npm run visual:reboot/);
   assert.match(agents, /npm run visual:reboot:accept/);
-  assert.match(agents, /Cycle 006|Cycle 007/);
+  assert.match(agents, /docs\/handoffs\/\d{4}-\d{2}-\d{2}-hmh-cycle-\d+-[a-z-]+-handoff\.md/);
 });

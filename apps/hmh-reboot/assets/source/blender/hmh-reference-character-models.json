@@ -1,0 +1,165 @@
+{
+  "schema": "hmh-reference-character-models-v1",
+  "blenderVersion": "5.1.2",
+  "sourcePolicy": {
+    "basis": "user-supplied-illustrated-character-sheets-and-pixel-action-sprites",
+    "binaryReferencesVendored": false,
+    "interpretationRule": "illustrated sheets own facial identity and material finish; pixel sheets own combat silhouette, equipment placement and weapon handling"
+  },
+  "runtimeScale": {
+    "hero": 0.58,
+    "enemy": 0.5,
+    "rule": "enemies-and-heroes-share-comparable-human-world-height"
+  },
+  "hitboxPlan": {
+    "currentEnemyHurtCapsule": {
+      "radiusFactor": 0.72,
+      "axisHalfLength": 8
+    },
+    "proposedEnemyHurtCapsule": {
+      "radiusFactor": 0.9,
+      "axisHalfLength": 10
+    },
+    "status": "planned-separate-deterministic-gameplay-cycle",
+    "collisionBodiesChange": false,
+    "intent": "larger-forgiving-projectile-target-without-changing-physical-collision"
+  },
+  "models": [
+    {
+      "actorId": "lester-original",
+      "modelSpecId": "lester-reference-combat-v1",
+      "implementationStatus": "cycle-028-implemented",
+      "anatomy": "human",
+      "runtimeAuthority": "projection-only",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "canonicalBlend": "polished-illustrated-mascot-head-plus-pixel-combat-body",
+      "proportions": {
+        "stature": "stocky-athletic",
+        "blenderHeight": 2.08,
+        "headDiameter": 0.57,
+        "headToBodyRatio": 0.275,
+        "shoulderWidth": 0.82
+      },
+      "immutableIdentity": [
+        "spherical-lester-blue-logo-head",
+        "large-expressive-eyes-and-smile",
+        "blue-neck-scarf-with-two-tails",
+        "olive-tactical-vest-and-webbing",
+        "brass-ammo-bandolier",
+        "tan-cargo-trousers",
+        "fingerless-gloves-and-black-combat-boots"
+      ],
+      "materials": {
+        "mascotBlue": "#155bd7",
+        "logoWhite": "#f4f8ff",
+        "oliveVest": "#3d4932",
+        "oliveWebbing": "#242d22",
+        "cargoTan": "#8a744f",
+        "brassRounds": "#c58b32",
+        "combatBlack": "#141b22",
+        "scarfBlue": "#0c48ba",
+        "skin": "#b86b43"
+      },
+      "rigRequirements": [
+        "weapon-socket-two-hand-ik-compatible",
+        "scarf-tails-chest-attached-for-current-clips",
+        "separate-face-logo-eye-mouth-meshes",
+        "all-combat-gear-bound-to-existing-fourteen-bone-rig"
+      ],
+      "detailKit": {
+        "kind": "reference-lester-combat-v1",
+        "minimumAuthoredParts": 42
+      }
+    },
+    {
+      "actorId": "lilly",
+      "modelSpecId": "lilly-reference-combat-v1",
+      "implementationStatus": "planned-next-bounded-model-cycle",
+      "anatomy": "human",
+      "runtimeAuthority": "projection-only",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "canonicalBlend": "illustrated-face-hair-and-glasses-plus-pixel-tactical-outfit",
+      "proportions": {
+        "stature": "slim-athletic",
+        "blenderHeight": 2.02,
+        "headToBodyRatio": 0.225,
+        "shoulderWidth": 0.66
+      },
+      "hair": {
+        "kind": "long-layered-wavy-teal",
+        "length": "mid-back-to-waist",
+        "minimumRiggedLocks": 9,
+        "clippingRule": "split-into-back-crown-and-side-lock-groups-with-weapon-clearance"
+      },
+      "immutableIdentity": [
+        "oval-heart-shaped-feminine-face",
+        "large-teal-green-eyes",
+        "round-teal-lens-glasses",
+        "long-layered-wavy-teal-hair",
+        "black-teal-cropped-tactical-jacket-with-gold-piping",
+        "teal-cargo-trousers-knee-pads-and-lace-up-boots",
+        "gold-l-logo-belt-and-shoulder-patch"
+      ],
+      "combatInterpretation": {
+        "keep": ["glasses", "hair", "gold-circuit-piping", "belt-logo", "combat-boots", "cargo-pouches"],
+        "omit": ["high-heels", "full-length-formal-coat-during-combat"],
+        "optionalProjectionOnly": ["short-split-coat-tails"]
+      }
+    },
+    {
+      "actorId": "lit-commando",
+      "modelSpecId": "lit-commando-rambo-v1",
+      "implementationStatus": "planned-bounded-model-cycle",
+      "anatomy": "human",
+      "runtimeAuthority": "projection-only",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "canonicalBlend": "distinct-human-male-army-commando-derived-from-lester-combat-language",
+      "proportions": {
+        "stature": "muscular-athletic",
+        "blenderHeight": 2.1,
+        "headToBodyRatio": 0.21,
+        "shoulderWidth": 0.86
+      },
+      "immutableIdentity": [
+        "rambo-army-commando-silhouette",
+        "human-face-no-helmet-or-mech-head",
+        "dark-hair-and-red-combat-headband-with-tails",
+        "olive-sleeveless-combat-shirt-and-bare-muscular-arms",
+        "cross-body-webbing-ammo-and-utility-belt",
+        "dark-cargo-trousers-knife-sheath-and-combat-boots"
+      ],
+      "differentiation": "no blue mascot sphere, glasses or teal hair; reads as the heavy conventional military survivor"
+    },
+    {
+      "actorId": "lit-valkyrie",
+      "modelSpecId": "lit-valkyrie-rambo-v1",
+      "implementationStatus": "planned-bounded-model-cycle",
+      "anatomy": "human",
+      "runtimeAuthority": "projection-only",
+      "gameplayBodyProfile": "human-medium-collision-v1",
+      "canonicalBlend": "female-valkyrie-commandos-and-army-survivor-language-derived-from-lilly-rig-needs",
+      "proportions": {
+        "stature": "athletic-feminine",
+        "blenderHeight": 2.04,
+        "headToBodyRatio": 0.22,
+        "shoulderWidth": 0.7
+      },
+      "hair": {
+        "kind": "long-platinum-braid-and-ponytail",
+        "length": "lower-shoulder-blades",
+        "minimumRiggedLocks": 7,
+        "clippingRule": "high-ponytail-and-braid-clear-weapon-stock-and-back-webbing"
+      },
+      "immutableIdentity": [
+        "female-rambo-army-commando-silhouette",
+        "visible-human-face-no-helmet-or-mech-head",
+        "long-platinum-braid-and-ponytail",
+        "olive-fitted-sleeveless-tactical-top",
+        "cross-harness-fingerless-gloves-and-thigh-holster",
+        "charcoal-cargo-trousers-knee-pads-and-combat-boots",
+        "small-mint-cyan-lit-identification-accents"
+      ],
+      "differentiation": "not Lilly: platinum tied hair, no glasses, military olive-charcoal palette and stronger melee silhouette"
+    }
+  ]
+}

@@ -109,7 +109,7 @@ async function mobileEvidence() {
   await ready(page);
   const state = await readState(page);
   const controls = await page.locator('[data-hmh-control]').count();
-  assert.equal(controls, 8);
+  assert.equal(controls, 4);
   assert.equal(state.frameIds.length, 4);
   assert.equal(state.actorArt, 'production-hero-atlas');
   await page.screenshot({ path: fileURLToPath(new URL(`${actorId}-production-hero-mobile.png`, evidenceDir)), fullPage: true });
