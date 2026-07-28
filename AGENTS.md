@@ -4,15 +4,16 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-2. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-3. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-4. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-5. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-6. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
-7. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-8. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-9. `docs/hmh-reboot/COMPATIBILITY.json`
+1. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md` — **current**; carries the standing visual/gameplay brief, the gate battery, and the pipeline traps
+2. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
+3. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+4. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+5. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+6. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+7. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
+8. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+9. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+10. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
