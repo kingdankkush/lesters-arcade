@@ -74,7 +74,7 @@
     {
       "actorId": "lilly",
       "modelSpecId": "lilly-reference-combat-v1",
-      "implementationStatus": "planned-next-bounded-model-cycle",
+      "implementationStatus": "cycle-029-implemented",
       "anatomy": "human",
       "runtimeAuthority": "projection-only",
       "gameplayBodyProfile": "human-medium-collision-v1",
@@ -104,6 +104,10 @@
         "keep": ["glasses", "hair", "gold-circuit-piping", "belt-logo", "combat-boots", "cargo-pouches"],
         "omit": ["high-heels", "full-length-formal-coat-during-combat"],
         "optionalProjectionOnly": ["short-split-coat-tails"]
+      },
+      "detailKit": {
+        "kind": "reference-lilly-combat-v1",
+        "minimumAuthoredParts": 52
       }
     },
     {

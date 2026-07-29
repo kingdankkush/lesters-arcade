@@ -5,8 +5,8 @@
   "runtimeAuthority": "projection-only",
   "gameplayAuthority": "none",
   "image": "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png",
-  "imageBytes": 357201,
-  "imageSha256": "2dbfe5920d9a285cac25795bf86ce4e1f800acb1e279e67094a5a4ac504b8a11",
+  "imageBytes": 362478,
+  "imageSha256": "01729545b557df1dccf28f4899b1b154677a85e61d71b337dc100709b888db6c",
   "atlasSize": {
     "width": 1280,
     "height": 640
@@ -156,7 +156,7 @@
         "lit-commando__torso-head__aim__north-west__000",
         "lit-commando__weapon__aim__north-west__000"
       ],
-      "pixelSha256": "6cd7706a55e8f47ae94e494dd6b29ec421b45109452d87580e9550cd97d40ec9"
+      "pixelSha256": "31e71db86c4e6df991636581302005972c1d1644ad6c60f4cc3f1b2c33627e0d"
     },
     {
       "portalHeroId": "lit-commando",
@@ -548,14 +548,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 3772,
+      "opaquePixels": 4001,
       "sourceFrames": [
         "lilly__shadow__idle__east__000",
         "lilly__lower-body__idle__east__000",
         "lilly__torso-head__aim__east__000",
         "lilly__weapon__aim__east__000"
       ],
-      "pixelSha256": "048bcf9ab85f9b8f54dc65a5d912465bb0e617fd4d5675115ce107185d9b794e"
+      "pixelSha256": "395307081431b13100b2de200a6869fc5566fa9455a329439c9f1d59184e4a78"
     },
     {
       "portalHeroId": "lilly",
@@ -567,14 +567,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 4545,
+      "opaquePixels": 4672,
       "sourceFrames": [
         "lilly__shadow__idle__north-east__000",
         "lilly__lower-body__idle__north-east__000",
         "lilly__torso-head__aim__north-east__000",
         "lilly__weapon__aim__north-east__000"
       ],
-      "pixelSha256": "eee79e5330c9de13879b8586ef451f551badb28795d888905a9f0f227aef4822"
+      "pixelSha256": "5330c7cfc8e9c96b962350f57bfb2ceb639712957bdd6ddae1e85450576aa99d"
     },
     {
       "portalHeroId": "lilly",
@@ -586,14 +586,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 4676,
+      "opaquePixels": 4765,
       "sourceFrames": [
         "lilly__shadow__idle__north__000",
         "lilly__lower-body__idle__north__000",
         "lilly__torso-head__aim__north__000",
         "lilly__weapon__aim__north__000"
       ],
-      "pixelSha256": "fc70d5e73b99be1fa465d2e4b7e47292e7278da14c7d9e406a633fb7150a81a0"
+      "pixelSha256": "d96815c856c7139a2027741712dc47f88b34f9c56bb6cf6d17a73ec11d34ba0d"
     },
     {
       "portalHeroId": "lilly",
@@ -605,14 +605,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 4523,
+      "opaquePixels": 4641,
       "sourceFrames": [
         "lilly__shadow__idle__north-west__000",
         "lilly__lower-body__idle__north-west__000",
         "lilly__torso-head__aim__north-west__000",
         "lilly__weapon__aim__north-west__000"
       ],
-      "pixelSha256": "e157f995eeff9f3e0b717d84398e6b299e402d8845a8d1ac7bd2c5cb27181e0b"
+      "pixelSha256": "d02c8808c5a0b7d048c7bc33576e4560087ccc7053b08de2f071a24d38180062"
     },
     {
       "portalHeroId": "lilly",
@@ -624,14 +624,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 3787,
+      "opaquePixels": 4035,
       "sourceFrames": [
         "lilly__shadow__idle__west__000",
         "lilly__lower-body__idle__west__000",
         "lilly__torso-head__aim__west__000",
         "lilly__weapon__aim__west__000"
       ],
-      "pixelSha256": "e72304b9eb5df9b8da967ed979dc939d1ba767c2e83bfb9506370210c9c6ac8c"
+      "pixelSha256": "d7cd2fc04b5082331c5001605cffcf104cc1af0ce4982eec75ba3e1400db87f3"
     },
     {
       "portalHeroId": "lilly",
@@ -643,14 +643,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 4590,
+      "opaquePixels": 4723,
       "sourceFrames": [
         "lilly__shadow__idle__south-west__000",
         "lilly__lower-body__idle__south-west__000",
         "lilly__torso-head__aim__south-west__000",
         "lilly__weapon__aim__south-west__000"
       ],
-      "pixelSha256": "efba9fe243117004eba1d2fbc7def92066f069657d04610cec2cbcf3e00e0492"
+      "pixelSha256": "f6def2cc1fd5d7c506a488cd7d5a79477dcc68b319e7b331134944336e216204"
     },
     {
       "portalHeroId": "lilly",
@@ -662,14 +662,14 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 4833,
+      "opaquePixels": 4872,
       "sourceFrames": [
         "lilly__shadow__idle__south__000",
         "lilly__lower-body__idle__south__000",
         "lilly__torso-head__aim__south__000",
         "lilly__weapon__aim__south__000"
       ],
-      "pixelSha256": "b9d1b9bb720ea836d3713b6026bec75cc7a94092c4e63a486ccacd87ea5826a9"
+      "pixelSha256": "e56beec01611d31ff77aee0f4f7ae2aa526148f75d9f6211c6fc85107467426a"
     },
     {
       "portalHeroId": "lilly",
@@ -681,44 +681,44 @@
         "w": 160,
         "h": 160
       },
-      "opaquePixels": 4574,
+      "opaquePixels": 4665,
       "sourceFrames": [
         "lilly__shadow__idle__south-east__000",
         "lilly__lower-body__idle__south-east__000",
         "lilly__torso-head__aim__south-east__000",
         "lilly__weapon__aim__south-east__000"
       ],
-      "pixelSha256": "084fe2c578ebc9032b24a4eae95bcf3c54d4f97c7fc88ebaa688b63ae25cc8fd"
+      "pixelSha256": "761a09c77209a139c133895a297796e26938febc761b4c8b3aae318641e15cd4"
     }
   ],
   "sources": [
     {
       "actorId": "lit-commando",
       "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
-      "metadataSha256": "36d15098ea456ce927dbaa2dbe7d3ec59e73bdcb15454f51b29d33d4b29f46b8",
+      "metadataSha256": "311c15da7b886e7c59bac20d22c250702bba35c1fe0e6d18776f0a3a73d3c043",
       "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png",
-      "imageSha256": "e6a65f26e2a53a72c357a41e432d3321a08092a7ecc5cc6cf166ce005fa5b858"
+      "imageSha256": "1f980355b8f508d97eaac87552ae3c1c453b19561ac28155e294386cd6ac486a"
     },
     {
       "actorId": "lit-valkyrie",
       "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
-      "metadataSha256": "2155c509f63a941b75dc3062373f5973a02cc5d6af66acea326dffb56e613b46",
+      "metadataSha256": "3f28a7125bff9a8f64d90d7f98c988ee93dc26cb0b533610989ba95e86f30785",
       "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png",
-      "imageSha256": "05a9f2ad8ba7e6eadef9e4d57b9e9ea4ce061bae3d58613b8ef941938b37bf03"
+      "imageSha256": "9007e090d75e86d0e1c24be86432b45cb21505b06ddb26dabd579f1d4745d06a"
     },
     {
       "actorId": "lester-original",
       "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.json",
-      "metadataSha256": "580e882d4124cf2cea252214040d7a7447c9b8cdcdef847857e17e7594c2de43",
+      "metadataSha256": "17ad8182446ee6f2ac26c1ad5c81c5161873ccabb27836258b6d9ab6c87e8903",
       "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png",
-      "imageSha256": "88dbf40e82b0ff58aa0f93403cf0ea747fb15f5efc93777ab29dd15baa194b50"
+      "imageSha256": "b7734688a07ffad8649f8a1e3ddb5dce471c17655b5387eeea1c5fd5f0245e40"
     },
     {
       "actorId": "lilly",
       "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.json",
-      "metadataSha256": "fbbc92156eafce61f72f02178c3a5f09c8ca72ac9284ad57659881bf7656cb7c",
+      "metadataSha256": "95d400007591e66ac2e10e00514aeccee51884fc7d3beb054ff4a545bfcc61ab",
       "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png",
-      "imageSha256": "a80a7d58d794fdb32481ab552a8195f02020028cd27f017de4539457b561f80b"
+      "imageSha256": "34774dc4fa55a549b23adfc15c13104e357a960f3255417b84b816e5e80b6eb3"
     }
   ]
 }

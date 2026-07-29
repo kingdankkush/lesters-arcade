@@ -73,6 +73,19 @@ test('Cycle 028 consumes a fail-closed Lester reference detail kit and records a
   assert.match(builderSource, /modelSpecId/);
 });
 
+test('Cycle 029 consumes a fail-closed Lilly reference detail kit and records authored geometry', () => {
+  const lilly = byActor.lilly;
+  assert.equal(lilly.implementationStatus, 'cycle-029-implemented');
+  assert.equal(lilly.detailKit.kind, 'reference-lilly-combat-v1');
+  assert.ok(lilly.detailKit.minimumAuthoredParts >= 45);
+  assert.ok(lilly.hair.minimumRiggedLocks >= 9);
+  assert.equal(productionManifest.pilots.find((pilot) => pilot.actorId === 'lilly').modelSpecId, lilly.modelSpecId);
+  assert.match(builderSource, /def add_lilly_reference_details\(/);
+  assert.match(builderSource, /reference-lilly-combat-v1/);
+  assert.match(builderSource, /Lilly reference detail kit has/);
+  assert.match(builderSource, /minimumRiggedLocks/);
+});
+
 test('production hero mobile evidence follows the four-control child ownership contract', () => {
   assert.match(browserSmokeSource, /const controls = await page\.locator\('\[data-hmh-control\]'\)\.count\(\);[\s\S]*?assert\.equal\(controls, 4\)/);
   assert.doesNotMatch(browserSmokeSource, /assert\.equal\(controls, 8\)/);

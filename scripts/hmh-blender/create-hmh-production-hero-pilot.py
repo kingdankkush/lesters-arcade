@@ -178,6 +178,13 @@ def actor_materials(concept, mats, actor_id: str) -> dict:
             "charcoal": concept.material("Lilly tactical black", "#11191d"),
             "teal": concept.material("Lilly hair teal", "#079e9b"),
             "teal_light": concept.material("Lilly teal light", "#59eee4", emission=0.38),
+            "teal_dark": concept.material("Lilly deep teal", "#045f62", metallic=0.12),
+            "gold": concept.material("Lilly piping gold", "#d8a93b", metallic=0.48),
+            "skin": concept.material("Lilly skin", "#d3a080"),
+            "eye_white": concept.material("Lilly eye white", "#f4fbf9"),
+            "eye_teal": concept.material("Lilly teal green eyes", "#22cbb7", emission=0.12),
+            "lens": concept.material("Lilly teal lenses", "#78e9df", alpha=0.62, emission=0.12),
+            "lip": concept.material("Lilly lips", "#9b5968"),
         })
     return themed
 
@@ -241,6 +248,107 @@ def add_lester_reference_details(concept, collection, rig, themed, actor_id: str
     }
 
 
+def add_lilly_reference_details(concept, collection, rig, themed, actor_id: str, variant_id: str, model_spec: dict) -> dict:
+    detail_kit = model_spec.get("detailKit", {})
+    if detail_kit.get("kind") != "reference-lilly-combat-v1":
+        raise RuntimeError(f"Unknown Lilly reference detail kit: {detail_kit.get('kind')}")
+    hair_spec = model_spec.get("hair", {})
+    minimum_locks = hair_spec.get("minimumRiggedLocks")
+    if not isinstance(minimum_locks, int) or minimum_locks < 9:
+        raise RuntimeError(f"Invalid Lilly minimumRiggedLocks: {minimum_locks}")
+
+    prefix = f"{actor_id}_{variant_id}"
+    # Remove the generic five-block pilot hair/temple proxy before the
+    # reference kit is measured. The rounded crown remains as an under-mass.
+    for suffix in ("_ShortHair", "_TempleGuard"):
+        stale = collection.objects.get(prefix + suffix)
+        if stale is not None:
+            bpy.data.objects.remove(stale, do_unlink=True)
+    before = set(collection.objects.keys())
+
+    # Recognizable face: separate eyes, pupils, brows, nose and softly shaped
+    # mouth remain readable under the glasses at the 160x160 camera contract.
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.sphere(prefix + f"_ReferenceEyeWhite_{side}", (sign * 0.078, -0.183, 1.80), (0.058, 0.012, 0.050), themed["eye_white"], collection, bone="head", rig=rig)
+        concept.sphere(prefix + f"_ReferenceEyePupil_{side}", (sign * 0.078, -0.198, 1.80), (0.022, 0.006, 0.027), themed["eye_teal"], collection, bone="head", rig=rig)
+        concept.cube(prefix + f"_ReferenceBrow_{side}", (sign * 0.080, -0.186, 1.870), (0.052, 0.008, 0.010), themed["teal_dark"], collection, bevel=0.007, rotation=(0, 0, math.radians(sign * 7)), bone="head", rig=rig)
+    concept.sphere(prefix + "_ReferenceNose", (0, -0.199, 1.748), (0.025, 0.014, 0.034), themed["skin"], collection, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceLipCenter", (0, -0.198, 1.695), (0.060, 0.008, 0.011), themed["lip"], collection, bevel=0.008, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceLipL", (-0.055, -0.193, 1.701), (0.020, 0.007, 0.009), themed["lip"], collection, bevel=0.006, rotation=(0, 0, math.radians(-10)), bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceLipR", (0.055, -0.193, 1.701), (0.020, 0.007, 0.009), themed["lip"], collection, bevel=0.006, rotation=(0, 0, math.radians(10)), bone="head", rig=rig)
+
+    # Teal-lens round glasses. The translucent lenses sit behind the gold
+    # rims, preserving eye color while keeping the signature silhouette.
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.sphere(prefix + f"_ReferenceGlassesLens_{side}", (sign * 0.083, -0.205, 1.80), (0.074, 0.008, 0.067), themed["lens"], collection, bone="head", rig=rig)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.078, minor_radius=0.010, major_segments=24, minor_segments=8, location=(sign * 0.083, -0.214, 1.80), rotation=(math.radians(90), 0, 0))
+        glasses = bpy.context.object
+        glasses.name = prefix + f"_ReferenceRoundGlasses_{side}"
+        glasses.data.materials.append(themed["gold"])
+        concept.move_to_collection(glasses, collection)
+        concept.attach_to_bone(glasses, rig, "head")
+    concept.cube(prefix + "_ReferenceGlassesBridge", (0, -0.214, 1.80), (0.024, 0.010, 0.009), themed["gold"], collection, bevel=0.007, bone="head", rig=rig)
+
+    # Twelve separated crown/side/back lock groups replace the five box proxy.
+    # Their staggered masses create a wavy mid-back silhouette from all views
+    # while leaving the front shoulders and weapon stock clear.
+    hair_locks = (
+        (-0.185, 0.135, 1.58, 0.072, 0.082, 0.255),
+        (-0.115, 0.165, 1.50, 0.075, 0.085, 0.300),
+        (-0.040, 0.180, 1.47, 0.076, 0.090, 0.325),
+        (0.040, 0.180, 1.47, 0.076, 0.090, 0.325),
+        (0.115, 0.165, 1.50, 0.075, 0.085, 0.300),
+        (0.185, 0.135, 1.58, 0.072, 0.082, 0.255),
+        (-0.215, 0.020, 1.61, 0.066, 0.070, 0.225),
+        (0.215, 0.020, 1.61, 0.066, 0.070, 0.225),
+        (-0.185, -0.045, 1.70, 0.060, 0.055, 0.175),
+        (0.185, -0.045, 1.70, 0.060, 0.055, 0.175),
+        (-0.095, 0.025, 1.94, 0.105, 0.115, 0.115),
+        (0.095, 0.025, 1.94, 0.105, 0.115, 0.115),
+    )
+    for index, (x, y, z, sx, sy, sz) in enumerate(hair_locks):
+        material = themed["teal"] if index % 3 else themed["teal_dark"]
+        concept.sphere(prefix + f"_ReferenceHairLock_{index:02d}", (x, y, z), (sx, sy, sz), material, collection, bone="head", rig=rig)
+
+    # Practical black/teal combat jacket with gold piping, shoulder identity,
+    # gloves, cargo storage, knee protection and grounded lace-up boot accents.
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.cube(prefix + f"_ReferenceJacketFront_{side}", (sign * 0.125, -0.215, 1.28), (0.112, 0.045, 0.225), themed["charcoal"], collection, bevel=0.040, bone="chest", rig=rig)
+        concept.cube(prefix + f"_ReferenceTealLapel_{side}", (sign * 0.105, -0.266, 1.355), (0.075, 0.018, 0.115), themed["teal_dark"], collection, bevel=0.018, rotation=(0, 0, math.radians(sign * 12)), bone="chest", rig=rig)
+        concept.cube(prefix + f"_ReferenceGoldPiping_{side}", (sign * 0.218, -0.258, 1.28), (0.014, 0.016, 0.220), themed["gold"], collection, bevel=0.008, bone="chest", rig=rig)
+        concept.cube(prefix + f"_ReferenceShoulderPiping_{side}", (sign * 0.300, -0.165, 1.47), (0.090, 0.020, 0.016), themed["gold"], collection, bevel=0.008, bone=f"upper_arm.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceGlove_{side}", (sign * 0.46, -0.15, 0.92), (0.105, 0.105, 0.072), themed["charcoal"], collection, bevel=0.040, bone=f"forearm.{side}", rig=rig)
+        concept.cylinder(prefix + f"_ReferenceCargoThigh_{side}", (sign * 0.16, 0, 0.54), 0.140, 0.43, themed["teal_dark"], collection, bone=f"thigh.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceCargoPocket_{side}", (sign * 0.215, -0.135, 0.56), (0.072, 0.036, 0.095), themed["charcoal"], collection, bevel=0.022, bone=f"thigh.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceKneeGuard_{side}", (sign * 0.16, -0.150, 0.35), (0.135, 0.070, 0.100), themed["charcoal"], collection, bevel=0.045, bone=f"shin.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceBootSole_{side}", (sign * 0.16, -0.105, 0.018), (0.145, 0.230, 0.028), themed["gold"], collection, bevel=0.015, bone=f"shin.{side}", rig=rig)
+    concept.cube(prefix + "_ReferenceGoldWaistPiping", (0, -0.258, 1.075), (0.220, 0.016, 0.015), themed["gold"], collection, bevel=0.008, bone="spine", rig=rig)
+    concept.cube(prefix + "_ReferenceGoldCollar", (0, -0.190, 1.49), (0.215, 0.040, 0.050), themed["gold"], collection, bevel=0.022, bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceShoulderPatch", (-0.305, -0.190, 1.43), (0.080, 0.016, 0.062), themed["teal_dark"], collection, bevel=0.015, bone="upper_arm.L", rig=rig)
+    concept.cube(prefix + "_ReferenceShoulderLStem", (-0.315, -0.210, 1.435), (0.012, 0.006, 0.036), themed["gold"], collection, bevel=0.005, bone="upper_arm.L", rig=rig)
+    concept.cube(prefix + "_ReferenceShoulderLCrossbar", (-0.295, -0.210, 1.407), (0.030, 0.006, 0.010), themed["gold"], collection, bevel=0.005, bone="upper_arm.L", rig=rig)
+    concept.cube(prefix + "_ReferenceBelt", (0, -0.215, 0.87), (0.275, 0.034, 0.048), themed["charcoal"], collection, bevel=0.015, bone="pelvis", rig=rig)
+    concept.cube(prefix + "_ReferenceBuckle", (0, -0.255, 0.87), (0.060, 0.016, 0.052), themed["gold"], collection, bevel=0.011, bone="pelvis", rig=rig)
+    concept.cube(prefix + "_ReferenceBuckleLStem", (-0.006, -0.273, 0.878), (0.009, 0.005, 0.027), themed["teal_dark"], collection, bevel=0.004, bone="pelvis", rig=rig)
+    concept.cube(prefix + "_ReferenceBuckleLCrossbar", (0.008, -0.273, 0.858), (0.022, 0.005, 0.008), themed["teal_dark"], collection, bevel=0.004, bone="pelvis", rig=rig)
+    for index, x in enumerate((-0.225, -0.115, 0.115, 0.225)):
+        concept.cube(prefix + f"_ReferencePouch_{index}", (x, -0.242, 0.82), (0.048, 0.036, 0.070), themed["teal_dark"], collection, bevel=0.016, bone="pelvis", rig=rig)
+
+    authored_names = sorted(set(collection.objects.keys()) - before)
+    hair_names = [name for name in authored_names if "_ReferenceHairLock_" in name]
+    if len(hair_names) < minimum_locks:
+        raise RuntimeError(f"Lilly reference hair has {len(hair_names)} locks; minimumRiggedLocks={minimum_locks}")
+    minimum = detail_kit.get("minimumAuthoredParts")
+    if not isinstance(minimum, int) or len(authored_names) < minimum:
+        raise RuntimeError(f"Lilly reference detail kit has {len(authored_names)} parts; minimumAuthoredParts={minimum}")
+    return {
+        "detailKitKind": detail_kit["kind"],
+        "riggedHairLockCount": len(hair_names),
+        "authoredReferencePartCount": len(authored_names),
+        "authoredReferenceParts": authored_names,
+    }
+
+
 def add_unlockable_details(concept, collection, rig, mats, actor_id: str, variant_id: str, model_spec: dict) -> tuple[dict, dict]:
     themed = actor_materials(concept, mats, actor_id)
     prefix = f"{actor_id}_{variant_id}"
@@ -249,20 +357,7 @@ def add_unlockable_details(concept, collection, rig, mats, actor_id: str, varian
     if actor_id == "lester-original":
         report = add_lester_reference_details(concept, collection, rig, themed, actor_id, variant_id, model_spec)
     elif actor_id == "lilly":
-        for index, (x, z, angle) in enumerate(((-0.18, 1.61, -12), (-0.10, 1.53, -6), (0.0, 1.49, 0), (0.10, 1.53, 6), (0.18, 1.61, 12))):
-            concept.cube(prefix + f"_LongHairLock_{index}", (x, 0.13, z), (0.07, 0.085, 0.25), themed["teal"], collection, bevel=0.065, rotation=(math.radians(-8), math.radians(angle), math.radians(angle)), bone="head", rig=rig)
-        for side, sign in (("L", -1), ("R", 1)):
-            bpy.ops.mesh.primitive_torus_add(major_radius=0.073, minor_radius=0.012, major_segments=24, minor_segments=8, location=(sign * 0.085, -0.198, 1.80), rotation=(math.radians(90), 0, 0))
-            glasses = bpy.context.object
-            glasses.name = prefix + f"_RoundGlasses_{side}"
-            glasses.data.materials.append(themed["silver"])
-            concept.move_to_collection(glasses, collection)
-            concept.attach_to_bone(glasses, rig, "head")
-        concept.cube(prefix + "_GlassesBridge", (0, -0.205, 1.80), (0.025, 0.018, 0.012), themed["silver"], collection, bevel=0.008, bone="head", rig=rig)
-        concept.cube(prefix + "_GoldCollar", (0, -0.19, 1.48), (0.22, 0.045, 0.055), themed["silver"], collection, bevel=0.025, bone="chest", rig=rig)
-        concept.cube(prefix + "_GoldBelt", (0, -0.205, 0.87), (0.24, 0.035, 0.045), themed["silver"], collection, bevel=0.018, bone="pelvis", rig=rig)
-        concept.cube(prefix + "_TealChestMark", (0, -0.245, 1.28), (0.075, 0.018, 0.17), themed["teal_light"], collection, bevel=0.018, bone="chest", rig=rig)
-        report = {"detailKitKind": None, "authoredReferencePartCount": 0, "authoredReferenceParts": []}
+        report = add_lilly_reference_details(concept, collection, rig, themed, actor_id, variant_id, model_spec)
     else:
         raise RuntimeError(f"Unknown production unlockable: {actor_id}")
     return themed, {

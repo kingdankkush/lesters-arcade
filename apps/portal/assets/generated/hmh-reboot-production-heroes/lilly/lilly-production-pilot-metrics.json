@@ -1,19 +1,19 @@
 {
   "actorId": "lilly",
-  "atlasSha256": "a80a7d58d794fdb32481ab552a8195f02020028cd27f017de4539457b561f80b",
+  "atlasSha256": "34774dc4fa55a549b23adfc15c13104e357a960f3255417b84b816e5e80b6eb3",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "6f476293664b65db65f68611b60f6979bae32b9534a362e896d8c20d453d1446",
+  "contactSheetSha256": "5cb3c8efc5417104540eb82b8af123b3e5d92cf7633aae42a1067386c91ec23d",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "fbbc92156eafce61f72f02178c3a5f09c8ca72ac9284ad57659881bf7656cb7c",
+  "metadataSha256": "95d400007591e66ac2e10e00514aeccee51884fc7d3beb054ff4a545bfcc61ab",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -29,7 +29,7 @@
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "bbff2dd407d34fa8c86e133efc8bad2671b532137b370fc4ff06ec4d67efe3ca",
+  "sourceBlendSha256": "f21a9f7d216d02c252849afc0c0f73416d0fd01faaa145357524d7c15ee10369",
   "status": "pass",
   "transparentCornerFailureCount": 0,
   "uniqueAnimatedFrameCount": 640,
