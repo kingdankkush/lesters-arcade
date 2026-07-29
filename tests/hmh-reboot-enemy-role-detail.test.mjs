@@ -50,8 +50,8 @@ test('evidence-safe roster preview instantiates every enemy family for non-vacuo
   assert.match(runtimeSource, /rosterPreviewEnabled[\s\S]*?reason: 'roster-preview'[\s\S]*?: stepEncounterDirector\(/);
 });
 
-test('rank-and-file production art uses the reviewed collision-readable projection scale', () => {
-  assert.equal(ENEMY_ROSTER_RUNTIME_SCALE, 0.50);
+test('Cycle 032 keeps rank-and-file zombies in the measured human-scale parity band', () => {
+  assert.equal(ENEMY_ROSTER_RUNTIME_SCALE, 0.75);
 });
 
 test('the role-detail browser gate covers desktop and mobile production roster composition', () => {

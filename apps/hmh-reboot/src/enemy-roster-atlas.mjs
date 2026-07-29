@@ -8,7 +8,11 @@
  */
 
 export const ENEMY_ROSTER_PIPELINE_ID = 'hmh-reboot-enemy-roster-v1';
-export const ENEMY_ROSTER_RUNTIME_SCALE = 0.50;
+// Measured from the shipped trimmed atlas frames rather than tuned by feel.
+// Rank-and-file zombies stay slightly smaller than the production heroes,
+// while the phase boss keeps a distinct larger silhouette.
+export const ENEMY_ROSTER_RUNTIME_SCALE = 0.75;
+export const BOSS_ROSTER_RUNTIME_SCALE = 0.86;
 // Compass names present in the atlas metadata.
 export const ENEMY_ROSTER_DIRECTIONS = Object.freeze([
   'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west',

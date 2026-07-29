@@ -23,6 +23,7 @@ import {
   terrainTileAsset,
 } from './terrain-tile-atlas.mjs';
 import {
+  BOSS_ROSTER_RUNTIME_SCALE,
   ENEMY_ROSTER_ACTORS,
   ENEMY_ROSTER_RUNTIME_SCALE,
   createEnemyRosterAtlasIndex,
@@ -254,8 +255,6 @@ async function boot() {
   // Authored terrain materials. `?flatTerrain=1` restores the flat colour
   // fills for regression comparison.
   const terrainTilesEnabled = runtimeParams.get('flatTerrain') !== '1';
-  // The boss renders larger than the rank-and-file roster.
-  const BOSS_ROSTER_RUNTIME_SCALE = 0.86;
   const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled;
   const requestedProductionHeroId = runtimeParams.get('productionHero');
   const productionHeroId = Object.hasOwn(PRODUCTION_HERO_ASSETS, requestedProductionHeroId)

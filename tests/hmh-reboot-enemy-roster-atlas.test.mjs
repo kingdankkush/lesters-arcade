@@ -4,9 +4,11 @@ import { existsSync } from 'node:fs';
 import test from 'node:test';
 
 import {
+  BOSS_ROSTER_RUNTIME_SCALE,
   ENEMY_ROSTER_ACTORS,
   ENEMY_ROSTER_DIRECTIONS,
   ENEMY_ROSTER_PIPELINE_ID,
+  ENEMY_ROSTER_RUNTIME_SCALE,
   ENEMY_ROSTER_STATES,
   ENEMY_DIRECTION_BY_SIMULATION_INDEX,
   createEnemyRosterAtlasIndex,
@@ -15,6 +17,7 @@ import {
   resolveEnemyRosterPose,
 } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
 import { ENEMY_ARCHETYPES, REQUIRED_ENEMY_VISUAL_STATES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+import { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_RUNTIME_SCALE } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
 
 const rosterPath = (actorId) => new URL(
   `../apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`,
@@ -22,6 +25,27 @@ const rosterPath = (actorId) => new URL(
 );
 
 const loadMetadata = async (actorId) => JSON.parse(await readFile(rosterPath(actorId), 'utf8'));
+
+const heroPath = (actorId) => new URL(
+  `../apps/portal/assets/generated/hmh-reboot-production-heroes/${actorId}/${actorId}-production-pilot-atlas.json`,
+  import.meta.url,
+);
+
+const median = (values) => {
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+};
+
+const frameBounds = (frame) => ({
+  top: -frame.pivot.y,
+  bottom: frame.frame.h - frame.pivot.y,
+});
+
+const unionHeight = (frames) => {
+  const bounds = frames.map(frameBounds);
+  return Math.max(...bounds.map(({ bottom }) => bottom)) - Math.min(...bounds.map(({ top }) => top));
+};
 
 test('the authored roster covers every active archetype plus the boss', () => {
   for (const archetypeId of Object.keys(ENEMY_ARCHETYPES)) {
@@ -107,6 +131,41 @@ test('roster assets resolve to committed paths and reject unknown actors', () =>
   assert.match(asset.imageUrl, /hmh-reboot-enemy-roster\/gas-bomber\/gas-bomber-roster-atlas\.png$/);
   assert.match(asset.metadataUrl, /gas-bomber-roster-atlas\.json$/);
   assert.throws(() => enemyRosterAsset('not-an-actor'), /unknown roster actor/);
+});
+
+test('ordinary zombies remain comparable to heroes while the boss reads larger', async () => {
+  const heroMedianHeights = [];
+  for (const actorId of Object.keys(PRODUCTION_HERO_ASSETS)) {
+    const metadata = JSON.parse(await readFile(heroPath(actorId), 'utf8'));
+    const directionalHeights = metadata.directions.map((direction) => unionHeight([
+      metadata.frames.find((frame) => frame.layer === 'lower-body' && frame.state === 'idle' && frame.direction === direction && frame.frameIndex === 0),
+      metadata.frames.find((frame) => frame.layer === 'torso-head' && frame.state === 'aim' && frame.direction === direction && frame.frameIndex === 0),
+    ]) * PRODUCTION_HERO_RUNTIME_SCALE);
+    heroMedianHeights.push(median(directionalHeights));
+  }
+
+  const ordinaryMedianHeights = [];
+  let bossMedianHeight = 0;
+  for (const actorId of ENEMY_ROSTER_ACTORS) {
+    const metadata = await loadMetadata(actorId);
+    const phase = metadata.phases?.[0] ?? null;
+    const scale = metadata.boss ? BOSS_ROSTER_RUNTIME_SCALE : ENEMY_ROSTER_RUNTIME_SCALE;
+    const directionalHeights = metadata.directions.map((direction) => {
+      const frame = metadata.frames.find((candidate) => candidate.state === 'idle'
+        && candidate.direction === direction
+        && candidate.frameIndex === 0
+        && (candidate.phase ?? null) === phase);
+      return frame.frame.h * scale;
+    });
+    if (metadata.boss) bossMedianHeight = median(directionalHeights);
+    else ordinaryMedianHeights.push(median(directionalHeights));
+  }
+
+  const heroHeight = median(heroMedianHeights);
+  const ordinaryRatio = median(ordinaryMedianHeights) / heroHeight;
+  const bossRatio = bossMedianHeight / heroHeight;
+  assert.ok(ordinaryRatio >= 0.8 && ordinaryRatio <= 0.9, `ordinary zombie/hero visual-height ratio ${ordinaryRatio.toFixed(3)} must stay in the measured 0.8–0.9 parity band`);
+  assert.ok(bossRatio >= 1 && bossRatio <= 1.15, `boss/hero visual-height ratio ${bossRatio.toFixed(3)} must stay in the measured 1.0–1.15 emphasis band`);
 });
 
 test('the runtime falls back to vector art and reports what it rendered', async () => {
