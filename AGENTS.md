@@ -4,21 +4,23 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-29-hmh-cycle-030-hermes-handoff.md` — **current**; carries certified Cycles 029–030, the Lit Valkyrie Cycle 031 brief, subsequent game/website priorities, full gates, and pipeline traps
+1. `docs/handoffs/2026-07-29-hmh-cycle-031-hermes-handoff.md` — **current**; carries certified Cycle 031, the measured actor-scale parity brief, subsequent game priorities, full gates, and pipeline traps
 2. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-3. `docs/hmh-reboot/cycles/CYCLE-030.md`
-4. `docs/hmh-reboot/cycles/CYCLE-029.md`
-5. `docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`
-6. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
-7. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
-8. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-9. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-10. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-11. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-12. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-13. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-14. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-15. `docs/hmh-reboot/COMPATIBILITY.json`
+3. `docs/hmh-reboot/cycles/CYCLE-031.md`
+4. `docs/handoffs/2026-07-29-hmh-cycle-030-hermes-handoff.md`
+5. `docs/hmh-reboot/cycles/CYCLE-030.md`
+6. `docs/hmh-reboot/cycles/CYCLE-029.md`
+7. `docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`
+8. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
+9. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
+10. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
+11. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+12. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+13. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+14. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+15. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+16. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+17. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
@@ -63,6 +65,8 @@ Current certified continuation and production baseline at the time of this instr
 - Cycle 029 exact commit patch SHA-256: `9c7d2acbc9f6b5d3e2390f94b5ccc3561a9dab7d959e390d927f5e508e496132`
 - Cycle 030 Lit Commando source: `d5a860d491739184a35e61fe9fd5f88c1c65743b`
 - Cycle 030 exact commit patch SHA-256: `38d5588b47d24067167c0749b7c36753bd350491a8aa7a10407d92161ea34950`
+- Cycle 031 Lit Valkyrie source: `45d1a25e48f0ba7f094efc0199ebb4675d8ac614`
+- Cycle 031 exact commit patch SHA-256: `a3be6886f105f98be6cec7eb0ca80fed6348e4080fa31b85f856d950e2914c36`
 - Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
 - Production deployment remains https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
 - `SETTLEMENT_LIVE=false`
