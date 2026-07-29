@@ -31,8 +31,10 @@ test('Vercel build command exposes the isolated Python target', () => {
   assert.equal(vercelConfig.buildCommand, 'PYTHONPATH="$PWD/.vercel-python" npm run vercel:build');
 });
 
-test('local Git state ignores the isolated Vercel Python target', () => {
-  assert.match(readFileSync(GITIGNORE, 'utf8'), /^\.vercel-python\/$/mu);
+test('local Git or the Vercel upload contract excludes the isolated Python target', () => {
+  const ignoredByGit = /^\.vercel-python\/$/mu.test(readFileSync(GITIGNORE, 'utf8'));
+  const ignoredByUpload = nonEmptyLines(VERCELIGNORE).includes('.vercel-python');
+  assert.equal(process.env.VERCEL === '1' ? ignoredByUpload : ignoredByGit, true);
 });
 
 test('selector builder uses a Pillow 11 compatible alpha byte API', () => {
