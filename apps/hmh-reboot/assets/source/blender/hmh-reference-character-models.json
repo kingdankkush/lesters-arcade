@@ -141,7 +141,7 @@
     {
       "actorId": "lit-valkyrie",
       "modelSpecId": "lit-valkyrie-rambo-v1",
-      "implementationStatus": "planned-bounded-model-cycle",
+      "implementationStatus": "cycle-031-implemented",
       "anatomy": "human",
       "runtimeAuthority": "projection-only",
       "gameplayBodyProfile": "human-medium-collision-v1",
@@ -167,7 +167,11 @@
         "charcoal-cargo-trousers-knee-pads-and-combat-boots",
         "small-mint-cyan-lit-identification-accents"
       ],
-      "differentiation": "not Lilly: platinum tied hair, no glasses, military olive-charcoal palette and stronger melee silhouette"
+      "differentiation": "not Lilly: platinum tied hair, no glasses, military olive-charcoal palette and stronger melee silhouette",
+      "detailKit": {
+        "kind": "lit-valkyrie-rambo-v1",
+        "minimumAuthoredParts": 60
+      }
     }
   ]
 }

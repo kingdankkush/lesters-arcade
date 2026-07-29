@@ -167,9 +167,10 @@ Do not hide hitbox changes inside a model or projection commit.
 1. Cycle 028: reference manifest plus Lester combat-model rebuild.
 2. Cycle 029: Lilly face, long wavy hair and teal/gold combat-outfit rebuild.
 3. Cycle 030: Lit Commando Rambo/army rebuild.
-4. Next model cycle: Lit Valkyrie female commando and long-hair rebuild.
-5. Separate gameplay cycle: enemy hurt-capsule generosity with seeded measurements.
-6. Subsequent enemy cycles: rebuild two enemy families at a time to hero-quality human/zombie standards.
-7. Separate animation cycles: recoil/recovery, cloth/scarf/hair secondary motion, hit reactions and boss phase poses.
+4. Cycle 031: Lit Valkyrie female commando, visible-face and long platinum-braid rebuild.
+5. Next projection cycle: measured ordinary hero/enemy visual-scale parity with gameplay bodies unchanged.
+6. Separate gameplay cycle: enemy hurt-capsule generosity with seeded measurements.
+7. Subsequent enemy cycles: rebuild two enemy families at a time to hero-quality human/zombie standards.
+8. Separate animation cycles: recoil/recovery, cloth/scarf/hair secondary motion, hit reactions and boss phase poses.
 
 Each cycle must run the relevant pinned Blender reproducibility pipeline, desktop/mobile browser evidence, full release/security/performance/repository battery and exact-index review before continuation-branch push.

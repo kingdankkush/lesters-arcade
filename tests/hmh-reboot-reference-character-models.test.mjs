@@ -97,6 +97,19 @@ test('Cycle 030 consumes a fail-closed Lit Commando Rambo detail kit and records
   assert.match(builderSource, /Lit Commando reference detail kit has/);
 });
 
+test('Cycle 031 consumes a fail-closed Lit Valkyrie Rambo detail kit and records authored geometry', () => {
+  const valkyrie = byActor['lit-valkyrie'];
+  assert.equal(valkyrie.implementationStatus, 'cycle-031-implemented');
+  assert.equal(valkyrie.detailKit.kind, 'lit-valkyrie-rambo-v1');
+  assert.ok(valkyrie.detailKit.minimumAuthoredParts >= 55);
+  assert.ok(valkyrie.hair.minimumRiggedLocks >= 7);
+  assert.equal(productionManifest.pilots.find((pilot) => pilot.actorId === 'lit-valkyrie').modelSpecId, valkyrie.modelSpecId);
+  assert.match(builderSource, /def add_lit_valkyrie_reference_details\(/);
+  assert.match(builderSource, /lit-valkyrie-rambo-v1/);
+  assert.match(builderSource, /Lit Valkyrie reference detail kit has/);
+  assert.match(builderSource, /Lit Valkyrie reference hair has/);
+});
+
 test('production hero mobile evidence follows the four-control child ownership contract', () => {
   assert.match(browserSmokeSource, /const controls = await page\.locator\('\[data-hmh-control\]'\)\.count\(\);[\s\S]*?assert\.equal\(controls, 4\)/);
   assert.doesNotMatch(browserSmokeSource, /assert\.equal\(controls, 8\)/);
