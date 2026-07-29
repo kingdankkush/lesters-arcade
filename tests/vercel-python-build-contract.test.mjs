@@ -9,19 +9,29 @@ const SELECTOR_BUILDER = fileURLToPath(new URL('../scripts/build-hmh-reboot-hero
 const GITIGNORE = fileURLToPath(new URL('../.gitignore', import.meta.url));
 const VERCELIGNORE = fileURLToPath(new URL('../.vercelignore', import.meta.url));
 
-test('Vercel installs the pinned Pillow dependency required by asset provenance checks', () => {
-  const config = JSON.parse(readFileSync(VERCEL_CONFIG, 'utf8'));
-  const requirements = readFileSync(PYTHON_REQUIREMENTS, 'utf8')
-    .split(/\r?\n/u)
-    .map((line) => line.trim())
-    .filter(Boolean);
+const vercelConfig = JSON.parse(readFileSync(VERCEL_CONFIG, 'utf8'));
 
-  assert.deepEqual(requirements, ['Pillow==11.3.0']);
+const nonEmptyLines = (path) => readFileSync(path, 'utf8')
+  .split(/\r?\n/u)
+  .map((line) => line.trim())
+  .filter(Boolean);
+
+test('Vercel pins the Pillow dependency required by asset provenance checks', () => {
+  assert.deepEqual(nonEmptyLines(PYTHON_REQUIREMENTS), ['Pillow==11.3.0']);
+});
+
+test('Vercel install command places Pillow in the isolated Python target', () => {
   assert.match(
-    config.installCommand,
+    vercelConfig.installCommand,
     /^npm install && uv pip install --python "\$\(command -v python\)" --target \.vercel-python --no-cache -r requirements-vercel\.txt$/u,
   );
-  assert.equal(config.buildCommand, 'PYTHONPATH="$PWD/.vercel-python" npm run vercel:build');
+});
+
+test('Vercel build command exposes the isolated Python target', () => {
+  assert.equal(vercelConfig.buildCommand, 'PYTHONPATH="$PWD/.vercel-python" npm run vercel:build');
+});
+
+test('local Git state ignores the isolated Vercel Python target', () => {
   assert.match(readFileSync(GITIGNORE, 'utf8'), /^\.vercel-python\/$/mu);
 });
 
