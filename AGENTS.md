@@ -4,19 +4,21 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md` — **current**; carries the user-reference hero brief, verified Cycle 028 source, remaining model/hitbox work, full gates, and pipeline traps
+1. `docs/handoffs/2026-07-29-hmh-cycle-030-hermes-handoff.md` — **current**; carries certified Cycles 029–030, the Lit Valkyrie Cycle 031 brief, subsequent game/website priorities, full gates, and pipeline traps
 2. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-3. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
-4. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
-5. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-6. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-7. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-8. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-9. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-10. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
-11. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-12. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-13. `docs/hmh-reboot/COMPATIBILITY.json`
+3. `docs/hmh-reboot/cycles/CYCLE-030.md`
+4. `docs/hmh-reboot/cycles/CYCLE-029.md`
+5. `docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`
+6. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
+7. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
+8. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
+9. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+10. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+11. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+12. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+13. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+14. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+15. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
@@ -57,8 +59,10 @@ Chikun's Escape remains a Coming Soon development cabinet. Its deterministic par
 Current certified continuation and production baseline at the time of this instruction:
 
 - Continuation branch: `reboot/hmh-aaa-continuous`
-- Cycle 028 runtime/art source: `fe8153f08c42500a57cce96f907ce5c117f0f8bc`
-- Cycle 028 exact commit patch SHA-256: `e7baade05a4f1876a8449ab3c82f3638670166e7a7526c83362c2bd14b6de6ca`
+- Cycle 029 Lilly source: `3784080bf0aa79cad7cbe1c7b13a9b6f9c094109`
+- Cycle 029 exact commit patch SHA-256: `9c7d2acbc9f6b5d3e2390f94b5ccc3561a9dab7d959e390d927f5e508e496132`
+- Cycle 030 Lit Commando source: `d5a860d491739184a35e61fe9fd5f88c1c65743b`
+- Cycle 030 exact commit patch SHA-256: `38d5588b47d24067167c0749b7c36753bd350491a8aa7a10407d92161ea34950`
 - Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
 - Production deployment remains https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
 - `SETTLEMENT_LIVE=false`
