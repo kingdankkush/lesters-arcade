@@ -86,6 +86,17 @@ test('Cycle 029 consumes a fail-closed Lilly reference detail kit and records au
   assert.match(builderSource, /minimumRiggedLocks/);
 });
 
+test('Cycle 030 consumes a fail-closed Lit Commando Rambo detail kit and records authored geometry', () => {
+  const commando = byActor['lit-commando'];
+  assert.equal(commando.implementationStatus, 'cycle-030-implemented');
+  assert.equal(commando.detailKit.kind, 'lit-commando-rambo-v1');
+  assert.ok(commando.detailKit.minimumAuthoredParts >= 50);
+  assert.equal(productionManifest.pilots.find((pilot) => pilot.actorId === 'lit-commando').modelSpecId, commando.modelSpecId);
+  assert.match(builderSource, /def add_lit_commando_reference_details\(/);
+  assert.match(builderSource, /lit-commando-rambo-v1/);
+  assert.match(builderSource, /Lit Commando reference detail kit has/);
+});
+
 test('production hero mobile evidence follows the four-control child ownership contract', () => {
   assert.match(browserSmokeSource, /const controls = await page\.locator\('\[data-hmh-control\]'\)\.count\(\);[\s\S]*?assert\.equal\(controls, 4\)/);
   assert.doesNotMatch(browserSmokeSource, /assert\.equal\(controls, 8\)/);

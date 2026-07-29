@@ -166,7 +166,7 @@ Do not hide hitbox changes inside a model or projection commit.
 
 1. Cycle 028: reference manifest plus Lester combat-model rebuild.
 2. Cycle 029: Lilly face, long wavy hair and teal/gold combat-outfit rebuild.
-3. Next model cycle: Lit Commando Rambo/army rebuild.
+3. Cycle 030: Lit Commando Rambo/army rebuild.
 4. Next model cycle: Lit Valkyrie female commando and long-hair rebuild.
 5. Separate gameplay cycle: enemy hurt-capsule generosity with seeded measurements.
 6. Subsequent enemy cycles: rebuild two enemy families at a time to hero-quality human/zombie standards.

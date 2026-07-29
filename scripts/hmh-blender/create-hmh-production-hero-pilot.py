@@ -149,6 +149,7 @@ def semantic_layer(obj) -> str:
         "_ReferencePouch_",
         "_ReferenceKneeGuard_",
         "_ReferenceBootSole_",
+        "_ReferenceKnife",
     )
     if any(token in name for token in lower_tokens):
         return "lower-body"
@@ -185,6 +186,25 @@ def actor_materials(concept, mats, actor_id: str) -> dict:
             "eye_teal": concept.material("Lilly teal green eyes", "#22cbb7", emission=0.12),
             "lens": concept.material("Lilly teal lenses", "#78e9df", alpha=0.62, emission=0.12),
             "lip": concept.material("Lilly lips", "#9b5968"),
+        })
+    elif actor_id == "lit-commando":
+        themed.update({
+            "blue": concept.material("Commando olive shirt", "#4c5835"),
+            "cyan": concept.material("Commando brass", "#b68a43", metallic=0.34),
+            "silver": concept.material("Commando gunmetal", "#46505a", metallic=0.30),
+            "silver_dark": concept.material("Commando boot dark", "#151b1d", metallic=0.08),
+            "charcoal": concept.material("Commando cargo charcoal", "#232a27"),
+            "teal": concept.material("Commando olive webbing", "#313a27"),
+            "teal_light": concept.material("Commando brass light", "#d1a755", metallic=0.40),
+            "skin": concept.material("Commando skin", "#b97956"),
+            "eye_white": concept.material("Commando eye white", "#f0e9dc"),
+            "eye_dark": concept.material("Commando dark eyes", "#35281f"),
+            "hair_dark": concept.material("Commando dark hair", "#17191a"),
+            "headband_red": concept.material("Commando headband red", "#a92525"),
+            "olive": concept.material("Commando olive field shirt", "#59643d"),
+            "olive_dark": concept.material("Commando webbing black olive", "#252c21"),
+            "steel": concept.material("Commando knife steel", "#9ba4a6", metallic=0.55),
+            "scar": concept.material("Commando scar", "#8c4f3d"),
         })
     return themed
 
@@ -349,6 +369,93 @@ def add_lilly_reference_details(concept, collection, rig, themed, actor_id: str,
     }
 
 
+def add_lit_commando_reference_details(concept, collection, rig, themed, actor_id: str, variant_id: str, model_spec: dict) -> dict:
+    detail_kit = model_spec.get("detailKit", {})
+    if detail_kit.get("kind") != "lit-commando-rambo-v1":
+        raise RuntimeError(f"Unknown reference detail kit: {detail_kit.get('kind')}")
+    prefix = f"{actor_id}_{variant_id}"
+
+    # Remove the concept-pilot helmet, visor and plated arms. The reference
+    # identity is a visible human survivor with bare muscular arms.
+    removable_suffixes = (
+        "_Helmet", "_Visor", "_Shoulder_L", "_Shoulder_R",
+        "_UpperArm_L", "_UpperArm_R", "_Forearm_L", "_Forearm_R",
+    )
+    for suffix in removable_suffixes:
+        obj = bpy.data.objects.get(prefix + suffix)
+        if obj is not None:
+            bpy.data.objects.remove(obj, do_unlink=True)
+
+    before = set(collection.objects.keys())
+
+    # Human square-jawed face, dark eyes, field scar and layered dark hair.
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.sphere(prefix + f"_ReferenceEyeWhite_{side}", (sign * 0.078, -0.184, 1.79), (0.057, 0.014, 0.043), themed["eye_white"], collection, bone="head", rig=rig)
+        concept.sphere(prefix + f"_ReferencePupil_{side}", (sign * 0.078, -0.199, 1.79), (0.025, 0.010, 0.027), themed["eye_dark"], collection, bone="head", rig=rig)
+        concept.cube(prefix + f"_ReferenceBrow_{side}", (sign * 0.078, -0.196, 1.855), (0.060, 0.012, 0.013), themed["hair_dark"], collection, bevel=0.008, rotation=(0, 0, math.radians(sign * -7)), bone="head", rig=rig)
+        concept.cube(prefix + f"_ReferenceJaw_{side}", (sign * 0.153, -0.040, 1.665), (0.052, 0.112, 0.078), themed["skin"], collection, bevel=0.030, rotation=(0, 0, math.radians(sign * 5)), bone="head", rig=rig)
+    concept.sphere(prefix + "_ReferenceNose", (0, -0.199, 1.735), (0.033, 0.025, 0.045), themed["skin"], collection, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceMouth", (0, -0.198, 1.682), (0.060, 0.010, 0.010), themed["scar"], collection, bevel=0.006, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceChin", (0, -0.146, 1.642), (0.112, 0.052, 0.052), themed["skin"], collection, bevel=0.032, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceScarA", (-0.118, -0.199, 1.780), (0.010, 0.006, 0.048), themed["scar"], collection, bevel=0.004, rotation=(0, 0, math.radians(-18)), bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceScarB", (-0.104, -0.199, 1.745), (0.009, 0.006, 0.025), themed["scar"], collection, bevel=0.004, rotation=(0, 0, math.radians(24)), bone="head", rig=rig)
+    concept.sphere(prefix + "_ReferenceHairCap", (0, 0.045, 1.895), (0.205, 0.185, 0.135), themed["hair_dark"], collection, bone="head", rig=rig)
+    for index, (x, y, z, rz) in enumerate(((-0.105, -0.015, 1.980, -18), (0.0, -0.025, 2.010, 0), (0.105, -0.010, 1.980, 18))):
+        concept.cube(prefix + f"_ReferenceHairTuft_{index}", (x, y, z), (0.065, 0.080, 0.065), themed["hair_dark"], collection, bevel=0.035, rotation=(0, math.radians(rz * 0.35), math.radians(rz)), bone="head", rig=rig)
+
+    # Red combat headband and two trailing tails retain a strong directional
+    # read without becoming a helmet or obscuring the weapon line.
+    concept.cube(prefix + "_ReferenceHeadbandFront", (0, -0.188, 1.887), (0.195, 0.025, 0.028), themed["headband_red"], collection, bevel=0.012, bone="head", rig=rig)
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.cube(prefix + f"_ReferenceHeadbandSide_{side}", (sign * 0.184, -0.015, 1.885), (0.025, 0.150, 0.028), themed["headband_red"], collection, bevel=0.012, bone="head", rig=rig)
+    concept.sphere(prefix + "_ReferenceHeadbandKnot", (0.145, 0.155, 1.875), (0.055, 0.050, 0.050), themed["headband_red"], collection, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceHeadbandTail_L", (0.105, 0.260, 1.775), (0.035, 0.145, 0.026), themed["headband_red"], collection, bevel=0.014, rotation=(math.radians(-18), 0, math.radians(-10)), bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceHeadbandTail_R", (0.190, 0.240, 1.815), (0.035, 0.125, 0.026), themed["headband_red"], collection, bevel=0.014, rotation=(math.radians(14), 0, math.radians(18)), bone="head", rig=rig)
+
+    # Bare muscular arms and compact wrist wraps replace the metallic pilot
+    # pauldrons while keeping the shared fourteen-bone animation contract.
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.sphere(prefix + f"_ReferenceShoulderMuscle_{side}", (sign * 0.365, 0, 1.430), (0.155, 0.175, 0.155), themed["skin"], collection, bone=f"upper_arm.{side}", rig=rig)
+        concept.cylinder(prefix + f"_ReferenceUpperArm_{side}", (sign * 0.430, 0, 1.235), 0.112, 0.38, themed["skin"], collection, rotation=(0, math.radians(sign * 18), 0), bone=f"upper_arm.{side}", rig=rig)
+        concept.cylinder(prefix + f"_ReferenceForearm_{side}", (sign * 0.500, -0.040, 1.035), 0.104, 0.34, themed["skin"], collection, rotation=(0, math.radians(sign * 12), 0), bone=f"forearm.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceWristWrap_{side}", (sign * 0.480, -0.090, 0.930), (0.115, 0.110, 0.065), themed["olive_dark"], collection, bevel=0.040, bone=f"forearm.{side}", rig=rig)
+
+    # Sleeveless olive field shirt, black-olive webbing, ammunition and tags.
+    concept.cube(prefix + "_ReferenceShirtFront_L", (-0.130, -0.220, 1.285), (0.125, 0.040, 0.270), themed["olive"], collection, bevel=0.045, bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceShirtFront_R", (0.130, -0.220, 1.285), (0.125, 0.040, 0.270), themed["olive"], collection, bevel=0.045, bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceShirtCollar", (0, -0.245, 1.505), (0.145, 0.025, 0.042), themed["olive_dark"], collection, bevel=0.018, bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceShirtHem", (0, -0.245, 1.055), (0.275, 0.025, 0.035), themed["olive_dark"], collection, bevel=0.014, bone="spine", rig=rig)
+    concept.cube(prefix + "_ReferenceWebbingA", (-0.105, -0.270, 1.300), (0.040, 0.020, 0.300), themed["olive_dark"], collection, bevel=0.012, rotation=(0, 0, math.radians(-18)), bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceWebbingB", (0.105, -0.270, 1.300), (0.040, 0.020, 0.300), themed["olive_dark"], collection, bevel=0.012, rotation=(0, 0, math.radians(18)), bone="chest", rig=rig)
+    for index, x in enumerate((-0.155, -0.095, -0.035, 0.025, 0.085, 0.145)):
+        concept.cube(prefix + f"_ReferenceAmmo_{index}", (x, -0.303, 1.340 - index * 0.015), (0.022, 0.018, 0.060), themed["teal_light"], collection, bevel=0.008, rotation=(0, 0, math.radians(-18)), bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceDogTagChain", (0, -0.294, 1.410), (0.006, 0.008, 0.090), themed["steel"], collection, bevel=0.003, bone="chest", rig=rig)
+    concept.cube(prefix + "_ReferenceDogTag", (0, -0.304, 1.325), (0.025, 0.010, 0.035), themed["steel"], collection, bevel=0.008, bone="chest", rig=rig)
+
+    # Cargo trousers, practical pouches, knife sheath and grounded heavy boots.
+    concept.cube(prefix + "_ReferenceBelt", (0, -0.215, 0.870), (0.300, 0.034, 0.050), themed["olive_dark"], collection, bevel=0.014, bone="pelvis", rig=rig)
+    concept.cube(prefix + "_ReferenceBuckle", (0, -0.255, 0.870), (0.060, 0.018, 0.050), themed["teal_light"], collection, bevel=0.010, bone="pelvis", rig=rig)
+    for index, x in enumerate((-0.235, -0.115, 0.115, 0.235)):
+        concept.cube(prefix + f"_ReferencePouch_{index}", (x, -0.245, 0.810), (0.050, 0.038, 0.072), themed["olive_dark"], collection, bevel=0.016, bone="pelvis", rig=rig)
+    for side, sign in (("L", -1), ("R", 1)):
+        concept.cube(prefix + f"_ReferenceCargoThigh_{side}", (sign * 0.160, -0.080, 0.570), (0.145, 0.105, 0.205), themed["charcoal"], collection, bevel=0.050, bone=f"thigh.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceCargoPocket_{side}", (sign * 0.245, -0.120, 0.580), (0.055, 0.045, 0.095), themed["olive_dark"], collection, bevel=0.018, bone=f"thigh.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceKneeGuard_{side}", (sign * 0.160, -0.195, 0.340), (0.145, 0.055, 0.112), themed["olive"], collection, bevel=0.035, bone=f"shin.{side}", rig=rig)
+        concept.cube(prefix + f"_ReferenceBootSole_{side}", (sign * 0.160, -0.115, 0.035), (0.155, 0.235, 0.035), themed["silver_dark"], collection, bevel=0.022, bone=f"shin.{side}", rig=rig)
+    concept.cube(prefix + "_ReferenceKnifeSheath", (0.255, -0.055, 0.570), (0.050, 0.065, 0.175), themed["silver_dark"], collection, bevel=0.020, rotation=(0, 0, math.radians(-7)), bone="thigh.R", rig=rig)
+    concept.cube(prefix + "_ReferenceKnifeHandle", (0.255, -0.070, 0.735), (0.045, 0.050, 0.070), themed["steel"], collection, bevel=0.015, rotation=(0, 0, math.radians(-7)), bone="thigh.R", rig=rig)
+
+    authored_names = sorted(set(collection.objects.keys()) - before)
+    minimum = detail_kit.get("minimumAuthoredParts")
+    if not isinstance(minimum, int) or len(authored_names) < minimum:
+        raise RuntimeError(f"Lit Commando reference detail kit has {len(authored_names)} parts; minimumAuthoredParts={minimum}")
+    return {
+        "detailKitKind": detail_kit["kind"],
+        "authoredReferencePartCount": len(authored_names),
+        "authoredReferenceParts": authored_names,
+    }
+
+
 def add_unlockable_details(concept, collection, rig, mats, actor_id: str, variant_id: str, model_spec: dict) -> tuple[dict, dict]:
     themed = actor_materials(concept, mats, actor_id)
     prefix = f"{actor_id}_{variant_id}"
@@ -358,6 +465,8 @@ def add_unlockable_details(concept, collection, rig, mats, actor_id: str, varian
         report = add_lester_reference_details(concept, collection, rig, themed, actor_id, variant_id, model_spec)
     elif actor_id == "lilly":
         report = add_lilly_reference_details(concept, collection, rig, themed, actor_id, variant_id, model_spec)
+    elif actor_id == "lit-commando":
+        report = add_lit_commando_reference_details(concept, collection, rig, themed, actor_id, variant_id, model_spec)
     else:
         raise RuntimeError(f"Unknown production unlockable: {actor_id}")
     return themed, {
@@ -407,7 +516,7 @@ def main() -> None:
     variants_by_actor = {}
     reference_reports = {}
     for pilot in manifest["pilots"]:
-        if pilot["actorId"] in {"lester-original", "lilly"}:
+        if pilot["actorId"] in {"lester-original", "lilly", "lit-commando"}:
             actor = {"id": pilot["actorId"]}
             variant = {"id": pilot["variantId"]}
         else:
@@ -416,7 +525,7 @@ def main() -> None:
         scene.collection.children.link(collection)
         actor_mats = mats
         model_spec = find_reference_model(reference_manifest, actor["id"], pilot["modelSpecId"])
-        if actor["id"] in {"lester-original", "lilly"}:
+        if actor["id"] in {"lester-original", "lilly", "lit-commando"}:
             actor_mats, reference_report = add_unlockable_details(concept, collection, rig, mats, actor["id"], variant["id"], model_spec)
         else:
             concept.add_variant_details(

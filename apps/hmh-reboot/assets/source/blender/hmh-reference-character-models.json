@@ -113,7 +113,7 @@
     {
       "actorId": "lit-commando",
       "modelSpecId": "lit-commando-rambo-v1",
-      "implementationStatus": "planned-bounded-model-cycle",
+      "implementationStatus": "cycle-030-implemented",
       "anatomy": "human",
       "runtimeAuthority": "projection-only",
       "gameplayBodyProfile": "human-medium-collision-v1",
@@ -132,7 +132,11 @@
         "cross-body-webbing-ammo-and-utility-belt",
         "dark-cargo-trousers-knife-sheath-and-combat-boots"
       ],
-      "differentiation": "no blue mascot sphere, glasses or teal hair; reads as the heavy conventional military survivor"
+      "differentiation": "no blue mascot sphere, glasses or teal hair; reads as the heavy conventional military survivor",
+      "detailKit": {
+        "kind": "lit-commando-rambo-v1",
+        "minimumAuthoredParts": 58
+      }
     },
     {
       "actorId": "lit-valkyrie",
