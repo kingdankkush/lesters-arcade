@@ -144,6 +144,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 035: Liquidator Agent and Validator Cultist ranged/support role-art upgrade plus exact cold-scene roster rendering
   - Status: committed on continuation as `0e4a0cc7`; production unchanged
   - Cycle ledger: `cycles/CYCLE-035.md`
+- [x] Cycle 036: mobile weapon access and deterministic reload/switch/overheat readability
+  - Status: committed on continuation as `15629eba`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-036.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -155,9 +158,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 035 automation, exact independent cold-scene verification, exact-index review, and desktop/mobile visual review certified
-- Cycle 035 runtime/art source: `0e4a0cc7dbe553196b64b5181ed5cd70d3c70e9f`
-- Exact Cycle 035 commit patch SHA-256: `697b72230da401d5ef686cea3145fb643c9ea274ad7116377b9dbdc166aa698f`
-- Current handoff: `../handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md`
+- Status: Cycle 036 mobile weapon access, deterministic combat-state readability, exact-index review, and desktop/mobile visual/browser review certified
+- Cycle 036 runtime source: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
+- Exact Cycle 036 commit patch SHA-256: `5fa3e71570a20d1ca5b4166df06c041e244e9a7315645ae74f797752686847d6`
+- Current handoff: `../handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md`
 - Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
 - Settlement: disabled; hardened Web3 remains outside this release

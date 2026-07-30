@@ -4,27 +4,29 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md` — **current**; carries certified Cycle 035, the ranged/support enemy model and animation upgrade, exact independent cold-scene rendering, current production boundary, the next deterministic combat-readability slice, full gates, and pipeline traps
-2. `docs/hmh-reboot/cycles/CYCLE-035.md`
-3. `docs/handoffs/2026-07-29-hmh-cycle-034-hermes-handoff.md`
-4. `docs/hmh-reboot/cycles/CYCLE-034.md`
-5. `docs/handoffs/2026-07-29-hmh-cycle-033-hermes-handoff.md`
-6. `docs/hmh-reboot/cycles/CYCLE-033.md`
-7. `docs/hmh-reboot/cycles/CYCLE-032.md`
-8. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-9. `docs/handoffs/2026-07-29-hmh-cycle-031-hermes-handoff.md`
-10. `docs/hmh-reboot/cycles/CYCLE-031.md`
-11. `docs/hmh-reboot/cycles/CYCLE-030.md`
-12. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
-13. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
-14. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-15. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-16. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-17. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-18. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-19. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-20. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-21. `docs/hmh-reboot/COMPATIBILITY.json`
+1. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — **current**; carries certified Cycle 036 mobile weapon access and deterministic combat readability, current production boundary, the next measured weapon-role slice, full gates, and review side-effect traps
+2. `docs/hmh-reboot/cycles/CYCLE-036.md`
+3. `docs/handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md`
+4. `docs/hmh-reboot/cycles/CYCLE-035.md`
+5. `docs/handoffs/2026-07-29-hmh-cycle-034-hermes-handoff.md`
+6. `docs/hmh-reboot/cycles/CYCLE-034.md`
+7. `docs/handoffs/2026-07-29-hmh-cycle-033-hermes-handoff.md`
+8. `docs/hmh-reboot/cycles/CYCLE-033.md`
+9. `docs/hmh-reboot/cycles/CYCLE-032.md`
+10. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
+11. `docs/handoffs/2026-07-29-hmh-cycle-031-hermes-handoff.md`
+12. `docs/hmh-reboot/cycles/CYCLE-031.md`
+13. `docs/hmh-reboot/cycles/CYCLE-030.md`
+14. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
+15. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
+16. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
+17. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
+18. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
+19. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
+20. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
+21. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
+22. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
+23. `docs/hmh-reboot/COMPATIBILITY.json`
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
@@ -79,6 +81,8 @@ Current certified continuation and production baseline at the time of this instr
 - Cycle 034 exact commit patch SHA-256: `540d71f3bcc9935fee4ee525e19b59806800430e6267207b65d55e403f220e50`
 - Cycle 035 source: `0e4a0cc7dbe553196b64b5181ed5cd70d3c70e9f`
 - Cycle 035 exact commit patch SHA-256: `697b72230da401d5ef686cea3145fb643c9ea274ad7116377b9dbdc166aa698f`
+- Cycle 036 source: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
+- Cycle 036 exact commit patch SHA-256: `5fa3e71570a20d1ca5b4166df06c041e244e9a7315645ae74f797752686847d6`
 - Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
 - Production remains https://lestersarcade.io
 - `SETTLEMENT_LIVE=false`
