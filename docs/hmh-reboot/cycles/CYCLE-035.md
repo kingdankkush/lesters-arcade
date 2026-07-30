@@ -2,7 +2,9 @@
 
 Date: 2026-07-29 PDT
 Branch: `reboot/hmh-aaa-continuous`
-Status: local candidate; exact-index commit pending
+Status: certified local-only
+Source: `0e4a0cc7dbe553196b64b5181ed5cd70d3c70e9f`
+Exact commit patch SHA-256: `697b72230da401d5ef686cea3145fb643c9ea274ad7116377b9dbdc166aa698f`
 Production: unchanged at `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
 Settlement: `SETTLEMENT_LIVE=false`
 

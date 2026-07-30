@@ -141,6 +141,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 034: Bagholder Rusher and Whale Enforcer model/detail and close-range attack-readability upgrade
   - Status: committed on continuation as `be2712e4`; production unchanged
   - Cycle ledger: `cycles/CYCLE-034.md`
+- [x] Cycle 035: Liquidator Agent and Validator Cultist ranged/support role-art upgrade plus exact cold-scene roster rendering
+  - Status: committed on continuation as `0e4a0cc7`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-035.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -152,9 +155,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 034 automation, deterministic authored-art verification, exact-index review, and desktop/mobile visual review certified
-- Cycle 034 runtime/art source: `be2712e4c617152eb3f115c5ef083e3a3a173044`
-- Exact Cycle 034 commit patch SHA-256: `540d71f3bcc9935fee4ee525e19b59806800430e6267207b65d55e403f220e50`
-- Current handoff: `../handoffs/2026-07-29-hmh-cycle-034-hermes-handoff.md`
+- Status: Cycle 035 automation, exact independent cold-scene verification, exact-index review, and desktop/mobile visual review certified
+- Cycle 035 runtime/art source: `0e4a0cc7dbe553196b64b5181ed5cd70d3c70e9f`
+- Exact Cycle 035 commit patch SHA-256: `697b72230da401d5ef686cea3145fb643c9ea274ad7116377b9dbdc166aa698f`
+- Current handoff: `../handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md`
 - Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
 - Settlement: disabled; hardened Web3 remains outside this release
