@@ -4,13 +4,13 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-29-hmh-cycle-031-hermes-handoff.md` — **current**; carries certified Cycle 031, the measured actor-scale parity brief, subsequent game priorities, full gates, and pipeline traps
-2. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-3. `docs/hmh-reboot/cycles/CYCLE-031.md`
-4. `docs/handoffs/2026-07-29-hmh-cycle-030-hermes-handoff.md`
-5. `docs/hmh-reboot/cycles/CYCLE-030.md`
-6. `docs/hmh-reboot/cycles/CYCLE-029.md`
-7. `docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`
+1. `docs/handoffs/2026-07-29-hmh-cycle-033-hermes-handoff.md` — **current**; carries certified Cycle 033, the forgiving deterministic enemy-hurtbox policy, current production boundary, next enemy-model wave, full gates, and pipeline traps
+2. `docs/hmh-reboot/cycles/CYCLE-033.md`
+3. `docs/hmh-reboot/cycles/CYCLE-032.md`
+4. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
+5. `docs/handoffs/2026-07-29-hmh-cycle-031-hermes-handoff.md`
+6. `docs/hmh-reboot/cycles/CYCLE-031.md`
+7. `docs/hmh-reboot/cycles/CYCLE-030.md`
 8. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
 9. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
 10. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
@@ -67,8 +67,12 @@ Current certified continuation and production baseline at the time of this instr
 - Cycle 030 exact commit patch SHA-256: `38d5588b47d24067167c0749b7c36753bd350491a8aa7a10407d92161ea34950`
 - Cycle 031 Lit Valkyrie source: `45d1a25e48f0ba7f094efc0199ebb4675d8ac614`
 - Cycle 031 exact commit patch SHA-256: `a3be6886f105f98be6cec7eb0ca80fed6348e4080fa31b85f856d950e2914c36`
-- Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
-- Production deployment remains https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
+- Cycle 032 source: `9002681fb5e91eed62cacbb8e1679201a3ae0e1a`
+- Cycle 032 exact staged patch SHA-256: `c493321316ea20687be04e2d8d4f0efadf9ab1db42e1caf842422d74b6a6907a`
+- Cycle 033 source: `d59d838258f285fa568382c28eadbc2979117a92`
+- Cycle 033 exact commit patch SHA-256: `e1e438b107280f5268f242d35b31a237256a1a68d198ade6ca38e4b3e6c881b9`
+- Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
+- Production remains https://lestersarcade.io
 - `SETTLEMENT_LIVE=false`
 
 Re-read live Git and deployment state before acting. Do not assume these values remain current in a later session.
