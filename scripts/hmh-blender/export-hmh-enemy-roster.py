@@ -38,7 +38,14 @@ def reset_pose(rig) -> None:
         pose_bone.scale = (1.0, 1.0, 1.0)
 
 
-def apply_pose(rig, state: str, frame_index: int, frame_count: int, stoop: float) -> None:
+def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int, stoop: float) -> None:
+    kind = actor.get("animationProfile", {}).get("kind", "shared-roster-v1")
+    if kind not in {
+        "shared-roster-v1",
+        "undead-straight-lunge-v1",
+        "undead-shoulder-charge-v1",
+    }:
+        raise RuntimeError(f"Unknown enemy animation profile: {kind}")
     reset_pose(rig)
     phase = (2.0 * math.pi * frame_index) / max(frame_count, 1)
     chest = rig.pose.bones["chest"]
@@ -79,6 +86,26 @@ def apply_pose(rig, state: str, frame_index: int, frame_count: int, stoop: float
         rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-36)
         rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-36)
         pelvis.location.z = 0.02 * wind
+        if kind == "undead-straight-lunge-v1":
+            chest.rotation_euler[0] = math.radians(-20 * wind)
+            head.rotation_euler[0] = math.radians(-12 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-112 * wind)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-112 * wind)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-48)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-48)
+            pelvis.location.z = -0.025 * wind
+        elif kind == "undead-shoulder-charge-v1":
+            chest.rotation_euler[0] = math.radians(18 * wind)
+            chest.rotation_euler[1] = math.radians(-16 * wind)
+            head.rotation_euler[1] = math.radians(12 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-34 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-28 * wind)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-72 * wind)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-30)
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(10 * wind)
+            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-8 * wind)
+            pelvis.location.z = -0.055 * wind
     elif state == "attack":
         # Strike: fast forward commitment, then recovery lean.
         swing = (1.0, 0.35, -0.25)[frame_index]
@@ -90,6 +117,25 @@ def apply_pose(rig, state: str, frame_index: int, frame_count: int, stoop: float
         rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-24 * swing)
         rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(-14 * swing)
         pelvis.location.y = -0.05 * swing
+        if kind == "undead-straight-lunge-v1":
+            chest.rotation_euler[0] = math.radians(34 * swing)
+            head.rotation_euler[0] = math.radians(18 * swing)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(72 * swing)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(72 * swing)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-32 * swing)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-32 * swing)
+            pelvis.location.y = -0.10 * swing
+        elif kind == "undead-shoulder-charge-v1":
+            chest.rotation_euler[0] = math.radians(42 * swing)
+            chest.rotation_euler[1] = math.radians(-18 * swing)
+            head.rotation_euler[1] = math.radians(10 * swing)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(18 * swing)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-38 * swing)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(34 * swing)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58 * swing)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-24 * swing)
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(-22 * swing)
+            pelvis.location.y = -0.13 * swing
     elif state == "hit":
         sign = -1 if frame_index == 0 else 1
         chest.rotation_euler[1] = math.radians(18 * sign)
@@ -173,7 +219,7 @@ def main() -> None:
                 for direction in manifest["directions"]:
                     rig.rotation_euler[2] = math.radians(manifest["directionAngles"][direction])
                     for frame_index in range(clip["frames"]):
-                        apply_pose(rig, state, frame_index, clip["frames"], stoop)
+                        apply_pose(rig, actor, state, frame_index, clip["frames"], stoop)
                         bpy.context.view_layer.update()
                         phase_token = f"__{boss_phase}" if boss_phase else ""
                         filename = f"{actor_id}__body{phase_token}__{state}__{direction}__{frame_index:03d}.png"

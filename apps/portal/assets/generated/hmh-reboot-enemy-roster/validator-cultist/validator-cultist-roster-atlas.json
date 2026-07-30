@@ -1,7 +1,11 @@
 {
   "actorId": "validator-cultist",
+  "animationProfile": {
+    "kind": "shared-roster-v1"
+  },
   "boss": false,
   "classification": "production-art",
+  "detailKit": null,
   "directions": [
     "south",
     "south-east",
@@ -369,7 +373,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "7c940f11574d1fe1b9ce11e401c6966f544378dbb5380a75eb956da0a234566f",
+      "sourcePixelSha256": "e65591e7d0d931413fac9468fab2bac83b3c07255fe99cb08cacfd315c111ffe",
       "state": "attack",
       "trimmed": true
     },
@@ -399,7 +403,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2b03ab56207899c636fc53d21d8aa46720f86846893fcc9ebd3b8b642b628aec",
+      "sourcePixelSha256": "2b020b6be729b5e7c89e2e72ec88cd2dfc9e097810f75c87d1e6dc73fdbb4d66",
       "state": "attack",
       "trimmed": true
     },
@@ -1239,7 +1243,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "90392bd929226cca5799f0aed4aa16447468b66839b6433cc2ab6bf728a6a02f",
+      "sourcePixelSha256": "97716cb269d7652da35952345ef9f752918402eef2b90d615a137119480ccadf",
       "state": "death",
       "trimmed": true
     },
@@ -1389,7 +1393,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4589d43f08bc0a4cc2749de78739c71ad6a1f25929c816b459a012b501ab333c",
+      "sourcePixelSha256": "2093291c8a84b3df9e67c0fe97f722cb3dba4c4c932f3b23cea981add7fedc00",
       "state": "death",
       "trimmed": true
     },
@@ -2199,7 +2203,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "cb97f616ec347603677d27c4116d6de8e4ba9f28e744783d56fe2d6dd3999f29",
+      "sourcePixelSha256": "4f289ba435d19ab7130efb5e211970c397a935f80153265a5043226ce3912ff7",
       "state": "idle",
       "trimmed": true
     },
@@ -2259,7 +2263,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "50349b4df8127d1a79ae501743b9725ca915d58a5d39ba7ecd45c3bfd00980cb",
+      "sourcePixelSha256": "ae0e74486f4677ee4bc2656619059c6ad852fdabb4f07ec61e012ede8eebfc8d",
       "state": "idle",
       "trimmed": true
     },
@@ -2469,7 +2473,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8d5236a3be9b57af4180e708020df0937c328dae72d2519d28ca7b2eb08f4f42",
+      "sourcePixelSha256": "f3d26af80ecd258219d920fdab77798386001afeb606e618fc02d7ddba5733b4",
       "state": "idle",
       "trimmed": true
     },
@@ -3519,7 +3523,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1db76170826c2bca8c0ce913d9dc8553ddb611e8c0e6bdeb4b8d11594b7a5cc0",
+      "sourcePixelSha256": "736f82a8390c82cf4d4779831977a811eee2662ae90c17c3699c92aa152b69ff",
       "state": "run",
       "trimmed": true
     },
@@ -3549,7 +3553,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2815f34073e4686fa94c80e08006477d6f1d3e9fb7a15849def860a3ccf633f8",
+      "sourcePixelSha256": "c1d798700a89d76fdf7ed3791f6b092ea5b5d22f1de6feaa2983d5be7c199797",
       "state": "run",
       "trimmed": true
     },
@@ -4179,7 +4183,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "793f4d980cae51572c644f9fd25a38ff0c0776ce785fb175a41fb50652f80982",
+      "sourcePixelSha256": "a38c671f39b7e271e0570c6ad6bb5bb0d9b53f46440c86633a5f84d401c96f0e",
       "state": "tell",
       "trimmed": true
     },
@@ -4329,7 +4333,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f29ed736b7c7ba1ed4f68b63c4e8c7ddf6b3c142997963d9107810bf0adac729",
+      "sourcePixelSha256": "28a8d01fcf1756fba77751a814c4228bbf1d07eddcdb231df46ae65c1592297a",
       "state": "tell",
       "trimmed": true
     },
@@ -4389,7 +4393,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "2badf31c736652dd454aafbb909f8cd2144d9434ecef7995de541c6ad9001dd9",
+      "sourcePixelSha256": "2ba15c057f0368c41dcd1ee11427f37fb2c8350d5f7f296428a0a4bfbf92d482",
       "state": "tell",
       "trimmed": true
     },

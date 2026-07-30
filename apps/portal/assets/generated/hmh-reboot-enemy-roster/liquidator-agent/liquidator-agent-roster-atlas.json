@@ -1,7 +1,11 @@
 {
   "actorId": "liquidator-agent",
+  "animationProfile": {
+    "kind": "shared-roster-v1"
+  },
   "boss": false,
   "classification": "production-art",
+  "detailKit": null,
   "directions": [
     "south",
     "south-east",
@@ -99,7 +103,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "07c8fa4ab3f82a3cc95bff63c781a132f72b3de22530a5c9a32fc4306b5eda1d",
+      "sourcePixelSha256": "efee506bb7c1baf5db9244659672dbd49d95bc6c26a0afe4bcd7a246afb80dca",
       "state": "attack",
       "trimmed": true
     },
@@ -369,7 +373,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ace2356f5b60a3c4092c035a7495fed4b950346876891ca448925e1cecc28fd9",
+      "sourcePixelSha256": "59b0d6848c78fc9a7f64387911d7239e978ffcf72be2b7ee097fc72ce8bfbbc4",
       "state": "attack",
       "trimmed": true
     },
@@ -429,7 +433,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1cb842770ff993c1c490a0d0aec4dda1b685dd82fe3664710a4f79341c5a70c6",
+      "sourcePixelSha256": "2ba6ae1af8ca5218b06efd687ff48d98d7123f1c56400acc526a38c5680c294d",
       "state": "attack",
       "trimmed": true
     },
@@ -1509,7 +1513,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "8b8b8495c31bf57cb6dea6a613a5547a3692958d97e3678f8305404c7dcd75c5",
+      "sourcePixelSha256": "d7b9947964cd802c004082edf57189d21476172dac7f87a4b67ef4355970e702",
       "state": "death",
       "trimmed": true
     },
@@ -2409,7 +2413,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "abf7a6c67b64fbf292abf0028f25a97209467f95cc34bd3ecd67efff818e7ee5",
+      "sourcePixelSha256": "0812d6e38d19bcbaa4ea3cfcdf4ee66a8f6af01227364be3747f4ebe6d5131c7",
       "state": "idle",
       "trimmed": true
     },
@@ -2469,7 +2473,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bff0868d75595fed07673c302db8175bbb8785900b21b19e0ac737a404fc8d45",
+      "sourcePixelSha256": "4262a2287a1c688998c53941e23eb7ac546692ef795e321ca6c1f364ccc19768",
       "state": "idle",
       "trimmed": true
     },
@@ -3069,7 +3073,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f8122f998ca19b9f7f3b63ff3780d1395c56300e9fbae37b28726dd7286ab3cd",
+      "sourcePixelSha256": "88b71bf6ba37eb01083adbc44d4c891ac1d90fcd710f78cca2c73fe4ca026475",
       "state": "run",
       "trimmed": true
     },
@@ -3099,7 +3103,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d90d97e47d3fd1d9c46a967dfef302a0f17cfa91eb03fbe5e0696503c726c2c3",
+      "sourcePixelSha256": "521fa2565b5da1dcb148fc40173849920d79fe91a648fa43cbba55aa71b0acf9",
       "state": "run",
       "trimmed": true
     },
@@ -3159,7 +3163,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "54264d603f8e7fd2e3a5201c8dd477ec1c24d90571268b45acf1e17ddaa3c0a7",
+      "sourcePixelSha256": "4612fa0415b1394f8bedbc975adc03ba178a729acecb0c045d96a93f5f4d517e",
       "state": "run",
       "trimmed": true
     },
@@ -3189,7 +3193,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b6c4ff9178fef1868185d7ac5c4bcf8e9b77428b14def20aa709a808c0ce8466",
+      "sourcePixelSha256": "e654e212ee49412849e67de240a496cd65230e8ae5e4318fb16582e4c76c09fa",
       "state": "run",
       "trimmed": true
     },
@@ -3429,7 +3433,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d50cbe2f62634f50a851c378fc0b251f61923b0eb74b62b3d02f193fe5b61372",
+      "sourcePixelSha256": "184ab5975ec8b6c86cd65d3d49b63e79a08412b38b9deb3ecec12be54c530b6b",
       "state": "run",
       "trimmed": true
     },
@@ -3459,7 +3463,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "152a3adc1f854b9fa17882c2b75decf4cd7e0e94f82262429e6789ebf8dd1adc",
+      "sourcePixelSha256": "cf99d1e305ceabcc65447df507a69069b3b8f0077e46c34d899a8a60773779c3",
       "state": "run",
       "trimmed": true
     },
@@ -3519,7 +3523,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b88af00ccf137ee7a56b5a4ee2ad9f14e1a4c0e4f141036fce078517b2306a6f",
+      "sourcePixelSha256": "127e106e42da8ca6b0e3f59e5792a3c386813b7155b29b8368bbb1c11b954abc",
       "state": "run",
       "trimmed": true
     },
@@ -3549,7 +3553,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b52aad2f84759e5781b0bddd1ed20dd474b67bcd70556cce9773502eaf9e5ef2",
+      "sourcePixelSha256": "266ef1b43d24a5be5646b2b0dd37f5bda7c497268c0c13403ba8b811743c0b43",
       "state": "run",
       "trimmed": true
     },
@@ -3609,7 +3613,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b9a91294d2166e45ca355be09685dda1e3cc57d608f7f4f1c858a964522b3180",
+      "sourcePixelSha256": "4f3667b747071167c2ce31928d490be136c3e1bee5ce2e488185f176b0fb0a95",
       "state": "run",
       "trimmed": true
     },
@@ -3639,7 +3643,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0c18e0025a3d358d045fe1277d76fc3ca962d314fff9cfa4f7fadde8bd33af47",
+      "sourcePixelSha256": "28371705d6c55d371ae175bd72e28b1f10e17dfb61cec61a9b1d20b03ffdf452",
       "state": "run",
       "trimmed": true
     },
@@ -3699,7 +3703,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "07472d79087126a01ae7b820393237ad89030de719122f6e4ce8ce70b12bfd1f",
+      "sourcePixelSha256": "0717578bee514b781c97d35c3cf636462c5a685b0501bb62de3e87b5f69ea27e",
       "state": "run",
       "trimmed": true
     },
@@ -3729,7 +3733,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "36b35750f07c6521758565b770297a81d34ba13cef8624d054c1aaf2bed3d3ea",
+      "sourcePixelSha256": "50a50fbb7f2e19669523912808b2a629843cf501f9ba468b08969ecfe55cc131",
       "state": "run",
       "trimmed": true
     },
@@ -4119,7 +4123,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "17e15f5e01bec9503733e202a34cf4099bce31bd0aa0262ab78b94c955f6be25",
+      "sourcePixelSha256": "c51b4e22ffa54900494d1b08288211c78372b5e70f83d079ddad6993dc8f7d4f",
       "state": "tell",
       "trimmed": true
     },
@@ -4329,7 +4333,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "0a2eca3ed8144473b368fa0995accb1908b382a54d5962c800003e70c9d05944",
+      "sourcePixelSha256": "ce0b8acba074f45f1692737f0682311e9bd2e3d8c9f11edafe01b26dbca27050",
       "state": "tell",
       "trimmed": true
     },
@@ -4419,7 +4423,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5a7dfdb5b405c8a31f05305c7d69b71cb44cbb0cc292018a0d3482d380e58135",
+      "sourcePixelSha256": "b3e7d270126560fb13f05ec343c67aaa9db5c2e2e321e2cf9e6ca74153230246",
       "state": "tell",
       "trimmed": true
     },

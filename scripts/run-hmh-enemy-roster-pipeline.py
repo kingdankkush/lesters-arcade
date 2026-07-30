@@ -197,6 +197,8 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
         "actorId": actor["actorId"],
         "identityForm": actor["identityForm"],
         "silhouette": actor["silhouette"],
+        "detailKit": actor.get("detailKit"),
+        "animationProfile": actor.get("animationProfile", {"kind": "shared-roster-v1"}),
         "boss": bool(actor.get("boss", False)),
         "image": f"./{atlas_path.name}",
         "directions": manifest["directions"],

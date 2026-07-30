@@ -228,6 +228,149 @@ def build_role_detail_kit(actor: dict, rig, collection, *, height: float, should
                     0.014, 0.30 * height, accent,
                     collection, rig, bone, actor_id,
                 ))
+    elif kind == "bagholder-undead-scrapper-v1":
+        bone_mat = material(f"{actor_id}_detail_bone", "#d8cfb3", roughness=0.9)
+        wound_mat = material(f"{actor_id}_detail_wound", "#541d32", roughness=0.94)
+
+        parts.append(cube(
+            f"{actor_id}_Detail_ScalpWound", (0.045, -0.102, 1.655 * height),
+            (0.052, 0.020, 0.025), wound_mat, collection, rig, "head", actor_id,
+            bevel=0.008, rotation=(0.0, math.radians(-10), math.radians(-16)),
+        ))
+        for tooth_index, x in enumerate((-0.042, 0.0, 0.042)):
+            parts.append(cone(
+                f"{actor_id}_Detail_BrokenTooth_{tooth_index}",
+                (x, -0.125, 1.485 * height), 0.017, 0.055, bone_mat,
+                collection, rig, "head", actor_id,
+                rotation=(math.radians(90), 0.0, 0.0),
+            ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Detail_TornLapel_{side}",
+                (sign * 0.095 * shoulders, -0.151 * bulk, 1.29 * height),
+                (0.052, 0.022, 0.17 * height), secondary,
+                collection, rig, "chest", actor_id, bevel=0.012,
+                rotation=(0.0, 0.0, math.radians(sign * 17)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_ShoulderScrap_{side}",
+                (sign * 0.275 * shoulders, -0.052, 1.37 * height),
+                (0.092 * bulk, 0.068 * bulk, 0.035), secondary,
+                collection, rig, "chest", actor_id, bevel=0.018,
+                rotation=(0.0, math.radians(sign * 12), math.radians(sign * 8)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_ForearmWrap_{side}",
+                (sign * 0.47 * shoulders, -0.048, 1.01 * height),
+                (0.061 * bulk, 0.058 * bulk, 0.082 * height), wound_mat,
+                collection, rig, f"forearm.{side}", actor_id, bevel=0.014,
+                rotation=(0.0, 0.0, math.radians(sign * 12)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_KneeGuard_{side}",
+                (sign * 0.13, -0.077, 0.43 * height),
+                (0.075 * bulk, 0.032, 0.072 * height), accent,
+                collection, rig, f"shin.{side}", actor_id, bevel=0.016,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_BootToe_{side}",
+                (sign * 0.13, -0.118, 0.075 * height),
+                (0.071 * bulk, 0.055 * bulk, 0.028 * height), secondary,
+                collection, rig, f"shin.{side}", actor_id, bevel=0.014,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_DebtPouch_{side}",
+                (sign * 0.20 * bulk, -0.142 * bulk, 0.99 * height),
+                (0.062, 0.036, 0.078 * height), boot,
+                collection, rig, "pelvis", actor_id, bevel=0.014,
+                rotation=(0.0, 0.0, math.radians(sign * 5)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_TornCoatTail_{side}",
+                (sign * 0.13 * bulk, 0.045, 0.78 * height),
+                (0.082 * bulk, 0.035, 0.16 * height), secondary,
+                collection, rig, "pelvis", actor_id, bevel=0.012,
+                rotation=(math.radians(sign * 4), 0.0, math.radians(sign * 8)),
+            ))
+        for link_index, (x, z) in enumerate(((-0.08, 1.31), (0.0, 1.24), (0.08, 1.17))):
+            parts.append(cylinder(
+                f"{actor_id}_Detail_DebtChain_{link_index}",
+                (x, -0.176 * bulk, z * height), 0.025, 0.055, accent,
+                collection, rig, "chest", actor_id,
+                rotation=(math.radians(90), 0.0, math.radians(-28)),
+            ))
+    elif kind == "whale-enforcer-undead-bruiser-v1":
+        bone_mat = material(f"{actor_id}_detail_bone", "#ddd1a7", roughness=0.9)
+        wound_mat = material(f"{actor_id}_detail_wound", "#46251c", roughness=0.94)
+
+        parts.append(cube(
+            f"{actor_id}_Detail_SkullFracture", (-0.045, -0.108, 1.655 * height),
+            (0.060, 0.020, 0.027), wound_mat, collection, rig, "head", actor_id,
+            bevel=0.008, rotation=(0.0, math.radians(8), math.radians(18)),
+        ))
+        for tooth_index, x in enumerate((-0.045, 0.045)):
+            parts.append(cone(
+                f"{actor_id}_Detail_JawTooth_{tooth_index}",
+                (x, -0.128, 1.485 * height), 0.020, 0.060, bone_mat,
+                collection, rig, "head", actor_id,
+                rotation=(math.radians(90), 0.0, 0.0),
+            ))
+        parts.append(cube(
+            f"{actor_id}_Detail_NeckGuard", (0.0, -0.058, 1.445 * height),
+            (0.20 * shoulders, 0.105 * bulk, 0.052 * height), boot,
+            collection, rig, "chest", actor_id, bevel=0.024,
+        ))
+        for plate_index, (x, width, rotation_z) in enumerate((
+            (0.0, 0.13, 0.0),
+            (-0.19, 0.085, -8.0),
+            (0.19, 0.085, 8.0),
+        )):
+            parts.append(cube(
+                f"{actor_id}_Detail_ChestPlate_{plate_index}",
+                (x * shoulders, -0.178 * bulk, (1.28 if plate_index == 0 else 1.27) * height),
+                (width * shoulders, 0.028, 0.145 * height), accent,
+                collection, rig, "chest", actor_id, bevel=0.020,
+                rotation=(0.0, 0.0, math.radians(rotation_z)),
+            ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Detail_CrossHarness_{side}",
+                (sign * 0.105 * shoulders, -0.205 * bulk, 1.27 * height),
+                (0.036, 0.018, 0.22 * height), boot,
+                collection, rig, "chest", actor_id, bevel=0.010,
+                rotation=(0.0, 0.0, math.radians(sign * 22)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_ForearmBracer_{side}",
+                (sign * 0.47 * shoulders, -0.045, 1.02 * height),
+                (0.078 * bulk, 0.068 * bulk, 0.115 * height), accent,
+                collection, rig, f"forearm.{side}", actor_id, bevel=0.022,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_KnucklePlate_{side}",
+                (sign * 0.53 * shoulders, -0.055, 0.89 * height),
+                (0.062 * bulk, 0.052 * bulk, 0.040 * height), bone_mat,
+                collection, rig, f"forearm.{side}", actor_id, bevel=0.018,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_HeavyPouch_{side}",
+                (sign * 0.21 * bulk, -0.160 * bulk, 0.99 * height),
+                (0.078, 0.042, 0.085 * height), secondary,
+                collection, rig, "pelvis", actor_id, bevel=0.016,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_KneePlate_{side}",
+                (sign * 0.13, -0.084, 0.43 * height),
+                (0.087 * bulk, 0.035, 0.082 * height), accent,
+                collection, rig, f"shin.{side}", actor_id, bevel=0.018,
+            ))
+            for rivet_index, z_offset in enumerate((-0.028, 0.035)):
+                parts.append(sphere(
+                    f"{actor_id}_Detail_ShoulderRivet_{side}_{rivet_index}",
+                    (sign * 0.315 * shoulders, -0.122, (1.39 + z_offset) * height),
+                    (0.034, 0.025, 0.034), bone_mat,
+                    collection, rig, "chest", actor_id,
+                ))
     elif kind == "gas-bomber-respirator-rig":
         parts.append(sphere(
             f"{actor_id}_Detail_Respirator", (0.0, -0.125, 1.53 * height),

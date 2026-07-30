@@ -1,7 +1,11 @@
 {
   "actorId": "the-liquidator",
+  "animationProfile": {
+    "kind": "shared-roster-v1"
+  },
   "boss": true,
   "classification": "production-art",
+  "detailKit": null,
   "directions": [
     "south",
     "south-east",
@@ -1119,7 +1123,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "535bc9fe6468d3a284426f364bb43fab0ef3fccca90a3ea8ce883454aa6d4d5c",
+      "sourcePixelSha256": "a97e100cbf63970e83d85cf0fd0c47595b4dc922c38f48754e34da4216061083",
       "state": "death",
       "trimmed": true
     },
@@ -1599,7 +1603,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "21e7e8bc58d776482ebfb700e40bbe8a4e71699fe49840684fa28758464dba1a",
+      "sourcePixelSha256": "498b487d749fb52e3cd4e69a5abf5404dad641038d68b383e7f8a5f015a9c331",
       "state": "death",
       "trimmed": true
     },
@@ -2439,7 +2443,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "01de5feaea336e3b640aa028da187b86d31bf2bc0f296568c07d752e6e94013e",
+      "sourcePixelSha256": "58747e535b921e74939a1ac5370447c9f9ed238ab7dba77708b859a3649ccfe2",
       "state": "idle",
       "trimmed": true
     },
@@ -3609,7 +3613,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "d20c3ba1c177871d0663a0f1a6cf9b4af1c1c7907218ec8080ee155520fe283e",
+      "sourcePixelSha256": "0def3c555daff5f07ef52f42035f210a182ba8a47ad8097c05e555dc1b2dabb4",
       "state": "run",
       "trimmed": true
     },
@@ -5679,7 +5683,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "914650010aa37873e2b0123abb1eff02521f1e82d34a57099e130221f26fb6b7",
+      "sourcePixelSha256": "67832884cb9d7673126169103e2c160fee19c7a4c1780d33032657a3529be569",
       "state": "death",
       "trimmed": true
     },
@@ -6159,7 +6163,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "38cf1b21965efe189b3f0971dd07763a9595c44b8b13c34da41d1e5820c66b11",
+      "sourcePixelSha256": "aeeb344d4958d25e112cf2990ea447694b3fc55a0f2dad4aa039570be9cf3d7f",
       "state": "death",
       "trimmed": true
     },
@@ -6999,7 +7003,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "da062dfaf43db0ead0fc4590b237b13baad8206ccfc050318c27c3414983a7bf",
+      "sourcePixelSha256": "f28ffe8a13924404b12d689c9d538c311ffe40da4d6060f9878b8763a5ed642b",
       "state": "idle",
       "trimmed": true
     },
@@ -10239,7 +10243,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "950197ac9e54086e2c6fc9bc869f448dac14231ee406de649e25d91b821ce2d7",
+      "sourcePixelSha256": "fd5b9da0b6c4745be824d9717d06ebd9faf755fe0c1c6a974babfd672799f5fc",
       "state": "death",
       "trimmed": true
     },
@@ -12729,7 +12733,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "f1649783247ecc5415746fc4616823177752824327d57124ac8578f3c1cc9e06",
+      "sourcePixelSha256": "6b7109e115c2ab2490de68b2c4799fd59578304d4ce53e675a5c75c3cc9cb27b",
       "state": "run",
       "trimmed": true
     },
@@ -12759,7 +12763,7 @@
         "x": 51,
         "y": 93
       },
-      "sourcePixelSha256": "916d58d6241667d394883c1c8f0cb77d671e6d52e096b7ec5035651c85fb084f",
+      "sourcePixelSha256": "6390c23493e4a7aa64c259b17bbe35c553dbe0f7f94ba35aa441f3703aa97d3f",
       "state": "run",
       "trimmed": true
     },

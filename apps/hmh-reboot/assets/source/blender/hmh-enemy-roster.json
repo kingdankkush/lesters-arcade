@@ -102,6 +102,14 @@
       "prop": {
         "kind": "chest-wedge",
         "accent": "#ff5c7a"
+      },
+      "detailKit": {
+        "kind": "bagholder-undead-scrapper-v1",
+        "frontReadable": true,
+        "minimumAuthoredParts": 18
+      },
+      "animationProfile": {
+        "kind": "undead-straight-lunge-v1"
       }
     },
     {
@@ -173,6 +181,14 @@
       "prop": {
         "kind": "shoulder-plate",
         "accent": "#ffc857"
+      },
+      "detailKit": {
+        "kind": "whale-enforcer-undead-bruiser-v1",
+        "frontReadable": true,
+        "minimumAuthoredParts": 18
+      },
+      "animationProfile": {
+        "kind": "undead-shoulder-charge-v1"
       }
     },
     {

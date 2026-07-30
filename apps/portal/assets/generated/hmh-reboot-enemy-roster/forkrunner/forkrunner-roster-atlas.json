@@ -1,7 +1,15 @@
 {
   "actorId": "forkrunner",
+  "animationProfile": {
+    "kind": "shared-roster-v1"
+  },
   "boss": false,
   "classification": "production-art",
+  "detailKit": {
+    "frontReadable": true,
+    "kind": "forkrunner-forearm-forks",
+    "minimumAuthoredParts": 10
+  },
   "directions": [
     "south",
     "south-east",
@@ -69,7 +77,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "38127b742725025c139bfcbc67fcd541fea616d072648e56791c7c6ced37eba2",
+      "sourcePixelSha256": "a95c8f8186819241496991a3339013893f76d60d6a3f653a1f7ca0a9dfe7dbc4",
       "state": "attack",
       "trimmed": true
     },
@@ -2079,7 +2087,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "55fcbc232e4b96b2daceb4e87bd8fa624787884e64e17fe843f20617aa73d38e",
+      "sourcePixelSha256": "2f2fb07f50f3b62b81cc00f40f85b8c4c4d1e46451b9aabd41b5afd0a8bf2eeb",
       "state": "hit",
       "trimmed": true
     },
@@ -2379,7 +2387,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1d82801f4af705391e5a111bfa7a60d2216b5488d1adf823e5c75a67c017203a",
+      "sourcePixelSha256": "490eab12a4470be6cc830dd8fc9d0106f4bbd730b88a3abfa1bfb90e71973ceb",
       "state": "idle",
       "trimmed": true
     },

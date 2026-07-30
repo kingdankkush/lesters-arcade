@@ -1,7 +1,15 @@
 {
   "actorId": "gas-bomber",
+  "animationProfile": {
+    "kind": "shared-roster-v1"
+  },
   "boss": false,
   "classification": "production-art",
+  "detailKit": {
+    "frontReadable": true,
+    "kind": "gas-bomber-respirator-rig",
+    "minimumAuthoredParts": 11
+  },
   "directions": [
     "south",
     "south-east",
@@ -429,7 +437,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "4445e0e4832f2e19b32dcdb53f73f640c0377f13f84a5fbf54c5865acf4974bd",
+      "sourcePixelSha256": "255915a7da70a89962454fdb43d267fb6932aab4943ff2ebc24bc7e4ef07e6ca",
       "state": "attack",
       "trimmed": true
     },
@@ -639,7 +647,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "1a1c3549ad53f9cc9420988d0fdfc9075e34e9fabbb5bf57ba647fa1bd44b4d3",
+      "sourcePixelSha256": "a497ab970590065172ef66eadf248eee0b9ce4a167a162a1cdaf7b9a19b0d0ec",
       "state": "attack",
       "trimmed": true
     },
@@ -1089,7 +1097,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "01717be6accb2dd40132a73f1e977ff79fa7af8b4467d29d2996e97673a4e865",
+      "sourcePixelSha256": "5e521eb23c5be4de1c9900b8a8cb4455fe8e266ad4b66448cddba993f1055a60",
       "state": "death",
       "trimmed": true
     },
@@ -2139,7 +2147,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a06e023741ec787feaf116cc0470ee2ff7097603a3bacabce78a44adf80fc253",
+      "sourcePixelSha256": "f52d4921820548f889bea206add399cbe24596b8f7e5479f32c9c02305226259",
       "state": "hit",
       "trimmed": true
     },
@@ -2259,7 +2267,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "068fad936d4bbe76ea9665937634b59681fb7254edaaf3cc55f98a83ffbdc547",
+      "sourcePixelSha256": "7fb4e55957c844d258c7c96c3014c851dd4d22ecb1923b72c4a12a91c86101db",
       "state": "idle",
       "trimmed": true
     },
@@ -2439,7 +2447,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "396945f00e33b3991be2b39e57dd5ee2b8c7bfe3c6aa54d148dc3234789c32df",
+      "sourcePixelSha256": "332003400798639699424f9d1fcfad7f33c7819deba02fa5ee9ba5fb2dac3fae",
       "state": "idle",
       "trimmed": true
     },
@@ -2499,7 +2507,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f9980faf983833c3a27d130a6859c7fa3a77cedf0ea3ed4ad03ad678d6b42f90",
+      "sourcePixelSha256": "1be65110d7c4cb3c3f68fc52d146d72b2527391c8ef6de4f494ad03519a1712c",
       "state": "idle",
       "trimmed": true
     },
@@ -2859,7 +2867,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "70842630a465785fb5b90537a9c31b43ffefe246c3f7054a3c9b6e0be0e4eb82",
+      "sourcePixelSha256": "13fc3a9e9e79104f2f8b6661d4360ddd86d98474c9719569ce2911955a80e25b",
       "state": "run",
       "trimmed": true
     },
@@ -2949,7 +2957,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "a227b2ea3d4c82c5d5b2ba2b9fb77a3b255aa78e26e09ed91c25b6231dff2f88",
+      "sourcePixelSha256": "091879bda96cb446361925e08dc7c7eef9766e30788a7d297b58018187202f1e",
       "state": "run",
       "trimmed": true
     },
@@ -3219,7 +3227,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "32e13d9fb677c2f7caa7f9ac620514f24bb6a87009c9e259991bb4831d6d66a7",
+      "sourcePixelSha256": "ce5c2ba40b08d209cc3b6bccd9f83984eb3a4392074ef0ce2f2b264eaa4802ff",
       "state": "run",
       "trimmed": true
     },
@@ -3429,7 +3437,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "bcc36f514d81ef7e886420c549197b498916e5e96c9dca6b21da91dc3ff9584b",
+      "sourcePixelSha256": "bbbd6658514971d8cdfd6b30044e7d31fa8c77fe41f4b364e37ca2019fa9bc6b",
       "state": "run",
       "trimmed": true
     },
@@ -3459,7 +3467,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9c7afcf87a50f1b5467beba8b3a52ff3986e5fb981aa834ea8bc4772a3edc7dc",
+      "sourcePixelSha256": "aaf2d7127c49e9d2613510e02d031214e9cb41c8465688f84d67979ec084da9c",
       "state": "run",
       "trimmed": true
     },
@@ -3519,7 +3527,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "165db646194b9e4b958baf17431f5285faf75ecb540d5b2c6f61ac28844bb7e8",
+      "sourcePixelSha256": "e9617a0d94e0fc8ac9648006821cdbc5f9f431417f035b115809856740ea3837",
       "state": "run",
       "trimmed": true
     },
@@ -3549,7 +3557,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d637c5fcf7af355a3faba7b9022c3e37afc7e7de3076a61121a2d99e85f429a2",
+      "sourcePixelSha256": "7068b3e9607a51657868898bfe5d9c5e8a5cde6c61bb063e6a7e41fe1918ae66",
       "state": "run",
       "trimmed": true
     },
@@ -4389,7 +4397,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "74e53ba081c2f5c25565efad1cfd5d7cb41d017960faa60d7e1738229a2478fb",
+      "sourcePixelSha256": "9964d90eda66b526d68be2095c9c75374637d43b930f65f328d60b810cb63b77",
       "state": "tell",
       "trimmed": true
     },
