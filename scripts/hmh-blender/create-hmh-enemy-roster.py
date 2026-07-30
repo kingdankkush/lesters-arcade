@@ -82,6 +82,14 @@ def material(name: str, color: str, *, metallic: float = 0.0, emission: float = 
     return mat
 
 
+def apply_render_material_policy(manifest: dict) -> None:
+    for mat in bpy.data.materials:
+        node = mat.node_tree.nodes.get("Principled BSDF") if mat.node_tree else None
+        if node is None or node.inputs.get("Specular IOR Level") is None:
+            raise RuntimeError(f"Material {mat.name} is missing the required Principled specular input")
+        node.inputs["Specular IOR Level"].default_value = manifest["render"]["specularIorLevel"]
+
+
 def move_to_collection(obj, collection):
     for owner in list(obj.users_collection):
         owner.objects.unlink(obj)
@@ -371,6 +379,162 @@ def build_role_detail_kit(actor: dict, rig, collection, *, height: float, should
                     (0.034, 0.025, 0.034), bone_mat,
                     collection, rig, "chest", actor_id,
                 ))
+    elif kind == "liquidator-tactical-suppressor-v1":
+        armor_mat = material(f"{actor_id}_detail_armor", "#21182e", roughness=0.66)
+        lens_mat = material(f"{actor_id}_detail_lens", "#ef9cff", emission=0.38, roughness=0.38)
+
+        parts.append(cube(
+            f"{actor_id}_Detail_Visor", (0.0, -0.112, 1.575 * height),
+            (0.102, 0.024, 0.035), lens_mat, collection, rig, "head", actor_id,
+            bevel=0.010,
+        ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(sphere(
+                f"{actor_id}_Detail_CommNode_{side}",
+                (sign * 0.122, -0.015, 1.57 * height), (0.035, 0.028, 0.045),
+                accent, collection, rig, "head", actor_id,
+            ))
+        for plate_index, (x, width, angle) in enumerate((
+            (0.0, 0.12, 0.0),
+            (-0.16, 0.07, -10.0),
+            (0.16, 0.07, 10.0),
+        )):
+            parts.append(cube(
+                f"{actor_id}_Detail_ChestPlate_{plate_index}",
+                (x * shoulders, -0.165 * bulk, 1.27 * height),
+                (width * shoulders, 0.025, 0.13 * height), armor_mat,
+                collection, rig, "chest", actor_id, bevel=0.018,
+                rotation=(0.0, 0.0, math.radians(angle)),
+            ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Detail_ShoulderPlate_{side}",
+                (sign * 0.29 * shoulders, -0.055, 1.38 * height),
+                (0.095 * bulk, 0.075 * bulk, 0.045), secondary,
+                collection, rig, "chest", actor_id, bevel=0.020,
+                rotation=(0.0, math.radians(sign * 12), math.radians(sign * 7)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_ForearmBracer_{side}",
+                (sign * 0.47 * shoulders, -0.045, 1.02 * height),
+                (0.066 * bulk, 0.060 * bulk, 0.105 * height), armor_mat,
+                collection, rig, f"forearm.{side}", actor_id, bevel=0.017,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_AmmoPouch_{side}",
+                (sign * 0.19 * bulk, -0.155 * bulk, 0.99 * height),
+                (0.060, 0.038, 0.075 * height), secondary,
+                collection, rig, "pelvis", actor_id, bevel=0.014,
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_KneePlate_{side}",
+                (sign * 0.13, -0.078, 0.43 * height),
+                (0.073 * bulk, 0.032, 0.070 * height), armor_mat,
+                collection, rig, f"shin.{side}", actor_id, bevel=0.016,
+            ))
+        parts.append(cube(
+            f"{actor_id}_Detail_RifleReceiver", (0.16, -0.27, 1.22 * height),
+            (0.062, 0.16, 0.060), armor_mat, collection, rig, "prop_socket", actor_id,
+            bevel=0.014,
+        ))
+        parts.append(cube(
+            f"{actor_id}_Detail_RifleStock", (0.16, -0.055, 1.22 * height),
+            (0.072, 0.080, 0.075), secondary, collection, rig, "prop_socket", actor_id,
+            bevel=0.016,
+        ))
+        parts.append(cylinder(
+            f"{actor_id}_Detail_RifleScope", (0.16, -0.265, 1.31 * height),
+            0.027, 0.18, lens_mat, collection, rig, "prop_socket", actor_id,
+            rotation=(math.radians(90), 0.0, 0.0),
+        ))
+        parts.append(cylinder(
+            f"{actor_id}_Detail_MuzzleBrake", (0.16, -0.59, 1.22 * height),
+            0.046, 0.085, armor_mat, collection, rig, "prop_socket", actor_id,
+            rotation=(math.radians(90), 0.0, 0.0),
+        ))
+        parts.append(cube(
+            f"{actor_id}_Detail_RifleMagazine", (0.16, -0.25, 1.115 * height),
+            (0.050, 0.045, 0.080), secondary, collection, rig, "prop_socket", actor_id,
+            bevel=0.012, rotation=(math.radians(-8), 0.0, 0.0),
+        ))
+    elif kind == "validator-undead-cultist-v1":
+        bone_mat = material(f"{actor_id}_detail_bone", "#d9d0b0", roughness=0.9)
+        wound_mat = material(f"{actor_id}_detail_wound", "#44203f", roughness=0.94)
+
+        parts.append(cube(
+            f"{actor_id}_Detail_ScalpSigil", (0.0, -0.108, 1.645 * height),
+            (0.055, 0.020, 0.026), wound_mat, collection, rig, "head", actor_id,
+            bevel=0.008, rotation=(0.0, math.radians(-8), math.radians(18)),
+        ))
+        for tooth_index, x in enumerate((-0.042, 0.0, 0.042)):
+            parts.append(cone(
+                f"{actor_id}_Detail_BrokenTooth_{tooth_index}",
+                (x, -0.125, 1.485 * height), 0.016, 0.052, bone_mat,
+                collection, rig, "head", actor_id,
+                rotation=(math.radians(90), 0.0, 0.0),
+            ))
+        parts.append(cube(
+            f"{actor_id}_Detail_CheekWound", (-0.072, -0.112, 1.535 * height),
+            (0.032, 0.018, 0.045), wound_mat, collection, rig, "head", actor_id,
+            bevel=0.007, rotation=(0.0, 0.0, math.radians(-18)),
+        ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Detail_CowlPanel_{side}",
+                (sign * 0.085, 0.015, 1.53 * height),
+                (0.060, 0.055, 0.15 * height), secondary,
+                collection, rig, "head", actor_id, bevel=0.020,
+                rotation=(0.0, math.radians(sign * 8), math.radians(sign * 12)),
+            ))
+            parts.append(cone(
+                f"{actor_id}_Detail_ShoulderSigil_{side}",
+                (sign * 0.28 * shoulders, -0.070, 1.39 * height),
+                0.070, 0.060, accent, collection, rig, "chest", actor_id,
+                rotation=(math.radians(90), 0.0, math.radians(sign * 15)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_ForearmWrap_{side}",
+                (sign * 0.47 * shoulders, -0.040, 1.02 * height),
+                (0.058 * bulk, 0.056 * bulk, 0.095 * height), wound_mat,
+                collection, rig, f"forearm.{side}", actor_id, bevel=0.014,
+                rotation=(0.0, 0.0, math.radians(sign * 9)),
+            ))
+            parts.append(cube(
+                f"{actor_id}_Detail_KneeWrap_{side}",
+                (sign * 0.13, -0.068, 0.43 * height),
+                (0.064 * bulk, 0.028, 0.070 * height), secondary,
+                collection, rig, f"shin.{side}", actor_id, bevel=0.014,
+            ))
+        for panel_index, (x, angle) in enumerate(((-0.11, -7.0), (0.0, 0.0), (0.11, 7.0))):
+            parts.append(cube(
+                f"{actor_id}_Detail_RobePanel_{panel_index}",
+                (x * bulk, 0.035, 0.78 * height),
+                (0.067 * bulk, 0.035, 0.20 * height), secondary,
+                collection, rig, "pelvis", actor_id, bevel=0.012,
+                rotation=(math.radians(3), 0.0, math.radians(angle)),
+            ))
+        for charm_index, x in enumerate((-0.12, 0.0, 0.12)):
+            parts.append(cube(
+                f"{actor_id}_Detail_BeltCharm_{charm_index}",
+                (x, -0.155 * bulk, 0.98 * height),
+                (0.034, 0.022, 0.065 * height), accent,
+                collection, rig, "pelvis", actor_id, bevel=0.010,
+                rotation=(0.0, 0.0, math.radians((charm_index - 1) * 8)),
+            ))
+        for band_index, z in enumerate((1.07, 1.34, 1.55)):
+            parts.append(cylinder(
+                f"{actor_id}_Detail_StaffBand_{band_index}",
+                (0.42, -0.10, z * height), 0.034, 0.052, bone_mat,
+                collection, rig, "forearm.L", actor_id,
+            ))
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Detail_OrbBracket_{side}",
+                (0.42 + sign * 0.055, -0.10, 1.60 * height),
+                (0.018, 0.022, 0.065), bone_mat,
+                collection, rig, "forearm.L", actor_id, bevel=0.008,
+                rotation=(0.0, math.radians(sign * 15), math.radians(sign * 18)),
+            ))
     elif kind == "gas-bomber-respirator-rig":
         parts.append(sphere(
             f"{actor_id}_Detail_Respirator", (0.0, -0.125, 1.53 * height),
@@ -610,6 +774,8 @@ def build_actor(actor: dict, rig, collection) -> dict:
 def build_lighting(manifest: dict):
     scene = bpy.context.scene
     scene.render.engine = manifest["render"]["engine"]
+    scene.render.dither_intensity = manifest["render"]["ditherIntensity"]
+    scene.eevee.taa_render_samples = manifest["render"]["taaRenderSamples"]
     scene.render.film_transparent = True
     world = bpy.data.worlds.new("HMH_Enemy_World")
     world.use_nodes = True
@@ -618,12 +784,19 @@ def build_lighting(manifest: dict):
     scene.world = world
     if hasattr(scene, "view_settings"):
         scene.view_settings.exposure = manifest["render"]["exposure"]
+    scene.display.shading.light = manifest["render"]["workbenchLight"]
+    scene.display.shading.color_type = manifest["render"]["workbenchColorType"]
+    scene.display.shading.show_shadows = True
+    scene.display.shading.show_cavity = manifest["render"]["workbenchCavityEnabled"]
+    scene.display.shading.cavity_type = manifest["render"]["workbenchCavity"]
+    scene.display.shading.show_specular_highlight = True
 
     _channels = dict((name, (color, energy)) for name, color, energy in shared_light_channels("enemy"))
     key = bpy.data.lights.new("HMH_Enemy_Key", type="AREA")
     key.energy = _channels["key"][1]
     key.color = _channels["key"][0]
     key.size = 5.0
+    key.use_shadow = manifest["render"]["castShadows"]
     key_obj = bpy.data.objects.new("HMH_Enemy_Key", key)
     key_obj.location = (2.6, -3.4, 4.4)
     key_obj.rotation_euler = (math.radians(48), 0.0, math.radians(38))
@@ -633,6 +806,7 @@ def build_lighting(manifest: dict):
     fill.energy = _channels["fill"][1]
     fill.color = _channels["fill"][0]
     fill.size = 6.0
+    fill.use_shadow = manifest["render"]["castShadows"]
     fill_obj = bpy.data.objects.new("HMH_Enemy_Fill", fill)
     fill_obj.location = (-3.2, -2.2, 2.6)
     fill_obj.rotation_euler = (math.radians(66), 0.0, math.radians(-52))
@@ -642,6 +816,7 @@ def build_lighting(manifest: dict):
     rim.energy = _channels["rim"][1]
     rim.color = _channels["rim"][0]
     rim.size = 4.0
+    rim.use_shadow = manifest["render"]["castShadows"]
     rim_obj = bpy.data.objects.new("HMH_Enemy_Rim", rim)
     rim_obj.location = (0.4, 3.6, 3.4)
     rim_obj.rotation_euler = (math.radians(-56), 0.0, math.radians(8))
@@ -677,6 +852,7 @@ def main() -> None:
         actor_with_policy = dict(actor)
         actor_with_policy["materialPolicy"] = manifest.get("materialPolicy", {})
         built.append(build_actor(actor_with_policy, rig, collection))
+    apply_render_material_policy(manifest)
 
     blend_path = Path(args.source_blend).resolve()
     blend_path.parent.mkdir(parents=True, exist_ok=True)

@@ -7,6 +7,7 @@ const repoUrl = new URL('../', import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json', repoUrl), 'utf8'));
 const builderSource = await readFile(new URL('scripts/hmh-blender/create-hmh-enemy-roster.py', repoUrl), 'utf8');
 const exporterSource = await readFile(new URL('scripts/hmh-blender/export-hmh-enemy-roster.py', repoUrl), 'utf8');
+const pipelineSource = await readFile(new URL('scripts/run-hmh-enemy-roster-pipeline.py', repoUrl), 'utf8');
 const runtimeSource = await readFile(new URL('apps/hmh-reboot/src/main.mjs', repoUrl), 'utf8');
 const packageJson = JSON.parse(await readFile(new URL('package.json', repoUrl), 'utf8'));
 const browserSmokeSource = await readFile(new URL('scripts/hmh-reboot-enemy-detail-browser-smoke.mjs', repoUrl), 'utf8');
@@ -88,6 +89,92 @@ test('Cycle 034 generated atlases retain the audited detail and animation proven
     assert.equal(metadata.runtimeAuthority, 'projection-only');
     assert.equal(metadata.gameplayBodyProfile, 'authored-archetype-collision-v1');
   }
+});
+
+test('Cycle 035 gives the remaining ranged and support families explicit role-readable detail and motion profiles', () => {
+  const liquidatorAgent = actor('liquidator-agent');
+  const validatorCultist = actor('validator-cultist');
+
+  assert.equal(liquidatorAgent.identityForm, 'human');
+  assert.deepEqual(liquidatorAgent.detailKit, {
+    kind: 'liquidator-tactical-suppressor-v1',
+    frontReadable: true,
+    minimumAuthoredParts: 18,
+  });
+  assert.deepEqual(liquidatorAgent.animationProfile, {
+    kind: 'suppression-rifle-burst-v1',
+  });
+
+  assert.equal(validatorCultist.identityForm, 'zombie');
+  assert.deepEqual(validatorCultist.detailKit, {
+    kind: 'validator-undead-cultist-v1',
+    frontReadable: true,
+    minimumAuthoredParts: 18,
+  });
+  assert.deepEqual(validatorCultist.animationProfile, {
+    kind: 'validator-staff-channel-v1',
+  });
+});
+
+test('Cycle 035 detail and motion profiles are fail-closed in the Blender source pipeline', () => {
+  assert.match(builderSource, /kind == "liquidator-tactical-suppressor-v1"/);
+  assert.match(builderSource, /kind == "validator-undead-cultist-v1"/);
+  assert.match(exporterSource, /kind == "suppression-rifle-burst-v1"/);
+  assert.match(exporterSource, /kind == "validator-staff-channel-v1"/);
+  assert.match(builderSource, /Unknown detail kit/);
+  assert.match(exporterSource, /Unknown enemy animation profile/);
+});
+
+test('Cycle 035 generated atlases retain ranged and support detail, identity, and animation provenance', async () => {
+  for (const [actorId, identityForm, detailKind, animationKind] of [
+    ['liquidator-agent', 'human', 'liquidator-tactical-suppressor-v1', 'suppression-rifle-burst-v1'],
+    ['validator-cultist', 'zombie', 'validator-undead-cultist-v1', 'validator-staff-channel-v1'],
+  ]) {
+    const metadata = JSON.parse(await readFile(
+      new URL(`apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`, repoUrl),
+      'utf8',
+    ));
+    assert.equal(metadata.identityForm, identityForm);
+    assert.equal(metadata.detailKit.kind, detailKind);
+    assert.equal(metadata.detailKit.frontReadable, true);
+    assert.ok(metadata.detailKit.minimumAuthoredParts >= 18);
+    assert.equal(metadata.animationProfile.kind, animationKind);
+    assert.equal(metadata.runtimeAuthority, 'projection-only');
+    assert.equal(metadata.gameplayBodyProfile, 'authored-archetype-collision-v1');
+  }
+});
+
+test('Cycle 035 cold-scene verification disables stochastic render drift and rebuilds before comparison', () => {
+  assert.equal(manifest.render.engine, 'BLENDER_WORKBENCH');
+  assert.equal(manifest.render.workbenchLight, 'STUDIO');
+  assert.equal(manifest.render.workbenchColorType, 'MATERIAL');
+  assert.equal(manifest.render.workbenchCavity, 'WORLD');
+  assert.equal(manifest.render.workbenchCavityEnabled, false);
+  assert.equal(manifest.render.exposure, 0.55);
+  assert.equal(manifest.render.ditherIntensity, 0);
+  assert.equal(manifest.render.taaRenderSamples, 1);
+  assert.equal(manifest.render.renderScale, 2);
+  assert.equal(manifest.render.minAlphaComponentPixels, 9);
+  assert.equal(manifest.render.castShadows, false);
+  assert.equal(manifest.render.specularIorLevel, 0);
+  assert.match(builderSource, /scene\.render\.dither_intensity = manifest\["render"\]\["ditherIntensity"\]/);
+  assert.match(builderSource, /scene\.eevee\.taa_render_samples = manifest\["render"\]\["taaRenderSamples"\]/);
+  assert.match(builderSource, /use_shadow = manifest\["render"\]\["castShadows"\]/);
+  assert.match(builderSource, /inputs\["Specular IOR Level"\]\.default_value = manifest\["render"\]\["specularIorLevel"\]/);
+  assert.match(builderSource, /scene\.display\.shading\.light = manifest\["render"\]\["workbenchLight"\]/);
+  assert.match(builderSource, /scene\.display\.shading\.color_type = manifest\["render"\]\["workbenchColorType"\]/);
+  assert.match(builderSource, /scene\.display\.shading\.cavity_type = manifest\["render"\]\["workbenchCavity"\]/);
+  assert.match(builderSource, /show_cavity = manifest\["render"\]\["workbenchCavityEnabled"\]/);
+  assert.match(pipelineSource, /def build_scene\(/);
+  assert.match(pipelineSource, /if args\.verify_reproducible:[\s\S]*?build_scene\(/);
+  assert.match(pipelineSource, /def generated_artifact_hashes\(/);
+  assert.match(pipelineSource, /def normalize_rendered_frames\(/);
+  assert.match(pipelineSource, /def remove_tiny_alpha_components\(/);
+  assert.match(pipelineSource, /minAlphaComponentPixels/);
+  assert.match(pipelineSource, /Image\.Resampling\.LANCZOS/);
+  assert.match(exporterSource, /parser\.add_argument\("--actor-id", required=True\)/);
+  assert.match(pipelineSource, /for actor in manifest\["actors"\]:[\s\S]*?"--actor-id", actor\["actorId"\]/);
+  assert.match(pipelineSource, /roster-contact-sheet\.png/);
 });
 
 test('evidence-safe roster preview instantiates every enemy family for non-vacuous browser art review', () => {

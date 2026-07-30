@@ -29,16 +29,26 @@
     "south-west": 315
   },
   "render": {
-    "engine": "BLENDER_EEVEE",
+    "engine": "BLENDER_WORKBENCH",
     "frameSize": [
       160,
       160
     ],
+    "ditherIntensity": 0,
+    "taaRenderSamples": 1,
+    "renderScale": 2,
+    "minAlphaComponentPixels": 9,
+    "castShadows": false,
+    "specularIorLevel": 0,
     "transparentFilm": true,
     "rawOutputDirectory": ".tmp/hmh-reboot-enemy-roster",
     "alphaThreshold": 8,
     "cameraOrthoScale": 2.35,
-    "exposure": -0.45,
+    "exposure": 0.55,
+    "workbenchLight": "STUDIO",
+    "workbenchColorType": "MATERIAL",
+    "workbenchCavity": "WORLD",
+    "workbenchCavityEnabled": false,
     "cameraTargetZ": 0.86,
     "cameraPitchDegrees": 55
   },
@@ -159,6 +169,14 @@
       "prop": {
         "kind": "shoulder-rifle",
         "accent": "#e26dff"
+      },
+      "detailKit": {
+        "kind": "liquidator-tactical-suppressor-v1",
+        "frontReadable": true,
+        "minimumAuthoredParts": 18
+      },
+      "animationProfile": {
+        "kind": "suppression-rifle-burst-v1"
       }
     },
     {
@@ -220,7 +238,7 @@
     },
     {
       "actorId": "validator-cultist",
-      "identityForm": "human",
+      "identityForm": "zombie",
       "silhouette": "star",
       "build": {
         "height": 1.0,
@@ -229,7 +247,7 @@
         "stoop": 0.08
       },
       "palette": {
-        "skin": "#cfa98d",
+        "skin": "#789781",
         "primary": "#2b1d47",
         "secondary": "#452a6d",
         "accent": "#b786ff",
@@ -238,6 +256,14 @@
       "prop": {
         "kind": "hand-staff",
         "accent": "#b786ff"
+      },
+      "detailKit": {
+        "kind": "validator-undead-cultist-v1",
+        "frontReadable": true,
+        "minimumAuthoredParts": 18
+      },
+      "animationProfile": {
+        "kind": "validator-staff-channel-v1"
       }
     },
     {

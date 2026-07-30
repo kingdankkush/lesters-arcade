@@ -22,6 +22,7 @@ def blender_args() -> argparse.Namespace:
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--raw-output", required=True)
     parser.add_argument("--report-output", required=True)
+    parser.add_argument("--actor-id", required=True)
     return parser.parse_args(argv)
 
 
@@ -44,6 +45,8 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
         "shared-roster-v1",
         "undead-straight-lunge-v1",
         "undead-shoulder-charge-v1",
+        "suppression-rifle-burst-v1",
+        "validator-staff-channel-v1",
     }:
         raise RuntimeError(f"Unknown enemy animation profile: {kind}")
     reset_pose(rig)
@@ -106,6 +109,24 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
             rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(10 * wind)
             rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-8 * wind)
             pelvis.location.z = -0.055 * wind
+        elif kind == "suppression-rifle-burst-v1":
+            chest.rotation_euler[0] = math.radians(-6 * wind)
+            head.rotation_euler[0] = math.radians(-4 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-72 * wind)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-58 * wind)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-64)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-78)
+            rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(-8 * wind)
+            pelvis.location.z = -0.018 * wind
+        elif kind == "validator-staff-channel-v1":
+            chest.rotation_euler[0] = math.radians(-18 * wind)
+            head.rotation_euler[0] = math.radians(-11 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-138 * wind)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-26)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-82 * wind)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-48)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(18 * wind)
+            pelvis.location.z = 0.035 * wind
     elif state == "attack":
         # Strike: fast forward commitment, then recovery lean.
         swing = (1.0, 0.35, -0.25)[frame_index]
@@ -136,6 +157,26 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
             rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-24 * swing)
             rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(-22 * swing)
             pelvis.location.y = -0.13 * swing
+        elif kind == "suppression-rifle-burst-v1":
+            recoil = (1.0, 0.60, 0.28)[frame_index]
+            chest.rotation_euler[0] = math.radians(-10 * recoil)
+            head.rotation_euler[0] = math.radians(-5 * recoil)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-68)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-54)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-62)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-76)
+            rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(-13 * recoil)
+            pelvis.location.y = 0.045 * recoil
+        elif kind == "validator-staff-channel-v1":
+            cast = (1.0, 0.52, -0.18)[frame_index]
+            chest.rotation_euler[0] = math.radians(22 * cast)
+            head.rotation_euler[0] = math.radians(10 * cast)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-84 + 34 * cast)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-38 + 22 * cast)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-48 + 72 * cast)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-32 * cast)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(28 * cast)
+            pelvis.location.y = -0.055 * cast
     elif state == "hit":
         sign = -1 if frame_index == 0 else 1
         chest.rotation_euler[1] = math.radians(18 * sign)
@@ -169,8 +210,9 @@ def main() -> None:
 
     scene = bpy.context.scene
     default_frame_size = manifest["render"]["frameSize"]
-    scene.render.resolution_x = default_frame_size[0]
-    scene.render.resolution_y = default_frame_size[1]
+    render_scale = manifest["render"].get("renderScale", 1)
+    scene.render.resolution_x = default_frame_size[0] * render_scale
+    scene.render.resolution_y = default_frame_size[1] * render_scale
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = True
     scene.render.image_settings.file_format = "PNG"
@@ -191,7 +233,10 @@ def main() -> None:
 
     rendered = []
     per_actor = {}
-    for actor in manifest["actors"]:
+    selected_actors = [actor for actor in manifest["actors"] if actor["actorId"] == args.actor_id]
+    if len(selected_actors) != 1:
+        raise RuntimeError(f"Unknown enemy actor id: {args.actor_id}")
+    for actor in selected_actors:
         actor_id = actor["actorId"]
         actor_objects = [obj for obj in all_actor_objects if obj.get("hmh_actor_id") == actor_id]
         if not actor_objects:
@@ -204,8 +249,8 @@ def main() -> None:
         # The boss carries three phase silhouettes, so it renders three times
         # the frames. Its own frame size keeps that atlas inside budget.
         actor_frame_size = actor.get("frameSize", default_frame_size)
-        scene.render.resolution_x = actor_frame_size[0]
-        scene.render.resolution_y = actor_frame_size[1]
+        scene.render.resolution_x = actor_frame_size[0] * render_scale
+        scene.render.resolution_y = actor_frame_size[1] * render_scale
         stoop = actor["build"]["stoop"]
         phases = list(actor.get("phaseVisuals", {})) or [None]
         count = 0

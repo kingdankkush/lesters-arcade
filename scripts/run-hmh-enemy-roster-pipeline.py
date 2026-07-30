@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 from collections import defaultdict
@@ -52,8 +53,143 @@ def run_checked(command: list[str], label: str) -> str:
     return combined
 
 
+def build_scene(blender: Path, blend_path: Path) -> None:
+    """Rebuild the source scene from the manifest for a cold reproducibility pass."""
+    run_checked([
+        str(blender), "--background", "--factory-startup",
+        "--python", str(ROOT / "scripts" / "hmh-blender" / "create-hmh-enemy-roster.py"),
+        "--",
+        "--manifest", str(MANIFEST_PATH),
+        "--source-blend", str(blend_path),
+        "--inspection-output", str(ROOT / ".tmp" / "hmh-enemy-roster-scene.json"),
+    ], "enemy roster scene build")
+    backup = blend_path.with_suffix(blend_path.suffix + "1")
+    if backup.exists():
+        backup.unlink()
+
+
+def render_roster_by_actor(
+    blender: Path,
+    blend_path: Path,
+    manifest: dict,
+    raw_dir: Path,
+    report_stem: str,
+    label: str,
+) -> None:
+    """Render each actor in a fresh Blender process to isolate GPU render state."""
+    for actor in manifest["actors"]:
+        actor_id = actor["actorId"]
+        run_checked([
+            str(blender), "--background", str(blend_path),
+            "--python", str(ROOT / "scripts" / "hmh-blender" / "export-hmh-enemy-roster.py"),
+            "--",
+            "--manifest", str(MANIFEST_PATH),
+            "--raw-output", str(raw_dir),
+            "--report-output", str(ROOT / ".tmp" / f"{report_stem}-{actor_id}.json"),
+            "--actor-id", actor["actorId"],
+        ], f"{label}: {actor_id}")
+
+
+def generated_artifact_hashes() -> dict[str, str]:
+    """Hash every shipped actor image and metadata artifact, excluding run metrics."""
+    patterns = (
+        "*-roster-atlas.png",
+        "*-roster-atlas.json",
+        "*-roster-contact-sheet.png",
+    )
+    paths = sorted({path for pattern in patterns for path in OUTPUT_ROOT.rglob(pattern)})
+    return {
+        path.relative_to(OUTPUT_ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in paths
+    }
+
+
+def decoded_frame_hashes(raw_dir: Path) -> dict[str, str]:
+    return {
+        path.name: hashlib.sha256(canonical_rgba(Image.open(path)).tobytes()).hexdigest()
+        for path in sorted(raw_dir.glob("*.png"))
+    }
+
+
 def canonical_rgba(image: Image.Image) -> Image.Image:
     return image.convert("RGBA") if image.mode != "RGBA" else image
+
+
+def remove_tiny_alpha_components(
+    image: Image.Image,
+    alpha_threshold: int,
+    min_pixels: int,
+) -> Image.Image:
+    """Remove disconnected antialiasing specks without touching authored components."""
+    if min_pixels < 1:
+        raise RuntimeError(f"minAlphaComponentPixels must be positive, received {min_pixels}")
+    result = canonical_rgba(image).copy()
+    alpha = result.getchannel("A")
+    alpha_pixels = alpha.load()
+    output_pixels = result.load()
+    width, height = result.size
+    visited = bytearray(width * height)
+    for y in range(height):
+        for x in range(width):
+            index = y * width + x
+            if visited[index] or alpha_pixels[x, y] <= alpha_threshold:
+                continue
+            visited[index] = 1
+            component = [(x, y)]
+            for current_x, current_y in component:
+                for next_x, next_y in (
+                    (current_x - 1, current_y),
+                    (current_x + 1, current_y),
+                    (current_x, current_y - 1),
+                    (current_x, current_y + 1),
+                ):
+                    if not (0 <= next_x < width and 0 <= next_y < height):
+                        continue
+                    next_index = next_y * width + next_x
+                    if visited[next_index] or alpha_pixels[next_x, next_y] <= alpha_threshold:
+                        continue
+                    visited[next_index] = 1
+                    component.append((next_x, next_y))
+            if len(component) < min_pixels:
+                for component_x, component_y in component:
+                    output_pixels[component_x, component_y] = (0, 0, 0, 0)
+    return result
+
+
+def normalize_rendered_frames(manifest: dict, raw_dir: Path) -> None:
+    """Deterministically downsample supersampled Blender output to runtime frame sizes."""
+    render_scale = manifest["render"].get("renderScale", 1)
+    if render_scale == 1:
+        return
+    if not isinstance(render_scale, int) or render_scale < 1:
+        raise RuntimeError(f"renderScale must be a positive integer, received {render_scale!r}")
+    default_size = tuple(manifest["render"]["frameSize"])
+    for actor in manifest["actors"]:
+        actor_id = actor["actorId"]
+        target_size = tuple(actor.get("frameSize", default_size))
+        rendered_size = (target_size[0] * render_scale, target_size[1] * render_scale)
+        phases = list(actor.get("phaseVisuals", {})) or [None]
+        for boss_phase in phases:
+            for state, clip in manifest["clips"].items():
+                for direction in manifest["directions"]:
+                    for frame_index in range(clip["frames"]):
+                        phase_token = f"__{boss_phase}" if boss_phase else ""
+                        filename = f"{actor_id}__body{phase_token}__{state}__{direction}__{frame_index:03d}.png"
+                        path = raw_dir / filename
+                        image = canonical_rgba(Image.open(path))
+                        if image.size != rendered_size:
+                            raise RuntimeError(
+                                f"Unexpected supersampled dimensions for {filename}: {image.size}; expected {rendered_size}"
+                            )
+                        normalized = image.resize(target_size, Image.Resampling.LANCZOS)
+                        normalized = remove_tiny_alpha_components(
+                            normalized,
+                            manifest["render"]["alphaThreshold"],
+                            manifest["render"]["minAlphaComponentPixels"],
+                        )
+                        normalized.save(
+                            path, optimize=False, compress_level=9,
+                        )
 
 
 def alpha_bbox(image: Image.Image, threshold: int):
@@ -247,27 +383,14 @@ def main() -> None:
             raise RuntimeError(f"expected {EXPECTED_BLENDER_VERSION!r}, received {first!r}")
 
     if not args.skip_scene:
-        run_checked([
-            str(blender), "--background", "--factory-startup",
-            "--python", str(ROOT / "scripts" / "hmh-blender" / "create-hmh-enemy-roster.py"),
-            "--",
-            "--manifest", str(MANIFEST_PATH),
-            "--source-blend", str(blend_path),
-            "--inspection-output", str(ROOT / ".tmp" / "hmh-enemy-roster-scene.json"),
-        ], "enemy roster scene build")
-        backup = blend_path.with_suffix(blend_path.suffix + "1")
-        if backup.exists():
-            backup.unlink()
+        build_scene(blender, blend_path)
 
     if not args.skip_render:
-        run_checked([
-            str(blender), "--background", str(blend_path),
-            "--python", str(ROOT / "scripts" / "hmh-blender" / "export-hmh-enemy-roster.py"),
-            "--",
-            "--manifest", str(MANIFEST_PATH),
-            "--raw-output", str(raw_dir),
-            "--report-output", str(ROOT / ".tmp" / "hmh-enemy-roster-render.json"),
-        ], "enemy roster render")
+        render_roster_by_actor(
+            blender, blend_path, manifest, raw_dir,
+            "hmh-enemy-roster-render", "enemy roster render",
+        )
+        normalize_rendered_frames(manifest, raw_dir)
 
     results = []
     for actor in manifest["actors"]:
@@ -275,28 +398,38 @@ def main() -> None:
         results.append(build_atlas(actor, manifest, records, OUTPUT_ROOT / actor["actorId"]))
 
     if args.verify_reproducible:
-        first_pass = {
-            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in sorted(OUTPUT_ROOT.rglob("*-roster-atlas.png"))
-        }
-        run_checked([
-            str(blender), "--background", str(blend_path),
-            "--python", str(ROOT / "scripts" / "hmh-blender" / "export-hmh-enemy-roster.py"),
-            "--",
-            "--manifest", str(MANIFEST_PATH),
-            "--raw-output", str(raw_dir),
-            "--report-output", str(ROOT / ".tmp" / "hmh-enemy-roster-render-verify.json"),
-        ], "enemy roster verification render")
+        first_pass = generated_artifact_hashes()
+        first_frame_pass = decoded_frame_hashes(raw_dir)
+        repro_snapshot = ROOT / ".tmp" / "hmh-enemy-roster-repro-first"
+        artifact_snapshot = ROOT / ".tmp" / "hmh-enemy-roster-artifacts-repro-first"
+        if repro_snapshot.exists():
+            shutil.rmtree(repro_snapshot)
+        if artifact_snapshot.exists():
+            shutil.rmtree(artifact_snapshot)
+        shutil.copytree(raw_dir, repro_snapshot)
+        shutil.copytree(OUTPUT_ROOT, artifact_snapshot)
+        build_scene(blender, blend_path)
+        render_roster_by_actor(
+            blender, blend_path, manifest, raw_dir,
+            "hmh-enemy-roster-render-verify", "enemy roster verification render",
+        )
+        normalize_rendered_frames(manifest, raw_dir)
         for actor in manifest["actors"]:
             records = analyse(actor, manifest, raw_dir)
             build_atlas(actor, manifest, records, OUTPUT_ROOT / actor["actorId"])
-        second_pass = {
-            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in sorted(OUTPUT_ROOT.rglob("*-roster-atlas.png"))
-        }
+        second_pass = generated_artifact_hashes()
+        second_frame_pass = decoded_frame_hashes(raw_dir)
         drifted = sorted(name for name, digest in first_pass.items() if second_pass.get(name) != digest)
+        drifted_frames = sorted(
+            name for name, digest in first_frame_pass.items() if second_frame_pass.get(name) != digest
+        )
         if drifted:
-            raise RuntimeError(f"atlas bytes are not reproducible across runs: {drifted}")
+            raise RuntimeError(
+                "generated art is not reproducible across cold scene rebuilds: "
+                f"artifacts={drifted}; decodedFrames={drifted_frames}"
+            )
+        shutil.rmtree(repro_snapshot)
+        shutil.rmtree(artifact_snapshot)
 
     metrics = {
         "status": "pass",
