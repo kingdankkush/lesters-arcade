@@ -123,6 +123,24 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 028: user-reference four-hero model contract and 48-part Lester combat rebuild
   - Status: committed on continuation as `fe8153f0`; production unchanged
   - Cycle ledger: `cycles/CYCLE-028.md`
+- [x] Cycle 029: reference-faithful Lilly Blender rebuild
+  - Status: committed on continuation as `3784080b`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-029.md`
+- [x] Cycle 030: reference-faithful Lit Commando Blender rebuild
+  - Status: committed on continuation as `d5a860d4`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-030.md`
+- [x] Cycle 031: reference-faithful Lit Valkyrie Blender rebuild
+  - Status: committed on continuation as `45d1a25e`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-031.md`
+- [x] Cycle 032: measured projection-only ordinary-zombie scale parity
+  - Status: promoted with Vercel upload-isolation fixes as `e8f7a73e`; production source
+  - Cycle ledger: `cycles/CYCLE-032.md`
+- [x] Cycle 033: deterministic forgiving ordinary-enemy hurtboxes
+  - Status: committed on continuation as `d59d8382`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-033.md`
+- [x] Cycle 034: Bagholder Rusher and Whale Enforcer model/detail and close-range attack-readability upgrade
+  - Status: committed on continuation as `be2712e4`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-034.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -134,9 +152,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 028 automation, deterministic authored-art verification, and desktop/mobile visual review certified
-- Cycle 028 runtime/art source: `fe8153f08c42500a57cce96f907ce5c117f0f8bc`
-- Exact Cycle 028 commit patch SHA-256: `e7baade05a4f1876a8449ab3c82f3638670166e7a7526c83362c2bd14b6de6ca`
-- Current handoff: `../handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`
-- Production source remains Cycle 021: `a81f1c8f830f3339ebb568de166c108e58f695d3`
+- Status: Cycle 034 automation, deterministic authored-art verification, exact-index review, and desktop/mobile visual review certified
+- Cycle 034 runtime/art source: `be2712e4c617152eb3f115c5ef083e3a3a173044`
+- Exact Cycle 034 commit patch SHA-256: `540d71f3bcc9935fee4ee525e19b59806800430e6267207b65d55e403f220e50`
+- Current handoff: `../handoffs/2026-07-29-hmh-cycle-034-hermes-handoff.md`
+- Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
 - Settlement: disabled; hardened Web3 remains outside this release

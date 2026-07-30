@@ -1,10 +1,12 @@
 # Hard Money Heroes Cycle 034
 
-Status: `LOCAL CERTIFIED CANDIDATE · EXACT-INDEX REVIEW PENDING · PRODUCTION UNTOUCHED`
+Status: `LOCAL CERTIFIED · COMMITTED LOCALLY · NOT PUSHED · PRODUCTION UNTOUCHED`
 
 Date: 2026-07-29 PDT
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `4b11e4d7ae51c4b870e2c574c156603af7396ef2`
+Source commit: `be2712e4c617152eb3f115c5ef083e3a3a173044`
+Exact commit patch SHA-256: `540d71f3bcc9935fee4ee525e19b59806800430e6267207b65d55e403f220e50`
 
 ## Bounded slice
 
@@ -133,7 +135,13 @@ Passed before exact-index freeze:
 - Documentation links and AGENTS policy: PASS.
 - `git diff --check`: PASS.
 
-Exact-index and independent blocker-review results are recorded after the packet is frozen.
+Exact-index review used the frozen digest
+`540d71f3bcc9935fee4ee525e19b59806800430e6267207b65d55e403f220e50`.
+Independent deterministic/gameplay-authority, security/performance/accessibility/release-scope,
+and full-resolution visual/Blender reviews all returned exact-digest PASS with empty blocker lists.
+The first visual reviewer lacked vision-model credits and was treated as non-certifying infrastructure
+failure; an independent Hermes `gpt-5.6-sol` session then inspected all four source/runtime images and
+returned the required exact-digest PASS. Post-commit `git show --binary --format=` reproduced the frozen digest.
 
 ## Authority preservation
 
