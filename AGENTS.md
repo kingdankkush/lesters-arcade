@@ -4,7 +4,7 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — **current**; carries certified Cycle 036 mobile weapon access and deterministic combat readability, current production boundary, the next measured weapon-role slice, full gates, and review side-effect traps
+1. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — **current**; carries the live Cycle 036 production release, the full Claude Fable / Opus 5 character/game/platform roadmap, verified production and rollback identities, full gates, and review side-effect traps
 2. `docs/hmh-reboot/cycles/CYCLE-036.md`
 3. `docs/handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md`
 4. `docs/hmh-reboot/cycles/CYCLE-035.md`
@@ -83,8 +83,9 @@ Current certified continuation and production baseline at the time of this instr
 - Cycle 035 exact commit patch SHA-256: `697b72230da401d5ef686cea3145fb643c9ea274ad7116377b9dbdc166aa698f`
 - Cycle 036 source: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
 - Cycle 036 exact commit patch SHA-256: `5fa3e71570a20d1ca5b4166df06c041e244e9a7315645ae74f797752686847d6`
-- Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
-- Production remains https://lestersarcade.io
+- Production branch head is the Cycle 036 closeout: `802e6cd18a537c72830224e0655617841241b548`
+- Production runtime implementation boundary is Cycle 036: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
+- Production deployment is `dpl_5mUEBJ6dZYaW6PANwSc1SfBnJRWo` at https://lestersarcade.io
 - `SETTLEMENT_LIVE=false`
 
 Re-read live Git and deployment state before acting. Do not assume these values remain current in a later session.
