@@ -327,6 +327,63 @@ export function getActiveWeaponState(state) {
   return weapon;
 }
 
+// Projection-only status for HUD, accessibility, and browser evidence. It reads
+// the authoritative fixed-tick state without advancing or mutating it.
+export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = {} } = {}) {
+  const currentTick = validTick(tick);
+  if (currentTick < state?.lastTick) throw new TypeError('readability tick cannot precede the current weapon tick');
+  const weapon = getActiveWeaponState(state);
+  const definition = HMH_WEAPON_DEFINITIONS[weapon.id];
+  const progression = applyWeaponProgression(weapon.id, progressionByWeapon?.[weapon.id]);
+  let mode = 'ready';
+  let ticksRemaining = 0;
+  if (weapon.reloadCompleteTick !== null) {
+    mode = 'reloading';
+    ticksRemaining = Math.max(0, weapon.reloadCompleteTick - currentTick);
+  } else if (weapon.overheated) {
+    mode = 'overheated';
+  } else if (currentTick < state.switchReadyTick) {
+    mode = 'switching';
+    ticksRemaining = state.switchReadyTick - currentTick;
+  } else if (weapon.ammoInClip <= 0) {
+    mode = 'empty';
+  }
+  const secondsRemaining = Number((ticksRemaining / TICKS_PER_SECOND).toFixed(1));
+  const ammoLabel = `${definition.displayName.toUpperCase()} ${weapon.ammoInClip}/${progression.clipSize}`;
+  let statusLabel = '';
+  let accessibleState = '';
+  if (mode === 'reloading') {
+    statusLabel = `RELOAD ${secondsRemaining.toFixed(1)}S`;
+    accessibleState = `reloading, ${secondsRemaining.toFixed(1)} seconds remaining`;
+  } else if (mode === 'overheated') {
+    statusLabel = `COOLING ${Math.round(weapon.heat)}%`;
+    accessibleState = `cooling, heat ${Math.round(weapon.heat)} percent`;
+  } else if (mode === 'switching') {
+    statusLabel = `SWITCH ${secondsRemaining.toFixed(1)}S`;
+    accessibleState = `switching, ${secondsRemaining.toFixed(1)} seconds remaining`;
+  } else if (mode === 'empty') {
+    statusLabel = 'EMPTY';
+    accessibleState = 'empty';
+  } else if (weapon.heat > 0) {
+    statusLabel = `HEAT ${Math.round(weapon.heat)}%`;
+    accessibleState = `ready, heat ${Math.round(weapon.heat)} percent`;
+  } else {
+    accessibleState = 'ready';
+  }
+  return freezeDeep({
+    weaponId: weapon.id,
+    displayName: definition.displayName,
+    mode,
+    ammoInClip: weapon.ammoInClip,
+    clipSize: progression.clipSize,
+    heat: weapon.heat,
+    ticksRemaining,
+    secondsRemaining,
+    hudLabel: statusLabel ? `${ammoLabel} // ${statusLabel}` : ammoLabel,
+    accessibleLabel: `${definition.displayName}, ${weapon.ammoInClip} of ${progression.clipSize} rounds, ${accessibleState}`,
+  });
+}
+
 function assertMonotonic(state, tick) {
   validTick(tick);
   if (tick <= state.lastTick) throw new TypeError('tick must be monotonic');

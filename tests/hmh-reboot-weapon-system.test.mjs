@@ -5,6 +5,7 @@ import {
   HMH_WEAPON_EVOLUTIONS,
   applyWeaponProgression,
   createWeaponLoadout,
+  getWeaponReadabilityStatus,
   refillWeaponLoadout,
   selectWeapon,
   stepWeaponLoadout,
@@ -73,6 +74,29 @@ test('pistol cadence ammo and timed automatic reload are deterministic at 60 Hz'
   assert.ok(completed.events.some((event) => event.type === 'weapon:reload-complete'));
   assert.ok(completed.events.some((event) => event.type === 'weapon:fire'));
   assert.equal(weaponState(state).ammoInClip, 7);
+});
+
+test('weapon readability reports deterministic reload timing and clip context without changing authority', () => {
+  const state = createWeaponLoadout({ weaponIds: ['scatter-shotgun'], activeWeaponId: 'scatter-shotgun', seed: 17 });
+  fireAt(state, 0);
+  fireAt(state, 64);
+  const before = structuredClone(state);
+  const status = getWeaponReadabilityStatus(state, { tick: 64 });
+  assert.deepEqual(status, {
+    weaponId: 'scatter-shotgun',
+    displayName: 'Shotgun',
+    mode: 'reloading',
+    ammoInClip: 0,
+    clipSize: 2,
+    heat: 0,
+    ticksRemaining: 120,
+    secondsRemaining: 2,
+    hudLabel: 'SHOTGUN 0/2 // RELOAD 2.0S',
+    accessibleLabel: 'Shotgun, 0 of 2 rounds, reloading, 2.0 seconds remaining',
+  });
+  assert.deepEqual(state, before, 'projection status must not mutate deterministic weapon state');
+  assert.equal(Object.isFrozen(status), true);
+  assert.throws(() => getWeaponReadabilityStatus(state, { tick: 63 }), /monotonic|tick/i);
 });
 
 test('shotgun produces stable seeded pellet ordering and seed-sensitive spread', () => {

@@ -150,10 +150,10 @@ async function assertTouchGeometry(page, profile) {
     const rect = node.getBoundingClientRect();
     return { name: node.dataset.hmhControl, left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
   }));
-  // Cycle 025 reduced the mobile control set to movement, aim, power and pause.
+  // Cycle 036 restores weapon access without returning to the crowded eight-control layout.
   assert.deepEqual(
     controls.map((control) => control.name).sort(),
-    ['aim', 'move', 'pause', 'power'],
+    ['aim', 'move', 'pause', 'power', 'weapon'],
     `${profile.name} touch control set`,
   );
   for (const control of controls) {

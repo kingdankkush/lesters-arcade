@@ -17,17 +17,19 @@ import {
  *
  * Two separate defects are covered here: the layout placed controls in the
  * layout viewport (which on a phone extends behind the browser URL bar), and
- * the control set was too dense for a phone screen.
+ * the control set was too dense for a phone screen. Cycle 036 restores one
+ * bounded SWAP action because the four-control version made three retained
+ * weapons unreachable on touch-only devices.
  */
 
 const PHONE = { width: 390, height: 844 };
 
-test('the simplified mobile layout exposes only movement, aim, power and pause', () => {
+test('the compact mobile layout exposes movement, aim, weapon swap, power and pause', () => {
   const layout = computeTouchControlLayout(PHONE);
   assert.ok(layout.moveStick, 'movement stick is required');
   assert.ok(layout.aimStick, 'aim stick is required');
   const buttons = Object.keys(layout.buttons).sort();
-  assert.deepEqual(buttons, ['pause', 'power'], 'only a power action and pause may remain');
+  assert.deepEqual(buttons, ['pause', 'power', 'weapon'], 'only weapon swap, power and pause may remain');
 });
 
 test('every control sits fully inside the visible viewport', () => {

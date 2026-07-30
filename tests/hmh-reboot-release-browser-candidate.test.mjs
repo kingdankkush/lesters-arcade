@@ -12,9 +12,9 @@ test('release browser certification executes the freshly built child candidate w
   assert.match(source, /candidateBundleRequests/);
 });
 
-test('release browser certification serves canonical production assets from tracked local files and preserves the four-control child contract', () => {
+test('release browser certification serves canonical production assets from tracked local files and preserves the five-control child contract', () => {
   assert.match(source, /portalAssetsRootPath/);
   assert.match(source, /https:\/\/lestersarcade\.io\/assets\/\*\*/);
   assert.match(source, /relativePath\.includes\('\.\.'\)/);
-  assert.match(source, /\['aim', 'move', 'pause', 'power'\]/);
+  assert.match(source, /\['aim', 'move', 'pause', 'power', 'weapon'\]/);
 });

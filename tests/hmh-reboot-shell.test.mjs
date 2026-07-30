@@ -84,6 +84,9 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /stageElement\.dataset\.bossArt/);
   assert.match(source, /stageElement\.dataset\.weaponAmmo/);
   assert.match(source, /stageElement\.dataset\.weaponHeat/);
+  assert.match(source, /stageElement\.dataset\.weaponStatus/);
+  assert.match(source, /stageElement\.dataset\.weaponReloadTicksRemaining/);
+  assert.match(source, /getWeaponReadabilityStatus/);
   assert.match(source, /magnitude:\s*event\.recoil/);
   assert.match(source, /createPlayerDefeatController/);
   assert.match(source, /simulation\.gameOver\(\)/);
@@ -99,7 +102,8 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /computeHudMinimapLayout/);
   assert.match(source, /computeCombatStatusLayout/);
   assert.match(source, /const combatStatusX = combatStatusLayout\.compact && activePowerupLabels\.length > 0[\s\S]*?view\.width \* 0\.25[\s\S]*?combatStatusLayout\.x/);
-  assert.match(source, /label\.position\.set\(combatStatusX, combatStatusLayout\.y\)/);
+  assert.match(source, /const combatStatusY = combatStatusLayout\.y \+ \(narrowDebug \? 32 : 0\)/);
+  assert.match(source, /label\.position\.set\(combatStatusX, combatStatusY\)/);
   assert.match(source, /createActorSpatialState\(/);
   assert.match(source, /createCameraState\(/);
   assert.match(source, /interpolateSpatialState\(/);

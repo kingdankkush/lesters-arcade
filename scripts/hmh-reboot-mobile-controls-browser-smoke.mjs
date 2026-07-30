@@ -33,7 +33,7 @@ const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-mobile-controls/', i
 await mkdir(evidenceDir, { recursive: true });
 
 const CHROME = process.env.HMH_CHROME_PATH ?? String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`;
-const EXPECTED_CONTROLS = ['aim', 'move', 'pause', 'power'];
+const EXPECTED_CONTROLS = ['aim', 'move', 'pause', 'power', 'weapon'];
 
 // Real handsets, including the short landscape case where browser chrome eats
 // the most vertical space.

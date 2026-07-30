@@ -118,6 +118,11 @@ test('browser touch adapter owns UI pointers relayouts and clears state on teard
   windowRef.emit('pointermove', event(2, 600, 240));
   adapter.elements.power.emit('pointerdown', event(3, 0, 0));
   adapter.elements.pause.emit('pointerdown', event(4, 0, 0));
+  assert.equal(adapter.elements.weapon.textContent, 'SWAP');
+  adapter.elements.weapon.emit('pointerdown', event(5, 0, 0));
+  assert.equal(snapshots.at(-1).weaponNext, true, 'the visible mobile control must expose weapon switching');
+  windowRef.emit('pointerup', event(5, 0, 0));
+  assert.equal(snapshots.at(-1).weaponNext, false);
   assert.equal(pauseToggles, 1);
   adapter.elements.pause.emit('pointerup', event(4, 0, 0));
   assert.ok(snapshots.at(-1).moveX > 0);

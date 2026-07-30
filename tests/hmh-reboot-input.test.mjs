@@ -223,13 +223,19 @@ test('touch layout respects safe areas and adapts to portrait and landscape rota
     }
   }
   assert.notDeepEqual(portrait.moveStick, landscape.moveStick);
-  // The mobile control set is movement, aim, one power action and pause; the
-  // remaining two buttons must still not overlap each other.
+  assert.ok(portrait.buttons.weapon, 'touch players need a visible weapon switch control');
+  assert.ok(portrait.buttons.weapon.x < portrait.moveStick.x, 'weapon switch belongs under the movement thumb');
+  // The mobile utility buttons must not overlap each other.
   const actionDistance = Math.hypot(
     portrait.buttons.power.x - portrait.buttons.pause.x,
     portrait.buttons.power.y - portrait.buttons.pause.y,
   );
   assert.ok(actionDistance >= portrait.buttons.power.radius + portrait.buttons.pause.radius + 8);
+  const weaponDistance = Math.hypot(
+    portrait.buttons.weapon.x - portrait.buttons.pause.x,
+    portrait.buttons.weapon.y - portrait.buttons.pause.y,
+  );
+  assert.ok(weaponDistance >= portrait.buttons.weapon.radius + portrait.buttons.pause.radius + 8);
   assert.ok(portrait.buttons.power.x > portrait.viewport.width - 100, 'power stays under the aiming thumb');
 });
 

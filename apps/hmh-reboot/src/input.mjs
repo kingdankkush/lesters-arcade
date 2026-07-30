@@ -311,9 +311,9 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
   };
   const shortEdge = Math.min(viewportWidth, viewportHeight);
   // Device playtest: eight controls crowded a phone screen and the movement
-  // stick could not be worked reliably. The mobile layout is now movement,
-  // aim, one power action, and pause. Firing is automatic when a target is in
-  // range (see `createAimState` autofire), so a fire button was redundant.
+  // stick could not be worked reliably. Keep the compact movement, aim, power,
+  // weapon-swap, and pause set. Firing remains automatic when a target is in
+  // range (see `createAimState` autofire), so a fire button is redundant.
   const radius = Math.max(38, Math.min(72, shortEdge * 0.15));
   const margin = Math.max(14, radius * 0.34);
   const buttonRadius = Math.max(26, radius * 0.56);
@@ -343,6 +343,10 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
     viewportWidth - safe.right - margin - buttonRadius,
     viewportWidth - buttonRadius,
   );
+  const weaponX = Math.max(
+    safe.left + margin + buttonRadius,
+    buttonRadius,
+  );
 
   // Pause sits in the gutter between the two sticks. Browser-verified: the top
   // row is not available on a phone — the status card owns the top-left and the
@@ -359,6 +363,7 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
   );
   const buttons = {
     power: { x: powerX, y: powerY, radius: buttonRadius },
+    weapon: { x: weaponX, y: powerY, radius: buttonRadius },
     pause: { x: pauseX, y: moveStick.y, radius: buttonRadius },
   };
   return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, moveStick, aimStick, buttons });

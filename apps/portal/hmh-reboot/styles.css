@@ -161,11 +161,12 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hmh-touch-stick::before { content: attr(data-hmh-control); position: absolute; top: 6px; left: 50%; min-width: 52px; padding: 3px 7px; border: 1px solid rgba(143,243,255,0.55); border-radius: 999px; color: #f4fbff; background: rgba(3,15,26,0.78); box-shadow: 0 3px 12px rgba(0,0,0,0.34); font-size: 0.72rem; font-weight: 900; line-height: 1.1; letter-spacing: 0.12em; text-align: center; text-shadow: 0 1px 3px #000; text-transform: uppercase; transform: translateX(-50%); }
 .hmh-touch-stick__knob { width: 44%; height: 44%; border: 2px solid rgba(255,255,255,0.72); border-radius: 50%; background: rgba(73,221,255,0.34); box-shadow: 0 0 18px rgba(73,221,255,0.34); }
 .hmh-touch-button { font-size: clamp(0.48rem,1.8vw,0.68rem); font-weight: 900; letter-spacing: 0.04em; }
-/* The mobile control set is movement, aim, power and pause. Power reads hot so
-   it is unmistakable under a thumb; pause stays quiet so it is never the
-   button reached for in a fight. */
+/* The mobile control set is movement, aim, power, weapon swap and pause. Power
+   reads hot, weapon swap reads cyan, and pause stays quiet. */
 .hmh-touch-button--power { border-color: rgba(255,92,122,0.85); background: rgba(112,22,42,0.44); box-shadow: inset 0 1px rgba(255,255,255,0.16), 0 0 20px rgba(255,92,122,0.28), 0 8px 24px rgba(0,0,0,0.28); }
 .hmh-touch-button--power:active { background: rgba(255,92,122,0.5); }
+.hmh-touch-button--weapon { border-color: rgba(73,221,255,0.82); background: rgba(12,70,91,0.52); box-shadow: inset 0 1px rgba(255,255,255,0.14), 0 0 18px rgba(73,221,255,0.24), 0 8px 24px rgba(0,0,0,0.25); }
+.hmh-touch-button--weapon:active { background: rgba(18,96,122,0.62); }
 .hmh-touch-button--pause { border-color: rgba(255,255,255,0.4); opacity: 0.72; }
 .hmh-touch-stick:active .hmh-touch-stick__knob { background: rgba(73,221,255,0.52); box-shadow: 0 0 24px rgba(73,221,255,0.5); }
 

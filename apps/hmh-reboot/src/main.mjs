@@ -141,6 +141,7 @@ import {
   HMH_WEAPON_DEFINITIONS,
   createWeaponLoadout,
   getActiveWeaponState,
+  getWeaponReadabilityStatus,
   refillWeaponLoadout,
   selectWeapon,
   stepWeaponLoadout,
@@ -1290,9 +1291,10 @@ async function boot() {
       const narrowDebug = debugGridEnabled && combatStatusLayout.multiline;
       label.style.fontSize = combatStatusLayout.fontSize;
       label.style.align = 'center';
-      const activeWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
-      const weaponName = activeWeapon ? HMH_WEAPON_DEFINITIONS[activeWeapon.id].displayName : 'NO WEAPON';
-      const heatHud = activeWeapon?.heat > 0 ? ` // HEAT ${Math.round(activeWeapon.heat)}${activeWeapon.overheated ? ' HOT' : ''}` : '';
+      const weaponStatus = weaponLoadout
+        ? getWeaponReadabilityStatus(weaponLoadout, { tick: simulation?.tick ?? 0 })
+        : null;
+      const weaponHud = weaponStatus?.hudLabel ?? 'NO WEAPON 0/0';
       const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
       const dashHud = dashStatus?.active ? 'DASHING' : dashStatus?.ready ? 'DASH READY' : `DASH ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
       const dashAccessible = dashStatus?.active ? 'Dash active' : dashStatus?.ready ? 'Dash ready' : `Dash ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
@@ -1301,10 +1303,10 @@ async function boot() {
       const activePowerupIds = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId) ?? [];
       const activePowerupLabels = collectibleSnapshot?.activeEffects.map((effect) => `${effect.effectId.toUpperCase()} ${Math.max(0, Math.ceil((effect.expiresTick - collectibleSnapshot.tick) / 60))}S`) ?? [];
       const powerupHud = activePowerupLabels.length > 0 ? ` // POWER ${activePowerupLabels.join('+')}` : '';
-      const combatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0}${heatHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
-      const compactCombatHud = `${weaponName} ${activeWeapon?.ammoInClip ?? 0} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
-      const landscapeCombatHud = `HP ${playerHealth} // AMMO ${activeWeapon?.ammoInClip ?? 0} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
-      const accessibleCombatStatus = `${weaponName}, ${activeWeapon?.ammoInClip ?? 0} rounds, heat ${Math.round(activeWeapon?.heat ?? 0)}${activeWeapon?.overheated ? ' overheated' : ''}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats${activePowerupIds.length > 0 ? `, active powerups ${activePowerupIds.join(', ')}` : ''}`;
+      const combatHud = `${weaponHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
+      const compactCombatHud = `${weaponHud} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
+      const landscapeCombatHud = `HP ${playerHealth} // ${weaponHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
+      const accessibleCombatStatus = `${weaponStatus?.accessibleLabel ?? 'No weapon'}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats${activePowerupIds.length > 0 ? `, active powerups ${activePowerupIds.join(', ')}` : ''}`;
       if (dashStatusElement) {
         dashStatusElement.textContent = dashAccessible;
         dashStatusElement.dataset.ready = String(dashStatus?.ready === true);
@@ -1317,13 +1319,17 @@ async function boot() {
         ? combatStatusLayout.compact
           ? `${landscapeCombatHud}\n${runtimeMode}`
           : narrowDebug
-          ? `${combatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
+          ? `${compactCombatHud}\n${runtimeMode}\n${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
           : `${combatHud} // ${runtimeMode} // ${lastGround?.surfaceId ?? 'none'} z=${lastGround?.groundZ ?? 0} // ${debugContact}`
         : combatStatusLayout.compact ? landscapeCombatHud : combatStatusLayout.multiline ? compactCombatHud : combatHud;
       const combatStatusX = combatStatusLayout.compact && activePowerupLabels.length > 0
         ? view.width * 0.25
         : combatStatusLayout.x;
-      label.position.set(combatStatusX, combatStatusLayout.y);
+      // The narrow debug/evidence view adds two diagnostic rows. Offset that
+      // taller block below the cockpit cards so its weapon/reload line cannot
+      // hide behind score/level chrome on portrait phones.
+      const combatStatusY = combatStatusLayout.y + (narrowDebug ? 32 : 0);
+      label.position.set(combatStatusX, combatStatusY);
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
       for (const pip of enemyHealthPips) {
@@ -1379,6 +1385,9 @@ async function boot() {
         stageElement.dataset.projectileDrops = String(droppedProjectiles);
         stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
         stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
+        stageElement.dataset.weaponClipSize = String(weaponStatus?.clipSize ?? 0);
+        stageElement.dataset.weaponStatus = weaponStatus?.mode ?? 'unavailable';
+        stageElement.dataset.weaponReloadTicksRemaining = String(weaponStatus?.mode === 'reloading' ? weaponStatus.ticksRemaining : 0);
         stageElement.dataset.actorArt = actorVisual.label ?? '';
         // Report what actually rendered, not what was requested: a failed
         // atlas load falls back to the prototype and must say so.

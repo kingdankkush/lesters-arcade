@@ -235,13 +235,13 @@ export function createTouchControlAdapter({
     listen(element, 'lostpointercapture', endOwnedPointer);
   }
 
-  // Simplified mobile control set: one power action plus pause. Firing is
+  // Simplified mobile control set: power, weapon swap, and pause. Firing is
   // automatic when a target is in range.
-  const labels = { power: 'POWER', pause: 'II' };
+  const labels = { power: 'POWER', weapon: 'SWAP', pause: 'II' };
   // The on-screen control maps onto the existing action vocabulary rather than
   // extending it, so the snapshot contract consumed by the simulation is
   // unchanged: POWER throws the grenade.
-  const ACTION_BY_CONTROL = { power: 'grenade', pause: 'pause' };
+  const ACTION_BY_CONTROL = { power: 'grenade', weapon: 'weaponNext', pause: 'pause' };
   for (const control of Object.keys(labels)) {
     const action = ACTION_BY_CONTROL[control];
     const element = makeControl(control, labels[control], `hmh-touch-button hmh-touch-button--${control}`);

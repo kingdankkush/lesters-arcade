@@ -110,7 +110,7 @@ test('Cycle 031 consumes a fail-closed Lit Valkyrie Rambo detail kit and records
   assert.match(builderSource, /Lit Valkyrie reference hair has/);
 });
 
-test('production hero mobile evidence follows the four-control child ownership contract', () => {
-  assert.match(browserSmokeSource, /const controls = await page\.locator\('\[data-hmh-control\]'\)\.count\(\);[\s\S]*?assert\.equal\(controls, 4\)/);
+test('production hero mobile evidence follows the compact five-control child ownership contract', () => {
+  assert.match(browserSmokeSource, /const controls = await page\.locator\('\[data-hmh-control\]'\)\.count\(\);[\s\S]*?assert\.equal\(controls, 5\)/);
   assert.doesNotMatch(browserSmokeSource, /assert\.equal\(controls, 8\)/);
 });

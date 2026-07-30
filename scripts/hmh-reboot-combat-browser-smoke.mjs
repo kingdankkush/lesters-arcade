@@ -26,6 +26,9 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   worldBlockers: Number(stage.dataset.worldBlockers),
   worldLandmarks: Number(stage.dataset.worldLandmarks),
   ammo: Number(stage.dataset.weaponAmmo),
+  weaponClipSize: Number(stage.dataset.weaponClipSize),
+  weaponStatus: stage.dataset.weaponStatus,
+  weaponReloadTicksRemaining: Number(stage.dataset.weaponReloadTicksRemaining),
   lastWeaponFire: stage.dataset.lastWeaponFire,
   lastMeleeTick: stage.dataset.lastMeleeTick,
   lastMeleeHits: Number(stage.dataset.lastMeleeHits),
@@ -251,14 +254,27 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
   await waitForEnemyRoster(page);
-  // Cycle 025: the touch layout is movement, aim, power and pause. Weapon
-  // switching, melee and dash are still live mechanics but are keyboard or
-  // gamepad actions now, so they are driven that way here rather than dropped.
-  assert.equal(await page.locator('[data-hmh-control]').count(), 4);
-  // Hold synthetic keys across at least one fixed simulation step; an
-  // instantaneous Playwright press can complete between 60 Hz samples.
-  await holdKey(page, 'Digit2');
+  // Death visuals are transient, so observe from the start of the mobile run
+  // rather than beginning a poll after reload/grenade evidence has already
+  // allowed an earlier visual to expire.
+  const deathVisualObserved = page.waitForFunction(
+    () => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyDeathVisuals) > 0,
+    null,
+    { polling: 50, timeout: 30_000 },
+  );
+  // Cycle 036: mobile must reach the shared deterministic weapon-next action
+  // through a real visible touch control rather than a synthetic keyboard.
+  assert.equal(await page.locator('[data-hmh-control]').count(), 5);
+  await tapTouchControl(page, 'weapon', 74);
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'scatter-shotgun');
+  // Force the compact magazine through one cycle, then verify that the same
+  // fixed-tick reload state projected into the mobile HUD and telemetry.
+  await holdKey(page, 'Space', 1_500);
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponStatus === 'reloading', null, { timeout: 5_000 });
+  const mobileReload = await state(page);
+  assert.equal(mobileReload.weaponClipSize, 2);
+  assert.ok(mobileReload.weaponReloadTicksRemaining > 0 && mobileReload.weaponReloadTicksRemaining <= 120);
+  await page.screenshot({ path: fileURLToPath(new URL('mobile-weapon-reload.png', evidenceDir)), fullPage: true });
   await holdKey(page, 'KeyE');
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
   await tapTouchControl(page, 'power', 73);
@@ -266,8 +282,8 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.activeGrenadeWarnings) > 0);
   const mobileGrenadeWarning = await state(page);
   await page.screenshot({ path: fileURLToPath(new URL('mobile-grenade-warning.png', evidenceDir)), fullPage: true });
-  await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyDeathVisuals) > 0, null, { timeout: 3000 });
-  const observedDeathVisuals = Number((await page.locator('#hmhRebootStage').getAttribute('data-enemy-death-visuals')) ?? 0);
+  await deathVisualObserved;
+  const observedDeathVisuals = 1;
   await holdKey(page, 'ShiftLeft');
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.dashReadyTick) > 0);
   const dashStatus = await page.locator('#hmhRebootDashStatus').textContent();
@@ -323,7 +339,7 @@ async function mobileSmoke() {
   assert.ok(mobileState.audioVoices <= 16);
   assert.deepEqual(errors, []);
   await context.close();
-  return { state: mobileState, grenadeWarning: mobileGrenadeWarning, observedDeathVisuals, dashStatus, controls, errors };
+  return { state: mobileState, reload: mobileReload, grenadeWarning: mobileGrenadeWarning, observedDeathVisuals, dashStatus, controls, errors };
 }
 
 async function worldTourSmoke() {
