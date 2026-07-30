@@ -9,6 +9,7 @@ import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
 import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
+import { createOrdinaryEnemyHurtboxProfile } from './enemy-hurtboxes.mjs';
 import {
   createLiquidatorProductionDisplay,
   createProductionEnemyDisplay,
@@ -1897,16 +1898,30 @@ async function boot() {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0 });
       }
 
-      const hurtTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createHurtTarget({
-        id: enemy.id,
-        bodyShape: { type: 'circle', radius: enemy.radius },
-        hurtShape: { type: 'capsule', a: { x: 0, y: -8 }, b: { x: 0, y: 8 }, radius: Math.max(8, enemy.radius * 0.72) },
-        previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
-        currentGround: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
-        minZ: 4,
-        maxZ: 60,
-        health: enemy.health,
-      }));
+      const hurtTargets = [];
+      const meleeTargets = [];
+      for (const enemy of grayboxEnemies) {
+        if (!enemy.active || enemy.health <= 0) continue;
+        const profile = createOrdinaryEnemyHurtboxProfile(enemy.radius);
+        hurtTargets.push(createHurtTarget({
+          id: enemy.id,
+          bodyShape: profile.bodyShape,
+          hurtShape: profile.projectileShape,
+          previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
+          currentGround: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
+          minZ: profile.minZ,
+          maxZ: profile.maxZ,
+          health: enemy.health,
+        }));
+        meleeTargets.push(createMeleeTarget({
+          id: enemy.id,
+          previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
+          currentGround: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
+          radius: profile.meleeRadius,
+          minZ: profile.minZ,
+          maxZ: profile.maxZ,
+        }));
+      }
       if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) hurtTargets.push(createHurtTarget({
         id: liquidatorBoss.id,
         bodyShape: { type: 'circle', radius: liquidatorBoss.body.radius },
@@ -1916,14 +1931,6 @@ async function boot() {
         minZ: 4,
         maxZ: 92,
         health: liquidatorBoss.health,
-      }));
-      const meleeTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => createMeleeTarget({
-        id: enemy.id,
-        previousGround: { x: enemy.previousX, y: enemy.previousY, z: enemy.previousGroundZ },
-        currentGround: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
-        radius: Math.max(8, enemy.radius * 0.72),
-        minZ: 4,
-        maxZ: 60,
       }));
       if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) meleeTargets.push(createMeleeTarget({
         id: liquidatorBoss.id,
