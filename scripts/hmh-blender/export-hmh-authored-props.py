@@ -44,6 +44,11 @@ def main() -> None:
             raise RuntimeError(f'No authored objects for {asset_id}')
         for obj in objects:
             obj.hide_render = obj.get('hmh_asset_id') != asset_id
+        # Detail-heavy world props render at a higher per-asset resolution; the
+        # camera is orthographic, so this only raises pixel density.
+        frame_size = asset.get('frameSize', manifest['render']['frameSize'])
+        scene.render.resolution_x = frame_size[0]
+        scene.render.resolution_y = frame_size[1]
         filename = f'{asset_id}.png'
         scene.render.filepath = str(raw_output / filename)
         bpy.context.view_layer.update()

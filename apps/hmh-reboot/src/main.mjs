@@ -21,6 +21,7 @@ import {
   TERRAIN_MATERIAL_IDS,
   createTerrainTileRegistry,
   terrainManifestUrl,
+  terrainFringeAsset,
   terrainTileAsset,
 } from './terrain-tile-atlas.mjs';
 import {
@@ -465,13 +466,21 @@ async function boot() {
       })
       .then((manifest) => {
         terrainTiles.setManifest(manifest);
-        return Promise.all(TERRAIN_MATERIAL_IDS.map((materialId) => Assets
-          .load(terrainTileAsset(materialId).imageUrl)
-          .then((texture) => terrainTiles.register(materialId, texture))
-          .catch((error) => {
-            terrainTiles.markFailed(materialId);
-            terrainTileLoadError = `${materialId}: ${String(error?.message ?? error)}`;
-          })));
+        return Promise.all(TERRAIN_MATERIAL_IDS.flatMap((materialId) => [
+          Assets
+            .load(terrainTileAsset(materialId).imageUrl)
+            .then((texture) => terrainTiles.register(materialId, texture))
+            .catch((error) => {
+              terrainTiles.markFailed(materialId);
+              terrainTileLoadError = `${materialId}: ${String(error?.message ?? error)}`;
+            }),
+          // Fringe strips are optional dressing: a miss leaves the previous
+          // hard district edge and never marks the material failed.
+          Assets
+            .load(terrainFringeAsset(materialId).imageUrl)
+            .then((texture) => terrainTiles.registerFringe(materialId, texture))
+            .catch(() => {}),
+        ]));
       })
       .catch((error) => {
         terrainTileLoadError = String(error?.message ?? error);

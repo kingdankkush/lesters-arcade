@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 31,
+  "assetCount": 37,
   "categories": [
     "pickup",
     "power-up",
@@ -22,8 +22,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 159,
-        "y": 159,
+        "x": 390,
+        "y": 197,
         "w": 57,
         "h": 22
       },
@@ -49,8 +49,8 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 114,
-        "y": 3,
+        "x": 3,
+        "y": 119,
         "w": 44,
         "h": 38
       },
@@ -76,8 +76,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 206,
-        "y": 3,
+        "x": 221,
+        "y": 119,
         "w": 46,
         "h": 34
       },
@@ -103,8 +103,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 58,
-        "y": 191,
+        "x": 3,
+        "y": 229,
         "w": 28,
         "h": 21
       },
@@ -132,8 +132,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 3,
-        "y": 48,
+        "x": 270,
+        "y": 119,
         "w": 26,
         "h": 34
       },
@@ -151,6 +151,33 @@
       "trimmed": true
     },
     {
+      "id": "chain-fence",
+      "assetId": "chain-fence",
+      "category": "world-prop",
+      "shape": "fence",
+      "itemUrl": "./items/chain-fence.png",
+      "districts": [],
+      "runtimeScale": 0.68,
+      "frame": {
+        "x": 50,
+        "y": 119,
+        "w": 123,
+        "h": 36
+      },
+      "pivot": {
+        "x": 0,
+        "y": -96
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": -2.666667
+      },
+      "opaquePixels": 1501,
+      "sourcePixelSha256": "de1d7a184b044abec9e9bc3b6d67b76dfc0872576d67f8d770fd996a22ac5b1d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "coin-blaster",
       "assetId": "coin-blaster",
       "category": "weapon",
@@ -159,8 +186,8 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 109,
-        "y": 159,
+        "x": 340,
+        "y": 197,
         "w": 47,
         "h": 23
       },
@@ -186,8 +213,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 32,
-        "y": 48,
+        "x": 299,
+        "y": 119,
         "w": 46,
         "h": 34
       },
@@ -213,8 +240,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 81,
-        "y": 48,
+        "x": 348,
+        "y": 119,
         "w": 46,
         "h": 34
       },
@@ -243,8 +270,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 130,
-        "y": 122,
+        "x": 367,
+        "y": 160,
         "w": 44,
         "h": 32
       },
@@ -270,8 +297,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 130,
-        "y": 48,
+        "x": 397,
+        "y": 119,
         "w": 46,
         "h": 34
       },
@@ -300,8 +327,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 179,
-        "y": 48,
+        "x": 446,
+        "y": 119,
         "w": 38,
         "h": 34
       },
@@ -328,7 +355,7 @@
       "runtimeScale": 0.44,
       "frame": {
         "x": 3,
-        "y": 85,
+        "y": 160,
         "w": 46,
         "h": 34
       },
@@ -346,6 +373,33 @@
       "trimmed": true
     },
     {
+      "id": "granite-boulder",
+      "assetId": "granite-boulder",
+      "category": "world-prop",
+      "shape": "boulder",
+      "itemUrl": "./items/granite-boulder.png",
+      "districts": [],
+      "runtimeScale": 0.6,
+      "frame": {
+        "x": 247,
+        "y": 197,
+        "w": 90,
+        "h": 24
+      },
+      "pivot": {
+        "x": 0,
+        "y": -108
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": -4.5
+      },
+      "opaquePixels": 683,
+      "sourcePixelSha256": "58737725256f1e75048c9c391df96eba0daebb20c21b6699c2e30a4e5d856860",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "hardened-wallet",
       "assetId": "hardened-wallet",
       "category": "power-up",
@@ -355,7 +409,7 @@
       "runtimeScale": 0.44,
       "frame": {
         "x": 52,
-        "y": 85,
+        "y": 160,
         "w": 46,
         "h": 34
       },
@@ -381,8 +435,8 @@
       "districts": [],
       "runtimeScale": 0.76,
       "frame": {
-        "x": 161,
-        "y": 3,
+        "x": 176,
+        "y": 119,
         "w": 42,
         "h": 35
       },
@@ -400,6 +454,33 @@
       "trimmed": true
     },
     {
+      "id": "hashwood-pine",
+      "assetId": "hashwood-pine",
+      "category": "world-prop",
+      "shape": "pine-tree",
+      "itemUrl": "./items/hashwood-pine.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 122,
+        "h": 113
+      },
+      "pivot": {
+        "x": 0,
+        "y": -19
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": -0.168142
+      },
+      "opaquePixels": 7122,
+      "sourcePixelSha256": "79843d0bec0650db30cd0a372b79a88cb99183f4976abf82ffb862e53e69f867",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "hashwood-stump",
       "assetId": "hashwood-stump",
       "category": "world-prop",
@@ -410,8 +491,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 177,
-        "y": 122,
+        "x": 414,
+        "y": 160,
         "w": 38,
         "h": 29
       },
@@ -429,6 +510,33 @@
       "trimmed": true
     },
     {
+      "id": "hashwood-tree",
+      "assetId": "hashwood-tree",
+      "category": "world-prop",
+      "shape": "broadleaf-tree",
+      "itemUrl": "./items/hashwood-tree.png",
+      "districts": [],
+      "runtimeScale": 0.9,
+      "frame": {
+        "x": 128,
+        "y": 3,
+        "w": 108,
+        "h": 102
+      },
+      "pivot": {
+        "x": 0,
+        "y": -30
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": -0.294118
+      },
+      "opaquePixels": 5311,
+      "sourcePixelSha256": "622f662b465a9a07e7c0a66d05ac502809658ca52cc636a0812ce45328583716",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "hot-wallet",
       "assetId": "hot-wallet",
       "category": "power-up",
@@ -438,7 +546,7 @@
       "runtimeScale": 0.44,
       "frame": {
         "x": 101,
-        "y": 85,
+        "y": 160,
         "w": 46,
         "h": 34
       },
@@ -465,7 +573,7 @@
       "runtimeScale": 0.62,
       "frame": {
         "x": 3,
-        "y": 159,
+        "y": 197,
         "w": 59,
         "h": 29
       },
@@ -492,7 +600,7 @@
       "runtimeScale": 0.44,
       "frame": {
         "x": 150,
-        "y": 85,
+        "y": 160,
         "w": 46,
         "h": 34
       },
@@ -520,8 +628,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 187,
-        "y": 191,
+        "x": 132,
+        "y": 229,
         "w": 24,
         "h": 15
       },
@@ -551,7 +659,7 @@
       "runtimeScale": 1.05,
       "frame": {
         "x": 199,
-        "y": 85,
+        "y": 160,
         "w": 38,
         "h": 34
       },
@@ -569,6 +677,33 @@
       "trimmed": true
     },
     {
+      "id": "miners-shack",
+      "assetId": "miners-shack",
+      "category": "world-prop",
+      "shape": "shack",
+      "itemUrl": "./items/miners-shack.png",
+      "districts": [],
+      "runtimeScale": 1.25,
+      "frame": {
+        "x": 239,
+        "y": 3,
+        "w": 141,
+        "h": 79
+      },
+      "pivot": {
+        "x": 0,
+        "y": -53
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": -0.670886
+      },
+      "opaquePixels": 5893,
+      "sourcePixelSha256": "5eedafb352c3575a159e20a33e0ea92badad46488d6742617602d29720979431",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "nuke-liquidation",
       "assetId": "nuke-liquidation",
       "category": "pickup",
@@ -577,7 +712,7 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 67,
+        "x": 447,
         "y": 3,
         "w": 44,
         "h": 40
@@ -607,7 +742,7 @@
       "runtimeScale": 1.15,
       "frame": {
         "x": 65,
-        "y": 159,
+        "y": 197,
         "w": 41,
         "h": 26
       },
@@ -633,8 +768,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 122,
+        "x": 240,
+        "y": 160,
         "w": 46,
         "h": 34
       },
@@ -662,7 +797,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 3,
+        "x": 383,
         "y": 3,
         "w": 28,
         "h": 42
@@ -691,8 +826,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 214,
-        "y": 191,
+        "x": 159,
+        "y": 229,
         "w": 24,
         "h": 15
       },
@@ -720,8 +855,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 3,
-        "y": 191,
+        "x": 450,
+        "y": 197,
         "w": 52,
         "h": 22
       },
@@ -750,8 +885,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 158,
-        "y": 191,
+        "x": 103,
+        "y": 229,
         "w": 26,
         "h": 18
       },
@@ -777,8 +912,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 89,
-        "y": 191,
+        "x": 34,
+        "y": 229,
         "w": 66,
         "h": 20
       },
@@ -804,7 +939,7 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 34,
+        "x": 414,
         "y": 3,
         "w": 30,
         "h": 41
@@ -831,8 +966,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 52,
-        "y": 122,
+        "x": 289,
+        "y": 160,
         "w": 46,
         "h": 34
       },
@@ -861,8 +996,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 101,
-        "y": 122,
+        "x": 338,
+        "y": 160,
         "w": 26,
         "h": 34
       },
@@ -876,6 +1011,33 @@
       },
       "opaquePixels": 640,
       "sourcePixelSha256": "1699ef12fb10f2b658304dae963e367885d8d34d7f477e6ffa87f2390ae1868d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "wrecked-sedan",
+      "assetId": "wrecked-sedan",
+      "category": "world-prop",
+      "shape": "wrecked-car",
+      "itemUrl": "./items/wrecked-sedan.png",
+      "districts": [],
+      "runtimeScale": 0.78,
+      "frame": {
+        "x": 109,
+        "y": 197,
+        "w": 135,
+        "h": 25
+      },
+      "pivot": {
+        "x": 0,
+        "y": -107
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": -4.28
+      },
+      "opaquePixels": 1377,
+      "sourcePixelSha256": "c80275186a57acca67582ed6a22ef3e4f3e0065fdce4b5ba7d2fe99b6c23b30d",
       "rotated": false,
       "trimmed": true
     }

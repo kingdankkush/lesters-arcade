@@ -409,6 +409,96 @@
         "accent": "#a8d8ff"
       },
       "runtimeScale": 0.44
+    },
+    {
+      "assetId": "hashwood-pine",
+      "category": "world-prop",
+      "shape": "pine-tree",
+      "palette": {
+        "primary": "#2f5d3a",
+        "secondary": "#4a3220",
+        "accent": "#7dff8c"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "hashwood-tree",
+      "category": "world-prop",
+      "shape": "broadleaf-tree",
+      "palette": {
+        "primary": "#3c6b45",
+        "secondary": "#52381f",
+        "accent": "#9fe86a"
+      },
+      "runtimeScale": 0.9,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "granite-boulder",
+      "category": "world-prop",
+      "shape": "boulder",
+      "palette": {
+        "primary": "#6f7276",
+        "secondary": "#565a5e",
+        "accent": "#8feaff"
+      },
+      "runtimeScale": 0.6,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "wrecked-sedan",
+      "category": "world-prop",
+      "shape": "wrecked-car",
+      "palette": {
+        "primary": "#7a4a2a",
+        "secondary": "#3a2c22",
+        "accent": "#ffb34d"
+      },
+      "runtimeScale": 0.78,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "chain-fence",
+      "category": "world-prop",
+      "shape": "fence",
+      "palette": {
+        "primary": "#5a6067",
+        "secondary": "#333940",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 0.68,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "miners-shack",
+      "category": "world-prop",
+      "shape": "shack",
+      "palette": {
+        "primary": "#4a3a28",
+        "secondary": "#2f2620",
+        "accent": "#7be1cf"
+      },
+      "runtimeScale": 1.25,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }

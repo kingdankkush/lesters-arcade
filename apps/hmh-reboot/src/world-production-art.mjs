@@ -332,6 +332,11 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   const terrainSprites = new ContainerClass();
   terrainSprites.label = 'world-terrain-tiles';
   root.addChildAt(terrainSprites, root.getChildIndex(layers.terrain) + 1);
+  // District-boundary fringe strips draw above the base tiles and below every
+  // detail/route layer, so ground materials stop meeting as hard rectangles.
+  const fringeSprites = new ContainerClass();
+  fringeSprites.label = 'world-terrain-fringe';
+  root.addChildAt(fringeSprites, root.getChildIndex(terrainSprites) + 1);
   // Water, bridge decks and ledges paint an opaque base into `surfaces`, so
   // their material must sit above that layer or the fill hides it.
   const surfaceSprites = new ContainerClass();
@@ -350,7 +355,7 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   roadMask.label = 'world-road-mask';
   roadSprites.addChild(roadMask);
   root.addChildAt(roadSprites, root.getChildIndex(layers.routes) + 1);
-  return Object.freeze({ root, layers: Object.freeze(layers), terrainSprites, surfaceSprites, surfaceCues, roadSprites, roadMask, TilingSpriteClass });
+  return Object.freeze({ root, layers: Object.freeze(layers), terrainSprites, fringeSprites, surfaceSprites, surfaceCues, roadSprites, roadMask, TilingSpriteClass });
 }
 
 export function clearWorldProductionLayers(worldProduction) {
@@ -636,6 +641,51 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       // Only draw the procedural motif when the authored tile is absent; the
       // tile already carries material detail and the two would fight.
       drawDistrictMaterial({ layers, district, kit, camera, view, project, tick });
+    }
+  }
+
+  // District boundary blending: the west district's material bleeds a ragged
+  // fringe across the shared edge into its eastern neighbour. Projection-only;
+  // walkability and district semantics stay with the world contract. With no
+  // fringe texture loaded (flat-colour fallback, load failure, ?flatTerrain=1)
+  // nothing draws and the previous hard edge remains.
+  const fringeContainer = worldProduction.fringeSprites;
+  const FRINGE_WORLD_DEPTH = 46;
+  let fringeCursor = 0;
+  if (fringeContainer && terrainTiles?.ready) {
+    const ordered = [...world.districts].sort((left, right) => left.area.minX - right.area.minX);
+    for (let index = 0; index + 1 < ordered.length; index += 1) {
+      const west = ordered[index];
+      const east = ordered[index + 1];
+      const boundaryX = east.area.minX;
+      const westMaterial = DISTRICT_TERRAIN_MATERIAL[west.id];
+      const texture = terrainTiles.fringeTextureFor?.(westMaterial) ?? null;
+      if (!texture) continue;
+      const top = project({ x: boundaryX, y: east.area.minY, z: 0 });
+      const bottom = project({ x: boundaryX, y: east.area.maxY, z: 0 });
+      const depth = FRINGE_WORLD_DEPTH * camera.zoom;
+      if (!screenBoundsVisible([top, { x: top.x + depth, y: bottom.y }], view, performanceProfile.worldCullMargin)) continue;
+      let sprite = fringeContainer.children[fringeCursor] ?? null;
+      if (!sprite) {
+        sprite = new worldProduction.TilingSpriteClass({ texture, width: 1, height: 1 });
+        fringeContainer.addChild(sprite);
+      }
+      fringeCursor += 1;
+      sprite.visible = true;
+      sprite.texture = texture;
+      // Rotated -90deg: the strip's U axis runs down the screen along the
+      // boundary and its V falloff bleeds eastward into the next district.
+      sprite.rotation = -Math.PI / 2;
+      sprite.position.set(top.x, bottom.y);
+      sprite.width = Math.max(1, bottom.y - top.y);
+      sprite.height = depth;
+      const tileWorldScale = camera.zoom * 0.26;
+      sprite.tileScale?.set?.(tileWorldScale, depth / 64);
+    }
+  }
+  if (fringeContainer) {
+    for (let index = fringeCursor; index < fringeContainer.children.length; index += 1) {
+      fringeContainer.children[index].visible = false;
     }
   }
 

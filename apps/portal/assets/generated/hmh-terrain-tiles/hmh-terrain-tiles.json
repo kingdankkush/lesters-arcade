@@ -1,5 +1,85 @@
 {
   "classification": "production-art",
+  "fringeHeight": 64,
+  "fringes": [
+    {
+      "bytes": 37517,
+      "file": "./bridge-deck-fringe.png",
+      "height": 64,
+      "id": "bridge-deck",
+      "width": 256
+    },
+    {
+      "bytes": 34588,
+      "file": "./crushed-ore-fringe.png",
+      "height": 64,
+      "id": "crushed-ore",
+      "width": 256
+    },
+    {
+      "bytes": 34405,
+      "file": "./forest-floor-fringe.png",
+      "height": 64,
+      "id": "forest-floor",
+      "width": 256
+    },
+    {
+      "bytes": 31732,
+      "file": "./industrial-slab-fringe.png",
+      "height": 64,
+      "id": "industrial-slab",
+      "width": 256
+    },
+    {
+      "bytes": 36006,
+      "file": "./ledge-top-fringe.png",
+      "height": 64,
+      "id": "ledge-top",
+      "width": 256
+    },
+    {
+      "bytes": 34452,
+      "file": "./packed-earth-fringe.png",
+      "height": 64,
+      "id": "packed-earth",
+      "width": 256
+    },
+    {
+      "bytes": 34239,
+      "file": "./red-rock-fringe.png",
+      "height": 64,
+      "id": "red-rock",
+      "width": 256
+    },
+    {
+      "bytes": 40571,
+      "file": "./road-fringe.png",
+      "height": 64,
+      "id": "road",
+      "width": 256
+    },
+    {
+      "bytes": 29384,
+      "file": "./shallow-water-fringe.png",
+      "height": 64,
+      "id": "shallow-water",
+      "width": 256
+    },
+    {
+      "bytes": 28095,
+      "file": "./water-fringe.png",
+      "height": 64,
+      "id": "water",
+      "width": 256
+    },
+    {
+      "bytes": 32999,
+      "file": "./wet-bank-fringe.png",
+      "height": 64,
+      "id": "wet-bank",
+      "width": 256
+    }
+  ],
   "materials": [
     {
       "bytes": 111988,

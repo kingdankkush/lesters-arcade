@@ -270,6 +270,36 @@ MATERIALS = {
 }
 
 
+FRINGE_HEIGHT = 64
+
+
+def bake_fringe(name: str, tile: Image.Image, seed: int) -> Image.Image:
+    """Cut a horizontally-tileable fringe strip from a baked tile.
+
+    The strip carries the material's own pixels with a ragged, dithered alpha
+    falloff, so two ground materials meet as a broken organic edge instead of
+    a hard flat rectangle. Deterministic: the edge profile and dither derive
+    from the same integer hash as the tile noise.
+    """
+    fringe = Image.new("RGBA", (TILE_SIZE, FRINGE_HEIGHT))
+    profile_field = wrapped_value_noise(TILE_SIZE, 32, seed ^ 0x0F12_19E5)
+    profile = profile_field[0]
+    for x in range(TILE_SIZE):
+        edge = 10 + profile[x] * 26
+        for y in range(FRINGE_HEIGHT):
+            r, g, b, _ = tile.getpixel((x, y))
+            if y <= edge:
+                alpha = 255
+            else:
+                fade = max(0.0, 1.0 - (y - edge) / (FRINGE_HEIGHT * 0.62 - edge * 0.4))
+                # Ordered dither keeps the falloff from reading as an airbrush
+                # gradient at gameplay zoom.
+                dither = ((x * 7 + y * 13 + (seed & 31)) % 4) / 8.0
+                alpha = int(255 * max(0.0, min(1.0, fade - dither)))
+            fringe.putpixel((x, y), (r, g, b, alpha))
+    return fringe
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Bake seamless HMH terrain tiles.")
     parser.add_argument("--verify-seamless", action="store_true",
@@ -278,6 +308,7 @@ def main() -> None:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     records = []
+    fringe_records = []
     seam_stats = {}
     for name, material in sorted(MATERIALS.items()):
         image = bake(material)
@@ -332,12 +363,25 @@ def main() -> None:
             "bytes": path.stat().st_size,
         })
 
+        fringe = bake_fringe(name, image, material["seed"])
+        fringe_path = OUTPUT_DIR / f"{name}-fringe.png"
+        fringe.save(fringe_path, optimize=True)
+        fringe_records.append({
+            "id": name,
+            "file": f"./{fringe_path.name}",
+            "width": TILE_SIZE,
+            "height": FRINGE_HEIGHT,
+            "bytes": fringe_path.stat().st_size,
+        })
+
     manifest = {
         "schemaVersion": 1,
         "pipelineId": PIPELINE_ID,
         "classification": "production-art",
         "runtimeAuthority": "projection-only",
         "tileSize": TILE_SIZE,
+        "fringeHeight": FRINGE_HEIGHT,
+        "fringes": fringe_records,
         "seamlessVerified": bool(args.verify_seamless),
         "seamStatistics": seam_stats,
         "materials": records,

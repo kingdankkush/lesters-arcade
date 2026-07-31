@@ -48,6 +48,14 @@ export function terrainTileAsset(materialId) {
   });
 }
 
+export function terrainFringeAsset(materialId) {
+  if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);
+  return Object.freeze({
+    materialId,
+    imageUrl: `${TILE_ROOT}/${materialId}-fringe.png`,
+  });
+}
+
 export function terrainManifestUrl() {
   return `${TILE_ROOT}/hmh-terrain-tiles.json`;
 }
@@ -80,6 +88,7 @@ export function validateTerrainManifest(manifest) {
  */
 export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
   const textures = new Map();
+  const fringeTextures = new Map();
   const failed = new Set();
   let manifest = null;
 
@@ -119,6 +128,25 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
       textures.set(materialId, texture);
       failed.delete(materialId);
       return texture;
+    },
+    registerFringe(materialId, texture) {
+      if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);
+      if (!texture?.source) throw new TypeError('terrain fringe texture source is required');
+      // Repeats along the boundary (U) only; V clamps so the alpha falloff is
+      // stretched across the fringe depth rather than repeated.
+      const source = texture.source;
+      if (source.style) {
+        source.style.addressMode = 'repeat';
+        source.style.addressModeU = 'repeat';
+        source.style.addressModeV = 'clamp-to-edge';
+        source.style.update?.();
+      }
+      source.update?.();
+      fringeTextures.set(materialId, texture);
+      return texture;
+    },
+    fringeTextureFor(materialId) {
+      return fringeTextures.get(materialId) ?? null;
     },
     markFailed(materialId) {
       failed.add(materialId);

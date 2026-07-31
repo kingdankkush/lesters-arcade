@@ -63,8 +63,11 @@ def analyse(manifest: dict, raw_dir: Path) -> list[dict]:
     for asset in manifest['assets']:
         path = raw_dir / f"{asset['assetId']}.png"
         image = canonical(Image.open(path))
-        if image.size != frame_size:
-            raise RuntimeError(f"{asset['assetId']} dimensions {image.size} != {frame_size}")
+        # Detail-heavy world props declare a per-asset frameSize; everything
+        # else uses the manifest default.
+        expected_size = tuple(asset.get('frameSize', frame_size))
+        if image.size != expected_size:
+            raise RuntimeError(f"{asset['assetId']} dimensions {image.size} != {expected_size}")
         alpha = image.getchannel('A')
         mask = alpha.point(lambda value: 255 if value > threshold else 0)
         bbox = mask.getbbox()

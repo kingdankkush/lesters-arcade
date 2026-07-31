@@ -120,6 +120,13 @@ def torus(name, location, major, minor, mat, asset_id, *, rotation=(0.0, 0.0, 0.
     return tag(obj, asset_id)
 
 
+def tone(hex_color: str, factor: float) -> str:
+    """Deterministically lighten/darken a hex colour for per-part variation."""
+    value = hex_color.lstrip('#')
+    r, g, b = (int(value[i:i + 2], 16) for i in (0, 2, 4))
+    return '#%02x%02x%02x' % tuple(max(0, min(255, round(channel * factor))) for channel in (r, g, b))
+
+
 def build_asset(asset: dict) -> dict:
     asset_id = asset['assetId']
     shape = asset['shape']
@@ -240,6 +247,155 @@ def build_asset(asset: dict) -> dict:
         for z,angle in ((0.38,16),(0.68,-14)): add(cube(f'{asset_id}_Plank_{z}', (0.0,0.0,z), (0.62,0.12,0.10), primary, asset_id, rotation=(0,0,math.radians(angle))))
         for x in (-0.42,0.42): add(cube(f'{asset_id}_Leg_{x}', (x,0.0,0.34), (0.08,0.12,0.40), secondary, asset_id, rotation=(0,math.radians(x*14),0)))
         add(cube(f'{asset_id}_Warning', (0.0,-0.13,0.55), (0.16,0.025,0.07), accent, asset_id))
+    elif shape == 'pine-tree':
+        # Dense conifer: tapered trunk with bark ridges and root flare, five
+        # canopy tiers each fringed with branch tufts in alternating greens.
+        deep = material(f'{asset_id}_deep', tone(palette['primary'], 0.62), roughness=0.82)
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.22), roughness=0.7)
+        add(cylinder(f'{asset_id}_TrunkLower', (0.0, 0.0, 0.16), 0.105, 0.32, secondary, asset_id, vertices=12))
+        add(cylinder(f'{asset_id}_TrunkUpper', (0.0, 0.0, 0.42), 0.08, 0.30, secondary, asset_id, vertices=12))
+        for ridge in range(6):
+            r = math.radians(ridge * 60 + 12)
+            add(cube(f'{asset_id}_Bark_{ridge}', (math.cos(r) * 0.095, math.sin(r) * 0.095, 0.18), (0.02, 0.02, 0.15), material(f'{asset_id}_bark_dark', tone(palette['secondary'], 0.7), roughness=0.9), asset_id, bevel=0.008, rotation=(0, 0, r)))
+        for root in range(4):
+            r = math.radians(root * 90 + 45)
+            add(cone(f'{asset_id}_Root_{root}', (math.cos(r) * 0.13, math.sin(r) * 0.13, 0.045), 0.06, 0.1, secondary, asset_id, rotation=(math.radians(78) * math.cos(r), math.radians(78) * math.sin(r), 0)))
+        tiers = ((0.52, 0.50, 9), (0.74, 0.42, 8), (0.95, 0.34, 7), (1.14, 0.26, 6), (1.30, 0.18, 5))
+        for tier_index, (z, radius, tufts) in enumerate(tiers):
+            body = primary if tier_index % 2 == 0 else deep
+            add(cone(f'{asset_id}_Tier_{tier_index}', (0.0, 0.0, z), radius, 0.34, body, asset_id))
+            for tuft in range(tufts):
+                r = math.radians(tuft * (360 / tufts) + tier_index * 23)
+                tx, ty = math.cos(r) * radius * 0.72, math.sin(r) * radius * 0.72
+                tuft_mat = lit if (tuft + tier_index) % 3 == 0 else (primary if tier_index % 2 else deep)
+                add(cone(f'{asset_id}_Tuft_{tier_index}_{tuft}', (tx, ty, z - 0.06), radius * 0.30, 0.20, tuft_mat, asset_id, rotation=(math.radians(24) * math.sin(r), math.radians(-24) * math.cos(r), 0)))
+        add(cone(f'{asset_id}_Crown', (0.0, 0.0, 1.44), 0.11, 0.22, lit, asset_id))
+        add(cone(f'{asset_id}_Tip', (0.0, 0.0, 1.56), 0.045, 0.1, accent, asset_id))
+    elif shape == 'broadleaf-tree':
+        deep = material(f'{asset_id}_deep', tone(palette['primary'], 0.6), roughness=0.85)
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.28), roughness=0.68)
+        add(cylinder(f'{asset_id}_Trunk', (0.0, 0.0, 0.30), 0.115, 0.60, secondary, asset_id, vertices=12))
+        add(cylinder(f'{asset_id}_BranchL', (-0.16, 0.03, 0.62), 0.055, 0.34, secondary, asset_id, vertices=10, rotation=(0, math.radians(-38), math.radians(10))))
+        add(cylinder(f'{asset_id}_BranchR', (0.14, -0.04, 0.70), 0.05, 0.30, secondary, asset_id, vertices=10, rotation=(0, math.radians(34), math.radians(-16))))
+        add(cylinder(f'{asset_id}_BranchB', (0.02, 0.12, 0.66), 0.045, 0.26, secondary, asset_id, vertices=10, rotation=(math.radians(-30), 0, 0)))
+        # Three canopy shells: shadowed base puffs, mid-tone body, lit crown.
+        puffs = (
+            (deep, ((-0.30, 0.05, 0.86, 0.24), (0.26, -0.02, 0.90, 0.26), (0.02, 0.20, 0.88, 0.22), (-0.05, -0.18, 0.84, 0.21))),
+            (primary, ((-0.22, 0.12, 1.06, 0.26), (0.18, 0.10, 1.10, 0.28), (0.00, -0.14, 1.04, 0.25), (-0.32, -0.06, 1.00, 0.20), (0.32, -0.04, 1.02, 0.19))),
+            (lit, ((-0.10, 0.02, 1.26, 0.24), (0.14, 0.05, 1.24, 0.20), (0.02, 0.14, 1.30, 0.17), (-0.02, -0.08, 1.32, 0.15))),
+        )
+        for shell_index, (mat, entries) in enumerate(puffs):
+            for puff_index, (x, y, z, size) in enumerate(entries):
+                add(cube(f'{asset_id}_Puff_{shell_index}_{puff_index}', (x, y, z), (size, size * 0.92, size * 0.8), mat, asset_id, bevel=size * 0.42, rotation=(0, 0, (shell_index * 5 + puff_index) * 0.5)))
+        add(cube(f'{asset_id}_AccentPuff', (0.08, -0.16, 1.18), (0.12, 0.11, 0.09), accent, asset_id, bevel=0.05))
+    elif shape == 'boulder':
+        dark = material(f'{asset_id}_dark', tone(palette['primary'], 0.66), roughness=0.92)
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.18), roughness=0.8)
+        moss = material(f'{asset_id}_moss', '#3f5a37', roughness=0.95)
+        crack = material(f'{asset_id}_crack', '#1b1d20', roughness=0.95)
+        rocks = (
+            (0.0, 0.0, 0.28, 0.42, 0.34, 0.28, 0.12, 0.38, primary),
+            (0.30, -0.12, 0.16, 0.22, 0.19, 0.17, -0.2, -0.52, dark),
+            (-0.26, 0.10, 0.14, 0.18, 0.16, 0.13, 0.3, 0.9, dark),
+            (0.06, 0.24, 0.18, 0.16, 0.14, 0.15, -0.15, 1.4, primary),
+            (-0.12, -0.24, 0.12, 0.14, 0.12, 0.10, 0.2, 2.1, lit),
+            (0.16, 0.10, 0.44, 0.15, 0.13, 0.10, 0.05, 0.7, lit),
+            (-0.30, -0.08, 0.08, 0.10, 0.09, 0.08, 0.0, 1.8, primary),
+        )
+        for index, (x, y, z, sx, sy, sz, rx, rz, mat) in enumerate(rocks):
+            add(cube(f'{asset_id}_Rock_{index}', (x, y, z), (sx, sy, sz), mat, asset_id, bevel=min(sx, sz) * 0.5, rotation=(rx, 0.0, rz)))
+        for index, (x, y, z, rz) in enumerate(((-0.08, -0.3, 0.36, 0.4), (0.24, -0.24, 0.3, -0.7), (-0.3, 0.02, 0.22, 1.1))):
+            add(cube(f'{asset_id}_Moss_{index}', (x, y, z), (0.09, 0.03, 0.05), moss, asset_id, bevel=0.02, rotation=(0.3, 0, rz)))
+        add(cube(f'{asset_id}_Crack', (0.08, -0.33, 0.22), (0.015, 0.02, 0.16), crack, asset_id, bevel=0.005, rotation=(0, 0, 0.25)))
+        add(cube(f'{asset_id}_Crack2', (-0.16, -0.3, 0.14), (0.1, 0.02, 0.012), crack, asset_id, bevel=0.004, rotation=(0, 0, -0.2)))
+        add(cube(f'{asset_id}_OreFleck', (0.12, -0.3, 0.4), (0.05, 0.02, 0.04), accent, asset_id, bevel=0.012))
+    elif shape == 'wrecked-car':
+        # Static world dressing only - never an actor. Panelled body, glass,
+        # rust blooms, one flat tyre and one bare hub sell the wreck.
+        rust = material(f'{asset_id}_rust', tone(palette['primary'], 0.58), roughness=0.95)
+        glass = material(f'{asset_id}_glass', '#20343c', roughness=0.3)
+        chrome = material(f'{asset_id}_chrome', '#8b959b', metallic=0.6, roughness=0.4)
+        add(cube(f'{asset_id}_Chassis', (0.0, 0.0, 0.185), (0.66, 0.27, 0.075), secondary, asset_id, bevel=0.03))
+        add(cube(f'{asset_id}_BodyMid', (0.0, 0.0, 0.27), (0.64, 0.26, 0.055), primary, asset_id, bevel=0.035))
+        add(cube(f'{asset_id}_Hood', (0.44, 0.0, 0.30), (0.20, 0.24, 0.030), primary, asset_id, bevel=0.025, rotation=(0, math.radians(4), 0)))
+        add(cube(f'{asset_id}_TrunkLid', (-0.46, 0.0, 0.305), (0.16, 0.24, 0.028), rust, asset_id, bevel=0.02, rotation=(0, math.radians(-3), 0)))
+        add(cube(f'{asset_id}_Cabin', (-0.05, 0.0, 0.415), (0.28, 0.22, 0.085), primary, asset_id, bevel=0.045, rotation=(0, math.radians(-2), 0)))
+        add(cube(f'{asset_id}_Windshield', (0.185, 0.0, 0.40), (0.055, 0.20, 0.075), glass, asset_id, bevel=0.02, rotation=(0, math.radians(28), 0)))
+        add(cube(f'{asset_id}_RearGlass', (-0.30, 0.0, 0.40), (0.045, 0.19, 0.065), glass, asset_id, bevel=0.02, rotation=(0, math.radians(-32), 0)))
+        for side in (-1, 1):
+            add(cube(f'{asset_id}_SideGlass_{side}', (-0.05, side * 0.225, 0.42), (0.20, 0.012, 0.055), glass, asset_id, bevel=0.012))
+            add(cube(f'{asset_id}_DoorLine_{side}', (0.05, side * 0.265, 0.26), (0.008, 0.008, 0.06), crack_mat := material(f'{asset_id}_panel', '#231a12', roughness=0.9), asset_id, bevel=0.003))
+        wheels = ((0.42, -0.30, 0.085, True), (0.42, 0.30, 0.085, False), (-0.40, -0.30, 0.085, False))
+        for index, (x, y, radius, flat) in enumerate(wheels):
+            wheel_radius = 0.055 if flat else radius
+            add(cylinder(f'{asset_id}_Tyre_{index}', (x, y, wheel_radius), wheel_radius, 0.075, material(f'{asset_id}_tyre', '#17181a', roughness=0.9), asset_id, vertices=16, rotation=(math.radians(90), 0, 0)))
+            add(cylinder(f'{asset_id}_Hub_{index}', (x, y * 1.02, wheel_radius), wheel_radius * 0.45, 0.078, chrome, asset_id, vertices=10, rotation=(math.radians(90), 0, 0)))
+        add(cylinder(f'{asset_id}_BareHub', (-0.40, 0.30, 0.07), 0.05, 0.07, chrome, asset_id, vertices=10, rotation=(math.radians(90), 0, 0)))
+        add(cube(f'{asset_id}_Grill', (0.655, 0.0, 0.24), (0.012, 0.16, 0.045), chrome, asset_id, bevel=0.008))
+        for side in (-1, 1):
+            add(cube(f'{asset_id}_Headlight_{side}', (0.65, side * 0.19, 0.27), (0.015, 0.045, 0.03), accent, asset_id, bevel=0.01))
+        for index, (x, y, sx, sz) in enumerate(((0.25, -0.262, 0.09, 0.035), (-0.15, -0.262, 0.12, 0.045), (0.1, 0.262, 0.1, 0.04), (0.52, 0.21, 0.06, 0.03))):
+            add(cube(f'{asset_id}_Rust_{index}', (x, y, 0.27), (sx, 0.012, sz), rust, asset_id, bevel=0.01, rotation=(0, 0, index * 0.4)))
+        add(cube(f'{asset_id}_RoofDent', (-0.02, 0.04, 0.505), (0.10, 0.09, 0.014), rust, asset_id, bevel=0.01, rotation=(0.1, 0.15, 0.3)))
+    elif shape == 'fence':
+        weathered = material(f'{asset_id}_weathered', tone(palette['primary'], 0.72), roughness=0.9)
+        for index, x in enumerate((-0.52, -0.17, 0.17, 0.52)):
+            add(cube(f'{asset_id}_Post_{index}', (x, 0.0, 0.33), (0.045, 0.045, 0.35), secondary, asset_id, bevel=0.015))
+            add(cube(f'{asset_id}_PostCap_{index}', (x, 0.0, 0.70), (0.055, 0.055, 0.02), weathered, asset_id, bevel=0.01))
+        for z in (0.22, 0.44, 0.60):
+            add(cube(f'{asset_id}_Rail_{z}', (0.0, 0.012, z), (0.56, 0.022, 0.028), primary, asset_id, bevel=0.01))
+        pickets = ((-0.42, 0.0), (-0.28, 0.0), (-0.02, 0.0), (0.12, 0.0), (0.40, 0.0))
+        for index, (x, tilt) in enumerate(pickets):
+            add(cube(f'{asset_id}_Picket_{index}', (x, -0.012, 0.38), (0.032, 0.014, 0.26), weathered if index % 2 else primary, asset_id, bevel=0.008, rotation=(0, 0, tilt)))
+        add(cube(f'{asset_id}_BrokenPicket', (0.27, -0.014, 0.30), (0.032, 0.014, 0.20), weathered, asset_id, bevel=0.008, rotation=(0, 0, math.radians(24))))
+        for sign_dir in (-1, 1):
+            add(cube(f'{asset_id}_Wire_{sign_dir}', (0.0, 0.02, 0.41), (0.5, 0.006, 0.006), material(f'{asset_id}_wire', '#6d757c', metallic=0.5, roughness=0.5), asset_id, bevel=0.002, rotation=(0, 0, sign_dir * math.radians(14))))
+        add(cube(f'{asset_id}_Sign', (-0.17, -0.05, 0.52), (0.085, 0.014, 0.06), accent, asset_id, bevel=0.01, rotation=(0, 0, math.radians(-6))))
+    elif shape == 'shack':
+        # Plank-built miner's shack: individual wall boards, staggered roof
+        # shingles, framed door and window, capped chimney and a porch step.
+        plank_dark = material(f'{asset_id}_plank_dark', tone(palette['primary'], 0.72), roughness=0.9)
+        plank_lit = material(f'{asset_id}_plank_lit', tone(palette['primary'], 1.18), roughness=0.82)
+        shingle_dark = material(f'{asset_id}_shingle_dark', tone(palette['secondary'], 0.7), roughness=0.9)
+        frame_mat = material(f'{asset_id}_frame', tone(palette['secondary'], 1.3), roughness=0.8)
+        add(cube(f'{asset_id}_Core', (0.0, 0.0, 0.40), (0.54, 0.39, 0.40), plank_dark, asset_id, bevel=0.02))
+        for row in range(6):
+            z = 0.085 + row * 0.135
+            jitter = ((row * 37) % 5 - 2) * 0.004
+            mat = (primary, plank_lit, plank_dark)[row % 3]
+            add(cube(f'{asset_id}_FrontPlank_{row}', (jitter, -0.402, z), (0.54, 0.012, 0.058), mat, asset_id, bevel=0.008))
+            add(cube(f'{asset_id}_BackPlank_{row}', (-jitter, 0.402, z), (0.54, 0.012, 0.058), mat, asset_id, bevel=0.008))
+        for side in (-1, 1):
+            for row in range(6):
+                z = 0.085 + row * 0.135
+                mat = (plank_lit, primary, plank_dark)[row % 3]
+                add(cube(f'{asset_id}_SidePlank_{side}_{row}', (side * 0.552, 0.0, z), (0.012, 0.39, 0.058), mat, asset_id, bevel=0.008))
+            add(cube(f'{asset_id}_CornerTrim_F{side}', (side * 0.545, -0.395, 0.40), (0.022, 0.022, 0.40), frame_mat, asset_id, bevel=0.008))
+            add(cube(f'{asset_id}_CornerTrim_B{side}', (side * 0.545, 0.395, 0.40), (0.022, 0.022, 0.40), frame_mat, asset_id, bevel=0.008))
+        # Roof: two shallow slopes of staggered shingle rows meeting at a ridge.
+        for sign in (-1, 1):
+            for row in range(4):
+                y = sign * (0.335 - row * 0.088)
+                z = 0.845 + row * 0.042
+                for col in range(5):
+                    x = -0.52 + col * 0.26 + (0.13 if row % 2 else 0.0)
+                    mat = shingle_dark if (row + col) % 2 else secondary
+                    add(cube(f'{asset_id}_Shingle_{sign}_{row}_{col}', (x, y, z), (0.125, 0.052, 0.016), mat, asset_id, bevel=0.006, rotation=(math.radians(sign * -16), 0, 0)))
+        add(cube(f'{asset_id}_Ridge', (0.0, 0.0, 1.02), (0.60, 0.045, 0.035), frame_mat, asset_id, bevel=0.012))
+        for sign in (-1, 1):
+            add(cube(f'{asset_id}_Fascia_{sign}', (0.0, sign * 0.42, 0.80), (0.62, 0.016, 0.035), frame_mat, asset_id, bevel=0.008))
+        add(cube(f'{asset_id}_DoorFrame', (0.22, -0.408, 0.30), (0.15, 0.016, 0.28), frame_mat, asset_id, bevel=0.008))
+        add(cube(f'{asset_id}_Door', (0.22, -0.415, 0.29), (0.115, 0.014, 0.25), secondary, asset_id, bevel=0.01))
+        add(cube(f'{asset_id}_Handle', (0.175, -0.428, 0.28), (0.014, 0.008, 0.014), material(f'{asset_id}_brass', '#c9a86a', metallic=0.5, roughness=0.4), asset_id, bevel=0.004))
+        add(cube(f'{asset_id}_WindowFrame', (-0.18, -0.408, 0.50), (0.155, 0.016, 0.14), frame_mat, asset_id, bevel=0.008))
+        add(cube(f'{asset_id}_Window', (-0.18, -0.415, 0.50), (0.125, 0.014, 0.11), accent, asset_id, bevel=0.008))
+        add(cube(f'{asset_id}_WindowCrossV', (-0.18, -0.425, 0.50), (0.012, 0.008, 0.11), frame_mat, asset_id, bevel=0.003))
+        add(cube(f'{asset_id}_WindowCrossH', (-0.18, -0.425, 0.50), (0.125, 0.008, 0.012), frame_mat, asset_id, bevel=0.003))
+        add(cube(f'{asset_id}_Chimney', (-0.32, 0.08, 0.98), (0.05, 0.05, 0.15), plank_dark, asset_id, bevel=0.012))
+        add(cube(f'{asset_id}_ChimneyCap', (-0.32, 0.08, 1.135), (0.065, 0.065, 0.018), frame_mat, asset_id, bevel=0.008))
+        add(cube(f'{asset_id}_Step', (0.22, -0.46, 0.045), (0.16, 0.05, 0.045), plank_lit, asset_id, bevel=0.012))
+        add(cylinder(f'{asset_id}_Barrel', (0.62, -0.26, 0.16), 0.085, 0.30, secondary, asset_id, vertices=14))
+        add(cube(f'{asset_id}_BarrelBand', (0.62, -0.26, 0.2), (0.1, 0.1, 0.012), frame_mat, asset_id, bevel=0.004))
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 
