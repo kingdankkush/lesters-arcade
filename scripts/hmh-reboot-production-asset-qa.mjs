@@ -121,6 +121,12 @@ assert.equal(rosterMetrics.actorCount, 7, 'enemy roster metrics actor count');
 assert.equal(rosterMetrics.totalFrames, 1_368, 'enemy roster metrics frame count');
 assert.equal(rosterMetrics.duplicateFrames, 0, 'enemy roster duplicate frames');
 assert.equal(rosterMetrics.reproducibleVerified, true, 'enemy roster reproducibility');
+// The roster comparison accepts documented single-LSB rasterizer jitter and
+// nothing more; the gate fails on any wider delta and on any metadata drift.
+assert.equal(rosterMetrics.reproducibilityPolicy?.kind, 'exact-or-single-lsb', 'roster reproducibility policy');
+assert.equal(rosterMetrics.reproducibilityPolicy?.maxChannelDelta, 1, 'roster LSB bound');
+assert.ok(rosterMetrics.reproducibilityPolicy?.maxDifferingSubpixelsPerFrame <= 8, 'roster subpixel bound');
+assert.equal(rosterMetrics.reproducibilityPolicy?.metadataExactExceptDerivedPixelSha, true, 'roster metadata exactness');
 assert.equal(rosterMetrics.totalAtlasBytes, rosterAtlasTotalBytes, 'enemy roster byte ledger drifted');
 
 const propImagePath = portalPath(AUTHORED_PROP_ATLAS_IMAGE_URL);

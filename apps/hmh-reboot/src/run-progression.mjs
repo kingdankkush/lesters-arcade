@@ -172,7 +172,10 @@ function resolveChoices(state) {
     .filter((upgrade) => (state.ranks[upgrade.id] ?? 0) < upgrade.maxRank)
     .map((upgrade) => ({ upgrade, order: hashChoice(state.seed, `${salt}:${upgrade.id}`) }))
     .sort((a, b) => a.order - b.order || a.upgrade.id.localeCompare(b.upgrade.id))
-    .slice(0, 3)
+    // Cycle 036 handoff, Priority E: every level-up offers exactly TWO
+    // deterministic options. The pair is a pure function of seed, level,
+    // ranks and selection sequence.
+    .slice(0, 2)
     .map(({ upgrade }) => freezeDeep({
       ...upgrade,
       rank: state.ranks[upgrade.id] ?? 0,

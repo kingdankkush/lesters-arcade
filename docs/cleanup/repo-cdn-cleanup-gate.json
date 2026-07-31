@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-26T11:57:20.682Z",
+  "generatedAt": "2026-07-31T07:22:21.357Z",
   "status": "approval-gated",
   "summary": {
-    "workingTreeBytes": 688520297,
+    "workingTreeBytes": 998492796,
     "gitBytes": "1.83 GiB",
-    "assetBytes": 188400015,
+    "assetBytes": 194865931,
     "cdnCandidateCount": 33,
     "cdnCandidateBytes": 105940018,
     "vaultExists": false,
@@ -87,6 +87,11 @@
       "runtimeReferenced": true
     },
     {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png",
+      "sizeBytes": 3227608,
+      "runtimeReferenced": true
+    },
+    {
       "path": "apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3160029,
       "runtimeReferenced": true
@@ -97,18 +102,13 @@
       "runtimeReferenced": true
     },
     {
-      "path": "apps/portal/assets/video/arcade-splash-loop.mp4",
-      "sizeBytes": 2937102,
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png",
+      "sizeBytes": 3076541,
       "runtimeReferenced": true
     },
     {
-      "path": "apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 2914826,
-      "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
-      "sizeBytes": 2913681,
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png",
+      "sizeBytes": 2998466,
       "runtimeReferenced": true
     }
   ],

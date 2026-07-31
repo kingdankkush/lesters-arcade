@@ -142,6 +142,7 @@ import {
   createWeaponLoadout,
   getActiveWeaponState,
   getWeaponReadabilityStatus,
+  grantWeaponPickup,
   refillWeaponLoadout,
   selectWeapon,
   stepWeaponLoadout,
@@ -623,6 +624,10 @@ async function boot() {
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
   const collectibleHealthPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleHealthPilot') === '1';
   const collectibleAmmoPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleAmmoPilot') === '1';
+  // Evidence-only arsenal: pre-grants every pickup weapon so switching and
+  // reload evidence does not depend on cache traversal. Gated behind
+  // evidenceSafe exactly like the other pilots; a real run starts pistol-only.
+  const weaponPilotEnabled = evidenceSafeEnabled && runtimeParams.get('weaponPilot') === '1';
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
@@ -1658,6 +1663,11 @@ async function boot() {
     previousWeaponNext = false;
     lastInputWeaponSlot = 0;
     weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });
+    if (weaponPilotEnabled) {
+      for (const weaponId of WEAPON_ORDER) {
+        if (weaponId !== weaponLoadout.activeWeaponId) grantWeaponPickup(weaponLoadout, { tick: 0, weaponId, select: false });
+      }
+    }
     if (collectibleAmmoPilotEnabled) weaponLoadout.weapons['coin-blaster'].ammoInClip = 1;
     meleeState = createMeleeState();
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
@@ -1959,7 +1969,8 @@ async function boot() {
         if (event.kind === 'heal') {
           playerHealth = Math.min(maxPlayerHealth, playerHealth + event.amount);
         } else if (event.kind === 'weapon-cache') {
-          refillWeaponLoadout(weaponLoadout, { tick, weaponId: event.weaponId, select: true });
+          // A weapon cache grants ownership plus authored finite reserve.
+          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true });
         } else if (event.kind === 'ammo-refill') {
           refillWeaponLoadout(weaponLoadout, { tick });
         } else if (event.kind === 'nuke') {
@@ -2073,11 +2084,20 @@ async function boot() {
         activeProjectiles = [];
       }
 
-      const directWeaponId = tickInput.weaponSlot > 0 ? WEAPON_ORDER[tickInput.weaponSlot - 1] : null;
+      // Switching only cycles weapons the player actually owns: the pistol is
+      // always owned, everything else is a pickup (Cycle 036 Priority D).
+      const ownsWeapon = (id) => weaponLoadout.weapons[id]?.owned === true;
+      const rawDirectWeaponId = tickInput.weaponSlot > 0 ? WEAPON_ORDER[tickInput.weaponSlot - 1] : null;
+      const directWeaponId = rawDirectWeaponId && ownsWeapon(rawDirectWeaponId) ? rawDirectWeaponId : null;
       const nextWeaponPressed = tickInput.weaponNext && !previousWeaponNext;
-      const nextWeaponId = nextWeaponPressed
-        ? WEAPON_ORDER[(WEAPON_ORDER.indexOf(weaponLoadout.activeWeaponId) + 1) % WEAPON_ORDER.length]
-        : null;
+      let nextWeaponId = null;
+      if (nextWeaponPressed) {
+        const start = WEAPON_ORDER.indexOf(weaponLoadout.activeWeaponId);
+        for (let offset = 1; offset <= WEAPON_ORDER.length; offset += 1) {
+          const candidate = WEAPON_ORDER[(start + offset) % WEAPON_ORDER.length];
+          if (ownsWeapon(candidate)) { nextWeaponId = candidate; break; }
+        }
+      }
       const requestedWeaponId = directWeaponId ?? nextWeaponId;
       let switchedWeapon = false;
       if (requestedWeaponId && requestedWeaponId !== weaponLoadout.activeWeaponId) {

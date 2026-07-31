@@ -1,6 +1,6 @@
 # Repo CDN cleanup gate
 
-Generated: 2026-07-26T11:57:20.682Z
+Generated: 2026-07-31T07:22:21.357Z
 Status: **approval-gated**
 
 ## Verdict
@@ -9,8 +9,8 @@ Status: **approval-gated**
 
 ## Current metrics
 
-- Working tree bytes: 657 MB
-- Portal asset bytes: 180 MB
+- Working tree bytes: 952 MB
+- Portal asset bytes: 186 MB
 - Git pack size: 1.83 GiB
 - CDN candidate media: 33 files / 101 MB
 - Vault exists: no
@@ -65,11 +65,11 @@ Status: **approval-gated**
 | apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3 | 3.2 MB | yes |
 | apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3 | 3.1 MB | yes |
 | apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3 | 3.1 MB | yes |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png | 3.1 MB | yes |
 | apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3 | 3.0 MB | yes |
 | apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3 | 3.0 MB | yes |
-| apps/portal/assets/video/arcade-splash-loop.mp4 | 2.8 MB | yes |
-| apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3 | 2.8 MB | yes |
-| apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3 | 2.8 MB | yes |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png | 2.9 MB | yes |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png | 2.9 MB | yes |
 
 ## Safe next actions
 

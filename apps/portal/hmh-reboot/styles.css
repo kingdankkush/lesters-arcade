@@ -133,7 +133,9 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hmh-upgrade-panel { width: min(980px, 100%); padding: 20px; border-radius: 22px 22px 10px 10px; }
 .hmh-upgrade-panel > header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .hmh-upgrade-queue { padding: 6px 10px; border: 1px solid rgba(255,209,102,0.35); border-radius: 999px; color: #fff0b7; font-size: 0.68rem; font-weight: 850; }
-.hmh-upgrade-choices { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
+/* Cycle 037: level-ups offer exactly two choices; a third column would sit
+   permanently empty on desktop. */
+.hmh-upgrade-choices { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
 .hmh-upgrade-option { min-width: 0; overflow: hidden; border-radius: 16px; transition: border-color 150ms ease, transform 150ms ease, background-color 150ms ease; }
 .hmh-upgrade-option:hover,
 .hmh-upgrade-option:focus-within { border-color: var(--cyan); background: rgba(15, 50, 69, 0.82); transform: translateY(-2px); }

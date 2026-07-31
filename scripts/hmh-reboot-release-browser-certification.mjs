@@ -21,7 +21,7 @@ const profiles = [
   { name: 'mobile-landscape', viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, isMobile: true },
 ];
 const anchorQuery = 'evidenceSafe=1&progressionPilot=1&releaseAnchor=1&telemetry=1&seed=424242';
-const liveQuery = 'evidenceSafe=1&combatPilot=1&telemetry=1&seed=424242';
+const liveQuery = 'evidenceSafe=1&combatPilot=1&weaponPilot=1&telemetry=1&seed=424242';
 
 await mkdir(evidenceRoot, { recursive: true });
 const browser = await chromium.launch({
@@ -132,7 +132,7 @@ async function assertResponsiveGeometry(page, profile) {
   });
   assert.ok(result.rootScrollWidth <= result.innerWidth + 1, `${profile.name} horizontal overflow ${result.rootScrollWidth}/${result.innerWidth}`);
   assert.ok(result.rootScrollHeight <= result.innerHeight + 1, `${profile.name} vertical overflow ${result.rootScrollHeight}/${result.innerHeight}`);
-  assert.equal(result.choiceCount, 3, `${profile.name} upgrade choice count`);
+  assert.equal(result.choiceCount, 2, `${profile.name} upgrade choice count`);
   assert.equal(result.canvasCount, 1, `${profile.name} canvas count`);
   for (const bound of result.bounds) {
     assert.equal(bound.exists, true, `${profile.name} missing ${bound.selector}`);

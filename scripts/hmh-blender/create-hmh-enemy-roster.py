@@ -310,6 +310,9 @@ def build_role_detail_kit(actor: dict, rig, collection, *, height: float, should
     elif kind == "whale-enforcer-undead-bruiser-v1":
         bone_mat = material(f"{actor_id}_detail_bone", "#ddd1a7", roughness=0.9)
         wound_mat = material(f"{actor_id}_detail_wound", "#46251c", roughness=0.94)
+        # Reuses the base body's skin material by name so the exposed hands
+        # match the head and arms exactly.
+        skin = material(f"{actor_id}_skin", actor["palette"]["skin"], roughness=0.9)
 
         parts.append(cube(
             f"{actor_id}_Detail_SkullFracture", (-0.045, -0.108, 1.655 * height),
@@ -379,6 +382,58 @@ def build_role_detail_kit(actor: dict, rig, collection, *, height: float, should
                     (0.034, 0.025, 0.034), bone_mat,
                     collection, rig, "chest", actor_id,
                 ))
+            # Audit 2026-07-30: the bruiser read as stacked boxes. Rounded trap
+            # slabs give the upper body a hunched mass instead of a shelf, and
+            # exposed undead hands below the knuckle plates read "zombie" at
+            # gameplay scale where the bracers alone read "crate".
+            # Faceted, slightly rotated slab rather than a smooth sphere: the
+            # sphere's silhouette tangent produced a one-LSB-unstable pixel in
+            # the tell/south-west frame across cold rebuilds — the same class
+            # of Workbench instability the authored-props pipeline solved by
+            # replacing a smooth orb with faceted geometry.
+            parts.append(cube(
+                f"{actor_id}_Detail_TrapSlab_{side}",
+                (sign * 0.225 * shoulders, 0.012, 1.470 * height),
+                (0.125 * shoulders, 0.105 * bulk, 0.062 * height), secondary,
+                collection, rig, "chest", actor_id, bevel=0.045,
+                rotation=(math.radians(-6), 0.0, math.radians(sign * 14)),
+            ))
+            # Faceted for the same reason as the trap slabs: the second cold
+            # rebuild flipped one LSB on a hand-sphere horizon in the death
+            # pose. Beveled cubes have no smooth silhouette tangent.
+            parts.append(cube(
+                f"{actor_id}_Detail_BareHand_{side}",
+                (sign * 0.53 * shoulders, -0.055, 0.845 * height),
+                (0.052 * bulk, 0.046 * bulk, 0.048 * height), skin,
+                collection, rig, f"forearm.{side}", actor_id, bevel=0.020,
+                rotation=(0.0, 0.0, math.radians(sign * 9)),
+            ))
+        # Dark strap trim between the gold chest plates so they read as armor
+        # segments rather than one cardboard slab, plus a waist band that
+        # breaks the torso block at the hip line.
+        for strap_index, x in enumerate((-0.095, 0.095)):
+            parts.append(cube(
+                f"{actor_id}_Detail_PlateTrim_{strap_index}",
+                (x * shoulders, -0.196 * bulk, 1.275 * height),
+                (0.020, 0.024, 0.150 * height), boot,
+                collection, rig, "chest", actor_id, bevel=0.006,
+            ))
+        parts.append(cube(
+            f"{actor_id}_Detail_WaistBand", (0.0, -0.135 * bulk, 1.045 * height),
+            (0.235 * shoulders, 0.050, 0.040 * height), boot,
+            collection, rig, "pelvis", actor_id, bevel=0.014,
+        ))
+        parts.append(cube(
+            f"{actor_id}_Detail_WaistBuckle", (0.0, -0.190 * bulk, 1.045 * height),
+            (0.055, 0.020, 0.036 * height), accent,
+            collection, rig, "pelvis", actor_id, bevel=0.010,
+        ))
+        parts.append(cube(
+            f"{actor_id}_Detail_ChestWound", (0.145 * shoulders, -0.185 * bulk, 1.205 * height),
+            (0.052, 0.018, 0.060 * height), wound_mat,
+            collection, rig, "chest", actor_id, bevel=0.008,
+            rotation=(0.0, 0.0, math.radians(-24)),
+        ))
     elif kind == "liquidator-tactical-suppressor-v1":
         armor_mat = material(f"{actor_id}_detail_armor", "#21182e", roughness=0.66)
         lens_mat = material(f"{actor_id}_detail_lens", "#ef9cff", emission=0.38, roughness=0.38)

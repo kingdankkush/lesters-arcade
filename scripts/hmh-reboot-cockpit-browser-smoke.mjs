@@ -21,9 +21,9 @@ async function inspect(name, viewport) {
   await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&telemetry=1&progressionPilot=1`, { waitUntil: 'networkidle' });
   await page.waitForSelector('#hmhUpgradePanel:not([hidden])');
   const choices = await page.locator('.hmh-upgrade-choice').evaluateAll((nodes) => nodes.map((node) => ({ id: node.dataset.upgradeId, text: node.textContent.trim() })));
-  assert.equal(choices.length, 3);
+  assert.equal(choices.length, 2);
   const details = page.locator('.hmh-upgrade-details');
-  assert.equal(await details.count(), 3);
+  assert.equal(await details.count(), 2);
   let disclosure;
   if (viewport.width <= 600) {
     const firstDetails = details.first();

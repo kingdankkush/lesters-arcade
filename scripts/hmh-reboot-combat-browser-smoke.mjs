@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
-const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1&evidenceSafe=1`;
+const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1&evidenceSafe=1&weaponPilot=1`;
 const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-phase8-combat/', import.meta.url);
 const expectedEnemyArchetypes = ['bagholder-rusher', 'forkrunner'];
 await mkdir(evidenceDir, { recursive: true });

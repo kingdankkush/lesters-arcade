@@ -23,7 +23,7 @@ function cloneProgression(seed = 1234) {
   return createRunProgression({ seed });
 }
 
-test('run progression is deterministic, bounded, and exposes three concrete upgrade choices', () => {
+test('run progression is deterministic, bounded, and exposes two concrete upgrade choices', () => {
   const first = cloneProgression();
   const second = cloneProgression();
   for (let index = 0; index < 3; index += 1) {
@@ -36,8 +36,8 @@ test('run progression is deterministic, bounded, and exposes three concrete upgr
   assert.ok(snapshot.score > 0);
   assert.ok(snapshot.xp > 0);
   assert.ok(snapshot.level >= 2);
-  assert.equal(snapshot.pendingChoices.length, 3);
-  assert.equal(new Set(snapshot.pendingChoices.map((choice) => choice.id)).size, 3);
+  assert.equal(snapshot.pendingChoices.length, 2);
+  assert.equal(new Set(snapshot.pendingChoices.map((choice) => choice.id)).size, 2);
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
@@ -57,7 +57,7 @@ test('skill tree has seven core upgrades plus repeatable mastery picks and appli
   const state = cloneProgression();
   recordRunDefeat(state, { enemyId: 'whale', threatCost: 20, tick: 1 });
   const offered = getRunProgressionSnapshot(state).pendingChoices;
-  assert.equal(offered.length, 3);
+  assert.equal(offered.length, 2);
   const unofferedId = Object.keys(RUN_UPGRADE_CATALOG).find((id) => !offered.some((choice) => choice.id === id));
   assert.throws(() => selectRunUpgrade(state, unofferedId), /not currently offered/);
   const result = selectRunUpgrade(state, offered[0].id);

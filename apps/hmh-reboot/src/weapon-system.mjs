@@ -77,6 +77,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     spreadRadians: 0,
     pelletCount: 1,
     recoil: 22,
+    pickupReserveAmmo: null,
     policy: STOP_POLICY,
   },
   'scatter-shotgun': {
@@ -94,6 +95,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     spreadRadians: Math.PI * 28 / 180,
     pelletCount: 8,
     recoil: 64,
+    pickupReserveAmmo: 12,
     policy: PELLET_POLICY,
   },
   'auto-miner': {
@@ -111,6 +113,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     spreadRadians: Math.PI * 4 / 180,
     pelletCount: 1,
     recoil: 8,
+    pickupReserveAmmo: 240,
     maxHeat: 100,
     heatPerShot: 6,
     heatRecoveryPerTick: 0.5,
@@ -135,6 +138,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     spreadRadians: 0,
     pelletCount: 1,
     recoil: 74,
+    pickupReserveAmmo: 8,
     policy: { type: 'splash', radius: 92 },
   },
 });
@@ -276,12 +280,21 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   });
 }
 
-function createPerWeaponState(id) {
+function createPerWeaponState(id, { owned = false } = {}) {
   const progression = applyWeaponProgression(id);
+  const definition = HMH_WEAPON_DEFINITIONS[id];
+  // Cycle 036 Priority D: the pistol is the always-owned unlimited-reserve
+  // fallback. Every other weapon is a true pickup: unowned at run start, with
+  // finite reserve granted by weapon caches.
+  const alwaysOwned = definition.pickupReserveAmmo === null;
+  const isOwned = alwaysOwned || owned;
   return {
     id,
+    owned: isOwned,
     ammoInClip: progression.clipSize,
-    reserveAmmo: null,
+    // Owning a finite weapon implies carrying its authored ammo; unowned
+    // pickups hold nothing until a cache grants them.
+    reserveAmmo: alwaysOwned ? null : (isOwned ? definition.pickupReserveAmmo : 0),
     nextFireTick: 0,
     reloadStartedTick: null,
     reloadCompleteTick: null,
@@ -307,7 +320,7 @@ export function createWeaponLoadout({
     if (!HMH_WEAPON_DEFINITIONS[id]) throw new TypeError(`unknown weapon ${id}`);
     if (unique.has(id)) throw new TypeError(`duplicate weapon ${id}`);
     unique.add(id);
-    weapons[id] = createPerWeaponState(id);
+    weapons[id] = createPerWeaponState(id, { owned: id === String(activeWeaponId) });
   }
   if (!weapons[activeWeaponId]) throw new TypeError(`unknown weapon ${String(activeWeaponId)}`);
   return {
@@ -374,6 +387,8 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
     weaponId: weapon.id,
     displayName: definition.displayName,
     mode,
+    owned: weapon.owned,
+    reserveAmmo: weapon.reserveAmmo,
     ammoInClip: weapon.ammoInClip,
     clipSize: progression.clipSize,
     heat: weapon.heat,
@@ -393,10 +408,48 @@ function assertMonotonic(state, tick) {
 export function selectWeapon(state, weaponId, { tick } = {}) {
   assertMonotonic(state, tick);
   if (!state.weapons?.[weaponId]) throw new TypeError(`unknown weapon ${String(weaponId)}`);
+  if (!state.weapons[weaponId].owned) throw new TypeError(`weapon ${String(weaponId)} is unowned`);
   const previousWeaponId = state.activeWeaponId;
   state.activeWeaponId = weaponId;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick });
+}
+
+export function grantWeaponPickup(state, { tick, weaponId, select = false, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick <= state.lastTick) throw new TypeError('weapon grant must precede the current weapon step');
+  const id = String(weaponId);
+  const weapon = state.weapons[id];
+  if (!weapon) throw new TypeError(`unknown weapon ${id}`);
+  const definition = HMH_WEAPON_DEFINITIONS[id];
+  const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
+  const authored = definition.pickupReserveAmmo;
+  const alreadyOwned = weapon.owned;
+  weapon.owned = true;
+  // The pickup includes a loaded weapon plus an authored reserve. Repeat
+  // pickups add reserve, bounded at twice the authored grant so hoarding
+  // cannot trivialize the finite-ammo economy.
+  weapon.ammoInClip = progression.clipSize;
+  weapon.reloadStartedTick = null;
+  weapon.reloadCompleteTick = null;
+  if (authored !== null) {
+    weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
+  }
+  const previousWeaponId = state.activeWeaponId;
+  if (select) {
+    state.activeWeaponId = id;
+    state.switchReadyTick = tick + state.switchTicks;
+  }
+  return freezeDeep({
+    type: 'weapon:granted',
+    tick,
+    weaponId: id,
+    alreadyOwned,
+    ammoInClip: weapon.ammoInClip,
+    reserveAmmo: weapon.reserveAmmo,
+    previousWeaponId,
+    activeWeaponId: state.activeWeaponId,
+  });
 }
 
 export function refillWeaponLoadout(state, { tick, weaponId = null, select = false, progressionByWeapon = {} } = {}) {
@@ -406,7 +459,13 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
   for (const id of weaponIds) {
     const weapon = state.weapons[id];
     if (!weapon) throw new TypeError(`unknown weapon ${id}`);
+    // A refill services what the player carries; it never grants ownership.
+    if (!weapon.owned) continue;
     const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
+    const authored = HMH_WEAPON_DEFINITIONS[id].pickupReserveAmmo;
+    if (authored !== null) {
+      weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
+    }
     weapon.ammoInClip = progression.clipSize;
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;
@@ -415,7 +474,8 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     weapon.heatUpdatedTick = tick;
   }
   const previousWeaponId = state.activeWeaponId;
-  if (select && weaponId !== null) {
+  // Selection through a refill honors ownership exactly like selectWeapon.
+  if (select && weaponId !== null && state.weapons[String(weaponId)].owned) {
     state.activeWeaponId = String(weaponId);
     state.switchReadyTick = tick + state.switchTicks;
   }
@@ -427,10 +487,16 @@ function completeReloads(state, tick, progressionByWeapon, events) {
     const weapon = state.weapons[id];
     if (weapon.reloadCompleteTick === null || tick < weapon.reloadCompleteTick) continue;
     const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
-    weapon.ammoInClip = progression.clipSize;
+    if (weapon.reserveAmmo === null) {
+      weapon.ammoInClip = progression.clipSize;
+    } else {
+      const loaded = Math.min(progression.clipSize - weapon.ammoInClip, weapon.reserveAmmo);
+      weapon.ammoInClip += loaded;
+      weapon.reserveAmmo -= loaded;
+    }
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;
-    events.push(freezeDeep({ type: 'weapon:reload-complete', tick, weaponId: id, ammoInClip: weapon.ammoInClip }));
+    events.push(freezeDeep({ type: 'weapon:reload-complete', tick, weaponId: id, ammoInClip: weapon.ammoInClip, reserveAmmo: weapon.reserveAmmo }));
   }
 }
 
@@ -450,6 +516,9 @@ function coolWeaponHeat(state, tick, progressionByWeapon, events) {
 
 function startReload(weapon, progression, tick, events) {
   if (weapon.reloadCompleteTick !== null || weapon.ammoInClip > 0) return;
+  // A finite-reserve weapon with nothing left cannot reload; it reads EMPTY
+  // and the always-owned pistol remains the fallback.
+  if (weapon.reserveAmmo !== null && weapon.reserveAmmo <= 0) return;
   weapon.reloadStartedTick = tick;
   weapon.reloadCompleteTick = tick + progression.reloadTicks;
   events.push(freezeDeep({

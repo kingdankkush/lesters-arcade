@@ -30,11 +30,11 @@
     },
     {
       "actorId": "whale-enforcer",
-      "atlasBytes": 1255223,
+      "atlasBytes": 1330231,
       "atlasSize": 2048,
-      "contactSheetBytes": 129882,
+      "contactSheetBytes": 142109,
       "frameCount": 152,
-      "metadataBytes": 98653,
+      "metadataBytes": 98662,
       "uniqueSourceFrames": 152
     },
     {
@@ -68,8 +68,15 @@
   "blender": "Blender 5.1.2",
   "duplicateFrames": 0,
   "pipelineId": "hmh-reboot-enemy-roster-v1",
+  "reproducibilityPolicy": {
+    "kind": "exact-or-single-lsb",
+    "maxChannelDelta": 1,
+    "maxDifferingSubpixelsPerFrame": 8,
+    "metadataExactExceptDerivedPixelSha": true,
+    "toleratedFrames": {}
+  },
   "reproducibleVerified": true,
   "status": "pass",
-  "totalAtlasBytes": 7254726,
+  "totalAtlasBytes": 7329734,
   "totalFrames": 1368
 }

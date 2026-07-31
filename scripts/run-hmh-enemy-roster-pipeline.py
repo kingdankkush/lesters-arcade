@@ -90,6 +90,68 @@ def render_roster_by_actor(
         ], f"{label}: {actor_id}")
 
 
+LSB_TOLERANCE_MAX_CHANNEL_DELTA = 1
+LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME = 8
+
+
+def roster_json_drift_is_derived(first_path: Path, second_path: Path, tolerated_frames: set[str]) -> bool:
+    """True when two atlas JSONs differ ONLY in the per-frame sourcePixelSha256
+    of frames whose pixels drifted within the LSB tolerance. Every geometric and
+    animation field (frame rects, pivots, trims, states, directions, image) must
+    still be exactly equal; any other difference is real metadata drift."""
+    a = json.loads(first_path.read_text(encoding="utf-8"))
+    b = json.loads(second_path.read_text(encoding="utf-8"))
+    a_frames = a.pop("frames", None)
+    b_frames = b.pop("frames", None)
+    if a != b or a_frames is None or b_frames is None or len(a_frames) != len(b_frames):
+        return False
+    for fa, fb in zip(a_frames, b_frames):
+        if fa == fb:
+            continue
+        keys = set(fa) | set(fb)
+        differing = {key for key in keys if fa.get(key) != fb.get(key)}
+        if differing != {"sourcePixelSha256"}:
+            return False
+        if f"{fa.get('id')}.png" not in tolerated_frames:
+            return False
+    return True
+
+
+def frames_within_lsb_tolerance(first_dir: Path, second_dir: Path, frame_names: list[str]):
+    """Return {frame: differing_subpixels} if every drifted frame is within the
+    documented Workbench rasterizer jitter (<=1 LSB on <=8 subpixels), else None.
+
+    Three consecutive cold rebuilds on 2026-07-31 flipped one LSB on a
+    different frame each run - including an actor whose source had not changed
+    at all - so an exact-byte gate on this renderer is structurally flaky. Real
+    non-determinism (geometry, pose, material or alpha drift) changes hundreds
+    of subpixels and still fails. Metadata JSON must remain byte-exact.
+    """
+    report = {}
+    for name in frame_names:
+        first_path = first_dir / name
+        second_path = second_dir / name
+        if not first_path.exists() or not second_path.exists():
+            return None
+        first = canonical_rgba(Image.open(first_path))
+        second = canonical_rgba(Image.open(second_path))
+        if first.size != second.size:
+            return None
+        a = first.tobytes()
+        b = second.tobytes()
+        differing = 0
+        for index in range(len(a)):
+            delta = a[index] - b[index]
+            if delta:
+                if abs(delta) > LSB_TOLERANCE_MAX_CHANNEL_DELTA:
+                    return None
+                differing += 1
+                if differing > LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME:
+                    return None
+        report[name] = differing
+    return report
+
+
 def generated_artifact_hashes() -> dict[str, str]:
     """Hash every shipped actor image and metadata artifact, excluding run metrics."""
     patterns = (
@@ -397,6 +459,7 @@ def main() -> None:
         records = analyse(actor, manifest, raw_dir)
         results.append(build_atlas(actor, manifest, records, OUTPUT_ROOT / actor["actorId"]))
 
+    tolerated_frames = {}
     if args.verify_reproducible:
         first_pass = generated_artifact_hashes()
         first_frame_pass = decoded_frame_hashes(raw_dir)
@@ -423,17 +486,57 @@ def main() -> None:
         drifted_frames = sorted(
             name for name, digest in first_frame_pass.items() if second_frame_pass.get(name) != digest
         )
+        tolerated_frames = {}
         if drifted:
-            raise RuntimeError(
-                "generated art is not reproducible across cold scene rebuilds: "
-                f"artifacts={drifted}; decodedFrames={drifted_frames}"
-            )
+            report = None
+            if drifted_frames:
+                report = frames_within_lsb_tolerance(repro_snapshot, raw_dir, drifted_frames)
+            if report is not None:
+                # Atlas JSON drift is acceptable only as a pure derivative of
+                # the tolerated pixels: each drifted JSON may differ solely in
+                # the sourcePixelSha256 of exactly those frames.
+                tolerated_set = set(report)
+                for name in (n for n in drifted if n.endswith(".json")):
+                    if not roster_json_drift_is_derived(
+                        artifact_snapshot / name, OUTPUT_ROOT / name, tolerated_set,
+                    ):
+                        report = None
+                        break
+            if report is None:
+                raise RuntimeError(
+                    "generated art is not reproducible across cold scene rebuilds: "
+                    f"artifacts={drifted}; decodedFrames={drifted_frames}"
+                )
+            tolerated_frames = report
+            # Within the documented one-LSB rasterizer jitter: bless the FIRST
+            # pass so the shipped artifact is a deterministic choice rather
+            # than whichever render happened to finish last. Raw frames are
+            # restored with it so a later --skip-render run compares against
+            # the pass that actually shipped.
+            shutil.copytree(artifact_snapshot, OUTPUT_ROOT, dirs_exist_ok=True)
+            shutil.rmtree(raw_dir)
+            shutil.copytree(repro_snapshot, raw_dir)
+            # Review finding (Cycle 037): the byte ledger below must describe
+            # the RESTORED first-pass artifacts, not the discarded second pass,
+            # or assets:qa fails on the first genuinely tolerated run.
+            for entry in results:
+                actor_dir = OUTPUT_ROOT / entry["actorId"]
+                entry["atlasBytes"] = (actor_dir / f"{entry['actorId']}-roster-atlas.png").stat().st_size
+                entry["metadataBytes"] = (actor_dir / f"{entry['actorId']}-roster-atlas.json").stat().st_size
+                entry["contactSheetBytes"] = (actor_dir / f"{entry['actorId']}-roster-contact-sheet.png").stat().st_size
         shutil.rmtree(repro_snapshot)
         shutil.rmtree(artifact_snapshot)
 
     metrics = {
         "status": "pass",
         "pipelineId": manifest["pipelineId"],
+        "reproducibilityPolicy": {
+            "kind": "exact-or-single-lsb",
+            "maxChannelDelta": LSB_TOLERANCE_MAX_CHANNEL_DELTA,
+            "maxDifferingSubpixelsPerFrame": LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME,
+            "metadataExactExceptDerivedPixelSha": True,
+            "toleratedFrames": tolerated_frames if args.verify_reproducible else None,
+        },
         "blender": EXPECTED_BLENDER_VERSION,
         "actorCount": len(results),
         "totalFrames": sum(entry["frameCount"] for entry in results),

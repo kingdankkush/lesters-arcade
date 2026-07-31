@@ -220,11 +220,16 @@ def actor_materials(concept, mats, actor_id: str) -> dict:
             "eye_white": concept.material("Valkyrie eye white", "#f5f2e9"),
             "eye_dark": concept.material("Valkyrie eye dark", "#273136"),
             "eye_mint": concept.material("Valkyrie mint eyes", "#55bfae", emission=0.08),
-            "hair_platinum": concept.material("Valkyrie platinum hair", "#e4ddc5", metallic=0.03),
-            "hair_shadow": concept.material("Valkyrie platinum shadow", "#aaa58f", metallic=0.02),
+            # Audit 2026-07-30: platinum #e4ddc5 against shadow #aaa58f and skin
+            # #d2a083 left the entire head within a narrow lightness band, so at
+            # 160px the face vanished into the hair. The shadow tone now sits a
+            # full value step down and a dedicated dark brow anchors the face.
+            "hair_platinum": concept.material("Valkyrie platinum hair", "#e8dfc2", metallic=0.03),
+            "hair_shadow": concept.material("Valkyrie platinum shadow", "#78715a", metallic=0.02),
+            "brow_dark": concept.material("Valkyrie brow", "#3c382b"),
             "olive": concept.material("Valkyrie olive top", "#586644"),
             "olive_dark": concept.material("Valkyrie black olive harness", "#293126"),
-            "mint": concept.material("Valkyrie restrained mint", "#6fd0bd", emission=0.10),
+            "mint": concept.material("Valkyrie restrained mint", "#6fd0bd", emission=0.30),
             "steel": concept.material("Valkyrie holster steel", "#929b9d", metallic=0.42),
             "lip": concept.material("Valkyrie lips", "#9f6770"),
         })
@@ -506,18 +511,22 @@ def add_lit_valkyrie_reference_details(concept, collection, rig, themed, actor_i
     # Visible feminine face with restrained mint identification marks. No
     # visor, glasses or helmet covers the human facial read.
     for side, sign in (("L", -1), ("R", 1)):
-        concept.sphere(prefix + f"_ReferenceEyeWhite_{side}", (sign * 0.076, -0.184, 1.785), (0.056, 0.014, 0.043), themed["eye_white"], collection, bone="head", rig=rig)
-        concept.sphere(prefix + f"_ReferenceEyeIris_{side}", (sign * 0.076, -0.198, 1.785), (0.029, 0.010, 0.029), themed["eye_mint"], collection, bone="head", rig=rig)
-        concept.sphere(prefix + f"_ReferenceEyePupil_{side}", (sign * 0.076, -0.206, 1.785), (0.014, 0.007, 0.016), themed["eye_dark"], collection, bone="head", rig=rig)
-        concept.cube(prefix + f"_ReferenceBrow_{side}", (sign * 0.078, -0.194, 1.848), (0.056, 0.010, 0.012), themed["hair_shadow"], collection, bevel=0.007, rotation=(0, 0, math.radians(sign * -8)), bone="head", rig=rig)
-        concept.cube(prefix + f"_ReferenceCheekMark_{side}", (sign * 0.125, -0.190, 1.720), (0.026, 0.008, 0.010), themed["mint"], collection, bevel=0.005, rotation=(0, 0, math.radians(sign * 12)), bone="head", rig=rig)
+        concept.sphere(prefix + f"_ReferenceEyeWhite_{side}", (sign * 0.076, -0.186, 1.785), (0.064, 0.015, 0.050), themed["eye_white"], collection, bone="head", rig=rig)
+        concept.sphere(prefix + f"_ReferenceEyeIris_{side}", (sign * 0.076, -0.200, 1.785), (0.034, 0.011, 0.034), themed["eye_mint"], collection, bone="head", rig=rig)
+        concept.sphere(prefix + f"_ReferenceEyePupil_{side}", (sign * 0.076, -0.208, 1.785), (0.016, 0.008, 0.018), themed["eye_dark"], collection, bone="head", rig=rig)
+        # Brows were drawn in the pale hair-shadow tone and disappeared against
+        # the skin; they are the strongest single facial anchor at 160px.
+        concept.cube(prefix + f"_ReferenceBrow_{side}", (sign * 0.078, -0.196, 1.850), (0.060, 0.011, 0.014), themed["brow_dark"], collection, bevel=0.007, rotation=(0, 0, math.radians(sign * -8)), bone="head", rig=rig)
+        concept.cube(prefix + f"_ReferenceCheekMark_{side}", (sign * 0.125, -0.190, 1.720), (0.032, 0.009, 0.012), themed["mint"], collection, bevel=0.005, rotation=(0, 0, math.radians(sign * 12)), bone="head", rig=rig)
     concept.sphere(prefix + "_ReferenceNose", (0, -0.198, 1.735), (0.030, 0.023, 0.043), themed["skin"], collection, bone="head", rig=rig)
     concept.cube(prefix + "_ReferenceMouth", (0, -0.197, 1.682), (0.055, 0.009, 0.010), themed["lip"], collection, bevel=0.006, bone="head", rig=rig)
 
     # Platinum crown, swept fringe and nine separated braid groups. The
     # tied chain sits left of the back-webbing/weapon line and remains rigidly
     # head-bound for this initial deterministic model cycle.
+    concept.sphere(prefix + "_ReferenceHairUnderCap", (0, 0.062, 1.872), (0.212, 0.182, 0.132), themed["hair_shadow"], collection, bone="head", rig=rig)
     concept.sphere(prefix + "_ReferenceHairCap", (0, 0.050, 1.885), (0.205, 0.175, 0.130), themed["hair_platinum"], collection, bone="head", rig=rig)
+    concept.cube(prefix + "_ReferenceHairPart", (-0.045, 0.020, 1.985), (0.014, 0.150, 0.030), themed["hair_shadow"], collection, bevel=0.008, rotation=(0, 0, math.radians(-10)), bone="head", rig=rig)
     for index, (x, z, rz) in enumerate(((-0.115, 1.925, -18), (0.0, 1.955, 0), (0.112, 1.920, 16))):
         concept.cube(prefix + f"_ReferenceHairFringe_{index}", (x, -0.125, z), (0.070, 0.060, 0.070), themed["hair_platinum"], collection, bevel=0.035, rotation=(0, 0, math.radians(rz)), bone="head", rig=rig)
     concept.sphere(prefix + "_ReferencePonytailRoot", (-0.105, 0.165, 1.925), (0.115, 0.100, 0.105), themed["hair_platinum"], collection, bone="head", rig=rig)

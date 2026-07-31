@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  grantWeaponPickup,
   HMH_WEAPON_DEFINITIONS,
   HMH_WEAPON_EVOLUTIONS,
   applyWeaponProgression,
@@ -86,6 +87,8 @@ test('weapon readability reports deterministic reload timing and clip context wi
     weaponId: 'scatter-shotgun',
     displayName: 'Shotgun',
     mode: 'reloading',
+    owned: true,
+    reserveAmmo: 12,
     ammoInClip: 0,
     clipSize: 2,
     heat: 0,
@@ -139,6 +142,8 @@ test('machine gun sustains deterministic automatic fire, then observes the retai
 
 test('weapon switching preserves each magazine and applies an explicit deterministic switch lockout', () => {
   const state = createWeaponLoadout({ weaponIds: ['coin-blaster', 'scatter-shotgun'], seed: 8 });
+  // Cycle 036 Priority D: pickups start unowned; grant before switching.
+  grantWeaponPickup(state, { tick: 1, weaponId: 'scatter-shotgun', select: false });
   fireAt(state, 1);
   assert.equal(weaponState(state, 'coin-blaster').ammoInClip, 7);
   const switched = selectWeapon(state, 'scatter-shotgun', { tick: 2 });
@@ -262,6 +267,7 @@ test('zero knockback resistance is rejected rather than launching the target', (
 
 test('weapon-cache refill restores bounded state and can select without consuming the fixed tick', () => {
   const state = createWeaponLoadout({ weaponIds: ['coin-blaster', 'auto-miner'], activeWeaponId: 'coin-blaster' });
+  grantWeaponPickup(state, { tick: 0, weaponId: 'auto-miner', select: false });
   fireAt(state, 0);
   const auto = state.weapons['auto-miner'];
   auto.ammoInClip = 0;
