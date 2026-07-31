@@ -199,6 +199,12 @@ export function createAuthoredPropAtlasIndex(metadata) {
   for (const frame of metadata.frames) {
     if (frameById.has(frame.assetId)) throw new TypeError(`duplicate authored prop ${frame.assetId}`);
     if (![frame.frame?.x, frame.frame?.y, frame.frame?.w, frame.frame?.h].every(Number.isFinite) || frame.frame.w <= 0 || frame.frame.h <= 0) throw new TypeError(`invalid authored prop frame ${frame.assetId}`);
+    // A ground anchor outside the crop means the pivot math ran against the
+    // wrong frame size; a sprite would draw detached from its authored ground
+    // point. Fail closed (review finding, Cycle 039).
+    if (!(frame.anchor?.x >= 0 && frame.anchor.x <= 1 && frame.anchor?.y >= 0 && frame.anchor.y <= 1)) {
+      throw new TypeError(`authored prop anchor out of bounds for ${frame.assetId}`);
+    }
     if (![frame.anchor?.x, frame.anchor?.y].every(Number.isFinite)) throw new TypeError(`invalid authored prop anchor ${frame.assetId}`);
     if (!frame.sourcePixelSha256 || frame.sourcePixelSha256.length !== 64) throw new TypeError(`authored prop provenance missing for ${frame.assetId}`);
     frameById.set(frame.assetId, Object.freeze({ ...frame, frame: Object.freeze({ ...frame.frame }), anchor: Object.freeze({ ...frame.anchor }) }));

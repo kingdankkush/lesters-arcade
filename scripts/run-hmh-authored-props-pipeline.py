@@ -73,7 +73,11 @@ def analyse(manifest: dict, raw_dir: Path) -> list[dict]:
         bbox = mask.getbbox()
         if bbox is None:
             raise RuntimeError(f"{asset['assetId']} rendered empty")
-        corners = [image.getpixel(point)[3] for point in ((0,0),(frame_size[0]-1,0),(0,frame_size[1]-1),(frame_size[0]-1,frame_size[1]-1))]
+        # Review finding (Cycle 039): corner sampling and the pivot below must
+        # use the PER-ASSET frame size. Sampling the manifest default on a
+        # 256px frame checked one real corner plus the frame center, and put
+        # the ground pivot outside the crop entirely.
+        corners = [image.getpixel(point)[3] for point in ((0,0),(expected_size[0]-1,0),(0,expected_size[1]-1),(expected_size[0]-1,expected_size[1]-1))]
         if max(corners) > threshold:
             raise RuntimeError(f"{asset['assetId']} touches a frame corner")
         digest = hashlib.sha256(image.tobytes()).hexdigest()
@@ -81,7 +85,7 @@ def analyse(manifest: dict, raw_dir: Path) -> list[dict]:
         x0,y0,x1,y1=bbox
         # Stable authored ground pivot at the frame's horizontal center and
         # lower content edge; include it in the crop for reliable grounding.
-        pivot=(frame_size[0]//2,min(frame_size[1]-4,y1))
+        pivot=(expected_size[0]//2,min(expected_size[1]-4,y1))
         x0=min(x0,pivot[0]); x1=max(x1,pivot[0]+1); y1=max(y1,pivot[1]+1)
         opaque=sum(1 for value in alpha.tobytes() if value>threshold)
         records.append({'asset':asset,'image':image,'bbox':(x0,y0,x1,y1),'pivot':pivot,'sourcePixelSha256':digest,'opaquePixels':opaque})

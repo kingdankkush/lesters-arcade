@@ -74,3 +74,24 @@ this commit before any candidate built from it is considered for promotion.
 - Escalation path if the bar demands it: dedicated 512px structures pipeline
   with Blender node materials (procedural grain/roughness).
 - Migrate the 12 legacy world props to 256px dense construction.
+
+---
+
+## Addendum (Cycle 039 session): deferred review completed — BLOCK, fixed
+
+All outstanding gates ran green (certification, mobile smoke 4/4, portal E2E,
+security 5/5, web3 9/9, third-party 3/3, repo health, docs links). The
+deferred adversarial review of `26206dae` then returned **BLOCK** with a
+confirmed HIGH: per-asset `frameSize` was only half-implemented — `analyse()`
+accepted 256px dimensions but computed the ground pivot (and corner sampling)
+against the 128px manifest default, so all six 256px props shipped anchors far
+outside [0,1]; the trees rendered ~110 world units off their ground point,
+breaking grounding and depth-sort. The accepted hashwood baseline had baked
+the error in — a gate that "passed" on wrong output.
+
+Fixed: pivot and corner sampling use the per-asset size;
+`createAuthoredPropAtlasIndex` now fails closed on any anchor outside [0,1]
+(the guard that would have caught this); props re-rendered reproducibly (pine
+anchor 0.49/0.96); baselines re-accepted with grounded trees; release gate
+1818/1766/52/0. The ledger's earlier "1 scene changed" claim also undersold
+the fringe-driven baseline churn (8 re-recorded) — noted per review.
