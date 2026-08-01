@@ -339,27 +339,29 @@ def build_asset(asset: dict) -> dict:
         for index, (x, y, sx, sz) in enumerate(((0.24, -0.262, 0.09, 0.05), (-0.16, -0.262, 0.13, 0.06), (0.08, 0.262, 0.11, 0.05))):
             add(cube(f'{asset_id}_Rust_{index}', (x, y, 0.40), (sx, 0.014, sz), rust, asset_id, bevel=0.012, rotation=(0, 0, index * 0.4)))
     elif shape == 'fence':
-        # Polish pass: denser silhouette - more pickets, tighter spacing,
-        # thicker rails, so the fence reads as a barrier at gameplay zoom.
+        # Solid-substrate rebuild: a continuous base board and full-width rail
+        # band carry picket RELIEF, so nothing floats at the 55-degree camera.
         weathered = material(f'{asset_id}_weathered', tone(palette['primary'], 0.72), roughness=0.9)
         lit_wood = material(f'{asset_id}_lit_wood', tone(palette['primary'], 1.18), roughness=0.8)
-        for index, x in enumerate((-0.55, 0.0, 0.55)):
-            add(cube(f'{asset_id}_Post_{index}', (x, 0.0, 0.36), (0.055, 0.055, 0.38), secondary, asset_id, bevel=0.018))
-            add(cube(f'{asset_id}_PostCap_{index}', (x, 0.0, 0.755), (0.07, 0.07, 0.025), weathered, asset_id, bevel=0.012))
-        for z in (0.30, 0.58):
-            add(cube(f'{asset_id}_Rail_{z}', (0.0, 0.014, z), (0.60, 0.028, 0.045), primary, asset_id, bevel=0.014))
+        add(cube(f'{asset_id}_BaseBoard', (0.0, 0.0, 0.10), (0.60, 0.05, 0.10), weathered, asset_id, bevel=0.02))
+        add(cube(f'{asset_id}_Band', (0.0, 0.0, 0.42), (0.60, 0.038, 0.24), primary, asset_id, bevel=0.02))
         for index in range(9):
-            x = -0.48 + index * 0.12
-            mat = (primary, lit_wood, weathered)[index % 3]
-            tilt = 0.0 if index != 6 else math.radians(14)
-            height = 0.30 if index != 6 else 0.24
-            add(cube(f'{asset_id}_Picket_{index}', (x, -0.016, 0.42 if index != 6 else 0.36), (0.042, 0.016, height), mat, asset_id, bevel=0.01, rotation=(0, 0, tilt)))
-            add(cone(f'{asset_id}_PicketTip_{index}', (x + (0.04 if index == 6 else 0.0), -0.016, (0.72 if index != 6 else 0.60)), 0.042, 0.05, mat, asset_id))
-        add(cube(f'{asset_id}_Sign', (-0.28, -0.06, 0.52), (0.09, 0.014, 0.065), accent, asset_id, bevel=0.01, rotation=(0, 0, math.radians(-6))))
+            x = -0.505 + index * 0.1265
+            mat = (lit_wood, primary, weathered)[index % 3]
+            # Relief pickets sit proud of the band front and run base-to-top
+            # with zero gaps; every second one is a hair taller for rhythm.
+            top = 0.70 if index % 2 else 0.665
+            add(cube(f'{asset_id}_Picket_{index}', (x, -0.052, (top + 0.02) / 2), (0.052, 0.018, (top - 0.02) / 2), mat, asset_id, bevel=0.012))
+            add(cone(f'{asset_id}_Tip_{index}', (x, -0.052, top + 0.028), 0.052, 0.06, mat, asset_id))
+        for index, x in enumerate((-0.56, 0.0, 0.56)):
+            add(cube(f'{asset_id}_Post_{index}', (x, 0.02, 0.40), (0.06, 0.06, 0.40), secondary, asset_id, bevel=0.018))
+            add(cube(f'{asset_id}_PostCap_{index}', (x, 0.02, 0.82), (0.075, 0.075, 0.028), weathered, asset_id, bevel=0.012))
+        add(cube(f'{asset_id}_Sign', (-0.26, -0.078, 0.50), (0.09, 0.014, 0.065), accent, asset_id, bevel=0.01, rotation=(0, 0, math.radians(-6))))
     elif shape == 'shack':
-        # Polish pass: solid roof decks under the shingles and stepped gable
-        # end walls close the structure; the previous version read as floating
-        # slats around a box.
+        # Solid-substrate rebuild: thick roof wedges meet at the ridge with a
+        # solid gable fill; shingle courses are thin relief laid flush ON the
+        # wedge surface (same rotation, surface-normal offset), so the roof is
+        # one closed volume instead of suspended slats.
         plank_dark = material(f'{asset_id}_plank_dark', tone(palette['primary'], 0.72), roughness=0.9)
         plank_lit = material(f'{asset_id}_plank_lit', tone(palette['primary'], 1.18), roughness=0.82)
         shingle_dark = material(f'{asset_id}_shingle_dark', tone(palette['secondary'], 0.7), roughness=0.9)
@@ -378,22 +380,24 @@ def build_asset(asset: dict) -> dict:
                 add(cube(f'{asset_id}_SidePlank_{side}_{row}', (side * 0.552, 0.0, z), (0.012, 0.39, 0.058), mat, asset_id, bevel=0.008))
             add(cube(f'{asset_id}_CornerTrim_F{side}', (side * 0.545, -0.395, 0.40), (0.022, 0.022, 0.40), frame_mat, asset_id, bevel=0.008))
             add(cube(f'{asset_id}_CornerTrim_B{side}', (side * 0.545, 0.395, 0.40), (0.022, 0.022, 0.40), frame_mat, asset_id, bevel=0.008))
-            # Stepped gable end walls close the space between wall top and ridge.
-            for tier, (half_y, height) in enumerate(((0.30, 0.05), (0.20, 0.05), (0.10, 0.05))):
-                add(cube(f'{asset_id}_Gable_{side}_{tier}', (side * 0.535, 0.0, 0.83 + tier * 0.09), (0.016, half_y, height), plank_dark, asset_id, bevel=0.006))
-        # Solid roof decks carry the shingles; rows overlap like real courses.
+        pitch = math.radians(22)
         for sign in (-1, 1):
-            add(cube(f'{asset_id}_RoofDeck_{sign}', (0.0, sign * 0.20, 0.90), (0.60, 0.235, 0.03), shingle_dark, asset_id, bevel=0.015, rotation=(math.radians(sign * -22), 0.0, 0.0)))
-            for row in range(4):
-                y = sign * (0.335 - row * 0.075)
-                z = 0.855 + row * 0.052
-                for col in range(5):
-                    x = -0.50 + col * 0.25 + (0.125 if row % 2 else 0.0)
-                    mat = shingle_dark if (row + col) % 2 else secondary
-                    add(cube(f'{asset_id}_Shingle_{sign}_{row}_{col}', (x, y, z), (0.13, 0.048, 0.014), mat, asset_id, bevel=0.006, rotation=(math.radians(sign * -22), 0, 0)))
-        add(cube(f'{asset_id}_Ridge', (0.0, 0.0, 1.075), (0.62, 0.05, 0.038), frame_mat, asset_id, bevel=0.012))
+            # Thick structural wedge: reaches from eave to past the ridge line.
+            add(cube(f'{asset_id}_RoofWedge_{sign}', (0.0, sign * 0.195, 0.905), (0.62, 0.25, 0.065), shingle_dark, asset_id, bevel=0.02, rotation=(sign * -pitch, 0.0, 0.0)))
+            for row in range(3):
+                # Relief courses: flush on the wedge's upper surface. Offset
+                # along the wedge normal (0, sign*sin, cos) by the half-sum of
+                # thicknesses so each course touches the deck.
+                centre_y = sign * (0.315 - row * 0.105)
+                centre_z = 0.865 + row * 0.0425
+                ny, nz = sign * math.sin(pitch), math.cos(pitch)
+                off = 0.065 + 0.012
+                mat = secondary if row % 2 else shingle_dark
+                add(cube(f'{asset_id}_Course_{sign}_{row}', (0.0, centre_y + ny * off, centre_z + nz * off), (0.62, 0.050, 0.012), mat, asset_id, bevel=0.006, rotation=(sign * -pitch, 0.0, 0.0)))
+        add(cube(f'{asset_id}_GableFill_F', (0.0, 0.0, 0.90), (0.015, 0.36, 0.13), plank_dark, asset_id, bevel=0.006, rotation=(0, 0, 0)))
+        add(cube(f'{asset_id}_Ridge', (0.0, 0.0, 1.035), (0.64, 0.055, 0.045), frame_mat, asset_id, bevel=0.014))
         for sign in (-1, 1):
-            add(cube(f'{asset_id}_Fascia_{sign}', (0.0, sign * 0.425, 0.815), (0.62, 0.016, 0.04), frame_mat, asset_id, bevel=0.008))
+            add(cube(f'{asset_id}_Fascia_{sign}', (0.0, sign * 0.43, 0.795), (0.64, 0.018, 0.05), frame_mat, asset_id, bevel=0.01))
         add(cube(f'{asset_id}_DoorFrame', (0.22, -0.408, 0.30), (0.15, 0.016, 0.28), frame_mat, asset_id, bevel=0.008))
         add(cube(f'{asset_id}_Door', (0.22, -0.415, 0.29), (0.115, 0.014, 0.25), secondary, asset_id, bevel=0.01))
         add(cube(f'{asset_id}_Handle', (0.175, -0.428, 0.28), (0.014, 0.008, 0.014), material(f'{asset_id}_brass', '#c9a86a', metallic=0.5, roughness=0.4), asset_id, bevel=0.004))
@@ -401,8 +405,8 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_Window', (-0.18, -0.415, 0.50), (0.125, 0.014, 0.11), accent, asset_id, bevel=0.008))
         add(cube(f'{asset_id}_WindowCrossV', (-0.18, -0.425, 0.50), (0.012, 0.008, 0.11), frame_mat, asset_id, bevel=0.003))
         add(cube(f'{asset_id}_WindowCrossH', (-0.18, -0.425, 0.50), (0.125, 0.008, 0.012), frame_mat, asset_id, bevel=0.003))
-        add(cube(f'{asset_id}_Chimney', (-0.32, 0.08, 1.06), (0.05, 0.05, 0.16), plank_dark, asset_id, bevel=0.012))
-        add(cube(f'{asset_id}_ChimneyCap', (-0.32, 0.08, 1.225), (0.065, 0.065, 0.018), frame_mat, asset_id, bevel=0.008))
+        add(cube(f'{asset_id}_Chimney', (-0.30, 0.09, 1.03), (0.05, 0.05, 0.15), plank_dark, asset_id, bevel=0.012))
+        add(cube(f'{asset_id}_ChimneyCap', (-0.30, 0.09, 1.185), (0.065, 0.065, 0.018), frame_mat, asset_id, bevel=0.008))
         add(cube(f'{asset_id}_Step', (0.22, -0.46, 0.045), (0.16, 0.05, 0.045), plank_lit, asset_id, bevel=0.012))
         add(cylinder(f'{asset_id}_Barrel', (0.62, -0.26, 0.16), 0.085, 0.30, secondary, asset_id, vertices=14))
         add(cube(f'{asset_id}_BarrelBand', (0.62, -0.26, 0.2), (0.1, 0.1, 0.012), frame_mat, asset_id, bevel=0.004))
