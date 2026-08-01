@@ -88,3 +88,18 @@ follow-up task chip exists for the lazy build.
 - browser certification five profiles PASS
 - combat, collectible (10 cases), mobile (4 devices) smokes PASS
 - performance p95 `7 ms` desktop and mobile
+
+## Production promotion (owner-approved "push live")
+
+| Release fact | Verified value |
+| --- | --- |
+| Branch head deployed | `6d5bcd57` |
+| Production deployment ID | `dpl_EFrNTXNpSWk4XmrAfgNcT78DCNUu` |
+| Immutable production URL | <https://lesters-arcade-mmj4eu8uc-justin-agent-projects.vercel.app> |
+| Public alias | <https://lestersarcade.io> |
+| Live HMH bundle SHA-256 | `1e374765b3c771a8633c8ba95981863ae78030d4cd814496f7b20dea0842fc83` — byte-identical to the local build |
+| Live terrain manifest | `hmh-terrain-tiles-v2`, 512px, painted |
+| Live certification | five profiles PASS against the public alias |
+| Rollback | `dpl_GCzM6feNQxWF4ye6ZCXDspk82Bvx` (Cycle 041 production) |
+
+`SETTLEMENT_LIVE` untouched.
