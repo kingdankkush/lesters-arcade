@@ -1,387 +1,387 @@
 {
-  "generatedAt": "2026-07-31T07:22:21.357Z",
+  "generatedAt": "2026-08-01T04:37:02.474Z",
   "status": "approval-gated",
   "summary": {
-    "workingTreeBytes": 998492796,
-    "gitBytes": "1.83 GiB",
-    "assetBytes": 194865931,
+    "workingTreeBytes": 323015476,
+    "gitBytes": "2.08 GiB",
+    "assetBytes": 200409609,
     "cdnCandidateCount": 33,
     "cdnCandidateBytes": 105940018,
-    "vaultExists": false,
+    "vaultExists": true,
     "vaultRemoteConfigured": false
   },
   "largestFiles": [
     {
       "path": "apps/portal/assets/video/hard-money-heroes-intro.mp4",
       "sizeBytes": 8396759,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/hmh-level-editor/runtime-sprite-library.json",
       "sizeBytes": 6656588,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 5034321,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/music/rise-to-the-occasion.mp3",
       "sizeBytes": 5024911,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 4993102,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 4919596,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/adventure-16-bit-arcade-music.mp3",
       "sizeBytes": 4560613,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 4233395,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/video/arcade-promo-loop.gif",
       "sizeBytes": 4174352,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 3516073,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3",
       "sizeBytes": 3389726,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
       "sizeBytes": 3366128,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3",
       "sizeBytes": 3310880,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3275609,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
       "sizeBytes": 3236543,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png",
       "sizeBytes": 3227608,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3160029,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3140881,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png",
       "sizeBytes": 3076541,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     },
     {
       "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png",
       "sizeBytes": 2998466,
-      "runtimeReferenced": true
+      "runtimeReferenced": false
     }
   ],
   "cdnCandidates": [
     {
       "path": "assets/video/hard-money-heroes-intro.mp4",
       "sizeBytes": 8396759,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 5034321,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/music/rise-to-the-occasion.mp3",
       "sizeBytes": 5024911,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 4993102,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 4919596,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/adventure-16-bit-arcade-music.mp3",
       "sizeBytes": 4560613,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 4233395,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/video/arcade-promo-loop.gif",
       "sizeBytes": 4174352,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 3516073,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/music/lester-and-lilly-rap-getting-lit.mp3",
       "sizeBytes": 3389726,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
       "sizeBytes": 3366128,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3",
       "sizeBytes": 3310880,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3275609,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
       "sizeBytes": 3236543,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3160029,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 3140881,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/video/arcade-splash-loop.mp4",
       "sizeBytes": 2937102,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 2914826,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
       "sizeBytes": 2913681,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3",
       "sizeBytes": 2821228,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/litbound-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 2566855,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/midnight-lit-16-bit-arcade-music-alt.mp3",
       "sizeBytes": 2546151,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 2543129,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 2466344,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3",
       "sizeBytes": 2306098,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 2223329,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music-alt.mp3",
       "sizeBytes": 2132901,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-trigger-16-bit-arcade-music.mp3",
       "sizeBytes": 2026072,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music.mp3",
       "sizeBytes": 1788693,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music-alt.mp3",
       "sizeBytes": 1594587,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/video/arcade-promo-loop.mp4",
@@ -395,20 +395,20 @@
     {
       "path": "assets/audio/playlist/midnight-lit-16-bit-arcade-music.mp3",
       "sizeBytes": 1513974,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     },
     {
       "path": "assets/audio/music/litvm-testnet-teaser.mp3",
       "sizeBytes": 1369382,
-      "runtimeReferenced": true,
+      "runtimeReferenced": false,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
+      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
     }
   ],
   "safeActions": [

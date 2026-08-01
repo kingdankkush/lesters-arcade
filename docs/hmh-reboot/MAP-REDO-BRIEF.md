@@ -5,13 +5,13 @@ places. Full composition redo, target: cohesive readable stylized top-down
 (honest approach to the Hades bar via the deterministic pipeline).
 
 ## Order of work (one bounded cycle each)
-1. **Biome composition** — redesign `level-one-world.mjs` districts as real
-   places: forest (dense hashwood, clearings, winding paths), ravine (rock
-   walls, chokepoints, rope bridge), crossing (river, bridges, wetland banks),
-   mining camp (shacks, ore carts, fenced yards), industrial yard (slab,
-   terminals, wreck rows). Every zone: entry routes, an arena, a landmark, a
-   recovery pocket. Collision/elevation stay authoritative in the world
-   contract; visuals follow it.
+1. **Biome composition** — ✅ DONE (Cycle 041): redesigned
+   `level-one-world.mjs` districts as real places — winding 25-node main
+   route, 11 → 38 blockers (interior structure in every district), seam
+   gates, arena cover, tenth POI `yard-medbay-cache` as the yard recovery
+   pocket. Guarded by `tests/hmh-reboot-level-one-composition.test.mjs`.
+   Remaining composition debt: rope bridge and ore-cart props are dressing
+   only; deeper per-zone set-piece work rides with slices 2 and 6.
 2. **Terrain fidelity** — raise tile bake to 512px with painted-style
    layering (the bakery is CPU-deterministic; extend `build-hmh-terrain-tiles.py`),
    more fringe pairings, path decals, shore banks.

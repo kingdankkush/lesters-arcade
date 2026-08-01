@@ -1,6 +1,6 @@
 # Repo CDN cleanup gate
 
-Generated: 2026-07-31T07:22:21.357Z
+Generated: 2026-08-01T04:37:02.474Z
 Status: **approval-gated**
 
 ## Verdict
@@ -9,67 +9,67 @@ Status: **approval-gated**
 
 ## Current metrics
 
-- Working tree bytes: 952 MB
-- Portal asset bytes: 186 MB
-- Git pack size: 1.83 GiB
+- Working tree bytes: 308 MB
+- Portal asset bytes: 191 MB
+- Git pack size: 2.08 GiB
 - CDN candidate media: 33 files / 101 MB
-- Vault exists: no
+- Vault exists: yes
 - Vault remote configured: no
 
 ## Top CDN candidates
 
 | Path | Size | Runtime referenced | Gate |
 | --- | ---: | --- | --- |
-| assets/video/hard-money-heroes-intro.mp4 | 8.0 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3 | 4.8 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/music/rise-to-the-occasion.mp3 | 4.8 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3 | 4.8 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3 | 4.7 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/adventure-16-bit-arcade-music.mp3 | 4.3 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3 | 4.0 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/video/arcade-promo-loop.gif | 4.0 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3 | 3.4 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/music/lester-and-lilly-rap-getting-lit.mp3 | 3.2 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/music/litvm-going-to-the-moon-new-2.mp3 | 3.2 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3 | 3.2 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3 | 3.1 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3 | 3.1 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3 | 3.0 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3 | 3.0 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/video/arcade-splash-loop.mp4 | 2.8 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3 | 2.8 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3 | 2.8 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3 | 2.7 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/litbound-16-bit-arcade-music-track-1.mp3 | 2.4 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/midnight-lit-16-bit-arcade-music-alt.mp3 | 2.4 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-2.mp3 | 2.4 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-1.mp3 | 2.4 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
-| assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3 | 2.2 MB | yes | Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification. |
+| assets/video/hard-money-heroes-intro.mp4 | 8.0 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3 | 4.8 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/music/rise-to-the-occasion.mp3 | 4.8 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3 | 4.8 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3 | 4.7 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/adventure-16-bit-arcade-music.mp3 | 4.3 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3 | 4.0 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/video/arcade-promo-loop.gif | 4.0 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3 | 3.4 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/music/lester-and-lilly-rap-getting-lit.mp3 | 3.2 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/music/litvm-going-to-the-moon-new-2.mp3 | 3.2 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3 | 3.2 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3 | 3.1 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3 | 3.1 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3 | 3.0 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3 | 3.0 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/video/arcade-splash-loop.mp4 | 2.8 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3 | 2.8 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3 | 2.8 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3 | 2.7 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/litbound-16-bit-arcade-music-track-1.mp3 | 2.4 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/midnight-lit-16-bit-arcade-music-alt.mp3 | 2.4 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-2.mp3 | 2.4 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-1.mp3 | 2.4 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
+| assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3 | 2.2 MB | no | Large media should move to the vault/CDN path before any repo deletion. |
 
 ## Largest files
 
 | Path | Size | Runtime referenced |
 | --- | ---: | --- |
-| apps/portal/assets/video/hard-money-heroes-intro.mp4 | 8.0 MB | yes |
-| apps/portal/assets/hmh-level-editor/runtime-sprite-library.json | 6.3 MB | yes |
-| apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3 | 4.8 MB | yes |
-| apps/portal/assets/audio/music/rise-to-the-occasion.mp3 | 4.8 MB | yes |
-| apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3 | 4.8 MB | yes |
-| apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3 | 4.7 MB | yes |
-| apps/portal/assets/audio/playlist/adventure-16-bit-arcade-music.mp3 | 4.3 MB | yes |
-| apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3 | 4.0 MB | yes |
-| apps/portal/assets/video/arcade-promo-loop.gif | 4.0 MB | yes |
-| apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3 | 3.4 MB | yes |
-| apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3 | 3.2 MB | yes |
-| apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3 | 3.2 MB | yes |
-| apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3 | 3.2 MB | yes |
-| apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3 | 3.1 MB | yes |
-| apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3 | 3.1 MB | yes |
-| apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png | 3.1 MB | yes |
-| apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3 | 3.0 MB | yes |
-| apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3 | 3.0 MB | yes |
-| apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png | 2.9 MB | yes |
-| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png | 2.9 MB | yes |
+| apps/portal/assets/video/hard-money-heroes-intro.mp4 | 8.0 MB | no |
+| apps/portal/assets/hmh-level-editor/runtime-sprite-library.json | 6.3 MB | no |
+| apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3 | 4.8 MB | no |
+| apps/portal/assets/audio/music/rise-to-the-occasion.mp3 | 4.8 MB | no |
+| apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3 | 4.8 MB | no |
+| apps/portal/assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3 | 4.7 MB | no |
+| apps/portal/assets/audio/playlist/adventure-16-bit-arcade-music.mp3 | 4.3 MB | no |
+| apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3 | 4.0 MB | no |
+| apps/portal/assets/video/arcade-promo-loop.gif | 4.0 MB | no |
+| apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3 | 3.4 MB | no |
+| apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3 | 3.2 MB | no |
+| apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3 | 3.2 MB | no |
+| apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3 | 3.2 MB | no |
+| apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3 | 3.1 MB | no |
+| apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3 | 3.1 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png | 3.1 MB | no |
+| apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3 | 3.0 MB | no |
+| apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3 | 3.0 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png | 2.9 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png | 2.9 MB | no |
 
 ## Safe next actions
 
