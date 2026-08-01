@@ -60,6 +60,20 @@ further out; flow-field greedy-following crosses the map without ever
 entering an unwalkable cell; construction and fields are deepEqual across
 rebuilds.
 
+### Review finding fixed post-commit
+
+The exact-index review caught a restart-determinism BLOCKER: the flow field
+lived in module state across `initializeSession`, so an in-game restart
+inherited the previous run's field (steering blocked pursuit with stale
+data) until the new run's tick counter caught up — same-seed runs diverged
+fresh-load vs post-restart. Fixed by resetting `enemyFlowField` /
+`enemyFlowFieldTick` at the top of `initializeSession`, with a source-guard
+test. Two review notes carried as debt: the enemy soak and enemy-simulation
+suites exercise the navigation-less path only (still byte-identical, but no
+longer the shipped pursuit path), and the boot-time grid build (~410 ms
+desktop, worse on low-end mobile) should move off the first-paint path — a
+follow-up task chip exists for the lazy build.
+
 ## Gates
 
 - check 338 JS + 49 Python PASS

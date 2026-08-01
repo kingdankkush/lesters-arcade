@@ -8,6 +8,8 @@ import {
   sampleFlowDirection,
   navLineBlocked,
 } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
+import { readFileSync } from 'node:fs';
+
 import {
   createEnemyPopulation,
   createEnemyState,
@@ -106,6 +108,17 @@ test('planEnemyIntent uses the flow direction only when the direct line is block
   const openEnemy = createEnemyState({ archetypeId: 'bagholder-rusher', id: 'nav-open', x: 900, y: 2_500 });
   const openIntent = planEnemyIntent(openEnemy, { player: { x: 800, y: 2_400 }, tick: 0, navigation });
   assert.ok(openIntent.facing.x < 0 && openIntent.facing.y < 0, 'open-field enemy keeps direct pursuit');
+});
+
+test('a session restart resets the flow field so runs cannot inherit stale state', () => {
+  // Review finding (Cycle 043): the field lived in module state across
+  // initializeSession, steering a restarted run with the previous run's data
+  // and breaking same-seed determinism fresh-load vs post-restart. Source
+  // guard, matching the repo's main.mjs source-text precedent.
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const initBody = source.slice(source.indexOf('const initializeSession = (payload) => {'), source.indexOf('const sessionHeroSelection'));
+  assert.match(initBody, /enemyFlowField = null/, 'initializeSession must clear the flow field');
+  assert.match(initBody, /enemyFlowFieldTick = -1/, 'initializeSession must reset the flow field tick');
 });
 
 test('a walled-off enemy makes real progress toward the player with navigation', () => {

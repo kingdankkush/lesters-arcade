@@ -1593,6 +1593,11 @@ async function boot() {
 
   const initializeSession = (payload) => {
     stopCurrentSession();
+    // The flow field is per-run simulation state: a restart resets the tick
+    // counter, so carrying the previous run's field would steer blocked
+    // pursuit with stale data and break same-seed determinism.
+    enemyFlowField = null;
+    enemyFlowFieldTick = -1;
     // Art selection must never be able to abort a session: this runs inside
     // the bridge onInit handler, and throwing here would skip `game:ready`
     // and strand the parent until its bridge timeout. Request the session's
