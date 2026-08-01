@@ -27,8 +27,7 @@ try {
   assert.deepEqual({ count: before.count, remaining: before.remaining }, { count: 0, remaining: 9 });
   assert.ok(Math.abs(before.actorX - 9_200) < 12, `world-tour spawn drifted: ${before.actorX}`);
 
-  await page.locator('canvas').focus();
-  await page.keyboard.down('d');
+    await page.keyboard.down('d');
   await page.waitForTimeout(800);
   await page.keyboard.up('d');
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleCount) === 1, null, { timeout: 5000 });
@@ -74,8 +73,7 @@ try {
   });
   await timedPage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=ravine`, { waitUntil: 'networkidle' });
   await timedPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'coin-blaster');
-  await timedPage.locator('canvas').focus();
-  await timedPage.keyboard.down('d');
+    await timedPage.keyboard.down('d');
   await timedPage.keyboard.down('w');
   await timedPage.waitForTimeout(550);
   await timedPage.keyboard.up('w');

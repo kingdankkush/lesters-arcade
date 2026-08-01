@@ -138,7 +138,7 @@ export class InputState {
 
   heldActions() {
     const keyboard = keyboardActions(this.keys);
-    const sources = [keyboard, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
+    const sources = [keyboard, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire, grenade: this.pointer.grenade ?? false } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
     return Object.fromEntries(BUFFERED_ACTIONS.map((action) => [action, sources.some((source) => source[action])]));
   }
 
@@ -169,13 +169,14 @@ export class InputState {
     return true;
   }
 
-  setPointer({ screenX, screenY, fire = false } = {}, atMs) {
+  setPointer({ screenX, screenY, fire = false, grenade = false } = {}, atMs) {
     const before = this.heldActions();
     const at = this.markDevice('keyboard-mouse', atMs);
     this.pointer = {
       screenX: finite(screenX, 'pointer screenX'),
       screenY: finite(screenY, 'pointer screenY'),
       fire: bool(fire),
+      grenade: bool(grenade),
     };
     this.pointerAt = at;
     this.captureActionEdges(before, this.heldActions(), at);
@@ -269,7 +270,7 @@ export class InputState {
       : { x: 0, y: 0, active: false };
 
     const keyboardActionState = keyboardActions(this.keys);
-    const sources = [keyboardActionState, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
+    const sources = [keyboardActionState, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire, grenade: this.pointer.grenade ?? false } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
     const actions = {
       move: { ...move },
       aim,
@@ -384,13 +385,16 @@ export function createBrowserInputController({ input, target, windowRef = global
     event.preventDefault?.();
     input.setKey(event.code, down, now());
   };
-  listen(target, 'keydown', key(true));
-  listen(target, 'keyup', key(false));
-  listen(target, 'pointermove', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: (event.buttons & 1) === 1 }, now()));
+  // Window-level: the canvas needing focus before WASD worked is the defect a
+  // real player hit at boot. The child document has no text inputs, so
+  // capturing gameplay keys on the window is safe.
+  listen(windowRef, 'keydown', key(true));
+  listen(windowRef, 'keyup', key(false));
+  listen(target, 'pointermove', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: (event.buttons & 1) === 1, grenade: (event.buttons & 2) === 2 }, now()));
   listen(target, 'pointerdown', (event) => {
     event.preventDefault?.();
     target.focus?.({ preventScroll: true });
-    input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: event.button === 0 }, now());
+    input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: event.button === 0, grenade: event.button === 2 }, now());
   });
   listen(target, 'pointerup', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: false }, now()));
   listen(target, 'pointercancel', () => input.reset('pointer-cancel', now()));

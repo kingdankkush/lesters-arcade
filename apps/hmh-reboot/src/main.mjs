@@ -2614,6 +2614,10 @@ async function boot() {
 
   const handleResize = () => renderWorld();
   app.canvas.addEventListener('pointerdown', () => app.canvas.focus());
+  // Boot focus: a player must be able to move the moment the run starts,
+  // without clicking the game first (device playtest, 2026-07-31).
+  window.focus?.();
+  app.canvas.focus({ preventScroll: true });
   app.renderer.on('resize', handleResize);
   app.ticker.add((ticker) => {
     if (!simulation || simulation.state !== 'active' || !actor || !camera) return;

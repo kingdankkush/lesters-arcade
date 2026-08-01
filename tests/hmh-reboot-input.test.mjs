@@ -287,11 +287,19 @@ test('browser controller prevents gameplay scrolling and resets on blur visibili
   let focusCalls = 0;
   target.focus = () => { focusCalls += 1; };
   const controller = createBrowserInputController({ input, target, windowRef, documentRef, now: () => 10 });
+  // Device playtest 2026-07-31: keys bound to the canvas were dead until the
+  // player clicked the game. Keyboard is window-level now — a key pressed
+  // BEFORE any pointer interaction must register.
+  windowRef.emit('keydown', { code: 'KeyW', preventDefault: () => { prevented += 1; } });
+  assert.equal(input.snapshot({ ...context, nowMs: 10.5 }).actions.move.y < 0, true, 'WASD must work with zero prior clicks');
   target.emit('pointerdown', { clientX: 400, clientY: 300, button: 0, preventDefault: () => { prevented += 1; } });
-  target.emit('keydown', { code: 'ArrowUp', preventDefault: () => { prevented += 1; } });
+  windowRef.emit('keydown', { code: 'ArrowUp', preventDefault: () => { prevented += 1; } });
   target.emit('contextmenu', { preventDefault: () => { prevented += 1; } });
-  assert.equal(prevented, 3);
+  assert.equal(prevented, 4);
   assert.equal(focusCalls, 1);
+  // Right-click throws the grenade.
+  target.emit('pointerdown', { clientX: 400, clientY: 300, button: 2, preventDefault: () => {} });
+  assert.equal(input.snapshot({ ...context, nowMs: 10.6 }).actions.grenade, true, 'right-click must map to grenade');
   windowRef.emit('blur');
   assert.equal(input.snapshot({ ...context, nowMs: 11 }).metadata.resetReason, 'blur');
   documentRef.visibilityState = 'hidden';

@@ -100,6 +100,10 @@ export function createHmhRebootHost({
     iframe.dataset.runtime = 'hmh-reboot';
     mount.replaceChildren(iframe);
     claimInputOwnership(true);
+    // The embedded runtime owns the keyboard too: without focusing the frame,
+    // WASD lands in the parent document and the hero never moves.
+    iframe.addEventListener('load', () => { try { iframe.focus(); iframe.contentWindow?.focus?.(); } catch { /* detached */ } }, { once: true });
+    try { iframe.focus(); } catch { /* detached */ }
 
     const bridge = bridgeFactory({
       iframe,
