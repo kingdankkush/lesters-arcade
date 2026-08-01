@@ -17,6 +17,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
+import { computeEnemyFlowField, createEnemyNavGrid, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
   createTerrainTileRegistry,
@@ -209,6 +210,16 @@ const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 const queryGround = createLevelOneGroundQuery();
 const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
+// Deterministic navgrid built once from authored world data; the flow field
+// refreshes on a fixed tick cadence inside the simulation step.
+const ENEMY_NAV_GRID = createEnemyNavGrid({ world: LEVEL_ONE_WORLD, queryGround });
+const ENEMY_FLOW_REFRESH_TICKS = 30;
+let enemyFlowField = null;
+let enemyFlowFieldTick = -1;
+const enemyNavigation = Object.freeze({
+  lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(ENEMY_NAV_GRID, fromX, fromY, toX, toY),
+  flowDirectionAt: (x, y) => sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y),
+});
 const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
 const sessionElement = document.querySelector('#hmhRebootSession');
@@ -1912,6 +1923,10 @@ async function boot() {
         : null;
 
       if (!rosterPreviewEnabled && openingEnemyMovementEnabled(tick)) {
+        if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS) {
+          enemyFlowField = computeEnemyFlowField({ grid: ENEMY_NAV_GRID, targetX: actor.x, targetY: actor.y });
+          enemyFlowFieldTick = tick;
+        }
         lastEnemyStep = stepEnemyPopulation({
           population: enemyPopulation,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
@@ -1921,6 +1936,7 @@ async function boot() {
           bounds: WORLD_BOUNDS,
           queryGround,
           preservePrevious: true,
+          navigation: enemyNavigation,
         });
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0 });

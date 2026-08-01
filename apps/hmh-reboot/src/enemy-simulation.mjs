@@ -196,13 +196,21 @@ export function retireEnemyFromPopulation(population, id, { tick, reason = 'reti
   return freezeDeep({ retired: true, id: enemy.id, archetypeId: enemy.archetypeId, tick, reason: reason.trim() });
 }
 
-export function planEnemyIntent(enemy, { player, tick } = {}) {
+export function planEnemyIntent(enemy, { player, tick, navigation = null } = {}) {
   const archetype = getEnemyArchetype(enemy?.archetypeId);
   nonNegativeInteger(tick, 'tick');
   const dx = finite(player?.x, 'player.x') - finite(enemy?.x, 'enemy.x');
   const dy = finite(player?.y, 'player.y') - finite(enemy?.y, 'enemy.y');
   const distance = Math.hypot(dx, dy);
-  const direct = normalize(dx, dy);
+  let direct = normalize(dx, dy);
+  // When authored structure blocks the straight line, pursue along the world
+  // flow field instead of pressing into the wall. The field is deterministic
+  // simulation state; role modifiers below still shape the final heading.
+  if (navigation && typeof navigation.lineBlocked === 'function'
+    && navigation.lineBlocked(enemy.x, enemy.y, player.x, player.y)) {
+    const flow = navigation.flowDirectionAt?.(enemy.x, enemy.y) ?? null;
+    if (flow) direct = normalize(flow.x, flow.y);
+  }
   const tangent = { x: -direct.y * stableSign(enemy.id), y: direct.x * stableSign(enemy.id) };
   let direction = direct;
   if (archetype.role === 'flanker') {
@@ -331,6 +339,7 @@ export function stepEnemyPopulation({
   bounds = null,
   queryGround,
   preservePrevious = false,
+  navigation = null,
 } = {}) {
   if (!population || !Array.isArray(population.active)) throw new TypeError('population is required');
   nonNegativeInteger(tick, 'tick');
@@ -357,7 +366,7 @@ export function stepEnemyPopulation({
     const lod = getEnemyLod(distance);
     const movementLocked = enemy.attackPhase === 'tell';
     if (!movementLocked && (!enemy.intent || tick >= enemy.nextDecisionTick)) {
-      enemy.intent = planEnemyIntent(enemy, { player, tick });
+      enemy.intent = planEnemyIntent(enemy, { player, tick, navigation });
       enemy.velocity = { ...enemy.intent.velocity };
       enemy.nextDecisionTick = tick + lod.cadenceTicks;
       decisions += 1;
