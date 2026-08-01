@@ -216,7 +216,7 @@ async function desktopSmoke() {
   ]);
   assert.equal(pistol.worldArt, 'production-vector-world-v1');
   assert.deepEqual(pistol.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([pistol.worldParticles, pistol.worldBlockers, pistol.worldLandmarks], [50, 11, 6]);
+  assert.deepEqual([pistol.worldParticles, pistol.worldBlockers, pistol.worldLandmarks], [50, 38, 6]);
   assert.deepEqual([pistol.worldWidth, pistol.worldHeight], [12000, 4800]);
   assert.equal(pistol.districtId, 'frontier-relay');
   assert.ok(pistol.revealedCells > 0 && pistol.revealedCells < pistol.revealTotalCells);
@@ -325,7 +325,7 @@ async function mobileSmoke() {
   ]);
   assert.equal(mobileState.worldArt, 'production-vector-world-v1');
   assert.deepEqual(mobileState.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks], [30, 11, 6]);
+  assert.deepEqual([mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks], [30, 38, 6]);
   assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
   assert.equal(mobileState.districtId, 'frontier-relay');
   assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
@@ -353,7 +353,7 @@ async function worldTourSmoke() {
   assert.equal(bridge.actorArt, 'production-hero-atlas');
   assert.equal(bridge.worldArt, 'production-vector-world-v1');
   assert.deepEqual(bridge.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([bridge.worldParticles, bridge.worldBlockers, bridge.worldLandmarks], [50, 11, 6]);
+  assert.deepEqual([bridge.worldParticles, bridge.worldBlockers, bridge.worldLandmarks], [50, 38, 6]);
   assert.deepEqual([bridge.worldWidth, bridge.worldHeight], [12000, 4800]);
   assert.equal(bridge.districtId, 'liquidity-crossing');
   assert.equal(bridge.surfaceId, 'proof-of-work-bridge');

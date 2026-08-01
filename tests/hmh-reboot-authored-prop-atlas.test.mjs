@@ -71,7 +71,7 @@ test('authored world dressing and gameplay POIs are deterministic and bounded', 
   assert.equal(new Set(first.map((placement) => placement.districtId)).size, 6);
   assert.ok(first.every((placement) => placement.x >= 0 && placement.x <= 12_000 && placement.y >= 0 && placement.y <= 4_800));
   const pointsOfInterest = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
-  assert.equal(pointsOfInterest.length, 9);
+  assert.equal(pointsOfInterest.length, 10);
   assert.deepEqual(new Set(pointsOfInterest.map((placement) => placement.assetId)), new Set([...AUTHORED_PROP_ASSETS.weapons, ...AUTHORED_PROP_ASSETS.pickups]));
   assert.deepEqual(pointsOfInterest.map(({ pointOfInterestId, hook, x, y }) => ({ pointOfInterestId, hook, x, y })), LEVEL_ONE_WORLD.pointsOfInterest.map((point) => ({ pointOfInterestId: point.id, hook: point.hook, x: point.anchor.x, y: point.anchor.y })));
   assert.ok(pointsOfInterest.every((placement) => placement.category === 'point-of-interest' && placement.runtimeAuthority === 'projection-only'));
@@ -140,8 +140,8 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
   const before = JSON.stringify(placements);
   const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
   // countPerDistrict 1 -> 5 x 1 + hashwood override 14 = 19 dressing entries,
-  // plus 6 landmarks x 8 offsets and 9 POIs.
-  assert.equal(display.entries.length, 19 + 6 * 8 + 9);
+  // plus 6 landmarks x 8 offsets and 10 POIs.
+  assert.equal(display.entries.length, 19 + 6 * 8 + 10);
   const report = display.render({
     camera: { zoom: 1 },
     view: { width: 12_000, height: 4_800 },
@@ -149,7 +149,7 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
     queryGround: () => ({ groundZ: 0 }),
     tick: 42,
   });
-  assert.equal(report.placementCount, 19 + 6 * 8 + 9);
+  assert.equal(report.placementCount, 19 + 6 * 8 + 10);
   assert.ok(report.visibleCount > 0);
   assert.ok(report.signalVisibleCount >= 12);
   assert.equal(report.animatedSignalVisibleCount, report.signalVisibleCount);

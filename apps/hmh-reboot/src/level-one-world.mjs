@@ -44,21 +44,29 @@ const DISTRICTS = [
 
 const ROUTE_NODES = [
   ['relay-spawn', 800, 2_400],
-  ['relay-gate', 1_700, 2_400],
-  ['ravine-entry', 1_900, 2_400],
+  ['relay-bend', 1_250, 2_750],
+  ['relay-gate', 1_700, 2_450],
+  ['ravine-entry', 1_950, 2_300],
   ['ravine-ramp-entry', 2_500, 1_500],
-  ['ravine-high-road', 3_000, 1_500],
-  ['ravine-exit', 3_700, 2_400],
+  ['ravine-high-road', 3_050, 1_450],
+  ['ravine-descent', 3_550, 2_150],
+  ['ravine-exit', 3_750, 2_500],
+  ['crossing-bend', 4_050, 2_470],
   ['bridge-west', 4_400, 2_400],
   ['bridge-east', 5_100, 2_400],
-  ['crossing-exit', 5_900, 2_400],
+  ['crossing-exit', 5_800, 2_550],
+  ['hashwood-gate', 6_150, 2_750],
+  ['hashwood-bend', 6_550, 2_350],
   ['hashwood-clearing', 7_000, 2_000],
-  ['hashwood-exit', 7_900, 2_400],
-  ['mining-gate', 8_200, 2_400],
+  ['hashwood-south-turn', 7_500, 2_650],
+  ['hashwood-exit', 7_900, 2_500],
+  ['mining-gate', 8_250, 2_350],
   ['mining-ramp-entry', 8_700, 1_600],
   ['mining-yard', 9_200, 1_600],
-  ['mining-exit', 9_900, 2_400],
-  ['yard-gate', 10_200, 2_400],
+  ['mining-descent', 9_550, 2_100],
+  ['mining-exit', 9_900, 2_550],
+  ['yard-gate', 10_250, 2_450],
+  ['yard-chicane', 10_600, 2_150],
   ['liquidator-arena-node', 11_000, 2_400],
   ['relay-loop-north', 1_250, 1_600],
   ['relay-loop-south', 1_250, 3_200],
@@ -76,10 +84,12 @@ const ROUTE_NODES = [
 const NODE_BY_ID = new Map(ROUTE_NODES.map((node) => [node.id, node]));
 
 const ROUTES = [
-  { id: 'main-route', kind: 'main', width: 192, nodeIds: ['relay-spawn', 'relay-gate', 'ravine-entry', 'ravine-ramp-entry', 'ravine-high-road', 'ravine-exit', 'bridge-west', 'bridge-east', 'crossing-exit', 'hashwood-clearing', 'hashwood-exit', 'mining-gate', 'mining-ramp-entry', 'mining-yard', 'mining-exit', 'yard-gate', 'liquidator-arena-node'] },
+  { id: 'main-route', kind: 'main', width: 192, nodeIds: ['relay-spawn', 'relay-bend', 'relay-gate', 'ravine-entry', 'ravine-ramp-entry', 'ravine-high-road', 'ravine-descent', 'ravine-exit', 'crossing-bend', 'bridge-west', 'bridge-east', 'crossing-exit', 'hashwood-gate', 'hashwood-bend', 'hashwood-clearing', 'hashwood-south-turn', 'hashwood-exit', 'mining-gate', 'mining-ramp-entry', 'mining-yard', 'mining-descent', 'mining-exit', 'yard-gate', 'yard-chicane', 'liquidator-arena-node'] },
   { id: 'relay-orientation-loop', kind: 'loop', width: 160, nodeIds: ['relay-gate', 'relay-loop-north', 'relay-loop-south', 'relay-gate'] },
   { id: 'ravine-salvage-loop', kind: 'loop', width: 160, nodeIds: ['ravine-entry', 'ravine-loop-north', 'ravine-loop-south', 'ravine-entry'] },
-  { id: 'crossing-bank-loop', kind: 'loop', width: 144, nodeIds: ['bridge-west', 'crossing-shallows-west', 'crossing-shallows-east', 'bridge-west'] },
+  // Out-and-back via the shallows: the old triangle's return leg crossed the
+  // deep river and the north bridge rail.
+  { id: 'crossing-bank-loop', kind: 'loop', width: 144, nodeIds: ['bridge-west', 'crossing-shallows-west', 'crossing-shallows-east', 'crossing-shallows-west', 'bridge-west'] },
   { id: 'hashwood-clearing-loop', kind: 'loop', width: 160, nodeIds: ['hashwood-clearing', 'hashwood-loop-north', 'hashwood-loop-south', 'hashwood-clearing'] },
   { id: 'mining-service-loop', kind: 'loop', width: 160, nodeIds: ['mining-gate', 'mining-loop-north', 'mining-loop-south', 'mining-gate'] },
   { id: 'liquidation-escape-loop', kind: 'loop', width: 176, nodeIds: ['yard-gate', 'yard-loop-north', 'yard-loop-south', 'yard-gate'] },
@@ -113,17 +123,57 @@ const BASE_SURFACE = createElevationSurface({ id: 'forked-frontier-ground', kind
 const SURFACES = SURFACE_SPECS.map((spec) => createElevationSurface(spec));
 
 const BLOCKER_FEATURES = [
+  // Frontier Relay: a fenced compound with a depot shed, an interior fence
+  // run, and a true gate at the ravine seam.
   { id: 'relay-orientation-fence', districtId: 'frontier-relay', anchor: point(1_450, 900), visualKind: 'fence', shape: { type: 'capsule', a: point(800, 900), b: point(1_650, 900), radius: 18 }, maxZ: 72 },
+  { id: 'relay-depot-shed', districtId: 'frontier-relay', anchor: point(1_550, 3_425), visualKind: 'building', shape: { type: 'polygon', vertices: [point(1_400, 3_300), point(1_700, 3_300), point(1_700, 3_550), point(1_400, 3_550)] }, maxZ: 200, combatCover: true },
+  { id: 'relay-north-fence-run', districtId: 'frontier-relay', anchor: point(850, 1_400), visualKind: 'fence', shape: { type: 'capsule', a: point(450, 1_450), b: point(1_250, 1_350), radius: 18 }, maxZ: 72 },
+  { id: 'relay-gate-north', districtId: 'frontier-relay', anchor: point(1_700, 1_940), visualKind: 'fence', shape: { type: 'capsule', a: point(1_700, 1_750), b: point(1_700, 2_130), radius: 18 }, maxZ: 72 },
+  { id: 'relay-gate-south', districtId: 'frontier-relay', anchor: point(1_700, 2_950), visualKind: 'fence', shape: { type: 'capsule', a: point(1_700, 2_760), b: point(1_700, 3_140), radius: 18 }, maxZ: 72 },
+  // Rugpull Ravine: canyon walls with interior rock spurs that force the
+  // route to wind, and a mid-canyon boulder choke inside the ambush bowl.
   { id: 'ravine-north-cliff', districtId: 'rugpull-ravine', anchor: point(2_800, 650), visualKind: 'cliff', shape: { type: 'capsule', a: point(1_850, 650), b: point(3_750, 650), radius: 48 }, maxZ: 140 },
   { id: 'ravine-south-cliff', districtId: 'rugpull-ravine', anchor: point(2_800, 3_650), visualKind: 'cliff', shape: { type: 'capsule', a: point(1_850, 3_650), b: point(3_750, 3_650), radius: 48 }, maxZ: 140 },
-  { id: 'bridge-north-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 2_260), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_390, 2_260), b: point(5_110, 2_260), radius: 14 }, minZ: 0, maxZ: 72 },
-  { id: 'bridge-south-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 2_540), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_390, 2_540), b: point(5_110, 2_540), radius: 14 }, minZ: 0, maxZ: 72 },
+  { id: 'ravine-spur-west', districtId: 'rugpull-ravine', anchor: point(2_150, 3_050), visualKind: 'cliff', shape: { type: 'capsule', a: point(2_150, 3_450), b: point(2_150, 2_650), radius: 48 }, maxZ: 140 },
+  { id: 'ravine-spur-east', districtId: 'rugpull-ravine', anchor: point(3_620, 1_440), visualKind: 'cliff', shape: { type: 'capsule', a: point(3_620, 1_050), b: point(3_620, 1_830), radius: 48 }, maxZ: 140 },
+  { id: 'ravine-boulder-choke', districtId: 'rugpull-ravine', anchor: point(2_460, 2_360), visualKind: 'cliff', shape: { type: 'capsule', a: point(2_340, 2_330), b: point(2_580, 2_390), radius: 44 }, maxZ: 120, combatCover: true },
+  { id: 'ravine-exit-palisade', districtId: 'rugpull-ravine', anchor: point(3_825, 2_975), visualKind: 'fence', shape: { type: 'capsule', a: point(3_700, 2_900), b: point(3_950, 3_050), radius: 20 }, maxZ: 80 },
+  // Liquidity Crossing: wetland banks — a west groyne funnels toward the
+  // bridge, wreck rows and fuel tanks dress the east bank, and a bank fence
+  // plus thicket gate the hashwood seam.
+  { id: 'bridge-north-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 2_260), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_510, 2_260), b: point(4_990, 2_260), radius: 14 }, minZ: 0, maxZ: 72 },
+  { id: 'bridge-south-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 2_540), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_510, 2_540), b: point(4_990, 2_540), radius: 14 }, minZ: 0, maxZ: 72 },
+  { id: 'crossing-west-groyne', districtId: 'liquidity-crossing', anchor: point(4_105, 1_990), visualKind: 'fence', shape: { type: 'capsule', a: point(3_980, 1_900), b: point(4_230, 2_080), radius: 18 }, maxZ: 72 },
+  { id: 'crossing-east-wreckrow', districtId: 'liquidity-crossing', anchor: point(5_550, 2_975), visualKind: 'containers', shape: { type: 'capsule', a: point(5_350, 2_900), b: point(5_750, 3_050), radius: 60 }, maxZ: 150, combatCover: true },
+  { id: 'crossing-fuel-tanks', districtId: 'liquidity-crossing', anchor: point(5_440, 3_375), visualKind: 'machinery', shape: { type: 'capsule', a: point(5_300, 3_350), b: point(5_580, 3_400), radius: 48 }, maxZ: 150, combatCover: true },
+  { id: 'crossing-east-bank-fence', districtId: 'liquidity-crossing', anchor: point(5_975, 2_175), visualKind: 'fence', shape: { type: 'capsule', a: point(5_850, 2_100), b: point(6_100, 2_250), radius: 18 }, maxZ: 72 },
+  { id: 'hashwood-gate-thicket', districtId: 'hashwood', anchor: point(6_100, 3_225), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(5_950, 3_150), b: point(6_250, 3_300), radius: 64 }, maxZ: 180 },
+  // Hashwood: interior thickets shape a winding forest path into a walled
+  // clearing, and fences gate the mining seam.
   { id: 'hashwood-north-tree-line', districtId: 'hashwood', anchor: point(7_000, 620), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_050, 620), b: point(7_950, 620), radius: 64 }, maxZ: 180 },
   { id: 'hashwood-south-tree-line', districtId: 'hashwood', anchor: point(7_000, 4_100), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_050, 4_100), b: point(7_950, 4_100), radius: 64 }, maxZ: 180 },
+  { id: 'hashwood-thicket-nw', districtId: 'hashwood', anchor: point(6_375, 1_440), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_200, 1_500), b: point(6_550, 1_380), radius: 64 }, maxZ: 180 },
+  { id: 'hashwood-thicket-south', districtId: 'hashwood', anchor: point(6_925, 3_125), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_700, 3_050), b: point(7_150, 3_200), radius: 64 }, maxZ: 180 },
+  { id: 'hashwood-clearing-edge-west', districtId: 'hashwood', anchor: point(6_755, 2_655), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_680, 2_530), b: point(6_830, 2_780), radius: 56 }, maxZ: 180, combatCover: true },
+  { id: 'hashwood-clearing-edge-east', districtId: 'hashwood', anchor: point(7_575, 2_275), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(7_500, 2_150), b: point(7_650, 2_400), radius: 56 }, maxZ: 180, combatCover: true },
+  { id: 'mining-gate-fence-north', districtId: 'mining-camp', anchor: point(8_075, 1_875), visualKind: 'fence', shape: { type: 'capsule', a: point(7_950, 1_800), b: point(8_200, 1_950), radius: 20 }, maxZ: 80 },
+  { id: 'mining-gate-fence-south', districtId: 'mining-camp', anchor: point(8_025, 3_025), visualKind: 'fence', shape: { type: 'capsule', a: point(7_900, 2_950), b: point(8_150, 3_100), radius: 20 }, maxZ: 80 },
+  // Mining Camp: a fenced work yard with a shack row south of the loader
+  // deck, and container walls gating the liquidation seam.
   { id: 'mining-north-machinery', districtId: 'mining-camp', anchor: point(8_900, 700), visualKind: 'machinery', shape: { type: 'capsule', a: point(8_100, 700), b: point(9_700, 700), radius: 54 }, maxZ: 160, combatCover: true },
   { id: 'mining-south-fence', districtId: 'mining-camp', anchor: point(9_000, 3_850), visualKind: 'fence', shape: { type: 'capsule', a: point(8_050, 3_850), b: point(9_950, 3_850), radius: 20 }, maxZ: 80 },
+  { id: 'mining-yard-fence-west', districtId: 'mining-camp', anchor: point(8_500, 3_000), visualKind: 'fence', shape: { type: 'capsule', a: point(8_500, 2_700), b: point(8_500, 3_300), radius: 20 }, maxZ: 80 },
+  { id: 'mining-yard-fence-east', districtId: 'mining-camp', anchor: point(9_200, 3_385), visualKind: 'fence', shape: { type: 'capsule', a: point(9_200, 3_210), b: point(9_200, 3_560), radius: 20 }, maxZ: 80 },
+  { id: 'mining-shack-row', districtId: 'mining-camp', anchor: point(8_800, 3_475), visualKind: 'building', shape: { type: 'polygon', vertices: [point(8_650, 3_350), point(8_950, 3_350), point(8_950, 3_600), point(8_650, 3_600)] }, maxZ: 220, combatCover: true },
+  { id: 'yard-gate-wall-north', districtId: 'mining-camp', anchor: point(10_050, 1_900), visualKind: 'containers', shape: { type: 'capsule', a: point(9_900, 1_850), b: point(10_200, 1_950), radius: 60 }, maxZ: 150, combatCover: true },
+  { id: 'yard-gate-wall-south', districtId: 'mining-camp', anchor: point(10_000, 3_075), visualKind: 'containers', shape: { type: 'capsule', a: point(9_850, 3_000), b: point(10_150, 3_150), radius: 60 }, maxZ: 150, combatCover: true },
+  // Liquidation Yard: wreck rows squeeze the approach into a chicane and a
+  // terminal block anchors the recovery pocket behind the arena.
   { id: 'yard-north-building', districtId: 'liquidation-yard', anchor: point(10_900, 620), visualKind: 'building', shape: { type: 'polygon', vertices: [point(10_200, 420), point(11_600, 420), point(11_600, 820), point(10_200, 820)] }, maxZ: 240, combatCover: true },
   { id: 'yard-south-containers', districtId: 'liquidation-yard', anchor: point(10_900, 4_000), visualKind: 'containers', shape: { type: 'capsule', a: point(10_250, 4_000), b: point(11_550, 4_000), radius: 72 }, maxZ: 150, combatCover: true },
+  { id: 'yard-wreck-row-north', districtId: 'liquidation-yard', anchor: point(10_650, 1_950), visualKind: 'containers', shape: { type: 'capsule', a: point(10_600, 1_945), b: point(10_700, 1_955), radius: 40 }, maxZ: 150, combatCover: true },
+  { id: 'yard-wreck-row-south', districtId: 'liquidation-yard', anchor: point(10_530, 3_075), visualKind: 'containers', shape: { type: 'capsule', a: point(10_380, 3_050), b: point(10_680, 3_100), radius: 56 }, maxZ: 150, combatCover: true },
+  { id: 'yard-terminal-block', districtId: 'liquidation-yard', anchor: point(11_570, 3_050), visualKind: 'building', shape: { type: 'polygon', vertices: [point(11_420, 2_900), point(11_720, 2_900), point(11_720, 3_200), point(11_420, 3_200)] }, maxZ: 220, combatCover: true },
 ];
 
 const COLLISION_BLOCKERS = BLOCKER_FEATURES.map((feature) => createStaticBlocker({
@@ -164,6 +214,7 @@ const POINTS_OF_INTEREST = [
   ['hashwood-shrine', 'hashwood', 6_700, 3_200, 'reward'],
   ['mining-control-room', 'mining-camp', 9_350, 1_600, 'upgrade'],
   ['yard-extraction-console', 'liquidation-yard', 10_650, 3_250, 'objective'],
+  ['yard-medbay-cache', 'liquidation-yard', 11_480, 3_330, 'reward'],
 ].map(([id, districtId, x, y, hook]) => freezeDeep({ id, districtId, anchor: point(x, y), hook }));
 
 const ENCOUNTER_ARENAS = [
@@ -171,7 +222,7 @@ const ENCOUNTER_ARENAS = [
   ['ravine-ambush-bowl', 'rugpull-ravine', 2_700, 2_700, 420],
   ['crossing-lockdown', 'liquidity-crossing', 5_450, 2_500, 420],
   ['hashwood-clearing-arena', 'hashwood', 7_150, 2_500, 460],
-  ['mining-yard-arena', 'mining-camp', 9_150, 2_550, 500],
+  ['mining-yard-arena', 'mining-camp', 8_850, 3_050, 500],
   ['liquidator-arena', 'liquidation-yard', 11_000, 2_400, 620],
 ].map(([id, districtId, x, y, radius]) => freezeDeep({ id, districtId, anchor: point(x, y), radius }));
 

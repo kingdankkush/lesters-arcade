@@ -27,7 +27,7 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
 });
 
 export function createCollectibleState({ placements, collectionRadius = 80 } = {}) {
-  if (!Array.isArray(placements) || placements.length !== 9) throw new TypeError('nine authored collectible placements are required');
+  if (!Array.isArray(placements) || placements.length !== 10) throw new TypeError('ten authored collectible placements are required');
   if (!Number.isFinite(collectionRadius) || collectionRadius <= 0) throw new TypeError('collectionRadius must be positive');
   const ids = new Set();
   const entries = placements.map((placement) => {

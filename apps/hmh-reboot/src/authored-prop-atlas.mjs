@@ -164,10 +164,11 @@ const POINT_OF_INTEREST_ASSET_BY_ID = Object.freeze({
   'hashwood-shrine': 'berserk-candle',
   'mining-control-room': 'auto-miner',
   'yard-extraction-console': 'launcher-rig',
+  'yard-medbay-cache': 'bonus-life',
 });
 
 export function buildAuthoredPointOfInterestPlacements(pointsOfInterest) {
-  if (!Array.isArray(pointsOfInterest) || pointsOfInterest.length !== 9) throw new TypeError('nine authored level-one points of interest are required');
+  if (!Array.isArray(pointsOfInterest) || pointsOfInterest.length !== 10) throw new TypeError('ten authored level-one points of interest are required');
   return freezeDeep(pointsOfInterest.map((pointOfInterest) => {
     const assetId = POINT_OF_INTEREST_ASSET_BY_ID[pointOfInterest.id];
     if (!assetId) throw new TypeError(`unsupported point of interest ${String(pointOfInterest.id)}`);

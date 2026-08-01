@@ -15,13 +15,13 @@ import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/s
 const placements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
 const digest = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 
-test('all nine authored POIs map to deterministic collectible effects', () => {
-  assert.equal(placements.length, 9);
-  assert.deepEqual(Object.keys(COLLECTIBLE_EFFECTS).sort(), placements.map((placement) => placement.assetId).sort());
+test('all ten authored POIs map to deterministic collectible effects', () => {
+  assert.equal(placements.length, 10);
+  assert.deepEqual(Object.keys(COLLECTIBLE_EFFECTS).sort(), [...new Set(placements.map((placement) => placement.assetId))].sort());
   const state = createCollectibleState({ placements });
   const snapshot = getCollectibleSnapshot(state, { tick: 0 });
   assert.equal(snapshot.collectedCount, 0);
-  assert.equal(snapshot.remainingCount, 9);
+  assert.equal(snapshot.remainingCount, 10);
   assert.equal(snapshot.damageMultiplier, 1);
   assert.equal(snapshot.speedMultiplier, 1);
 });
@@ -63,8 +63,8 @@ test('collectible events and expiries are identical at 60, 30, and 20 render sch
   const results = [60, 30, 20].map(runSchedule);
   const hashes = results.map(digest);
   assert.equal(new Set(hashes).size, 1);
-  assert.equal(results[0].snapshot.collectedCount, 9);
+  assert.equal(results[0].snapshot.collectedCount, 10);
   assert.equal(results[0].snapshot.remainingCount, 0);
   assert.equal(results[0].snapshot.activeEffects.length, 0);
-  assert.deepEqual(results[0].events.map((event) => event.type).filter((type) => type === 'collectible:collected').length, 9);
+  assert.deepEqual(results[0].events.map((event) => event.type).filter((type) => type === 'collectible:collected').length, 10);
 });
