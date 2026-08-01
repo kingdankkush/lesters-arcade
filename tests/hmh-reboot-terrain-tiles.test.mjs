@@ -43,6 +43,16 @@ test('the baked manifest is present, projection-only, and complete', async () =>
   }
 });
 
+test('tiles are baked at 512px with painted layering and proportional fringes', async () => {
+  // MAP-REDO slice 2: raise the bake to 512px with painted-style layering.
+  // The world-unit repeat is fixed by the renderer, so a larger bake means
+  // more texel density at gameplay zoom, not larger features.
+  const manifest = await loadManifest();
+  assert.ok(manifest.tileSize >= 512, `tileSize ${manifest.tileSize} is below the 512px fidelity bar`);
+  assert.equal(manifest.paintedLayering, true, 'bakery must record the painted-layering pass');
+  assert.ok(manifest.fringeHeight >= 128, `fringeHeight ${manifest.fringeHeight} must scale with the bake`);
+});
+
 test('every material file referenced by the manifest exists on disk', async () => {
   const manifest = await loadManifest();
   for (const material of manifest.materials) {

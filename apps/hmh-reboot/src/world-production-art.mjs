@@ -559,8 +559,10 @@ function drawInteraction(graphic, center, kit, zoom, pulse, hazard = false) {
   }
 }
 
-// One authored tile spans this many world units. Larger reads as finer grain.
-export const TERRAIN_TILE_WORLD_SCALE = 0.26;
+// One authored tile spans this many world units regardless of the bake
+// resolution (256 x 0.26 from the original tuning). A higher-resolution bake
+// therefore buys texel density at gameplay zoom, not larger features.
+export const TERRAIN_TILE_REPEAT_WORLD = 66.56;
 
 /**
  * Reuses tiling sprites across frames so terrain costs no per-frame allocation.
@@ -572,7 +574,7 @@ function createTerrainSpritePlacer({ container, terrainTiles, camera, view }) {
   // The road container also holds its mask, which must never be pooled or
   // hidden as if it were a terrain sprite.
   const poolable = () => container.children.filter((child) => child.label !== 'world-road-mask');
-  const scale = TERRAIN_TILE_WORLD_SCALE * camera.zoom;
+  const scale = (TERRAIN_TILE_REPEAT_WORLD / (terrainTiles.tileSize || 256)) * camera.zoom;
   // World-locked so the pattern does not swim under a moving camera.
   const originX = view.width / 2 - camera.x * camera.zoom;
   const originY = view.height / 2 - camera.y * camera.zoom;
@@ -679,8 +681,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       sprite.position.set(top.x, bottom.y);
       sprite.width = Math.max(1, bottom.y - top.y);
       sprite.height = depth;
-      const tileWorldScale = camera.zoom * 0.26;
-      sprite.tileScale?.set?.(tileWorldScale, depth / 64);
+      const tileWorldScale = (TERRAIN_TILE_REPEAT_WORLD / (terrainTiles.tileSize || 256)) * camera.zoom;
+      sprite.tileScale?.set?.(tileWorldScale, depth / (terrainTiles.fringeHeight || 64));
     }
   }
   if (fringeContainer) {

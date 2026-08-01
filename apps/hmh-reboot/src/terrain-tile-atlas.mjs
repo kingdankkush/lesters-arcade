@@ -11,8 +11,8 @@
  * `level-one-world.mjs`; this module only decides what a surface looks like.
  */
 
-export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v1';
-export const TERRAIN_TILE_SIZE = 256;
+export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v2';
+export const TERRAIN_TILE_SIZE = 512;
 
 const TILE_ROOT = '../assets/generated/hmh-terrain-tiles';
 
@@ -74,6 +74,7 @@ export function validateTerrainManifest(manifest) {
   }
   return Object.freeze({
     tileSize: manifest.tileSize ?? TERRAIN_TILE_SIZE,
+    fringeHeight: manifest.fringeHeight ?? 128,
     materialIds: Object.freeze([...ids].sort()),
     seamlessVerified: Boolean(manifest.seamlessVerified),
   });
@@ -108,6 +109,9 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
     },
     get tileSize() {
       return manifest?.tileSize ?? TERRAIN_TILE_SIZE;
+    },
+    get fringeHeight() {
+      return manifest?.fringeHeight ?? 128;
     },
     register(materialId, texture) {
       if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);

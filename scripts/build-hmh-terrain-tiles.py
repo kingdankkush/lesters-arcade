@@ -27,8 +27,12 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "apps" / "portal" / "assets" / "generated" / "hmh-terrain-tiles"
-TILE_SIZE = 256
-PIPELINE_ID = "hmh-terrain-tiles-v1"
+TILE_SIZE = 512
+# Authored periods below are tuned against the original 256px bake. Scaling
+# them with the tile size keeps every feature the same size in world units --
+# a bigger bake buys texel density, not bigger pebbles.
+PERIOD_SCALE = TILE_SIZE // 256
+PIPELINE_ID = "hmh-terrain-tiles-v2"
 
 # Light direction for every material, so surfaces share one lighting model and
 # read as one world. Normalised at use.
@@ -166,12 +170,20 @@ def apply_structure(height: list[list[float]], size: int, structure: str, period
 def bake(material: dict) -> Image.Image:
     size = TILE_SIZE
     seed = material["seed"]
+    # Octave periods are lattice CELL COUNTS per tile (cell = size / period),
+    # so they are already resolution-independent: a period-8 field spans the
+    # same world distance at any bake size. Only pixel-domain values
+    # (structure joints, fringe profile) need PERIOD_SCALE.
     height = fbm(size, material["octaves"], seed)
     structure = material.get("structure")
     if structure:
-        apply_structure(height, size, structure, material.get("structurePeriod", 64))
+        apply_structure(height, size, structure, material.get("structurePeriod", 64) * PERIOD_SCALE)
     lighting = shade(height, size, material["relief"])
     detail = fbm(size, material.get("detailOctaves", [(64, 1.0)]), seed + 4001)
+    # Painted-style layering: broad colour blotches, as if underpainted with a
+    # wide brush before the detail pass. Low-frequency and wrapped, so the
+    # paint reads as deliberate variation rather than noise or a seam.
+    paint = fbm(size, [(3, 1.0), (6, 0.55)], seed + 8009)
 
     base = hex_rgb(material["base"])
     shadow = hex_rgb(material["shadow"])
@@ -185,14 +197,33 @@ def bake(material: dict) -> Image.Image:
     ambient = material.get("ambient", 0.42)
     spec_amount = material.get("specular", 0.16)
 
+    paint_amount = material.get("paintAmount", 0.16)
+    band_count = material.get("valueBands", 6)
+    band_mix = material.get("bandMix", 0.24)
+
     for y in range(size):
         for x in range(size):
             lambert, spec = lighting[y][x]
             light_amount = ambient + (1.0 - ambient) * lambert
+            # Quantized value bands underneath the continuous shading make the
+            # lighting read as blocked-in brushwork instead of a photo gradient.
+            banded = round(light_amount * band_count) / band_count
+            light_amount = light_amount * (1.0 - band_mix) + banded * band_mix
             colour = mix(shadow, base, min(1.0, light_amount * 1.15))
             colour = mix(colour, highlight, max(0.0, (light_amount - 0.72)) * 1.6)
+            # Underpainting: broad warm/cool blotches pulling toward shadow or
+            # highlight, centred so the mean colour is unchanged.
+            blotch = (paint[y][x] - 0.5) * 2.0
+            if blotch > 0:
+                colour = mix(colour, highlight, blotch * paint_amount)
+            else:
+                colour = mix(colour, shadow, -blotch * paint_amount)
             # Grain: fine detail modulating value, keeps flats from reading dead.
-            grain = (detail[y][x] - 0.5) * material.get("grain", 0.12)
+            # Sampling the detail field with an integer 45-degree shear turns
+            # isotropic noise into directional strokes; the shear is modulo the
+            # tile size, so seamlessness is preserved exactly.
+            stroke = detail[y][(x + y) % size]
+            grain = (stroke - 0.5) * material.get("grain", 0.12)
             colour = tuple(max(0, min(255, round(channel * (1.0 + grain)))) for channel in colour)
             if accent_amount > 0 and detail[y][x] > accent_threshold:
                 colour = mix(colour, accent, accent_amount)
@@ -270,7 +301,7 @@ MATERIALS = {
 }
 
 
-FRINGE_HEIGHT = 64
+FRINGE_HEIGHT = 64 * PERIOD_SCALE
 
 
 def bake_fringe(name: str, tile: Image.Image, seed: int) -> Image.Image:
@@ -285,7 +316,7 @@ def bake_fringe(name: str, tile: Image.Image, seed: int) -> Image.Image:
     profile_field = wrapped_value_noise(TILE_SIZE, 32, seed ^ 0x0F12_19E5)
     profile = profile_field[0]
     for x in range(TILE_SIZE):
-        edge = 10 + profile[x] * 26
+        edge = (10 + profile[x] * 26) * PERIOD_SCALE
         for y in range(FRINGE_HEIGHT):
             r, g, b, _ = tile.getpixel((x, y))
             if y <= edge:
@@ -381,6 +412,7 @@ def main() -> None:
         "runtimeAuthority": "projection-only",
         "tileSize": TILE_SIZE,
         "fringeHeight": FRINGE_HEIGHT,
+        "paintedLayering": True,
         "fringes": fringe_records,
         "seamlessVerified": bool(args.verify_seamless),
         "seamStatistics": seam_stats,

@@ -1,224 +1,225 @@
 {
   "classification": "production-art",
-  "fringeHeight": 64,
+  "fringeHeight": 128,
   "fringes": [
     {
-      "bytes": 37517,
+      "bytes": 120064,
       "file": "./bridge-deck-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "bridge-deck",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 34588,
+      "bytes": 108745,
       "file": "./crushed-ore-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "crushed-ore",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 34405,
+      "bytes": 107848,
       "file": "./forest-floor-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "forest-floor",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 31732,
+      "bytes": 93344,
       "file": "./industrial-slab-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "industrial-slab",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 36006,
+      "bytes": 116271,
       "file": "./ledge-top-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "ledge-top",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 34452,
+      "bytes": 108848,
       "file": "./packed-earth-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "packed-earth",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 34239,
+      "bytes": 108408,
       "file": "./red-rock-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "red-rock",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 40571,
+      "bytes": 132683,
       "file": "./road-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "road",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 29384,
+      "bytes": 78518,
       "file": "./shallow-water-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "shallow-water",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 28095,
+      "bytes": 75521,
       "file": "./water-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "water",
-      "width": 256
+      "width": 512
     },
     {
-      "bytes": 32999,
+      "bytes": 104600,
       "file": "./wet-bank-fringe.png",
-      "height": 64,
+      "height": 128,
       "id": "wet-bank",
-      "width": 256
+      "width": 512
     }
   ],
   "materials": [
     {
-      "bytes": 111988,
+      "bytes": 354622,
       "file": "./bridge-deck.png",
       "id": "bridge-deck",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 92659,
+      "bytes": 295456,
       "file": "./crushed-ore.png",
       "id": "crushed-ore",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 97847,
+      "bytes": 307048,
       "file": "./forest-floor.png",
       "id": "forest-floor",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 82798,
+      "bytes": 234563,
       "file": "./industrial-slab.png",
       "id": "industrial-slab",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 106310,
+      "bytes": 343507,
       "file": "./ledge-top.png",
       "id": "ledge-top",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 98865,
+      "bytes": 311400,
       "file": "./packed-earth.png",
       "id": "packed-earth",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 94237,
+      "bytes": 298475,
       "file": "./red-rock.png",
       "id": "red-rock",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 123652,
+      "bytes": 399105,
       "file": "./road.png",
       "id": "road",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 73580,
+      "bytes": 181476,
       "file": "./shallow-water.png",
       "id": "shallow-water",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 70949,
+      "bytes": 180398,
       "file": "./water.png",
       "id": "water",
-      "size": 256
+      "size": 512
     },
     {
-      "bytes": 94289,
+      "bytes": 296873,
       "file": "./wet-bank.png",
       "id": "wet-bank",
-      "size": 256
+      "size": 512
     }
   ],
-  "pipelineId": "hmh-terrain-tiles-v1",
+  "paintedLayering": true,
+  "pipelineId": "hmh-terrain-tiles-v2",
   "runtimeAuthority": "projection-only",
   "schemaVersion": 1,
   "seamStatistics": {
     "bridge-deck": {
-      "interiorX": 6.445,
-      "interiorY": 7.954,
-      "wrapX": 4.783,
-      "wrapY": 1.701
+      "interiorX": 2.19,
+      "interiorY": 2.624,
+      "wrapX": 1.875,
+      "wrapY": 0.693
     },
     "crushed-ore": {
-      "interiorX": 6.124,
-      "interiorY": 6.704,
-      "wrapX": 7.533,
-      "wrapY": 8.043
+      "interiorX": 3.539,
+      "interiorY": 3.745,
+      "wrapX": 4.52,
+      "wrapY": 5.389
     },
     "forest-floor": {
-      "interiorX": 4.051,
-      "interiorY": 4.353,
-      "wrapX": 4.323,
-      "wrapY": 6.09
+      "interiorX": 1.967,
+      "interiorY": 1.992,
+      "wrapX": 1.589,
+      "wrapY": 2.246
     },
     "industrial-slab": {
-      "interiorX": 2.139,
-      "interiorY": 2.301,
-      "wrapX": 1.383,
-      "wrapY": 1.504
+      "interiorX": 0.715,
+      "interiorY": 0.771,
+      "wrapX": 0.423,
+      "wrapY": 0.53
     },
     "ledge-top": {
-      "interiorX": 5.118,
-      "interiorY": 5.805,
-      "wrapX": 7.109,
-      "wrapY": 7.811
+      "interiorX": 2.021,
+      "interiorY": 2.408,
+      "wrapX": 2.839,
+      "wrapY": 3.269
     },
     "packed-earth": {
-      "interiorX": 3.698,
-      "interiorY": 4.139,
-      "wrapX": 4.577,
-      "wrapY": 5.276
+      "interiorX": 1.495,
+      "interiorY": 1.674,
+      "wrapX": 1.778,
+      "wrapY": 2.151
     },
     "red-rock": {
-      "interiorX": 3.385,
-      "interiorY": 3.661,
-      "wrapX": 4.143,
-      "wrapY": 5.75
+      "interiorX": 1.689,
+      "interiorY": 1.986,
+      "wrapX": 1.339,
+      "wrapY": 1.747
     },
     "road": {
-      "interiorX": 7.029,
-      "interiorY": 8.201,
-      "wrapX": 7.871,
-      "wrapY": 8.469
+      "interiorX": 3.941,
+      "interiorY": 4.234,
+      "wrapX": 4.783,
+      "wrapY": 5.941
     },
     "shallow-water": {
-      "interiorX": 1.362,
-      "interiorY": 1.458,
-      "wrapX": 0.482,
-      "wrapY": 0.796
+      "interiorX": 0.86,
+      "interiorY": 0.993,
+      "wrapX": 0.09,
+      "wrapY": 0.151
     },
     "water": {
-      "interiorX": 1.521,
-      "interiorY": 1.564,
-      "wrapX": 0.948,
-      "wrapY": 0.633
+      "interiorX": 0.803,
+      "interiorY": 0.833,
+      "wrapX": 0.145,
+      "wrapY": 0.139
     },
     "wet-bank": {
-      "interiorX": 3.177,
-      "interiorY": 3.625,
-      "wrapX": 4.595,
-      "wrapY": 5.685
+      "interiorX": 1.368,
+      "interiorY": 1.397,
+      "wrapX": 1.176,
+      "wrapY": 1.14
     }
   },
   "seamlessVerified": true,
-  "tileSize": 256
+  "tileSize": 512
 }
