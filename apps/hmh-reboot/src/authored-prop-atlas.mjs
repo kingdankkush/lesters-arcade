@@ -16,10 +16,10 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
 const DISTRICTS = Object.freeze([
   Object.freeze({ id: 'frontier-relay', minX: 0, maxX: 1_800, propIds: ['relay-console', 'salvage-crate', 'fuel-drum', 'hashwood-pine', 'granite-boulder'] }),
   Object.freeze({ id: 'rugpull-ravine', minX: 1_800, maxX: 3_800, propIds: ['rugpull-barricade', 'salvage-crate', 'warning-beacon', 'granite-boulder', 'wrecked-sedan'] }),
-  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['proof-pylon', 'bridge-bollard'] }),
+  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['proof-pylon', 'bridge-bollard', 'chain-fence'] }),
   Object.freeze({ id: 'hashwood', minX: 6_000, maxX: 8_000, propIds: ['hashwood-pine', 'hashwood-tree', 'hashwood-stump', 'crystal-cluster'], countOverride: 14 }),
-  Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster'] }),
-  Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon', 'wrecked-sedan'] }),
+  Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster', 'miners-shack'] }),
+  Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon', 'wrecked-sedan', 'chain-fence'] }),
 ]);
 
 const DISTRICT_LANDMARKS = Object.freeze([

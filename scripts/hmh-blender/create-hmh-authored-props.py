@@ -127,6 +127,32 @@ def tone(hex_color: str, factor: float) -> str:
     return '#%02x%02x%02x' % tuple(max(0, min(255, round(channel * factor))) for channel in (r, g, b))
 
 
+def prism_mesh(name, profile, y_min, y_max, mat, asset_id, *, location=(0.0, 0.0, 0.0)):
+    """One flat-shaded solid extruded from an (x, z) profile polygon.
+
+    Explicit vertex/face authorship: fully deterministic, no modifiers, no
+    bevel. Crisp joined silhouettes are what the beveled-primitive assembly
+    could not produce at the 55-degree camera.
+    """
+    count = len(profile)
+    verts = [(x, y_min, z) for x, z in profile] + [(x, y_max, z) for x, z in profile]
+    faces = [list(range(count - 1, -1, -1)), list(range(count, 2 * count))]
+    for index in range(count):
+        nxt = (index + 1) % count
+        faces.append([index, nxt, count + nxt, count + index])
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    obj.location = location
+    obj.data.materials.append(mat)
+    for poly in mesh.polygons:
+        poly.use_smooth = False
+    bpy.context.scene.collection.objects.link(obj)
+    tag(obj, asset_id)
+    return obj
+
+
 def build_asset(asset: dict) -> dict:
     asset_id = asset['assetId']
     shape = asset['shape']
@@ -339,65 +365,52 @@ def build_asset(asset: dict) -> dict:
         for index, (x, y, sx, sz) in enumerate(((0.24, -0.262, 0.09, 0.05), (-0.16, -0.262, 0.13, 0.06), (0.08, 0.262, 0.11, 0.05))):
             add(cube(f'{asset_id}_Rust_{index}', (x, y, 0.40), (sx, 0.014, sz), rust, asset_id, bevel=0.012, rotation=(0, 0, index * 0.4)))
     elif shape == 'fence':
-        # Solid-substrate rebuild: a continuous base board and full-width rail
-        # band carry picket RELIEF, so nothing floats at the 55-degree camera.
+        # One joined comb solid: base rail, top rail and nine pickets share a
+        # single flat-shaded mesh, so nothing can float apart.
         weathered = material(f'{asset_id}_weathered', tone(palette['primary'], 0.72), roughness=0.9)
-        lit_wood = material(f'{asset_id}_lit_wood', tone(palette['primary'], 1.18), roughness=0.8)
-        add(cube(f'{asset_id}_BaseBoard', (0.0, 0.0, 0.10), (0.60, 0.05, 0.10), weathered, asset_id, bevel=0.02))
-        add(cube(f'{asset_id}_Band', (0.0, 0.0, 0.42), (0.60, 0.038, 0.24), primary, asset_id, bevel=0.02))
-        for index in range(9):
+        profile = [(-0.60, 0.02), (0.60, 0.02)]
+        # up the right edge of the base rail
+        profile += [(0.60, 0.20)]
+        # picket comb, right to left: gap-top, picket-up-over-down per picket
+        for index in range(8, -1, -1):
             x = -0.505 + index * 0.1265
-            mat = (lit_wood, primary, weathered)[index % 3]
-            # Relief pickets sit proud of the band front and run base-to-top
-            # with zero gaps; every second one is a hair taller for rhythm.
-            top = 0.70 if index % 2 else 0.665
-            add(cube(f'{asset_id}_Picket_{index}', (x, -0.052, (top + 0.02) / 2), (0.052, 0.018, (top - 0.02) / 2), mat, asset_id, bevel=0.012))
-            add(cone(f'{asset_id}_Tip_{index}', (x, -0.052, top + 0.028), 0.052, 0.06, mat, asset_id))
+            top = 0.74 if index % 2 else 0.68
+            profile += [(x + 0.048, 0.20), (x + 0.048, top), (x, top + 0.075), (x - 0.048, top), (x - 0.048, 0.20)]
+        profile += [(-0.60, 0.20)]
+        parts.append(prism_mesh(f'{asset_id}_Comb', profile, -0.035, 0.035, primary, asset_id))
+        # Mid rail crosses every picket as a second joined solid.
+        parts.append(prism_mesh(f'{asset_id}_MidRail', [(-0.60, 0.40), (0.60, 0.40), (0.60, 0.47), (-0.60, 0.47)], -0.05, 0.05, weathered, asset_id))
         for index, x in enumerate((-0.56, 0.0, 0.56)):
-            add(cube(f'{asset_id}_Post_{index}', (x, 0.02, 0.40), (0.06, 0.06, 0.40), secondary, asset_id, bevel=0.018))
-            add(cube(f'{asset_id}_PostCap_{index}', (x, 0.02, 0.82), (0.075, 0.075, 0.028), weathered, asset_id, bevel=0.012))
-        add(cube(f'{asset_id}_Sign', (-0.26, -0.078, 0.50), (0.09, 0.014, 0.065), accent, asset_id, bevel=0.01, rotation=(0, 0, math.radians(-6))))
+            parts.append(prism_mesh(f'{asset_id}_Post_{index}', [(x - 0.055, 0.0), (x + 0.055, 0.0), (x + 0.055, 0.80), (x + 0.07, 0.80), (x, 0.88), (x - 0.07, 0.80), (x - 0.055, 0.80)], -0.055, 0.055, secondary, asset_id))
+        add(cube(f'{asset_id}_Sign', (-0.26, -0.075, 0.55), (0.09, 0.014, 0.065), accent, asset_id, bevel=0.008, rotation=(0, 0, math.radians(-6))))
     elif shape == 'shack':
-        # Solid-substrate rebuild: thick roof wedges meet at the ridge with a
-        # solid gable fill; shingle courses are thin relief laid flush ON the
-        # wedge surface (same rotation, surface-normal offset), so the roof is
-        # one closed volume instead of suspended slats.
-        plank_dark = material(f'{asset_id}_plank_dark', tone(palette['primary'], 0.72), roughness=0.9)
+        # Walls: one crisp prism slab (front profile extruded through depth)
+        # with plank grooves as shallow relief strips; roof: one closed gabled
+        # prism with an overhang, extruded along X so the gable ends are part
+        # of the same solid.
         plank_lit = material(f'{asset_id}_plank_lit', tone(palette['primary'], 1.18), roughness=0.82)
-        shingle_dark = material(f'{asset_id}_shingle_dark', tone(palette['secondary'], 0.7), roughness=0.9)
+        roof_mat = material(f'{asset_id}_roof', tone(palette['secondary'], 0.78), roughness=0.88)
         frame_mat = material(f'{asset_id}_frame', tone(palette['secondary'], 1.3), roughness=0.8)
-        add(cube(f'{asset_id}_Core', (0.0, 0.0, 0.40), (0.54, 0.39, 0.40), plank_dark, asset_id, bevel=0.02))
-        for row in range(6):
-            z = 0.085 + row * 0.135
-            jitter = ((row * 37) % 5 - 2) * 0.004
-            mat = (primary, plank_lit, plank_dark)[row % 3]
-            add(cube(f'{asset_id}_FrontPlank_{row}', (jitter, -0.402, z), (0.54, 0.012, 0.058), mat, asset_id, bevel=0.008))
-            add(cube(f'{asset_id}_BackPlank_{row}', (-jitter, 0.402, z), (0.54, 0.012, 0.058), mat, asset_id, bevel=0.008))
-        for side in (-1, 1):
-            for row in range(6):
-                z = 0.085 + row * 0.135
-                mat = (plank_lit, primary, plank_dark)[row % 3]
-                add(cube(f'{asset_id}_SidePlank_{side}_{row}', (side * 0.552, 0.0, z), (0.012, 0.39, 0.058), mat, asset_id, bevel=0.008))
-            add(cube(f'{asset_id}_CornerTrim_F{side}', (side * 0.545, -0.395, 0.40), (0.022, 0.022, 0.40), frame_mat, asset_id, bevel=0.008))
-            add(cube(f'{asset_id}_CornerTrim_B{side}', (side * 0.545, 0.395, 0.40), (0.022, 0.022, 0.40), frame_mat, asset_id, bevel=0.008))
-        pitch = math.radians(22)
+        parts.append(prism_mesh(f'{asset_id}_Walls', [(-0.54, 0.0), (0.54, 0.0), (0.54, 0.80), (-0.54, 0.80)], -0.40, 0.40, primary, asset_id))
+        for row in range(5):
+            z = 0.14 + row * 0.15
+            parts.append(prism_mesh(f'{asset_id}_Groove_{row}', [(-0.54, z), (0.54, z), (0.54, z + 0.022), (-0.54, z + 0.022)], -0.415, 0.415, plank_lit if row % 2 else material(f'{asset_id}_plank_dark', tone(palette['primary'], 0.72), roughness=0.9), asset_id))
+        # Roof: profile in (y, z) plane -> build as (x=long axis) prism by
+        # swapping: author profile in (x, z) as the GABLE face and extrude in
+        # y? No - the gable faces are at x ends, so extrude the (y, z) section
+        # along x. prism_mesh profiles are (x, z) extruded in y; rotate the
+        # object 90 degrees about Z to map extrusion onto X.
+        roof = prism_mesh(f'{asset_id}_Roof', [(-0.47, 0.76), (0.47, 0.76), (0.47, 0.82), (0.0, 1.10), (-0.47, 0.82)], -0.62, 0.62, roof_mat, asset_id)
+        roof.rotation_euler = (0.0, 0.0, math.radians(90))
+        # Shingle course lines as thin joined strips on each slope.
         for sign in (-1, 1):
-            # Thick structural wedge: reaches from eave to past the ridge line.
-            add(cube(f'{asset_id}_RoofWedge_{sign}', (0.0, sign * 0.195, 0.905), (0.62, 0.25, 0.065), shingle_dark, asset_id, bevel=0.02, rotation=(sign * -pitch, 0.0, 0.0)))
             for row in range(3):
-                # Relief courses: flush on the wedge's upper surface. Offset
-                # along the wedge normal (0, sign*sin, cos) by the half-sum of
-                # thicknesses so each course touches the deck.
-                centre_y = sign * (0.315 - row * 0.105)
-                centre_z = 0.865 + row * 0.0425
-                ny, nz = sign * math.sin(pitch), math.cos(pitch)
-                off = 0.065 + 0.012
-                mat = secondary if row % 2 else shingle_dark
-                add(cube(f'{asset_id}_Course_{sign}_{row}', (0.0, centre_y + ny * off, centre_z + nz * off), (0.62, 0.050, 0.012), mat, asset_id, bevel=0.006, rotation=(sign * -pitch, 0.0, 0.0)))
-        add(cube(f'{asset_id}_GableFill_F', (0.0, 0.0, 0.90), (0.015, 0.36, 0.13), plank_dark, asset_id, bevel=0.006, rotation=(0, 0, 0)))
-        add(cube(f'{asset_id}_Ridge', (0.0, 0.0, 1.035), (0.64, 0.055, 0.045), frame_mat, asset_id, bevel=0.014))
-        for sign in (-1, 1):
-            add(cube(f'{asset_id}_Fascia_{sign}', (0.0, sign * 0.43, 0.795), (0.64, 0.018, 0.05), frame_mat, asset_id, bevel=0.01))
+                t = 0.22 + row * 0.26
+                y_pos = sign * (0.47 - t * 0.47)
+                z_pos = 0.82 + t * 0.26
+                strip = prism_mesh(f'{asset_id}_Course_{sign}_{row}', [(y_pos - 0.028, z_pos), (y_pos + 0.028, z_pos), (y_pos + 0.028, z_pos + 0.035), (y_pos - 0.028, z_pos + 0.035)], -0.60, 0.60, frame_mat if row == 1 else roof_mat, asset_id)
+                strip.rotation_euler = (0.0, 0.0, math.radians(90))
+        add(cube(f'{asset_id}_Ridge', (0.0, 0.0, 1.11), (0.64, 0.05, 0.04), frame_mat, asset_id, bevel=0.012))
         add(cube(f'{asset_id}_DoorFrame', (0.22, -0.408, 0.30), (0.15, 0.016, 0.28), frame_mat, asset_id, bevel=0.008))
         add(cube(f'{asset_id}_Door', (0.22, -0.415, 0.29), (0.115, 0.014, 0.25), secondary, asset_id, bevel=0.01))
         add(cube(f'{asset_id}_Handle', (0.175, -0.428, 0.28), (0.014, 0.008, 0.014), material(f'{asset_id}_brass', '#c9a86a', metallic=0.5, roughness=0.4), asset_id, bevel=0.004))
@@ -405,8 +418,7 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_Window', (-0.18, -0.415, 0.50), (0.125, 0.014, 0.11), accent, asset_id, bevel=0.008))
         add(cube(f'{asset_id}_WindowCrossV', (-0.18, -0.425, 0.50), (0.012, 0.008, 0.11), frame_mat, asset_id, bevel=0.003))
         add(cube(f'{asset_id}_WindowCrossH', (-0.18, -0.425, 0.50), (0.125, 0.008, 0.012), frame_mat, asset_id, bevel=0.003))
-        add(cube(f'{asset_id}_Chimney', (-0.30, 0.09, 1.03), (0.05, 0.05, 0.15), plank_dark, asset_id, bevel=0.012))
-        add(cube(f'{asset_id}_ChimneyCap', (-0.30, 0.09, 1.185), (0.065, 0.065, 0.018), frame_mat, asset_id, bevel=0.008))
+        parts.append(prism_mesh(f'{asset_id}_Chimney', [(-0.36, 1.02), (-0.25, 1.02), (-0.25, 1.24), (-0.235, 1.24), (-0.235, 1.28), (-0.365, 1.28), (-0.365, 1.24), (-0.36, 1.24)], 0.04, 0.15, primary, asset_id))
         add(cube(f'{asset_id}_Step', (0.22, -0.46, 0.045), (0.16, 0.05, 0.045), plank_lit, asset_id, bevel=0.012))
         add(cylinder(f'{asset_id}_Barrel', (0.62, -0.26, 0.16), 0.085, 0.30, secondary, asset_id, vertices=14))
         add(cube(f'{asset_id}_BarrelBand', (0.62, -0.26, 0.2), (0.1, 0.1, 0.012), frame_mat, asset_id, bevel=0.004))
