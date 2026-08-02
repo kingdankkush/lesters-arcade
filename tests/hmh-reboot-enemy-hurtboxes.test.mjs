@@ -84,13 +84,16 @@ function scheduleOutcome(stepsPerRenderFrame) {
 
 test('ordinary enemy hurtboxes enlarge the vulnerable core without changing collision bodies', () => {
   const profile = createOrdinaryEnemyHurtboxProfile(STANDARD_BODY_RADIUS);
-  assert.equal(ORDINARY_ENEMY_HURTBOX_POLICY.id, 'cycle-033-forgiving-ordinary-enemy-hurtbox-v1');
+  // Cycle 045 (MAP-REDO slice 5, F1): swarm-forgiving growth — the vulnerable
+  // radius reaches full body scale and the capsule lengthens, while the
+  // 30-unit wide-miss guard below still bounds the policy.
+  assert.equal(ORDINARY_ENEMY_HURTBOX_POLICY.id, 'cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2');
   assert.equal(profile.bodyShape.radius, STANDARD_BODY_RADIUS);
   assert.equal(profile.projectileShape.type, 'capsule');
-  assert.equal(profile.projectileShape.radius, 16.2);
+  assert.equal(profile.projectileShape.radius, 18);
   assert.equal(profile.meleeRadius, profile.projectileShape.radius);
-  assert.deepEqual(profile.projectileShape.a, { x: 0, y: -8 });
-  assert.deepEqual(profile.projectileShape.b, { x: 0, y: 8 });
+  assert.deepEqual(profile.projectileShape.a, { x: 0, y: -9 });
+  assert.deepEqual(profile.projectileShape.b, { x: 0, y: 9 });
   assert.equal(profile.minZ, 4);
   assert.equal(profile.maxZ, 60);
   assert.equal(Object.isFrozen(profile), true);
@@ -109,13 +112,26 @@ test('seeded cross-track aim measurement improves ordinary-enemy hit rate withou
     minZ: 4,
     maxZ: 60,
   });
+  const cycle033Profile = Object.freeze({
+    bodyShape: Object.freeze({ type: 'circle', radius: STANDARD_BODY_RADIUS }),
+    projectileShape: Object.freeze({
+      type: 'capsule',
+      a: Object.freeze({ x: 0, y: -8 }),
+      b: Object.freeze({ x: 0, y: 8 }),
+      radius: STANDARD_BODY_RADIUS * 0.9,
+    }),
+    minZ: 4,
+    maxZ: 60,
+  });
   const previous = measureSeededHitRate(previousProfile);
+  const cycle033 = measureSeededHitRate(cycle033Profile);
   const candidateProfile = createOrdinaryEnemyHurtboxProfile(STANDARD_BODY_RADIUS);
   const candidate = measureSeededHitRate(candidateProfile);
 
-  assert.ok(previous.rate >= 0.74 && previous.rate <= 0.79, `unexpected baseline ${previous.rate}`);
-  assert.ok(candidate.rate >= 0.86 && candidate.rate <= 0.89, `unexpected candidate ${candidate.rate}`);
-  assert.ok(candidate.rate - previous.rate >= 0.10, `expected >=10 percentage-point gain, got ${candidate.rate - previous.rate}`);
+  assert.ok(previous.rate >= 0.74 && previous.rate <= 0.79, `unexpected pre-033 baseline ${previous.rate}`);
+  assert.ok(cycle033.rate >= 0.86 && cycle033.rate <= 0.89, `unexpected cycle-033 baseline ${cycle033.rate}`);
+  assert.ok(candidate.rate - cycle033.rate >= 0.03, `expected >=3 percentage-point gain over cycle 033, got ${candidate.rate - cycle033.rate}`);
+  assert.ok(candidate.rate < 0.97, `growth must stay bounded, got ${candidate.rate}`);
   assert.equal(resolveProjectilePath({
     projectile: shot('deliberate-wide-miss', 30),
     targets: [targetFromProfile('bounded-zombie', candidateProfile)],

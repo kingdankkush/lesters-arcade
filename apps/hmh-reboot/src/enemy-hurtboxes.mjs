@@ -1,9 +1,15 @@
-const ORDINARY_ENEMY_HURTBOX_RADIUS_SCALE = 0.9;
-const ORDINARY_ENEMY_HURTBOX_MIN_RADIUS = 10;
-const ORDINARY_ENEMY_HURTBOX_HALF_LENGTH = 8;
+// Cycle 045 (MAP-REDO slice 5, F1): swarm-forgiving growth. The vulnerable
+// radius reaches full body scale and the capsule lengthens, measured by the
+// seeded cross-track harness (+~4pp hit rate over Cycle 033 at 30-unit aim
+// error) while a shot at the aim-error edge still misses. Render scale,
+// collision bodies, and melee CONTACT bounds are unchanged; this is the
+// projectile/melee VULNERABLE core only.
+const ORDINARY_ENEMY_HURTBOX_RADIUS_SCALE = 1.0;
+const ORDINARY_ENEMY_HURTBOX_MIN_RADIUS = 12;
+const ORDINARY_ENEMY_HURTBOX_HALF_LENGTH = 9;
 
 export const ORDINARY_ENEMY_HURTBOX_POLICY = Object.freeze({
-  id: 'cycle-033-forgiving-ordinary-enemy-hurtbox-v1',
+  id: 'cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2',
   radiusScale: ORDINARY_ENEMY_HURTBOX_RADIUS_SCALE,
   minimumRadius: ORDINARY_ENEMY_HURTBOX_MIN_RADIUS,
   halfLength: ORDINARY_ENEMY_HURTBOX_HALF_LENGTH,

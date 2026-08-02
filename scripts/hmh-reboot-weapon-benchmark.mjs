@@ -25,6 +25,10 @@ import {
   createProjectileState,
   resolveProjectilePath,
 } from '../apps/hmh-reboot/src/projectile-physics.mjs';
+import {
+  ORDINARY_ENEMY_HURTBOX_POLICY,
+  createOrdinaryEnemyHurtboxProfile,
+} from '../apps/hmh-reboot/src/enemy-hurtboxes.mjs';
 
 const TICKS_PER_SECOND = 60;
 const WINDOW_TICKS = 30 * TICKS_PER_SECOND;
@@ -128,6 +132,102 @@ function benchmarkCase(weaponId, tierId, rangeId) {
   };
 }
 
+// Moving-target extension (Cycle 045, MAP-REDO slice 5): a strafing target
+// with the REAL ordinary-enemy hurtbox profile, tracked with a fixed 6-tick
+// (100 ms) reaction lag. Cross-track aim error therefore equals the strafe
+// displacement over the reaction window — the exact regime the hurtbox
+// policy governs. Triangle-wave strafe keeps everything closed-form
+// deterministic.
+const STRAFE_SPEEDS = Object.freeze({ rusher: 220, walker: 116 });
+const STRAFE_AMPLITUDE = 80;
+const REACTION_LAG_TICKS = 10;
+const MOVING_BODY_RADIUS = 18;
+
+function strafeOffset(tick, speed) {
+  const period = (STRAFE_AMPLITUDE * 4) / speed * TICKS_PER_SECOND;
+  const phase = ((tick % period) + period) % period / period;
+  const tri = phase < 0.5 ? phase * 4 - 1 : 3 - phase * 4;
+  return tri * STRAFE_AMPLITUDE;
+}
+
+function benchmarkMovingCase(weaponId, tierId, rangeId, strafeId) {
+  const distance = RANGES[rangeId];
+  const strafeSpeed = STRAFE_SPEEDS[strafeId];
+  const progressionByWeapon = { [weaponId]: TIERS[tierId] };
+  const state = createWeaponLoadout({ weaponIds: [...WEAPON_IDS], activeWeaponId: 'coin-blaster', seed: SEED });
+  if (weaponId !== 'coin-blaster') {
+    grantWeaponPickup(state, { tick: 0, weaponId, select: true, progressionByWeapon });
+  }
+  const profile = createOrdinaryEnemyHurtboxProfile(MOVING_BODY_RADIUS);
+  const targetAt = (y) => createHurtTarget({
+    id: 'bench-moving-target',
+    bodyShape: profile.bodyShape,
+    hurtShape: profile.projectileShape,
+    previousGround: { x: distance, y, z: 0 },
+    currentGround: { x: distance, y, z: 0 },
+    minZ: profile.minZ,
+    maxZ: profile.maxZ,
+    health: 999999,
+  });
+
+  let shotsFired = 0;
+  let projectilesEmitted = 0;
+  let contacts = 0;
+  for (let tick = 1; tick <= WINDOW_TICKS; tick += 1) {
+    const aimY = strafeOffset(Math.max(0, tick - REACTION_LAG_TICKS), strafeSpeed);
+    const targetY = strafeOffset(tick, strafeSpeed);
+    const aim = { x: distance - 28, y: aimY - 0 };
+    const aimLength = Math.hypot(aim.x, aim.y) || 1;
+    const direction = { x: aim.x / aimLength, y: aim.y / aimLength };
+    const frame = stepWeaponLoadout(state, { tick, fire: true, direction, progressionByWeapon });
+    for (const event of frame.events) {
+      if (event.type !== 'weapon:fire') continue;
+      shotsFired += 1;
+      for (const shot of event.shots) {
+        projectilesEmitted += 1;
+        const reach = Math.min(shot.range, distance + 40);
+        const projectile = createProjectileState({
+          id: shot.id,
+          ownerId: 'bench',
+          previous: { x: 28, y: 0, z: 22 },
+          current: { x: 28 + shot.direction.x * reach, y: shot.direction.y * reach, z: 22 },
+          radius: shot.radius,
+          damage: shot.damage,
+          policy: shot.policy,
+        });
+        const resolved = resolveProjectilePath({ projectile, targets: [targetAt(targetY)] });
+        contacts += resolved.hits.length;
+      }
+    }
+  }
+  return {
+    weaponId,
+    tier: tierId,
+    range: rangeId,
+    strafe: strafeId,
+    strafeSpeed,
+    hurtboxPolicyId: ORDINARY_ENEMY_HURTBOX_POLICY.id,
+    shotsFired,
+    projectilesEmitted,
+    contacts,
+    movingHitRate: projectilesEmitted === 0 ? 0 : Number((contacts / projectilesEmitted).toFixed(4)),
+  };
+}
+
+export function runMovingBenchmark() {
+  const rows = [];
+  for (const weaponId of WEAPON_IDS) {
+    for (const tierId of Object.keys(TIERS)) {
+      for (const rangeId of Object.keys(RANGES)) {
+        for (const strafeId of Object.keys(STRAFE_SPEEDS)) {
+          rows.push(benchmarkMovingCase(weaponId, tierId, rangeId, strafeId));
+        }
+      }
+    }
+  }
+  return rows;
+}
+
 export function runBenchmark() {
   const rows = [];
   for (const weaponId of WEAPON_IDS) {
@@ -143,23 +243,33 @@ export function runBenchmark() {
 const first = runBenchmark();
 const second = runBenchmark();
 assert.deepEqual(first, second, 'benchmark drifted across identical same-seed runs');
+const movingFirst = runMovingBenchmark();
+const movingSecond = runMovingBenchmark();
+assert.deepEqual(movingFirst, movingSecond, 'moving benchmark drifted across identical same-seed runs');
 
 const report = {
-  schemaVersion: 1,
-  pipelineId: 'hmh-weapon-benchmark-v1',
+  schemaVersion: 2,
+  pipelineId: 'hmh-weapon-benchmark-v2',
   runtimeAuthority: 'measurement-only',
   seed: SEED,
   windowSeconds: WINDOW_TICKS / TICKS_PER_SECOND,
   targetHealth: TARGET_HEALTH,
   ranges: RANGES,
-  note: 'Flight resolved through resolveProjectilePath against a static reference target on flat ground; moving-target and swarm pressure are future extensions. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
+  strafeSpeeds: STRAFE_SPEEDS,
+  reactionLagTicks: REACTION_LAG_TICKS,
+  hurtboxPolicyId: ORDINARY_ENEMY_HURTBOX_POLICY.id,
+  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 6-tick reaction lag. Swarm pressure remains a future extension. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
   rows: first,
+  movingRows: movingFirst,
 };
 
 const out = fileURLToPath(new URL('../docs/qa/hmh-weapon-benchmark.json', import.meta.url));
 await mkdir(fileURLToPath(new URL('../docs/qa/', import.meta.url)), { recursive: true });
 await writeFile(out, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(JSON.stringify({ status: 'pass', rows: first.length, out: 'docs/qa/hmh-weapon-benchmark.json' }));
+console.log(JSON.stringify({ status: 'pass', rows: first.length, movingRows: movingFirst.length, out: 'docs/qa/hmh-weapon-benchmark.json' }));
 for (const row of first.filter((entry) => entry.range === 'mid')) {
   console.log(`${row.weaponId} ${row.tier} @mid: dps=${row.sustainedDps} ttk=${row.timeToKillSeconds}s reload=${row.reloadDowntimeSeconds}s empty=${row.emptySeconds}s`);
+}
+for (const row of movingFirst.filter((entry) => entry.range === 'mid' && entry.tier === 'base')) {
+  console.log(`${row.weaponId} base @mid vs ${row.strafe}: movingHitRate=${row.movingHitRate}`);
 }
