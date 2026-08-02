@@ -63,3 +63,18 @@ commands than the old per-cell wash.
 ## Gates
 
 (recorded at closeout)
+
+## Production promotion (owner-approved standing "push live")
+
+| Release fact | Verified value |
+| --- | --- |
+| Branch head deployed | `cdfbe038` |
+| Production deployment ID | `dpl_Hbm8q8H4vJ4JQz8sEroeoiatPQH1` |
+| Immutable production URL | <https://lesters-arcade-j467qqotx-justin-agent-projects.vercel.app> |
+| Public alias | <https://lestersarcade.io> |
+| Live HMH bundle SHA-256 | `8c3932760f5c979c147118ba28867dca715773040379da86a2290468ab3e3076` — byte-identical to the local build |
+| Live prop atlas | 45 assets |
+| Live certification | five profiles PASS against the public alias |
+| Rollback | `dpl_EFrNTXNpSWk4XmrAfgNcT78DCNUu` (Cycle 043 production) |
+
+`SETTLEMENT_LIVE` untouched.
