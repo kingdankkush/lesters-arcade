@@ -422,6 +422,172 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_Step', (0.22, -0.46, 0.045), (0.16, 0.05, 0.045), plank_lit, asset_id, bevel=0.012))
         add(cylinder(f'{asset_id}_Barrel', (0.62, -0.26, 0.16), 0.085, 0.30, secondary, asset_id, vertices=14))
         add(cube(f'{asset_id}_BarrelBand', (0.62, -0.26, 0.2), (0.1, 0.1, 0.012), frame_mat, asset_id, bevel=0.004))
+    elif shape == 'dead-pine':
+        # Bare weathered snag: tapered trunk, broken crown, stub branches at
+        # alternating angles. Reads as the hashwood's dead sibling.
+        bark = material(f'{asset_id}_bark', tone(palette['primary'], 0.8), roughness=0.95)
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.24), roughness=0.8)
+        add(cylinder(f'{asset_id}_Trunk', (0.0, 0.0, 0.62), 0.085, 1.24, primary, asset_id, vertices=10))
+        add(cylinder(f'{asset_id}_TrunkTop', (0.02, 0.0, 1.30), 0.05, 0.24, bark, asset_id, vertices=8, rotation=(0, math.radians(6), 0)))
+        add(cone(f'{asset_id}_Snap', (0.03, 0.0, 1.46), 0.052, 0.12, secondary, asset_id))
+        branches = ((0.42, 0.30, 0.0, 58), (0.68, 0.26, 122, 64), (0.92, 0.22, 233, 52), (1.12, 0.18, 40, 66), (0.55, 0.24, 300, 60))
+        for index, (z, length, yaw, pitch) in enumerate(branches):
+            r = math.radians(yaw)
+            mat = lit if index % 2 else bark
+            add(cylinder(f'{asset_id}_Branch_{index}', (math.cos(r) * length * 0.5, math.sin(r) * length * 0.5, z), 0.028, length, mat, asset_id, vertices=8, rotation=(math.radians(pitch) * math.sin(r), math.radians(pitch) * math.cos(r), 0)))
+            add(cone(f'{asset_id}_BranchTip_{index}', (math.cos(r) * length * 0.92, math.sin(r) * length * 0.92, z + 0.05), 0.024, 0.07, secondary, asset_id))
+        add(cube(f'{asset_id}_RootFlare', (0.0, 0.0, 0.05), (0.16, 0.16, 0.05), secondary, asset_id, bevel=0.03))
+        add(cube(f'{asset_id}_FallenBranch', (0.30, -0.20, 0.03), (0.20, 0.03, 0.025), bark, asset_id, bevel=0.008, rotation=(0, 0, 0.5)))
+    elif shape == 'moss-boulder':
+        # Forest-floor rock stack with a mossy crown; value-compressed toward
+        # the hashwood ground band per the art direction.
+        dark = material(f'{asset_id}_dark', tone(palette['primary'], 0.6), roughness=0.94)
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.2), roughness=0.8)
+        moss = material(f'{asset_id}_moss', tone(palette['secondary'], 1.35), roughness=0.96)
+        rocks = (
+            (0.0, 0.0, 0.36, 0.36, 0.30, 0.36, 0.08, 0.4, primary),
+            (-0.06, 0.08, 0.72, 0.24, 0.20, 0.18, -0.12, 1.1, lit),
+            (0.30, -0.12, 0.22, 0.20, 0.17, 0.22, 0.2, -0.6, dark),
+            (-0.30, -0.10, 0.18, 0.16, 0.14, 0.18, -0.08, 0.9, dark),
+            (0.10, 0.24, 0.24, 0.13, 0.12, 0.14, 0.24, 1.7, primary),
+        )
+        for index, (x, y, z, sx, sy, sz, rx, rz, mat) in enumerate(rocks):
+            add(cube(f'{asset_id}_Rock_{index}', (x, y, z), (sx, sy, sz), mat, asset_id, bevel=min(sx, sz) * 0.4, rotation=(rx, 0.0, rz)))
+        for index, (x, y, z, sx, rz) in enumerate(((-0.08, 0.06, 0.86, 0.20, 0.3), (0.10, 0.02, 0.82, 0.14, -0.5), (-0.02, 0.16, 0.80, 0.11, 1.2), (0.28, -0.10, 0.40, 0.10, 0.8))):
+            add(cube(f'{asset_id}_Moss_{index}', (x, y, z), (sx, sx * 0.85, 0.045), moss, asset_id, bevel=0.02, rotation=(0.1, 0, rz)))
+        add(cube(f'{asset_id}_MintFleck', (-0.10, 0.14, 0.90), (0.045, 0.035, 0.02), accent, asset_id, bevel=0.008))
+    elif shape == 'reed-cluster':
+        # Wetland reed fan for the crossing banks: thin blades at raked
+        # angles around a mud hummock, seed heads catching the light.
+        blade = material(f'{asset_id}_blade', palette['primary'], roughness=0.85)
+        blade_lit = material(f'{asset_id}_blade_lit', tone(palette['primary'], 1.3), roughness=0.7)
+        mud = material(f'{asset_id}_mud', tone(palette['secondary'], 0.85), roughness=0.98)
+        head = material(f'{asset_id}_head', tone(palette['secondary'], 1.5), roughness=0.8)
+        add(cube(f'{asset_id}_Hummock', (0.0, 0.0, 0.05), (0.30, 0.24, 0.055), mud, asset_id, bevel=0.04))
+        blades = (
+            (0.0, 0.0, 0.95, 0, 3), (0.10, 0.05, 0.85, 24, -6), (-0.10, -0.03, 0.9, 210, 8),
+            (0.16, -0.08, 0.7, 120, 12), (-0.16, 0.08, 0.75, 300, -10), (0.05, 0.13, 0.8, 70, 7),
+            (-0.06, -0.13, 0.68, 250, -9), (0.20, 0.10, 0.6, 30, 14), (-0.20, -0.08, 0.62, 200, -13),
+        )
+        for index, (x, y, height, yaw, lean) in enumerate(blades):
+            r = math.radians(yaw)
+            mat = blade_lit if index % 3 == 0 else blade
+            add(cube(f'{asset_id}_Blade_{index}', (x, y, height / 2 + 0.06), (0.016, 0.05, height / 2), mat, asset_id, bevel=0.006, rotation=(math.radians(lean) * math.sin(r), math.radians(lean) * math.cos(r), r)))
+            if index % 2 == 0:
+                add(cone(f'{asset_id}_Head_{index}', (x + math.sin(r) * 0.03, y + math.cos(r) * 0.03, height + 0.10), 0.028, 0.16, head, asset_id))
+        add(cube(f'{asset_id}_WaterGlint', (0.24, -0.14, 0.025), (0.07, 0.05, 0.012), accent, asset_id, bevel=0.006))
+    elif shape == 'driftwood-log':
+        # Beached weathered log. Polish pass: the first thin horizontal
+        # cylinder read as a sliver — now a fat trunk with a big upturned
+        # root ball, raised branch arms, and a strong bleach/bark split.
+        bleach = material(f'{asset_id}_bleach', tone(palette['primary'], 1.4), roughness=0.82)
+        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 0.75), roughness=0.96)
+        ring = material(f'{asset_id}_ring', tone(palette['secondary'], 1.35), roughness=0.8)
+        log_yaw = math.radians(24)
+        add(cylinder(f'{asset_id}_Trunk', (0.05, 0.0, 0.22), 0.21, 1.05, primary, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
+        add(cylinder(f'{asset_id}_TrunkTaper', (0.52, 0.21, 0.19), 0.14, 0.36, bark, asset_id, vertices=10, rotation=(0, math.radians(86), log_yaw)))
+        # Upturned root ball: a broad disc with radiating root spokes.
+        root_center = (-0.52, -0.235)
+        add(cylinder(f'{asset_id}_RootDisc', (root_center[0], root_center[1], 0.34), 0.30, 0.10, bark, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
+        for index in range(6):
+            spoke_angle = math.radians(index * 60 + 12)
+            add(cube(f'{asset_id}_Root_{index}', (root_center[0] - 0.05, root_center[1] + math.cos(spoke_angle) * 0.26, 0.34 + math.sin(spoke_angle) * 0.26), (0.06, 0.05, 0.16), index % 2 and bark or primary, asset_id, bevel=0.015, rotation=(spoke_angle, 0.2, 0)))
+        add(cylinder(f'{asset_id}_RingFace', (root_center[0] + 0.055, root_center[1] + 0.02, 0.34), 0.185, 0.02, ring, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
+        add(cube(f'{asset_id}_TopBleach', (0.05, 0.02, 0.42), (0.46, 0.12, 0.025), bleach, asset_id, bevel=0.012, rotation=(0, 0, log_yaw)))
+        for index, (x, y, z, branch_yaw, pitch) in enumerate(((-0.12, 0.14, 0.44, 0.6, 55), (0.26, -0.10, 0.40, -0.8, 62), (0.44, 0.24, 0.34, 1.8, 48))):
+            add(cylinder(f'{asset_id}_Arm_{index}', (x, y, z), 0.045, 0.30, bark, asset_id, vertices=8, rotation=(math.radians(pitch), 0, branch_yaw)))
+            add(cone(f'{asset_id}_ArmTip_{index}', (x + math.sin(branch_yaw) * 0.08, y + math.cos(branch_yaw) * 0.08, z + 0.16), 0.04, 0.09, bleach, asset_id))
+        add(cube(f'{asset_id}_SandDrift', (0.34, -0.24, 0.035), (0.28, 0.14, 0.035), material(f'{asset_id}_sand', tone(palette['primary'], 0.72), roughness=0.98), asset_id, bevel=0.02, rotation=(0, 0, log_yaw)))
+    elif shape == 'ruined-wall':
+        # Broken L-shaped masonry segment. Polish pass: the first flat run
+        # washed out — now taller (chest-high peaks), thicker, yawed 18
+        # degrees, with a dark exposed-core face and higher brick contrast.
+        yaw = math.radians(18)
+        mortar = material(f'{asset_id}_mortar', tone(palette['primary'], 1.28), roughness=0.9)
+        core = material(f'{asset_id}_core', tone(palette['secondary'], 0.62), roughness=0.95)
+        brick = material(f'{asset_id}_brick', '#8a5a48', roughness=0.92)
+        wall_parts = []
+        wall_parts.append(prism_mesh(f'{asset_id}_Run', [(-0.58, 0.0), (0.58, 0.0), (0.58, 0.34), (0.40, 0.34), (0.38, 0.72), (0.12, 0.72), (0.10, 0.95), (-0.20, 0.95), (-0.22, 0.58), (-0.44, 0.58), (-0.46, 0.80), (-0.58, 0.80)], -0.13, 0.13, primary, asset_id))
+        # Exposed rubble core along the broken top steps: a darker inset slab.
+        wall_parts.append(prism_mesh(f'{asset_id}_Core', [(-0.20, 0.56), (0.10, 0.56), (0.10, 0.93), (-0.18, 0.93)], -0.08, 0.08, core, asset_id))
+        wall_parts.append(prism_mesh(f'{asset_id}_Wing', [(-0.13, 0.0), (0.13, 0.0), (0.13, 0.52), (0.02, 0.52), (0.0, 0.38), (-0.13, 0.38)], -0.56, -0.13, mortar, asset_id, location=(-0.45, 0.0, 0.0)))
+        for part in wall_parts:
+            part.rotation_euler = (0.0, 0.0, yaw)
+            parts.append(part)
+        for index, (x, z, sx) in enumerate(((-0.32, 0.55, 0.11), (0.0, 0.70, 0.10), (0.28, 0.32, 0.12), (-0.50, 0.77, 0.07), (0.09, 0.92, 0.08))):
+            add(cube(f'{asset_id}_BrickTop_{index}', (x, 0.0, z), (sx, 0.135, 0.045), brick, asset_id, bevel=0.01, rotation=(0, 0, yaw + index * 0.06)))
+        for index, (x, y, z) in enumerate(((0.50, -0.30, 0.05), (-0.05, -0.34, 0.06), (0.22, -0.28, 0.045))):
+            add(cube(f'{asset_id}_Rubble_{index}', (x, y, z), (0.09, 0.075, 0.05), index % 2 and brick or mortar, asset_id, bevel=0.018, rotation=(0.2, 0, index * 0.7)))
+        add(cube(f'{asset_id}_Conduit', (0.40, 0.13, 0.24), (0.022, 0.022, 0.22), material(f'{asset_id}_conduit', '#20262c', roughness=0.6), asset_id, bevel=0.006, rotation=(0, 0, yaw)))
+        add(cube(f'{asset_id}_ConduitLight', (0.40, 0.13, 0.50), (0.032, 0.032, 0.024), accent, asset_id, bevel=0.008, rotation=(0, 0, yaw)))
+    elif shape == 'watchtower':
+        # Frontier watch platform: four raked legs, braced deck, roof and a
+        # powered lamp. Anchor-scale silhouette for the relay compound.
+        timber = material(f'{asset_id}_timber', tone(palette['primary'], 0.9), roughness=0.9)
+        timber_lit = material(f'{asset_id}_timber_lit', tone(palette['primary'], 1.22), roughness=0.78)
+        roof_mat = material(f'{asset_id}_roof', tone(palette['secondary'], 1.1), roughness=0.85)
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                add(cylinder(f'{asset_id}_Leg_{sx}_{sy}', (sx * 0.30, sy * 0.24, 0.55), 0.045, 1.14, timber, asset_id, vertices=8, rotation=(math.radians(-7) * sy, math.radians(7) * sx, 0)))
+        add(cube(f'{asset_id}_BraceX', (0.0, 0.245, 0.44), (0.30, 0.02, 0.025), timber_lit, asset_id, bevel=0.006, rotation=(0, math.radians(32), 0)))
+        add(cube(f'{asset_id}_BraceX2', (0.0, -0.245, 0.44), (0.30, 0.02, 0.025), timber_lit, asset_id, bevel=0.006, rotation=(0, math.radians(-32), 0)))
+        parts.append(prism_mesh(f'{asset_id}_Deck', [(-0.42, 1.06), (0.42, 1.06), (0.42, 1.12), (-0.42, 1.12)], -0.36, 0.36, timber_lit, asset_id))
+        parts.append(prism_mesh(f'{asset_id}_Rail', [(-0.42, 1.12), (-0.38, 1.12), (-0.38, 1.34), (-0.42, 1.34)], -0.36, 0.36, timber, asset_id))
+        parts.append(prism_mesh(f'{asset_id}_Rail2', [(0.38, 1.12), (0.42, 1.12), (0.42, 1.34), (0.38, 1.34)], -0.36, 0.36, timber, asset_id))
+        roof = prism_mesh(f'{asset_id}_Roof', [(-0.46, 1.52), (0.46, 1.52), (0.0, 1.74)], -0.40, 0.40, roof_mat, asset_id)
+        parts.append(roof)
+        for sx in (-1, 1):
+            add(cylinder(f'{asset_id}_RoofPost_{sx}', (sx * 0.34, 0.0, 1.42), 0.025, 0.22, timber, asset_id, vertices=8))
+        add(cube(f'{asset_id}_Ladder', (0.0, -0.30, 0.55), (0.02, 0.015, 0.52), timber_lit, asset_id, bevel=0.004, rotation=(math.radians(8), 0, 0)))
+        for rung in range(5):
+            add(cube(f'{asset_id}_Rung_{rung}', (0.0, -0.315 - rung * 0.008, 0.18 + rung * 0.2), (0.09, 0.012, 0.012), timber, asset_id, bevel=0.003))
+        add(cube(f'{asset_id}_Lamp', (0.0, 0.0, 1.40), (0.05, 0.05, 0.05), accent, asset_id, bevel=0.015))
+    elif shape == 'cargo-container':
+        # Corrugated shipping container, doors ajar. Polish pass: the first
+        # axis-aligned low box read as a flat slab from the 55-degree camera.
+        # Now taller, shorter, and yawed 28 degrees so two faces read, with a
+        # strong rib/frame value split and a bigger neon tag.
+        yaw = math.radians(28)
+        shell = material(f'{asset_id}_shell', tone(palette['primary'], 1.1), roughness=0.85)
+        shell_dark = material(f'{asset_id}_shell_dark', tone(palette['primary'], 0.55), roughness=0.9)
+        frame_mat = material(f'{asset_id}_frame', tone(palette['secondary'], 1.6), roughness=0.6, metallic=0.3)
+        container_parts = []
+        profile = [(-0.52, 0.0), (0.52, 0.0), (0.52, 0.86), (-0.52, 0.86)]
+        container_parts.append(prism_mesh(f'{asset_id}_Body', profile, -0.30, 0.30, shell, asset_id))
+        for index in range(6):
+            x = -0.42 + index * 0.168
+            container_parts.append(prism_mesh(f'{asset_id}_Rib_{index}', [(x - 0.026, 0.03), (x + 0.026, 0.03), (x + 0.026, 0.83), (x - 0.026, 0.83)], -0.315, 0.315, shell_dark, asset_id))
+        container_parts.append(prism_mesh(f'{asset_id}_FrameTop', [(-0.535, 0.83), (0.535, 0.83), (0.535, 0.90), (-0.535, 0.90)], -0.325, 0.325, frame_mat, asset_id))
+        container_parts.append(prism_mesh(f'{asset_id}_FrameBase', [(-0.535, 0.0), (0.535, 0.0), (0.535, 0.06), (-0.535, 0.06)], -0.325, 0.325, frame_mat, asset_id))
+        for corner in (-0.535, 0.535):
+            container_parts.append(prism_mesh(f'{asset_id}_Post_{corner}', [(corner - 0.024, 0.0), (corner + 0.024, 0.0), (corner + 0.024, 0.90), (corner - 0.024, 0.90)], -0.325, 0.325, frame_mat, asset_id))
+        door = prism_mesh(f'{asset_id}_Door', [(-0.02, 0.06), (0.34, 0.06), (0.34, 0.83), (-0.02, 0.83)], -0.016, 0.016, shell_dark, asset_id, location=(0.52, -0.36, 0.0))
+        door.rotation_euler = (0.0, 0.0, math.radians(-58))
+        container_parts.append(door)
+        for part in container_parts:
+            part.rotation_euler = (part.rotation_euler[0], part.rotation_euler[1], part.rotation_euler[2] + yaw)
+            parts.append(part)
+        add(cube(f'{asset_id}_Tag', (-0.26, -0.36, 0.52), (0.18, 0.014, 0.13), accent, asset_id, bevel=0.008, rotation=(0, 0, yaw)))
+        add(cube(f'{asset_id}_Lock', (0.55, 0.16, 0.40), (0.02, 0.035, 0.06), frame_mat, asset_id, bevel=0.006, rotation=(0, 0, yaw)))
+    elif shape == 'ore-conveyor':
+        # Mining conveyor segment: A-frame legs, raked belt with ore lumps,
+        # drive drum with a powered warning stripe.
+        steel = material(f'{asset_id}_steel', palette['primary'], roughness=0.7, metallic=0.35)
+        steel_dark = material(f'{asset_id}_steel_dark', tone(palette['primary'], 0.7), roughness=0.8, metallic=0.3)
+        belt = material(f'{asset_id}_belt', '#232426', roughness=0.92)
+        ore = material(f'{asset_id}_ore', tone(palette['secondary'], 1.4), roughness=0.85)
+        for index, (x, height) in enumerate(((-0.44, 0.34), (0.10, 0.56), (0.56, 0.78))):
+            for sy in (-1, 1):
+                add(cylinder(f'{asset_id}_Leg_{index}_{sy}', (x, sy * 0.16, height / 2), 0.028, height, steel_dark, asset_id, vertices=8, rotation=(math.radians(-8) * sy, 0, 0)))
+        parts.append(prism_mesh(f'{asset_id}_Frame', [(-0.62, 0.30), (0.72, 0.72), (0.72, 0.78), (-0.62, 0.36)], -0.16, 0.16, steel, asset_id))
+        parts.append(prism_mesh(f'{asset_id}_Belt', [(-0.60, 0.365), (0.70, 0.785), (0.70, 0.805), (-0.60, 0.385)], -0.13, 0.13, belt, asset_id))
+        for index, (t, size) in enumerate(((0.15, 0.05), (0.38, 0.06), (0.60, 0.045), (0.80, 0.055))):
+            x = -0.60 + t * 1.30
+            z = 0.385 + t * 0.42 + size
+            add(cube(f'{asset_id}_Ore_{index}', (x, (index % 2 - 0.5) * 0.1, z), (size, size, size), ore, asset_id, bevel=size * 0.3, rotation=(0.3, 0, index * 0.8)))
+        add(cylinder(f'{asset_id}_Drum', (0.74, 0.0, 0.79), 0.06, 0.30, steel_dark, asset_id, vertices=12, rotation=(math.radians(90), 0, 0)))
+        add(cube(f'{asset_id}_Stripe', (0.74, 0.0, 0.87), (0.05, 0.26, 0.014), accent, asset_id, bevel=0.005))
+        add(cube(f'{asset_id}_Hopper', (-0.62, 0.0, 0.22), (0.10, 0.14, 0.10), steel, asset_id, bevel=0.02))
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 

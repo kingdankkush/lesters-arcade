@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 37,
+  "assetCount": 45,
   "categories": [
     "pickup",
     "power-up",
@@ -22,8 +22,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 374,
-        "y": 211,
+        "x": 325,
+        "y": 385,
         "w": 57,
         "h": 22
       },
@@ -49,8 +49,8 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 385,
-        "y": 119,
+        "x": 371,
+        "y": 303,
         "w": 44,
         "h": 38
       },
@@ -76,8 +76,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 174,
+        "x": 463,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -103,8 +103,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 3,
-        "y": 248,
+        "x": 440,
+        "y": 385,
         "w": 28,
         "h": 21
       },
@@ -132,8 +132,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 52,
-        "y": 174,
+        "x": 3,
+        "y": 348,
         "w": 26,
         "h": 34
       },
@@ -151,6 +151,33 @@
       "trimmed": true
     },
     {
+      "id": "cargo-container",
+      "assetId": "cargo-container",
+      "category": "world-prop",
+      "shape": "cargo-container",
+      "itemUrl": "./items/cargo-container.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 3,
+        "y": 155,
+        "w": 159,
+        "h": 85
+      },
+      "pivot": {
+        "x": 70,
+        "y": 81
+      },
+      "anchor": {
+        "x": 0.440252,
+        "y": 0.952941
+      },
+      "opaquePixels": 9840,
+      "sourcePixelSha256": "0165cc99411ef78ae106800eeff0693260edb9bf961a4b5f9bde9a70237f4594",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "chain-fence",
       "assetId": "chain-fence",
       "category": "world-prop",
@@ -159,8 +186,8 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 3,
-        "y": 119,
+        "x": 248,
+        "y": 243,
         "w": 136,
         "h": 52
       },
@@ -186,8 +213,8 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 324,
-        "y": 211,
+        "x": 275,
+        "y": 385,
         "w": 47,
         "h": 23
       },
@@ -213,8 +240,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 81,
-        "y": 174,
+        "x": 32,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -240,8 +267,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 130,
-        "y": 174,
+        "x": 81,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -270,8 +297,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 130,
-        "y": 211,
+        "x": 81,
+        "y": 385,
         "w": 44,
         "h": 32
       },
@@ -289,6 +316,33 @@
       "trimmed": true
     },
     {
+      "id": "dead-pine",
+      "assetId": "dead-pine",
+      "category": "world-prop",
+      "shape": "dead-pine",
+      "itemUrl": "./items/dead-pine.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 223,
+        "y": 3,
+        "w": 50,
+        "h": 105
+      },
+      "pivot": {
+        "x": 17,
+        "y": 101
+      },
+      "anchor": {
+        "x": 0.34,
+        "y": 0.961905
+      },
+      "opaquePixels": 2200,
+      "sourcePixelSha256": "d5acf2762496757be7d4992d3ff7d525475e7c2a7c878270bc8ff8fdce050fc2",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "diamond-hands",
       "assetId": "diamond-hands",
       "category": "power-up",
@@ -297,8 +351,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 179,
-        "y": 174,
+        "x": 130,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -316,6 +370,33 @@
       "trimmed": true
     },
     {
+      "id": "driftwood-log",
+      "assetId": "driftwood-log",
+      "category": "world-prop",
+      "shape": "driftwood-log",
+      "itemUrl": "./items/driftwood-log.png",
+      "districts": [],
+      "runtimeScale": 0.75,
+      "frame": {
+        "x": 135,
+        "y": 303,
+        "w": 153,
+        "h": 41
+      },
+      "pivot": {
+        "x": 74,
+        "y": 37
+      },
+      "anchor": {
+        "x": 0.48366,
+        "y": 0.902439
+      },
+      "opaquePixels": 2762,
+      "sourcePixelSha256": "41b4cd0f7121b6d3b32a300a863e2cf4667d531de85ac134db1408f83638368e",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "fuel-drum",
       "assetId": "fuel-drum",
       "category": "world-prop",
@@ -327,8 +408,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 228,
-        "y": 174,
+        "x": 179,
+        "y": 348,
         "w": 38,
         "h": 34
       },
@@ -354,8 +435,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 269,
-        "y": 174,
+        "x": 220,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -381,8 +462,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 350,
-        "y": 3,
+        "x": 159,
+        "y": 243,
         "w": 86,
         "h": 53
       },
@@ -408,8 +489,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 318,
-        "y": 174,
+        "x": 269,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -435,8 +516,8 @@
       "districts": [],
       "runtimeScale": 0.76,
       "frame": {
-        "x": 432,
-        "y": 119,
+        "x": 418,
+        "y": 303,
         "w": 42,
         "h": 35
       },
@@ -462,7 +543,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 3,
+        "x": 106,
         "y": 3,
         "w": 114,
         "h": 113
@@ -491,8 +572,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 177,
-        "y": 211,
+        "x": 128,
+        "y": 385,
         "w": 38,
         "h": 29
       },
@@ -518,7 +599,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 120,
+        "x": 276,
         "y": 3,
         "w": 90,
         "h": 102
@@ -545,8 +626,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 367,
-        "y": 174,
+        "x": 318,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -572,8 +653,8 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 218,
-        "y": 211,
+        "x": 169,
+        "y": 385,
         "w": 59,
         "h": 29
       },
@@ -599,8 +680,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 416,
-        "y": 174,
+        "x": 367,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -628,8 +709,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 132,
-        "y": 248,
+        "x": 101,
+        "y": 422,
         "w": 24,
         "h": 15
       },
@@ -658,8 +739,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 465,
-        "y": 174,
+        "x": 416,
+        "y": 348,
         "w": 38,
         "h": 34
       },
@@ -685,7 +766,7 @@
       "districts": [],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 213,
+        "x": 369,
         "y": 3,
         "w": 134,
         "h": 93
@@ -704,6 +785,33 @@
       "trimmed": true
     },
     {
+      "id": "moss-boulder",
+      "assetId": "moss-boulder",
+      "category": "world-prop",
+      "shape": "moss-boulder",
+      "itemUrl": "./items/moss-boulder.png",
+      "districts": [],
+      "runtimeScale": 0.62,
+      "frame": {
+        "x": 353,
+        "y": 155,
+        "w": 58,
+        "h": 61
+      },
+      "pivot": {
+        "x": 21,
+        "y": 57
+      },
+      "anchor": {
+        "x": 0.362069,
+        "y": 0.934426
+      },
+      "opaquePixels": 1683,
+      "sourcePixelSha256": "90fd1131d47e8cc3933a57d98f5c4be2b350fe40cc97c60d2dbc2b14d9baf76e",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "nuke-liquidation",
       "assetId": "nuke-liquidation",
       "category": "pickup",
@@ -712,8 +820,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 338,
-        "y": 119,
+        "x": 324,
+        "y": 303,
         "w": 44,
         "h": 40
       },
@@ -741,8 +849,8 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 280,
-        "y": 211,
+        "x": 231,
+        "y": 385,
         "w": 41,
         "h": 26
       },
@@ -760,6 +868,33 @@
       "trimmed": true
     },
     {
+      "id": "ore-conveyor",
+      "assetId": "ore-conveyor",
+      "category": "world-prop",
+      "shape": "ore-conveyor",
+      "itemUrl": "./items/ore-conveyor.png",
+      "districts": [],
+      "runtimeScale": 0.95,
+      "frame": {
+        "x": 3,
+        "y": 243,
+        "w": 153,
+        "h": 57
+      },
+      "pivot": {
+        "x": 67,
+        "y": 53
+      },
+      "anchor": {
+        "x": 0.437908,
+        "y": 0.929825
+      },
+      "opaquePixels": 4098,
+      "sourcePixelSha256": "12137ccf43f8a4bdd9d29e77f5e5415e85eb96a486035f6e42ea0ea2557f74b1",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "proof-of-work",
       "assetId": "proof-of-work",
       "category": "power-up",
@@ -768,8 +903,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 211,
+        "x": 457,
+        "y": 348,
         "w": 46,
         "h": 34
       },
@@ -797,8 +932,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 142,
-        "y": 119,
+        "x": 387,
+        "y": 243,
         "w": 28,
         "h": 42
       },
@@ -816,6 +951,33 @@
       "trimmed": true
     },
     {
+      "id": "reed-cluster",
+      "assetId": "reed-cluster",
+      "category": "world-prop",
+      "shape": "reed-cluster",
+      "itemUrl": "./items/reed-cluster.png",
+      "districts": [],
+      "runtimeScale": 0.7,
+      "frame": {
+        "x": 165,
+        "y": 155,
+        "w": 54,
+        "h": 72
+      },
+      "pivot": {
+        "x": 27,
+        "y": 68
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.944444
+      },
+      "opaquePixels": 1468,
+      "sourcePixelSha256": "03613132b4ef4b7a170c05008e54e57baf13d1ad3c0805b9fc929f208c36df2d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "relay-console",
       "assetId": "relay-console",
       "category": "world-prop",
@@ -826,8 +988,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 159,
-        "y": 248,
+        "x": 128,
+        "y": 422,
         "w": 24,
         "h": 15
       },
@@ -855,8 +1017,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 434,
-        "y": 211,
+        "x": 385,
+        "y": 385,
         "w": 52,
         "h": 22
       },
@@ -874,6 +1036,33 @@
       "trimmed": true
     },
     {
+      "id": "ruined-wall",
+      "assetId": "ruined-wall",
+      "category": "world-prop",
+      "shape": "ruined-wall",
+      "itemUrl": "./items/ruined-wall.png",
+      "districts": [],
+      "runtimeScale": 0.9,
+      "frame": {
+        "x": 222,
+        "y": 155,
+        "w": 128,
+        "h": 65
+      },
+      "pivot": {
+        "x": 64,
+        "y": 61
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.938462
+      },
+      "opaquePixels": 5509,
+      "sourcePixelSha256": "f3127dd6bed69765402a69cbfdeaf32800574425bf13814bd8ac5a3ea304b8ea",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "salvage-crate",
       "assetId": "salvage-crate",
       "category": "world-prop",
@@ -885,8 +1074,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 103,
-        "y": 248,
+        "x": 72,
+        "y": 422,
         "w": 26,
         "h": 18
       },
@@ -912,8 +1101,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 34,
-        "y": 248,
+        "x": 3,
+        "y": 422,
         "w": 66,
         "h": 20
       },
@@ -939,8 +1128,8 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 305,
-        "y": 119,
+        "x": 291,
+        "y": 303,
         "w": 30,
         "h": 41
       },
@@ -966,8 +1155,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 52,
-        "y": 211,
+        "x": 3,
+        "y": 385,
         "w": 46,
         "h": 34
       },
@@ -996,8 +1185,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 101,
-        "y": 211,
+        "x": 52,
+        "y": 385,
         "w": 26,
         "h": 34
       },
@@ -1015,6 +1204,33 @@
       "trimmed": true
     },
     {
+      "id": "watchtower",
+      "assetId": "watchtower",
+      "category": "world-prop",
+      "shape": "watchtower",
+      "itemUrl": "./items/watchtower.png",
+      "districts": [],
+      "runtimeScale": 1.1,
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 100,
+        "h": 149
+      },
+      "pivot": {
+        "x": 50,
+        "y": 145
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.973154
+      },
+      "opaquePixels": 11117,
+      "sourcePixelSha256": "1a4099e94aa0747cbc4b6f2f804fb6011bea5ba4529255f2443bce79371be486",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "wrecked-sedan",
       "assetId": "wrecked-sedan",
       "category": "world-prop",
@@ -1023,8 +1239,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 173,
-        "y": 119,
+        "x": 3,
+        "y": 303,
         "w": 129,
         "h": 42
       },

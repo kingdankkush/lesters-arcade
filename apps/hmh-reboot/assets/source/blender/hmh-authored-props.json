@@ -499,6 +499,126 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "dead-pine",
+      "category": "world-prop",
+      "shape": "dead-pine",
+      "palette": {
+        "primary": "#6b5b4a",
+        "secondary": "#4a3d31",
+        "accent": "#8a7a63"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "moss-boulder",
+      "category": "world-prop",
+      "shape": "moss-boulder",
+      "palette": {
+        "primary": "#5d6658",
+        "secondary": "#37402f",
+        "accent": "#7ef0c1"
+      },
+      "runtimeScale": 0.62,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "reed-cluster",
+      "category": "world-prop",
+      "shape": "reed-cluster",
+      "palette": {
+        "primary": "#4a7a5c",
+        "secondary": "#2a4a3a",
+        "accent": "#bfd3e6"
+      },
+      "runtimeScale": 0.7,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "driftwood-log",
+      "category": "world-prop",
+      "shape": "driftwood-log",
+      "palette": {
+        "primary": "#7a6248",
+        "secondary": "#55432f",
+        "accent": "#8a7a63"
+      },
+      "runtimeScale": 0.75,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "ruined-wall",
+      "category": "world-prop",
+      "shape": "ruined-wall",
+      "palette": {
+        "primary": "#6e6257",
+        "secondary": "#4a4038",
+        "accent": "#35d0ff"
+      },
+      "runtimeScale": 0.9,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "watchtower",
+      "category": "world-prop",
+      "shape": "watchtower",
+      "palette": {
+        "primary": "#5a4a38",
+        "secondary": "#3a3028",
+        "accent": "#35d0ff"
+      },
+      "runtimeScale": 1.1,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "cargo-container",
+      "category": "world-prop",
+      "shape": "cargo-container",
+      "palette": {
+        "primary": "#8a4c52",
+        "secondary": "#4a2a30",
+        "accent": "#ff527e"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "ore-conveyor",
+      "category": "world-prop",
+      "shape": "ore-conveyor",
+      "palette": {
+        "primary": "#55565a",
+        "secondary": "#33343a",
+        "accent": "#f0ae4c"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }

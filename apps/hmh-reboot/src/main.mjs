@@ -18,6 +18,7 @@ import {
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
 import { computeEnemyFlowField, createEnemyNavGrid, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
+import { computeMinimapModel, createMinimapDiscoveryState } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
   createTerrainTileRegistry,
@@ -216,6 +217,14 @@ const ENEMY_NAV_GRID = createEnemyNavGrid({ world: LEVEL_ONE_WORLD, queryGround 
 const ENEMY_FLOW_REFRESH_TICKS = 30;
 let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
+// Minimap discovery is per-run projection bookkeeping (what the player has
+// seen); it resets with the session like the flow field does.
+const minimapDiscovery = createMinimapDiscoveryState();
+// Per-frame allocation caches: the reveal Set only changes when the snapshot
+// object does, and markers do not need 60 Hz recomputation. Both exist so
+// the minimap stays inside the heap-growth performance budget.
+let minimapRevealCache = { snapshot: null, set: null };
+let minimapModelCache = { tick: -1, model: null };
 const enemyNavigation = Object.freeze({
   lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(ENEMY_NAV_GRID, fromX, fromY, toX, toY),
   flowDirectionAt: (x, y) => sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y),
@@ -855,56 +864,106 @@ async function boot() {
       stageElement.dataset.minimapCompactLandscape = String(minimapLayout.compactLandscape);
     }
     const mapPoint = (normalized) => ({ x: originX + normalized.x * width, y: originY + normalized.y * height });
+    // Neon-noir instrument panel: near-black glass, geometry as dim emissive
+    // plates, water as the one saturated fill, routes as lit filaments.
     minimap.roundRect(originX - 6, originY - 6, width + 12, height + 12, 8)
-      .fill({ color: 0x071522, alpha: 0.92 }).stroke({ color: 0x8dc6d8, width: 2, alpha: 0.85 });
+      .fill({ color: 0x04090f, alpha: 0.94 }).stroke({ color: 0x35d0ff, width: 1.5, alpha: 0.55 });
     for (const district of MINIMAP_GEOMETRY.districts) {
       const minimum = mapPoint(district.area.min);
       const maximum = mapPoint(district.area.max);
-      minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y).fill({ color: district.color, alpha: 0.5 });
-    }
-    for (const route of MINIMAP_GEOMETRY.routes) {
-      const points = route.points.map(mapPoint);
-      minimap.moveTo(points[0].x, points[0].y);
-      for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
-      minimap.stroke({ color: route.kind === 'main' ? 0xffd166 : 0xb8a36e, width: route.kind === 'main' ? 3 : 1.5, alpha: 0.82, cap: 'round' });
+      minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y).fill({ color: district.color, alpha: 0.3 });
     }
     for (const surface of MINIMAP_GEOMETRY.surfaces.filter((candidate) => ['water', 'shallow-water', 'bridge'].includes(candidate.kind))) {
       if (surface.area.type !== 'rect') continue;
       const minimum = mapPoint(surface.area.min);
       const maximum = mapPoint(surface.area.max);
       minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y)
-        .fill({ color: surface.kind === 'bridge' ? 0xc49a63 : 0x2591b3, alpha: 0.9 });
+        .fill({ color: surface.kind === 'bridge' ? 0xc49a63 : 0x1f9fd4, alpha: 0.92 });
     }
-    for (const cellId of revealSnapshot.revealedCellIds) {
-      const [column, row] = cellId.split(':').map(Number);
-      const cellWidth = width / revealSnapshot.columns;
-      const cellHeight = height / revealSnapshot.rows;
-      minimap.rect(originX + column * cellWidth, originY + row * cellHeight, cellWidth + 0.5, cellHeight + 0.5)
-        .fill({ color: 0xe8f6c9, alpha: 0.08 });
+    for (const route of MINIMAP_GEOMETRY.routes) {
+      const points = route.points.map(mapPoint);
+      minimap.moveTo(points[0].x, points[0].y);
+      for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
+      minimap.stroke({ color: route.kind === 'main' ? 0xffd166 : 0x8f7f52, width: route.kind === 'main' ? 2 : 1, alpha: 0.85, cap: 'round' });
     }
     for (const boundary of MINIMAP_GEOMETRY.hardBoundaries) {
       if (boundary.shape.type === 'capsule') {
         const a = mapPoint(boundary.shape.a);
         const b = mapPoint(boundary.shape.b);
-        minimap.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0xd7fbff, width: 1.5, alpha: 0.8, cap: 'round' });
+        minimap.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0x9fd8e4, width: 1, alpha: 0.6, cap: 'round' });
       } else if (boundary.shape.type === 'polygon') {
         const points = boundary.shape.points.map(mapPoint);
         minimap.moveTo(points[0].x, points[0].y);
         for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
-        minimap.closePath().stroke({ color: 0xd7fbff, width: 1.5, alpha: 0.8 });
+        minimap.closePath().stroke({ color: 0x9fd8e4, width: 1, alpha: 0.6 });
       }
     }
     for (const landmark of MINIMAP_GEOMETRY.landmarks) {
       const center = mapPoint(landmark.point);
-      minimap.circle(center.x, center.y, 2.5).fill({ color: 0xfff06a, alpha: 0.95 });
+      minimap.circle(center.x, center.y, 2.2).fill({ color: 0xfff06a, alpha: 0.95 });
     }
-    const normalizedPlayer = {
-      x: (renderState.x - WORLD_BOUNDS.minX) / (WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX),
-      y: (renderState.y - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY),
-    };
-    const player = mapPoint(normalizedPlayer);
-    minimap.circle(player.x, player.y, minimapLayout.compactPortrait ? 4 : 5)
-      .fill({ color: 0x49ddff, alpha: 1 }).stroke({ color: 0xffffff, width: 1.5, alpha: 1 });
+    // Fog inversion (handoff §H8-11): geometry only exists where explored.
+    // Unrevealed cells paint back to glass; runs merge per row so the void
+    // costs one rect per contiguous gap instead of one per cell.
+    if (minimapRevealCache.snapshot !== revealSnapshot) {
+      minimapRevealCache = { snapshot: revealSnapshot, set: new Set(revealSnapshot.revealedCellIds) };
+    }
+    const revealedSet = minimapRevealCache.set;
+    const cellWidth = width / revealSnapshot.columns;
+    const cellHeight = height / revealSnapshot.rows;
+    for (let row = 0; row < revealSnapshot.rows; row += 1) {
+      let runStart = -1;
+      for (let column = 0; column <= revealSnapshot.columns; column += 1) {
+        const covered = column < revealSnapshot.columns && !revealedSet.has(`${column}:${row}`);
+        if (covered && runStart < 0) runStart = column;
+        if (!covered && runStart >= 0) {
+          minimap.rect(originX + runStart * cellWidth, originY + row * cellHeight, (column - runStart) * cellWidth + 0.5, cellHeight + 0.5)
+            .fill({ color: 0x04090f, alpha: 0.9 });
+          runStart = -1;
+        }
+      }
+    }
+    // Live markers: enemies exist only inside current visibility, POIs are
+    // discovered knowledge, the player is always the brightest thing.
+    const modelTick = simulation?.tick ?? 0;
+    if (minimapModelCache.model === null || modelTick - minimapModelCache.tick >= 6 || modelTick < minimapModelCache.tick) {
+      minimapModelCache = {
+        tick: modelTick,
+        model: computeMinimapModel({
+          bounds: WORLD_BOUNDS,
+          player: renderState,
+          enemies: grayboxEnemies,
+          boss: liquidatorBoss,
+          pointsOfInterest: LEVEL_ONE_WORLD.pointsOfInterest,
+          discovery: minimapDiscovery,
+        }),
+      };
+    }
+    const minimapModel = minimapModelCache.model;
+    for (const poi of minimapModel.pointsOfInterest) {
+      const center = mapPoint(poi);
+      minimap.poly([center.x, center.y - 3, center.x + 3, center.y, center.x, center.y + 3, center.x - 3, center.y])
+        .fill({ color: 0x7ef0c1, alpha: 0.95 });
+    }
+    for (const enemy of minimapModel.enemies) {
+      const center = mapPoint(enemy);
+      minimap.circle(center.x, center.y, 1.8).fill({ color: 0xff5257, alpha: 0.95 });
+    }
+    if (minimapModel.boss) {
+      const center = mapPoint(minimapModel.boss);
+      minimap.circle(center.x, center.y, 3.4).fill({ color: 0xff527e, alpha: 1 })
+        .stroke({ color: 0xffffff, width: 1, alpha: 0.9 });
+    }
+    const player = mapPoint(minimapModel.player);
+    const headingX = Number.isFinite(motion?.vx) && (Math.abs(motion.vx) + Math.abs(motion.vy) > 1) ? motion.vx : 1;
+    const headingY = Number.isFinite(motion?.vy) && (Math.abs(motion.vx) + Math.abs(motion.vy) > 1) ? motion.vy : 0;
+    const heading = Math.atan2(headingY, headingX);
+    const size = minimapLayout.compactPortrait ? 5 : 6;
+    minimap.poly([
+      player.x + Math.cos(heading) * size, player.y + Math.sin(heading) * size,
+      player.x + Math.cos(heading + 2.5) * size * 0.8, player.y + Math.sin(heading + 2.5) * size * 0.8,
+      player.x + Math.cos(heading - 2.5) * size * 0.8, player.y + Math.sin(heading - 2.5) * size * 0.8,
+    ]).fill({ color: 0x49ddff, alpha: 1 }).stroke({ color: 0xffffff, width: 1.2, alpha: 1 });
   };
 
   const renderWorld = (renderState = renderActor ?? actor) => {
@@ -1598,6 +1657,9 @@ async function boot() {
     // pursuit with stale data and break same-seed determinism.
     enemyFlowField = null;
     enemyFlowFieldTick = -1;
+    minimapDiscovery.discoveredPoiIds.clear();
+    minimapRevealCache = { snapshot: null, set: null };
+    minimapModelCache = { tick: -1, model: null };
     // Art selection must never be able to abort a session: this runs inside
     // the bridge onInit handler, and throwing here would skip `game:ready`
     // and strand the parent until its bridge timeout. Request the session's

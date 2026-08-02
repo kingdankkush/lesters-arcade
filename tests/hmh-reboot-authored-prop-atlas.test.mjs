@@ -65,9 +65,10 @@ test('authored world dressing and gameplay POIs are deterministic and bounded', 
   const first = buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 0x484d4807, countPerDistrict: 8 });
   const second = buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 0x484d4807, countPerDistrict: 8 });
   assert.deepEqual(first, second);
-  // 5 districts x 8 plus hashwood's authored countOverride of 14 (Cycle 038:
-  // the forest district carries denser dressing so it reads as a forest).
-  assert.equal(first.length, 5 * 8 + 14);
+  // Every district carries an authored density override per the gameworld
+  // art direction (hashwood leads at 18 so the forest reads as a forest):
+  // 11 + 11 + 11 + 18 + 12 + 12 = 75.
+  assert.equal(first.length, 75);
   assert.equal(new Set(first.map((placement) => placement.districtId)).size, 6);
   assert.ok(first.every((placement) => placement.x >= 0 && placement.x <= 12_000 && placement.y >= 0 && placement.y <= 4_800));
   const pointsOfInterest = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -139,9 +140,10 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
   ]);
   const before = JSON.stringify(placements);
   const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
-  // countPerDistrict 1 -> 5 x 1 + hashwood override 14 = 19 dressing entries,
-  // plus 6 landmarks x 8 offsets and 10 POIs.
-  assert.equal(display.entries.length, 19 + 6 * 8 + 10);
+  // Authored overrides drive every district now, so countPerDistrict 1 still
+  // yields the full 75 dressing entries, plus 6 landmarks x 8 offsets and
+  // 10 POIs.
+  assert.equal(display.entries.length, 75 + 6 * 8 + 10);
   const report = display.render({
     camera: { zoom: 1 },
     view: { width: 12_000, height: 4_800 },
@@ -149,7 +151,7 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
     queryGround: () => ({ groundZ: 0 }),
     tick: 42,
   });
-  assert.equal(report.placementCount, 19 + 6 * 8 + 10);
+  assert.equal(report.placementCount, 75 + 6 * 8 + 10);
   assert.ok(report.visibleCount > 0);
   assert.ok(report.signalVisibleCount >= 12);
   assert.equal(report.animatedSignalVisibleCount, report.signalVisibleCount);
