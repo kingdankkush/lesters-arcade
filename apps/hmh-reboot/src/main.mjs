@@ -940,6 +940,12 @@ async function boot() {
       };
     }
     const minimapModel = minimapModelCache.model;
+    // The player marker must stay per-frame accurate (handoff §H9); only
+    // enemy/POI/boss markers ride the 6-tick cache.
+    const playerMarker = {
+      x: (renderState.x - WORLD_BOUNDS.minX) / (WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX),
+      y: (renderState.y - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY),
+    };
     for (const poi of minimapModel.pointsOfInterest) {
       const center = mapPoint(poi);
       minimap.poly([center.x, center.y - 3, center.x + 3, center.y, center.x, center.y + 3, center.x - 3, center.y])
@@ -954,7 +960,7 @@ async function boot() {
       minimap.circle(center.x, center.y, 3.4).fill({ color: 0xff527e, alpha: 1 })
         .stroke({ color: 0xffffff, width: 1, alpha: 0.9 });
     }
-    const player = mapPoint(minimapModel.player);
+    const player = mapPoint(playerMarker);
     const headingX = Number.isFinite(motion?.vx) && (Math.abs(motion.vx) + Math.abs(motion.vy) > 1) ? motion.vx : 1;
     const headingY = Number.isFinite(motion?.vy) && (Math.abs(motion.vx) + Math.abs(motion.vy) > 1) ? motion.vy : 0;
     const heading = Math.atan2(headingY, headingX);
