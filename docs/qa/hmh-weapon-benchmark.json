@@ -16,7 +16,7 @@
   },
   "reactionLagTicks": 10,
   "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-  "note": "Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 6-tick reaction lag. Swarm pressure remains a future extension. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.",
+  "note": "Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 10-tick reaction lag. Swarm pressure remains a future extension. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.",
   "rows": [
     {
       "weaponId": "coin-blaster",

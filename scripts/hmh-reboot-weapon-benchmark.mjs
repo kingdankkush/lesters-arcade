@@ -133,8 +133,8 @@ function benchmarkCase(weaponId, tierId, rangeId) {
 }
 
 // Moving-target extension (Cycle 045, MAP-REDO slice 5): a strafing target
-// with the REAL ordinary-enemy hurtbox profile, tracked with a fixed 6-tick
-// (100 ms) reaction lag. Cross-track aim error therefore equals the strafe
+// with the REAL ordinary-enemy hurtbox profile, tracked with a fixed 10-tick
+// (167 ms) reaction lag. Cross-track aim error therefore equals the strafe
 // displacement over the reaction window — the exact regime the hurtbox
 // policy governs. Triangle-wave strafe keeps everything closed-form
 // deterministic.
@@ -258,7 +258,7 @@ const report = {
   strafeSpeeds: STRAFE_SPEEDS,
   reactionLagTicks: REACTION_LAG_TICKS,
   hurtboxPolicyId: ORDINARY_ENEMY_HURTBOX_POLICY.id,
-  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 6-tick reaction lag. Swarm pressure remains a future extension. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
+  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 10-tick reaction lag. Swarm pressure remains a future extension. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
   rows: first,
   movingRows: movingFirst,
 };

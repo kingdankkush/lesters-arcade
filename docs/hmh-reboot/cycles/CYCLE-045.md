@@ -51,3 +51,15 @@ the future balance cycle — no weapon values changed here.
 - combat, collectible, mobile (4 devices) smokes PASS
 - performance p95 `7 / 7.1 ms`, bundle `1,039,225 / 1,050,000`, heap delta
   negative
+
+## Production promotion (owner-approved standing "push live")
+
+| Release fact | Verified value |
+| --- | --- |
+| Branch head deployed | `80161dea` |
+| Immutable production URL | <https://lesters-arcade-6j600ilmk-justin-agent-projects.vercel.app> |
+| Public alias | <https://lestersarcade.io> — bundle byte-identical to the local build |
+| Live certification | five profiles PASS against the public alias |
+| Rollback | `dpl_Hbm8q8H4vJ4JQz8sEroeoiatPQH1` (Cycle 044 production) |
+
+`SETTLEMENT_LIVE` untouched.
