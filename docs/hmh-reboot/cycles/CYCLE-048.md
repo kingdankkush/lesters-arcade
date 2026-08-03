@@ -53,3 +53,27 @@ the same tour-spawn pattern the combat smoke uses. 3/3 consecutive passes.
 - visual 8/8; certification five profiles; combat + collectibles smokes
 - mobile controls 3/3 consecutive with the isolated harness
 - performance PASS ×2 (bundle `1,040,213 / 1,050,000`, p95 7 ms)
+
+## Production promotion and verification incident (2026-08-02)
+
+Promoted `f702bb47` → `dpl_2iXBUqq2F1i9PAAE5NJu3FBdwPTY`
+(`lesters-arcade-ibu2j9z69`). During verification the public alias began
+returning 403 for ALL automated clients (curl, headless certification) —
+this was Vercel's **Security Checkpoint** bot challenge (most likely
+auto-triggered by the day's heavy automated certification traffic), not an
+outage: the site renders normally in a real browser. Before identifying
+that, a precautionary rollback to the 047 deployment was performed and then
+reversed; final production is the 048 deployment.
+
+Live verification was therefore performed through a REAL browser: the
+portal renders, and the HMH runtime boots to a ready session (pistol 8/8,
+3 grenades, 100 HP, HUD/minimap live) on <https://lestersarcade.io>.
+Byte-hash comparison and headless live-certification are BLOCKED at the
+edge until automation access exists.
+
+**Owner action item:** add a Vercel Protection-Bypass-for-Automation secret
+(or review the checkpoint setting) so CI certification can run against
+production again. Security settings were deliberately not changed from this
+environment.
+
+Rollback remains the 047 deployment (`h4s9ihqe9`).
