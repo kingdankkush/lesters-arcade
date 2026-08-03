@@ -4,7 +4,8 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — **current**; carries the live Cycle 036 production release, the full Claude Fable / Opus 5 character/game/platform roadmap, verified production and rollback identities, full gates, and review side-effect traps
+0. `docs/handoffs/2026-08-02-hmh-cycle-049-fable-handoff.md` — **current**; cycles 041-049 production state, verified operational facts (Vercel promote works from this environment; Security Checkpoint blocks automated production verification; never parallel browser smokes; heap-gate variance), and the prioritized objective list
+1. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — standing architecture boundaries, bridge contract, and Web3 truth (still authoritative for those contracts)
 2. `docs/hmh-reboot/cycles/CYCLE-036.md`
 3. `docs/handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md`
 4. `docs/hmh-reboot/cycles/CYCLE-035.md`
