@@ -68,7 +68,12 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     displayName: 'Pistol',
     kind: 'projectile',
     damage: 3,
-    fireRatePerSecond: 2.6,
+    // Cycle 049 measured balance step: the moving-target benchmark showed
+    // the pistol landing only ~18% against strafing rushers at mid range;
+    // a cadence bump (2.6 -> 3.0) lifts sustained pressure ~15% without
+    // touching damage or the upgrade tree. Before/after rows live in
+    // docs/qa/hmh-weapon-benchmark.json history.
+    fireRatePerSecond: 3.0,
     reloadSeconds: 1.5,
     clipSize: 8,
     projectileSpeed: 1200,

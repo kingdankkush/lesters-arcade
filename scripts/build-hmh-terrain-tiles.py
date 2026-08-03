@@ -197,9 +197,13 @@ def bake(material: dict) -> Image.Image:
     ambient = material.get("ambient", 0.42)
     spec_amount = material.get("specular", 0.16)
 
-    paint_amount = material.get("paintAmount", 0.16)
-    band_count = material.get("valueBands", 6)
-    band_mix = material.get("bandMix", 0.24)
+    # Cycle 049 visibility pass: the owner read the ground as "single color,
+    # no texture" at gameplay zoom — the painted layering was real but
+    # value-compressed into invisibility. Underpainting, banding, and grain
+    # all step up; per-material grain/accent scale below.
+    paint_amount = material.get("paintAmount", 0.30)
+    band_count = material.get("valueBands", 5)
+    band_mix = material.get("bandMix", 0.34)
 
     for y in range(size):
         for x in range(size):
@@ -221,9 +225,10 @@ def bake(material: dict) -> Image.Image:
             # Grain: fine detail modulating value, keeps flats from reading dead.
             # Sampling the detail field with an integer 45-degree shear turns
             # isotropic noise into directional strokes; the shear is modulo the
-            # tile size, so seamlessness is preserved exactly.
+            # tile size, so seamlessness is preserved exactly. The 1.6x
+            # visibility multiplier is the Cycle 049 contrast step.
             stroke = detail[y][(x + y) % size]
-            grain = (stroke - 0.5) * material.get("grain", 0.12)
+            grain = (stroke - 0.5) * material.get("grain", 0.12) * 1.6
             colour = tuple(max(0, min(255, round(channel * (1.0 + grain)))) for channel in colour)
             if accent_amount > 0 and detail[y][x] > accent_threshold:
                 colour = mix(colour, accent, accent_amount)
@@ -239,63 +244,63 @@ MATERIALS = {
     # Walkable ground per district.
     "packed-earth": {
         "seed": 11, "base": "#2f5f52", "shadow": "#173a32", "highlight": "#4d8a76",
-        "accent": "#6fbfa1", "accentAmount": 0.22, "octaves": [(8, 1.0), (16, 0.5), (32, 0.25), (64, 0.12)],
+        "accent": "#6fbfa1", "accentAmount": 0.3, "octaves": [(8, 1.0), (16, 0.5), (32, 0.25), (64, 0.12)],
         "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 46, "grain": 0.14, "specular": 0.06,
     },
     "red-rock": {
         "seed": 23, "base": "#6b3b33", "shadow": "#3a1d19", "highlight": "#a3614a",
-        "accent": "#d97852", "accentAmount": 0.26, "octaves": [(6, 1.0), (12, 0.6), (24, 0.3), (48, 0.16)],
+        "accent": "#d97852", "accentAmount": 0.35, "octaves": [(6, 1.0), (12, 0.6), (24, 0.3), (48, 0.16)],
         "detailOctaves": [(48, 1.0), (96, 0.6)], "relief": 62, "grain": 0.18, "specular": 0.08,
     },
     "wet-bank": {
         "seed": 37, "base": "#2a5a63", "shadow": "#123239", "highlight": "#4d8f95",
-        "accent": "#7fc4c8", "accentAmount": 0.2, "octaves": [(8, 1.0), (16, 0.5), (32, 0.28)],
+        "accent": "#7fc4c8", "accentAmount": 0.27, "octaves": [(8, 1.0), (16, 0.5), (32, 0.28)],
         "detailOctaves": [(64, 1.0), (128, 0.45)], "relief": 40, "grain": 0.12, "specular": 0.2,
     },
     "forest-floor": {
         "seed": 53, "base": "#2c5434", "shadow": "#14301c", "highlight": "#4a8850",
-        "accent": "#7fc878", "accentAmount": 0.3, "octaves": [(6, 1.0), (14, 0.6), (28, 0.32), (56, 0.18)],
+        "accent": "#7fc878", "accentAmount": 0.41, "octaves": [(6, 1.0), (14, 0.6), (28, 0.32), (56, 0.18)],
         "detailOctaves": [(56, 1.0), (112, 0.6)], "relief": 56, "grain": 0.2, "specular": 0.05,
     },
     "crushed-ore": {
         "seed": 71, "base": "#4a4b4e", "shadow": "#26272a", "highlight": "#78797d",
-        "accent": "#f0ae4c", "accentAmount": 0.24, "octaves": [(10, 1.0), (20, 0.55), (40, 0.3), (80, 0.18)],
+        "accent": "#f0ae4c", "accentAmount": 0.32, "octaves": [(10, 1.0), (20, 0.55), (40, 0.3), (80, 0.18)],
         "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 58, "grain": 0.22, "specular": 0.14,
     },
     "industrial-slab": {
         "seed": 89, "base": "#4a2b3f", "shadow": "#24121e", "highlight": "#734a63",
         "structure": "slab-grid", "structurePeriod": 64,
-        "accent": "#ff527e", "accentAmount": 0.18, "octaves": [(4, 1.0), (16, 0.4), (32, 0.2)],
+        "accent": "#ff527e", "accentAmount": 0.24, "octaves": [(4, 1.0), (16, 0.4), (32, 0.2)],
         "detailOctaves": [(64, 1.0), (128, 0.4)], "relief": 30, "grain": 0.1, "specular": 0.12,
     },
     # Shared, non-district surfaces. These carry the semantic load the player
     # complained about: am I on a road, in water, or on something raised?
     "road": {
         "seed": 101, "base": "#8a7350", "shadow": "#4f4130", "highlight": "#bda278",
-        "accent": "#d8c199", "accentAmount": 0.16, "octaves": [(12, 1.0), (24, 0.5), (48, 0.3), (96, 0.2)],
+        "accent": "#d8c199", "accentAmount": 0.22, "octaves": [(12, 1.0), (24, 0.5), (48, 0.3), (96, 0.2)],
         "detailOctaves": [(64, 1.0), (128, 0.55)], "relief": 52, "grain": 0.16, "specular": 0.07,
     },
     "water": {
         "seed": 131, "base": "#12617f", "shadow": "#07374d", "highlight": "#3fa7c4",
-        "accent": "#a8ecff", "accentAmount": 0.34, "accentThreshold": 0.74,
+        "accent": "#a8ecff", "accentAmount": 0.46, "accentThreshold": 0.74,
         "octaves": [(4, 1.0), (8, 0.55), (16, 0.3)],
         "detailOctaves": [(16, 1.0), (32, 0.6)], "relief": 26, "grain": 0.08, "specular": 0.42, "ambient": 0.5,
     },
     "shallow-water": {
         "seed": 137, "base": "#1c7f92", "shadow": "#0d4a58", "highlight": "#5fc6d6",
-        "accent": "#bff4ff", "accentAmount": 0.36, "accentThreshold": 0.7,
+        "accent": "#bff4ff", "accentAmount": 0.49, "accentThreshold": 0.7,
         "octaves": [(4, 1.0), (8, 0.6), (16, 0.34)],
         "detailOctaves": [(16, 1.0), (32, 0.6)], "relief": 22, "grain": 0.08, "specular": 0.38, "ambient": 0.54,
     },
     "bridge-deck": {
         "seed": 149, "base": "#7a5c3c", "shadow": "#3f2e1d", "highlight": "#a98254",
         "structure": "planks", "structurePeriod": 32,
-        "accent": "#c9a878", "accentAmount": 0.2, "octaves": [(4, 1.0), (32, 0.35), (64, 0.2)],
+        "accent": "#c9a878", "accentAmount": 0.27, "octaves": [(4, 1.0), (32, 0.35), (64, 0.2)],
         "detailOctaves": [(64, 1.0), (128, 0.4)], "relief": 44, "grain": 0.14, "specular": 0.1,
     },
     "ledge-top": {
         "seed": 163, "base": "#5d5344", "shadow": "#2e2820", "highlight": "#8d7f68",
-        "accent": "#b8a888", "accentAmount": 0.2, "octaves": [(8, 1.0), (16, 0.5), (32, 0.28), (64, 0.16)],
+        "accent": "#b8a888", "accentAmount": 0.27, "octaves": [(8, 1.0), (16, 0.5), (32, 0.28), (64, 0.16)],
         "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 50, "grain": 0.16, "specular": 0.1,
     },
 }

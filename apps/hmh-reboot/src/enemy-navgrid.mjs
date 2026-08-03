@@ -230,7 +230,25 @@ export function sampleFlowDirection(grid, field, x, y) {
   if (cell < 0) return null;
   const column = cell % grid.columns;
   const row = (cell - column) / grid.columns;
-  return field.directionAtCell(column, row);
+  const primary = field.directionAtCell(column, row);
+  if (!primary) return null;
+  // Corner smoothing (Cycle 049): when the next cell along the flow would
+  // itself turn, blend one step of lookahead so enemies cut smooth diagonals
+  // instead of marching square staircases — but only when the diagonal
+  // between the two steps is walkable from here (no corner clipping). Pure
+  // function of grid+field: determinism unchanged.
+  const nextColumn = column + primary.x;
+  const nextRow = row + primary.y;
+  const secondary = field.directionAtCell(nextColumn, nextRow);
+  if (secondary && (secondary.x !== primary.x || secondary.y !== primary.y)
+    && grid.isWalkableCell(column + primary.x + secondary.x, row + primary.y + secondary.y)
+    && grid.isWalkableCell(column + secondary.x, row + secondary.y)) {
+    const blendX = primary.x + secondary.x;
+    const blendY = primary.y + secondary.y;
+    const magnitude = Math.hypot(blendX, blendY);
+    if (magnitude > 0) return Object.freeze({ x: blendX / magnitude, y: blendY / magnitude });
+  }
+  return primary;
 }
 
 // Supercover raycast on the walkable grid: true when the straight segment

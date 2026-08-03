@@ -61,11 +61,12 @@ test('pistol cadence ammo and timed automatic reload are deterministic at 60 Hz'
   assert.equal(first.events[0].shots.length, 1);
   assert.equal(first.events[0].recoil, HMH_WEAPON_DEFINITIONS['coin-blaster'].recoil);
   assert.equal(weaponState(state).ammoInClip, 7);
+  // Cycle 049 cadence: 3.0/s at 60 Hz = a 20-tick interval.
   assert.equal(fireAt(state, 2).events.length, 0);
-  assert.equal(fireAt(state, 24).events.length, 0);
-  assert.equal(fireAt(state, 25).events[0].type, 'weapon:fire');
+  assert.equal(fireAt(state, 20).events.length, 0);
+  assert.equal(fireAt(state, 21).events[0].type, 'weapon:fire');
 
-  for (let tick = 49; weaponState(state).ammoInClip > 0; tick += 24) fireAt(state, tick);
+  for (let tick = 41; weaponState(state).ammoInClip > 0; tick += 20) fireAt(state, tick);
   assert.equal(weaponState(state).ammoInClip, 0);
   const reloadStart = weaponState(state).reloadStartedTick;
   const reloadComplete = weaponState(state).reloadCompleteTick;

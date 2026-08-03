@@ -154,3 +154,29 @@ test('a walled-off enemy makes real progress toward the player with navigation',
   assert.ok(withNav < 120, `with navigation the enemy must round the fence and close in (ended ${Math.round(withNav)} away)`);
   assert.ok(withoutNav - withNav > 100, `navigation must beat wall-sliding by a clear margin (nav ${Math.round(withNav)} vs slide ${Math.round(withoutNav)})`);
 });
+
+test('corner smoothing blends a diagonal only when the diagonal is walkable', () => {
+  const grid = buildGrid();
+  const field = computeEnemyFlowField({ grid, targetX: 800, targetY: 2_400 });
+  let blended = 0;
+  let checked = 0;
+  for (let row = 2; row < grid.rows - 2; row += 1) {
+    for (let column = 2; column < grid.columns - 2; column += 1) {
+      if (!grid.isWalkableCell(column, row)) continue;
+      const direction = sampleFlowDirection(grid, field, grid.centreX(column), grid.centreY(row));
+      if (!direction) continue;
+      checked += 1;
+      const isDiagonal = direction.x !== 0 && direction.y !== 0;
+      if (!isDiagonal) continue;
+      blended += 1;
+      // The blend is unit-length and both orthogonal components must lead
+      // through walkable cells (no corner clipping by construction).
+      assert.ok(Math.abs(Math.hypot(direction.x, direction.y) - 1) < 1e-9);
+      const stepX = Math.sign(direction.x);
+      const stepY = Math.sign(direction.y);
+      assert.ok(grid.isWalkableCell(column + stepX, row + stepY), `diagonal into a wall at ${column},${row}`);
+    }
+  }
+  assert.ok(checked > 500, 'smoothing sweep must cover the map');
+  assert.ok(blended > 0, 'at least some cells must blend a smooth diagonal');
+});

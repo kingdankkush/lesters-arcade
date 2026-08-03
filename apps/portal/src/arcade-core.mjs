@@ -1588,7 +1588,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
       // a slow reload. The run is meant to level up over time — fire-rate and
       // reload-speed upgrades make it feel better, and shotgun/MG pickups change
       // the whole feel. Never auto-emptying-fast at the start.
-      fireRatePerSecond: 2.6,
+      fireRatePerSecond: 3.0,
       reloadSeconds: 1.5,
       clip: 8,
       range: 'mid',
