@@ -70,9 +70,19 @@ const actorPosition = async (stage) => ({
 });
 
 const settle = async (page, stage) => {
-  // Let the hero come to rest so the next scenario measures from a still frame.
-  await page.waitForTimeout(450);
-  return actorPosition(stage);
+  // Wait for actual stillness instead of a fixed delay: a fixed 450ms sat on
+  // a timing knife-edge (deceleration + interpolation phase) that flipped
+  // with unrelated bundle changes on the 390px profile. Two consecutive
+  // stable samples prove rest; the timeout keeps a genuinely latched stick
+  // failing loudly instead of passing by luck.
+  let previous = await actorPosition(stage);
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    await page.waitForTimeout(150);
+    const current = await actorPosition(stage);
+    if (Math.hypot(current.x - previous.x, current.y - previous.y) < 0.8) return current;
+    previous = current;
+  }
+  return previous;
 };
 
 async function openPage(device, { shrinkVisualViewport = false } = {}) {
@@ -100,7 +110,14 @@ async function openPage(device, { shrinkVisualViewport = false } = {}) {
   const errors = [];
   page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
   page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
-  await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&telemetry=1`, { waitUntil: 'networkidle' });
+  // worldTour=mining spawns the hero on the loader deck, ~7,900 units from
+  // the opening enemies. Evidence-safe blocks damage but NOT enemy melee
+  // knockback, so with real pathing (Cycle 043) enemies reached a stationary
+  // hero mid-measurement and shoved it — "kept moving after the touch
+  // ended" on whichever profile's timing lost the race. Movement mechanics
+  // are identical everywhere; this isolates them from combat, exactly like
+  // the combat smoke's own tour spawns.
+  await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&telemetry=1&worldTour=mining`, { waitUntil: 'networkidle' });
   const stage = page.locator('#hmhRebootStage');
   await stage.waitFor({ state: 'attached' });
   return { context, page, stage, errors };

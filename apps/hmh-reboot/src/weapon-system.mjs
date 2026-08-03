@@ -127,19 +127,23 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     displayName: 'Grenade Launcher',
     kind: 'grenade-launch',
     grenadeId: 'satoshi-frag',
-    damage: 14,
+    // The launcher fires real satoshi-frag grenades at runtime; these
+    // declared values mirror the authoritative grenade definition so the
+    // benchmark and HUD describe what actually detonates (Cycle 048 —
+    // Cycle 047 raised the grenade to 34/150 and this record lagged).
+    damage: 34,
     fireRatePerSecond: 0.75,
     reloadSeconds: 2.4,
     clipSize: 4,
     projectileSpeed: 560,
     range: 640,
     projectileRadius: 4,
-    blastRadius: 92,
+    blastRadius: 150,
     spreadRadians: 0,
     pelletCount: 1,
     recoil: 74,
     pickupReserveAmmo: 8,
-    policy: { type: 'splash', radius: 92 },
+    policy: { type: 'splash', radius: 150 },
   },
 });
 
@@ -184,7 +188,7 @@ const SPECIAL_EFFECTS = freezeDeep({
   'armor-piercing': { policy: { type: 'pierce', maxTargets: 2 } },
   // Shells detonate on impact.
   explosive: { policy: { type: 'splash', radius: 58 } },
-  'shaped-charge': { policy: { type: 'splash', radius: 128 } },
+  'shaped-charge': { policy: { type: 'splash', radius: 210 } },
   // Both barrels at once: more pellets across the same arc.
   'double-barrel': { pelletCountBonus: 6 },
   'twin-tube': { pelletCountBonus: 1, spreadRadiansOverride: Math.PI * 7 / 180 },

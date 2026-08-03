@@ -2204,15 +2204,24 @@ async function boot() {
       // Switching only cycles weapons the player actually owns: the pistol is
       // always owned, everything else is a pickup (Cycle 036 Priority D).
       const ownsWeapon = (id) => weaponLoadout.weapons[id]?.owned === true;
+      // Cycle 048 review fix: an exhausted pickup is unselectable — the
+      // auto-fallback would bounce it back to the pistol next tick, which on
+      // mobile (SWAP only) made every weapon AFTER the exhausted one
+      // permanently unreachable. Cycling and direct slots skip dead weapons.
+      const weaponSelectable = (id) => {
+        if (!ownsWeapon(id)) return false;
+        const candidate = weaponLoadout.weapons[id];
+        return id === 'coin-blaster' || candidate.ammoInClip > 0 || candidate.reserveAmmo === null || candidate.reserveAmmo > 0;
+      };
       const rawDirectWeaponId = tickInput.weaponSlot > 0 ? WEAPON_ORDER[tickInput.weaponSlot - 1] : null;
-      const directWeaponId = rawDirectWeaponId && ownsWeapon(rawDirectWeaponId) ? rawDirectWeaponId : null;
+      const directWeaponId = rawDirectWeaponId && weaponSelectable(rawDirectWeaponId) ? rawDirectWeaponId : null;
       const nextWeaponPressed = tickInput.weaponNext && !previousWeaponNext;
       let nextWeaponId = null;
       if (nextWeaponPressed) {
         const start = WEAPON_ORDER.indexOf(weaponLoadout.activeWeaponId);
         for (let offset = 1; offset <= WEAPON_ORDER.length; offset += 1) {
           const candidate = WEAPON_ORDER[(start + offset) % WEAPON_ORDER.length];
-          if (ownsWeapon(candidate)) { nextWeaponId = candidate; break; }
+          if (weaponSelectable(candidate)) { nextWeaponId = candidate; break; }
         }
       }
       const requestedWeaponId = directWeaponId ?? nextWeaponId;

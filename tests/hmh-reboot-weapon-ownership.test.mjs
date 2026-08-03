@@ -190,3 +190,22 @@ test('the pistol itself never auto-falls back and fallback is deterministic', ()
   assert.equal(pistolState.activeWeaponId, 'coin-blaster');
   assert.ok(pistolFrame.events.some((event) => event.type === 'weapon:reload-start'), 'the pistol reloads instead');
 });
+
+test('the launcher declaration mirrors the authoritative grenade it fires', async () => {
+  const { HMH_GRENADE_DEFINITION } = await import('../apps/hmh-reboot/src/grenades.mjs');
+  const launcher = HMH_WEAPON_DEFINITIONS['launcher-rig'];
+  assert.equal(launcher.damage, HMH_GRENADE_DEFINITION.damage);
+  assert.equal(launcher.blastRadius, HMH_GRENADE_DEFINITION.blastRadius);
+  assert.equal(launcher.policy.radius, HMH_GRENADE_DEFINITION.blastRadius);
+});
+
+test('weapon cycling in the runtime skips exhausted pickups (mobile SWAP trap)', async () => {
+  // Cycle 048 review fix: with SWAP as the only mobile switch, selecting an
+  // exhausted weapon bounced back to the pistol next tick and made every
+  // later slot unreachable. The runtime must treat dead pickups as
+  // unselectable in both cycling and direct slots.
+  const source = await (await import('node:fs/promises')).readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /const weaponSelectable = \(id\) =>/);
+  assert.match(source, /weaponSelectable\(rawDirectWeaponId\)/);
+  assert.match(source, /if \(weaponSelectable\(candidate\)\)/);
+});
