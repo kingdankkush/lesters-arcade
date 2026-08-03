@@ -44,3 +44,16 @@ Replay note: item 3 is a simulation change; pre-049 replays diverge.
   evidence captures inspected by eye regardless)
 - certification five profiles; combat/collectibles smokes; mobile 4/4;
   perf PASS (bundle `1,040,559 / 1,050,000`); assets QA pass
+
+## Production promotion (owner-approved standing "push live")
+
+| Release fact | Verified value |
+| --- | --- |
+| Branch head deployed | `b866c17c` |
+| Production deployment ID | `dpl_A9ydUK3hgNA3GcBGMTMHC6N1v152` |
+| Immutable production URL | <https://lesters-arcade-5a6xqa2nq-justin-agent-projects.vercel.app> |
+| Public alias | <https://lestersarcade.io> |
+| Live verification | real-browser boot: session ready, pistol 8/8, HUD live (Security Checkpoint still blocks automated clients) |
+| Rollback | Cycle 048 (`ibu2j9z69`) |
+
+`SETTLEMENT_LIVE` untouched.
