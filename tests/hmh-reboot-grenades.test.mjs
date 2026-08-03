@@ -145,7 +145,7 @@ test('blast-edge hurtbox overlap clamps combat ordering time to the canonical un
     spawnTick: 0,
     detonateTick: 39,
   });
-  const blast = resolveGrenadeBlast({ grenade, targets: [hurt('edge', { x: 96, y: 0 })] });
+  const blast = resolveGrenadeBlast({ grenade, targets: [hurt('edge', { x: HMH_GRENADE_DEFINITION.blastRadius + 4, y: 0 })] });
   assert.equal(blast.hits.length, 1);
   assert.equal(blast.hits[0].time, 1);
 });

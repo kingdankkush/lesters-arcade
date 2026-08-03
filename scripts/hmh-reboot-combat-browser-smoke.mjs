@@ -228,7 +228,7 @@ async function desktopSmoke() {
   assert.ok(Number(melee.lastMeleeTick) > 0);
   assert.ok(grenadeWarning.grenadeCount > 0);
   assert.equal(grenadeWarning.activeGrenadeWarnings, grenadeWarning.grenadeCount, 'every live grenade needs one truthful warning');
-  assert.equal(grenadeWarning.activeGrenadeWarningRadius, 92, 'warning radius must match the authoritative Satoshi Frag radius');
+  assert.equal(grenadeWarning.activeGrenadeWarningRadius, 150, 'warning radius must match the authoritative Satoshi Frag radius');
   assert.equal(handGrenade.activeGrenadeWarnings, 0, 'warning must retire with the detonated grenade');
   assert.equal(handGrenade.handGrenades, 2);
   assert.notEqual(handGrenade.lastGrenadeTick, priorGrenadeTick);
@@ -332,7 +332,7 @@ async function mobileSmoke() {
   assert.ok(mobileState.minimapWidth > 0 && mobileState.minimapHeight > 0 && mobileState.minimapX >= 0 && mobileState.minimapY >= 0);
   assert.ok(Number(mobileState.lastMeleeTick) > 0);
   assert.equal(mobileGrenadeWarning.activeGrenadeWarnings, mobileGrenadeWarning.grenadeCount);
-  assert.equal(mobileGrenadeWarning.activeGrenadeWarningRadius, 92);
+  assert.equal(mobileGrenadeWarning.activeGrenadeWarningRadius, 150);
   assert.equal(mobileState.handGrenades, 2);
   assert.ok(mobileState.dashReadyTick > 0);
   assert.match(dashStatus, /Dash (?:active|\d+ seconds)/i);

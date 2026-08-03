@@ -9,7 +9,7 @@ const grenade = Object.freeze({
   position: Object.freeze({ x: 120, y: 240, z: 8 }),
   spawnTick: 10,
   detonateTick: 49,
-  blastRadius: 92,
+  blastRadius: 150,
 });
 
 test('grenade danger projection samples the authoritative blast radius on the ground plane', () => {

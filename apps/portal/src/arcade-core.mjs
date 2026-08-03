@@ -1709,8 +1709,10 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'satoshi-frag',
       title: 'Crypto Bombs',
-      damage: 14,
-      radiusPixels: 92,
+      // Owner playtest 2026-08-02: grenades need a bigger impact and much
+      // more area damage. 34 one-shots ordinaries inside a wider blast.
+      damage: 34,
+      radiusPixels: 150,
       fuseMs: 650,
       role: 'AOE throwable',
       animation: 'matte-black Ł-stamped bomb, arcing throw, blue-white blast flash',

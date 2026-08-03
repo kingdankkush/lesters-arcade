@@ -740,6 +740,12 @@ async function boot() {
   let motion = null;
   let aimState = null;
   let aimIntent = null;
+  // Render-only cursor tracking for the aim reticle; never feeds simulation.
+  let pointerReticleScreen = null;
+  window.addEventListener('pointermove', (event) => {
+    pointerReticleScreen = { x: event.clientX, y: event.clientY };
+  }, { passive: true });
+  if (stageElement) stageElement.style.cursor = 'none';
   let grayboxEnemies = [];
   let enemyPopulation = null;
   let encounterDirector = null;
@@ -1288,14 +1294,27 @@ async function boot() {
         projectileImpacts.circle(impact.x, impact.y, 10 + age * 1.7)
           .stroke({ color: 0xffd166, width: 4, alpha: Math.max(0.2, 1 - age / HIT_FEEDBACK_TICKS) });
       }
+      // Owner playtest 2026-08-02: no more aim line from the hero. Pointer
+      // aim shows a crosshair reticle at the cursor; gamepad/touch aim shows
+      // the same reticle at the projected aim point. Projection-only.
       aimLine.clear();
       if (aimIntent) {
-        const aimEnd = worldToScreen({
-          x: renderState.x + aimIntent.direction.x * 96,
-          y: renderState.y + aimIntent.direction.y * 96,
-          z: renderState.z,
-        }, camera, view);
-        aimLine.moveTo(screen.x, screen.y).lineTo(aimEnd.x, aimEnd.y).stroke({ color: aimIntent.fire ? 0xffd166 : 0x49ddff, width: 3, alpha: 0.85 });
+        const reticleColor = aimIntent.fire ? 0xffd166 : 0x49ddff;
+        const reticle = aimIntent.source === 'pointer' && pointerReticleScreen
+          ? pointerReticleScreen
+          : worldToScreen({
+            x: renderState.x + aimIntent.direction.x * 140,
+            y: renderState.y + aimIntent.direction.y * 140,
+            z: renderState.z,
+          }, camera, view);
+        const r = 11;
+        aimLine.circle(reticle.x, reticle.y, r).stroke({ color: reticleColor, width: 2, alpha: 0.9 });
+        aimLine.circle(reticle.x, reticle.y, 1.8).fill({ color: reticleColor, alpha: 0.95 });
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          aimLine.moveTo(reticle.x + dx * (r - 4), reticle.y + dy * (r - 4))
+            .lineTo(reticle.x + dx * (r + 5), reticle.y + dy * (r + 5))
+            .stroke({ color: reticleColor, width: 2, alpha: 0.9 });
+        }
       }
       shadow.position.set(groundScreen.x, groundScreen.y);
       actorVisual.position.set(atlasActorEnabled ? groundScreen.x : screen.x, atlasActorEnabled ? groundScreen.y : screen.y);

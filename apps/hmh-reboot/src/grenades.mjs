@@ -53,8 +53,11 @@ function stableTargetCenter(target) {
 export const HMH_GRENADE_DEFINITION = freezeDeep({
   id: 'satoshi-frag',
   title: 'Crypto Bombs',
-  damage: 14,
-  blastRadius: 92,
+  // Owner playtest 2026-08-02: bigger impact, bigger explosion, much more
+  // area damage. One-shots ordinary enemies inside a half-again-wider blast;
+  // knockback rises to match the new authority.
+  damage: 34,
+  blastRadius: 150,
   fuseTicks: 39,
   radius: 4,
   handSpeed: 360,
@@ -66,7 +69,7 @@ export const HMH_GRENADE_DEFINITION = freezeDeep({
   surfaceFriction: 0.72,
   minimumBounceSpeed: 40,
   maxBounces: 4,
-  knockback: 32,
+  knockback: 56,
   friendlyFire: 'self-damage',
 });
 

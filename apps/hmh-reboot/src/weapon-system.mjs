@@ -576,6 +576,20 @@ export function stepWeaponLoadout(state, {
   const events = [];
   coolWeaponHeat(state, tick, progressionByWeapon, events);
   completeReloads(state, tick, progressionByWeapon, events);
+  // Owner playtest 2026-08-02: an exhausted pickup stranded the player
+  // weaponless until death. A finite-reserve weapon with no clip, no
+  // reserve, and no reload in flight hands control back to the always-owned
+  // pistol immediately and deterministically.
+  const active = state.weapons[state.activeWeaponId];
+  if (state.activeWeaponId !== 'coin-blaster'
+    && active.ammoInClip <= 0
+    && active.reserveAmmo !== null && active.reserveAmmo <= 0
+    && active.reloadCompleteTick === null) {
+    const previousWeaponId = state.activeWeaponId;
+    state.activeWeaponId = 'coin-blaster';
+    state.switchReadyTick = tick + state.switchTicks;
+    events.push(freezeDeep({ type: 'weapon:auto-fallback', tick, previousWeaponId, weaponId: 'coin-blaster', readyTick: state.switchReadyTick }));
+  }
   if (!fire || tick < state.switchReadyTick) return freezeDeep({ tick, events });
   const normalizedDirection = normalize(direction);
   const weapon = state.weapons[state.activeWeaponId];

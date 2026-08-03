@@ -147,3 +147,46 @@ test('grants and reserve consumption are deterministic across identical runs', (
   };
   assert.deepEqual(run(), run());
 });
+
+test('an exhausted pickup weapon auto-falls back to the pistol (owner playtest 2026-08-02)', () => {
+  // The owner ran a shotgun dry and was stranded weaponless until death.
+  // When the active finite-reserve weapon has no clip, no reserve, and no
+  // reload in flight, the next step must hand control back to the pistol.
+  const state = newLoadout();
+  grantWeaponPickup(state, { tick: 1, weaponId: 'scatter-shotgun', select: true });
+  const shotgun = state.weapons['scatter-shotgun'];
+  // Exhaust it deterministically.
+  shotgun.reserveAmmo = 0;
+  shotgun.ammoInClip = 0;
+  const frame = stepWeaponLoadout(state, { tick: 5, fire: true, direction: { x: 1, y: 0 } });
+  assert.equal(state.activeWeaponId, 'coin-blaster', 'the pistol must take over');
+  const fallback = frame.events.find((event) => event.type === 'weapon:auto-fallback');
+  assert.ok(fallback, 'the step must announce the fallback');
+  assert.equal(fallback.previousWeaponId, 'scatter-shotgun');
+  assert.equal(fallback.weaponId, 'coin-blaster');
+});
+
+test('the pistol itself never auto-falls back and fallback is deterministic', () => {
+  const run = () => {
+    const state = newLoadout();
+    grantWeaponPickup(state, { tick: 1, weaponId: 'scatter-shotgun', select: true });
+    state.weapons['scatter-shotgun'].reserveAmmo = 0;
+    state.weapons['scatter-shotgun'].ammoInClip = 0;
+    const trace = [];
+    for (let tick = 5; tick < 30; tick += 1) {
+      const frame = stepWeaponLoadout(state, { tick, fire: true, direction: { x: 1, y: 0 } });
+      for (const event of frame.events) trace.push(`${event.tick}:${event.type}`);
+    }
+    return { trace, active: state.activeWeaponId };
+  };
+  const first = run();
+  assert.deepEqual(first, run());
+  assert.equal(first.active, 'coin-blaster');
+  assert.equal(first.trace.filter((entry) => entry.includes('auto-fallback')).length, 1, 'fallback fires exactly once');
+  // A pistol with an empty clip reloads (unlimited reserve) instead of falling back.
+  const pistolState = newLoadout();
+  pistolState.weapons['coin-blaster'].ammoInClip = 0;
+  const pistolFrame = stepWeaponLoadout(pistolState, { tick: 3, fire: true, direction: { x: 1, y: 0 } });
+  assert.equal(pistolState.activeWeaponId, 'coin-blaster');
+  assert.ok(pistolFrame.events.some((event) => event.type === 'weapon:reload-start'), 'the pistol reloads instead');
+});

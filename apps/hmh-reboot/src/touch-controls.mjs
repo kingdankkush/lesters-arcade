@@ -88,6 +88,16 @@ export class TouchControlState {
     return this.pointers.delete(pointerId);
   }
 
+  // Ground-truth release: when the platform reports no remaining touches, no
+  // control may stay engaged, regardless of which pointer events got lost on
+  // the way. Unlike cancelAll this keeps tap bookkeeping so a dash pair
+  // completed just before the release still lands.
+  endAllPointers() {
+    if (this.pointers.size === 0) return false;
+    this.pointers.clear();
+    return true;
+  }
+
   cancelAll() {
     this.pointers.clear();
     this.lastMoveTapAt = null;
@@ -219,6 +229,18 @@ export function createTouchControlAdapter({
   });
   surfaceListen('pointerup', endOwnedPointer);
   surfaceListen('pointercancel', endOwnedPointer);
+  // Owner playtest follow-through (2026-08-02): the mobile smoke proved a
+  // dropped synthesized pointerup can latch a stick ("hero kept moving after
+  // the touch ended"). Raw touch events are the ground truth the pointer
+  // stream sometimes loses: zero remaining touches releases everything.
+  const releaseWhenNoTouchesRemain = (event) => {
+    if (event.touches && event.touches.length === 0 && state.endAllPointers()) {
+      own(event);
+      sync();
+    }
+  };
+  surfaceListen('touchend', releaseWhenNoTouchesRemain);
+  surfaceListen('touchcancel', releaseWhenNoTouchesRemain);
 
   for (const role of ['move', 'aim']) {
     const element = makeControl(role, '', `hmh-touch-stick hmh-touch-stick--${role}`);

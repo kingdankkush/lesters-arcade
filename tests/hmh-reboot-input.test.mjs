@@ -315,3 +315,17 @@ test('runtime canvas is explicitly keyboard-focusable', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /app\.canvas\.tabIndex = 0/);
 });
+
+test('zero remaining touches releases every engaged control (dropped-pointerup guard)', async () => {
+  const { TouchControlState } = await import('../apps/hmh-reboot/src/touch-controls.mjs');
+  const state = new TouchControlState({ now: () => 1000 });
+  state.beginStick(7, 'move', { x: 100, y: 100 });
+  state.movePointer(7, { x: 160, y: 100 });
+  assert.ok(state.snapshot().moveX > 0, 'stick must be engaged before the release');
+  assert.equal(state.endAllPointers(), true);
+  assert.equal(state.snapshot().moveX, 0, 'no touches left must mean no movement');
+  assert.equal(state.endAllPointers(), false, 'a second release is a no-op');
+  const source = await (await import('node:fs/promises')).readFile(new URL('../apps/hmh-reboot/src/touch-controls.mjs', import.meta.url), 'utf8');
+  assert.match(source, /surfaceListen\('touchend', releaseWhenNoTouchesRemain\)/);
+  assert.match(source, /surfaceListen\('touchcancel', releaseWhenNoTouchesRemain\)/);
+});
