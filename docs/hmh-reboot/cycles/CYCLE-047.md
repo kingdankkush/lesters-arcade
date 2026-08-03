@@ -52,3 +52,16 @@ by the deterministic traces in the weapon and grenade suites.
   (grenade warning-radius locks updated 92 → 150)
 - mobile controls 4/4 twice consecutively after the release guard
 - performance p95 `7 / 7.1 ms`, bundle `1,040,127 / 1,050,000`
+
+## Production promotion (owner-approved standing "push live")
+
+| Release fact | Verified value |
+| --- | --- |
+| Branch head deployed | `d3f7d32b` (includes Cycle 046 `0d8b7a77`) |
+| Production deployment ID | `dpl_6ejFhMz2wiShWXv4V5QVnFcyvqgt` |
+| Immutable production URL | <https://lesters-arcade-h4s9ihqe9-justin-agent-projects.vercel.app> |
+| Public alias | <https://lestersarcade.io> — bundle byte-identical (`c7d9551f…`) |
+| Live certification | five profiles PASS against the public alias |
+| Rollback | Cycle 045 production (`6j600ilmk`) |
+
+`SETTLEMENT_LIVE` untouched.
