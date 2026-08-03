@@ -795,7 +795,10 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
 
   for (const feature of world.blockers) {
     const shape = feature.shape;
-    const anchors = shape.type === 'circle' ? [shape.center] : shape.type === 'capsule' ? [shape.a, shape.b] : shape.vertices;
+    // Circle shapes carry x/y directly (collision.mjs canonical form); the
+    // old `shape.center` read produced NaN projections that silently culled
+    // every circle blocker.
+    const anchors = shape.type === 'circle' ? [{ x: shape.x, y: shape.y }] : shape.type === 'capsule' ? [shape.a, shape.b] : shape.vertices;
     const points = anchors.map((point) => project({ ...point, z: 0 }));
     if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
     drawBlocker(layers.blockers, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));

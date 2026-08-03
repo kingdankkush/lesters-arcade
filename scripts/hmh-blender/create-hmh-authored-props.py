@@ -477,27 +477,33 @@ def build_asset(asset: dict) -> dict:
                 add(cone(f'{asset_id}_Head_{index}', (x + math.sin(r) * 0.03, y + math.cos(r) * 0.03, height + 0.10), 0.028, 0.16, head, asset_id))
         add(cube(f'{asset_id}_WaterGlint', (0.24, -0.14, 0.025), (0.07, 0.05, 0.012), accent, asset_id, bevel=0.006))
     elif shape == 'driftwood-log':
-        # Beached weathered log. Polish pass: the first thin horizontal
-        # cylinder read as a sliver — now a fat trunk with a big upturned
-        # root ball, raised branch arms, and a strong bleach/bark split.
-        bleach = material(f'{asset_id}_bleach', tone(palette['primary'], 1.4), roughness=0.82)
-        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 0.75), roughness=0.96)
-        ring = material(f'{asset_id}_ring', tone(palette['secondary'], 1.35), roughness=0.8)
-        log_yaw = math.radians(24)
-        add(cylinder(f'{asset_id}_Trunk', (0.05, 0.0, 0.22), 0.21, 1.05, primary, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
-        add(cylinder(f'{asset_id}_TrunkTaper', (0.52, 0.21, 0.19), 0.14, 0.36, bark, asset_id, vertices=10, rotation=(0, math.radians(86), log_yaw)))
-        # Upturned root ball: a broad disc with radiating root spokes.
-        root_center = (-0.52, -0.235)
-        add(cylinder(f'{asset_id}_RootDisc', (root_center[0], root_center[1], 0.34), 0.30, 0.10, bark, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
-        for index in range(6):
-            spoke_angle = math.radians(index * 60 + 12)
-            add(cube(f'{asset_id}_Root_{index}', (root_center[0] - 0.05, root_center[1] + math.cos(spoke_angle) * 0.26, 0.34 + math.sin(spoke_angle) * 0.26), (0.06, 0.05, 0.16), index % 2 and bark or primary, asset_id, bevel=0.015, rotation=(spoke_angle, 0.2, 0)))
-        add(cylinder(f'{asset_id}_RingFace', (root_center[0] + 0.055, root_center[1] + 0.02, 0.34), 0.185, 0.02, ring, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
-        add(cube(f'{asset_id}_TopBleach', (0.05, 0.02, 0.42), (0.46, 0.12, 0.025), bleach, asset_id, bevel=0.012, rotation=(0, 0, log_yaw)))
-        for index, (x, y, z, branch_yaw, pitch) in enumerate(((-0.12, 0.14, 0.44, 0.6, 55), (0.26, -0.10, 0.40, -0.8, 62), (0.44, 0.24, 0.34, 1.8, 48))):
-            add(cylinder(f'{asset_id}_Arm_{index}', (x, y, z), 0.045, 0.30, bark, asset_id, vertices=8, rotation=(math.radians(pitch), 0, branch_yaw)))
-            add(cone(f'{asset_id}_ArmTip_{index}', (x + math.sin(branch_yaw) * 0.08, y + math.cos(branch_yaw) * 0.08, z + 0.16), 0.04, 0.09, bleach, asset_id))
-        add(cube(f'{asset_id}_SandDrift', (0.34, -0.24, 0.035), (0.28, 0.14, 0.035), material(f'{asset_id}_sand', tone(palette['primary'], 0.72), roughness=0.98), asset_id, bevel=0.02, rotation=(0, 0, log_yaw)))
+        # Beached weathered log, third pass: the rotated root disc never read
+        # from the 55-degree camera. The root end is now a chunky faceted
+        # mass (the boulder recipe, which ships), the trunk is fat with a
+        # hard bleach/bark value split, and two upturned arms give the
+        # silhouette height.
+        bleach = material(f'{asset_id}_bleach', tone(palette['primary'], 1.45), roughness=0.82)
+        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 0.7), roughness=0.96)
+        log_yaw = math.radians(20)
+        add(cylinder(f'{asset_id}_Trunk', (0.10, 0.0, 0.24), 0.23, 1.00, primary, asset_id, vertices=12, rotation=(0, math.radians(86), log_yaw)))
+        add(cylinder(f'{asset_id}_TrunkTaper', (0.56, 0.19, 0.20), 0.15, 0.34, bark, asset_id, vertices=10, rotation=(0, math.radians(86), log_yaw)))
+        add(cube(f'{asset_id}_TopBleach', (0.10, 0.02, 0.46), (0.42, 0.13, 0.028), bleach, asset_id, bevel=0.012, rotation=(0, 0, log_yaw)))
+        add(cube(f'{asset_id}_SideBark', (0.10, -0.20, 0.24), (0.44, 0.03, 0.14), bark, asset_id, bevel=0.015, rotation=(0, 0, log_yaw)))
+        # Root mass: stacked faceted chunks rising above the trunk line.
+        root_chunks = (
+            (-0.46, -0.17, 0.30, 0.24, 0.22, 0.30, 0.1, 0.5, primary),
+            (-0.52, -0.10, 0.62, 0.17, 0.15, 0.16, -0.15, 1.2, bark),
+            (-0.36, -0.30, 0.52, 0.14, 0.12, 0.14, 0.2, -0.6, bleach),
+            (-0.60, -0.26, 0.44, 0.12, 0.11, 0.13, -0.1, 0.9, bark),
+        )
+        for index, (x, y, z, sx, sy, sz, rx, rz, mat) in enumerate(root_chunks):
+            add(cube(f'{asset_id}_RootChunk_{index}', (x, y, z), (sx, sy, sz), mat, asset_id, bevel=min(sx, sz) * 0.35, rotation=(rx, 0.0, rz)))
+        for index, (x, y, dz, rz) in enumerate(((-0.50, -0.02, 0.78, 0.4), (-0.40, -0.34, 0.68, -0.8), (-0.64, -0.18, 0.70, 1.5))):
+            add(cone(f'{asset_id}_RootSpike_{index}', (x, y, dz), 0.05, 0.20, bark if index % 2 else primary, asset_id, rotation=(0.35, 0.15 * index, rz)))
+        for index, (x, y, z, branch_yaw, pitch) in enumerate(((0.00, 0.16, 0.48, 0.6, 52), (0.34, -0.12, 0.42, -0.9, 60))):
+            add(cylinder(f'{asset_id}_Arm_{index}', (x, y, z), 0.05, 0.32, bark, asset_id, vertices=8, rotation=(math.radians(pitch), 0, branch_yaw)))
+            add(cone(f'{asset_id}_ArmTip_{index}', (x + math.sin(branch_yaw) * 0.09, y + math.cos(branch_yaw) * 0.09, z + 0.17), 0.045, 0.10, bleach, asset_id))
+        add(cube(f'{asset_id}_SandDrift', (0.38, -0.24, 0.035), (0.26, 0.13, 0.035), material(f'{asset_id}_sand', tone(palette['primary'], 0.72), roughness=0.98), asset_id, bevel=0.02, rotation=(0, 0, log_yaw)))
     elif shape == 'ruined-wall':
         # Broken L-shaped masonry segment. Polish pass: the first flat run
         # washed out — now taller (chest-high peaks), thicker, yawed 18

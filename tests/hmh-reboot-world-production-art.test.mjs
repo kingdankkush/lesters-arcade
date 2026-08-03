@@ -130,4 +130,9 @@ test('world art contract is production, layered, and never gains gameplay author
   const worldSource = read('apps/hmh-reboot/src/world-production-art.mjs');
   assert.match(worldSource, /const details = layers\.groundDetails;/);
   assert.match(worldSource, /layers\.details\.roundRect\(center\.x-s/);
+  // Cycle 046 regression guard: circle blockers project from the canonical
+  // x/y fields. The old `shape.center` read produced NaN anchors that
+  // silently culled every circle blocker from the render.
+  assert.match(worldSource, /shape\.type === 'circle' \? \[\{ x: shape\.x, y: shape\.y \}\]/);
+  assert.doesNotMatch(worldSource, /\[shape\.center\]/);
 });
