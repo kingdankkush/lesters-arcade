@@ -53,6 +53,8 @@ export function createCockpitUi({
     profileSeason: required(documentRef, 'hmhProfileSeason'),
     adapter: required(documentRef, 'hmhAdapterStatus'),
     pausePanel: required(documentRef, 'hmhPausePanel'),
+    controlsHint: documentRef.getElementById('hmhControlsHint'),
+    controlsHintDismiss: documentRef.getElementById('hmhControlsHintDismiss'),
     resume: required(documentRef, 'hmhResumeButton'),
     restart: required(documentRef, 'hmhRestartButton'),
     exit: required(documentRef, 'hmhExitButton'),
@@ -98,6 +100,18 @@ export function createCockpitUi({
         onSettingToggle(key, enabled);
       }
     });
+  }
+
+  // M1 first-run hint: dismissible, and it retires itself after a bounded
+  // on-screen time so it never covers sustained play.
+  const CONTROLS_HINT_MS = 12_000;
+  if (elements.controlsHintDismiss && elements.controlsHint) {
+    elements.controlsHintDismiss.addEventListener('click', () => {
+      elements.controlsHint.hidden = true;
+    });
+    documentRef.defaultView?.setTimeout?.(() => {
+      elements.controlsHint.hidden = true;
+    }, CONTROLS_HINT_MS);
   }
 
   return Object.freeze({
@@ -146,7 +160,12 @@ export function createCockpitUi({
     setPaused(paused) {
       elements.pausePanel.hidden = !paused;
       elements.menu.setAttribute('aria-expanded', String(paused));
-      if (paused) elements.resume.focus({ preventScroll: true });
+      if (paused) {
+        // Opening the menu exposes the full controls card, so the hint has
+        // served its purpose.
+        if (elements.controlsHint) elements.controlsHint.hidden = true;
+        elements.resume.focus({ preventScroll: true });
+      }
     },
     showUpgrade(snapshot) {
       elements.pausePanel.hidden = true;
@@ -196,6 +215,12 @@ export function createCockpitUi({
       elements.upgradeChoices.replaceChildren();
     },
     get menuOpen() { return !elements.pausePanel.hidden; },
+    dismissControlsHint() {
+      // M1: the first-run hint retires permanently once acknowledged, once
+      // the player opens the pause menu (the card lives there), or on the
+      // bounded timeout below. It must never sit over sustained gameplay.
+      if (elements.controlsHint) elements.controlsHint.hidden = true;
+    },
     destroy() {
       for (const remove of listeners.splice(0)) remove();
       elements.upgradeChoices.replaceChildren();

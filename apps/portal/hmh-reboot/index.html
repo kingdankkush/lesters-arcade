@@ -34,6 +34,11 @@
         <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Dash ready</output>
       </section>
 
+      <aside id="hmhControlsHint" class="hmh-controls-hint" role="status" aria-live="polite">
+        <strong>WASD</strong> move · <strong>Mouse</strong> aim · <strong>Right click</strong> grenade · <strong>1-4</strong> weapons · <strong>Esc</strong> for all controls
+        <button id="hmhControlsHintDismiss" type="button" aria-label="Dismiss controls hint">×</button>
+      </aside>
+
       <section id="hmhProfilePanel" class="hmh-glass-panel hmh-profile-panel" aria-label="Pilot profile" hidden>
         <span class="hmh-panel-kicker">Active pilot</span>
         <strong id="hmhProfileName">Standalone Developer</strong>
@@ -75,6 +80,20 @@
               <h2 id="hmhBuildTitle">Current build</h2>
               <p id="hmhBuildEmpty" class="hmh-build-empty">No upgrades acquired yet.</p>
               <ul id="hmhBuildSummary" class="hmh-build-summary" aria-label="Acquired run upgrades"></ul>
+            </section>
+            <section aria-labelledby="hmhControlsTitle">
+              <h2 id="hmhControlsTitle">Controls</h2>
+              <dl class="hmh-controls-card">
+                <div><dt>Move</dt><dd>WASD / Arrows</dd></div>
+                <div><dt>Aim</dt><dd>Mouse</dd></div>
+                <div><dt>Fire</dt><dd>Left click / Space</dd></div>
+                <div><dt>Grenade</dt><dd>Right click / F / G</dd></div>
+                <div><dt>Melee</dt><dd>E</dd></div>
+                <div><dt>Dash</dt><dd>Shift</dd></div>
+                <div><dt>Weapon slots</dt><dd>1 – 4</dd></div>
+                <div><dt>Pause</dt><dd>Esc</dd></div>
+                <div><dt>Touch</dt><dd>MOVE / AIM sticks, SWAP, POWER, double-tap MOVE to dash</dd></div>
+              </dl>
             </section>
           </div>
           <div class="hmh-menu-actions">
