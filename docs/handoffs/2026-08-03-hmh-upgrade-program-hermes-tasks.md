@@ -9,6 +9,13 @@ operational facts), `docs/hmh-reboot/ART-DIRECTION-GAMEWORLD.md` (creative
 authority), `2026-07-30-hmh-cycle-036-hermes-handoff.md` (architecture,
 bridge, Web3 truth).
 
+> **Status note (2026-08-05).** Fourteen of these tasks are now DONE and two
+> constraints have changed since this was written — the child bundle has 1.4 KB
+> of headroom left, and the props reproducibility gate has been observed flaky.
+> Read `2026-08-05-hmh-hermes-remaining-program.md` FIRST for current state,
+> what remains, and the pipeline facts learned building it. The budget table in
+> section 3 below is stale; the handoff has current numbers.
+
 This document is the **task backlog**. It is grounded in a live audit taken
 2026-08-03; every number below was measured, not remembered.
 
