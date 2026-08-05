@@ -3,7 +3,7 @@
 Date: 2026-08-05 PDT
 Author: Claude Fable 5
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (head at handoff: `a8638243`)
+Branch: `reboot/hmh-aaa-continuous` (T1 implementation head: `d059a2b1`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -101,8 +101,9 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | C2 combat feel | `1a901a2e` | Per-weapon recoil, directional impact spray. |
 | T2 ground decals | `5b1ac494` | 177 marks, baked to a runtime asset. |
 | A5 bridge kit | `4938bc21` | 6 parts; span/upright proportion split. |
+| T1 terrain patches | `d059a2b1` | 3 named sub-materials per district, blended by a wrapped deterministic mask into the existing six runtime tiles. |
 
-World props **26 → 61**. Visual scenes **8 → 10**. Tests **1,852 → 1,983**
+World props **26 → 61**. Visual scenes **8 → 10**. Tests **1,852 → 1,984**
 (expected failures still 51).
 
 ### New pipelines you can reuse
@@ -116,6 +117,12 @@ World props **26 → 61**. Visual scenes **8 → 10**. Tests **1,852 → 1,983**
   decoded at 1.082 and clipped. `npm run smoke:hmh:weapon-sfx` gates it.
 - **`scripts/build-hmh-world-decals.mjs`** — bakes decal placements to an asset.
   The pattern to copy whenever derived data would otherwise cost bundle bytes.
+- **`scripts/build-hmh-terrain-tiles.py` patch baking** — each district declares
+  three named sub-material recipes. A wrapped FBM selector at periods 2/4/8
+  blends those recipes into the district's existing 512px tile, before its
+  fringe is derived. The runtime still loads the same 11 files and uses the
+  same pooled `TilingSprite` path. Manifest schema 2 records the mask seed,
+  periods and palettes; no child JS or request was added.
 
 ---
 
@@ -165,20 +172,22 @@ the assumption they were stable.
 
 ## 3. What to pick up, in order
 
-### Immediate: finish Wave 2
-
-**T1 — intra-district material patches** *(the only Wave 2 item left)*.
-2–3 sub-materials per biome plus a deterministic patch mask, so a district reads
-as varied ground rather than one fill. Files: `build-hmh-terrain-tiles.py`,
-`terrain-tile-atlas.mjs`, `world-production-art.mjs`. Accept: no seams, no perf
-regression, variety visible across all **10** scenes. It wants its own session —
-baking, masking and seam verification are each non-trivial.
-
-### Then: unblock the code path
+### Immediate: unblock the code path
 
 **P6 legacy code triage**, then **U10 portal modularization**. Everything in
 Waves 4 and 6 is gated behind bundle headroom. Doing these two first is worth
 more than any single feature slice.
+
+Wave 2 is now complete. T1 landed at `d059a2b1`: six district tiles each bake
+three named sub-materials through a deterministic wrapped mask. Regeneration
+was byte-identical across consecutive runs; all 10 scenes were inspected and
+accepted; bundle bytes and runtime sprite/request counts did not change.
+
+The full gate exposed two pre-existing certification defects, repaired
+separately at `1f27add0`: mobile/short-landscape pause actions were below the
+initial viewport, and DPR-3 anchor captures needed image decode + compositor
+warm-up. The behavioral gates failed before the fixes and pass afterward; no
+threshold was weakened.
 
 ### Then: Wave 4, which now has its evidence
 
@@ -253,14 +262,17 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        1983 / 1932 passed / 51 expected failures   PASS
+test:release        1984 / 1933 passed / 51 expected failures   PASS
 visual regression   10 scenes                                    PASS
-performance         p95 7.0-7.1 ms both profiles                 PASS
+performance         p95 7.0 ms both profiles                     PASS
 bundle              1,048,584 / 1,050,000                        PASS (1.4 KB left)
 prop atlas          326,439 / 524,288                            PASS
 security audit      5/5, 0 findings                              PASS
 web3 audit          9/9                                          PASS
 portal E2E          all implemented flows                        PASS
+browser certify     5 profiles, zero anchor-pixel delta          PASS
+network audit       4 clean/warm scenarios, zero errors          PASS
+Vercel build        production-shape .vercel/output              PASS
 weapon SFX decode   6 cues, peaks < 1.0                          PASS
 ```
 

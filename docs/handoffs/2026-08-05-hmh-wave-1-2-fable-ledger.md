@@ -1,14 +1,14 @@
-# Cycle ledger — upgrade program Waves 1 and 2 (partial)
+# Cycle ledger — upgrade program Waves 1 and 2 (complete)
 
 Date: 2026-08-05 PDT
-Author: Claude Fable 5
-Branch: `reboot/hmh-aaa-continuous` (head at close: `4938bc21`)
+Author: Claude Fable 5 + Hermes Agent
+Branch: `reboot/hmh-aaa-continuous` (T1 implementation head: `d059a2b1`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
-Fifteen slices, each RED-tested first, gated, reviewed against the exact staged
-index, committed and pushed separately. **Production was not promoted** — that
-remains the owner's from the Vercel dashboard. Pushing the branch creates a
-Preview only.
+Fifteen program tasks, each RED-tested first, gated, reviewed against the exact
+staged index, and committed separately. T1 also exposed one prerequisite
+certification-repair commit. **Production was not promoted** — that remains the
+owner's from the Vercel dashboard. Pushing the branch creates a Preview only.
 
 ---
 
@@ -30,9 +30,10 @@ Preview only.
 | C2 combat feel | `1a901a2e` | Per-weapon recoil weight, directional impact spray. |
 | T2 ground decals | `5b1ac494` | 177 contract-anchored marks, baked to a runtime asset. |
 | A5 bridge kit | `4938bc21` | 6 bridge parts; span/upright proportion split. |
+| T1 terrain patches | `d059a2b1` | Three named sub-materials per district, wrapped deterministic patch masks, same runtime tile/request count. |
 
 World-prop library: **26 → 61**. Prop atlas 178,089 B → 326,439 B against a
-524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,983**, expected
+524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,984**, expected
 failures still 51.
 
 ## Non-art pipelines added
@@ -53,6 +54,29 @@ clears 8; coin-blaster runs its reserve dry at 3 kills; **scatter-shotgun kills
 1 of 4** because its spread has dispersed past the pack by 420 units. That last
 one is counter-intuitive and is a finding for S5 — not tuned here, because
 changing values in the slice that produced the evidence defeats the point.
+
+**Terrain sub-material patch bake** (`scripts/build-hmh-terrain-tiles.py`).
+Each of the six district materials now owns three named palette/relief recipes.
+A wrapped FBM field at periods 2/4/8 smoothly selects low/base/high variants,
+then the composite is saved over the same district tile and used to derive the
+existing fringe. Manifest schema 2 records `districtPatches`, mask seeds and
+variant palettes. This is projection-only and bundle-neutral: 11 runtime tile
+requests before and after, with no atlas or renderer code change.
+
+Two consecutive generator runs produced byte-identical district tiles, fringes
+and manifest. The focused terrain/world set passed 25/25. All 10 runtime scenes
+were inspected before baseline acceptance, then reran with zero changed cells
+(the animated crossing-water scene had max channel delta 1). Performance ended
+at p95 7.0 ms desktop/mobile and the child bundle stayed 1,048,584 B.
+
+**Certification prerequisites** (`1f27add0`). The T1 full gate found two older
+failures outside terrain: mobile portrait and short landscape placed all three
+pause actions below the initial viewport, and fresh DPR-3 GPU contexts could
+differ by one channel step before their first screenshot. The fixes keep the
+44px actions in a fixed footer while the dense pause content scrolls, and wait
+for images/fonts plus warm the compositor before the strict anchor. The
+original thresholds remain unchanged. Cockpit passes four profiles and release
+certification passes five with zero anchor-pixel delta.
 
 ---
 
@@ -136,7 +160,7 @@ Nothing new was allowed below 0.55.
 
 ## The bundle budget is now the binding constraint
 
-**Child JS bundle: 1,048,368 B against a 1,050,000 B cap — 1,632 B left.**
+**Child JS bundle: 1,048,584 B against a 1,050,000 B cap — 1,416 B left.**
 
 This arc consumed the 9.4 KB the program started with. T2 hit the wall
 directly: its placement logic cost 4,451 B against 3,218 B of headroom, and
@@ -188,10 +212,9 @@ Two consequences:
   gate captures a paused frame that may never land on an active shake.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
-- **Wave 2 remaining: T1 intra-district material patches only.** A5 and T2 are
-  done. T1 is the biggest of the three: it needs 2-3 sub-materials baked per
-  biome, a deterministic patch mask, and seam verification across all 10 visual
-  scenes, so it wants its own session rather than a tail-end slice.
+- **Wave 2 is complete.** A5, T2 and T1 are closed with deterministic generated
+  assets and 10-scene visual evidence. The next program move is P6 legacy-code
+  triage, followed by U10 portal modularization, to recover bundle headroom.
 - **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
   rebalance now have the swarm evidence they were missing. The shotgun's
   mid-range swarm result is the first thing to look at.
@@ -203,4 +226,8 @@ Two consequences:
 
 Production was NOT promoted and remains the owner's call from the Vercel
 dashboard. The Vercel Security Checkpoint still 403s automated clients, so
-live verification has to happen in a real browser regardless.
+live verification has to happen in a real browser regardless. T1's final gate
+also passed the 1,984-test release suite, syntax, generated assets, contract
+structure, security, Web3 audit, four-scenario network audit, six-flow portal
+E2E, browser certification, cockpit smoke, and a wrapped Windows production-
+shape `vercel build`. `SETTLEMENT_LIVE` was not changed.

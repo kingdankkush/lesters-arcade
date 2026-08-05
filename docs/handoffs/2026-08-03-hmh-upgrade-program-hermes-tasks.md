@@ -9,7 +9,8 @@ operational facts), `docs/hmh-reboot/ART-DIRECTION-GAMEWORLD.md` (creative
 authority), `2026-07-30-hmh-cycle-036-hermes-handoff.md` (architecture,
 bridge, Web3 truth).
 
-> **Status note (2026-08-05).** Fourteen of these tasks are now DONE and two
+> **Status note (2026-08-05, updated after T1).** Fifteen of these tasks are now
+> DONE, Wave 2 is complete, and two
 > constraints have changed since this was written — the child bundle has 1.4 KB
 > of headroom left, and the props reproducibility gate has been observed flaky.
 > Read `2026-08-05-hmh-hermes-remaining-program.md` FIRST for current state,
