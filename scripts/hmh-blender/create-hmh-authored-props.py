@@ -990,6 +990,178 @@ def build_asset(asset: dict) -> dict:
             ))
         add(cube(f'{asset_id}_Fleck', (0.14, -0.24, 0.34), (0.030, 0.018, 0.026), accent, asset_id, bevel=0.008))
 
+    # --- A1 trees, second generation --------------------------------------
+    # The first generation was four conifer-ish shapes, so a forest read as one
+    # species repeated. These are chosen for silhouette contrast: pale
+    # multi-stem, low thicket, bare snag, one-sided canopy, and a fallen trunk
+    # whose ROOT PLATE does the vertical work (a horizontal log is the exact
+    # shape driftwood-log failed three passes on).
+    elif shape == 'birch-cluster':
+        # Three pale slender stems from one base, canopy high and narrow.
+        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 1.42), roughness=0.84)
+        bark_dark = material(f'{asset_id}_bark_dark', tone(palette['secondary'], 0.95), roughness=0.9)
+        leaf = material(f'{asset_id}_leaf', palette['primary'], roughness=0.86)
+        leaf_lit = material(f'{asset_id}_leaf_lit', tone(palette['primary'], 1.30), roughness=0.76)
+        for index, (x0, lean, height, mat) in enumerate((
+            (-0.13, -0.05, 1.16, bark), (0.02, 0.03, 1.42, bark), (0.15, 0.07, 1.02, bark_dark),
+        )):
+            trunk = [
+                (x0 - 0.036, 0.0), (x0 - 0.030 + lean * 0.5, height * 0.55),
+                (x0 - 0.022 + lean, height), (x0 + 0.022 + lean, height),
+                (x0 + 0.030 + lean * 0.5, height * 0.55), (x0 + 0.036, 0.0),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Trunk_{index}', trunk, -0.05, 0.05, mat, asset_id))
+            for band in range(3):
+                z = height * (0.28 + 0.22 * band)
+                parts.append(prism_mesh(
+                    f'{asset_id}_Band_{index}_{band}',
+                    [(x0 - 0.030, z), (x0 + 0.030, z), (x0 + 0.030, z + 0.026), (x0 - 0.030, z + 0.026)],
+                    -0.07, -0.05, bark_dark, asset_id,
+                ))
+        canopies = (
+            (-0.11, 1.18, 0.20, 0.06, leaf),
+            (0.05, 1.46, 0.22, -0.02, leaf_lit),
+            (0.21, 1.04, 0.17, 0.10, leaf),
+            (-0.02, 1.30, 0.16, 0.14, leaf_lit),
+        )
+        for index, (x, z, r, depth, mat) in enumerate(canopies):
+            crown = [
+                (x - r, z), (x - r * 0.62, z + r * 0.85), (x, z + r * 1.15),
+                (x + r * 0.66, z + r * 0.80), (x + r, z - r * 0.10), (x + r * 0.4, z - r * 0.45),
+                (x - r * 0.45, z - r * 0.42),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Crown_{index}', crown, depth - 0.07, depth + 0.07, mat, asset_id))
+        add(cube(f'{asset_id}_Fleck', (0.06, -0.13, 1.52), (0.030, 0.020, 0.026), accent, asset_id, bevel=0.008))
+    elif shape == 'sapling-thicket':
+        # Many thin young stems, low and dense. The wide-but-short mass is
+        # deliberate contrast against the tall singles around it.
+        stem = material(f'{asset_id}_stem', tone(palette['secondary'], 0.9), roughness=0.9)
+        leaf = material(f'{asset_id}_leaf', palette['primary'], roughness=0.86)
+        leaf_lit = material(f'{asset_id}_leaf_lit', tone(palette['primary'], 1.28), roughness=0.78)
+        leaf_dark = material(f'{asset_id}_leaf_dark', tone(palette['primary'], 0.68), roughness=0.9)
+        # Second pass: pulled in from 0.45 wide and raised, so young growth
+        # reads as vertical rather than as a low hedge.
+        saplings = (
+            (-0.13, 0.72, -0.04, leaf_dark), (-0.06, 0.94, 0.05, leaf),
+            (0.01, 0.82, -0.09, leaf_lit), (0.08, 1.02, 0.02, leaf),
+            (0.14, 0.78, -0.06, leaf_dark), (-0.02, 0.64, 0.10, leaf_lit),
+        )
+        for index, (x, height, depth, mat) in enumerate(saplings):
+            parts.append(prism_mesh(
+                f'{asset_id}_Stem_{index}',
+                [(x - 0.016, 0.0), (x - 0.012, height * 0.7), (x + 0.012, height * 0.7), (x + 0.016, 0.0)],
+                depth - 0.02, depth + 0.02, stem, asset_id,
+            ))
+            r = 0.085
+            leaf_shape = [
+                (x - r, height * 0.58), (x - r * 0.5, height * 0.88), (x, height + 0.06),
+                (x + r * 0.55, height * 0.86), (x + r, height * 0.56), (x, height * 0.44),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Leaf_{index}', leaf_shape, depth - 0.05, depth + 0.05, mat, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_Litter',
+            [(-0.17, 0.0), (-0.11, 0.055), (0.04, 0.05), (0.13, 0.06), (0.17, 0.0)],
+            -0.14, 0.10, material(f'{asset_id}_litter', tone(palette['secondary'], 0.66), roughness=0.97), asset_id,
+        ))
+        add(cube(f'{asset_id}_Fleck', (0.08, -0.12, 0.86), (0.028, 0.018, 0.024), accent, asset_id, bevel=0.008))
+    elif shape == 'burned-snag':
+        # A dead standing trunk, charred, with broken limbs. Bare silhouette is
+        # the whole read, so the limbs stay part of the trunk profile.
+        char = material(f'{asset_id}_char', tone(palette['primary'], 0.42), roughness=0.97)
+        char_lit = material(f'{asset_id}_char_lit', tone(palette['primary'], 0.78), roughness=0.9)
+        ash = material(f'{asset_id}_ash', tone(palette['secondary'], 1.25), roughness=0.95)
+        trunk = [
+            (-0.085, 0.0), (-0.070, 0.52), (-0.058, 1.02), (-0.030, 1.44),
+            (0.008, 1.38), (0.030, 0.98), (0.052, 0.50), (0.078, 0.0),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_Trunk', trunk, -0.07, 0.07, char, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_TrunkLit',
+            [(-0.028, 0.06), (-0.020, 1.36), (0.008, 1.32), (0.020, 0.06)],
+            -0.10, -0.07, char_lit, asset_id,
+        ))
+        limbs = (
+            ([(-0.06, 0.92), (-0.22, 1.14), (-0.27, 1.08), (-0.06, 0.82)], -0.05, 0.02, char),
+            ([(0.04, 1.10), (0.21, 1.28), (0.24, 1.20), (0.04, 1.00)], 0.02, 0.08, char_lit),
+            ([(-0.05, 0.56), (-0.18, 0.66), (-0.20, 0.59), (-0.05, 0.48)], 0.03, 0.09, char),
+            ([(0.05, 0.68), (0.16, 0.80), (0.18, 0.73), (0.05, 0.60)], -0.09, -0.04, char_lit),
+        )
+        for index, (profile, y0, y1, mat) in enumerate(limbs):
+            parts.append(prism_mesh(f'{asset_id}_Limb_{index}', profile, y0, y1, mat, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_AshRing',
+            [(-0.20, 0.0), (-0.13, 0.045), (0.05, 0.04), (0.17, 0.05), (0.21, 0.0)],
+            -0.16, 0.12, ash, asset_id,
+        ))
+        add(cube(f'{asset_id}_Ember', (-0.02, -0.12, 0.40), (0.026, 0.016, 0.022), accent, asset_id, bevel=0.007))
+    elif shape == 'canopy-edge-tree':
+        # Asymmetric crown: full on one side, cut back on the other, the way a
+        # tree grows at a treeline. Gives a forest edge a real boundary.
+        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 0.86), roughness=0.92)
+        leaf = material(f'{asset_id}_leaf', palette['primary'], roughness=0.86)
+        leaf_lit = material(f'{asset_id}_leaf_lit', tone(palette['primary'], 1.30), roughness=0.76)
+        leaf_dark = material(f'{asset_id}_leaf_dark', tone(palette['primary'], 0.66), roughness=0.9)
+        trunk = [(-0.07, 0.0), (-0.05, 0.44), (-0.02, 0.70), (0.05, 0.70), (0.06, 0.42), (0.09, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Trunk', trunk, -0.06, 0.06, bark, asset_id))
+        for index, (profile, y0, y1, mat) in enumerate((
+            # Crown mass leans hard to +x; the -x side is clipped nearly flat.
+            ([(-0.06, 0.62), (-0.09, 0.92), (0.02, 1.14), (0.20, 1.10), (0.33, 0.92), (0.30, 0.66), (0.10, 0.56)], 0.02, 0.16, leaf_dark),
+            ([(-0.04, 0.70), (-0.06, 0.96), (0.06, 1.16), (0.24, 1.10), (0.34, 0.90), (0.28, 0.70), (0.08, 0.62)], -0.10, 0.02, leaf),
+            ([(0.00, 0.76), (0.02, 1.04), (0.14, 1.12), (0.26, 0.98), (0.22, 0.78), (0.08, 0.70)], -0.18, -0.10, leaf_lit),
+        )):
+            parts.append(prism_mesh(f'{asset_id}_Crown_{index}', profile, y0, y1, mat, asset_id))
+        for index, (profile, y0, y1) in enumerate((
+            ([(0.02, 0.62), (0.20, 0.72), (0.21, 0.65), (0.02, 0.54)], -0.04, 0.02),
+            ([(-0.02, 0.50), (-0.14, 0.58), (-0.15, 0.52), (-0.02, 0.44)], 0.03, 0.08),
+        )):
+            parts.append(prism_mesh(f'{asset_id}_Branch_{index}', profile, y0, y1, bark, asset_id))
+        add(cube(f'{asset_id}_Fleck', (0.18, -0.19, 0.94), (0.030, 0.018, 0.026), accent, asset_id, bevel=0.008))
+    elif shape == 'fallen-trunk':
+        # A toppled tree. The trunk is horizontal, which is the shape that
+        # killed driftwood-log, so the ROOT PLATE carries the silhouette: a
+        # tall upended disc of soil and torn roots standing clear of the log.
+        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 0.80), roughness=0.94)
+        wood = material(f'{asset_id}_wood', tone(palette['secondary'], 1.30), roughness=0.86)
+        soil = material(f'{asset_id}_soil', tone(palette['primary'], 0.58), roughness=0.98)
+        moss = material(f'{asset_id}_moss', palette['primary'], roughness=0.94)
+        # Root plate: upright, tall, and frontmost so nothing occludes it.
+        # Third pass: the roots splayed to x=-0.56 and held the asset at 0.52
+        # h/w, under granite-boulder's shipping 0.62. Roots pulled in, plate
+        # raised, so the upended disc reads as tall rather than sprawling.
+        plate = [
+            (-0.34, 0.02), (-0.38, 0.40), (-0.32, 0.74), (-0.20, 0.94), (-0.07, 0.88),
+            (-0.03, 0.58), (-0.06, 0.24), (-0.12, 0.02),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_RootPlate', plate, -0.20, -0.04, soil, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_PlateFace',
+            [(-0.30, 0.14), (-0.32, 0.50), (-0.22, 0.74), (-0.10, 0.62), (-0.10, 0.18)],
+            -0.26, -0.20, wood, asset_id,
+        ))
+        for index, (profile) in enumerate((
+            [(-0.36, 0.66), (-0.44, 0.86), (-0.38, 0.90), (-0.30, 0.74)],
+            [(-0.24, 0.88), (-0.27, 1.06), (-0.19, 1.04), (-0.18, 0.86)],
+            [(-0.37, 0.34), (-0.46, 0.42), (-0.44, 0.50), (-0.34, 0.44)],
+        )):
+            parts.append(prism_mesh(f'{asset_id}_Root_{index}', profile, -0.24, -0.16, bark, asset_id))
+        # Second pass: the log ran to x=0.48 as a thin sliver, which dominated
+        # the bounding box and dragged the asset to 0.39 h/w -- driftwood-log
+        # territory. It is now short and thick, a broken stump end rather than
+        # a plank, so the root plate stays the silhouette.
+        log = [(-0.12, 0.08), (-0.10, 0.40), (0.20, 0.36), (0.23, 0.05)]
+        parts.append(prism_mesh(f'{asset_id}_Log', log, -0.16, 0.12, bark, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_LogTop',
+            [(-0.11, 0.37), (0.21, 0.33), (0.21, 0.42), (-0.11, 0.46)],
+            -0.17, -0.11, moss, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_LogEnd',
+            [(0.19, 0.06), (0.17, 0.35), (0.24, 0.33), (0.26, 0.05)],
+            -0.14, -0.06, wood, asset_id,
+        ))
+        add(cube(f'{asset_id}_Fleck', (-0.19, -0.27, 0.56), (0.028, 0.016, 0.024), accent, asset_id, bevel=0.008))
+
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 

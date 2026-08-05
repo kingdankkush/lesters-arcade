@@ -821,6 +821,81 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "birch-cluster",
+      "category": "world-prop",
+      "shape": "birch-cluster",
+      "palette": {
+        "primary": "#7fa85c",
+        "secondary": "#cfd4c6",
+        "accent": "#e8f0a0"
+      },
+      "runtimeScale": 0.9,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "sapling-thicket",
+      "category": "world-prop",
+      "shape": "sapling-thicket",
+      "palette": {
+        "primary": "#4a7a42",
+        "secondary": "#5d4a30",
+        "accent": "#a8e070"
+      },
+      "runtimeScale": 0.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "burned-snag",
+      "category": "world-prop",
+      "shape": "burned-snag",
+      "palette": {
+        "primary": "#4a4038",
+        "secondary": "#8a8078",
+        "accent": "#ff9a4d"
+      },
+      "runtimeScale": 0.92,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "canopy-edge-tree",
+      "category": "world-prop",
+      "shape": "canopy-edge-tree",
+      "palette": {
+        "primary": "#356b41",
+        "secondary": "#584028",
+        "accent": "#9fe86a"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "fallen-trunk",
+      "category": "world-prop",
+      "shape": "fallen-trunk",
+      "palette": {
+        "primary": "#4f6b45",
+        "secondary": "#6b5540",
+        "accent": "#c9e88a"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }

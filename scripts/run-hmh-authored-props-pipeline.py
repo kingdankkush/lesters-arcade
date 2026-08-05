@@ -88,7 +88,27 @@ def analyse(manifest: dict, raw_dir: Path) -> list[dict]:
         pivot=(expected_size[0]//2,min(expected_size[1]-4,y1))
         x0=min(x0,pivot[0]); x1=max(x1,pivot[0]+1); y1=max(y1,pivot[1]+1)
         opaque=sum(1 for value in alpha.tobytes() if value>threshold)
-        records.append({'asset':asset,'image':image,'bbox':(x0,y0,x1,y1),'pivot':pivot,'sourcePixelSha256':digest,'opaquePixels':opaque})
+        # Vertical mass centroid over the trimmed silhouette, 0.0 at the top
+        # edge and 1.0 at the bottom. This is the cheapest descriptor that
+        # separates shapes an aspect ratio cannot: a conifer carries its mass
+        # low and tapers to a point (high value), a canopy tree carries a
+        # crown over a thin trunk (low value). Silhouette-variety checks use
+        # it so two props with matching proportions still have to look
+        # different. Deterministic: derived from the same canonical pixels as
+        # sourcePixelSha256.
+        alpha_bytes=alpha.tobytes()
+        width_px=expected_size[0]
+        weighted=0
+        counted=0
+        for index,value in enumerate(alpha_bytes):
+            if value>threshold:
+                row=index//width_px
+                if y0<=row<y1:
+                    weighted+=row-y0
+                    counted+=1
+        span=max(1,y1-y0-1)
+        centroid_y=round(weighted/counted/span,6) if counted else 0.0
+        records.append({'asset':asset,'image':image,'bbox':(x0,y0,x1,y1),'pivot':pivot,'sourcePixelSha256':digest,'opaquePixels':opaque,'massCentroidY':centroid_y})
     duplicates=[ids for ids in hashes.values() if len(ids)>1]
     if duplicates:
         raise RuntimeError(f'Authored prop duplicate rendered assets: {duplicates}')
@@ -127,7 +147,8 @@ def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_
             'itemUrl':f"./items/{asset['assetId']}.png",
             'districts':asset.get('districts',[]),'runtimeScale':asset['runtimeScale'],'frame':{'x':ax,'y':ay,'w':width,'h':height},
             'pivot':{'x':pivot_x,'y':pivot_y},'anchor':{'x':round(pivot_x/max(width,1),6),'y':round(pivot_y/max(height,1),6)},
-            'opaquePixels':record['opaquePixels'],'sourcePixelSha256':record['sourcePixelSha256'],'rotated':False,'trimmed':True,
+            'opaquePixels':record['opaquePixels'],'massCentroidY':record['massCentroidY'],
+            'sourcePixelSha256':record['sourcePixelSha256'],'rotated':False,'trimmed':True,
         })
     atlas_path=output_dir/'hmh-authored-props-atlas.png'; atlas.save(atlas_path,optimize=False,compress_level=9)
     metadata={
