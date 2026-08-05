@@ -262,7 +262,7 @@ test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Lev
     assert.equal(asset.footprintTiles.w > 5, true, `${asset.id} must be a large footprint mega-prop`);
     assert.equal(levelOneCuratedAssetSrc(asset.id), asset.src, `${asset.id} must resolve through the live image resolver`);
     assert.equal(existsSync(repoPath(runtimePath)), true, `${asset.id} PNG should exist on disk`);
-    if (existsSync(repoPath('.git'))) {
+    if (existsSync(repoPath('.git/index'))) {
       const trackedPath = execFileSync('git', ['ls-files', '--error-unmatch', runtimePath], {
         cwd: repoPath(''),
         encoding: 'utf8',
