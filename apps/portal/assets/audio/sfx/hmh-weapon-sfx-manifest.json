@@ -1,0 +1,96 @@
+{
+  "pipelineId": "hmh-weapon-sfx-v1",
+  "license": "synthesised-in-repo",
+  "runtimeAuthority": "projection-only",
+  "sampleRate": 22050,
+  "channels": 1,
+  "bitDepth": 16,
+  "notes": "Rendered by scripts/build-hmh-weapon-sfx.py from pure-Python DSP with a fixed xorshift32 PRNG. Regenerate with npm run assets:hmh:weapon-sfx.",
+  "cues": {
+    "hmh-fire-auto-miner": {
+      "src": "./assets/audio/sfx/hmh-fire-auto-miner.wav",
+      "bytes": 4894,
+      "format": "wav",
+      "durationMs": 110,
+      "sha256": "800504c76aa767761d4b3b2215ca1ab5e06d0dfa82045982e863552291f830e2",
+      "synth": {
+        "seed": 172429585,
+        "lowpassHz": 6200,
+        "drive": 2.6,
+        "peak": 0.66,
+        "layers": 3
+      }
+    },
+    "hmh-fire-coin-blaster": {
+      "src": "./assets/audio/sfx/hmh-fire-coin-blaster.wav",
+      "bytes": 6658,
+      "format": "wav",
+      "durationMs": 150,
+      "sha256": "e6ea7a229b29ac47e5f28b11748443889054f4b515cf5446f73633fed639d193",
+      "synth": {
+        "seed": 201437605,
+        "lowpassHz": 7600,
+        "drive": 1.5,
+        "peak": 0.7,
+        "layers": 3
+      }
+    },
+    "hmh-fire-launcher-rig": {
+      "src": "./assets/audio/sfx/hmh-fire-launcher-rig.wav",
+      "bytes": 22976,
+      "format": "wav",
+      "durationMs": 520,
+      "sha256": "a982d2115e82708bf3c36f80885734cfe5de7cf26b3070f164413f4cc1d55d09",
+      "synth": {
+        "seed": 437014034,
+        "lowpassHz": 2400,
+        "drive": 1.8,
+        "peak": 0.78,
+        "layers": 3
+      }
+    },
+    "hmh-fire-scatter-shotgun": {
+      "src": "./assets/audio/sfx/hmh-fire-scatter-shotgun.wav",
+      "bytes": 18566,
+      "format": "wav",
+      "durationMs": 420,
+      "sha256": "9cac641f56a220c7a3c2161643baca9af63c5608371d95541ea9de3b67999020",
+      "synth": {
+        "seed": 1548161588,
+        "lowpassHz": 4200,
+        "drive": 2.1,
+        "peak": 0.76,
+        "layers": 3
+      }
+    },
+    "hmh-weapon-empty": {
+      "src": "./assets/audio/sfx/hmh-weapon-empty.wav",
+      "bytes": 4012,
+      "format": "wav",
+      "durationMs": 90,
+      "sha256": "d8817fb81220604f55b520532df31b22e83bb8b8e85a92620425582c19b05874",
+      "synth": {
+        "seed": 1026293760,
+        "lowpassHz": 6800,
+        "drive": 1.2,
+        "peak": 0.46,
+        "layers": 2
+      }
+    },
+    "hmh-weapon-reload": {
+      "src": "./assets/audio/sfx/hmh-weapon-reload.wav",
+      "bytes": 14156,
+      "format": "wav",
+      "durationMs": 320,
+      "sha256": "6f66aa1eb17eaf882fcd15ce67e76cb6680bc2209e514db13cc05319fcf24379",
+      "synth": {
+        "seed": 772844919,
+        "lowpassHz": 5400,
+        "drive": 1.4,
+        "peak": 0.58,
+        "layers": 4
+      }
+    }
+  },
+  "reproducibleVerified": true
+}

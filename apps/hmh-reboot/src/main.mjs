@@ -2,6 +2,7 @@ import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Text
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
+import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
 import { computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
@@ -2248,13 +2249,24 @@ async function boot() {
           fire: aimIntent.fire,
           direction: aimIntent.direction,
         });
+      // C1: reload and the dry-fire fallback get their own cues. Both events
+      // already existed and were silent, so the player learned about an empty
+      // weapon only from the HUD -- which is exactly how the exhausted-shotgun
+      // trap went unnoticed.
+      for (const event of weaponFrame.events) {
+        if (event.type === 'weapon:reload-start') {
+          combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
+        } else if (event.type === 'weapon:auto-fallback') {
+          combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
+        }
+      }
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:fire')) {
         lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
         applyRecoilImpulse(motion, {
           direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },
           magnitude: event.recoil,
         });
-        combatAudio.play(event.weaponId === 'launcher-rig' ? 'grenade' : 'weapon-fire', { volume: event.weaponId === 'scatter-shotgun' ? 0.14 : 0.1 });
+        combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) });
         pushCombatVisualEvent({
           type: 'muzzle',
           tick,

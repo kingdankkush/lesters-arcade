@@ -4,7 +4,13 @@ import {
   resolveHmhSfxVoiceAllocation,
 } from '../../portal/src/hmh-audio-system.mjs';
 
+import { HMH_WEAPON_SFX } from './weapon-audio.mjs';
+
 const SAMPLE_PATHS = Object.freeze({
+  // C1: per-weapon fire, reload and empty-click, synthesised in-repo. Spread
+  // first so a sourced cue of the same name would still win -- these are
+  // additions, not overrides.
+  ...Object.fromEntries(Object.entries(HMH_WEAPON_SFX).map(([cueId, cue]) => [cueId, cue.src])),
   'weapon-fire': '../assets/audio/sfx/weapon-fire.ogg',
   melee: '../assets/audio/sfx/melee.ogg',
   grenade: '../assets/audio/sfx/grenade.ogg',
