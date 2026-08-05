@@ -7,7 +7,7 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
   weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
   pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
   powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two', 'precision-ledger', 'hard-fork-rounds']),
-  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines', 'rock-spire', 'rock-shelf', 'scree-pile', 'cliff-face', 'balanced-boulder', 'ore-vein-rock', 'birch-cluster', 'sapling-thicket', 'burned-snag', 'canopy-edge-tree', 'fallen-trunk', 'lily-pads', 'water-grass', 'submerged-log', 'stepping-stones', 'dock-post', 'wetland-hummock']),
+  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines', 'rock-spire', 'rock-shelf', 'scree-pile', 'cliff-face', 'balanced-boulder', 'ore-vein-rock', 'birch-cluster', 'sapling-thicket', 'burned-snag', 'canopy-edge-tree', 'fallen-trunk', 'lily-pads', 'water-grass', 'submerged-log', 'stepping-stones', 'dock-post', 'wetland-hummock', 'campfire-ring', 'bedroll-cluster', 'sandbag-nest', 'scrap-barricade', 'watch-platform', 'faction-banner']),
 });
 
 // Cycle 038: trees, boulders, wrecked cars, fencing and a shack join the
@@ -117,6 +117,69 @@ export const AUTHORED_DRESSING_DENSITY = Object.freeze({
   'mining-camp': 22,
   'liquidation-yard': 22,
 });
+
+// W3 enemy hangouts. Enemies spawned on open ground, so an encounter read as
+// figures appearing on a lawn rather than as a place someone lives. Each
+// encampment is pinned to an encounter arena that already exists, offset to
+// the arena's edge so the fighting floor stays clear.
+//
+// Dressing only: these carry no collision, no spawn timing and no AI. The
+// arena anchors and radii are the world contract's, not new geometry.
+export const AUTHORED_CAMP_KIT = Object.freeze([
+  Object.freeze({
+    id: 'camp:relay-picket', districtId: 'frontier-relay', arenaId: 'relay-training-yard',
+    x: 1_400, y: 3_000, radius: 360,
+    propIds: Object.freeze(['watch-platform', 'sandbag-nest', 'campfire-ring', 'bedroll-cluster']),
+  }),
+  Object.freeze({
+    id: 'camp:ravine-ambush', districtId: 'rugpull-ravine', arenaId: 'ravine-ambush-bowl',
+    x: 2_700, y: 2_700, radius: 420,
+    propIds: Object.freeze(['faction-banner', 'scrap-barricade', 'campfire-ring', 'sandbag-nest']),
+  }),
+  Object.freeze({
+    id: 'camp:hashwood-hunters', districtId: 'hashwood', arenaId: 'hashwood-clearing-arena',
+    x: 7_150, y: 2_500, radius: 460,
+    propIds: Object.freeze(['campfire-ring', 'bedroll-cluster', 'watch-platform', 'faction-banner']),
+  }),
+  Object.freeze({
+    id: 'camp:mining-crew', districtId: 'mining-camp', arenaId: 'mining-yard-arena',
+    x: 8_850, y: 3_050, radius: 500,
+    propIds: Object.freeze(['scrap-barricade', 'sandbag-nest', 'watch-platform', 'bedroll-cluster']),
+  }),
+  Object.freeze({
+    id: 'camp:yard-holdouts', districtId: 'liquidation-yard', arenaId: 'liquidator-arena',
+    x: 11_000, y: 2_400, radius: 620,
+    propIds: Object.freeze(['faction-banner', 'scrap-barricade', 'sandbag-nest', 'campfire-ring']),
+  }),
+]);
+
+// Encampment props ring the arena edge. Kept outside the fighting floor so a
+// camp frames an encounter instead of cluttering it.
+const CAMP_EDGE_INSET = 0.82;
+
+export function buildAuthoredEncampmentPlacements({ worldId } = {}) {
+  if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored camp world ${String(worldId)}`);
+  const placements = [];
+  for (const camp of AUTHORED_CAMP_KIT) {
+    camp.propIds.forEach((assetId, index) => {
+      // Fixed angular slots so the ring is even and fully deterministic.
+      const angle = (index / camp.propIds.length) * Math.PI * 2 + Math.PI / camp.propIds.length;
+      const distance = camp.radius * CAMP_EDGE_INSET;
+      placements.push(freezeDeep({
+        id: `${camp.id}:${String(index).padStart(2, '0')}`,
+        assetId,
+        campId: camp.id,
+        arenaId: camp.arenaId,
+        category: 'encampment',
+        districtId: camp.districtId,
+        x: Number((camp.x + Math.cos(angle) * distance).toFixed(3)),
+        y: Number((camp.y + Math.sin(angle) * distance).toFixed(3)),
+        runtimeAuthority: 'projection-only',
+      }));
+    });
+  }
+  return Object.freeze(placements);
+}
 
 // Satellites per anchor, cycled deterministically. Mixed group sizes are what
 // keep clusters from reading as a repeated stamp.

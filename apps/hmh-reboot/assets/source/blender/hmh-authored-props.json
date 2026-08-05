@@ -986,6 +986,96 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "campfire-ring",
+      "category": "world-prop",
+      "shape": "campfire-ring",
+      "palette": {
+        "primary": "#6b5a42",
+        "secondary": "#7a7268",
+        "accent": "#ff9a3d"
+      },
+      "runtimeScale": 0.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "bedroll-cluster",
+      "category": "world-prop",
+      "shape": "bedroll-cluster",
+      "palette": {
+        "primary": "#5a6b7a",
+        "secondary": "#6b5a42",
+        "accent": "#d8c48a"
+      },
+      "runtimeScale": 0.78,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "sandbag-nest",
+      "category": "world-prop",
+      "shape": "sandbag-nest",
+      "palette": {
+        "primary": "#8a7a58",
+        "secondary": "#5a4f38",
+        "accent": "#e0705d"
+      },
+      "runtimeScale": 0.88,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "scrap-barricade",
+      "category": "world-prop",
+      "shape": "scrap-barricade",
+      "palette": {
+        "primary": "#6b6e72",
+        "secondary": "#7a5a42",
+        "accent": "#ffb34d"
+      },
+      "runtimeScale": 0.92,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "watch-platform",
+      "category": "world-prop",
+      "shape": "watch-platform",
+      "palette": {
+        "primary": "#7a6a4e",
+        "secondary": "#5a4a34",
+        "accent": "#ffd479"
+      },
+      "runtimeScale": 1.15,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "faction-banner",
+      "category": "world-prop",
+      "shape": "faction-banner",
+      "palette": {
+        "primary": "#8a3d52",
+        "secondary": "#5a4a38",
+        "accent": "#ffd479"
+      },
+      "runtimeScale": 1.05,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }

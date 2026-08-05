@@ -120,6 +120,7 @@ import {
   AUTHORED_PROP_ATLAS_IMAGE_URL,
   AUTHORED_PROP_ATLAS_METADATA_URL,
   buildAuthoredDistrictLandmarkPlacements,
+  buildAuthoredEncampmentPlacements,
   buildAuthoredPointOfInterestPlacements,
   buildAuthoredWorldPropPlacements,
   createAuthoredHeldWeaponDisplay,
@@ -386,6 +387,9 @@ async function boot() {
   const authoredPropPlacements = Object.freeze([
     ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: 0x484d4807, countPerDistrict: 8 }),
     ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
+    // W3: encampments ring the encounter arenas so enemies come from
+    // somewhere. Projection-only, like every other authored placement.
+    ...buildAuthoredEncampmentPlacements({ worldId: LEVEL_ONE_WORLD.id }),
     ...authoredPointOfInterestPlacements,
   ]);
   let authoredPropDisplay = null;

@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 70,
+  "assetCount": 76,
   "categories": [
     "pickup",
     "power-up",
@@ -22,8 +22,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 159,
-        "y": 334,
+        "x": 611,
+        "y": 352,
         "w": 57,
         "h": 22
       },
@@ -50,7 +50,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 570,
+        "x": 789,
         "y": 155,
         "w": 53,
         "h": 60
@@ -70,6 +70,34 @@
       "trimmed": true
     },
     {
+      "id": "bedroll-cluster",
+      "assetId": "bedroll-cluster",
+      "category": "world-prop",
+      "shape": "bedroll-cluster",
+      "itemUrl": "./items/bedroll-cluster.png",
+      "districts": [],
+      "runtimeScale": 0.78,
+      "frame": {
+        "x": 64,
+        "y": 303,
+        "w": 57,
+        "h": 44
+      },
+      "pivot": {
+        "x": 26,
+        "y": 40
+      },
+      "anchor": {
+        "x": 0.45614,
+        "y": 0.909091
+      },
+      "opaquePixels": 1514,
+      "massCentroidY": 0.605404,
+      "sourcePixelSha256": "b2b1bd228b8ff8c440751f577e3e172d3af2c0df0a8bb0fd7bd5e395897ce4ef",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "berserk-candle",
       "assetId": "berserk-candle",
       "category": "pickup",
@@ -78,8 +106,8 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 62,
-        "y": 291,
+        "x": 525,
+        "y": 303,
         "w": 44,
         "h": 38
       },
@@ -134,8 +162,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 154,
-        "y": 291,
+        "x": 617,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -162,8 +190,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 274,
-        "y": 334,
+        "x": 726,
+        "y": 352,
         "w": 28,
         "h": 21
       },
@@ -192,8 +220,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 203,
-        "y": 291,
+        "x": 666,
+        "y": 303,
         "w": 26,
         "h": 34
       },
@@ -220,7 +248,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 455,
+        "x": 514,
         "y": 3,
         "w": 56,
         "h": 102
@@ -240,6 +268,34 @@
       "trimmed": true
     },
     {
+      "id": "campfire-ring",
+      "assetId": "campfire-ring",
+      "category": "world-prop",
+      "shape": "campfire-ring",
+      "itemUrl": "./items/campfire-ring.png",
+      "districts": [],
+      "runtimeScale": 0.8,
+      "frame": {
+        "x": 921,
+        "y": 243,
+        "w": 59,
+        "h": 46
+      },
+      "pivot": {
+        "x": 29,
+        "y": 42
+      },
+      "anchor": {
+        "x": 0.491525,
+        "y": 0.913043
+      },
+      "opaquePixels": 1249,
+      "massCentroidY": 0.68848,
+      "sourcePixelSha256": "86a414d1d0abdbd20c377677df5c75655fff3ca462da26808d2261619620bce2",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "canopy-edge-tree",
       "assetId": "canopy-edge-tree",
       "category": "world-prop",
@@ -248,8 +304,8 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 958,
-        "y": 3,
+        "x": 165,
+        "y": 155,
         "w": 54,
         "h": 82
       },
@@ -276,8 +332,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 796,
-        "y": 3,
+        "x": 3,
+        "y": 155,
         "w": 159,
         "h": 85
       },
@@ -304,8 +360,8 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 92,
-        "y": 235,
+        "x": 386,
+        "y": 243,
         "w": 136,
         "h": 52
       },
@@ -332,7 +388,7 @@
       "districts": [],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 138,
+        "x": 357,
         "y": 155,
         "w": 66,
         "h": 75
@@ -360,8 +416,8 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 109,
-        "y": 334,
+        "x": 561,
+        "y": 352,
         "w": 47,
         "h": 23
       },
@@ -388,8 +444,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 232,
-        "y": 291,
+        "x": 695,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -416,8 +472,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 281,
-        "y": 291,
+        "x": 744,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -447,8 +503,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 882,
-        "y": 291,
+        "x": 367,
+        "y": 352,
         "w": 44,
         "h": 32
       },
@@ -503,8 +559,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 330,
-        "y": 291,
+        "x": 793,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -531,7 +587,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 3,
+        "x": 222,
         "y": 155,
         "w": 50,
         "h": 77
@@ -559,8 +615,8 @@
       "districts": [],
       "runtimeScale": 0.75,
       "frame": {
-        "x": 352,
-        "y": 235,
+        "x": 646,
+        "y": 243,
         "w": 160,
         "h": 48
       },
@@ -579,6 +635,34 @@
       "trimmed": true
     },
     {
+      "id": "faction-banner",
+      "assetId": "faction-banner",
+      "category": "world-prop",
+      "shape": "faction-banner",
+      "itemUrl": "./items/faction-banner.png",
+      "districts": [],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 855,
+        "y": 3,
+        "w": 44,
+        "h": 91
+      },
+      "pivot": {
+        "x": 22,
+        "y": 87
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.956044
+      },
+      "opaquePixels": 2520,
+      "massCentroidY": 0.406759,
+      "sourcePixelSha256": "b33992deca23539de2997337ea2c51c602929a2eb72f3d1784a8e709145fd3a7",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "fallen-trunk",
       "assetId": "fallen-trunk",
       "category": "world-prop",
@@ -587,8 +671,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 941,
-        "y": 155,
+        "x": 159,
+        "y": 243,
         "w": 72,
         "h": 55
       },
@@ -615,7 +699,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 207,
+        "x": 426,
         "y": 155,
         "w": 59,
         "h": 74
@@ -643,8 +727,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 515,
-        "y": 235,
+        "x": 809,
+        "y": 243,
         "w": 31,
         "h": 48
       },
@@ -674,8 +758,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 379,
-        "y": 291,
+        "x": 842,
+        "y": 303,
         "w": 38,
         "h": 34
       },
@@ -702,8 +786,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 420,
-        "y": 291,
+        "x": 883,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -730,8 +814,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 3,
-        "y": 235,
+        "x": 297,
+        "y": 243,
         "w": 86,
         "h": 53
       },
@@ -758,7 +842,7 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 744,
+        "x": 963,
         "y": 155,
         "w": 38,
         "h": 57
@@ -786,7 +870,7 @@
       "districts": [],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 682,
+        "x": 901,
         "y": 155,
         "w": 59,
         "h": 58
@@ -814,8 +898,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 469,
-        "y": 291,
+        "x": 932,
+        "y": 303,
         "w": 46,
         "h": 34
       },
@@ -842,8 +926,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 518,
-        "y": 291,
+        "x": 3,
+        "y": 352,
         "w": 46,
         "h": 34
       },
@@ -870,8 +954,8 @@
       "districts": [],
       "runtimeScale": 0.76,
       "frame": {
-        "x": 109,
-        "y": 291,
+        "x": 572,
+        "y": 303,
         "w": 42,
         "h": 35
       },
@@ -928,8 +1012,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 929,
-        "y": 291,
+        "x": 414,
+        "y": 352,
         "w": 38,
         "h": 29
       },
@@ -956,7 +1040,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 514,
+        "x": 573,
         "y": 3,
         "w": 90,
         "h": 102
@@ -984,8 +1068,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 567,
-        "y": 291,
+        "x": 52,
+        "y": 352,
         "w": 46,
         "h": 34
       },
@@ -1012,8 +1096,8 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 3,
-        "y": 334,
+        "x": 455,
+        "y": 352,
         "w": 59,
         "h": 29
       },
@@ -1040,8 +1124,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 616,
-        "y": 291,
+        "x": 101,
+        "y": 352,
         "w": 46,
         "h": 34
       },
@@ -1098,8 +1182,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 403,
-        "y": 334,
+        "x": 855,
+        "y": 352,
         "w": 24,
         "h": 15
       },
@@ -1129,8 +1213,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 665,
-        "y": 291,
+        "x": 150,
+        "y": 352,
         "w": 38,
         "h": 34
       },
@@ -1157,7 +1241,7 @@
       "districts": [],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 659,
+        "x": 718,
         "y": 3,
         "w": 134,
         "h": 93
@@ -1185,7 +1269,7 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 509,
+        "x": 728,
         "y": 155,
         "w": 58,
         "h": 61
@@ -1213,8 +1297,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 923,
-        "y": 235,
+        "x": 419,
+        "y": 303,
         "w": 44,
         "h": 40
       },
@@ -1243,8 +1327,8 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 65,
-        "y": 334,
+        "x": 517,
+        "y": 352,
         "w": 41,
         "h": 26
       },
@@ -1271,8 +1355,8 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 785,
-        "y": 155,
+        "x": 3,
+        "y": 243,
         "w": 153,
         "h": 57
       },
@@ -1299,8 +1383,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 627,
-        "y": 235,
+        "x": 3,
+        "y": 303,
         "w": 58,
         "h": 46
       },
@@ -1327,8 +1411,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 706,
-        "y": 291,
+        "x": 191,
+        "y": 352,
         "w": 46,
         "h": 34
       },
@@ -1355,8 +1439,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 755,
-        "y": 291,
+        "x": 240,
+        "y": 352,
         "w": 46,
         "h": 34
       },
@@ -1385,8 +1469,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 727,
-        "y": 235,
+        "x": 223,
+        "y": 303,
         "w": 28,
         "h": 42
       },
@@ -1413,7 +1497,7 @@
       "districts": [],
       "runtimeScale": 0.7,
       "frame": {
-        "x": 269,
+        "x": 488,
         "y": 155,
         "w": 54,
         "h": 72
@@ -1443,8 +1527,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 430,
-        "y": 334,
+        "x": 882,
+        "y": 352,
         "w": 24,
         "h": 15
       },
@@ -1471,8 +1555,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 231,
-        "y": 235,
+        "x": 525,
+        "y": 243,
         "w": 67,
         "h": 51
       },
@@ -1499,7 +1583,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 607,
+        "x": 666,
         "y": 3,
         "w": 49,
         "h": 94
@@ -1529,8 +1613,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 219,
-        "y": 334,
+        "x": 671,
+        "y": 352,
         "w": 52,
         "h": 22
       },
@@ -1557,7 +1641,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 378,
+        "x": 597,
         "y": 155,
         "w": 128,
         "h": 65
@@ -1588,8 +1672,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 374,
-        "y": 334,
+        "x": 826,
+        "y": 352,
         "w": 26,
         "h": 18
       },
@@ -1608,6 +1692,34 @@
       "trimmed": true
     },
     {
+      "id": "sandbag-nest",
+      "assetId": "sandbag-nest",
+      "category": "world-prop",
+      "shape": "sandbag-nest",
+      "itemUrl": "./items/sandbag-nest.png",
+      "districts": [],
+      "runtimeScale": 0.88,
+      "frame": {
+        "x": 124,
+        "y": 303,
+        "w": 57,
+        "h": 44
+      },
+      "pivot": {
+        "x": 29,
+        "y": 40
+      },
+      "anchor": {
+        "x": 0.508772,
+        "y": 0.909091
+      },
+      "opaquePixels": 2045,
+      "massCentroidY": 0.546608,
+      "sourcePixelSha256": "7daf4a88369fd14d0c4893d3c8e75925083aa669faf6b5a641fef97fb4563a35",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "sapling-thicket",
       "assetId": "sapling-thicket",
       "category": "world-prop",
@@ -1616,7 +1728,7 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 326,
+        "x": 545,
         "y": 155,
         "w": 49,
         "h": 71
@@ -1644,8 +1756,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 305,
-        "y": 334,
+        "x": 757,
+        "y": 352,
         "w": 66,
         "h": 20
       },
@@ -1664,6 +1776,34 @@
       "trimmed": true
     },
     {
+      "id": "scrap-barricade",
+      "assetId": "scrap-barricade",
+      "category": "world-prop",
+      "shape": "scrap-barricade",
+      "itemUrl": "./items/scrap-barricade.png",
+      "districts": [],
+      "runtimeScale": 0.92,
+      "frame": {
+        "x": 234,
+        "y": 243,
+        "w": 60,
+        "h": 55
+      },
+      "pivot": {
+        "x": 29,
+        "y": 51
+      },
+      "anchor": {
+        "x": 0.483333,
+        "y": 0.927273
+      },
+      "opaquePixels": 2481,
+      "massCentroidY": 0.563736,
+      "sourcePixelSha256": "30b6e0c92ca688fcf252fb9df1f43318f444b0ccfeeb57bc0ea9e70c4cd6553b",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "scree-pile",
       "assetId": "scree-pile",
       "category": "world-prop",
@@ -1672,8 +1812,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 3,
-        "y": 291,
+        "x": 466,
+        "y": 303,
         "w": 56,
         "h": 40
       },
@@ -1700,8 +1840,8 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 301,
-        "y": 235,
+        "x": 595,
+        "y": 243,
         "w": 48,
         "h": 51
       },
@@ -1728,7 +1868,7 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 56,
+        "x": 275,
         "y": 155,
         "w": 32,
         "h": 76
@@ -1756,8 +1896,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 549,
-        "y": 235,
+        "x": 843,
+        "y": 243,
         "w": 75,
         "h": 47
       },
@@ -1784,7 +1924,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 626,
+        "x": 845,
         "y": 155,
         "w": 53,
         "h": 60
@@ -1812,8 +1952,8 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 890,
-        "y": 235,
+        "x": 386,
+        "y": 303,
         "w": 30,
         "h": 41
       },
@@ -1840,8 +1980,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 804,
-        "y": 291,
+        "x": 289,
+        "y": 352,
         "w": 46,
         "h": 34
       },
@@ -1871,8 +2011,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 853,
-        "y": 291,
+        "x": 338,
+        "y": 352,
         "w": 26,
         "h": 34
       },
@@ -1887,6 +2027,34 @@
       "opaquePixels": 640,
       "massCentroidY": 0.520786,
       "sourcePixelSha256": "1699ef12fb10f2b658304dae963e367885d8d34d7f477e6ffa87f2390ae1868d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "watch-platform",
+      "assetId": "watch-platform",
+      "category": "world-prop",
+      "shape": "watch-platform",
+      "itemUrl": "./items/watch-platform.png",
+      "districts": [],
+      "runtimeScale": 1.15,
+      "frame": {
+        "x": 455,
+        "y": 3,
+        "w": 56,
+        "h": 104
+      },
+      "pivot": {
+        "x": 27,
+        "y": 100
+      },
+      "anchor": {
+        "x": 0.482143,
+        "y": 0.961538
+      },
+      "opaquePixels": 3337,
+      "massCentroidY": 0.453343,
+      "sourcePixelSha256": "5522346ba363c705234a72a63f86c2e0926759cf2a36c8692dc9fe872ec2457a",
       "rotated": false,
       "trimmed": true
     },
@@ -1927,7 +2095,7 @@
       "districts": [],
       "runtimeScale": 0.82,
       "frame": {
-        "x": 91,
+        "x": 310,
         "y": 155,
         "w": 44,
         "h": 76
@@ -1955,8 +2123,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 688,
-        "y": 235,
+        "x": 184,
+        "y": 303,
         "w": 36,
         "h": 44
       },
@@ -1983,8 +2151,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 758,
-        "y": 235,
+        "x": 254,
+        "y": 303,
         "w": 129,
         "h": 42
       },

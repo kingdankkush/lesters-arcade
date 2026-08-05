@@ -1357,6 +1357,239 @@ def build_asset(asset: dict) -> dict:
             parts.append(prism_mesh(f'{asset_id}_Tuft_{index}', profile, depth - 0.030, depth + 0.030, mat, asset_id))
         add(cube(f'{asset_id}_Glint', (0.17, -0.22, 0.04), (0.028, 0.018, 0.012), accent, asset_id, bevel=0.006))
 
+    # --- A7 camp and enemy-hangout kit ------------------------------------
+    # Enemies spawned on open grass, so an encounter read as figures appearing
+    # on a lawn. This kit gives a spawn region somewhere to come FROM. Purely
+    # projection-only dressing: no collision, no spawn or AI change.
+    elif shape == 'campfire-ring':
+        # Third pass. The render frame clips content below roughly z=0.15, so
+        # the first build lost its stone ring, ash bed and logs entirely while
+        # the flame survived; scaling the whole asset up in z made them visible
+        # but turned a campfire into an obelisk. Everything is now composed to
+        # START at 0.16 and stay in proportion within the band.
+        stone = material(f'{asset_id}_stone', tone(palette['secondary'], 0.9), roughness=0.94)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['secondary'], 1.25), roughness=0.86)
+        log = material(f'{asset_id}_log', tone(palette['primary'], 0.66), roughness=0.95)
+        char = material(f'{asset_id}_char', '#241d1a', roughness=0.98)
+        flame = material(f'{asset_id}_flame', palette['accent'], roughness=0.4, emission=1.15)
+        flame_core = material(f'{asset_id}_flame_core', tone(palette['accent'], 1.4), roughness=0.35, emission=1.6)
+        parts.append(prism_mesh(
+            f'{asset_id}_KerbBack',
+            [(-0.26, 0.20), (-0.20, 0.34), (-0.07, 0.37), (0.07, 0.35), (0.20, 0.37), (0.27, 0.21)],
+            0.04, 0.20, stone, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Ash',
+            [(-0.24, 0.18), (0.24, 0.18), (0.19, 0.28), (-0.19, 0.28)],
+            -0.14, 0.10, char, asset_id,
+        ))
+        for index, (x0, z0, x1, z1, depth) in enumerate((
+            (-0.20, 0.24, 0.13, 0.42, -0.06),
+            (0.19, 0.24, -0.09, 0.44, 0.04),
+        )):
+            parts.append(prism_mesh(
+                f'{asset_id}_Log_{index}',
+                [(x0, z0), (x1, z1), (x1 + 0.055, z1 - 0.055), (x0 + 0.055, z0 - 0.055)],
+                depth - 0.05, depth + 0.05, log, asset_id,
+            ))
+        # Front kerb last so it reads in front of the ash and logs.
+        parts.append(prism_mesh(
+            f'{asset_id}_Kerb',
+            [(-0.30, 0.16), (-0.26, 0.29), (-0.18, 0.31), (-0.13, 0.23), (-0.05, 0.30),
+             (0.04, 0.32), (0.12, 0.29), (0.20, 0.32), (0.27, 0.28), (0.31, 0.16)],
+            -0.22, -0.10, stone_lit, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Flame',
+            [(-0.13, 0.30), (-0.07, 0.50), (-0.09, 0.62), (0.0, 0.80), (0.08, 0.60), (0.05, 0.46), (0.13, 0.30)],
+            -0.07, 0.07, flame, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_FlameCore',
+            [(-0.055, 0.32), (-0.025, 0.50), (0.01, 0.66), (0.045, 0.48), (0.055, 0.32)],
+            -0.10, -0.07, flame_core, asset_id,
+        ))
+    elif shape == 'bedroll-cluster':
+        # Third pass, same clipping lesson as campfire-ring: bedrolls lie on
+        # the ground, which is exactly where the frame cuts off. The rolls are
+        # composed starting at z=0.16 and the standing pack carries the height.
+        cloth = material(f'{asset_id}_cloth', palette['primary'], roughness=0.94)
+        cloth_alt = material(f'{asset_id}_cloth_alt', tone(palette['primary'], 0.72), roughness=0.94)
+        strap = material(f'{asset_id}_strap', tone(palette['secondary'], 0.7), roughness=0.9)
+        pack = material(f'{asset_id}_pack', tone(palette['secondary'], 1.15), roughness=0.9)
+        for index, (x, length, depth, mat) in enumerate((
+            (-0.26, 0.26, -0.06, cloth),
+            (0.04, 0.23, 0.06, cloth_alt),
+        )):
+            roll = [
+                (x, 0.20), (x + 0.03, 0.34), (x + length * 0.5, 0.37),
+                (x + length, 0.33), (x + length + 0.02, 0.19), (x + length * 0.5, 0.16),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Roll_{index}', roll, depth - 0.10, depth + 0.10, mat, asset_id))
+            band = [(x + length * 0.36, 0.17), (x + length * 0.46, 0.17), (x + length * 0.46, 0.36), (x + length * 0.36, 0.36)]
+            parts.append(prism_mesh(f'{asset_id}_Strap_{index}', band, depth - 0.115, depth - 0.100, strap, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_Pack',
+            [(-0.13, 0.18), (-0.16, 0.52), (-0.06, 0.76), (0.08, 0.74), (0.16, 0.44), (0.12, 0.18)],
+            -0.11, 0.09, pack, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_PackFlap',
+            [(-0.13, 0.50), (-0.04, 0.73), (0.08, 0.70), (0.05, 0.46)],
+            -0.16, -0.11, strap, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Buckle',
+            [(-0.035, 0.55), (0.035, 0.55), (0.035, 0.64), (-0.035, 0.64)],
+            -0.185, -0.16, accent, asset_id,
+        ))
+    elif shape == 'sandbag-nest':
+        # Second pass, authored cards. Fourteen small bevelled cubes produced
+        # one visible sliver. The courses are now drawn as scalloped bands --
+        # each bump is a bag -- stepping up to a firing lip, which reads as an
+        # emplacement rather than a mound.
+        bag = material(f'{asset_id}_bag', palette['primary'], roughness=0.96)
+        bag_lit = material(f'{asset_id}_bag_lit', tone(palette['primary'], 1.24), roughness=0.9)
+        bag_dark = material(f'{asset_id}_bag_dark', tone(palette['primary'], 0.68), roughness=0.97)
+
+        def course(width, z, height, bumps):
+            points = [(-width, z)]
+            for index in range(bumps):
+                left = -width + (2 * width) * index / bumps
+                right = -width + (2 * width) * (index + 1) / bumps
+                points.append((left, z + height * 0.72))
+                points.append(((left + right) / 2, z + height))
+                points.append((right, z + height * 0.72))
+            points.append((width, z))
+            return points
+
+        parts.append(prism_mesh(f'{asset_id}_Course0', course(0.29, 0.14, 0.15, 4), -0.20, -0.06, bag_dark, asset_id))
+        parts.append(prism_mesh(f'{asset_id}_Course1', course(0.26, 0.28, 0.14, 4), -0.06, 0.06, bag, asset_id))
+        parts.append(prism_mesh(f'{asset_id}_Course2', course(0.22, 0.41, 0.13, 3), 0.06, 0.16, bag_lit, asset_id))
+        parts.append(prism_mesh(f'{asset_id}_Course3', course(0.17, 0.53, 0.12, 2), 0.16, 0.24, bag, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_Lip',
+            [(-0.19, 0.64), (0.19, 0.66), (0.19, 0.74), (-0.19, 0.72)],
+            -0.10, 0.10, bag_lit, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Tag',
+            [(-0.06, 0.44), (0.02, 0.45), (0.02, 0.53), (-0.06, 0.52)],
+            -0.24, -0.20, accent, asset_id,
+        ))
+    elif shape == 'scrap-barricade':
+        # Second pass. The plate sprawled to 0.33 h/w -- flatter than
+        # driftwood-log. Narrowed and stood up, with the props tucked behind
+        # rather than splaying outward.
+        plate = material(f'{asset_id}_plate', palette['primary'], roughness=0.82, metallic=0.3)
+        plate_lit = material(f'{asset_id}_plate_lit', tone(palette['primary'], 1.26), roughness=0.72, metallic=0.35)
+        rust = material(f'{asset_id}_rust', tone(palette['secondary'], 0.9), roughness=0.97)
+        frame = material(f'{asset_id}_frame', tone(palette['secondary'], 0.6), roughness=0.9, metallic=0.4)
+        parts.append(prism_mesh(
+            f'{asset_id}_Plate',
+            [(-0.19, 0.02), (-0.21, 0.70), (-0.09, 0.86), (0.03, 0.75), (0.13, 0.90), (0.20, 0.68), (0.17, 0.02)],
+            -0.05, 0.07, plate, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_PlateLit',
+            [(-0.15, 0.08), (-0.16, 0.66), (-0.04, 0.75), (-0.01, 0.10)],
+            -0.10, -0.05, plate_lit, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Rust',
+            [(0.03, 0.12), (0.05, 0.64), (0.15, 0.71), (0.13, 0.10)],
+            -0.09, -0.05, rust, asset_id,
+        ))
+        for index, (x, lean) in enumerate(((-0.17, -0.09), (0.16, 0.08))):
+            parts.append(prism_mesh(
+                f'{asset_id}_Prop_{index}',
+                [(x, 0.0), (x + lean * 0.4, 0.38), (x + lean, 0.74), (x + lean + 0.045, 0.70), (x + 0.045, 0.0)],
+                0.07, 0.13, frame, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Mark',
+            [(-0.08, 0.38), (-0.01, 0.39), (-0.01, 0.47), (-0.08, 0.46)],
+            -0.13, -0.10, accent, asset_id,
+        ))
+    elif shape == 'watch-platform':
+        # Second pass. At 0.76 h/w the stand read as a table. The footprint is
+        # narrower and the legs are much taller, so it reads as a lookout that
+        # someone climbs.
+        timber = material(f'{asset_id}_timber', tone(palette['secondary'], 0.9), roughness=0.94)
+        timber_lit = material(f'{asset_id}_timber_lit', tone(palette['secondary'], 1.24), roughness=0.86)
+        deck = material(f'{asset_id}_deck', palette['primary'], roughness=0.92)
+        for index, (x, y, lean) in enumerate(((-0.13, -0.09, 0.030), (0.13, -0.09, -0.030), (-0.10, 0.11, 0.024), (0.10, 0.11, -0.024))):
+            parts.append(prism_mesh(
+                f'{asset_id}_Leg_{index}',
+                [(x - 0.024, 0.0), (x + lean * 12 - 0.019, 1.16), (x + lean * 12 + 0.019, 1.16), (x + 0.024, 0.0)],
+                y - 0.024, y + 0.024, timber if index % 2 else timber_lit, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Deck',
+            [(-0.22, 1.14), (0.22, 1.14), (0.22, 1.21), (-0.22, 1.21)],
+            -0.16, 0.18, deck, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Rail',
+            [(-0.21, 1.42), (0.21, 1.42), (0.21, 1.48), (-0.21, 1.48)],
+            -0.15, -0.11, timber_lit, asset_id,
+        ))
+        for index, x in enumerate((-0.19, -0.01, 0.19)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Post_{index}',
+                [(x - 0.020, 1.19), (x - 0.016, 1.48), (x + 0.016, 1.48), (x + 0.020, 1.19)],
+                -0.15, -0.11, timber, asset_id,
+            ))
+        for index, z in enumerate((0.22, 0.50, 0.78)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Rung_{index}',
+                [(0.14, z), (0.26, z + 0.02), (0.26, z + 0.055), (0.14, z + 0.035)],
+                0.13, 0.17, timber, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Lamp',
+            [(-0.04, 1.50), (0.04, 1.50), (0.03, 1.60), (-0.03, 1.60)],
+            -0.17, -0.13, accent, asset_id,
+        ))
+    elif shape == 'faction-banner':
+        # A hung banner on a pole. Per-enemy-role colour lives in the palette
+        # accent, so one shape carries every faction's identity.
+        pole = material(f'{asset_id}_pole', tone(palette['secondary'], 0.72), roughness=0.92)
+        cloth = material(f'{asset_id}_cloth', palette['primary'], roughness=0.94)
+        cloth_shade = material(f'{asset_id}_cloth_shade', tone(palette['primary'], 0.7), roughness=0.95)
+        base = material(f'{asset_id}_base', tone(palette['secondary'], 0.56), roughness=0.96)
+        parts.append(prism_mesh(
+            f'{asset_id}_Base',
+            [(-0.16, 0.0), (-0.11, 0.10), (0.10, 0.11), (0.15, 0.0)],
+            -0.14, 0.12, base, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Pole',
+            [(-0.026, 0.06), (-0.020, 1.34), (0.020, 1.34), (0.026, 0.06)],
+            -0.026, 0.026, pole, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Crossbar',
+            [(-0.20, 1.22), (0.20, 1.22), (0.20, 1.27), (-0.20, 1.27)],
+            -0.022, 0.022, pole, asset_id,
+        ))
+        # Banner cloth with a ragged lower edge.
+        parts.append(prism_mesh(
+            f'{asset_id}_Cloth',
+            [(-0.18, 1.22), (0.18, 1.22), (0.17, 0.72), (0.10, 0.62), (0.02, 0.74), (-0.07, 0.60), (-0.16, 0.70)],
+            -0.048, -0.022, cloth, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_ClothShade',
+            [(0.02, 1.20), (0.17, 1.20), (0.16, 0.74), (0.03, 0.70)],
+            -0.062, -0.048, cloth_shade, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Sigil',
+            [(-0.08, 0.94), (0.0, 1.08), (0.08, 0.94), (0.0, 0.82)],
+            -0.075, -0.062, accent, asset_id,
+        ))
+
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 
