@@ -53,6 +53,33 @@ test('tiles are baked at 512px with painted layering and proportional fringes', 
   assert.ok(manifest.fringeHeight >= 128, `fringeHeight ${manifest.fringeHeight} must scale with the bake`);
 });
 
+test('each district tile bakes three named sub-materials through a deterministic wrapped patch mask', async () => {
+  const manifest = await loadManifest();
+  assert.equal(manifest.intraDistrictPatches, true, 'T1 patch baking must be explicit in the manifest');
+
+  const districtMaterialIds = new Set(Object.values(DISTRICT_TERRAIN_MATERIAL));
+  const patches = new Map((manifest.districtPatches ?? []).map((entry) => [entry.id, entry]));
+  assert.equal(patches.size, districtMaterialIds.size, 'every district material needs one patch recipe');
+
+  for (const materialId of districtMaterialIds) {
+    const patch = patches.get(materialId);
+    assert.ok(patch, `${materialId} has no intra-district patch recipe`);
+    assert.equal(patch.bakedInto, materialId, `${materialId} patches must stay in the existing runtime tile`);
+    assert.equal(patch.mask?.source, 'wrapped-fbm', `${materialId} mask must be deterministic and seamless`);
+    assert.deepEqual(patch.mask?.periods, [2, 4, 8], `${materialId} mask periods must wrap the tile`);
+    assert.ok(Number.isInteger(patch.mask?.seed), `${materialId} mask seed must be an integer`);
+    assert.equal(patch.variants?.length, 3, `${materialId} must carry three sub-materials`);
+    assert.equal(new Set(patch.variants.map((variant) => variant.id)).size, 3, `${materialId} variant ids must be unique`);
+    for (const variant of patch.variants) {
+      assert.match(variant.id, /^[a-z0-9-]+$/, `${materialId} has a non-semantic variant id`);
+      for (const key of ['base', 'shadow', 'highlight']) {
+        assert.match(variant[key] ?? '', /^#[0-9a-f]{6}$/i, `${materialId}/${variant.id} must record ${key}`);
+      }
+    }
+    assert.ok(manifest.seamStatistics?.[materialId], `${materialId} needs measured wrap statistics`);
+  }
+});
+
 test('every material file referenced by the manifest exists on disk', async () => {
   const manifest = await loadManifest();
   for (const material of manifest.materials) {

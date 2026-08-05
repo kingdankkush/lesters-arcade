@@ -167,7 +167,7 @@ def apply_structure(height: list[list[float]], size: int, structure: str, period
                     height[y][x] -= 0.4
 
 
-def bake(material: dict) -> Image.Image:
+def bake_surface(material: dict) -> Image.Image:
     size = TILE_SIZE
     seed = material["seed"]
     # Octave periods are lattice CELL COUNTS per tile (cell = size / period),
@@ -238,6 +238,77 @@ def bake(material: dict) -> Image.Image:
     return image
 
 
+PATCH_MASK_PERIODS = [2, 4, 8]
+PATCH_MASK_OCTAVES = [(2, 1.0), (4, 0.55), (8, 0.25)]
+
+
+def material_variant(base: dict, variant: dict) -> dict:
+    """Resolve one named sub-material without leaking patch metadata into baking."""
+    resolved = {key: value for key, value in base.items() if key != "patchVariants"}
+    resolved.update({key: value for key, value in variant.items() if key != "id"})
+    return resolved
+
+
+def bake_material(name: str, material: dict) -> tuple[Image.Image, dict | None]:
+    """Bake one runtime tile, folding district variation into the existing asset.
+
+    Districts keep one texture request and one pooled TilingSprite. Three authored
+    sub-materials are composited with a low-frequency wrapped FBM mask at build
+    time, so the visual patches add no child-JS bytes and cannot gain gameplay
+    authority. Shared world-locked sampling in the renderer keeps the result from
+    swimming under the camera.
+    """
+    variants = material.get("patchVariants")
+    if not variants:
+        return bake_surface(material), None
+    if len(variants) != 3:
+        raise ValueError(f"{name}: district materials require exactly three patch variants")
+
+    resolved = [material_variant(material, variant) for variant in variants]
+    variant_tiles = [bake_surface(spec) for spec in resolved]
+    mask_seed = int(material["seed"]) ^ 0x544831
+    selector = fbm(TILE_SIZE, PATCH_MASK_OCTAVES, mask_seed)
+    output = Image.new("RGBA", (TILE_SIZE, TILE_SIZE))
+    pixels = output.load()
+
+    # The centre variant is the connective material. Low and high wrapped-FBM
+    # lobes fade into the other two variants, producing broad readable patches
+    # without threshold seams or runtime mask sprites.
+    for y in range(TILE_SIZE):
+        for x in range(TILE_SIZE):
+            value = selector[y][x]
+            if value < 0.46:
+                amount = smootherstep(min(1.0, (0.46 - value) / 0.18))
+                source = variant_tiles[0].getpixel((x, y))
+            elif value > 0.54:
+                amount = smootherstep(min(1.0, (value - 0.54) / 0.18))
+                source = variant_tiles[2].getpixel((x, y))
+            else:
+                amount = 0.0
+                source = variant_tiles[1].getpixel((x, y))
+            centre = variant_tiles[1].getpixel((x, y))
+            pixels[x, y] = tuple(round(centre[index] + (source[index] - centre[index]) * amount) for index in range(4))
+
+    return output, {
+        "id": name,
+        "bakedInto": name,
+        "mask": {
+            "source": "wrapped-fbm",
+            "seed": mask_seed,
+            "periods": PATCH_MASK_PERIODS,
+        },
+        "variants": [
+            {
+                "id": variant["id"],
+                "base": spec["base"],
+                "shadow": spec["shadow"],
+                "highlight": spec["highlight"],
+            }
+            for variant, spec in zip(variants, resolved)
+        ],
+    }
+
+
 # Surface materials. Each must be identifiable at a glance from the others --
 # that is the whole point of the change.
 MATERIALS = {
@@ -246,32 +317,62 @@ MATERIALS = {
         "seed": 11, "base": "#2f5f52", "shadow": "#173a32", "highlight": "#4d8a76",
         "accent": "#6fbfa1", "accentAmount": 0.3, "octaves": [(8, 1.0), (16, 0.5), (32, 0.25), (64, 0.12)],
         "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 46, "grain": 0.14, "specular": 0.06,
+        "patchVariants": [
+            {"id": "relay-loam", "seed": 111, "base": "#315b4d", "shadow": "#17352d", "highlight": "#56806d"},
+            {"id": "gravelly-earth", "seed": 112, "base": "#4b6258", "shadow": "#273b35", "highlight": "#748a7d", "relief": 58, "grain": 0.2},
+            {"id": "signal-lichen", "seed": 113, "base": "#365f46", "shadow": "#183825", "highlight": "#68926a", "accent": "#9ecf7e"},
+        ],
     },
     "red-rock": {
         "seed": 23, "base": "#6b3b33", "shadow": "#3a1d19", "highlight": "#a3614a",
         "accent": "#d97852", "accentAmount": 0.35, "octaves": [(6, 1.0), (12, 0.6), (24, 0.3), (48, 0.16)],
         "detailOctaves": [(48, 1.0), (96, 0.6)], "relief": 62, "grain": 0.18, "specular": 0.08,
+        "patchVariants": [
+            {"id": "iron-dust", "seed": 231, "base": "#724036", "shadow": "#3d211c", "highlight": "#ad674d"},
+            {"id": "shale-scree", "seed": 232, "base": "#5d4542", "shadow": "#302524", "highlight": "#8b7069", "relief": 70, "grain": 0.23},
+            {"id": "sunbaked-clay", "seed": 233, "base": "#7e4938", "shadow": "#45251d", "highlight": "#bd7452", "accent": "#e49a63"},
+        ],
     },
     "wet-bank": {
         "seed": 37, "base": "#2a5a63", "shadow": "#123239", "highlight": "#4d8f95",
         "accent": "#7fc4c8", "accentAmount": 0.27, "octaves": [(8, 1.0), (16, 0.5), (32, 0.28)],
         "detailOctaves": [(64, 1.0), (128, 0.45)], "relief": 40, "grain": 0.12, "specular": 0.2,
+        "patchVariants": [
+            {"id": "river-silt", "seed": 371, "base": "#365d5e", "shadow": "#1a3638", "highlight": "#618b89"},
+            {"id": "reed-mud", "seed": 372, "base": "#31564b", "shadow": "#17342d", "highlight": "#5c8670", "accent": "#87b883"},
+            {"id": "mineral-wash", "seed": 373, "base": "#326875", "shadow": "#163a43", "highlight": "#61a1a8", "specular": 0.24},
+        ],
     },
     "forest-floor": {
         "seed": 53, "base": "#2c5434", "shadow": "#14301c", "highlight": "#4a8850",
         "accent": "#7fc878", "accentAmount": 0.41, "octaves": [(6, 1.0), (14, 0.6), (28, 0.32), (56, 0.18)],
         "detailOctaves": [(56, 1.0), (112, 0.6)], "relief": 56, "grain": 0.2, "specular": 0.05,
+        "patchVariants": [
+            {"id": "needle-litter", "seed": 531, "base": "#40513a", "shadow": "#222f20", "highlight": "#68775a", "accent": "#9b8b5d"},
+            {"id": "mossy-floor", "seed": 532, "base": "#315d38", "shadow": "#17351f", "highlight": "#559258", "accent": "#8ed17f"},
+            {"id": "root-mat", "seed": 533, "base": "#4a5535", "shadow": "#29301d", "highlight": "#77805a", "relief": 64, "grain": 0.24},
+        ],
     },
     "crushed-ore": {
         "seed": 71, "base": "#4a4b4e", "shadow": "#26272a", "highlight": "#78797d",
         "accent": "#f0ae4c", "accentAmount": 0.32, "octaves": [(10, 1.0), (20, 0.55), (40, 0.3), (80, 0.18)],
         "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 58, "grain": 0.22, "specular": 0.14,
+        "patchVariants": [
+            {"id": "granite-tailings", "seed": 711, "base": "#55575a", "shadow": "#2d2f32", "highlight": "#85878a"},
+            {"id": "coal-fines", "seed": 712, "base": "#3b3d42", "shadow": "#1d1f23", "highlight": "#676a70", "grain": 0.26},
+            {"id": "oxidized-ore", "seed": 713, "base": "#5d4e47", "shadow": "#302924", "highlight": "#8e7566", "accent": "#e49b45"},
+        ],
     },
     "industrial-slab": {
         "seed": 89, "base": "#4a2b3f", "shadow": "#24121e", "highlight": "#734a63",
         "structure": "slab-grid", "structurePeriod": 64,
         "accent": "#ff527e", "accentAmount": 0.24, "octaves": [(4, 1.0), (16, 0.4), (32, 0.2)],
         "detailOctaves": [(64, 1.0), (128, 0.4)], "relief": 30, "grain": 0.1, "specular": 0.12,
+        "patchVariants": [
+            {"id": "patched-slab", "seed": 891, "base": "#55384a", "shadow": "#2c1d27", "highlight": "#805c70"},
+            {"id": "oil-darkened-slab", "seed": 892, "base": "#3d2a37", "shadow": "#1d131a", "highlight": "#664756", "specular": 0.18},
+            {"id": "rust-stained-slab", "seed": 893, "base": "#5b3440", "shadow": "#2d1920", "highlight": "#8a5661", "accent": "#d96a4f"},
+        ],
     },
     # Shared, non-district surfaces. These carry the semantic load the player
     # complained about: am I on a road, in water, or on something raised?
@@ -345,9 +446,12 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     records = []
     fringe_records = []
+    patch_records = []
     seam_stats = {}
     for name, material in sorted(MATERIALS.items()):
-        image = bake(material)
+        image, patch_record = bake_material(name, material)
+        if patch_record:
+            patch_records.append(patch_record)
 
         if args.verify_seamless:
             # A seam is not "opposite edges are identical" -- for high-frequency
@@ -411,13 +515,15 @@ def main() -> None:
         })
 
     manifest = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "pipelineId": PIPELINE_ID,
         "classification": "production-art",
         "runtimeAuthority": "projection-only",
         "tileSize": TILE_SIZE,
         "fringeHeight": FRINGE_HEIGHT,
         "paintedLayering": True,
+        "intraDistrictPatches": True,
+        "districtPatches": patch_records,
         "fringes": fringe_records,
         "seamlessVerified": bool(args.verify_seamless),
         "seamStatistics": seam_stats,

@@ -1,5 +1,205 @@
 {
   "classification": "production-art",
+  "districtPatches": [
+    {
+      "bakedInto": "crushed-ore",
+      "id": "crushed-ore",
+      "mask": {
+        "periods": [
+          2,
+          4,
+          8
+        ],
+        "seed": 5523574,
+        "source": "wrapped-fbm"
+      },
+      "variants": [
+        {
+          "base": "#55575a",
+          "highlight": "#85878a",
+          "id": "granite-tailings",
+          "shadow": "#2d2f32"
+        },
+        {
+          "base": "#3b3d42",
+          "highlight": "#676a70",
+          "id": "coal-fines",
+          "shadow": "#1d1f23"
+        },
+        {
+          "base": "#5d4e47",
+          "highlight": "#8e7566",
+          "id": "oxidized-ore",
+          "shadow": "#302924"
+        }
+      ]
+    },
+    {
+      "bakedInto": "forest-floor",
+      "id": "forest-floor",
+      "mask": {
+        "periods": [
+          2,
+          4,
+          8
+        ],
+        "seed": 5523460,
+        "source": "wrapped-fbm"
+      },
+      "variants": [
+        {
+          "base": "#40513a",
+          "highlight": "#68775a",
+          "id": "needle-litter",
+          "shadow": "#222f20"
+        },
+        {
+          "base": "#315d38",
+          "highlight": "#559258",
+          "id": "mossy-floor",
+          "shadow": "#17351f"
+        },
+        {
+          "base": "#4a5535",
+          "highlight": "#77805a",
+          "id": "root-mat",
+          "shadow": "#29301d"
+        }
+      ]
+    },
+    {
+      "bakedInto": "industrial-slab",
+      "id": "industrial-slab",
+      "mask": {
+        "periods": [
+          2,
+          4,
+          8
+        ],
+        "seed": 5523560,
+        "source": "wrapped-fbm"
+      },
+      "variants": [
+        {
+          "base": "#55384a",
+          "highlight": "#805c70",
+          "id": "patched-slab",
+          "shadow": "#2c1d27"
+        },
+        {
+          "base": "#3d2a37",
+          "highlight": "#664756",
+          "id": "oil-darkened-slab",
+          "shadow": "#1d131a"
+        },
+        {
+          "base": "#5b3440",
+          "highlight": "#8a5661",
+          "id": "rust-stained-slab",
+          "shadow": "#2d1920"
+        }
+      ]
+    },
+    {
+      "bakedInto": "packed-earth",
+      "id": "packed-earth",
+      "mask": {
+        "periods": [
+          2,
+          4,
+          8
+        ],
+        "seed": 5523514,
+        "source": "wrapped-fbm"
+      },
+      "variants": [
+        {
+          "base": "#315b4d",
+          "highlight": "#56806d",
+          "id": "relay-loam",
+          "shadow": "#17352d"
+        },
+        {
+          "base": "#4b6258",
+          "highlight": "#748a7d",
+          "id": "gravelly-earth",
+          "shadow": "#273b35"
+        },
+        {
+          "base": "#365f46",
+          "highlight": "#68926a",
+          "id": "signal-lichen",
+          "shadow": "#183825"
+        }
+      ]
+    },
+    {
+      "bakedInto": "red-rock",
+      "id": "red-rock",
+      "mask": {
+        "periods": [
+          2,
+          4,
+          8
+        ],
+        "seed": 5523494,
+        "source": "wrapped-fbm"
+      },
+      "variants": [
+        {
+          "base": "#724036",
+          "highlight": "#ad674d",
+          "id": "iron-dust",
+          "shadow": "#3d211c"
+        },
+        {
+          "base": "#5d4542",
+          "highlight": "#8b7069",
+          "id": "shale-scree",
+          "shadow": "#302524"
+        },
+        {
+          "base": "#7e4938",
+          "highlight": "#bd7452",
+          "id": "sunbaked-clay",
+          "shadow": "#45251d"
+        }
+      ]
+    },
+    {
+      "bakedInto": "wet-bank",
+      "id": "wet-bank",
+      "mask": {
+        "periods": [
+          2,
+          4,
+          8
+        ],
+        "seed": 5523476,
+        "source": "wrapped-fbm"
+      },
+      "variants": [
+        {
+          "base": "#365d5e",
+          "highlight": "#618b89",
+          "id": "river-silt",
+          "shadow": "#1a3638"
+        },
+        {
+          "base": "#31564b",
+          "highlight": "#5c8670",
+          "id": "reed-mud",
+          "shadow": "#17342d"
+        },
+        {
+          "base": "#326875",
+          "highlight": "#61a1a8",
+          "id": "mineral-wash",
+          "shadow": "#163a43"
+        }
+      ]
+    }
+  ],
   "fringeHeight": 128,
   "fringes": [
     {
@@ -10,21 +210,21 @@
       "width": 512
     },
     {
-      "bytes": 115812,
+      "bytes": 121162,
       "file": "./crushed-ore-fringe.png",
       "height": 128,
       "id": "crushed-ore",
       "width": 512
     },
     {
-      "bytes": 112409,
+      "bytes": 113023,
       "file": "./forest-floor-fringe.png",
       "height": 128,
       "id": "forest-floor",
       "width": 512
     },
     {
-      "bytes": 97422,
+      "bytes": 96975,
       "file": "./industrial-slab-fringe.png",
       "height": 128,
       "id": "industrial-slab",
@@ -38,14 +238,14 @@
       "width": 512
     },
     {
-      "bytes": 113329,
+      "bytes": 114364,
       "file": "./packed-earth-fringe.png",
       "height": 128,
       "id": "packed-earth",
       "width": 512
     },
     {
-      "bytes": 112617,
+      "bytes": 111869,
       "file": "./red-rock-fringe.png",
       "height": 128,
       "id": "red-rock",
@@ -73,13 +273,14 @@
       "width": 512
     },
     {
-      "bytes": 110104,
+      "bytes": 110991,
       "file": "./wet-bank-fringe.png",
       "height": 128,
       "id": "wet-bank",
       "width": 512
     }
   ],
+  "intraDistrictPatches": true,
   "materials": [
     {
       "bytes": 368674,
@@ -88,19 +289,19 @@
       "size": 512
     },
     {
-      "bytes": 322904,
+      "bytes": 351977,
       "file": "./crushed-ore.png",
       "id": "crushed-ore",
       "size": 512
     },
     {
-      "bytes": 325113,
+      "bytes": 336648,
       "file": "./forest-floor.png",
       "id": "forest-floor",
       "size": 512
     },
     {
-      "bytes": 252824,
+      "bytes": 260009,
       "file": "./industrial-slab.png",
       "id": "industrial-slab",
       "size": 512
@@ -112,13 +313,13 @@
       "size": 512
     },
     {
-      "bytes": 328942,
+      "bytes": 340085,
       "file": "./packed-earth.png",
       "id": "packed-earth",
       "size": 512
     },
     {
-      "bytes": 316362,
+      "bytes": 330451,
       "file": "./red-rock.png",
       "id": "red-rock",
       "size": 512
@@ -142,7 +343,7 @@
       "size": 512
     },
     {
-      "bytes": 317040,
+      "bytes": 317391,
       "file": "./wet-bank.png",
       "id": "wet-bank",
       "size": 512
@@ -151,7 +352,7 @@
   "paintedLayering": true,
   "pipelineId": "hmh-terrain-tiles-v2",
   "runtimeAuthority": "projection-only",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "seamStatistics": {
     "bridge-deck": {
       "interiorX": 2.384,
@@ -160,22 +361,22 @@
       "wrapY": 0.954
     },
     "crushed-ore": {
-      "interiorX": 3.791,
-      "interiorY": 3.973,
-      "wrapX": 4.697,
-      "wrapY": 5.371
+      "interiorX": 3.531,
+      "interiorY": 3.747,
+      "wrapX": 3.692,
+      "wrapY": 4.708
     },
     "forest-floor": {
-      "interiorX": 2.113,
-      "interiorY": 2.303,
-      "wrapX": 1.838,
-      "wrapY": 2.303
+      "interiorX": 2.215,
+      "interiorY": 2.337,
+      "wrapX": 2.305,
+      "wrapY": 1.781
     },
     "industrial-slab": {
-      "interiorX": 0.871,
-      "interiorY": 0.923,
-      "wrapX": 0.561,
-      "wrapY": 0.736
+      "interiorX": 0.851,
+      "interiorY": 0.889,
+      "wrapX": 0.654,
+      "wrapY": 0.596
     },
     "ledge-top": {
       "interiorX": 2.202,
@@ -184,16 +385,16 @@
       "wrapY": 3.167
     },
     "packed-earth": {
-      "interiorX": 1.665,
-      "interiorY": 1.85,
-      "wrapX": 1.997,
-      "wrapY": 2.195
+      "interiorX": 1.752,
+      "interiorY": 1.968,
+      "wrapX": 2.281,
+      "wrapY": 2.111
     },
     "red-rock": {
-      "interiorX": 1.91,
-      "interiorY": 2.286,
-      "wrapX": 1.635,
-      "wrapY": 1.753
+      "interiorX": 2.007,
+      "interiorY": 2.273,
+      "wrapX": 1.706,
+      "wrapY": 1.555
     },
     "road": {
       "interiorX": 4.167,
@@ -214,10 +415,10 @@
       "wrapY": 0.198
     },
     "wet-bank": {
-      "interiorX": 1.524,
-      "interiorY": 1.63,
-      "wrapX": 1.353,
-      "wrapY": 1.279
+      "interiorX": 1.42,
+      "interiorY": 1.423,
+      "wrapX": 1.339,
+      "wrapY": 1.1
     }
   },
   "seamlessVerified": true,
