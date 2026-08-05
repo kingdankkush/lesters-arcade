@@ -1,0 +1,114 @@
+# Cycle ledger — upgrade program Waves 1 and 2 (partial)
+
+Date: 2026-08-05 PDT
+Author: Claude Fable 5
+Branch: `reboot/hmh-aaa-continuous` (head at close: `ff013b60`)
+Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
+
+Eight slices, each RED-tested first, gated, reviewed against the exact staged
+index, committed and pushed separately. **Production was not promoted** — that
+remains the owner's from the Vercel dashboard. Pushing the branch creates a
+Preview only.
+
+---
+
+## What shipped
+
+| Slice | Commit | Summary |
+|---|---|---|
+| P2 heap gate | `fef0dae3` | Forced synchronous major GC + median-of-7. Swing ~70 MB → ~7 MB; cap 24 MB → 16 MB. |
+| U11a mock wallet | `7d36a85d` | Simulated wallet labelled on every visible surface; own browser smoke. |
+| A2 undergrowth | `19fc79c0` | 6 plant props + prism_mesh normals guard. |
+| A3 rock/cliff | `54f3f348` | 6 rock props; `balanced-boulder` held out of dressing. |
+| A1 trees gen 2 | `3cfec4c3` | 5 tree props + `massCentroidY` silhouette descriptor in the pipeline. |
+| A4 water | `e6a95ee6` | 6 water props; the crossing now reads as water. |
+| W1 density | `2cecaf6b` | Dressing 75 → 128, anchor-plus-satellite clustering. |
+| A7 + W3 camps | `ff013b60` | 6 camp props, 5 encampments ringing the encounter arenas. |
+
+World-prop library: **26 → 55**. Prop atlas 178,089 B → 306,970 B against a
+524,288 B cap. Test count 1,852 → 1,931, expected failures still 51.
+
+---
+
+## Pipeline facts learned the hard way
+
+These cost multiple render cycles each. They are the most valuable thing in
+this document.
+
+1. **The render frame clips content below roughly z = 0.15.** A prop composed
+   at the ground plane loses its lower parts silently — the objects build, the
+   scene inspection counts them, and they simply do not appear. Compose low
+   props to START at ~0.16. This ate three passes on `campfire-ring` and
+   `bedroll-cluster`.
+2. **`prism_mesh` takes an (x, z) profile and extrudes along Y.** It cannot
+   express a round *horizontal* shape. Disc profiles come out as vertical
+   plates seen edge-on. For anything genuinely horizontal (lily pads,
+   platforms) use a flat faceted `cylinder`.
+3. **The 55° camera turns Y DEPTH into screen height.** A part with a large Y
+   extent projects as a tall band that hides whatever sits behind it in Z.
+   This is why `balanced-boulder` had no visible pinch and `rock-shelf`'s
+   strata merged. Put the feature that carries the concept frontmost and
+   shallow, and step everything else back in Y.
+4. **Small primitives with bevels near their own half-extent collapse.** A
+   0.062-wide cube with a 0.018 bevel renders as nothing.
+5. **Author silhouettes as polygons; do not assemble rotated primitives and
+   compute where the next piece should meet.** At 20-30° of lean the
+   small-angle offsets are visibly wrong and pieces detach. Four passes of A2
+   were lost to this before switching to `prism_mesh` profiles.
+6. **A filled polygon has no holes.** A curtain of vines drawn as one polygon
+   renders as a slab; the gaps between strands are most of what makes foliage
+   read. Draw each strand.
+
+## Gate lessons
+
+- **Measure and eyeball; neither alone is enough.** `fern-cluster` passed the
+  height gate at 0.86 h/w while rendering as disconnected floating blobs.
+  `balanced-boulder` measures 1.13 and still reads as a mushroom. Conversely
+  `scrub-bush` looked fine in a zoomed crop at 0.44 h/w and would have smeared
+  into the ground band in play.
+- **A rule that cannot separate the good case from the bad one is not a rule.**
+  A mass-centroid "flat decal" check was drafted for A4 and removed: the
+  reference set showed `reed-cluster` (ships, reads well) at 0.687 and
+  `driftwood-log` (the documented failure) at 0.706 — 0.019 apart. Any
+  threshold rejecting the failure also rejected the good prop. Tuning it to fit
+  this wave's assets would have been rerunning to green.
+- **Nudge the geometry, not the threshold.** Three camp props landed just under
+  minimums declared before authoring; the shapes moved, the gate did not.
+- **The visual gate screenshots the canvas only.** It is blind to the entire
+  portal DOM. U11a shipped with its own browser smoke
+  (`npm run smoke:portal:simulated-wallet`), which earned itself twice: it
+  caught a disclosure rendered into a 0×0 legacy panel, and a chain-guard line
+  still reading "Wallet connected" under a "Simulated Wallet" headline.
+
+## Calibration reference (shipped nature props, h/w)
+
+```
+driftwood-log 0.30 (FAILURE, held out)   granite-boulder 0.62 (ships)
+hashwood-stump 0.76   hashwood-pine 0.99   moss-boulder 1.05
+hashwood-tree 1.13    reed-cluster 1.33    dead-pine 2.10
+```
+
+Nothing new was allowed below 0.55.
+
+---
+
+## Standing debts
+
+- **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
+  district dressing.** Both need re-concepting, not another iteration. For the
+  boulder: wedged in a cleft, or split by a fracture, rather than perched on a
+  plinth. The hold-out list is asserted at one entry so it cannot quietly grow.
+- **P5 is now concrete.** The five A1 trees and several later props do not
+  appear in any of the 8 pinned visual scenes — they were verified by rendered
+  montage and atlas metrics, not by the regression baselines, so they ship
+  unwatched by that gate. New scenes are needed.
+- **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
+  right at the budget of two. Standing evidence for M6 (chunked navgrid).
+- **Not yet done in Wave 2:** A5 bridges, T1 intra-district material patches,
+  T2 ground decals.
+
+## Verification note
+
+Production was NOT promoted and remains the owner's call from the Vercel
+dashboard. The Vercel Security Checkpoint still 403s automated clients, so
+live verification has to happen in a real browser regardless.
