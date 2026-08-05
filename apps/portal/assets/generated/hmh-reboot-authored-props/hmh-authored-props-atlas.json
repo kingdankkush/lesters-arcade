@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 64,
+  "assetCount": 70,
   "categories": [
     "pickup",
     "power-up",
@@ -22,8 +22,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 897,
-        "y": 287,
+        "x": 159,
+        "y": 334,
         "w": 57,
         "h": 22
       },
@@ -50,7 +50,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 366,
+        "x": 570,
         "y": 155,
         "w": 53,
         "h": 60
@@ -78,8 +78,8 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 823,
-        "y": 232,
+        "x": 62,
+        "y": 291,
         "w": 44,
         "h": 38
       },
@@ -134,8 +134,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 915,
-        "y": 232,
+        "x": 154,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -162,8 +162,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 3,
-        "y": 324,
+        "x": 274,
+        "y": 334,
         "w": 28,
         "h": 21
       },
@@ -192,8 +192,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 964,
-        "y": 232,
+        "x": 203,
+        "y": 291,
         "w": 26,
         "h": 34
       },
@@ -220,7 +220,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 354,
+        "x": 455,
         "y": 3,
         "w": 56,
         "h": 102
@@ -248,7 +248,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 857,
+        "x": 958,
         "y": 3,
         "w": 54,
         "h": 82
@@ -276,7 +276,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 695,
+        "x": 796,
         "y": 3,
         "w": 159,
         "h": 85
@@ -304,8 +304,8 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 3,
-        "y": 232,
+        "x": 92,
+        "y": 235,
         "w": 136,
         "h": 52
       },
@@ -332,8 +332,8 @@
       "districts": [],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 914,
-        "y": 3,
+        "x": 138,
+        "y": 155,
         "w": 66,
         "h": 75
       },
@@ -360,8 +360,8 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 847,
-        "y": 287,
+        "x": 109,
+        "y": 334,
         "w": 47,
         "h": 23
       },
@@ -388,8 +388,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 287,
+        "x": 232,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -416,8 +416,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 52,
-        "y": 287,
+        "x": 281,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -447,8 +447,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 653,
-        "y": 287,
+        "x": 882,
+        "y": 291,
         "w": 44,
         "h": 32
       },
@@ -475,7 +475,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 301,
+        "x": 402,
         "y": 3,
         "w": 50,
         "h": 105
@@ -503,8 +503,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 101,
-        "y": 287,
+        "x": 330,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -523,6 +523,34 @@
       "trimmed": true
     },
     {
+      "id": "dock-post",
+      "assetId": "dock-post",
+      "category": "world-prop",
+      "shape": "dock-post",
+      "itemUrl": "./items/dock-post.png",
+      "districts": [],
+      "runtimeScale": 0.95,
+      "frame": {
+        "x": 3,
+        "y": 155,
+        "w": 50,
+        "h": 77
+      },
+      "pivot": {
+        "x": 26,
+        "y": 73
+      },
+      "anchor": {
+        "x": 0.52,
+        "y": 0.948052
+      },
+      "opaquePixels": 1718,
+      "massCentroidY": 0.587839,
+      "sourcePixelSha256": "2b2657a465bd209a41134731da5864572af51bb8f07d454c87422bb9c88afcd4",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "driftwood-log",
       "assetId": "driftwood-log",
       "category": "world-prop",
@@ -531,8 +559,8 @@
       "districts": [],
       "runtimeScale": 0.75,
       "frame": {
-        "x": 263,
-        "y": 232,
+        "x": 352,
+        "y": 235,
         "w": 160,
         "h": 48
       },
@@ -559,7 +587,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 737,
+        "x": 941,
         "y": 155,
         "w": 72,
         "h": 55
@@ -587,7 +615,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 3,
+        "x": 207,
         "y": 155,
         "w": 59,
         "h": 74
@@ -615,8 +643,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 426,
-        "y": 232,
+        "x": 515,
+        "y": 235,
         "w": 31,
         "h": 48
       },
@@ -646,8 +674,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 150,
-        "y": 287,
+        "x": 379,
+        "y": 291,
         "w": 38,
         "h": 34
       },
@@ -674,8 +702,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 191,
-        "y": 287,
+        "x": 420,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -702,8 +730,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 812,
-        "y": 155,
+        "x": 3,
+        "y": 235,
         "w": 86,
         "h": 53
       },
@@ -730,7 +758,7 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 540,
+        "x": 744,
         "y": 155,
         "w": 38,
         "h": 57
@@ -758,7 +786,7 @@
       "districts": [],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 478,
+        "x": 682,
         "y": 155,
         "w": 59,
         "h": 58
@@ -786,8 +814,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 240,
-        "y": 287,
+        "x": 469,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -814,8 +842,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 289,
-        "y": 287,
+        "x": 518,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -842,8 +870,8 @@
       "districts": [],
       "runtimeScale": 0.76,
       "frame": {
-        "x": 870,
-        "y": 232,
+        "x": 109,
+        "y": 291,
         "w": 42,
         "h": 35
       },
@@ -900,8 +928,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 700,
-        "y": 287,
+        "x": 929,
+        "y": 291,
         "w": 38,
         "h": 29
       },
@@ -928,7 +956,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 413,
+        "x": 514,
         "y": 3,
         "w": 90,
         "h": 102
@@ -956,8 +984,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 338,
-        "y": 287,
+        "x": 567,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -984,8 +1012,8 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 741,
-        "y": 287,
+        "x": 3,
+        "y": 334,
         "w": 59,
         "h": 29
       },
@@ -1012,8 +1040,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 387,
-        "y": 287,
+        "x": 616,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -1032,6 +1060,34 @@
       "trimmed": true
     },
     {
+      "id": "lily-pads",
+      "assetId": "lily-pads",
+      "category": "world-prop",
+      "shape": "lily-pads",
+      "itemUrl": "./items/lily-pads.png",
+      "districts": [],
+      "runtimeScale": 0.72,
+      "frame": {
+        "x": 301,
+        "y": 3,
+        "w": 98,
+        "h": 107
+      },
+      "pivot": {
+        "x": 52,
+        "y": 103
+      },
+      "anchor": {
+        "x": 0.530612,
+        "y": 0.962617
+      },
+      "opaquePixels": 2472,
+      "massCentroidY": 0.711619,
+      "sourcePixelSha256": "a431271e5e79947c3bac79423f7a263c6019603947f24a8f12e8cbc43f837c57",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "liquidation-terminal",
       "assetId": "liquidation-terminal",
       "category": "world-prop",
@@ -1042,8 +1098,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 132,
-        "y": 324,
+        "x": 403,
+        "y": 334,
         "w": 24,
         "h": 15
       },
@@ -1073,8 +1129,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 436,
-        "y": 287,
+        "x": 665,
+        "y": 291,
         "w": 38,
         "h": 34
       },
@@ -1101,7 +1157,7 @@
       "districts": [],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 558,
+        "x": 659,
         "y": 3,
         "w": 134,
         "h": 93
@@ -1129,7 +1185,7 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 305,
+        "x": 509,
         "y": 155,
         "w": 58,
         "h": 61
@@ -1157,8 +1213,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 717,
-        "y": 232,
+        "x": 923,
+        "y": 235,
         "w": 44,
         "h": 40
       },
@@ -1187,8 +1243,8 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 803,
-        "y": 287,
+        "x": 65,
+        "y": 334,
         "w": 41,
         "h": 26
       },
@@ -1215,7 +1271,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 581,
+        "x": 785,
         "y": 155,
         "w": 153,
         "h": 57
@@ -1243,8 +1299,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 460,
-        "y": 232,
+        "x": 627,
+        "y": 235,
         "w": 58,
         "h": 46
       },
@@ -1271,8 +1327,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 477,
-        "y": 287,
+        "x": 706,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -1299,8 +1355,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 526,
-        "y": 287,
+        "x": 755,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -1329,8 +1385,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 521,
-        "y": 232,
+        "x": 727,
+        "y": 235,
         "w": 28,
         "h": 42
       },
@@ -1357,7 +1413,7 @@
       "districts": [],
       "runtimeScale": 0.7,
       "frame": {
-        "x": 65,
+        "x": 269,
         "y": 155,
         "w": 54,
         "h": 72
@@ -1387,8 +1443,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 159,
-        "y": 324,
+        "x": 430,
+        "y": 334,
         "w": 24,
         "h": 15
       },
@@ -1415,8 +1471,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 142,
-        "y": 232,
+        "x": 231,
+        "y": 235,
         "w": 67,
         "h": 51
       },
@@ -1443,7 +1499,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 506,
+        "x": 607,
         "y": 3,
         "w": 49,
         "h": 94
@@ -1473,8 +1529,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 957,
-        "y": 287,
+        "x": 219,
+        "y": 334,
         "w": 52,
         "h": 22
       },
@@ -1501,7 +1557,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 174,
+        "x": 378,
         "y": 155,
         "w": 128,
         "h": 65
@@ -1532,8 +1588,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 103,
-        "y": 324,
+        "x": 374,
+        "y": 334,
         "w": 26,
         "h": 18
       },
@@ -1560,7 +1616,7 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 122,
+        "x": 326,
         "y": 155,
         "w": 49,
         "h": 71
@@ -1588,8 +1644,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 34,
-        "y": 324,
+        "x": 305,
+        "y": 334,
         "w": 66,
         "h": 20
       },
@@ -1616,8 +1672,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 764,
-        "y": 232,
+        "x": 3,
+        "y": 291,
         "w": 56,
         "h": 40
       },
@@ -1644,8 +1700,8 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 212,
-        "y": 232,
+        "x": 301,
+        "y": 235,
         "w": 48,
         "h": 51
       },
@@ -1664,6 +1720,62 @@
       "trimmed": true
     },
     {
+      "id": "stepping-stones",
+      "assetId": "stepping-stones",
+      "category": "world-prop",
+      "shape": "stepping-stones",
+      "itemUrl": "./items/stepping-stones.png",
+      "districts": [],
+      "runtimeScale": 0.88,
+      "frame": {
+        "x": 56,
+        "y": 155,
+        "w": 32,
+        "h": 76
+      },
+      "pivot": {
+        "x": 16,
+        "y": 72
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.947368
+      },
+      "opaquePixels": 1654,
+      "massCentroidY": 0.547126,
+      "sourcePixelSha256": "dc77e1f6f7df073752fe36de01bc4dddd8dc8bc3c9dd2d77689d82b4caeaedc9",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "submerged-log",
+      "assetId": "submerged-log",
+      "category": "world-prop",
+      "shape": "submerged-log",
+      "itemUrl": "./items/submerged-log.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 549,
+        "y": 235,
+        "w": 75,
+        "h": 47
+      },
+      "pivot": {
+        "x": 42,
+        "y": 43
+      },
+      "anchor": {
+        "x": 0.56,
+        "y": 0.914894
+      },
+      "opaquePixels": 1431,
+      "massCentroidY": 0.721706,
+      "sourcePixelSha256": "0155c3f520933612224061d4a8c5dbd9c424338092eac1ecd8a0168bac53b6aa",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "thorn-bramble",
       "assetId": "thorn-bramble",
       "category": "world-prop",
@@ -1672,7 +1784,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 422,
+        "x": 626,
         "y": 155,
         "w": 53,
         "h": 60
@@ -1700,8 +1812,8 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 684,
-        "y": 232,
+        "x": 890,
+        "y": 235,
         "w": 30,
         "h": 41
       },
@@ -1728,8 +1840,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 575,
-        "y": 287,
+        "x": 804,
+        "y": 291,
         "w": 46,
         "h": 34
       },
@@ -1759,8 +1871,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 624,
-        "y": 287,
+        "x": 853,
+        "y": 291,
         "w": 26,
         "h": 34
       },
@@ -1807,6 +1919,62 @@
       "trimmed": true
     },
     {
+      "id": "water-grass",
+      "assetId": "water-grass",
+      "category": "world-prop",
+      "shape": "water-grass",
+      "itemUrl": "./items/water-grass.png",
+      "districts": [],
+      "runtimeScale": 0.82,
+      "frame": {
+        "x": 91,
+        "y": 155,
+        "w": 44,
+        "h": 76
+      },
+      "pivot": {
+        "x": 19,
+        "y": 72
+      },
+      "anchor": {
+        "x": 0.431818,
+        "y": 0.947368
+      },
+      "opaquePixels": 1145,
+      "massCentroidY": 0.617304,
+      "sourcePixelSha256": "f8360985d606e86fab7866afcb4110efe4b67ed1ec2e6350e0d31ecddddd9032",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "wetland-hummock",
+      "assetId": "wetland-hummock",
+      "category": "world-prop",
+      "shape": "wetland-hummock",
+      "itemUrl": "./items/wetland-hummock.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 688,
+        "y": 235,
+        "w": 36,
+        "h": 44
+      },
+      "pivot": {
+        "x": 17,
+        "y": 40
+      },
+      "anchor": {
+        "x": 0.472222,
+        "y": 0.909091
+      },
+      "opaquePixels": 773,
+      "massCentroidY": 0.683715,
+      "sourcePixelSha256": "3931f335d2db568f07f777498fed372c5fb61991fe5efeb97ae7b83e87173a72",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "wrecked-sedan",
       "assetId": "wrecked-sedan",
       "category": "world-prop",
@@ -1815,8 +1983,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 552,
-        "y": 232,
+        "x": 758,
+        "y": 235,
         "w": 129,
         "h": 42
       },

@@ -7,7 +7,7 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
   weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
   pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
   powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two', 'precision-ledger', 'hard-fork-rounds']),
-  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines', 'rock-spire', 'rock-shelf', 'scree-pile', 'cliff-face', 'balanced-boulder', 'ore-vein-rock', 'birch-cluster', 'sapling-thicket', 'burned-snag', 'canopy-edge-tree', 'fallen-trunk']),
+  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines', 'rock-spire', 'rock-shelf', 'scree-pile', 'cliff-face', 'balanced-boulder', 'ore-vein-rock', 'birch-cluster', 'sapling-thicket', 'burned-snag', 'canopy-edge-tree', 'fallen-trunk', 'lily-pads', 'water-grass', 'submerged-log', 'stepping-stones', 'dock-post', 'wetland-hummock']),
 });
 
 // Cycle 038: trees, boulders, wrecked cars, fencing and a shack join the
@@ -35,7 +35,12 @@ const DISTRICTS = Object.freeze([
   // exactly why these get inspected by eye as well as measured. Per the
   // driftwood-log lesson: re-concept it (a boulder wedged in a cleft, or one
   // split by a fracture, rather than perched on a plinth), do not iterate.
-  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['reed-cluster', 'proof-pylon', 'moss-boulder', 'bridge-bollard', 'reed-cluster', 'chain-fence', 'granite-boulder', 'grass-tuft', 'cliff-face', 'rock-shelf'], countOverride: 11 }),
+  // A4: the water district now reads as water. Generic rock (moss-boulder,
+  // granite-boulder), the industrial chain-fence and a duplicated
+  // reed-cluster gave way to the new water dressing; all four are still
+  // placed in districts where they belong. Count unchanged at the
+  // ceiling -- W1 owns density.
+  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['reed-cluster', 'proof-pylon', 'wetland-hummock', 'bridge-bollard', 'water-grass', 'submerged-log', 'lily-pads', 'stepping-stones', 'cliff-face', 'rock-shelf', 'dock-post'], countOverride: 11 }),
   Object.freeze({ id: 'hashwood', minX: 6_000, maxX: 8_000, propIds: ['hashwood-pine', 'hashwood-tree', 'moss-boulder', 'hashwood-stump', 'hashwood-pine', 'dead-pine', 'crystal-cluster', 'fern-cluster', 'grass-tuft', 'flowering-weeds', 'rock-shelf', 'birch-cluster', 'canopy-edge-tree', 'sapling-thicket', 'fallen-trunk'], countOverride: 18 }),
   Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'ore-conveyor', 'loader-barrel', 'miners-shack', 'crystal-cluster', 'cargo-container', 'ruined-wall', 'flowering-weeds', 'ore-vein-rock', 'scree-pile', 'burned-snag'], countOverride: 12 }),
   Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['cargo-container', 'liquidation-terminal', 'wrecked-sedan', 'fuel-drum', 'ruined-wall', 'warning-beacon', 'cargo-container', 'chain-fence', 'thorn-bramble', 'scrub-bush', 'scree-pile'], countOverride: 12 }),

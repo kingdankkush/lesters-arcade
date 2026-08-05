@@ -1162,6 +1162,201 @@ def build_asset(asset: dict) -> dict:
         ))
         add(cube(f'{asset_id}_Fleck', (-0.19, -0.27, 0.56), (0.028, 0.016, 0.024), accent, asset_id, bevel=0.008))
 
+    # --- A4 water dressing -------------------------------------------------
+    # reed-cluster was the only water prop in the game. Everything here is
+    # built so that something stands proud of the surface: a flat pad or stone
+    # on its own is the driftwood-log silhouette and will not read.
+    elif shape == 'lily-pads':
+        # Fifth pass. prism_mesh shapes the x-z profile and extrudes along Y,
+        # so it cannot make a ROUND horizontal disc -- the pads came out as
+        # vertical plates seen edge-on, then as a solid rectangular block. A
+        # flat cylinder is the right primitive: faceted at 14 sides (smooth
+        # spheres and smooth discs both read badly here), thick enough to show
+        # a rim, and lifted off the frame edge. Flower spikes give the group
+        # the vertical anchor a floating pad cannot provide on its own.
+        pad = material(f'{asset_id}_pad', palette['primary'], roughness=0.72)
+        pad_lit = material(f'{asset_id}_pad_lit', tone(palette['primary'], 1.28), roughness=0.62)
+        pad_dark = material(f'{asset_id}_pad_dark', tone(palette['primary'], 0.68), roughness=0.8)
+        stem = material(f'{asset_id}_stem', tone(palette['primary'], 0.86), roughness=0.84)
+        bloom = material(f'{asset_id}_bloom', tone(palette['secondary'], 1.35), roughness=0.6)
+        pads = (
+            (-0.30, -0.06, 0.22, 0.26, pad_dark),
+            (-0.02, 0.10, 0.26, 0.30, pad),
+            (0.28, -0.02, 0.20, 0.22, pad_lit),
+            (0.08, -0.24, 0.17, 0.18, pad_dark),
+        )
+        for index, (x, y, radius, z, mat) in enumerate(pads):
+            add(cylinder(f'{asset_id}_Pad_{index}', (x, y, z), radius, 0.055, mat, asset_id, vertices=14))
+            # Notch: the wedge cut every lily pad has, read as a darker chord.
+            add(cube(f'{asset_id}_Notch_{index}', (x + radius * 0.52, y, z + 0.030), (radius * 0.40, radius * 0.16, 0.020), pad_dark, asset_id, bevel=0.008))
+        for index, (x, y, height) in enumerate(((-0.16, -0.10, 0.92), (0.06, 0.06, 1.14), (0.26, -0.06, 0.80))):
+            add(cylinder(f'{asset_id}_Stem_{index}', (x, y, height / 2 + 0.20), 0.016, height, stem, asset_id, vertices=6))
+            add(cone(f'{asset_id}_Bloom_{index}', (x, y, height + 0.26), 0.055, 0.20, bloom, asset_id))
+        add(cube(f'{asset_id}_Glint', (-0.36, -0.30, 0.24), (0.032, 0.022, 0.014), accent, asset_id, bevel=0.006))
+    elif shape == 'water-grass':
+        # Tall emergent blades in standing water, taller and looser than
+        # reed-cluster so the two do not read as the same prop.
+        blade = material(f'{asset_id}_blade', palette['primary'], roughness=0.86)
+        blade_lit = material(f'{asset_id}_blade_lit', tone(palette['primary'], 1.32), roughness=0.74)
+        blade_dark = material(f'{asset_id}_blade_dark', tone(palette['primary'], 0.66), roughness=0.9)
+        silt = material(f'{asset_id}_silt', tone(palette['secondary'], 0.78), roughness=0.98)
+        parts.append(prism_mesh(
+            f'{asset_id}_Silt',
+            [(-0.17, 0.0), (-0.11, 0.05), (0.05, 0.045), (0.15, 0.05), (0.18, 0.0)],
+            -0.13, 0.11, silt, asset_id,
+        ))
+        blades = (
+            (-0.13, 0.72, 0.055, -0.05, blade_dark),
+            (-0.05, 1.02, 0.048, 0.04, blade),
+            (0.02, 0.88, 0.044, -0.09, blade_lit),
+            (0.09, 1.12, 0.050, 0.02, blade),
+            (0.15, 0.80, 0.042, -0.03, blade_dark),
+            (-0.09, 0.94, 0.040, 0.10, blade_lit),
+        )
+        for index, (x, height, width, depth, mat) in enumerate(blades):
+            tip = x + (0.07 if index % 2 == 0 else -0.07)
+            profile = [
+                (x - width * 0.5, 0.03), (tip - width * 0.16, height),
+                (tip, height + 0.05), (tip + width * 0.14, height * 0.96), (x + width * 0.5, 0.03),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Blade_{index}', profile, depth - 0.016, depth + 0.016, mat, asset_id))
+        add(cube(f'{asset_id}_Glint', (0.19, -0.14, 0.03), (0.030, 0.018, 0.012), accent, asset_id, bevel=0.006))
+    elif shape == 'submerged-log':
+        # A waterlogged trunk lying half under, with one broken limb standing
+        # up out of the water. driftwood-log failed as a pure horizontal, so
+        # the limb is not decoration here -- it is the reason this reads.
+        bark = material(f'{asset_id}_bark', tone(palette['secondary'], 0.74), roughness=0.95)
+        wet = material(f'{asset_id}_wet', tone(palette['secondary'], 0.5), roughness=0.42)
+        algae = material(f'{asset_id}_algae', palette['primary'], roughness=0.9)
+        parts.append(prism_mesh(
+            f'{asset_id}_Limb',
+            [(-0.05, 0.28), (-0.08, 0.62), (-0.01, 0.84), (0.05, 0.80), (0.05, 0.50), (0.07, 0.26)],
+            -0.06, 0.02, bark, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_LimbStub',
+            [(0.02, 0.44), (0.16, 0.56), (0.19, 0.49), (0.04, 0.36)],
+            -0.06, 0.01, bark, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Trunk',
+            [(-0.40, 0.06), (-0.37, 0.40), (0.29, 0.35), (0.33, 0.04)],
+            -0.13, 0.11, bark, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Waterline',
+            [(-0.41, 0.06), (0.34, 0.03), (0.34, 0.16), (-0.41, 0.20)],
+            -0.16, -0.12, wet, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Algae',
+            [(-0.33, 0.34), (-0.05, 0.38), (0.21, 0.32), (0.19, 0.42), (-0.31, 0.43)],
+            -0.15, -0.10, algae, asset_id,
+        ))
+        add(cube(f'{asset_id}_Glint', (0.20, -0.18, 0.10), (0.030, 0.018, 0.012), accent, asset_id, bevel=0.006))
+    elif shape == 'stepping-stones':
+        # A crossing line of stones. Each one is a raised block with a visible
+        # side face, not a flat disc -- the side faces are what carry it.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.9)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.30), roughness=0.8)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.60), roughness=0.94)
+        wet = material(f'{asset_id}_wet', tone(palette['secondary'], 0.62), roughness=0.4)
+        # Second pass: laid out in a row this measured 0.37 h/w -- flatter
+        # than driftwood-log. The stones now recede UP the frame, which is
+        # what a crossing line actually looks like from this camera, and the
+        # silhouette gains height instead of width.
+        stones = (
+            (-0.10, 0.0, 0.125, 0.34, -0.14, stone_dark),
+            (0.02, 0.26, 0.115, 0.32, -0.02, stone),
+            (-0.04, 0.52, 0.100, 0.28, 0.10, stone_lit),
+            (0.06, 0.76, 0.085, 0.24, 0.20, stone_dark),
+        )
+        for index, (x, z, r, height, depth, mat) in enumerate(stones):
+            block = [
+                (x - r, z), (x - r * 0.86, z + height * 0.78), (x - r * 0.3, z + height),
+                (x + r * 0.42, z + height * 0.94), (x + r, z + height * 0.6), (x + r * 0.9, z),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Stone_{index}', block, depth - r * 0.7, depth + r * 0.7, mat, asset_id))
+            parts.append(prism_mesh(
+                f'{asset_id}_Wet_{index}',
+                [(x - r * 0.9, z), (x + r * 0.85, z), (x + r * 0.85, z + height * 0.18), (x - r * 0.9, z + height * 0.18)],
+                depth - r * 0.74, depth - r * 0.7, wet, asset_id,
+            ))
+        add(cube(f'{asset_id}_Glint', (-0.18, -0.20, 0.14), (0.030, 0.018, 0.014), accent, asset_id, bevel=0.006))
+    elif shape == 'dock-post':
+        # A mooring post with a cross-brace and a rope collar. The tallest
+        # thing in this wave and the one that gives the bank a built edge.
+        timber = material(f'{asset_id}_timber', tone(palette['secondary'], 0.86), roughness=0.94)
+        timber_lit = material(f'{asset_id}_timber_lit', tone(palette['secondary'], 1.22), roughness=0.86)
+        wet = material(f'{asset_id}_wet', tone(palette['secondary'], 0.52), roughness=0.4)
+        rope = material(f'{asset_id}_rope', tone(palette['primary'], 1.2), roughness=0.92)
+        parts.append(prism_mesh(
+            f'{asset_id}_Post',
+            [(-0.075, 0.0), (-0.065, 0.62), (-0.052, 1.04), (0.048, 1.06), (0.062, 0.60), (0.072, 0.0)],
+            -0.075, 0.075, timber, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_PostLit',
+            [(-0.026, 0.04), (-0.020, 1.02), (0.020, 1.03), (0.026, 0.04)],
+            -0.10, -0.075, timber_lit, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Cap',
+            [(-0.088, 1.02), (-0.070, 1.12), (0.062, 1.13), (0.082, 1.01)],
+            -0.09, 0.09, timber_lit, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Brace',
+            [(-0.24, 0.34), (-0.22, 0.42), (0.20, 0.56), (0.22, 0.48)],
+            -0.05, 0.03, timber, asset_id,
+        ))
+        for index, z in enumerate((0.72, 0.79)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Rope_{index}',
+                [(-0.085, z), (0.082, z), (0.082, z + 0.042), (-0.085, z + 0.042)],
+                -0.11, -0.085, rope, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Waterline',
+            [(-0.10, 0.06), (0.095, 0.06), (0.095, 0.15), (-0.10, 0.15)],
+            -0.115, -0.10, wet, asset_id,
+        ))
+        add(cube(f'{asset_id}_Glint', (0.14, -0.13, 0.10), (0.028, 0.018, 0.012), accent, asset_id, bevel=0.006))
+    elif shape == 'wetland-hummock':
+        # A raised tussock of marsh grass on a peat mound: the bank filler
+        # between reed-cluster and open water.
+        peat = material(f'{asset_id}_peat', tone(palette['secondary'], 0.66), roughness=0.98)
+        peat_lit = material(f'{asset_id}_peat_lit', tone(palette['secondary'], 0.95), roughness=0.95)
+        tuft = material(f'{asset_id}_tuft', palette['primary'], roughness=0.88)
+        tuft_lit = material(f'{asset_id}_tuft_lit', tone(palette['primary'], 1.30), roughness=0.78)
+        # Second pass: the peat mound carried the mass (centroid 0.709, a
+        # flat-decal reading). Mound flattened, tufts roughly doubled.
+        mound = [(-0.23, 0.0), (-0.19, 0.14), (-0.07, 0.23), (0.07, 0.24), (0.19, 0.15), (0.24, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Mound', mound, -0.18, 0.14, peat, asset_id))
+        parts.append(prism_mesh(
+            f'{asset_id}_MoundFace',
+            [(-0.13, 0.02), (-0.10, 0.13), (0.05, 0.15), (0.13, 0.09), (0.11, 0.02)],
+            -0.23, -0.18, peat_lit, asset_id,
+        ))
+        # Third pass: vertical spears made this a second water-grass. The
+        # tufts now splay outward from the crown and the peat mound stays
+        # visible beneath them, so the silhouette is a tussock rather than a
+        # stand of blades.
+        tufts = (
+            (-0.13, 0.52, 0.048, -0.06, -0.13, tuft),
+            (-0.05, 0.66, 0.052, 0.04, -0.05, tuft_lit),
+            (0.04, 0.60, 0.046, -0.02, 0.06, tuft),
+            (0.12, 0.46, 0.040, 0.08, 0.15, tuft_lit),
+            (0.00, 0.72, 0.044, 0.12, 0.01, tuft),
+        )
+        for index, (x, height, width, depth, splay, mat) in enumerate(tufts):
+            profile = [
+                (x - width, 0.12), (splay - width * 0.5, height * 0.72), (splay - width * 0.2, height),
+                (splay + width * 0.25, height * 0.94), (splay + width * 0.6, height * 0.66), (x + width, 0.12),
+            ]
+            parts.append(prism_mesh(f'{asset_id}_Tuft_{index}', profile, depth - 0.030, depth + 0.030, mat, asset_id))
+        add(cube(f'{asset_id}_Glint', (0.17, -0.22, 0.04), (0.028, 0.018, 0.012), accent, asset_id, bevel=0.006))
+
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 

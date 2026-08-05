@@ -896,6 +896,96 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "lily-pads",
+      "category": "world-prop",
+      "shape": "lily-pads",
+      "palette": {
+        "primary": "#3f7a5a",
+        "secondary": "#e0a8c8",
+        "accent": "#bfe8f0"
+      },
+      "runtimeScale": 0.72,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "water-grass",
+      "category": "world-prop",
+      "shape": "water-grass",
+      "palette": {
+        "primary": "#4a8a6a",
+        "secondary": "#5a6a52",
+        "accent": "#cfeef0"
+      },
+      "runtimeScale": 0.82,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "submerged-log",
+      "category": "world-prop",
+      "shape": "submerged-log",
+      "palette": {
+        "primary": "#3f6b52",
+        "secondary": "#5a4a38",
+        "accent": "#bfe8f0"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "stepping-stones",
+      "category": "world-prop",
+      "shape": "stepping-stones",
+      "palette": {
+        "primary": "#6e7278",
+        "secondary": "#3f5a62",
+        "accent": "#cfeef0"
+      },
+      "runtimeScale": 0.88,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "dock-post",
+      "category": "world-prop",
+      "shape": "dock-post",
+      "palette": {
+        "primary": "#8a7a52",
+        "secondary": "#6b5a42",
+        "accent": "#cfeef0"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "wetland-hummock",
+      "category": "world-prop",
+      "shape": "wetland-hummock",
+      "palette": {
+        "primary": "#5a8a5c",
+        "secondary": "#4a4030",
+        "accent": "#cfeef0"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }
