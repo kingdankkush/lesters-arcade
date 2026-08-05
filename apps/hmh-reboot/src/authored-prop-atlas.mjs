@@ -7,7 +7,7 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
   weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
   pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
   powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two', 'precision-ledger', 'hard-fork-rounds']),
-  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor']),
+  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines']),
 });
 
 // Cycle 038: trees, boulders, wrecked cars, fencing and a shack join the
@@ -17,15 +17,21 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
 // every biome reads dressed, and prop mixes carry the biome's identity
 // (forest organic, ravine rocky, crossing wet, camp industrial, yard
 // wrecked). Order sets the mix ratio.
+// Cycle 050 (A2): undergrowth joins every district's mix. Placement is a strict
+// round robin over propIds, so an id past index countOverride-1 is never
+// placed — every list below stays at or under its countOverride, and the
+// undergrowth-props test fails if any of these stops being reached.
+// Counts are deliberately unchanged here: this slice adds variety to the mix,
+// and W1 is where density goes up.
 const DISTRICTS = Object.freeze([
-  Object.freeze({ id: 'frontier-relay', minX: 0, maxX: 1_800, propIds: ['relay-console', 'watchtower', 'salvage-crate', 'ruined-wall', 'fuel-drum', 'dead-pine', 'granite-boulder', 'hashwood-pine'], countOverride: 11 }),
-  Object.freeze({ id: 'rugpull-ravine', minX: 1_800, maxX: 3_800, propIds: ['rugpull-barricade', 'granite-boulder', 'dead-pine', 'warning-beacon', 'moss-boulder', 'salvage-crate', 'wrecked-sedan', 'granite-boulder'], countOverride: 11 }),
+  Object.freeze({ id: 'frontier-relay', minX: 0, maxX: 1_800, propIds: ['relay-console', 'watchtower', 'salvage-crate', 'ruined-wall', 'fuel-drum', 'dead-pine', 'granite-boulder', 'hashwood-pine', 'scrub-bush', 'grass-tuft'], countOverride: 11 }),
+  Object.freeze({ id: 'rugpull-ravine', minX: 1_800, maxX: 3_800, propIds: ['rugpull-barricade', 'granite-boulder', 'dead-pine', 'warning-beacon', 'moss-boulder', 'salvage-crate', 'wrecked-sedan', 'granite-boulder', 'thorn-bramble', 'hanging-vines', 'scrub-bush'], countOverride: 11 }),
   // driftwood-log stays atlas-only until its polish pass (root ball does not
   // read from the 55-degree camera yet) — same hold-out policy as Cycle 038.
-  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['reed-cluster', 'proof-pylon', 'moss-boulder', 'bridge-bollard', 'reed-cluster', 'chain-fence', 'granite-boulder'], countOverride: 11 }),
-  Object.freeze({ id: 'hashwood', minX: 6_000, maxX: 8_000, propIds: ['hashwood-pine', 'hashwood-tree', 'moss-boulder', 'hashwood-stump', 'hashwood-pine', 'dead-pine', 'crystal-cluster'], countOverride: 18 }),
-  Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'ore-conveyor', 'loader-barrel', 'miners-shack', 'crystal-cluster', 'cargo-container', 'ruined-wall'], countOverride: 12 }),
-  Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['cargo-container', 'liquidation-terminal', 'wrecked-sedan', 'fuel-drum', 'ruined-wall', 'warning-beacon', 'cargo-container', 'chain-fence'], countOverride: 12 }),
+  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['reed-cluster', 'proof-pylon', 'moss-boulder', 'bridge-bollard', 'reed-cluster', 'chain-fence', 'granite-boulder', 'grass-tuft'], countOverride: 11 }),
+  Object.freeze({ id: 'hashwood', minX: 6_000, maxX: 8_000, propIds: ['hashwood-pine', 'hashwood-tree', 'moss-boulder', 'hashwood-stump', 'hashwood-pine', 'dead-pine', 'crystal-cluster', 'fern-cluster', 'grass-tuft', 'flowering-weeds'], countOverride: 18 }),
+  Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'ore-conveyor', 'loader-barrel', 'miners-shack', 'crystal-cluster', 'cargo-container', 'ruined-wall', 'flowering-weeds'], countOverride: 12 }),
+  Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['cargo-container', 'liquidation-terminal', 'wrecked-sedan', 'fuel-drum', 'ruined-wall', 'warning-beacon', 'cargo-container', 'chain-fence', 'thorn-bramble', 'scrub-bush'], countOverride: 12 }),
 ]);
 
 const DISTRICT_LANDMARKS = Object.freeze([

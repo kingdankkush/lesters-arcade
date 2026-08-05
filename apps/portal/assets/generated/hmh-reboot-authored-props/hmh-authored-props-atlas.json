@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 47,
+  "assetCount": 53,
   "categories": [
     "pickup",
     "power-up",
@@ -22,8 +22,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 53,
-        "y": 428,
+        "x": 325,
+        "y": 443,
         "w": 57,
         "h": 22
       },
@@ -49,8 +49,8 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 409,
-        "y": 303,
+        "x": 215,
+        "y": 361,
         "w": 44,
         "h": 38
       },
@@ -76,8 +76,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 354,
+        "x": 307,
+        "y": 361,
         "w": 46,
         "h": 34
       },
@@ -103,8 +103,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 168,
-        "y": 428,
+        "x": 440,
+        "y": 443,
         "w": 28,
         "h": 21
       },
@@ -132,8 +132,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 52,
-        "y": 354,
+        "x": 356,
+        "y": 361,
         "w": 26,
         "h": 34
       },
@@ -186,8 +186,8 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 248,
-        "y": 243,
+        "x": 3,
+        "y": 306,
         "w": 136,
         "h": 52
       },
@@ -213,8 +213,8 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 3,
-        "y": 428,
+        "x": 275,
+        "y": 443,
         "w": 47,
         "h": 23
       },
@@ -240,8 +240,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 81,
-        "y": 354,
+        "x": 385,
+        "y": 361,
         "w": 46,
         "h": 34
       },
@@ -267,8 +267,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 130,
-        "y": 354,
+        "x": 434,
+        "y": 361,
         "w": 46,
         "h": 34
       },
@@ -297,8 +297,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 269,
-        "y": 391,
+        "x": 81,
+        "y": 443,
         "w": 44,
         "h": 32
       },
@@ -351,8 +351,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 179,
-        "y": 354,
+        "x": 3,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -378,8 +378,8 @@
       "districts": [],
       "runtimeScale": 0.75,
       "frame": {
-        "x": 3,
-        "y": 303,
+        "x": 193,
+        "y": 306,
         "w": 160,
         "h": 48
       },
@@ -397,6 +397,60 @@
       "trimmed": true
     },
     {
+      "id": "fern-cluster",
+      "assetId": "fern-cluster",
+      "category": "world-prop",
+      "shape": "fern-cluster",
+      "itemUrl": "./items/fern-cluster.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 165,
+        "y": 155,
+        "w": 59,
+        "h": 74
+      },
+      "pivot": {
+        "x": 29,
+        "y": 70
+      },
+      "anchor": {
+        "x": 0.491525,
+        "y": 0.945946
+      },
+      "opaquePixels": 1361,
+      "sourcePixelSha256": "52d00d463078abe11ef423c716b68ef3d6642cc4e35c20b8b1fab7b7ced187de",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "flowering-weeds",
+      "assetId": "flowering-weeds",
+      "category": "world-prop",
+      "shape": "flowering-weeds",
+      "itemUrl": "./items/flowering-weeds.png",
+      "districts": [],
+      "runtimeScale": 0.8,
+      "frame": {
+        "x": 356,
+        "y": 306,
+        "w": 31,
+        "h": 48
+      },
+      "pivot": {
+        "x": 15,
+        "y": 44
+      },
+      "anchor": {
+        "x": 0.483871,
+        "y": 0.916667
+      },
+      "opaquePixels": 796,
+      "sourcePixelSha256": "a29251f2f071bff547d929ef3b918d4777f363788a80b8c8511b69e2e82bff6f",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "fuel-drum",
       "assetId": "fuel-drum",
       "category": "world-prop",
@@ -408,8 +462,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 228,
-        "y": 354,
+        "x": 52,
+        "y": 406,
         "w": 38,
         "h": 34
       },
@@ -435,8 +489,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 269,
-        "y": 354,
+        "x": 93,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -462,7 +516,7 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 159,
+        "x": 318,
         "y": 243,
         "w": 86,
         "h": 53
@@ -481,6 +535,60 @@
       "trimmed": true
     },
     {
+      "id": "grass-tuft",
+      "assetId": "grass-tuft",
+      "category": "world-prop",
+      "shape": "grass-tuft",
+      "itemUrl": "./items/grass-tuft.png",
+      "districts": [],
+      "runtimeScale": 0.78,
+      "frame": {
+        "x": 121,
+        "y": 243,
+        "w": 38,
+        "h": 57
+      },
+      "pivot": {
+        "x": 19,
+        "y": 53
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.929825
+      },
+      "opaquePixels": 717,
+      "sourcePixelSha256": "660c09611577927d65771ff28b90cc96ab75ead349629476b5ae401f645def24",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "hanging-vines",
+      "assetId": "hanging-vines",
+      "category": "world-prop",
+      "shape": "hanging-vines",
+      "itemUrl": "./items/hanging-vines.png",
+      "districts": [],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 59,
+        "y": 243,
+        "w": 59,
+        "h": 58
+      },
+      "pivot": {
+        "x": 29,
+        "y": 54
+      },
+      "anchor": {
+        "x": 0.491525,
+        "y": 0.931034
+      },
+      "opaquePixels": 1926,
+      "sourcePixelSha256": "2c82f4650b10342f980fcedd4341ed90eefa69787f3562c23495d3c616e809fa",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "hard-fork-rounds",
       "assetId": "hard-fork-rounds",
       "category": "power-up",
@@ -489,8 +597,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 318,
-        "y": 354,
+        "x": 142,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -516,8 +624,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 367,
-        "y": 354,
+        "x": 191,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -543,8 +651,8 @@
       "districts": [],
       "runtimeScale": 0.76,
       "frame": {
-        "x": 456,
-        "y": 303,
+        "x": 262,
+        "y": 361,
         "w": 42,
         "h": 35
       },
@@ -599,8 +707,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 316,
-        "y": 391,
+        "x": 128,
+        "y": 443,
         "w": 38,
         "h": 29
       },
@@ -653,8 +761,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 416,
-        "y": 354,
+        "x": 240,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -680,8 +788,8 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 357,
-        "y": 391,
+        "x": 169,
+        "y": 443,
         "w": 59,
         "h": 29
       },
@@ -707,8 +815,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 391,
+        "x": 289,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -736,8 +844,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 297,
-        "y": 428,
+        "x": 101,
+        "y": 480,
         "w": 24,
         "h": 15
       },
@@ -766,8 +874,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 52,
-        "y": 391,
+        "x": 338,
+        "y": 406,
         "w": 38,
         "h": 34
       },
@@ -820,7 +928,7 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 353,
+        "x": 415,
         "y": 155,
         "w": 58,
         "h": 61
@@ -847,8 +955,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 362,
-        "y": 303,
+        "x": 168,
+        "y": 361,
         "w": 44,
         "h": 40
       },
@@ -876,8 +984,8 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 419,
-        "y": 391,
+        "x": 231,
+        "y": 443,
         "w": 41,
         "h": 26
       },
@@ -903,7 +1011,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 3,
+        "x": 162,
         "y": 243,
         "w": 153,
         "h": 57
@@ -930,8 +1038,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 93,
-        "y": 391,
+        "x": 379,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -957,8 +1065,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 142,
-        "y": 391,
+        "x": 428,
+        "y": 406,
         "w": 46,
         "h": 34
       },
@@ -986,8 +1094,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 166,
-        "y": 303,
+        "x": 390,
+        "y": 306,
         "w": 28,
         "h": 42
       },
@@ -1013,7 +1121,7 @@
       "districts": [],
       "runtimeScale": 0.7,
       "frame": {
-        "x": 165,
+        "x": 227,
         "y": 155,
         "w": 54,
         "h": 72
@@ -1042,8 +1150,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 324,
-        "y": 428,
+        "x": 128,
+        "y": 480,
         "w": 24,
         "h": 15
       },
@@ -1071,8 +1179,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 113,
-        "y": 428,
+        "x": 385,
+        "y": 443,
         "w": 52,
         "h": 22
       },
@@ -1098,7 +1206,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 222,
+        "x": 284,
         "y": 155,
         "w": 128,
         "h": 65
@@ -1128,8 +1236,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 268,
-        "y": 428,
+        "x": 72,
+        "y": 480,
         "w": 26,
         "h": 18
       },
@@ -1155,8 +1263,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 199,
-        "y": 428,
+        "x": 3,
+        "y": 480,
         "w": 66,
         "h": 20
       },
@@ -1174,6 +1282,60 @@
       "trimmed": true
     },
     {
+      "id": "scrub-bush",
+      "assetId": "scrub-bush",
+      "category": "world-prop",
+      "shape": "scrub-bush",
+      "itemUrl": "./items/scrub-bush.png",
+      "districts": [],
+      "runtimeScale": 0.95,
+      "frame": {
+        "x": 142,
+        "y": 306,
+        "w": 48,
+        "h": 51
+      },
+      "pivot": {
+        "x": 24,
+        "y": 47
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.921569
+      },
+      "opaquePixels": 1415,
+      "sourcePixelSha256": "f18b7a8af852d3e3a01a74da46ce92ecf4980e5cb35bf48a5ccb15074fcb9804",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "thorn-bramble",
+      "assetId": "thorn-bramble",
+      "category": "world-prop",
+      "shape": "thorn-bramble",
+      "itemUrl": "./items/thorn-bramble.png",
+      "districts": [],
+      "runtimeScale": 0.92,
+      "frame": {
+        "x": 3,
+        "y": 243,
+        "w": 53,
+        "h": 60
+      },
+      "pivot": {
+        "x": 28,
+        "y": 56
+      },
+      "anchor": {
+        "x": 0.528302,
+        "y": 0.933333
+      },
+      "opaquePixels": 1655,
+      "sourcePixelSha256": "90d6d6f71b2e1d7377c54ed06f6b8e67437399ee9998a9cb59d5c341a59d74b0",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "time-dilation",
       "assetId": "time-dilation",
       "category": "pickup",
@@ -1182,8 +1344,8 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 329,
-        "y": 303,
+        "x": 135,
+        "y": 361,
         "w": 30,
         "h": 41
       },
@@ -1209,8 +1371,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 191,
-        "y": 391,
+        "x": 3,
+        "y": 443,
         "w": 46,
         "h": 34
       },
@@ -1239,8 +1401,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 240,
-        "y": 391,
+        "x": 52,
+        "y": 443,
         "w": 26,
         "h": 34
       },
@@ -1293,8 +1455,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 197,
-        "y": 303,
+        "x": 3,
+        "y": 361,
         "w": 129,
         "h": 42
       },

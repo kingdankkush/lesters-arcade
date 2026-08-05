@@ -641,6 +641,96 @@
         "accent": "#ff8fb0"
       },
       "runtimeScale": 0.44
+    },
+    {
+      "assetId": "scrub-bush",
+      "category": "world-prop",
+      "shape": "scrub-bush",
+      "palette": {
+        "primary": "#4a6b3c",
+        "secondary": "#4a3a24",
+        "accent": "#c9e86a"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "fern-cluster",
+      "category": "world-prop",
+      "shape": "fern-cluster",
+      "palette": {
+        "primary": "#33613f",
+        "secondary": "#3d3021",
+        "accent": "#8fe89a"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "grass-tuft",
+      "category": "world-prop",
+      "shape": "grass-tuft",
+      "palette": {
+        "primary": "#5c7a45",
+        "secondary": "#8a7a4a",
+        "accent": "#d8e08a"
+      },
+      "runtimeScale": 0.78,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "thorn-bramble",
+      "category": "world-prop",
+      "shape": "thorn-bramble",
+      "palette": {
+        "primary": "#5a4a30",
+        "secondary": "#7a6a48",
+        "accent": "#e0705d"
+      },
+      "runtimeScale": 0.92,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "flowering-weeds",
+      "category": "world-prop",
+      "shape": "flowering-weeds",
+      "palette": {
+        "primary": "#4f6b42",
+        "secondary": "#c08ab5",
+        "accent": "#f0d264"
+      },
+      "runtimeScale": 0.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "hanging-vines",
+      "category": "world-prop",
+      "shape": "hanging-vines",
+      "palette": {
+        "primary": "#3f6b4a",
+        "secondary": "#6b6258",
+        "accent": "#9fe8b4"
+      },
+      "runtimeScale": 1.05,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }

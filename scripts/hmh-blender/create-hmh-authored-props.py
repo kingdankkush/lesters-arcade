@@ -133,6 +133,15 @@ def prism_mesh(name, profile, y_min, y_max, mat, asset_id, *, location=(0.0, 0.0
     Explicit vertex/face authorship: fully deterministic, no modifiers, no
     bevel. Crisp joined silhouettes are what the beveled-primitive assembly
     could not produce at the 55-degree camera.
+
+    EEVEE ONLY. The winding below leaves both caps facing INWARD: for a profile
+    wound counter-clockwise in (x, z), the top cap's face order yields a -Y
+    normal even though the cap sits at y_max. EEVEE shades non-culled backfaces
+    by flipping the normal toward the viewer, so this is invisible here and
+    every prop built on it renders correctly. Workbench does not do that, so
+    the same geometry renders inside-out in the BLENDER_WORKBENCH enemy-roster
+    pipeline. Fix the winding before reusing this there -- do not copy the
+    helper across as-is. Guarded by tests/hmh-reboot-prism-mesh-policy.test.mjs.
     """
     count = len(profile)
     verts = [(x, y_min, z) for x, z in profile] + [(x, y_max, z) for x, z in profile]
@@ -594,6 +603,237 @@ def build_asset(asset: dict) -> dict:
         add(cylinder(f'{asset_id}_Drum', (0.74, 0.0, 0.79), 0.06, 0.30, steel_dark, asset_id, vertices=12, rotation=(math.radians(90), 0, 0)))
         add(cube(f'{asset_id}_Stripe', (0.74, 0.0, 0.87), (0.05, 0.26, 0.014), accent, asset_id, bevel=0.005))
         add(cube(f'{asset_id}_Hopper', (-0.62, 0.0, 0.22), (0.10, 0.14, 0.10), steel, asset_id, bevel=0.02))
+
+    # --- A2 undergrowth -------------------------------------------------
+    # The layer between "tree" and "bare ground". Every one of these is built
+    # to stand UP: driftwood-log proved three times over that a low horizontal
+    # mass disappears at the 55-degree camera, and undergrowth is the category
+    # most tempted toward ground-hugging shapes. Mass sits in a raised crown,
+    # not a flat skirt, and the lit/dark value split runs top-to-bottom so the
+    # silhouette separates from the ground band it stands on.
+    elif shape == 'scrub-bush':
+        # Fourth pass, authored cards. Primitive assembly gave this a rock-pile
+        # read, then a grass read, then floating crown plates. The silhouette is
+        # now drawn directly: three overlapping bush masses with notched tops,
+        # set at different depths and values so the crown reads as layered
+        # foliage rather than one flat blob.
+        wood = material(f'{asset_id}_wood', tone(palette['secondary'], 0.70), roughness=0.94)
+        leaf_dark = material(f'{asset_id}_leaf_dark', tone(palette['primary'], 0.64), roughness=0.90)
+        leaf_mid = material(f'{asset_id}_leaf_mid', palette['primary'], roughness=0.86)
+        leaf_lit = material(f'{asset_id}_leaf_lit', tone(palette['primary'], 1.32), roughness=0.76)
+        add(cylinder(f'{asset_id}_Stem', (0.0, 0.0, 0.10), 0.038, 0.20, wood, asset_id, vertices=8))
+        back = [
+            (-0.19, 0.14), (-0.15, 0.52), (-0.09, 0.40), (-0.04, 0.72), (0.00, 0.50),
+            (0.06, 0.76), (0.11, 0.46), (0.16, 0.60), (0.20, 0.16), (0.14, 0.05), (-0.14, 0.05),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_MassBack', back, 0.05, 0.11, leaf_dark, asset_id))
+        mid = [
+            (-0.16, 0.12), (-0.12, 0.60), (-0.06, 0.46), (-0.01, 0.84), (0.04, 0.55),
+            (0.09, 0.82), (0.14, 0.44), (0.17, 0.62), (0.18, 0.13), (0.12, 0.04), (-0.12, 0.04),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_MassMid', mid, -0.04, 0.05, leaf_mid, asset_id))
+        front = [
+            (-0.13, 0.10), (-0.09, 0.52), (-0.04, 0.38), (0.01, 0.68), (0.05, 0.42),
+            (0.10, 0.58), (0.13, 0.32), (0.15, 0.09), (0.09, 0.03), (-0.10, 0.03),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_MassFront', front, -0.12, -0.04, leaf_lit, asset_id))
+        for index, (x, z, w) in enumerate(((-0.17, 0.42, 0.050), (0.17, 0.48, 0.046), (0.01, 0.90, 0.042))):
+            leaf = [(x - w, z), (x, z + w * 1.7), (x + w, z), (x, z - w * 0.5)]
+            parts.append(prism_mesh(f'{asset_id}_Sprig_{index}', leaf, -0.14, -0.10, leaf_lit if index % 2 else leaf_mid, asset_id))
+        add(cube(f'{asset_id}_Berry', (0.04, -0.13, 0.66), (0.030, 0.028, 0.030), accent, asset_id, bevel=0.011))
+    elif shape == 'fern-cluster':
+        # Fourth pass, authored cards. The cone-tipped fronds never met their
+        # blades and the two-plate rebuild broke into an X of loose segments.
+        # Each frond is now ONE polygon with its taper and arc drawn in, so
+        # there is no seam that can open up.
+        frond = material(f'{asset_id}_frond', palette['primary'], roughness=0.86)
+        frond_lit = material(f'{asset_id}_frond_lit', tone(palette['primary'], 1.34), roughness=0.72)
+        frond_dark = material(f'{asset_id}_frond_dark', tone(palette['primary'], 0.68), roughness=0.9)
+        litter = material(f'{asset_id}_litter', tone(palette['secondary'], 0.8), roughness=0.97)
+        add(cube(f'{asset_id}_Crown', (0.0, 0.0, 0.05), (0.13, 0.11, 0.05), litter, asset_id, bevel=0.03))
+
+        def frond_profile(tip_x, tip_z, width, notches=4):
+            """One arching frond: a spine from the crown to (tip_x, tip_z) with
+            saw-tooth pinnae down the outer edge."""
+            points = [(0.0, 0.07)]
+            for step in range(1, notches + 1):
+                t = step / notches
+                # Quadratic arc: rises fast, then leans out toward the tip.
+                x = tip_x * (t ** 1.45)
+                z = 0.07 + (tip_z - 0.07) * (t ** 0.72)
+                spread = width * (1.0 - 0.55 * t)
+                points.append((x - spread * 0.35, z + spread * 0.55))
+                points.append((x + spread * 0.30, z + spread * 0.15))
+            points.append((tip_x, tip_z))
+            for step in range(notches, 0, -1):
+                t = step / notches
+                x = tip_x * (t ** 1.45)
+                z = 0.07 + (tip_z - 0.07) * (t ** 0.72)
+                spread = width * (1.0 - 0.55 * t)
+                points.append((x + spread * 0.30, z - spread * 0.45))
+            return points
+
+        fronds = (
+            (-0.19, 0.82, 0.078, -0.06, -0.05, frond_dark),
+            (-0.10, 1.00, 0.074, -0.03, 0.02, frond),
+            (0.01, 1.10, 0.070, 0.0, -0.03, frond_lit),
+            (0.12, 0.98, 0.074, 0.03, 0.04, frond),
+            (0.20, 0.78, 0.078, 0.06, -0.06, frond_dark),
+            (-0.05, 0.72, 0.066, -0.01, 0.08, frond_lit),
+            (0.08, 0.68, 0.066, 0.02, 0.09, frond),
+        )
+        for index, (tip_x, tip_z, width, y_shift, depth, mat) in enumerate(fronds):
+            profile = [(x + y_shift, z) for x, z in frond_profile(tip_x, tip_z, width)]
+            parts.append(prism_mesh(
+                f'{asset_id}_Frond_{index}', profile,
+                depth - 0.016, depth + 0.016, mat, asset_id,
+            ))
+        add(cube(f'{asset_id}_Curl', (0.01, -0.04, 1.16), (0.038, 0.032, 0.045), accent, asset_id, bevel=0.015))
+    elif shape == 'grass-tuft':
+        # Tall grass: a fan of raked blades. Deliberately narrow in plan and
+        # tall in elevation -- a wide low tuft is exactly the silhouette the
+        # camera loses against the ground band.
+        blade = material(f'{asset_id}_blade', palette['primary'], roughness=0.88)
+        blade_lit = material(f'{asset_id}_blade_lit', tone(palette['primary'], 1.32), roughness=0.74)
+        blade_dry = material(f'{asset_id}_blade_dry', tone(palette['secondary'], 1.12), roughness=0.9)
+        soil = material(f'{asset_id}_soil', tone(palette['secondary'], 0.7), roughness=0.98)
+        add(cube(f'{asset_id}_Base', (0.0, 0.0, 0.05), (0.15, 0.13, 0.05), soil, asset_id, bevel=0.03))
+        blades = (
+            (0.00, 0.00, 0.78, 5, 4), (0.07, 0.04, 0.70, 40, -9), (-0.07, -0.03, 0.74, 215, 10),
+            (0.11, -0.06, 0.60, 130, 14), (-0.11, 0.06, 0.64, 305, -12), (0.03, 0.10, 0.66, 75, 8),
+            (-0.04, -0.10, 0.56, 250, -11), (0.13, 0.08, 0.50, 25, 16), (-0.13, -0.06, 0.52, 195, -15),
+            (0.00, -0.12, 0.58, 160, 12),
+        )
+        for index, (x, y, height, yaw, lean) in enumerate(blades):
+            r = math.radians(yaw)
+            mat = (blade_lit, blade, blade_dry)[index % 3]
+            add(cube(
+                f'{asset_id}_Blade_{index}',
+                (x, y, height / 2 + 0.06),
+                (0.014, 0.042, height / 2),
+                mat, asset_id, bevel=0.005,
+                rotation=(math.radians(lean) * math.sin(r), math.radians(lean) * math.cos(r), r),
+            ))
+        add(cone(f'{asset_id}_Seed', (0.02, 0.01, 0.90), 0.022, 0.13, accent, asset_id))
+    elif shape == 'thorn-bramble':
+        # Fourth pass, authored cards. Cylinder canes read as a woodpile at any
+        # thickness I tried. The tangle is now drawn as spiked silhouette
+        # polygons, so the thorns are part of the outline instead of separate
+        # cones that scatter.
+        cane = material(f'{asset_id}_cane', tone(palette['primary'], 0.66), roughness=0.92)
+        cane_lit = material(f'{asset_id}_cane_lit', tone(palette['primary'], 1.05), roughness=0.84)
+        leaf = material(f'{asset_id}_leaf', tone(palette['secondary'], 0.9), roughness=0.9)
+        dirt = material(f'{asset_id}_dirt', tone(palette['secondary'], 0.58), roughness=0.98)
+        add(cube(f'{asset_id}_Mound', (0.0, 0.0, 0.055), (0.17, 0.15, 0.055), dirt, asset_id, bevel=0.035))
+
+        def cane_profile(lean, height, thickness):
+            """A cane rising from the mound with thorns barbed off both edges."""
+            points = []
+            steps = 5
+            for step in range(steps + 1):
+                t = step / steps
+                x = lean * (t ** 1.3)
+                z = 0.08 + (height - 0.08) * t
+                barb = thickness * (2.6 if step % 2 == 1 else 1.0)
+                points.append((x - barb, z))
+            points.append((lean, height + 0.05))
+            for step in range(steps, -1, -1):
+                t = step / steps
+                x = lean * (t ** 1.3)
+                z = 0.08 + (height - 0.08) * t
+                barb = thickness * (2.6 if step % 2 == 0 else 1.0)
+                points.append((x + barb, z))
+            return points
+
+        canes = (
+            (-0.17, 0.72, 0.017, -0.06, cane),
+            (-0.07, 0.94, 0.019, 0.01, cane_lit),
+            (0.04, 0.86, 0.018, -0.03, cane),
+            (0.14, 0.68, 0.017, 0.05, cane_lit),
+            (0.21, 0.52, 0.015, -0.08, cane),
+            (-0.22, 0.54, 0.015, 0.07, cane_lit),
+        )
+        for index, (lean, height, thickness, depth, mat) in enumerate(canes):
+            parts.append(prism_mesh(
+                f'{asset_id}_Cane_{index}', cane_profile(lean, height, thickness),
+                depth - 0.014, depth + 0.014, mat, asset_id,
+            ))
+        for index, (x, z, w) in enumerate(((-0.11, 0.48, 0.046), (0.09, 0.58, 0.042), (0.0, 0.32, 0.046))):
+            blade = [(x - w, z), (x, z + w * 1.3), (x + w, z), (x, z - w * 0.6)]
+            parts.append(prism_mesh(f'{asset_id}_Leaf_{index}', blade, -0.10, -0.07, leaf, asset_id))
+        add(cube(f'{asset_id}_Berry', (0.03, -0.09, 0.80), (0.028, 0.026, 0.028), accent, asset_id, bevel=0.010))
+    elif shape == 'flowering-weeds':
+        # Ruderal weed patch: leggy stems carrying flower heads at varied
+        # heights. The colour interest sits at the TOP of the silhouette where
+        # the camera can see it, not on the ground.
+        stem = material(f'{asset_id}_stem', palette['primary'], roughness=0.88)
+        stem_lit = material(f'{asset_id}_stem_lit', tone(palette['primary'], 1.3), roughness=0.76)
+        leaf = material(f'{asset_id}_leaf', tone(palette['primary'], 0.78), roughness=0.9)
+        bloom = material(f'{asset_id}_bloom', tone(palette['secondary'], 1.35), roughness=0.62)
+        dirt = material(f'{asset_id}_dirt', tone(palette['secondary'], 0.6), roughness=0.98)
+        add(cube(f'{asset_id}_Soil', (0.0, 0.0, 0.045), (0.22, 0.19, 0.045), dirt, asset_id, bevel=0.035))
+        stems = (
+            (0.00, 0.00, 0.72, 6, bloom),
+            (0.12, 0.06, 0.58, -14, bloom),
+            (-0.12, -0.05, 0.62, 12, accent),
+            (0.07, -0.13, 0.48, -18, bloom),
+            (-0.09, 0.13, 0.52, 16, accent),
+            (0.16, -0.02, 0.40, -22, bloom),
+        )
+        for index, (x, y, height, lean, head_mat) in enumerate(stems):
+            lean_r = math.radians(lean)
+            mat = stem_lit if index % 2 == 0 else stem
+            add(cylinder(f'{asset_id}_Stem_{index}', (x, y, height / 2 + 0.06), 0.011, height, mat, asset_id, vertices=6, rotation=(0.0, lean_r, 0.0)))
+            top_x = x + math.sin(lean_r) * height * 0.5
+            add(cone(f'{asset_id}_Bloom_{index}', (top_x, y, height + 0.09), 0.045, 0.11, head_mat, asset_id, rotation=(0.0, lean_r, 0.0)))
+            add(cube(f'{asset_id}_Leaf_{index}', (x + 0.05, y, height * 0.45), (0.06, 0.014, 0.028), leaf, asset_id, bevel=0.008, rotation=(0.0, 0.25, index * 0.9)))
+    elif shape == 'hanging-vines':
+        # Fifth pass. Rods with regular leaf ticks read as a ladder; random
+        # leans read as scattered diagonals; one filled curtain polygon read as
+        # a solid slab, because a polygon has no holes and the gaps BETWEEN
+        # strands are most of what makes a drape look like foliage. Each strand
+        # is now its own narrow ribbon with leaf lobes bulging off its outline,
+        # so the leaves ride the vine and the negative space survives.
+        anchor = material(f'{asset_id}_anchor', tone(palette['secondary'], 0.60), roughness=0.96)
+        vine = material(f'{asset_id}_vine', palette['primary'], roughness=0.88)
+        vine_lit = material(f'{asset_id}_vine_lit', tone(palette['primary'], 1.30), roughness=0.76)
+        vine_dark = material(f'{asset_id}_vine_dark', tone(palette['primary'], 0.66), roughness=0.9)
+        add(cube(f'{asset_id}_Spar', (0.0, 0.0, 0.95), (0.28, 0.045, 0.028), anchor, asset_id, bevel=0.010))
+
+        def strand(x0, bottom_z, sway, leaf_at, thickness=0.014, leaf=0.048):
+            """One vine: a slightly swaying ribbon from the spar down to
+            bottom_z, with leaf lobes swelling off alternating sides."""
+            top_z = 0.93
+            steps = 8
+            left, right = [], []
+            for step in range(steps + 1):
+                t = step / steps
+                z = top_z - (top_z - bottom_z) * t
+                x = x0 + sway * math.sin(t * 2.4)
+                grow = leaf if step in leaf_at else 0.0
+                side = 1 if step % 2 == 0 else -1
+                left.append((x - thickness - (grow if side < 0 else 0.0), z))
+                right.append((x + thickness + (grow if side > 0 else 0.0), z))
+            # Down the left edge, across the tip, back up the right edge.
+            points = list(left)
+            points.append((x0 + sway * math.sin(2.4), bottom_z - 0.05))
+            points.extend(reversed(right))
+            return points
+
+        strands = (
+            (-0.235, 0.30, 0.035, (2, 5), vine_dark, 0.052),
+            (-0.145, 0.10, -0.030, (1, 4, 7), vine, -0.005),
+            (-0.050, 0.34, 0.028, (3, 6), vine_lit, -0.062),
+            (0.045, 0.06, -0.034, (2, 5, 7), vine, -0.005),
+            (0.140, 0.26, 0.030, (1, 4), vine_lit, -0.062),
+            (0.230, 0.42, -0.026, (2, 5), vine_dark, 0.052),
+        )
+        for index, (x0, bottom_z, sway, leaf_at, mat, depth) in enumerate(strands):
+            parts.append(prism_mesh(
+                f'{asset_id}_Vine_{index}', strand(x0, bottom_z, sway, leaf_at),
+                depth - 0.013, depth + 0.013, mat, asset_id,
+            ))
+        add(cube(f'{asset_id}_Bloom', (-0.05, -0.078, 0.52), (0.030, 0.016, 0.028), accent, asset_id, bevel=0.010))
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 
