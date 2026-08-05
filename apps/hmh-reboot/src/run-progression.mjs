@@ -81,6 +81,29 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     effect: 'outgoingDamageMultiplier',
     amount: 0.03,
   },
+  // Upgrade program S3: the critical machinery already existed in
+  // combat-events (seeded, deterministic) and every player hit already
+  // carried a base 8% / 1.75x, but nothing let a player invest in it.
+  'precision-ledger': {
+    id: 'precision-ledger',
+    branch: 'power',
+    title: 'Precision Ledger',
+    mechanicalLabel: '+6% critical chance',
+    description: 'Raise the deterministic critical rate on outgoing hits. Capped so criticals stay a spike, not the baseline.',
+    maxRank: 3,
+    effect: 'criticalChanceBonus',
+    amount: 0.06,
+  },
+  'hard-fork-rounds': {
+    id: 'hard-fork-rounds',
+    branch: 'power',
+    title: 'Hard Fork Rounds',
+    mechanicalLabel: '+35% critical damage',
+    description: 'Critical hits carry a heavier multiplier. Pairs with Precision Ledger for a burst build.',
+    maxRank: 3,
+    effect: 'criticalDamageBonus',
+    amount: 0.35,
+  },
   // The mobility branch held a single upgrade capped at two ranks, so a player
   // who wanted a mobility build ran out of anything to pick almost immediately.
   'hot-wallet': {
@@ -125,6 +148,8 @@ const EFFECT_DEFAULTS = Object.freeze({
   scoreMultiplier: 1,
   xpMultiplier: 1,
   moveSpeedMultiplier: 1,
+  criticalChanceBonus: 0,
+  criticalDamageBonus: 0,
 });
 
 function validSeed(value) {

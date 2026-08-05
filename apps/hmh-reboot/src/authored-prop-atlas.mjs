@@ -6,7 +6,7 @@ export const AUTHORED_PROP_ITEM_ROOT = '/assets/generated/hmh-reboot-authored-pr
 export const AUTHORED_PROP_ASSETS = Object.freeze({
   weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
   pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
-  powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two']),
+  powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two', 'precision-ledger', 'hard-fork-rounds']),
   worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor']),
 });
 

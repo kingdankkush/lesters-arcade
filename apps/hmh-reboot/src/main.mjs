@@ -194,6 +194,12 @@ const MAX_ACTIVE_GRENADES = 16;
 const MAX_COMBAT_VISUAL_EVENTS = 64;
 const PROJECTILE_GRID_THRESHOLD = 64;
 const HIT_FEEDBACK_TICKS = 12;
+// Criticals stay a spike rather than the baseline: even a full crit-chance
+// build tops out here, so the damage curve keeps its shape.
+const CRITICAL_CHANCE_CAP = 0.45;
+const BASE_CRITICAL_CHANCE = 0.08;
+const BASE_CRITICAL_MULTIPLIER = 1.75;
+
 const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']);
 const WEAPON_KNOCKBACK = Object.freeze({
   'coin-blaster': 8,
@@ -2181,8 +2187,8 @@ async function boot() {
               sourceId: 'player',
               weaponId: shot.weaponId,
               damage: hit.damage,
-              criticalChance: 0.08,
-              criticalMultiplier: 1.75,
+              criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
+              criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
               armorPiercing: false,
               direction: { x: shot.vx, y: shot.vy },
               knockback: WEAPON_KNOCKBACK[shot.weaponId] ?? 6,
