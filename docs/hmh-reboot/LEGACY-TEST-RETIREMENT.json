@@ -6,7 +6,7 @@
     "tests": 1303,
     "suites": 8,
     "pass": 1251,
-    "fail": 52,
+    "fail": 51,
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
@@ -134,11 +134,6 @@
     {
       "file": "tests/hmh-level-one-terrain-polish.test.mjs",
       "assertion": "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage (1.2772ms)",
-      "reason": "retired legacy HMH binary art contract"
-    },
-    {
-      "file": "tests/hmh-level-one-visible-runtime.test.mjs",
-      "assertion": "WO-102 mega-props are real alpha-clean runtime assets and emit visible Level 1 objects (1.0561ms)",
       "reason": "retired legacy HMH binary art contract"
     },
     {
