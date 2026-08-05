@@ -228,6 +228,153 @@ export function runMovingBenchmark() {
   return rows;
 }
 
+// --- C6 swarm pressure ----------------------------------------------------
+// The static and moving rows both measure ONE target, so nothing in the
+// benchmark answered a question about crowds: which weapon actually clears a
+// pack, how much damage a launcher wastes on small bodies, whether spread
+// earns its reload. The handoff calls this the missing input for S1 and S5.
+//
+// A pack is a line of enemies at fixed spacing across the firing lane, which
+// is the arrangement spread and blast can exploit and single-target fire
+// cannot. Overkill is tracked explicitly: damage landed on a body that was
+// already dead is wasted, and it is exactly how a weapon looks strong on a DPS
+// row while clearing slowly.
+const SWARM_PACK_SIZES = Object.freeze([4, 8]);
+const SWARM_ENEMY_HEALTH = 60;
+const SWARM_SPACING = 46;
+const SWARM_DISTANCE = RANGES.mid;
+
+function benchmarkSwarmCase(weaponId, tierId, packSize) {
+  const progressionByWeapon = { [weaponId]: TIERS[tierId] };
+  const state = createWeaponLoadout({ weaponIds: [...WEAPON_IDS], activeWeaponId: 'coin-blaster', seed: SEED });
+  if (weaponId !== 'coin-blaster') {
+    grantWeaponPickup(state, { tick: 0, weaponId, select: true, progressionByWeapon });
+  }
+
+  const pack = [];
+  for (let index = 0; index < packSize; index += 1) {
+    const offset = (index - (packSize - 1) / 2) * SWARM_SPACING;
+    pack.push({ id: `swarm-${index}`, y: offset, health: SWARM_ENEMY_HEALTH, dead: false });
+  }
+
+  let shotsFired = 0;
+  let projectilesEmitted = 0;
+  let contacts = 0;
+  let damageApplied = 0;
+  let overkillDamage = 0;
+  let killed = 0;
+  let firstKillTick = null;
+  let clearTick = null;
+
+  const MUZZLE = { x: 28, y: 0, z: 22 };
+
+  // Aim at the nearest living member rather than firing blindly down the axis.
+  // The first build fired at a fixed (1, 0) while the pack straddled that line,
+  // so no member ever sat on it and single-target weapons scored zero contacts
+  // -- the harness was measuring its own layout, not the weapons.
+  const aimAtNearest = () => {
+    let best = null;
+    let bestDistance = Infinity;
+    for (const member of pack) {
+      if (member.dead) continue;
+      const dx = SWARM_DISTANCE - MUZZLE.x;
+      const dy = member.y - MUZZLE.y;
+      const distance = Math.hypot(dx, dy);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = { x: dx / distance, y: dy / distance };
+      }
+    }
+    return best;
+  };
+
+  for (let tick = 1; tick <= WINDOW_TICKS && clearTick === null; tick += 1) {
+    const aim = aimAtNearest();
+    if (!aim) break;
+    const frame = stepWeaponLoadout(state, { tick, fire: true, direction: aim, progressionByWeapon });
+    for (const event of frame.events) {
+      if (event.type !== 'weapon:fire') continue;
+      shotsFired += 1;
+      for (const shot of event.shots) {
+        projectilesEmitted += 1;
+        const reach = Math.min(shot.range, SWARM_DISTANCE + 120);
+        const projectile = createProjectileState({
+          id: shot.id,
+          ownerId: 'bench',
+          previous: { ...MUZZLE },
+          current: { x: MUZZLE.x + shot.direction.x * reach, y: MUZZLE.y + shot.direction.y * reach, z: MUZZLE.z },
+          radius: shot.radius,
+          damage: shot.damage,
+          policy: shot.policy,
+        });
+        // Every living member is a candidate, so pierce and spread can
+        // register more than one contact from a single projectile.
+        const living = pack.filter((member) => !member.dead);
+        if (living.length === 0) break;
+        const targets = living.map((member) => createHurtTarget({
+          id: member.id,
+          bodyShape: { type: 'circle', x: 0, y: 0, radius: 16 },
+          hurtShape: { type: 'circle', x: 0, y: 0, radius: 16 },
+          previousGround: { x: SWARM_DISTANCE, y: member.y, z: 0 },
+          currentGround: { x: SWARM_DISTANCE, y: member.y, z: 0 },
+          minZ: 0,
+          maxZ: 44,
+          health: 999999,
+        }));
+        const resolved = resolveProjectilePath({ projectile, targets });
+        for (const hit of resolved.hits) {
+          contacts += 1;
+          const damage = finiteOrThrow(hit.damage ?? shot.damage, 'swarm hit damage');
+          damageApplied += damage;
+          const member = pack.find((candidate) => candidate.id === hit.targetId);
+          if (!member || member.dead) {
+            overkillDamage += damage;
+            continue;
+          }
+          const absorbed = Math.min(member.health, damage);
+          overkillDamage += damage - absorbed;
+          member.health -= absorbed;
+          if (member.health <= 0) {
+            member.dead = true;
+            killed += 1;
+            if (firstKillTick === null) firstKillTick = tick;
+            if (killed === packSize) clearTick = tick;
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    weaponId,
+    tier: tierId,
+    packSize,
+    range: 'mid',
+    shotsFired,
+    projectilesEmitted,
+    contacts,
+    contactsPerProjectile: projectilesEmitted === 0 ? 0 : Number((contacts / projectilesEmitted).toFixed(4)),
+    damageApplied: Number(damageApplied.toFixed(2)),
+    overkillDamage: Number(overkillDamage.toFixed(2)),
+    overkillRatio: damageApplied === 0 ? 0 : Number((overkillDamage / damageApplied).toFixed(4)),
+    killed,
+    timeToFirstKillSeconds: firstKillTick === null ? null : Number((firstKillTick / TICKS_PER_SECOND).toFixed(3)),
+    clearSeconds: clearTick === null ? null : Number((clearTick / TICKS_PER_SECOND).toFixed(3)),
+  };
+}
+
+export function runSwarmBenchmark() {
+  const rows = [];
+  for (const weaponId of WEAPON_IDS) {
+    for (const tierId of Object.keys(TIERS)) {
+      for (const packSize of SWARM_PACK_SIZES) {
+        rows.push(benchmarkSwarmCase(weaponId, tierId, packSize));
+      }
+    }
+  }
+  return rows;
+}
+
 export function runBenchmark() {
   const rows = [];
   for (const weaponId of WEAPON_IDS) {
@@ -246,10 +393,13 @@ assert.deepEqual(first, second, 'benchmark drifted across identical same-seed ru
 const movingFirst = runMovingBenchmark();
 const movingSecond = runMovingBenchmark();
 assert.deepEqual(movingFirst, movingSecond, 'moving benchmark drifted across identical same-seed runs');
+const swarmFirst = runSwarmBenchmark();
+const swarmSecond = runSwarmBenchmark();
+assert.deepEqual(swarmFirst, swarmSecond, 'swarm benchmark drifted across identical same-seed runs');
 
 const report = {
-  schemaVersion: 2,
-  pipelineId: 'hmh-weapon-benchmark-v2',
+  schemaVersion: 3,
+  pipelineId: 'hmh-weapon-benchmark-v3',
   runtimeAuthority: 'measurement-only',
   seed: SEED,
   windowSeconds: WINDOW_TICKS / TICKS_PER_SECOND,
@@ -258,18 +408,30 @@ const report = {
   strafeSpeeds: STRAFE_SPEEDS,
   reactionLagTicks: REACTION_LAG_TICKS,
   hurtboxPolicyId: ORDINARY_ENEMY_HURTBOX_POLICY.id,
-  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 10-tick reaction lag. Swarm pressure remains a future extension. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
+  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 10-tick reaction lag. Swarm rows: a line of enemies at fixed spacing across the firing lane, with overkill tracked explicitly. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
+  swarm: {
+    packSizes: SWARM_PACK_SIZES,
+    enemyHealth: SWARM_ENEMY_HEALTH,
+    spacing: SWARM_SPACING,
+    distance: SWARM_DISTANCE,
+    deterministic: true,
+    note: 'A pack is a line across the lane, which is the arrangement spread and blast can exploit and single-target fire cannot. Overkill counts damage landed on an already-dead body: it is how a weapon looks strong on a DPS row while clearing slowly. clearSeconds is null when the pack survived the window, which is a finding rather than a missing value.',
+  },
   rows: first,
   movingRows: movingFirst,
+  swarmRows: swarmFirst,
 };
 
 const out = fileURLToPath(new URL('../docs/qa/hmh-weapon-benchmark.json', import.meta.url));
 await mkdir(fileURLToPath(new URL('../docs/qa/', import.meta.url)), { recursive: true });
 await writeFile(out, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(JSON.stringify({ status: 'pass', rows: first.length, movingRows: movingFirst.length, out: 'docs/qa/hmh-weapon-benchmark.json' }));
+console.log(JSON.stringify({ status: 'pass', rows: first.length, movingRows: movingFirst.length, swarmRows: swarmFirst.length, out: 'docs/qa/hmh-weapon-benchmark.json' }));
 for (const row of first.filter((entry) => entry.range === 'mid')) {
   console.log(`${row.weaponId} ${row.tier} @mid: dps=${row.sustainedDps} ttk=${row.timeToKillSeconds}s reload=${row.reloadDowntimeSeconds}s empty=${row.emptySeconds}s`);
 }
 for (const row of movingFirst.filter((entry) => entry.range === 'mid' && entry.tier === 'base')) {
   console.log(`${row.weaponId} base @mid vs ${row.strafe}: movingHitRate=${row.movingHitRate}`);
+}
+for (const row of swarmFirst.filter((entry) => entry.tier === 'base')) {
+  console.log(`${row.weaponId} base swarm x${row.packSize}: killed=${row.killed}/${row.packSize} clear=${row.clearSeconds === null ? 'never' : `${row.clearSeconds}s`} overkill=${row.overkillRatio} contacts/proj=${row.contactsPerProjectile}`);
 }
