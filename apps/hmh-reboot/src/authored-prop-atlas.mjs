@@ -105,31 +105,87 @@ export function authoredPropItemUrl(assetId) {
   return `${AUTHORED_PROP_ITEM_ROOT}/${assetId}.png`;
 }
 
+// W1 density. Waves A1-A4 grew the world-prop library from 26 to 49 while
+// deliberately holding these counts flat, so the world kept placing the same
+// 75 items. These are the counts that put the library on screen. The placement
+// helper caps a district at 24; hashwood leads the map per the art direction.
+export const AUTHORED_DRESSING_DENSITY = Object.freeze({
+  'frontier-relay': 20,
+  'rugpull-ravine': 20,
+  'liquidity-crossing': 20,
+  hashwood: 24,
+  'mining-camp': 22,
+  'liquidation-yard': 22,
+});
+
+// Satellites per anchor, cycled deterministically. Mixed group sizes are what
+// keep clusters from reading as a repeated stamp.
+const CLUSTER_SATELLITES = Object.freeze([2, 1, 3, 1, 2, 2, 1, 3]);
+const SATELLITE_MIN_RADIUS = 60;
+const SATELLITE_MAX_RADIUS = 300;
+
 export function buildAuthoredWorldPropPlacements({ worldId, seed, countPerDistrict = 8 } = {}) {
   if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored prop world ${String(worldId)}`);
   if (!Number.isInteger(countPerDistrict) || countPerDistrict < 0 || countPerDistrict > 24) throw new TypeError('countPerDistrict must be an integer from 0 to 24');
   const placements = [];
   for (const district of DISTRICTS) {
-    const districtCount = Math.min(24, district.countOverride ?? countPerDistrict);
-    for (let index = 0; index < districtCount; index += 1) {
-      const key = `${worldId}:${district.id}:${index}`;
-      const assetId = district.propIds[index % district.propIds.length];
-      // Dressing lives toward district shoulders, leaving the authored route
-      // and arenas readable. It is projection-only and never becomes collision.
-      const north = index % 2 === 0;
-      const x = district.minX + 220 + seededUnit(seed, `${key}:x`) * Math.max(1, district.maxX - district.minX - 440);
-      const y = north
-        ? 420 + seededUnit(seed, `${key}:y`) * 1_050
-        : 3_330 + seededUnit(seed, `${key}:y`) * 1_050;
-      placements.push(freezeDeep({
-        id: `dressing:${district.id}:${String(index).padStart(2, '0')}`,
-        assetId,
-        category: 'world-prop',
-        districtId: district.id,
-        x: Number(x.toFixed(3)),
-        y: Number(y.toFixed(3)),
-        runtimeAuthority: 'projection-only',
-      }));
+    const districtCount = Math.min(24, AUTHORED_DRESSING_DENSITY[district.id] ?? district.countOverride ?? countPerDistrict);
+    // Anchor plus satellites rather than scattered singles: the art
+    // direction's composition rule. An anchor is placed in the shoulder band,
+    // then its satellites are offset around it, so the eye reads a few groups
+    // instead of evenly spread confetti.
+    let index = 0;
+    let clusterIndex = 0;
+    while (index < districtCount) {
+      const anchorIndex = index;
+      const clusterId = `cluster:${district.id}:${String(clusterIndex).padStart(2, '0')}`;
+      const anchorKey = `${worldId}:${district.id}:${anchorIndex}`;
+      // Alternate shoulders by CLUSTER, not by item, so a group stays on one
+      // side of the route instead of being split across the map.
+      const north = clusterIndex % 2 === 0;
+      const anchorX = district.minX + 260 + seededUnit(seed, `${anchorKey}:x`) * Math.max(1, district.maxX - district.minX - 520);
+      const anchorY = north
+        ? 460 + seededUnit(seed, `${anchorKey}:y`) * 900
+        : 3_380 + seededUnit(seed, `${anchorKey}:y`) * 900;
+      const satellites = Math.min(
+        CLUSTER_SATELLITES[clusterIndex % CLUSTER_SATELLITES.length],
+        districtCount - index - 1,
+      );
+      for (let member = 0; member <= satellites; member += 1) {
+        const memberIndex = anchorIndex + member;
+        const key = `${worldId}:${district.id}:${memberIndex}`;
+        const assetId = district.propIds[memberIndex % district.propIds.length];
+        let x = anchorX;
+        let y = anchorY;
+        if (member > 0) {
+          const angle = seededUnit(seed, `${key}:angle`) * Math.PI * 2;
+          const radius = SATELLITE_MIN_RADIUS
+            + seededUnit(seed, `${key}:radius`) * (SATELLITE_MAX_RADIUS - SATELLITE_MIN_RADIUS);
+          x = anchorX + Math.cos(angle) * radius;
+          y = anchorY + Math.sin(angle) * radius;
+        }
+        // Dressing lives toward district shoulders, leaving the authored route
+        // and arenas readable. Satellite offsets are clamped back into the
+        // shoulder band so a denser pass cannot push dressing into the
+        // corridor. It is projection-only and never becomes collision.
+        x = Math.min(district.maxX - 120, Math.max(district.minX + 120, x));
+        y = north
+          ? Math.min(1_640, Math.max(300, y))
+          : Math.min(4_500, Math.max(3_160, y));
+        placements.push(freezeDeep({
+          id: `dressing:${district.id}:${String(memberIndex).padStart(2, '0')}`,
+          assetId,
+          clusterId,
+          clusterRole: member === 0 ? 'anchor' : 'satellite',
+          category: 'world-prop',
+          districtId: district.id,
+          x: Number(x.toFixed(3)),
+          y: Number(y.toFixed(3)),
+          runtimeAuthority: 'projection-only',
+        }));
+      }
+      index += satellites + 1;
+      clusterIndex += 1;
     }
   }
   return Object.freeze(placements);

@@ -94,9 +94,10 @@ test('Cycle 007 authored prop runtime is deterministic and covers every district
   const first = module.buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 0x7a11ce, countPerDistrict: 8 });
   const second = module.buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 0x7a11ce, countPerDistrict: 8 });
   assert.deepEqual(first, second);
-  // Cycle 044: every district carries an authored density override
-  // (11 + 11 + 11 + 18 + 12 + 12 = 75).
-  assert.equal(first.length, 75);
+  // Cycle 044 gave every district an authored density override; W1 raised
+  // them once the A1-A4 asset waves had a library worth placing
+  // (20 + 20 + 20 + 24 + 22 + 22 = 128).
+  assert.equal(first.length, 128);
   assert.deepEqual([...new Set(first.map((entry) => entry.districtId))].sort(), [
     'frontier-relay', 'hashwood', 'liquidation-yard', 'liquidity-crossing', 'mining-camp', 'rugpull-ravine',
   ]);
