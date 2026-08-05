@@ -2,10 +2,10 @@
 
 Date: 2026-08-05 PDT
 Author: Claude Fable 5
-Branch: `reboot/hmh-aaa-continuous` (head at close: `1a901a2e`)
+Branch: `reboot/hmh-aaa-continuous` (head at close: `5b1ac494`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
-Thirteen slices, each RED-tested first, gated, reviewed against the exact staged
+Fourteen slices, each RED-tested first, gated, reviewed against the exact staged
 index, committed and pushed separately. **Production was not promoted** — that
 remains the owner's from the Vercel dashboard. Pushing the branch creates a
 Preview only.
@@ -28,6 +28,7 @@ Preview only.
 | C6 swarm bench | `530ff899` | Pack clear time, overkill and projectile pressure. |
 | P5 visual scenes | `18dffedd` | Camp + water scenes; scenes now declare what they gate. |
 | C2 combat feel | `1a901a2e` | Per-weapon recoil weight, directional impact spray. |
+| T2 ground decals | `5b1ac494` | 177 contract-anchored marks, baked to a runtime asset. |
 
 World-prop library: **26 → 55**. Prop atlas 178,089 B → 306,970 B against a
 524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,962**, expected
@@ -132,6 +133,29 @@ Nothing new was allowed below 0.55.
   for the new scenes would have produced scenes asserting nothing about their
   own subject. They now require visible authored props instead.
 
+## The bundle budget is now the binding constraint
+
+**Child JS bundle: 1,048,368 B against a 1,050,000 B cap — 1,632 B left.**
+
+This arc consumed the 9.4 KB the program started with. T2 hit the wall
+directly: its placement logic cost 4,451 B against 3,218 B of headroom, and
+the perf gate failed at 1,051,172. Raising the cap was not on the table, and
+unifying the code did not recover enough, so the derivation moved to build
+time and the child now fetches a 57 KB asset. Bundle work, not art work, is
+what that pattern buys.
+
+**Practical consequence: further child code slices are effectively blocked.**
+D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all add child
+code. Two things would unblock them, both already in the program:
+
+- **P6 legacy code triage** — the pre-reboot canvas combat path and the hidden
+  `#developerBackstage` shell are still shipped.
+- **U10 portal modularization** — 15.5k-line `main.js` split by route, with the
+  dead legacy combat path deleted on the way through.
+
+Until one of those lands, prefer asset-shaped work (which costs no bundle
+bytes) or accept that each code slice must pay for itself in removals.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -144,8 +168,8 @@ Nothing new was allowed below 0.55.
   gate captures a paused frame that may never land on an active shake.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
-- **Not yet done in Wave 2:** A5 bridges, T1 intra-district material patches,
-  T2 ground decals.
+- **Not yet done in Wave 2:** A5 bridges, T1 intra-district material patches.
+  T2 is done.
 - **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
   rebalance now have the swarm evidence they were missing. The shotgun's
   mid-range swarm result is the first thing to look at.
