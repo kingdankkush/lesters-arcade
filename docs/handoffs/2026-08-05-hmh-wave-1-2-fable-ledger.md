@@ -2,10 +2,10 @@
 
 Date: 2026-08-05 PDT
 Author: Claude Fable 5
-Branch: `reboot/hmh-aaa-continuous` (head at close: `5b1ac494`)
+Branch: `reboot/hmh-aaa-continuous` (head at close: `4938bc21`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
-Fourteen slices, each RED-tested first, gated, reviewed against the exact staged
+Fifteen slices, each RED-tested first, gated, reviewed against the exact staged
 index, committed and pushed separately. **Production was not promoted** — that
 remains the owner's from the Vercel dashboard. Pushing the branch creates a
 Preview only.
@@ -29,9 +29,10 @@ Preview only.
 | P5 visual scenes | `18dffedd` | Camp + water scenes; scenes now declare what they gate. |
 | C2 combat feel | `1a901a2e` | Per-weapon recoil weight, directional impact spray. |
 | T2 ground decals | `5b1ac494` | 177 contract-anchored marks, baked to a runtime asset. |
+| A5 bridge kit | `4938bc21` | 6 bridge parts; span/upright proportion split. |
 
-World-prop library: **26 → 55**. Prop atlas 178,089 B → 306,970 B against a
-524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,962**, expected
+World-prop library: **26 → 61**. Prop atlas 178,089 B → 326,439 B against a
+524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,983**, expected
 failures still 51.
 
 ## Non-art pipelines added
@@ -156,6 +157,25 @@ code. Two things would unblock them, both already in the program:
 Until one of those lands, prefer asset-shaped work (which costs no bundle
 bytes) or accept that each code slice must pay for itself in removals.
 
+## The props reproducibility gate is flaky, and now there is evidence
+
+The authored-props verify FAILED once and then passed five consecutive times
+on an unchanged scene: **1 failure in 6 runs**. Nothing in the scene changed
+between them, and a byte diff of the two render directories after the failure
+showed zero differing assets.
+
+This is the same structural flakiness that made the enemy-roster exact-byte
+gate untenable in Cycle 037 and earned it the ±1 LSB policy. The props
+pipeline was left exact on the assumption that it was stable. That assumption
+now has a counter-example.
+
+Two consequences:
+- A lone props-verify failure should be treated as rerun-once, like the heap
+  gate was before P2 fixed it — **not** as a reproducibility defect in whatever
+  asset was being added at the time.
+- Migrating props to the roster's ±1 LSB policy was already open debt. It now
+  has a measurement behind it rather than a suspicion.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -168,8 +188,10 @@ bytes) or accept that each code slice must pay for itself in removals.
   gate captures a paused frame that may never land on an active shake.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
-- **Not yet done in Wave 2:** A5 bridges, T1 intra-district material patches.
-  T2 is done.
+- **Wave 2 remaining: T1 intra-district material patches only.** A5 and T2 are
+  done. T1 is the biggest of the three: it needs 2-3 sub-materials baked per
+  biome, a deterministic patch mask, and seam verification across all 10 visual
+  scenes, so it wants its own session rather than a tail-end slice.
 - **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
   rebalance now have the swarm evidence they were missing. The shotgun's
   mid-range swarm result is the first thing to look at.
