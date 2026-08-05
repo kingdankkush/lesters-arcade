@@ -2,6 +2,7 @@ import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Text
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
+import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
@@ -1278,8 +1279,15 @@ async function boot() {
             // Impact sparks. Seeded from the event so the fan is identical on
             // replay, and scaled by the active performance profile.
             const sparks = particleScale > 0 ? (event.critical ? 8 : 4) : 0;
-            for (let spark = 0; spark < sparks; spark += 1) {
-              const angle = deterministicUnit(`${event.tick}:${event.point.y}:${spark}`) * Math.PI * 2;
+            // Sprayed back along the impact rather than fanned at random
+            // angles: a hit used to throw sparks into the shooter as often as
+            // away from the surface.
+            const sprayAngles = impactSprayAngles({
+              seed: `${event.tick}:${event.point.y}`,
+              direction: event.direction ?? { x: 0, y: 0 },
+              count: sparks,
+            });
+            for (const angle of sprayAngles) {
               const inner = 6 + age * 2;
               const outer = inner + 7 + age * 1.5;
               combatVisuals.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner)
@@ -2272,6 +2280,10 @@ async function boot() {
           magnitude: event.recoil,
         });
         combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) });
+        // C2: firing had no camera weight at all, so a pistol and a grenade
+        // launcher felt identical. Projection-only, and the existing
+        // screenShake/reduceMotion settings still gate whether it is drawn.
+        triggerCameraShake(tick, weaponRecoilShake(event.weaponId));
         pushCombatVisualEvent({
           type: 'muzzle',
           tick,
@@ -2516,6 +2528,11 @@ async function boot() {
             tick,
             point: damageEvent.point,
             critical: damageEvent.critical,
+            // Knockback already points along the impact's travel, so it is the
+            // surface normal the spark fan sprays back from. It is zero for a
+            // shielded or zero-damage hit, which the spray helper treats as
+            // "no direction" and falls back to a full circle.
+            direction: damageEvent.knockback,
             color: damageEvent.shielded ? 0x8bb8ff : damageEvent.critical ? 0xfff06a : 0xff8c5a,
           });
           if (damageEvent.targetId === 'player') {
@@ -2821,6 +2838,10 @@ async function boot() {
     } else if (world.position.x !== 0 || world.position.y !== 0) {
       world.position.set(0, 0);
     }
+    // Telemetry for the shake. Without it the effect is unobservable from
+    // outside: the visual gate captures a paused frame and may never land on
+    // an active shake, so per-weapon recoil could regress to zero silently.
+    stageElement.dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
     renderWorld(renderActor);
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
