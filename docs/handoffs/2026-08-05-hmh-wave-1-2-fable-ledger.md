@@ -2,10 +2,10 @@
 
 Date: 2026-08-05 PDT
 Author: Claude Fable 5
-Branch: `reboot/hmh-aaa-continuous` (head at close: `ff013b60`)
+Branch: `reboot/hmh-aaa-continuous` (head at close: `1a901a2e`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
-Eight slices, each RED-tested first, gated, reviewed against the exact staged
+Thirteen slices, each RED-tested first, gated, reviewed against the exact staged
 index, committed and pushed separately. **Production was not promoted** — that
 remains the owner's from the Vercel dashboard. Pushing the branch creates a
 Preview only.
@@ -24,9 +24,33 @@ Preview only.
 | A4 water | `e6a95ee6` | 6 water props; the crossing now reads as water. |
 | W1 density | `2cecaf6b` | Dressing 75 → 128, anchor-plus-satellite clustering. |
 | A7 + W3 camps | `ff013b60` | 6 camp props, 5 encampments ringing the encounter arenas. |
+| C1 weapon audio | `9d669796` | Per-weapon fire/reload/empty, synthesised in-repo, byte-exact. |
+| C6 swarm bench | `530ff899` | Pack clear time, overkill and projectile pressure. |
+| P5 visual scenes | `18dffedd` | Camp + water scenes; scenes now declare what they gate. |
+| C2 combat feel | `1a901a2e` | Per-weapon recoil weight, directional impact spray. |
 
 World-prop library: **26 → 55**. Prop atlas 178,089 B → 306,970 B against a
-524,288 B cap. Test count 1,852 → 1,931, expected failures still 51.
+524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,962**, expected
+failures still 51.
+
+## Non-art pipelines added
+
+**Synthesised SFX** (`scripts/build-hmh-weapon-sfx.py`). Every weapon shared
+one sourced weapon-fire.ogg. The existing SFX are CC0 packs that cannot be
+regenerated from repo source, so six new cues are synthesised instead: pure
+Python DSP, fixed xorshift32 PRNG, byte-exact. Output is **WAV, not OGG**, and
+that was measured rather than assumed — libvorbis is not byte-reproducible in
+this ffmpeg build (re-encoding the same input twice differs, because the Ogg
+stream serial is not pinned by `-fflags +bitexact`). 71 KB for six cues is
+cheaper than the codec dependency.
+
+**Swarm benchmark** (`docs/qa/hmh-weapon-benchmark.json`, schema 3). Packs of
+4 and 8 with overkill tracked explicitly. Base tier at mid range:
+launcher-rig clears 8 in 4.1 s at 4.0 contacts/projectile; auto-miner never
+clears 8; coin-blaster runs its reserve dry at 3 kills; **scatter-shotgun kills
+1 of 4** because its spread has dispersed past the pack by 420 units. That last
+one is counter-intuitive and is a finding for S5 — not tuned here, because
+changing values in the slice that produced the evidence defeats the point.
 
 ---
 
@@ -92,20 +116,46 @@ Nothing new was allowed below 0.55.
 
 ---
 
+## More gate lessons from the second half
+
+- **A rule can be wrong in the other direction too.** A mass-centroid "flat
+  decal" check was drafted for the water wave and removed after checking it
+  against shipped props: reed-cluster (good) sits 0.019 from driftwood-log
+  (the known failure), so no threshold separates them.
+- **Verify the runtime path, not just the module.** Per-weapon recoil measured
+  exactly zero in a browser probe while being correctly wired, because
+  standalone hardcodes `screenShake: false` (it is the evidence-capture path;
+  stable baselines need no jitter) while the portal path defaults it on. Both
+  defaults are now asserted.
+- **Decode audio in a real browser.** scatter-shotgun decoded at peak 1.082
+  because the browser resamples 22.05 kHz to its device rate and reconstruction
+  overshoots between samples. Nothing static would have caught the clipping;
+  cue peaks now carry a 0.78 ceiling and `smoke:hmh:weapon-sfx` gates it.
+- **Make every scene declare what it gates.** Adding camp and water scenes hit
+  a harness rule requiring three visible landmarks in EVERY scene. Weakening it
+  for the new scenes would have produced scenes asserting nothing about their
+  own subject. They now require visible authored props instead.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
   district dressing.** Both need re-concepting, not another iteration. For the
   boulder: wedged in a cleft, or split by a fracture, rather than perched on a
   plinth. The hold-out list is asserted at one entry so it cannot quietly grow.
-- **P5 is now concrete.** The five A1 trees and several later props do not
-  appear in any of the 8 pinned visual scenes — they were verified by rendered
-  montage and atlas metrics, not by the regression baselines, so they ship
-  unwatched by that gate. New scenes are needed.
+- **P5 partially closed.** Camp and water now have pinned scenes (10 total).
+  The A1 trees still do not appear in any scene, and the C2 combat-feel work is
+  covered by unit tests and a live probe rather than by a baseline, because the
+  gate captures a paused frame that may never land on an active shake.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
 - **Not yet done in Wave 2:** A5 bridges, T1 intra-district material patches,
   T2 ground decals.
+- **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
+  rebalance now have the swarm evidence they were missing. The shotgun's
+  mid-range swarm result is the first thing to look at.
+- **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
+  boss phase cues) and X2 (volume categories, ducking) remain. The synth
+  pipeline added here is the obvious vehicle for them.
 
 ## Verification note
 
