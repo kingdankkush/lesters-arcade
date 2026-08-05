@@ -2,6 +2,7 @@ import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Text
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
+import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
@@ -298,6 +299,11 @@ async function boot() {
   const world = new Container();
   const backdrop = new Graphics();
   const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics, TilingSpriteClass: TilingSprite });
+  // T2: ground decals sit above the terrain material and BELOW every prop and
+  // actor layer, so a mark on the floor can never occlude something the player
+  // needs to read.
+  const worldDecalLayer = new Graphics();
+  worldDecalLayer.label = 'world-decals';
   const authoredPropLayer = new Container();
   authoredPropLayer.label = 'authored-prop-layer';
   authoredPropLayer.sortableChildren = true;
@@ -381,11 +387,17 @@ async function boot() {
   label.anchor.set(0.5);
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, minimap);
 
 
   const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
+  // Baked at build time and fetched, not computed here. The placement logic
+  // costs 4,451 B minified against a bundle that had 3,218 B of headroom, and
+  // runtime-fetched assets cost no bundle bytes. Decals are pure decoration,
+  // so a failed fetch degrades to an empty layer rather than blocking boot --
+  // never block boot on art.
+  let worldDecals = [];
   const authoredPropPlacements = Object.freeze([
     ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: 0x484d4807, countPerDistrict: 8 }),
     ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
@@ -397,6 +409,14 @@ async function boot() {
   let authoredPropDisplay = null;
   let authoredHeldWeaponDisplay = null;
   let authoredPropLoadError = null;
+  // Decals load on their own promise, deliberately NOT inside the prop
+  // Promise.all: that array is destructured positionally, so adding an entry
+  // shifted atlasTexture to undefined and the prop display never reported
+  // ready -- which is the exact signal the visual gate waits on.
+  fetch(WORLD_DECAL_URL, { credentials: 'same-origin' })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((payload) => { worldDecals = Object.freeze(payload?.decals ?? []); })
+    .catch(() => { worldDecals = []; });
   Promise.all([
     fetch(AUTHORED_PROP_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
     Assets.load(AUTHORED_PROP_ATLAS_IMAGE_URL),
@@ -848,6 +868,7 @@ async function boot() {
   const viewport = () => ({ width: app.screen.width, height: app.screen.height });
 
   let worldArtReport = null;
+  let decalsDrawn = 0;
   const renderAuthoredTerrain = (view) => {
     worldArtReport = renderWorldProductionArt({
       worldProduction,
@@ -860,6 +881,17 @@ async function boot() {
       performanceProfile,
       terrainTiles,
     });
+    // Decals draw immediately after the terrain material, into their own layer
+    // beneath every prop and actor. Culled to the viewport, so an off-screen
+    // mark costs a comparison rather than a path.
+    decalsDrawn = drawWorldDecals({
+      target: worldDecalLayer,
+      decals: worldDecals,
+      camera,
+      view,
+      project: worldToScreen,
+    });
+    stageElement.dataset.worldDecalsVisible = String(decalsDrawn);
   };
 
   const renderAuthoredCollision = (view) => {
@@ -999,6 +1031,7 @@ async function boot() {
     const view = viewport();
     backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 });
     clearWorldProductionLayers(worldProduction);
+    worldDecalLayer.clear();
     grid.clear();
     collisionDebug.clear();
     projectileTrails.clear();

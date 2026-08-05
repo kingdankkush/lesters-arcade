@@ -122,6 +122,7 @@
     "assets:hmh:authored-props": "python scripts/run-hmh-authored-props-pipeline.py",
     "assets:hmh:authored-props:verify": "python scripts/run-hmh-authored-props-pipeline.py --verify-reproducible",
     "assets:hmh:terrain": "python scripts/build-hmh-terrain-tiles.py --verify-seamless",
+    "assets:hmh:world-decals": "node scripts/build-hmh-world-decals.mjs",
     "assets:hmh:weapon-sfx": "python scripts/build-hmh-weapon-sfx.py",
     "assets:hmh:weapon-sfx:verify": "python scripts/build-hmh-weapon-sfx.py --verify-reproducible",
     "smoke:hmh:mobile-controls": "node scripts/hmh-reboot-mobile-controls-browser-smoke.mjs",
