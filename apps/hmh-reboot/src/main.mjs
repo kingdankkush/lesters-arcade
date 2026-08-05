@@ -676,6 +676,11 @@ async function boot() {
     hashwood: Object.freeze({ x: 7_000, y: 900 }),
     mining: Object.freeze({ x: 9_200, y: 1_600 }),
     yard: Object.freeze({ x: 11_000, y: 800 }),
+    // P5: the A1-A7 waves added 29 props that no pinned scene could see, so
+    // the regression gate was not watching them. These two tours put the camp
+    // kit and the water dressing on camera.
+    'camp-hashwood': Object.freeze({ x: 7_150, y: 2_500 }),
+    'crossing-water': Object.freeze({ x: 4_900, y: 1_050 }),
     ...Object.fromEntries(authoredPointOfInterestPlacements.map((placement) => [
       `collectible-${placement.pointOfInterestId}`,
       Object.freeze({ x: placement.x, y: placement.y }),

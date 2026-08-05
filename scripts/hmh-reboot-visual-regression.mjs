@@ -174,6 +174,24 @@ export const VISUAL_SCENES = Object.freeze([
     viewport: Object.freeze({ width: 1440, height: 900 }),
     tick: 180,
   }),
+  // P5: the A1-A7 asset waves added 29 world props and most of them landed
+  // outside every camera above, so those scenes came back "unchanged" while
+  // the new art shipped unwatched. These two put the camp kit and the water
+  // dressing under the gate.
+  Object.freeze({
+    id: 'hashwood-camp-desktop',
+    query: 'evidenceSafe=1&telemetry=1&worldTour=camp-hashwood',
+    viewport: Object.freeze({ width: 1440, height: 900 }),
+    tick: 180,
+    requires: Object.freeze({ props: 3 }),
+  }),
+  Object.freeze({
+    id: 'crossing-water-desktop',
+    query: 'evidenceSafe=1&telemetry=1&worldTour=crossing-water',
+    viewport: Object.freeze({ width: 1440, height: 900 }),
+    tick: 180,
+    requires: Object.freeze({ props: 3 }),
+  }),
 ]);
 
 export function compareSignatures(baseline, current) {
@@ -285,12 +303,27 @@ if (isMain) {
       }
       const landmarkVisible = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.authoredLandmarkVisible ?? Number.NaN));
       const landmarkAnimated = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.authoredLandmarkAnimated ?? Number.NaN));
-      const minimumVisibleLandmarks = scene.viewport.width <= 600 ? 2 : 3;
-      if (!Number.isFinite(landmarkVisible) || landmarkVisible < minimumVisibleLandmarks) {
-        throw new Error(`scene ${scene.id} has ${String(landmarkVisible)} visible district landmarks; expected at least ${minimumVisibleLandmarks}`);
+      const propVisible = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.authoredPropVisible ?? Number.NaN));
+      // Scenes declare what they gate. The district scenes are landmark-centric
+      // and keep the landmark floor; the camp and water scenes exist to watch
+      // authored dressing, which lives away from the landmark clusters. A
+      // scene that asserted nothing about its own subject would pass happily
+      // while rendering an empty field, which is the failure P5 is about.
+      const requires = scene.requires ?? { landmarks: scene.viewport.width <= 600 ? 2 : 3, animatedLandmarks: 1 };
+      if (requires.landmarks) {
+        if (!Number.isFinite(landmarkVisible) || landmarkVisible < requires.landmarks) {
+          throw new Error(`scene ${scene.id} has ${String(landmarkVisible)} visible district landmarks; expected at least ${requires.landmarks}`);
+        }
       }
-      if (!Number.isFinite(landmarkAnimated) || landmarkAnimated < 1) {
-        throw new Error(`scene ${scene.id} has ${String(landmarkAnimated)} animated district landmark signals onscreen; expected at least 1`);
+      if (requires.animatedLandmarks) {
+        if (!Number.isFinite(landmarkAnimated) || landmarkAnimated < requires.animatedLandmarks) {
+          throw new Error(`scene ${scene.id} has ${String(landmarkAnimated)} animated district landmark signals onscreen; expected at least ${requires.animatedLandmarks}`);
+        }
+      }
+      if (requires.props) {
+        if (!Number.isFinite(propVisible) || propVisible < requires.props) {
+          throw new Error(`scene ${scene.id} has ${String(propVisible)} visible authored props; expected at least ${requires.props}`);
+        }
       }
       // Capture the renderer canvas only, so DOM chrome (cockpit rail, pause
       // panel) cannot mask a change in the rendered world.
