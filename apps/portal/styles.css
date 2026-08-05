@@ -1675,6 +1675,62 @@ svg.arcade-icon {
   box-shadow: inset 0 0 18px rgba(255, 232, 77, 0.1);
 }
 
+/* U11a. The simulated fallback identity is a trust surface, not a status: it
+   reads amber like the wrong-chain warning rather than green like a real
+   connection, and it must not be mistaken for a connected wallet. */
+.wallet-rail-card.simulated-wallet,
+.wallet-rail-card.simulated-wallet-notice {
+  border-color: rgba(255, 176, 62, 0.72);
+  background: rgba(38, 22, 4, 0.72);
+  box-shadow: inset 0 0 18px rgba(255, 176, 62, 0.12);
+}
+
+.wallet-rail-card.simulated-wallet-notice {
+  margin-top: 10px;
+}
+
+.wallet-rail-card.simulated-wallet-notice strong {
+  color: rgb(255, 196, 104);
+}
+
+.profile-wallet-rail-card.simulated-wallet {
+  border-color: rgba(255, 176, 62, 0.72);
+}
+
+[data-simulated-wallet='true'] {
+  color: rgb(255, 196, 104);
+}
+
+/* U11a shell banner. Amber and full width so the simulated identity is legible
+   on every route, not only in Profile. */
+.simulated-wallet-banner {
+  /* Top margin clears the sticky nav, which otherwise crops the banner's top
+     border and the first line of the headline. */
+  margin: 14px auto 12px;
+  max-width: 1180px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 176, 62, 0.72);
+  border-radius: 12px;
+  background: rgba(38, 22, 4, 0.86);
+  color: var(--text);
+}
+
+.simulated-wallet-banner[hidden] {
+  display: none;
+}
+
+.simulated-wallet-banner strong {
+  display: block;
+  color: rgb(255, 196, 104);
+}
+
+.simulated-wallet-banner span,
+.simulated-wallet-banner small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+
 .wallet-link-row {
   display: flex;
   flex-wrap: wrap;

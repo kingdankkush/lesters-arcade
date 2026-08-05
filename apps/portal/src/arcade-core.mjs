@@ -4817,24 +4817,56 @@ function buildChainGuard({ providerAvailable, normalizedWallet, chainId }) {
   });
 }
 
-export function buildWalletConnectionModel({ providerAvailable = false, wallet = null, chainId = null } = {}) {
+// The address connectWallet() falls back to when no injected provider answers.
+// Exported so the connection model can recognise it rather than trusting a
+// caller-supplied connector string, and so main.js stops carrying its own copy.
+export const SIMULATED_WALLET_ADDRESS = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
+
+const SIMULATED_WALLET_DISCLOSURE = Object.freeze({
+  headline: 'Simulated wallet — not a real connection',
+  detail:
+    'No browser wallet answered, so the arcade signed you in with a local test identity. '
+    + 'Nothing here touches the blockchain: no on-chain balance, no settlement receipt, '
+    + 'and this profile does not carry over to a real wallet.',
+  action: 'Install a browser wallet, then reconnect to play Ranked and settle runs on LitVM.',
+});
+
+export function buildWalletConnectionModel({
+  providerAvailable = false,
+  wallet = null,
+  chainId = null,
+  connector = null,
+} = {}) {
   const normalizedWallet = wallet ? normalizeWallet(wallet) : null;
-  const chainGuard = buildChainGuard({ providerAvailable: Boolean(providerAvailable), normalizedWallet, chainId });
+  // Address first, connector second. A stale or wrong connector string must not
+  // be able to promote the fallback identity into a real one.
+  const simulated = Boolean(
+    normalizedWallet
+    && (normalizedWallet === SIMULATED_WALLET_ADDRESS || connector === 'mock-wallet'),
+  );
+  // A simulated wallet is on no chain at all, so it must never satisfy the
+  // chain guard -- reporting 'right-chain' would let the ranked path believe
+  // its network precondition was met.
+  const chainGuard = simulated
+    ? buildChainGuard({ providerAvailable: false, normalizedWallet, chainId: null })
+    : buildChainGuard({ providerAvailable: Boolean(providerAvailable), normalizedWallet, chainId });
   const connectors = LESTER_ARCADE_WALLET_RAILS.connectors.map((connector) => Object.freeze({
     ...connector,
     available: connector.id === 'injected-evm' ? Boolean(providerAvailable) : true,
     recommended: connector.id === 'injected-evm' && Boolean(providerAvailable),
   }));
 
-  const status = normalizedWallet
-    ? chainGuard.status === 'right-chain'
-      ? 'connected-valid-chain'
-      : chainGuard.status === 'wrong-chain'
-        ? 'connected-wrong-chain'
-        : 'connected-chain-unknown'
-    : providerAvailable
-      ? 'ready'
-      : 'mock-ready';
+  const status = simulated
+    ? 'simulated-wallet'
+    : normalizedWallet
+      ? chainGuard.status === 'right-chain'
+        ? 'connected-valid-chain'
+        : chainGuard.status === 'wrong-chain'
+          ? 'connected-wrong-chain'
+          : 'connected-chain-unknown'
+      : providerAvailable
+        ? 'ready'
+        : 'mock-ready';
 
   return Object.freeze({
     parentSystem: LESTER_ARCADE_WALLET_RAILS.parentSystem,
@@ -4852,6 +4884,12 @@ export function buildWalletConnectionModel({ providerAvailable = false, wallet =
       safetyNotes: [...LITVM_LITEFORGE_NETWORK.safetyNotes],
     }),
     status,
+    simulated,
+    disclosure: simulated ? SIMULATED_WALLET_DISCLOSURE : null,
+    // Settlement and Ranked need a real signer on the right chain. A simulated
+    // wallet can never satisfy either, and saying so here keeps every caller
+    // from re-deriving it.
+    canSettle: Boolean(normalizedWallet) && !simulated && chainGuard.status === 'right-chain',
     wallet: normalizedWallet,
     walletShort: normalizedWallet ? `${normalizedWallet.slice(0, 8)}…${normalizedWallet.slice(-6)}` : null,
     connectors,

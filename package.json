@@ -41,6 +41,7 @@
     "audit:hmh:network": "node scripts/hmh-reboot-network-console-audit.mjs",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
+    "smoke:portal:simulated-wallet": "node scripts/hmh-simulated-wallet-browser-smoke.mjs",
     "visual:regression": "npm run build && node scripts/visual-regression.mjs",
     "visual:accept": "npm run build && node scripts/visual-regression.mjs --accept",
     "visual:responsive": "node scripts/responsive-matrix.mjs",

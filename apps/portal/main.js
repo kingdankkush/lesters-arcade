@@ -156,6 +156,7 @@ import {
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BUILD_STACK,
   LESTER_ARCADE_WALLET_RAILS,
+  SIMULATED_WALLET_ADDRESS,
   LESTERS_ARCADE_V2_APP_SHELL,
   LESTER_BLASTER_ANIMATION_PLAN,
   LITVM_LITEFORGE_NETWORK,
@@ -286,7 +287,7 @@ function debugRuntimeLog(...args) {
   if (DEBUG_ARCADE_RUNTIME) console.log(...args);
 }
 
-const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
+const MOCK_WALLET = SIMULATED_WALLET_ADDRESS;
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
 const GROUND_Y = 276;
 const ROGUELIKE_PLAYER_START_SEARCH_RADIUS_TILES = 56;
@@ -1520,6 +1521,7 @@ const dom = {
   arcadeMusicExpandButton: document.querySelector('#arcadeMusicExpandButton'),
   arcadeMusicQueueList: document.querySelector('#arcadeMusicQueueList'),
   officialNavTabs: document.querySelector('#officialNavTabs'),
+  simulatedWalletBanner: document.querySelector('#simulatedWalletBanner'),
   developerBackstageToggle: document.querySelector('#developerBackstageToggle'),
   developerBackstage: document.querySelector('#developerBackstage'),
   officialWalletSplash: document.querySelector('#officialWalletSplash'),
@@ -2296,11 +2298,61 @@ function selectedGame() {
   return getGame(selectedGameId);
 }
 
+// U11a. connectWallet() falls back to a local test identity whenever no
+// injected provider answers, and until now that produced a UI indistinguishable
+// from a real connection. Single predicate so the surfaces below cannot drift
+// apart on what counts as simulated.
+function isSimulatedWalletActive() {
+  return Boolean(connectedWallet)
+    && (connectedWallet === SIMULATED_WALLET_ADDRESS || walletConnector === 'mock-wallet');
+}
+
+// Every surface that shows a connected wallet renders this notice instead of
+// leaving the user to infer the state from a connector string. role=status so a
+// screen reader announces it when it appears.
+function renderSimulatedWalletNotice(disclosure, extraClass = '') {
+  const notice = el('article', {
+    className: `wallet-rail-card simulated-wallet-notice ${extraClass}`.trim(),
+    role: 'status',
+  });
+  notice.dataset.simulatedWallet = 'true';
+  appendText(notice, 'strong', disclosure.headline);
+  appendText(notice, 'span', disclosure.detail);
+  appendText(notice, 'small', disclosure.action);
+  return notice;
+}
+
+// The shell-level banner. The wallet rail panel lives in the legacy login
+// terminal, which is hidden once you are connected -- rendering the disclosure
+// only there meant it was in the DOM but invisible, which is worse than useless
+// because it looks handled. This one is in the official app shell, so it shows
+// on every route for as long as the simulated identity is active.
+function renderSimulatedWalletBanner() {
+  const banner = dom.simulatedWalletBanner;
+  if (!banner) return;
+  const simulated = isSimulatedWalletActive();
+  banner.hidden = !simulated;
+  banner.replaceChildren();
+  if (!simulated) return;
+  const model = buildWalletConnectionModel({
+    providerAvailable: Boolean(detectEthereumProvider()?.request),
+    wallet: connectedWallet,
+    chainId: connectedChainId,
+    connector: walletConnector,
+  });
+  if (!model.disclosure) return;
+  banner.dataset.simulatedWallet = 'true';
+  appendText(banner, 'strong', model.disclosure.headline);
+  appendText(banner, 'span', model.disclosure.detail);
+  appendText(banner, 'small', model.disclosure.action);
+}
+
 function renderWalletRails() {
   const model = buildWalletConnectionModel({
     providerAvailable: Boolean(detectEthereumProvider()?.request),
     wallet: connectedWallet,
     chainId: connectedChainId,
+    connector: walletConnector,
   });
 
   dom.walletRailPanel.replaceChildren();
@@ -2311,6 +2363,11 @@ function renderWalletRails() {
     : 'No wallet connected. Browser wallet will be tried first; mock fallback stays available for local testing.');
   appendText(status, 'small', model.chainGuard.copy);
   dom.walletRailPanel.append(status);
+  // No disclosure notice here on purpose. This panel lives in the legacy
+  // .hero-panel header, which measures 0x0 in both the connected and
+  // disconnected states -- a notice appended here is unreachable, and an
+  // unreachable disclosure is worse than none because it looks handled.
+  // The reachable surfaces are the shell banner and the profile wallet card.
 
   const network = el('article', { className: 'wallet-rail-card network-card' });
   appendText(network, 'strong', `${model.network.name} // Chain ${model.network.chainId} (${model.network.chainIdHex})`);
@@ -4631,8 +4688,14 @@ function renderOfficialProfile() {
   heroTop.append(renderAvatarChip(connectedWallet, profile?.displayName, 'profile-hero-avatar'));
   const heroIdentity = el('div', { className: 'profile-hero-identity' });
   appendText(heroIdentity, 'strong', profile?.displayName ?? 'Connect wallet to activate profile', 'profile-hero-name');
+  // The "locked identity for settlement" claim is only true of a real wallet.
+  // Saying it over the fallback identity is the exact misreading U11a exists to
+  // stop, so the simulated case gets its own line.
+  const walletIsSimulated = isSimulatedWalletActive();
   appendText(heroIdentity, 'small', connectedWallet
-    ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // ${walletConnector} // wallet is your locked identity for scores, achievements & settlement`
+    ? walletIsSimulated
+      ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // simulated wallet // local test identity only — progress here does not settle on-chain or carry over to a real wallet`
+      : `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // ${walletConnector} // wallet is your locked identity for scores, achievements & settlement`
     : 'Wallet is the locked identity for progress, high scores, achievements, avatars, and LitVM settlement receipts.');
   heroTop.append(heroIdentity);
   profileHero.append(heroTop);
@@ -4716,16 +4779,23 @@ function renderOfficialProfile() {
     providerAvailable: Boolean(detectEthereumProvider()?.request),
     wallet: connectedWallet,
     chainId: connectedChainId,
+    connector: walletConnector,
   });
   const walletCard = el('article', { className: `official-info-card profile-wallet-rail-card ${walletModel.status} ${walletModel.chainGuard.status}` });
   appendText(walletCard, 'span', 'Wallet + Chain Guard', 'cabinet-status-label');
-  appendText(walletCard, 'strong', walletModel.chainGuard.status === 'right-chain' ? 'LiteForge Ready' : 'Action Needed');
-  appendText(walletCard, 'small', walletModel.chainGuard.copy);
+  appendText(walletCard, 'strong', walletModel.simulated
+    ? 'Simulated Wallet'
+    : walletModel.chainGuard.status === 'right-chain' ? 'LiteForge Ready' : 'Action Needed');
+  // The chain-guard copy opens with "Wallet connected", which contradicts the
+  // headline above it when the wallet is the local fallback.
+  appendText(walletCard, 'small', walletModel.simulated
+    ? 'No browser wallet is connected, so there is no chain to guard. Chain checks resume once you connect a real wallet.'
+    : walletModel.chainGuard.copy);
   const walletFacts = el('div', { className: 'profile-wallet-facts' });
   for (const [label, value] of [
     ['Network', `${walletModel.network.name} · ${walletModel.network.chainIdHex}`],
     ['Gas', walletModel.network.nativeCurrency.symbol],
-    ['Connector', walletConnector],
+    ['Connector', walletModel.simulated ? 'simulated (no real wallet)' : walletConnector],
     ['Writes', walletModel.permissions.writeScopes.join(' · ')],
   ]) {
     const fact = el('span', { className: 'profile-wallet-fact' });
@@ -4733,6 +4803,9 @@ function renderOfficialProfile() {
     walletFacts.append(fact);
   }
   walletCard.append(walletFacts);
+  if (walletModel.disclosure) {
+    walletCard.append(renderSimulatedWalletNotice(walletModel.disclosure, 'profile-simulated-wallet-notice'));
+  }
   dom.officialCabinetGrid.append(walletCard);
 
   if (profileV2) {
@@ -5414,6 +5487,10 @@ function renderOfficialArcadeFloor() {
   dom.officialCabinetGrid.classList.toggle('profile-command-grid', officialAppStep === 'profile');
   dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', officialAppStep === 'leaderboards');
   const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'Guest practice';
+  // "Wallet profile connected" over the fallback identity is the exact mixed
+  // message U11a exists to remove -- the banner says simulated while this said
+  // connected, and this one sits closer to the user's eye.
+  const simulatedWallet = isSimulatedWalletActive();
   const titleByStep = {
     'arcade-walk-in': 'Entering the Arcade...',
     'cabinet-select': 'Choose Your Cabinet',
@@ -5422,7 +5499,9 @@ function renderOfficialArcadeFloor() {
     settings: 'Settings',
   };
   const copyByStep = {
-    'arcade-walk-in': `${walletShort} is active. Neon doors opening; cabinet row loading...`,
+    'arcade-walk-in': simulatedWallet
+      ? `${walletShort} is a simulated local identity, not a real wallet. Neon doors opening; cabinet row loading...`
+      : `${walletShort} is active. Neon doors opening; cabinet row loading...`,
     'cabinet-select': connectedWallet
       ? `Select a cabinet. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now; future cabinets remain locked.`
       : `Select a cabinet and play Free as a guest. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now. Connect a wallet anytime to save progress and unlock Ranked.`,
@@ -5432,7 +5511,9 @@ function renderOfficialArcadeFloor() {
     leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
     settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
   };
-  dom.officialProfileEyebrow.textContent = connectedWallet ? 'Wallet profile connected' : 'Guest practice session';
+  dom.officialProfileEyebrow.textContent = simulatedWallet
+    ? 'Simulated wallet session'
+    : connectedWallet ? 'Wallet profile connected' : 'Guest practice session';
   dom.officialProfileTitle.textContent = titleByStep[officialAppStep] ?? titleByStep['cabinet-select'];
   dom.officialProfileCopy.textContent = copyByStep[officialAppStep] ?? copyByStep['cabinet-select'];
   if (officialAppStep === 'profile') renderOfficialProfile();
@@ -6185,6 +6266,10 @@ async function authenticateWalletSiwe(provider, address) {
 }
 
 function connectMockWallet() {
+  // Reached whenever no injected provider answers. Every surface that shows the
+  // resulting identity labels it as simulated (see renderSimulatedWalletNotice);
+  // this warning is for anyone reading the console during QA.
+  console.warn('[Wallet] No browser wallet answered — signing in with the simulated local identity. Nothing will settle on-chain.');
   connectedWallet = MOCK_WALLET;
   // GameRegistry shared profile (parent-account identity) — fire and forget
   getSharedPlayerProfile(connectedWallet).then((profile) => {
@@ -6559,6 +6644,7 @@ async function completePrototypeRun() {
 
 function renderLogin() {
   renderWalletRails();
+  renderSimulatedWalletBanner();
   if (!connectedWallet) {
     dom.walletStatus.textContent = 'No wallet connected';
     dom.systemStatus.textContent = 'Connect an injected EVM wallet if available, or use the mock fallback, to create the parent Lester\'s Arcade account used by Hard Money Heroes.';
@@ -6566,8 +6652,16 @@ function renderLogin() {
   }
 
   const snapshot = buildPlayerArcadeSnapshot(state, connectedWallet);
-  dom.walletStatus.textContent = `${snapshot.profile.wallet.slice(0, 8)}…${snapshot.profile.wallet.slice(-6)}`;
-  dom.systemStatus.textContent = `${snapshot.profile.handle} // ${snapshot.profile.rank} // XP ${snapshot.profile.xp} // ${walletConnector}`;
+  const simulated = isSimulatedWalletActive();
+  // The header chip is the one wallet surface visible on every screen, so the
+  // simulated state has to be readable there too rather than only in Profile.
+  dom.walletStatus.textContent = simulated
+    ? `${snapshot.profile.wallet.slice(0, 8)}…${snapshot.profile.wallet.slice(-6)} (simulated)`
+    : `${snapshot.profile.wallet.slice(0, 8)}…${snapshot.profile.wallet.slice(-6)}`;
+  dom.walletStatus.dataset.simulatedWallet = simulated ? 'true' : 'false';
+  dom.systemStatus.textContent = simulated
+    ? `${snapshot.profile.handle} // ${snapshot.profile.rank} // XP ${snapshot.profile.xp} // simulated wallet — not on-chain`
+    : `${snapshot.profile.handle} // ${snapshot.profile.rank} // XP ${snapshot.profile.xp} // ${walletConnector}`;
 }
 
 function renderParentOps() {

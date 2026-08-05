@@ -85,6 +85,11 @@
           <button id="developerBackstageToggle" class="ghost-button dev-tool-toggle" type="button" hidden>Tools</button>
         </nav>
 
+        <!-- U11a. Shown whenever the arcade fell back to the local test identity
+             because no browser wallet answered. It lives in the app shell rather
+             than on one route so the state is legible on every screen. -->
+        <div id="simulatedWalletBanner" class="simulated-wallet-banner" role="status" hidden></div>
+
         <!-- Partner ad space (vertical rail). Fixed on the right, above the music player. Hidden on mobile + landscape-mobile. Banner art behind real reflowing text. -->
         <a id="adBannerVertical" class="ad-banner ad-banner-vertical" href="mailto:kingdankkush420@gmail.com?subject=Lester%27s%20Arcade%20Ad%20Space"
            target="_blank" rel="noopener sponsored" data-ad-slot="vertical-rail" aria-label="Advertise on Lester's Arcade — place your ad here, contact kingdankkush420@gmail.com">
