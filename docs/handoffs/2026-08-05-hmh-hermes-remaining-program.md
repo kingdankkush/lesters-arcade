@@ -189,6 +189,13 @@ initial viewport, and DPR-3 anchor captures needed image decode + compositor
 warm-up. The behavioral gates failed before the fixes and pass afterward; no
 threshold was weakened.
 
+The first pushed Preview then exposed a clean-clone deployment defect outside
+T1: three WO-102 mega-prop runtime winners existed only as ignored local files,
+so Vercel correctly failed their disk-existence test. `f14fd833` tracks only the
+three selected PNGs, adds exact ignore exceptions, and makes the local test
+assert `git ls-files` when Git metadata is present. A staged-tree archive passed
+without access to ignored local files.
+
 ### Then: Wave 4, which now has its evidence
 
 **C6 is done**, so S1/S5 are unblocked. The swarm benchmark's first finding,

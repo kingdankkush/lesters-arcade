@@ -78,6 +78,15 @@ for images/fonts plus warm the compositor before the strict anchor. The
 original thresholds remain unchanged. Cockpit passes four profiles and release
 certification passes five with zero anchor-pixel delta.
 
+**Clean-clone deployment prerequisite** (`f14fd833`). The first Vercel Preview
+failed the existing WO-102 runtime-asset test even though local builds passed.
+Root cause: the three selected mega-prop PNGs were covered by the processed-
+candidate ignore rule and had never been tracked; local ignored copies masked
+the omission. The repair adds exact exceptions for those three winners, tracks
+only them, and asserts local Git tracking in the existing test. A clean archive
+of the staged Git tree contained exactly three processed winners and passed the
+focused runtime test before the full release suite reran.
+
 ---
 
 ## Pipeline facts learned the hard way
