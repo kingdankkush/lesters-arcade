@@ -116,12 +116,8 @@ Nothing new was allowed below 0.55.
 
 ---
 
-## More gate lessons from the second half
+## Gate lessons, continued
 
-- **A rule can be wrong in the other direction too.** A mass-centroid "flat
-  decal" check was drafted for the water wave and removed after checking it
-  against shipped props: reed-cluster (good) sits 0.019 from driftwood-log
-  (the known failure), so no threshold separates them.
 - **Verify the runtime path, not just the module.** Per-weapon recoil measured
   exactly zero in a browser probe while being correctly wired, because
   standalone hardcodes `screenShake: false` (it is the evidence-capture path;
