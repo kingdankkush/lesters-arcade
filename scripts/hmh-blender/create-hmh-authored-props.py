@@ -1590,6 +1590,219 @@ def build_asset(asset: dict) -> dict:
             -0.075, -0.062, accent, asset_id,
         ))
 
+    # --- A5 bridge kit -----------------------------------------------------
+    # The proof-of-work bridge was a walkable surface plus two rail blockers
+    # and one bollard, so the map's signature crossing had almost no authored
+    # structure on it. These are the parts that make it read as built.
+    elif shape == 'bridge-pier':
+        # A stone footing rising out of the water: battered sides, a capping
+        # course, and a waterline stain so it reads as standing IN something.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.93)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.26), roughness=0.84)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.58), roughness=0.95)
+        wet = material(f'{asset_id}_wet', tone(palette['secondary'], 0.6), roughness=0.42)
+        # Battered: wider at the base than the top, which is what makes masonry
+        # look load-bearing rather than like a box.
+        parts.append(prism_mesh(
+            f'{asset_id}_Shaft',
+            [(-0.26, 0.16), (-0.19, 0.86), (0.18, 0.88), (0.25, 0.16)],
+            -0.20, 0.18, stone, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_ShaftLit',
+            [(-0.15, 0.20), (-0.11, 0.84), (0.03, 0.85), (0.05, 0.20)],
+            -0.25, -0.20, stone_lit, asset_id,
+        ))
+        # Capping course, proud of the shaft on both sides.
+        parts.append(prism_mesh(
+            f'{asset_id}_Cap',
+            [(-0.28, 0.86), (0.27, 0.88), (0.27, 1.00), (-0.28, 0.98)],
+            -0.24, 0.22, stone_lit, asset_id,
+        ))
+        for index, z in enumerate((0.34, 0.52, 0.70)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Course_{index}',
+                [(-0.23, z), (0.22, z + 0.01), (0.22, z + 0.030), (-0.23, z + 0.020)],
+                -0.26, -0.24, stone_dark, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Waterline',
+            [(-0.27, 0.17), (0.26, 0.17), (0.26, 0.27), (-0.27, 0.27)],
+            -0.27, -0.25, wet, asset_id,
+        ))
+        add(cube(f'{asset_id}_Fleck', (0.10, -0.28, 0.60), (0.030, 0.018, 0.026), accent, asset_id, bevel=0.008))
+    elif shape == 'bridge-truss':
+        # A steel support frame: top and bottom chords with a zig-zag web
+        # between them. The web is the whole read, so it is drawn as one
+        # polygon rather than assembled from struts that could drift apart.
+        steel = material(f'{asset_id}_steel', palette['primary'], roughness=0.7, metallic=0.4)
+        steel_lit = material(f'{asset_id}_steel_lit', tone(palette['primary'], 1.24), roughness=0.6, metallic=0.45)
+        rust = material(f'{asset_id}_rust', tone(palette['secondary'], 0.92), roughness=0.96)
+        parts.append(prism_mesh(
+            f'{asset_id}_BottomChord',
+            [(-0.36, 0.18), (0.36, 0.18), (0.36, 0.27), (-0.36, 0.27)],
+            -0.07, 0.07, steel, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_TopChord',
+            [(-0.32, 0.78), (0.32, 0.78), (0.32, 0.87), (-0.32, 0.87)],
+            -0.07, 0.07, steel_lit, asset_id,
+        ))
+        # Zig-zag web, one continuous outline: down-up-down across the span.
+        web = [
+            (-0.33, 0.26), (-0.20, 0.79), (-0.14, 0.79), (-0.03, 0.30), (0.03, 0.30),
+            (0.14, 0.79), (0.20, 0.79), (0.33, 0.26), (0.27, 0.26), (0.17, 0.72),
+            (0.06, 0.26), (-0.06, 0.26), (-0.17, 0.72), (-0.27, 0.26),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_Web', web, -0.035, 0.035, steel, asset_id))
+        for index, x in enumerate((-0.30, 0.30)):
+            parts.append(prism_mesh(
+                f'{asset_id}_EndPost_{index}',
+                [(x - 0.035, 0.18), (x - 0.030, 0.86), (x + 0.030, 0.86), (x + 0.035, 0.18)],
+                -0.075, 0.075, steel_lit, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Rust',
+            [(-0.10, 0.19), (0.08, 0.19), (0.07, 0.25), (-0.10, 0.25)],
+            -0.09, -0.07, rust, asset_id,
+        ))
+        add(cube(f'{asset_id}_Bolt', (0.22, -0.10, 0.82), (0.028, 0.018, 0.024), accent, asset_id, bevel=0.008))
+    elif shape == 'plank-deck-broken':
+        # A deck section with boards missing. A plank surface IS flat, so this
+        # one earns its read from the BROKEN EDGE rather than from height: the
+        # gap and the splintered ends are the silhouette.
+        plank = material(f'{asset_id}_plank', palette['primary'], roughness=0.95)
+        plank_lit = material(f'{asset_id}_plank_lit', tone(palette['primary'], 1.26), roughness=0.88)
+        plank_dark = material(f'{asset_id}_plank_dark', tone(palette['primary'], 0.66), roughness=0.96)
+        beam = material(f'{asset_id}_beam', tone(palette['secondary'], 0.72), roughness=0.94)
+        # Cross beam under the deck, visible through the gap.
+        parts.append(prism_mesh(
+            f'{asset_id}_Beam',
+            [(-0.23, 0.18), (0.23, 0.18), (0.23, 0.30), (-0.23, 0.30)],
+            -0.10, 0.10, beam, asset_id,
+        ))
+        # Boards, with two missing in the middle and one snapped short.
+        # Second pass: at 0.64 wide against a 0.28 deck this measured 0.36 h/w,
+        # under the 0.62 that granite-boulder ships at and near driftwood-log's
+        # 0.30 failure. Narrower, with longer boards and a taller broken edge.
+        boards = (
+            (-0.21, 0.34, plank_dark), (-0.145, 0.42, plank), (-0.08, 0.30, plank_lit),
+            (0.055, 0.38, plank), (0.12, 0.46, plank_lit), (0.185, 0.32, plank_dark),
+        )
+        for index, (x, length, mat) in enumerate(boards):
+            parts.append(prism_mesh(
+                f'{asset_id}_Board_{index}',
+                [(x, 0.30), (x + 0.055, 0.30), (x + 0.055, 0.30 + length), (x, 0.30 + length)],
+                -0.12, 0.12, mat, asset_id,
+            ))
+        # Splintered ends framing the gap.
+        # The broken edge is the read, so it reaches well above the deck.
+        for index, (x, direction) in enumerate(((-0.045, 1), (0.045, -1))):
+            parts.append(prism_mesh(
+                f'{asset_id}_Splinter_{index}',
+                [(x, 0.30), (x + direction * 0.050, 0.46), (x + direction * 0.018, 0.60), (x + direction * 0.044, 0.76), (x, 0.66)],
+                -0.10, 0.10, plank_dark, asset_id,
+            ))
+        add(cube(f'{asset_id}_Nail', (-0.15, -0.14, 0.60), (0.026, 0.016, 0.022), accent, asset_id, bevel=0.007))
+    elif shape == 'handrail-post':
+        # A post with two rails running off it. Tall and thin: the vertical
+        # rhythm along a bridge edge.
+        timber = material(f'{asset_id}_timber', palette['primary'], roughness=0.93)
+        timber_lit = material(f'{asset_id}_timber_lit', tone(palette['primary'], 1.25), roughness=0.86)
+        iron = material(f'{asset_id}_iron', tone(palette['secondary'], 0.7), roughness=0.72, metallic=0.4)
+        parts.append(prism_mesh(
+            f'{asset_id}_Post',
+            [(-0.055, 0.16), (-0.048, 1.02), (0.048, 1.02), (0.055, 0.16)],
+            -0.055, 0.055, timber, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_PostLit',
+            [(-0.020, 0.18), (-0.016, 1.00), (0.016, 1.00), (0.020, 0.18)],
+            -0.075, -0.055, timber_lit, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Cap',
+            [(-0.072, 1.00), (-0.055, 1.09), (0.052, 1.09), (0.070, 0.99)],
+            -0.065, 0.065, timber_lit, asset_id,
+        ))
+        for index, z in enumerate((0.58, 0.84)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Rail_{index}',
+                [(-0.30, z), (0.30, z + 0.012), (0.30, z + 0.055), (-0.30, z + 0.043)],
+                -0.030, 0.030, timber, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Bracket',
+            [(-0.040, 0.30), (0.040, 0.30), (0.040, 0.37), (-0.040, 0.37)],
+            -0.080, -0.062, iron, asset_id,
+        ))
+        add(cube(f'{asset_id}_Bolt', (0.0, -0.085, 0.72), (0.026, 0.016, 0.022), accent, asset_id, bevel=0.007))
+    elif shape == 'bridge-warning-sign':
+        # A load-limit sign on a leaning post. The board is the read, so it is
+        # frontmost and the post is set behind it.
+        post = material(f'{asset_id}_post', tone(palette['secondary'], 0.72), roughness=0.9, metallic=0.3)
+        board = material(f'{asset_id}_board', palette['primary'], roughness=0.82)
+        board_edge = material(f'{asset_id}_board_edge', tone(palette['primary'], 0.62), roughness=0.9)
+        parts.append(prism_mesh(
+            f'{asset_id}_Post',
+            [(-0.030, 0.16), (-0.012, 0.86), (0.030, 0.86), (0.012, 0.16)],
+            -0.028, 0.028, post, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Board',
+            [(-0.21, 0.72), (0.20, 0.76), (0.20, 1.10), (-0.21, 1.06)],
+            -0.055, -0.030, board, asset_id,
+        ))
+        parts.append(prism_mesh(
+            f'{asset_id}_BoardEdge',
+            [(-0.21, 0.72), (0.20, 0.76), (0.20, 0.80), (-0.21, 0.76)],
+            -0.060, -0.055, board_edge, asset_id,
+        ))
+        # Two stripes: enough to read as a marking, not enough to be text.
+        for index, z in enumerate((0.84, 0.95)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Stripe_{index}',
+                [(-0.15, z), (0.14, z + 0.03), (0.14, z + 0.062), (-0.15, z + 0.032)],
+                -0.066, -0.060, accent, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Base',
+            [(-0.10, 0.16), (0.10, 0.16), (0.08, 0.24), (-0.08, 0.24)],
+            -0.06, 0.06, post, asset_id,
+        ))
+    elif shape == 'rope-bridge-anchor':
+        # The ravine end of a rope span: a lashed timber A-frame with the ropes
+        # running off it. The ropes leave frame, which is what tells you the
+        # span continues past the prop.
+        timber = material(f'{asset_id}_timber', palette['primary'], roughness=0.94)
+        timber_lit = material(f'{asset_id}_timber_lit', tone(palette['primary'], 1.24), roughness=0.88)
+        rope = material(f'{asset_id}_rope', tone(palette['secondary'], 1.18), roughness=0.96)
+        stone = material(f'{asset_id}_stone', tone(palette['secondary'], 0.6), roughness=0.96)
+        parts.append(prism_mesh(
+            f'{asset_id}_Ballast',
+            [(-0.30, 0.16), (-0.24, 0.34), (0.22, 0.35), (0.29, 0.16)],
+            -0.18, 0.16, stone, asset_id,
+        ))
+        for index, lean in enumerate((-0.16, 0.16)):
+            parts.append(prism_mesh(
+                f'{asset_id}_Leg_{index}',
+                [(lean * 1.4 - 0.045, 0.30), (lean * 0.2 - 0.038, 0.94), (lean * 0.2 + 0.038, 0.94), (lean * 1.4 + 0.045, 0.30)],
+                -0.06 + index * 0.10, 0.02 + index * 0.10, timber if index else timber_lit, asset_id,
+            ))
+        parts.append(prism_mesh(
+            f'{asset_id}_Lashing',
+            [(-0.075, 0.86), (0.075, 0.86), (0.075, 0.94), (-0.075, 0.94)],
+            -0.10, 0.12, rope, asset_id,
+        ))
+        # Ropes running out of frame toward the far side.
+        for index, (z0, z1) in enumerate(((0.90, 0.74), (0.66, 0.56))):
+            parts.append(prism_mesh(
+                f'{asset_id}_Rope_{index}',
+                [(0.02, z0), (0.46, z1), (0.46, z1 - 0.032), (0.02, z0 - 0.032)],
+                -0.04 + index * 0.05, -0.01 + index * 0.05, rope, asset_id,
+            ))
+        add(cube(f'{asset_id}_Knot', (0.0, -0.12, 0.90), (0.030, 0.020, 0.026), accent, asset_id, bevel=0.008))
+
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 

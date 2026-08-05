@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 76,
+  "assetCount": 82,
   "categories": [
     "pickup",
     "power-up",
@@ -22,8 +22,8 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 611,
-        "y": 352,
+        "x": 3,
+        "y": 395,
         "w": 57,
         "h": 22
       },
@@ -50,8 +50,8 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 789,
-        "y": 155,
+        "x": 64,
+        "y": 243,
         "w": 53,
         "h": 60
       },
@@ -78,8 +78,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 64,
-        "y": 303,
+        "x": 455,
+        "y": 307,
         "w": 57,
         "h": 44
       },
@@ -106,8 +106,8 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 525,
-        "y": 303,
+        "x": 916,
+        "y": 307,
         "w": 44,
         "h": 38
       },
@@ -162,8 +162,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 617,
-        "y": 303,
+        "x": 3,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -190,8 +190,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 726,
-        "y": 352,
+        "x": 118,
+        "y": 395,
         "w": 28,
         "h": 21
       },
@@ -220,8 +220,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 666,
-        "y": 303,
+        "x": 52,
+        "y": 358,
         "w": 26,
         "h": 34
       },
@@ -236,6 +236,90 @@
       "opaquePixels": 640,
       "massCentroidY": 0.520786,
       "sourcePixelSha256": "ecc9f95d1bc286541eb715f7da70c6d4d1c1476405a3b34f9991dfc404a9b911",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "bridge-pier",
+      "assetId": "bridge-pier",
+      "category": "world-prop",
+      "shape": "bridge-pier",
+      "itemUrl": "./items/bridge-pier.png",
+      "districts": [],
+      "runtimeScale": 1.05,
+      "frame": {
+        "x": 488,
+        "y": 155,
+        "w": 61,
+        "h": 73
+      },
+      "pivot": {
+        "x": 31,
+        "y": 69
+      },
+      "anchor": {
+        "x": 0.508197,
+        "y": 0.945205
+      },
+      "opaquePixels": 4106,
+      "massCentroidY": 0.485377,
+      "sourcePixelSha256": "6c7e135595f49021bfcd480fed083e5702f5fba27085213ac2d8d456caf9c23e",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "bridge-truss",
+      "assetId": "bridge-truss",
+      "category": "world-prop",
+      "shape": "bridge-truss",
+      "itemUrl": "./items/bridge-truss.png",
+      "districts": [],
+      "runtimeScale": 1.0,
+      "frame": {
+        "x": 573,
+        "y": 243,
+        "w": 72,
+        "h": 53
+      },
+      "pivot": {
+        "x": 36,
+        "y": 49
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.924528
+      },
+      "opaquePixels": 2783,
+      "massCentroidY": 0.428087,
+      "sourcePixelSha256": "268affa9f1225e63431754b6f6fc4cabf8524b9e2d5e7a2736916904eb5d09a4",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "bridge-warning-sign",
+      "assetId": "bridge-warning-sign",
+      "category": "world-prop",
+      "shape": "bridge-warning-sign",
+      "itemUrl": "./items/bridge-warning-sign.png",
+      "districts": [],
+      "runtimeScale": 0.88,
+      "frame": {
+        "x": 730,
+        "y": 155,
+        "w": 45,
+        "h": 67
+      },
+      "pivot": {
+        "x": 23,
+        "y": 63
+      },
+      "anchor": {
+        "x": 0.511111,
+        "y": 0.940299
+      },
+      "opaquePixels": 1685,
+      "massCentroidY": 0.331769,
+      "sourcePixelSha256": "aa0295e18e75c5ac8d61abd15e7e82ac22a19a38e2ea5866f97427efa4e5a593",
       "rotated": false,
       "trimmed": true
     },
@@ -276,8 +360,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 921,
-        "y": 243,
+        "x": 278,
+        "y": 307,
         "w": 59,
         "h": 46
       },
@@ -360,7 +444,7 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 386,
+        "x": 737,
         "y": 243,
         "w": 136,
         "h": 52
@@ -416,8 +500,8 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 561,
-        "y": 352,
+        "x": 925,
+        "y": 358,
         "w": 47,
         "h": 23
       },
@@ -444,8 +528,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 695,
-        "y": 303,
+        "x": 81,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -472,8 +556,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 744,
-        "y": 303,
+        "x": 130,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -503,8 +587,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 367,
-        "y": 352,
+        "x": 731,
+        "y": 358,
         "w": 44,
         "h": 32
       },
@@ -559,8 +643,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 793,
-        "y": 303,
+        "x": 179,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -615,8 +699,8 @@
       "districts": [],
       "runtimeScale": 0.75,
       "frame": {
-        "x": 646,
-        "y": 243,
+        "x": 3,
+        "y": 307,
         "w": 160,
         "h": 48
       },
@@ -671,7 +755,7 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 159,
+        "x": 435,
         "y": 243,
         "w": 72,
         "h": 55
@@ -727,8 +811,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 809,
-        "y": 243,
+        "x": 166,
+        "y": 307,
         "w": 31,
         "h": 48
       },
@@ -758,8 +842,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 842,
-        "y": 303,
+        "x": 228,
+        "y": 358,
         "w": 38,
         "h": 34
       },
@@ -786,8 +870,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 883,
-        "y": 303,
+        "x": 269,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -814,7 +898,7 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 297,
+        "x": 648,
         "y": 243,
         "w": 86,
         "h": 53
@@ -842,8 +926,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 963,
-        "y": 155,
+        "x": 238,
+        "y": 243,
         "w": 38,
         "h": 57
       },
@@ -862,6 +946,34 @@
       "trimmed": true
     },
     {
+      "id": "handrail-post",
+      "assetId": "handrail-post",
+      "category": "world-prop",
+      "shape": "handrail-post",
+      "itemUrl": "./items/handrail-post.png",
+      "districts": [],
+      "runtimeScale": 0.85,
+      "frame": {
+        "x": 552,
+        "y": 155,
+        "w": 66,
+        "h": 72
+      },
+      "pivot": {
+        "x": 33,
+        "y": 68
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.944444
+      },
+      "opaquePixels": 1893,
+      "massCentroidY": 0.489944,
+      "sourcePixelSha256": "5147750a1ac3c43a74455ecda97fad6f70a3a11dbf8afbfb76fcc6c240f0d74b",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "hanging-vines",
       "assetId": "hanging-vines",
       "category": "world-prop",
@@ -870,8 +982,8 @@
       "districts": [],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 901,
-        "y": 155,
+        "x": 176,
+        "y": 243,
         "w": 59,
         "h": 58
       },
@@ -898,8 +1010,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 932,
-        "y": 303,
+        "x": 318,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -926,8 +1038,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 352,
+        "x": 367,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -954,8 +1066,8 @@
       "districts": [],
       "runtimeScale": 0.76,
       "frame": {
-        "x": 572,
-        "y": 303,
+        "x": 963,
+        "y": 307,
         "w": 42,
         "h": 35
       },
@@ -1012,8 +1124,8 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 414,
-        "y": 352,
+        "x": 778,
+        "y": 358,
         "w": 38,
         "h": 29
       },
@@ -1068,8 +1180,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 52,
-        "y": 352,
+        "x": 416,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -1096,8 +1208,8 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 455,
-        "y": 352,
+        "x": 819,
+        "y": 358,
         "w": 59,
         "h": 29
       },
@@ -1124,8 +1236,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 101,
-        "y": 352,
+        "x": 465,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -1182,8 +1294,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 855,
-        "y": 352,
+        "x": 247,
+        "y": 395,
         "w": 24,
         "h": 15
       },
@@ -1213,8 +1325,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 150,
-        "y": 352,
+        "x": 514,
+        "y": 358,
         "w": 38,
         "h": 34
       },
@@ -1269,8 +1381,8 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 728,
-        "y": 155,
+        "x": 3,
+        "y": 243,
         "w": 58,
         "h": 61
       },
@@ -1297,8 +1409,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 419,
-        "y": 303,
+        "x": 810,
+        "y": 307,
         "w": 44,
         "h": 40
       },
@@ -1327,8 +1439,8 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 517,
-        "y": 352,
+        "x": 881,
+        "y": 358,
         "w": 41,
         "h": 26
       },
@@ -1355,7 +1467,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 3,
+        "x": 279,
         "y": 243,
         "w": 153,
         "h": 57
@@ -1383,8 +1495,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 3,
-        "y": 303,
+        "x": 340,
+        "y": 307,
         "w": 58,
         "h": 46
       },
@@ -1403,6 +1515,34 @@
       "trimmed": true
     },
     {
+      "id": "plank-deck-broken",
+      "assetId": "plank-deck-broken",
+      "category": "world-prop",
+      "shape": "plank-deck-broken",
+      "itemUrl": "./items/plank-deck-broken.png",
+      "districts": [],
+      "runtimeScale": 0.9,
+      "frame": {
+        "x": 401,
+        "y": 307,
+        "w": 51,
+        "h": 46
+      },
+      "pivot": {
+        "x": 25,
+        "y": 42
+      },
+      "anchor": {
+        "x": 0.490196,
+        "y": 0.913043
+      },
+      "opaquePixels": 1937,
+      "massCentroidY": 0.570378,
+      "sourcePixelSha256": "53d5fae0af7102b91dc0eb3f8b79a78fe763d08be40a1363fb8b590c784802af",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "precision-ledger",
       "assetId": "precision-ledger",
       "category": "power-up",
@@ -1411,8 +1551,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 191,
-        "y": 352,
+        "x": 555,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -1439,8 +1579,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 240,
-        "y": 352,
+        "x": 604,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -1469,8 +1609,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 223,
-        "y": 303,
+        "x": 614,
+        "y": 307,
         "w": 28,
         "h": 42
       },
@@ -1497,7 +1637,7 @@
       "districts": [],
       "runtimeScale": 0.7,
       "frame": {
-        "x": 488,
+        "x": 621,
         "y": 155,
         "w": 54,
         "h": 72
@@ -1527,8 +1667,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 882,
-        "y": 352,
+        "x": 274,
+        "y": 395,
         "w": 24,
         "h": 15
       },
@@ -1555,7 +1695,7 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 525,
+        "x": 876,
         "y": 243,
         "w": 67,
         "h": 51
@@ -1603,6 +1743,34 @@
       "trimmed": true
     },
     {
+      "id": "rope-bridge-anchor",
+      "assetId": "rope-bridge-anchor",
+      "category": "world-prop",
+      "shape": "rope-bridge-anchor",
+      "itemUrl": "./items/rope-bridge-anchor.png",
+      "districts": [],
+      "runtimeScale": 0.95,
+      "frame": {
+        "x": 909,
+        "y": 155,
+        "w": 81,
+        "h": 62
+      },
+      "pivot": {
+        "x": 31,
+        "y": 58
+      },
+      "anchor": {
+        "x": 0.382716,
+        "y": 0.935484
+      },
+      "opaquePixels": 2318,
+      "massCentroidY": 0.580143,
+      "sourcePixelSha256": "22950bfab91622dca081f7ffb1abdbc63bfaab3d4539ae036e2134528b82bee1",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "rugpull-barricade",
       "assetId": "rugpull-barricade",
       "category": "world-prop",
@@ -1613,8 +1781,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 671,
-        "y": 352,
+        "x": 63,
+        "y": 395,
         "w": 52,
         "h": 22
       },
@@ -1641,7 +1809,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 597,
+        "x": 778,
         "y": 155,
         "w": 128,
         "h": 65
@@ -1672,8 +1840,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 826,
-        "y": 352,
+        "x": 218,
+        "y": 395,
         "w": 26,
         "h": 18
       },
@@ -1700,8 +1868,8 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 124,
-        "y": 303,
+        "x": 515,
+        "y": 307,
         "w": 57,
         "h": 44
       },
@@ -1728,7 +1896,7 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 545,
+        "x": 678,
         "y": 155,
         "w": 49,
         "h": 71
@@ -1756,8 +1924,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 757,
-        "y": 352,
+        "x": 149,
+        "y": 395,
         "w": 66,
         "h": 20
       },
@@ -1784,7 +1952,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 234,
+        "x": 510,
         "y": 243,
         "w": 60,
         "h": 55
@@ -1812,8 +1980,8 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 466,
-        "y": 303,
+        "x": 857,
+        "y": 307,
         "w": 56,
         "h": 40
       },
@@ -1840,7 +2008,7 @@
       "districts": [],
       "runtimeScale": 0.95,
       "frame": {
-        "x": 595,
+        "x": 946,
         "y": 243,
         "w": 48,
         "h": 51
@@ -1896,8 +2064,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 843,
-        "y": 243,
+        "x": 200,
+        "y": 307,
         "w": 75,
         "h": 47
       },
@@ -1924,8 +2092,8 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 845,
-        "y": 155,
+        "x": 120,
+        "y": 243,
         "w": 53,
         "h": 60
       },
@@ -1952,8 +2120,8 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 386,
-        "y": 303,
+        "x": 777,
+        "y": 307,
         "w": 30,
         "h": 41
       },
@@ -1980,8 +2148,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 289,
-        "y": 352,
+        "x": 653,
+        "y": 358,
         "w": 46,
         "h": 34
       },
@@ -2011,8 +2179,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 338,
-        "y": 352,
+        "x": 702,
+        "y": 358,
         "w": 26,
         "h": 34
       },
@@ -2123,8 +2291,8 @@
       "districts": [],
       "runtimeScale": 0.85,
       "frame": {
-        "x": 184,
-        "y": 303,
+        "x": 575,
+        "y": 307,
         "w": 36,
         "h": 44
       },
@@ -2151,8 +2319,8 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 254,
-        "y": 303,
+        "x": 645,
+        "y": 307,
         "w": 129,
         "h": 42
       },

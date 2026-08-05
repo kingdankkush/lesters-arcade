@@ -1076,6 +1076,96 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "bridge-pier",
+      "category": "world-prop",
+      "shape": "bridge-pier",
+      "palette": {
+        "primary": "#6e6a63",
+        "secondary": "#3f5a62",
+        "accent": "#8feaff"
+      },
+      "runtimeScale": 1.05,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "bridge-truss",
+      "category": "world-prop",
+      "shape": "bridge-truss",
+      "palette": {
+        "primary": "#7a8088",
+        "secondary": "#8a5a3a",
+        "accent": "#ffd479"
+      },
+      "runtimeScale": 1.0,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "plank-deck-broken",
+      "category": "world-prop",
+      "shape": "plank-deck-broken",
+      "palette": {
+        "primary": "#8a7250",
+        "secondary": "#5a4a34",
+        "accent": "#d8c48a"
+      },
+      "runtimeScale": 0.9,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "handrail-post",
+      "category": "world-prop",
+      "shape": "handrail-post",
+      "palette": {
+        "primary": "#7a6448",
+        "secondary": "#5a5f66",
+        "accent": "#ffd479"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "bridge-warning-sign",
+      "category": "world-prop",
+      "shape": "bridge-warning-sign",
+      "palette": {
+        "primary": "#c9b98a",
+        "secondary": "#6b6e72",
+        "accent": "#e0705d"
+      },
+      "runtimeScale": 0.88,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "rope-bridge-anchor",
+      "category": "world-prop",
+      "shape": "rope-bridge-anchor",
+      "palette": {
+        "primary": "#7a6448",
+        "secondary": "#8a8078",
+        "accent": "#d8c48a"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }
