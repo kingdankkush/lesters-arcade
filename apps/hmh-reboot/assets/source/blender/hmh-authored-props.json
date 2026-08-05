@@ -731,6 +731,96 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "rock-spire",
+      "category": "world-prop",
+      "shape": "rock-spire",
+      "palette": {
+        "primary": "#6a6560",
+        "secondary": "#4a463f",
+        "accent": "#8feaff"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "rock-shelf",
+      "category": "world-prop",
+      "shape": "rock-shelf",
+      "palette": {
+        "primary": "#736b60",
+        "secondary": "#554d42",
+        "accent": "#c9b48a"
+      },
+      "runtimeScale": 0.88,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "scree-pile",
+      "category": "world-prop",
+      "shape": "scree-pile",
+      "palette": {
+        "primary": "#6e6a66",
+        "secondary": "#4d4945",
+        "accent": "#a8b6bf"
+      },
+      "runtimeScale": 0.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "cliff-face",
+      "category": "world-prop",
+      "shape": "cliff-face",
+      "palette": {
+        "primary": "#6b6459",
+        "secondary": "#494339",
+        "accent": "#9fb0a0"
+      },
+      "runtimeScale": 1.25,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "balanced-boulder",
+      "category": "world-prop",
+      "shape": "balanced-boulder",
+      "palette": {
+        "primary": "#70737a",
+        "secondary": "#4f5257",
+        "accent": "#8feaff"
+      },
+      "runtimeScale": 0.92,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "ore-vein-rock",
+      "category": "world-prop",
+      "shape": "ore-vein-rock",
+      "palette": {
+        "primary": "#67635e",
+        "secondary": "#d8a24a",
+        "accent": "#ffd479"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ]
     }
   ]
 }

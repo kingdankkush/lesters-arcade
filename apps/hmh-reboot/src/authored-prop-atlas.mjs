@@ -7,7 +7,7 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
   weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
   pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
   powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two', 'precision-ledger', 'hard-fork-rounds']),
-  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines']),
+  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines', 'rock-spire', 'rock-shelf', 'scree-pile', 'cliff-face', 'balanced-boulder', 'ore-vein-rock']),
 });
 
 // Cycle 038: trees, boulders, wrecked cars, fencing and a shack join the
@@ -25,13 +25,20 @@ export const AUTHORED_PROP_ASSETS = Object.freeze({
 // and W1 is where density goes up.
 const DISTRICTS = Object.freeze([
   Object.freeze({ id: 'frontier-relay', minX: 0, maxX: 1_800, propIds: ['relay-console', 'watchtower', 'salvage-crate', 'ruined-wall', 'fuel-drum', 'dead-pine', 'granite-boulder', 'hashwood-pine', 'scrub-bush', 'grass-tuft'], countOverride: 11 }),
-  Object.freeze({ id: 'rugpull-ravine', minX: 1_800, maxX: 3_800, propIds: ['rugpull-barricade', 'granite-boulder', 'dead-pine', 'warning-beacon', 'moss-boulder', 'salvage-crate', 'wrecked-sedan', 'granite-boulder', 'thorn-bramble', 'hanging-vines', 'scrub-bush'], countOverride: 11 }),
+  Object.freeze({ id: 'rugpull-ravine', minX: 1_800, maxX: 3_800, propIds: ['rugpull-barricade', 'granite-boulder', 'dead-pine', 'warning-beacon', 'moss-boulder', 'salvage-crate', 'wrecked-sedan', 'rock-spire', 'thorn-bramble', 'hanging-vines', 'scrub-bush'], countOverride: 11 }),
   // driftwood-log stays atlas-only until its polish pass (root ball does not
   // read from the 55-degree camera yet) — same hold-out policy as Cycle 038.
-  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['reed-cluster', 'proof-pylon', 'moss-boulder', 'bridge-bollard', 'reed-cluster', 'chain-fence', 'granite-boulder', 'grass-tuft'], countOverride: 11 }),
-  Object.freeze({ id: 'hashwood', minX: 6_000, maxX: 8_000, propIds: ['hashwood-pine', 'hashwood-tree', 'moss-boulder', 'hashwood-stump', 'hashwood-pine', 'dead-pine', 'crystal-cluster', 'fern-cluster', 'grass-tuft', 'flowering-weeds'], countOverride: 18 }),
-  Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'ore-conveyor', 'loader-barrel', 'miners-shack', 'crystal-cluster', 'cargo-container', 'ruined-wall', 'flowering-weeds'], countOverride: 12 }),
-  Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['cargo-container', 'liquidation-terminal', 'wrecked-sedan', 'fuel-drum', 'ruined-wall', 'warning-beacon', 'cargo-container', 'chain-fence', 'thorn-bramble', 'scrub-bush'], countOverride: 12 }),
+  // balanced-boulder (A3) joins it under the same policy. Three passes could
+  // not stop it reading as a mushroom: a cap on a pedestal reads as a stalk
+  // and head no matter how the proportions are traded, and it measures 1.13
+  // h/w — comfortably past the ratio gate while still looking wrong, which is
+  // exactly why these get inspected by eye as well as measured. Per the
+  // driftwood-log lesson: re-concept it (a boulder wedged in a cleft, or one
+  // split by a fracture, rather than perched on a plinth), do not iterate.
+  Object.freeze({ id: 'liquidity-crossing', minX: 3_800, maxX: 6_000, propIds: ['reed-cluster', 'proof-pylon', 'moss-boulder', 'bridge-bollard', 'reed-cluster', 'chain-fence', 'granite-boulder', 'grass-tuft', 'cliff-face', 'rock-shelf'], countOverride: 11 }),
+  Object.freeze({ id: 'hashwood', minX: 6_000, maxX: 8_000, propIds: ['hashwood-pine', 'hashwood-tree', 'moss-boulder', 'hashwood-stump', 'hashwood-pine', 'dead-pine', 'crystal-cluster', 'fern-cluster', 'grass-tuft', 'flowering-weeds', 'rock-shelf'], countOverride: 18 }),
+  Object.freeze({ id: 'mining-camp', minX: 8_000, maxX: 10_000, propIds: ['ore-cart', 'ore-conveyor', 'loader-barrel', 'miners-shack', 'crystal-cluster', 'cargo-container', 'ruined-wall', 'flowering-weeds', 'ore-vein-rock', 'scree-pile'], countOverride: 12 }),
+  Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['cargo-container', 'liquidation-terminal', 'wrecked-sedan', 'fuel-drum', 'ruined-wall', 'warning-beacon', 'cargo-container', 'chain-fence', 'thorn-bramble', 'scrub-bush', 'scree-pile'], countOverride: 12 }),
 ]);
 
 const DISTRICT_LANDMARKS = Object.freeze([

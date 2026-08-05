@@ -834,6 +834,162 @@ def build_asset(asset: dict) -> dict:
                 depth - 0.013, depth + 0.013, mat, asset_id,
             ))
         add(cube(f'{asset_id}_Bloom', (-0.05, -0.078, 0.52), (0.030, 0.016, 0.028), accent, asset_id, bevel=0.010))
+    # --- A3 rock and cliff -----------------------------------------------
+    # Authored silhouettes again. Rock is faceted by construction here: the
+    # facets ARE the profile vertices, so there is no way for a smooth sphere
+    # to creep back in (established twice in earlier cycles that smooth
+    # spheres read badly at this projection).
+    elif shape == 'rock-spire':
+        # A weathered needle. Tall and narrow on purpose -- this is the
+        # vertical accent the ravine had no authored version of.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.9)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.26), roughness=0.82)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.62), roughness=0.94)
+        base = [(-0.28, 0.0), (-0.20, 0.20), (-0.10, 0.14), (0.06, 0.22), (0.18, 0.10), (0.26, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Base', base, -0.20, 0.18, stone_dark, asset_id))
+        shaft = [(-0.16, 0.10), (-0.11, 0.62), (-0.05, 1.02), (0.02, 1.34), (0.07, 0.96), (0.13, 0.58), (0.18, 0.08)]
+        parts.append(prism_mesh(f'{asset_id}_Shaft', shaft, -0.11, 0.09, stone, asset_id))
+        lit = [(-0.07, 0.20), (-0.04, 0.70), (0.01, 1.30), (0.05, 0.86), (0.09, 0.24)]
+        parts.append(prism_mesh(f'{asset_id}_LitFace', lit, -0.14, -0.10, stone_lit, asset_id))
+        flake = [(0.14, 0.30), (0.24, 0.52), (0.30, 0.40), (0.22, 0.18)]
+        parts.append(prism_mesh(f'{asset_id}_Flake', flake, -0.08, 0.02, stone_dark, asset_id))
+        add(cube(f'{asset_id}_Fleck', (-0.06, -0.13, 0.92), (0.030, 0.020, 0.026), accent, asset_id, bevel=0.008))
+    elif shape == 'rock-shelf':
+        # Third pass. Centred concentric steps read as a ziggurat. Sedimentary
+        # bedding is asymmetric: the strata now shear to the left as they rise,
+        # each one overhanging the last on one side only, with a tilted bedding
+        # plane. Depth still steps back so no layer buries the one behind it.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.9)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.30), roughness=0.78)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.56), roughness=0.95)
+        seam = material(f'{asset_id}_seam', tone(palette['secondary'], 0.72), roughness=0.96)
+        strata = (
+            ([(-0.20, 0.0), (-0.24, 0.20), (0.34, 0.26), (0.32, 0.0)], -0.25, -0.16, stone_lit),
+            ([(-0.30, 0.19), (-0.33, 0.39), (0.24, 0.44), (0.27, 0.24)], -0.14, -0.05, stone),
+            ([(-0.36, 0.38), (-0.34, 0.56), (0.12, 0.61), (0.17, 0.42)], -0.03, 0.06, stone_dark),
+            ([(-0.30, 0.55), (-0.26, 0.74), (0.02, 0.78), (0.06, 0.59)], 0.08, 0.17, stone),
+        )
+        for index, (profile, y0, y1, mat) in enumerate(strata):
+            parts.append(prism_mesh(f'{asset_id}_Stratum_{index}', profile, y0, y1, mat, asset_id))
+        for index, (x0, z0, x1, z1, y) in enumerate((
+            (-0.23, 0.185, 0.33, 0.245, -0.26),
+            (-0.32, 0.375, 0.235, 0.425, -0.15),
+            (-0.35, 0.545, 0.115, 0.595, -0.04),
+        )):
+            parts.append(prism_mesh(
+                f'{asset_id}_Seam_{index}',
+                [(x0, z0), (x1, z1), (x1, z1 + 0.022), (x0, z0 + 0.022)],
+                y - 0.012, y, seam, asset_id,
+            ))
+        add(cube(f'{asset_id}_Fleck', (0.18, -0.27, 0.16), (0.028, 0.016, 0.022), accent, asset_id, bevel=0.008))
+    elif shape == 'scree-pile':
+        # Second pass. A smooth heap outline projected as a plain triangle and
+        # the loose chunks were hidden behind it. The outline is now a stepped
+        # rubble profile -- every notch is a visible block edge -- and the
+        # separate chunks sit in FRONT of the heap rather than beside it.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.93)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.32), roughness=0.82)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.56), roughness=0.96)
+        heap_back = [
+            (-0.34, 0.0), (-0.30, 0.14), (-0.23, 0.13), (-0.19, 0.31), (-0.11, 0.29),
+            (-0.06, 0.50), (0.02, 0.62), (0.08, 0.45), (0.15, 0.47), (0.19, 0.28),
+            (0.27, 0.26), (0.31, 0.11), (0.36, 0.0),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_HeapBack', heap_back, 0.06, 0.22, stone_dark, asset_id))
+        heap_mid = [
+            (-0.28, 0.0), (-0.24, 0.17), (-0.16, 0.15), (-0.12, 0.34), (-0.04, 0.32),
+            (0.00, 0.52), (0.06, 0.38), (0.13, 0.36), (0.17, 0.19), (0.25, 0.17), (0.29, 0.0),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_HeapMid', heap_mid, -0.10, 0.06, stone, asset_id))
+        heap_front = [
+            (-0.22, 0.0), (-0.18, 0.13), (-0.10, 0.11), (-0.06, 0.27), (0.01, 0.25),
+            (0.05, 0.14), (0.13, 0.12), (0.17, 0.0),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_HeapFront', heap_front, -0.26, -0.10, stone_lit, asset_id))
+        # Loose blocks in front of the pile, faceted, no smooth spheres.
+        chunks = (
+            (-0.25, 0.055, 0.060, 0.5, stone_lit),
+            (0.21, 0.050, 0.052, -0.8, stone),
+            (-0.02, 0.055, 0.048, 1.2, stone_dark),
+            (0.10, 0.045, 0.044, 0.2, stone_lit),
+        )
+        for index, (x, z, size, rz, mat) in enumerate(chunks):
+            add(cube(f'{asset_id}_Chunk_{index}', (x, -0.30, z), (size, size * 0.8, size * 0.85), mat, asset_id, bevel=size * 0.28, rotation=(0.18, 0.0, rz)))
+        add(cube(f'{asset_id}_Fleck', (0.03, -0.32, 0.10), (0.026, 0.016, 0.022), accent, asset_id, bevel=0.007))
+    elif shape == 'cliff-face':
+        # Third pass. Deep crest notches turned the top into crystal spikes and
+        # the relief columns ran the full height like pillars. The crest now
+        # varies only between 0.94 and 1.06 -- broken, not toothed -- and the
+        # reliefs stop well short of it so they read as fracture planes on a
+        # wall. Left and right edges stay straight at matching x so instances
+        # abut seamlessly when tiled along a capsule blocker.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.92)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.22), roughness=0.84)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.56), roughness=0.95)
+        face = [
+            (-0.30, 0.0), (-0.30, 1.00), (-0.19, 1.06), (-0.06, 0.97),
+            (0.08, 1.04), (0.20, 0.96), (0.30, 1.01), (0.30, 0.0),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_Face', face, -0.10, 0.16, stone, asset_id))
+        relief = [(-0.25, 0.10), (-0.26, 0.62), (-0.14, 0.70), (-0.12, 0.08)]
+        parts.append(prism_mesh(f'{asset_id}_Relief', relief, -0.17, -0.10, stone_dark, asset_id))
+        relief_lit = [(0.04, 0.07), (0.06, 0.74), (0.20, 0.64), (0.18, 0.05)]
+        parts.append(prism_mesh(f'{asset_id}_ReliefLit', relief_lit, -0.17, -0.10, stone_lit, asset_id))
+        ledge = [(-0.28, 0.76), (-0.10, 0.82), (0.06, 0.78), (0.04, 0.70), (-0.26, 0.68)]
+        parts.append(prism_mesh(f'{asset_id}_Ledge', ledge, -0.20, -0.15, stone_lit, asset_id))
+        talus = [(-0.32, 0.0), (-0.24, 0.16), (-0.10, 0.08), (0.06, 0.18), (0.20, 0.09), (0.32, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Talus', talus, -0.26, -0.17, stone_dark, asset_id))
+        add(cube(f'{asset_id}_Fleck', (-0.02, -0.23, 0.42), (0.026, 0.016, 0.022), accent, asset_id, bevel=0.008))
+    elif shape == 'balanced-boulder':
+        # Third pass. A big cap on a short pedestal reads as a mushroom, not as
+        # a rock that should have fallen over. Inverting the proportions is
+        # what sells it: the pedestal is now the tall element, the cap is
+        # SMALLER than the pedestal is tall, and it sits off-centre so the mass
+        # is visibly not above the support.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.9)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.30), roughness=0.8)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.56), roughness=0.94)
+        pad = [(-0.26, 0.0), (-0.19, 0.09), (0.17, 0.10), (0.25, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Pad', pad, -0.16, 0.04, stone_dark, asset_id))
+        # Tall narrow pedestal, frontmost so nothing can occlude the waist.
+        pedestal = [(-0.11, 0.07), (-0.07, 0.34), (-0.05, 0.60), (0.06, 0.61), (0.09, 0.33), (0.12, 0.07)]
+        parts.append(prism_mesh(f'{asset_id}_Pedestal', pedestal, -0.21, -0.10, stone, asset_id))
+        pedestal_lit = [(-0.05, 0.12), (-0.03, 0.58), (0.04, 0.58), (0.06, 0.12)]
+        parts.append(prism_mesh(f'{asset_id}_PedestalLit', pedestal_lit, -0.25, -0.21, stone_lit, asset_id))
+        # Cap: modest, tilted, and pushed left of the pedestal centre.
+        cap = [
+            (-0.27, 0.63), (-0.22, 0.80), (-0.09, 0.90), (0.05, 0.86),
+            (0.14, 0.74), (0.11, 0.61), (-0.20, 0.59),
+        ]
+        parts.append(prism_mesh(f'{asset_id}_Cap', cap, -0.08, 0.14, stone, asset_id))
+        cap_lit = [(-0.18, 0.70), (-0.10, 0.86), (0.02, 0.83), (0.06, 0.70), (-0.08, 0.64)]
+        parts.append(prism_mesh(f'{asset_id}_CapLit', cap_lit, -0.12, -0.08, stone_lit, asset_id))
+        # A chock jammed under the low side of the overhang.
+        chock = [(0.10, 0.40), (0.13, 0.58), (0.21, 0.57), (0.16, 0.39)]
+        parts.append(prism_mesh(f'{asset_id}_Chock', chock, -0.19, -0.13, stone_dark, asset_id))
+        add(cube(f'{asset_id}_Fleck', (-0.12, -0.14, 0.76), (0.026, 0.016, 0.022), accent, asset_id, bevel=0.008))
+    elif shape == 'ore-vein-rock':
+        # Mining-camp stone: a split block with an exposed ore seam. The
+        # accent is the seam itself, so the prop reads as worth mining rather
+        # than as another grey rock.
+        stone = material(f'{asset_id}_stone', palette['primary'], roughness=0.9)
+        stone_lit = material(f'{asset_id}_stone_lit', tone(palette['primary'], 1.24), roughness=0.82)
+        stone_dark = material(f'{asset_id}_stone_dark', tone(palette['primary'], 0.58), roughness=0.95)
+        ore = material(f'{asset_id}_ore', tone(palette['secondary'], 1.35), roughness=0.5, emission=0.22)
+        block = [(-0.28, 0.0), (-0.24, 0.44), (-0.12, 0.66), (0.04, 0.72), (0.18, 0.58), (0.26, 0.30), (0.28, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Block', block, -0.20, 0.18, stone, asset_id))
+        shoulder = [(-0.20, 0.30), (-0.14, 0.60), (-0.02, 0.68), (0.06, 0.50), (-0.04, 0.28)]
+        parts.append(prism_mesh(f'{asset_id}_Shoulder', shoulder, -0.24, -0.19, stone_lit, asset_id))
+        skirt = [(-0.32, 0.0), (-0.22, 0.14), (-0.04, 0.09), (0.14, 0.16), (0.30, 0.0)]
+        parts.append(prism_mesh(f'{asset_id}_Skirt', skirt, -0.22, -0.15, stone_dark, asset_id))
+        for index, (x0, z0, x1, z1) in enumerate(((-0.16, 0.14, -0.06, 0.46), (0.02, 0.20, 0.12, 0.52), (-0.06, 0.44, 0.04, 0.62))):
+            parts.append(prism_mesh(
+                f'{asset_id}_Vein_{index}',
+                [(x0, z0), (x1, z1), (x1 + 0.035, z1 - 0.035), (x0 + 0.035, z0 - 0.035)],
+                -0.26, -0.21, ore, asset_id,
+            ))
+        add(cube(f'{asset_id}_Fleck', (0.14, -0.24, 0.34), (0.030, 0.018, 0.026), accent, asset_id, bevel=0.008))
+
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 
