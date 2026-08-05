@@ -236,8 +236,24 @@ async function captureAnchor(profile, pass) {
     await page.goto(`${origin}/hmh-reboot/?${anchorQuery}&candidate=${Date.now()}`, { waitUntil: 'networkidle' });
     await rejectAuthenticationPage(page);
     await page.waitForSelector('#hmhUpgradePanel:not([hidden])');
-    await page.evaluate(() => document.fonts.ready);
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await Promise.all([...document.images].map((image) => (
+        image.complete
+          ? image.decode().catch(() => {})
+          : new Promise((resolve) => {
+              image.addEventListener('load', resolve, { once: true });
+              image.addEventListener('error', resolve, { once: true });
+            })
+      )));
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
     await page.waitForTimeout(250);
+    // Warm the DPR/GPU compositor before collecting the strict zero-delta anchor.
+    // Without this first rasterization, fresh mobile contexts can differ by one
+    // channel step even though geometry and deterministic game state are equal.
+    await page.screenshot({ type: 'png' });
+    await page.waitForTimeout(50);
     const geometry = await assertResponsiveGeometry(page, profile);
     const image = await page.screenshot({ type: 'png' });
     await writeFile(path.join(evidenceRoot, `${profile.name}-anchor-pass-${pass}.png`), image);
