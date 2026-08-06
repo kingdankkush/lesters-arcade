@@ -252,7 +252,7 @@
       "width": 512
     },
     {
-      "bytes": 136973,
+      "bytes": 133518,
       "file": "./road-fringe.png",
       "height": 128,
       "id": "road",
@@ -325,7 +325,7 @@
       "size": 512
     },
     {
-      "bytes": 416353,
+      "bytes": 406436,
       "file": "./road.png",
       "id": "road",
       "size": 512
@@ -351,6 +351,39 @@
   ],
   "paintedLayering": true,
   "pipelineId": "hmh-terrain-tiles-v2",
+  "roadNetwork": {
+    "bakedInto": "road",
+    "id": "road",
+    "mask": {
+      "periods": [
+        4,
+        8,
+        16
+      ],
+      "seed": 5523540,
+      "source": "wrapped-fbm"
+    },
+    "variants": [
+      {
+        "base": "#766f62",
+        "highlight": "#a69b89",
+        "id": "gravel-shoulder",
+        "shadow": "#454039"
+      },
+      {
+        "base": "#625f59",
+        "highlight": "#8b877e",
+        "id": "cracked-asphalt",
+        "shadow": "#33312e"
+      },
+      {
+        "base": "#7a6855",
+        "highlight": "#aa9075",
+        "id": "dirt-track",
+        "shadow": "#44372c"
+      }
+    ]
+  },
   "runtimeAuthority": "projection-only",
   "schemaVersion": 2,
   "seamStatistics": {
@@ -397,10 +430,10 @@
       "wrapY": 1.555
     },
     "road": {
-      "interiorX": 4.167,
-      "interiorY": 4.529,
-      "wrapX": 5.027,
-      "wrapY": 5.984
+      "interiorX": 3.636,
+      "interiorY": 3.898,
+      "wrapX": 4.365,
+      "wrapY": 6.454
     },
     "shallow-water": {
       "interiorX": 0.955,

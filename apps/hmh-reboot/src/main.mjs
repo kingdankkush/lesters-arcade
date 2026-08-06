@@ -127,6 +127,7 @@ import {
   buildAuthoredDistrictLandmarkPlacements,
   buildAuthoredEncampmentPlacements,
   buildAuthoredPointOfInterestPlacements,
+  buildAuthoredTownPlacements,
   buildAuthoredWorldPropPlacements,
   createAuthoredHeldWeaponDisplay,
   createAuthoredPropAtlasIndex,
@@ -427,10 +428,11 @@ async function boot() {
   ]).then(async ([metadataResponse, atlasTexture]) => {
     if (!metadataResponse.ok) throw new Error(`Authored prop metadata failed with ${metadataResponse.status}`);
     const propIndex = createAuthoredPropAtlasIndex(await metadataResponse.json());
+    const placements = Object.freeze([...authoredPropPlacements, ...buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex })]);
     const display = createAuthoredPropDisplay({
       index: propIndex,
       atlasTexture,
-      placements: authoredPropPlacements,
+      placements,
       ContainerClass: Container,
       SpriteClass: Sprite,
       TextureClass: Texture,
@@ -446,12 +448,14 @@ async function boot() {
       RectangleClass: Rectangle,
     });
     if (app.stage.destroyed || !world.parent) return;
-    authoredPropDisplay = display;
-    authoredHeldWeaponDisplay = heldWeaponDisplay;
     authoredPropLayer.addChild(display.container);
     heldWeaponLayer.addChild(heldWeaponDisplay.container);
+    authoredPropDisplay = display;
+    authoredHeldWeaponDisplay = heldWeaponDisplay;
+    worldProduction.layers.townBlockers.visible = false;
+    worldProduction.layers.landmarks.visible = false;
     dataset.authoredPropStatus = 'ready';
-    dataset.authoredPropCount = String(authoredPropPlacements.length);
+    dataset.authoredPropCount = String(placements.length);
   }).catch((error) => {
     authoredPropLoadError = error;
     dataset.authoredPropStatus = 'fallback';

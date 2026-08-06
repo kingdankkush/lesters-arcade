@@ -33,7 +33,7 @@ test('the navgrid marks blocker interiors unwalkable and open ground walkable', 
   const grid = buildGrid();
   assert.ok(grid.columns > 0 && grid.rows > 0);
   // Inside the yard-north-building footprint.
-  assert.equal(grid.isWalkableAt(10_900, 620), false, 'building interior must be unwalkable');
+  assert.equal(grid.isWalkableAt(11_150, 650), false, 'building interior must be unwalkable');
   // Deep river water.
   assert.equal(grid.isWalkableAt(4_700, 1_700), false, 'deep water must be unwalkable');
   // Open relay ground near spawn.

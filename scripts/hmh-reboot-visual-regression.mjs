@@ -133,6 +133,9 @@ export const VISUAL_SCENES = Object.freeze([
     query: 'evidenceSafe=1&telemetry=1',
     viewport: Object.freeze({ width: 390, height: 844 }),
     tick: 90,
+    // A9 replaces two inner mobile props with one canonical set-piece and a
+    // 400-unit dressing-free ring. Desktop scenes retain animated-signal gates.
+    requires: Object.freeze({ landmarks: 1, animatedLandmarks: 0 }),
   }),
   Object.freeze({
     id: 'combat-engaged-desktop',
@@ -173,6 +176,21 @@ export const VISUAL_SCENES = Object.freeze([
     query: 'evidenceSafe=1&telemetry=1&worldTour=yard',
     viewport: Object.freeze({ width: 1440, height: 900 }),
     tick: 180,
+    requires: Object.freeze({ props: 3 }),
+  }),
+  Object.freeze({
+    id: 'liquidation-market-desktop',
+    query: 'evidenceSafe=1&telemetry=1&worldTour=collectible-yard-extraction-console',
+    viewport: Object.freeze({ width: 1440, height: 900 }),
+    tick: 180,
+    requires: Object.freeze({ props: 3 }),
+  }),
+  Object.freeze({
+    id: 'liquidation-residential-desktop',
+    query: 'evidenceSafe=1&telemetry=1&worldTour=collectible-yard-medbay-cache',
+    viewport: Object.freeze({ width: 1440, height: 900 }),
+    tick: 180,
+    requires: Object.freeze({ props: 3 }),
   }),
   // P5: the A1-A7 asset waves added 29 world props and most of them landed
   // outside every camera above, so those scenes came back "unchanged" while

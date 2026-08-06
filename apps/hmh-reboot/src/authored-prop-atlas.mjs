@@ -4,10 +4,10 @@ export const AUTHORED_PROP_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-au
 export const AUTHORED_PROP_ITEM_ROOT = '/assets/generated/hmh-reboot-authored-props/items';
 
 export const AUTHORED_PROP_ASSETS = Object.freeze({
-  weapons: Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']),
-  pickups: Object.freeze(['bonus-life', 'hash-rail-core', 'time-dilation', 'berserk-candle', 'nuke-liquidation']),
-  powerUps: Object.freeze(['proof-of-work', 'diamond-hands', 'gas-optimization', 'cold-storage', 'block-reward', 'validator-training', 'compound-interest', 'hardened-wallet', 'hot-wallet', 'layer-two', 'precision-ledger', 'hard-fork-rounds']),
-  worldProps: Object.freeze(['relay-console', 'salvage-crate', 'proof-pylon', 'bridge-bollard', 'hashwood-stump', 'crystal-cluster', 'ore-cart', 'loader-barrel', 'rugpull-barricade', 'warning-beacon', 'liquidation-terminal', 'fuel-drum', 'hashwood-pine', 'hashwood-tree', 'granite-boulder', 'wrecked-sedan', 'chain-fence', 'miners-shack', 'dead-pine', 'moss-boulder', 'reed-cluster', 'driftwood-log', 'ruined-wall', 'watchtower', 'cargo-container', 'ore-conveyor', 'scrub-bush', 'fern-cluster', 'grass-tuft', 'thorn-bramble', 'flowering-weeds', 'hanging-vines', 'rock-spire', 'rock-shelf', 'scree-pile', 'cliff-face', 'balanced-boulder', 'ore-vein-rock', 'birch-cluster', 'sapling-thicket', 'burned-snag', 'canopy-edge-tree', 'fallen-trunk', 'lily-pads', 'water-grass', 'submerged-log', 'stepping-stones', 'dock-post', 'wetland-hummock', 'campfire-ring', 'bedroll-cluster', 'sandbag-nest', 'scrap-barricade', 'watch-platform', 'faction-banner', 'bridge-pier', 'bridge-truss', 'plank-deck-broken', 'handrail-post', 'bridge-warning-sign', 'rope-bridge-anchor']),
+  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig'.split(' ')),
+  pickups: Object.freeze('bonus-life hash-rail-core time-dilation berserk-candle nuke-liquidation'.split(' ')),
+  powerUps: Object.freeze('proof-of-work diamond-hands gas-optimization cold-storage block-reward validator-training compound-interest hardened-wallet hot-wallet layer-two precision-ledger hard-fork-rounds'.split(' ')),
+
 });
 
 // Cycle 038: trees, boulders, wrecked cars, fencing and a shack join the
@@ -47,12 +47,12 @@ const DISTRICTS = Object.freeze([
 ]);
 
 const DISTRICT_LANDMARKS = Object.freeze([
-  Object.freeze({ id: 'frontier-relay', x: 780, y: 2_400, propIds: ['relay-console', 'salvage-crate', 'fuel-drum'] }),
-  Object.freeze({ id: 'rugpull-ravine', x: 3_050, y: 1_500, propIds: ['rugpull-barricade', 'salvage-crate', 'warning-beacon'] }),
-  Object.freeze({ id: 'liquidity-crossing', x: 4_700, y: 2_400, propIds: ['proof-pylon', 'bridge-bollard'] }),
-  Object.freeze({ id: 'hashwood', x: 7_000, y: 900, propIds: ['hashwood-stump', 'crystal-cluster'] }),
-  Object.freeze({ id: 'mining-camp', x: 9_200, y: 1_600, propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster'] }),
-  Object.freeze({ id: 'liquidation-yard', x: 11_000, y: 800, propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon'] }),
+  Object.freeze({ id: 'frontier-relay', x: 780, y: 2_400, setpieceId:'relay-tower-setpiece', propIds: ['relay-console', 'salvage-crate', 'fuel-drum'] }),
+  Object.freeze({ id: 'rugpull-ravine', x: 3_050, y: 1_500, setpieceId:'forked-spire-setpiece', propIds: ['rugpull-barricade', 'salvage-crate', 'warning-beacon'] }),
+  Object.freeze({ id: 'liquidity-crossing', x: 4_700, y: 2_400, setpieceId:'proof-bridge-setpiece', propIds: ['proof-pylon', 'bridge-bollard'] }),
+  Object.freeze({ id: 'hashwood', x: 7_000, y: 900, setpieceId:'hashwood-beacon-setpiece', propIds: ['hashwood-stump', 'crystal-cluster'] }),
+  Object.freeze({ id: 'mining-camp', x: 9_200, y: 1_600, setpieceId:'mining-headframe-setpiece', propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster'] }),
+  Object.freeze({ id: 'liquidation-yard', x: 11_000, y: 800, setpieceId:'liquidation-tower-setpiece', propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon'] }),
 ]);
 const LANDMARK_OFFSETS = Object.freeze([
   Object.freeze({ x: -350, y: -350, scale: 1.6 }),
@@ -61,8 +61,7 @@ const LANDMARK_OFFSETS = Object.freeze([
   Object.freeze({ x: 350, y: -350, scale: 1.5 }),
   Object.freeze({ x: -420, y: -260, scale: 1.9 }),
   Object.freeze({ x: 420, y: 260, scale: 1.4 }),
-  Object.freeze({ x: -100, y: -100, scale: 1.3, mobileOnly: true }),
-  Object.freeze({ x: 100, y: 100, scale: 1.3, mobileOnly: true }),
+
 ]);
 const LANDMARK_SIGNAL_KITS = Object.freeze({
   'relay-console': Object.freeze({ id: 'relay-scan', color: 0x5cffe2, periodTicks: 96, radiusScale: 0.3 }),
@@ -76,6 +75,18 @@ function freezeDeep(value) {
   if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
   for (const child of Object.values(value)) freezeDeep(child);
   return Object.freeze(value);
+}
+
+export function buildAuthoredTownPlacements({ worldId, index } = {}) {
+  if (worldId !== 'forked-frontier' || !index?.frameById) throw new TypeError('town index');
+  const placements = [];
+  for (const frame of index.frameById.values()) {
+    for (const placement of frame.townPlacements ?? []) placements.push(Object.freeze({
+      ...placement, id: `town:${placement.id}`, assetId: frame.assetId,
+      runtimeAuthority: 'projection-only',
+    }));
+  }
+  return Object.freeze(placements);
 }
 
 function seededUnit(seed, key) {
@@ -94,14 +105,15 @@ export const AUTHORED_PROP_ASSET_IDS = Object.freeze([
   ...AUTHORED_PROP_ASSETS.weapons,
   ...AUTHORED_PROP_ASSETS.pickups,
   ...AUTHORED_PROP_ASSETS.powerUps,
-  ...AUTHORED_PROP_ASSETS.worldProps,
+
 ]);
 export const AUTHORED_PROP_ASSET_COUNT = AUTHORED_PROP_ASSET_IDS.length;
+const PROP_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const isPropId = (value) => typeof value === 'string' && PROP_ID.test(value);
+const isTownId = (value) => typeof value === 'string' && /^[a-z0-9:-]+$/.test(value);
 
 export function authoredPropItemUrl(assetId) {
-  if (!AUTHORED_PROP_ASSET_IDS.includes(assetId)) {
-    throw new TypeError(`unknown authored prop ${String(assetId)}`);
-  }
+  if (!isPropId(assetId)) throw new TypeError(`bad prop ${String(assetId)}`);
   return `${AUTHORED_PROP_ITEM_ROOT}/${assetId}.png`;
 }
 
@@ -258,6 +270,7 @@ export function buildAuthoredDistrictLandmarkPlacements({ worldId } = {}) {
   if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored landmark world ${String(worldId)}`);
   const placements = [];
   for (const district of DISTRICT_LANDMARKS) {
+    placements.push(freezeDeep({ id:`landmark:${district.id}:setpiece`, assetId:district.setpieceId, category:'district-landmark', districtId:district.id, x:district.x, y:district.y, scale:1, mobileOnly:false, anchorDistance:0, runtimeAuthority:'projection-only' }));
     for (let index = 0; index < LANDMARK_OFFSETS.length; index += 1) {
       const offset = LANDMARK_OFFSETS[index];
       placements.push(freezeDeep({
@@ -331,30 +344,36 @@ export function buildAuthoredPointOfInterestPlacements(pointsOfInterest) {
 }
 
 export function createAuthoredPropAtlasIndex(metadata) {
-  if (metadata?.schemaVersion !== 1 || metadata.pipelineId !== AUTHORED_PROP_PIPELINE_ID) throw new TypeError('invalid authored prop atlas metadata');
-  if (metadata.classification !== 'production-art' || metadata.runtimeAuthority !== 'projection-only') throw new TypeError('authored prop atlas authority drifted');
+  if (metadata?.schemaVersion !== 1 || metadata.pipelineId !== AUTHORED_PROP_PIPELINE_ID) throw new TypeError('invalid prop atlas');
+  if (metadata.classification !== 'production-art' || metadata.runtimeAuthority !== 'projection-only') throw new TypeError('prop authority drift');
   // Derived from the declared roster rather than a literal: a hard-coded 29
   // meant every added prop broke this guard with a message naming the old
   // count, which reads as corruption rather than as "the roster grew".
-  if (!Array.isArray(metadata.frames) || metadata.frames.length !== AUTHORED_PROP_ASSET_COUNT) {
-    throw new TypeError(`authored prop atlas requires ${AUTHORED_PROP_ASSET_COUNT} certified assets, found ${metadata?.frames?.length ?? 0}`);
-  }
+  if (!Array.isArray(metadata.frames) || metadata.assetCount !== metadata.frames.length) throw new TypeError('bad prop count');
+  const atlasWidth=metadata.atlasSize?.width, atlasHeight=metadata.atlasSize?.height;
+  if (![atlasWidth,atlasHeight].every(Number.isInteger) || atlasWidth<=0 || atlasHeight<=0) throw new TypeError('bad atlas size');
   const frameById = new Map();
   for (const frame of metadata.frames) {
-    if (frameById.has(frame.assetId)) throw new TypeError(`duplicate authored prop ${frame.assetId}`);
-    if (![frame.frame?.x, frame.frame?.y, frame.frame?.w, frame.frame?.h].every(Number.isFinite) || frame.frame.w <= 0 || frame.frame.h <= 0) throw new TypeError(`invalid authored prop frame ${frame.assetId}`);
+    if (!isPropId(frame.assetId)) throw new TypeError('bad prop id');
+    if (frameById.has(frame.assetId)) throw new TypeError('duplicate prop');
+    const {x,y,w,h}=frame.frame??{};
+    if (![x,y,w,h].every(Number.isInteger) || x<0 || y<0 || w<=0 || h<=0 || x+w>atlasWidth || y+h>atlasHeight) throw new TypeError('bad frame');
     // A ground anchor outside the crop means the pivot math ran against the
     // wrong frame size; a sprite would draw detached from its authored ground
     // point. Fail closed (review finding, Cycle 039).
-    if (!(frame.anchor?.x >= 0 && frame.anchor.x <= 1 && frame.anchor?.y >= 0 && frame.anchor.y <= 1)) {
-      throw new TypeError(`authored prop anchor out of bounds for ${frame.assetId}`);
+    const anchor=[frame.anchor?.x,frame.anchor?.y];
+    if (!anchor.every(Number.isFinite) || anchor.some((value)=>value<0||value>1)) throw new TypeError('bad anchor');
+    if (!/^[a-f0-9]{64}$/.test(frame.sourcePixelSha256)) throw new TypeError('bad hash');
+    if (!Array.isArray(frame.townPlacements)) throw new TypeError('bad town placements');
+    for (const placement of frame.townPlacements) {
+      const blocked=placement?.collisionPolicy==='canonical-blocker' && isPropId(placement.collisionBlockerId);
+      const visual=placement?.collisionPolicy==='visual-only' && placement.collisionBlockerId==null;
+      if (!isTownId(placement?.id) || !isTownId(placement?.blockId) || placement.districtId!=='liquidation-yard' || ![placement.x,placement.y,placement.rotation??0,placement.scale].every(Number.isFinite) || placement.scale<=0 || !(blocked||visual)) throw new TypeError('bad town placement');
     }
-    if (![frame.anchor?.x, frame.anchor?.y].every(Number.isFinite)) throw new TypeError(`invalid authored prop anchor ${frame.assetId}`);
-    if (!frame.sourcePixelSha256 || frame.sourcePixelSha256.length !== 64) throw new TypeError(`authored prop provenance missing for ${frame.assetId}`);
-    frameById.set(frame.assetId, Object.freeze({ ...frame, frame: Object.freeze({ ...frame.frame }), anchor: Object.freeze({ ...frame.anchor }) }));
+    frameById.set(frame.assetId, Object.freeze({ ...frame, frame: Object.freeze({ ...frame.frame }), anchor: Object.freeze({ ...frame.anchor }), townPlacements: freezeDeep([...(frame.townPlacements ?? [])]) }));
   }
-  for (const assetId of [...AUTHORED_PROP_ASSETS.weapons, ...AUTHORED_PROP_ASSETS.pickups, ...AUTHORED_PROP_ASSETS.powerUps, ...AUTHORED_PROP_ASSETS.worldProps]) {
-    if (!frameById.has(assetId)) throw new TypeError(`authored prop atlas is missing ${assetId}`);
+  for (const assetId of AUTHORED_PROP_ASSET_IDS) {
+    if (!frameById.has(assetId)) throw new TypeError(`missing ${assetId}`);
   }
   return Object.freeze({ pipelineId: metadata.pipelineId, runtimeAuthority: metadata.runtimeAuthority, frameById, frameFor(assetId) { return frameById.get(assetId); } });
 }

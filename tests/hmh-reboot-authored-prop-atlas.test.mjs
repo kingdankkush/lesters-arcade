@@ -47,9 +47,7 @@ test('authored prop metadata is complete, projection-only, and provenance-bearin
   const index = createAuthoredPropAtlasIndex(metadata);
   assert.equal(index.pipelineId, AUTHORED_PROP_PIPELINE_ID);
   assert.equal(index.runtimeAuthority, 'projection-only');
-  // Pinned to the declared roster, not a literal, so adding a prop does not
-  // require editing a number in two places.
-  assert.equal(index.frameById.size, AUTHORED_PROP_ASSET_COUNT);
+  assert.equal(index.frameById.size, metadata.assetCount);
   assert.equal(new Set(AUTHORED_PROP_ASSET_IDS).size, AUTHORED_PROP_ASSET_COUNT, 'prop ids must be unique');
   for (const assetId of Object.values(AUTHORED_PROP_ASSETS).flat()) {
     const frame = index.frameFor(assetId);
@@ -58,7 +56,26 @@ test('authored prop metadata is complete, projection-only, and provenance-bearin
     assert.ok(frame.runtimeScale > 0);
     assert.equal(authoredPropItemUrl(assetId), `/assets/generated/hmh-reboot-authored-props/items/${assetId}.png`);
   }
-  assert.throws(() => authoredPropItemUrl('fake-prop'), /unknown authored prop/);
+  for (const frame of metadata.frames) assert.match(frame.sourcePixelSha256, /^[0-9a-f]{64}$/u);
+  assert.throws(() => authoredPropItemUrl('../fake-prop'), /bad prop/);
+});
+
+test('authored prop atlas rejects count, path, bounds, hash, and town schema drift', async () => {
+  const metadata = await loadMetadata();
+  const reject = (mutate) => {
+    const changed = structuredClone(metadata);
+    mutate(changed);
+    assert.throws(() => createAuthoredPropAtlasIndex(changed), TypeError);
+  };
+  reject((value) => { value.assetCount += 1; });
+  reject((value) => { delete value.atlasSize; });
+  reject((value) => { value.frames[0].assetId = '../bad'; });
+  reject((value) => { value.frames[0].frame.x = -1; });
+  reject((value) => { value.frames[0].frame.x = value.atlasSize.width; });
+  reject((value) => { value.frames[0].anchor.x = null; });
+  reject((value) => { value.frames[0].anchor.y = Number.NaN; });
+  reject((value) => { value.frames[0].sourcePixelSha256 = 'g'.repeat(64); });
+  reject((value) => { delete value.frames.find((frame) => frame.townPlacements.length).townPlacements[0].collisionPolicy; });
 });
 
 test('authored world dressing and gameplay POIs are deterministic and bounded', () => {
@@ -83,7 +100,7 @@ test('district landmark clusters stay near visual anchors and clear the playable
   const first = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
   const second = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
   assert.deepEqual(first, second);
-  assert.equal(first.length, 48);
+  assert.equal(first.length, 42);
   const byDistrict = new Map();
   for (const placement of first) {
     const placements = byDistrict.get(placement.districtId) ?? [];
@@ -92,12 +109,13 @@ test('district landmark clusters stay near visual anchors and clear the playable
   }
   assert.equal(byDistrict.size, 6);
   for (const placements of byDistrict.values()) {
-    assert.equal(placements.length, 8);
+    assert.equal(placements.length, 7);
     assert.ok(placements.every((placement) => placement.category === 'district-landmark'));
     assert.ok(placements.every((placement) => placement.runtimeAuthority === 'projection-only'));
-    assert.ok(placements.every((placement) => placement.scale >= 1.25 && placement.scale <= 2));
-    assert.ok(placements.every((placement) => placement.anchorDistance >= 140 && placement.anchorDistance <= 530));
-    assert.equal(placements.filter((placement) => placement.mobileOnly).length, 2);
+    assert.ok(placements.every((placement) => placement.scale >= 1 && placement.scale <= 1.9));
+    assert.equal(placements.filter((placement) => placement.anchorDistance === 0).length, 1);
+    assert.ok(placements.filter((placement) => placement.anchorDistance > 0).every((placement) => placement.anchorDistance >= 400 && placement.anchorDistance <= 530));
+    assert.equal(placements.filter((placement) => placement.mobileOnly).length, 0);
   }
   assert.ok(first.every((placement) => placement.x >= 0 && placement.x <= 12_000));
   assert.ok(first.every((placement) => placement.y >= 0 && placement.y <= 4_800));
@@ -142,9 +160,9 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
   const before = JSON.stringify(placements);
   const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
   // Authored overrides drive every district now, so countPerDistrict 1 still
-  // yields the full 75 dressing entries, plus 6 landmarks x 8 offsets and
+  // yields the full 128 dressing entries, plus 6 landmarks x 7 parts and
   // 10 POIs.
-  assert.equal(display.entries.length, 128 + 6 * 8 + 10);
+  assert.equal(display.entries.length, 128 + 6 * 7 + 10);
   const report = display.render({
     camera: { zoom: 1 },
     view: { width: 12_000, height: 4_800 },
@@ -152,7 +170,7 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
     queryGround: () => ({ groundZ: 0 }),
     tick: 42,
   });
-  assert.equal(report.placementCount, 128 + 6 * 8 + 10);
+  assert.equal(report.placementCount, 128 + 6 * 7 + 10);
   assert.ok(report.visibleCount > 0);
   assert.ok(report.signalVisibleCount >= 12);
   assert.equal(report.animatedSignalVisibleCount, report.signalVisibleCount);

@@ -122,11 +122,20 @@ const SURFACE_SPECS = [
 const BASE_SURFACE = createElevationSurface({ id: 'forked-frontier-ground', kind: 'ground', area: rect(0, 0, 12_000, 4_800), groundZ: 0, visibleTerrainId: 'forked-frontier-ground', priority: 0 });
 const SURFACES = SURFACE_SPECS.map((spec) => createElevationSurface(spec));
 
+const block = (id, districtId, x, y, width, depth, maxZ, visualKind = 'building') => ({
+  id, districtId, anchor: point(x, y), visualKind,
+  shape: depth === 0
+    ? { type: 'circle', x, y, radius: width }
+    : depth < 0
+      ? { type: 'capsule', a: point(x - width / 2, y), b: point(x + width / 2, y), radius: -depth }
+      : { type: 'polygon', vertices: [point(x - width / 2, y - depth / 2), point(x + width / 2, y - depth / 2), point(x + width / 2, y + depth / 2), point(x - width / 2, y + depth / 2)] },
+  maxZ, combatCover: true,
+});
 const BLOCKER_FEATURES = [
   // Frontier Relay: a fenced compound with a depot shed, an interior fence
   // run, and a true gate at the ravine seam.
   { id: 'relay-orientation-fence', districtId: 'frontier-relay', anchor: point(1_450, 900), visualKind: 'fence', shape: { type: 'capsule', a: point(800, 900), b: point(1_650, 900), radius: 18 }, maxZ: 72 },
-  { id: 'relay-depot-shed', districtId: 'frontier-relay', anchor: point(1_550, 3_425), visualKind: 'building', shape: { type: 'polygon', vertices: [point(1_400, 3_300), point(1_700, 3_300), point(1_700, 3_550), point(1_400, 3_550)] }, maxZ: 200, combatCover: true },
+  block('relay-depot-shed', 'frontier-relay', 1_550, 3_425, 300, 250, 200),
   { id: 'relay-north-fence-run', districtId: 'frontier-relay', anchor: point(850, 1_400), visualKind: 'fence', shape: { type: 'capsule', a: point(450, 1_450), b: point(1_250, 1_350), radius: 18 }, maxZ: 72 },
   { id: 'relay-gate-north', districtId: 'frontier-relay', anchor: point(1_700, 1_940), visualKind: 'fence', shape: { type: 'capsule', a: point(1_700, 1_750), b: point(1_700, 2_130), radius: 18 }, maxZ: 72 },
   { id: 'relay-gate-south', districtId: 'frontier-relay', anchor: point(1_700, 2_950), visualKind: 'fence', shape: { type: 'capsule', a: point(1_700, 2_760), b: point(1_700, 3_140), radius: 18 }, maxZ: 72 },
@@ -164,16 +173,21 @@ const BLOCKER_FEATURES = [
   { id: 'mining-south-fence', districtId: 'mining-camp', anchor: point(9_000, 3_850), visualKind: 'fence', shape: { type: 'capsule', a: point(8_050, 3_850), b: point(9_950, 3_850), radius: 20 }, maxZ: 80 },
   { id: 'mining-yard-fence-west', districtId: 'mining-camp', anchor: point(8_500, 3_000), visualKind: 'fence', shape: { type: 'capsule', a: point(8_500, 2_700), b: point(8_500, 3_300), radius: 20 }, maxZ: 80 },
   { id: 'mining-yard-fence-east', districtId: 'mining-camp', anchor: point(9_200, 3_385), visualKind: 'fence', shape: { type: 'capsule', a: point(9_200, 3_210), b: point(9_200, 3_560), radius: 20 }, maxZ: 80 },
-  { id: 'mining-shack-row', districtId: 'mining-camp', anchor: point(8_800, 3_475), visualKind: 'building', shape: { type: 'polygon', vertices: [point(8_650, 3_350), point(8_950, 3_350), point(8_950, 3_600), point(8_650, 3_600)] }, maxZ: 220, combatCover: true },
+  block('mining-shack-row', 'mining-camp', 8_800, 3_475, 300, 250, 220),
   { id: 'yard-gate-wall-north', districtId: 'mining-camp', anchor: point(10_050, 1_900), visualKind: 'containers', shape: { type: 'capsule', a: point(9_900, 1_850), b: point(10_200, 1_950), radius: 60 }, maxZ: 150, combatCover: true },
   { id: 'yard-gate-wall-south', districtId: 'mining-camp', anchor: point(10_000, 3_075), visualKind: 'containers', shape: { type: 'capsule', a: point(9_850, 3_000), b: point(10_150, 3_150), radius: 60 }, maxZ: 150, combatCover: true },
-  // Liquidation Yard: wreck rows squeeze the approach into a chicane and a
-  // terminal block anchors the recovery pocket behind the arena.
-  { id: 'yard-north-building', districtId: 'liquidation-yard', anchor: point(10_900, 620), visualKind: 'building', shape: { type: 'polygon', vertices: [point(10_200, 420), point(11_600, 420), point(11_600, 820), point(10_200, 820)] }, maxZ: 240, combatCover: true },
-  { id: 'yard-south-containers', districtId: 'liquidation-yard', anchor: point(10_900, 4_000), visualKind: 'containers', shape: { type: 'capsule', a: point(10_250, 4_000), b: point(11_550, 4_000), radius: 72 }, maxZ: 150, combatCover: true },
+  // Liquidation Yard neighborhood: two north commercial masses, water tower,
+  // south market island, east homes and a narrow gate frame streets around the
+  // existing chicane/arena instead of filling its combat floor.
+  block('town-north-shopfront', 'liquidation-yard', 10_450, 650, 380, 300, 220),
+  block('town-north-tenement', 'liquidation-yard', 11_150, 650, 400, 420, 260),
+  block('town-water-tower', 'liquidation-yard', 11_550, 1_100, 80, 0, 260, 'machinery'),
+  block('town-fuel-island', 'liquidation-yard', 10_800, 3_600, 320, 280, 200, 'machinery'),
   { id: 'yard-wreck-row-north', districtId: 'liquidation-yard', anchor: point(10_650, 1_950), visualKind: 'containers', shape: { type: 'capsule', a: point(10_600, 1_945), b: point(10_700, 1_955), radius: 40 }, maxZ: 150, combatCover: true },
   { id: 'yard-wreck-row-south', districtId: 'liquidation-yard', anchor: point(10_530, 3_075), visualKind: 'containers', shape: { type: 'capsule', a: point(10_380, 3_050), b: point(10_680, 3_100), radius: 56 }, maxZ: 150, combatCover: true },
-  { id: 'yard-terminal-block', districtId: 'liquidation-yard', anchor: point(11_570, 3_050), visualKind: 'building', shape: { type: 'polygon', vertices: [point(11_420, 2_900), point(11_720, 2_900), point(11_720, 3_200), point(11_420, 3_200)] }, maxZ: 220, combatCover: true },
+  block('town-market-gate', 'liquidation-yard', 10_150, 3_400, 300, -18, 90, 'fence'),
+  block('town-east-lean-to', 'liquidation-yard', 11_650, 3_050, 300, 300, 180),
+  block('town-east-tenement', 'liquidation-yard', 11_350, 3_740, 360, 360, 260),
 ];
 
 const COLLISION_BLOCKERS = BLOCKER_FEATURES.map((feature) => createStaticBlocker({

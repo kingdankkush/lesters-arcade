@@ -3,8 +3,6 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-  AUTHORED_PROP_ASSETS,
-  AUTHORED_PROP_ASSET_IDS,
   authoredPropItemUrl,
   buildAuthoredWorldPropPlacements,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
@@ -41,8 +39,7 @@ const ROCKS = Object.freeze({
 
 test('every rock asset is on the world-prop roster', () => {
   for (const id of Object.keys(ROCKS)) {
-    assert.ok(AUTHORED_PROP_ASSETS.worldProps.includes(id), `${id} missing from worldProps`);
-    assert.ok(AUTHORED_PROP_ASSET_IDS.includes(id), `${id} missing from the asset id list`);
+    assert.equal(manifest.assets.find((asset) => asset.assetId === id)?.category, 'world-prop', `${id} missing from the authored manifest`);
   }
 });
 
@@ -101,7 +98,7 @@ test('the dressing hold-out list stays small and stays in the atlas', () => {
   // not landing and the concept needs revisiting, not another entry.
   assert.ok(HELD_OUT_OF_DRESSING.length <= 1, 'too many rocks held out of dressing');
   for (const id of HELD_OUT_OF_DRESSING) {
-    assert.ok(AUTHORED_PROP_ASSET_IDS.includes(id), `${id} must stay on the roster while held out`);
+    assert.ok(atlas.frames.some((frame) => frame.assetId === id), `${id} must stay in the atlas while held out`);
   }
 });
 

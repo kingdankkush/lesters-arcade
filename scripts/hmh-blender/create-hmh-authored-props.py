@@ -168,7 +168,7 @@ def build_asset(asset: dict) -> dict:
     palette = asset['palette']
     primary = material(f'{asset_id}_primary', palette['primary'], metallic=0.12, roughness=0.68)
     secondary = material(f'{asset_id}_secondary', palette['secondary'], metallic=0.18, roughness=0.74)
-    emissive_world_shapes = {'pylon', 'crystal', 'beacon', 'console', 'terminal'}
+    emissive_world_shapes = {'pylon', 'crystal', 'beacon', 'console', 'terminal', 'awning-shopfront', 'water-tower', 'fuel-pump-island', 'town-billboard', 'streetlamp', 'relay-tower-setpiece', 'forked-spire-setpiece', 'proof-bridge-setpiece', 'hashwood-beacon-setpiece', 'mining-headframe-setpiece', 'liquidation-tower-setpiece'}
     accent_emission = 0.42 if asset['category'] == 'world-prop' and shape in emissive_world_shapes else 0.0 if asset['category'] == 'world-prop' else 0.65
     accent = material(f'{asset_id}_accent', palette['accent'], metallic=0.1, emission=accent_emission, roughness=0.68 if asset['category'] == 'world-prop' else 0.55)
     parts = []
@@ -1805,6 +1805,185 @@ def build_asset(asset: dict) -> dict:
             ))
         add(cube(f'{asset_id}_Knot', (0.0, -0.12, 0.90), (0.030, 0.020, 0.026), accent, asset_id, bevel=0.008))
 
+    elif shape in {
+        'relay-tower-setpiece', 'forked-spire-setpiece', 'proof-bridge-setpiece',
+        'hashwood-beacon-setpiece', 'mining-headframe-setpiece', 'liquidation-tower-setpiece',
+    }:
+        # A9 district landmarks: large, joined silhouettes with one dominant
+        # vertical read and district-specific secondary masses. Gameplay and
+        # collision stay with the canonical world landmark; these are art.
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.32), roughness=.72)
+        dark = material(f'{asset_id}_dark', tone(palette['secondary'], .68), roughness=.92)
+        metal = material(f'{asset_id}_metal', tone(palette['secondary'], 1.42), metallic=.44, roughness=.62)
+        if shape == 'relay-tower-setpiece':
+            add(cube(f'{asset_id}_Foundation', (0,0,.10), (.76,.58,.10), primary, asset_id, bevel=.05))
+            add(cube(f'{asset_id}_PlinthCap', (0,-.04,.22), (.68,.48,.045), lit, asset_id, bevel=.018))
+            for x in (-.46,0,.46):
+                add(cylinder(f'{asset_id}_Mast_{x}', (x,0,1.16+abs(x)*.26), .045, 2.12-abs(x)*.34, metal, asset_id, vertices=10, rotation=(0,math.radians(-6*x),0)))
+                add(cube(f'{asset_id}_Lamp_{x}', (x,-.055,2.18-abs(x)*.08), (.07,.05,.08), accent, asset_id, bevel=.016))
+            for z,w in ((.52,.62),(1.08,.52),(1.62,.42)): add(cube(f'{asset_id}_Cross_{z}', (0,0,z), (w,.035,.035), lit, asset_id, bevel=.008))
+            add(torus(f'{asset_id}_DishRim', (0,-.08,1.60), .32,.035,lit,asset_id,rotation=(math.radians(78),0,0)))
+            add(cube(f'{asset_id}_DishBar', (0,-.10,1.60), (.30,.025,.035), accent, asset_id, rotation=(0,0,.22), bevel=.006))
+            add(cube(f'{asset_id}_Console', (0,-.48,.42), (.32,.20,.30), primary, asset_id, bevel=.035))
+        elif shape == 'forked-spire-setpiece':
+            left=[(-.72,0),(-.18,0),(-.10,1.04),(-.26,1.72),(-.42,2.38),(-.62,1.42)]
+            right=[(.10,0),(.74,0),(.58,.88),(.64,1.76),(.42,2.18),(.24,1.20)]
+            add(prism_mesh(f'{asset_id}_Left',left,-.30,.30,primary,asset_id))
+            add(prism_mesh(f'{asset_id}_Right',right,-.34,.34,dark,asset_id))
+            add(cube(f'{asset_id}_Span', (0,-.02,1.04), (.50,.18,.09), metal, asset_id, rotation=(0,0,-.08), bevel=.025))
+            for i,z in enumerate((.46,.78,1.34)): add(cube(f'{asset_id}_Strata_{i}', (-.30 if i%2==0 else .34,-.32,z), (.24,.025,.035), lit, asset_id, rotation=(0,0,.12-i*.11), bevel=.008))
+            add(cube(f'{asset_id}_Warning', (0,-.24,1.20), (.17,.025,.11), accent, asset_id, rotation=(0,0,-.08), bevel=.012))
+            for i,x in enumerate((-.54,.54)): add(cube(f'{asset_id}_Rubble_{i}', (x,-.38,.10), (.18,.14,.10), lit if i else primary, asset_id, rotation=(.2,0,i*.7), bevel=.035))
+        elif shape == 'proof-bridge-setpiece':
+            add(cube(f'{asset_id}_Deck', (0,0,.46), (.88,.34,.10), primary, asset_id, bevel=.025))
+            for x in (-.68,.68):
+                add(cube(f'{asset_id}_Pier_{x}', (x,.04,.86), (.24,.36,1.68), dark, asset_id, bevel=.025))
+                add(cube(f'{asset_id}_Cap_{x}', (x,.04,1.72), (.30,.42,.12), lit, asset_id, bevel=.018))
+                add(cylinder(f'{asset_id}_Beacon_{x}', (x,.04,1.91), .06,.30,accent,asset_id,vertices=10))
+            add(cube(f'{asset_id}_TopSpan', (0,.04,1.72), (1.18,.32,.10), lit, asset_id, bevel=.012))
+            for side in (-1,1):
+                add(cube(f'{asset_id}_FacePost_{side}', (side*.68,-.30,1.10), (.12,.05,1.25), lit, asset_id, bevel=.01))
+                add(cube(f'{asset_id}_Truss_{side}', (side*.30,-.31,1.16), (.70,.045,.045), metal, asset_id, rotation=(0,math.radians(38*side),0), bevel=.007))
+            add(cube(f'{asset_id}_FaceTop', (0,-.30,1.72), (1.20,.05,.10), lit, asset_id, bevel=.012))
+            add(cube(f'{asset_id}_Ledger', (0,-.37,.92), (.38,.03,.13), accent, asset_id, bevel=.012))
+            for x in (-.36,0,.36): add(cube(f'{asset_id}_Rail_{x}', (x,-.32,.68), (.025,.025,.24), lit, asset_id, bevel=.006))
+        elif shape == 'hashwood-beacon-setpiece':
+            add(cylinder(f'{asset_id}_Trunk', (0,.02,.90), .30,1.72,dark,asset_id,vertices=11,rotation=(0,math.radians(-7),0)))
+            for i,(x,y,z,s) in enumerate(((-.40,.02,.92,.54),(.36,.05,1.14,.60),(-.10,.08,1.60,.66))):
+                add(cone(f'{asset_id}_Crown_{i}', (x,y,z), s,.78,primary if i!=1 else lit,asset_id))
+            for i,(x,y,r) in enumerate(((-.48,-.08,.30),(.45,.10,.32),(0,-.35,.28))): add(cube(f'{asset_id}_Root_{i}', (x,y,.15), (r,.10,.08), dark, asset_id, rotation=(0,0,(i-1)*.55), bevel=.035))
+            add(cone(f'{asset_id}_Crystal', (0,-.20,2.12), .18,.62,accent,asset_id))
+            add(torus(f'{asset_id}_Halo', (0,-.20,2.18), .30,.028,accent,asset_id,rotation=(math.radians(90),0,0)))
+            add(cube(f'{asset_id}_Shrine', (0,-.32,.50), (.30,.20,.12), metal, asset_id, bevel=.025))
+        elif shape == 'mining-headframe-setpiece':
+            add(cube(f'{asset_id}_Pad', (0,0,.08), (.82,.52,.08), dark, asset_id, bevel=.04))
+            for x in (-.48,.48):
+                add(cylinder(f'{asset_id}_Leg_{x}', (x,0,1.02), .055,2.04,metal,asset_id,vertices=8,rotation=(0,math.radians(-12*x),0)))
+            add(cube(f'{asset_id}_Crown', (0,0,1.94), (.58,.26,.09), lit, asset_id, bevel=.018))
+            for z,angle in ((.55,34),(1.02,-34),(1.48,34)): add(cube(f'{asset_id}_Brace_{z}', (0,-.05,z), (.62,.035,.035), primary, asset_id, rotation=(0,math.radians(angle),0), bevel=.006))
+            add(cube(f'{asset_id}_MidSpan', (0,-.04,1.18), (.48,.035,.045), lit, asset_id, bevel=.008))
+            add(cube(f'{asset_id}_BaseSpan', (0,-.04,.20), (.70,.05,.055), lit, asset_id, bevel=.012))
+            add(torus(f'{asset_id}_Wheel', (0,-.10,1.76), .28,.045,accent,asset_id,rotation=(math.radians(90),0,0)))
+            add(cylinder(f'{asset_id}_Axle', (0,-.10,1.76), .055,.22,metal,asset_id,vertices=10,rotation=(math.radians(90),0,0)))
+            add(cube(f'{asset_id}_Hoist', (0,-.18,.38), (.34,.22,.28), primary, asset_id, bevel=.04))
+        elif shape == 'liquidation-tower-setpiece':
+            add(cube(f'{asset_id}_Base', (0,0,.12), (.70,.52,.12), dark, asset_id, bevel=.045))
+            for x in (-.38,.38): add(cylinder(f'{asset_id}_Leg_{x}', (x,0,.88), .05,1.62,metal,asset_id,vertices=8,rotation=(0,math.radians(-8*x),0)))
+            add(cube(f'{asset_id}_Platform', (0,0,1.56), (.54,.40,.10), primary, asset_id, bevel=.025))
+            for x in (-.48,.48): add(cylinder(f'{asset_id}_Rail_{x}', (x,0,1.82), .025,.46,lit,asset_id,vertices=8))
+            add(cylinder(f'{asset_id}_Mast', (0,.02,2.02), .045,.92,metal,asset_id,vertices=10))
+            add(cube(f'{asset_id}_Ticker', (0,-.34,1.84), (.46,.035,.15), accent, asset_id, bevel=.018))
+            for i,w in enumerate((.34,.24,.40)): add(cube(f'{asset_id}_Line_{i}', (0,-.38,1.90-i*.09), (w,.012,.018), lit if i!=1 else secondary, asset_id, bevel=.004))
+            add(torus(f'{asset_id}_Signal', (0,-.02,2.46), .18,.028,accent,asset_id))
+
+    elif shape in {
+        'awning-shopfront', 'ruined-tenement', 'corrugated-lean-to', 'market-stall',
+        'water-tower', 'fuel-pump-island', 'town-billboard', 'porch-stoop',
+        'chain-fence-gate', 'streetlamp', 'mailbox', 'stacked-crates',
+    }:
+        # A6 shares a weathered settlement material grammar while each module
+        # keeps a distinct target-distance silhouette. These are source props;
+        # collisionProxy metadata is consumed by W2, never by this art builder.
+        lit = material(f'{asset_id}_lit', tone(palette['primary'], 1.18), roughness=.82)
+        dark = material(f'{asset_id}_dark', tone(palette['secondary'], .72), roughness=.94)
+        metal = material(f'{asset_id}_metal', tone(palette['secondary'], 1.3), metallic=.36, roughness=.68)
+        if shape == 'awning-shopfront':
+            add(cube(f'{asset_id}_Body', (0,0,.58), (.76,.42,.58), primary, asset_id, bevel=.025))
+            add(cube(f'{asset_id}_Parapet', (0,0,1.20), (.81,.46,.08), dark, asset_id, bevel=.018))
+            add(cube(f'{asset_id}_Window', (-.18,-.44,.58), (.34,.02,.33), accent, asset_id, bevel=.008))
+            add(cube(f'{asset_id}_Door', (.48,-.44,.45), (.16,.02,.42), secondary, asset_id, bevel=.01))
+            add(cube(f'{asset_id}_Awning', (-.12,-.59,.96), (.58,.25,.055), lit, asset_id, rotation=(math.radians(-10),0,0), bevel=.012))
+            for i,x in enumerate((-.52,-.26,0,.26,.52)): add(cube(f'{asset_id}_Stripe_{i}', (x-.12,-.61,.98), (.05,.25,.014), accent if i%2 else dark, asset_id, rotation=(math.radians(-10),0,0), bevel=.004))
+            add(cube(f'{asset_id}_Sign', (.12,-.46,1.14), (.42,.025,.10), accent, asset_id, bevel=.012))
+        elif shape == 'ruined-tenement':
+            add(cube(f'{asset_id}_Block', (0,0,.88), (.64,.45,.88), primary, asset_id, bevel=.018))
+            add(cube(f'{asset_id}_Roof', (-.08,.02,1.80), (.60,.44,.06), secondary, asset_id, rotation=(0,0,-.07), bevel=.012))
+            for floor,z in enumerate((.47,1.03,1.48)):
+                add(cube(f'{asset_id}_Band_{floor}', (0,-.46,z-.27), (.62,.018,.035), dark, asset_id, bevel=.005))
+                for col,x in enumerate((-.38,0,.38)):
+                    if floor==2 and col==2: continue
+                    add(cube(f'{asset_id}_Window_{floor}_{col}', (x,-.47,z), (.12,.018,.16), accent if (floor+col)%3==0 else dark, asset_id, bevel=.008))
+            add(cube(f'{asset_id}_Breach', (.43,-.468,1.48), (.12,.018,.30), dark, asset_id, rotation=(0,0,.08), bevel=.008))
+            for i,(x,y) in enumerate(((.48,-.28),(.30,-.40),(.12,-.46))): add(cube(f'{asset_id}_Rubble_{i}', (x,y,.07), (.10,.08,.07), lit, asset_id, rotation=(.2,0,i*.7), bevel=.025))
+        elif shape == 'corrugated-lean-to':
+            add(cube(f'{asset_id}_Rear', (0,.24,.48), (.62,.08,.48), dark, asset_id, bevel=.015))
+            add(cube(f'{asset_id}_Side', (-.54,0,.40), (.08,.34,.40), metal, asset_id, bevel=.012))
+            add(cube(f'{asset_id}_Roof', (0,-.02,.91), (.70,.46,.06), metal, asset_id, rotation=(math.radians(-8),0,0), bevel=.014))
+            for i,x in enumerate((-.55,-.33,-.11,.11,.33,.55)): add(cube(f'{asset_id}_Rib_{i}', (x,-.02,.94), (.018,.46,.025), primary if i%2 else dark, asset_id, rotation=(math.radians(-8),0,0), bevel=.004))
+            for x in (-.56,.56): add(cylinder(f'{asset_id}_Post_{x}', (x,-.30,.40), .035,.80,dark,asset_id,vertices=8))
+            add(cube(f'{asset_id}_Bench', (.12,-.20,.27), (.38,.22,.08), lit, asset_id, bevel=.015))
+        elif shape == 'market-stall':
+            add(cube(f'{asset_id}_Counter', (0,-.08,.48), (.56,.28,.08), dark, asset_id, bevel=.012))
+            add(cube(f'{asset_id}_Front', (0,.12,.27), (.56,.08,.27), primary, asset_id, bevel=.01))
+            for x in (-.50,.50): add(cylinder(f'{asset_id}_Post_{x}', (x,.04,.82), .035,1.42,dark,asset_id,vertices=8))
+            add(cube(f'{asset_id}_Canopy', (0,.02,1.38), (.66,.42,.055), lit, asset_id, rotation=(math.radians(-5),0,0), bevel=.015))
+            for i,x in enumerate((-.48,-.24,0,.24,.48)): add(cube(f'{asset_id}_Stripe_{i}', (x,-.08,1.40), (.055,.42,.015), accent if i%2 else secondary, asset_id, rotation=(math.radians(-5),0,0), bevel=.004))
+            for i,x in enumerate((-.30,0,.28)): add(cube(f'{asset_id}_Goods_{i}', (x,-.26,.58), (.09,.09,.08+i*.02), accent if i==1 else primary, asset_id, bevel=.025))
+        elif shape == 'water-tower':
+            for sx in (-1,1):
+                for sy in (-1,1): add(cylinder(f'{asset_id}_Leg_{sx}_{sy}', (sx*.28,sy*.24,.67), .035,1.34,dark,asset_id,vertices=8,rotation=(math.radians(-4)*sy,math.radians(4)*sx,0)))
+            add(cylinder(f'{asset_id}_Tank', (0,0,1.53), .43,.62,metal,asset_id,vertices=20))
+            add(cone(f'{asset_id}_Roof', (0,0,1.89), .45,.20,dark,asset_id))
+            add(torus(f'{asset_id}_Band', (0,0,1.53), .43,.028,accent,asset_id))
+            for z in (.38,.78,1.08): add(cube(f'{asset_id}_Brace_{z}', (0,-.25,z), (.30,.022,.022), lit, asset_id, rotation=(0,math.radians(28 if z!=.78 else -28),0), bevel=.005))
+            add(cube(f'{asset_id}_Ladder', (.35,-.19,.94), (.022,.018,.58), accent, asset_id, bevel=.004))
+        elif shape == 'fuel-pump-island':
+            add(cube(f'{asset_id}_Island', (0,0,.06), (.70,.34,.06), dark, asset_id, bevel=.04))
+            for x in (-.30,.30):
+                add(cube(f'{asset_id}_Pump_{x}', (x,-.05,.48), (.16,.14,.42), primary, asset_id, bevel=.035))
+                add(cube(f'{asset_id}_Meter_{x}', (x,-.195,.62), (.10,.015,.10), accent, asset_id, bevel=.008))
+                add(cylinder(f'{asset_id}_Hose_{x}', (x+.16,-.05,.44), .025,.48,metal,asset_id,vertices=8,rotation=(math.radians(12),0,0)))
+            for x in (-.60,.60): add(cylinder(f'{asset_id}_CanopyPost_{x}', (x,.12,.78), .035,1.45,metal,asset_id,vertices=8))
+            add(cube(f'{asset_id}_Canopy', (0,.06,1.50), (.78,.42,.08), primary, asset_id, bevel=.025))
+            add(cube(f'{asset_id}_Glow', (0,-.37,1.47), (.50,.02,.035), accent, asset_id, bevel=.008))
+        elif shape == 'town-billboard':
+            for x in (-.46,.46): add(cylinder(f'{asset_id}_Post_{x}', (x,.10,.70), .045,1.40,dark,asset_id,vertices=8))
+            add(cube(f'{asset_id}_Board', (0,0,1.30), (.68,.09,.40), primary, asset_id, rotation=(0,0,-.05), bevel=.018))
+            add(cube(f'{asset_id}_Inset', (0,-.10,1.30), (.58,.018,.30), secondary, asset_id, rotation=(0,0,-.05), bevel=.012))
+            add(cube(f'{asset_id}_Headline', (-.12,-.125,1.42), (.34,.012,.055), accent, asset_id, rotation=(0,0,-.05), bevel=.006))
+            for i,w in enumerate((.40,.30,.46)): add(cube(f'{asset_id}_Copy_{i}', (-.05,-.124,1.28-i*.10), (w,.01,.018), lit if i!=1 else accent, asset_id, bevel=.004))
+            add(cube(f'{asset_id}_Break', (.57,-.11,1.56), (.12,.025,.10), dark, asset_id, rotation=(.2,0,.6), bevel=.01))
+        elif shape == 'porch-stoop':
+            add(cube(f'{asset_id}_Facade', (0,.35,.72), (.46,.08,.66), primary, asset_id, bevel=.018))
+            add(cube(f'{asset_id}_Roof', (0,.26,1.42), (.52,.20,.06), dark, asset_id, rotation=(math.radians(-8),0,0), bevel=.012))
+            add(cube(f'{asset_id}_Deck', (0,.05,.34), (.56,.34,.08), lit, asset_id, bevel=.012))
+            for i,(y,z,w) in enumerate(((-.34,.07,.62),(-.23,.15,.58),(-.12,.23,.54))): add(cube(f'{asset_id}_Step_{i}', (0,y,z), (w,.10,.07), primary, asset_id, bevel=.012))
+            for x in (-.50,.50):
+                add(cylinder(f'{asset_id}_Post_{x}', (x,.22,.72), .03,.92,dark,asset_id,vertices=8))
+                add(cube(f'{asset_id}_Rail_{x}', (x,0,.62), (.03,.28,.03), dark, asset_id, rotation=(math.radians(10 if x>0 else -10),0,0), bevel=.005))
+            add(cube(f'{asset_id}_DoorFrame', (0,.36,.76), (.22,.035,.45), dark, asset_id, bevel=.01))
+            add(cube(f'{asset_id}_Door', (0,.32,.77), (.16,.02,.36), accent, asset_id, bevel=.008))
+        elif shape == 'chain-fence-gate':
+            for x in (-.65,.65): add(cylinder(f'{asset_id}_Post_{x}', (x,0,.58), .045,1.16,metal,asset_id,vertices=10))
+            for side in (-1,1):
+                center=side*.34
+                add(cube(f'{asset_id}_Top_{side}', (center,0,1.02), (.27,.025,.025), metal, asset_id, rotation=(0,0,side*.09), bevel=.005))
+                add(cube(f'{asset_id}_Base_{side}', (center,0,.16), (.27,.025,.025), metal, asset_id, rotation=(0,0,side*.09), bevel=.005))
+                for i in range(4): add(cube(f'{asset_id}_Picket_{side}_{i}', (center+(i-1.5)*.14,0,.58), (.012,.02,.42), dark, asset_id, rotation=(0,0,side*.09), bevel=.003))
+            add(cube(f'{asset_id}_Warning', (0,-.04,.76), (.14,.018,.09), accent, asset_id, rotation=(0,0,.09), bevel=.008))
+        elif shape == 'streetlamp':
+            add(cylinder(f'{asset_id}_Base', (0,0,.10), .13,.20,dark,asset_id,vertices=12))
+            add(cylinder(f'{asset_id}_Pole', (0,0,.88), .035,1.56,metal,asset_id,vertices=10))
+            add(cube(f'{asset_id}_Arm', (.18,0,1.64), (.20,.025,.025), metal, asset_id, rotation=(0,0,.14), bevel=.006))
+            add(cube(f'{asset_id}_Housing', (.38,0,1.55), (.14,.10,.08), secondary, asset_id, rotation=(0,0,-.14), bevel=.018))
+            add(cube(f'{asset_id}_Light', (.38,-.07,1.50), (.10,.025,.035), accent, asset_id, bevel=.012))
+            add(cube(f'{asset_id}_Poster', (0,-.045,.78), (.08,.018,.16), primary, asset_id, rotation=(0,0,-.14), bevel=.004))
+        elif shape == 'mailbox':
+            add(cylinder(f'{asset_id}_Post', (0,.05,.40), .045,.80,dark,asset_id,vertices=8))
+            add(cube(f'{asset_id}_Box', (0,-.02,.86), (.24,.20,.18), primary, asset_id, bevel=.06))
+            add(cylinder(f'{asset_id}_Roof', (0,-.02,1.02), .20,.48,lit,asset_id,vertices=12,rotation=(0,math.radians(90),0)))
+            add(cube(f'{asset_id}_Door', (-.25,-.02,.88), (.025,.17,.15), secondary, asset_id, bevel=.012))
+            add(cube(f'{asset_id}_FlagPost', (.12,-.22,1.02), (.018,.018,.22), accent, asset_id, bevel=.004))
+            add(cube(f'{asset_id}_Flag', (.20,-.22,1.18), (.09,.018,.06), accent, asset_id, bevel=.006))
+        elif shape == 'stacked-crates':
+            crates=((- .30,.04,.28,.28,.24,.28,0),(.30,.02,.26,.26,.23,.26,.08),(0,-.04,.80,.30,.24,.26,-.10))
+            for i,(x,y,z,sx,sy,sz,rz) in enumerate(crates):
+                add(cube(f'{asset_id}_Crate_{i}', (x,y,z), (sx,sy,sz), lit if i!=1 else primary, asset_id, rotation=(0,0,rz), bevel=.018))
+                front=y-sy-.012
+                add(cube(f'{asset_id}_BandH_{i}', (x,front,z), (sx+.015,.018,.028), dark, asset_id, rotation=(0,0,rz), bevel=.004))
+                add(cube(f'{asset_id}_BandV_{i}', (x,front-.005,z), (.028,.018,sz+.015), dark, asset_id, rotation=(0,0,rz), bevel=.004))
+            add(cube(f'{asset_id}_Mark', (0,-.292,.80), (.10,.014,.06), accent, asset_id, rotation=(0,0,-.1), bevel=.006))
+
     else:
         raise RuntimeError(f'Unknown authored prop shape: {shape}')
 
@@ -1819,6 +1998,11 @@ def configure_scene(manifest: dict):
     scene.render.resolution_x = manifest['render']['frameSize'][0]
     scene.render.resolution_y = manifest['render']['frameSize'][1]
     scene.render.resolution_percentage = 100
+    # Exact pixel reproducibility is a release contract. Eevee can vary a
+    # shaded edge by one RGB unit when tile work is scheduled across threads.
+    scene.render.threads_mode = 'FIXED'
+    scene.render.threads = 1
+    scene.render.dither_intensity = 0.0
     scene.render.image_settings.file_format = 'PNG'
     scene.render.image_settings.color_mode = 'RGBA'
     scene.render.image_settings.color_depth = '8'

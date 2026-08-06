@@ -3,8 +3,6 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-  AUTHORED_PROP_ASSETS,
-  AUTHORED_PROP_ASSET_IDS,
   authoredPropItemUrl,
   buildAuthoredWorldPropPlacements,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
@@ -36,8 +34,7 @@ const UNDERGROWTH = Object.freeze({
 
 test('every undergrowth asset is on the world-prop roster', () => {
   for (const id of Object.keys(UNDERGROWTH)) {
-    assert.ok(AUTHORED_PROP_ASSETS.worldProps.includes(id), `${id} missing from worldProps`);
-    assert.ok(AUTHORED_PROP_ASSET_IDS.includes(id), `${id} missing from the asset id list`);
+    assert.equal(manifest.assets.find((asset) => asset.assetId === id)?.category, 'world-prop', `${id} missing from the authored manifest`);
   }
 });
 

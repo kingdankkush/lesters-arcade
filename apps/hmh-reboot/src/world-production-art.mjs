@@ -62,7 +62,7 @@ export const WORLD_PRODUCTION_ART = artKit({
   // Ground motifs sit below routes while tangible detail props stay above
   // surfaces. Keeping those concerns separate prevents decorative strokes from
   // crossing roads without burying destructibles or explosive-zone props.
-  layers: Object.freeze(['terrain', 'groundDetails', 'routes', 'surfaces', 'details', 'blockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']),
+  layers: Object.freeze(['terrain', 'groundDetails', 'routes', 'surfaces', 'details', 'blockers', 'townBlockers', 'landmarks', 'interactions', 'particles', 'lighting', 'vignette']),
   shaderIds: Object.freeze(['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']),
 });
 
@@ -392,22 +392,23 @@ function screenBoundsVisible(points, view, margin) {
 
 function drawRoute(layers, points, route, kit, roadMask = null) {
   const zoom = points.zoom;
-  const trace = () => {
-    layers.routes.moveTo(points[0].x, points[0].y);
-    for (const point of points.slice(1)) layers.routes.lineTo(point.x, point.y);
+  const road=layers.routes,cues=layers.details;
+  const trace = (layer=road) => {
+    layer.moveTo(points[0].x, points[0].y);
+    for (const point of points.slice(1)) layer.lineTo(point.x, point.y);
   };
   // Roads used to be a flat slab between two hard black borders. They are now
   // built up in passes: a soft shoulder that fades into the ground, a worn
   // verge, the surface, a lighter centre wear band, and dashed lane marks —
   // so a route reads as a travelled surface rather than a coloured shape.
   trace();
-  layers.routes.stroke({ color: 0x130f13, width: (route.width + 40) * zoom, alpha: 0.32, cap: 'round', join: 'round' });
+  road.stroke({ color: 0x130f13, width: (route.width + 40) * zoom, alpha: 0.32, cap: 'round', join: 'round' });
   trace();
-  layers.routes.stroke({ color: 0x130f13, width: (route.width + 22) * zoom, alpha: 0.72, cap: 'round', join: 'round' });
+  road.stroke({ color: 0x130f13, width: (route.width + 22) * zoom, alpha: 0.72, cap: 'round', join: 'round' });
   trace();
-  layers.routes.stroke({ color: mixColor(kit.routeColor, 0x000000, 0.34), width: (route.width + 8) * zoom, alpha: 0.9, cap: 'round', join: 'round' });
+  road.stroke({ color: mixColor(kit.routeColor, 0x000000, 0.34), width: (route.width + 8) * zoom, alpha: 0.9, cap: 'round', join: 'round' });
   trace();
-  layers.routes.stroke({ color: kit.routeColor, width: route.width * zoom, alpha: route.kind === 'main' ? 0.96 : 0.82, cap: 'round', join: 'round' });
+  road.stroke({ color: kit.routeColor, width: route.width * zoom, alpha: route.kind === 'main' ? 0.96 : 0.82, cap: 'round', join: 'round' });
   if (roadMask) {
     // Same geometry into the mask, so the tiled surface clips exactly to the
     // travelled width.
@@ -416,8 +417,8 @@ function drawRoute(layers, points, route, kit, roadMask = null) {
     roadMask.stroke({ color: 0xffffff, width: route.width * zoom, cap: 'round', join: 'round' });
   }
   // Centre wear band: lighter where traffic polishes the surface.
-  trace();
-  layers.routes.stroke({ color: mixColor(kit.routeColor, 0xffffff, 0.16), width: Math.max(2, route.width * 0.42 * zoom), alpha: 0.3, cap: 'round', join: 'round' });
+  trace(cues);
+  cues.stroke({ color: mixColor(kit.routeColor, 0xffffff, 0.16), width: Math.max(2, route.width * 0.42 * zoom), alpha: 0.3, cap: 'round', join: 'round' });
 
   // Dashed lane marks along each segment, spaced in world units so they stay
   // locked to the road as the camera moves.
@@ -435,7 +436,7 @@ function drawRoute(layers, points, route, kit, roadMask = null) {
     const stride = (DASH + GAP) * zoom;
     const dashLength = DASH * zoom;
     for (let travelled = stride * 0.5; travelled + dashLength < length; travelled += stride) {
-      layers.routes.moveTo(from.x + stepX * travelled, from.y + stepY * travelled)
+      cues.moveTo(from.x + stepX * travelled, from.y + stepY * travelled)
         .lineTo(from.x + stepX * (travelled + dashLength), from.y + stepY * (travelled + dashLength))
         .stroke({ color: kit.detailColor, width: Math.max(1, 2.4 * zoom), alpha: route.kind === 'main' ? 0.32 : 0.18 });
     }
@@ -801,7 +802,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const anchors = shape.type === 'circle' ? [{ x: shape.x, y: shape.y }] : shape.type === 'capsule' ? [shape.a, shape.b] : shape.vertices;
     const points = anchors.map((point) => project({ ...point, z: 0 }));
     if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
-    drawBlocker(layers.blockers, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
+    const layer = feature.id.startsWith('town-') ? layers.townBlockers : layers.blockers;
+    drawBlocker(layer, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
   }
 
   for (const destructible of world.interactions.destructibles) {

@@ -1166,6 +1166,657 @@
         256,
         256
       ]
+    },
+    {
+      "assetId": "awning-shopfront",
+      "category": "world-prop",
+      "shape": "awning-shopfront",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#6f4b3c",
+        "secondary": "#27232b",
+        "accent": "#ffb85c"
+      },
+      "runtimeScale": 1.35,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.5,
+        "depth": 0.8
+      },
+      "townPlacements": [
+        {
+          "id": "shopfront",
+          "blockId": "yard:north-commercial",
+          "districtId": "liquidation-yard",
+          "x": 10450,
+          "y": 650,
+          "scale": 1,
+          "collisionBlockerId": "town-north-shopfront",
+          "collisionPolicy": "canonical-blocker"
+        }
+      ]
+    },
+    {
+      "assetId": "ruined-tenement",
+      "category": "world-prop",
+      "shape": "ruined-tenement",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#594c4b",
+        "secondary": "#26242b",
+        "accent": "#ff627f"
+      },
+      "runtimeScale": 1.3,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.3,
+        "depth": 0.9
+      },
+      "townPlacements": [
+        {
+          "id": "tenement-north",
+          "blockId": "yard:north-commercial",
+          "districtId": "liquidation-yard",
+          "x": 11150,
+          "y": 650,
+          "scale": 1,
+          "collisionBlockerId": "town-north-tenement",
+          "collisionPolicy": "canonical-blocker"
+        },
+        {
+          "id": "tenement-east",
+          "blockId": "yard:east-residential",
+          "districtId": "liquidation-yard",
+          "x": 11350,
+          "y": 3740,
+          "scale": 1,
+          "collisionBlockerId": "town-east-tenement",
+          "collisionPolicy": "canonical-blocker"
+        }
+      ]
+    },
+    {
+      "assetId": "corrugated-lean-to",
+      "category": "world-prop",
+      "shape": "corrugated-lean-to",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#59636a",
+        "secondary": "#2b3035",
+        "accent": "#5cffe2"
+      },
+      "runtimeScale": 1.1,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.2,
+        "depth": 0.7
+      },
+      "townPlacements": [
+        {
+          "id": "lean-to",
+          "blockId": "yard:east-residential",
+          "districtId": "liquidation-yard",
+          "x": 11650,
+          "y": 3050,
+          "scale": 1,
+          "collisionBlockerId": "town-east-lean-to",
+          "collisionPolicy": "canonical-blocker"
+        }
+      ]
+    },
+    {
+      "assetId": "market-stall",
+      "category": "world-prop",
+      "shape": "market-stall",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#77523c",
+        "secondary": "#30262a",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 1.0,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.1,
+        "depth": 0.7
+      },
+      "townPlacements": [
+        {
+          "id": "market-stall",
+          "blockId": "yard:south-market",
+          "districtId": "liquidation-yard",
+          "x": 10450,
+          "y": 3550,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        }
+      ]
+    },
+    {
+      "assetId": "water-tower",
+      "category": "world-prop",
+      "shape": "water-tower",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#53636c",
+        "secondary": "#2b3036",
+        "accent": "#49ddff"
+      },
+      "runtimeScale": 1.2,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "circle",
+        "width": 0.9,
+        "depth": 0.9
+      },
+      "townPlacements": [
+        {
+          "id": "water-tower",
+          "blockId": "yard:north-commercial",
+          "districtId": "liquidation-yard",
+          "x": 11550,
+          "y": 1100,
+          "scale": 1,
+          "collisionBlockerId": "town-water-tower",
+          "collisionPolicy": "canonical-blocker"
+        }
+      ]
+    },
+    {
+      "assetId": "fuel-pump-island",
+      "category": "world-prop",
+      "shape": "fuel-pump-island",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#7a3d42",
+        "secondary": "#28262c",
+        "accent": "#ffc857"
+      },
+      "runtimeScale": 1.05,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.3,
+        "depth": 0.65
+      },
+      "townPlacements": [
+        {
+          "id": "fuel-island",
+          "blockId": "yard:south-market",
+          "districtId": "liquidation-yard",
+          "x": 10800,
+          "y": 3600,
+          "scale": 1,
+          "collisionBlockerId": "town-fuel-island",
+          "collisionPolicy": "canonical-blocker"
+        }
+      ]
+    },
+    {
+      "assetId": "town-billboard",
+      "category": "world-prop",
+      "shape": "town-billboard",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#60453a",
+        "secondary": "#2a2529",
+        "accent": "#ff527e"
+      },
+      "runtimeScale": 1.15,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.2,
+        "depth": 0.25
+      },
+      "townPlacements": [
+        {
+          "id": "billboard",
+          "blockId": "yard:north-commercial",
+          "districtId": "liquidation-yard",
+          "x": 10650,
+          "y": 1200,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        }
+      ]
+    },
+    {
+      "assetId": "porch-stoop",
+      "category": "world-prop",
+      "shape": "porch-stoop",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#6b5747",
+        "secondary": "#302a29",
+        "accent": "#83f28f"
+      },
+      "runtimeScale": 0.95,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.0,
+        "depth": 0.55
+      },
+      "townPlacements": [
+        {
+          "id": "porch",
+          "blockId": "yard:east-residential",
+          "districtId": "liquidation-yard",
+          "x": 11400,
+          "y": 3350,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        }
+      ]
+    },
+    {
+      "assetId": "chain-fence-gate",
+      "category": "world-prop",
+      "shape": "chain-fence-gate",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#59646b",
+        "secondary": "#252a30",
+        "accent": "#49ddff"
+      },
+      "runtimeScale": 0.85,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 1.25,
+        "depth": 0.15
+      },
+      "townPlacements": [
+        {
+          "id": "market-gate",
+          "blockId": "yard:south-market",
+          "districtId": "liquidation-yard",
+          "x": 10150,
+          "y": 3400,
+          "scale": 1,
+          "collisionBlockerId": "town-market-gate",
+          "collisionPolicy": "canonical-blocker"
+        }
+      ]
+    },
+    {
+      "assetId": "streetlamp",
+      "category": "world-prop",
+      "shape": "streetlamp",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#46535b",
+        "secondary": "#242a30",
+        "accent": "#ffd479"
+      },
+      "runtimeScale": 0.8,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "circle",
+        "width": 0.2,
+        "depth": 0.2
+      },
+      "townPlacements": [
+        {
+          "id": "lamp-north",
+          "blockId": "yard:north-commercial",
+          "districtId": "liquidation-yard",
+          "x": 10900,
+          "y": 1250,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        },
+        {
+          "id": "lamp-market",
+          "blockId": "yard:south-market",
+          "districtId": "liquidation-yard",
+          "x": 11100,
+          "y": 3600,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        },
+        {
+          "id": "lamp-east",
+          "blockId": "yard:east-residential",
+          "districtId": "liquidation-yard",
+          "x": 11450,
+          "y": 3400,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        }
+      ]
+    },
+    {
+      "assetId": "mailbox",
+      "category": "world-prop",
+      "shape": "mailbox",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#5d4b45",
+        "secondary": "#27262a",
+        "accent": "#ff6b7d"
+      },
+      "runtimeScale": 0.75,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "circle",
+        "width": 0.25,
+        "depth": 0.25
+      },
+      "townPlacements": [
+        {
+          "id": "mailbox-north",
+          "blockId": "yard:north-commercial",
+          "districtId": "liquidation-yard",
+          "x": 10300,
+          "y": 1200,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        },
+        {
+          "id": "mailbox-market",
+          "blockId": "yard:south-market",
+          "districtId": "liquidation-yard",
+          "x": 10250,
+          "y": 3650,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        },
+        {
+          "id": "mailbox-east",
+          "blockId": "yard:east-residential",
+          "districtId": "liquidation-yard",
+          "x": 11800,
+          "y": 3600,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        }
+      ]
+    },
+    {
+      "assetId": "stacked-crates",
+      "category": "world-prop",
+      "shape": "stacked-crates",
+      "moduleFamily": "town-kit-v1",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "palette": {
+        "primary": "#745239",
+        "secondary": "#30271f",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 0.9,
+      "frameSize": [
+        256,
+        256
+      ],
+      "collisionProxy": {
+        "type": "box",
+        "width": 0.7,
+        "depth": 0.6
+      },
+      "townPlacements": [
+        {
+          "id": "crates-market",
+          "blockId": "yard:south-market",
+          "districtId": "liquidation-yard",
+          "x": 10600,
+          "y": 3650,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        },
+        {
+          "id": "crates-east",
+          "blockId": "yard:east-residential",
+          "districtId": "liquidation-yard",
+          "x": 11250,
+          "y": 3900,
+          "scale": 1,
+          "collisionPolicy": "visual-only"
+        }
+      ]
+    },
+    {
+      "assetId": "relay-tower-setpiece",
+      "category": "world-prop",
+      "shape": "relay-tower-setpiece",
+      "moduleFamily": "landmark-setpiece",
+      "landmarkId": "frontier-relay",
+      "districts": [
+        "frontier-relay"
+      ],
+      "runtimeAuthority": "projection-only",
+      "palette": {
+        "primary": "#314b4c",
+        "secondary": "#151f26",
+        "accent": "#5cffe2"
+      },
+      "runtimeScale": 1.75,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "forked-spire-setpiece",
+      "category": "world-prop",
+      "shape": "forked-spire-setpiece",
+      "moduleFamily": "landmark-setpiece",
+      "landmarkId": "rugpull-ravine",
+      "districts": [
+        "rugpull-ravine"
+      ],
+      "runtimeAuthority": "projection-only",
+      "palette": {
+        "primary": "#6f493f",
+        "secondary": "#2b2025",
+        "accent": "#ff875c"
+      },
+      "runtimeScale": 1.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "proof-bridge-setpiece",
+      "category": "world-prop",
+      "shape": "proof-bridge-setpiece",
+      "moduleFamily": "landmark-setpiece",
+      "landmarkId": "liquidity-crossing",
+      "districts": [
+        "liquidity-crossing"
+      ],
+      "runtimeAuthority": "projection-only",
+      "palette": {
+        "primary": "#4c6570",
+        "secondary": "#202c35",
+        "accent": "#8feaff"
+      },
+      "runtimeScale": 1.7,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "hashwood-beacon-setpiece",
+      "category": "world-prop",
+      "shape": "hashwood-beacon-setpiece",
+      "moduleFamily": "landmark-setpiece",
+      "landmarkId": "hashwood",
+      "districts": [
+        "hashwood"
+      ],
+      "runtimeAuthority": "projection-only",
+      "palette": {
+        "primary": "#365845",
+        "secondary": "#1b2924",
+        "accent": "#7dff8c"
+      },
+      "runtimeScale": 1.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "mining-headframe-setpiece",
+      "category": "world-prop",
+      "shape": "mining-headframe-setpiece",
+      "moduleFamily": "landmark-setpiece",
+      "landmarkId": "mining-camp",
+      "districts": [
+        "mining-camp"
+      ],
+      "runtimeAuthority": "projection-only",
+      "palette": {
+        "primary": "#66523d",
+        "secondary": "#26282b",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 1.8,
+      "frameSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "assetId": "liquidation-tower-setpiece",
+      "category": "world-prop",
+      "shape": "liquidation-tower-setpiece",
+      "moduleFamily": "landmark-setpiece",
+      "landmarkId": "liquidation-yard",
+      "districts": [
+        "liquidation-yard"
+      ],
+      "runtimeAuthority": "projection-only",
+      "palette": {
+        "primary": "#5e404d",
+        "secondary": "#241f2a",
+        "accent": "#ff5d8f"
+      },
+      "runtimeScale": 1.85,
+      "frameSize": [
+        256,
+        256
+      ]
+    }
+  ],
+  "townBlocks": [
+    {
+      "id": "yard:north-commercial",
+      "districtId": "liquidation-yard",
+      "streetClearance": 192,
+      "alleyClearance": 144,
+      "placementIds": [
+        "shopfront",
+        "tenement-north",
+        "water-tower",
+        "billboard",
+        "lamp-north",
+        "mailbox-north"
+      ]
+    },
+    {
+      "id": "yard:south-market",
+      "districtId": "liquidation-yard",
+      "streetClearance": 192,
+      "alleyClearance": 144,
+      "placementIds": [
+        "market-stall",
+        "fuel-island",
+        "market-gate",
+        "crates-market",
+        "lamp-market",
+        "mailbox-market"
+      ]
+    },
+    {
+      "id": "yard:east-residential",
+      "districtId": "liquidation-yard",
+      "streetClearance": 192,
+      "alleyClearance": 144,
+      "placementIds": [
+        "lean-to",
+        "porch",
+        "tenement-east",
+        "crates-east",
+        "lamp-east",
+        "mailbox-east"
+      ]
     }
   ]
 }

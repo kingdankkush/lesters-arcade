@@ -3,8 +3,6 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-  AUTHORED_PROP_ASSETS,
-  AUTHORED_PROP_ASSET_IDS,
   authoredPropItemUrl,
   buildAuthoredWorldPropPlacements,
   AUTHORED_CAMP_KIT,
@@ -41,8 +39,7 @@ const CAMP = Object.freeze({
 
 test('every camp asset is on the world-prop roster', () => {
   for (const id of Object.keys(CAMP)) {
-    assert.ok(AUTHORED_PROP_ASSETS.worldProps.includes(id), `${id} missing from worldProps`);
-    assert.ok(AUTHORED_PROP_ASSET_IDS.includes(id), `${id} missing from the asset id list`);
+    assert.equal(manifest.assets.find((asset) => asset.assetId === id)?.category, 'world-prop', `${id} missing from the authored manifest`);
   }
 });
 
@@ -101,7 +98,7 @@ test('the camp kit declares encampments tied to encounter regions', () => {
     assert.ok(camp.x >= 0 && camp.x <= 12_000 && camp.y >= 0 && camp.y <= 4_800, `${camp.id} out of bounds`);
     assert.ok(Array.isArray(camp.propIds) && camp.propIds.length >= 3, `${camp.id} is too thin to read as a camp`);
     for (const id of camp.propIds) {
-      assert.ok(AUTHORED_PROP_ASSET_IDS.includes(id), `${camp.id} references unknown prop ${id}`);
+      assert.ok(atlas.frames.some((frame) => frame.assetId === id), `${camp.id} references unknown prop ${id}`);
     }
   }
 });

@@ -48,6 +48,12 @@ def canonical(image: Image.Image) -> Image.Image:
     for index in range(0, len(data), 4):
         if data[index + 3] == 0:
             data[index:index + 3] = b'\0\0\0'
+        else:
+            # Preserve authored alpha exactly while removing least-significant
+            # backend RGB noise. Maximum per-channel impact is 7/255.
+            data[index] &= 0xF8
+            data[index + 1] &= 0xF8
+            data[index + 2] &= 0xF8
     return Image.frombytes('RGBA', image.size, bytes(data))
 
 
@@ -146,6 +152,7 @@ def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_
             'id':asset['assetId'],'assetId':asset['assetId'],'category':asset['category'],'shape':asset['shape'],
             'itemUrl':f"./items/{asset['assetId']}.png",
             'districts':asset.get('districts',[]),'runtimeScale':asset['runtimeScale'],'frame':{'x':ax,'y':ay,'w':width,'h':height},
+            'moduleFamily':asset.get('moduleFamily'),'landmarkId':asset.get('landmarkId'),'collisionProxy':asset.get('collisionProxy'),'townPlacements':asset.get('townPlacements',[]),
             'pivot':{'x':pivot_x,'y':pivot_y},'anchor':{'x':round(pivot_x/max(width,1),6),'y':round(pivot_y/max(height,1),6)},
             'opaquePixels':record['opaquePixels'],'massCentroidY':record['massCentroidY'],
             'sourcePixelSha256':record['sourcePixelSha256'],'rotated':False,'trimmed':True,
@@ -153,7 +160,7 @@ def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_
     atlas_path=output_dir/'hmh-authored-props-atlas.png'; atlas.save(atlas_path,optimize=False,compress_level=9)
     metadata={
       'schemaVersion':1,'pipelineId':manifest['pipelineId'],'classification':manifest['classification'],'runtimeAuthority':manifest['runtimeAuthority'],
-      'image':'./hmh-authored-props-atlas.png','cameraPitchDegrees':manifest['render']['cameraPitchDegrees'],'assetCount':len(frames),
+      'image':'./hmh-authored-props-atlas.png','cameraPitchDegrees':manifest['render']['cameraPitchDegrees'],'assetCount':len(frames),'atlasSize':{'width':size,'height':size},
       'categories':sorted({frame['category'] for frame in frames}),'frames':frames,
     }
     metadata_path=output_dir/'hmh-authored-props-atlas.json'; write_json(metadata_path,metadata)

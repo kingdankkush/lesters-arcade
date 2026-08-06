@@ -267,7 +267,9 @@ def bake_material(name: str, material: dict) -> tuple[Image.Image, dict | None]:
     resolved = [material_variant(material, variant) for variant in variants]
     variant_tiles = [bake_surface(spec) for spec in resolved]
     mask_seed = int(material["seed"]) ^ 0x544831
-    selector = fbm(TILE_SIZE, PATCH_MASK_OCTAVES, mask_seed)
+    mask_periods = [4, 8, 16] if name == "road" else PATCH_MASK_PERIODS
+    mask_octaves = [(period, amplitude) for period, (_, amplitude) in zip(mask_periods, PATCH_MASK_OCTAVES)]
+    selector = fbm(TILE_SIZE, mask_octaves, mask_seed)
     output = Image.new("RGBA", (TILE_SIZE, TILE_SIZE))
     pixels = output.load()
 
@@ -277,6 +279,18 @@ def bake_material(name: str, material: dict) -> tuple[Image.Image, dict | None]:
     for y in range(TILE_SIZE):
         for x in range(TILE_SIZE):
             value = selector[y][x]
+            if name == "road":
+                # Road patches must not resolve as district-scale coloured
+                # islands. Continuously crossfade gravel -> asphalt -> dirt;
+                # medium wrapped periods keep the texture varied but calm at
+                # gameplay zoom.
+                position = smootherstep(value) * 2.0
+                low = min(1, int(position))
+                amount = smootherstep(position - low)
+                left = variant_tiles[low].getpixel((x, y))
+                right = variant_tiles[low + 1].getpixel((x, y))
+                pixels[x, y] = tuple(round(left[index] + (right[index] - left[index]) * amount) for index in range(4))
+                continue
             if value < 0.46:
                 amount = smootherstep(min(1.0, (0.46 - value) / 0.18))
                 source = variant_tiles[0].getpixel((x, y))
@@ -295,7 +309,7 @@ def bake_material(name: str, material: dict) -> tuple[Image.Image, dict | None]:
         "mask": {
             "source": "wrapped-fbm",
             "seed": mask_seed,
-            "periods": PATCH_MASK_PERIODS,
+            "periods": mask_periods,
         },
         "variants": [
             {
@@ -380,6 +394,15 @@ MATERIALS = {
         "seed": 101, "base": "#8a7350", "shadow": "#4f4130", "highlight": "#bda278",
         "accent": "#d8c199", "accentAmount": 0.22, "octaves": [(12, 1.0), (24, 0.5), (48, 0.3), (96, 0.2)],
         "detailOctaves": [(64, 1.0), (128, 0.55)], "relief": 52, "grain": 0.16, "specular": 0.07,
+        # T4: the runtime keeps one pooled/masked road texture request. These
+        # three materials are composited into that tile with the same wrapped
+        # mask as district patches, so roads gain local material identity with
+        # no child code, request, collision, or navigation authority.
+        "patchVariants": [
+            {"id": "gravel-shoulder", "seed": 1011, "base": "#766f62", "shadow": "#454039", "highlight": "#a69b89", "relief": 62, "grain": 0.2},
+            {"id": "cracked-asphalt", "seed": 1012, "base": "#625f59", "shadow": "#33312e", "highlight": "#8b877e", "relief": 68, "grain": 0.22, "specular": 0.04},
+            {"id": "dirt-track", "seed": 1013, "base": "#7a6855", "shadow": "#44372c", "highlight": "#aa9075", "relief": 56, "grain": 0.18, "accent": "#c3a483"},
+        ],
     },
     "water": {
         "seed": 131, "base": "#12617f", "shadow": "#07374d", "highlight": "#3fa7c4",
@@ -523,7 +546,8 @@ def main() -> None:
         "fringeHeight": FRINGE_HEIGHT,
         "paintedLayering": True,
         "intraDistrictPatches": True,
-        "districtPatches": patch_records,
+        "districtPatches": [record for record in patch_records if record["id"] != "road"],
+        "roadNetwork": next((record for record in patch_records if record["id"] == "road"), None),
         "fringes": fringe_records,
         "seamlessVerified": bool(args.verify_seamless),
         "seamStatistics": seam_stats,
