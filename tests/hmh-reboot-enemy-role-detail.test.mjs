@@ -51,6 +51,7 @@ test('Cycle 034 gives both close-range undead families explicit role-readable de
   });
   assert.deepEqual(bagholder.animationProfile, {
     kind: 'undead-straight-lunge-v1',
+    damageResponse: 'snapback-stumble-v1',
   });
 
   assert.equal(whale.identityForm, 'zombie');
@@ -61,6 +62,7 @@ test('Cycle 034 gives both close-range undead families explicit role-readable de
   });
   assert.deepEqual(whale.animationProfile, {
     kind: 'undead-shoulder-charge-v1',
+    damageResponse: 'armored-shoulder-absorb-v1',
   });
 });
 
@@ -103,6 +105,7 @@ test('Cycle 035 gives the remaining ranged and support families explicit role-re
   });
   assert.deepEqual(liquidatorAgent.animationProfile, {
     kind: 'suppression-rifle-burst-v1',
+    damageResponse: 'rifle-shoulder-recoil-v1',
   });
 
   assert.equal(validatorCultist.identityForm, 'zombie');
@@ -113,6 +116,7 @@ test('Cycle 035 gives the remaining ranged and support families explicit role-re
   });
   assert.deepEqual(validatorCultist.animationProfile, {
     kind: 'validator-staff-channel-v1',
+    damageResponse: 'staff-braced-shock-v1',
   });
 });
 

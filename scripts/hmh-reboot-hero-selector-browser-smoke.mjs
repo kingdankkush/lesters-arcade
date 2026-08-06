@@ -56,12 +56,12 @@ try {
       assert.equal(evidence.roster.overflowX, 'auto');
       assert.ok(evidence.documentHeight < 1800, `mobile selector too tall: ${evidence.documentHeight}`);
       assert.ok(evidence.cards.every((card) => card.rect.width <= 340 && card.rect.width >= 300));
-      assert.ok(evidence.cards.every((card) => Math.abs(card.rect.top - evidence.cards[0].rect.top) <= 1));
+      assert.ok(evidence.cards.every((card) => Math.abs(card.layoutTop - evidence.cards[0].layoutTop) <= 1));
     } else {
       assert.equal(swipeHintVisible, false);
       assert.equal(jukeboxVisible, false, 'desktop jukebox must not cover locked hero cards');
       assert.ok(evidence.roster.scrollWidth <= evidence.roster.clientWidth + 2, 'desktop roster must not scroll horizontally');
-      assert.ok(evidence.cards.every((card) => Math.abs(card.rect.top - evidence.cards[0].rect.top) <= 1));
+      assert.ok(evidence.cards.every((card) => Math.abs(card.layoutTop - evidence.cards[0].layoutTop) <= 1));
     }
     assert.deepEqual(errors, []);
     await page.screenshot({ path: path.join(evidenceRoot, `${profile.id}.png`), fullPage: true });

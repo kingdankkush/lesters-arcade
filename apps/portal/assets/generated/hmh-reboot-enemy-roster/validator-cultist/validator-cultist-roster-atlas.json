@@ -1,6 +1,7 @@
 {
   "actorId": "validator-cultist",
   "animationProfile": {
+    "damageResponse": "staff-braced-shock-v1",
     "kind": "validator-staff-channel-v1"
   },
   "boss": false,
@@ -31,8 +32,8 @@
       "frame": {
         "h": 82,
         "w": 44,
-        "x": 647,
-        "y": 192
+        "x": 555,
+        "y": 191
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__east__000",
@@ -61,8 +62,8 @@
       "frame": {
         "h": 79,
         "w": 44,
-        "x": 921,
-        "y": 362
+        "x": 883,
+        "y": 360
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__east__001",
@@ -92,7 +93,7 @@
         "h": 81,
         "w": 41,
         "x": 267,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__east__002",
@@ -122,7 +123,7 @@
         "h": 81,
         "w": 48,
         "x": 310,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__north-east__000",
@@ -152,7 +153,7 @@
         "h": 81,
         "w": 56,
         "x": 360,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__north-east__001",
@@ -181,8 +182,8 @@
       "frame": {
         "h": 79,
         "w": 45,
-        "x": 967,
-        "y": 362
+        "x": 929,
+        "y": 360
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__north-east__002",
@@ -211,8 +212,8 @@
       "frame": {
         "h": 80,
         "w": 76,
-        "x": 274,
-        "y": 362
+        "x": 170,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__north-west__000",
@@ -242,7 +243,7 @@
         "h": 81,
         "w": 63,
         "x": 418,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__north-west__001",
@@ -272,7 +273,7 @@
         "h": 79,
         "w": 62,
         "x": 2,
-        "y": 445
+        "y": 443
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__north-west__002",
@@ -301,8 +302,8 @@
       "frame": {
         "h": 80,
         "w": 83,
-        "x": 352,
-        "y": 362
+        "x": 248,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__north__000",
@@ -332,7 +333,7 @@
         "h": 81,
         "w": 78,
         "x": 483,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__north__001",
@@ -362,7 +363,7 @@
         "h": 79,
         "w": 64,
         "x": 66,
-        "y": 445
+        "y": 443
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__north__002",
@@ -391,8 +392,8 @@
       "frame": {
         "h": 70,
         "w": 76,
-        "x": 689,
-        "y": 606
+        "x": 686,
+        "y": 604
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__south-east__000",
@@ -421,8 +422,8 @@
       "frame": {
         "h": 75,
         "w": 64,
-        "x": 900,
-        "y": 526
+        "x": 800,
+        "y": 524
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__south-east__001",
@@ -451,8 +452,8 @@
       "frame": {
         "h": 82,
         "w": 62,
-        "x": 693,
-        "y": 192
+        "x": 601,
+        "y": 191
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__south-east__002",
@@ -481,8 +482,8 @@
       "frame": {
         "h": 68,
         "w": 48,
-        "x": 824,
-        "y": 606
+        "x": 821,
+        "y": 604
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__south-west__000",
@@ -511,8 +512,8 @@
       "frame": {
         "h": 75,
         "w": 57,
-        "x": 2,
-        "y": 606
+        "x": 866,
+        "y": 524
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__south-west__001",
@@ -541,8 +542,8 @@
       "frame": {
         "h": 82,
         "w": 45,
-        "x": 757,
-        "y": 192
+        "x": 665,
+        "y": 191
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__south-west__002",
@@ -571,8 +572,8 @@
       "frame": {
         "h": 64,
         "w": 83,
-        "x": 874,
-        "y": 606
+        "x": 871,
+        "y": 604
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__south__000",
@@ -601,8 +602,8 @@
       "frame": {
         "h": 71,
         "w": 78,
-        "x": 609,
-        "y": 606
+        "x": 606,
+        "y": 604
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__south__001",
@@ -631,8 +632,8 @@
       "frame": {
         "h": 80,
         "w": 64,
-        "x": 437,
-        "y": 362
+        "x": 333,
+        "y": 360
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__south__002",
@@ -661,8 +662,8 @@
       "frame": {
         "h": 75,
         "w": 36,
-        "x": 61,
-        "y": 606
+        "x": 925,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__attack__west__000",
@@ -692,7 +693,7 @@
         "h": 79,
         "w": 36,
         "x": 132,
-        "y": 445
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__attack__west__001",
@@ -722,7 +723,7 @@
         "h": 81,
         "w": 37,
         "x": 563,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__attack__west__002",
@@ -782,7 +783,7 @@
         "h": 79,
         "w": 54,
         "x": 170,
-        "y": 445
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__east__001",
@@ -812,7 +813,7 @@
         "h": 54,
         "w": 73,
         "x": 262,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__east__002",
@@ -842,7 +843,7 @@
         "h": 45,
         "w": 69,
         "x": 939,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__east__003",
@@ -871,7 +872,7 @@
       "frame": {
         "h": 91,
         "w": 53,
-        "x": 667,
+        "x": 597,
         "y": 2
       },
       "frameIndex": 0,
@@ -901,8 +902,8 @@
       "frame": {
         "h": 83,
         "w": 54,
-        "x": 211,
-        "y": 192
+        "x": 2,
+        "y": 191
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__north-east__001",
@@ -932,7 +933,7 @@
         "h": 58,
         "w": 62,
         "x": 78,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__north-east__002",
@@ -962,7 +963,7 @@
         "h": 44,
         "w": 55,
         "x": 151,
-        "y": 747
+        "y": 745
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__north-east__003",
@@ -991,8 +992,8 @@
       "frame": {
         "h": 80,
         "w": 57,
-        "x": 503,
-        "y": 362
+        "x": 399,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__death__north-west__000",
@@ -1021,8 +1022,8 @@
       "frame": {
         "h": 78,
         "w": 74,
-        "x": 866,
-        "y": 445
+        "x": 893,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__north-west__001",
@@ -1052,7 +1053,7 @@
         "h": 52,
         "w": 77,
         "x": 622,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__north-west__002",
@@ -1082,7 +1083,7 @@
         "h": 44,
         "w": 57,
         "x": 208,
-        "y": 747
+        "y": 745
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__north-west__003",
@@ -1111,8 +1112,8 @@
       "frame": {
         "h": 80,
         "w": 70,
-        "x": 562,
-        "y": 362
+        "x": 458,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__death__north__000",
@@ -1142,7 +1143,7 @@
         "h": 79,
         "w": 67,
         "x": 226,
-        "y": 445
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__north__001",
@@ -1172,7 +1173,7 @@
         "h": 56,
         "w": 63,
         "x": 197,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__north__002",
@@ -1202,7 +1203,7 @@
         "h": 44,
         "w": 64,
         "x": 267,
-        "y": 747
+        "y": 745
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__north__003",
@@ -1231,7 +1232,7 @@
       "frame": {
         "h": 85,
         "w": 57,
-        "x": 705,
+        "x": 440,
         "y": 99
       },
       "frameIndex": 0,
@@ -1262,7 +1263,7 @@
         "h": 62,
         "w": 74,
         "x": 2,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__south-east__001",
@@ -1292,7 +1293,7 @@
         "h": 52,
         "w": 86,
         "x": 701,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__south-east__002",
@@ -1322,7 +1323,7 @@
         "h": 53,
         "w": 81,
         "x": 406,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__south-east__003",
@@ -1351,8 +1352,8 @@
       "frame": {
         "h": 80,
         "w": 53,
-        "x": 634,
-        "y": 362
+        "x": 530,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__death__south-west__000",
@@ -1382,7 +1383,7 @@
         "h": 58,
         "w": 53,
         "x": 142,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__south-west__001",
@@ -1412,7 +1413,7 @@
         "h": 52,
         "w": 68,
         "x": 789,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__south-west__002",
@@ -1442,7 +1443,7 @@
         "h": 53,
         "w": 65,
         "x": 489,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__south-west__003",
@@ -1471,8 +1472,8 @@
       "frame": {
         "h": 78,
         "w": 70,
-        "x": 942,
-        "y": 445
+        "x": 2,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__death__south__000",
@@ -1502,7 +1503,7 @@
         "h": 54,
         "w": 67,
         "x": 337,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__south__001",
@@ -1532,7 +1533,7 @@
         "h": 45,
         "w": 63,
         "x": 2,
-        "y": 747
+        "y": 745
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__south__002",
@@ -1562,7 +1563,7 @@
         "h": 53,
         "w": 64,
         "x": 556,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__south__003",
@@ -1592,7 +1593,7 @@
         "h": 81,
         "w": 25,
         "x": 602,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__death__west__000",
@@ -1621,8 +1622,8 @@
       "frame": {
         "h": 70,
         "w": 55,
-        "x": 767,
-        "y": 606
+        "x": 764,
+        "y": 604
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__death__west__001",
@@ -1652,7 +1653,7 @@
         "h": 49,
         "w": 78,
         "x": 859,
-        "y": 683
+        "y": 681
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__death__west__002",
@@ -1682,7 +1683,7 @@
         "h": 45,
         "w": 82,
         "x": 67,
-        "y": 747
+        "y": 745
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__death__west__003",
@@ -1703,323 +1704,53 @@
     },
     {
       "anchor": {
-        "x": 0.021277,
-        "y": 0.45679
+        "x": 0.089286,
+        "y": 0.413333
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 81,
-        "w": 47,
-        "x": 629,
-        "y": 278
+        "h": 75,
+        "w": 56,
+        "x": 963,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__hit__east__000",
-      "opaquePixels": 1553,
+      "opaquePixels": 1545,
       "phase": null,
       "pivot": {
-        "x": 1,
-        "y": 37
+        "x": 5,
+        "y": 31
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c936ed147794628d1e68fd3753d0aab0d55e25847f4ae44ccb65d0a0012a99d2",
+      "sourcePixelSha256": "ef8bbd16867dae84b7f8e85cd959ea0dbea81d7392c1030feb92d4bb86b41001",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.102564,
-        "y": 0.516484
+        "x": 0.092593,
+        "y": 0.482353
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 91,
-        "w": 39,
-        "x": 722,
-        "y": 2
+        "h": 85,
+        "w": 54,
+        "x": 499,
+        "y": 99
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__hit__east__001",
-      "opaquePixels": 1784,
+      "opaquePixels": 1870,
       "phase": null,
       "pivot": {
-        "x": 4,
-        "y": 47
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "ef3cd7994fcd386c5fb64e4be3dfbd23e12eb561748007c7287a5695a23bdd49",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.142857,
-        "y": 0.516484
-      },
-      "direction": "north-east",
-      "fps": 12,
-      "frame": {
-        "h": 91,
-        "w": 42,
-        "x": 763,
-        "y": 2
-      },
-      "frameIndex": 0,
-      "id": "validator-cultist__body__hit__north-east__000",
-      "opaquePixels": 2185,
-      "phase": null,
-      "pivot": {
-        "x": 6,
-        "y": 47
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "c32bb79021fba4b3eaca9d1b65dd4bd6a976dff6b96a8cfc326c6dbf027ed52c",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.35443,
-        "y": 0.47619
-      },
-      "direction": "north-east",
-      "fps": 12,
-      "frame": {
-        "h": 84,
-        "w": 79,
-        "x": 863,
-        "y": 99
-      },
-      "frameIndex": 1,
-      "id": "validator-cultist__body__hit__north-east__001",
-      "opaquePixels": 2779,
-      "phase": null,
-      "pivot": {
-        "x": 28,
-        "y": 40
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "51937e5729599a3e42de6991a32a7340e1d1bd6396951425ada8baa3de01fd9f",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.241935,
-        "y": 0.488372
-      },
-      "direction": "north-west",
-      "fps": 12,
-      "frame": {
-        "h": 86,
-        "w": 62,
-        "x": 448,
-        "y": 99
-      },
-      "frameIndex": 0,
-      "id": "validator-cultist__body__hit__north-west__000",
-      "opaquePixels": 2847,
-      "phase": null,
-      "pivot": {
-        "x": 15,
-        "y": 42
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "631e78bd2ef89fdfb76c9b33d927d85afeb6e9e5d2f27a7ce4109a29bfd2d5b0",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.2,
-        "y": 0.435897
-      },
-      "direction": "north-west",
-      "fps": 12,
-      "frame": {
-        "h": 78,
-        "w": 40,
-        "x": 2,
-        "y": 526
-      },
-      "frameIndex": 1,
-      "id": "validator-cultist__body__hit__north-west__001",
-      "opaquePixels": 2204,
-      "phase": null,
-      "pivot": {
-        "x": 8,
-        "y": 34
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "fd57eb465f46e0a56c73383a43e7dbf724873370019a61a06f42400271172496",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.308824,
-        "y": 0.526882
-      },
-      "direction": "north",
-      "fps": 12,
-      "frame": {
-        "h": 93,
-        "w": 68,
-        "x": 247,
-        "y": 2
-      },
-      "frameIndex": 0,
-      "id": "validator-cultist__body__hit__north__000",
-      "opaquePixels": 2855,
-      "phase": null,
-      "pivot": {
-        "x": 21,
-        "y": 49
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "552bf664df6926a0f042e4437face036cf6f46a17d1cb46eee0433afe4cfba8c",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.35443,
-        "y": 0.45679
-      },
-      "direction": "north",
-      "fps": 12,
-      "frame": {
-        "h": 81,
-        "w": 79,
-        "x": 678,
-        "y": 278
-      },
-      "frameIndex": 1,
-      "id": "validator-cultist__body__hit__north__001",
-      "opaquePixels": 2692,
-      "phase": null,
-      "pivot": {
-        "x": 28,
-        "y": 37
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "c5708948666e18b14264b460ffef0cfbcd2424a0b5ad9e0afbc0d826e2ef6c52",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.241935,
-        "y": 0.421053
-      },
-      "direction": "south-east",
-      "fps": 12,
-      "frame": {
-        "h": 76,
-        "w": 62,
-        "x": 660,
-        "y": 526
-      },
-      "frameIndex": 0,
-      "id": "validator-cultist__body__hit__south-east__000",
-      "opaquePixels": 2314,
-      "phase": null,
-      "pivot": {
-        "x": 15,
-        "y": 32
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "3a6467c814cb21d2e477d2cca15eacebce010e9afd04a35eabc56dd7aaecde36",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.0,
-        "y": 0.516484
-      },
-      "direction": "south-east",
-      "fps": 12,
-      "frame": {
-        "h": 91,
-        "w": 40,
-        "x": 807,
-        "y": 2
-      },
-      "frameIndex": 1,
-      "id": "validator-cultist__body__hit__south-east__001",
-      "opaquePixels": 2206,
-      "phase": null,
-      "pivot": {
-        "x": 0,
-        "y": 47
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "4f92a05938786c7cc22d783906a9aa2428172240d851f51a1575a9bb48367bbe",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.095238,
-        "y": 0.482353
-      },
-      "direction": "south-west",
-      "fps": 12,
-      "frame": {
-        "h": 85,
-        "w": 42,
-        "x": 764,
-        "y": 99
-      },
-      "frameIndex": 0,
-      "id": "validator-cultist__body__hit__south-west__000",
-      "opaquePixels": 2032,
-      "phase": null,
-      "pivot": {
-        "x": 4,
+        "x": 5,
         "y": 41
       },
       "rotated": false,
@@ -2027,157 +1758,427 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "21cca2a1df3be8f622f8f8851eb8a7917aa08644590cd5467378185ce9a089ba",
+      "sourcePixelSha256": "8758732b6ad571b889d858259304bd91279da125faaff40c949690db2afdb35c",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.240506,
-        "y": 0.421053
+        "x": 0.0,
+        "y": 0.388889
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 72,
+        "w": 39,
+        "x": 565,
+        "y": 604
+      },
+      "frameIndex": 0,
+      "id": "validator-cultist__body__hit__north-east__000",
+      "opaquePixels": 1725,
+      "phase": null,
+      "pivot": {
+        "x": 0,
+        "y": 28
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "620150ec5e9a1c98fd678e31f1938331fc231a06f17506d9d036a812b80029b9",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.269231,
+        "y": 0.47619
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 84,
+        "w": 52,
+        "x": 668,
+        "y": 99
+      },
+      "frameIndex": 1,
+      "id": "validator-cultist__body__hit__north-east__001",
+      "opaquePixels": 2293,
+      "phase": null,
+      "pivot": {
+        "x": 14,
+        "y": 40
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "6394f8f65aa4dd1be5e0854e0515ca40365d7ca9855ef8abdef8e4de5759d63b",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.203125,
+        "y": 0.45
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 80,
+        "w": 64,
+        "x": 585,
+        "y": 360
+      },
+      "frameIndex": 0,
+      "id": "validator-cultist__body__hit__north-west__000",
+      "opaquePixels": 2170,
+      "phase": null,
+      "pivot": {
+        "x": 13,
+        "y": 36
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "6536e90188dda6f19b483482b6a23febbc9fe859bf6845369ac4539daf46197a",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.490909,
+        "y": 0.443038
+      },
+      "direction": "north-west",
+      "fps": 12,
+      "frame": {
+        "h": 79,
+        "w": 55,
+        "x": 295,
+        "y": 443
+      },
+      "frameIndex": 1,
+      "id": "validator-cultist__body__hit__north-west__001",
+      "opaquePixels": 2071,
+      "phase": null,
+      "pivot": {
+        "x": 27,
+        "y": 35
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f54239eb4469c478f4be8b0fff1396151d1d501214df17035bcc40a9b84a3e9c",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.405405
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 74,
+        "w": 51,
+        "x": 146,
+        "y": 604
+      },
+      "frameIndex": 0,
+      "id": "validator-cultist__body__hit__north__000",
+      "opaquePixels": 2039,
+      "phase": null,
+      "pivot": {
+        "x": 0,
+        "y": 30
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5d6ab26904cb95a8d010c14be343fee9e7624e6c6ea5269fab9e7ddc268531d9",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.539683,
+        "y": 0.463415
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 82,
+        "w": 63,
+        "x": 712,
+        "y": 191
+      },
+      "frameIndex": 1,
+      "id": "validator-cultist__body__hit__north__001",
+      "opaquePixels": 2306,
+      "phase": null,
+      "pivot": {
+        "x": 34,
+        "y": 38
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "45acbda08365992ce3c36b9335342736a81873b07337adfca9991639991718f5",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.296875,
+        "y": 0.443038
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 79,
+        "w": 64,
+        "x": 352,
+        "y": 443
+      },
+      "frameIndex": 0,
+      "id": "validator-cultist__body__hit__south-east__000",
+      "opaquePixels": 2210,
+      "phase": null,
+      "pivot": {
+        "x": 19,
+        "y": 35
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "30310229fe1f2796a9220d71a3a35f6d6db4fdf00d6493a77fd02b88bdef09b9",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.5
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 88,
+        "w": 59,
+        "x": 45,
+        "y": 99
+      },
+      "frameIndex": 1,
+      "id": "validator-cultist__body__hit__south-east__001",
+      "opaquePixels": 2255,
+      "phase": null,
+      "pivot": {
+        "x": 0,
+        "y": 44
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "0815903dc86568e300b83c36334b666149630f06c0a622314a3b3a48af4e384a",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.2,
+        "y": 0.5
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
-        "h": 76,
-        "w": 79,
-        "x": 724,
-        "y": 526
+        "h": 88,
+        "w": 35,
+        "x": 106,
+        "y": 99
+      },
+      "frameIndex": 0,
+      "id": "validator-cultist__body__hit__south-west__000",
+      "opaquePixels": 2101,
+      "phase": null,
+      "pivot": {
+        "x": 7,
+        "y": 44
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "5ef50d83a55a2d48abea71b041532e852dd379bccf92f6f445c89733f3595b2e",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.132075,
+        "y": 0.443038
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 79,
+        "w": 53,
+        "x": 418,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__hit__south-west__001",
-      "opaquePixels": 2551,
+      "opaquePixels": 2413,
       "phase": null,
       "pivot": {
-        "x": 19,
-        "y": 32
+        "x": 7,
+        "y": 35
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "5c17cd04386f5074d6015db6dec62463e08b16b1c4d96a375daa4be804db60b7",
+      "sourcePixelSha256": "ec671cc66e7d8ec6bab8ce5f9880f370e5900df9bfb18e51ee05191165b431c8",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.220588,
-        "y": 0.443038
+        "x": 0.395833,
+        "y": 0.46988
       },
       "direction": "south",
       "fps": 12,
       "frame": {
-        "h": 79,
-        "w": 68,
-        "x": 295,
-        "y": 445
+        "h": 83,
+        "w": 48,
+        "x": 58,
+        "y": 191
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__hit__south__000",
-      "opaquePixels": 2402,
+      "opaquePixels": 2146,
       "phase": null,
       "pivot": {
-        "x": 15,
-        "y": 35
+        "x": 19,
+        "y": 39
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ad42ba5e7c1be42b95310a3c4c2f1a17865b4cd45523571eafc4a8ef4f69c73e",
+      "sourcePixelSha256": "74b9bb155703afbee08c0327f71fa4aed46c9aac099da56384eb346625d50b00",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.240506,
-        "y": 0.443038
+        "x": 0.0,
+        "y": 0.46988
       },
       "direction": "south",
       "fps": 12,
       "frame": {
-        "h": 79,
-        "w": 79,
-        "x": 365,
-        "y": 445
+        "h": 83,
+        "w": 65,
+        "x": 108,
+        "y": 191
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__hit__south__001",
-      "opaquePixels": 2659,
+      "opaquePixels": 2209,
       "phase": null,
       "pivot": {
-        "x": 19,
-        "y": 35
+        "x": 0,
+        "y": 39
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "abc857c9e1dab458622990657d3a965194a472f53c5df176475a5697e45cb6e5",
+      "sourcePixelSha256": "907af3c8457b33720ae8e969eec1a41be754c2fa4f0b9898e9e65c20cc4aea82",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.304348,
-        "y": 0.494253
+        "x": 0.339286,
+        "y": 0.482353
       },
       "direction": "west",
       "fps": 12,
       "frame": {
-        "h": 87,
-        "w": 46,
-        "x": 340,
+        "h": 85,
+        "w": 56,
+        "x": 555,
         "y": 99
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__hit__west__000",
-      "opaquePixels": 1882,
+      "opaquePixels": 1686,
       "phase": null,
       "pivot": {
-        "x": 14,
-        "y": 43
+        "x": 19,
+        "y": 41
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ff60858913049ac4c15622e3b3cf719c27baa9d1ee78e9b65db47733a5735e7f",
+      "sourcePixelSha256": "23da6838ef3d098ca286e795a49aabe5726060a1f09cec98567e727d17f71516",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.076923,
-        "y": 0.421053
+        "x": 0.314815,
+        "y": 0.428571
       },
       "direction": "west",
       "fps": 12,
       "frame": {
-        "h": 76,
-        "w": 39,
-        "x": 805,
-        "y": 526
+        "h": 77,
+        "w": 54,
+        "x": 305,
+        "y": 524
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__hit__west__001",
-      "opaquePixels": 1543,
+      "opaquePixels": 1786,
       "phase": null,
       "pivot": {
-        "x": 3,
-        "y": 32
+        "x": 17,
+        "y": 33
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "3b5153757e467954e8f2a5ac0b24e3fb1ca094e23d3c8217f6f6e18570dc25ce",
+      "sourcePixelSha256": "4f9e55509bcf3057e1726870784c308c309bd939e208fface046baf0c24270de",
       "state": "hit",
       "trimmed": true
     },
@@ -2191,7 +2192,7 @@
       "frame": {
         "h": 93,
         "w": 30,
-        "x": 317,
+        "x": 247,
         "y": 2
       },
       "frameIndex": 0,
@@ -2251,7 +2252,7 @@
       "frame": {
         "h": 91,
         "w": 49,
-        "x": 849,
+        "x": 652,
         "y": 2
       },
       "frameIndex": 0,
@@ -2281,8 +2282,8 @@
       "frame": {
         "h": 90,
         "w": 50,
-        "x": 201,
-        "y": 99
+        "x": 951,
+        "y": 2
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__idle__north-east__001",
@@ -2311,8 +2312,8 @@
       "frame": {
         "h": 80,
         "w": 54,
-        "x": 689,
-        "y": 362
+        "x": 651,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__idle__north-west__000",
@@ -2341,8 +2342,8 @@
       "frame": {
         "h": 79,
         "w": 53,
-        "x": 446,
-        "y": 445
+        "x": 473,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__idle__north-west__001",
@@ -2371,8 +2372,8 @@
       "frame": {
         "h": 81,
         "w": 69,
-        "x": 759,
-        "y": 278
+        "x": 629,
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__idle__north__000",
@@ -2401,8 +2402,8 @@
       "frame": {
         "h": 79,
         "w": 69,
-        "x": 501,
-        "y": 445
+        "x": 528,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__idle__north__001",
@@ -2431,7 +2432,7 @@
       "frame": {
         "h": 84,
         "w": 54,
-        "x": 944,
+        "x": 722,
         "y": 99
       },
       "frameIndex": 0,
@@ -2461,7 +2462,7 @@
       "frame": {
         "h": 85,
         "w": 53,
-        "x": 808,
+        "x": 613,
         "y": 99
       },
       "frameIndex": 1,
@@ -2491,8 +2492,8 @@
       "frame": {
         "h": 80,
         "w": 49,
-        "x": 745,
-        "y": 362
+        "x": 707,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__idle__south-west__000",
@@ -2521,8 +2522,8 @@
       "frame": {
         "h": 81,
         "w": 50,
-        "x": 830,
-        "y": 278
+        "x": 700,
+        "y": 276
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__idle__south-west__001",
@@ -2551,8 +2552,8 @@
       "frame": {
         "h": 77,
         "w": 69,
-        "x": 275,
-        "y": 526
+        "x": 361,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__idle__south__000",
@@ -2581,8 +2582,8 @@
       "frame": {
         "h": 79,
         "w": 69,
-        "x": 572,
-        "y": 445
+        "x": 599,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__idle__south__001",
@@ -2611,8 +2612,8 @@
       "frame": {
         "h": 81,
         "w": 23,
-        "x": 882,
-        "y": 278
+        "x": 752,
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__idle__west__000",
@@ -2641,8 +2642,8 @@
       "frame": {
         "h": 81,
         "w": 26,
-        "x": 907,
-        "y": 278
+        "x": 777,
+        "y": 276
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__idle__west__001",
@@ -2671,7 +2672,7 @@
       "frame": {
         "h": 93,
         "w": 42,
-        "x": 349,
+        "x": 279,
         "y": 2
       },
       "frameIndex": 0,
@@ -2701,7 +2702,7 @@
       "frame": {
         "h": 91,
         "w": 47,
-        "x": 900,
+        "x": 703,
         "y": 2
       },
       "frameIndex": 1,
@@ -2731,8 +2732,8 @@
       "frame": {
         "h": 91,
         "w": 74,
-        "x": 2,
-        "y": 99
+        "x": 752,
+        "y": 2
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__east__002",
@@ -2761,7 +2762,7 @@
       "frame": {
         "h": 93,
         "w": 33,
-        "x": 393,
+        "x": 323,
         "y": 2
       },
       "frameIndex": 3,
@@ -2791,7 +2792,7 @@
       "frame": {
         "h": 92,
         "w": 55,
-        "x": 428,
+        "x": 358,
         "y": 2
       },
       "frameIndex": 4,
@@ -2821,7 +2822,7 @@
       "frame": {
         "h": 92,
         "w": 66,
-        "x": 485,
+        "x": 415,
         "y": 2
       },
       "frameIndex": 5,
@@ -2851,7 +2852,7 @@
       "frame": {
         "h": 92,
         "w": 55,
-        "x": 553,
+        "x": 483,
         "y": 2
       },
       "frameIndex": 0,
@@ -2881,8 +2882,8 @@
       "frame": {
         "h": 91,
         "w": 56,
-        "x": 78,
-        "y": 99
+        "x": 828,
+        "y": 2
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__north-east__001",
@@ -2911,8 +2912,8 @@
       "frame": {
         "h": 91,
         "w": 63,
-        "x": 136,
-        "y": 99
+        "x": 886,
+        "y": 2
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__north-east__002",
@@ -2941,7 +2942,7 @@
       "frame": {
         "h": 92,
         "w": 55,
-        "x": 610,
+        "x": 540,
         "y": 2
       },
       "frameIndex": 3,
@@ -3031,8 +3032,8 @@
       "frame": {
         "h": 82,
         "w": 62,
-        "x": 804,
-        "y": 192
+        "x": 777,
+        "y": 191
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__run__north-west__000",
@@ -3061,8 +3062,8 @@
       "frame": {
         "h": 83,
         "w": 77,
-        "x": 267,
-        "y": 192
+        "x": 175,
+        "y": 191
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__north-west__001",
@@ -3091,8 +3092,8 @@
       "frame": {
         "h": 83,
         "w": 77,
-        "x": 346,
-        "y": 192
+        "x": 254,
+        "y": 191
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__north-west__002",
@@ -3121,8 +3122,8 @@
       "frame": {
         "h": 82,
         "w": 62,
-        "x": 868,
-        "y": 192
+        "x": 841,
+        "y": 191
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__run__north-west__003",
@@ -3151,8 +3152,8 @@
       "frame": {
         "h": 83,
         "w": 56,
-        "x": 425,
-        "y": 192
+        "x": 333,
+        "y": 191
       },
       "frameIndex": 4,
       "id": "validator-cultist__body__run__north-west__004",
@@ -3181,8 +3182,8 @@
       "frame": {
         "h": 83,
         "w": 63,
-        "x": 483,
-        "y": 192
+        "x": 391,
+        "y": 191
       },
       "frameIndex": 5,
       "id": "validator-cultist__body__run__north-west__005",
@@ -3211,8 +3212,8 @@
       "frame": {
         "h": 82,
         "w": 70,
-        "x": 932,
-        "y": 192
+        "x": 905,
+        "y": 191
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__run__north__000",
@@ -3241,8 +3242,8 @@
       "frame": {
         "h": 84,
         "w": 81,
-        "x": 2,
-        "y": 192
+        "x": 778,
+        "y": 99
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__north__001",
@@ -3271,8 +3272,8 @@
       "frame": {
         "h": 84,
         "w": 81,
-        "x": 85,
-        "y": 192
+        "x": 861,
+        "y": 99
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__north__002",
@@ -3302,7 +3303,7 @@
         "h": 82,
         "w": 70,
         "x": 2,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__run__north__003",
@@ -3331,7 +3332,7 @@
       "frame": {
         "h": 86,
         "w": 68,
-        "x": 512,
+        "x": 247,
         "y": 99
       },
       "frameIndex": 4,
@@ -3361,7 +3362,7 @@
       "frame": {
         "h": 86,
         "w": 68,
-        "x": 582,
+        "x": 317,
         "y": 99
       },
       "frameIndex": 5,
@@ -3392,7 +3393,7 @@
         "h": 82,
         "w": 62,
         "x": 74,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__run__south-east__000",
@@ -3421,8 +3422,8 @@
       "frame": {
         "h": 79,
         "w": 77,
-        "x": 643,
-        "y": 445
+        "x": 670,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__south-east__001",
@@ -3451,8 +3452,8 @@
       "frame": {
         "h": 79,
         "w": 77,
-        "x": 722,
-        "y": 445
+        "x": 749,
+        "y": 443
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__south-east__002",
@@ -3482,7 +3483,7 @@
         "h": 82,
         "w": 62,
         "x": 138,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__run__south-east__003",
@@ -3511,8 +3512,8 @@
       "frame": {
         "h": 80,
         "w": 56,
-        "x": 796,
-        "y": 362
+        "x": 758,
+        "y": 360
       },
       "frameIndex": 4,
       "id": "validator-cultist__body__run__south-east__004",
@@ -3541,8 +3542,8 @@
       "frame": {
         "h": 80,
         "w": 65,
-        "x": 854,
-        "y": 362
+        "x": 816,
+        "y": 360
       },
       "frameIndex": 5,
       "id": "validator-cultist__body__run__south-east__005",
@@ -3571,8 +3572,8 @@
       "frame": {
         "h": 78,
         "w": 55,
-        "x": 44,
-        "y": 526
+        "x": 74,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__run__south-west__000",
@@ -3601,8 +3602,8 @@
       "frame": {
         "h": 77,
         "w": 49,
-        "x": 346,
-        "y": 526
+        "x": 432,
+        "y": 524
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__south-west__001",
@@ -3631,8 +3632,8 @@
       "frame": {
         "h": 77,
         "w": 58,
-        "x": 397,
-        "y": 526
+        "x": 483,
+        "y": 524
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__south-west__002",
@@ -3661,8 +3662,8 @@
       "frame": {
         "h": 78,
         "w": 55,
-        "x": 101,
-        "y": 526
+        "x": 131,
+        "y": 524
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__run__south-west__003",
@@ -3691,8 +3692,8 @@
       "frame": {
         "h": 77,
         "w": 67,
-        "x": 457,
-        "y": 526
+        "x": 543,
+        "y": 524
       },
       "frameIndex": 4,
       "id": "validator-cultist__body__run__south-west__004",
@@ -3721,8 +3722,8 @@
       "frame": {
         "h": 77,
         "w": 67,
-        "x": 526,
-        "y": 526
+        "x": 612,
+        "y": 524
       },
       "frameIndex": 5,
       "id": "validator-cultist__body__run__south-west__005",
@@ -3751,8 +3752,8 @@
       "frame": {
         "h": 75,
         "w": 70,
-        "x": 99,
-        "y": 606
+        "x": 2,
+        "y": 604
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__run__south__000",
@@ -3781,8 +3782,8 @@
       "frame": {
         "h": 73,
         "w": 81,
-        "x": 303,
-        "y": 606
+        "x": 259,
+        "y": 604
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__south__001",
@@ -3811,8 +3812,8 @@
       "frame": {
         "h": 73,
         "w": 81,
-        "x": 386,
-        "y": 606
+        "x": 342,
+        "y": 604
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__south__002",
@@ -3841,8 +3842,8 @@
       "frame": {
         "h": 75,
         "w": 70,
-        "x": 171,
-        "y": 606
+        "x": 74,
+        "y": 604
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__run__south__003",
@@ -3871,8 +3872,8 @@
       "frame": {
         "h": 73,
         "w": 68,
-        "x": 469,
-        "y": 606
+        "x": 425,
+        "y": 604
       },
       "frameIndex": 4,
       "id": "validator-cultist__body__run__south__004",
@@ -3901,8 +3902,8 @@
       "frame": {
         "h": 73,
         "w": 68,
-        "x": 539,
-        "y": 606
+        "x": 495,
+        "y": 604
       },
       "frameIndex": 5,
       "id": "validator-cultist__body__run__south__005",
@@ -3931,8 +3932,8 @@
       "frame": {
         "h": 81,
         "w": 26,
-        "x": 935,
-        "y": 278
+        "x": 805,
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__run__west__000",
@@ -3961,8 +3962,8 @@
       "frame": {
         "h": 81,
         "w": 56,
-        "x": 963,
-        "y": 278
+        "x": 833,
+        "y": 276
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__run__west__001",
@@ -3991,8 +3992,8 @@
       "frame": {
         "h": 81,
         "w": 66,
-        "x": 2,
-        "y": 362
+        "x": 891,
+        "y": 276
       },
       "frameIndex": 2,
       "id": "validator-cultist__body__run__west__002",
@@ -4021,8 +4022,8 @@
       "frame": {
         "h": 81,
         "w": 34,
-        "x": 70,
-        "y": 362
+        "x": 959,
+        "y": 276
       },
       "frameIndex": 3,
       "id": "validator-cultist__body__run__west__003",
@@ -4051,8 +4052,8 @@
       "frame": {
         "h": 81,
         "w": 46,
-        "x": 106,
-        "y": 362
+        "x": 2,
+        "y": 360
       },
       "frameIndex": 4,
       "id": "validator-cultist__body__run__west__004",
@@ -4081,8 +4082,8 @@
       "frame": {
         "h": 81,
         "w": 74,
-        "x": 154,
-        "y": 362
+        "x": 50,
+        "y": 360
       },
       "frameIndex": 5,
       "id": "validator-cultist__body__run__west__005",
@@ -4111,8 +4112,8 @@
       "frame": {
         "h": 78,
         "w": 51,
-        "x": 158,
-        "y": 526
+        "x": 188,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__tell__east__000",
@@ -4141,8 +4142,8 @@
       "frame": {
         "h": 77,
         "w": 63,
-        "x": 595,
-        "y": 526
+        "x": 681,
+        "y": 524
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__tell__east__001",
@@ -4171,8 +4172,8 @@
       "frame": {
         "h": 81,
         "w": 42,
-        "x": 230,
-        "y": 362
+        "x": 126,
+        "y": 360
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__tell__north-east__000",
@@ -4201,8 +4202,8 @@
       "frame": {
         "h": 84,
         "w": 41,
-        "x": 168,
-        "y": 192
+        "x": 944,
+        "y": 99
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__tell__north-east__001",
@@ -4231,8 +4232,8 @@
       "frame": {
         "h": 78,
         "w": 62,
-        "x": 211,
-        "y": 526
+        "x": 241,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__tell__north-west__000",
@@ -4261,8 +4262,8 @@
       "frame": {
         "h": 74,
         "w": 58,
-        "x": 243,
-        "y": 606
+        "x": 199,
+        "y": 604
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__tell__north-west__001",
@@ -4291,8 +4292,8 @@
       "frame": {
         "h": 76,
         "w": 52,
-        "x": 846,
-        "y": 526
+        "x": 746,
+        "y": 524
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__tell__north__000",
@@ -4321,8 +4322,8 @@
       "frame": {
         "h": 83,
         "w": 44,
-        "x": 548,
-        "y": 192
+        "x": 456,
+        "y": 191
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__tell__north__001",
@@ -4352,7 +4353,7 @@
         "h": 82,
         "w": 63,
         "x": 202,
-        "y": 278
+        "y": 276
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__tell__south-east__000",
@@ -4381,7 +4382,7 @@
       "frame": {
         "h": 87,
         "w": 58,
-        "x": 388,
+        "x": 187,
         "y": 99
       },
       "frameIndex": 1,
@@ -4411,7 +4412,7 @@
       "frame": {
         "h": 88,
         "w": 42,
-        "x": 296,
+        "x": 143,
         "y": 99
       },
       "frameIndex": 0,
@@ -4441,7 +4442,7 @@
       "frame": {
         "h": 90,
         "w": 41,
-        "x": 253,
+        "x": 2,
         "y": 99
       },
       "frameIndex": 1,
@@ -4471,8 +4472,8 @@
       "frame": {
         "h": 83,
         "w": 51,
-        "x": 594,
-        "y": 192
+        "x": 502,
+        "y": 191
       },
       "frameIndex": 0,
       "id": "validator-cultist__body__tell__south__000",
@@ -4531,7 +4532,7 @@
       "frame": {
         "h": 86,
         "w": 51,
-        "x": 652,
+        "x": 387,
         "y": 99
       },
       "frameIndex": 0,
@@ -4561,8 +4562,8 @@
       "frame": {
         "h": 79,
         "w": 63,
-        "x": 801,
-        "y": 445
+        "x": 828,
+        "y": 443
       },
       "frameIndex": 1,
       "id": "validator-cultist__body__tell__west__001",

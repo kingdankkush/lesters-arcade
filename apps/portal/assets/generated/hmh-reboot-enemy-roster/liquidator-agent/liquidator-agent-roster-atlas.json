@@ -1,6 +1,7 @@
 {
   "actorId": "liquidator-agent",
   "animationProfile": {
+    "damageResponse": "rifle-shoulder-recoil-v1",
     "kind": "suppression-rifle-burst-v1"
   },
   "boss": false,
@@ -32,7 +33,7 @@
         "h": 81,
         "w": 58,
         "x": 222,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__attack__east__000",
@@ -61,8 +62,8 @@
       "frame": {
         "h": 80,
         "w": 58,
-        "x": 956,
-        "y": 175
+        "x": 964,
+        "y": 177
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__attack__east__001",
@@ -92,7 +93,7 @@
         "h": 80,
         "w": 59,
         "x": 2,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__east__002",
@@ -121,8 +122,8 @@
       "frame": {
         "h": 79,
         "w": 48,
-        "x": 268,
-        "y": 341
+        "x": 59,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__attack__north-east__000",
@@ -152,7 +153,7 @@
         "h": 80,
         "w": 47,
         "x": 63,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__attack__north-east__001",
@@ -182,7 +183,7 @@
         "h": 80,
         "w": 47,
         "x": 112,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__north-east__002",
@@ -211,8 +212,8 @@
       "frame": {
         "h": 79,
         "w": 60,
-        "x": 318,
-        "y": 341
+        "x": 109,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__attack__north-west__000",
@@ -242,7 +243,7 @@
         "h": 80,
         "w": 60,
         "x": 161,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__attack__north-west__001",
@@ -272,7 +273,7 @@
         "h": 80,
         "w": 60,
         "x": 223,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__north-west__002",
@@ -301,8 +302,8 @@
       "frame": {
         "h": 79,
         "w": 54,
-        "x": 380,
-        "y": 341
+        "x": 171,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__attack__north__000",
@@ -331,8 +332,8 @@
       "frame": {
         "h": 79,
         "w": 54,
-        "x": 436,
-        "y": 341
+        "x": 227,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__attack__north__001",
@@ -361,8 +362,8 @@
       "frame": {
         "h": 79,
         "w": 54,
-        "x": 492,
-        "y": 341
+        "x": 283,
+        "y": 343
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__north__002",
@@ -391,7 +392,7 @@
       "frame": {
         "h": 85,
         "w": 60,
-        "x": 58,
+        "x": 228,
         "y": 2
       },
       "frameIndex": 0,
@@ -421,7 +422,7 @@
       "frame": {
         "h": 83,
         "w": 60,
-        "x": 678,
+        "x": 671,
         "y": 2
       },
       "frameIndex": 1,
@@ -452,7 +453,7 @@
         "h": 81,
         "w": 60,
         "x": 282,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__south-east__002",
@@ -481,7 +482,7 @@
       "frame": {
         "h": 85,
         "w": 48,
-        "x": 120,
+        "x": 290,
         "y": 2
       },
       "frameIndex": 0,
@@ -511,7 +512,7 @@
       "frame": {
         "h": 83,
         "w": 47,
-        "x": 740,
+        "x": 733,
         "y": 2
       },
       "frameIndex": 1,
@@ -542,7 +543,7 @@
         "h": 81,
         "w": 47,
         "x": 344,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__south-west__002",
@@ -571,7 +572,7 @@
       "frame": {
         "h": 86,
         "w": 54,
-        "x": 2,
+        "x": 55,
         "y": 2
       },
       "frameIndex": 0,
@@ -601,7 +602,7 @@
       "frame": {
         "h": 84,
         "w": 54,
-        "x": 291,
+        "x": 340,
         "y": 2
       },
       "frameIndex": 1,
@@ -632,7 +633,7 @@
         "h": 82,
         "w": 54,
         "x": 136,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__south__002",
@@ -662,7 +663,7 @@
         "h": 81,
         "w": 58,
         "x": 393,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__attack__west__000",
@@ -692,7 +693,7 @@
         "h": 80,
         "w": 56,
         "x": 285,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__attack__west__001",
@@ -722,7 +723,7 @@
         "h": 80,
         "w": 55,
         "x": 343,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__attack__west__002",
@@ -751,8 +752,8 @@
       "frame": {
         "h": 79,
         "w": 60,
-        "x": 548,
-        "y": 341
+        "x": 339,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__east__000",
@@ -781,8 +782,8 @@
       "frame": {
         "h": 69,
         "w": 58,
-        "x": 694,
-        "y": 664
+        "x": 426,
+        "y": 666
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__east__001",
@@ -811,8 +812,8 @@
       "frame": {
         "h": 52,
         "w": 76,
-        "x": 542,
-        "y": 742
+        "x": 269,
+        "y": 744
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__east__002",
@@ -841,8 +842,8 @@
       "frame": {
         "h": 47,
         "w": 71,
-        "x": 758,
-        "y": 742
+        "x": 485,
+        "y": 744
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__east__003",
@@ -872,7 +873,7 @@
         "h": 80,
         "w": 59,
         "x": 400,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__north-east__000",
@@ -901,8 +902,8 @@
       "frame": {
         "h": 78,
         "w": 60,
-        "x": 584,
-        "y": 504
+        "x": 444,
+        "y": 506
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__north-east__001",
@@ -931,8 +932,8 @@
       "frame": {
         "h": 54,
         "w": 61,
-        "x": 2,
-        "y": 742
+        "x": 733,
+        "y": 666
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__north-east__002",
@@ -961,8 +962,8 @@
       "frame": {
         "h": 44,
         "w": 54,
-        "x": 915,
-        "y": 742
+        "x": 642,
+        "y": 744
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__north-east__003",
@@ -992,7 +993,7 @@
         "h": 80,
         "w": 70,
         "x": 461,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__north-west__000",
@@ -1021,8 +1022,8 @@
       "frame": {
         "h": 78,
         "w": 65,
-        "x": 646,
-        "y": 504
+        "x": 506,
+        "y": 506
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__north-west__001",
@@ -1051,8 +1052,8 @@
       "frame": {
         "h": 54,
         "w": 63,
-        "x": 65,
-        "y": 742
+        "x": 796,
+        "y": 666
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__north-west__002",
@@ -1081,8 +1082,8 @@
       "frame": {
         "h": 44,
         "w": 56,
-        "x": 2,
-        "y": 798
+        "x": 698,
+        "y": 744
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__north-west__003",
@@ -1111,8 +1112,8 @@
       "frame": {
         "h": 79,
         "w": 78,
-        "x": 610,
-        "y": 341
+        "x": 401,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__north__000",
@@ -1142,7 +1143,7 @@
         "h": 82,
         "w": 64,
         "x": 192,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__north__001",
@@ -1171,8 +1172,8 @@
       "frame": {
         "h": 56,
         "w": 54,
-        "x": 945,
-        "y": 664
+        "x": 677,
+        "y": 666
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__north__002",
@@ -1201,8 +1202,8 @@
       "frame": {
         "h": 44,
         "w": 54,
-        "x": 60,
-        "y": 798
+        "x": 756,
+        "y": 744
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__north__003",
@@ -1232,7 +1233,7 @@
         "h": 80,
         "w": 70,
         "x": 533,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__south-east__000",
@@ -1261,8 +1262,8 @@
       "frame": {
         "h": 60,
         "w": 65,
-        "x": 816,
-        "y": 664
+        "x": 548,
+        "y": 666
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__south-east__001",
@@ -1291,8 +1292,8 @@
       "frame": {
         "h": 53,
         "w": 72,
-        "x": 397,
-        "y": 742
+        "x": 124,
+        "y": 744
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__south-east__002",
@@ -1321,8 +1322,8 @@
       "frame": {
         "h": 54,
         "w": 73,
-        "x": 130,
-        "y": 742
+        "x": 861,
+        "y": 666
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__south-east__003",
@@ -1352,7 +1353,7 @@
         "h": 80,
         "w": 59,
         "x": 605,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__south-west__000",
@@ -1381,8 +1382,8 @@
       "frame": {
         "h": 60,
         "w": 60,
-        "x": 883,
-        "y": 664
+        "x": 615,
+        "y": 666
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__south-west__001",
@@ -1411,8 +1412,8 @@
       "frame": {
         "h": 53,
         "w": 69,
-        "x": 471,
-        "y": 742
+        "x": 198,
+        "y": 744
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__south-west__002",
@@ -1441,8 +1442,8 @@
       "frame": {
         "h": 54,
         "w": 68,
-        "x": 205,
-        "y": 742
+        "x": 936,
+        "y": 666
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__south-west__003",
@@ -1472,7 +1473,7 @@
         "h": 80,
         "w": 78,
         "x": 666,
-        "y": 259
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__south__000",
@@ -1501,8 +1502,8 @@
       "frame": {
         "h": 54,
         "w": 64,
-        "x": 275,
-        "y": 742
+        "x": 2,
+        "y": 744
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__south__001",
@@ -1531,8 +1532,8 @@
       "frame": {
         "h": 52,
         "w": 54,
-        "x": 620,
-        "y": 742
+        "x": 347,
+        "y": 744
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__south__002",
@@ -1561,8 +1562,8 @@
       "frame": {
         "h": 54,
         "w": 54,
-        "x": 341,
-        "y": 742
+        "x": 68,
+        "y": 744
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__south__003",
@@ -1591,8 +1592,8 @@
       "frame": {
         "h": 79,
         "w": 53,
-        "x": 690,
-        "y": 341
+        "x": 481,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__death__west__000",
@@ -1621,8 +1622,8 @@
       "frame": {
         "h": 69,
         "w": 60,
-        "x": 754,
-        "y": 664
+        "x": 486,
+        "y": 666
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__death__west__001",
@@ -1651,8 +1652,8 @@
       "frame": {
         "h": 52,
         "w": 80,
-        "x": 676,
-        "y": 742
+        "x": 403,
+        "y": 744
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__death__west__002",
@@ -1681,8 +1682,8 @@
       "frame": {
         "h": 47,
         "w": 82,
-        "x": 831,
-        "y": 742
+        "x": 558,
+        "y": 744
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__death__west__003",
@@ -1703,83 +1704,83 @@
     },
     {
       "anchor": {
-        "x": 0.0,
-        "y": 0.421053
+        "x": 0.017241,
+        "y": 0.428571
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 76,
-        "w": 62,
-        "x": 540,
-        "y": 585
+        "h": 77,
+        "w": 58,
+        "x": 884,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__hit__east__000",
-      "opaquePixels": 1959,
+      "opaquePixels": 2047,
       "phase": null,
       "pivot": {
-        "x": 0,
-        "y": 32
+        "x": 1,
+        "y": 33
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "b52d2c2ac7a04645829bf77b3147c1fcfc1a1b75edaa501a00128f92cef761a2",
+      "sourcePixelSha256": "bd930b0de923798f3714bb345251e9c8fce0f430c2c994f3141094afc0ca873f",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.0,
-        "y": 0.482353
+        "x": 0.020833,
+        "y": 0.47619
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 85,
-        "w": 55,
-        "x": 170,
+        "h": 84,
+        "w": 48,
+        "x": 396,
         "y": 2
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__hit__east__001",
-      "opaquePixels": 2035,
+      "opaquePixels": 2057,
       "phase": null,
       "pivot": {
-        "x": 0,
-        "y": 41
+        "x": 1,
+        "y": 40
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "9a3cb68bb4af4375d9706341aea013c46684fb0ab9d028a5c60bb6ca75372445",
+      "sourcePixelSha256": "b5b3dad8c839417e533028cb28144bf65638c81295008dc2259a441a62a375e5",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.098361,
+        "x": 0.0,
         "y": 0.443038
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
         "h": 79,
-        "w": 61,
-        "x": 745,
-        "y": 341
+        "w": 54,
+        "x": 536,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__hit__north-east__000",
-      "opaquePixels": 2486,
+      "opaquePixels": 2185,
       "phase": null,
       "pivot": {
-        "x": 6,
+        "x": 0,
         "y": 35
       },
       "rotated": false,
@@ -1787,89 +1788,89 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "02c3c15e45d82d5ad63a3259f5ffed6d801684e66010d8bfca39bb62652690c7",
+      "sourcePixelSha256": "40d80d4068fa94046aef3d2ddd23ab0c1d0bdd594af7158553d422be6e87bc06",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.253521,
-        "y": 0.47619
+        "x": 0.27451,
+        "y": 0.5
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 84,
-        "w": 71,
-        "x": 347,
+        "h": 88,
+        "w": 51,
+        "x": 2,
         "y": 2
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__hit__north-east__001",
-      "opaquePixels": 2854,
+      "opaquePixels": 2389,
       "phase": null,
       "pivot": {
-        "x": 18,
-        "y": 40
+        "x": 14,
+        "y": 44
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "32c48fc749a951bafceecc8c1b9537635e16b7f3d342cfcc2ce57e3dd3822f09",
+      "sourcePixelSha256": "56abb93a153ebba248b72b6b0a2e4386a9575687be715944eed299af010cafe4",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.279412,
-        "y": 0.47619
+        "x": 0.132075,
+        "y": 0.45679
       },
       "direction": "north-west",
       "fps": 12,
       "frame": {
-        "h": 84,
-        "w": 68,
-        "x": 420,
-        "y": 2
+        "h": 81,
+        "w": 53,
+        "x": 453,
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__hit__north-west__000",
-      "opaquePixels": 2963,
+      "opaquePixels": 2350,
       "phase": null,
       "pivot": {
-        "x": 19,
-        "y": 40
+        "x": 7,
+        "y": 37
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "ea2cbf269e0cab3745edc156bf08166e0756c173c2122f4e13cb2da1379fbf71",
+      "sourcePixelSha256": "fdd1c79b268bb96dbeffaaea86e848a2b03df0e659b9852b420ff1e40f09ca2d",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.477612,
+        "x": 0.508475,
         "y": 0.443038
       },
       "direction": "north-west",
       "fps": 12,
       "frame": {
         "h": 79,
-        "w": 67,
-        "x": 808,
-        "y": 341
+        "w": 59,
+        "x": 592,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__hit__north-west__001",
-      "opaquePixels": 2548,
+      "opaquePixels": 2197,
       "phase": null,
       "pivot": {
-        "x": 32,
+        "x": 30,
         "y": 35
       },
       "rotated": false,
@@ -1877,59 +1878,89 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "f5d8f5f819e84ca511f2fdf64e2ed6305ca54debc541f424d94d903760040490",
+      "sourcePixelSha256": "5b3091df93de7db2230a77f8f68375ff7176c94b56dae4009338ff12f4e5596d",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.306667,
-        "y": 0.45679
+        "x": 0.040816,
+        "y": 0.435897
       },
       "direction": "north",
       "fps": 12,
       "frame": {
-        "h": 81,
-        "w": 75,
-        "x": 453,
-        "y": 175
+        "h": 78,
+        "w": 49,
+        "x": 573,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__hit__north__000",
-      "opaquePixels": 2811,
+      "opaquePixels": 2149,
       "phase": null,
       "pivot": {
-        "x": 23,
-        "y": 37
+        "x": 2,
+        "y": 34
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "57eb71f543821e32722f301e48c5cafa7cfa3b701447587b8b0c44920855bc4d",
+      "sourcePixelSha256": "e6366679503262496c95be5f0b64edfb74d9ac98450a41ee562bc115444c1c08",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.289474,
-        "y": 0.45679
+        "x": 0.392857,
+        "y": 0.443038
       },
       "direction": "north",
       "fps": 12,
       "frame": {
-        "h": 81,
-        "w": 76,
-        "x": 530,
-        "y": 175
+        "h": 79,
+        "w": 56,
+        "x": 653,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__hit__north__001",
-      "opaquePixels": 2825,
+      "opaquePixels": 2331,
       "phase": null,
       "pivot": {
         "x": 22,
+        "y": 35
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "15ac157c6925d33e656a15f709a390e7dd7aefc5e5ecebebd485f6bdf10ad9f5",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.264151,
+        "y": 0.45679
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 81,
+        "w": 53,
+        "x": 508,
+        "y": 177
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__south-east__000",
+      "opaquePixels": 2434,
+      "phase": null,
+      "pivot": {
+        "x": 14,
         "y": 37
       },
       "rotated": false,
@@ -1937,89 +1968,119 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c95216fd1cf90863f31d9a1855504a174edc83b52623ad459c76fd29a7681217",
+      "sourcePixelSha256": "38caf46fcf501f281ed0f24941902e05657dff915c3f2e77f79f2846377cf18a",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.25,
-        "y": 0.428571
+        "x": 0.0,
+        "y": 0.488372
       },
       "direction": "south-east",
       "fps": 12,
       "frame": {
-        "h": 77,
-        "w": 68,
-        "x": 2,
-        "y": 585
-      },
-      "frameIndex": 0,
-      "id": "liquidator-agent__body__hit__south-east__000",
-      "opaquePixels": 2608,
-      "phase": null,
-      "pivot": {
-        "x": 17,
-        "y": 33
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "d19733a7120600286ba4d007e7022a28e9785619143fb563b679b75bdaac18ca",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.044776,
-        "y": 0.47619
-      },
-      "direction": "south-east",
-      "fps": 12,
-      "frame": {
-        "h": 84,
-        "w": 67,
-        "x": 490,
+        "h": 86,
+        "w": 62,
+        "x": 111,
         "y": 2
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__hit__south-east__001",
-      "opaquePixels": 2477,
+      "opaquePixels": 2423,
       "phase": null,
       "pivot": {
-        "x": 3,
-        "y": 40
+        "x": 0,
+        "y": 42
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "d3f63620f37a856a9244e35d032de7f91d991a8335887f425b16e3c8e284ae98",
+      "sourcePixelSha256": "227dd6fbe23fea8294dbc42f68fa5190736019d401679dc7cc5b356fa3e3b874",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.377049,
-        "y": 0.47619
+        "x": 0.431373,
+        "y": 0.488372
       },
       "direction": "south-west",
       "fps": 12,
       "frame": {
-        "h": 84,
-        "w": 61,
-        "x": 559,
+        "h": 86,
+        "w": 51,
+        "x": 175,
         "y": 2
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__hit__south-west__000",
-      "opaquePixels": 2321,
+      "opaquePixels": 2234,
       "phase": null,
       "pivot": {
-        "x": 23,
+        "x": 22,
+        "y": 42
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "4a91eacbd44d48df7932d129f49e7d2546ea6a09593fe129405e6978b75b6e99",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.098039,
+        "y": 0.45679
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 81,
+        "w": 51,
+        "x": 563,
+        "y": 177
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__south-west__001",
+      "opaquePixels": 2341,
+      "phase": null,
+      "pivot": {
+        "x": 5,
+        "y": 37
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "c80fed30aac54ef12e80a642f5a6603b241696f6b6e69d355ef6fae61e631df0",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.306122,
+        "y": 0.47619
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 84,
+        "w": 49,
+        "x": 446,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__south__000",
+      "opaquePixels": 2389,
+      "phase": null,
+      "pivot": {
+        "x": 15,
         "y": 40
       },
       "rotated": false,
@@ -2027,29 +2088,89 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "82da1b48e64d6c0a5378c81b22547295361cde56ca7358a2d3c9e5fd3b95f887",
+      "sourcePixelSha256": "a6cbab7518918bd795f930e74302beecc5a410e087a88db026962a725a6d5be0",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.295775,
+        "x": 0.035714,
+        "y": 0.47619
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 84,
+        "w": 56,
+        "x": 497,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "liquidator-agent__body__hit__south__001",
+      "opaquePixels": 2517,
+      "phase": null,
+      "pivot": {
+        "x": 2,
+        "y": 40
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "ca4fa570503858323111f50ce1ef4964052f98cbcaf7ca4ea30393f2c0149302",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.431034,
+        "y": 0.47619
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 84,
+        "w": 58,
+        "x": 555,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "liquidator-agent__body__hit__west__000",
+      "opaquePixels": 1990,
+      "phase": null,
+      "pivot": {
+        "x": 25,
+        "y": 40
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "bb36f287c98f070e51ea45c2ceb03f7c5ac30b75e3fb372fd5f678491e7177b9",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.3125,
         "y": 0.428571
       },
-      "direction": "south-west",
+      "direction": "west",
       "fps": 12,
       "frame": {
         "h": 77,
-        "w": 71,
-        "x": 72,
-        "y": 585
+        "w": 48,
+        "x": 944,
+        "y": 506
       },
       "frameIndex": 1,
-      "id": "liquidator-agent__body__hit__south-west__001",
-      "opaquePixels": 2604,
+      "id": "liquidator-agent__body__hit__west__001",
+      "opaquePixels": 1959,
       "phase": null,
       "pivot": {
-        "x": 21,
+        "x": 15,
         "y": 33
       },
       "rotated": false,
@@ -2057,127 +2178,7 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "780c285b7bb35054fa67370f7bef870bc8c962cd99f53b3631ef895ae62f6c98",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.266667,
-        "y": 0.45
-      },
-      "direction": "south",
-      "fps": 12,
-      "frame": {
-        "h": 80,
-        "w": 75,
-        "x": 746,
-        "y": 259
-      },
-      "frameIndex": 0,
-      "id": "liquidator-agent__body__hit__south__000",
-      "opaquePixels": 2614,
-      "phase": null,
-      "pivot": {
-        "x": 20,
-        "y": 36
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "2f6a0e0d7b4a3e667fca5c730f05a85884328686ddff7128a08588c1e7cb8169",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.289474,
-        "y": 0.45
-      },
-      "direction": "south",
-      "fps": 12,
-      "frame": {
-        "h": 80,
-        "w": 76,
-        "x": 823,
-        "y": 259
-      },
-      "frameIndex": 1,
-      "id": "liquidator-agent__body__hit__south__001",
-      "opaquePixels": 2840,
-      "phase": null,
-      "pivot": {
-        "x": 22,
-        "y": 36
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "d3e351d2122fe6fff5bf5d3ca84d45052a9d4537b785e9da114334d194b8b4f5",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.483871,
-        "y": 0.482353
-      },
-      "direction": "west",
-      "fps": 12,
-      "frame": {
-        "h": 85,
-        "w": 62,
-        "x": 227,
-        "y": 2
-      },
-      "frameIndex": 0,
-      "id": "liquidator-agent__body__hit__west__000",
-      "opaquePixels": 2178,
-      "phase": null,
-      "pivot": {
-        "x": 30,
-        "y": 41
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "298765baa6644cab5699c55f38ec73f146f6c5dc58aa38720f764517d42b36dc",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.425926,
-        "y": 0.421053
-      },
-      "direction": "west",
-      "fps": 12,
-      "frame": {
-        "h": 76,
-        "w": 54,
-        "x": 604,
-        "y": 585
-      },
-      "frameIndex": 1,
-      "id": "liquidator-agent__body__hit__west__001",
-      "opaquePixels": 1909,
-      "phase": null,
-      "pivot": {
-        "x": 23,
-        "y": 32
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "37929a2509cd550d84eb1155556b0e5280af0cf7c05e8e753d620f0cdb69100c",
+      "sourcePixelSha256": "71a61ae9e5fe23147a08af6a7f9b31e3c91e63f84cbdcfcd6d2759fd202df8e6",
       "state": "hit",
       "trimmed": true
     },
@@ -2191,8 +2192,8 @@
       "frame": {
         "h": 79,
         "w": 61,
-        "x": 877,
-        "y": 341
+        "x": 711,
+        "y": 343
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__east__000",
@@ -2221,8 +2222,8 @@
       "frame": {
         "h": 79,
         "w": 59,
-        "x": 940,
-        "y": 341
+        "x": 774,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__east__001",
@@ -2251,8 +2252,8 @@
       "frame": {
         "h": 80,
         "w": 55,
-        "x": 901,
-        "y": 259
+        "x": 746,
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__north-east__000",
@@ -2281,8 +2282,8 @@
       "frame": {
         "h": 79,
         "w": 55,
-        "x": 2,
-        "y": 423
+        "x": 835,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__north-east__001",
@@ -2311,8 +2312,8 @@
       "frame": {
         "h": 80,
         "w": 66,
-        "x": 2,
-        "y": 341
+        "x": 803,
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__north-west__000",
@@ -2341,8 +2342,8 @@
       "frame": {
         "h": 79,
         "w": 65,
-        "x": 59,
-        "y": 423
+        "x": 892,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__north-west__001",
@@ -2371,8 +2372,8 @@
       "frame": {
         "h": 80,
         "w": 72,
-        "x": 70,
-        "y": 341
+        "x": 871,
+        "y": 261
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__north__000",
@@ -2401,8 +2402,8 @@
       "frame": {
         "h": 79,
         "w": 72,
-        "x": 126,
-        "y": 423
+        "x": 2,
+        "y": 425
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__north__001",
@@ -2431,8 +2432,8 @@
       "frame": {
         "h": 79,
         "w": 66,
-        "x": 200,
-        "y": 423
+        "x": 76,
+        "y": 425
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__south-east__000",
@@ -2461,8 +2462,8 @@
       "frame": {
         "h": 80,
         "w": 65,
-        "x": 144,
-        "y": 341
+        "x": 945,
+        "y": 261
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__south-east__001",
@@ -2491,8 +2492,8 @@
       "frame": {
         "h": 79,
         "w": 56,
-        "x": 268,
-        "y": 423
+        "x": 144,
+        "y": 425
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__south-west__000",
@@ -2521,8 +2522,8 @@
       "frame": {
         "h": 80,
         "w": 55,
-        "x": 211,
-        "y": 341
+        "x": 2,
+        "y": 343
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__south-west__001",
@@ -2551,8 +2552,8 @@
       "frame": {
         "h": 79,
         "w": 72,
-        "x": 326,
-        "y": 423
+        "x": 202,
+        "y": 425
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__south__000",
@@ -2581,8 +2582,8 @@
       "frame": {
         "h": 81,
         "w": 72,
-        "x": 608,
-        "y": 175
+        "x": 616,
+        "y": 177
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__south__001",
@@ -2611,8 +2612,8 @@
       "frame": {
         "h": 79,
         "w": 53,
-        "x": 400,
-        "y": 423
+        "x": 276,
+        "y": 425
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__idle__west__000",
@@ -2641,8 +2642,8 @@
       "frame": {
         "h": 79,
         "w": 54,
-        "x": 455,
-        "y": 423
+        "x": 331,
+        "y": 425
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__idle__west__001",
@@ -2671,8 +2672,8 @@
       "frame": {
         "h": 79,
         "w": 62,
-        "x": 511,
-        "y": 423
+        "x": 387,
+        "y": 425
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__east__000",
@@ -2701,8 +2702,8 @@
       "frame": {
         "h": 79,
         "w": 68,
-        "x": 575,
-        "y": 423
+        "x": 451,
+        "y": 425
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__east__001",
@@ -2731,8 +2732,8 @@
       "frame": {
         "h": 79,
         "w": 78,
-        "x": 645,
-        "y": 423
+        "x": 521,
+        "y": 425
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__east__002",
@@ -2761,8 +2762,8 @@
       "frame": {
         "h": 79,
         "w": 62,
-        "x": 725,
-        "y": 423
+        "x": 601,
+        "y": 425
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__east__003",
@@ -2791,8 +2792,8 @@
       "frame": {
         "h": 79,
         "w": 65,
-        "x": 789,
-        "y": 423
+        "x": 665,
+        "y": 425
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__east__004",
@@ -2821,8 +2822,8 @@
       "frame": {
         "h": 79,
         "w": 69,
-        "x": 856,
-        "y": 423
+        "x": 732,
+        "y": 425
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__east__005",
@@ -2851,8 +2852,8 @@
       "frame": {
         "h": 81,
         "w": 61,
-        "x": 682,
-        "y": 175
+        "x": 690,
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__north-east__000",
@@ -2882,7 +2883,7 @@
         "h": 82,
         "w": 56,
         "x": 258,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__north-east__001",
@@ -2912,7 +2913,7 @@
         "h": 82,
         "w": 64,
         "x": 316,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__north-east__002",
@@ -2941,8 +2942,8 @@
       "frame": {
         "h": 81,
         "w": 61,
-        "x": 745,
-        "y": 175
+        "x": 753,
+        "y": 177
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__north-east__003",
@@ -2972,7 +2973,7 @@
         "h": 82,
         "w": 73,
         "x": 382,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__north-east__004",
@@ -3002,7 +3003,7 @@
         "h": 82,
         "w": 73,
         "x": 457,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__north-east__005",
@@ -3031,8 +3032,8 @@
       "frame": {
         "h": 81,
         "w": 72,
-        "x": 808,
-        "y": 175
+        "x": 816,
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__north-west__000",
@@ -3062,7 +3063,7 @@
         "h": 82,
         "w": 84,
         "x": 532,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__north-west__001",
@@ -3092,7 +3093,7 @@
         "h": 82,
         "w": 84,
         "x": 618,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__north-west__002",
@@ -3121,8 +3122,8 @@
       "frame": {
         "h": 81,
         "w": 72,
-        "x": 882,
-        "y": 175
+        "x": 890,
+        "y": 177
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__north-west__003",
@@ -3152,7 +3153,7 @@
         "h": 82,
         "w": 65,
         "x": 704,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__north-west__004",
@@ -3182,7 +3183,7 @@
         "h": 82,
         "w": 67,
         "x": 771,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__north-west__005",
@@ -3212,7 +3213,7 @@
         "h": 82,
         "w": 78,
         "x": 840,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__north__000",
@@ -3241,7 +3242,7 @@
       "frame": {
         "h": 83,
         "w": 76,
-        "x": 789,
+        "x": 782,
         "y": 2
       },
       "frameIndex": 1,
@@ -3271,7 +3272,7 @@
       "frame": {
         "h": 83,
         "w": 76,
-        "x": 867,
+        "x": 860,
         "y": 2
       },
       "frameIndex": 2,
@@ -3302,7 +3303,7 @@
         "h": 82,
         "w": 78,
         "x": 920,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__north__003",
@@ -3331,7 +3332,7 @@
       "frame": {
         "h": 83,
         "w": 76,
-        "x": 945,
+        "x": 938,
         "y": 2
       },
       "frameIndex": 4,
@@ -3362,7 +3363,7 @@
         "h": 83,
         "w": 76,
         "x": 2,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__north__005",
@@ -3391,8 +3392,8 @@
       "frame": {
         "h": 78,
         "w": 72,
-        "x": 713,
-        "y": 504
+        "x": 624,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__south-east__000",
@@ -3421,8 +3422,8 @@
       "frame": {
         "h": 76,
         "w": 84,
-        "x": 660,
-        "y": 585
+        "x": 397,
+        "y": 587
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__south-east__001",
@@ -3451,8 +3452,8 @@
       "frame": {
         "h": 76,
         "w": 84,
-        "x": 746,
-        "y": 585
+        "x": 483,
+        "y": 587
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__south-east__002",
@@ -3481,8 +3482,8 @@
       "frame": {
         "h": 78,
         "w": 72,
-        "x": 787,
-        "y": 504
+        "x": 698,
+        "y": 506
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__south-east__003",
@@ -3511,8 +3512,8 @@
       "frame": {
         "h": 76,
         "w": 66,
-        "x": 832,
-        "y": 585
+        "x": 569,
+        "y": 587
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__south-east__004",
@@ -3541,8 +3542,8 @@
       "frame": {
         "h": 76,
         "w": 74,
-        "x": 900,
-        "y": 585
+        "x": 637,
+        "y": 587
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__south-east__005",
@@ -3571,8 +3572,8 @@
       "frame": {
         "h": 77,
         "w": 61,
-        "x": 145,
-        "y": 585
+        "x": 2,
+        "y": 587
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__south-west__000",
@@ -3601,8 +3602,8 @@
       "frame": {
         "h": 76,
         "w": 53,
-        "x": 2,
-        "y": 664
+        "x": 713,
+        "y": 587
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__south-west__001",
@@ -3631,8 +3632,8 @@
       "frame": {
         "h": 76,
         "w": 61,
-        "x": 57,
-        "y": 664
+        "x": 768,
+        "y": 587
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__south-west__002",
@@ -3661,8 +3662,8 @@
       "frame": {
         "h": 77,
         "w": 61,
-        "x": 208,
-        "y": 585
+        "x": 65,
+        "y": 587
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__south-west__003",
@@ -3691,8 +3692,8 @@
       "frame": {
         "h": 76,
         "w": 73,
-        "x": 120,
-        "y": 664
+        "x": 831,
+        "y": 587
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__south-west__004",
@@ -3721,8 +3722,8 @@
       "frame": {
         "h": 76,
         "w": 73,
-        "x": 195,
-        "y": 664
+        "x": 906,
+        "y": 587
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__south-west__005",
@@ -3751,8 +3752,8 @@
       "frame": {
         "h": 77,
         "w": 78,
-        "x": 271,
-        "y": 585
+        "x": 128,
+        "y": 587
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__south__000",
@@ -3781,8 +3782,8 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 382,
-        "y": 664
+        "x": 114,
+        "y": 666
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__south__001",
@@ -3811,8 +3812,8 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 460,
-        "y": 664
+        "x": 192,
+        "y": 666
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__south__002",
@@ -3841,8 +3842,8 @@
       "frame": {
         "h": 77,
         "w": 78,
-        "x": 351,
-        "y": 585
+        "x": 208,
+        "y": 587
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__south__003",
@@ -3871,8 +3872,8 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 538,
-        "y": 664
+        "x": 270,
+        "y": 666
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__south__004",
@@ -3901,8 +3902,8 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 616,
-        "y": 664
+        "x": 348,
+        "y": 666
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__south__005",
@@ -3931,8 +3932,8 @@
       "frame": {
         "h": 79,
         "w": 54,
-        "x": 927,
-        "y": 423
+        "x": 803,
+        "y": 425
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__run__west__000",
@@ -3961,8 +3962,8 @@
       "frame": {
         "h": 79,
         "w": 66,
-        "x": 2,
-        "y": 504
+        "x": 859,
+        "y": 425
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__run__west__001",
@@ -3991,8 +3992,8 @@
       "frame": {
         "h": 79,
         "w": 70,
-        "x": 70,
-        "y": 504
+        "x": 927,
+        "y": 425
       },
       "frameIndex": 2,
       "id": "liquidator-agent__body__run__west__002",
@@ -4021,8 +4022,8 @@
       "frame": {
         "h": 79,
         "w": 54,
-        "x": 142,
-        "y": 504
+        "x": 2,
+        "y": 506
       },
       "frameIndex": 3,
       "id": "liquidator-agent__body__run__west__003",
@@ -4051,8 +4052,8 @@
       "frame": {
         "h": 79,
         "w": 69,
-        "x": 198,
-        "y": 504
+        "x": 58,
+        "y": 506
       },
       "frameIndex": 4,
       "id": "liquidator-agent__body__run__west__004",
@@ -4081,8 +4082,8 @@
       "frame": {
         "h": 79,
         "w": 79,
-        "x": 269,
-        "y": 504
+        "x": 129,
+        "y": 506
       },
       "frameIndex": 5,
       "id": "liquidator-agent__body__run__west__005",
@@ -4111,8 +4112,8 @@
       "frame": {
         "h": 79,
         "w": 56,
-        "x": 350,
-        "y": 504
+        "x": 210,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__east__000",
@@ -4141,8 +4142,8 @@
       "frame": {
         "h": 79,
         "w": 57,
-        "x": 408,
-        "y": 504
+        "x": 268,
+        "y": 506
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__east__001",
@@ -4171,8 +4172,8 @@
       "frame": {
         "h": 78,
         "w": 47,
-        "x": 861,
-        "y": 504
+        "x": 772,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__north-east__000",
@@ -4201,8 +4202,8 @@
       "frame": {
         "h": 77,
         "w": 45,
-        "x": 431,
-        "y": 585
+        "x": 288,
+        "y": 587
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__north-east__001",
@@ -4231,8 +4232,8 @@
       "frame": {
         "h": 78,
         "w": 61,
-        "x": 910,
-        "y": 504
+        "x": 821,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__north-west__000",
@@ -4261,8 +4262,8 @@
       "frame": {
         "h": 77,
         "w": 60,
-        "x": 478,
-        "y": 585
+        "x": 335,
+        "y": 587
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__north-west__001",
@@ -4291,8 +4292,8 @@
       "frame": {
         "h": 76,
         "w": 54,
-        "x": 270,
-        "y": 664
+        "x": 2,
+        "y": 666
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__north__000",
@@ -4321,8 +4322,8 @@
       "frame": {
         "h": 76,
         "w": 54,
-        "x": 326,
-        "y": 664
+        "x": 58,
+        "y": 666
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__north__001",
@@ -4352,7 +4353,7 @@
         "h": 82,
         "w": 60,
         "x": 2,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__south-east__000",
@@ -4382,7 +4383,7 @@
         "h": 82,
         "w": 60,
         "x": 64,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__south-east__001",
@@ -4412,7 +4413,7 @@
         "h": 82,
         "w": 47,
         "x": 126,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__south-west__000",
@@ -4442,7 +4443,7 @@
         "h": 82,
         "w": 45,
         "x": 175,
-        "y": 175
+        "y": 177
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__south-west__001",
@@ -4472,7 +4473,7 @@
         "h": 83,
         "w": 54,
         "x": 80,
-        "y": 90
+        "y": 92
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__south__000",
@@ -4501,7 +4502,7 @@
       "frame": {
         "h": 84,
         "w": 54,
-        "x": 622,
+        "x": 615,
         "y": 2
       },
       "frameIndex": 1,
@@ -4531,8 +4532,8 @@
       "frame": {
         "h": 79,
         "w": 56,
-        "x": 467,
-        "y": 504
+        "x": 327,
+        "y": 506
       },
       "frameIndex": 0,
       "id": "liquidator-agent__body__tell__west__000",
@@ -4561,8 +4562,8 @@
       "frame": {
         "h": 79,
         "w": 57,
-        "x": 525,
-        "y": 504
+        "x": 385,
+        "y": 506
       },
       "frameIndex": 1,
       "id": "liquidator-agent__body__tell__west__001",

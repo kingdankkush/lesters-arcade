@@ -119,7 +119,8 @@
         "minimumAuthoredParts": 18
       },
       "animationProfile": {
-        "kind": "undead-straight-lunge-v1"
+        "kind": "undead-straight-lunge-v1",
+        "damageResponse": "snapback-stumble-v1"
       }
     },
     {
@@ -149,7 +150,8 @@
         "minimumAuthoredParts": 10
       },
       "animationProfile": {
-        "kind": "forkrunner-quick-fork-slash-v1"
+        "kind": "forkrunner-quick-fork-slash-v1",
+        "damageResponse": "crossed-fork-guard-break-v1"
       }
     },
     {
@@ -179,7 +181,8 @@
         "minimumAuthoredParts": 18
       },
       "animationProfile": {
-        "kind": "suppression-rifle-burst-v1"
+        "kind": "suppression-rifle-burst-v1",
+        "damageResponse": "rifle-shoulder-recoil-v1"
       }
     },
     {
@@ -209,7 +212,8 @@
         "minimumAuthoredParts": 18
       },
       "animationProfile": {
-        "kind": "undead-shoulder-charge-v1"
+        "kind": "undead-shoulder-charge-v1",
+        "damageResponse": "armored-shoulder-absorb-v1"
       }
     },
     {
@@ -239,7 +243,8 @@
         "minimumAuthoredParts": 11
       },
       "animationProfile": {
-        "kind": "gas-bomber-canister-lob-v1"
+        "kind": "gas-bomber-canister-lob-v1",
+        "damageResponse": "canister-protective-stagger-v1"
       }
     },
     {
@@ -269,7 +274,8 @@
         "minimumAuthoredParts": 18
       },
       "animationProfile": {
-        "kind": "validator-staff-channel-v1"
+        "kind": "validator-staff-channel-v1",
+        "damageResponse": "staff-braced-shock-v1"
       }
     },
     {

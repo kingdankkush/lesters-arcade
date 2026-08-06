@@ -41,6 +41,7 @@ def reset_pose(rig) -> None:
 
 def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int, stoop: float) -> None:
     kind = actor.get("animationProfile", {}).get("kind", "shared-roster-v1")
+    damage_kind = actor.get("animationProfile", {}).get("damageResponse", "shared-impact-v1")
     if kind not in {
         "shared-roster-v1",
         "forkrunner-quick-fork-slash-v1",
@@ -51,6 +52,16 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
         "validator-staff-channel-v1",
     }:
         raise RuntimeError(f"Unknown enemy animation profile: {kind}")
+    if damage_kind not in {
+        "shared-impact-v1",
+        "snapback-stumble-v1",
+        "crossed-fork-guard-break-v1",
+        "rifle-shoulder-recoil-v1",
+        "armored-shoulder-absorb-v1",
+        "canister-protective-stagger-v1",
+        "staff-braced-shock-v1",
+    }:
+        raise RuntimeError(f"Unknown enemy damage response: {damage_kind}")
     reset_pose(rig)
     phase = (2.0 * math.pi * frame_index) / max(frame_count, 1)
     chest = rig.pose.bones["chest"]
@@ -236,12 +247,87 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
             pelvis.location.y = -0.055 * cast
     elif state == "hit":
         sign = -1 if frame_index == 0 else 1
-        chest.rotation_euler[1] = math.radians(18 * sign)
-        chest.rotation_euler[2] = math.radians(-20 * sign)
-        head.rotation_euler[2] = math.radians(24 * sign)
-        rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-30 * sign)
-        rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(26 * sign)
-        pelvis.location.y = 0.04
+        if damage_kind == "snapback-stumble-v1":
+            chest.rotation_euler[0] = math.radians(-24)
+            chest.rotation_euler[1] = math.radians(16 * sign)
+            chest.rotation_euler[2] = math.radians(-22 * sign)
+            head.rotation_euler[0] = math.radians(-30)
+            head.rotation_euler[2] = math.radians(28 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(34)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-42 * sign)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(28)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(38 * sign)
+            pelvis.location.y = 0.09
+            pelvis.location.z = -0.025 if frame_index == 1 else 0.015
+        elif damage_kind == "crossed-fork-guard-break-v1":
+            chest.rotation_euler[0] = math.radians(-12)
+            chest.rotation_euler[2] = math.radians(34 * sign)
+            head.rotation_euler[2] = math.radians(-24 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-82)
+            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-48 * sign)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-76)
+            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(44 * sign)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-62)
+            pelvis.location.y = 0.045
+            pelvis.location.z = -0.035
+        elif damage_kind == "rifle-shoulder-recoil-v1":
+            chest.rotation_euler[0] = math.radians(-10)
+            chest.rotation_euler[1] = math.radians(28 * sign)
+            chest.rotation_euler[2] = math.radians(-14 * sign)
+            head.rotation_euler[1] = math.radians(-18 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-64)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-52)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-72)
+            rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(18 * sign)
+            pelvis.location.y = 0.035
+        elif damage_kind == "armored-shoulder-absorb-v1":
+            chest.rotation_euler[0] = math.radians(18)
+            chest.rotation_euler[1] = math.radians(-12 * sign)
+            chest.rotation_euler[2] = math.radians(14 * sign)
+            head.rotation_euler[1] = math.radians(10 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-26)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-48 * sign)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-16)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(30 * sign)
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(14)
+            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-12)
+            pelvis.location.y = 0.025
+            pelvis.location.z = -0.065
+        elif damage_kind == "canister-protective-stagger-v1":
+            chest.rotation_euler[0] = math.radians(-18)
+            chest.rotation_euler[2] = math.radians(30 * sign)
+            head.rotation_euler[0] = math.radians(-12)
+            head.rotation_euler[2] = math.radians(-18 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-58)
+            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-32 * sign)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-76)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-92)
+            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(38 * sign)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-52)
+            pelvis.location.y = 0.055
+            pelvis.location.z = -0.025
+        elif damage_kind == "staff-braced-shock-v1":
+            chest.rotation_euler[0] = math.radians(-14)
+            chest.rotation_euler[1] = math.radians(18 * sign)
+            chest.rotation_euler[2] = math.radians(-28 * sign)
+            head.rotation_euler[0] = math.radians(-16)
+            head.rotation_euler[2] = math.radians(22 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-122)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-20 * sign)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-34)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-52)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(42 * sign)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-44)
+            pelvis.location.y = 0.04
+        else:
+            chest.rotation_euler[1] = math.radians(18 * sign)
+            chest.rotation_euler[2] = math.radians(-20 * sign)
+            head.rotation_euler[2] = math.radians(24 * sign)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-30 * sign)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(26 * sign)
+            pelvis.location.y = 0.04
     elif state == "death":
         # Collapse over four frames: buckle, fold, drop, settle.
         progress = frame_index / max(frame_count - 1, 1)

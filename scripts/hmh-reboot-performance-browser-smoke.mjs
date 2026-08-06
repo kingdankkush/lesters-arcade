@@ -49,9 +49,18 @@ async function measure({ name, viewport, deviceScaleFactor, isMobile, expectedPr
   });
   await page.goto(`${origin}/hmh-reboot/?debugGrid=1&director=1&boss=1&evidenceSafe=1&worldTour=hazard`, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'coin-blaster');
-  // Boot allocation is still landing at 750 ms: sampling there gave a baseline
-  // spread of ~9 MB, and an unstable baseline is an unstable delta no matter
-  // how clean the post-window samples are.
+  await page.waitForFunction(() => {
+    const stage = document.querySelector('#hmhRebootStage');
+    const loadedRoster = new Set(String(stage?.dataset.enemyRosterLoaded ?? '').split(',').filter(Boolean));
+    return ['bagholder-rusher', 'forkrunner', 'the-liquidator'].every((actorId) => loadedRoster.has(actorId))
+      && stage?.dataset.enemyArt === 'production-roster-atlas-v1'
+      && stage.dataset.terrainTiles === 'authored-tiles-v1'
+      && stage.dataset.authoredPropStatus === 'ready'
+      && Number(stage.dataset.simulationTick) >= 720;
+  }, null, { timeout: 30_000 });
+  // The hazard scenario lazy-loads its first boss/roster steady-state workload
+  // near tick 600. Waiting through tick 720 keeps one-time initialization out
+  // of the leak window; the extra settle absorbs any post-load finalizers.
   await page.waitForTimeout(2_000);
   // Read boot's long tasks before the sampler runs. The buffer gets cleared
   // below, and dropping it outright would silently retire this gate's only

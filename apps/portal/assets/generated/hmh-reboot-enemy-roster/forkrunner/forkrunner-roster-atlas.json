@@ -1,6 +1,7 @@
 {
   "actorId": "forkrunner",
   "animationProfile": {
+    "damageResponse": "crossed-fork-guard-break-v1",
     "kind": "forkrunner-quick-fork-slash-v1"
   },
   "boss": false,
@@ -61,8 +62,8 @@
       "frame": {
         "h": 73,
         "w": 33,
-        "x": 571,
-        "y": 188
+        "x": 773,
+        "y": 189
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__east__001",
@@ -91,8 +92,8 @@
       "frame": {
         "h": 69,
         "w": 31,
-        "x": 846,
-        "y": 488
+        "x": 620,
+        "y": 489
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__east__002",
@@ -151,8 +152,8 @@
       "frame": {
         "h": 73,
         "w": 43,
-        "x": 606,
-        "y": 188
+        "x": 808,
+        "y": 189
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__north-east__001",
@@ -181,8 +182,8 @@
       "frame": {
         "h": 71,
         "w": 67,
-        "x": 160,
-        "y": 414
+        "x": 68,
+        "y": 415
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__north-east__002",
@@ -211,7 +212,7 @@
       "frame": {
         "h": 78,
         "w": 78,
-        "x": 519,
+        "x": 866,
         "y": 2
       },
       "frameIndex": 0,
@@ -241,8 +242,8 @@
       "frame": {
         "h": 64,
         "w": 49,
-        "x": 685,
-        "y": 560
+        "x": 517,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__north-west__001",
@@ -271,8 +272,8 @@
       "frame": {
         "h": 73,
         "w": 72,
-        "x": 651,
-        "y": 188
+        "x": 853,
+        "y": 189
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__north-west__002",
@@ -301,7 +302,7 @@
       "frame": {
         "h": 96,
         "w": 90,
-        "x": 131,
+        "x": 170,
         "y": 2
       },
       "frameIndex": 0,
@@ -331,8 +332,8 @@
       "frame": {
         "h": 69,
         "w": 56,
-        "x": 879,
-        "y": 488
+        "x": 653,
+        "y": 489
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__north__001",
@@ -361,8 +362,8 @@
       "frame": {
         "h": 72,
         "w": 92,
-        "x": 742,
-        "y": 265
+        "x": 652,
+        "y": 266
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__north__002",
@@ -391,7 +392,7 @@
       "frame": {
         "h": 80,
         "w": 78,
-        "x": 384,
+        "x": 586,
         "y": 2
       },
       "frameIndex": 0,
@@ -421,8 +422,8 @@
       "frame": {
         "h": 69,
         "w": 49,
-        "x": 937,
-        "y": 488
+        "x": 711,
+        "y": 489
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__south-east__001",
@@ -451,8 +452,8 @@
       "frame": {
         "h": 70,
         "w": 72,
-        "x": 758,
-        "y": 414
+        "x": 708,
+        "y": 415
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__south-east__002",
@@ -481,8 +482,8 @@
       "frame": {
         "h": 68,
         "w": 73,
-        "x": 372,
-        "y": 560
+        "x": 138,
+        "y": 561
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__south-west__000",
@@ -511,8 +512,8 @@
       "frame": {
         "h": 59,
         "w": 43,
-        "x": 248,
-        "y": 631
+        "x": 58,
+        "y": 632
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__south-west__001",
@@ -541,8 +542,8 @@
       "frame": {
         "h": 72,
         "w": 67,
-        "x": 836,
-        "y": 265
+        "x": 746,
+        "y": 266
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__south-west__002",
@@ -571,8 +572,8 @@
       "frame": {
         "h": 70,
         "w": 90,
-        "x": 832,
-        "y": 414
+        "x": 782,
+        "y": 415
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__south__000",
@@ -601,8 +602,8 @@
       "frame": {
         "h": 63,
         "w": 57,
-        "x": 800,
-        "y": 560
+        "x": 632,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__south__001",
@@ -631,8 +632,8 @@
       "frame": {
         "h": 71,
         "w": 92,
-        "x": 229,
-        "y": 414
+        "x": 137,
+        "y": 415
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__south__002",
@@ -661,8 +662,8 @@
       "frame": {
         "h": 71,
         "w": 49,
-        "x": 323,
-        "y": 414
+        "x": 231,
+        "y": 415
       },
       "frameIndex": 0,
       "id": "forkrunner__body__attack__west__000",
@@ -691,8 +692,8 @@
       "frame": {
         "h": 60,
         "w": 33,
-        "x": 157,
-        "y": 631
+        "x": 971,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__attack__west__001",
@@ -721,8 +722,8 @@
       "frame": {
         "h": 73,
         "w": 33,
-        "x": 725,
-        "y": 188
+        "x": 927,
+        "y": 189
       },
       "frameIndex": 2,
       "id": "forkrunner__body__attack__west__002",
@@ -751,8 +752,8 @@
       "frame": {
         "h": 72,
         "w": 27,
-        "x": 905,
-        "y": 265
+        "x": 815,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__east__000",
@@ -781,8 +782,8 @@
       "frame": {
         "h": 65,
         "w": 45,
-        "x": 532,
-        "y": 560
+        "x": 364,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__east__001",
@@ -811,8 +812,8 @@
       "frame": {
         "h": 55,
         "w": 70,
-        "x": 420,
-        "y": 631
+        "x": 230,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__east__002",
@@ -841,8 +842,8 @@
       "frame": {
         "h": 48,
         "w": 69,
-        "x": 862,
-        "y": 631
+        "x": 672,
+        "y": 632
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__east__003",
@@ -871,8 +872,8 @@
       "frame": {
         "h": 73,
         "w": 57,
-        "x": 760,
-        "y": 188
+        "x": 962,
+        "y": 189
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__north-east__000",
@@ -901,8 +902,8 @@
       "frame": {
         "h": 71,
         "w": 47,
-        "x": 374,
-        "y": 414
+        "x": 282,
+        "y": 415
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__north-east__001",
@@ -931,8 +932,8 @@
       "frame": {
         "h": 53,
         "w": 50,
-        "x": 605,
-        "y": 631
+        "x": 415,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__north-east__002",
@@ -961,8 +962,8 @@
       "frame": {
         "h": 44,
         "w": 60,
-        "x": 71,
-        "y": 694
+        "x": 895,
+        "y": 632
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__north-east__003",
@@ -991,8 +992,8 @@
       "frame": {
         "h": 73,
         "w": 57,
-        "x": 819,
-        "y": 188
+        "x": 2,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__north-west__000",
@@ -1021,8 +1022,8 @@
       "frame": {
         "h": 71,
         "w": 48,
-        "x": 423,
-        "y": 414
+        "x": 331,
+        "y": 415
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__north-west__001",
@@ -1051,8 +1052,8 @@
       "frame": {
         "h": 53,
         "w": 53,
-        "x": 657,
-        "y": 631
+        "x": 467,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__north-west__002",
@@ -1081,7 +1082,7 @@
       "frame": {
         "h": 44,
         "w": 68,
-        "x": 133,
+        "x": 2,
         "y": 694
       },
       "frameIndex": 3,
@@ -1111,8 +1112,8 @@
       "frame": {
         "h": 72,
         "w": 74,
-        "x": 934,
-        "y": 265
+        "x": 844,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__north__000",
@@ -1141,8 +1142,8 @@
       "frame": {
         "h": 74,
         "w": 54,
-        "x": 275,
-        "y": 188
+        "x": 431,
+        "y": 189
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__north__001",
@@ -1171,8 +1172,8 @@
       "frame": {
         "h": 55,
         "w": 39,
-        "x": 492,
-        "y": 631
+        "x": 302,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__north__002",
@@ -1201,7 +1202,7 @@
       "frame": {
         "h": 44,
         "w": 38,
-        "x": 203,
+        "x": 72,
         "y": 694
       },
       "frameIndex": 3,
@@ -1231,8 +1232,8 @@
       "frame": {
         "h": 73,
         "w": 57,
-        "x": 878,
-        "y": 188
+        "x": 61,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__south-east__000",
@@ -1261,8 +1262,8 @@
       "frame": {
         "h": 61,
         "w": 48,
-        "x": 2,
-        "y": 631
+        "x": 816,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__south-east__001",
@@ -1291,8 +1292,8 @@
       "frame": {
         "h": 57,
         "w": 63,
-        "x": 293,
-        "y": 631
+        "x": 103,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__south-east__002",
@@ -1321,8 +1322,8 @@
       "frame": {
         "h": 49,
         "w": 63,
-        "x": 797,
-        "y": 631
+        "x": 607,
+        "y": 632
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__south-east__003",
@@ -1351,8 +1352,8 @@
       "frame": {
         "h": 73,
         "w": 57,
-        "x": 937,
-        "y": 188
+        "x": 120,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__south-west__000",
@@ -1381,8 +1382,8 @@
       "frame": {
         "h": 61,
         "w": 47,
-        "x": 52,
-        "y": 631
+        "x": 866,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__south-west__001",
@@ -1411,8 +1412,8 @@
       "frame": {
         "h": 57,
         "w": 60,
-        "x": 358,
-        "y": 631
+        "x": 168,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__south-west__002",
@@ -1441,8 +1442,8 @@
       "frame": {
         "h": 47,
         "w": 67,
-        "x": 2,
-        "y": 694
+        "x": 826,
+        "y": 632
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__south-west__003",
@@ -1471,8 +1472,8 @@
       "frame": {
         "h": 73,
         "w": 74,
-        "x": 2,
-        "y": 265
+        "x": 179,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__south__000",
@@ -1501,8 +1502,8 @@
       "frame": {
         "h": 60,
         "w": 54,
-        "x": 192,
-        "y": 631
+        "x": 2,
+        "y": 632
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__south__001",
@@ -1531,8 +1532,8 @@
       "frame": {
         "h": 51,
         "w": 39,
-        "x": 756,
-        "y": 631
+        "x": 566,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__south__002",
@@ -1561,8 +1562,8 @@
       "frame": {
         "h": 52,
         "w": 42,
-        "x": 712,
-        "y": 631
+        "x": 522,
+        "y": 632
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__south__003",
@@ -1591,8 +1592,8 @@
       "frame": {
         "h": 72,
         "w": 34,
-        "x": 2,
-        "y": 340
+        "x": 920,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__death__west__000",
@@ -1621,8 +1622,8 @@
       "frame": {
         "h": 65,
         "w": 47,
-        "x": 579,
-        "y": 560
+        "x": 411,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__death__west__001",
@@ -1651,8 +1652,8 @@
       "frame": {
         "h": 55,
         "w": 70,
-        "x": 533,
-        "y": 631
+        "x": 343,
+        "y": 632
       },
       "frameIndex": 2,
       "id": "forkrunner__body__death__west__002",
@@ -1681,8 +1682,8 @@
       "frame": {
         "h": 48,
         "w": 81,
-        "x": 933,
-        "y": 631
+        "x": 743,
+        "y": 632
       },
       "frameIndex": 3,
       "id": "forkrunner__body__death__west__003",
@@ -1703,473 +1704,323 @@
     },
     {
       "anchor": {
-        "x": 0.090909,
-        "y": 0.352941
+        "x": 0.125,
+        "y": 0.526882
       },
       "direction": "east",
       "fps": 12,
       "frame": {
-        "h": 68,
-        "w": 33,
-        "x": 447,
-        "y": 560
+        "h": 93,
+        "w": 48,
+        "x": 262,
+        "y": 2
       },
       "frameIndex": 0,
       "id": "forkrunner__body__hit__east__000",
-      "opaquePixels": 1415,
+      "opaquePixels": 1633,
       "phase": null,
       "pivot": {
-        "x": 3,
-        "y": 24
+        "x": 6,
+        "y": 49
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "c3958c356532beb6e4a011f3f52d0e72f814edb8ff4454260a3117bda34b755a",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.0625,
-        "y": 0.435897
-      },
-      "direction": "east",
-      "fps": 12,
-      "frame": {
-        "h": 78,
-        "w": 48,
-        "x": 599,
-        "y": 2
-      },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__east__001",
-      "opaquePixels": 1584,
-      "phase": null,
-      "pivot": {
-        "x": 3,
-        "y": 34
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "9fb709554b592336bc611572a47dfc43254959714a3ba164d497faadac8ef469",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.26087,
-        "y": 0.371429
-      },
-      "direction": "north-east",
-      "fps": 12,
-      "frame": {
-        "h": 70,
-        "w": 46,
-        "x": 924,
-        "y": 414
-      },
-      "frameIndex": 0,
-      "id": "forkrunner__body__hit__north-east__000",
-      "opaquePixels": 1868,
-      "phase": null,
-      "pivot": {
-        "x": 12,
-        "y": 26
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "a18047551868306dd0e00a905e593a5bf57aab92a29bc63e4a0f2a9c8f3b9e80",
+      "sourcePixelSha256": "af4b57d17bfbcdb370f29a77787667674b1ded76fb31205d1f200bf28f8ae774",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
         "x": 0.166667,
-        "y": 0.428571
+        "y": 0.413333
+      },
+      "direction": "east",
+      "fps": 12,
+      "frame": {
+        "h": 75,
+        "w": 36,
+        "x": 662,
+        "y": 109
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__east__001",
+      "opaquePixels": 1380,
+      "phase": null,
+      "pivot": {
+        "x": 6,
+        "y": 31
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "000a17ecec35ddd449e230c6864a4d2b8790d8dca09d724feea820d800247487",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.297297,
+        "y": 0.55102
       },
       "direction": "north-east",
       "fps": 12,
       "frame": {
-        "h": 77,
-        "w": 78,
-        "x": 812,
+        "h": 98,
+        "w": 37,
+        "x": 131,
         "y": 2
       },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__north-east__001",
-      "opaquePixels": 2258,
+      "frameIndex": 0,
+      "id": "forkrunner__body__hit__north-east__000",
+      "opaquePixels": 2014,
       "phase": null,
       "pivot": {
-        "x": 13,
-        "y": 33
+        "x": 11,
+        "y": 54
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "6a3bd939141ce3a74b0574ec60db5309f9f7026de2f5aea276e6ea0c2fe4124f",
+      "sourcePixelSha256": "9e5d89bf6996dcc35382f479fede9709c59c44580e778ac62fdd3760feaca8dd",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.30303,
-        "y": 0.428571
+        "x": 0.075,
+        "y": 0.380282
+      },
+      "direction": "north-east",
+      "fps": 12,
+      "frame": {
+        "h": 71,
+        "w": 40,
+        "x": 381,
+        "y": 415
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__north-east__001",
+      "opaquePixels": 1707,
+      "phase": null,
+      "pivot": {
+        "x": 3,
+        "y": 27
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "7c837f9ce5d54a7c44fde471d42bbfe271b5426319a0010aa69e292fcaf53b03",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.42623,
+        "y": 0.45
       },
       "direction": "north-west",
       "fps": 12,
       "frame": {
-        "h": 77,
-        "w": 66,
-        "x": 892,
+        "h": 80,
+        "w": 61,
+        "x": 666,
         "y": 2
       },
       "frameIndex": 0,
       "id": "forkrunner__body__hit__north-west__000",
-      "opaquePixels": 2386,
+      "opaquePixels": 1718,
       "phase": null,
       "pivot": {
-        "x": 20,
-        "y": 33
+        "x": 26,
+        "y": 36
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "280263e47b2b77463daed7beba19ee1a6f00419f9810c58e4426cdff37be9992",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.232558,
-        "y": 0.371429
-      },
-      "direction": "north-west",
-      "fps": 12,
-      "frame": {
-        "h": 70,
-        "w": 43,
-        "x": 972,
-        "y": 414
-      },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__north-west__001",
-      "opaquePixels": 1859,
-      "phase": null,
-      "pivot": {
-        "x": 10,
-        "y": 26
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "4de2685d1abb5784f579c7f439442fa0a1c4f902914aab456b08ddaa941407b8",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.378378,
-        "y": 0.39726
-      },
-      "direction": "north",
-      "fps": 12,
-      "frame": {
-        "h": 73,
-        "w": 74,
-        "x": 78,
-        "y": 265
-      },
-      "frameIndex": 0,
-      "id": "forkrunner__body__hit__north__000",
-      "opaquePixels": 2334,
-      "phase": null,
-      "pivot": {
-        "x": 28,
-        "y": 29
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "f08a67de9c85171244e1145a6737711bfa198e6781435dfba60d1cc3369ea556",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.25974,
-        "y": 0.39726
-      },
-      "direction": "north",
-      "fps": 12,
-      "frame": {
-        "h": 73,
-        "w": 77,
-        "x": 154,
-        "y": 265
-      },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__north__001",
-      "opaquePixels": 2133,
-      "phase": null,
-      "pivot": {
-        "x": 20,
-        "y": 29
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "e748537d37fa5adc598e406748c8fe40678af3ac478befa10d509ec8116dd54c",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.212121,
-        "y": 0.371429
-      },
-      "direction": "south-east",
-      "fps": 12,
-      "frame": {
-        "h": 70,
-        "w": 66,
-        "x": 2,
-        "y": 488
-      },
-      "frameIndex": 0,
-      "id": "forkrunner__body__hit__south-east__000",
-      "opaquePixels": 1980,
-      "phase": null,
-      "pivot": {
-        "x": 14,
-        "y": 26
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "3d666c2ace7f6550e703ed3027e806a9e71f97b5a470e9fd6401f173021714e8",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.023256,
-        "y": 0.428571
-      },
-      "direction": "south-east",
-      "fps": 12,
-      "frame": {
-        "h": 77,
-        "w": 43,
-        "x": 960,
-        "y": 2
-      },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__south-east__001",
-      "opaquePixels": 1888,
-      "phase": null,
-      "pivot": {
-        "x": 1,
-        "y": 33
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "d31b8ac3e586bcd02666551160ca9afd4233493dfe1e184a530971cc87a12309",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.043478,
-        "y": 0.428571
-      },
-      "direction": "south-west",
-      "fps": 12,
-      "frame": {
-        "h": 77,
-        "w": 46,
-        "x": 2,
-        "y": 109
-      },
-      "frameIndex": 0,
-      "id": "forkrunner__body__hit__south-west__000",
-      "opaquePixels": 1881,
-      "phase": null,
-      "pivot": {
-        "x": 2,
-        "y": 33
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "8e761e1f48f2fb0310f30e3ee118af21b7a4717a62bcf3ed39bc996340835aca",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.423077,
-        "y": 0.371429
-      },
-      "direction": "south-west",
-      "fps": 12,
-      "frame": {
-        "h": 70,
-        "w": 78,
-        "x": 70,
-        "y": 488
-      },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__south-west__001",
-      "opaquePixels": 2184,
-      "phase": null,
-      "pivot": {
-        "x": 33,
-        "y": 26
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "1a4914fbeaba1013c5b83f4e4a726a91e63d5090b2124fedb884215eedba9380",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.189189,
-        "y": 0.39726
-      },
-      "direction": "south",
-      "fps": 12,
-      "frame": {
-        "h": 73,
-        "w": 74,
-        "x": 233,
-        "y": 265
-      },
-      "frameIndex": 0,
-      "id": "forkrunner__body__hit__south__000",
-      "opaquePixels": 2167,
-      "phase": null,
-      "pivot": {
-        "x": 14,
-        "y": 29
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "55e471022ed31151471d48364bfa833eccdd49f6ed5c3218eee74880237d72e2",
-      "state": "hit",
-      "trimmed": true
-    },
-    {
-      "anchor": {
-        "x": 0.324675,
-        "y": 0.39726
-      },
-      "direction": "south",
-      "fps": 12,
-      "frame": {
-        "h": 73,
-        "w": 77,
-        "x": 309,
-        "y": 265
-      },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__south__001",
-      "opaquePixels": 2356,
-      "phase": null,
-      "pivot": {
-        "x": 25,
-        "y": 29
-      },
-      "rotated": false,
-      "sourcePivot": {
-        "x": 64,
-        "y": 116
-      },
-      "sourcePixelSha256": "36f476cf44e1af62fe6738db1521b85977afa4ec734798113518bd63250e61f7",
+      "sourcePixelSha256": "23c97cee72f9e38bb0110a4359e97dbcc3482e22153d4284df104b512d98179d",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
         "x": 0.0,
-        "y": 0.435897
+        "y": 0.405405
       },
-      "direction": "west",
+      "direction": "north-west",
       "fps": 12,
       "frame": {
-        "h": 78,
-        "w": 35,
-        "x": 649,
-        "y": 2
+        "h": 74,
+        "w": 44,
+        "x": 487,
+        "y": 189
       },
-      "frameIndex": 0,
-      "id": "forkrunner__body__hit__west__000",
-      "opaquePixels": 1627,
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__north-west__001",
+      "opaquePixels": 1742,
       "phase": null,
       "pivot": {
         "x": 0,
-        "y": 34
+        "y": 30
       },
       "rotated": false,
       "sourcePivot": {
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "df53ddbde49434b823cdd4e3c4bc8c1e465395486e9849436af8b4b3a9d4c8f6",
+      "sourcePixelSha256": "99995596207da3ba43c37dab06b4755dd7dccb54f037d4503482ebd0bf70340a",
       "state": "hit",
       "trimmed": true
     },
     {
       "anchor": {
-        "x": 0.270833,
+        "x": 0.416667,
+        "y": 0.526882
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 93,
+        "w": 48,
+        "x": 312,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "forkrunner__body__hit__north__000",
+      "opaquePixels": 1774,
+      "phase": null,
+      "pivot": {
+        "x": 20,
+        "y": 49
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "d6c276d859eb566dfaeec70484cb355cf82dc62250b7ca6cd6c39f81a5dea929",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.092593,
+        "y": 0.333333
+      },
+      "direction": "north",
+      "fps": 12,
+      "frame": {
+        "h": 66,
+        "w": 54,
+        "x": 308,
+        "y": 561
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__north__001",
+      "opaquePixels": 1742,
+      "phase": null,
+      "pivot": {
+        "x": 5,
+        "y": 22
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "2dae6ec8b9c6ae23ec0144153197156cba77ecfbc0d2ebc9981273247d672006",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.04918,
+        "y": 0.45679
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 81,
+        "w": 61,
+        "x": 523,
+        "y": 2
+      },
+      "frameIndex": 0,
+      "id": "forkrunner__body__hit__south-east__000",
+      "opaquePixels": 2044,
+      "phase": null,
+      "pivot": {
+        "x": 3,
+        "y": 37
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "22c9f30f34ff5d50484c5a164d8aa127c343104774d75fe7c17cc4719d3bc486",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.292683,
+        "y": 0.39726
+      },
+      "direction": "south-east",
+      "fps": 12,
+      "frame": {
+        "h": 73,
+        "w": 41,
+        "x": 255,
+        "y": 266
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__south-east__001",
+      "opaquePixels": 1747,
+      "phase": null,
+      "pivot": {
+        "x": 12,
+        "y": 29
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "d4fb352b7091198f3ef0099ac0fc6f854872673d2513eefa9f2e2105bfd264d7",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
         "y": 0.352941
       },
-      "direction": "west",
+      "direction": "south-west",
       "fps": 12,
       "frame": {
         "h": 68,
-        "w": 48,
-        "x": 482,
-        "y": 560
+        "w": 43,
+        "x": 213,
+        "y": 561
       },
-      "frameIndex": 1,
-      "id": "forkrunner__body__hit__west__001",
-      "opaquePixels": 1447,
+      "frameIndex": 0,
+      "id": "forkrunner__body__hit__south-west__000",
+      "opaquePixels": 1502,
       "phase": null,
       "pivot": {
-        "x": 13,
+        "x": 0,
         "y": 24
       },
       "rotated": false,
@@ -2177,7 +2028,157 @@
         "x": 64,
         "y": 116
       },
-      "sourcePixelSha256": "e66fee7bb9cf70bc6f11cd228438f8bfae4d6f4a89a3f956157cb02826d379bc",
+      "sourcePixelSha256": "809d8411fff1095fa559f249d2aa912e14ca5355bc004a9ac94f8b7b21b2c38a",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.125,
+        "y": 0.45
+      },
+      "direction": "south-west",
+      "fps": 12,
+      "frame": {
+        "h": 80,
+        "w": 40,
+        "x": 729,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__south-west__001",
+      "opaquePixels": 1738,
+      "phase": null,
+      "pivot": {
+        "x": 5,
+        "y": 36
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "321d760d7e4ee25f426add14247e1c9fb2f414778790fff8c9f699f5a8ced44c",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.421053
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 76,
+        "w": 52,
+        "x": 64,
+        "y": 109
+      },
+      "frameIndex": 0,
+      "id": "forkrunner__body__hit__south__000",
+      "opaquePixels": 1719,
+      "phase": null,
+      "pivot": {
+        "x": 0,
+        "y": 32
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "af72c8f6de0bc6c9bbe1262fd40fbdf133a27a2d873078a2aa99cb3c058c9f9b",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.314815,
+        "y": 0.421053
+      },
+      "direction": "south",
+      "fps": 12,
+      "frame": {
+        "h": 76,
+        "w": 54,
+        "x": 118,
+        "y": 109
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__south__001",
+      "opaquePixels": 1768,
+      "phase": null,
+      "pivot": {
+        "x": 17,
+        "y": 32
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "720e8b0e591265f85dbbf07e985d01eec59f766730e0c200ee7bd33306200fa1",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.208333,
+        "y": 0.343284
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 67,
+        "w": 48,
+        "x": 258,
+        "y": 561
+      },
+      "frameIndex": 0,
+      "id": "forkrunner__body__hit__west__000",
+      "opaquePixels": 1359,
+      "phase": null,
+      "pivot": {
+        "x": 10,
+        "y": 23
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "f3d02566c9e4abb6d49144fbff280120e0710d9cc75eb3d948468858739f6d53",
+      "state": "hit",
+      "trimmed": true
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.443038
+      },
+      "direction": "west",
+      "fps": 12,
+      "frame": {
+        "h": 79,
+        "w": 38,
+        "x": 826,
+        "y": 2
+      },
+      "frameIndex": 1,
+      "id": "forkrunner__body__hit__west__001",
+      "opaquePixels": 1314,
+      "phase": null,
+      "pivot": {
+        "x": 0,
+        "y": 35
+      },
+      "rotated": false,
+      "sourcePivot": {
+        "x": 64,
+        "y": 116
+      },
+      "sourcePixelSha256": "1e6422d0b3f6b002948e127a015e61c8230f75633a06025dfb1d5b0dd8e31d8f",
       "state": "hit",
       "trimmed": true
     },
@@ -2191,8 +2192,8 @@
       "frame": {
         "h": 72,
         "w": 31,
-        "x": 38,
-        "y": 340
+        "x": 956,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__east__000",
@@ -2221,8 +2222,8 @@
       "frame": {
         "h": 72,
         "w": 33,
-        "x": 71,
-        "y": 340
+        "x": 989,
+        "y": 266
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__east__001",
@@ -2251,8 +2252,8 @@
       "frame": {
         "h": 73,
         "w": 52,
-        "x": 388,
-        "y": 265
+        "x": 298,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__north-east__000",
@@ -2281,8 +2282,8 @@
       "frame": {
         "h": 72,
         "w": 53,
-        "x": 106,
-        "y": 340
+        "x": 2,
+        "y": 341
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__north-east__001",
@@ -2311,8 +2312,8 @@
       "frame": {
         "h": 73,
         "w": 52,
-        "x": 442,
-        "y": 265
+        "x": 352,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__north-west__000",
@@ -2341,8 +2342,8 @@
       "frame": {
         "h": 72,
         "w": 53,
-        "x": 161,
-        "y": 340
+        "x": 57,
+        "y": 341
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__north-west__001",
@@ -2371,8 +2372,8 @@
       "frame": {
         "h": 73,
         "w": 66,
-        "x": 496,
-        "y": 265
+        "x": 406,
+        "y": 266
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__north__000",
@@ -2401,8 +2402,8 @@
       "frame": {
         "h": 72,
         "w": 66,
-        "x": 216,
-        "y": 340
+        "x": 112,
+        "y": 341
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__north__001",
@@ -2431,8 +2432,8 @@
       "frame": {
         "h": 72,
         "w": 52,
-        "x": 284,
-        "y": 340
+        "x": 180,
+        "y": 341
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__south-east__000",
@@ -2461,8 +2462,8 @@
       "frame": {
         "h": 73,
         "w": 53,
-        "x": 564,
-        "y": 265
+        "x": 474,
+        "y": 266
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__south-east__001",
@@ -2491,8 +2492,8 @@
       "frame": {
         "h": 72,
         "w": 53,
-        "x": 338,
-        "y": 340
+        "x": 234,
+        "y": 341
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__south-west__000",
@@ -2521,8 +2522,8 @@
       "frame": {
         "h": 73,
         "w": 53,
-        "x": 619,
-        "y": 265
+        "x": 529,
+        "y": 266
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__south-west__001",
@@ -2551,8 +2552,8 @@
       "frame": {
         "h": 72,
         "w": 66,
-        "x": 393,
-        "y": 340
+        "x": 289,
+        "y": 341
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__south__000",
@@ -2581,8 +2582,8 @@
       "frame": {
         "h": 73,
         "w": 66,
-        "x": 674,
-        "y": 265
+        "x": 584,
+        "y": 266
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__south__001",
@@ -2611,8 +2612,8 @@
       "frame": {
         "h": 72,
         "w": 33,
-        "x": 461,
-        "y": 340
+        "x": 357,
+        "y": 341
       },
       "frameIndex": 0,
       "id": "forkrunner__body__idle__west__000",
@@ -2641,8 +2642,8 @@
       "frame": {
         "h": 72,
         "w": 34,
-        "x": 496,
-        "y": 340
+        "x": 392,
+        "y": 341
       },
       "frameIndex": 1,
       "id": "forkrunner__body__idle__west__001",
@@ -2671,8 +2672,8 @@
       "frame": {
         "h": 72,
         "w": 43,
-        "x": 532,
-        "y": 340
+        "x": 428,
+        "y": 341
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__east__000",
@@ -2701,8 +2702,8 @@
       "frame": {
         "h": 72,
         "w": 45,
-        "x": 577,
-        "y": 340
+        "x": 473,
+        "y": 341
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__east__001",
@@ -2731,8 +2732,8 @@
       "frame": {
         "h": 72,
         "w": 63,
-        "x": 624,
-        "y": 340
+        "x": 520,
+        "y": 341
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__east__002",
@@ -2761,8 +2762,8 @@
       "frame": {
         "h": 72,
         "w": 31,
-        "x": 689,
-        "y": 340
+        "x": 585,
+        "y": 341
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__east__003",
@@ -2791,8 +2792,8 @@
       "frame": {
         "h": 72,
         "w": 55,
-        "x": 722,
-        "y": 340
+        "x": 618,
+        "y": 341
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__east__004",
@@ -2821,8 +2822,8 @@
       "frame": {
         "h": 72,
         "w": 66,
-        "x": 779,
-        "y": 340
+        "x": 675,
+        "y": 341
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__east__005",
@@ -2851,8 +2852,8 @@
       "frame": {
         "h": 74,
         "w": 58,
-        "x": 331,
-        "y": 188
+        "x": 533,
+        "y": 189
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__north-east__000",
@@ -2881,7 +2882,7 @@
       "frame": {
         "h": 75,
         "w": 55,
-        "x": 538,
+        "x": 700,
         "y": 109
       },
       "frameIndex": 1,
@@ -2911,7 +2912,7 @@
       "frame": {
         "h": 75,
         "w": 62,
-        "x": 595,
+        "x": 757,
         "y": 109
       },
       "frameIndex": 2,
@@ -2941,8 +2942,8 @@
       "frame": {
         "h": 74,
         "w": 58,
-        "x": 391,
-        "y": 188
+        "x": 593,
+        "y": 189
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__north-east__003",
@@ -2971,7 +2972,7 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 659,
+        "x": 821,
         "y": 109
       },
       "frameIndex": 4,
@@ -3001,7 +3002,7 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 737,
+        "x": 899,
         "y": 109
       },
       "frameIndex": 5,
@@ -3031,8 +3032,8 @@
       "frame": {
         "h": 74,
         "w": 58,
-        "x": 451,
-        "y": 188
+        "x": 653,
+        "y": 189
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__north-west__000",
@@ -3061,8 +3062,8 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 815,
-        "y": 109
+        "x": 2,
+        "y": 189
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__north-west__001",
@@ -3091,8 +3092,8 @@
       "frame": {
         "h": 75,
         "w": 76,
-        "x": 893,
-        "y": 109
+        "x": 80,
+        "y": 189
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__north-west__002",
@@ -3121,8 +3122,8 @@
       "frame": {
         "h": 74,
         "w": 58,
-        "x": 511,
-        "y": 188
+        "x": 713,
+        "y": 189
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__north-west__003",
@@ -3151,8 +3152,8 @@
       "frame": {
         "h": 75,
         "w": 55,
-        "x": 2,
-        "y": 188
+        "x": 158,
+        "y": 189
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__north-west__004",
@@ -3181,8 +3182,8 @@
       "frame": {
         "h": 75,
         "w": 62,
-        "x": 59,
-        "y": 188
+        "x": 215,
+        "y": 189
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__north-west__005",
@@ -3211,8 +3212,8 @@
       "frame": {
         "h": 75,
         "w": 74,
-        "x": 123,
-        "y": 188
+        "x": 279,
+        "y": 189
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__north__000",
@@ -3241,7 +3242,7 @@
       "frame": {
         "h": 76,
         "w": 76,
-        "x": 50,
+        "x": 174,
         "y": 109
       },
       "frameIndex": 1,
@@ -3271,7 +3272,7 @@
       "frame": {
         "h": 76,
         "w": 76,
-        "x": 128,
+        "x": 252,
         "y": 109
       },
       "frameIndex": 2,
@@ -3301,8 +3302,8 @@
       "frame": {
         "h": 75,
         "w": 74,
-        "x": 199,
-        "y": 188
+        "x": 355,
+        "y": 189
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__north__003",
@@ -3331,7 +3332,7 @@
       "frame": {
         "h": 76,
         "w": 76,
-        "x": 206,
+        "x": 330,
         "y": 109
       },
       "frameIndex": 4,
@@ -3361,7 +3362,7 @@
       "frame": {
         "h": 76,
         "w": 76,
-        "x": 284,
+        "x": 408,
         "y": 109
       },
       "frameIndex": 5,
@@ -3391,8 +3392,8 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 473,
-        "y": 414
+        "x": 423,
+        "y": 415
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__south-east__000",
@@ -3421,8 +3422,8 @@
       "frame": {
         "h": 70,
         "w": 76,
-        "x": 150,
-        "y": 488
+        "x": 874,
+        "y": 415
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__south-east__001",
@@ -3451,8 +3452,8 @@
       "frame": {
         "h": 70,
         "w": 76,
-        "x": 228,
-        "y": 488
+        "x": 2,
+        "y": 489
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__south-east__002",
@@ -3481,8 +3482,8 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 533,
-        "y": 414
+        "x": 483,
+        "y": 415
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__south-east__003",
@@ -3511,8 +3512,8 @@
       "frame": {
         "h": 70,
         "w": 52,
-        "x": 306,
-        "y": 488
+        "x": 80,
+        "y": 489
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__south-east__004",
@@ -3541,8 +3542,8 @@
       "frame": {
         "h": 70,
         "w": 60,
-        "x": 360,
-        "y": 488
+        "x": 134,
+        "y": 489
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__south-east__005",
@@ -3571,8 +3572,8 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 593,
-        "y": 414
+        "x": 543,
+        "y": 415
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__south-west__000",
@@ -3601,8 +3602,8 @@
       "frame": {
         "h": 70,
         "w": 52,
-        "x": 422,
-        "y": 488
+        "x": 196,
+        "y": 489
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__south-west__001",
@@ -3631,8 +3632,8 @@
       "frame": {
         "h": 70,
         "w": 60,
-        "x": 476,
-        "y": 488
+        "x": 250,
+        "y": 489
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__south-west__002",
@@ -3661,8 +3662,8 @@
       "frame": {
         "h": 71,
         "w": 58,
-        "x": 653,
-        "y": 414
+        "x": 603,
+        "y": 415
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__south-west__003",
@@ -3691,8 +3692,8 @@
       "frame": {
         "h": 70,
         "w": 76,
-        "x": 538,
-        "y": 488
+        "x": 312,
+        "y": 489
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__south-west__004",
@@ -3721,8 +3722,8 @@
       "frame": {
         "h": 70,
         "w": 76,
-        "x": 616,
-        "y": 488
+        "x": 390,
+        "y": 489
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__south-west__005",
@@ -3751,8 +3752,8 @@
       "frame": {
         "h": 70,
         "w": 74,
-        "x": 694,
-        "y": 488
+        "x": 468,
+        "y": 489
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__south__000",
@@ -3781,8 +3782,8 @@
       "frame": {
         "h": 69,
         "w": 76,
-        "x": 2,
-        "y": 560
+        "x": 762,
+        "y": 489
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__south__001",
@@ -3811,8 +3812,8 @@
       "frame": {
         "h": 69,
         "w": 76,
-        "x": 80,
-        "y": 560
+        "x": 840,
+        "y": 489
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__south__002",
@@ -3841,8 +3842,8 @@
       "frame": {
         "h": 70,
         "w": 74,
-        "x": 770,
-        "y": 488
+        "x": 544,
+        "y": 489
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__south__003",
@@ -3871,8 +3872,8 @@
       "frame": {
         "h": 69,
         "w": 76,
-        "x": 158,
-        "y": 560
+        "x": 918,
+        "y": 489
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__south__004",
@@ -3901,8 +3902,8 @@
       "frame": {
         "h": 69,
         "w": 76,
-        "x": 236,
-        "y": 560
+        "x": 2,
+        "y": 561
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__south__005",
@@ -3931,8 +3932,8 @@
       "frame": {
         "h": 72,
         "w": 33,
-        "x": 847,
-        "y": 340
+        "x": 743,
+        "y": 341
       },
       "frameIndex": 0,
       "id": "forkrunner__body__run__west__000",
@@ -3961,8 +3962,8 @@
       "frame": {
         "h": 72,
         "w": 55,
-        "x": 882,
-        "y": 340
+        "x": 778,
+        "y": 341
       },
       "frameIndex": 1,
       "id": "forkrunner__body__run__west__001",
@@ -3991,8 +3992,8 @@
       "frame": {
         "h": 72,
         "w": 66,
-        "x": 939,
-        "y": 340
+        "x": 835,
+        "y": 341
       },
       "frameIndex": 2,
       "id": "forkrunner__body__run__west__002",
@@ -4021,8 +4022,8 @@
       "frame": {
         "h": 72,
         "w": 43,
-        "x": 2,
-        "y": 414
+        "x": 903,
+        "y": 341
       },
       "frameIndex": 3,
       "id": "forkrunner__body__run__west__003",
@@ -4051,8 +4052,8 @@
       "frame": {
         "h": 72,
         "w": 45,
-        "x": 47,
-        "y": 414
+        "x": 948,
+        "y": 341
       },
       "frameIndex": 4,
       "id": "forkrunner__body__run__west__004",
@@ -4081,8 +4082,8 @@
       "frame": {
         "h": 72,
         "w": 64,
-        "x": 94,
-        "y": 414
+        "x": 2,
+        "y": 415
       },
       "frameIndex": 5,
       "id": "forkrunner__body__run__west__005",
@@ -4111,7 +4112,7 @@
       "frame": {
         "h": 76,
         "w": 52,
-        "x": 362,
+        "x": 486,
         "y": 109
       },
       "frameIndex": 0,
@@ -4141,7 +4142,7 @@
       "frame": {
         "h": 76,
         "w": 63,
-        "x": 416,
+        "x": 540,
         "y": 109
       },
       "frameIndex": 1,
@@ -4171,8 +4172,8 @@
       "frame": {
         "h": 71,
         "w": 43,
-        "x": 713,
-        "y": 414
+        "x": 663,
+        "y": 415
       },
       "frameIndex": 0,
       "id": "forkrunner__body__tell__north-east__000",
@@ -4201,8 +4202,8 @@
       "frame": {
         "h": 69,
         "w": 56,
-        "x": 314,
-        "y": 560
+        "x": 80,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__north-east__001",
@@ -4231,8 +4232,8 @@
       "frame": {
         "h": 64,
         "w": 62,
-        "x": 736,
-        "y": 560
+        "x": 568,
+        "y": 561
       },
       "frameIndex": 0,
       "id": "forkrunner__body__tell__north-west__000",
@@ -4261,8 +4262,8 @@
       "frame": {
         "h": 61,
         "w": 54,
-        "x": 101,
-        "y": 631
+        "x": 915,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__north-west__001",
@@ -4291,8 +4292,8 @@
       "frame": {
         "h": 65,
         "w": 55,
-        "x": 628,
-        "y": 560
+        "x": 460,
+        "y": 561
       },
       "frameIndex": 0,
       "id": "forkrunner__body__tell__north__000",
@@ -4321,8 +4322,8 @@
       "frame": {
         "h": 62,
         "w": 49,
-        "x": 933,
-        "y": 560
+        "x": 765,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__north__001",
@@ -4351,7 +4352,7 @@
       "frame": {
         "h": 78,
         "w": 62,
-        "x": 686,
+        "x": 946,
         "y": 2
       },
       "frameIndex": 0,
@@ -4381,7 +4382,7 @@
       "frame": {
         "h": 80,
         "w": 53,
-        "x": 464,
+        "x": 771,
         "y": 2
       },
       "frameIndex": 1,
@@ -4411,7 +4412,7 @@
       "frame": {
         "h": 87,
         "w": 46,
-        "x": 278,
+        "x": 417,
         "y": 2
       },
       "frameIndex": 0,
@@ -4441,8 +4442,8 @@
       "frame": {
         "h": 78,
         "w": 60,
-        "x": 750,
-        "y": 2
+        "x": 2,
+        "y": 109
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__south-west__001",
@@ -4471,7 +4472,7 @@
       "frame": {
         "h": 86,
         "w": 56,
-        "x": 326,
+        "x": 465,
         "y": 2
       },
       "frameIndex": 0,
@@ -4501,7 +4502,7 @@
       "frame": {
         "h": 88,
         "w": 53,
-        "x": 223,
+        "x": 362,
         "y": 2
       },
       "frameIndex": 1,
@@ -4531,7 +4532,7 @@
       "frame": {
         "h": 76,
         "w": 55,
-        "x": 481,
+        "x": 605,
         "y": 109
       },
       "frameIndex": 0,
@@ -4561,8 +4562,8 @@
       "frame": {
         "h": 63,
         "w": 72,
-        "x": 859,
-        "y": 560
+        "x": 691,
+        "y": 561
       },
       "frameIndex": 1,
       "id": "forkrunner__body__tell__west__001",

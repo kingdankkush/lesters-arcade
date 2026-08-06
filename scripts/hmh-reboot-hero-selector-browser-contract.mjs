@@ -33,6 +33,7 @@ export async function readHeroSelectorEvidence(page, { timeout = 15_000 } = {}) 
           id: card.dataset.characterId ?? null,
           active: card.classList.contains('active'),
           locked: card.classList.contains('locked'),
+          layoutTop: card.offsetTop,
           rect: card.getBoundingClientRect().toJSON(),
           alphaPixels: frames.map((frame) => {
             const data = frame.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, frame.width, frame.height).data;
