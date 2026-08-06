@@ -452,12 +452,15 @@ reduce motion, reduce flash — `PAUSE_SETTING_KEYS`, `cockpit-ui.mjs:14`).
 Add volume sliders (music/SFX split), input settings (M3), and the
 controls card (M1).
 
-**U10. Portal modularization** *(L, enabling)* — Splitting the
-**15.5k-line** `main.js` by route is a prerequisite for U4-U8 not becoming
-unreviewable. P6 already retired the public legacy canvas/backstage runtime;
-U10 now owns source separation and route loading only. It does **not** recover
-bytes from the separately-built HMH child entry. Own cycle, no behaviour
-change, smoke suite as the net.
+**U10. Portal modularization — COMPLETE (`6b9e1b42`)** *(L, enabling)* — Six
+reviewed dependency-injected slices extracted route history/deep links, shell,
+app dispatch, profile, leaderboard, cabinets, mode selection, character select,
+and gameplay presentation. `main.js` fell 1,039 lines (15,540 → 14,501). Release
+closed at 2,005 tests / 1,954 pass / 51 expected failures; portal, cockpit,
+network, direct profile/scores, and Chikun dev-cabinet checks passed. The Ready
+Preview is `dpl_AuFosN2dQ3WYysfWazEpkikqKAe5`. This is eager source separation,
+not lazy-loading or child headroom: parent output is 1,098,361 B (+8,084 B from
+P6), and the separately-built HMH child remains exactly 1,048,584 B.
 
 **U11. Wallet UX truthfulness** *(M — has a trust dimension)* — The real
 path is genuinely real: injected EIP-1193 + EIP-6963 discovery + SIWE

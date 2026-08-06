@@ -147,8 +147,13 @@ esbuild entries.
   obsolete legacy browser soak, and conditional Reboot flag were retired. The
   emitted parent fell from 1,253,798 B to 1,090,277 B (163,521 B / 13.0%), while
   the child remained exactly 1,048,584 B.
-- **U10 portal modularization remains useful for reviewability and parent-route
-  loading, but cannot be credited as child headroom.**
+- **U10 portal modularization is complete at `6b9e1b42`.** Six reviewed slices
+  extracted history/deep-link control, shell rendering, app dispatch, profile,
+  leaderboard, and cabinet/mode/character/gameplay routes into dependency-
+  injected modules. `main.js` fell from 15,540 to 14,501 lines. Because the
+  route modules remain intentionally eager, emitted parent JS grew 8,084 B
+  (0.741%) to 1,098,361 B; the child remained exactly 1,048,584 B. This is
+  source ownership and reviewability, not lazy loading or child headroom.
 - **A child-specific bundle triage is now required** before D1/S4/M3/U9 unless
   each slice pays for itself with measured child removals.
 
@@ -178,15 +183,24 @@ the assumption they were stable.
 
 ## 3. What to pick up, in order
 
-### Immediate: finish parent modularization, then recover real child headroom
+### Immediate: recover real child headroom, while Wave 4 proceeds
 
 **P6 legacy code triage is complete at `372c7ef9`.** It removed 813 indexed
 lines, reduced emitted parent JS by 163,521 B, and passed 1,987 release tests,
 six portal E2E flows with zero page/console errors, four cockpit profiles, five
 browser-certification profiles, performance, network, and all ten visual
-scenes. **U10 portal modularization is next**, followed by a measured
-child-entry triage. Wave 4 balance work that does not add child code can proceed
-in parallel; Wave 6 child features remain bundle-gated.
+scenes. **U10 portal modularization is also complete at `6b9e1b42`.** Its six
+route slices passed 2,005 release tests, six portal E2E flows, four cockpit
+profiles, four network scenarios, direct `/profile`, `/scores`, and Chikun dev-
+cabinet interaction, plus exact child-byte verification. Immutable Preview
+`dpl_AuFosN2dQ3WYysfWazEpkikqKAe5` is Ready at
+`https://lesters-arcade-k97umtc74-justin-agent-projects.vercel.app`; authenticated
+fetches covered `/`, `/profile`, `/scores`, `/settings`,
+`/play/hard-money-heroes`, and `/games/hard-money-heroes`. The deployed parent
+matched the local build after normalizing only esbuild content-hash chunk names;
+the deployed child matched raw bytes. A measured child-entry triage is now the
+remaining prerequisite for child-code-heavy work. Wave 4 balance work that does
+not add child code can proceed; Wave 6 child features remain bundle-gated.
 
 Wave 2 is now complete. T1 landed at `d059a2b1`: six district tiles each bake
 three named sub-materials through a deterministic wrapped mask. Regeneration

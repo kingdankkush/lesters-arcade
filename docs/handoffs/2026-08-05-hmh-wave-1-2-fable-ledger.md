@@ -186,9 +186,13 @@ B, but the separately-built child stayed exactly 1,048,584 B. That measurement
 disproves the earlier assumption that P6/U10 parent cleanup would recover child
 headroom.
 
-U10 remains valuable for route ownership and reviewability. Actual child-code
-work now requires a child-specific bundle triage, or each slice must pay for
-itself in measured child removals. Prefer asset-shaped work until then.
+U10 is complete at `6b9e1b42`. Six dependency-injected route slices reduced
+`main.js` from 15,540 to 14,501 lines and passed 2,005 release tests plus portal,
+cockpit, network, profile, scores, and Chikun interaction checks. The eager
+parent grew 8,084 B to 1,098,361 B, while the child stayed exactly 1,048,584 B.
+Actual child-code work still requires child-specific bundle triage, or each
+slice must pay for itself in measured child removals. Prefer asset-shaped work
+until then.
 
 ## The props reproducibility gate is flaky, and now there is evidence
 
@@ -221,9 +225,11 @@ Two consequences:
   gate captures a paused frame that may never land on an active shake.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
-- **Wave 2 is complete.** A5, T2 and T1 are closed with deterministic generated
-  assets and 10-scene visual evidence. P6 legacy-code triage is also complete;
-  U10 portal modularization is next, followed by child-specific bundle triage.
+- **Wave 2, P6, and U10 are complete.** A5, T2 and T1 are closed with
+  deterministic generated assets and 10-scene visual evidence; P6 retired the
+  legacy parent runtime; U10 established route ownership through the Ready
+  immutable Preview `dpl_AuFosN2dQ3WYysfWazEpkikqKAe5`. Child-specific bundle
+  triage remains separate and still gates child-code-heavy tasks.
 - **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
   rebalance now have the swarm evidence they were missing. The shotgun's
   mid-range swarm result is the first thing to look at.
