@@ -63,7 +63,8 @@ import { HMH_FINAL_WORLD_AMBIENT_ASSETS, finalWorldAmbientAssetByKey } from './a
 import { HMH_LEVEL_TWO_FINAL_CITY_ASSETS, levelTwoFinalCityAssetByKey } from './assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, levelThreeFinalGetawayAssetByKey } from './assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three-ground/final-getaway/level3-final-getaway-ground-manifest.mjs';
-import { routeForView, viewForPath, gameSlugFor, gameIdForSlug, isGuestAllowedStep, buildPlatformShellModel } from './src/arcade-router.mjs';
+import { gameSlugFor, isGuestAllowedStep, buildPlatformShellModel } from './src/arcade-router.mjs';
+import { createPortalRouteController } from './src/routes/portal-route-controller.mjs';
 import {
   generateDistrictGrid,
   generateRoadNetwork,
@@ -4365,38 +4366,22 @@ function renderFlowSteps() {
   }
 }
 
-// Guard so URL syncing from setOfficialView doesn't fight popstate-driven nav.
-let suppressRouteSync = false;
-
-function syncRouteForView(step) {
-  if (suppressRouteSync || typeof window === 'undefined' || !window.history?.pushState) return;
-  const gameSlug = gameSlugFor(selectedGameId);
-  const sessionId = currentSession?.urlSessionId ?? null;
-  const path = routeForView(step, { gameSlug, sessionId, routeBase: 'play' });
-  if (window.location.pathname !== path) {
-    window.history.pushState({ step, gameSlug, sessionId }, '', path);
-  }
-}
-
-function setOfficialView(step) {
-  officialAppStep = step;
-  syncRouteForView(step);
-  document.documentElement.style.overflowAnchor = step === 'character-select' ? 'none' : '';
-  document.documentElement.style.scrollBehavior = step === 'character-select' ? 'auto' : '';
-  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-  render();
-  window.scrollTo(0, 0);
-  window.requestAnimationFrame(() => {
-    if (step === 'character-select') dom.officialCharacterSelect?.scrollIntoView({ block: 'start', inline: 'nearest' });
-    else window.scrollTo(0, 0);
-  });
-  // When entering the global boards or a profile, pull the latest on-chain data
-  // so other players' runs (and this player's runs from other devices) show up.
-  // Best-effort + async: the view renders immediately from local state, then
-  // re-renders when the chain read resolves.
-  if (step === 'leaderboards') hydrateLeaderboardFromChain();
-  if (step === 'profile') hydrateProfileFromChain();
-}
+const portalRouteController = createPortalRouteController({
+  windowRef: window,
+  documentRef: document,
+  getConnected: () => Boolean(connectedWallet),
+  setStep: (step) => { officialAppStep = step; },
+  getSelectedGameId: () => selectedGameId,
+  setSelectedGameId: (gameId) => { selectedGameId = gameId; },
+  getSessionId: () => currentSession?.urlSessionId ?? null,
+  getCharacterPanel: () => dom.officialCharacterSelect,
+  render,
+  hydrateLeaderboard: hydrateLeaderboardFromChain,
+  hydrateProfile: hydrateProfileFromChain,
+  isHtmlElement: (value) => value instanceof HTMLElement,
+});
+const setOfficialView = portalRouteController.setView;
+const syncRouteForView = portalRouteController.syncRoute;
 
 // --- on-chain hydration ----------------------------------------------------
 // Merge LitVM ScoreSubmissionRegistry records into local state so the global
@@ -15494,25 +15479,7 @@ function ensureTouchControls(profile) {
   touchControlsBuilt = true;
 }
 
-// --- URL routing bootstrap ---------------------------------------------------
-// Map the current URL to a view on load + on browser back/forward, layered over
-// the existing officialAppStep state machine. Deep-linking into an active ranked
-// session URL without a live session lands on the game page (mode-select) since
-// the session can't be reconstructed client-side yet.
-function applyRouteFromLocation() {
-  if (typeof window === 'undefined') return;
-  const { step, gameSlug } = viewForPath(window.location.pathname, { connected: Boolean(connectedWallet) });
-  if (gameSlug) selectedGameId = gameIdForSlug(gameSlug);
-  suppressRouteSync = true;
-  officialAppStep = step;
-  try {
-    render();
-  } finally {
-    suppressRouteSync = false;
-  }
-}
-
-window.addEventListener('popstate', applyRouteFromLocation);
+portalRouteController.attachPopstate();
 
 applyDeviceProfile();
 let deviceResizeTimer = null;
@@ -15537,4 +15504,4 @@ window.addEventListener('orientationchange', () => {
 });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
-applyRouteFromLocation();
+portalRouteController.applyLocation();
