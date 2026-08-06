@@ -42,7 +42,8 @@ test('S2 source XP depends on event order and fixed ticks, never render cadence 
 test('S2 runtime wires collectible XP, combo milestones, and damage resets through progression authority', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /grantRunXp\(runProgression/);
-  assert.match(source, /comboMilestoneXp\((?:\+\+)?runCombo\)/);
+  assert.match(source, /comboMilestoneXp\(feedback\.current\)/);
   assert.match(source, /event\.xpGain/);
-  assert.match(source, /runCombo = 0/);
+  assert.match(source, /updateRunCombo\(0\)/);
+  assert.match(source, /resolveComboFeedback/);
 });

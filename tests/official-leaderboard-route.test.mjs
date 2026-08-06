@@ -20,13 +20,16 @@ function node(tag = 'div', props = {}) {
 
 test('leaderboard route restores default state and renders an empty ranked board', () => {
   const grid = node('grid');
+  let modelInput = null;
   const routeState = { cadence: 'all-time', gameId: 'lester-blaster', search: '', sortKey: 'score', sortDir: 'desc' };
   const route = createOfficialLeaderboardRoute({
     dom: { officialCabinetGrid: grid },
     routeState,
     getContext: () => ({ connectedWallet: null, state: { profiles: {} } }),
     appendText: (parent, tag, text, className = '') => parent.append(node(tag, { textContent: text, className })),
-    buildLeaderboardExperienceV2Model: (_state, input) => ({
+    buildLeaderboardExperienceV2Model: (_state, input) => {
+      modelInput = input;
+      return ({
       cadence: input.cadence,
       periodKey: 'all-time',
       topEntries: [],
@@ -34,7 +37,8 @@ test('leaderboard route restores default state and renders an empty ranked board
       trustSummary: { flaggedRuns: 0 },
       playerRank: null,
       playerEntry: null,
-    }),
+      });
+    },
     documentRef: { createTextNode: (text) => ({ text }), querySelector: () => null },
     el: (tag, props = {}) => node(tag, props),
     formatSurvive: () => '0:00',
@@ -53,8 +57,9 @@ test('leaderboard route restores default state and renders an empty ranked board
   route.renderLeaderboards();
   assert.equal(grid.children.length, 2);
   assert.match(JSON.stringify(grid.children[0]), /Leaderboard Filters/);
-  assert.match(JSON.stringify(grid.children[1]), /No ranked scores in this period yet/);
-  assert.deepEqual(routeState, { cadence: 'all-time', gameId: 'lester-blaster', search: '', sortKey: 'score', sortDir: 'desc' });
+  assert.match(JSON.stringify(grid.children[1]), /No verified ranked scores in this period yet/);
+  assert.deepEqual(routeState, { cadence: 'all-time', gameId: 'lester-blaster', source: 'official', search: '', sortKey: 'score', sortDir: 'desc' });
+  assert.equal(modelInput.limit, 5000, 'provenance must be filtered before the visible top-50 truncation');
 
   const weekly = JSON.stringify(grid.children[0]).includes('WEEKLY');
   assert.equal(weekly, true);

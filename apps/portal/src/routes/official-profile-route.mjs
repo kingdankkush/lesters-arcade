@@ -1,3 +1,8 @@
+import { buildHmhRunHistoryModel } from '../hmh-run-history.mjs';
+
+const formatPermille = (value) => `${(Math.max(0, Number(value) || 0) / 10).toFixed(1)}%`;
+const titleCase = (value) => String(value ?? '').split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
+
 export function createOfficialProfileRoute({
   ACHIEVEMENTS,
   ARCADE_GAMES,
@@ -38,6 +43,12 @@ export function createOfficialProfileRoute({
     dom.officialCabinetGrid.classList.add('profile-command-grid');
     const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
     const profileV2 = connectedWallet ? buildProfileExperienceV2Model(state, connectedWallet, { selectedGameId: routeState.gameId }) : null;
+    routeState.historyFilters ??= { heroId: 'all', weaponId: 'all', mode: 'all', date: 'all', result: 'all' };
+    const hmhRunHistory = connectedWallet ? buildHmhRunHistoryModel(state.runHistory, {
+      wallet: connectedWallet,
+      filters: routeState.historyFilters,
+      settlements: snapshot?.settlements,
+    }) : null;
     const profile = snapshot?.profile;
 
     const profileHero = el('article', { className: 'official-info-card profile-hero-card hmh-visual-polish-v12' });
@@ -443,6 +454,120 @@ export function createOfficialProfileRoute({
       }
     }
     dom.officialCabinetGrid.append(statsCard);
+
+    if (hmhRunHistory) {
+      const historyCard = el('article', { className: 'official-info-card canonical-run-history-card' });
+      appendText(historyCard, 'span', 'CANONICAL RUN HISTORY', 'cabinet-status-label');
+      appendText(historyCard, 'strong', `${hmhRunHistory.totalCanonicalRuns} verified-format run${hmhRunHistory.totalCanonicalRuns === 1 ? '' : 's'} on this device`);
+      appendText(historyCard, 'small', 'Gameplay facts come from the fixed-step child summary. Ranked settlement status comes from the parent wallet rail; free and unpublished runs stay explicitly local.');
+
+      const filterGrid = el('div', { className: 'hmh-history-filter-grid' });
+      const filterSpecs = [
+        ['heroId', 'Hero', hmhRunHistory.options.heroes],
+        ['weaponId', 'Weapon', hmhRunHistory.options.weapons],
+        ['mode', 'Mode', hmhRunHistory.options.modes],
+        ['date', 'Date', hmhRunHistory.options.dates],
+        ['result', 'Result', hmhRunHistory.options.results],
+      ];
+      for (const [key, label, options] of filterSpecs) {
+        const field = el('label', { className: 'hmh-history-filter' });
+        appendText(field, 'span', label, 'hmh-history-filter-label');
+        const select = el('select', { className: 'hmh-history-select' });
+        select.setAttribute('aria-label', `Filter run history by ${label.toLowerCase()}`);
+        for (const option of options) {
+          const node = el('option', { textContent: option.label });
+          node.value = option.id;
+          select.append(node);
+        }
+        select.value = hmhRunHistory.filters[key];
+        select.addEventListener('change', () => {
+          routeState.historyFilters = { ...routeState.historyFilters, [key]: select.value };
+          renderOfficialProfile();
+        });
+        field.append(select);
+        filterGrid.append(field);
+      }
+      historyCard.append(filterGrid);
+
+      const pb = hmhRunHistory.personalBests;
+      const pbGrid = el('div', { className: 'profile-hero-stats hmh-history-pb-grid' });
+      for (const [label, value] of [
+        ['Best Score', pb.score.toLocaleString()],
+        ['Survival', formatSeconds(pb.survivalTicks / 60)],
+        ['Level', String(pb.level)],
+        ['Max Combo', `×${pb.maxCombo}`],
+        ['Boss Clears', String(pb.bossClears)],
+        ['Damage', pb.damage.toLocaleString()],
+        ['Trigger Accuracy', formatPermille(pb.triggerAccuracyPermille)],
+        ['Projectile Accuracy', formatPermille(pb.projectileAccuracyPermille)],
+      ]) {
+        const cell = el('div', { className: 'profile-hero-stat' });
+        appendText(cell, 'span', label);
+        appendText(cell, 'strong', value);
+        pbGrid.append(cell);
+      }
+      historyCard.append(pbGrid);
+
+      const detailsBySessionId = new Map((profileV2?.sessionFeed.rows ?? []).map((row) => [row.sessionId, row.detailHref]));
+      const runList = el('div', { className: 'hmh-history-run-list', role: 'table' });
+      runList.setAttribute('aria-label', 'Canonical Hard Money Heroes run history');
+      const tableHeader = el('div', { className: 'hmh-history-run-row hmh-history-table-header', role: 'row' });
+      for (const label of ['Run', 'Performance', 'Build']) tableHeader.append(el('span', { textContent: label, role: 'columnheader' }));
+      runList.append(tableHeader);
+      if (hmhRunHistory.rows.length === 0) {
+        appendText(runList, 'small', hmhRunHistory.emptyMessage, 'profile-empty-state');
+      }
+      for (const run of hmhRunHistory.rows) {
+        const row = el('article', { className: `hmh-history-run-row provenance-${run.provenance.id}`, role: 'row' });
+        row.setAttribute('aria-label', `${run.score} points, ${run.heroLabel}, ${run.provenance.label}`);
+        const heading = el('div', { className: 'hmh-history-run-heading', role: 'cell' });
+        appendText(heading, 'strong', `${run.score.toLocaleString()} pts · ${run.heroLabel}`);
+        appendText(heading, 'span', run.provenance.label, `hmh-history-provenance provenance-${run.provenance.id}`);
+        row.append(heading);
+        const performance = el('div', { className: 'hmh-history-performance', role: 'cell' });
+        appendText(performance, 'small', `${titleCase(run.mode)} · ${titleCase(run.result)} · ${formatSeconds(run.survivalTicks / 60)} · ${run.kills} kills · Level ${run.level} · ×${run.maxCombo} combo`);
+        appendText(performance, 'small', `${run.primaryWeaponLabels.join(' + ') || 'No weapon activity'} · trigger ${formatPermille(run.triggerAccuracyPermille)} · projectile ${formatPermille(run.projectileAccuracyPermille)}`);
+        row.append(performance);
+        const buildText = run.build.ranks.length
+          ? run.build.ranks.map((rank) => `${titleCase(rank.upgradeId)} ${rank.rank}`).join(' · ')
+          : 'No upgrades selected';
+        const buildCell = el('div', { className: 'hmh-history-build', role: 'cell' });
+        appendText(buildCell, 'small', `Build: ${buildText}`);
+        const detailHref = detailsBySessionId.get(run.sessionId);
+        if (detailHref) buildCell.append(el('a', { className: 'game-history-link', href: detailHref, textContent: 'Open ranked receipt' }));
+        row.append(buildCell);
+        runList.append(row);
+      }
+      historyCard.append(runList);
+
+      if (hmhRunHistory.weapons.length) {
+        appendText(historyCard, 'span', 'WEAPON USAGE', 'cabinet-status-label game-stats-subhead');
+        const weaponGrid = el('div', { className: 'profile-breakdown-grid hmh-history-weapon-grid' });
+        for (const weapon of hmhRunHistory.weapons.slice(0, 6)) {
+          const cell = el('div', { className: 'profile-breakdown-card' });
+          appendText(cell, 'strong', weapon.label);
+          appendText(cell, 'small', `${weapon.runs} run${weapon.runs === 1 ? '' : 's'} · ${weapon.damage.toLocaleString()} damage · ${weapon.kills} kills`);
+          appendText(cell, 'small', `Trigger ${formatPermille(weapon.triggerAccuracyPermille)} · projectile ${formatPermille(weapon.projectileAccuracyPermille)} · reload ${formatPermille(weapon.reloadRatePermille)} · empty ${formatPermille(weapon.emptyRatePermille)}`);
+          weaponGrid.append(cell);
+        }
+        historyCard.append(weaponGrid);
+      }
+
+      if (hmhRunHistory.heroes.length) {
+        appendText(historyCard, 'span', 'HERO EFFECTIVENESS', 'cabinet-status-label game-stats-subhead');
+        const heroGrid = el('div', { className: 'profile-breakdown-grid hmh-history-hero-grid' });
+        for (const hero of hmhRunHistory.heroes) {
+          const cell = el('div', { className: 'profile-breakdown-card' });
+          appendText(cell, 'strong', hero.label);
+          appendText(cell, 'small', `${hero.runs} run${hero.runs === 1 ? '' : 's'} · ${formatPermille(hero.completionRatePermille)} completed`);
+          appendText(cell, 'small', `${hero.averageDamage.toLocaleString()} avg damage · ${hero.averageKills} avg kills · prefers ${hero.preferredWeaponLabel}`);
+          heroGrid.append(cell);
+        }
+        historyCard.append(heroGrid);
+      }
+      if (hmhRunHistory.legacyRuns > 0) appendText(historyCard, 'small', `${hmhRunHistory.legacyRuns} legacy run${hmhRunHistory.legacyRuns === 1 ? '' : 's'} predate canonical summaries and are excluded from these metrics.`, 'tiny-note');
+      dom.officialCabinetGrid.append(historyCard);
+    }
 
     if (profileV2) {
       const collectionCard = el('article', { className: 'official-info-card profile-collection-card' });

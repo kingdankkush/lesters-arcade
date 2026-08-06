@@ -1698,6 +1698,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   try { window.dispatchEvent(new Event('eip6963:requestProvider')); } catch { /* older browsers */ }
 }
 let currentSession = null;
+const bootRuntimeSearch = window.location.search;
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
@@ -4471,6 +4472,7 @@ const profileRouteState = {
   avatarJustSaved: false,
   usernameJustSaved: false,
   gameId: 'lester-blaster',
+  historyFilters: { heroId: 'all', weaponId: 'all', mode: 'all', date: 'all', result: 'all' },
 };
 
 const officialProfileRoute = createOfficialProfileRoute({
@@ -4512,6 +4514,7 @@ const renderOfficialProfile = officialProfileRoute.renderProfile;
 const leaderboardRouteState = {
   cadence: 'all-time',
   gameId: 'lester-blaster',
+  source: 'official',
   search: '',
   sortKey: 'score',
   sortDir: 'desc',
@@ -4617,6 +4620,7 @@ function mountHmhRebootSession() {
     hmhRebootHost = createHmhRebootHost({
       mount: dom.officialCombatMount,
       expectedOrigin: window.location.origin,
+      runtimeSearch: bootRuntimeSearch,
       onReady: () => {
         hmhRebootActive = true;
         combat.active = true;

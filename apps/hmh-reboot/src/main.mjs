@@ -100,6 +100,7 @@ import {
   recordRunDefeat,
   selectRunUpgrade,
 } from './run-progression.mjs';
+import { resolveComboFeedback } from './combo-feedback.mjs';
 import { buildRunResultMessages, getWeb3AdapterStatus } from './run-adapters.mjs';
 import {
   createRunSummaryAccumulator,
@@ -713,6 +714,7 @@ async function boot() {
   const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams.get('rosterPreview') === '1';
   const rosterCombatEnabled = rosterPreviewEnabled && runtimeParams.get('rosterCombat') === '1';
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
+  const terminalPilotEnabled = evidenceSafeEnabled && runtimeParams.get('terminalPilot') === '1';
   const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
   const collectibleHealthPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleHealthPilot') === '1';
@@ -888,9 +890,17 @@ async function boot() {
     if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
     combatVisualEvents.push(Object.freeze({ ...event }));
   };
-  const awardComboXp = (snapshot, tick) => {
-    const baseXp = comboMilestoneXp(++runCombo);
+  const updateRunCombo = (nextCombo, { bossDefeated = false, silent = false } = {}) => {
+    const feedback = resolveComboFeedback({ previous: runCombo, current: nextCombo, bossDefeated });
+    runCombo = feedback.current;
     maxRunCombo = Math.max(maxRunCombo, runCombo);
+    cockpit?.updateCombo(runCombo);
+    if (!silent && feedback.cue) combatAudio.play(feedback.cue, { volume: feedback.cue === 'combo-reset' ? 0.06 : 0.11 });
+    return feedback;
+  };
+  const awardComboXp = (snapshot, tick, { bossDefeated = false } = {}) => {
+    const feedback = updateRunCombo(runCombo + 1, { bossDefeated });
+    const baseXp = comboMilestoneXp(feedback.current);
     return baseXp ? grantRunXp(runProgression, baseXp, tick) : snapshot;
   };
 
@@ -1787,6 +1797,7 @@ async function boot() {
     runKills = 0;
     runCombo = 0;
     maxRunCombo = 0;
+    cockpit?.updateCombo(0);
     runSummaryAccumulator = null;
     runEventSequence = 0;
     previousGrenade = false;
@@ -1927,6 +1938,7 @@ async function boot() {
     runKills = 0;
     runCombo = 0;
     maxRunCombo = 0;
+    cockpit?.updateCombo(0);
     if (progressionPilotEnabled) {
       const pilotSnapshot = recordRunDefeat(runProgression, {
         enemyId: 'evidence-progression-pilot',
@@ -2617,6 +2629,24 @@ async function boot() {
         });
       }
 
+      if (terminalPilotEnabled && tick === 2) {
+        combatHitIntents.push({
+          id: 'evidence-terminal-hit',
+          tick,
+          time: 1,
+          targetId: 'player',
+          sourceId: 'evidence-terminal-pilot',
+          weaponId: 'enemy-bagholder-rusher',
+          damage: maxPlayerHealth + 1,
+          criticalChance: 0,
+          criticalMultiplier: 1,
+          armorPiercing: true,
+          direction: { x: 1, y: 0 },
+          knockback: 0,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
+        });
+      }
+
       discoverMinimapPointsOfInterest({
         discovery: minimapDiscovery,
         player: actor,
@@ -2699,7 +2729,7 @@ async function boot() {
           });
           if (damageEvent.targetId === 'player') {
             lastPlayerHit = { tick, sourceId: damageEvent.sourceId };
-            runCombo = 0;
+            updateRunCombo(0);
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
             if (magnitude > 0) applyRecoilImpulse(motion, {
@@ -2762,7 +2792,7 @@ async function boot() {
               enemyId: scoreEvent.enemyId,
               threatCost: LIQUIDATOR_THREAT_COST,
               tick,
-            }), tick);
+            }), tick, { bossDefeated: true });
             cockpit?.updateRun(bossSnapshot);
             if (bossSnapshot.pendingLevels > 0) upgradePending = true;
             continue;

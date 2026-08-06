@@ -21,7 +21,7 @@ class FakeDocument {
   }
 }
 
-function fixture() {
+function fixture({ runtimeSearch = '' } = {}) {
   const mount = { children: [], replaceChildren(...children) { this.children = children; for (const child of children) child.contentWindow = {}; } };
   const bridges = [];
   const ready = [];
@@ -52,6 +52,7 @@ function fixture() {
     mount,
     documentRef: new FakeDocument(),
     expectedOrigin: 'https://arcade.test',
+    runtimeSearch,
     bridgeFactory,
     onReady: (message) => ready.push(message),
     onState: (message) => states.push(message),
@@ -100,9 +101,16 @@ test('host mounts a same-origin sandboxed child frame with no navigation capabil
   assert.equal(bridges[0].connects, 1);
 });
 
+test('host only forwards the explicitly gated terminal evidence query to the child', () => {
+  const gated = fixture({ runtimeSearch: '?evidenceSafe=1&terminalPilot=1&walletKey=secret' });
+  assert.equal(gated.host.mountSession(gated.session).src, 'https://arcade.test/hmh-reboot/index.html?evidenceSafe=1&terminalPilot=1');
+  const ungated = fixture({ runtimeSearch: '?terminalPilot=1' });
+  assert.equal(ungated.host.mountSession(ungated.session).src, 'https://arcade.test/hmh-reboot/index.html');
+});
+
 test('host routes only recognized child message types to portal callbacks', () => {
   const { host, bridges, ready, states, errors, exits, runEvents, runSummaries, scoreResults, achievements, settingEvents, session } = fixture();
-  host.mountSession(session);
+  const iframe = host.mountSession(session);
   bridges[0].options.onMessage({ type: 'game:ready' });
   bridges[0].options.onMessage({ type: 'game:state' });
   bridges[0].options.onMessage({ type: 'game:pause' });
@@ -127,6 +135,7 @@ test('host routes only recognized child message types to portal callbacks', () =
   assert.equal(exits.length, 1);
   assert.equal(runEvents.length, 1);
   assert.equal(runSummaries.length, 1);
+  assert.equal(iframe.dataset.runSummaryCount, '1');
   assert.equal(scoreResults.length, 1);
   assert.equal(achievements.length, 1);
   assert.equal(settingEvents.length, 1);

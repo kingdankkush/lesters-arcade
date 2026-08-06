@@ -1,5 +1,6 @@
 import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
 import { RUN_UPGRADE_CATALOG } from './run-progression.mjs';
+import { resolveComboPresentation } from './combo-feedback.mjs';
 
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
@@ -40,6 +41,9 @@ export function createCockpitUi({
   const elements = {
     score: required(documentRef, 'hmhRunScore'),
     level: required(documentRef, 'hmhRunLevel'),
+    combo: required(documentRef, 'hmhRunCombo'),
+    comboLabel: required(documentRef, 'hmhRunComboLabel'),
+    comboStat: required(documentRef, 'hmhRunComboStat'),
     xp: required(documentRef, 'hmhRunXp'),
     xpNext: required(documentRef, 'hmhRunXpNext'),
     xpFill: required(documentRef, 'hmhRunXpFill'),
@@ -135,6 +139,13 @@ export function createCockpitUi({
       }
       elements.buildEmpty.hidden = ranked.length > 0;
       elements.buildSummary.hidden = ranked.length === 0;
+    },
+    updateCombo(combo) {
+      const presentation = resolveComboPresentation(combo);
+      elements.combo.textContent = presentation.text;
+      elements.comboLabel.textContent = presentation.label;
+      elements.comboStat.dataset.tier = presentation.tier;
+      elements.comboStat.setAttribute('aria-label', presentation.label);
     },
     setSession(payload, adapterStatus) {
       elements.profileName.textContent = payload.profile.displayName;

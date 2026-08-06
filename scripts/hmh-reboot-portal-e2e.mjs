@@ -75,10 +75,10 @@ export const PORTAL_E2E_FLOWS = Object.freeze([
     reason: 'Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove.',
   }),
   Object.freeze({
-    id: 'game-over-duplicate-rejection',
-    status: 'deferred',
-    covers: Object.freeze(['game-over', 'restart-play-again']),
-    reason: 'The portal embeds the child without evidence-safe parameters, so there is no deterministic in-portal death path yet. Duplicate-finalization rejection stays covered by tests/hmh-reboot-portal-lifecycle.test.mjs.',
+    id: 'game-over-run-summary',
+    status: 'implemented',
+    covers: Object.freeze(['game-over', 'restart-play-again', 'scores-session-history']),
+    description: 'An evidence-gated deterministic child defeat emits exactly one canonical summary; the parent accepts matching terminal messages and persists the same score, kills, mode, and terminal reason.',
   }),
   Object.freeze({
     id: 'service-worker-offline-update',
@@ -221,7 +221,7 @@ if (isMain) {
   // The portal's "runtime connected" status copy is transient (live run status
   // overwrites it within a second), so readiness is read from the child frame
   // itself: bridge status plus, for restarts, a session identity change.
-  async function waitForConnectedChild({ differentFrom = null, timeoutMs = 45_000 } = {}) {
+  async function waitForConnectedChild({ differentFrom = null, timeoutMs = 45_000, allowTerminal = false } = {}) {
     const deadline = Date.now() + timeoutMs;
     let lastDetail = 'no child frame attached';
     while (Date.now() < deadline) {
@@ -232,7 +232,7 @@ if (isMain) {
         try {
           const status = await frame.locator('#hmhRebootStatus').textContent({ timeout: 1_000 });
           const session = (await frame.locator('#hmhRebootSession').textContent({ timeout: 1_000 })).trim();
-          if (status === 'Portal session connected' && (!differentFrom || session !== differentFrom)) {
+          if ((status === 'Portal session connected' || (allowTerminal && status === 'Run ended')) && (!differentFrom || session !== differentFrom)) {
             await frame.waitForSelector('#hmhRebootStage canvas', { timeout: 10_000 });
             return { frame, session };
           }
@@ -246,9 +246,9 @@ if (isMain) {
     throw new Error(`reboot child did not reach connected state (${lastDetail})`);
   }
 
-  async function waitForChildReady() {
+  async function waitForChildReady({ allowTerminal = false } = {}) {
     await page.waitForSelector('#officialCombatMount iframe[data-runtime="hmh-reboot"]', { timeout: 20_000 });
-    const { frame } = await waitForConnectedChild();
+    const { frame } = await waitForConnectedChild({ allowTerminal });
     return frame;
   }
 
@@ -280,7 +280,7 @@ if (isMain) {
     await page.waitForSelector('#combatMenuPanel[data-state="paused"]', { timeout: 10_000 });
   }
 
-  async function enterGuestFreeRun() {
+  async function enterGuestFreeRun({ allowTerminal = false } = {}) {
     await page.waitForSelector('#officialWalletSplash:not([hidden])');
     await page.click('#officialGuestEnterButton');
     await page.waitForSelector('#officialArcadeFloor:not([hidden])');
@@ -294,7 +294,7 @@ if (isMain) {
     await page.waitForSelector('#officialLevelIntro:not([hidden])');
     await page.click('#officialBeginLevelButton');
     await page.waitForSelector('#officialGameplay:not([hidden])');
-    return waitForChildReady();
+    return waitForChildReady({ allowTerminal });
   }
 
   async function runFlow(id, execute) {
@@ -401,6 +401,32 @@ if (isMain) {
       assert.equal(await page.locator('#officialCombatMount iframe[data-runtime="hmh-reboot"]').count(), 0, 'exit must unmount the reboot iframe');
       await page.screenshot({ path: evidencePath('05-exit-splash'), fullPage: false });
       return { returnedTo: 'wallet-splash' };
+    });
+
+    await runFlow('game-over-run-summary', async () => {
+      await page.goto(`${origin}/?evidenceSafe=1&terminalPilot=1`, { waitUntil: 'domcontentloaded' });
+      child = await enterGuestFreeRun({ allowTerminal: true });
+      await page.waitForFunction(() => {
+        const save = JSON.parse(localStorage.getItem('lesters-arcade-save-v1') ?? 'null');
+        return Boolean(save?.runHistory?.[0]?.runSummary?.identity?.terminalReason === 'defeated');
+      }, undefined, { timeout: 20_000 });
+      const iframe = page.locator('#officialCombatMount iframe[data-runtime="hmh-reboot"]');
+      assert.equal(await iframe.getAttribute('data-run-summary-count'), '1', 'child must deliver exactly one canonical run summary');
+      const record = await page.evaluate(() => JSON.parse(localStorage.getItem('lesters-arcade-save-v1')).runHistory[0]);
+      assert.equal(record.mode, 'free');
+      assert.equal(record.runSummary.identity.mode, 'free');
+      assert.equal(record.runSummary.identity.terminalReason, 'defeated');
+      assert.equal(record.score, record.runSummary.totals.score);
+      assert.equal(record.kills, record.runSummary.kills.total);
+      assert.equal(record.elapsedSeconds, Math.round(record.runSummary.totals.elapsedMs / 1000));
+      await page.screenshot({ path: evidencePath('06-game-over-run-summary'), fullPage: false });
+      return {
+        sessionId: record.sessionId,
+        summaryCount: 1,
+        score: record.score,
+        kills: record.kills,
+        terminalReason: record.runSummary.identity.terminalReason,
+      };
     });
   } finally {
     await browser.close();

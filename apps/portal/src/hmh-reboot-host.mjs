@@ -23,10 +23,16 @@ export function createHmhRebootHost({
   readyTimeoutMs = 8000,
   setTimeoutRef = globalThis.setTimeout,
   clearTimeoutRef = globalThis.clearTimeout,
+  runtimeSearch = '',
 }) {
   if (!mount?.replaceChildren) throw new Error('HMH reboot mount element is required');
   if (!Number.isFinite(readyTimeoutMs) || readyTimeoutMs <= 0) throw new Error('readyTimeoutMs must be positive');
   const origin = normalizeOrigin(expectedOrigin);
+  const requestedRuntimeParams = new URLSearchParams(String(runtimeSearch).replace(/^\?/, ''));
+  const runtimeParams = new URLSearchParams();
+  if (requestedRuntimeParams.get('evidenceSafe') === '1') runtimeParams.set('evidenceSafe', '1');
+  if (runtimeParams.has('evidenceSafe') && requestedRuntimeParams.get('terminalPilot') === '1') runtimeParams.set('terminalPilot', '1');
+  const runtimeSuffix = runtimeParams.size > 0 ? `?${runtimeParams}` : '';
   let activeBridge = null;
   let activeFrame = null;
   let activeSession = null;
@@ -55,7 +61,10 @@ export function createHmhRebootHost({
         || identity.heroId !== activeSession.heroId) {
         onError(new Error('HMH reboot run-summary identity does not match the mounted session'));
         destroy();
-      } else onRunSummary(message);
+      } else {
+        activeFrame.dataset.runSummaryCount = String(Number(activeFrame.dataset.runSummaryCount || 0) + 1);
+        onRunSummary(message);
+      }
     }
     else if (message.type === 'game:score-result') onScoreResult(message);
     else if (message.type === 'game:achievement') onAchievement(message);
@@ -106,13 +115,14 @@ export function createHmhRebootHost({
     const iframe = documentRef.createElement('iframe');
     iframe.className = 'hmh-reboot-frame';
     iframe.title = 'Hard Money Heroes reboot runtime';
-    iframe.src = `${origin}/hmh-reboot/index.html`;
+    iframe.src = `${origin}/hmh-reboot/index.html${runtimeSuffix}`;
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock');
     iframe.setAttribute('allow', 'fullscreen; gamepad');
     iframe.setAttribute('allowfullscreen', '');
     iframe.dataset.runtime = 'hmh-reboot';
+    iframe.dataset.runSummaryCount = '0';
     mount.replaceChildren(iframe);
     claimInputOwnership(true);
     // The embedded runtime owns the keyboard too: without focusing the frame,

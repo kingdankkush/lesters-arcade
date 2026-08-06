@@ -21,12 +21,37 @@ const HOUSE_SCORE_PROVENANCE = Object.freeze({ source: 'house-score', label: 'HO
 const OFFICIAL_SCORE_PROVENANCE = Object.freeze({ source: 'ranked-settlement', label: 'ON-CHAIN', official: true });
 const LOCAL_SCORE_PROVENANCE = Object.freeze({ source: 'local-practice', label: 'LOCAL', official: false });
 
+export const LEADERBOARD_SOURCE_TABS = Object.freeze([
+  Object.freeze({ id: 'official', label: 'Verified Ranked', copy: 'Settled ranked scores only.' }),
+  Object.freeze({ id: 'local', label: 'Local Preview', copy: 'Unsettled local scores only.' }),
+  Object.freeze({ id: 'demo', label: 'House Demo', copy: 'Synthetic house scores for layout and balance preview.' }),
+]);
+
 export function leaderboardEntryProvenance(entry = {}, profile = null) {
   if (entry.seed === true || profile?.seed === true || String(entry.wallet ?? '').startsWith('0xSEED')) {
     return HOUSE_SCORE_PROVENANCE;
   }
   if (entry.settlementTxHash) return OFFICIAL_SCORE_PROVENANCE;
   return LOCAL_SCORE_PROVENANCE;
+}
+
+export function filterLeaderboardEntriesBySource(entries = [], profiles = {}, requestedSource = 'official') {
+  const tab = LEADERBOARD_SOURCE_TABS.find((row) => row.id === requestedSource) ?? LEADERBOARD_SOURCE_TABS[0];
+  const rows = (Array.isArray(entries) ? entries : []).filter((entry) => {
+    const provenance = leaderboardEntryProvenance(entry, profiles?.[entry?.wallet]);
+    if (tab.id === 'official') return provenance.official;
+    if (tab.id === 'demo') return provenance.source === 'house-score';
+    return provenance.source === 'local-practice';
+  }).map((entry, index) => ({ ...entry, rank: index + 1 }));
+  return Object.freeze({
+    source: tab.id,
+    label: tab.label,
+    copy: tab.copy,
+    rows,
+    total: rows.length,
+    playerRank: rows.find((row) => row.isCurrentPlayer)?.rank ?? null,
+    playerEntry: rows.find((row) => row.isCurrentPlayer) ?? null,
+  });
 }
 
 export function summarizeVisibleLeaderboardProvenance(entries = [], profiles = {}, totalRankedPlayers = entries.length) {

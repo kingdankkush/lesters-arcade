@@ -1472,6 +1472,98 @@
   .game-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Canonical HMH history: parent-owned filters and mobile-first run cards. */
+.canonical-run-history-card {
+  grid-column: 1 / -1;
+  align-items: stretch;
+}
+.hmh-history-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.hmh-history-filter { display: grid; gap: 5px; }
+.hmh-history-filter-label {
+  color: #8fa0c8;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.hmh-history-select {
+  min-width: 0;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid rgba(25, 247, 255, 0.28);
+  border-radius: 8px;
+  background: #070b1b;
+  color: #e8f7ff;
+  font: inherit;
+}
+.hmh-history-pb-grid { margin-top: 14px; }
+.hmh-history-run-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.hmh-history-run-row {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) minmax(260px, 1.45fr) minmax(190px, 1fr);
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid rgba(25, 247, 255, 0.18);
+  border-left: 3px solid rgba(25, 247, 255, 0.6);
+  border-radius: 10px;
+  background: rgba(4, 6, 16, 0.66);
+}
+.hmh-history-table-header {
+  padding-block: 6px;
+  border-color: transparent;
+  background: transparent;
+  color: #7f91ba;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.hmh-history-performance,
+.hmh-history-build { display: grid; align-content: start; gap: 4px; }
+.hmh-history-run-row.provenance-verified-ranked { border-left-color: #45ff8a; }
+.hmh-history-run-row.provenance-local-ranked { border-left-color: #ffe84d; }
+.hmh-history-run-row.provenance-local-free { border-left-color: #19f7ff; }
+.hmh-history-run-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hmh-history-provenance {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: #19f7ff;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.hmh-history-provenance.provenance-verified-ranked { color: #45ff8a; }
+.hmh-history-provenance.provenance-local-ranked { color: #ffe84d; }
+.hmh-history-build { color: #adbbdf; }
+.hmh-history-weapon-grid,
+.hmh-history-hero-grid { margin-top: 8px; }
+@media (max-width: 820px) {
+  .hmh-history-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .hmh-history-filter-grid { grid-template-columns: 1fr; }
+  .hmh-history-pb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hmh-history-run-heading { align-items: flex-start; flex-direction: column; }
+  .hmh-history-run-row { grid-template-columns: 1fr; padding: 12px; }
+  .hmh-history-table-header { display: none; }
+}
+
 /* --- Sign out confirmation modal ------------------------------------------- */
 .modal-overlay {
   position: fixed;

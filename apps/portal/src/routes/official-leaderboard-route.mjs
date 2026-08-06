@@ -1,3 +1,5 @@
+import { LEADERBOARD_SOURCE_TABS, filterLeaderboardEntriesBySource } from '../leaderboard-seed.mjs';
+
 export function createOfficialLeaderboardRoute({
   appendText,
   buildLeaderboardExperienceV2Model,
@@ -32,13 +34,33 @@ export function createOfficialLeaderboardRoute({
       routeState.gameId = leaderboardGameFilters[0]?.gameId ?? 'lester-blaster';
     }
 
-    const active = buildLeaderboardExperienceV2Model(state, {
+    routeState.source ??= 'official';
+    const unfiltered = buildLeaderboardExperienceV2Model(state, {
       gameId: routeState.gameId,
       cadence: routeState.cadence,
       wallet: connectedWallet,
       displayNameFor,
-      limit: 50,
+      // Filter provenance before truncating. The public seed board currently
+      // occupies the first 50 aggregate rows; limiting first would hide every
+      // legitimate score ranked below the demo data.
+      limit: 5000,
     });
+    const sourceBoard = filterLeaderboardEntriesBySource(unfiltered.topEntries, state.profiles, routeState.source);
+    routeState.source = sourceBoard.source;
+    const active = {
+      ...unfiltered,
+      total: sourceBoard.total,
+      topEntries: sourceBoard.rows.slice(0, 50),
+      rows: sourceBoard.rows.slice(0, 50),
+      playerRank: sourceBoard.playerRank,
+      playerEntry: sourceBoard.playerEntry,
+      trustSummary: {
+        totalRankedRuns: sourceBoard.total,
+        settledRuns: sourceBoard.rows.filter((row) => row.trust?.verdict === 'settled' || row.settlementTxHash).length,
+        flaggedRuns: sourceBoard.rows.filter((row) => ['suspicious', 'rejected'].includes(row.trust?.verdict)).length,
+        prototypeRuns: sourceBoard.rows.filter((row) => row.trust?.verdict === 'prototype').length,
+      },
+    };
     const scoreSourceSummary = summarizeVisibleLeaderboardProvenance(
       active.topEntries,
       state.profiles,
@@ -56,7 +78,7 @@ export function createOfficialLeaderboardRoute({
     appendText(filterCopy, 'small', `${humanList(playableCabinetNames())} ${leaderboardGameFilters.length === 1 ? 'is the current public score filter' : 'are the current public score filters'}. Daily, weekly, monthly, yearly, and all-time are time filters for the same ranked board below.`);
     const filterSummary = el('div', { className: 'leaderboard-filter-summary' });
     appendText(filterSummary, 'span', activeLeaderboardTitle, 'leaderboard-filter-summary-game');
-    appendText(filterSummary, 'strong', scoreSourceSummary.label);
+    appendText(filterSummary, 'strong', `${sourceBoard.label} · ${scoreSourceSummary.label}`);
     appendText(filterSummary, 'small', routeState.cadence.replace('-', ' ').toUpperCase());
     filterHead.append(filterCopy, filterSummary);
     filterPanel.append(filterHead);
@@ -101,7 +123,29 @@ export function createOfficialLeaderboardRoute({
       tabBar.append(tab);
     }
     timeGroup.append(tabBar);
-    filterGrid.append(gameGroup, timeGroup);
+
+    const sourceGroup = el('div', { className: 'leaderboard-filter-group leaderboard-source-filter' });
+    appendText(sourceGroup, 'span', 'Source', 'leaderboard-filter-label');
+    const sourceBar = el('div', { className: 'leaderboard-source-tabs leaderboard-filter-buttons' });
+    for (const source of LEADERBOARD_SOURCE_TABS) {
+      const tab = el('button', {
+        className: `pixel-button leaderboard-filter-button leaderboard-source-tab${source.id === routeState.source ? ' is-active' : ''}`,
+        type: 'button',
+      });
+      appendText(tab, 'span', source.label, 'leaderboard-game-tab-title');
+      tab.title = source.copy;
+      tab.addEventListener('click', () => {
+        if (routeState.source === source.id) return;
+        routeState.source = source.id;
+        routeState.search = '';
+        routeState.sortKey = 'score';
+        routeState.sortDir = 'desc';
+        renderOfficialLeaderboards();
+      });
+      sourceBar.append(tab);
+    }
+    sourceGroup.append(sourceBar);
+    filterGrid.append(gameGroup, timeGroup, sourceGroup);
     filterPanel.append(filterGrid);
     dom.officialCabinetGrid.append(filterPanel);
 
@@ -111,7 +155,7 @@ export function createOfficialLeaderboardRoute({
     const leaderboardTitle = el('h3', { className: 'leaderboard-title' });
     leaderboardTitle.append(renderArcadeIcon('trophy'), documentRef.createTextNode(activeLeaderboardTitle.toUpperCase()));
     headerCopy.append(leaderboardTitle);
-    appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${scoreSourceSummary.label}`, 'cabinet-status-label');
+    appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${sourceBoard.label} · ${scoreSourceSummary.label}`, 'cabinet-status-label');
     const headerStats = el('div', { className: 'leaderboard-header-stats' });
     const topScore = active.topEntries[0]?.score ?? 0;
     for (const [label, value] of [
@@ -130,7 +174,11 @@ export function createOfficialLeaderboardRoute({
     board.append(header);
 
     if (active.topEntries.length === 0) {
-      appendText(board, 'small', 'No ranked scores in this period yet. Play a Ranked run and submit your official score at game over to claim the top spot.');
+      appendText(board, 'small', routeState.source === 'demo'
+        ? 'No synthetic house scores are available for this period.'
+        : routeState.source === 'local'
+          ? 'No unpublished local ranked scores are available in this period.'
+          : 'No verified ranked scores in this period yet. Play Ranked and publish a settled score to claim the top spot.');
       dom.officialCabinetGrid.append(board);
       return;
     }
