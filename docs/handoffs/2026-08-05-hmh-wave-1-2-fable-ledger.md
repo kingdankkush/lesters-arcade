@@ -230,7 +230,7 @@ Two consequences:
   legacy parent runtime; U10 established route ownership through the Ready
   immutable Preview `dpl_AuFosN2dQ3WYysfWazEpkikqKAe5`. Child-specific bundle
   triage remains separate and still gates child-code-heavy tasks.
-- **S1, S5, and S2 complete; S4 next:** S5 commit `b785ce6f` adds weighted band
+- **Wave 4 complete — S1, S5, S2, and S4:** S5 commit `b785ce6f` adds weighted band
   mixes, measured stat corrections, a bounded validator armor pulse, and a
   range-only shotgun correction. Final matrix digest `6a6f21c3`; base shotgun
   mid-range DPS is 10.8 and its eight-body clear is 19.567 seconds. Preview
@@ -240,7 +240,13 @@ Two consequences:
   120/240/480/900 base XP through one multiplier/threshold authority. Damage and
   run resets clear the combo. Release/browser/art gates passed; Ready Preview
   `dpl_HC3G4bDDcJkUi3Ct4k6w3R6xpi5r` served a raw-identical 1,049,954-byte child.
-  Only 46 bytes of child headroom remain.
+  S4 commit `0570fe07` makes the three-branch Coin Blaster tree live through
+  authored run ranks; adds existing crit routes, speed/range, 12-round magazine,
+  ricochet-to-pierce progression, seeded shock, and the bounded all-branch crowd
+  capstone. Release `2019/1968 + 51`, benchmark `24/48/16`, visual/browser gates,
+  and exact review `d6fd2277...ef4bd` passed. Ready Preview
+  `dpl_98gnDoAKrznrmu96H3K43BqkSShj` served a raw-identical 1,049,945-byte child
+  with SHA-256 `143082c7...f22c7`; 55 bytes of child headroom remain.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.

@@ -299,6 +299,34 @@ Ready Preview `dpl_HC3G4bDDcJkUi3Ct4k6w3R6xpi5r` at
 raw-identical child with SHA-256
 `4db3191c0ca74df928f1b8747039415e7db4a1a8ceab8e9f7bfb3fcc672a5ff3`.
 
+**S4 is complete** at implementation commit `0570fe07`. Three existing authored
+run cards now route into the live Coin Blaster tree without adding parallel
+progression state: `proof-of-work` advances damage, `hot-wallet` advances
+cadence/velocity, and `block-reward` advances reload/magazine. Existing
+`precision-ledger` and `hard-fork-rounds` remain the critical-chance and
+critical-damage routes. Pistol cadence tiers add projectile speed/range
+multipliers `1.10/1.08`, `1.22/1.18`, and `1.30/1.25`; damage tier 2 uses
+one-bounce ricochet while tier 3 pierces three targets and bypasses armor;
+reload tier 2 gains seeded shock at `12% / 1.5x` knockback, tier 3 carries a
+12-round magazine and `18% / 1.75x`, and all three branches maxed unlock the
+bounded `25% / 3x` crowd-displacement capstone. Shock derives from weapon seed
+plus attack ID, survives the active-projectile copy, and multiplies the existing
+collision-aware knockback authority.
+
+S4 validation passed release `2019/1968 + 51`, syntax `336 JS + 49 Python`,
+unchanged long-run certification, weapon benchmark `24` static + `48` moving +
+`16` swarm rows, visual `10/10`, cockpit, portal E2E, network, and performance.
+The maxed pistol measures `46.93` sustained DPS at mid/long range versus base
+`6.4`; its eight-enemy pack clears in `10.533 s`. The child is
+`1,049,945 / 1,050,000` bytes (`55` bytes headroom). Frozen implementation diff
+`d6fd22774a0544b0436dddb58e280f76b3eaa55304d9e80583df38a8252ef4bd`
+received exact-digest local review `PASS`. Ready Preview
+`dpl_98gnDoAKrznrmu96H3K43BqkSShj` at
+`https://lesters-arcade-8ovhhsrs3-justin-agent-projects.vercel.app` served a
+raw-identical child with SHA-256
+`143082c7b1bcd0e7c525a99b93cd0cc32847c11c4b46b74041e2d888ff6f22c7`;
+configured portal and child routes both returned their expected HTML identities.
+
 ### Wave 3 scope is decided
 
 The owner previously chose the **ruined-yard town** direction and subsequently

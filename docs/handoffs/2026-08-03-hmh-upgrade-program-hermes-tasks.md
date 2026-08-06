@@ -362,11 +362,14 @@ child (46 bytes headroom).
 entry, effect wiring, a new power-up art asset (A10), and count-lock
 updates. Natural next skill-tree step.
 
-**S4. Pistol depth tree** *(L)* — Per the handoff: crit chance/damage,
-magazine, projectile speed/range, penetration/ricochet, elemental procs,
-crowd-control capstone — with caps, stacking order, proc ownership, and
-deterministic rounding in **one authoritative module** to avoid
-multiplicative runaway.
+**S4. Pistol depth tree — COMPLETE** *(L)* — Commit `0570fe07` routes three
+authored run cards into the live Coin Blaster damage/cadence/reload tree;
+existing precision/hard-fork cards remain the crit route. Tiers add speed/range,
+a 12-round magazine, one-bounce ricochet, three-target pierce + armor bypass,
+seeded shock, and a bounded `25% / 3x` all-branch crowd capstone through the one
+weapon authority. Release `2019/1968 + 51`, benchmark `24/48/16`, visual/browser
+matrix, child `1,049,945 / 1,050,000`, exact review `d6fd2277...ef4bd`, and Ready
+Preview `dpl_98gnDoAKrznrmu96H3K43BqkSShj` are green.
 
 **S5. Enemy band rebalance — COMPLETE** *(L)* — Commit `b785ce6f` adds
 measured stat corrections, deterministic weighted role mixes, a bounded
