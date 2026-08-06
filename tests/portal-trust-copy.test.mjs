@@ -84,14 +84,15 @@ test('leaderboard provenance summary accepts an empty board total of zero', () =
 test('portal renders guest identity and House Score provenance without claiming a wallet is active', () => {
   const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const appRoutesSource = readFileSync(new URL('../apps/portal/src/routes/official-app-routes.mjs', import.meta.url), 'utf8');
+  const leaderboardRouteSource = readFileSync(new URL('../apps/portal/src/routes/official-leaderboard-route.mjs', import.meta.url), 'utf8');
   const htmlSource = readFileSync(new URL('../apps/portal/index.html', import.meta.url), 'utf8');
 
   assert.match(appRoutesSource, /connectedWallet \? 'Wallet Profile' : 'Guest Practice Profile'/);
-  assert.match(mainSource, /leaderboardEntryProvenance\(entry/);
-  assert.match(mainSource, /provenance\.label/);
-  assert.match(mainSource, /summarizeVisibleLeaderboardProvenance/);
-  assert.match(mainSource, /Official shown/);
-  assert.match(mainSource, /House shown/);
+  assert.match(leaderboardRouteSource, /leaderboardEntryProvenance\(entry/);
+  assert.match(leaderboardRouteSource, /provenance\.label/);
+  assert.match(leaderboardRouteSource, /summarizeVisibleLeaderboardProvenance/);
+  assert.match(leaderboardRouteSource, /Official shown/);
+  assert.match(leaderboardRouteSource, /House shown/);
   assert.doesNotMatch(htmlSource, /Wallet\/profile is already active/);
   assert.doesNotMatch(htmlSource, /Your Lester’s Arcade profile is already active/);
   assert.doesNotMatch(htmlSource, /Wallet profile active/i);

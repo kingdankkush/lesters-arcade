@@ -2200,16 +2200,17 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
 
 test('leaderboard page treats games and time windows as compact filters above the board', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const leaderboardRouteSource = readFileSync(fileURLToPath(new URL('../apps/portal/src/routes/official-leaderboard-route.mjs', import.meta.url)), 'utf8');
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
   const polishSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url)), 'utf8');
-  assert.equal(mainSource.includes('leaderboard-filter-shell'), true);
-  assert.equal(mainSource.includes('publicLeaderboardCabinets()'), true);
+  assert.equal(leaderboardRouteSource.includes('leaderboard-filter-shell'), true);
+  assert.equal(leaderboardRouteSource.includes('publicLeaderboardCabinets()'), true);
   assert.match(mainSource, /filter\(\(cabinet\) => cabinet\.playable/);
   assert.equal(mainSource.includes("cabinet.id === 'chikun'"), false, 'Chikun loader should not be hard-wired into public cabinet clicks');
   assert.equal(mainSource.includes("get('devCabinets') === '1'"), true);
-  assert.equal(mainSource.includes('leaderboard-game-filter'), true);
-  assert.equal(mainSource.includes('leaderboard-time-filter'), true);
-  assert.equal(mainSource.includes('leaderboard-coming-soon-banner'), false);
+  assert.equal(leaderboardRouteSource.includes('leaderboard-game-filter'), true);
+  assert.equal(leaderboardRouteSource.includes('leaderboard-time-filter'), true);
+  assert.equal(leaderboardRouteSource.includes('leaderboard-coming-soon-banner'), false);
   assert.equal(styleSource.includes('.leaderboard-filter-shell'), true);
   assert.equal(polishSource.includes('.leaderboard-filter-shell'), true);
 });
