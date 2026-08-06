@@ -347,9 +347,14 @@ upgrade interval. The analytical survival result does not replace browser or
 human balance evidence. Preview `dpl_13eBCtQnRDuZbfCViZeN8yHNAxbJ` was Ready;
 deployed child remained raw byte-identical at 1,048,584 bytes.
 
-**S2. XP source rebalance** *(M)* — XP is kill-driven only. The handoff
-wants Litecoin pickups and combo milestones contributing, with no
-dependence on frame rate or wall-clock.
+**S2. XP source rebalance — COMPLETE** *(M)* — Commit `fa64070d` routes enemy
+defeats, a 160-base-XP authored Litecoin token, and 5/10/20/30 no-damage combo
+milestones (120/240/480/900 base XP) through one child multiplier/threshold
+authority. Actual player damage and run resets clear combo state; fixed ticks,
+not render rate or wall-clock, own event order. The deterministic Blender token
+pipeline passed 82/82 unique frames, release passed 2,015 entries, and Ready
+Preview `dpl_HC3G4bDDcJkUi3Ct4k6w3R6xpi5r` served the raw-identical 1,049,954-byte
+child (46 bytes headroom).
 
 **S3. Critical-strike branch** *(M)* — The machinery already exists
 (`combat-events.mjs` seeded criticals; player hits carry

@@ -277,6 +277,28 @@ recover bytes first or remain numeric/data-only. Ready Preview
 raw-identical child with SHA-256
 `ddc29efe151c33fe6a746de816526894d466e53133c36d02f8cda2f44563244a`.
 
+**S2 is complete** at implementation commit `fa64070d`. Enemy defeats, the
+authored Litecoin token, and no-damage combo milestones now share the child
+progression authority, XP multiplier, deterministic thresholds, and fixed-tick
+event record. The token awards 160 base XP and retains the ammo refill. Combo
+milestones at 5/10/20/30 kills award 120/240/480/900 base XP; actual player
+damage and every run reset clear the chain. Normal and boss defeat paths both
+participate without changing wallet, settlement, parent bridge, or replay
+authority.
+
+The existing `hash-rail-core` atlas slot was rebuilt through its deterministic
+Blender owner as a silver/blue `litecoin-token` with a raised mark; the asset ID
+and projection-only runtime slot remain stable. Two consecutive pipeline renders
+were byte-identical across all 82 unique source frames. Focused S2/art tests
+passed 24/24. Release passed 2,015 entries (1,964 current passes and 51 separately
+ledgered expected legacy failures), plus syntax, asset QA, all 10 visual scenes,
+collectible browser evidence, portal E2E, four cockpit viewports, network, and
+performance. The child is 1,049,954 / 1,050,000 bytes, leaving 46 bytes.
+Ready Preview `dpl_HC3G4bDDcJkUi3Ct4k6w3R6xpi5r` at
+`https://lesters-arcade-bj6ios0n4-justin-agent-projects.vercel.app` served a
+raw-identical child with SHA-256
+`4db3191c0ca74df928f1b8747039415e7db4a1a8ceab8e9f7bfb3fcc672a5ff3`.
+
 ### Wave 3 scope is decided
 
 The owner previously chose the **ruined-yard town** direction and subsequently
