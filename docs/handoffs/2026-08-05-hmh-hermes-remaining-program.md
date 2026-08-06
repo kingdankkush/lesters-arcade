@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A15 transition head: `4ee4f0fb`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 hero-motion head: `e0c9aa20`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -105,9 +105,10 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | Wave 3 authored world | `c4680a68` | A6 12-piece town kit, W2 three-block ruined neighborhood, A9 six set-pieces, T4 road materials, P5 12-scene coverage. |
 | Wave 5 A14 role profiles | `dfcd216a` | Forkrunner fork-slash and gas-bomber canister-lob anticipation/strike/recovery replace the last shared ordinary-enemy poses. |
 | Wave 5 A15 phase beat | `4ee4f0fb` | Liquidator grows 18% and settles over 45 ticks at the three authored phase entries, projection-only. |
+| Wave 5 A13 hero motion | `e0c9aa20` | Four canonical heroes receive distinct Blender-authored motion profiles inside the existing 648-frame atlas and runtime contracts. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,039** (expected failures still 51). The seven-actor enemy roster
+**1,852 → 2,042** (expected failures still 51). The seven-actor enemy roster
 holds 1,368 frames in 5,005,462 atlas bytes.
 
 ### New pipelines you can reuse
@@ -411,11 +412,54 @@ Ready Preview `dpl_2iCh6oDxowShj5p7Zjpv1QZp2Ltw` at
 configured HTML routes and that raw-identical child. Production and LitVM were
 not touched.
 
+### Wave 5 A13 hero-motion slice is complete
+
+Implementation commit `e0c9aa20` adds four authoritative projection-only motion
+profiles without changing hero clip counts, frame rate, runtime atlas mapping,
+gameplay bodies, collision, weapons, movement, combat, progression or unlocks:
+
+- `heavy-vanguard-motion-v1` keeps Lit Commando planted with heavier recoil and
+  melee weight.
+- `agile-striker-motion-v1` gives Lit Valkyrie more stride, lift and dash energy.
+- `scrappy-gunslinger-motion-v1` gives Lester stronger recoil, hurt and melee
+  follow-through.
+- `disciplined-veteran-motion-v1` keeps Lilly's recoil and hurt controlled while
+  strengthening the grenade arc.
+
+The manifest-owned scales drive idle breath, run stride/lift, pistol recoil,
+hurt, dash, melee, grenade and lateral death direction only inside the Blender
+exporter. Exact profile objects are preserved in each published atlas JSON and
+metrics file. The shared pipeline rebuilt the editable `.blend`, rendered all
+four 648-frame actors twice and reported zero changed visible pixels, channel
+delta or total delta. A read-only source probe found the four canonical actor
+IDs, 14 bones, `weapon_socket` present and zero external Blender libraries.
+
+All 2,592 frames passed an 8-connected alpha audit with zero components of eight
+pixels or fewer; the smallest was 51 pixels. Native contact sheets and fresh
+desktop/mobile runtime evidence passed independent visual review. Hero atlases
+total 12,279,348 / 12,582,912 bytes (303,564 bytes headroom); the selector is
+361,863 / 524,288 bytes. Release passed 2,042 entries (1,991 current passes and
+51 ledgered expected failures), syntax 336 JS and 49 Python, and the complete
+long-run, weapon, asset, 12-scene visual, portal, cockpit, collectible, four-hero,
+enemy, selector, five-profile browser, network and performance chain. Frozen
+implementation diff
+`ec50ea8adbe53978c4e3a295a0c5b3f6e68445b64014cf41e268de9fc343fcc1`
+received exact text/authority and visual reviews with `BLOCKERS: none`.
+
+The child remained byte-identical at 1,050,000 / 1,050,000 bytes, SHA-256
+`2e4691e1fad6f4e986c5f67c9e4d46b6e5ee931b5c88e9587d63a0995e19a21c`.
+GitHub deployment `5778932319` binds commit `e0c9aa20` to Ready Preview
+`dpl_ERKAoPvn3RZFGg8sMpweUKwLjJr5` at
+`https://lesters-arcade-oeu9s4zoq-justin-agent-projects.vercel.app`.
+Authenticated proof served both configured HTML routes, the raw-identical child,
+all four byte-identical hero atlases with matching profile metadata, and the
+byte-identical selector JSON/PNG. Production and LitVM were not touched.
+
 ### Next: continue Wave 5 character presentation
 
-Proceed with A13 hero animation, remaining A14 damage-state/full-role polish and
-A15 phase audio/remaining telegraph polish as projection-only work using existing
-atlas budgets. **A12 256px hero escalation remains a separate owner
+Proceed with remaining A13 character-select presentation polish, A14
+damage-state/full-role polish and A15 phase audio/remaining telegraph polish as
+projection-only work using existing atlas budgets. **A12 256px hero escalation remains a separate owner
 budget gate**: do not raise the hero atlas budget or start the full-resolution
 batch without explicit approval.
 
@@ -476,19 +520,20 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2039 / 1988 passed / 51 expected failures    PASS
+test:release        2042 / 1991 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
 bundle              1,050,000 / 1,050,000                        PASS (0 B left)
 prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
 enemy roster        1,368 frames / 5,005,462 B, reproducible     PASS
+hero atlases        2,592 frames / 12,279,348 B, reproducible    PASS
 portal E2E          all implemented flows                        PASS
 cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
 staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
-exact review        4d022a07...97cc9ebd, BLOCKERS: none          PASS
-Vercel Preview      dpl_2iCh6oDxowShj5p7Zjpv1QZp2Ltw            READY
+exact review        ec50ea8a...43fcc1, BLOCKERS: none             PASS
+Vercel Preview      dpl_ERKAoPvn3RZFGg8sMpweUKwLjJr5            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security

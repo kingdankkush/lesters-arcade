@@ -1,8 +1,8 @@
-# Cycle ledger — upgrade program through Wave 5 A15 transition
+# Cycle ledger — upgrade program through Wave 5 A13 hero motion
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A15 transition head: `4ee4f0fb`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 hero-motion head: `e0c9aa20`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
 The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
@@ -36,9 +36,10 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | Wave 3 authored world | `c4680a68` | A6 town kit, W2 ruined neighborhood, A9 set-pieces, T4 roads, P5 12-scene coverage. |
 | Wave 5 A14 role profiles | `dfcd216a` | Role-native fork-slash and canister-lob anticipation/strike/recovery replace the last two shared ordinary-enemy pose profiles. |
 | Wave 5 A15 phase beat | `4ee4f0fb` | A bounded 18%/45-tick Liquidator scale pulse marks the three authored phase entries. |
+| Wave 5 A13 hero motion | `e0c9aa20` | Four manifest-owned hero motion profiles create distinct action weight inside the existing atlas/runtime contract. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,039**, expected failures still
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,042**, expected failures still
 51. Enemy roster: 7 actors, 1,368 frames and 5,005,462 atlas bytes.
 
 ## Non-art pipelines added
@@ -293,6 +294,46 @@ Ready Preview `dpl_2iCh6oDxowShj5p7Zjpv1QZp2Ltw` at
 configured HTML routes and that raw-identical child. Production and LitVM were
 not touched. This is an A15 transition slice, not final A15 completion.
 
+## Wave 5 A13 hero-motion slice
+
+Implementation commit `e0c9aa20` introduces four bounded animation profiles in
+the authoritative hero manifest: heavy/planted Lit Commando, agile Lit Valkyrie,
+scrappy Lester and disciplined Lilly. The Blender exporter consumes profile
+scales for idle breath, run stride/lift, pistol recoil, hurt, dash, melee,
+grenade and lateral death direction. Profile provenance is copied exactly into
+atlas metadata and generated metrics. Hero clip counts, 648-frame coverage,
+source resolution, atlas dimensions, runtime mappings, gameplay bodies,
+collision, weapons, movement, combat, progression and unlock authority are
+unchanged; no child runtime source file changed.
+
+The shared source/publish pipeline regenerated all four heroes twice with zero
+changed visible pixels, maximum channel delta zero and total delta zero. The
+editable `.blend` probe found four canonical actor IDs, 14 bones, a valid
+`weapon_socket` and zero external libraries. All 2,592 frames passed an
+8-connected alpha audit with no component of eight pixels or fewer and a
+51-pixel minimum. Native comparison/contact sheets and fresh live desktop/mobile
+evidence received independent visual `PASS`.
+
+Hero atlases total 12,279,348 / 12,582,912 bytes (303,564 bytes headroom); the
+selector is 361,863 / 524,288 bytes. Release `2042/1991 + 51`, syntax
+`336 JS + 49 Python`, long-run, weapon, production-asset, 12-scene visual,
+portal, cockpit, collectible, four-hero, enemy-detail, selector, five-profile
+browser, network and performance gates passed. The child remained byte-identical
+at the fixed 1,050,000-byte cap, SHA-256
+`2e4691e1fad6f4e986c5f67c9e4d46b6e5ee931b5c88e9587d63a0995e19a21c`.
+Exact staged text/authority and visual reviews for digest
+`ec50ea8adbe53978c4e3a295a0c5b3f6e68445b64014cf41e268de9fc343fcc1`
+both returned `PASS` with `BLOCKERS: none`.
+
+GitHub deployment `5778932319` binds the exact implementation commit to Ready
+Preview `dpl_ERKAoPvn3RZFGg8sMpweUKwLjJr5` at
+`https://lesters-arcade-oeu9s4zoq-justin-agent-projects.vercel.app`.
+Authenticated verification covered `/games/hard-money-heroes/play`,
+`/hmh-reboot/`, the raw-identical child, four raw-identical hero atlases with
+matching profile metadata and the raw-identical selector JSON/PNG. Production
+and LitVM remained untouched. This is an A13 hero-motion slice; character-select
+presentation still remains before final A13 completion.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -335,6 +376,10 @@ not touched. This is an A15 transition slice, not final A15 completion.
 - **A15 remains partial after `4ee4f0fb`.** Phase art, telegraphs and a visible
   transition beat are live. Phase-change audio remains in X1, and the child has
   zero byte headroom for additional runtime presentation.
+- **A13 remains partial after `e0c9aa20`.** All four heroes now have distinct
+  deterministic action weight inside the existing animation contract. Remaining
+  character-select presentation polish must stay within the established selector
+  and hero-atlas budgets unless the owner explicitly approves A12 escalation.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.
@@ -344,8 +389,9 @@ not touched. This is an A15 transition slice, not final A15 completion.
 Production was NOT promoted and remains the owner's call from the Vercel
 dashboard. The latest protected Preview was verified with authenticated read-only
 fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
-child-byte comparison. The implementation passed the 2,039-entry release suite,
-syntax, generated assets, long-run/weapon evidence, 12-scene visual regression,
-four-scenario network audit, six-flow portal E2E, cockpit, collectibles, selector,
-five-profile browser certification and performance. `SETTLEMENT_LIVE` and LitVM
-were not changed.
+child and generated-hero/selector byte comparison. The implementation passed the
+2,042-entry release suite (1,991 current passes and 51 expected failures), syntax,
+generated assets, long-run/weapon evidence, 12-scene visual regression,
+four-scenario network audit, portal E2E, cockpit, collectibles, all four hero
+smokes, selector, five-profile browser certification and performance.
+`SETTLEMENT_LIVE` and LitVM were not changed.
