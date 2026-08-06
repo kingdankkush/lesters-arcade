@@ -183,6 +183,7 @@ test('Cycle 035 cold-scene verification disables stochastic render drift and reb
 
 test('evidence-safe roster preview instantiates every enemy family for non-vacuous browser art review', () => {
   assert.match(runtimeSource, /const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams\.get\('rosterPreview'\) === '1'/);
+  assert.match(runtimeSource, /const rosterCombatEnabled = rosterPreviewEnabled && runtimeParams\.get\('rosterCombat'\) === '1'/);
   assert.match(runtimeSource, /const initialEnemyArchetypeIds = rosterPreviewEnabled \? ENEMY_ARCHETYPE_IDS : HMH_OPENING_ENEMY_ARCHETYPE_IDS/);
   assert.match(runtimeSource, /const rosterPreviewOffsets = Object\.freeze/);
   assert.match(runtimeSource, /runtimePlayerSpawn\.x \+ offset\.x/);
@@ -190,7 +191,7 @@ test('evidence-safe roster preview instantiates every enemy family for non-vacuo
   assert.match(runtimeSource, /autoFireEnabled: !rosterPreviewEnabled/);
   assert.match(runtimeSource, /rosterPreviewEnabled \? Number\.MAX_SAFE_INTEGER : directorDebugEnabled \? 1 : 600/);
   assert.match(runtimeSource, /!rosterPreviewEnabled && openingEnemyMovementEnabled\(tick\)/);
-  assert.match(runtimeSource, /!rosterPreviewEnabled && openingEnemyAttacksEnabled\(tick\)/);
+  assert.match(runtimeSource, /\(!rosterPreviewEnabled \|\| rosterCombatEnabled\) && openingEnemyAttacksEnabled\(tick\)/);
   assert.match(runtimeSource, /rosterPreviewEnabled[\s\S]*?reason: 'roster-preview'[\s\S]*?: stepEncounterDirector\(/);
 });
 

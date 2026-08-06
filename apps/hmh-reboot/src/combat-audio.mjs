@@ -17,6 +17,7 @@ const SAMPLE_PATHS = Object.freeze({
   'grenade-boom': '../assets/audio/sfx/grenade.ogg',
   'enemy-hit': '../assets/audio/sfx/enemy-hit.ogg',
   'player-hit': '../assets/audio/sfx/player-hit.ogg',
+  'boss-phase': '../assets/audio/sfx/boss-warning.ogg',
   pickup: '../assets/audio/sfx/pickup.ogg',
 });
 const MUSIC_PATH = '../assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3';

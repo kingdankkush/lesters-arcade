@@ -88,6 +88,16 @@ test('unknown cues fail closed without allocating voices', () => {
   assert.equal(FakeAudio.instances.length, 0);
 });
 
+test('boss phase uses the retained local warning sample through the boss-family cue policy', () => {
+  const audio = fresh();
+  const first = audio.play('boss-phase', { now: 1_200, volume: 0.14 });
+  const blocked = audio.play('boss-phase', { now: 1_201, volume: 0.14 });
+  assert.equal(first.played, true);
+  assert.equal(blocked.reason, 'cooldown');
+  assert.match(FakeAudio.instances[0].src, /^\.\.\/assets\/audio\/sfx\/boss-warning\.ogg$/);
+  assert.equal(FakeAudio.instances[0].volume, 0.16);
+});
+
 class RejectingAudio extends FakeAudio {
   play() {
     this.playCalls += 1;

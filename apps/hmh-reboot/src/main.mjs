@@ -11,6 +11,7 @@ import { computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
+import { projectGasBomberCanister } from './enemy-attack-presentation.mjs';
 import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from './enemy-archetypes.mjs';
 import { createOrdinaryEnemyHurtboxProfile } from './enemy-hurtboxes.mjs';
 import {
@@ -390,10 +391,13 @@ async function boot() {
   shadow.visible = !atlasActorEnabled;
   const label = new Text({ text: 'DETERMINISTIC RUNTIME', style: { fill: 0xe9fbff, fontFamily: 'system-ui', fontSize: 18, fontWeight: '700' } });
   label.anchor.set(0.5);
+  const bossLabel = new Text({ text: '', style: { fill: 0xffd8df, fontFamily: 'system-ui', fontSize: 13, fontWeight: '800', letterSpacing: 1 } });
+  bossLabel.anchor.set(0.5, 1);
+  bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
   world.addChild(backdrop, worldProduction.root, worldDecalLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
-  app.stage.addChild(world, overlayVisuals, minimap);
+  app.stage.addChild(world, overlayVisuals, bossLabel, minimap);
 
 
   const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -688,6 +692,7 @@ async function boot() {
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
   const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams.get('rosterPreview') === '1';
+  const rosterCombatEnabled = rosterPreviewEnabled && runtimeParams.get('rosterCombat') === '1';
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
   const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
@@ -1088,6 +1093,7 @@ async function boot() {
       bossTelegraphs.clear();
       overlayVisuals.clear();
       bossVisual.visible = false;
+      if (releaseTelemetryEnabled) dataset.gasCanisterProgress = '';
       let animatedEnemyCount = 0;
       let bossTelegraphPrimitiveCount = 0;
       const enemyHealthPips = [];
@@ -1141,6 +1147,19 @@ async function boot() {
             .fill({ color: archetype.visual.color, alpha: 0.08 })
             .stroke({ ...CONTOUR, width: 10 })
             .stroke({ color: archetype.visual.color, width: 4, alpha });
+          const canister = projectGasBomberCanister({ enemy, tick: simulation.tick });
+          if (canister) {
+            const canisterScreen = worldToScreen(canister, camera, view);
+            const stripeX = Math.cos(canister.rotation) * 6 * camera.zoom;
+            const stripeY = Math.sin(canister.rotation) * 6 * camera.zoom;
+            enemyTelegraphs.circle(canisterScreen.x, canisterScreen.y, 8 * camera.zoom)
+              .fill({ color: archetype.visual.color, alpha: 0.98 })
+              .stroke({ color: 0x080d12, width: 3 * camera.zoom, alpha: 1 });
+            enemyTelegraphs.moveTo(canisterScreen.x - stripeX, canisterScreen.y - stripeY)
+              .lineTo(canisterScreen.x + stripeX, canisterScreen.y + stripeY)
+              .stroke({ color: 0xfff4c7, width: 2 * camera.zoom, alpha: 0.92 });
+            if (releaseTelemetryEnabled) dataset.gasCanisterProgress = canister.progress.toFixed(3);
+          }
         } else if (archetype.attack.tokenFamily === 'support') {
           enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 140 * camera.zoom)
             .stroke({ ...CONTOUR, width: 11 })
@@ -1526,16 +1545,21 @@ async function boot() {
         overlayVisuals.roundRect(pipX - width / 2, y, width * pip.ratio, 4, 2)
           .fill({ color: pip.ratio > 0.5 ? 0x8ef5a8 : pip.ratio > 0.25 ? 0xffd166 : 0xff5c7a, alpha: 0.96 });
       }
+      bossLabel.visible = false;
       if (liquidatorBoss?.active && (simulation?.tick ?? 0) >= liquidatorBoss.startTick) {
         const barWidth = Math.min(420, view.width * 0.52);
         const barX = view.width / 2 - barWidth / 2;
+        const bossBarY = view.width < 560 ? 276 : 124;
         const ratio = Math.max(0, Math.min(1, liquidatorBoss.health / liquidatorBoss.maxHealth));
-        overlayVisuals.roundRect(barX - 2, 22, barWidth + 4, 14, 7).fill({ color: 0x05090d, alpha: 0.82 });
-        overlayVisuals.roundRect(barX, 24, barWidth, 10, 5).fill({ color: 0x1b2733, alpha: 0.95 });
-        overlayVisuals.roundRect(barX, 24, barWidth * ratio, 10, 5).fill({ color: 0xff496c, alpha: 0.98 });
+        bossLabel.text = `THE LIQUIDATOR // ${liquidatorBoss.phaseId.replaceAll('-', ' ').toUpperCase()}`;
+        bossLabel.position.set(view.width / 2, bossBarY - 5);
+        bossLabel.visible = true;
+        overlayVisuals.roundRect(barX - 2, bossBarY - 2, barWidth + 4, 14, 7).fill({ color: 0x05090d, alpha: 0.82 });
+        overlayVisuals.roundRect(barX, bossBarY, barWidth, 10, 5).fill({ color: 0x1b2733, alpha: 0.95 });
+        overlayVisuals.roundRect(barX, bossBarY, barWidth * ratio, 10, 5).fill({ color: 0xff496c, alpha: 0.98 });
         // Phase boundaries so the player can read fight progress.
         for (const marker of [1 / 3, 2 / 3]) {
-          overlayVisuals.rect(barX + barWidth * marker, 24, 2, 10).fill({ color: 0x05090d, alpha: 0.9 });
+          overlayVisuals.rect(barX + barWidth * marker, bossBarY, 2, 10).fill({ color: 0x05090d, alpha: 0.9 });
         }
       }
       const damageAge = lastPlayerHit && simulation ? simulation.tick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
@@ -2474,7 +2498,7 @@ async function boot() {
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
-      if (!rosterPreviewEnabled && openingEnemyAttacksEnabled(tick)) {
+      if ((!rosterPreviewEnabled || rosterCombatEnabled) && openingEnemyAttacksEnabled(tick)) {
         lastEnemyAttack = stepEnemyAttacks({
           enemies: grayboxEnemies,
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
@@ -2510,6 +2534,7 @@ async function boot() {
         });
       }
       for (const event of lastBossStep?.events ?? []) {
+        if (event.type === 'arena-change') combatAudio.play('boss-phase', { volume: 0.14 });
         if (event.type !== 'attack' && event.type !== 'add-wave') continue;
         const resolved = resolveLiquidatorAttack({
           event,
