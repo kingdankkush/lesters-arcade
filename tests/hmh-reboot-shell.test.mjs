@@ -91,6 +91,7 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /createPlayerDefeatController/);
   assert.match(source, /simulation\.gameOver\(\)/);
   assert.match(source, /buildRunResultMessages\(/);
+  assert.match(source, /bridge\.send\('game:run-summary', resultMessages\.runSummary\)/);
   assert.match(source, /bridge\.send\('game:score-result', resultMessages\.scoreResult\)/);
   assert.match(source, /bridge\.send\('game:game-over', resultMessages\.gameOver\)/);
   assert.match(source, /simulation\?\.state === 'game-over' \? 'game-over'/);

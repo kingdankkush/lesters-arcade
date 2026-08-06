@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   MINIMAP_VISIBILITY_RADIUS,
   createMinimapDiscoveryState,
+  discoverMinimapPointsOfInterest,
   computeMinimapModel,
 } from '../apps/hmh-reboot/src/minimap-model.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
@@ -66,6 +67,31 @@ test('POIs are discovered inside visibility and persist after leaving', () => {
   // Walk away: the marker persists — discovery is knowledge, not sensor data.
   const after = model({ discovery, player: { x: 11_000, y: 2_400 } });
   assert.equal(after.pointsOfInterest.some((poi) => poi.id === 'relay-armory'), true);
+});
+
+test('POI discovery can advance from accepted fixed-step positions without invoking render projection', () => {
+  const discovery = createMinimapDiscoveryState();
+  const discovered = discoverMinimapPointsOfInterest({
+    discovery,
+    player: { x: 1_500, y: 1_500 },
+    pointsOfInterest: LEVEL_ONE_WORLD.pointsOfInterest,
+  });
+  assert.equal(discovered, 1);
+  assert.equal(discovery.discoveredPoiIds.has('relay-armory'), true);
+  assert.equal(discoverMinimapPointsOfInterest({
+    discovery,
+    player: { x: 1_500, y: 1_500 },
+    pointsOfInterest: LEVEL_ONE_WORLD.pointsOfInterest,
+  }), 0);
+
+  const boundedDiscovery = createMinimapDiscoveryState();
+  discoverMinimapPointsOfInterest({
+    discovery: boundedDiscovery,
+    player: { x: 1_510, y: 1_500 },
+    pointsOfInterest: LEVEL_ONE_WORLD.pointsOfInterest,
+    radius: 5,
+  });
+  assert.equal(boundedDiscovery.discoveredPoiIds.size, 0);
 });
 
 test('undiscovered POIs never leak', () => {

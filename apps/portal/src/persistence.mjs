@@ -11,7 +11,7 @@
 // then without leaderboards, before giving up.
 
 export const ARCADE_PERSIST_KEY = 'lesters-arcade-save-v1';
-export const ARCADE_PERSIST_VERSION = 2;
+export const ARCADE_PERSIST_VERSION = 3;
 export const RUN_HISTORY_LIMIT = 50;
 export const SUBMITTED_SESSION_LIMIT = 1000;
 
@@ -55,7 +55,7 @@ export function snapshotArcadeState(state, { includeAvatars = true, includeLeade
 export function restoreArcadeState(state, snapshot) {
   if (!state || typeof state !== 'object') throw new Error('state is required');
   if (!snapshot || typeof snapshot !== 'object') return false;
-  if (![1, ARCADE_PERSIST_VERSION].includes(snapshot.version)) return false;
+  if (![1, 2, ARCADE_PERSIST_VERSION].includes(snapshot.version)) return false;
 
   let restored = snapshot.version === 1;
   if (snapshot.profiles && typeof snapshot.profiles === 'object') {
@@ -79,11 +79,11 @@ export function restoreArcadeState(state, snapshot) {
     state.runHistory = snapshot.runHistory.slice(0, RUN_HISTORY_LIMIT);
     restored = true;
   }
-  state.activeSessionCheckpoint = snapshot.version === ARCADE_PERSIST_VERSION
+  state.activeSessionCheckpoint = snapshot.version >= 2
     && snapshot.activeSessionCheckpoint && typeof snapshot.activeSessionCheckpoint === 'object'
     ? { ...snapshot.activeSessionCheckpoint }
     : null;
-  state.submittedSessionIds = snapshot.version === ARCADE_PERSIST_VERSION && Array.isArray(snapshot.submittedSessionIds)
+  state.submittedSessionIds = snapshot.version >= 2 && Array.isArray(snapshot.submittedSessionIds)
     ? [...new Set(snapshot.submittedSessionIds.map(String))].slice(0, SUBMITTED_SESSION_LIMIT)
     : [];
   if (state.activeSessionCheckpoint || state.submittedSessionIds.length) restored = true;
@@ -131,8 +131,8 @@ export function loadArcadeState(state, storage, { key = ARCADE_PERSIST_KEY } = {
   return restoreArcadeState(state, snapshot);
 }
 
-// Append a completed-run record (ranked submissions; free practice is
-// intentionally untracked per the product copy). Newest first, capped.
+// Append a completed-run record. Ranked and free HMH summaries share the same
+// bounded history; leaderboard acceptance remains a separate ranked-only rail.
 export function appendRunRecord(state, record, { limit = RUN_HISTORY_LIMIT } = {}) {
   if (!state || typeof state !== 'object') throw new Error('state is required');
   if (!record || typeof record !== 'object') throw new Error('record is required');

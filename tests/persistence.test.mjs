@@ -18,6 +18,12 @@ import { createInitialArcadeState, connectPlayerAccount, setArcadeUsername, buil
 import { recordCadenceScore } from '../apps/portal/src/leaderboard-engine.mjs';
 
 const WALLET = '0x' + 'a'.repeat(40);
+const RUN_SUMMARY = Object.freeze({
+  schemaVersion: 1,
+  identity: Object.freeze({ terminalReason: 'defeated' }),
+  totals: Object.freeze({ score: 9000, elapsedMs: 240_000 }),
+  kills: Object.freeze({ total: 4 }),
+});
 
 // In-memory localStorage mock with optional simulated quota.
 function makeStorage({ quotaBytes = Infinity } = {}) {
@@ -34,11 +40,12 @@ function makeStorage({ quotaBytes = Infinity } = {}) {
 }
 
 test('snapshot + restore round-trips profiles, usernames, leaderboards, and run history', () => {
+  assert.equal(ARCADE_PERSIST_VERSION, 3);
   const state = createInitialArcadeState();
   connectPlayerAccount(state, WALLET, { handle: 'Tester' });
   setArcadeUsername(state, WALLET, 'HardMoneyHero');
   recordCadenceScore(state, 'lester-blaster', { wallet: WALLET, score: 9000 });
-  appendRunRecord(state, { gameId: 'lester-blaster', wallet: WALLET, score: 9000, elapsedSeconds: 240 });
+  appendRunRecord(state, { gameId: 'hmh-reboot', wallet: WALLET, score: 9000, elapsedSeconds: 240, runSummary: RUN_SUMMARY });
   state.__seededLeaderboard = true;
 
   const snapshot = snapshotArcadeState(state);
@@ -53,6 +60,7 @@ test('snapshot + restore round-trips profiles, usernames, leaderboards, and run 
   assert.equal(fresh.__seededLeaderboard, true);
   assert.equal(fresh.runHistory.length, 1);
   assert.equal(fresh.runHistory[0].score, 9000);
+  assert.deepEqual(fresh.runHistory[0].runSummary, RUN_SUMMARY);
   const buckets = fresh.cadenceLeaderboards['lester-blaster']['all-time']['all-time'];
   assert.equal(buckets.some((row) => row.wallet === WALLET && row.score === 9000), true);
 });
@@ -182,4 +190,18 @@ test('v1 persistence snapshots migrate without canonical session fields', () => 
   assert.equal(restoreArcadeState(state, { version: 1, profiles: {}, usernames: {}, runHistory: [] }), true);
   assert.equal(state.activeSessionCheckpoint, null);
   assert.deepEqual(state.submittedSessionIds, []);
+});
+
+test('v2 persistence snapshots migrate while preserving pre-summary history', () => {
+  const state = createInitialArcadeState();
+  assert.equal(restoreArcadeState(state, {
+    version: 2,
+    profiles: {},
+    usernames: {},
+    runHistory: [{ gameId: 'hmh-reboot', score: 7 }],
+    activeSessionCheckpoint: null,
+    submittedSessionIds: [],
+  }), true);
+  assert.equal(state.runHistory[0].score, 7);
+  assert.equal(state.runHistory[0].runSummary, undefined);
 });

@@ -16,6 +16,7 @@ export function createHmhRebootHost({
   onError = () => {},
   onExit = () => {},
   onRunEvent = () => {},
+  onRunSummary = () => {},
   onScoreResult = () => {},
   onAchievement = () => {},
   onSettings = () => {},
@@ -28,6 +29,7 @@ export function createHmhRebootHost({
   const origin = normalizeOrigin(expectedOrigin);
   let activeBridge = null;
   let activeFrame = null;
+  let activeSession = null;
   let bridgeReady = false;
   let pendingCommands = [];
   let readyTimer = null;
@@ -44,6 +46,17 @@ export function createHmhRebootHost({
     } else if (message.type === 'game:state' || message.type === 'game:game-over' || message.type === 'game:pause') onState(message);
     else if (message.type === 'game:exit') onExit(message);
     else if (message.type === 'game:run-event') onRunEvent(message);
+    else if (message.type === 'game:run-summary') {
+      const identity = message.payload?.identity;
+      if (!identity || !activeSession
+        || identity.seed !== activeSession.session.seed
+        || identity.buildHash !== activeSession.session.buildHash
+        || identity.mode !== activeSession.mode
+        || identity.heroId !== activeSession.heroId) {
+        onError(new Error('HMH reboot run-summary identity does not match the mounted session'));
+        destroy();
+      } else onRunSummary(message);
+    }
     else if (message.type === 'game:score-result') onScoreResult(message);
     else if (message.type === 'game:achievement') onAchievement(message);
     else if (message.type === 'game:settings') onSettings(message);
@@ -73,6 +86,7 @@ export function createHmhRebootHost({
     activeBridge?.destroy();
     activeBridge = null;
     activeFrame = null;
+    activeSession = null;
     bridgeReady = false;
     pendingCommands = [];
     mount.replaceChildren();
@@ -88,6 +102,7 @@ export function createHmhRebootHost({
 
   const mountSession = (session) => {
     if (activeBridge) destroy();
+    activeSession = session;
     const iframe = documentRef.createElement('iframe');
     iframe.className = 'hmh-reboot-frame';
     iframe.title = 'Hard Money Heroes reboot runtime';

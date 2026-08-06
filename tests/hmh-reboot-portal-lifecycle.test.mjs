@@ -15,7 +15,7 @@ function fixture({ paid = true } = {}) {
     health: 100,
     maxHealth: 100,
   };
-  const calls = { stat: [], score: [], end: [], ranked: 0, free: 0, sync: 0, errors: [] };
+  const calls = { stat: [], score: [], end: [], ranked: [], free: [], sync: 0, errors: [] };
   const adapter = {
     emitStatUpdate(value) { calls.stat.push(value); return true; },
     submitScore(score, value) { calls.score.push({ score, value }); return true; },
@@ -26,8 +26,8 @@ function fixture({ paid = true } = {}) {
     combat,
     getSession: () => session,
     getAdapter: () => adapter,
-    finalizeRanked: () => { calls.ranked += 1; combat.gameOverSubmitted = true; },
-    finalizeFree: () => { calls.free += 1; },
+    finalizeRanked: (value) => { calls.ranked.push(value); combat.gameOverSubmitted = true; },
+    finalizeFree: (value) => { calls.free.push(value); },
     syncUi: () => { calls.sync += 1; },
     onError: (error) => calls.errors.push(error),
   });
@@ -42,9 +42,19 @@ const gameOver = {
   type: 'game:game-over',
   payload: { score: 4200, kills: 19, elapsedMs: 91234.5, reason: 'defeated' },
 };
+const runSummary = {
+  type: 'game:run-summary',
+  payload: {
+    schemaVersion: 1,
+    identity: { terminalReason: 'defeated' },
+    totals: { score: 4200, elapsedMs: 91234.5 },
+    kills: { total: 19 },
+  },
+};
 
-test('ranked reboot result finalizes parent rails exactly once after a matching score candidate', () => {
+test('ranked reboot result finalizes parent rails exactly once after a matching canonical summary and score candidate', () => {
   const { combat, calls, lifecycle } = fixture({ paid: true });
+  assert.equal(lifecycle.handleRunSummary(runSummary), true);
   lifecycle.handleScoreResult(scoreResult);
   assert.equal(lifecycle.handleState(gameOver), true);
   assert.equal(combat.active, false);
@@ -53,8 +63,9 @@ test('ranked reboot result finalizes parent rails exactly once after a matching 
   assert.equal(combat.score, 4200);
   assert.equal(combat.kills, 19);
   assert.equal(combat.elapsedGameSeconds, 91.2345);
-  assert.equal(calls.ranked, 1);
-  assert.equal(calls.free, 0);
+  assert.equal(calls.ranked.length, 1);
+  assert.equal(calls.ranked[0].runSummary, runSummary.payload);
+  assert.equal(calls.free.length, 0);
   assert.equal(calls.score.length, 1);
   assert.equal(calls.score[0].score, 4200);
   assert.equal(calls.end.length, 1);
@@ -63,16 +74,18 @@ test('ranked reboot result finalizes parent rails exactly once after a matching 
 
   lifecycle.handleScoreResult(scoreResult);
   assert.equal(lifecycle.handleState(gameOver), false);
-  assert.equal(calls.ranked, 1);
+  assert.equal(calls.ranked.length, 1);
   assert.equal(calls.end.length, 1);
 });
 
-test('free reboot result ends SDK lifecycle without writing ranked rails', () => {
+test('free reboot result ends SDK lifecycle and persists summary without writing ranked rails', () => {
   const { calls, lifecycle } = fixture({ paid: false });
+  lifecycle.handleRunSummary(runSummary);
   lifecycle.handleScoreResult(scoreResult);
   assert.equal(lifecycle.handleState(gameOver), true);
-  assert.equal(calls.ranked, 0);
-  assert.equal(calls.free, 1);
+  assert.equal(calls.ranked.length, 0);
+  assert.equal(calls.free.length, 1);
+  assert.equal(calls.free[0].runSummary, runSummary.payload);
   assert.equal(calls.score.length, 0);
   assert.equal(calls.end.length, 1);
   assert.deepEqual(calls.errors, []);
@@ -80,6 +93,7 @@ test('free reboot result ends SDK lifecycle without writing ranked rails', () =>
 
 test('reboot result fails closed when score candidate and game-over summary disagree', () => {
   const { combat, calls, lifecycle } = fixture({ paid: true });
+  lifecycle.handleRunSummary(runSummary);
   lifecycle.handleScoreResult(scoreResult);
   const accepted = lifecycle.handleState({
     ...gameOver,
@@ -87,11 +101,25 @@ test('reboot result fails closed when score candidate and game-over summary disa
   });
   assert.equal(accepted, false);
   assert.equal(combat.gameOverSubmitted, false);
-  assert.equal(calls.ranked, 0);
+  assert.equal(calls.ranked.length, 0);
   assert.equal(calls.score.length, 0);
   assert.equal(calls.end.length, 0);
   assert.equal(calls.errors.length, 1);
   assert.match(calls.errors[0].message, /does not match/i);
+});
+
+test('reboot result fails closed without exactly one prior canonical run summary', () => {
+  const { combat, calls, lifecycle } = fixture({ paid: true });
+  lifecycle.handleScoreResult(scoreResult);
+  assert.equal(lifecycle.handleState(gameOver), false);
+  assert.equal(combat.gameOverSubmitted, false);
+  assert.equal(calls.ranked.length, 0);
+  assert.match(calls.errors.at(-1).message, /run summary/i);
+
+  const duplicate = fixture({ paid: true });
+  assert.equal(duplicate.lifecycle.handleRunSummary(runSummary), true);
+  assert.equal(duplicate.lifecycle.handleRunSummary(runSummary), false);
+  assert.match(duplicate.calls.errors.at(-1).message, /duplicate/i);
 });
 
 test('live state and pause messages synchronize parent combat and SDK stats', () => {
@@ -112,12 +140,13 @@ test('live state and pause messages synchronize parent combat and SDK stats', ()
   assert.equal(combat.paused, true);
 });
 
-test('portal entrypoint binds reboot game over, canonical seed, and restart to parent authority', () => {
+test('portal entrypoint binds reboot game over, canonical summary, seed, and restart to parent authority', () => {
   const source = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(source, /createHmhRebootPortalLifecycle\(\{/);
   assert.match(source, /onState: \(message\) => hmhRebootLifecycle\?\.handleState\(message\)/);
+  assert.match(source, /onRunSummary: \(message\) => hmhRebootLifecycle\?\.handleRunSummary\(message\)/);
   assert.match(source, /hmhRebootLifecycle\?\.handleScoreResult\(message\)/);
-  assert.match(source, /finalizeRanked: \(\) => submitCombatGameOver\(\)/);
+  assert.match(source, /finalizeRanked: \(\{ runSummary \}\) => submitCombatGameOver\(runSummary\)/);
   assert.match(source, /seed: currentSession\.seed \?\? currentSession\.canonicalContext\?\.seed \?\? 0/);
   assert.match(source, /currentSession = beginTrackedSession\(\{ mode: wasPaid \? 'paid' : 'free' \}\)/);
   assert.match(source, /sessionId: currentSession\.sessionId,\s+rankedEligible: currentSession\.isPaid/);

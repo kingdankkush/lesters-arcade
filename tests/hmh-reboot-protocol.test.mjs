@@ -8,6 +8,7 @@ import {
   validateConnectMessage,
   validateParentMessage,
 } from '../sdk/hmh-bridge-protocol.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS as summaryCatalogs } from '../sdk/hmh-run-summary-schema.mjs';
 
 const settings = Object.freeze({
   musicEnabled: true,
@@ -33,6 +34,70 @@ function parentInit(overrides = {}) {
       ...overrides,
     },
   });
+}
+
+function runSummary() {
+  return {
+    schemaVersion: 1,
+    identity: {
+      seed: 1234567890,
+      buildHash: 'site-106:hmh-wave-6a',
+      mode: 'ranked',
+      heroId: 'lit-commando',
+      terminalReason: 'defeated',
+      startTick: 0,
+      endTick: 3600,
+    },
+    totals: {
+      survivalTicks: 3600,
+      elapsedMs: 60000,
+      score: 4200,
+      level: 4,
+      xp: 1900,
+      litecoin: 1,
+      currentCombo: 2,
+      maxCombo: 12,
+      damageDealt: 9000,
+      damageTaken: 80,
+      healing: 30,
+      distanceMilli: 1234567,
+    },
+    kills: {
+      total: 44,
+      byEnemyRole: summaryCatalogs.enemyRoles.map((enemyRoleId, index) => ({ enemyRoleId, count: index === 0 ? 44 : 0 })),
+      byWeapon: summaryCatalogs.weapons.map((weaponId, index) => ({ weaponId, count: index === 0 ? 44 : 0 })),
+      elite: 2,
+      boss: 0,
+    },
+    weapons: summaryCatalogs.weapons.map((weaponId, index) => ({
+      weaponId,
+      pickups: index === 0 ? 1 : 0,
+      swaps: index === 0 ? 2 : 0,
+      triggers: index === 0 ? 120 : 0,
+      triggerContacts: index === 0 ? 80 : 0,
+      projectilesEmitted: index === 0 ? 120 : 0,
+      projectileContacts: index === 0 ? 80 : 0,
+      reloadStarts: index === 0 ? 5 : 0,
+      reloadCompletes: index === 0 ? 5 : 0,
+      emptyAttempts: 0,
+      equippedTicks: index === 0 ? 3600 : 0,
+      damage: index === 0 ? 9000 : 0,
+      kills: index === 0 ? 44 : 0,
+      criticalHits: index === 0 ? 8 : 0,
+      overkill: index === 0 ? 120 : 0,
+    })),
+    grenades: { thrown: 1, detonated: 1, contacts: 2, kills: 0, selfDamage: 0, overflows: 0 },
+    collectibles: summaryCatalogs.collectibles.map((effectId) => ({ effectId, collected: effectId === 'litecoin-token' ? 1 : 0, activeTicks: 0 })),
+    upgrades: summaryCatalogs.upgrades.map((upgradeId) => ({ upgradeId, offered: 0, selected: 0 })),
+    exploration: {
+      visitedDistrictMask: 3,
+      discoveredPoiMask: 5,
+      revealedCells: 120,
+      totalCells: 240,
+      revealedPermille: 500,
+      distanceMilli: 1234567,
+    },
+  };
 }
 
 test('valid portal init envelope passes exact schema validation', () => {
@@ -80,6 +145,48 @@ test('valid child ready envelope passes and wallet-shaped leakage fails', () => 
   assert.equal(validateChildMessage(ready).ok, true);
   ready.payload.wallet = '0x1234';
   assert.equal(validateChildMessage(ready).ok, false);
+});
+
+test('canonical run-summary capability and exact bounded payload pass validation', () => {
+  const ready = createBridgeEnvelope({
+    type: 'game:ready',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-ready-summary',
+    payload: { runtimeVersion: '0.5.0', renderer: 'pixi.js', capabilities: ['run-summary'] },
+  });
+  assert.equal(validateChildMessage(ready).ok, true);
+  const envelope = createBridgeEnvelope({
+    type: 'game:run-summary',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-summary-1',
+    payload: runSummary(),
+  });
+  const result = validateChildMessage(envelope);
+  assert.equal(result.ok, true, result.error);
+  assert.ok(new TextEncoder().encode(JSON.stringify(envelope)).byteLength < HMH_MAX_MESSAGE_BYTES);
+});
+
+test('run-summary rejects extra authority fields, wrong catalog rows, inconsistent totals, and out-of-range values', () => {
+  const envelope = createBridgeEnvelope({
+    type: 'game:run-summary',
+    sessionId: 'game-session-000000001',
+    messageId: 'game-summary-invalid',
+    payload: runSummary(),
+  });
+  envelope.payload.walletAddress = '0x1234';
+  assert.match(validateChildMessage(envelope).error, /unexpected|exact fields/i);
+  delete envelope.payload.walletAddress;
+  envelope.payload.weapons[0].weaponId = 'unknown-weapon';
+  assert.equal(validateChildMessage(envelope).ok, false);
+  envelope.payload = runSummary();
+  envelope.payload.kills.total = 43;
+  assert.equal(validateChildMessage(envelope).ok, false);
+  envelope.payload = runSummary();
+  envelope.payload.exploration.revealedPermille = 1001;
+  assert.equal(validateChildMessage(envelope).ok, false);
+  envelope.payload = runSummary();
+  envelope.payload.weapons[0].damage = Number.POSITIVE_INFINITY;
+  assert.equal(validateChildMessage(envelope).ok, false);
 });
 
 test('connect handshake requires exact protocol, nonce, and type', () => {

@@ -30,7 +30,9 @@ export function createRunScoreChecksum(input) {
 
 export function buildRunResultMessages(input) {
   const value = resultInput(input);
+  if (!input.runSummary || typeof input.runSummary !== 'object' || Array.isArray(input.runSummary)) throw new TypeError('runSummary is required');
   return Object.freeze({
+    runSummary: input.runSummary,
     scoreResult: Object.freeze({
       score: value.score,
       kills: value.kills,

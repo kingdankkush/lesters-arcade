@@ -1,6 +1,4 @@
-function finite(value, fallback = 0) {
-  return Number.isFinite(value) ? value : fallback;
-}
+import { runSummaryMatchesResult } from '../../../sdk/hmh-run-summary.mjs';
 
 function sameResult(candidate, gameOver) {
   if (!candidate || !gameOver) return false;
@@ -28,6 +26,7 @@ export function createHmhRebootPortalLifecycle({
 } = {}) {
   if (!combat || typeof combat !== 'object') throw new TypeError('combat state is required');
   let pendingScoreResult = null;
+  let pendingRunSummary = null;
   const finalizedSessionIds = new Set();
 
   const report = (value) => {
@@ -38,7 +37,15 @@ export function createHmhRebootPortalLifecycle({
 
   const handleScoreResult = (message) => {
     if (message?.type !== 'game:score-result' || !message.payload) return report('expected game:score-result');
+    if (pendingScoreResult) return report('HMH reboot duplicate score result rejected');
     pendingScoreResult = Object.freeze({ ...message.payload });
+    return true;
+  };
+
+  const handleRunSummary = (message) => {
+    if (message?.type !== 'game:run-summary' || !message.payload) return report('expected game:run-summary');
+    if (pendingRunSummary) return report('HMH reboot duplicate run summary rejected');
+    pendingRunSummary = message.payload;
     return true;
   };
 
@@ -48,7 +55,13 @@ export function createHmhRebootPortalLifecycle({
     const sessionId = session?.sessionId;
     if (!sessionId) return report('HMH reboot game over has no bound parent session');
     if (finalizedSessionIds.has(sessionId)) return false;
+    if (!sameResult(pendingScoreResult, payload)) return report('HMH reboot score candidate does not match game-over summary');
+    if (!pendingRunSummary) return report('HMH reboot game over requires one prior canonical run summary');
+    if (!runSummaryMatchesResult(pendingRunSummary, payload)) return report('HMH reboot canonical run summary does not match terminal result');
 
+    const adapter = getAdapter();
+    const runStats = normalizeRunStats(payload);
+    const runSummary = pendingRunSummary;
     combat.score = payload.score;
     combat.kills = payload.kills;
     combat.elapsedGameSeconds = payload.elapsedMs / 1000;
@@ -56,13 +69,6 @@ export function createHmhRebootPortalLifecycle({
     combat.paused = false;
     combat.gameOver = true;
     combat.gameOverReason = payload.reason;
-
-    if (!sameResult(pendingScoreResult, payload)) {
-      return report('HMH reboot score candidate does not match game-over summary');
-    }
-
-    const adapter = getAdapter();
-    const runStats = normalizeRunStats(payload);
     try {
       adapter?.emitStatUpdate?.(runStats);
       if (session.isPaid) {
@@ -73,10 +79,11 @@ export function createHmhRebootPortalLifecycle({
         });
       }
       adapter?.end?.(runStats);
+      if (session.isPaid) finalizeRanked({ message, scoreResult: pendingScoreResult, runSummary, session });
+      else finalizeFree({ message, scoreResult: pendingScoreResult, runSummary, session });
       finalizedSessionIds.add(sessionId);
-      if (session.isPaid) finalizeRanked({ message, scoreResult: pendingScoreResult, session });
-      else finalizeFree({ message, scoreResult: pendingScoreResult, session });
       pendingScoreResult = null;
+      pendingRunSummary = null;
       syncUi();
       return true;
     } catch (error) {
@@ -116,6 +123,8 @@ export function createHmhRebootPortalLifecycle({
   return Object.freeze({
     handleState,
     handleScoreResult,
+    handleRunSummary,
     get pendingScoreResult() { return pendingScoreResult ? { ...pendingScoreResult } : null; },
+    get pendingRunSummary() { return pendingRunSummary; },
   });
 }

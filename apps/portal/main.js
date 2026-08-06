@@ -2555,7 +2555,7 @@ async function checkpointCurrentSessionEvidence() {
   }
 }
 
-function submitCombatGameOver() {
+function submitCombatGameOver(runSummary) {
   if (!combat.gameOver || !currentSession?.isPaid || combat.gameOverSubmitted) return;
   recordCurrentSessionEvent('run-end', currentCanonicalFinalState());
   lastRunPreviousBestScore = currentPlayerBestScoreForMode(currentSession?.mode);
@@ -2594,6 +2594,7 @@ function submitCombatGameOver() {
     characterId: combat.characterId,
     killedBy: combat.killedBy ?? null,
     bossDefeated: Boolean(combat.bossDefeated),
+    runSummary,
   });
   persistArcadeStateSoon();
   // GameRegistry: child game -> parent sync packet (local now, LitVM SessionLedger later)
@@ -4568,7 +4569,7 @@ function destroyHmhRebootSession() {
   hmhRebootActive = false;
 }
 
-function finalizeHmhRebootFreeGameOver() {
+function finalizeHmhRebootFreeGameOver(runSummary) {
   lastCompletedSession = currentSession;
   lastRunResult = {
     score: combat.score,
@@ -4577,6 +4578,20 @@ function finalizeHmhRebootFreeGameOver() {
   };
   lastRunScore = combat.score;
   lastRunElapsedSeconds = combat.elapsedGameSeconds;
+  appendRunRecord(state, {
+    sessionId: currentSession.sessionId,
+    gameId: 'lester-blaster',
+    wallet: connectedWallet,
+    mode: 'free',
+    score: runSummary.totals.score,
+    elapsedSeconds: Math.round(runSummary.totals.elapsedMs / 1000),
+    kills: runSummary.kills.total,
+    characterId: runSummary.identity.heroId,
+    killedBy: null,
+    bossDefeated: runSummary.kills.boss > 0,
+    runSummary,
+  });
+  persistArcadeStateSoon();
   renderOfficialRunStatus();
   renderGameOverSummary();
   renderCombatMenuActionGrid();
@@ -4589,8 +4604,8 @@ function mountHmhRebootSession() {
       combat,
       getSession: () => currentSession,
       getAdapter: () => gameAdapter,
-      finalizeRanked: () => submitCombatGameOver(),
-      finalizeFree: () => finalizeHmhRebootFreeGameOver(),
+      finalizeRanked: ({ runSummary }) => submitCombatGameOver(runSummary),
+      finalizeFree: ({ runSummary }) => finalizeHmhRebootFreeGameOver(runSummary),
       syncUi: () => syncCombatOverlay(),
       onError: (error) => {
         console.error('[HMH reboot lifecycle]', error);
@@ -4609,6 +4624,7 @@ function mountHmhRebootSession() {
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Top-down reboot runtime connected. Portal session authority remains active.';
       },
       onState: (message) => hmhRebootLifecycle?.handleState(message),
+      onRunSummary: (message) => hmhRebootLifecycle?.handleRunSummary(message),
       onExit: () => returnToOfficialGameMenu(),
       onRunEvent: (message) => {
         if (!currentSession?.isPaid || !currentSession.evidence) return;

@@ -54,7 +54,7 @@ export const PORTAL_E2E_FLOWS = Object.freeze([
     id: 'settings-persistence-reload',
     status: 'implemented',
     covers: Object.freeze(['reload-persistence', 'audio']),
-    description: 'A settings toggle made during a run persists to hmh-settings across a full page reload, and the arcade save (version 2) survives reload.',
+    description: 'A settings toggle made during a run persists to hmh-settings across a full page reload, and the arcade save (version 3) survives reload.',
   }),
   Object.freeze({
     id: 'guest-exit-to-splash',
@@ -382,7 +382,7 @@ if (isMain) {
       }));
       assert.equal(persisted.settings.gore, expectedGore, 'hmh-settings did not survive reload');
       assert.ok(persisted.save, 'arcade save missing after reload');
-      assert.equal(persisted.save.version, 2);
+      assert.equal(persisted.save.version, 3);
       child = null;
       return { gore: expectedGore, saveVersion: persisted.save.version };
     });

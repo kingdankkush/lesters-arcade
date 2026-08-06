@@ -78,12 +78,14 @@ test('score and XP events reject replays and impossible inputs', () => {
 });
 
 test('run result adapter is deterministic, protocol-shaped, and has no wallet authority', () => {
-  const input = { seed: 42, score: 9_250, kills: 17, elapsedMs: 61_000 };
+  const runSummary = Object.freeze({ schemaVersion: 1, identity: Object.freeze({ terminalReason: 'defeated' }) });
+  const input = { seed: 42, score: 9_250, kills: 17, elapsedMs: 61_000, runSummary };
   const checksum = createRunScoreChecksum(input);
   assert.match(checksum, /^hmh-score:[a-f0-9]{16}$/);
   assert.equal(checksum, createRunScoreChecksum(input));
   const messages = buildRunResultMessages(input);
-  assert.deepEqual(Object.keys(messages).sort(), ['gameOver', 'scoreResult']);
+  assert.deepEqual(Object.keys(messages).sort(), ['gameOver', 'runSummary', 'scoreResult']);
+  assert.equal(messages.runSummary, runSummary);
   assert.equal(messages.scoreResult.checksum, checksum);
   assert.equal(messages.gameOver.reason, 'defeated');
   assert.deepEqual(getWeb3AdapterStatus({ embedded: false, rankedEligible: false }), {

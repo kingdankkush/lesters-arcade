@@ -22,7 +22,7 @@ import {
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
 import { computeEnemyFlowField, createEnemyNavGrid, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
-import { computeMinimapModel, createMinimapDiscoveryState } from './minimap-model.mjs';
+import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
   createTerrainTileRegistry,
@@ -101,6 +101,25 @@ import {
   selectRunUpgrade,
 } from './run-progression.mjs';
 import { buildRunResultMessages, getWeb3AdapterStatus } from './run-adapters.mjs';
+import {
+  createRunSummaryAccumulator,
+  finalizeRunSummary,
+  recordRunCollectible,
+  recordRunDamage,
+  recordRunGrenade,
+  recordRunGrenadeDetonation,
+  recordRunHealing,
+  recordRunKill,
+  recordRunProjectileContacts,
+  recordRunProjectileResolution,
+  recordRunTick,
+  recordRunUpgradeOffer,
+  recordRunUpgradeSelection,
+  recordRunWeaponEvent,
+  recordRunWeaponFire,
+  recordRunWeaponLifecycleEvent,
+  recordRunWeaponTriggerContact,
+} from '../../../sdk/hmh-run-summary.mjs';
 import {
   compactExpiredEventsInPlace,
   isScreenPointVisible,
@@ -857,6 +876,8 @@ async function boot() {
   let lastCollectibleEvent = null;
   let runKills = 0;
   let runCombo = 0;
+  let maxRunCombo = 0;
+  let runSummaryAccumulator = null;
   let runEventSequence = 0;
   let lastAccessibleCombatStatus = '';
   let combatVisualEvents = [];
@@ -869,6 +890,7 @@ async function boot() {
   };
   const awardComboXp = (snapshot, tick) => {
     const baseXp = comboMilestoneXp(++runCombo);
+    maxRunCombo = Math.max(maxRunCombo, runCombo);
     return baseXp ? grantRunXp(runProgression, baseXp, tick) : snapshot;
   };
 
@@ -1764,6 +1786,8 @@ async function boot() {
     cockpit?.setPaused(false);
     runKills = 0;
     runCombo = 0;
+    maxRunCombo = 0;
+    runSummaryAccumulator = null;
     runEventSequence = 0;
     previousGrenade = false;
     previousDash = false;
@@ -1803,6 +1827,14 @@ async function boot() {
     }));
     cockpit?.updateRun(getRunProgressionSnapshot(runProgression));
     actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });
+    runSummaryAccumulator = createRunSummaryAccumulator({
+      seed: payload.session.seed,
+      buildHash: payload.session.buildHash,
+      mode: payload.mode,
+      heroId: payload.heroId,
+      startTick: 0,
+      startPosition: actor,
+    });
     lastGround = queryGround(actor.x, actor.y);
     actor.groundZ = lastGround.groundZ;
     actor.z = lastGround.groundZ;
@@ -1876,7 +1908,10 @@ async function boot() {
     weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });
     if (weaponPilotEnabled) {
       for (const weaponId of WEAPON_ORDER) {
-        if (weaponId !== weaponLoadout.activeWeaponId) grantWeaponPickup(weaponLoadout, { tick: 0, weaponId, select: false });
+        if (weaponId !== weaponLoadout.activeWeaponId) {
+          grantWeaponPickup(weaponLoadout, { tick: 0, weaponId, select: false });
+          recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId });
+        }
       }
     }
     if (collectibleAmmoPilotEnabled) weaponLoadout.weapons['coin-blaster'].ammoInClip = 1;
@@ -1891,6 +1926,7 @@ async function boot() {
     playerHealth = collectibleHealthPilotEnabled ? 70 : maxPlayerHealth;
     runKills = 0;
     runCombo = 0;
+    maxRunCombo = 0;
     if (progressionPilotEnabled) {
       const pilotSnapshot = recordRunDefeat(runProgression, {
         enemyId: 'evidence-progression-pilot',
@@ -1898,6 +1934,7 @@ async function boot() {
         tick: 0,
       });
       runKills = 1;
+      recordRunKill(runSummaryAccumulator, { enemyRoleId: 'bagholder-rusher', weaponId: 'coin-blaster' });
       cockpit?.updateRun(pilotSnapshot);
       upgradePending = pilotSnapshot.pendingLevels > 0;
     }
@@ -2183,12 +2220,18 @@ async function boot() {
       for (const event of collectibleFrame.events) {
         lastCollectibleEvent = event;
         if (event.type !== 'collectible:collected') continue;
+        recordRunCollectible(runSummaryAccumulator, { effectId: event.effectId });
         const placement = authoredPointOfInterestPlacements.find((candidate) => candidate.id === event.placementId);
         if (event.kind === 'heal') {
+          const healthBefore = playerHealth;
           playerHealth = Math.min(maxPlayerHealth, playerHealth + event.amount);
+          recordRunHealing(runSummaryAccumulator, playerHealth - healthBefore);
         } else if (event.kind === 'weapon-cache') {
           // A weapon cache grants ownership plus authored finite reserve.
+          const previousWeaponId = weaponLoadout.activeWeaponId;
           grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true, progressionByWeapon });
+          recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.weaponId });
+          if (weaponLoadout.activeWeaponId !== previousWeaponId) recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: event.weaponId });
         } else if (event.kind === 'ammo-refill') {
           refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
         } else if (event.kind === 'nuke') {
@@ -2278,6 +2321,7 @@ async function boot() {
         const shotById = new Map(steppedProjectiles.map((shot) => [shot.id, shot]));
         for (const resolution of batch.resolutions) {
           const shot = shotById.get(resolution.projectileId);
+          recordRunProjectileResolution(runSummaryAccumulator, shot, resolution.hits);
           for (const hit of resolution.hits) {
             combatHitIntents.push({
               id: `${shot.id}:${hit.targetId}:${hit.kind}`,
@@ -2334,6 +2378,7 @@ async function boot() {
       let switchedWeapon = false;
       if (requestedWeaponId && requestedWeaponId !== weaponLoadout.activeWeaponId) {
         selectWeapon(weaponLoadout, requestedWeaponId, { tick });
+        recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
         switchedWeapon = true;
       }
       previousWeaponNext = tickInput.weaponNext;
@@ -2350,6 +2395,7 @@ async function boot() {
       // weapon only from the HUD -- which is exactly how the exhausted-shotgun
       // trap went unnoticed.
       for (const event of weaponFrame.events) {
+        recordRunWeaponLifecycleEvent(runSummaryAccumulator, event);
         if (event.type === 'weapon:reload-start') {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
         } else if (event.type === 'weapon:auto-fallback') {
@@ -2378,7 +2424,7 @@ async function boot() {
           color: WEAPON_COLORS[event.weaponId] ?? 0x49ddff,
         });
         if (event.weaponId === 'launcher-rig') {
-          throwGrenade(grenadeSystem, {
+          const launch = throwGrenade(grenadeSystem, {
             tick,
             mode: 'launcher',
             origin: {
@@ -2389,8 +2435,12 @@ async function boot() {
             direction: aimIntent.direction,
             damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
           });
+          recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: launch.spawned ? 1 : 0 });
+          if (!launch.spawned && launch.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
           continue;
         }
+        recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: Math.min(event.shots.length, MAX_ACTIVE_PROJECTILES - activeProjectiles.length) });
+        const trigger = { contacted: false };
         for (const shot of event.shots) {
           if (activeProjectiles.length >= MAX_ACTIVE_PROJECTILES) {
             droppedProjectiles += 1;
@@ -2406,6 +2456,7 @@ async function boot() {
           activeProjectiles.push({
             id: shot.id,
             attackId: event.attackId,
+            trigger,
             weaponId: event.weaponId,
             previousX: actor.x,
             previousY: actor.y,
@@ -2440,6 +2491,11 @@ async function boot() {
       });
       combatHitIntents.push(...meleeFrame.hits.map((hit) => ({ ...hit, damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1) })));
       if (meleeFrame.attacked) {
+        recordRunWeaponFire(runSummaryAccumulator, { weaponId: 'litecoin-knife', emitted: 1 });
+        if (meleeFrame.hits.length > 0) {
+          recordRunWeaponTriggerContact(runSummaryAccumulator, { weaponId: 'litecoin-knife' });
+          recordRunProjectileContacts(runSummaryAccumulator, { weaponId: 'litecoin-knife', count: meleeFrame.hits.length });
+        }
         lastMeleeAttack = { tick, hits: meleeFrame.hits.length };
         combatAudio.play('melee', { volume: 0.12 });
         pushCombatVisualEvent({
@@ -2463,13 +2519,14 @@ async function boot() {
           damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
         });
         if (grenadeSpawn.spawned) {
+          recordRunGrenade(runSummaryAccumulator, { type: 'thrown' });
           lastGrenadeThrow = { tick, grenadeId: grenadeSpawn.grenade?.id ?? null };
           combatAudio.play('grenade', { volume: 0.12 });
           applyRecoilImpulse(motion, {
             direction: { x: -aimIntent.direction.x, y: -aimIntent.direction.y },
             magnitude: 70,
           });
-        }
+        } else if (grenadeSpawn.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
       }
       previousGrenade = tickInput.grenade;
       const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
@@ -2491,6 +2548,7 @@ async function boot() {
         targets: playerHurtTarget ? [...hurtTargets, playerHurtTarget] : hurtTargets,
       });
       for (const detonation of grenadeFrame.detonations) {
+        recordRunGrenadeDetonation(runSummaryAccumulator, detonation);
         lastGrenadeDetonation = { tick, reason: detonation.reason, grenadeId: detonation.grenadeId };
         combatAudio.play('grenade-boom', { volume: 0.16 });
         pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius });
@@ -2559,6 +2617,20 @@ async function boot() {
         });
       }
 
+      discoverMinimapPointsOfInterest({
+        discovery: minimapDiscovery,
+        player: actor,
+        pointsOfInterest: LEVEL_ONE_WORLD.pointsOfInterest,
+      });
+      recordRunTick(runSummaryAccumulator, {
+        tick,
+        position: actor,
+        activeWeaponId: weaponLoadout.activeWeaponId,
+        districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
+        discoveredPoiIds: minimapDiscovery.discoveredPoiIds,
+        activeEffectIds: collectibleSnapshot.activeEffects.map((effect) => effect.effectId),
+      });
+
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
         .map((hit) => hit.sourceId === 'player' && hit.targetId !== 'player'
           ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier }
@@ -2606,6 +2678,10 @@ async function boot() {
         if (lastCombatResolution.targets.player) playerHealth = lastCombatResolution.targets.player.health;
         for (const damageEvent of lastCombatResolution.damageEvents) {
           if (damageEvent.damageApplied <= 0) continue;
+          recordRunDamage(runSummaryAccumulator, damageEvent);
+          if (damageEvent.targetId === 'player' && damageEvent.weaponId === 'satoshi-frag') {
+            recordRunGrenade(runSummaryAccumulator, { type: 'self-damage', amount: damageEvent.damageApplied });
+          }
           combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : 'enemy-hit', {
             volume: damageEvent.critical ? 0.14 : 0.09,
           });
@@ -2676,6 +2752,11 @@ async function boot() {
         let retiredEnemies = false;
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
           if (scoreEvent.enemyId === liquidatorBoss.id) {
+            recordRunKill(runSummaryAccumulator, {
+              enemyRoleId: 'liquidator',
+              weaponId: scoreEvent.weaponId,
+              boss: true,
+            });
             runKills += 1;
             const bossSnapshot = awardComboXp(recordRunDefeat(runProgression, {
               enemyId: scoreEvent.enemyId,
@@ -2688,6 +2769,11 @@ async function boot() {
           }
           const defeatedEnemy = grayboxEnemies.find((enemy) => enemy.id === scoreEvent.enemyId);
           if (!defeatedEnemy) continue;
+          recordRunKill(runSummaryAccumulator, {
+            enemyRoleId: defeatedEnemy.archetypeId,
+            weaponId: scoreEvent.weaponId,
+            elite: isEliteEnemyProjection(defeatedEnemy.id),
+          });
           queueEnemyDeathVisual(defeatedEnemy, tick);
           runKills += 1;
           const progressionSnapshot = awardComboXp(recordRunDefeat(runProgression, {
@@ -2721,13 +2807,27 @@ async function boot() {
           setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
           if (bridge?.initialized) {
             const runSnapshot = getRunProgressionSnapshot(runProgression);
+            const runSummary = finalizeRunSummary(runSummaryAccumulator, {
+              endTick: simulation.tick,
+              elapsedMs: simulation.timeMs,
+              terminalReason: 'defeated',
+              score: runSnapshot.score,
+              level: runSnapshot.level,
+              xp: runSnapshot.xp,
+              currentCombo: runCombo,
+              maxCombo: maxRunCombo,
+              revealedCells: revealSnapshot.revealedCellIds.length,
+              totalCells: revealSnapshot.totalCells,
+            });
             const resultMessages = buildRunResultMessages({
               seed: sessionPayload.session.seed,
               score: runSnapshot.score,
               kills: runKills,
               elapsedMs: simulation.timeMs,
+              runSummary,
             });
             bridge.send('game:state', statePayload('game-over'));
+            bridge.send('game:run-summary', resultMessages.runSummary);
             bridge.send('game:score-result', resultMessages.scoreResult);
             bridge.send('game:game-over', resultMessages.gameOver);
           }
@@ -2753,6 +2853,7 @@ async function boot() {
       const progressionSnapshot = getRunProgressionSnapshot(runProgression);
       upgradePending = false;
       simulation.enterUpgrade();
+      recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
       combatAudio.pause();
       cockpit?.showUpgrade(progressionSnapshot);
       app.ticker.stop();
@@ -2813,6 +2914,7 @@ async function boot() {
     if (simulation?.state !== 'upgrade' || !runProgression) return;
     const before = getRunProgressionSnapshot(runProgression);
     const selection = selectRunUpgrade(runProgression, upgradeId);
+    recordRunUpgradeSelection(runSummaryAccumulator, upgradeId);
     const healthGain = selection.effects.maxHealthBonus - before.effects.maxHealthBonus;
     const grenadeGain = selection.effects.bonusGrenadeCharges - before.effects.bonusGrenadeCharges;
     if (healthGain > 0) {
@@ -2824,6 +2926,7 @@ async function boot() {
     if (grenadeSystem && grenadeGain > 0) grenadeSystem.handCharges += grenadeGain;
     cockpit?.updateRun(selection.snapshot);
     if (selection.snapshot.pendingLevels > 0 && selection.snapshot.pendingChoices.length > 0) {
+      recordRunUpgradeOffer(runSummaryAccumulator, selection.snapshot.pendingChoices.map((choice) => choice.id));
       cockpit?.showUpgrade(selection.snapshot);
       return;
     }
@@ -2897,6 +3000,7 @@ async function boot() {
       const progressionSnapshot = getRunProgressionSnapshot(runProgression);
       upgradePending = false;
       if (progressionSnapshot.pendingLevels > 0 && progressionSnapshot.pendingChoices.length > 0) {
+        recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
         simulation.enterUpgrade();
         combatAudio.pause();
         cockpit?.showUpgrade(progressionSnapshot);

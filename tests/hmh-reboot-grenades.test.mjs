@@ -135,6 +135,20 @@ test('blast applies stable radial falloff, self-damage, height legality, and aut
   assert.ok(!blast.hits.some((hit) => hit.targetId === 'high'));
 });
 
+test('launcher grenade hits retain launcher-rig attribution for canonical weapon statistics', () => {
+  const grenade = createGrenadeState({
+    id: 'launcher-rig:0001',
+    ownerId: 'player',
+    mode: 'launcher',
+    position: { x: 0, y: 0, z: 4 },
+    velocity: { x: 0, y: 0, z: 0 },
+    spawnTick: 0,
+    detonateTick: 1,
+  });
+  const blast = resolveGrenadeBlast({ grenade, targets: [hurt('target', { x: 8, y: 0 })] });
+  assert.equal(blast.hits[0].weaponId, 'launcher-rig');
+});
+
 test('blast-edge hurtbox overlap clamps combat ordering time to the canonical unit interval', () => {
   const grenade = createGrenadeState({
     id: 'satoshi-frag:edge',

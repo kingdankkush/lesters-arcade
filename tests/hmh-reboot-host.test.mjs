@@ -29,6 +29,7 @@ function fixture() {
   const errors = [];
   const exits = [];
   const runEvents = [];
+  const runSummaries = [];
   const scoreResults = [];
   const achievements = [];
   const settingEvents = [];
@@ -57,6 +58,7 @@ function fixture() {
     onError: (error) => errors.push(error),
     onExit: (message) => exits.push(message),
     onRunEvent: (message) => runEvents.push(message),
+    onRunSummary: (message) => runSummaries.push(message),
     onScoreResult: (message) => scoreResults.push(message),
     onAchievement: (message) => achievements.push(message),
     onSettings: (message) => settingEvents.push(message),
@@ -77,7 +79,7 @@ function fixture() {
     session: { seed: 1234567890, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false },
     settings: { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false },
   };
-  return { host, mount, bridges, ready, states, errors, exits, runEvents, scoreResults, achievements, settingEvents, timers, session };
+  return { host, mount, bridges, ready, states, errors, exits, runEvents, runSummaries, scoreResults, achievements, settingEvents, timers, session };
 }
 
 test('host mounts a same-origin sandboxed child frame with no navigation capability', () => {
@@ -99,13 +101,24 @@ test('host mounts a same-origin sandboxed child frame with no navigation capabil
 });
 
 test('host routes only recognized child message types to portal callbacks', () => {
-  const { host, bridges, ready, states, errors, exits, runEvents, scoreResults, achievements, settingEvents, session } = fixture();
+  const { host, bridges, ready, states, errors, exits, runEvents, runSummaries, scoreResults, achievements, settingEvents, session } = fixture();
   host.mountSession(session);
   bridges[0].options.onMessage({ type: 'game:ready' });
   bridges[0].options.onMessage({ type: 'game:state' });
   bridges[0].options.onMessage({ type: 'game:pause' });
   bridges[0].options.onMessage({ type: 'game:exit' });
   bridges[0].options.onMessage({ type: 'game:run-event' });
+  bridges[0].options.onMessage({
+    type: 'game:run-summary',
+    payload: {
+      identity: {
+        seed: session.session.seed,
+        buildHash: session.session.buildHash,
+        mode: session.mode,
+        heroId: session.heroId,
+      },
+    },
+  });
   bridges[0].options.onMessage({ type: 'game:score-result' });
   bridges[0].options.onMessage({ type: 'game:achievement' });
   bridges[0].options.onMessage({ type: 'game:settings' });
@@ -113,10 +126,32 @@ test('host routes only recognized child message types to portal callbacks', () =
   assert.equal(states.length, 2);
   assert.equal(exits.length, 1);
   assert.equal(runEvents.length, 1);
+  assert.equal(runSummaries.length, 1);
   assert.equal(scoreResults.length, 1);
   assert.equal(achievements.length, 1);
   assert.equal(settingEvents.length, 1);
   assert.equal(errors.length, 0);
+});
+
+test('host fails closed when canonical run-summary identity differs from the mounted session', () => {
+  const { host, mount, bridges, errors, runSummaries, session } = fixture();
+  host.mountSession(session);
+  bridges[0].options.onMessage({
+    type: 'game:run-summary',
+    payload: {
+      identity: {
+        seed: session.session.seed + 1,
+        buildHash: session.session.buildHash,
+        mode: session.mode,
+        heroId: session.heroId,
+      },
+    },
+  });
+  assert.equal(runSummaries.length, 0);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0].message, /identity/i);
+  assert.equal(bridges[0].destroyed, true);
+  assert.deepEqual(mount.children, []);
 });
 
 test('host queues lifecycle commands until load, then forwards them in order', () => {

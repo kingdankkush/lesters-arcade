@@ -1,3 +1,5 @@
+import { validateRunSummaryPayload } from './hmh-run-summary-schema.mjs';
+
 export const HMH_BRIDGE_PROTOCOL = 'hmh-bridge/v1';
 export const HMH_MAX_MESSAGE_BYTES = 64 * 1024;
 export const HMH_GAME_ID = 'lester-blaster';
@@ -8,7 +10,7 @@ const NONCE_PATTERN = /^[A-Za-z0-9_-]{16,128}$/;
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
 const BINDING_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const CHECKSUM_PATTERN = /^[a-z0-9][a-z0-9:_-]{7,127}$/;
-const CAPABILITIES = new Set(['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements']);
+const CAPABILITIES = new Set(['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'run-summary', 'score-result', 'achievements']);
 
 function fail(error) {
   return { ok: false, error };
@@ -224,6 +226,7 @@ export function validateChildMessage(input) {
   else if (input.type === 'game:pause') error = validateGamePause(input.payload);
   else if (input.type === 'game:exit') error = validateGameExit(input.payload);
   else if (input.type === 'game:run-event') error = validateRunEvent(input.payload);
+  else if (input.type === 'game:run-summary') error = validateRunSummaryPayload(input.payload);
   else if (input.type === 'game:score-result') error = validateScoreResult(input.payload);
   else if (input.type === 'game:achievement') error = validateAchievement(input.payload);
   else if (input.type === 'game:settings') error = validateSettingsPayload(input.payload);

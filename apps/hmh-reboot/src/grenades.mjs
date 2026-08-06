@@ -249,7 +249,7 @@ export function resolveGrenadeBlast({ grenade, targets = [], blockers = [] } = {
       time: Math.min(1, distance / grenade.blastRadius),
       targetId: target.id,
       sourceId: grenade.ownerId,
-      weaponId: HMH_GRENADE_DEFINITION.id,
+      weaponId: grenade.mode === 'launcher' ? 'launcher-rig' : HMH_GRENADE_DEFINITION.id,
       damage: radialDamage(grenade.damage, distance, grenade.blastRadius),
       criticalChance: 0,
       direction: freezeDeep({

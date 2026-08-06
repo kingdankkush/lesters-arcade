@@ -17,6 +17,17 @@ export function createMinimapDiscoveryState() {
   return { discoveredPoiIds: new Set() };
 }
 
+export function discoverMinimapPointsOfInterest({ discovery, player, pointsOfInterest = [], radius = MINIMAP_VISIBILITY_RADIUS } = {}) {
+  if (!(discovery?.discoveredPoiIds instanceof Set)) throw new TypeError('discovery state is required');
+  if (!Number.isFinite(player?.x) || !Number.isFinite(player?.y) || !Array.isArray(pointsOfInterest) || !Number.isFinite(radius) || radius < 0) throw new TypeError('player, pointsOfInterest, and radius are required');
+  const priorSize = discovery.discoveredPoiIds.size;
+  for (const poi of pointsOfInterest) {
+    if (!discovery.discoveredPoiIds.has(poi.id)
+      && Math.hypot(poi.anchor.x - player.x, poi.anchor.y - player.y) <= radius) discovery.discoveredPoiIds.add(poi.id);
+  }
+  return discovery.discoveredPoiIds.size - priorSize;
+}
+
 function normalize(bounds, x, y) {
   return {
     x: (x - bounds.minX) / (bounds.maxX - bounds.minX),
@@ -60,12 +71,7 @@ export function computeMinimapModel({
   }
 
   // Discovery is monotonic: entering visibility of a POI records it forever.
-  for (const poi of pointsOfInterest) {
-    if (discovery.discoveredPoiIds.has(poi.id)) continue;
-    if (Math.hypot(poi.anchor.x - player.x, poi.anchor.y - player.y) <= radius) {
-      discovery.discoveredPoiIds.add(poi.id);
-    }
-  }
+  discoverMinimapPointsOfInterest({ discovery, player, pointsOfInterest, radius });
   const poiMarkers = pointsOfInterest
     .filter((poi) => discovery.discoveredPoiIds.has(poi.id))
     .map((poi) => ({
