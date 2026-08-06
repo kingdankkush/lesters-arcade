@@ -363,9 +363,12 @@ crowd-control capstone — with caps, stacking order, proc ownership, and
 deterministic rounding in **one authoritative module** to avoid
 multiplicative runaway.
 
-**S5. Enemy band rebalance** *(L)* — Health, armor, speed, damage,
-telegraph/recovery times, role mix, spawn intervals, active caps, and
-attack tokens against the measured player power curve (needs S1 + C6).
+**S5. Enemy band rebalance — COMPLETE** *(L)* — Commit `b785ce6f` adds
+measured stat corrections, deterministic weighted role mixes, a bounded
+non-stacking validator armor pulse, and a range-only shotgun correction.
+Existing intervals/caps/tokens were certified against 34.24–55 player KPM;
+matrix digest `6a6f21c3`. Release/browser gates passed and Ready Preview
+`dpl_7NkyGHvhTqPYeQUMhEsuYkEYb79L` served the raw-identical 1,049,934-byte child.
 
 **S6. Skill-tree UI** *(M)* — The two-card level-up is clean but there is
 no way to review your build mid-run. Add a build summary to the pause menu

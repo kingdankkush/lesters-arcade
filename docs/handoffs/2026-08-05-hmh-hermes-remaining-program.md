@@ -252,10 +252,30 @@ Ready; `/play/hard-money-heroes` returned authenticated HTML and deployed child
 SHA-256 `1e815ad88f00b99a5f0c4d60b14b5232c30b83044827399d6662d45a674e1f8e`
 matched local raw bytes.
 
-**The shotgun being the worst swarm weapon at mid range remains the first S5
-finding to address.** Its spread has dispersed past the pack by 420 units, so
-it pays a reload cost for pellets that miss. Preserve C6's measured baseline
-while tuning S5 against S1's weapon/enemy medians.
+**S5 is complete** at implementation commit `b785ce6f`. It added deterministic
+20-slot role weights to all six encounter bands, modest measured stat
+corrections, and a non-stacking validator support pulse: nearest non-support
+ally target, 1.15x armor for 180 ticks, exact refresh/expiry, and zero direct
+player damage. Existing spawn rates, body/threat caps, and attack-token budgets
+remain because evidence maps 30/40/60/80/60/120 spawns/minute against measured
+weapon medians of 34.24–55 KPM instead of just churning working limits.
+
+The shotgun finding is closed with a range-only change from 320 to 480 pixels;
+its original 28-degree spread and all damage/cadence/ammo/reload values remain.
+Base mid-range DPS moved 2.4 → 10.8, maxed mid stayed 33.57 below launcher
+45.3, and the eight-body swarm clears in 19.567 seconds. The regenerated
+192-run matrix digest is `6a6f21c3`: zero invalid runs and dead offers, median
+2.033 levels/minute, 1.602x damage growth, and 27-second upgrade intervals.
+
+Focused S5 tests passed 36/36. Release passed 2,012 entries (1,961 current
+passes and 51 separately ledgered expected legacy failures), plus syntax,
+portal E2E, cockpit, network, and browser performance. Child output is
+1,049,934 / 1,050,000 bytes, leaving only 66 bytes; future child-code work must
+recover bytes first or remain numeric/data-only. Ready Preview
+`dpl_7NkyGHvhTqPYeQUMhEsuYkEYb79L` at
+`https://lesters-arcade-b6ekcptjm-justin-agent-projects.vercel.app` served a
+raw-identical child with SHA-256
+`ddc29efe151c33fe6a746de816526894d466e53133c36d02f8cda2f44563244a`.
 
 ### Wave 3 scope is decided
 

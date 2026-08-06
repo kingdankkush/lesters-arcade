@@ -230,13 +230,12 @@ Two consequences:
   legacy parent runtime; U10 established route ownership through the Ready
   immutable Preview `dpl_AuFosN2dQ3WYysfWazEpkikqKAe5`. Child-specific bundle
   triage remains separate and still gates child-code-heavy tasks.
-- **S1 complete; S5 active:** commit `951cb8d9` added 192 deterministic
-  30-minute hero × weapon × enemy matrix runs with report digest `3289067f`.
-  The matrix had zero invalid runs and zero dead offers; median pace was 2.0
-  levels/minute, 1.605× expected-hit growth, and 28 seconds between upgrades.
-  Preview `dpl_13eBCtQnRDuZbfCViZeN8yHNAxbJ` was Ready and the deployed child
-  remained raw byte-identical at 1,048,584 bytes. The shotgun's mid-range swarm
-  result remains S5's first measured balance finding.
+- **S1 and S5 complete; S2 next:** S5 commit `b785ce6f` adds weighted band
+  mixes, measured stat corrections, a bounded validator armor pulse, and a
+  range-only shotgun correction. Final matrix digest `6a6f21c3`; base shotgun
+  mid-range DPS is 10.8 and its eight-body clear is 19.567 seconds. Preview
+  `dpl_7NkyGHvhTqPYeQUMhEsuYkEYb79L` is Ready with a raw-identical 1,049,934-byte
+  child. Only 66 bytes of child headroom remain.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.
