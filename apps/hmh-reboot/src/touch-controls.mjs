@@ -1,9 +1,6 @@
 import { computeTouchControlLayout } from './input.mjs';
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function point(value, name) {
   return { x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) };

@@ -12,10 +12,7 @@ export const AI_LOD_BANDS = Object.freeze([
 ]);
 export const DEFAULT_ATTACK_TOKEN_BUDGET = Object.freeze({ melee: 3, ranged: 2, area: 1, support: 1 });
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function nonNegativeInteger(value, name) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);

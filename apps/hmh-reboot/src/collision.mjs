@@ -3,10 +3,7 @@ const CONTACT_SKIN = 1e-6;
 const MAX_DEPENETRATION_PASSES = 6;
 const MAX_SLIDE_ITERATIONS = 6;
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { clamp, finite } from './value-guards.mjs';
 
 function positive(value, name) {
   finite(value, name);
@@ -31,10 +28,6 @@ function normalize(vector, fallbackId = 'normal') {
   for (const character of String(fallbackId)) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619) >>> 0;
   const angle = hash / 0x1_0000_0000 * Math.PI * 2;
   return { x: Math.cos(angle), y: Math.sin(angle) };
-}
-
-function clamp(value, minimum, maximum) {
-  return Math.min(maximum, Math.max(minimum, value));
 }
 
 function closestPointOnSegment(position, a, b) {

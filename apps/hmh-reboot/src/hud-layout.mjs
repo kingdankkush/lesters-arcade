@@ -32,10 +32,7 @@ export function minimapExclusionLeft({ width, height } = {}) {
     - MINIMAP_OUTER_PADDING;
 }
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 
 export function isCompactLandscape({ width, height } = {}) {

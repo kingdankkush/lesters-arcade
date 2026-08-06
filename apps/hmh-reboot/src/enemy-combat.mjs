@@ -15,10 +15,7 @@ export const ENEMY_TELL_STAGGER_TICKS = 9;
 export const ENEMY_SUPPORT_ARMOR_MULTIPLIER = 1.15;
 export const ENEMY_SUPPORT_ARMOR_DURATION_TICKS = 180;
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function nonNegativeInteger(value, name) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);

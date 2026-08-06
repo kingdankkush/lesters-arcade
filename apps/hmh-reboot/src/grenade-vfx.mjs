@@ -1,9 +1,6 @@
 const DEFAULT_SEGMENTS = 32;
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function positive(value, name) {
   finite(value, name);

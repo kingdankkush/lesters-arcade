@@ -5,10 +5,7 @@ const EPSILON = 1e-9;
 const FIXED_STEP_SECONDS = 1 / 60;
 
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function positive(value, name) {
   finite(value, name);

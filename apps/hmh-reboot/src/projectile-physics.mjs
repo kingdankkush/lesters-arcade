@@ -4,10 +4,7 @@ const SHARP_GROUND_DROP = 8;
 const GROUND_TRANSITION_SEARCH_STEPS = 16;
 const PROJECTILE_POLICIES = new Set(['stop', 'pierce', 'ricochet', 'splash', 'pellet', 'hitscan']);
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { clamp, finite } from './value-guards.mjs';
 
 function nonNegative(value, name) {
   finite(value, name);
@@ -47,10 +44,6 @@ function normalize(vector, fallbackId = 'vector') {
   for (const character of String(fallbackId)) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619) >>> 0;
   const angle = hash / 0x1_0000_0000 * Math.PI * 2;
   return { x: Math.cos(angle), y: Math.sin(angle) };
-}
-
-function clamp(value, minimum, maximum) {
-  return Math.min(maximum, Math.max(minimum, value));
 }
 
 function validateLocalShape(shape, name) {

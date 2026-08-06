@@ -1,10 +1,7 @@
 import { freezeDeep } from './value-guards.mjs';
 const EPSILON = 1e-9;
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { clamp, finite } from './value-guards.mjs';
 
 function positive(value, name) {
   finite(value, name);
@@ -20,10 +17,6 @@ function nonNegative(value, name) {
 
 function point(value, name) {
   return Object.freeze({ x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) });
-}
-
-function clamp(value, minimum, maximum) {
-  return Math.min(maximum, Math.max(minimum, value));
 }
 
 

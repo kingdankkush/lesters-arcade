@@ -12,10 +12,7 @@ export const LIQUIDATOR_READABILITY_BUDGET = freezeDeep({
   activeAdds: 6,
 });
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function nonNegativeInteger(value, name) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);

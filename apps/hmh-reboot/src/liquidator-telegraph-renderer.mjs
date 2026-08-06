@@ -2,10 +2,7 @@ const DEFAULT_TELEGRAPH_COLOR = 0xff496c;
 const SUPER_TELEGRAPH_COLOR = 0xfff06a;
 const SAFE_ZONE_COLOR = 0x83f28f;
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function requireGraphics(graphics) {
   for (const method of ['moveTo', 'lineTo', 'circle', 'fill', 'stroke']) {

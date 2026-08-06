@@ -18,10 +18,7 @@ export const DEPTH_BANDS = Object.freeze({
 
 const DEFAULT_WORLD_BOUNDS = Object.freeze({ minX: 0, minY: 0, maxX: 4096, maxY: 4096 });
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { clamp, finite } from './value-guards.mjs';
 
 function positive(value, name) {
   finite(value, name);
@@ -45,10 +42,6 @@ function finiteViewport(viewport) {
     width: positive(viewport?.width, 'viewport.width'),
     height: positive(viewport?.height, 'viewport.height'),
   };
-}
-
-function clamp(value, minimum, maximum) {
-  return Math.min(maximum, Math.max(minimum, value));
 }
 
 

@@ -21,10 +21,7 @@ export const POINTER_AIM_IDLE_MS = 1000;
 export const ACTION_BUFFER_MS = 100;
 const BUFFERED_ACTIONS = Object.freeze(['fire', 'melee', 'grenade', 'dash']);
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 function timestamp(value) {
   finite(value, 'input timestamp');

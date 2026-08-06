@@ -17,10 +17,7 @@ function nonNegativeInteger(value, name) {
   return value;
 }
 
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
+import { finite } from './value-guards.mjs';
 
 const defineBand = (definition) => freezeDeep(definition);
 const roleWeights = (rusher, flanker, suppressor = 0, heavy = 0, demolition = 0, support = 0) => ({ rusher, flanker, suppressor, heavy, demolition, support });
