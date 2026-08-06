@@ -83,9 +83,10 @@ test('leaderboard provenance summary accepts an empty board total of zero', () =
 
 test('portal renders guest identity and House Score provenance without claiming a wallet is active', () => {
   const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  const appRoutesSource = readFileSync(new URL('../apps/portal/src/routes/official-app-routes.mjs', import.meta.url), 'utf8');
   const htmlSource = readFileSync(new URL('../apps/portal/index.html', import.meta.url), 'utf8');
 
-  assert.match(mainSource, /connectedWallet \? 'Wallet Profile' : 'Guest Practice Profile'/);
+  assert.match(appRoutesSource, /connectedWallet \? 'Wallet Profile' : 'Guest Practice Profile'/);
   assert.match(mainSource, /leaderboardEntryProvenance\(entry/);
   assert.match(mainSource, /provenance\.label/);
   assert.match(mainSource, /summarizeVisibleLeaderboardProvenance/);
@@ -94,6 +95,6 @@ test('portal renders guest identity and House Score provenance without claiming 
   assert.doesNotMatch(htmlSource, /Wallet\/profile is already active/);
   assert.doesNotMatch(htmlSource, /Your Lester’s Arcade profile is already active/);
   assert.doesNotMatch(htmlSource, /Wallet profile active/i);
-  assert.match(mainSource, /officialProfileEyebrow/);
+  assert.match(appRoutesSource, /officialProfileEyebrow/);
   assert.match(htmlSource, /Lester’s Arcade session is active/);
 });

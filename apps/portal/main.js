@@ -66,6 +66,7 @@ import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three
 import { gameSlugFor, isGuestAllowedStep, buildPlatformShellModel } from './src/arcade-router.mjs';
 import { createPortalRouteController } from './src/routes/portal-route-controller.mjs';
 import { createOfficialShellRoutes } from './src/routes/official-shell-routes.mjs';
+import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
 import {
   generateDistrictGrid,
   generateRoadNetwork,
@@ -4523,12 +4524,6 @@ async function hydrateProfileFromChain() {
   }
 }
 
-function showOfficialPanel(activePanel) {
-  for (const panel of [dom.officialWalletSplash, dom.officialArcadeFloor, dom.officialModeSelect, dom.officialCharacterSelect, dom.officialLevelIntro, dom.officialGameplay]) {
-    if (panel) panel.hidden = panel !== activePanel;
-  }
-}
-
 function renderOfficialCabinets() {
   dom.officialCabinetGrid.replaceChildren();
   for (const cabinet of LESTERS_ARCADE_V2_APP_SHELL.cabinets) {
@@ -5387,46 +5382,6 @@ function renderOfficialLeaderboards() {
   dom.officialCabinetGrid.append(board);
 }
 
-function renderOfficialArcadeFloor() {
-  applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, officialAppStep === 'settings' ? 'options' : 'mainMenu');
-  dom.officialCabinetGrid.classList.toggle('profile-command-grid', officialAppStep === 'profile');
-  dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', officialAppStep === 'leaderboards');
-  const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'Guest practice';
-  // "Wallet profile connected" over the fallback identity is the exact mixed
-  // message U11a exists to remove -- the banner says simulated while this said
-  // connected, and this one sits closer to the user's eye.
-  const simulatedWallet = isSimulatedWalletActive();
-  const titleByStep = {
-    'arcade-walk-in': 'Entering the Arcade...',
-    'cabinet-select': 'Choose Your Cabinet',
-    profile: connectedWallet ? 'Wallet Profile' : 'Guest Practice Profile',
-    leaderboards: 'Leaderboards',
-    settings: 'Settings',
-  };
-  const copyByStep = {
-    'arcade-walk-in': simulatedWallet
-      ? `${walletShort} is a simulated local identity, not a real wallet. Neon doors opening; cabinet row loading...`
-      : `${walletShort} is active. Neon doors opening; cabinet row loading...`,
-    'cabinet-select': connectedWallet
-      ? `Select a cabinet. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now; future cabinets remain locked.`
-      : `Select a cabinet and play Free as a guest. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now. Connect a wallet anytime to save progress and unlock Ranked.`,
-    profile: connectedWallet
-      ? LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy
-      : 'Guest Practice Profile saves local settings, scores, and run history on this device. Connect a wallet when you want cross-session identity and Ranked testnet publishing.',
-    leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
-    settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
-  };
-  dom.officialProfileEyebrow.textContent = simulatedWallet
-    ? 'Simulated wallet session'
-    : connectedWallet ? 'Wallet profile connected' : 'Guest practice session';
-  dom.officialProfileTitle.textContent = titleByStep[officialAppStep] ?? titleByStep['cabinet-select'];
-  dom.officialProfileCopy.textContent = copyByStep[officialAppStep] ?? copyByStep['cabinet-select'];
-  if (officialAppStep === 'profile') renderOfficialProfile();
-  else if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
-  else if (officialAppStep === 'settings') renderOfficialSettings();
-  else renderOfficialCabinets();
-}
-
 function renderOfficialModeSelect() {
   const game = selectedGame();
   const modeSelect = buildGameModeSelectModel(game.id);
@@ -5653,37 +5608,29 @@ function renderOfficialGameplay() {
   }
 }
 
-function renderOfficialApp() {
-  if (!dom.officialApp) return;
-  dom.officialApp.dataset.step = officialAppStep;
-  if (dom.arcadeMusicPlayer) dom.arcadeMusicPlayer.hidden = officialAppStep === 'gameplay';
-  // Drive the responsive touch-control overlay: only visible during gameplay.
-  document.documentElement.dataset.ingame = officialAppStep === 'gameplay' ? 'true' : 'false';
-  renderOfficialNav();
-  renderOfficialWalletSplash();
-  // Guest-first: guests may browse the arcade floor, enter a cabinet, play Free
-  // mode, AND browse Profile / Scores / Settings (which render a "connect to
-  // save" state). Only a ranked session URL (carrying a game-session id) bounces
-  // back to the splash when no wallet is connected.
-  if (!connectedWallet && !isGuestAllowedStep(officialAppStep)) officialAppStep = 'wallet-splash';
-  if (['arcade-walk-in', 'cabinet-select', 'profile', 'leaderboards', 'settings'].includes(officialAppStep)) {
-    showOfficialPanel(dom.officialArcadeFloor);
-    renderOfficialArcadeFloor();
-  } else if (officialAppStep === 'mode-select') {
-    showOfficialPanel(dom.officialModeSelect);
-    renderOfficialModeSelect();
-  } else if (officialAppStep === 'character-select') {
-    showOfficialPanel(dom.officialCharacterSelect);
-    renderOfficialCharacterSelect();
-  } else if (officialAppStep === 'level-one-intro') {
-    showOfficialPanel(dom.officialLevelIntro);
-  } else if (officialAppStep === 'gameplay') {
-    showOfficialPanel(dom.officialGameplay);
-    renderOfficialGameplay();
-  } else {
-    showOfficialPanel(dom.officialWalletSplash);
-  }
-}
+const officialAppRoutes = createOfficialAppRoutes({
+  dom,
+  documentRef: document,
+  getStep: () => officialAppStep,
+  setStep: (step) => { officialAppStep = step; },
+  getConnectedWallet: () => connectedWallet,
+  isGuestAllowedStep,
+  isSimulatedWalletActive,
+  playableCabinetNames,
+  humanList,
+  shellModel: LESTERS_ARCADE_V2_APP_SHELL,
+  applyHardMoneyHeroScreenBackground,
+  renderNav: renderOfficialNav,
+  renderWalletSplash: renderOfficialWalletSplash,
+  renderProfile: renderOfficialProfile,
+  renderLeaderboards: renderOfficialLeaderboards,
+  renderSettings: renderOfficialSettings,
+  renderCabinets: renderOfficialCabinets,
+  renderModeSelect: renderOfficialModeSelect,
+  renderCharacterSelect: renderOfficialCharacterSelect,
+  renderGameplay: renderOfficialGameplay,
+});
+const renderOfficialApp = officialAppRoutes.renderApp;
 
 async function connectOfficialWallet() {
   if (!connectedWallet) {
