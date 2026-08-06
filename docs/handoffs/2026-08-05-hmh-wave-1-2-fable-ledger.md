@@ -1,11 +1,12 @@
-# Cycle ledger — upgrade program through Wave 4
+# Cycle ledger — upgrade program through Wave 5 A14 role profiles
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 3 implementation head: `c4680a68`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 slice head: `dfcd216a`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
-The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 slices were
+The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
+Wave 5 slices were
 RED-tested first, gated, reviewed against exact staged indices, and committed as
 bounded implementation slices. T1 also exposed one prerequisite certification-
 repair commit. **Production was not promoted** — that remains the owner's from
@@ -33,10 +34,11 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | A5 bridge kit | `4938bc21` | 6 bridge parts; span/upright proportion split. |
 | T1 terrain patches | `d059a2b1` | Three named sub-materials per district, wrapped deterministic patch masks, same runtime tile/request count. |
 | Wave 3 authored world | `c4680a68` | A6 town kit, W2 ruined neighborhood, A9 set-pieces, T4 roads, P5 12-scene coverage. |
+| Wave 5 A14 role profiles | `dfcd216a` | Role-native fork-slash and canister-lob anticipation/strike/recovery replace the last two shared ordinary-enemy pose profiles. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,033**, expected failures still
-51.
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,037**, expected failures still
+51. Enemy roster: 7 actors, 1,368 frames and 5,005,462 atlas bytes.
 
 ## Non-art pipelines added
 
@@ -171,14 +173,16 @@ Nothing new was allowed below 0.55.
 
 ## The bundle budget is now the binding constraint
 
-**Child JS bundle: 1,048,584 B against a 1,050,000 B cap — 1,416 B left.**
+**Current child JS bundle: 1,049,944 B against a 1,050,000 B cap — 56 B left.**
 
-This arc consumed the 9.4 KB the program started with. T2 hit the wall
+At the original Wave 1/2 close the child measured 1,048,584 B with 1,416 B left.
+That arc had already consumed the 9.4 KB the program started with. T2 hit the wall
 directly: its placement logic cost 4,451 B against 3,218 B of headroom, and
 the perf gate failed at 1,051,172. Raising the cap was not on the table, and
 unifying the code did not recover enough, so the derivation moved to build
-time and the child now fetches a 57 KB asset. Bundle work, not art work, is
-what that pattern buys.
+time and the child fetched a 57 KB asset. Subsequent Wave 3/4 work consumed the
+remaining margin; asset-shaped A14 left the current child byte-identical. Bundle
+work, not art work, is what that pattern buys.
 
 **Practical consequence: further child code slices are effectively blocked.**
 D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all add child
@@ -230,6 +234,37 @@ configured HTML routes and a raw-identical 1,049,944-byte child with SHA-256
 `edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
 Production and LitVM remained untouched.
 
+## Wave 5 A14 role-profile slice
+
+Implementation commit `dfcd216a` adds explicit
+`forkrunner-quick-fork-slash-v1` and `gas-bomber-canister-lob-v1` authored pose
+branches. Both provide distinct anticipation, strike/follow-through and recovery
+without changing AI, attack timing, damage, collision, spawning or runtime JS.
+
+The first cold rebuild exposed four RGB-only backend drifts across three actors:
+2–8 pixels per frame, alpha unchanged and maximum channel delta 1–3. A 5-bit
+floor mask was measured and rejected because boundary values became full-step
+mismatches. The accepted pipeline rounds visible RGB to the nearest step 8
+(maximum change 4/255), zeros invisible RGB and preserves alpha. Applied to both
+cold passes before hashes and packaging, it made all 1,368 decoded frames and
+every generated artifact exact. Final metrics report zero duplicate frames, zero
+tolerance exceptions and 5,005,462 total atlas bytes.
+
+All 80 affected tell/attack frames passed 8-connected alpha audit with a minimum
+93-pixel component. Native and live desktop/mobile review found no detached art,
+proxy identity, cropping or doubled fallback body. Release `2037/1986 + 51`,
+syntax `336 JS + 49 Python`, asset QA, long-run, weapon, visual, portal, cockpit,
+collectible, selector, browser, network and performance gates passed. Exact
+staged review `b39d6b379d9fb6a5d4fe5f7c30331d4ab7648d697a5db3749a5fa8816378c9b4`
+returned `PASS` with `BLOCKERS: none`.
+
+Ready Preview `dpl_9mgEXxwbo4Ltvo7usqpBEkY66WZd` at
+`https://lesters-arcade-7ne0uxy5n-justin-agent-projects.vercel.app` served both
+configured HTML routes and a raw-identical 1,049,944-byte child with SHA-256
+`edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
+Production and LitVM remained untouched. This is an A14 role-animation slice,
+not final A14 completion.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -266,6 +301,9 @@ Production and LitVM remained untouched.
 - **Wave 3 complete — A6, W2, A9, T4 and P5:** implementation commit `c4680a68`,
   exact reviewed diff `0c507bc1...f51e88`, 100 deterministic authored props,
   12 visual scenes and Ready Preview `dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw`.
+- **A14 remains partial after `dfcd216a`.** All six ordinary enemy roles now own
+  distinct attack profiles. Explicit damage-state art and the gas-bomber's
+  separate thrown-projectile presentation remain before final A14 certification.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.
@@ -273,9 +311,10 @@ Production and LitVM remained untouched.
 ## Verification note
 
 Production was NOT promoted and remains the owner's call from the Vercel
-dashboard. Wave 3's protected Preview was verified with authenticated read-only
+dashboard. The latest protected Preview was verified with authenticated read-only
 fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
-child-byte comparison. The implementation passed the 2,033-entry release suite,
+child-byte comparison. The implementation passed the 2,037-entry release suite,
 syntax, generated assets, long-run/weapon evidence, 12-scene visual regression,
-four-scenario network audit, six-flow portal E2E, cockpit, collectibles and
-performance. `SETTLEMENT_LIVE` and LitVM were not changed.
+four-scenario network audit, six-flow portal E2E, cockpit, collectibles, selector,
+five-profile browser certification and performance. `SETTLEMENT_LIVE` and LitVM
+were not changed.

@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 3 implementation head: `c4680a68`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 slice head: `dfcd216a`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -103,9 +103,11 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | A5 bridge kit | `4938bc21` | 6 parts; span/upright proportion split. |
 | T1 terrain patches | `d059a2b1` | 3 named sub-materials per district, blended by a wrapped deterministic mask into the existing six runtime tiles. |
 | Wave 3 authored world | `c4680a68` | A6 12-piece town kit, W2 three-block ruined neighborhood, A9 six set-pieces, T4 road materials, P5 12-scene coverage. |
+| Wave 5 A14 role profiles | `dfcd216a` | Forkrunner fork-slash and gas-bomber canister-lob anticipation/strike/recovery replace the last shared ordinary-enemy poses. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,033** (expected failures still 51).
+**1,852 → 2,037** (expected failures still 51). The seven-actor enemy roster
+holds 1,368 frames in 5,005,462 atlas bytes.
 
 ### New pipelines you can reuse
 
@@ -349,12 +351,45 @@ configured portal route `/games/hard-money-heroes/play` and child route
 `edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
 Production and LitVM were not touched.
 
-### Next: Wave 5 character presentation
+### Wave 5 A14 role-profile slice is complete
 
-Proceed with A13 hero animation, A14 enemy identity and A15 Liquidator phase
-presentation as projection-only work using existing atlas budgets. **A12 256px
-hero escalation remains a separate owner budget gate**: do not raise the hero
-atlas budget or start the full-resolution batch without explicit approval.
+Implementation commit `dfcd216a` removes the final two shared ordinary-enemy
+animation profiles without changing simulation, timing, damage, collision or
+runtime JavaScript:
+
+- `forkrunner-quick-fork-slash-v1` adds a low crossed-fork anticipation, fast
+  cross-body strike, follow-through and recovery.
+- `gas-bomber-canister-lob-v1` adds a canister-braced overhand wind-up, release,
+  torso follow-through and recovery.
+- The enemy pipeline now rounds visible RGB to the nearest step of 8 (maximum
+  authored change 4/255), zeros invisible RGB and preserves alpha. This replaced
+  neither source art nor alpha authority; it closes measured cold-render RGB
+  jitter that a floor mask made worse at bin boundaries.
+
+The full seven-actor pipeline rebuilt 1,368 frames twice with zero duplicates,
+zero tolerated frames and byte-exact packaged artifacts. The 80 affected
+tell/attack frames had no alpha component smaller than 93 pixels; native and live
+desktop/mobile evidence passed. Release passed 2,037 entries (1,986 current
+passes and 51 ledgered expected failures), syntax passed 336 JS and 49 Python,
+and the full asset, long-run, weapon, 12-scene visual, portal, cockpit,
+collectible, selector, browser-certification, network and performance chain
+passed. Frozen implementation diff
+`b39d6b379d9fb6a5d4fe5f7c30331d4ab7648d697a5db3749a5fa8816378c9b4`
+received exact review `PASS` with `BLOCKERS: none`.
+
+Ready Preview `dpl_9mgEXxwbo4Ltvo7usqpBEkY66WZd` at
+`https://lesters-arcade-7ne0uxy5n-justin-agent-projects.vercel.app` served both
+configured HTML routes and a raw-identical 1,049,944-byte child with SHA-256
+`edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
+Production and LitVM were not touched.
+
+### Next: continue Wave 5 character presentation
+
+Proceed with A13 hero animation, remaining A14 damage-state/full-role polish and
+A15 Liquidator phase-transition presentation as projection-only work using
+existing atlas budgets. **A12 256px hero escalation remains a separate owner
+budget gate**: do not raise the hero atlas budget or start the full-resolution
+batch without explicit approval.
 
 ---
 
@@ -367,6 +402,10 @@ atlas budget or start the full-resolution batch without explicit approval.
 - **P5 now covers 12 production scenes**, including camp, water, foliage, all six
   district landmarks, combat and three ruined-neighborhood views. Transient C2
   recoil/impact timing remains live-probe evidence rather than a paused baseline.
+- **A14 is not complete.** All six ordinary roles now own distinct attack
+  profiles, but explicit damage-state art and the gas-bomber's separate thrown
+  projectile presentation remain. Treat `dfcd216a` as the role-animation slice,
+  not final enemy-wave certification.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting right
   at the budget of two. Standing evidence for **M6 chunked navgrid**. Remember the
   naive deferral into `initializeSession` was tried and reverted — it dropped a
@@ -405,18 +444,19 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2033 / 1982 passed / 51 expected failures    PASS
+test:release        2037 / 1986 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
 bundle              1,049,944 / 1,050,000                        PASS (56 B left)
 prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
+enemy roster        1,368 frames / 5,005,462 B, reproducible     PASS
 portal E2E          all implemented flows                        PASS
 cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
 staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
-exact review        0c507bc1...f51e88, BLOCKERS: none            PASS
-Vercel Preview      dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw            READY
+exact review        b39d6b37...6378c9b4, BLOCKERS: none          PASS
+Vercel Preview      dpl_9mgEXxwbo4Ltvo7usqpBEkY66WZd            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security
