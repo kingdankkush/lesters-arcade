@@ -454,8 +454,10 @@ controls card (M1).
 
 **U10. Portal modularization** *(L, enabling)* — Splitting the
 **15.5k-line** `main.js` by route is a prerequisite for U4-U8 not becoming
-unreviewable, and it is the natural moment to delete the dead legacy
-combat path. Own cycle, no behaviour change, smoke suite as the net.
+unreviewable. P6 already retired the public legacy canvas/backstage runtime;
+U10 now owns source separation and route loading only. It does **not** recover
+bytes from the separately-built HMH child entry. Own cycle, no behaviour
+change, smoke suite as the net.
 
 **U11. Wallet UX truthfulness** *(M — has a trust dimension)* — The real
 path is genuinely real: injected EIP-1193 + EIP-6963 discovery + SIWE
@@ -533,12 +535,13 @@ superseded Canvas/isometric/pixellab-era art. Decide keep/retire per
 directory; feeds the CDN gate.
 **P4. Truthful docs pass** *(S)* — Several public-facing docs still
 describe pre-041 cycles.
-**P6. Legacy code triage** *(M)* — The pre-reboot canvas combat path
-(`#combatCanvas`, `renderCombatMenuActionGrid`, `renderCombatSettingsPanel`,
-legacy game-over summary) and a hidden `#developerBackstage` shell
-(`index.html:282`) are still shipped. Decide keep/retire; pairs naturally
-with U10. Also note heavy version-suffixed CSS class churn
-(`hmh-visual-polish-v12`, `leaderboard-board-v9`) implying dead selectors.
+**P6. Legacy code triage — COMPLETE (`372c7ef9`)** *(M)* — Retired the public
+pre-reboot canvas/backstage markup, animation and pointer roots, conditional
+Reboot flag, and obsolete legacy browser soak. Official status writes now map
+to `#officialGameStateCopy`; six portal flows pass with zero errors. The emitted
+parent fell 163,521 B (13.0%) to 1,090,277 B. The child stayed 1,048,584 B,
+proving that parent cleanup does not unblock child-code tasks. Remaining dead
+source/selector separation belongs to U10; child headroom needs its own triage.
 **P5. Visual scene coverage** *(S)* — 8 pinned scenes exist; new districts
 or set-pieces need their own scenes or they ship unwatched.
 

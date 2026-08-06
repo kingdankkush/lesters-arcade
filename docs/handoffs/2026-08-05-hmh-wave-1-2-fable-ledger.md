@@ -180,15 +180,15 @@ what that pattern buys.
 
 **Practical consequence: further child code slices are effectively blocked.**
 D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all add child
-code. Two things would unblock them, both already in the program:
+code. P6 closed at `372c7ef9`, retiring the public backstage/canvas runtime and
+its obsolete soak. It reduced the emitted parent from 1,253,798 B to 1,090,277
+B, but the separately-built child stayed exactly 1,048,584 B. That measurement
+disproves the earlier assumption that P6/U10 parent cleanup would recover child
+headroom.
 
-- **P6 legacy code triage** — the pre-reboot canvas combat path and the hidden
-  `#developerBackstage` shell are still shipped.
-- **U10 portal modularization** — 15.5k-line `main.js` split by route, with the
-  dead legacy combat path deleted on the way through.
-
-Until one of those lands, prefer asset-shaped work (which costs no bundle
-bytes) or accept that each code slice must pay for itself in removals.
+U10 remains valuable for route ownership and reviewability. Actual child-code
+work now requires a child-specific bundle triage, or each slice must pay for
+itself in measured child removals. Prefer asset-shaped work until then.
 
 ## The props reproducibility gate is flaky, and now there is evidence
 
@@ -222,8 +222,8 @@ Two consequences:
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
 - **Wave 2 is complete.** A5, T2 and T1 are closed with deterministic generated
-  assets and 10-scene visual evidence. The next program move is P6 legacy-code
-  triage, followed by U10 portal modularization, to recover bundle headroom.
+  assets and 10-scene visual evidence. P6 legacy-code triage is also complete;
+  U10 portal modularization is next, followed by child-specific bundle triage.
 - **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
   rebalance now have the swarm evidence they were missing. The shotgun's
   mid-range swarm result is the first thing to look at.

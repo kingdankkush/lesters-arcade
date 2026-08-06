@@ -138,16 +138,22 @@ failed at 1,051,172. The cap was not raised. The derivation moved to build time
 and the child now fetches a 57 KB asset.
 
 **Consequence: D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all
-add child code and are effectively blocked.** Two program items unblock them:
+add child code and are effectively blocked.** P6 proved that the original
+unblocker assumption was wrong: the portal parent and HMH child are separate
+esbuild entries.
 
-- **P6 legacy code triage** — the pre-reboot canvas combat path
-  (`#combatCanvas`, `renderCombatMenuActionGrid`, `renderCombatSettingsPanel`)
-  and the hidden `#developerBackstage` shell are still shipped.
-- **U10 portal modularization** — split the 15.5k-line `main.js` by route and
-  delete the dead legacy combat path on the way through.
+- **P6 legacy code triage is complete at `372c7ef9`.** The public
+  `#developerBackstage` and `#combatCanvas` markup, parent animation/input roots,
+  obsolete legacy browser soak, and conditional Reboot flag were retired. The
+  emitted parent fell from 1,253,798 B to 1,090,277 B (163,521 B / 13.0%), while
+  the child remained exactly 1,048,584 B.
+- **U10 portal modularization remains useful for reviewability and parent-route
+  loading, but cannot be credited as child headroom.**
+- **A child-specific bundle triage is now required** before D1/S4/M3/U9 unless
+  each slice pays for itself with measured child removals.
 
-Until one lands: prefer **asset-shaped work** (costs no bundle bytes), or make
-each code slice pay for itself in removals.
+Until that lands: prefer **asset-shaped work** (costs no child bundle bytes), or
+make each child-code slice pay for itself in measured removals.
 
 Other budgets are healthy: prop atlas 326,439 / 524,288 (198 KB free), roster
 atlases 3.1 MB free, hero atlases 334 KB free (still tight — A12 needs an
@@ -172,11 +178,15 @@ the assumption they were stable.
 
 ## 3. What to pick up, in order
 
-### Immediate: unblock the code path
+### Immediate: finish parent modularization, then recover real child headroom
 
-**P6 legacy code triage**, then **U10 portal modularization**. Everything in
-Waves 4 and 6 is gated behind bundle headroom. Doing these two first is worth
-more than any single feature slice.
+**P6 legacy code triage is complete at `372c7ef9`.** It removed 813 indexed
+lines, reduced emitted parent JS by 163,521 B, and passed 1,987 release tests,
+six portal E2E flows with zero page/console errors, four cockpit profiles, five
+browser-certification profiles, performance, network, and all ten visual
+scenes. **U10 portal modularization is next**, followed by a measured
+child-entry triage. Wave 4 balance work that does not add child code can proceed
+in parallel; Wave 6 child features remain bundle-gated.
 
 Wave 2 is now complete. T1 landed at `d059a2b1`: six district tiles each bake
 three named sub-materials through a deterministic wrapped mask. Regeneration
@@ -214,11 +224,12 @@ reload cost for pellets that miss. This was deliberately NOT tuned — changing
 values in the slice that produced the evidence defeats the point. Take it into
 S5 with S1's long-run simulation alongside it.
 
-### Wave 3 needs an owner decision first
+### Wave 3 scope is decided
 
-**W2 (a real town district)** still says *decide scope with the owner before
-building*. That has not happened. **A6 town kit** is its prerequisite and is
-buildable now without the decision.
+The owner previously chose the **ruined-yard town** direction and subsequently
+authorized all remaining waves. Implement W2 as the documented option (a):
+convert part of `liquidation-yard` into a ruined neighborhood rather than adding
+a seventh district. **A6 town kit** remains its prerequisite and lands first.
 
 ---
 
