@@ -232,11 +232,30 @@ coin-blaster     kills 3 of 4, reserve runs dry
 scatter-shotgun  kills 1 of 4, 0.18 contacts/projectile
 ```
 
-**The shotgun being the worst swarm weapon at mid range is the thing to look at
-first.** Its spread has dispersed past the pack by 420 units, so it pays a
-reload cost for pellets that miss. This was deliberately NOT tuned — changing
-values in the slice that produced the evidence defeats the point. Take it into
-S5 with S1's long-run simulation alongside it.
+**S1 is complete** at implementation commit `951cb8d9`. The canonical
+`npm run design:long-run` report now covers 192 deterministic 30-minute runs:
+4 heroes × 4 authoritative weapons × 6 authoritative enemy archetypes × 2
+seeds. It reports levels/minute, the choices from each one visible draft,
+dead offers, build diversity, expected-hit growth sourced from live combat
+math, survivability, and upgrade intervals. The final matrix had 192/192 valid
+completed runs, zero dead offers, median 2.0 levels/minute, median 1.605×
+expected-hit growth, and a 28-second median upgrade interval; digest
+`3289067f`. These are analytical baseline-player results, not a substitute for
+the canonical browser durability soak or human balance playtest.
+
+The implementation passed the 2,008-test release gate: 1,957 current passes and
+51 separately ledgered expected legacy failures. Syntax, bundle metadata, the
+weapon benchmark, and the browser performance smoke passed on an unchanged
+rerun after one retained-heap variance failure. Parent output stayed 1,098,361
+bytes and the child stayed exactly 1,048,584 bytes. Immutable Preview `dpl_13eBCtQnRDuZbfCViZeN8yHNAxbJ` was
+Ready; `/play/hard-money-heroes` returned authenticated HTML and deployed child
+SHA-256 `1e815ad88f00b99a5f0c4d60b14b5232c30b83044827399d6662d45a674e1f8e`
+matched local raw bytes.
+
+**The shotgun being the worst swarm weapon at mid range remains the first S5
+finding to address.** Its spread has dispersed past the pack by 420 units, so
+it pays a reload cost for pellets that miss. Preserve C6's measured baseline
+while tuning S5 against S1's weapon/enemy medians.
 
 ### Wave 3 scope is decided
 

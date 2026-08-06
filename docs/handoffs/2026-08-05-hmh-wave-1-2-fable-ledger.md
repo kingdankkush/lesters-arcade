@@ -230,9 +230,13 @@ Two consequences:
   legacy parent runtime; U10 established route ownership through the Ready
   immutable Preview `dpl_AuFosN2dQ3WYysfWazEpkikqKAe5`. Child-specific bundle
   triage remains separate and still gates child-code-heavy tasks.
-- **Unblocked and waiting:** S1 long-run balance simulation and S5 enemy band
-  rebalance now have the swarm evidence they were missing. The shotgun's
-  mid-range swarm result is the first thing to look at.
+- **S1 complete; S5 active:** commit `951cb8d9` added 192 deterministic
+  30-minute hero × weapon × enemy matrix runs with report digest `3289067f`.
+  The matrix had zero invalid runs and zero dead offers; median pace was 2.0
+  levels/minute, 1.605× expected-hit growth, and 28 seconds between upgrades.
+  Preview `dpl_13eBCtQnRDuZbfCViZeN8yHNAxbJ` was Ready and the deployed child
+  remained raw byte-identical at 1,048,584 bytes. The shotgun's mid-range swarm
+  result remains S5's first measured balance finding.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.

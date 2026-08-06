@@ -336,11 +336,16 @@ power-up art assets) across power/survival/mobility/utility branches with
 a repeatable mastery tail; weapon upgrade trees exist per weapon
 (rateOfFire/damage/reloadSpeed with tier-3 capstones).
 
-**S1. Long-run balance simulation** *(L — blocks S4/S5)* — The 036 handoff
-requires it and it is still unbuilt: simulate many full runs across hero ×
-weapon × enemy combinations; report levels/minute, choices seen, dead
-offers, build diversity, damage growth, survivability, and time between
-upgrades. **Do not tune values without this.**
+**S1. Long-run balance simulation — COMPLETE** *(L — unblocks S4/S5)* —
+Commit `951cb8d9` certifies 192 deterministic 30-minute runs across all 4
+heroes × 4 authoritative weapons × 6 authoritative enemies × 2 seeds. The
+report covers levels/minute, one visible draft per applied upgrade, dead
+offers, build diversity, live-combat expected-hit growth, survivability, and
+upgrade timing. Final digest: `3289067f`; 192/192 valid/completed, zero dead
+offers, median 2.0 levels/minute, 1.605× damage growth, and 28-second median
+upgrade interval. The analytical survival result does not replace browser or
+human balance evidence. Preview `dpl_13eBCtQnRDuZbfCViZeN8yHNAxbJ` was Ready;
+deployed child remained raw byte-identical at 1,048,584 bytes.
 
 **S2. XP source rebalance** *(M)* — XP is kill-driven only. The handoff
 wants Litecoin pickups and combo milestones contributing, with no
