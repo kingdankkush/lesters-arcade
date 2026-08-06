@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 import { screenToGround } from './world-space.mjs';
 import { minimapExclusionLeft } from './hud-layout.mjs';
 
@@ -31,11 +32,6 @@ function timestamp(value) {
   return value;
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function bool(value) {
   return value === true;

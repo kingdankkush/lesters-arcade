@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 export const WORLD_COORDINATES = Object.freeze({
   axes: Object.freeze({ x: 'right', y: 'down', z: 'up' }),
   depthAxis: 'y',
@@ -50,11 +51,6 @@ function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 export function createActorSpatialState({
   x = 0,

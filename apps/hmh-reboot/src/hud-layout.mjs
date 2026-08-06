@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 export const COMPACT_LANDSCAPE_MAX_HEIGHT = 520;
 export const COMPACT_LANDSCAPE_MINIMAP_WIDTH = 140;
 // The minimap's distance from the viewport edge, and the padding of its frame.
@@ -36,11 +37,6 @@ function finite(value, name) {
   return value;
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 export function isCompactLandscape({ width, height } = {}) {
   const viewportWidth = finite(width, 'viewport width');

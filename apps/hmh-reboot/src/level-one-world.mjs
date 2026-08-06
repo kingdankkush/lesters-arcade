@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 import { auditCollisionWorld, createStaticBlocker } from './collision.mjs';
 import { createAuthoredGroundQuery, createElevationSurface } from './elevation.mjs';
 
@@ -5,11 +6,6 @@ export const LEVEL_ONE_PLAYER_RADIUS = 24;
 export const LEVEL_ONE_PROTECTED_SPAWN_RADIUS = 560;
 const REVEAL_CELL_SIZE = 240;
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function point(x, y) {
   return Object.freeze({ x, y });

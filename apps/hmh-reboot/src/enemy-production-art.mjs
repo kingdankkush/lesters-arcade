@@ -1,10 +1,6 @@
+import { freezeDeep } from './value-guards.mjs';
 const REQUIRED_STATES = Object.freeze(['idle', 'run', 'tell', 'attack', 'hit', 'death']);
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function kit(definition) {
   return freezeDeep({

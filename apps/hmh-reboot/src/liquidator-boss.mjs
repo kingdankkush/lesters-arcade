@@ -1,12 +1,8 @@
+import { freezeDeep } from './value-guards.mjs';
 const EPSILON = 1e-9;
 export const LIQUIDATOR_TARGET_FIGHT_TICKS = 3_600;
 export const MAX_BOSS_EVENTS_PER_TICK = 8;
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 export const LIQUIDATOR_READABILITY_BUDGET = freezeDeep({
   animationLayers: 4,

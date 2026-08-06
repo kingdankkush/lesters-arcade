@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 import { resolveSweptCircleMotion } from './collision.mjs';
 import { resolveSweptTraversalPath } from './elevation.mjs';
 import { resolveEnemyPressure } from './movement.mjs';
@@ -32,11 +33,6 @@ function normalize(value, name) {
   return magnitude <= EPSILON ? Object.freeze({ x: 0, y: 0 }) : Object.freeze({ x: x / magnitude, y: y / magnitude });
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function validateTier(cooldownTier) {
   if (!Number.isInteger(cooldownTier) || cooldownTier < 0 || cooldownTier >= DASH_COOLDOWN_TICKS_BY_TIER.length) {

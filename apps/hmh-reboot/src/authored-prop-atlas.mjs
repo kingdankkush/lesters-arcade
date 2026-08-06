@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 export const AUTHORED_PROP_PIPELINE_ID = 'hmh-reboot-authored-props-v1';
 export const AUTHORED_PROP_ATLAS_IMAGE_URL = '/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png';
 export const AUTHORED_PROP_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json';
@@ -71,11 +72,6 @@ const LANDMARK_SIGNAL_KITS = Object.freeze({
   'liquidation-terminal': Object.freeze({ id: 'margin-signal', color: 0xff5d8f, periodTicks: 84, radiusScale: 0.28 }),
 });
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 export function buildAuthoredTownPlacements({ worldId, index } = {}) {
   if (worldId !== 'forked-frontier' || !index?.frameById) throw new TypeError('town index');

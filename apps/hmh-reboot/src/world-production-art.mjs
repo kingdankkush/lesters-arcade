@@ -1,14 +1,10 @@
+import { freezeDeep } from './value-guards.mjs';
 import { isScreenPointVisible } from './runtime-performance.mjs';
 import {
   DISTRICT_TERRAIN_MATERIAL,
   SURFACE_TERRAIN_MATERIAL,
 } from './terrain-tile-atlas.mjs';
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function artKit(spec) {
   return freezeDeep({ classification: 'production-art', runtimeAuthority: 'projection-only', ...spec });

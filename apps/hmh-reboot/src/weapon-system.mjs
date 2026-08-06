@@ -1,12 +1,8 @@
+import { freezeDeep } from './value-guards.mjs';
 const TICKS_PER_SECOND = 60;
 const UINT32_MAX = 0xffff_ffff;
 const EPSILON = 1e-12;
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);

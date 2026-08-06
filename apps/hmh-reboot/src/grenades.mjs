@@ -1,13 +1,9 @@
+import { freezeDeep } from './value-guards.mjs';
 import { createProjectileState, resolveProjectilePath } from './projectile-physics.mjs';
 
 const EPSILON = 1e-9;
 const FIXED_STEP_SECONDS = 1 / 60;
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);

@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
 import { allocateAttackTokens, DEFAULT_ATTACK_TOKEN_BUDGET } from './enemy-simulation.mjs';
 import { traceHeightAwareLineOfSight } from './elevation.mjs';
@@ -24,11 +25,6 @@ function nonNegativeInteger(value, name) {
   return value;
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function point(value, name) {
   return {

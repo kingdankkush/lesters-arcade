@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
 import {
   attemptScheduledEnemyInsertion,
@@ -10,11 +11,6 @@ const REST_DURATION_TICKS = 900;
 const PROTECTED_HERO_RADIUS = 560;
 const MAX_SPAWN_ELEVATION_DELTA = 64;
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function nonNegativeInteger(value, name) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);

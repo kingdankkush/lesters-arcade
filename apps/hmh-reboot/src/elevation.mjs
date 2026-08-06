@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 const EPSILON = 1e-9;
 
 function finite(value, name) {
@@ -25,11 +26,6 @@ function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function validateArea(area) {
   if (area?.type === 'rect') {

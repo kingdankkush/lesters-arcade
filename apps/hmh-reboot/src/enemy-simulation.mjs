@@ -1,3 +1,4 @@
+import { freezeDeep } from './value-guards.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from './collision.mjs';
 import { resolveSweptTraversalPath } from './elevation.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
@@ -31,11 +32,6 @@ function validId(value, name = 'enemy id') {
   return value;
 }
 
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
 
 function normalize(x, y, fallback = { x: 1, y: 0 }) {
   const magnitude = Math.hypot(x, y);

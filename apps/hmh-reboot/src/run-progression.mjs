@@ -1,8 +1,4 @@
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
+import { freezeDeep } from './value-guards.mjs';
 
 export const RUN_UPGRADE_CATALOG = freezeDeep({
   'proof-of-work': {

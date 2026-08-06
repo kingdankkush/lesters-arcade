@@ -1,8 +1,4 @@
-function freezeDeep(value) {
-  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
-  for (const child of Object.values(value)) freezeDeep(child);
-  return Object.freeze(value);
-}
+import { freezeDeep } from './value-guards.mjs';
 
 function validTick(value) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError('tick must be a non-negative integer');
