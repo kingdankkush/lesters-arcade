@@ -11,11 +11,18 @@ import {
   selectWeapon,
   stepWeaponLoadout,
 } from '../apps/hmh-reboot/src/weapon-system.mjs';
-import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
+import { expectedCombatHitDamage, resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
 import { LESTER_BLASTER_WEAPON_SYSTEM } from '../apps/portal/src/arcade-core.mjs';
 import { computeWeaponUpgrades } from '../apps/portal/src/weapon-upgrades.mjs';
 
 const direction = Object.freeze({ x: 1, y: 0 });
+
+test('expected hit damage mirrors rounded combat branches and caps critical chance', () => {
+  assert.equal(expectedCombatHitDamage({ damage: 10, armor: 2, criticalChance: 0 }), 5);
+  assert.equal(expectedCombatHitDamage({ damage: 10, armor: 2, criticalChance: 0.25, criticalMultiplier: 2 }), 6.25);
+  assert.equal(expectedCombatHitDamage({ damage: 10, armor: 2, criticalChance: 2, criticalMultiplier: 2 }), 10);
+  assert.equal(expectedCombatHitDamage({ damage: 10, armor: 4, armorPiercing: true, critChance: 0.5, critMultiplier: 2 }), 15);
+});
 
 function fireAt(state, tick, options = {}) {
   return stepWeaponLoadout(state, { tick, fire: true, direction, ...options });

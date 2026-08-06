@@ -95,6 +95,24 @@ function validateHit(hit) {
   return { ...hit, tick: hit.tick ?? 0, time, criticalChance };
 }
 
+export function expectedCombatHitDamage({
+  damage,
+  armor = 1,
+  armorPiercing = false,
+  criticalChance,
+  criticalMultiplier,
+  critChance,
+  critMultiplier,
+} = {}) {
+  const baseDamage = positive(damage, 'damage');
+  const armorDivisor = armorPiercing === true ? 1 : positive(armor, 'armor');
+  const chance = Math.min(1, nonNegative(criticalChance ?? critChance ?? 0.08, 'criticalChance'));
+  const multiplier = positive(criticalMultiplier ?? critMultiplier ?? 1.75, 'criticalMultiplier');
+  const normalDamage = Math.max(1, Math.round(baseDamage / armorDivisor));
+  const criticalDamage = Math.max(1, Math.round(baseDamage * multiplier / armorDivisor));
+  return normalDamage * (1 - chance) + criticalDamage * chance;
+}
+
 export function resolveCombatHits({ sessionSeed, hits = [], targets = [] } = {}) {
   validSeed(sessionSeed);
   if (!Array.isArray(hits) || !Array.isArray(targets)) throw new TypeError('hits and targets must be arrays');

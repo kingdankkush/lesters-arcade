@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  buildHmhCombatMatrixCertification,
   buildHmhLongRunCertification,
   buildHmhUpgradeBuildCertification,
 } from '../apps/portal/src/hmh-long-run-simulator.mjs';
@@ -13,11 +14,25 @@ const jsonPath = join(outputDir, 'hard-money-heroes-long-run-certification.json'
 const markdownPath = join(outputDir, 'hard-money-heroes-long-run-certification.md');
 const report = buildHmhLongRunCertification();
 const buildCertification = buildHmhUpgradeBuildCertification();
+const matrixCertification = buildHmhCombatMatrixCertification();
 const passed = report.summary.invalidRuns === 0
   && report.summary.survivalRate >= 0.95
   && report.summary.scoreSpreadPct <= 35
   && report.summary.minimumBossesDefeated >= 4
-  && buildCertification.passed;
+  && buildCertification.passed
+  && matrixCertification.summary.invalidRuns === 0;
+const compactMatrixCertification = Object.freeze({
+  ...matrixCertification,
+  runs: undefined,
+  runDigests: Object.freeze(matrixCertification.runs.map((run) => Object.freeze({
+    heroId: run.heroId,
+    weaponId: run.weaponId,
+    enemyArchetypeId: run.enemyArchetypeId,
+    seed: run.seed,
+    terminalReason: run.terminalReason,
+    digest: run.digest,
+  }))),
+});
 
 mkdirSync(outputDir, { recursive: true });
 
@@ -43,6 +58,30 @@ This is a deterministic baseline-player balance simulation. It certifies data-mo
 - Minimum major bosses defeated: ${report.summary.minimumBossesDefeated}
 - Maximum tracked objects: ${report.summary.maximumTrackedObjects}
 - Certification digest: \`${report.digest}\`
+
+## Hero × weapon × enemy matrix
+
+- Combinations: ${matrixCertification.summary.combinations}
+- Matrix runs: ${matrixCertification.summary.totalRuns}
+- Levels per minute (median): ${matrixCertification.summary.medianLevelsPerMinute}
+- Choices seen: ${matrixCertification.summary.choicesSeen.join(', ')}
+- Dead offers: ${matrixCertification.summary.deadOfferCount} (${(matrixCertification.summary.deadOfferRate * 100).toFixed(2)}%)
+- Damage growth (median): ${matrixCertification.summary.medianDamageGrowth}x
+- Survival: ${(matrixCertification.summary.survivalRate * 100).toFixed(1)}%
+- Median upgrade interval: ${matrixCertification.summary.medianSecondsBetweenUpgrades}s
+- Matrix digest: \`${matrixCertification.digest}\`
+
+### Weapon medians
+
+| Weapon | Runs | Survival | Kills/min | Levels/min | Damage growth |
+| --- | ---: | ---: | ---: | ---: | ---: |
+${matrixCertification.weaponSummaries.map((entry) => `| ${entry.weaponId} | ${entry.runs} | ${(entry.survivalRate * 100).toFixed(1)}% | ${entry.medianKillsPerMinute} | ${entry.medianLevelsPerMinute} | ${entry.medianDamageGrowth}x |`).join('\n')}
+
+### Enemy medians
+
+| Enemy | Runs | Survival | Kills/min | Median damage taken |
+| --- | ---: | ---: | ---: | ---: |
+${matrixCertification.enemySummaries.map((entry) => `| ${entry.enemyArchetypeId} | ${entry.runs} | ${(entry.survivalRate * 100).toFixed(1)}% | ${entry.medianKillsPerMinute} | ${entry.medianDamageTaken} |`).join('\n')}
 
 ## Hero medians
 
@@ -71,7 +110,7 @@ ${report.runs.map((run) => `| ${run.heroId} | ${run.seed} | ${run.terminalReason
 - Boss-rematch readability review under late pressure
 `;
 
-writeFileSync(jsonPath, `${JSON.stringify({ ...report, buildCertification, passed }, null, 2)}\n`);
+writeFileSync(jsonPath, `${JSON.stringify({ ...report, buildCertification, matrixCertification: compactMatrixCertification, passed }, null, 2)}\n`);
 writeFileSync(markdownPath, markdown);
 console.log(`Long-run certification ${passed ? 'passed' : 'failed'}:`);
 console.log(`- ${jsonPath}`);

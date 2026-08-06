@@ -18,10 +18,15 @@ import {
   playableCharacterStatIdentityFor,
 } from './hmh-character-config.mjs';
 import { buildUpgradeRuntimePolicy, evolutionScoreMultiplier } from './hmh-upgrade-runtime.mjs';
+import { expectedCombatHitDamage } from '../../hmh-reboot/src/combat-events.mjs';
+import { ENEMY_ARCHETYPES, ENEMY_ARCHETYPE_IDS } from '../../hmh-reboot/src/enemy-archetypes.mjs';
+import { HMH_WEAPON_DEFINITIONS } from '../../hmh-reboot/src/weapon-system.mjs';
 
 export const HMH_LONG_RUN_HERO_IDS = Object.freeze(Object.keys(HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES));
+export const HMH_LONG_RUN_WEAPON_IDS = Object.freeze(Object.keys(HMH_WEAPON_DEFINITIONS));
+export const HMH_LONG_RUN_ENEMY_IDS = ENEMY_ARCHETYPE_IDS;
 export const HMH_LONG_RUN_CHECKPOINT_SECONDS = Object.freeze([5, 10, 20, 30, 45].map((minutes) => minutes * 60));
-export const HMH_LONG_RUN_SCHEMA_VERSION = 1;
+export const HMH_LONG_RUN_SCHEMA_VERSION = 2;
 
 export const HMH_CERTIFIED_BUILD_PROFILES = Object.freeze([
   Object.freeze({ id: 'settler-rail', title: 'Settler Rail', heroId: 'lester', preferredSkillIds: Object.freeze(['damage-alpha', 'pierce', 'rate-of-fire', 'evolve-settler-rail']) }),
@@ -83,24 +88,60 @@ function majorBossBeat(beat) {
 }
 
 function chooseAndApplyUpgrade(run, seed, preferredSkillIds = []) {
-  if (!run.pausedForLevelUp) return { run, applied: null };
-  let fallback = null;
-  let option = null;
-  for (let attempt = 0; attempt < 12 && !option; attempt += 1) {
-    const draft = chooseRoguelikeUpgradeOptions(run, { seed: seed + run.level * 997 + attempt * 131 });
-    const legal = draft.options.filter((entry) => entry?.id && entry.id !== 'post-cap-coins');
-    fallback ??= legal[0] ?? null;
-    option = preferredSkillIds
-      .map((id) => legal.find((entry) => entry.id === id))
-      .find(Boolean) ?? null;
-  }
-  option ??= fallback;
+  if (!run.pausedForLevelUp) return { run, applied: null, choicesSeen: [], deadOfferCount: 0, draftCount: 0 };
+  const draft = chooseRoguelikeUpgradeOptions(run, { seed: seed + run.level * 997 });
+  const choicesSeen = draft.options.filter((entry) => entry?.id).map((entry) => entry.id);
+  const deadOfferCount = draft.options.filter((entry) => !entry?.id).length;
+  const legal = draft.options.filter((entry) => entry?.id && entry.id !== 'post-cap-coins');
+  const option = preferredSkillIds
+    .map((id) => legal.find((entry) => entry.id === id))
+    .find(Boolean) ?? legal[0] ?? null;
   if (!option) {
     run.pausedForLevelUp = false;
     run.pendingUpgradeChoices = 0;
-    return { run, applied: 'post-cap-coins' };
+    const postCap = draft.options.some((entry) => entry?.id === 'post-cap-coins');
+    return { run, applied: postCap ? 'post-cap-coins' : null, choicesSeen, deadOfferCount, draftCount: 1 };
   }
-  return { run: applyRoguelikeSkillUpgrade(run, option.id), applied: option.id };
+  return {
+    run: applyRoguelikeSkillUpgrade(run, option.id),
+    applied: option.id,
+    choicesSeen,
+    deadOfferCount,
+    draftCount: 1,
+  };
+}
+
+function matchupModel(weaponId, enemyArchetypeId) {
+  const weapon = HMH_WEAPON_DEFINITIONS[weaponId];
+  const enemy = ENEMY_ARCHETYPES[enemyArchetypeId];
+  if (!weapon || !enemy) return Object.freeze({ offenseMultiplier: 1, incomingMultiplier: 1, startExpectedHit: 1 });
+  const expectedHit = expectedCombatHitDamage({
+    damage: weapon.damage,
+    armor: enemy.armor,
+    criticalChance: 0.08,
+    criticalMultiplier: 1.75,
+  });
+  const firingSeconds = weapon.clipSize / weapon.fireRatePerSecond;
+  const sustainedShotsPerSecond = weapon.clipSize / Math.max(0.1, firingSeconds + weapon.reloadSeconds);
+  const distance = Math.max(48, enemy.preferredDistance);
+  const inRange = distance <= weapon.range ? 1 : Math.max(0.2, weapon.range / distance);
+  const spreadWidth = Math.max(enemy.radius * 2, Math.tan((weapon.spreadRadians ?? 0) / 2) * distance * 2);
+  const pelletContact = weapon.pelletCount <= 1 ? 1 : clamp((enemy.radius * 2) / spreadWidth, 1 / weapon.pelletCount, 1);
+  const expectedPellets = 1 + Math.max(0, weapon.pelletCount - 1) * pelletContact;
+  const sustainedDamage = expectedHit * sustainedShotsPerSecond * expectedPellets * inRange;
+  const referenceDamage = expectedCombatHitDamage({ damage: 3, armor: 1, criticalChance: 0.08, criticalMultiplier: 1.75 }) * 1.92;
+  const durability = Math.max(0.5, enemy.maxHealth * enemy.armor / 75);
+  const offenseMultiplier = clamp(Math.sqrt(sustainedDamage / Math.max(0.1, referenceDamage * durability)), 0.25, 2.5);
+  const attackCycle = Math.max(1, enemy.attack.tellTicks + enemy.attack.recoveryTicks);
+  const incomingMultiplier = clamp(
+    (enemy.attack.damage || 0) / 12
+      * (39 / attackCycle)
+      * (enemy.speed / 176)
+      * (enemy.costs.threat / 2),
+    0.25,
+    2.5,
+  );
+  return Object.freeze({ offenseMultiplier, incomingMultiplier, startExpectedHit: expectedHit });
 }
 
 function heroModel(heroId) {
@@ -137,6 +178,8 @@ function checkpointFor(state, elapsedSeconds, run) {
 
 export function simulateHmhLongRun({
   heroId = 'lit-commando',
+  weaponId = null,
+  enemyArchetypeId = null,
   seed = 1337,
   durationSeconds = 30 * 60,
   checkpointSeconds = HMH_LONG_RUN_CHECKPOINT_SECONDS,
@@ -145,12 +188,22 @@ export function simulateHmhLongRun({
   const safeDuration = Math.max(1, Math.floor(Number(durationSeconds) || 1));
   const safeSeed = Math.floor(Number(seed) || 1);
   const hero = heroModel(heroId);
+  const effectiveWeaponId = weaponId ?? (HMH_WEAPON_DEFINITIONS[hero.identity.startingWeaponId] ? hero.identity.startingWeaponId : 'coin-blaster');
+  const effectiveEnemyArchetypeId = enemyArchetypeId ?? 'bagholder-rusher';
+  if (!HMH_WEAPON_DEFINITIONS[effectiveWeaponId]) throw new Error(`Unknown Hard Money Heroes weapon: ${effectiveWeaponId}`);
+  if (!ENEMY_ARCHETYPES[effectiveEnemyArchetypeId]) throw new Error(`Unknown Hard Money Heroes enemy: ${effectiveEnemyArchetypeId}`);
+  const matchupEnabled = weaponId !== null || enemyArchetypeId !== null;
+  const matchup = matchupModel(effectiveWeaponId, effectiveEnemyArchetypeId);
   const random = createPrng(safeSeed ^ digestValue(heroId).charCodeAt(0));
   let run = createRoguelikeRunState({ seed: safeSeed, characterId: heroId, mode: 'free' });
   const startingMaxHealth = Math.max(1, Math.round(100 * (Number(run.stats.maxHealth) || 1)));
   const checkpointsWanted = new Set(checkpointSeconds.filter((seconds) => seconds > 0 && seconds <= safeDuration));
   const checkpoints = [];
   const upgrades = [];
+  const choicesSeen = new Set();
+  const upgradeSeconds = [];
+  let deadOfferCount = 0;
+  let draftCount = 0;
   const triggeredBossBeats = [];
   let spawnAccumulator = 0;
   let looseXpGems = 0;
@@ -203,6 +256,7 @@ export function simulateHmhLongRun({
       * buildFireRate
       * expectedCritDamage
       * grenadePressure
+      * (matchupEnabled ? matchup.offenseMultiplier : 1)
       / Math.max(1, director.healthMultiplier * 0.82);
     const killBudget = killRatePerSecond + random() * 0.42;
     const killsThisSecond = Math.min(state.activeEnemies, Math.floor(killBudget) + (random() < killBudget % 1 ? 1 : 0));
@@ -227,7 +281,13 @@ export function simulateHmhLongRun({
         run = grantRoguelikeXp(run, xpValue);
         const upgraded = chooseAndApplyUpgrade(run, safeSeed + second + kill, preferredSkillIds);
         run = upgraded.run;
-        if (upgraded.applied) upgrades.push(upgraded.applied);
+        for (const id of upgraded.choicesSeen) choicesSeen.add(id);
+        deadOfferCount += upgraded.deadOfferCount;
+        draftCount += upgraded.draftCount;
+        if (upgraded.applied) {
+          upgrades.push(upgraded.applied);
+          upgradeSeconds.push(second);
+        }
       }
       if (random() < dropChance * 0.18) {
         loosePowerUps += 1;
@@ -252,7 +312,13 @@ export function simulateHmhLongRun({
       run = grantRoguelikeXp(run, bossXp);
       let upgraded = chooseAndApplyUpgrade(run, safeSeed + second + beat.pressureTier, preferredSkillIds);
       run = upgraded.run;
-      if (upgraded.applied) upgrades.push(upgraded.applied);
+      for (const id of upgraded.choicesSeen) choicesSeen.add(id);
+      deadOfferCount += upgraded.deadOfferCount;
+      draftCount += upgraded.draftCount;
+      if (upgraded.applied) {
+        upgrades.push(upgraded.applied);
+        upgradeSeconds.push(second);
+      }
       if (isMajor) state.bossesDefeated += 1;
       else state.miniBossesDefeated += 2;
       const bossScoreMultiplier = isMajor ? (hero.identity.signature?.bossScoreMultiplier ?? 1) : 1;
@@ -277,6 +343,7 @@ export function simulateHmhLongRun({
       * (Number(run.stats.incomingDamage) || 1)
       * (0.09 + director.rangedEnemyShare * 0.11)
       * (0.82 + random() * 0.36)
+      * (matchupEnabled ? matchup.incomingMultiplier : 1)
       / (evasion * armor);
     state.health -= incoming;
     state.damageTaken += incoming;
@@ -316,6 +383,15 @@ export function simulateHmhLongRun({
 
   const finalPolicy = buildUpgradeRuntimePolicy(run.stats);
   const finalEvolutionMultiplier = evolutionScoreMultiplier(finalPolicy, hero.identity.startingWeaponId);
+  const upgradeIntervals = upgradeSeconds.slice(1).map((second, index) => second - upgradeSeconds[index]);
+  const enemy = ENEMY_ARCHETYPES[effectiveEnemyArchetypeId];
+  const weapon = HMH_WEAPON_DEFINITIONS[effectiveWeaponId];
+  const finalExpectedHit = expectedCombatHitDamage({
+    damage: weapon.damage * (Number(run.stats.damage) || 1),
+    armor: enemy.armor,
+    criticalChance: 0.08 + finalPolicy.critChanceBonus,
+    criticalMultiplier: 1.75 + finalPolicy.critDamageBonus,
+  });
   const final = Object.freeze({
     elapsedSeconds: state.elapsedSeconds,
     level: run.level,
@@ -350,16 +426,45 @@ export function simulateHmhLongRun({
     maxProjectiles: MAX_PROJECTILES,
     maxTrackedObjects: MAX_TRACKED_OBJECTS,
   });
+  const progression = Object.freeze({
+    levelsPerMinute: round((run.level - 1) / Math.max(1 / 60, state.elapsedSeconds / 60), 3),
+    choicesSeen: Object.freeze([...choicesSeen].sort()),
+    draftCount,
+    deadOfferCount,
+    deadOfferRate: round(deadOfferCount / Math.max(1, draftCount * 2), 4),
+    uniqueUpgrades: new Set(upgrades).size,
+    damageGrowth: Object.freeze({
+      startExpectedHit: round(matchup.startExpectedHit, 3),
+      finalExpectedHit: round(finalExpectedHit, 3),
+      multiplier: round(finalExpectedHit / Math.max(0.001, matchup.startExpectedHit), 3),
+    }),
+    upgradeTiming: Object.freeze({
+      firstUpgradeSecond: upgradeSeconds[0] ?? 0,
+      medianSecondsBetweenUpgrades: round(median(upgradeIntervals), 2),
+      maximumSecondsBetweenUpgrades: upgradeIntervals.length ? Math.max(...upgradeIntervals) : 0,
+    }),
+  });
+  const survivability = Object.freeze({
+    survived: terminalReason === 'time-limit',
+    healthRatio: round(state.health / Math.max(1, state.maxHealth), 4),
+    damageTaken: round(state.damageTaken, 2),
+    healthRecovered: round(state.healthRecovered, 2),
+    revivesUsed: state.revivesUsed,
+  });
   const result = {
     schemaVersion: HMH_LONG_RUN_SCHEMA_VERSION,
     model: 'deterministic-baseline-player-balance-simulation',
     heroId,
+    weaponId: effectiveWeaponId,
+    enemyArchetypeId: effectiveEnemyArchetypeId,
     seed: safeSeed,
     requestedDurationSeconds: safeDuration,
     terminalReason,
     checkpoints: Object.freeze(checkpoints),
     triggeredBossBeats: Object.freeze(triggeredBossBeats),
     upgradeHistory: Object.freeze(upgrades),
+    progression,
+    survivability,
     maxima: Object.freeze({ ...state.maxima }),
     limits,
     final,
@@ -423,6 +528,79 @@ export function buildHmhUpgradeBuildCertification({
     passed: builds.every((build) => build.passed),
     builds: Object.freeze(builds),
   });
+}
+
+export function buildHmhCombatMatrixCertification({
+  heroIds = HMH_LONG_RUN_HERO_IDS,
+  weaponIds = HMH_LONG_RUN_WEAPON_IDS,
+  enemyIds = HMH_LONG_RUN_ENEMY_IDS,
+  seeds = Object.freeze([4101, 4102]),
+  durationSeconds = 30 * 60,
+} = {}) {
+  const runs = [];
+  for (const heroId of heroIds) {
+    for (const weaponId of weaponIds) {
+      for (const enemyArchetypeId of enemyIds) {
+        for (const seed of seeds) {
+          runs.push(simulateHmhLongRun({ heroId, weaponId, enemyArchetypeId, seed, durationSeconds }));
+        }
+      }
+    }
+  }
+  const validRuns = runs.filter(runIsValid);
+  const completedRuns = runs.filter((run) => run.terminalReason === 'time-limit');
+  const choicesSeen = new Set(runs.flatMap((run) => run.progression.choicesSeen));
+  const totalDrafts = runs.reduce((sum, run) => sum + run.progression.draftCount, 0);
+  const totalDeadOffers = runs.reduce((sum, run) => sum + run.progression.deadOfferCount, 0);
+  const weaponSummaries = weaponIds.map((weaponId) => {
+    const weaponRuns = runs.filter((run) => run.weaponId === weaponId);
+    return Object.freeze({
+      weaponId,
+      runs: weaponRuns.length,
+      survivalRate: round(weaponRuns.filter((run) => run.terminalReason === 'time-limit').length / Math.max(1, weaponRuns.length), 3),
+      medianKillsPerMinute: round(median(weaponRuns.map((run) => run.final.killsPerMinute)), 2),
+      medianLevelsPerMinute: round(median(weaponRuns.map((run) => run.progression.levelsPerMinute)), 3),
+      medianDamageGrowth: round(median(weaponRuns.map((run) => run.progression.damageGrowth.multiplier)), 3),
+    });
+  });
+  const enemySummaries = enemyIds.map((enemyArchetypeId) => {
+    const enemyRuns = runs.filter((run) => run.enemyArchetypeId === enemyArchetypeId);
+    return Object.freeze({
+      enemyArchetypeId,
+      runs: enemyRuns.length,
+      survivalRate: round(enemyRuns.filter((run) => run.terminalReason === 'time-limit').length / Math.max(1, enemyRuns.length), 3),
+      medianKillsPerMinute: round(median(enemyRuns.map((run) => run.final.killsPerMinute)), 2),
+      medianDamageTaken: round(median(enemyRuns.map((run) => run.survivability.damageTaken)), 2),
+    });
+  });
+  const report = {
+    schemaVersion: HMH_LONG_RUN_SCHEMA_VERSION,
+    generatedBy: 'npm run design:long-run',
+    model: 'deterministic-hero-weapon-enemy-matrix',
+    durationSeconds,
+    heroIds: Object.freeze([...heroIds]),
+    weaponIds: Object.freeze([...weaponIds]),
+    enemyIds: Object.freeze([...enemyIds]),
+    seeds: Object.freeze([...seeds]),
+    runs: Object.freeze(runs),
+    weaponSummaries: Object.freeze(weaponSummaries),
+    enemySummaries: Object.freeze(enemySummaries),
+    summary: Object.freeze({
+      combinations: heroIds.length * weaponIds.length * enemyIds.length,
+      totalRuns: runs.length,
+      validRuns: validRuns.length,
+      invalidRuns: runs.length - validRuns.length,
+      completedRuns: completedRuns.length,
+      survivalRate: round(completedRuns.length / Math.max(1, runs.length), 3),
+      choicesSeen: Object.freeze([...choicesSeen].sort()),
+      deadOfferCount: totalDeadOffers,
+      deadOfferRate: round(totalDeadOffers / Math.max(1, totalDrafts * 2), 4),
+      medianLevelsPerMinute: round(median(runs.map((run) => run.progression.levelsPerMinute)), 3),
+      medianDamageGrowth: round(median(runs.map((run) => run.progression.damageGrowth.multiplier)), 3),
+      medianSecondsBetweenUpgrades: round(median(runs.map((run) => run.progression.upgradeTiming.medianSecondsBetweenUpgrades)), 2),
+    }),
+  };
+  return Object.freeze({ ...report, digest: digestValue(report) });
 }
 
 export function buildHmhLongRunCertification({
