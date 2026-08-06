@@ -11,6 +11,8 @@ export const ENEMY_STRIKE_TICKS = 6;
 // unavoidable damage. Each additional attacker starting a tell on one tick is
 // pushed back by this many ticks so the player can read and react to them.
 export const ENEMY_TELL_STAGGER_TICKS = 9;
+export const ENEMY_SUPPORT_ARMOR_MULTIPLIER = 1.15;
+export const ENEMY_SUPPORT_ARMOR_DURATION_TICKS = 180;
 
 function finite(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
@@ -85,6 +87,41 @@ function clearTelegraph(enemy) {
   enemy.attackTellStartedTick = null;
 }
 
+function expireSupportArmor(enemy, tick) {
+  const baseArmor = Number.isFinite(enemy.baseArmor) ? enemy.baseArmor : enemy.armor;
+  enemy.baseArmor = baseArmor;
+  if ((enemy.supportArmorUntilTick ?? 0) > tick) return;
+  enemy.armor = baseArmor;
+  enemy.supportArmorUntilTick = 0;
+}
+
+function supportTargetFor(enemy, enemies, fallback) {
+  const ally = enemies
+    .filter((candidate) => candidate.id !== enemy.id && getEnemyArchetype(candidate.archetypeId).role !== 'support')
+    .map((candidate) => ({ candidate, distance: Math.hypot(candidate.x - enemy.x, candidate.y - enemy.y) }))
+    .sort((a, b) => a.distance - b.distance || a.candidate.id.localeCompare(b.candidate.id))[0]?.candidate;
+  return ally ? point(ally, 'supportTarget') : fallback;
+}
+
+function applySupportArmorPulse(event, enemies, tick) {
+  const affected = enemies.filter((enemy) => Math.hypot(enemy.x - event.geometry.center.x, enemy.y - event.geometry.center.y) <= event.geometry.radius);
+  for (const enemy of affected) {
+    const baseArmor = Number.isFinite(enemy.baseArmor) ? enemy.baseArmor : enemy.armor;
+    enemy.baseArmor = baseArmor;
+    enemy.armor = baseArmor * ENEMY_SUPPORT_ARMOR_MULTIPLIER;
+    enemy.supportArmorUntilTick = Math.max(enemy.supportArmorUntilTick ?? 0, tick + ENEMY_SUPPORT_ARMOR_DURATION_TICKS);
+  }
+  return freezeDeep({
+    ...event,
+    effect: {
+      kind: 'formation-armor',
+      multiplier: ENEMY_SUPPORT_ARMOR_MULTIPLIER,
+      durationTicks: ENEMY_SUPPORT_ARMOR_DURATION_TICKS,
+      affectedEnemyIds: affected.map((enemy) => enemy.id),
+    },
+  });
+}
+
 export function stepEnemyAttacks({
   enemies,
   player,
@@ -95,6 +132,7 @@ export function stepEnemyAttacks({
   nonNegativeInteger(tick, 'tick');
   const playerPoint = point(player, 'player');
   const ordered = enemies.filter((enemy) => enemy?.active && enemy.health > 0).sort((a, b) => a.id.localeCompare(b.id));
+  for (const enemy of ordered) expireSupportArmor(enemy, tick);
   const tokenMap = allocateAttackTokens({ enemies: ordered, player: playerPoint, budgets });
   const events = [];
   let droppedEvents = 0;
@@ -124,7 +162,10 @@ export function stepEnemyAttacks({
 
     if (enemy.attackPhase === 'tell') {
       if (tick < enemy.attackPhaseUntilTick) continue;
-      const event = createAttackEvent(enemy, archetype, tick);
+      const baseEvent = createAttackEvent(enemy, archetype, tick);
+      const event = archetype.attack.tokenFamily === 'support'
+        ? applySupportArmorPulse(baseEvent, ordered, tick)
+        : baseEvent;
       if (events.length < MAX_ENEMY_ATTACK_EVENTS) events.push(event);
       else droppedEvents += 1;
       const strikeTicks = Math.min(ENEMY_STRIKE_TICKS, archetype.attack.recoveryTicks);
@@ -152,7 +193,7 @@ export function stepEnemyAttacks({
     enemy.attackPhase = 'tell';
     enemy.attackTellStartedTick = tick;
     enemy.attackPhaseUntilTick = tick + archetype.attack.tellTicks + tellsStartedThisTick * ENEMY_TELL_STAGGER_TICKS;
-    enemy.telegraphTarget = Object.freeze({ ...playerPoint });
+    enemy.telegraphTarget = Object.freeze({ ...(archetype.attack.tokenFamily === 'support' ? supportTargetFor(enemy, ordered, playerPoint) : playerPoint) });
     tellsStartedThisTick += 1;
   }
 

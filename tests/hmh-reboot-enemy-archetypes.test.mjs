@@ -59,6 +59,23 @@ test('every role has bounded body, threat, attack, movement, and honest counterp
   }
 });
 
+test('S5 measured stat corrections preserve distinct pressure roles', () => {
+  assert.deepEqual(
+    Object.fromEntries(ENEMY_ARCHETYPE_IDS.map((id) => {
+      const enemy = getEnemyArchetype(id);
+      return [id, { health: enemy.maxHealth, armor: enemy.armor, speed: enemy.speed, damage: enemy.attack.damage }];
+    })),
+    {
+      'bagholder-rusher': { health: 80, armor: 1, speed: 184, damage: 12 },
+      forkrunner: { health: 64, armor: 1, speed: 216, damage: 8 },
+      'liquidator-agent': { health: 96, armor: 1.1, speed: 140, damage: 10 },
+      'whale-enforcer': { health: 240, armor: 1.35, speed: 96, damage: 18 },
+      'gas-bomber': { health: 100, armor: 1.05, speed: 124, damage: 16 },
+      'validator-cultist': { health: 110, armor: 1.05, speed: 116, damage: 0 },
+    },
+  );
+});
+
 test('prototype and production silhouettes cover all combat states with elite visuals enabled', () => {
   assert.deepEqual(REQUIRED_ENEMY_VISUAL_STATES, ['idle', 'run', 'tell', 'attack', 'hit', 'death']);
   for (const archetype of Object.values(ENEMY_ARCHETYPES)) {

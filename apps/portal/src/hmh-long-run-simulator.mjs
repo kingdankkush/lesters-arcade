@@ -133,14 +133,16 @@ function matchupModel(weaponId, enemyArchetypeId) {
   const durability = Math.max(0.5, enemy.maxHealth * enemy.armor / 75);
   const offenseMultiplier = clamp(Math.sqrt(sustainedDamage / Math.max(0.1, referenceDamage * durability)), 0.25, 2.5);
   const attackCycle = Math.max(1, enemy.attack.tellTicks + enemy.attack.recoveryTicks);
-  const incomingMultiplier = clamp(
-    (enemy.attack.damage || 0) / 12
-      * (39 / attackCycle)
-      * (enemy.speed / 176)
-      * (enemy.costs.threat / 2),
-    0.25,
-    2.5,
-  );
+  const incomingMultiplier = enemy.attack.damage <= 0
+    ? 0
+    : clamp(
+      enemy.attack.damage / 12
+        * (39 / attackCycle)
+        * (enemy.speed / 176)
+        * (enemy.costs.threat / 2),
+      0.25,
+      2.5,
+    );
   return Object.freeze({ offenseMultiplier, incomingMultiplier, startExpectedHit: expectedHit });
 }
 

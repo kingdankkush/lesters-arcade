@@ -3,6 +3,8 @@ import test from 'node:test';
 
 import { createStaticBlocker } from '../apps/hmh-reboot/src/collision.mjs';
 import {
+  ENEMY_SUPPORT_ARMOR_DURATION_TICKS,
+  ENEMY_SUPPORT_ARMOR_MULTIPLIER,
   ENEMY_STRIKE_TICKS,
   MAX_ENEMY_ATTACK_EVENTS,
   resolveEnemyAttackAgainstPlayer,
@@ -111,6 +113,36 @@ test('support pulse has no player damage and Dash invulnerability suppresses dam
   stepEnemyAttacks({ enemies: [rusher], player, tick: 1 });
   const strike = stepEnemyAttacks({ enemies: [rusher], player, tick: rusher.attackPhaseUntilTick }).events[0];
   assert.equal(resolveEnemyAttackAgainstPlayer(strike, { player, invulnerable: true }).hit, false);
+});
+
+test('support pulse hardens nearby formation armor without stacking and expires on fixed ticks', () => {
+  const cultist = enemy('validator-cultist', 'cultist', 300);
+  const secondCultist = enemy('validator-cultist', 'cultist-b', 310);
+  const ally = enemy('bagholder-rusher', 'ally', 100);
+  const distant = enemy('bagholder-rusher', 'distant', 600);
+  const baseArmor = ally.armor;
+  const enemies = [cultist, secondCultist, ally, distant];
+  const budgets = { melee: 3, ranged: 2, area: 1, support: 2 };
+  stepEnemyAttacks({ enemies, player, tick: 1, budgets });
+  const firstPulseTick = cultist.attackPhaseUntilTick;
+  const firstPulse = stepEnemyAttacks({ enemies, player, tick: firstPulseTick, budgets });
+  const firstSupport = firstPulse.events.find((event) => event.role === 'support');
+  assert.deepEqual(firstSupport.effect, {
+    kind: 'formation-armor',
+    multiplier: ENEMY_SUPPORT_ARMOR_MULTIPLIER,
+    durationTicks: ENEMY_SUPPORT_ARMOR_DURATION_TICKS,
+    affectedEnemyIds: ['ally'],
+  });
+  const secondPulseTick = secondCultist.attackPhaseUntilTick;
+  const secondPulse = stepEnemyAttacks({ enemies, player, tick: secondPulseTick, budgets });
+  const secondSupport = secondPulse.events.find((event) => event.role === 'support');
+  assert.deepEqual(secondSupport.effect, firstSupport.effect);
+  assert.equal(ally.armor, baseArmor * ENEMY_SUPPORT_ARMOR_MULTIPLIER);
+  assert.equal(distant.armor, distant.baseArmor);
+  assert.equal(ally.supportArmorUntilTick, secondPulseTick + ENEMY_SUPPORT_ARMOR_DURATION_TICKS);
+  stepEnemyAttacks({ enemies: [ally], player, tick: secondPulseTick + ENEMY_SUPPORT_ARMOR_DURATION_TICKS });
+  assert.equal(ally.armor, baseArmor);
+  assert.equal(ally.supportArmorUntilTick, 0);
 });
 
 test('attack event pool is hard-capped with truthful overflow telemetry', () => {

@@ -35,6 +35,9 @@ test('canonical long-run writer publishes combat matrix and progression telemetr
   assert.match(source, /Damage growth/);
   assert.match(source, /Survival/);
   assert.match(source, /Median upgrade interval/);
+  assert.match(source, /encounterBandEvidence/);
+  assert.match(source, /Spawn \/ min/);
+  assert.match(source, /Role weights/);
   assert.match(source, /matrixCertification\.runs\.map/);
 });
 
@@ -76,6 +79,9 @@ test('combat matrix covers every authoritative hero weapon and enemy combination
     assert.ok(run.progression.damageGrowth.finalExpectedHit > 0);
     assert.ok(run.survivability.healthRatio >= 0 && run.survivability.healthRatio <= 1);
   }
+  assert.ok(report.runs
+    .filter((run) => run.enemyArchetypeId === 'validator-cultist')
+    .every((run) => run.survivability.damageTaken === 0));
 });
 
 test('different seeds produce distinct but bounded Level 1 runs', () => {

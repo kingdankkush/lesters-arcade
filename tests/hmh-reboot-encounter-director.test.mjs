@@ -13,6 +13,7 @@ import {
   stepEncounterDirector,
   validateEncounterSpawn,
 } from '../apps/hmh-reboot/src/encounter-director.mjs';
+import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { createEnemyPopulation, createEnemyState } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 
 const CAMERA = { minX: -480, minY: -270, maxX: 480, maxY: 270 };
@@ -59,6 +60,8 @@ test('six immutable pacing bands expose independent fixed budgets and exact boun
     assert.ok(band.budgets.fullAiCap <= band.budgets.bodyCap);
     assert.ok(band.budgets.animationCap <= band.budgets.bodyCap);
     assert.ok(Object.isFrozen(band.budgets.attackTokens));
+    assert.ok(Object.isFrozen(band.roleWeights));
+    assert.equal(Object.values(band.roleWeights).reduce((sum, value) => sum + value, 0), 20, band.id);
     assert.deepEqual(Object.keys(band.budgets.attackTokens).sort(), ['area', 'melee', 'ranged', 'support']);
     for (const value of Object.values(band.budgets.attackTokens)) assert.ok(Number.isInteger(value) && value >= 0);
     assert.ok(Number.isInteger(band.spawnIntervalTicks) && band.spawnIntervalTicks > 0);
@@ -79,12 +82,27 @@ test('district role gates and stable ordinal selection never mislabel fallback r
   assert.deepEqual(DISTRICT_ROLE_GATES['frontier-relay'], ['rusher', 'flanker']);
   assert.deepEqual(DISTRICT_ROLE_GATES['liquidation-yard'], ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support']);
   const a = selectEncounterArchetype({ districtId: 'frontier-relay', bandId: 'opening', spawnOrdinal: 0 });
-  const b = selectEncounterArchetype({ districtId: 'frontier-relay', bandId: 'opening', spawnOrdinal: 1 });
+  const b = selectEncounterArchetype({ districtId: 'frontier-relay', bandId: 'opening', spawnOrdinal: 14 });
   assert.deepEqual([a.archetypeId, a.requestedRole, a.roleApplied], ['bagholder-rusher', 'rusher', true]);
   assert.deepEqual([b.archetypeId, b.requestedRole, b.roleApplied], ['forkrunner', 'flanker', true]);
-  const fallback = selectEncounterArchetype({ districtId: 'liquidity-crossing', bandId: 'opening', spawnOrdinal: 2 });
+  const fallback = selectEncounterArchetype({ districtId: 'liquidity-crossing', bandId: 'opening', spawnOrdinal: 2, requestedRole: 'suppressor' });
   assert.deepEqual([fallback.archetypeId, fallback.requestedRole, fallback.roleApplied, fallback.fallbackReason], ['bagholder-rusher', 'suppressor', false, 'band-gated-role']);
   assert.throws(() => selectEncounterArchetype({ districtId: 'unknown', bandId: 'opening', spawnOrdinal: 0 }), /districtId/);
+});
+
+test('S5 weighted role cycles apply authored per-band mixes deterministically', () => {
+  const countRoles = (bandId) => {
+    const counts = {};
+    for (let spawnOrdinal = 0; spawnOrdinal < 20; spawnOrdinal += 1) {
+      const selected = selectEncounterArchetype({ districtId: 'mining-camp', bandId, spawnOrdinal, seed: 0 });
+      const role = ENEMY_ARCHETYPES[selected.archetypeId].role;
+      counts[role] = (counts[role] ?? 0) + 1;
+      assert.equal(selected.roleApplied, true);
+    }
+    return counts;
+  };
+  assert.deepEqual(countRoles('opening'), { rusher: 14, flanker: 6 });
+  assert.deepEqual(countRoles('elite'), { rusher: 5, flanker: 4, suppressor: 3, bruiser: 3, demolition: 3, support: 2 });
 });
 
 test('seeded role order is repeatable and different seeds diverge without randomness', () => {

@@ -9622,33 +9622,33 @@
         "weaponId": "coin-blaster",
         "runs": 48,
         "survivalRate": 1,
-        "medianKillsPerMinute": 33.85,
-        "medianLevelsPerMinute": 1.767,
+        "medianKillsPerMinute": 34.24,
+        "medianLevelsPerMinute": 1.784,
         "medianDamageGrowth": 1.484
       },
       {
         "weaponId": "scatter-shotgun",
         "runs": 48,
         "survivalRate": 1,
-        "medianKillsPerMinute": 43.97,
-        "medianLevelsPerMinute": 1.967,
-        "medianDamageGrowth": 1.69
+        "medianKillsPerMinute": 47.6,
+        "medianLevelsPerMinute": 2.05,
+        "medianDamageGrowth": 1.571
       },
       {
         "weaponId": "auto-miner",
         "runs": 48,
         "survivalRate": 1,
-        "medianKillsPerMinute": 53.63,
+        "medianKillsPerMinute": 55,
         "medianLevelsPerMinute": 2.117,
-        "medianDamageGrowth": 1.578
+        "medianDamageGrowth": 1.75
       },
       {
         "weaponId": "launcher-rig",
         "runs": 48,
         "survivalRate": 1,
-        "medianKillsPerMinute": 52.54,
-        "medianLevelsPerMinute": 2.117,
-        "medianDamageGrowth": 1.706
+        "medianKillsPerMinute": 50.72,
+        "medianLevelsPerMinute": 2.167,
+        "medianDamageGrowth": 1.644
       }
     ],
     "enemySummaries": [
@@ -9656,43 +9656,43 @@
         "enemyArchetypeId": "bagholder-rusher",
         "runs": 32,
         "survivalRate": 1,
-        "medianKillsPerMinute": 59.95,
-        "medianDamageTaken": 102.86
+        "medianKillsPerMinute": 59.04,
+        "medianDamageTaken": 114.81
       },
       {
         "enemyArchetypeId": "forkrunner",
         "runs": 32,
         "survivalRate": 1,
-        "medianKillsPerMinute": 63.4,
-        "medianDamageTaken": 142.87
+        "medianKillsPerMinute": 63.22,
+        "medianDamageTaken": 127.34
       },
       {
         "enemyArchetypeId": "liquidator-agent",
         "runs": 32,
         "survivalRate": 1,
-        "medianKillsPerMinute": 44.12,
-        "medianDamageTaken": 90.16
+        "medianKillsPerMinute": 45.74,
+        "medianDamageTaken": 92.68
       },
       {
         "enemyArchetypeId": "whale-enforcer",
         "runs": 32,
         "survivalRate": 1,
-        "medianKillsPerMinute": 28.84,
-        "medianDamageTaken": 179.08
+        "medianKillsPerMinute": 31.6,
+        "medianDamageTaken": 168.9
       },
       {
         "enemyArchetypeId": "gas-bomber",
         "runs": 32,
         "survivalRate": 1,
-        "medianKillsPerMinute": 43.5,
-        "medianDamageTaken": 127.52
+        "medianKillsPerMinute": 46.38,
+        "medianDamageTaken": 117.36
       },
       {
         "enemyArchetypeId": "validator-cultist",
         "runs": 32,
         "survivalRate": 1,
-        "medianKillsPerMinute": 44.97,
-        "medianDamageTaken": 32.79
+        "medianKillsPerMinute": 44.15,
+        "medianDamageTaken": 0
       }
     ],
     "summary": {
@@ -9737,11 +9737,11 @@
       ],
       "deadOfferCount": 0,
       "deadOfferRate": 0,
-      "medianLevelsPerMinute": 2,
-      "medianDamageGrowth": 1.605,
-      "medianSecondsBetweenUpgrades": 28
+      "medianLevelsPerMinute": 2.033,
+      "medianDamageGrowth": 1.602,
+      "medianSecondsBetweenUpgrades": 27
     },
-    "digest": "3289067f",
+    "digest": "6a6f21c3",
     "runDigests": [
       {
         "heroId": "lit-commando",
@@ -9749,7 +9749,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "c7120889"
+        "digest": "e3d8fab3"
       },
       {
         "heroId": "lit-commando",
@@ -9757,7 +9757,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "6739b436"
+        "digest": "522b7e41"
       },
       {
         "heroId": "lit-commando",
@@ -9765,7 +9765,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "37411b0a"
+        "digest": "ba814f47"
       },
       {
         "heroId": "lit-commando",
@@ -9773,7 +9773,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "ce410cb1"
+        "digest": "b0955941"
       },
       {
         "heroId": "lit-commando",
@@ -9781,7 +9781,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "aaa5cad2"
+        "digest": "e49d76dc"
       },
       {
         "heroId": "lit-commando",
@@ -9789,7 +9789,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "fc054f69"
+        "digest": "ae800389"
       },
       {
         "heroId": "lit-commando",
@@ -9797,7 +9797,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "cf2ff7e9"
+        "digest": "358ce1d3"
       },
       {
         "heroId": "lit-commando",
@@ -9805,7 +9805,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "b74ffe9c"
+        "digest": "36ce4e2b"
       },
       {
         "heroId": "lit-commando",
@@ -9813,7 +9813,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "510e02e0"
+        "digest": "c19f3ce9"
       },
       {
         "heroId": "lit-commando",
@@ -9821,7 +9821,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "bc138829"
+        "digest": "5b0478fd"
       },
       {
         "heroId": "lit-commando",
@@ -9829,7 +9829,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "8531ace1"
+        "digest": "3aaa70fe"
       },
       {
         "heroId": "lit-commando",
@@ -9837,7 +9837,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "418b4735"
+        "digest": "08120f21"
       },
       {
         "heroId": "lit-commando",
@@ -9845,7 +9845,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "17524bd2"
+        "digest": "f09e2e07"
       },
       {
         "heroId": "lit-commando",
@@ -9853,7 +9853,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "19059e5d"
+        "digest": "e716d02a"
       },
       {
         "heroId": "lit-commando",
@@ -9861,7 +9861,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "1c3fc898"
+        "digest": "75e706fd"
       },
       {
         "heroId": "lit-commando",
@@ -9869,7 +9869,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "34ebe1e7"
+        "digest": "093719cb"
       },
       {
         "heroId": "lit-commando",
@@ -9877,7 +9877,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "c8885677"
+        "digest": "7a83630b"
       },
       {
         "heroId": "lit-commando",
@@ -9885,7 +9885,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e2861eeb"
+        "digest": "7a3a7f0f"
       },
       {
         "heroId": "lit-commando",
@@ -9893,7 +9893,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "85accc27"
+        "digest": "29dfe34b"
       },
       {
         "heroId": "lit-commando",
@@ -9901,7 +9901,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "d6deaa68"
+        "digest": "15e0ee81"
       },
       {
         "heroId": "lit-commando",
@@ -9909,7 +9909,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "c459553a"
+        "digest": "b1008ad4"
       },
       {
         "heroId": "lit-commando",
@@ -9917,7 +9917,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "9d431857"
+        "digest": "c9261308"
       },
       {
         "heroId": "lit-commando",
@@ -9925,7 +9925,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "546a9193"
+        "digest": "f840fc90"
       },
       {
         "heroId": "lit-commando",
@@ -9933,7 +9933,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "8fbb4334"
+        "digest": "eb962c18"
       },
       {
         "heroId": "lit-commando",
@@ -9941,7 +9941,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "6d8d66bc"
+        "digest": "f98c39d2"
       },
       {
         "heroId": "lit-commando",
@@ -9949,7 +9949,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "f1b390d2"
+        "digest": "b23f864e"
       },
       {
         "heroId": "lit-commando",
@@ -9957,7 +9957,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "daf7710b"
+        "digest": "f0836733"
       },
       {
         "heroId": "lit-commando",
@@ -9965,7 +9965,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "281790be"
+        "digest": "081ee40b"
       },
       {
         "heroId": "lit-commando",
@@ -9973,7 +9973,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "9b3f38a3"
+        "digest": "41aa2fd5"
       },
       {
         "heroId": "lit-commando",
@@ -9981,7 +9981,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "491cdc3b"
+        "digest": "0871da01"
       },
       {
         "heroId": "lit-commando",
@@ -9989,7 +9989,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d91c70a9"
+        "digest": "5f8990c6"
       },
       {
         "heroId": "lit-commando",
@@ -9997,7 +9997,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "02fee91e"
+        "digest": "acd916bb"
       },
       {
         "heroId": "lit-commando",
@@ -10005,7 +10005,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d25b578a"
+        "digest": "8a5f097f"
       },
       {
         "heroId": "lit-commando",
@@ -10013,7 +10013,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "29aef4d2"
+        "digest": "79583b71"
       },
       {
         "heroId": "lit-commando",
@@ -10021,7 +10021,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "490686c5"
+        "digest": "6fbea4fc"
       },
       {
         "heroId": "lit-commando",
@@ -10029,7 +10029,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "1afac161"
+        "digest": "2c0cad6b"
       },
       {
         "heroId": "lit-commando",
@@ -10037,7 +10037,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "a4531f78"
+        "digest": "2efcbec3"
       },
       {
         "heroId": "lit-commando",
@@ -10045,7 +10045,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e5163e52"
+        "digest": "85d2e05a"
       },
       {
         "heroId": "lit-commando",
@@ -10053,7 +10053,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "0dfcc16f"
+        "digest": "8cec749b"
       },
       {
         "heroId": "lit-commando",
@@ -10061,7 +10061,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "f79f497f"
+        "digest": "1f46f59a"
       },
       {
         "heroId": "lit-commando",
@@ -10069,7 +10069,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "1b61bb7a"
+        "digest": "793b749a"
       },
       {
         "heroId": "lit-commando",
@@ -10077,7 +10077,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "099c3e8f"
+        "digest": "cec65236"
       },
       {
         "heroId": "lit-commando",
@@ -10085,7 +10085,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "1a1846f0"
+        "digest": "fa7357ad"
       },
       {
         "heroId": "lit-commando",
@@ -10093,7 +10093,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "b42bf016"
+        "digest": "da49b731"
       },
       {
         "heroId": "lit-commando",
@@ -10101,7 +10101,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "06e7c7d9"
+        "digest": "e41ffc3e"
       },
       {
         "heroId": "lit-commando",
@@ -10109,7 +10109,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "c797aeb4"
+        "digest": "4c3d5682"
       },
       {
         "heroId": "lit-commando",
@@ -10117,7 +10117,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "6a60ddbf"
+        "digest": "dc34359c"
       },
       {
         "heroId": "lit-commando",
@@ -10125,7 +10125,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "7021a828"
+        "digest": "feb5dbfd"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10133,7 +10133,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "779fd27e"
+        "digest": "1c200b25"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10141,7 +10141,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "ea239928"
+        "digest": "e3ebfb43"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10149,7 +10149,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "8cca9d24"
+        "digest": "215c0916"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10157,7 +10157,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "279f3f82"
+        "digest": "3d843d8c"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10165,7 +10165,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "78286976"
+        "digest": "81b401a1"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10173,7 +10173,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "97f77bf4"
+        "digest": "74798d4f"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10181,7 +10181,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "88029617"
+        "digest": "058c84c9"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10189,7 +10189,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "2fcc2e7f"
+        "digest": "d5d1ce94"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10197,7 +10197,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "a7b0f3c9"
+        "digest": "91575522"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10205,7 +10205,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "3fb75baa"
+        "digest": "b7cea27a"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10213,7 +10213,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "90520857"
+        "digest": "68dd01a9"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10221,7 +10221,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "1fd82458"
+        "digest": "4dec914b"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10229,7 +10229,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "a6da6fa5"
+        "digest": "910f1f02"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10237,7 +10237,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "065909d9"
+        "digest": "d977f11d"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10245,7 +10245,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "959c4823"
+        "digest": "62cf993d"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10253,7 +10253,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "688ce304"
+        "digest": "66db9423"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10261,7 +10261,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "3bc5317e"
+        "digest": "2572c78d"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10269,7 +10269,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "dd909e4d"
+        "digest": "d6ed92ad"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10277,7 +10277,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "caa2635f"
+        "digest": "dbff8286"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10285,7 +10285,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "f3a117bc"
+        "digest": "791fa410"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10293,7 +10293,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "85070e0d"
+        "digest": "370bca95"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10301,7 +10301,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "3741dc0c"
+        "digest": "17b417ff"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10309,7 +10309,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "bc25e443"
+        "digest": "b8f80316"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10317,7 +10317,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "9284cd4a"
+        "digest": "0d42c562"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10325,7 +10325,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "da56d565"
+        "digest": "8767ba90"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10333,7 +10333,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "2d7d9898"
+        "digest": "25dd8eeb"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10341,7 +10341,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "0ed8a600"
+        "digest": "c109e2e5"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10349,7 +10349,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "bd84a1fa"
+        "digest": "ea08439b"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10357,7 +10357,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "48a2929e"
+        "digest": "d461963b"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10365,7 +10365,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "897c44f7"
+        "digest": "6d196bd7"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10373,7 +10373,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "cfa53081"
+        "digest": "61a7b162"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10381,7 +10381,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "d794f644"
+        "digest": "d872057a"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10389,7 +10389,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "56d405f5"
+        "digest": "2e7735ec"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10397,7 +10397,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "1d4b7c03"
+        "digest": "5e90861c"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10405,7 +10405,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "7ea6748d"
+        "digest": "1d188378"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10413,7 +10413,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "8359c54e"
+        "digest": "9d9d5288"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10421,7 +10421,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "bcc437d5"
+        "digest": "6b4ad7b4"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10429,7 +10429,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "bdc97f29"
+        "digest": "c8c600b5"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10437,7 +10437,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "2eb7c8d1"
+        "digest": "1779e109"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10445,7 +10445,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "2f0590e2"
+        "digest": "400e9af1"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10453,7 +10453,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "86726aad"
+        "digest": "46d4bc8c"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10461,7 +10461,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "40d3ac9c"
+        "digest": "99a48c39"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10469,7 +10469,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "eadb6e89"
+        "digest": "0697d010"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10477,7 +10477,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "8c56ce42"
+        "digest": "e4559d11"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10485,7 +10485,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "1562af45"
+        "digest": "d68e3633"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10493,7 +10493,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "60996493"
+        "digest": "0ff8eae1"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10501,7 +10501,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "f59a437b"
+        "digest": "b8656e80"
       },
       {
         "heroId": "lit-valkyrie",
@@ -10509,7 +10509,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "3f40448a"
+        "digest": "8eb53ea0"
       },
       {
         "heroId": "lester-original",
@@ -10517,7 +10517,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "4aa7b3e9"
+        "digest": "570578c8"
       },
       {
         "heroId": "lester-original",
@@ -10525,7 +10525,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "67c78c30"
+        "digest": "f58c9169"
       },
       {
         "heroId": "lester-original",
@@ -10533,7 +10533,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "ef7c5589"
+        "digest": "5a37b2d8"
       },
       {
         "heroId": "lester-original",
@@ -10541,7 +10541,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "5e5023fa"
+        "digest": "4deeb579"
       },
       {
         "heroId": "lester-original",
@@ -10549,7 +10549,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "79ca3fa9"
+        "digest": "f00fa037"
       },
       {
         "heroId": "lester-original",
@@ -10557,7 +10557,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "61066a57"
+        "digest": "b53d8be6"
       },
       {
         "heroId": "lester-original",
@@ -10565,7 +10565,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "5713296e"
+        "digest": "eb1882e9"
       },
       {
         "heroId": "lester-original",
@@ -10573,7 +10573,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "071d5517"
+        "digest": "4a0875a5"
       },
       {
         "heroId": "lester-original",
@@ -10581,7 +10581,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "283f3621"
+        "digest": "650e1ffb"
       },
       {
         "heroId": "lester-original",
@@ -10589,7 +10589,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "7fd51d2d"
+        "digest": "595b92e0"
       },
       {
         "heroId": "lester-original",
@@ -10597,7 +10597,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "c9498512"
+        "digest": "7170f96c"
       },
       {
         "heroId": "lester-original",
@@ -10605,7 +10605,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "d978a13d"
+        "digest": "bab45c5b"
       },
       {
         "heroId": "lester-original",
@@ -10613,7 +10613,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d9c4077b"
+        "digest": "5fb65bb0"
       },
       {
         "heroId": "lester-original",
@@ -10621,7 +10621,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "dde05a3a"
+        "digest": "a7b38c59"
       },
       {
         "heroId": "lester-original",
@@ -10629,7 +10629,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "3d0ef155"
+        "digest": "7403e5aa"
       },
       {
         "heroId": "lester-original",
@@ -10637,7 +10637,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e4166a0f"
+        "digest": "352e00c6"
       },
       {
         "heroId": "lester-original",
@@ -10645,7 +10645,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "f8427f81"
+        "digest": "e80d31e9"
       },
       {
         "heroId": "lester-original",
@@ -10653,7 +10653,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "078f592d"
+        "digest": "b7a9ece4"
       },
       {
         "heroId": "lester-original",
@@ -10661,7 +10661,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "e446909e"
+        "digest": "6817d84a"
       },
       {
         "heroId": "lester-original",
@@ -10669,7 +10669,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "6fce67a2"
+        "digest": "e7ba39c7"
       },
       {
         "heroId": "lester-original",
@@ -10677,7 +10677,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "cee9f1b5"
+        "digest": "89e30cf2"
       },
       {
         "heroId": "lester-original",
@@ -10685,7 +10685,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e3ea1e2c"
+        "digest": "3e75fdb8"
       },
       {
         "heroId": "lester-original",
@@ -10693,7 +10693,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "95ba9ec0"
+        "digest": "1b3f00d8"
       },
       {
         "heroId": "lester-original",
@@ -10701,7 +10701,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "17343024"
+        "digest": "e6af5365"
       },
       {
         "heroId": "lester-original",
@@ -10709,7 +10709,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "31cc8387"
+        "digest": "6cbc35f4"
       },
       {
         "heroId": "lester-original",
@@ -10717,7 +10717,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "36940914"
+        "digest": "5ee874a3"
       },
       {
         "heroId": "lester-original",
@@ -10725,7 +10725,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "edf9cf53"
+        "digest": "5fdab587"
       },
       {
         "heroId": "lester-original",
@@ -10733,7 +10733,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "372850c0"
+        "digest": "3ebc8988"
       },
       {
         "heroId": "lester-original",
@@ -10741,7 +10741,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "8e24584a"
+        "digest": "ed1e54e4"
       },
       {
         "heroId": "lester-original",
@@ -10749,7 +10749,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e2e1e6e1"
+        "digest": "03cc9960"
       },
       {
         "heroId": "lester-original",
@@ -10757,7 +10757,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "9e062e03"
+        "digest": "fbed45d5"
       },
       {
         "heroId": "lester-original",
@@ -10765,7 +10765,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "293655f8"
+        "digest": "d6890c7d"
       },
       {
         "heroId": "lester-original",
@@ -10773,7 +10773,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "9bfaab37"
+        "digest": "2de2eb74"
       },
       {
         "heroId": "lester-original",
@@ -10781,7 +10781,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "81e337a8"
+        "digest": "7319ecab"
       },
       {
         "heroId": "lester-original",
@@ -10789,7 +10789,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "f51f55b4"
+        "digest": "2fc8d74d"
       },
       {
         "heroId": "lester-original",
@@ -10797,7 +10797,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "b20e11a5"
+        "digest": "b52365fc"
       },
       {
         "heroId": "lester-original",
@@ -10805,7 +10805,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "ba94998f"
+        "digest": "b022a174"
       },
       {
         "heroId": "lester-original",
@@ -10813,7 +10813,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "c8769557"
+        "digest": "b91efa33"
       },
       {
         "heroId": "lester-original",
@@ -10821,7 +10821,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "fe87a80b"
+        "digest": "de6ddf60"
       },
       {
         "heroId": "lester-original",
@@ -10829,7 +10829,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "a651da54"
+        "digest": "b9b6dcb0"
       },
       {
         "heroId": "lester-original",
@@ -10837,7 +10837,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "e13cf905"
+        "digest": "df0a85cf"
       },
       {
         "heroId": "lester-original",
@@ -10845,7 +10845,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "0d78b79d"
+        "digest": "36a8a5a3"
       },
       {
         "heroId": "lester-original",
@@ -10853,7 +10853,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "b5f84dbc"
+        "digest": "b6e39b06"
       },
       {
         "heroId": "lester-original",
@@ -10861,7 +10861,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "c8494822"
+        "digest": "6cc58586"
       },
       {
         "heroId": "lester-original",
@@ -10869,7 +10869,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "dac2c006"
+        "digest": "753864e5"
       },
       {
         "heroId": "lester-original",
@@ -10877,7 +10877,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "44842297"
+        "digest": "de17ac9e"
       },
       {
         "heroId": "lester-original",
@@ -10885,7 +10885,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "93286393"
+        "digest": "09fcf70c"
       },
       {
         "heroId": "lester-original",
@@ -10893,7 +10893,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "c71b3a8d"
+        "digest": "0661325b"
       },
       {
         "heroId": "lilly",
@@ -10901,7 +10901,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "b22fbd85"
+        "digest": "83c65b97"
       },
       {
         "heroId": "lilly",
@@ -10909,7 +10909,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "b06b6cad"
+        "digest": "3c0d9fc8"
       },
       {
         "heroId": "lilly",
@@ -10917,7 +10917,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "1bf3b08f"
+        "digest": "9469a1a6"
       },
       {
         "heroId": "lilly",
@@ -10925,7 +10925,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "fa4f7d10"
+        "digest": "2a68ff56"
       },
       {
         "heroId": "lilly",
@@ -10933,7 +10933,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d90aae5d"
+        "digest": "8ff33019"
       },
       {
         "heroId": "lilly",
@@ -10941,7 +10941,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "a22ece38"
+        "digest": "4838b65c"
       },
       {
         "heroId": "lilly",
@@ -10949,7 +10949,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "ea24bf65"
+        "digest": "ecf0741e"
       },
       {
         "heroId": "lilly",
@@ -10957,7 +10957,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "2f55d551"
+        "digest": "fc576788"
       },
       {
         "heroId": "lilly",
@@ -10965,7 +10965,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "ea0162bb"
+        "digest": "d2ee69e8"
       },
       {
         "heroId": "lilly",
@@ -10973,7 +10973,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "30c4b994"
+        "digest": "61aac82d"
       },
       {
         "heroId": "lilly",
@@ -10981,7 +10981,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "5c4ef0dc"
+        "digest": "005c1d5b"
       },
       {
         "heroId": "lilly",
@@ -10989,7 +10989,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "b4628412"
+        "digest": "4d572392"
       },
       {
         "heroId": "lilly",
@@ -10997,7 +10997,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "4b62206b"
+        "digest": "b4b2842a"
       },
       {
         "heroId": "lilly",
@@ -11005,7 +11005,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "3abc5740"
+        "digest": "506b470e"
       },
       {
         "heroId": "lilly",
@@ -11013,7 +11013,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d25500ef"
+        "digest": "19f926b1"
       },
       {
         "heroId": "lilly",
@@ -11021,7 +11021,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "641a8e78"
+        "digest": "94dd40dc"
       },
       {
         "heroId": "lilly",
@@ -11029,7 +11029,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "3996a80d"
+        "digest": "784f624b"
       },
       {
         "heroId": "lilly",
@@ -11037,7 +11037,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "fb3f1e82"
+        "digest": "678beecc"
       },
       {
         "heroId": "lilly",
@@ -11045,7 +11045,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d93e35e0"
+        "digest": "899eec81"
       },
       {
         "heroId": "lilly",
@@ -11053,7 +11053,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "401cd359"
+        "digest": "9419ca8d"
       },
       {
         "heroId": "lilly",
@@ -11061,7 +11061,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "a78f46fd"
+        "digest": "936dda38"
       },
       {
         "heroId": "lilly",
@@ -11069,7 +11069,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "c8936683"
+        "digest": "39652cfd"
       },
       {
         "heroId": "lilly",
@@ -11077,7 +11077,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "d9019436"
+        "digest": "291d2b2f"
       },
       {
         "heroId": "lilly",
@@ -11085,7 +11085,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "ae2ed298"
+        "digest": "50816a24"
       },
       {
         "heroId": "lilly",
@@ -11093,7 +11093,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "99f33069"
+        "digest": "fc569ab3"
       },
       {
         "heroId": "lilly",
@@ -11101,7 +11101,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "720e5c27"
+        "digest": "72719fd1"
       },
       {
         "heroId": "lilly",
@@ -11109,7 +11109,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "f0393bce"
+        "digest": "b0bd371e"
       },
       {
         "heroId": "lilly",
@@ -11117,7 +11117,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "42b61836"
+        "digest": "c761bb01"
       },
       {
         "heroId": "lilly",
@@ -11125,7 +11125,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "e44f1e1f"
+        "digest": "22216797"
       },
       {
         "heroId": "lilly",
@@ -11133,7 +11133,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "8c7f21f0"
+        "digest": "4d774a11"
       },
       {
         "heroId": "lilly",
@@ -11141,7 +11141,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "dd43946f"
+        "digest": "b562aad9"
       },
       {
         "heroId": "lilly",
@@ -11149,7 +11149,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "beb9bfda"
+        "digest": "f2139727"
       },
       {
         "heroId": "lilly",
@@ -11157,7 +11157,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "b2410cca"
+        "digest": "db2672d2"
       },
       {
         "heroId": "lilly",
@@ -11165,7 +11165,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "b64ba2ec"
+        "digest": "2ee1a9e6"
       },
       {
         "heroId": "lilly",
@@ -11173,7 +11173,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "530fdc1c"
+        "digest": "52a8ff23"
       },
       {
         "heroId": "lilly",
@@ -11181,7 +11181,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "23ca52d6"
+        "digest": "1b414e21"
       },
       {
         "heroId": "lilly",
@@ -11189,7 +11189,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "6a72e105"
+        "digest": "ae828799"
       },
       {
         "heroId": "lilly",
@@ -11197,7 +11197,7 @@
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "a4786f86"
+        "digest": "4ee053d0"
       },
       {
         "heroId": "lilly",
@@ -11205,7 +11205,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "8bec3297"
+        "digest": "7e9eda55"
       },
       {
         "heroId": "lilly",
@@ -11213,7 +11213,7 @@
         "enemyArchetypeId": "forkrunner",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "8df7bf62"
+        "digest": "873d7006"
       },
       {
         "heroId": "lilly",
@@ -11221,7 +11221,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "9a550f64"
+        "digest": "fbfe00d0"
       },
       {
         "heroId": "lilly",
@@ -11229,7 +11229,7 @@
         "enemyArchetypeId": "liquidator-agent",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e2f5d866"
+        "digest": "b703792b"
       },
       {
         "heroId": "lilly",
@@ -11237,7 +11237,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "97229724"
+        "digest": "7d1789be"
       },
       {
         "heroId": "lilly",
@@ -11245,7 +11245,7 @@
         "enemyArchetypeId": "whale-enforcer",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "e1fe694f"
+        "digest": "d07af946"
       },
       {
         "heroId": "lilly",
@@ -11253,7 +11253,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "4f893d74"
+        "digest": "be4aa006"
       },
       {
         "heroId": "lilly",
@@ -11261,7 +11261,7 @@
         "enemyArchetypeId": "gas-bomber",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "06acc150"
+        "digest": "a860f99c"
       },
       {
         "heroId": "lilly",
@@ -11269,7 +11269,7 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4101,
         "terminalReason": "time-limit",
-        "digest": "fc4af497"
+        "digest": "40f47cc9"
       },
       {
         "heroId": "lilly",
@@ -11277,9 +11277,134 @@
         "enemyArchetypeId": "validator-cultist",
         "seed": 4102,
         "terminalReason": "time-limit",
-        "digest": "cb659160"
+        "digest": "478e1142"
       }
     ]
   },
+  "measuredPlayerKpm": {
+    "minimum": 34.24,
+    "maximum": 55
+  },
+  "encounterBandEvidence": [
+    {
+      "bandId": "opening",
+      "spawnPerMinute": 30,
+      "pressureRelation": "recovery",
+      "bodyCap": 32,
+      "threatCap": 64,
+      "attackTokens": {
+        "melee": 2,
+        "ranged": 1,
+        "area": 1,
+        "support": 0
+      },
+      "roleWeights": {
+        "rusher": 14,
+        "flanker": 6
+      }
+    },
+    {
+      "bandId": "build",
+      "spawnPerMinute": 40,
+      "pressureRelation": "matched",
+      "bodyCap": 64,
+      "threatCap": 128,
+      "attackTokens": {
+        "melee": 3,
+        "ranged": 2,
+        "area": 1,
+        "support": 1
+      },
+      "roleWeights": {
+        "rusher": 11,
+        "flanker": 6,
+        "suppressor": 3
+      }
+    },
+    {
+      "bandId": "pressure",
+      "spawnPerMinute": 60,
+      "pressureRelation": "accumulating",
+      "bodyCap": 100,
+      "threatCap": 240,
+      "attackTokens": {
+        "melee": 4,
+        "ranged": 3,
+        "area": 2,
+        "support": 1
+      },
+      "roleWeights": {
+        "rusher": 6,
+        "flanker": 4,
+        "suppressor": 3,
+        "heavy": 3,
+        "demolition": 2,
+        "support": 2
+      }
+    },
+    {
+      "bandId": "elite",
+      "spawnPerMinute": 80,
+      "pressureRelation": "accumulating",
+      "bodyCap": 128,
+      "threatCap": 360,
+      "attackTokens": {
+        "melee": 5,
+        "ranged": 4,
+        "area": 3,
+        "support": 2
+      },
+      "roleWeights": {
+        "rusher": 5,
+        "flanker": 4,
+        "suppressor": 3,
+        "heavy": 3,
+        "demolition": 3,
+        "support": 2
+      }
+    },
+    {
+      "bandId": "boss",
+      "spawnPerMinute": 60,
+      "pressureRelation": "accumulating",
+      "bodyCap": 128,
+      "threatCap": 512,
+      "attackTokens": {
+        "melee": 3,
+        "ranged": 3,
+        "area": 3,
+        "support": 2
+      },
+      "roleWeights": {
+        "rusher": 4,
+        "flanker": 3,
+        "suppressor": 3,
+        "heavy": 4,
+        "demolition": 3,
+        "support": 3
+      }
+    },
+    {
+      "bandId": "endurance",
+      "spawnPerMinute": 120,
+      "pressureRelation": "accumulating",
+      "bodyCap": 160,
+      "threatCap": 640,
+      "attackTokens": {
+        "melee": 6,
+        "ranged": 5,
+        "area": 4,
+        "support": 2
+      },
+      "roleWeights": {
+        "rusher": 4,
+        "flanker": 4,
+        "suppressor": 3,
+        "heavy": 3,
+        "demolition": 3,
+        "support": 3
+      }
+    }
+  ],
   "passed": true
 }

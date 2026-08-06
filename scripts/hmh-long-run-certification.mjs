@@ -7,6 +7,7 @@ import {
   buildHmhLongRunCertification,
   buildHmhUpgradeBuildCertification,
 } from '../apps/portal/src/hmh-long-run-simulator.mjs';
+import { ENCOUNTER_BANDS } from '../apps/hmh-reboot/src/encounter-director.mjs';
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const outputDir = join(repoRoot, 'docs', 'qa');
@@ -15,6 +16,25 @@ const markdownPath = join(outputDir, 'hard-money-heroes-long-run-certification.m
 const report = buildHmhLongRunCertification();
 const buildCertification = buildHmhUpgradeBuildCertification();
 const matrixCertification = buildHmhCombatMatrixCertification();
+const weaponKpm = matrixCertification.weaponSummaries.map((entry) => entry.medianKillsPerMinute);
+const measuredPlayerKpm = Object.freeze({ minimum: Math.min(...weaponKpm), maximum: Math.max(...weaponKpm) });
+const encounterBandEvidence = Object.freeze(ENCOUNTER_BANDS.map((band) => {
+  const spawnPerMinute = 3_600 / band.spawnIntervalTicks;
+  const pressureRelation = spawnPerMinute < measuredPlayerKpm.minimum
+    ? 'recovery'
+    : spawnPerMinute <= measuredPlayerKpm.maximum
+      ? 'matched'
+      : 'accumulating';
+  return Object.freeze({
+    bandId: band.id,
+    spawnPerMinute,
+    pressureRelation,
+    bodyCap: band.budgets.bodyCap,
+    threatCap: band.budgets.threatCap,
+    attackTokens: band.budgets.attackTokens,
+    roleWeights: Object.freeze(Object.fromEntries(Object.entries(band.roleWeights).filter(([, weight]) => weight > 0))),
+  });
+}));
 const passed = report.summary.invalidRuns === 0
   && report.summary.survivalRate >= 0.95
   && report.summary.scoreSpreadPct <= 35
@@ -83,6 +103,14 @@ ${matrixCertification.weaponSummaries.map((entry) => `| ${entry.weaponId} | ${en
 | --- | ---: | ---: | ---: | ---: |
 ${matrixCertification.enemySummaries.map((entry) => `| ${entry.enemyArchetypeId} | ${entry.runs} | ${(entry.survivalRate * 100).toFixed(1)}% | ${entry.medianKillsPerMinute} | ${entry.medianDamageTaken} |`).join('\n')}
 
+## Encounter band evidence
+
+Measured player KPM range: ${measuredPlayerKpm.minimum}–${measuredPlayerKpm.maximum}.
+
+| Band | Spawn / min | Pressure | Body cap | Threat cap | Attack tokens | Role weights |
+| --- | ---: | --- | ---: | ---: | --- | --- |
+${encounterBandEvidence.map((entry) => `| ${entry.bandId} | ${entry.spawnPerMinute} | ${entry.pressureRelation} | ${entry.bodyCap} | ${entry.threatCap} | ${Object.entries(entry.attackTokens).map(([family, count]) => `${family}:${count}`).join(', ')} | ${Object.entries(entry.roleWeights).map(([role, weight]) => `${role}:${weight}`).join(', ')} |`).join('\n')}
+
 ## Hero medians
 
 | Hero | Runs | Median score | Median kills | Median level | Survival | Minimum major bosses |
@@ -110,7 +138,7 @@ ${report.runs.map((run) => `| ${run.heroId} | ${run.seed} | ${run.terminalReason
 - Boss-rematch readability review under late pressure
 `;
 
-writeFileSync(jsonPath, `${JSON.stringify({ ...report, buildCertification, matrixCertification: compactMatrixCertification, passed }, null, 2)}\n`);
+writeFileSync(jsonPath, `${JSON.stringify({ ...report, buildCertification, matrixCertification: compactMatrixCertification, measuredPlayerKpm, encounterBandEvidence, passed }, null, 2)}\n`);
 writeFileSync(markdownPath, markdown);
 console.log(`Long-run certification ${passed ? 'passed' : 'failed'}:`);
 console.log(`- ${jsonPath}`);

@@ -95,7 +95,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     reloadSeconds: 2,
     clipSize: 2,
     projectileSpeed: 900,
-    range: 320,
+    range: 480,
     projectileRadius: 3,
     spreadRadians: Math.PI * 28 / 180,
     pelletCount: 8,
