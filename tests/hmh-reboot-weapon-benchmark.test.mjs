@@ -22,3 +22,19 @@ test('S5 shotgun remains close-range dominant without collapsing at mid-range', 
   assert.equal(shotgunSwarm.killed, 8);
   assert.notEqual(shotgunSwarm.clearSeconds, null);
 });
+
+test('S4 maxed pistol gains authored long-range and crowd-clear identity', () => {
+  const rows = runBenchmark();
+  const find = (tier, range) => rows.find((entry) => entry.weaponId === 'coin-blaster' && entry.tier === tier && entry.range === range);
+  const baseMid = find('base', 'mid');
+  const maxedMid = find('maxed', 'mid');
+  const baseLong = find('base', 'long');
+  const maxedLong = find('maxed', 'long');
+  const swarm = runSwarmBenchmark().find((entry) => entry.weaponId === 'coin-blaster' && entry.tier === 'maxed' && entry.packSize === 8);
+
+  assert.ok(maxedMid.sustainedDps > baseMid.sustainedDps);
+  assert.ok(maxedLong.contacts > baseLong.contacts);
+  assert.ok(maxedLong.sustainedDps > baseLong.sustainedDps);
+  assert.equal(swarm.killed, 8);
+  assert.notEqual(swarm.clearSeconds, null);
+});

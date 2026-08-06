@@ -86,7 +86,7 @@ test('the shipped player identity is the production atlas, not the prototype gra
   assert.match(source, /const productionPilotEnabled = !grayboxRequested && !pipelinePilotEnabled/);
   // A failed atlas load must degrade to the prototype rather than break the run.
   assert.match(source, /productionHeroLoadError = String/);
-  assert.match(source, /stageElement\.dataset\.actorArtSource = productionHeroDisplay \?/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArtSource = productionHeroDisplay \?/);
 });
 
 test('enemy depth sorting and combat VFX draw order are explicit', async () => {

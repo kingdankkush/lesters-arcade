@@ -99,12 +99,12 @@ test('runtime projects production enemy and boss art without mutating combat aut
   assert.match(source, /queueEnemyDeathVisual\(defeatedEnemy, tick\)/);
   assert.match(source, /endTick: tick \+ 30/);
   assert.ok(source.indexOf('queueEnemyDeathVisual(defeatedEnemy, tick)') < source.indexOf('retireEnemyFromPopulation(enemyPopulation, scoreEvent.enemyId'));
-  assert.match(source, /stageElement\.dataset\.enemyDeathVisuals/);
-  assert.match(source, /stageElement\.dataset\.enemyEliteVisuals/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDeathVisuals/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyEliteVisuals/);
   assert.match(source, /enemy\.hitUntilTick = tick \+ 6/);
   assert.match(source, /bossDeathVisualUntilTick = tick \+ 45/);
   assert.match(source, /bossHitVisualUntilTick = tick \+ 6/);
-  assert.match(source, /stageElement\.dataset\.bossVisualState/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.bossVisualState/);
   // Enemies and the boss now render from authored Blender roster atlases when
   // those resolve, and fall back to this vector projection otherwise, so the
   // art telemetry reports whichever actually rendered.

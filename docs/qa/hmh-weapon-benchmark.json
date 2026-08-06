@@ -544,8 +544,8 @@
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
       "shotsFired": 176,
       "projectilesEmitted": 176,
-      "contacts": 26,
-      "movingHitRate": 0.1477
+      "contacts": 33,
+      "movingHitRate": 0.1875
     },
     {
       "weaponId": "coin-blaster",

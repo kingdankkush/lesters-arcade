@@ -123,8 +123,8 @@ test('world art contract is production, layered, and never gains gameplay author
   const source = read('apps/hmh-reboot/src/main.mjs');
   assert.match(source, /createWorldProductionLayers/);
   assert.match(source, /renderWorldProductionArt/);
-  assert.match(source, /stageElement\.dataset\.worldArt = 'production-vector-world-v1'/);
-  assert.match(source, /stageElement\.dataset\.worldShader/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.worldArt = 'production-vector-world-v1'/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.worldShader/);
   assert.doesNotMatch(source, /worldProduction(?:Layers)?\.(?:collision|damage|health|spawn|score|wallet|settlement|bridge|persistence)\s*=/);
 
   const worldSource = read('apps/hmh-reboot/src/world-production-art.mjs');

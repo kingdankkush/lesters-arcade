@@ -18,19 +18,19 @@
 export const WEAPON_UPGRADE_TREES = Object.freeze({
   'coin-blaster': {
     rateOfFire: [
-      { tier: 1, effect: '+18% fire rate', multiplier: 1.18 },
-      { tier: 2, effect: '+38% fire rate (compounded)', multiplier: 1.38 },
+      { tier: 1, effect: '+18% fire rate + faster rounds', multiplier: 1.18, special: 'fast-rounds' },
+      { tier: 2, effect: '+38% fire rate + longer range', multiplier: 1.38, special: 'long-rounds' },
       { tier: 3, effect: '+62% fire rate + rapid-fire burst', multiplier: 1.62, special: 'burst-fire' },
     ],
     damage: [
       { tier: 1, effect: '+1 damage per shot', flatBonus: 1 },
-      { tier: 2, effect: '+3 damage per shot', flatBonus: 3 },
-      { tier: 3, effect: '+5 damage + armor-piercing rounds', flatBonus: 5, special: 'armor-piercing' },
+      { tier: 2, effect: '+3 damage + one ricochet', flatBonus: 3, special: 'ricochet' },
+      { tier: 3, effect: '+5 damage + armor penetration', flatBonus: 5, special: 'armor-piercing' },
     ],
     reloadSpeed: [
       { tier: 1, effect: '+22% reload speed', multiplier: 1.22 },
-      { tier: 2, effect: '+48% reload speed (compounded)', multiplier: 1.48 },
-      { tier: 3, effect: '+78% reload speed + extended mag (12 rounds)', multiplier: 1.78, special: 'extended-mag' },
+      { tier: 2, effect: '+48% reload speed + shock rounds', multiplier: 1.48, special: 'shock-rounds' },
+      { tier: 3, effect: '+78% reload speed + shock mag', multiplier: 1.78, special: 'extended-mag' },
     ],
   },
   'scatter-shotgun': {

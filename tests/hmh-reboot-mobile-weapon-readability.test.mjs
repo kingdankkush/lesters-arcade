@@ -20,9 +20,9 @@ test('mobile combat HUD names the selected weapon, magazine capacity, and action
   const runtime = repoText('apps/hmh-reboot/src/main.mjs');
   assert.match(runtime, /weaponStatus\?\.hudLabel/);
   assert.match(runtime, /weaponStatus\?\.accessibleLabel/);
-  assert.match(runtime, /stageElement\.dataset\.weaponClipSize/);
-  assert.match(runtime, /stageElement\.dataset\.weaponStatus/);
-  assert.match(runtime, /stageElement\.dataset\.weaponReloadTicksRemaining/);
+  assert.match(runtime, /(?:stageElement\.dataset|dataset)\.weaponClipSize/);
+  assert.match(runtime, /(?:stageElement\.dataset|dataset)\.weaponStatus/);
+  assert.match(runtime, /(?:stageElement\.dataset|dataset)\.weaponReloadTicksRemaining/);
 });
 
 test('touch styles preserve a distinct readable weapon switch control', () => {

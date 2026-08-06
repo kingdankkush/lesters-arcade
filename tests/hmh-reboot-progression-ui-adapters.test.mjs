@@ -115,7 +115,7 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(main, /PAUSE_SETTING_KEYS = new Set\(\['musicEnabled', 'screenShake', 'reduceMotion', 'reduceFlash'\]\)/);
   assert.match(main, /syncRuntimeSettings\(\{ \.\.\.settings, \[key\]: Boolean\(enabled\) \}, \{ notify: true \}\)/);
   assert.match(main, /sessionPayload = \{ \.\.\.sessionPayload, settings: \{ \.\.\.settings \} \}/);
-  assert.match(main, /stageElement\.dataset\.settingReduceMotion/);
+  assert.match(main, /(?:stageElement\.dataset|dataset)\.settingReduceMotion/);
   assert.match(main, /createRunProgression/);
   assert.match(main, /recordRunDefeat/);
   assert.match(main, /selectRunUpgrade/);

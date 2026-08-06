@@ -163,9 +163,9 @@ export const HMH_WEAPON_EVOLUTIONS = freezeDeep({
 
 const UPGRADE_TREES = freezeDeep({
   'coin-blaster': {
-    rateOfFire: [{ multiplier: 1.18 }, { multiplier: 1.38 }, { multiplier: 1.62, special: 'burst-fire' }],
-    damage: [{ flatBonus: 1 }, { flatBonus: 3 }, { flatBonus: 5, special: 'armor-piercing' }],
-    reloadSpeed: [{ multiplier: 1.22 }, { multiplier: 1.48 }, { multiplier: 1.78, special: 'extended-mag' }],
+    rateOfFire: [{ multiplier: 1.18, special: 'fast-rounds' }, { multiplier: 1.38, special: 'long-rounds' }, { multiplier: 1.62, special: 'burst-fire' }],
+    damage: [{ flatBonus: 1 }, { flatBonus: 3, special: 'ricochet' }, { flatBonus: 5, special: 'armor-piercing' }],
+    reloadSpeed: [{ multiplier: 1.22 }, { multiplier: 1.48, special: 'shock-rounds' }, { multiplier: 1.78, special: 'extended-mag' }],
   },
   'scatter-shotgun': {
     rateOfFire: [{ multiplier: 1.1 }, { multiplier: 1.22 }, { multiplier: 1.36, special: 'double-barrel' }],
@@ -185,12 +185,21 @@ const UPGRADE_TREES = freezeDeep({
   },
 });
 
+export const pistolProgressionByWeapon = (ranks = {}) => ({
+  'coin-blaster': { branches: {
+    damage: ranks['proof-of-work'] ?? 0,
+    rateOfFire: ranks['hot-wallet'] ?? 0,
+    reloadSpeed: ranks['block-reward'] ?? 0,
+  } },
+});
+
 // Tier-three capstones. Before this, five of these tags were inert: a player
 // spent three tiers and received only the numeric bonus, with the named
 // capability doing nothing at all.
 const SPECIAL_EFFECTS = freezeDeep({
   // Rounds punch through a target and keep going.
-  'armor-piercing': { policy: { type: 'pierce', maxTargets: 2 } },
+  'armor-piercing': { policy: { type: 'pierce', maxTargets: 3 } },
+  ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
   // Shells detonate on impact.
   explosive: { policy: { type: 'splash', radius: 58 } },
   'shaped-charge': { policy: { type: 'splash', radius: 210 } },
@@ -200,7 +209,11 @@ const SPECIAL_EFFECTS = freezeDeep({
   // Flatter, faster rounds that reach further.
   'tracer-rounds': { projectileSpeedMultiplier: 1.35, rangeMultiplier: 1.25, projectileTag: 'tracer-round' },
   // A fast three-round burst, then the normal cadence gap.
-  'burst-fire': { burstCount: 3, burstIntervalTicks: 4 },
+  'fast-rounds': { projectileSpeedMultiplier: 1.1, rangeMultiplier: 1.08 },
+  'long-rounds': { projectileSpeedMultiplier: 1.22, rangeMultiplier: 1.18 },
+  'burst-fire': { burstCount: 3, burstIntervalTicks: 4, projectileSpeedMultiplier: 1.3, rangeMultiplier: 1.25 },
+  'shock-rounds': { shock: [0.12, 1.5] },
+  'extended-mag': { clipSize: 12, shock: [0.18, 1.75] },
   bandolier: { clipSize: 7 },
 });
 
@@ -246,6 +259,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   let specialTag = null;
   let burstCount = 1;
   let burstIntervalTicks = 0;
+  let shock = null;
   for (const special of specials) {
     const effect = SPECIAL_EFFECTS[special];
     if (!effect) continue;
@@ -258,6 +272,13 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (effect.burstCount) burstCount = effect.burstCount;
     if (effect.burstIntervalTicks) burstIntervalTicks = effect.burstIntervalTicks;
     if (effect.clipSize) clipSize = effect.clipSize;
+    if (effect.shock) shock = effect.shock;
+  }
+
+  const crowdControlCapstone = weaponId === 'coin-blaster'
+    && ['rateOfFire', 'damage', 'reloadSpeed'].every((branch) => branches?.[branch] === 3);
+  if (crowdControlCapstone) {
+    shock = [0.25, 3];
   }
 
   // The evolution keeps priority over a capstone policy: it is the rarer award.
@@ -282,6 +303,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     burstIntervalTicks,
     projectileTag: evolutionId ? evolution.projectileTag : specialTag,
     projectilePolicy,
+    shock,
     heatPerShot: (definition.heatPerShot ?? 0) * (specials.includes('overheat-reduction') ? 0.72 : 1),
     maxHeat: definition.maxHeat ?? 0,
     heatRecoveryPerTick: definition.heatRecoveryPerTick ?? 0,
@@ -553,6 +575,7 @@ function spreadOffsets(profile, state, attackId) {
 }
 
 function buildShots({ definition, progression, state, direction, attackId }) {
+  const shock = (progression.shock?.[0] ?? 0) > seededUnit(state.seed, `${attackId}:shock`);
   return Object.freeze(spreadOffsets(progression, state, attackId).map((angleOffset, pelletIndex) => {
     const shotDirection = rotate(direction, angleOffset);
     const id = `${attackId}:${String(pelletIndex).padStart(2, '0')}`;
@@ -571,6 +594,8 @@ function buildShots({ definition, progression, state, direction, attackId }) {
       damage: progression.damage,
       policy: progression.projectilePolicy,
       projectileTag: progression.projectileTag,
+      shock,
+      knockbackMultiplier: shock ? progression.shock[1] : 1,
     });
   }));
 }

@@ -75,17 +75,17 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /actor\.groundZ\s*=\s*lastGround\.groundZ/);
   assert.match(source, /actor\.z\s*=\s*lastGround\.groundZ/);
   assert.match(worldSource, /visibleAssetId:\s*`graybox-/);
-  assert.match(source, /stageElement\.dataset\.collisionBlocker/);
-  assert.match(source, /stageElement\.dataset\.surfaceId/);
-  assert.match(source, /stageElement\.dataset\.projectileHit/);
-  assert.match(source, /stageElement\.dataset\.weaponId/);
-  assert.match(source, /stageElement\.dataset\.actorArt/);
-  assert.match(source, /stageElement\.dataset\.enemyArt/);
-  assert.match(source, /stageElement\.dataset\.bossArt/);
-  assert.match(source, /stageElement\.dataset\.weaponAmmo/);
-  assert.match(source, /stageElement\.dataset\.weaponHeat/);
-  assert.match(source, /stageElement\.dataset\.weaponStatus/);
-  assert.match(source, /stageElement\.dataset\.weaponReloadTicksRemaining/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.collisionBlocker/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.surfaceId/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.projectileHit/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.weaponId/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArt/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyArt/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.bossArt/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.weaponAmmo/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.weaponHeat/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.weaponStatus/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.weaponReloadTicksRemaining/);
   assert.match(source, /getWeaponReadabilityStatus/);
   assert.match(source, /magnitude:\s*event\.recoil/);
   assert.match(source, /createPlayerDefeatController/);
@@ -94,10 +94,10 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /bridge\.send\('game:score-result', resultMessages\.scoreResult\)/);
   assert.match(source, /bridge\.send\('game:game-over', resultMessages\.gameOver\)/);
   assert.match(source, /simulation\?\.state === 'game-over' \? 'game-over'/);
-  assert.match(source, /stageElement\.dataset\.grenadeCount/);
-  assert.match(source, /stageElement\.dataset\.dashReadyTick/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.grenadeCount/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.dashReadyTick/);
   assert.doesNotMatch(source, /SETTLER_CALIBRATION/);
-  assert.match(source, /if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{[\s\S]*stageElement\.dataset\.collisionBlocker/);
+  assert.match(source, /if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{[\s\S]*(?:stageElement\.dataset|dataset)\.collisionBlocker/);
   assert.match(source, /label\.style\.fontSize/);
   assert.match(source, /computeHudMinimapLayout/);
   assert.match(source, /computeCombatStatusLayout/);
@@ -133,7 +133,7 @@ test('opt-in Blender pilot composes render state without replacing the default g
   assert.match(source, /Assets\.load\(MANNEQUIN_ATLAS_IMAGE_URL\)/);
   assert.match(source, /mannequinDisplay\.applyPose\(\{[\s\S]*simulationTick:[\s\S]*locomotion:[\s\S]*legDirection:[\s\S]*torsoDirection:/);
   assert.match(source, /actorVisual\.position\.set\(atlasActorEnabled \? groundScreen\.x : screen\.x, atlasActorEnabled \? groundScreen\.y : screen\.y\)/);
-  assert.match(source, /stageElement\.dataset\.actorArtSource/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArtSource/);
   assert.match(atlasSource, /pipeline-pilot-human-atlas/);
   assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
   assert.doesNotMatch(source, /pipelinePilotEnabled[\s\S]{0,120}(?:collision|damage|score|wallet|settlement)\s*=/i);
@@ -168,7 +168,7 @@ test('the production hero atlas is the projection-only shipped identity with a g
   assert.match(source, /world\.addChildAt\(actorVisual, slot\)/);
   // Art telemetry must reflect what rendered, so a fallback cannot be
   // reported as production art.
-  assert.match(source, /stageElement\.dataset\.actorArtSource = productionHeroDisplay \? 'production-blender-atlas-v1'/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArtSource = productionHeroDisplay \? 'production-blender-atlas-v1'/);
   assert.match(source, /dataset\.actorArtFallbackReason/);
   assert.match(atlasSource, /runtimeAuthority !== 'projection-only'/);
   assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);

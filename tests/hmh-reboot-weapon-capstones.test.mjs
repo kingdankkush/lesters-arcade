@@ -25,7 +25,7 @@ test('armor-piercing makes pistol rounds punch through a target', () => {
   const tierTwo = applyWeaponProgression('coin-blaster', { branches: { damage: 2 } });
   const capstone = applyWeaponProgression('coin-blaster', { branches: { damage: 3 } });
   assert.ok(capstone.specials.includes('armor-piercing'));
-  assert.equal(tierTwo.projectilePolicy.type, 'stop', 'tier two must still stop on the first target');
+  assert.deepEqual(tierTwo.projectilePolicy, { type: 'ricochet', maxBounces: 1 });
   assert.equal(capstone.projectilePolicy.type, 'pierce');
   assert.ok(capstone.projectilePolicy.maxTargets >= 2);
 });

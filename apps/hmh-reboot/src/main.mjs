@@ -153,6 +153,7 @@ import {
   getWeaponReadabilityStatus,
   grantWeaponPickup,
   refillWeaponLoadout,
+  pistolProgressionByWeapon,
   selectWeapon,
   stepWeaponLoadout,
 } from './weapon-system.mjs';
@@ -254,6 +255,7 @@ function setStatus(status, detail = '') {
 
 async function boot() {
   if (!stageElement) throw new Error('HMH reboot stage is missing');
+  const dataset = stageElement.dataset;
   const performanceProfile = selectRuntimePerformanceProfile({
     width: window.innerWidth,
     devicePixelRatio: window.devicePixelRatio || 1,
@@ -349,7 +351,7 @@ async function boot() {
   // shell signals READY pushed embedded boot past the parent's 8s bridge
   // timeout, so the run is brought up on the prototype actor immediately and
   // the atlas is swapped in as soon as it decodes. A failure leaves the
-  // prototype in place and is reported through evidence telemetry.
+  // prototype in place and is reported through evidence dataset.
   const loadProductionHeroAtlas = async (selection) => {
     const [metadataResponse, atlasTexture] = await Promise.all([
       fetch(selection.metadataUrl, { credentials: 'same-origin' }),
@@ -448,12 +450,12 @@ async function boot() {
     authoredHeldWeaponDisplay = heldWeaponDisplay;
     authoredPropLayer.addChild(display.container);
     heldWeaponLayer.addChild(heldWeaponDisplay.container);
-    stageElement.dataset.authoredPropStatus = 'ready';
-    stageElement.dataset.authoredPropCount = String(authoredPropPlacements.length);
+    dataset.authoredPropStatus = 'ready';
+    dataset.authoredPropCount = String(authoredPropPlacements.length);
   }).catch((error) => {
     authoredPropLoadError = error;
-    stageElement.dataset.authoredPropStatus = 'fallback';
-    stageElement.dataset.authoredPropError = String(error?.message ?? error);
+    dataset.authoredPropStatus = 'fallback';
+    dataset.authoredPropError = String(error?.message ?? error);
     // Existing vector POIs and world materials remain live if generated art is
     // unavailable; a visual asset failure must never terminate a run.
     console.warn('[HMH] Authored prop atlas fallback active', error);
@@ -760,10 +762,10 @@ async function boot() {
     if (sessionPayload) sessionPayload = { ...sessionPayload, settings: { ...settings } };
     combatAudio.setMusicEnabled(settings.musicEnabled);
     cockpit?.setSettings(settings);
-    stageElement.dataset.settingMusic = String(settings.musicEnabled);
-    stageElement.dataset.settingScreenShake = String(settings.screenShake);
-    stageElement.dataset.settingReduceMotion = String(settings.reduceMotion);
-    stageElement.dataset.settingReduceFlash = String(settings.reduceFlash);
+    dataset.settingMusic = String(settings.musicEnabled);
+    dataset.settingScreenShake = String(settings.screenShake);
+    dataset.settingReduceMotion = String(settings.reduceMotion);
+    dataset.settingReduceFlash = String(settings.reduceFlash);
     if (notify && bridge?.initialized) {
       bridge.send('game:settings', { settings: { ...settings } });
       bridge.send('game:state', statePayload());
@@ -898,7 +900,7 @@ async function boot() {
       view,
       project: worldToScreen,
     });
-    stageElement.dataset.worldDecalsVisible = String(decalsDrawn);
+    dataset.worldDecalsVisible = String(decalsDrawn);
   };
 
   const renderAuthoredCollision = (view) => {
@@ -919,11 +921,11 @@ async function boot() {
     });
     const { width, height, x: originX, y: originY } = minimapLayout;
     if (debugGridEnabled || releaseTelemetryEnabled) {
-      stageElement.dataset.minimapWidth = width.toFixed(3);
-      stageElement.dataset.minimapHeight = height.toFixed(3);
-      stageElement.dataset.minimapX = originX.toFixed(3);
-      stageElement.dataset.minimapY = originY.toFixed(3);
-      stageElement.dataset.minimapCompactLandscape = String(minimapLayout.compactLandscape);
+      dataset.minimapWidth = width.toFixed(3);
+      dataset.minimapHeight = height.toFixed(3);
+      dataset.minimapX = originX.toFixed(3);
+      dataset.minimapY = originY.toFixed(3);
+      dataset.minimapCompactLandscape = String(minimapLayout.compactLandscape);
     }
     const mapPoint = (normalized) => ({ x: originX + normalized.x * width, y: originY + normalized.y * height });
     // Neon-noir instrument panel: near-black glass, geometry as dim emissive
@@ -1071,9 +1073,9 @@ async function boot() {
         reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
       });
       if (releaseTelemetryEnabled || debugGridEnabled) {
-        stageElement.dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
-        stageElement.dataset.authoredLandmarkVisible = String(authoredPropReport?.onscreenByCategory?.['district-landmark'] ?? 0);
-        stageElement.dataset.authoredLandmarkAnimated = String(authoredPropReport?.animatedSignalOnscreenCount ?? 0);
+        dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
+        dataset.authoredLandmarkVisible = String(authoredPropReport?.onscreenByCategory?.['district-landmark'] ?? 0);
+        dataset.authoredLandmarkAnimated = String(authoredPropReport?.animatedSignalOnscreenCount ?? 0);
       }
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
@@ -1465,7 +1467,10 @@ async function boot() {
       label.style.fontSize = combatStatusLayout.fontSize;
       label.style.align = 'center';
       const weaponStatus = weaponLoadout
-        ? getWeaponReadabilityStatus(weaponLoadout, { tick: simulation?.tick ?? 0 })
+        ? getWeaponReadabilityStatus(weaponLoadout, {
+          tick: simulation?.tick ?? 0,
+          progressionByWeapon: runProgression ? pistolProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {},
+        })
         : null;
       const weaponHud = weaponStatus?.hudLabel ?? 'NO WEAPON 0/0';
       const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
@@ -1544,118 +1549,118 @@ async function boot() {
       }
       renderMinimap(view, renderState);
       if (debugGridEnabled || releaseTelemetryEnabled) {
-        stageElement.dataset.actorX = renderState.x.toFixed(3);
-        stageElement.dataset.actorY = renderState.y.toFixed(3);
-        stageElement.dataset.targetX = grayboxEnemies[0]?.x.toFixed(3) ?? '';
-        stageElement.dataset.aimSource = aimIntent?.source ?? 'none';
-        stageElement.dataset.firing = String(aimIntent?.fire === true);
-        stageElement.dataset.collisionBlocker = lastCollision?.contacts.at(-1)?.blockerId ?? '';
-        stageElement.dataset.collisionStalls = String(zeroDisplacementFrames);
-        stageElement.dataset.surfaceId = lastGround?.surfaceId ?? '';
-        stageElement.dataset.groundZ = String(lastGround?.groundZ ?? 0);
-        stageElement.dataset.traversal = lastTraversal?.reason ?? '';
-        stageElement.dataset.projectileCount = String(activeProjectiles.length);
-        stageElement.dataset.projectileDrops = String(droppedProjectiles);
-        stageElement.dataset.projectileHit = lastProjectileHit?.targetId ?? '';
-        stageElement.dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
-        stageElement.dataset.weaponClipSize = String(weaponStatus?.clipSize ?? 0);
-        stageElement.dataset.weaponStatus = weaponStatus?.mode ?? 'unavailable';
-        stageElement.dataset.weaponReloadTicksRemaining = String(weaponStatus?.mode === 'reloading' ? weaponStatus.ticksRemaining : 0);
-        stageElement.dataset.actorArt = actorVisual.label ?? '';
+        dataset.actorX = renderState.x.toFixed(3);
+        dataset.actorY = renderState.y.toFixed(3);
+        dataset.targetX = grayboxEnemies[0]?.x.toFixed(3) ?? '';
+        dataset.aimSource = aimIntent?.source ?? 'none';
+        dataset.firing = String(aimIntent?.fire === true);
+        dataset.collisionBlocker = lastCollision?.contacts.at(-1)?.blockerId ?? '';
+        dataset.collisionStalls = String(zeroDisplacementFrames);
+        dataset.surfaceId = lastGround?.surfaceId ?? '';
+        dataset.groundZ = String(lastGround?.groundZ ?? 0);
+        dataset.traversal = lastTraversal?.reason ?? '';
+        dataset.projectileCount = String(activeProjectiles.length);
+        dataset.projectileDrops = String(droppedProjectiles);
+        dataset.projectileHit = lastProjectileHit?.targetId ?? '';
+        dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
+        dataset.weaponClipSize = String(weaponStatus?.clipSize ?? 0);
+        dataset.weaponStatus = weaponStatus?.mode ?? 'unavailable';
+        dataset.weaponReloadTicksRemaining = String(weaponStatus?.mode === 'reloading' ? weaponStatus.ticksRemaining : 0);
+        dataset.actorArt = actorVisual.label ?? '';
         // Report what actually rendered, not what was requested: a failed
         // atlas load falls back to the prototype and must say so.
-        stageElement.dataset.actorArtSource = productionHeroDisplay ? 'production-blender-atlas-v1' : mannequinDisplay ? 'blender-atlas-v1' : 'pixi-graybox';
-        stageElement.dataset.actorArtActor = productionHeroDisplay && loadedProductionHeroId ? loadedProductionHeroId : mannequinDisplay ? 'neutral-mannequin' : 'prototype-human';
-        stageElement.dataset.actorArtFallbackReason = productionHeroLoadError ?? '';
-        stageElement.dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
-        stageElement.dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
+        dataset.actorArtSource = productionHeroDisplay ? 'production-blender-atlas-v1' : mannequinDisplay ? 'blender-atlas-v1' : 'pixi-graybox';
+        dataset.actorArtActor = productionHeroDisplay && loadedProductionHeroId ? loadedProductionHeroId : mannequinDisplay ? 'neutral-mannequin' : 'prototype-human';
+        dataset.actorArtFallbackReason = productionHeroLoadError ?? '';
+        dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
+        dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
         // Report the art actually in use: the authored roster only applies to
         // archetypes whose atlas has resolved.
-        stageElement.dataset.enemyArt = enemyRosterIndexes.size > 0 ? 'production-roster-atlas-v1' : 'production-vector-enemies-v1';
-        stageElement.dataset.bossArt = enemyRosterIndexes.has('the-liquidator') ? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1';
-        stageElement.dataset.enemyRosterLoaded = [...enemyRosterIndexes.keys()].sort().join(',');
-        stageElement.dataset.enemyRosterError = enemyRosterLoadError ?? '';
-        stageElement.dataset.rosterPreview = String(rosterPreviewEnabled);
-        stageElement.dataset.rosterPreviewAutoFire = String(aimState?.autoFireEnabled === true);
-        stageElement.dataset.terrainTiles = terrainTiles.ready ? 'authored-tiles-v1' : 'flat-colour-fallback';
-        stageElement.dataset.terrainTilesLoaded = terrainTiles.loadedIds.join(',');
-        stageElement.dataset.terrainTilesError = terrainTileLoadError ?? '';
-        stageElement.dataset.worldArt = 'production-vector-world-v1';
-        stageElement.dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
-        stageElement.dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);
-        stageElement.dataset.worldRenderedParticles = String(worldArtReport?.renderedParticleCount ?? 0);
-        stageElement.dataset.worldBlockers = String(worldArtReport?.blockerCount ?? 0);
-        stageElement.dataset.worldLandmarks = String(worldArtReport?.landmarkCount ?? 0);
-        stageElement.dataset.performanceProfile = performanceProfile.id;
-        stageElement.dataset.renderResolution = String(performanceProfile.resolution);
-        stageElement.dataset.animatedEnemies = String(animatedEnemyCount);
+        dataset.enemyArt = enemyRosterIndexes.size > 0 ? 'production-roster-atlas-v1' : 'production-vector-enemies-v1';
+        dataset.bossArt = enemyRosterIndexes.has('the-liquidator') ? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1';
+        dataset.enemyRosterLoaded = [...enemyRosterIndexes.keys()].sort().join(',');
+        dataset.enemyRosterError = enemyRosterLoadError ?? '';
+        dataset.rosterPreview = String(rosterPreviewEnabled);
+        dataset.rosterPreviewAutoFire = String(aimState?.autoFireEnabled === true);
+        dataset.terrainTiles = terrainTiles.ready ? 'authored-tiles-v1' : 'flat-colour-fallback';
+        dataset.terrainTilesLoaded = terrainTiles.loadedIds.join(',');
+        dataset.terrainTilesError = terrainTileLoadError ?? '';
+        dataset.worldArt = 'production-vector-world-v1';
+        dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
+        dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);
+        dataset.worldRenderedParticles = String(worldArtReport?.renderedParticleCount ?? 0);
+        dataset.worldBlockers = String(worldArtReport?.blockerCount ?? 0);
+        dataset.worldLandmarks = String(worldArtReport?.landmarkCount ?? 0);
+        dataset.performanceProfile = performanceProfile.id;
+        dataset.renderResolution = String(performanceProfile.resolution);
+        dataset.animatedEnemies = String(animatedEnemyCount);
         const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
         const audioSnapshot = combatAudio.status();
-        stageElement.dataset.runScore = String(runSnapshot?.score ?? 0);
-        stageElement.dataset.runXp = String(runSnapshot?.xp ?? 0);
-        stageElement.dataset.runLevel = String(runSnapshot?.level ?? 1);
-        stageElement.dataset.runPendingLevels = String(runSnapshot?.pendingLevels ?? 0);
-        stageElement.dataset.musicEnabled = String(audioSnapshot.musicEnabled);
-        stageElement.dataset.musicActive = String(audioSnapshot.musicActive);
-        stageElement.dataset.bossVisualState = bossVisual.visible ? bossVisual.visualState ?? 'idle' : 'hidden';
-        stageElement.dataset.inputWeaponSlot = String(lastInputWeaponSlot);
-        stageElement.dataset.simulationTick = String(simulation?.tick ?? 0);
-        stageElement.dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
-        stageElement.dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
-        stageElement.dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
-        stageElement.dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
-        stageElement.dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
-        stageElement.dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
-        stageElement.dataset.activeGrenadeWarningUrgent = String(activeGrenadeWarningUrgent);
-        stageElement.dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
-        stageElement.dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
-        stageElement.dataset.dashActive = String(dashStatus?.active === true);
-        stageElement.dataset.dashInvulnerable = String(dashStatus?.invulnerable === true);
-        stageElement.dataset.dashStopReason = dashStatus?.lastStopReason ?? '';
-        stageElement.dataset.playerHealth = String(playerHealth);
-        stageElement.dataset.collectibleCount = String(collectibleSnapshot?.collectedCount ?? 0);
-        stageElement.dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
-        stageElement.dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
-        stageElement.dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
-        stageElement.dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
-        stageElement.dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
-        stageElement.dataset.audioVoices = String(combatAudio.status().activeVoices);
-        stageElement.dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
-        stageElement.dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
-        stageElement.dataset.lastMeleeHits = String(lastMeleeAttack?.hits ?? 0);
-        stageElement.dataset.lastGrenadeReason = lastGrenadeDetonation?.reason ?? '';
-        stageElement.dataset.lastGrenadeTick = lastGrenadeDetonation ? String(lastGrenadeDetonation.tick) : '';
-        stageElement.dataset.projectileCover = lastProjectileResolution?.resolutions
+        dataset.runScore = String(runSnapshot?.score ?? 0);
+        dataset.runXp = String(runSnapshot?.xp ?? 0);
+        dataset.runLevel = String(runSnapshot?.level ?? 1);
+        dataset.runPendingLevels = String(runSnapshot?.pendingLevels ?? 0);
+        dataset.musicEnabled = String(audioSnapshot.musicEnabled);
+        dataset.musicActive = String(audioSnapshot.musicActive);
+        dataset.bossVisualState = bossVisual.visible ? bossVisual.visualState ?? 'idle' : 'hidden';
+        dataset.inputWeaponSlot = String(lastInputWeaponSlot);
+        dataset.simulationTick = String(simulation?.tick ?? 0);
+        dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
+        dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
+        dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
+        dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
+        dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
+        dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
+        dataset.activeGrenadeWarningUrgent = String(activeGrenadeWarningUrgent);
+        dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
+        dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
+        dataset.dashActive = String(dashStatus?.active === true);
+        dataset.dashInvulnerable = String(dashStatus?.invulnerable === true);
+        dataset.dashStopReason = dashStatus?.lastStopReason ?? '';
+        dataset.playerHealth = String(playerHealth);
+        dataset.collectibleCount = String(collectibleSnapshot?.collectedCount ?? 0);
+        dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
+        dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
+        dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
+        dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
+        dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
+        dataset.audioVoices = String(combatAudio.status().activeVoices);
+        dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
+        dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
+        dataset.lastMeleeHits = String(lastMeleeAttack?.hits ?? 0);
+        dataset.lastGrenadeReason = lastGrenadeDetonation?.reason ?? '';
+        dataset.lastGrenadeTick = lastGrenadeDetonation ? String(lastGrenadeDetonation.tick) : '';
+        dataset.projectileCover = lastProjectileResolution?.resolutions
           ?.find((resolution) => resolution.coverHit)?.coverHit?.blockerId ?? '';
-        stageElement.dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
-        stageElement.dataset.enemyCount = String(activeEnemyCount);
-        stageElement.dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
-        stageElement.dataset.enemyTells = String(enemyTellCount);
-        stageElement.dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
-        stageElement.dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
-        stageElement.dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
-        stageElement.dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
-        stageElement.dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
+        dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
+        dataset.enemyCount = String(activeEnemyCount);
+        dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
+        dataset.enemyTells = String(enemyTellCount);
+        dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
+        dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
+        dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
+        dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
+        dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
         const encounterSnapshot = getEncounterSnapshot(simulation?.tick ?? 0);
-        stageElement.dataset.encounterBand = encounterSnapshot.bandId;
-        stageElement.dataset.directorInsertions = String(encounterDirector?.insertedCount ?? 0);
-        stageElement.dataset.directorRejections = String(encounterDirector?.rejectedCount ?? 0);
-        stageElement.dataset.directorLastReason = lastDirectorStep?.reason ?? '';
-        stageElement.dataset.directorBodyCap = String(encounterSnapshot.bodyCap);
-        stageElement.dataset.directorThreatCap = String(encounterSnapshot.threatCap);
-        stageElement.dataset.bossActive = String(liquidatorBoss?.active === true && (simulation?.tick ?? 0) >= liquidatorBoss.startTick);
-        stageElement.dataset.bossPhase = liquidatorBoss?.phaseId ?? '';
-        stageElement.dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
-        stageElement.dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
-        stageElement.dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
-        stageElement.dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
-        stageElement.dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
-        stageElement.dataset.worldId = LEVEL_ONE_WORLD.id;
-        stageElement.dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
-        stageElement.dataset.worldHeight = String(WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY);
-        stageElement.dataset.districtId = getLevelOneDistrictAt(renderState.x, renderState.y)?.id ?? '';
-        stageElement.dataset.revealedCells = String(revealSnapshot.revealedCellIds.length);
-        stageElement.dataset.revealTotalCells = String(revealSnapshot.totalCells);
+        dataset.encounterBand = encounterSnapshot.bandId;
+        dataset.directorInsertions = String(encounterDirector?.insertedCount ?? 0);
+        dataset.directorRejections = String(encounterDirector?.rejectedCount ?? 0);
+        dataset.directorLastReason = lastDirectorStep?.reason ?? '';
+        dataset.directorBodyCap = String(encounterSnapshot.bodyCap);
+        dataset.directorThreatCap = String(encounterSnapshot.threatCap);
+        dataset.bossActive = String(liquidatorBoss?.active === true && (simulation?.tick ?? 0) >= liquidatorBoss.startTick);
+        dataset.bossPhase = liquidatorBoss?.phaseId ?? '';
+        dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
+        dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
+        dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
+        dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
+        dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
+        dataset.worldId = LEVEL_ONE_WORLD.id;
+        dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
+        dataset.worldHeight = String(WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY);
+        dataset.districtId = getLevelOneDistrictAt(renderState.x, renderState.y)?.id ?? '';
+        dataset.revealedCells = String(revealSnapshot.revealedCellIds.length);
+        dataset.revealTotalCells = String(revealSnapshot.totalCells);
       }
     } else {
       minimap.clear();
@@ -1917,6 +1922,7 @@ async function boot() {
       // Resolved before movement: the mobility upgrades feed the movement step,
       // and this was previously declared further down the same tick.
       const runEffects = getRunProgressionSnapshot(runProgression).effects;
+      const progressionByWeapon = pistolProgressionByWeapon(runProgression.ranks);
       const dashPressed = tickInput.dash && !previousDash;
       const dashStart = dashPressed
         ? beginDash(dashState, { tick, direction: tickInput.move, fallbackDirection: aimIntent.direction })
@@ -2153,9 +2159,9 @@ async function boot() {
           playerHealth = Math.min(maxPlayerHealth, playerHealth + event.amount);
         } else if (event.kind === 'weapon-cache') {
           // A weapon cache grants ownership plus authored finite reserve.
-          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true });
+          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true, progressionByWeapon });
         } else if (event.kind === 'ammo-refill') {
-          refillWeaponLoadout(weaponLoadout, { tick });
+          refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
         } else if (event.kind === 'nuke') {
           rechargeHandGrenades(grenadeSystem, { tick, amount: 1 });
           for (const target of hurtTargets) {
@@ -2254,9 +2260,9 @@ async function boot() {
               damage: hit.damage,
               criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
               criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
-              armorPiercing: false,
+              armorPiercing: shot.policy.type === 'pierce',
               direction: { x: shot.vx, y: shot.vy },
-              knockback: WEAPON_KNOCKBACK[shot.weaponId] ?? 6,
+              knockback: (WEAPON_KNOCKBACK[shot.weaponId] ?? 6) * shot.knockbackMultiplier,
               point: hit.point,
             });
           }
@@ -2308,6 +2314,7 @@ async function boot() {
           tick,
           fire: aimIntent.fire,
           direction: aimIntent.direction,
+          progressionByWeapon,
         });
       // C1: reload and the dry-fire fallback get their own cues. Both events
       // already existed and were silent, so the player learned about an empty
@@ -2385,6 +2392,8 @@ async function boot() {
             damage: shot.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
             policy: shot.policy,
             projectileTag: shot.projectileTag ?? null,
+            shock: shot.shock,
+            knockbackMultiplier: shot.knockbackMultiplier,
             remainingRange: shot.range,
           });
         }
@@ -2851,7 +2860,7 @@ async function boot() {
       gamepadWasActive = false;
     }
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
-    if (debugGridEnabled) stageElement.dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
+    if (debugGridEnabled) dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions);
     if (frame.steps > 0) input.consumeBufferedActions(snapshot.sequence);
     if (upgradePending && simulation.state === 'active' && (!progressionPilotEnabled || simulation.tick >= 2)) {
@@ -2889,7 +2898,7 @@ async function boot() {
     // Telemetry for the shake. Without it the effect is unobservable from
     // outside: the visual gate captures a paused frame and may never land on
     // an active shake, so per-weapon recoil could regress to zero silently.
-    stageElement.dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
+    dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
     renderWorld(renderActor);
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
