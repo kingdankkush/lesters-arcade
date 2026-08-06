@@ -20,7 +20,7 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
   'scatter-shotgun': { effectId: 'scatter-shotgun-cache', kind: 'weapon-cache', weaponId: 'scatter-shotgun' },
   'auto-miner': { effectId: 'auto-miner-cache', kind: 'weapon-cache', weaponId: 'auto-miner' },
   'launcher-rig': { effectId: 'launcher-rig-cache', kind: 'weapon-cache', weaponId: 'launcher-rig' },
-  'hash-rail-core': { effectId: 'hash-rail-core', kind: 'ammo-refill' },
+  'hash-rail-core': { effectId: 'litecoin-token', kind: 'ammo-refill', xpGain: 160 },
   'time-dilation': { effectId: 'time-dilation', kind: 'timed', durationTicks: 600, speedMultiplier: 1.2 },
   'berserk-candle': { effectId: 'berserk-candle', kind: 'timed', durationTicks: 600, damageMultiplier: 2 },
   'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999 },

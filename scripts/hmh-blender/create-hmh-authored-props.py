@@ -203,14 +203,16 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_CrossBar', (0.0, 0.0, 0.66), (0.30, 0.10, 0.05), accent, asset_id))
         add(cube(f'{asset_id}_CrossStem', (0.0, 0.0, 0.66), (0.10, 0.30, 0.05), accent, asset_id))
         add(cube(f'{asset_id}_Handle', (0.0, -0.34, 0.56), (0.16, 0.05, 0.08), secondary, asset_id))
-    elif shape == 'rail-core':
-        # Ribbed ammo cell: a squat ringed cylinder with a lit terminal cap.
-        # The old double cone read as a diamond, indistinguishable from the
-        # other cone-shaped power-ups at gameplay scale.
-        add(cylinder(f'{asset_id}_Cell', (0.0, 0.0, 0.50), 0.34, 0.66, primary, asset_id))
-        for z in (0.30, 0.50, 0.70):
-            add(torus(f'{asset_id}_Rib_{int(z * 100)}', (0.0, 0.0, z), 0.35, 0.035, secondary, asset_id))
-        add(cylinder(f'{asset_id}_Cap', (0.0, 0.0, 0.90), 0.17, 0.16, accent, asset_id))
+    elif shape == 'litecoin-token':
+        # Upright silver/blue token with a raised stylized Ł mark. Facing the
+        # certified camera preserves the circular silhouette and symbol.
+        face_rotation = (math.radians(90), 0.0, 0.0)
+        add(cylinder(f'{asset_id}_Coin', (0.0, 0.0, 0.60), 0.44, 0.14, primary, asset_id, rotation=face_rotation, vertices=32))
+        add(torus(f'{asset_id}_Rim', (0.0, -0.08, 0.60), 0.35, 0.045, secondary, asset_id, rotation=face_rotation))
+        mark_rotation = (0.0, math.radians(-14), 0.0)
+        add(cube(f'{asset_id}_LStem', (-0.03, -0.16, 0.60), (0.055, 0.025, 0.24), accent, asset_id, rotation=mark_rotation))
+        add(cube(f'{asset_id}_LCross', (0.0, -0.16, 0.60), (0.23, 0.026, 0.045), accent, asset_id, rotation=mark_rotation))
+        add(cube(f'{asset_id}_LFoot', (0.05, -0.16, 0.39), (0.20, 0.026, 0.045), accent, asset_id, rotation=mark_rotation))
     elif shape == 'hourglass':
         add(cone(f'{asset_id}_Upper', (0.0, 0.0, 0.82), 0.28, 0.45, primary, asset_id, rotation=(math.pi, 0.0, 0.0)))
         add(cone(f'{asset_id}_Lower', (0.0, 0.0, 0.38), 0.28, 0.45, primary, asset_id))

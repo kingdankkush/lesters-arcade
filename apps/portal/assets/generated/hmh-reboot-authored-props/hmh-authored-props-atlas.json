@@ -162,8 +162,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
-        "y": 358,
+        "x": 963,
+        "y": 307,
         "w": 46,
         "h": 34
       },
@@ -220,7 +220,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 52,
+        "x": 3,
         "y": 358,
         "w": 26,
         "h": 34
@@ -500,7 +500,7 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 925,
+        "x": 927,
         "y": 358,
         "w": 47,
         "h": 23
@@ -528,7 +528,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 81,
+        "x": 32,
         "y": 358,
         "w": 46,
         "h": 34
@@ -556,7 +556,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 130,
+        "x": 81,
         "y": 358,
         "w": 46,
         "h": 34
@@ -587,7 +587,7 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 731,
+        "x": 733,
         "y": 358,
         "w": 44,
         "h": 32
@@ -643,7 +643,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 179,
+        "x": 130,
         "y": 358,
         "w": 46,
         "h": 34
@@ -842,7 +842,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 228,
+        "x": 179,
         "y": 358,
         "w": 38,
         "h": 34
@@ -870,7 +870,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 269,
+        "x": 220,
         "y": 358,
         "w": 46,
         "h": 34
@@ -1010,7 +1010,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 318,
+        "x": 269,
         "y": 358,
         "w": 46,
         "h": 34
@@ -1038,7 +1038,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 367,
+        "x": 318,
         "y": 358,
         "w": 46,
         "h": 34
@@ -1061,27 +1061,27 @@
       "id": "hash-rail-core",
       "assetId": "hash-rail-core",
       "category": "pickup",
-      "shape": "rail-core",
+      "shape": "litecoin-token",
       "itemUrl": "./items/hash-rail-core.png",
       "districts": [],
-      "runtimeScale": 0.76,
+      "runtimeScale": 0.86,
       "frame": {
-        "x": 963,
-        "y": 307,
-        "w": 42,
-        "h": 35
+        "x": 367,
+        "y": 358,
+        "w": 48,
+        "h": 34
       },
       "pivot": {
-        "x": 21,
-        "y": 31
+        "x": 24,
+        "y": 30
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.885714
+        "y": 0.882353
       },
-      "opaquePixels": 1254,
-      "massCentroidY": 0.562623,
-      "sourcePixelSha256": "a6abd0961ad81c4cc9c218e65b658a4185b774cb322511c7ccb9ae0c27afef70",
+      "opaquePixels": 1421,
+      "massCentroidY": 0.546521,
+      "sourcePixelSha256": "4351d18aa1c93c8757ce3cd4972ab58c480676dd36601f9b0b518cfb50761d3d",
       "rotated": false,
       "trimmed": true
     },
@@ -1124,7 +1124,7 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 778,
+        "x": 780,
         "y": 358,
         "w": 38,
         "h": 29
@@ -1180,7 +1180,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 416,
+        "x": 418,
         "y": 358,
         "w": 46,
         "h": 34
@@ -1208,7 +1208,7 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 819,
+        "x": 821,
         "y": 358,
         "w": 59,
         "h": 29
@@ -1236,7 +1236,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 465,
+        "x": 467,
         "y": 358,
         "w": 46,
         "h": 34
@@ -1325,7 +1325,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 514,
+        "x": 516,
         "y": 358,
         "w": 38,
         "h": 34
@@ -1439,7 +1439,7 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 881,
+        "x": 883,
         "y": 358,
         "w": 41,
         "h": 26
@@ -1551,7 +1551,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 555,
+        "x": 557,
         "y": 358,
         "w": 46,
         "h": 34
@@ -1579,7 +1579,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 604,
+        "x": 606,
         "y": 358,
         "w": 46,
         "h": 34
@@ -2148,7 +2148,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 653,
+        "x": 655,
         "y": 358,
         "w": 46,
         "h": 34
@@ -2179,7 +2179,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 702,
+        "x": 704,
         "y": 358,
         "w": 26,
         "h": 34

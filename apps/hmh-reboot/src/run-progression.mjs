@@ -10,7 +10,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'power',
     title: 'Proof of Work',
     mechanicalLabel: '+8% outgoing damage',
-    description: 'Tighten the firing loop and raise canonical player damage without changing enemy authority.',
+    description: 'Deal 8% more damage without changing enemy authority.',
     maxRank: 3,
     effect: 'outgoingDamageMultiplier',
     amount: 0.08,
@@ -20,7 +20,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'survival',
     title: 'Diamond Hands',
     mechanicalLabel: '+20 maximum health',
-    description: 'Increase the run health ceiling and restore the newly gained capacity.',
+    description: 'Gain 20 max health and restore the added capacity.',
     maxRank: 3,
     effect: 'maxHealthBonus',
     amount: 20,
@@ -30,7 +30,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'mobility',
     title: 'Gas Optimization',
     mechanicalLabel: 'Faster Dash cooldown',
-    description: 'Advance the bounded Dash cooldown tier, up to the authored tier cap.',
+    description: 'Shorten Dash cooldown, up to the authored cap.',
     maxRank: 2,
     effect: 'dashCooldownTier',
     amount: 1,
@@ -50,7 +50,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'power',
     title: 'Block Reward',
     mechanicalLabel: '+25% score gain',
-    description: 'Raise deterministic run score from future enemy defeats. No wallet or settlement value.',
+    description: 'Gain 25% more run score from enemy defeats. No wallet value.',
     maxRank: 3,
     effect: 'scoreMultiplier',
     amount: 0.25,
@@ -60,7 +60,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'utility',
     title: 'Validator Training',
     mechanicalLabel: '+25% XP gain',
-    description: 'Raise deterministic experience from future enemy defeats.',
+    description: 'Gain 25% more XP from every source.',
     maxRank: 3,
     effect: 'xpMultiplier',
     amount: 0.25,
@@ -75,7 +75,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'power',
     title: 'Compound Interest',
     mechanicalLabel: '+3% outgoing damage',
-    description: 'A repeatable mastery pick for long runs. Smaller than a core power rank, but it never runs out.',
+    description: 'Repeatable: gain 3% outgoing damage.',
     maxRank: 25,
     repeatable: true,
     effect: 'outgoingDamageMultiplier',
@@ -89,7 +89,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'power',
     title: 'Precision Ledger',
     mechanicalLabel: '+6% critical chance',
-    description: 'Raise the deterministic critical rate on outgoing hits. Capped so criticals stay a spike, not the baseline.',
+    description: 'Add 6% critical chance, up to the authored cap.',
     maxRank: 3,
     effect: 'criticalChanceBonus',
     amount: 0.06,
@@ -99,7 +99,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'power',
     title: 'Hard Fork Rounds',
     mechanicalLabel: '+35% critical damage',
-    description: 'Critical hits carry a heavier multiplier. Pairs with Precision Ledger for a burst build.',
+    description: 'Add 35% critical damage for heavier burst hits.',
     maxRank: 3,
     effect: 'criticalDamageBonus',
     amount: 0.35,
@@ -111,7 +111,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'mobility',
     title: 'Hot Wallet',
     mechanicalLabel: '+6% movement speed',
-    description: 'Raise sustained movement speed for the current run. Collision, hitboxes and enemy authority are unchanged.',
+    description: 'Gain 6% movement speed; collision and hitboxes stay unchanged.',
     maxRank: 3,
     effect: 'moveSpeedMultiplier',
     amount: 0.06,
@@ -121,7 +121,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'mobility',
     title: 'Layer Two',
     mechanicalLabel: '+2% movement speed',
-    description: 'A repeatable mastery pick for long runs. Smaller than a core mobility rank, but it never runs out.',
+    description: 'Repeatable: gain 2% movement speed.',
     maxRank: 25,
     repeatable: true,
     effect: 'moveSpeedMultiplier',
@@ -132,7 +132,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     branch: 'survival',
     title: 'Hardened Wallet',
     mechanicalLabel: '+6 maximum health',
-    description: 'A repeatable mastery pick for long runs. Smaller than a core survival rank, but it never runs out.',
+    description: 'Repeatable: gain 6 maximum health.',
     maxRank: 25,
     repeatable: true,
     effect: 'maxHealthBonus',
@@ -151,6 +151,9 @@ const EFFECT_DEFAULTS = Object.freeze({
   criticalChanceBonus: 0,
   criticalDamageBonus: 0,
 });
+
+const COMBO_MILESTONE_XP = Object.freeze({ 5: 120, 10: 240, 20: 480, 30: 900 });
+export const comboMilestoneXp = (combo) => COMBO_MILESTONE_XP[combo] ?? 0;
 
 function validSeed(value) {
   if (!Number.isInteger(value) || value < 0 || value > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
@@ -243,27 +246,35 @@ export function getRunProgressionSnapshot(state) {
   });
 }
 
+function applyRunXp(state, baseXp) {
+  const xpGain = Math.round(baseXp * resolveEffects(state).xpMultiplier);
+  state.xp += xpGain;
+  let levelsGained = 0;
+  while (state.level < 1000 && state.xp >= nextLevelThreshold(state.level)) {
+    state.level += 1;
+    if (state.pendingLevels < remainingRankCapacity(state)) state.pendingLevels += 1;
+    levelsGained += 1;
+  }
+  return { xpGain, levelsGained };
+}
+
+export function grantRunXp(state, baseXp, tick) {
+  if (!Number.isInteger(baseXp) || baseXp <= 0 || baseXp > 1_000_000) throw new TypeError('baseXp must be a positive bounded integer');
+  const gained = applyRunXp(state, baseXp);
+  state.lastEvent = { tick, ...gained };
+  return getRunProgressionSnapshot(state);
+}
+
 export function recordRunDefeat(state, { enemyId, threatCost, tick } = {}) {
   if (typeof enemyId !== 'string' || !enemyId || enemyId.length > 128) throw new TypeError('enemyId must be a non-empty bounded string');
   if (!Number.isInteger(threatCost) || threatCost < 0 || threatCost > 1024) throw new TypeError('threatCost must be an integer from 0 to 1024');
   if (!Number.isInteger(tick) || tick < 0 || tick > 1_000_000_000) throw new TypeError('tick must be a non-negative bounded integer');
   if (state.recordedEnemyIds.has(enemyId)) throw new Error(`enemyId ${enemyId} was already recorded`);
-  const effects = resolveEffects(state);
-  const scoreGain = Math.round((100 + threatCost * 25) * effects.scoreMultiplier);
-  const xpGain = Math.round((80 + threatCost * 20) * effects.xpMultiplier);
+  const scoreGain = Math.round((100 + threatCost * 25) * resolveEffects(state).scoreMultiplier);
   state.recordedEnemyIds.add(enemyId);
   state.score += scoreGain;
-  state.xp += xpGain;
-  let levelsGained = 0;
-  while (state.level < 1000 && state.xp >= nextLevelThreshold(state.level)) {
-    state.level += 1;
-    // A queued level that no upgrade can absorb would sit in the cockpit
-    // forever as a phantom "pending" count, so the queue is capped at the
-    // remaining rank capacity across the whole tree.
-    if (state.pendingLevels < remainingRankCapacity(state)) state.pendingLevels += 1;
-    levelsGained += 1;
-  }
-  state.lastEvent = { enemyId, tick, scoreGain, xpGain, levelsGained };
+  const gained = applyRunXp(state, 80 + threatCost * 20);
+  state.lastEvent = { sourceId: `enemy:${enemyId}`, enemyId, tick, scoreGain, ...gained };
   return getRunProgressionSnapshot(state);
 }
 

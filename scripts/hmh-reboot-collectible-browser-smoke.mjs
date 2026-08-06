@@ -136,7 +136,7 @@ try {
     ['ravine-salvage', 'scatter-shotgun-cache', 'scatter-shotgun', 1, 1, 3],
     ['ravine-overlook-cache', 'time-dilation', 'coin-blaster', 1, 1.2, 3],
     ['crossing-fuel-depot', 'nuke-liquidation', 'coin-blaster', 1, 1, 4],
-    ['crossing-bank-cache', 'hash-rail-core', 'coin-blaster', 1, 1, 3],
+    ['crossing-bank-cache', 'litecoin-token', 'coin-blaster', 1, 1, 3],
     ['hashwood-shrine', 'berserk-candle', 'coin-blaster', 2, 1, 3],
     ['mining-control-room', 'auto-miner-cache', 'auto-miner', 1, 1, 3],
     ['yard-extraction-console', 'launcher-rig-cache', 'launcher-rig', 1, 1, 3],
@@ -164,9 +164,16 @@ try {
       enemyCount: Number(element.dataset.enemyCount),
       playerHealth: Number(element.dataset.playerHealth),
       ammo: Number(element.dataset.weaponAmmo),
+      runXp: Number(element.dataset.runXp),
     }));
-    if (effectId === 'hash-rail-core') assert.equal(observed.ammo, 8, 'all-ammo pickup did not refill the pilot magazine');
-    const { ammo, ...contract } = observed;
+    if (effectId === 'litecoin-token') {
+      assert.equal(observed.ammo, 8, 'Litecoin token did not refill the pilot magazine');
+      assert.equal(observed.runXp, 160, 'Litecoin token did not award canonical run XP');
+    } else {
+      const expectedRunXp = effectId === 'nuke-liquidation' ? 260 : 0;
+      assert.equal(observed.runXp, expectedRunXp, `${effectId} XP drifted`);
+    }
+    const { ammo, runXp, ...contract } = observed;
     assert.deepEqual(contract, { effectId, weaponId, damageMultiplier, speedMultiplier, handGrenades, enemyCount: effectId === 'nuke-liquidation' ? 0 : 2, playerHealth: 100 }, pointOfInterestId);
     canonical.push({ pointOfInterestId, ...observed });
     await casePage.close();

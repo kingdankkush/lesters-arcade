@@ -92,8 +92,10 @@ import {
 import { DeterministicSimulation } from './simulation.mjs';
 import { createStandaloneInitPayload } from './standalone-session.mjs';
 import {
+  comboMilestoneXp,
   createRunProgression,
   getRunProgressionSnapshot,
+  grantRunXp,
   recordRunDefeat,
   selectRunUpgrade,
 } from './run-progression.mjs';
@@ -843,6 +845,7 @@ async function boot() {
   let collectibleSnapshot = null;
   let lastCollectibleEvent = null;
   let runKills = 0;
+  let runCombo = 0;
   let runEventSequence = 0;
   let lastAccessibleCombatStatus = '';
   let combatVisualEvents = [];
@@ -852,6 +855,10 @@ async function boot() {
   const pushCombatVisualEvent = (event) => {
     if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
     combatVisualEvents.push(Object.freeze({ ...event }));
+  };
+  const awardComboXp = (snapshot, tick) => {
+    const baseXp = comboMilestoneXp(++runCombo);
+    return baseXp ? grantRunXp(runProgression, baseXp, tick) : snapshot;
   };
 
   if (debugOverlay) {
@@ -1722,6 +1729,7 @@ async function boot() {
     cockpit?.hideUpgrade();
     cockpit?.setPaused(false);
     runKills = 0;
+    runCombo = 0;
     runEventSequence = 0;
     previousGrenade = false;
     previousDash = false;
@@ -1848,6 +1856,7 @@ async function boot() {
     playerDefeatController = createPlayerDefeatController({ maxHealth: maxPlayerHealth });
     playerHealth = collectibleHealthPilotEnabled ? 70 : maxPlayerHealth;
     runKills = 0;
+    runCombo = 0;
     if (progressionPilotEnabled) {
       const pilotSnapshot = recordRunDefeat(runProgression, {
         enemyId: 'evidence-progression-pilot',
@@ -2166,6 +2175,11 @@ async function boot() {
               point: { x: target.currentGround.x, y: target.currentGround.y, z: target.currentGround.z + target.minZ },
             });
           }
+        }
+        if (event.xpGain) {
+          const xpSnapshot = grantRunXp(runProgression, event.xpGain, tick);
+          cockpit?.updateRun(xpSnapshot);
+          if (xpSnapshot.pendingLevels > 0) upgradePending = true;
         }
         combatAudio.play('pickup', { volume: 0.16 });
         if (placement) pushCombatVisualEvent({
@@ -2570,6 +2584,7 @@ async function boot() {
           });
           if (damageEvent.targetId === 'player') {
             lastPlayerHit = { tick, sourceId: damageEvent.sourceId };
+            runCombo = 0;
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
             if (magnitude > 0) applyRecoilImpulse(motion, {
@@ -2623,11 +2638,11 @@ async function boot() {
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
           if (scoreEvent.enemyId === liquidatorBoss.id) {
             runKills += 1;
-            const bossSnapshot = recordRunDefeat(runProgression, {
+            const bossSnapshot = awardComboXp(recordRunDefeat(runProgression, {
               enemyId: scoreEvent.enemyId,
               threatCost: LIQUIDATOR_THREAT_COST,
               tick,
-            });
+            }), tick);
             cockpit?.updateRun(bossSnapshot);
             if (bossSnapshot.pendingLevels > 0) upgradePending = true;
             continue;
@@ -2636,11 +2651,11 @@ async function boot() {
           if (!defeatedEnemy) continue;
           queueEnemyDeathVisual(defeatedEnemy, tick);
           runKills += 1;
-          const progressionSnapshot = recordRunDefeat(runProgression, {
+          const progressionSnapshot = awardComboXp(recordRunDefeat(runProgression, {
             enemyId: defeatedEnemy.id,
             threatCost: ENEMY_ARCHETYPES[defeatedEnemy.archetypeId].costs.threat,
             tick,
-          });
+          }), tick);
           cockpit?.updateRun(progressionSnapshot);
           if (progressionSnapshot.pendingLevels > 0) upgradePending = true;
           if (bridge?.initialized) {

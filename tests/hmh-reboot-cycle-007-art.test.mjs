@@ -84,6 +84,9 @@ test('Cycle 007 prop manifest covers weapons, P0 pickups, power-ups and world dr
   const byCategory = Object.groupBy(manifest.assets, (asset) => asset.category);
   assert.deepEqual(byCategory.weapon.map((asset) => asset.assetId).sort(), ['auto-miner', 'coin-blaster', 'launcher-rig', 'scatter-shotgun']);
   assert.deepEqual(byCategory.pickup.map((asset) => asset.assetId).sort(), ['berserk-candle', 'bonus-life', 'hash-rail-core', 'nuke-liquidation', 'time-dilation']);
+  assert.equal(byCategory.pickup.find((asset) => asset.assetId === 'hash-rail-core').shape, 'litecoin-token');
+  const metadata = await loadJson(new URL('../apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json', import.meta.url));
+  assert.equal(metadata.frames.find((frame) => frame.assetId === 'hash-rail-core').shape, 'litecoin-token');
   assert.ok(byCategory['power-up'].length >= 6, 'important power-up icons are missing');
   assert.ok(byCategory['world-prop'].length >= 12, 'world dressing kit is too small');
 });

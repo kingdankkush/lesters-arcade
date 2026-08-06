@@ -86,13 +86,13 @@
     {
       "assetId": "hash-rail-core",
       "category": "pickup",
-      "shape": "rail-core",
+      "shape": "litecoin-token",
       "palette": {
         "primary": "#d9f8ff",
         "secondary": "#2e65a6",
         "accent": "#49ddff"
       },
-      "runtimeScale": 0.76
+      "runtimeScale": 0.86
     },
     {
       "assetId": "time-dilation",
