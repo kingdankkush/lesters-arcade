@@ -1,9 +1,9 @@
 # Hermes handoff — remaining upgrade program
 
-Date: 2026-08-05 PDT
-Author: Claude Fable 5
+Date: 2026-08-06 PDT
+Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (T1 implementation head: `d059a2b1`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 3 implementation head: `c4680a68`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -102,9 +102,10 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | T2 ground decals | `5b1ac494` | 177 marks, baked to a runtime asset. |
 | A5 bridge kit | `4938bc21` | 6 parts; span/upright proportion split. |
 | T1 terrain patches | `d059a2b1` | 3 named sub-materials per district, blended by a wrapped deterministic mask into the existing six runtime tiles. |
+| Wave 3 authored world | `c4680a68` | A6 12-piece town kit, W2 three-block ruined neighborhood, A9 six set-pieces, T4 road materials, P5 12-scene coverage. |
 
-World props **26 → 61**. Visual scenes **8 → 10**. Tests **1,852 → 1,984**
-(expected failures still 51).
+Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
+**1,852 → 2,033** (expected failures still 51).
 
 ### New pipelines you can reuse
 
@@ -128,19 +129,15 @@ World props **26 → 61**. Visual scenes **8 → 10**. Tests **1,852 → 1,984**
 
 ## 2. Two constraints that will bite you
 
-### The child bundle is nearly full
+### The child bundle is effectively full
 
-**1,048,584 B against a 1,050,000 B cap — 1,416 B left.**
+**1,049,944 B against a 1,050,000 B cap — 56 B left after Wave 3.**
 
-This arc consumed the 9.4 KB the program started with. T2 hit it directly: its
-placement logic cost 4,451 B against 3,218 B of headroom, and the perf gate
-failed at 1,051,172. The cap was not raised. The derivation moved to build time
-and the child now fetches a 57 KB asset.
-
-**Consequence: D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all
-add child code and are effectively blocked.** P6 proved that the original
-unblocker assumption was wrong: the portal parent and HMH child are separate
-esbuild entries.
+The cap was not raised. Wave 3 remained mostly asset- and metadata-shaped, but
+its fail-closed atlas validation consumed the remaining safe margin. Any further
+child-code slice must recover bytes first and prove the removal behaviorally, or
+remain numeric/data-only. Parent refactors do not pay this budget because the
+portal parent and HMH child are separate esbuild entries.
 
 - **P6 legacy code triage is complete at `372c7ef9`.** The public
   `#developerBackstage` and `#combatCanvas` markup, parent animation/input roots,
@@ -160,30 +157,24 @@ esbuild entries.
 Until that lands: prefer **asset-shaped work** (costs no child bundle bytes), or
 make each child-code slice pay for itself in measured removals.
 
-Other budgets are healthy: prop atlas 326,439 / 524,288 (198 KB free), roster
-atlases 3.1 MB free, hero atlases 334 KB free (still tight — A12 needs an
-explicit budget conversation with the owner).
+Other budgets are healthy: prop atlas 259,679 / 524,288, roster atlases 3.1 MB
+free, hero atlases 334 KB free (still tight — A12 needs an explicit budget
+conversation with the owner).
 
-### The props reproducibility gate is flaky
+### The props reproducibility drift is resolved
 
-The authored-props verify **failed once and then passed five consecutive times
-on an unchanged scene** — 1 in 6. A byte diff of both render directories after
-the failure showed **zero** differing assets.
-
-This is the same structural flakiness that made the enemy-roster exact-byte gate
-untenable in Cycle 037 and earned it the ±1 LSB policy. Props were left exact on
-the assumption they were stable.
-
-- **Treat a lone props-verify failure as rerun-once** — not as a defect in
-  whatever asset you were adding.
-- Migrating props to the roster's ±1 LSB policy is existing debt and now has a
-  measurement behind it. Worth doing early; it will otherwise waste a cycle.
+Wave 3 reproduced the old one-channel render variance on the A9 set-pieces. The
+pipeline now zeros RGB for fully transparent pixels and quantizes every
+nontransparent RGB channel with `0xF8` before comparison/publication, while
+preserving authored alpha. Blender also renders single-threaded with dithering
+disabled. The full 100-asset pipeline and metadata-only verification path both
+pass exact reproducibility; do not replace this with a wider image tolerance.
 
 ---
 
-## 3. What to pick up, in order
+## 3. Completed continuation work and next pickup
 
-### Immediate: recover real child headroom, while Wave 4 proceeds
+### Completed platform and balance prerequisites
 
 **P6 legacy code triage is complete at `372c7ef9`.** It removed 813 indexed
 lines, reduced emitted parent JS by 163,521 B, and passed 1,987 release tests,
@@ -327,12 +318,43 @@ raw-identical child with SHA-256
 `143082c7b1bcd0e7c525a99b93cd0cc32847c11c4b46b74041e2d888ff6f22c7`;
 configured portal and child routes both returned their expected HTML identities.
 
-### Wave 3 scope is decided
+### Wave 3 is complete
 
-The owner previously chose the **ruined-yard town** direction and subsequently
-authorized all remaining waves. Implement W2 as the documented option (a):
-convert part of `liquidation-yard` into a ruined neighborhood rather than adding
-a seventh district. **A6 town kit** remains its prerequisite and lands first.
+Implementation commit `c4680a68` closes A6, W2, A9, T4 and the current P5
+production-scene expansion as one reviewed authored-world slice:
+
+- A6 adds 12 deterministic Blender-authored town modules to the 100-asset prop
+  manifest and atlas.
+- W2 converts `liquidation-yard` into north-commercial, south-market/fuel and
+  east-residential blocks through 18 generated-metadata placements: 7 explicitly
+  synchronized to canonical blockers and 11 explicitly visual-only.
+- A9 replaces all six procedural landmark presentations with authored set-pieces
+  after successful display attachment; canonical collision remains active.
+- T4 bakes gravel shoulder, cracked asphalt and dirt-track grammar into the
+  existing pooled road material without adding runtime requests.
+- P5 expands deterministic visual coverage to 12 desktop/mobile scenes.
+
+The full 100-asset pipeline is reproducible; release passed 2,033 entries (1,982
+current passes and 51 ledgered expected failures), syntax passed 336 JS modules
+and 49 Python scripts, and asset QA, long-run, weapon, visual, portal, cockpit,
+collectible, network and performance gates passed. The frozen implementation
+diff `0c507bc1bab1ce56eb723217cb3a8f4ab2a39e5d65c181d51901977053f51e88`
+received exact-digest review `PASS` with `BLOCKERS: none`.
+
+Ready Preview `dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw` at
+`https://lesters-arcade-3eg52i6rw-justin-agent-projects.vercel.app` returned the
+configured portal route `/games/hard-money-heroes/play` and child route
+`/hmh-reboot/`. Its emitted child is raw-identical to the reviewed local build:
+1,049,944 bytes, SHA-256
+`edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
+Production and LitVM were not touched.
+
+### Next: Wave 5 character presentation
+
+Proceed with A13 hero animation, A14 enemy identity and A15 Liquidator phase
+presentation as projection-only work using existing atlas budgets. **A12 256px
+hero escalation remains a separate owner budget gate**: do not raise the hero
+atlas budget or start the full-resolution batch without explicit approval.
 
 ---
 
@@ -342,9 +364,9 @@ a seventh district. **A6 town kit** remains its prerequisite and lands first.
   district dressing. Both need re-concepting, not another iteration. For the
   boulder: wedged in a cleft, or split by a fracture, rather than perched on a
   plinth. The hold-out list is asserted at one entry so it cannot quietly grow.
-- **P5 is partially closed.** Camp and water have scenes. The five A1 trees still
-  appear in none, and C2's combat feel is covered by unit tests plus a live probe
-  rather than a baseline, because the gate captures a paused frame.
+- **P5 now covers 12 production scenes**, including camp, water, foliage, all six
+  district landmarks, combat and three ruined-neighborhood views. Transient C2
+  recoil/impact timing remains live-probe evidence rather than a paused baseline.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting right
   at the budget of two. Standing evidence for **M6 chunked navgrid**. Remember the
   naive deferral into `initializeSession` was tried and reverted — it dropped a
@@ -383,18 +405,18 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        1984 / 1933 passed / 51 expected failures   PASS
-visual regression   10 scenes                                    PASS
-performance         p95 7.0 ms both profiles                     PASS
-bundle              1,048,584 / 1,050,000                        PASS (1.4 KB left)
-prop atlas          326,439 / 524,288                            PASS
-security audit      5/5, 0 findings                              PASS
-web3 audit          9/9                                          PASS
+test:release        2033 / 1982 passed / 51 expected failures    PASS
+visual regression   12 scenes, zero delta                        PASS
+performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
+bundle              1,049,944 / 1,050,000                        PASS (56 B left)
+prop atlas          259,679 / 524,288                            PASS
+authored pipeline   100/100 frames, reproducible                 PASS
 portal E2E          all implemented flows                        PASS
-browser certify     5 profiles, zero anchor-pixel delta          PASS
+cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
-Vercel build        production-shape .vercel/output              PASS
-weapon SFX decode   6 cues, peaks < 1.0                          PASS
+staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
+exact review        0c507bc1...f51e88, BLOCKERS: none            PASS
+Vercel Preview      dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security

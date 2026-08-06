@@ -1,14 +1,15 @@
-# Cycle ledger — upgrade program Waves 1 and 2 (complete)
+# Cycle ledger — upgrade program through Wave 4
 
-Date: 2026-08-05 PDT
+Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (T1 implementation head: `d059a2b1`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 3 implementation head: `c4680a68`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
-Fifteen program tasks, each RED-tested first, gated, reviewed against the exact
-staged index, and committed separately. T1 also exposed one prerequisite
-certification-repair commit. **Production was not promoted** — that remains the
-owner's from the Vercel dashboard. Pushing the branch creates a Preview only.
+The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 slices were
+RED-tested first, gated, reviewed against exact staged indices, and committed as
+bounded implementation slices. T1 also exposed one prerequisite certification-
+repair commit. **Production was not promoted** — that remains the owner's from
+the Vercel dashboard. Pushing the branch creates a Preview only.
 
 ---
 
@@ -31,10 +32,11 @@ owner's from the Vercel dashboard. Pushing the branch creates a Preview only.
 | T2 ground decals | `5b1ac494` | 177 contract-anchored marks, baked to a runtime asset. |
 | A5 bridge kit | `4938bc21` | 6 bridge parts; span/upright proportion split. |
 | T1 terrain patches | `d059a2b1` | Three named sub-materials per district, wrapped deterministic patch masks, same runtime tile/request count. |
+| Wave 3 authored world | `c4680a68` | A6 town kit, W2 ruined neighborhood, A9 set-pieces, T4 roads, P5 12-scene coverage. |
 
-World-prop library: **26 → 61**. Prop atlas 178,089 B → 326,439 B against a
-524,288 B cap. Visual scenes 8 → 10. Test count 1,852 → **1,984**, expected
-failures still 51.
+Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,033**, expected failures still
+51.
 
 ## Non-art pipelines added
 
@@ -194,24 +196,39 @@ Actual child-code work still requires child-specific bundle triage, or each
 slice must pay for itself in measured child removals. Prefer asset-shaped work
 until then.
 
-## The props reproducibility gate is flaky, and now there is evidence
+## The props reproducibility drift is resolved
 
-The authored-props verify FAILED once and then passed five consecutive times
-on an unchanged scene: **1 failure in 6 runs**. Nothing in the scene changed
-between them, and a byte diff of the two render directories after the failure
-showed zero differing assets.
+Wave 3 reproduced the old one-channel render variance while authoring A9. The
+pipeline now zeros RGB for fully transparent pixels and quantizes every
+nontransparent RGB channel with `0xF8` before exact comparison/publication,
+while preserving authored alpha. It also renders single-threaded and disables
+Blender dithering. The full 100-asset pipeline and metadata-only reproducibility
+path pass. A broad comparison tolerance was not introduced.
 
-This is the same structural flakiness that made the enemy-roster exact-byte
-gate untenable in Cycle 037 and earned it the ±1 LSB policy. The props
-pipeline was left exact on the assumption that it was stable. That assumption
-now has a counter-example.
+## Wave 3 authored-world closeout
 
-Two consequences:
-- A lone props-verify failure should be treated as rerun-once, like the heap
-  gate was before P2 fixed it — **not** as a reproducibility defect in whatever
-  asset was being added at the time.
-- Migrating props to the roster's ±1 LSB policy was already open debt. It now
-  has a measurement behind it rather than a suspicion.
+Implementation commit `c4680a68` closes A6/W2/A9/T4 and expands P5:
+
+- 12 deterministic town modules and six authored district set-pieces;
+- a three-block liquidation-yard neighborhood with 18 metadata-driven
+  placements, including 7 canonical-blocker and 11 visual-only policies;
+- deterministic road shoulder/crack/track grammar through the existing pooled
+  terrain request shape;
+- safe landmark fallback handoff and dedicated town-blocker rendering;
+- 12 accepted desktop/mobile visual scenes.
+
+The release gate passed 2,033 entries (1,982 current passes plus 51 ledgered
+expected failures), syntax passed 336 JS and 49 Python files, and the full asset,
+long-run, weapon, visual, portal, cockpit, collectible, network and performance
+chain passed. The child is 1,049,944 / 1,050,000 bytes. Exact staged review
+`0c507bc1bab1ce56eb723217cb3a8f4ab2a39e5d65c181d51901977053f51e88`
+returned `PASS` with `BLOCKERS: none`.
+
+Ready Preview `dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw` at
+`https://lesters-arcade-3eg52i6rw-justin-agent-projects.vercel.app` served both
+configured HTML routes and a raw-identical 1,049,944-byte child with SHA-256
+`edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
+Production and LitVM remained untouched.
 
 ## Standing debts
 
@@ -219,10 +236,9 @@ Two consequences:
   district dressing.** Both need re-concepting, not another iteration. For the
   boulder: wedged in a cleft, or split by a fracture, rather than perched on a
   plinth. The hold-out list is asserted at one entry so it cannot quietly grow.
-- **P5 partially closed.** Camp and water now have pinned scenes (10 total).
-  The A1 trees still do not appear in any scene, and the C2 combat-feel work is
-  covered by unit tests and a live probe rather than by a baseline, because the
-  gate captures a paused frame that may never land on an active shake.
+- **P5 now has 12 pinned production scenes.** Camp, water, foliage, district
+  landmarks, combat and three neighborhood views are represented. Transient C2
+  timing remains unit/live-probe evidence rather than a paused baseline.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting
   right at the budget of two. Standing evidence for M6 (chunked navgrid).
 - **Wave 2, P6, and U10 are complete.** A5, T2 and T1 are closed with
@@ -246,7 +262,10 @@ Two consequences:
   capstone. Release `2019/1968 + 51`, benchmark `24/48/16`, visual/browser gates,
   and exact review `d6fd2277...ef4bd` passed. Ready Preview
   `dpl_98gnDoAKrznrmu96H3K43BqkSShj` served a raw-identical 1,049,945-byte child
-  with SHA-256 `143082c7...f22c7`; 55 bytes of child headroom remain.
+  with SHA-256 `143082c7...f22c7`; that slice had 55 bytes of child headroom.
+- **Wave 3 complete — A6, W2, A9, T4 and P5:** implementation commit `c4680a68`,
+  exact reviewed diff `0c507bc1...f51e88`, 100 deterministic authored props,
+  12 visual scenes and Ready Preview `dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw`.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.
@@ -254,9 +273,9 @@ Two consequences:
 ## Verification note
 
 Production was NOT promoted and remains the owner's call from the Vercel
-dashboard. The Vercel Security Checkpoint still 403s automated clients, so
-live verification has to happen in a real browser regardless. T1's final gate
-also passed the 1,984-test release suite, syntax, generated assets, contract
-structure, security, Web3 audit, four-scenario network audit, six-flow portal
-E2E, browser certification, cockpit smoke, and a wrapped Windows production-
-shape `vercel build`. `SETTLEMENT_LIVE` was not changed.
+dashboard. Wave 3's protected Preview was verified with authenticated read-only
+fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
+child-byte comparison. The implementation passed the 2,033-entry release suite,
+syntax, generated assets, long-run/weapon evidence, 12-scene visual regression,
+four-scenario network audit, six-flow portal E2E, cockpit, collectibles and
+performance. `SETTLEMENT_LIVE` and LitVM were not changed.
