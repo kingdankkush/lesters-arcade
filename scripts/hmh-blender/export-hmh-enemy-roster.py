@@ -43,6 +43,8 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
     kind = actor.get("animationProfile", {}).get("kind", "shared-roster-v1")
     if kind not in {
         "shared-roster-v1",
+        "forkrunner-quick-fork-slash-v1",
+        "gas-bomber-canister-lob-v1",
         "undead-straight-lunge-v1",
         "undead-shoulder-charge-v1",
         "suppression-rifle-burst-v1",
@@ -118,6 +120,34 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
             rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-78)
             rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(-8 * wind)
             pelvis.location.z = -0.018 * wind
+        elif kind == "forkrunner-quick-fork-slash-v1":
+            # Pull the twin forearm forks across opposite shoulders. The low,
+            # twisted stance reads as a fast crossing slash rather than the
+            # shared two-arm overhead wind-up.
+            chest.rotation_euler[0] = math.radians(-14 * wind)
+            chest.rotation_euler[2] = math.radians(-20 * wind)
+            head.rotation_euler[2] = math.radians(12 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-126 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-38 * wind)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-52)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-74 * wind)
+            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(28 * wind)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-68)
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(12 * wind)
+            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-10 * wind)
+            pelvis.location.z = -0.045 * wind
+        elif kind == "gas-bomber-canister-lob-v1":
+            # Brace the canister side and cock one arm far behind the head so
+            # the coming lob reads from the silhouette before release.
+            chest.rotation_euler[0] = math.radians(-24 * wind)
+            chest.rotation_euler[2] = math.radians(15 * wind)
+            head.rotation_euler[0] = math.radians(-10 * wind)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-54 * wind)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-70)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-148 * wind)
+            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(22 * wind)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-46)
+            pelvis.location.z = -0.035 * wind
         elif kind == "validator-staff-channel-v1":
             chest.rotation_euler[0] = math.radians(-18 * wind)
             head.rotation_euler[0] = math.radians(-11 * wind)
@@ -167,6 +197,33 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
             rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-76)
             rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(-13 * recoil)
             pelvis.location.y = 0.045 * recoil
+        elif kind == "forkrunner-quick-fork-slash-v1":
+            # Strike, cross-body follow-through, then a readable recovery. The
+            # opposing Z rotations carry both fork silhouettes through the arc.
+            slash = (1.0, -0.70, 0.18)[frame_index]
+            chest.rotation_euler[0] = math.radians(16 * abs(slash))
+            chest.rotation_euler[2] = math.radians(34 * slash)
+            head.rotation_euler[2] = math.radians(-18 * slash)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(62 * slash)
+            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-72 * slash)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-42 * slash)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(54 * slash)
+            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(58 * slash)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-48 * slash)
+            pelvis.location.y = -0.10 * abs(slash)
+        elif kind == "gas-bomber-canister-lob-v1":
+            # Release overhand, follow through, then settle back toward the
+            # canister. The torso twist keeps the lob distinct from a melee hit.
+            lob = (1.0, 0.46, -0.20)[frame_index]
+            chest.rotation_euler[0] = math.radians(32 * lob)
+            chest.rotation_euler[2] = math.radians(-24 * lob)
+            head.rotation_euler[0] = math.radians(12 * lob)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-34 * lob)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-56 * lob)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(92 * lob)
+            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(-28 * lob)
+            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-64 * lob)
+            pelvis.location.y = -0.11 * lob
         elif kind == "validator-staff-channel-v1":
             cast = (1.0, 0.52, -0.18)[frame_index]
             chest.rotation_euler[0] = math.radians(22 * cast)

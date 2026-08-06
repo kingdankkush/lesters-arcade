@@ -92,6 +92,8 @@ def render_roster_by_actor(
 
 LSB_TOLERANCE_MAX_CHANNEL_DELTA = 1
 LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME = 8
+RGB_CANONICALIZATION_STEP = 8
+RGB_CANONICALIZATION_OFFSET = RGB_CANONICALIZATION_STEP // 2
 
 
 def roster_json_drift_is_derived(first_path: Path, second_path: Path, tolerated_frames: set[str]) -> bool:
@@ -177,6 +179,29 @@ def canonical_rgba(image: Image.Image) -> Image.Image:
     return image.convert("RGBA") if image.mode != "RGBA" else image
 
 
+def canonicalize_rendered_rgb(image: Image.Image) -> Image.Image:
+    """Remove bounded backend RGB jitter without changing authored alpha.
+
+    Round visible RGB to the nearest 8-value bucket (maximum adjustment 4)
+    and zero invisible RGB. A floor mask is intentionally not used: preserved
+    cold-pass evidence showed one-LSB values straddling a floor boundary.
+    """
+    image = canonical_rgba(image)
+    data = bytearray(image.tobytes())
+    for index in range(0, len(data), 4):
+        if data[index + 3] == 0:
+            data[index:index + 3] = b"\0\0\0"
+            continue
+        for channel in range(3):
+            value = data[index + channel]
+            data[index + channel] = min(
+                255,
+                ((value + RGB_CANONICALIZATION_OFFSET) // RGB_CANONICALIZATION_STEP)
+                * RGB_CANONICALIZATION_STEP,
+            )
+    return Image.frombytes("RGBA", image.size, bytes(data))
+
+
 def remove_tiny_alpha_components(
     image: Image.Image,
     alpha_threshold: int,
@@ -249,6 +274,7 @@ def normalize_rendered_frames(manifest: dict, raw_dir: Path) -> None:
                             manifest["render"]["alphaThreshold"],
                             manifest["render"]["minAlphaComponentPixels"],
                         )
+                        normalized = canonicalize_rendered_rgb(normalized)
                         normalized.save(
                             path, optimize=False, compress_level=9,
                         )
@@ -535,6 +561,12 @@ def main() -> None:
             "maxChannelDelta": LSB_TOLERANCE_MAX_CHANNEL_DELTA,
             "maxDifferingSubpixelsPerFrame": LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME,
             "metadataExactExceptDerivedPixelSha": True,
+            "rgbCanonicalization": {
+                "kind": "nearest-step",
+                "step": RGB_CANONICALIZATION_STEP,
+                "maxChannelDelta": RGB_CANONICALIZATION_OFFSET,
+                "preserveAlpha": True,
+            },
             "toleratedFrames": tolerated_frames if args.verify_reproducible else None,
         },
         "blender": EXPECTED_BLENDER_VERSION,

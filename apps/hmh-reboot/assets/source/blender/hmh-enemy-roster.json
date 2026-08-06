@@ -147,6 +147,9 @@
         "kind": "forkrunner-forearm-forks",
         "frontReadable": true,
         "minimumAuthoredParts": 10
+      },
+      "animationProfile": {
+        "kind": "forkrunner-quick-fork-slash-v1"
       }
     },
     {
@@ -234,6 +237,9 @@
         "kind": "gas-bomber-respirator-rig",
         "frontReadable": true,
         "minimumAuthoredParts": 11
+      },
+      "animationProfile": {
+        "kind": "gas-bomber-canister-lob-v1"
       }
     },
     {

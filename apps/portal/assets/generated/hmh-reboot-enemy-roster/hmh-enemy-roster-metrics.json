@@ -3,63 +3,63 @@
   "actors": [
     {
       "actorId": "bagholder-rusher",
-      "atlasBytes": 833803,
+      "atlasBytes": 569126,
       "atlasSize": 1024,
-      "contactSheetBytes": 85876,
+      "contactSheetBytes": 69481,
       "frameCount": 152,
       "metadataBytes": 98741,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "forkrunner",
-      "atlasBytes": 793671,
+      "atlasBytes": 555106,
       "atlasSize": 1024,
-      "contactSheetBytes": 80970,
+      "contactSheetBytes": 70809,
       "frameCount": 152,
-      "metadataBytes": 97868,
+      "metadataBytes": 97842,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "liquidator-agent",
-      "atlasBytes": 830360,
+      "atlasBytes": 566545,
       "atlasSize": 1024,
-      "contactSheetBytes": 81444,
+      "contactSheetBytes": 64430,
       "frameCount": 152,
       "metadataBytes": 98731,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "whale-enforcer",
-      "atlasBytes": 1330231,
+      "atlasBytes": 864662,
       "atlasSize": 2048,
-      "contactSheetBytes": 142109,
+      "contactSheetBytes": 107511,
       "frameCount": 152,
       "metadataBytes": 98662,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "gas-bomber",
-      "atlasBytes": 838060,
+      "atlasBytes": 557797,
       "atlasSize": 1024,
-      "contactSheetBytes": 87980,
+      "contactSheetBytes": 71274,
       "frameCount": 152,
-      "metadataBytes": 97864,
+      "metadataBytes": 97889,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "validator-cultist",
-      "atlasBytes": 872976,
+      "atlasBytes": 609350,
       "atlasSize": 1024,
-      "contactSheetBytes": 91974,
+      "contactSheetBytes": 76143,
       "frameCount": 152,
       "metadataBytes": 98875,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "the-liquidator",
-      "atlasBytes": 1830633,
+      "atlasBytes": 1282876,
       "atlasSize": 2048,
-      "contactSheetBytes": 135063,
+      "contactSheetBytes": 110411,
       "frameCount": 456,
       "metadataBytes": 305724,
       "uniqueSourceFrames": 456
@@ -73,10 +73,16 @@
     "maxChannelDelta": 1,
     "maxDifferingSubpixelsPerFrame": 8,
     "metadataExactExceptDerivedPixelSha": true,
+    "rgbCanonicalization": {
+      "kind": "nearest-step",
+      "maxChannelDelta": 4,
+      "preserveAlpha": true,
+      "step": 8
+    },
     "toleratedFrames": {}
   },
   "reproducibleVerified": true,
   "status": "pass",
-  "totalAtlasBytes": 7329734,
+  "totalAtlasBytes": 5005462,
   "totalFrames": 1368
 }
