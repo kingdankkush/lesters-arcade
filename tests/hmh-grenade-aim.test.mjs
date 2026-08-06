@@ -66,20 +66,15 @@ test('WO-101 cancel zone accepts upward drag or second-finger tap', () => {
   assert.equal(isGrenadeAimCancel({ secondFingerTap: true }), true);
 });
 
-test('WO-101 runtime wires tap/hold/release/cancel across touch and desktop', () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  const css = readFileSync(new URL('../apps/portal/styles.css', import.meta.url), 'utf8');
+test('WO-101 live reboot input wires desktop and touch grenade controls with cancellation', () => {
+  const input = readFileSync(new URL('../apps/hmh-reboot/src/input.mjs', import.meta.url), 'utf8');
+  const touch = readFileSync(new URL('../apps/hmh-reboot/src/touch-controls.mjs', import.meta.url), 'utf8');
   const doc = readFileSync(new URL('../docs/game-design/hmh-grenade-aim-wo101.md', import.meta.url), 'utf8');
-  assert.match(main, /from '.\/src\/hmh-grenade-aim\.mjs'/);
-  assert.match(main, /function startGrenadeAimInput/);
-  assert.match(main, /function releaseGrenadeAimInput/);
-  assert.match(main, /classifyGrenadeRelease/);
-  assert.match(main, /isGrenadeAimCancel/);
-  assert.match(main, /key === 'f' \|\| key === 'g'/);
-  assert.match(main, /event\.button === 2\) startGrenadeAimInput/);
-  assert.match(main, /touch-grenade-cancel-zone/);
-  assert.doesNotMatch(main, /btn\.addEventListener\('pointerdown',[\s\S]{0,180}performTouchAction\('grenade'\)/);
-  assert.match(css, /touch-grenade-cancel-zone/);
+  assert.match(input, /grenade: event\.button === 2/);
+  assert.match(input, /listen\(target, 'pointercancel'/);
+  assert.match(input, /listen\(target, 'contextmenu'/);
+  assert.match(touch, /power: 'grenade'/);
+  assert.match(touch, /surfaceListen\('pointercancel', endOwnedPointer\)/);
+  assert.match(touch, /surfaceListen\('touchcancel', releaseWhenNoTouchesRemain\)/);
   assert.match(doc, /Tap grenade/);
-  assert.match(doc, /hold `F`, `G`, or right mouse/);
 });

@@ -47,7 +47,7 @@
     "visual:responsive": "node scripts/responsive-matrix.mjs",
     "test:soak": "npm run build && node scripts/hmh-browser-soak.mjs --profile=desktop --minutes=30",
     "test:soak:mobile": "npm run build && node scripts/hmh-browser-soak.mjs --profile=mobile --minutes=30",
-    "test:soak:legacy": "npm run build && node scripts/hmh-legacy-browser-soak.mjs --minutes=30",
+
     "design:audit": "node scripts/report-hmh-animation-coverage.mjs",
     "design:art-census": "node scripts/global-art-census.mjs",
     "design:art-repair": "node scripts/art-purge-repair.mjs",

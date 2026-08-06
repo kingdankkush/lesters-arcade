@@ -1522,8 +1522,7 @@ const dom = {
   arcadeMusicQueueList: document.querySelector('#arcadeMusicQueueList'),
   officialNavTabs: document.querySelector('#officialNavTabs'),
   simulatedWalletBanner: document.querySelector('#simulatedWalletBanner'),
-  developerBackstageToggle: document.querySelector('#developerBackstageToggle'),
-  developerBackstage: document.querySelector('#developerBackstage'),
+
   officialWalletSplash: document.querySelector('#officialWalletSplash'),
   splashFeaturedCabinet: document.querySelector('#splashFeaturedCabinet'),
   officialConnectButton: document.querySelector('#officialConnectButton'),
@@ -1628,7 +1627,7 @@ const dom = {
   fpsPill: document.querySelector('#fpsPill'),
   controlSchemePanel: document.querySelector('#controlSchemePanel'),
   combatRunStatus: document.querySelector('#combatRunStatus'),
-  combatStatus: document.querySelector('#combatStatus'),
+  combatStatus: document.querySelector('#officialGameStateCopy'),
   difficultyPanel: document.querySelector('#difficultyPanel'),
   mechanicList: document.querySelector('#mechanicList'),
   bossRoster: document.querySelector('#bossRoster'),
@@ -1693,7 +1692,6 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   try { window.dispatchEvent(new Event('eip6963:requestProvider')); } catch { /* older browsers */ }
 }
 let currentSession = null;
-const HMH_REBOOT_ENABLED = true;
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
@@ -1718,7 +1716,7 @@ let lastSettlementQueued = false;
 // Drives the game-over "Published ✓" vs "Retry Publish" state, so a declined
 // wallet tx is never shown as a successful publish.
 let lastSettlementSucceeded = false;
-let developerBackstageOpen = false;
+
 
 // Playable hero display names. The in-game roguelike heroes were renamed from
 // the old mascot working titles (lester/lilly) to their combat identities. The
@@ -1996,19 +1994,17 @@ function heroRotationSprite(characterId) {
   // what spawns. Do not fall Lit Valkyrie through to Lilly or any hero through to
   // QA/generated placeholders.
   const rosterKey = HERO_LOCKED_ROSTER[characterId] ?? characterId;
-  if (HMH_REBOOT_ENABLED) {
-    const production = HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[characterId]
-      ?? HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[rosterKey];
-    if (production) {
-      return {
-        id: production.actorId,
-        animation: 'production-rotation',
-        frames: production.frames.map((src, index) => ({ src, direction: HMH_REBOOT_HERO_SELECTOR_ATLAS.directions[index] })),
-        frameDurationMs: production.frameDurationMs,
-        className: `hero-character-rotator hmh-reboot-selector-${production.actorId}`,
-        displayScale: 1.28,
-      };
-    }
+  const production = HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[characterId]
+    ?? HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[rosterKey];
+  if (production) {
+    return {
+      id: production.actorId,
+      animation: 'production-rotation',
+      frames: production.frames.map((src, index) => ({ src, direction: HMH_REBOOT_HERO_SELECTOR_ATLAS.directions[index] })),
+      frameDurationMs: production.frameDurationMs,
+      className: `hero-character-rotator hmh-reboot-selector-${production.actorId}`,
+      displayScale: 1.28,
+    };
   }
   const entry = hmh('HMH_ANIMATED_ROSTER')?.[rosterKey] ?? hmh('HMH_ANIMATED_ROSTER')?.[characterId];
   const animations = entry?.animations ?? {};
@@ -2395,6 +2391,7 @@ function renderWalletRails() {
 }
 
 function renderOfficialRunStatus() {
+  if (!dom.runStatus || !dom.runDetails) return;
   const model = buildOfficialRunStatusModel({
     gameTitle: selectedGame().title,
     connected: Boolean(connectedWallet),
@@ -4607,23 +4604,7 @@ function renderOfficialCabinets() {
       // Lazy-load the game's art and data manifests the first time the player
       // selects this cabinet. The heavy HMH bundles live in games/<id>/loader.mjs,
       // fetched over HTTP only on demand, so the portal shell stays small.
-      if (cabinet.id === 'hard-money-heroes' && !HMH_REBOOT_ENABLED) {
-        card.classList.add('is-loading');
-        card.setAttribute('aria-busy', 'true');
-        // Only surface the overlay when a real download is happening — repeat
-        // visits resolve instantly from the cached payload.
-        const needsOverlay = !HMH_PAYLOAD;
-        const dismissOverlay = needsOverlay ? showCartridgeLoadingOverlay(cabinet.title) : null;
-        try {
-          await ensureHMHLoaded();
-        } catch (err) {
-          console.error('[HMH] Failed to load game payload:', err);
-        } finally {
-          dismissOverlay?.();
-          card.classList.remove('is-loading');
-          card.removeAttribute('aria-busy');
-        }
-      } else if (cabinet.gameId === 'chikun' && DEV_CABINETS_ENABLED) {
+      if (cabinet.gameId === 'chikun' && DEV_CABINETS_ENABLED) {
         card.classList.add('is-loading');
         card.setAttribute('aria-busy', 'true');
         try {
@@ -5645,7 +5626,7 @@ function finalizeHmhRebootFreeGameOver() {
 }
 
 function mountHmhRebootSession() {
-  if (!HMH_REBOOT_ENABLED || !dom.officialCombatMount || !currentSession) return null;
+  if (!dom.officialCombatMount || !currentSession) return null;
   if (!hmhRebootLifecycle) {
     hmhRebootLifecycle = createHmhRebootPortalLifecycle({
       combat,
@@ -5742,24 +5723,10 @@ function renderOfficialGameplay() {
     }
     return;
   }
-  if (HMH_REBOOT_ENABLED && game.id === 'lester-blaster') {
+  if (game.id === 'lester-blaster') {
     dom.officialGameModeTitle.textContent = `Hard Money Heroes: Top-Down Reboot // ${modeLabel}`;
     if (dom.officialGameStateCopy && !hmhRebootActive) dom.officialGameStateCopy.textContent = 'Starting isolated PixiJS child runtime…';
-    return;
   }
-  const level = currentCampaignLevel();
-  dom.officialGameModeTitle.textContent = `${level.gameplayTitle} // ${modeLabel}`;
-  syncCombatOverlay();
-  if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
-    dom.officialCombatMount.append(dom.combatCanvas);
-  }
-  // CRITICAL: size the canvas to its laid-out box now that it's visible. Without
-
-  // fullscreen toggle forces a resize. Run after layout settles (two rAFs).
-  requestAnimationFrame(() => {
-    resizeCombatCanvas();
-    requestAnimationFrame(() => resizeCombatCanvas());
-  });
 }
 
 function renderOfficialApp() {
@@ -5768,8 +5735,6 @@ function renderOfficialApp() {
   if (dom.arcadeMusicPlayer) dom.arcadeMusicPlayer.hidden = officialAppStep === 'gameplay';
   // Drive the responsive touch-control overlay: only visible during gameplay.
   document.documentElement.dataset.ingame = officialAppStep === 'gameplay' ? 'true' : 'false';
-  dom.developerBackstage.hidden = !developerBackstageOpen;
-  dom.developerBackstageToggle.textContent = developerBackstageOpen ? 'Hide Backstage' : 'Dev Backstage';
   renderOfficialNav();
   renderOfficialWalletSplash();
   // Guest-first: guests may browse the arcade floor, enter a cabinet, play Free
@@ -5966,7 +5931,7 @@ function requestRankedEntry() {
 }
 
 async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID, options = {}) {
-  if (HMH_REBOOT_ENABLED && selectedGameId === 'lester-blaster') {
+  if (selectedGameId === 'lester-blaster') {
     combat.currentCampaignLevelId = levelId;
     if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
     setOfficialView('gameplay');
@@ -15063,31 +15028,14 @@ function drawHud(ctx) {
   ctx.fillText(`DMG CHAIN ${combat.maxDamageCombo} // PICKUPS ${combat.powerUpsCollected} // I-FRAMES ${combat.invulnerableFrames}`, 20, 100);
 }
 function render() {
-  renderFlowSteps();
-  renderLogin();
-  renderUiQualityGuide();
-  renderParentOps();
-  renderBuildStack();
-  renderMenuModel();
-  renderCabinetStage();
-  renderCartridges();
-  renderSelectedGame();
   renderOfficialRunStatus();
-  renderCombatSandboxStatus();
-  renderLeaderboard();
-  renderDesignPanels();
-  renderControlScheme();
-  renderCodexPanels();
   renderOfficialApp();
   renderArcadeMusicPlayer();
 }
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
 dom.officialGuestEnterButton?.addEventListener('click', enterArcadeAsGuest);
-dom.developerBackstageToggle.addEventListener('click', () => {
-  developerBackstageOpen = !developerBackstageOpen;
-  renderOfficialApp();
-});
+
 dom.officialFreeModeButton.addEventListener('click', () => startOfficialMode('free'));
 dom.officialRankedModeButton.addEventListener('click', () => startOfficialMode('ranked'));
 dom.officialModeBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('cabinet-select'); });
@@ -15095,16 +15043,7 @@ dom.officialCharacterBackButton?.addEventListener('click', () => { playSfxCue('m
 dom.officialLevelBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('character-select'); });
 dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
-dom.connectWalletButton.addEventListener('click', connectOfficialWallet);
-dom.freePlayButton.addEventListener('click', () => startMode('free'));
-dom.paidPlayButton.addEventListener('click', () => startMode('paid'));
-dom.simulateRunButton.addEventListener('click', completePrototypeRun);
-dom.startCombatButton.addEventListener('click', startCombat);
-dom.jumpButton.addEventListener('click', jump);
-dom.shootButton.addEventListener('click', shoot);
 
-dom.grenadeButton.addEventListener('click', grenade);
-dom.powerUpButton.addEventListener('click', dropPowerUp);
 dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatMenuIconButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatRestartButton?.addEventListener('click', restartCombatRun);
@@ -15238,36 +15177,6 @@ document.addEventListener('keyup', (event) => {
     return;
   }
   if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) combat.keys.delete(key);
-});
-
-dom.combatCanvas.addEventListener('contextmenu', (event) => {
-  event.preventDefault();
-});
-
-dom.combatCanvas.addEventListener('pointermove', (event) => {
-  if (combat.roguelikeRun) updateAimFromPointer(event);
-  handleGrenadePointerMove(event);
-});
-
-dom.combatCanvas.addEventListener('mousedown', (event) => {
-  if (combat.roguelikeRun) updateAimFromPointer(event);
-  if (combat.paused || combat.gameOver) return;
-  if (combat.roguelikeRun) {
-    // SIMPLIFIED CONTROLS: the gun AUTO-FIRES toward the mouse. Left click is a
-    // manual fire (same gun — useful for deliberate shots), right click throws
-    // the grenade. Melee/axes were removed to keep the player focused on
-    // movement + positioning.
-    event.preventDefault();
-    if (event.button === 0) shoot();
-    else if (event.button === 2) startGrenadeAimInput({ source: 'mouse', clientX: event.clientX, clientY: event.clientY });
-    return;
-  }
-  // Legacy sandbox (non-roguelike) keeps click-to-shoot / right-click grenade.
-  if (event.button === 0) shoot();
-  if (event.button === 2) {
-    event.preventDefault();
-    grenade();
-  }
 });
 
 document.addEventListener('mouseup', (event) => {
@@ -15629,4 +15538,3 @@ window.addEventListener('orientationchange', () => {
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 applyRouteFromLocation();
-requestAnimationFrame(drawCombatScene);

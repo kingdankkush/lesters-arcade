@@ -211,7 +211,7 @@ if (isMain) {
   const consoleErrors = [];
   let heroSelectorEvidence = null;
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
-  page.on('pageerror', (error) => consoleErrors.push(`page: ${error.message}`));
+  page.on('pageerror', (error) => consoleErrors.push(`page: ${error.stack || error.message}`));
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(`console: ${message.text()}`); });
 
   const childFrame = () => page.frames().find((frame) => {

@@ -9,7 +9,6 @@ const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.me
 const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
 const browserSoakScript = readFileSync(new URL('../scripts/hmh-browser-soak.mjs', import.meta.url), 'utf8');
 const combatSoakScript = readFileSync(new URL('../scripts/hmh-reboot-combat-soak.mjs', import.meta.url), 'utf8');
-const legacyBrowserSoakScript = readFileSync(new URL('../scripts/hmh-legacy-browser-soak.mjs', import.meta.url), 'utf8');
 const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-65 visual regression harness is command-wired and captures real HMH canvas frames', () => {
@@ -81,10 +80,7 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
 test('browser soak targets the current Pixi reboot and proves authored runtime time advances', () => {
   assert.equal(packageJson.scripts['test:soak'], 'npm run build && node scripts/hmh-browser-soak.mjs --profile=desktop --minutes=30');
   assert.equal(packageJson.scripts['test:soak:mobile'], 'npm run build && node scripts/hmh-browser-soak.mjs --profile=mobile --minutes=30');
-  assert.equal(packageJson.scripts['test:soak:legacy'], 'npm run build && node scripts/hmh-legacy-browser-soak.mjs --minutes=30');
-  assert.match(legacyBrowserSoakScript, /hmh-legacy-browser-soak\.json/);
-  assert.match(legacyBrowserSoakScript, /legacy-soak/);
-  assert.doesNotMatch(legacyBrowserSoakScript, /'hmh-browser-soak\.json'/);
+
   assert.match(browserSoakScript, /hmh-reboot\/\?\$\{REBOOT_QUERY\}/);
   assert.match(browserSoakScript, /#hmhRebootStage/);
   assert.match(browserSoakScript, /acquireRunLock/);

@@ -187,7 +187,6 @@ const NODE_CHECK_FILES = [
   "scripts/smoke-portal-interactions.mjs",
   "scripts/visual-regression.mjs",
   "scripts/hmh-browser-soak.mjs",
-  "scripts/hmh-legacy-browser-soak.mjs",
   "tests/visual-regression.test.mjs",
   "scripts/smoke-pixellab-calibration-browser.mjs",
   "scripts/repo-cleanup-audit.mjs",
