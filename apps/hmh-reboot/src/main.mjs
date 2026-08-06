@@ -1177,9 +1177,10 @@ async function boot() {
         death.graphic.alpha = 1 - deathProgress * deathProgress;
       }
       const bossVisualTick = simulation?.tick ?? 0;
-      if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick - 600) requestEnemyRosterAtlas('the-liquidator');
-    if (liquidatorBoss && bossVisualTick >= liquidatorBoss.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
+      if (bossVisualTick >= liquidatorBoss?.startTick - 600) requestEnemyRosterAtlas('the-liquidator');
+    if (bossVisualTick >= liquidatorBoss?.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
+        const bossPhaseTick = lastBossStep?.elapsedTick ?? 45;
         bossVisual.applyPose({
           state: !liquidatorBoss.active ? 'death' : bossVisualTick <= bossHitVisualUntilTick ? 'hit' : liquidatorBoss.pendingAttacks.length > 0 ? 'tell' : 'idle',
           tick: bossVisualTick,
@@ -1189,7 +1190,7 @@ async function boot() {
         });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
-        bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom);
+        bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + (bossPhaseTick < 2_445 && Math.max(0, 45 - (bossPhaseTick % 1_200)) / 250)));
         // Boss health reads from the dedicated bar, never from transparency.
         bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
         const projectBossTelegraph = (point) => worldToScreen(point, camera, view);
