@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 slice head: `dfcd216a`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A15 transition head: `4ee4f0fb`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -104,9 +104,10 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | T1 terrain patches | `d059a2b1` | 3 named sub-materials per district, blended by a wrapped deterministic mask into the existing six runtime tiles. |
 | Wave 3 authored world | `c4680a68` | A6 12-piece town kit, W2 three-block ruined neighborhood, A9 six set-pieces, T4 road materials, P5 12-scene coverage. |
 | Wave 5 A14 role profiles | `dfcd216a` | Forkrunner fork-slash and gas-bomber canister-lob anticipation/strike/recovery replace the last shared ordinary-enemy poses. |
+| Wave 5 A15 phase beat | `4ee4f0fb` | Liquidator grows 18% and settles over 45 ticks at the three authored phase entries, projection-only. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,037** (expected failures still 51). The seven-actor enemy roster
+**1,852 → 2,039** (expected failures still 51). The seven-actor enemy roster
 holds 1,368 frames in 5,005,462 atlas bytes.
 
 ### New pipelines you can reuse
@@ -133,13 +134,14 @@ holds 1,368 frames in 5,005,462 atlas bytes.
 
 ### The child bundle is effectively full
 
-**1,049,944 B against a 1,050,000 B cap — 56 B left after Wave 3.**
+**Current child: 1,050,000 B against a 1,050,000 B cap — zero headroom.**
 
-The cap was not raised. Wave 3 remained mostly asset- and metadata-shaped, but
-its fail-closed atlas validation consumed the remaining safe margin. Any further
-child-code slice must recover bytes first and prove the removal behaviorally, or
-remain numeric/data-only. Parent refactors do not pay this budget because the
-portal parent and HMH child are separate esbuild entries.
+The cap was not raised. Wave 3 closed at 1,049,944 B with 56 B left; asset-shaped
+A14 kept that byte-identical, and the reviewed A15 phase beat consumed exactly
+those final 56 B. Any further child-code slice must recover bytes first and prove
+the removal behaviorally, or remain numeric/data-only. Parent refactors do not
+pay this budget because the portal parent and HMH child are separate esbuild
+entries.
 
 - **P6 legacy code triage is complete at `372c7ef9`.** The public
   `#developerBackstage` and `#combatCanvas` markup, parent animation/input roots,
@@ -383,11 +385,37 @@ configured HTML routes and a raw-identical 1,049,944-byte child with SHA-256
 `edc08245bc852761ae0cadbb23877e9a78b496c6fb5cba260efade0d05d65929`.
 Production and LitVM were not touched.
 
+### Wave 5 A15 phase-transition slice is complete
+
+Implementation commit `4ee4f0fb` adds a projection-only Liquidator phase beat:
+at elapsed ticks 0, 1,200 and 2,400 the authored boss grows to 1.18 scale and
+settles to 1.0 over 45 ticks. The beat is capped at elapsed tick 2,445, so the
+endless final-phase cadence at 3,600/4,800 does not create false transitions.
+Death alpha, phase art, telegraphs, simulation, attack timing, damage, collision,
+health and spawning remain unchanged.
+
+The slice was RED-tested and passed release 2,039 entries (1,988 current passes
+and 51 ledgered expected failures), syntax 336 JS and 49 Python, long-run,
+weapon, asset, 12-scene visual, portal, cockpit, collectible, hero/enemy/selector,
+five-profile browser, network and performance gates. Real phase-boundary evidence
+captured desktop and portrait transitions with the production boss atlas; the
+final portrait actor/boss distance was about 127, above the 84-unit separation
+radius, with the boss fully visible between HUD and controls. Frozen implementation
+diff `4d022a070cc2a293ccd562fb2282c8227f178d7a6bd11880f7e6c0a897cc9ebd`
+received parser-strict exact review `PASS` with `BLOCKERS: none`.
+
+The child now exactly fills the fixed cap: 1,050,000 / 1,050,000 bytes, SHA-256
+`2e4691e1fad6f4e986c5f67c9e4d46b6e5ee931b5c88e9587d63a0995e19a21c`.
+Ready Preview `dpl_2iCh6oDxowShj5p7Zjpv1QZp2Ltw` at
+`https://lesters-arcade-94ho56zhj-justin-agent-projects.vercel.app` served both
+configured HTML routes and that raw-identical child. Production and LitVM were
+not touched.
+
 ### Next: continue Wave 5 character presentation
 
 Proceed with A13 hero animation, remaining A14 damage-state/full-role polish and
-A15 Liquidator phase-transition presentation as projection-only work using
-existing atlas budgets. **A12 256px hero escalation remains a separate owner
+A15 phase audio/remaining telegraph polish as projection-only work using existing
+atlas budgets. **A12 256px hero escalation remains a separate owner
 budget gate**: do not raise the hero atlas budget or start the full-resolution
 batch without explicit approval.
 
@@ -406,6 +434,10 @@ batch without explicit approval.
   profiles, but explicit damage-state art and the gas-bomber's separate thrown
   projectile presentation remain. Treat `dfcd216a` as the role-animation slice,
   not final enemy-wave certification.
+- **A15 is not complete.** Phase geometry, telegraphs and the transition scale
+  beat are live, but phase-change audio belongs to X1 and remains. The child has
+  zero byte headroom, so any further child-code presentation must first recover
+  equivalent bytes or remain asset-shaped.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting right
   at the budget of two. Standing evidence for **M6 chunked navgrid**. Remember the
   naive deferral into `initializeSession` was tried and reverted — it dropped a
@@ -444,10 +476,10 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2037 / 1986 passed / 51 expected failures    PASS
+test:release        2039 / 1988 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
-bundle              1,049,944 / 1,050,000                        PASS (56 B left)
+bundle              1,050,000 / 1,050,000                        PASS (0 B left)
 prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
 enemy roster        1,368 frames / 5,005,462 B, reproducible     PASS
@@ -455,8 +487,8 @@ portal E2E          all implemented flows                        PASS
 cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
 staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
-exact review        b39d6b37...6378c9b4, BLOCKERS: none          PASS
-Vercel Preview      dpl_9mgEXxwbo4Ltvo7usqpBEkY66WZd            READY
+exact review        4d022a07...97cc9ebd, BLOCKERS: none          PASS
+Vercel Preview      dpl_2iCh6oDxowShj5p7Zjpv1QZp2Ltw            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security

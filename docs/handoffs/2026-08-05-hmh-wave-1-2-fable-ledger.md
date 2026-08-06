@@ -1,8 +1,8 @@
-# Cycle ledger — upgrade program through Wave 5 A14 role profiles
+# Cycle ledger — upgrade program through Wave 5 A15 transition
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 slice head: `dfcd216a`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A15 transition head: `4ee4f0fb`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
 The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
@@ -35,9 +35,10 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | T1 terrain patches | `d059a2b1` | Three named sub-materials per district, wrapped deterministic patch masks, same runtime tile/request count. |
 | Wave 3 authored world | `c4680a68` | A6 town kit, W2 ruined neighborhood, A9 set-pieces, T4 roads, P5 12-scene coverage. |
 | Wave 5 A14 role profiles | `dfcd216a` | Role-native fork-slash and canister-lob anticipation/strike/recovery replace the last two shared ordinary-enemy pose profiles. |
+| Wave 5 A15 phase beat | `4ee4f0fb` | A bounded 18%/45-tick Liquidator scale pulse marks the three authored phase entries. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,037**, expected failures still
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,039**, expected failures still
 51. Enemy roster: 7 actors, 1,368 frames and 5,005,462 atlas bytes.
 
 ## Non-art pipelines added
@@ -173,16 +174,16 @@ Nothing new was allowed below 0.55.
 
 ## The bundle budget is now the binding constraint
 
-**Current child JS bundle: 1,049,944 B against a 1,050,000 B cap — 56 B left.**
+**Current child JS bundle: 1,050,000 B against a 1,050,000 B cap — zero headroom.**
 
 At the original Wave 1/2 close the child measured 1,048,584 B with 1,416 B left.
 That arc had already consumed the 9.4 KB the program started with. T2 hit the wall
 directly: its placement logic cost 4,451 B against 3,218 B of headroom, and
 the perf gate failed at 1,051,172. Raising the cap was not on the table, and
 unifying the code did not recover enough, so the derivation moved to build
-time and the child fetched a 57 KB asset. Subsequent Wave 3/4 work consumed the
-remaining margin; asset-shaped A14 left the current child byte-identical. Bundle
-work, not art work, is what that pattern buys.
+time and the child fetched a 57 KB asset. Subsequent Wave 3/4 work left 56 B;
+asset-shaped A14 kept that byte-identical, and A15 consumed those final bytes.
+Bundle work, not art work, is what that pattern buys.
 
 **Practical consequence: further child code slices are effectively blocked.**
 D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all add child
@@ -265,6 +266,33 @@ configured HTML routes and a raw-identical 1,049,944-byte child with SHA-256
 Production and LitVM remained untouched. This is an A14 role-animation slice,
 not final A14 completion.
 
+## Wave 5 A15 phase-transition slice
+
+Implementation commit `4ee4f0fb` projects each authored Liquidator phase entry
+through a scale pulse from 1.18 to 1.0 over 45 ticks. The elapsed-tick gate ends
+at 2,445, preventing false pulses in the endless total-liquidation cadence at
+3,600 and 4,800. The compact optional-start guard remains null-safe: undefined
+start arithmetic yields `NaN`, the comparison is false and later dereferences
+short-circuit. No alpha, attack-plan, simulation, damage, collision, health,
+spawn, RNG or settlement authority changed.
+
+Release `2039/1988 + 51`, syntax `336 JS + 49 Python`, long-run, weapon, asset,
+12-scene visual, portal, cockpit, collectible, character, selector, five-profile
+browser, network and performance gates passed. Desktop and portrait evidence
+captured real market-open → margin-call boundaries with production boss art. The
+final portrait actor/boss distance was about 127 versus an 84-unit separation
+radius, and the pulsed boss remained fully visible between HUD and controls.
+Exact staged review
+`4d022a070cc2a293ccd562fb2282c8227f178d7a6bd11880f7e6c0a897cc9ebd`
+returned parser-valid `PASS` with `BLOCKERS: none`.
+
+The child now exactly fills the fixed cap: 1,050,000 / 1,050,000 bytes, SHA-256
+`2e4691e1fad6f4e986c5f67c9e4d46b6e5ee931b5c88e9587d63a0995e19a21c`.
+Ready Preview `dpl_2iCh6oDxowShj5p7Zjpv1QZp2Ltw` at
+`https://lesters-arcade-94ho56zhj-justin-agent-projects.vercel.app` served both
+configured HTML routes and that raw-identical child. Production and LitVM were
+not touched. This is an A15 transition slice, not final A15 completion.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -304,6 +332,9 @@ not final A14 completion.
 - **A14 remains partial after `dfcd216a`.** All six ordinary enemy roles now own
   distinct attack profiles. Explicit damage-state art and the gas-bomber's
   separate thrown-projectile presentation remain before final A14 certification.
+- **A15 remains partial after `4ee4f0fb`.** Phase art, telegraphs and a visible
+  transition beat are live. Phase-change audio remains in X1, and the child has
+  zero byte headroom for additional runtime presentation.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.
@@ -313,7 +344,7 @@ not final A14 completion.
 Production was NOT promoted and remains the owner's call from the Vercel
 dashboard. The latest protected Preview was verified with authenticated read-only
 fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
-child-byte comparison. The implementation passed the 2,037-entry release suite,
+child-byte comparison. The implementation passed the 2,039-entry release suite,
 syntax, generated assets, long-run/weapon evidence, 12-scene visual regression,
 four-scenario network audit, six-flow portal E2E, cockpit, collectibles, selector,
 five-profile browser certification and performance. `SETTLEMENT_LIVE` and LitVM
