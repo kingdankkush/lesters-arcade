@@ -2216,7 +2216,8 @@ test('leaderboard page treats games and time windows as compact filters above th
 
 test('public HMH screens use the user-supplied cabinet sheet over the older production placeholder', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
-  assert.equal(mainSource.includes('featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite()'), true);
+  const shellRoutesSource = readFileSync(fileURLToPath(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url)), 'utf8');
+  assert.equal(shellRoutesSource.includes('featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite()'), true);
   assert.equal(mainSource.includes('cabinet.desktopCabinetSprite ?? productionCabinetSprite()'), true);
 });
 

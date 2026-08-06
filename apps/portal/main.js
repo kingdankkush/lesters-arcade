@@ -65,6 +65,7 @@ import { HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, levelThreeFinalGetawayAssetByKey 
 import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three-ground/final-getaway/level3-final-getaway-ground-manifest.mjs';
 import { gameSlugFor, isGuestAllowedStep, buildPlatformShellModel } from './src/arcade-router.mjs';
 import { createPortalRouteController } from './src/routes/portal-route-controller.mjs';
+import { createOfficialShellRoutes } from './src/routes/official-shell-routes.mjs';
 import {
   generateDistrictGrid,
   generateRoadNetwork,
@@ -4383,6 +4384,34 @@ const portalRouteController = createPortalRouteController({
 const setOfficialView = portalRouteController.setView;
 const syncRouteForView = portalRouteController.syncRoute;
 
+const officialShellRoutes = createOfficialShellRoutes({
+  dom,
+  documentRef: document,
+  getStep: () => officialAppStep,
+  getConnectedWallet: () => connectedWallet,
+  getSelectedGameId: () => selectedGameId,
+  getSessionId: () => currentSession?.urlSessionId ?? null,
+  getState: () => state,
+  setView: setOfficialView,
+  playSfxCue,
+  signOutWallet,
+  buildPlatformShellModel,
+  gameSlugFor,
+  el,
+  appendText,
+  renderArcadeIcon,
+  buildPlayerArcadeSnapshot,
+  renderAvatarChip,
+  applyHardMoneyHeroScreenBackground,
+  shellModel: LESTERS_ARCADE_V2_APP_SHELL,
+  networkModel: LITVM_LITEFORGE_NETWORK,
+  productionCabinetSprite,
+  renderRotatingCabinetSprite,
+});
+const renderOfficialNav = officialShellRoutes.renderNav;
+const renderOfficialSettings = officialShellRoutes.renderSettings;
+const renderOfficialWalletSplash = officialShellRoutes.renderWalletSplash;
+
 // --- on-chain hydration ----------------------------------------------------
 // Merge LitVM ScoreSubmissionRegistry records into local state so the global
 // leaderboard + profile reflect the chain (cross-device, cross-player). Dedup
@@ -4498,79 +4527,6 @@ function showOfficialPanel(activePanel) {
   for (const panel of [dom.officialWalletSplash, dom.officialArcadeFloor, dom.officialModeSelect, dom.officialCharacterSelect, dom.officialLevelIntro, dom.officialGameplay]) {
     if (panel) panel.hidden = panel !== activePanel;
   }
-}
-
-function renderOfficialNav() {
-  if (!dom.officialNavTabs) return;
-  dom.officialNavTabs.replaceChildren();
-  const iconById = { cabinets: 'arcade', profile: 'profile', leaderboards: 'trophy', settings: 'settings' };
-  const shell = buildPlatformShellModel(officialAppStep, {
-    connected: Boolean(connectedWallet),
-    gameSlug: gameSlugFor(selectedGameId),
-    sessionId: currentSession?.urlSessionId ?? null,
-  });
-  if (dom.officialApp) {
-    dom.officialApp.dataset.shellStep = shell.step;
-    dom.officialApp.dataset.shellBreadcrumb = shell.breadcrumbs.map((crumb) => crumb.label).join(' / ');
-    if (shell.backTarget) {
-      dom.officialApp.dataset.shellBackStep = shell.backTarget.step;
-      dom.officialApp.dataset.shellBackLabel = shell.backTarget.label;
-    } else {
-      delete dom.officialApp.dataset.shellBackStep;
-      delete dom.officialApp.dataset.shellBackLabel;
-    }
-  }
-  for (const item of shell.nav) {
-    const button = el('button', { className: `official-nav-tab ${item.active ? 'active' : ''}` });
-    button.type = 'button';
-    button.dataset.route = item.href;
-    button.setAttribute('aria-current', item.active ? 'page' : 'false');
-    // Guest-first: every primary view is browsable without a wallet. Profile /
-    // Scores render a clear "connect to save" state instead of being dead,
-    // disabled buttons. Connecting later upgrades the same session in place.
-    button.disabled = false;
-    if (!connectedWallet && item.id !== 'cabinets') {
-      button.classList.add('nav-tab-guest');
-      button.title = 'Browse as guest — connect a wallet to save progress here';
-    }
-    button.append(renderArcadeIcon(iconById[item.id] ?? 'star', item.label), document.createTextNode(item.label));
-    button.addEventListener('click', () => {
-      playSfxCue('menu-click');
-      setOfficialView(item.step);
-    });
-    dom.officialNavTabs.append(button);
-  }
-  // When connected: show the player's avatar chip + a Sign Out button.
-  if (connectedWallet) {
-    const snapshot = buildPlayerArcadeSnapshot(state, connectedWallet);
-    const displayName = snapshot?.profile?.displayName ?? connectedWallet;
-    const account = el('div', { className: 'official-nav-account' });
-    const avatar = renderAvatarChip(connectedWallet, displayName, 'nav-avatar');
-    avatar.title = displayName;
-    const avatarBtn = el('button', { className: 'nav-avatar-button', type: 'button', ariaLabel: 'Open profile' });
-    avatarBtn.append(avatar);
-    avatarBtn.addEventListener('click', () => { playSfxCue('menu-click'); setOfficialView('profile'); });
-    const signOut = el('button', { className: 'nav-signout-button', type: 'button', textContent: 'Sign Out' });
-    signOut.addEventListener('click', signOutWallet);
-    account.append(avatarBtn, signOut);
-    dom.officialNavTabs.append(account);
-  }
-}
-
-function renderOfficialWalletSplash() {
-  if (!dom.officialWalletSplash) return;
-  applyHardMoneyHeroScreenBackground(dom.officialWalletSplash, 'splash');
-  const featuredCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
-  const featuredSprite = featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite();
-  if (dom.splashFeaturedCabinet && featuredSprite) {
-    // Show the original 3D rotating cabinet sprite animation (no static banner).
-    dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
-  }
-  const copy = connectedWallet
-    ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
-    : LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy;
-  dom.officialWalletCopy.textContent = copy;
-  dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Connect Wallet';
 }
 
 function renderOfficialCabinets() {
@@ -5429,23 +5385,6 @@ function renderOfficialLeaderboards() {
     appendText(board, 'small', 'You have no ranked score in this period yet. Play Ranked and submit at game over.');
   }
   dom.officialCabinetGrid.append(board);
-}
-
-function renderOfficialSettings() {
-  dom.officialCabinetGrid.replaceChildren();
-  const settings = [
-    ['Controls', LESTERS_ARCADE_V2_APP_SHELL.levelIntro.controlsSummary],
-    ['Audio', 'Music and SFX start after user interaction; prototype music is loaded from the local Lester/Lilly rap track.'],
-    ['Network', `${LITVM_LITEFORGE_NETWORK.name} // Chain ${LITVM_LITEFORGE_NETWORK.chainId} // gas ${LITVM_LITEFORGE_NETWORK.nativeCurrency.symbol}`],
-    ['Sign out', 'Coming next: clear active wallet and sign in with another wallet profile.'],
-  ];
-  for (const [title, copy] of settings) {
-    const card = el('article', { className: 'official-info-card' });
-    appendText(card, 'span', 'SETTING', 'cabinet-status-label');
-    appendText(card, 'strong', title);
-    appendText(card, 'small', copy);
-    dom.officialCabinetGrid.append(card);
-  }
 }
 
 function renderOfficialArcadeFloor() {

@@ -145,12 +145,14 @@ test('platform shell model gives guest-first persistent nav, canonical scores ro
 
 test('runtime platform shell nav is wired through the shared model', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  const shellRoutes = readFileSync(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url), 'utf8');
   const core = readFileSync(new URL('../apps/portal/src/arcade-core.mjs', import.meta.url), 'utf8');
 
-  assert.equal(main.includes('buildPlatformShellModel'), true);
-  assert.equal(main.includes('button.dataset.route = item.href'), true);
-  assert.equal(main.includes("button.setAttribute('aria-current'"), true);
-  assert.equal(main.includes('dataset.shellBreadcrumb'), true);
+  assert.equal(main.includes('createOfficialShellRoutes'), true);
+  assert.equal(shellRoutes.includes('buildPlatformShellModel'), true);
+  assert.equal(shellRoutes.includes('button.dataset.route = item.href'), true);
+  assert.equal(shellRoutes.includes("button.setAttribute('aria-current'"), true);
+  assert.equal(shellRoutes.includes('dataset.shellBreadcrumb'), true);
   assert.equal(core.includes("Object.freeze({ id: 'settings', label: 'Settings'"), true);
 });
 
