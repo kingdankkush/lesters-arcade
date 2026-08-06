@@ -82,6 +82,18 @@
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
+      "animationProfile": {
+        "id": "heavy-vanguard-motion-v1",
+        "idleBreathScale": 0.85,
+        "runStrideScale": 1.08,
+        "runLiftScale": 0.82,
+        "recoilScale": 1.2,
+        "hurtScale": 1.05,
+        "dashScale": 0.9,
+        "meleeScale": 1.15,
+        "grenadeScale": 0.92,
+        "deathSide": 1
+      },
       "layers": [
         "shadow",
         "lower-body",
@@ -221,6 +233,18 @@
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
+      "animationProfile": {
+        "id": "agile-striker-motion-v1",
+        "idleBreathScale": 1.15,
+        "runStrideScale": 1.2,
+        "runLiftScale": 1.25,
+        "recoilScale": 0.82,
+        "hurtScale": 1.12,
+        "dashScale": 1.2,
+        "meleeScale": 1.05,
+        "grenadeScale": 1.12,
+        "deathSide": -1
+      },
       "layers": [
         "shadow",
         "lower-body",
@@ -360,6 +384,18 @@
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
+      "animationProfile": {
+        "id": "scrappy-gunslinger-motion-v1",
+        "idleBreathScale": 1.08,
+        "runStrideScale": 0.94,
+        "runLiftScale": 1.08,
+        "recoilScale": 1.35,
+        "hurtScale": 1.25,
+        "dashScale": 1.05,
+        "meleeScale": 1.3,
+        "grenadeScale": 0.88,
+        "deathSide": -1
+      },
       "unlockGate": {
         "type": "ranked-matches-played",
         "count": 10,
@@ -518,6 +554,18 @@
       "status": "production-pilot",
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
+      "animationProfile": {
+        "id": "disciplined-veteran-motion-v1",
+        "idleBreathScale": 0.9,
+        "runStrideScale": 1.02,
+        "runLiftScale": 0.92,
+        "recoilScale": 0.72,
+        "hurtScale": 0.86,
+        "dashScale": 1.0,
+        "meleeScale": 0.9,
+        "grenadeScale": 1.25,
+        "deathSide": 1
+      },
       "unlockGate": {
         "type": "ranked-matches-played",
         "count": 20

@@ -44,10 +44,19 @@ def set_base_aim_pose(rig, breath: float = 0.0) -> None:
     rig.pose.bones["forearm.R"].rotation_euler[2] = math.radians(-12)
 
 
-def apply_pose(rig, layer: str, state: str, frame_index: int, frame_count: int) -> None:
+def apply_pose(rig, layer: str, state: str, frame_index: int, frame_count: int, animation_profile: dict) -> None:
     reset_pose(rig)
     phase = (2.0 * math.pi * frame_index) / max(frame_count, 1)
     progress = frame_index / max(frame_count - 1, 1)
+    idle_breath_scale = animation_profile["idleBreathScale"]
+    run_stride_scale = animation_profile["runStrideScale"]
+    run_lift_scale = animation_profile["runLiftScale"]
+    recoil_scale = animation_profile["recoilScale"]
+    hurt_scale = animation_profile["hurtScale"]
+    dash_scale = animation_profile["dashScale"]
+    melee_scale = animation_profile["meleeScale"]
+    grenade_scale = animation_profile["grenadeScale"]
+    death_side = animation_profile["deathSide"]
     if state in {"dash", "melee", "grenade", "death"}:
         # Action clips are non-looping. A subtle authored root lift gives every
         # anticipation/impact/recovery frame a monotonic pixel signature while
@@ -56,7 +65,7 @@ def apply_pose(rig, layer: str, state: str, frame_index: int, frame_count: int) 
 
     if layer == "lower-body":
         if state == "idle":
-            amount = -0.025 if frame_index == 0 else 0.025
+            amount = (-0.025 if frame_index == 0 else 0.025) * idle_breath_scale
             rig.pose.bones["pelvis"].location.z = amount
             rig.pose.bones["thigh.L"].rotation_euler[0] = amount * 1.5
             rig.pose.bones["thigh.R"].rotation_euler[0] = -amount * 1.5
@@ -64,71 +73,72 @@ def apply_pose(rig, layer: str, state: str, frame_index: int, frame_count: int) 
             stride = math.sin(phase)
             lift_left = max(0.0, math.sin(phase + math.pi / 2))
             lift_right = max(0.0, math.sin(phase - math.pi / 2))
-            rig.pose.bones["pelvis"].location.z = 0.035 * abs(math.sin(phase))
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(34) * stride
-            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-34) * stride
-            rig.pose.bones["shin.L"].rotation_euler[0] = math.radians(-42) * lift_left
-            rig.pose.bones["shin.R"].rotation_euler[0] = math.radians(-42) * lift_right
+            rig.pose.bones["pelvis"].location.z = 0.035 * run_lift_scale * abs(math.sin(phase))
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(34) * run_stride_scale * stride
+            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-34) * run_stride_scale * stride
+            rig.pose.bones["shin.L"].rotation_euler[0] = math.radians(-42) * run_stride_scale * lift_left
+            rig.pose.bones["shin.R"].rotation_euler[0] = math.radians(-42) * run_stride_scale * lift_right
         elif state == "dash":
-            rig.pose.bones["pelvis"].location.y = -0.08 - 0.05 * math.sin(progress * math.pi)
-            rig.pose.bones["pelvis"].location.z = 0.04 * math.sin(progress * math.pi)
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(48 - 18 * progress)
-            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-42 + 14 * progress)
-            rig.pose.bones["shin.L"].rotation_euler[0] = math.radians(-36)
+            rig.pose.bones["pelvis"].location.y = (-0.08 - 0.05 * math.sin(progress * math.pi)) * dash_scale
+            rig.pose.bones["pelvis"].location.z = 0.04 * dash_scale * math.sin(progress * math.pi)
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians((48 - 18 * progress) * dash_scale)
+            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians((-42 + 14 * progress) * dash_scale)
+            rig.pose.bones["shin.L"].rotation_euler[0] = math.radians(-36 * dash_scale)
         elif state in {"melee", "grenade"}:
             brace = math.sin(progress * math.pi)
             sign = -1.0 if state == "melee" else 1.0
-            rig.pose.bones["pelvis"].rotation_euler[2] = math.radians(sign * (8 + 18 * brace))
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(18 * brace)
-            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-12 * brace)
-            rig.pose.bones["pelvis"].location.z = -0.025 * brace
+            action_scale = melee_scale if state == "melee" else grenade_scale
+            rig.pose.bones["pelvis"].rotation_euler[2] = math.radians(sign * (8 + 18 * brace) * action_scale)
+            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(18 * brace * action_scale)
+            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-12 * brace * action_scale)
+            rig.pose.bones["pelvis"].location.z = -0.025 * brace * action_scale
         elif state == "death":
             collapse = progress * progress
-            rig.pose.bones["pelvis"].rotation_euler[1] = math.radians(78 * collapse)
-            rig.pose.bones["pelvis"].location.x = 0.28 * collapse
+            rig.pose.bones["pelvis"].rotation_euler[1] = math.radians(78 * collapse * death_side)
+            rig.pose.bones["pelvis"].location.x = 0.28 * collapse * death_side
             rig.pose.bones["pelvis"].location.z = -0.40 * collapse
             rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(28 * collapse)
             rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-34 * collapse)
     elif layer == "torso-head":
-        breath = 0.008 if frame_index % 2 else -0.004
+        breath = (0.008 if frame_index % 2 else -0.004) * idle_breath_scale
         set_base_aim_pose(rig, breath)
         if state == "pistol-fire":
-            recoil = (math.radians(4), math.radians(-13), math.radians(-5))[frame_index]
+            recoil = (math.radians(4), math.radians(-13), math.radians(-5))[frame_index] * recoil_scale
             rig.pose.bones["chest"].rotation_euler[0] += recoil
             rig.pose.bones["head"].rotation_euler[0] += recoil * 0.32
             rig.pose.bones["upper_arm.R"].rotation_euler[0] += recoil * 0.55
         elif state == "hurt":
             sign = -1 if frame_index == 0 else 1
-            rig.pose.bones["chest"].rotation_euler[1] = math.radians(15 * sign)
-            rig.pose.bones["chest"].rotation_euler[2] = math.radians(-18 * sign)
-            rig.pose.bones["head"].rotation_euler[2] = math.radians(22 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-28 * sign)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(24 * sign)
+            rig.pose.bones["chest"].rotation_euler[1] = math.radians(15 * sign * hurt_scale)
+            rig.pose.bones["chest"].rotation_euler[2] = math.radians(-18 * sign * hurt_scale)
+            rig.pose.bones["head"].rotation_euler[2] = math.radians(22 * sign * hurt_scale)
+            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-28 * sign * hurt_scale)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(24 * sign * hurt_scale)
         elif state == "dash":
             surge = math.sin(progress * math.pi)
-            rig.pose.bones["chest"].rotation_euler[0] = math.radians(-24 - 10 * surge)
-            rig.pose.bones["head"].rotation_euler[0] = math.radians(14 + 8 * surge)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(18)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(12)
+            rig.pose.bones["chest"].rotation_euler[0] = math.radians((-24 - 10 * surge) * dash_scale)
+            rig.pose.bones["head"].rotation_euler[0] = math.radians((14 + 8 * surge) * dash_scale)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(18 * dash_scale)
+            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(12 * dash_scale)
         elif state == "melee":
             swing = math.sin(progress * math.pi)
-            rig.pose.bones["chest"].rotation_euler[2] = math.radians(-42 + 84 * progress)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(-76 + 132 * progress)
-            rig.pose.bones["forearm.R"].rotation_euler[1] = math.radians(-58 * swing)
-            rig.pose.bones["head"].rotation_euler[2] = math.radians(-14 + 28 * progress)
+            rig.pose.bones["chest"].rotation_euler[2] = math.radians((-42 + 84 * progress) * melee_scale)
+            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians((-76 + 132 * progress) * melee_scale)
+            rig.pose.bones["forearm.R"].rotation_euler[1] = math.radians(-58 * swing * melee_scale)
+            rig.pose.bones["head"].rotation_euler[2] = math.radians((-14 + 28 * progress) * melee_scale)
         elif state == "grenade":
             arc = math.sin(progress * math.pi)
-            rig.pose.bones["chest"].rotation_euler[2] = math.radians(26 - 46 * progress)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-18 - 112 * arc)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-22 - 96 * (1.0 - progress))
-            rig.pose.bones["head"].rotation_euler[2] = math.radians(10 - 20 * progress)
+            rig.pose.bones["chest"].rotation_euler[2] = math.radians((26 - 46 * progress) * grenade_scale)
+            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians((-18 - 112 * arc) * grenade_scale)
+            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians((-22 - 96 * (1.0 - progress)) * grenade_scale)
+            rig.pose.bones["head"].rotation_euler[2] = math.radians((10 - 20 * progress) * grenade_scale)
         elif state == "death":
             collapse = progress * progress
-            rig.pose.bones["chest"].rotation_euler[1] = math.radians(10 + 72 * collapse)
+            rig.pose.bones["chest"].rotation_euler[1] = math.radians((10 + 72 * collapse) * death_side)
             rig.pose.bones["chest"].rotation_euler[2] = math.radians(-4 - 14 * collapse)
-            rig.pose.bones["chest"].location.x = 0.04 + 0.26 * collapse
+            rig.pose.bones["chest"].location.x = (0.04 + 0.26 * collapse) * death_side
             rig.pose.bones["chest"].location.z = -0.62 * collapse
-            rig.pose.bones["head"].rotation_euler[1] = math.radians(44 * collapse)
+            rig.pose.bones["head"].rotation_euler[1] = math.radians(44 * collapse * death_side)
             rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-58 * collapse)
             rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(64 * collapse)
     elif layer == "weapon":
@@ -136,23 +146,23 @@ def apply_pose(rig, layer: str, state: str, frame_index: int, frame_count: int) 
         if state == "aim":
             socket.location.z = -0.003 if frame_index == 0 else 0.004
         elif state == "pistol-fire":
-            socket.location.y = (0.0, 0.11, 0.035)[frame_index]
-            socket.rotation_euler[0] = (0.0, math.radians(-10), math.radians(-3))[frame_index]
+            socket.location.y = (0.0, 0.11, 0.035)[frame_index] * recoil_scale
+            socket.rotation_euler[0] = (0.0, math.radians(-10), math.radians(-3))[frame_index] * recoil_scale
         elif state == "dash":
-            socket.rotation_euler[0] = math.radians(-24 - 12 * math.sin(progress * math.pi))
-            socket.location.y = 0.06 * progress
+            socket.rotation_euler[0] = math.radians((-24 - 12 * math.sin(progress * math.pi)) * dash_scale)
+            socket.location.y = 0.06 * progress * dash_scale
         elif state == "melee":
-            socket.rotation_euler[2] = math.radians(-72 + 144 * progress)
-            socket.rotation_euler[1] = math.radians(-38 * math.sin(progress * math.pi))
-            socket.location.x = 0.11 * math.sin(progress * math.pi)
+            socket.rotation_euler[2] = math.radians((-72 + 144 * progress) * melee_scale)
+            socket.rotation_euler[1] = math.radians(-38 * math.sin(progress * math.pi) * melee_scale)
+            socket.location.x = 0.11 * math.sin(progress * math.pi) * melee_scale
         elif state == "grenade":
-            socket.rotation_euler[0] = math.radians(-12 + 42 * math.sin(progress * math.pi))
-            socket.location.y = -0.035 + 0.115 * math.sin(progress * math.pi)
-            socket.location.z = -0.08 - 0.05 * progress
+            socket.rotation_euler[0] = math.radians((-12 + 42 * math.sin(progress * math.pi)) * grenade_scale)
+            socket.location.y = (-0.035 + 0.115 * math.sin(progress * math.pi)) * grenade_scale
+            socket.location.z = (-0.08 - 0.05 * progress) * grenade_scale
         elif state == "death":
             collapse = progress * progress
-            socket.rotation_euler[1] = math.radians(15 + 77 * collapse)
-            socket.location.x = 0.04 + 0.30 * collapse
+            socket.rotation_euler[1] = math.radians((15 + 77 * collapse) * death_side)
+            socket.location.x = (0.04 + 0.30 * collapse) * death_side
             socket.location.z = -0.04 - 0.51 * collapse
 
 
@@ -205,7 +215,7 @@ def main() -> None:
             for direction in manifest["directions"]:
                 rig.rotation_euler[2] = math.radians(manifest["directionAngles"][direction])
                 for frame_index in range(clip["frames"]):
-                    apply_pose(rig, layer, state, frame_index, clip["frames"])
+                    apply_pose(rig, layer, state, frame_index, clip["frames"], pilot["animationProfile"])
                     bpy.context.view_layer.update()
                     filename = f"{pilot['actorId']}__{layer}__{state}__{direction}__{frame_index:03d}.png"
                     scene.render.filepath = str(raw_output / filename)
@@ -222,6 +232,7 @@ def main() -> None:
         "status": "pass",
         "actorId": pilot["actorId"],
         "variantId": pilot["variantId"],
+        "animationProfile": pilot["animationProfile"],
         "frameCount": len(rendered),
         "frames": rendered,
         "layerObjectCounts": layer_counts,

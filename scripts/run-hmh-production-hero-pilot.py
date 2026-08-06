@@ -222,7 +222,7 @@ def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -
     metadata_path = output_dir / Path(pilot["output"]["metadata"]).name
     atlas.save(atlas_path, optimize=False, compress_level=9)
     metadata = {
-        "schemaVersion": 1, "pipelineId": manifest["pipelineId"], "actorId": pilot["actorId"], "variantId": pilot["variantId"],
+        "schemaVersion": 1, "pipelineId": manifest["pipelineId"], "actorId": pilot["actorId"], "variantId": pilot["variantId"], "animationProfile": pilot["animationProfile"],
         "classification": manifest["classification"], "runtimeAuthority": pilot["runtimeAuthority"], "gameplayBodyProfile": manifest["gameplayBodyProfile"],
         "image": "./" + atlas_path.name, "directions": manifest["directions"], "layers": pilot["layers"],
         "composition": {"independentDirections": True, "weaponSocket": manifest["scene"]["weaponSocket"], "layerOrder": pilot["composition"]},
@@ -335,7 +335,7 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
     contact_sheet_path = build_contact_sheet(manifest, pilot, run_a, output_root)
     metrics_path = output_root / Path(pilot["output"]["metrics"]).name
     metrics = {
-        "schema": "hmh-reboot-production-hero-pilot-metrics-v1", "status": "pass", "actorId": pilot["actorId"], "variantId": pilot["variantId"],
+        "schema": "hmh-reboot-production-hero-pilot-metrics-v1", "status": "pass", "actorId": pilot["actorId"], "variantId": pilot["variantId"], "animationProfile": pilot["animationProfile"],
         "blenderVersion": actual_version, "gameplayBodyProfile": manifest["gameplayBodyProfile"], "runtimeAuthority": pilot["runtimeAuthority"],
         "frameCount": len(frames), "uniqueFrameIdCount": len({frame["id"] for frame in frames}), "uniqueAnimatedFrameCount": analysis_a["uniqueAnimatedFrameCount"],
         "duplicateDecodedFrameGroups": analysis_a["duplicateGroups"], "emptyFrameCount": len(analysis_a["empty"]), "transparentCornerFailureCount": len(analysis_a["cornerFailures"]),

@@ -1,19 +1,31 @@
 {
   "actorId": "lester-original",
-  "atlasSha256": "0f8831d422907865173b68686274a44e51335483d503fbe345a8bfca56e0f2a2",
+  "animationProfile": {
+    "dashScale": 1.05,
+    "deathSide": -1,
+    "grenadeScale": 0.88,
+    "hurtScale": 1.25,
+    "id": "scrappy-gunslinger-motion-v1",
+    "idleBreathScale": 1.08,
+    "meleeScale": 1.3,
+    "recoilScale": 1.35,
+    "runLiftScale": 1.08,
+    "runStrideScale": 0.94
+  },
+  "atlasSha256": "065f9a2726e81a2adf7e535fd65b8970a5a42df46a0c1a427e17ec0164937c1c",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "dd000f9da080c95f7f30226c0745754a49b512d41d21179d8cf53fe1b9f85466",
+  "contactSheetSha256": "b09caa1b2e7a3e1c61f0f92ee54b4f2510a2f9cb511df083eb55ea564834f9c5",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "25a6e686b0614dc26f8ad8e54712d684784b1a8fa0d21ab728065ed6b213ea91",
+  "metadataSha256": "4cb559d9bcdc3afbbc4388e2b7c8d3212275c46a5a0924e165db6632205351ee",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -29,7 +41,7 @@
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "057c276c8083b199c21236968f6dc6ed3d16d3b61da17dce2b6f5c1b571b0806",
+  "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
   "status": "pass",
   "transparentCornerFailureCount": 0,
   "uniqueAnimatedFrameCount": 640,

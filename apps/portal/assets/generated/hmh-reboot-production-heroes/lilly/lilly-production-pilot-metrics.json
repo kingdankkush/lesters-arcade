@@ -1,19 +1,31 @@
 {
   "actorId": "lilly",
-  "atlasSha256": "cbf48c85b0ac37c066eb8920a5b0bac2ee0fc698ba2572ce73c1fe01f157a59f",
+  "animationProfile": {
+    "dashScale": 1.0,
+    "deathSide": 1,
+    "grenadeScale": 1.25,
+    "hurtScale": 0.86,
+    "id": "disciplined-veteran-motion-v1",
+    "idleBreathScale": 0.9,
+    "meleeScale": 0.9,
+    "recoilScale": 0.72,
+    "runLiftScale": 0.92,
+    "runStrideScale": 1.02
+  },
+  "atlasSha256": "80f0d0bf8e1ca6911426ee6015388f5f5c628ffbb70aa8963f25ae55a0c9de87",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
   "boneCount": 14,
-  "contactSheetSha256": "efe1945cfd5434f871cd39d240ca7b244ec759a5f0eb7a24ca489ab440ed7ba0",
+  "contactSheetSha256": "4c8625da0e669bf3970605da61bc51815f8eef9029e60c5ec302d2b98b2f2751",
   "duplicateDecodedFrameGroups": [],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "57250b62ac43cbdf2a82f77c27fdafe9c108708e290a825d72696034c88746dc",
+  "metadataSha256": "c0d956b11e0290c916dc045d6e8c4dabd7c6b0d95f5ac33c909ab00aa7c85301",
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -29,7 +41,7 @@
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "057c276c8083b199c21236968f6dc6ed3d16d3b61da17dce2b6f5c1b571b0806",
+  "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
   "status": "pass",
   "transparentCornerFailureCount": 0,
   "uniqueAnimatedFrameCount": 640,
