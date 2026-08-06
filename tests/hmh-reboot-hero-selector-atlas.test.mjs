@@ -21,7 +21,7 @@ function sha256(data) {
 test('selector atlas is a frozen projection-only four-hero eight-direction manifest', () => {
   const manifest = HMH_REBOOT_HERO_SELECTOR_ATLAS;
   assert.equal(Object.isFrozen(manifest), true);
-  assert.equal(manifest.pipelineId, 'hmh-reboot-hero-selector-atlas-v1');
+  assert.equal(manifest.pipelineId, 'hmh-reboot-hero-selector-atlas-v2');
   assert.equal(manifest.classification, 'production-art');
   assert.equal(manifest.runtimeAuthority, 'projection-only');
   assert.equal(manifest.gameplayAuthority, 'none');
@@ -49,6 +49,26 @@ test('selector atlas is a frozen projection-only four-hero eight-direction manif
       assert.ok(region.x >= 0 && region.x + region.width <= manifest.atlasSize.width);
       assert.ok(region.y >= 0 && region.y + region.height <= manifest.atlasSize.height);
     }
+  }
+});
+
+test('selector atlas records bounded hero-card presentation framing without clipping', () => {
+  const metadata = JSON.parse(readFileSync(METADATA, 'utf8'));
+  assert.deepEqual(metadata.presentation, {
+    scale: 1.15,
+    bottomMargin: 10,
+    resampling: 'lanczos',
+    sourceFrameSize: 160,
+  });
+  for (const frame of metadata.frames) {
+    assert.equal(frame.presentationScale, 1.15, `${frame.portalHeroId}/${frame.direction}: scale drift`);
+    const bounds = frame.alphaBounds;
+    assert.ok(bounds, `${frame.portalHeroId}/${frame.direction}: missing alpha bounds`);
+    assert.ok(bounds.w >= 66 && bounds.w <= 82, `${frame.portalHeroId}/${frame.direction}: width ${bounds.w}`);
+    assert.ok(bounds.h >= 126 && bounds.h <= 148, `${frame.portalHeroId}/${frame.direction}: height ${bounds.h}`);
+    assert.ok(bounds.x >= 6 && bounds.y >= 4, `${frame.portalHeroId}/${frame.direction}: unsafe top/left margin`);
+    assert.ok(bounds.x + bounds.w <= 154, `${frame.portalHeroId}/${frame.direction}: right crop`);
+    assert.equal(bounds.y + bounds.h, 150, `${frame.portalHeroId}/${frame.direction}: grounding drift`);
   }
 });
 

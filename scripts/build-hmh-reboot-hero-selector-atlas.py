@@ -18,7 +18,9 @@ HEROES = {
     'lilly': 'lilly',
 }
 FRAME_SIZE = 160
-PIPELINE_ID = 'hmh-reboot-hero-selector-atlas-v1'
+PIPELINE_ID = 'hmh-reboot-hero-selector-atlas-v2'
+PRESENTATION_SCALE = 1.15
+PRESENTATION_BOTTOM_MARGIN = 10
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -33,6 +35,31 @@ def png_bytes(image: Image.Image) -> bytes:
     stream = io.BytesIO()
     image.save(stream, format='PNG', optimize=False, compress_level=9)
     return stream.getvalue()
+
+
+def frame_for_selector(composed: Image.Image) -> tuple[Image.Image, dict]:
+    bounds = composed.getchannel('A').getbbox()
+    if bounds is None:
+        raise ValueError('selector source composite is blank')
+    source = composed.crop(bounds)
+    width = round(source.width * PRESENTATION_SCALE)
+    height = round(source.height * PRESENTATION_SCALE)
+    x = (FRAME_SIZE - width) // 2
+    y = FRAME_SIZE - PRESENTATION_BOTTOM_MARGIN - height
+    if x < 0 or y < 0 or x + width > FRAME_SIZE or y + height > FRAME_SIZE:
+        raise ValueError(f'selector presentation clips frame: {(x, y, width, height)}')
+    resized = source.resize((width, height), Image.Resampling.LANCZOS)
+    framed = Image.new('RGBA', (FRAME_SIZE, FRAME_SIZE), (0, 0, 0, 0))
+    framed.alpha_composite(resized, (x, y))
+    framed_bounds = framed.getchannel('A').getbbox()
+    if framed_bounds is None:
+        raise ValueError('selector presentation composite is blank')
+    return framed, {
+        'x': framed_bounds[0],
+        'y': framed_bounds[1],
+        'w': framed_bounds[2] - framed_bounds[0],
+        'h': framed_bounds[3] - framed_bounds[1],
+    }
 
 
 def module_bytes(manifest: dict) -> bytes:
@@ -99,6 +126,7 @@ def build(repo_root: Path) -> tuple[bytes, bytes, bytes]:
                 destination = frame['spriteSourceSize']
                 crop = source_atlas.crop((rect['x'], rect['y'], rect['x'] + rect['w'], rect['y'] + rect['h']))
                 composed.alpha_composite(crop, (destination['x'], destination['y']))
+            composed, alpha_bounds = frame_for_selector(composed)
             alpha = composed.getchannel('A')
             opaque_pixels = sum(1 for value in alpha.tobytes() if value > 0)
             if opaque_pixels <= 0 or alpha.getbbox() is None:
@@ -114,6 +142,8 @@ def build(repo_root: Path) -> tuple[bytes, bytes, bytes]:
                 'direction': direction,
                 'frame': {'x': x, 'y': y, 'w': FRAME_SIZE, 'h': FRAME_SIZE},
                 'opaquePixels': opaque_pixels,
+                'presentationScale': PRESENTATION_SCALE,
+                'alphaBounds': alpha_bounds,
                 'sourceFrames': source_ids,
                 'pixelSha256': sha256_bytes(composed.tobytes()),
             })
@@ -144,6 +174,12 @@ def build(repo_root: Path) -> tuple[bytes, bytes, bytes]:
         'frameSize': FRAME_SIZE,
         'frameCount': len(records),
         'directions': DIRECTIONS,
+        'presentation': {
+            'scale': PRESENTATION_SCALE,
+            'bottomMargin': PRESENTATION_BOTTOM_MARGIN,
+            'resampling': 'lanczos',
+            'sourceFrameSize': FRAME_SIZE,
+        },
         'heroes': heroes,
         'frames': records,
         'sources': sources,

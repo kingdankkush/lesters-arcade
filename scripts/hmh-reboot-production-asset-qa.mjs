@@ -88,7 +88,15 @@ const selectorMetadata = JSON.parse(readFileSync(selectorMetadataPath, 'utf8'));
 const selectorImagePath = portalPath(HMH_REBOOT_HERO_SELECTOR_ATLAS.image);
 const selectorPngReport = validatePng(selectorImagePath, 'hmh-reboot-hero-selector');
 const selectorSha256 = createHash('sha256').update(readFileSync(selectorImagePath)).digest('hex');
-assert.equal(selectorMetadata.pipelineId, 'hmh-reboot-hero-selector-atlas-v1');
+assert.equal(selectorMetadata.pipelineId, 'hmh-reboot-hero-selector-atlas-v2');
+assert.deepEqual(selectorMetadata.presentation, {
+  scale: 1.15,
+  bottomMargin: 10,
+  resampling: 'lanczos',
+  sourceFrameSize: 160,
+});
+assert.ok(selectorMetadata.frames.every((frame) => frame.presentationScale === 1.15));
+assert.ok(selectorMetadata.frames.every((frame) => frame.alphaBounds.y + frame.alphaBounds.h === 150));
 assert.equal(selectorMetadata.runtimeAuthority, 'projection-only');
 assert.equal(selectorMetadata.frameCount, 32);
 assert.equal(selectorMetadata.imageSha256, selectorSha256);
