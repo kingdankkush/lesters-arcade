@@ -101,10 +101,11 @@ test('achievement snapshot and profile UI consume manifest-backed badge image so
   assert.match(locked.iconSrc, /locked-achievement-l2-ngmi\.png/);
 
   const main = repoText('apps/portal/main.js');
+  const profileRoute = repoText('apps/portal/src/routes/official-profile-route.mjs');
   assert.equal(main.includes('renderAchievementIcon'), true, 'main.js should render badge images via a helper');
   assert.equal(main.includes("el('img'"), true, 'achievement helper should create img nodes');
-  assert.equal(main.includes('a.iconSrc'), true, 'achievement grid should consume model iconSrc');
-  assert.equal(main.includes("appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon')"), false, 'achievement grid should not be emoji-only');
+  assert.equal(profileRoute.includes('a.iconSrc'), true, 'achievement grid should consume model iconSrc');
+  assert.equal(profileRoute.includes("appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon')"), false, 'achievement grid should not be emoji-only');
 });
 
 test('achievement atlas generator and tests are wired into project gates', () => {
