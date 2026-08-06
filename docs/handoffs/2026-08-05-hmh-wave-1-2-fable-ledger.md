@@ -1,8 +1,8 @@
-# Cycle ledger — upgrade program through Wave 5 A14 damage responses
+# Cycle ledger — upgrade program through Wave 5 A14/A15 presentation
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 damage-response head: `491bcb86`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14/A15 presentation head: `1b0f3054`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
 The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
@@ -39,9 +39,11 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | Wave 5 A13 hero motion | `e0c9aa20` | Four manifest-owned hero motion profiles create distinct action weight inside the existing atlas/runtime contract. |
 | Wave 5 A13 selector | `e3712fc3` | Selector v2 enlarges and grounds all 32 production composites inside unchanged 160px cells. |
 | Wave 5 A14 damage responses | `491bcb86` | Six ordinary roles gain manifest-owned, two-frame directional hit reactions; browser certification waits were made non-vacuous and deterministic. |
+| Wave 5 bundle recovery | `0af9c496` | Centralizes twenty identical deep-freeze helpers and recovers 2,510 behavior-neutral child bytes. |
+| Wave 5 A14/A15 presentation | `1b0f3054` | Closes gas-canister flight, phase audio, responsive phase labeling and final desktop/mobile certification. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,046**, expected failures still
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,053**, expected failures still
 51. Enemy roster: 7 actors, 1,368 frames and 4,985,197 atlas bytes.
 
 ## Non-art pipelines added
@@ -177,7 +179,7 @@ Nothing new was allowed below 0.55.
 
 ## The bundle budget is now the binding constraint
 
-**Current child JS bundle: 1,050,000 B against a 1,050,000 B cap — zero headroom.**
+**Current child JS bundle: 1,048,844 B against a 1,050,000 B cap — 1,156 B headroom.**
 
 At the original Wave 1/2 close the child measured 1,048,584 B with 1,416 B left.
 That arc had already consumed the 9.4 KB the program started with. T2 hit the wall
@@ -185,12 +187,13 @@ directly: its placement logic cost 4,451 B against 3,218 B of headroom, and
 the perf gate failed at 1,051,172. Raising the cap was not on the table, and
 unifying the code did not recover enough, so the derivation moved to build
 time and the child fetched a 57 KB asset. Subsequent Wave 3/4 work left 56 B;
-asset-shaped A14 kept that byte-identical, and A15 consumed those final bytes.
-Bundle work, not art work, is what that pattern buys.
+asset-shaped A14 kept that byte-identical, and early A15 consumed those final
+bytes. Commit `0af9c496` later recovered 2,510 behavior-neutral bytes before the
+final A14/A15 slice used part of them. Bundle work, not art work, buys that room.
 
-**Practical consequence: further child code slices are effectively blocked.**
-D1 run-stats, S4's pistol tree, M3 rebinding and U9 settings all add child
-code. P6 closed at `372c7ef9`, retiring the public backstage/canvas runtime and
+**Practical consequence: substantial child code remains effectively blocked.**
+D1 run-stats, M3 rebinding and U9 settings exceed the current 1,156-byte margin
+without further measured recovery. P6 closed at `372c7ef9`, retiring the public backstage/canvas runtime and
 its obsolete soak. It reduced the emitted parent from 1,253,798 B to 1,090,277
 B, but the separately-built child stayed exactly 1,048,584 B. That measurement
 disproves the earlier assumption that P6/U10 parent cleanup would recover child
@@ -412,6 +415,41 @@ Authenticated verification proved both configured routes, the raw-identical
 child, metrics, and all six changed atlas JSON/PNG pairs. Production and LitVM
 remained untouched.
 
+## Wave 5 A14/A15 final-presentation slice
+
+Bundle-recovery commit `0af9c496` centralizes twenty byte-identical deep-freeze
+helpers behind one tested utility and reduces the child from 1,050,000 to
+1,047,490 bytes without changing behavior. Implementation commit `1b0f3054`
+spends only part of that headroom on projection and audio:
+
+- the gas bomber projects a rotating canister over its existing immutable tell
+  from attack origin to locked area target;
+- Liquidator one-shot `arena-change` events play semantic `boss-phase` through
+  the retained local `boss-warning.ogg`;
+- a responsive `THE LIQUIDATOR // MARGIN CALL` label and segmented bar remain
+  clear of desktop and portrait-mobile chrome;
+- evidence roster combat requires all three evidence-safe flags, executes browser
+  profiles serially and proves the canister's actual draw branch with bounded
+  `gasCanisterProgress` telemetry.
+
+The final child is 1,048,844 bytes, SHA-256
+`c5794cdcf81ebcdb88e1a79e0ada20b67075a808d3ad06761da6261147e8a88a`,
+leaving 1,156 bytes under the unchanged cap. Release passed 2,053 entries (2,002
+current passes and 51 expected failures), syntax 336 JavaScript and 49 Python
+files, and the complete deterministic/asset/visual/browser/network/performance
+chain. Exact implementation and visual reviews for digest
+`f75d561ec4e8d6b7f880528cb9b6ba5c66e650bbddc94a5d0ef9902ff605a6ed`
+returned `PASS` with `BLOCKERS: none`; earlier blocked candidate reviews are
+superseded by the serial, draw-branch-bound final gate.
+
+GitHub deployment `5783210591` binds the implementation to Ready Preview
+`dpl_Au5ZQ8bDLfaKoLXW5aTr4R4A8T9s` at
+`https://lesters-arcade-5xr64k2us-justin-agent-projects.vercel.app`.
+Authenticated verification proved `/games/hard-money-heroes/play`,
+`/hmh-reboot/`, the byte-identical child and the byte-identical local boss sample.
+Production and LitVM remained untouched during this slice. A14 and A15 are
+release-closed.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -448,27 +486,23 @@ remained untouched.
 - **Wave 3 complete — A6, W2, A9, T4 and P5:** implementation commit `c4680a68`,
   exact reviewed diff `0c507bc1...f51e88`, 100 deterministic authored props,
   12 visual scenes and Ready Preview `dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw`.
-- **A14 remains partial after `dfcd216a` + `491bcb86`.** All six ordinary enemy
-  roles now own distinct attack and damage-response profiles. The gas-bomber's
-  separate thrown-projectile presentation remains before final A14 certification.
-- **A15 remains partial after `4ee4f0fb`.** Phase art, telegraphs and a visible
-  transition beat are live. Phase-change audio remains in X1, and the child has
-  zero byte headroom for additional runtime presentation.
+- **A14 and A15 are complete after `dfcd216a`, `491bcb86` and `1b0f3054`.** All
+  six ordinary roles own attacks and damage responses, the gas canister reads in
+  flight, and the Liquidator phase change owns visual labeling and local audio.
 - **A13 is complete after `e0c9aa20` + `e3712fc3`.** Four heroes own distinct
   deterministic motion profiles and selector v2 gives all 32 turntable views
   bounded, larger framing. A12 256px escalation remains a separate owner gate,
   not unfinished A13 scope.
-- **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
-  boss phase cues) and X2 (volume categories, ducking) remain. The synth
-  pipeline added here is the obvious vehicle for them.
+- **Audio still thin beyond weapons:** X1 footsteps by surface and level-up cues,
+  plus X2 volume categories and ducking, remain. Boss phase audio is closed.
 
 ## Verification note
 
 Production was NOT promoted and remains the owner's call from the Vercel
 dashboard. The latest protected Preview was verified with authenticated read-only
 fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
-child, metrics, and six changed enemy-atlas JSON/PNG comparisons. The
-implementation passed the 2,046-entry release suite (1,995 current passes and 51
+child and boss-sample comparisons. The implementation passed the 2,053-entry
+release suite (2,002 current passes and 51
 expected failures), syntax,
 generated assets, long-run/weapon evidence, 12-scene visual regression,
 four-scenario network audit, portal E2E, cockpit, collectibles, all four hero

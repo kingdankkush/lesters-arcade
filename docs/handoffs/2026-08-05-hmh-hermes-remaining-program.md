@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 damage-response head: `491bcb86`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14/A15 presentation head: `1b0f3054`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -108,9 +108,11 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | Wave 5 A13 hero motion | `e0c9aa20` | Four canonical heroes receive distinct Blender-authored motion profiles inside the existing 648-frame atlas and runtime contracts. |
 | Wave 5 A13 selector | `e3712fc3` | Deterministic 1.15× alpha-bounds framing makes all 32 selector turntable frames larger and grounded without runtime or resolution changes. |
 | Wave 5 A14 damage responses | `491bcb86` | Six ordinary roles gain manifest-owned, two-frame directional hit reactions; certification browser gates were hardened without relaxing budgets. |
+| Wave 5 bundle recovery | `0af9c496` | Twenty byte-identical deep-freeze helpers were centralized with a direct semantic contract, recovering 2,510 child bytes without changing behavior. |
+| Wave 5 A14/A15 presentation | `1b0f3054` | Gas-bomber canister flight, event-driven Liquidator phase audio and a responsive labeled boss bar close ordinary-enemy and boss presentation certification. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,046** (expected failures still 51). The seven-actor enemy roster
+**1,852 → 2,053** (expected failures still 51). The seven-actor enemy roster
 holds 1,368 frames in 4,985,197 atlas bytes.
 
 ### New pipelines you can reuse
@@ -137,12 +139,13 @@ holds 1,368 frames in 4,985,197 atlas bytes.
 
 ### The child bundle is effectively full
 
-**Current child: 1,050,000 B against a 1,050,000 B cap — zero headroom.**
+**Current child: 1,048,844 B against a 1,050,000 B cap — 1,156 B headroom.**
 
 The cap was not raised. Wave 3 closed at 1,049,944 B with 56 B left; asset-shaped
-A14 kept that byte-identical, and the reviewed A15 phase beat consumed exactly
-those final 56 B. Any further child-code slice must recover bytes first and prove
-the removal behaviorally, or remain numeric/data-only. Parent refactors do not
+A14 kept that byte-identical, and the first reviewed A15 phase beat consumed
+those final 56 B. Commit `0af9c496` then recovered 2,510 behavior-neutral bytes
+before final A14/A15 presentation used part of them. Further substantial child
+code must recover and behaviorally prove more bytes. Parent refactors do not
 pay this budget because the portal parent and HMH child are separate esbuild
 entries.
 
@@ -490,15 +493,60 @@ GitHub deployment `5779505340` binds `e3712fc3` to Ready Preview
 Authenticated proof served both HTML routes plus byte-identical child, v2 selector
 JSON and selector PNG. Production and LitVM were not touched. A13 is complete.
 
-### Next: finish Wave 5 enemy/boss presentation
+### Next: begin Wave 6 with D1 run-summary authority
 
-A14 now has role-native attack and damage-state presentation. Proceed with the
-gas-bomber's separate thrown-canister projectile presentation and final full-role
-certification, then A15 phase audio/remaining telegraph polish as projection-only
-work using existing asset budgets. **A12
-256px hero escalation remains a separate owner
+A14 and A15 are release-closed. D1 is the first Wave 6 dependency for U6 run
+history and U7 challenge presentation. Its child counters and strict
+`game:run-summary` bridge validator exceed the current 1,156-byte margin, so
+centralize the measured duplicate finite/clamp validators first and prove that
+refactor behaviorally before adding summary authority. **A12 256px hero
+escalation remains a separate owner
 budget gate**: do not raise the hero atlas budget or start the full-resolution
 batch without explicit approval.
+
+---
+
+### Wave 5 A14/A15 final-presentation slice is complete
+
+Implementation commit `1b0f3054` closes A14 and A15 without changing collision,
+damage, health, AI, navigation, spawning, progression, timing or simulation RNG.
+The gas bomber now projects a rotating canister from its immutable tell origin to
+the locked area target over the real dodge window. Liquidator `arena-change`
+events play the semantic `boss-phase` cue through the existing local
+`boss-warning.ogg`, and the boss overlay now names `THE LIQUIDATOR // MARGIN
+CALL` above a responsive segmented health bar clear of desktop and mobile chrome.
+
+The evidence-only roster-combat path requires `evidenceSafe=1`,
+`rosterPreview=1` and `rosterCombat=1`. Its permanent browser smoke executes all
+profiles serially and waits for `gasCanisterProgress` strictly inside `(0,1)`;
+the runtime publishes that value only from the actual canister draw branch.
+Accepted evidence:
+
+- `.hermes/evidence/a14-canister-desktop.png`;
+- `.hermes/evidence/a14-canister-mobile.png`;
+- `.hermes/evidence/a15-phase-audio-desktop.png`;
+- `.hermes/evidence/a15-phase-audio-mobile.png`.
+
+Release passed 2,053 entries (2,002 current passes and 51 expected failures),
+syntax 336 JavaScript and 49 Python files, plus the full deterministic,
+asset, visual, portal, cockpit, hero, enemy, selector, browser, network,
+performance, metadata, docs and whitespace chain. The child is 1,048,844 bytes
+with SHA-256
+`c5794cdcf81ebcdb88e1a79e0ada20b67075a808d3ad06761da6261147e8a88a`,
+leaving 1,156 bytes under the unchanged ceiling.
+
+The final exact implementation and visual reviews for digest
+`f75d561ec4e8d6b7f880528cb9b6ba5c66e650bbddc94a5d0ef9902ff605a6ed`
+returned `PASS` with `BLOCKERS: none`. Earlier candidate reviews are superseded:
+one correctly blocked parallel browser sessions and generic-tell-only proof;
+the final candidate serializes profiles and binds telemetry to the draw branch.
+
+GitHub deployment `5783210591` binds the exact implementation to Ready Preview
+`dpl_Au5ZQ8bDLfaKoLXW5aTr4R4A8T9s` at
+`https://lesters-arcade-5xr64k2us-justin-agent-projects.vercel.app`.
+Authenticated verification proved both configured routes, the byte-identical
+child and the byte-identical local boss sample. Production and LitVM remained
+untouched during this slice.
 
 ---
 
@@ -511,22 +559,17 @@ batch without explicit approval.
 - **P5 now covers 12 production scenes**, including camp, water, foliage, all six
   district landmarks, combat and three ruined-neighborhood views. Transient C2
   recoil/impact timing remains live-probe evidence rather than a paused baseline.
-- **A14 is not complete.** All six ordinary roles now own distinct attack and
-  two-frame directional damage-response profiles. The gas-bomber's separate
-  thrown-projectile presentation and final full-role certification remain. Treat
-  `dfcd216a` and `491bcb86` as bounded animation slices, not final enemy-wave
-  certification.
-- **A15 is not complete.** Phase geometry, telegraphs and the transition scale
-  beat are live, but phase-change audio belongs to X1 and remains. The child has
-  zero byte headroom, so any further child-code presentation must first recover
-  equivalent bytes or remain asset-shaped.
+- **A14 and A15 are complete.** Commits `dfcd216a`, `491bcb86` and `1b0f3054`
+  provide role-native attacks, directional damage responses, gas-canister flight,
+  Liquidator phase visuals, event-driven phase audio and final desktop/mobile
+  certification. Further enemy or boss work is a new scope, not closeout debt.
 - **Boot long tasks are real:** 546–905 ms desktop, ~390 ms mobile, sitting right
   at the budget of two. Standing evidence for **M6 chunked navgrid**. Remember the
   naive deferral into `initializeSession` was tried and reverted — it dropped a
   touch pointer-up on iphone-13-portrait. The fix must slice the build across
   idle time *before* input binds.
-- **Audio beyond weapons:** X1 (footsteps by surface, level-up, boss phase cues)
-  and X2 (volume categories, ducking) remain. The synth pipeline is the vehicle.
+- **Audio beyond weapons:** X1 footsteps by surface and level-up cues plus X2
+  volume categories/ducking remain. Boss phase audio is complete.
 - **Standalone defaults `screenShake: false`** (it is the evidence-capture path;
   stable baselines need no jitter) while the portal path defaults it on. Verify
   runtime effects through the portal configuration or you will measure zero on a
@@ -558,10 +601,10 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2046 / 1995 passed / 51 expected failures    PASS
+test:release        2053 / 2002 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
-bundle              1,050,000 / 1,050,000                        PASS (0 B left)
+bundle              1,048,844 / 1,050,000                        PASS (1,156 B left)
 prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
 enemy roster        1,368 frames / 4,985,197 B, reproducible     PASS
@@ -571,8 +614,8 @@ portal E2E          all implemented flows                        PASS
 cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
 staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
-exact review        f5618821...fc21d19, BLOCKERS: none             PASS
-Vercel Preview      dpl_Dj385aPHrL1LTBAzPbsMA8QaahSX            READY
+exact review        f75d561e...605a6ed, BLOCKERS: none             PASS
+Vercel Preview      dpl_Au5ZQ8bDLfaKoLXW5aTr4R4A8T9s            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security
