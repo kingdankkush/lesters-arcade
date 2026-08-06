@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14/A15 presentation head: `1b0f3054`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 6 D1-prerequisite head: `ea9e5b3d`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -110,9 +110,10 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | Wave 5 A14 damage responses | `491bcb86` | Six ordinary roles gain manifest-owned, two-frame directional hit reactions; certification browser gates were hardened without relaxing budgets. |
 | Wave 5 bundle recovery | `0af9c496` | Twenty byte-identical deep-freeze helpers were centralized with a direct semantic contract, recovering 2,510 child bytes without changing behavior. |
 | Wave 5 A14/A15 presentation | `1b0f3054` | Gas-bomber canister flight, event-driven Liquidator phase audio and a responsive labeled boss bar close ordinary-enemy and boss presentation certification. |
+| Wave 6 D1 prerequisite | `ea9e5b3d` | Twenty identical finite validators and five clamps are centralized, recovering another 2,182 child bytes before run-summary authority. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,053** (expected failures still 51). The seven-actor enemy roster
+**1,852 → 2,055** (expected failures still 51). The seven-actor enemy roster
 holds 1,368 frames in 4,985,197 atlas bytes.
 
 ### New pipelines you can reuse
@@ -139,13 +140,14 @@ holds 1,368 frames in 4,985,197 atlas bytes.
 
 ### The child bundle is effectively full
 
-**Current child: 1,048,844 B against a 1,050,000 B cap — 1,156 B headroom.**
+**Current child: 1,046,662 B against a 1,050,000 B cap — 3,338 B headroom.**
 
 The cap was not raised. Wave 3 closed at 1,049,944 B with 56 B left; asset-shaped
 A14 kept that byte-identical, and the first reviewed A15 phase beat consumed
 those final 56 B. Commit `0af9c496` then recovered 2,510 behavior-neutral bytes
-before final A14/A15 presentation used part of them. Further substantial child
-code must recover and behaviorally prove more bytes. Parent refactors do not
+before final A14/A15 presentation used part of them. Commit `ea9e5b3d` then
+centralized twenty identical finite validators and five clamps, recovering a
+further 2,182 bytes with exact error semantics intact. Parent refactors do not
 pay this budget because the portal parent and HMH child are separate esbuild
 entries.
 
@@ -497,9 +499,9 @@ JSON and selector PNG. Production and LitVM were not touched. A13 is complete.
 
 A14 and A15 are release-closed. D1 is the first Wave 6 dependency for U6 run
 history and U7 challenge presentation. Its child counters and strict
-`game:run-summary` bridge validator exceed the current 1,156-byte margin, so
-centralize the measured duplicate finite/clamp validators first and prove that
-refactor behaviorally before adding summary authority. **A12 256px hero
+`game:run-summary` bridge validator now have 3,338 bytes of measured room after
+the finite/clamp consolidation. Implement D1 as its own RED-tested slice; do not
+truncate fields or report zero-filled placeholders to fit. **A12 256px hero
 escalation remains a separate owner
 budget gate**: do not raise the hero atlas budget or start the full-resolution
 batch without explicit approval.
@@ -552,6 +554,12 @@ untouched during this slice.
 
 ## 4. Debts carried forward
 
+- **D1 remains unbuilt after its prerequisite.** Commit `ea9e5b3d` centralizes
+  twenty byte-identical finite validators and five identical clamps, passes
+  2,055 release entries and the full browser/network/performance chain, and
+  leaves 3,338 child bytes. The versioned final run-summary, real counters and
+  strict 64 KB bridge validator remain the next bounded Wave 6 slice.
+
 - **`balanced-boulder` and `driftwood-log`** are in the atlas but held out of
   district dressing. Both need re-concepting, not another iteration. For the
   boulder: wedged in a cleft, or split by a fracture, rather than perched on a
@@ -601,10 +609,10 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2053 / 2002 passed / 51 expected failures    PASS
+test:release        2055 / 2004 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
-bundle              1,048,844 / 1,050,000                        PASS (1,156 B left)
+bundle              1,046,662 / 1,050,000                        PASS (3,338 B left)
 prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
 enemy roster        1,368 frames / 4,985,197 B, reproducible     PASS

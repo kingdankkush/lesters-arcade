@@ -2,7 +2,7 @@
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14/A15 presentation head: `1b0f3054`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 6 D1-prerequisite head: `ea9e5b3d`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
 The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
@@ -41,9 +41,10 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | Wave 5 A14 damage responses | `491bcb86` | Six ordinary roles gain manifest-owned, two-frame directional hit reactions; browser certification waits were made non-vacuous and deterministic. |
 | Wave 5 bundle recovery | `0af9c496` | Centralizes twenty identical deep-freeze helpers and recovers 2,510 behavior-neutral child bytes. |
 | Wave 5 A14/A15 presentation | `1b0f3054` | Closes gas-canister flight, phase audio, responsive phase labeling and final desktop/mobile certification. |
+| Wave 6 D1 prerequisite | `ea9e5b3d` | Centralizes twenty finite validators and five clamps, recovering another 2,182 behavior-neutral child bytes. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,053**, expected failures still
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,055**, expected failures still
 51. Enemy roster: 7 actors, 1,368 frames and 4,985,197 atlas bytes.
 
 ## Non-art pipelines added
@@ -179,7 +180,7 @@ Nothing new was allowed below 0.55.
 
 ## The bundle budget is now the binding constraint
 
-**Current child JS bundle: 1,048,844 B against a 1,050,000 B cap — 1,156 B headroom.**
+**Current child JS bundle: 1,046,662 B against a 1,050,000 B cap — 3,338 B headroom.**
 
 At the original Wave 1/2 close the child measured 1,048,584 B with 1,416 B left.
 That arc had already consumed the 9.4 KB the program started with. T2 hit the wall
@@ -191,9 +192,10 @@ asset-shaped A14 kept that byte-identical, and early A15 consumed those final
 bytes. Commit `0af9c496` later recovered 2,510 behavior-neutral bytes before the
 final A14/A15 slice used part of them. Bundle work, not art work, buys that room.
 
-**Practical consequence: substantial child code remains effectively blocked.**
-D1 run-stats, M3 rebinding and U9 settings exceed the current 1,156-byte margin
-without further measured recovery. P6 closed at `372c7ef9`, retiring the public backstage/canvas runtime and
+**Practical consequence: substantial child code still requires exact accounting.**
+D1 now has 3,338 measured bytes after `ea9e5b3d`, but its complete counters and
+strict bridge validator must be implemented as a separate bounded slice rather
+than truncated to fit. P6 closed at `372c7ef9`, retiring the public backstage/canvas runtime and
 its obsolete soak. It reduced the emitted parent from 1,253,798 B to 1,090,277
 B, but the separately-built child stayed exactly 1,048,584 B. That measurement
 disproves the earlier assumption that P6/U10 parent cleanup would recover child
@@ -449,6 +451,24 @@ Authenticated verification proved `/games/hard-money-heroes/play`,
 `/hmh-reboot/`, the byte-identical child and the byte-identical local boss sample.
 Production and LitVM remained untouched during this slice. A14 and A15 are
 release-closed.
+
+## Wave 6 D1-prerequisite validator recovery
+
+Commit `ea9e5b3d` moves twenty byte-identical `finite(value, name)` validators
+and five identical clamps to the existing `value-guards.mjs`. Direct tests prove
+finite pass/rejection behavior, named `TypeError` text, two-sided clamping and
+deep-freeze identity. Release passes 2,055 entries (2,004 current passes and 51
+expected failures), syntax remains 336 JavaScript and 49 Python files, and the
+full asset, visual, portal, character, serial browser, network and performance
+chain passes. The child falls to 1,046,662 bytes, SHA-256
+`871511d8501948bba858200134cc32a24e829542803278f1bc266cf94455ce65`,
+leaving 3,338 bytes under the unchanged cap. Exact reviewed digest
+`cb78c9dc6f020c29ce446f44b3bfa98ef6d0a062e53e86d22851384526bda464`
+returned `PASS` with `BLOCKERS: none`.
+
+This is a prerequisite, not D1 completion. Real deterministic counters,
+versioned summary construction, one final `game:run-summary` message and strict
+64 KB protocol validation remain next.
 
 ## Standing debts
 
