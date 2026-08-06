@@ -2038,15 +2038,16 @@ test('Chikun mode selection uses canonical title, game-specific copy, and tempor
 
   const portalHtml = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const portalMain = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const playRoutesSource = readFileSync(fileURLToPath(new URL('../apps/portal/src/routes/official-play-routes.mjs', import.meta.url)), 'utf8');
   for (const id of ['officialModeTitle', 'officialModeArtNote', 'officialFreeModeBanner', 'officialRankedModeBanner']) {
     assert.match(portalHtml, new RegExp(`id=["']${id}["']`));
     assert.match(portalMain, new RegExp(`#${id}`));
   }
   assert.equal(buildGameModeSelectModel('future-unregistered-cabinet'), null);
-  assert.match(portalMain, /buildGameModeSelectModel\(game\.id\)/);
-  assert.match(portalMain, /Mode selection blocked safely/);
-  assert.match(portalMain, /This unconfigured game cannot start a session/);
-  assert.match(portalMain, /SETTLEMENT_LIVE && ranked\.requiresZkLtc/);
+  assert.match(playRoutesSource, /buildGameModeSelectModel\(game\.id\)/);
+  assert.match(playRoutesSource, /Mode selection blocked safely/);
+  assert.match(playRoutesSource, /This unconfigured game cannot start a session/);
+  assert.match(playRoutesSource, /SETTLEMENT_LIVE && ranked\.requiresZkLtc/);
 
   const chikunGame = ARCADE_GAMES.find((game) => game.id === 'chikun');
   const chikunCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'chikun');
@@ -2216,10 +2217,10 @@ test('leaderboard page treats games and time windows as compact filters above th
 });
 
 test('public HMH screens use the user-supplied cabinet sheet over the older production placeholder', () => {
-  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const playRoutesSource = readFileSync(fileURLToPath(new URL('../apps/portal/src/routes/official-play-routes.mjs', import.meta.url)), 'utf8');
   const shellRoutesSource = readFileSync(fileURLToPath(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url)), 'utf8');
   assert.equal(shellRoutesSource.includes('featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite()'), true);
-  assert.equal(mainSource.includes('cabinet.desktopCabinetSprite ?? productionCabinetSprite()'), true);
+  assert.equal(playRoutesSource.includes('cabinet.desktopCabinetSprite ?? productionCabinetSprite()'), true);
 });
 
 test('Lester Arcade custom MP3 playlist manifest drives a global minimal music player and Hard Money Heroes queue', async () => {

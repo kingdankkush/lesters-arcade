@@ -9,6 +9,7 @@ import {
 import { createRoguelikeRunState } from '../apps/portal/src/arcade-core.mjs';
 
 const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+const playRoutesSource = readFileSync(new URL('../apps/portal/src/routes/official-play-routes.mjs', import.meta.url), 'utf8');
 
 const EXPECTED_LOADOUTS = Object.freeze({
   'lit-commando': 'auto-miner',
@@ -54,8 +55,8 @@ test('live runtime consumes hero health loadout and signature hooks', () => {
   assert.match(mainSource, /movingFireRateMultiplier/);
   assert.match(mainSource, /bossRecoveryFraction/);
   assert.match(mainSource, /bossScoreMultiplier/);
-  assert.match(mainSource, /hero-loadout/);
-  assert.match(mainSource, /hero\.passive\.description/);
+  assert.match(playRoutesSource, /hero-loadout/);
+  assert.match(playRoutesSource, /hero\.passive\.description/);
 });
 
 test('Lester aliases resolve to the same gameplay identity', () => {
