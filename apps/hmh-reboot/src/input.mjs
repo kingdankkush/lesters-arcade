@@ -1,16 +1,16 @@
 import { freezeDeep } from './value-guards.mjs';
 import { screenToGround } from './world-space.mjs';
 import { minimapExclusionLeft } from './hud-layout.mjs';
+import {
+  keyboardActionRecord,
+  keyboardCodesForBindings,
+  keyboardMovement,
+  normalizeKeyboardBindings,
+} from './action-map.mjs';
 
 // Gap kept between the pause button and the minimap frame.
 const MINIMAP_CLEARANCE = 8;
 
-const GAMEPLAY_KEYS = new Set([
-  'KeyW', 'KeyA', 'KeyS', 'KeyD',
-  'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
-  'Space', 'KeyE', 'KeyF', 'KeyG', 'ShiftLeft', 'ShiftRight', 'Escape',
-  'Digit1', 'Digit2', 'Digit3', 'Digit4',
-]);
 
 const ACTION_DEFAULTS = Object.freeze({
   fire: false, melee: false, grenade: false, dash: false, pause: false,
@@ -34,14 +34,15 @@ function bool(value) {
   return value === true;
 }
 
-export function normalizeAxisPair(rawX, rawY, deadzone = 0) {
+export function normalizeAxisPair(rawX, rawY, deadzone = 0, { sensitivity = 1, responseCurve = 1 } = {}) {
   const x = finite(rawX, 'axis x');
   const y = finite(rawY, 'axis y');
   finite(deadzone, 'axis deadzone');
   if (deadzone < 0 || deadzone >= 1) throw new TypeError('axis deadzone must be in [0, 1)');
+  if (!(sensitivity > 0) || !(responseCurve > 0)) throw new TypeError('axis sensitivity and response curve must be positive');
   const magnitude = Math.hypot(x, y);
   if (magnitude <= deadzone || magnitude === 0) return { x: 0, y: 0 };
-  const normalizedMagnitude = Math.min(1, (magnitude - deadzone) / (1 - deadzone));
+  const normalizedMagnitude = Math.min(1, Math.pow((magnitude - deadzone) / (1 - deadzone), responseCurve) * sensitivity);
   return {
     x: (x / magnitude) * normalizedMagnitude,
     y: (y / magnitude) * normalizedMagnitude,
@@ -56,12 +57,12 @@ function buttonPressed(buttons, index) {
   return buttons?.[index]?.pressed === true || Number(buttons?.[index]?.value ?? 0) > 0.5;
 }
 
-export function mapGamepadSnapshot(gamepad, { deadzone = 0.2 } = {}) {
+export function mapGamepadSnapshot(gamepad, { deadzone = 0.2, sensitivity = 1, responseCurve = 1 } = {}) {
   const axes = gamepad?.axes ?? [];
   const buttons = gamepad?.buttons ?? [];
   return freezeDeep({
-    move: normalizeAxisPair(Number(axes[0] ?? 0), Number(axes[1] ?? 0), deadzone),
-    aim: normalizeAxisPair(Number(axes[2] ?? 0), Number(axes[3] ?? 0), deadzone),
+    move: normalizeAxisPair(Number(axes[0] ?? 0), Number(axes[1] ?? 0), deadzone, { sensitivity, responseCurve }),
+    aim: normalizeAxisPair(Number(axes[2] ?? 0), Number(axes[3] ?? 0), deadzone, { sensitivity, responseCurve }),
     actions: {
       fire: buttonPressed(buttons, 7),
       melee: buttonPressed(buttons, 2),
@@ -74,24 +75,6 @@ export function mapGamepadSnapshot(gamepad, { deadzone = 0.2 } = {}) {
   });
 }
 
-function keyboardMove(keys) {
-  const x = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
-  const y = (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0);
-  return normalizeDirection(x, y);
-}
-
-function keyboardActions(keys) {
-  const weaponSlot = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].findIndex((code) => keys.has(code)) + 1;
-  return {
-    fire: keys.has('Space'),
-    melee: keys.has('KeyE'),
-    grenade: keys.has('KeyF') || keys.has('KeyG'),
-    dash: keys.has('ShiftLeft') || keys.has('ShiftRight'),
-    pause: keys.has('Escape'),
-    weaponSlot,
-    weaponNext: false,
-  };
-}
 
 function hasDirection(direction) {
   return direction.x !== 0 || direction.y !== 0;
@@ -112,7 +95,9 @@ function actionRecord(value = {}) {
 }
 
 export class InputState {
-  constructor() {
+  constructor({ keyboardBindings } = {}) {
+    this.keyboardBindings = normalizeKeyboardBindings(keyboardBindings);
+    this.gameplayKeys = new Set(keyboardCodesForBindings(this.keyboardBindings));
     this.keys = new Set();
     this.keyboardAt = -1;
     this.pointer = null;
@@ -129,8 +114,15 @@ export class InputState {
     this.lastBufferedSnapshot = null;
   }
 
+  setKeyboardBindings(bindings, { rankedActive = false } = {}) {
+    if (rankedActive) throw new TypeError('keyboard bindings are locked during an active ranked run');
+    this.keyboardBindings = normalizeKeyboardBindings(bindings);
+    this.gameplayKeys = new Set(keyboardCodesForBindings(this.keyboardBindings));
+    this.reset('bindings-changed');
+  }
+
   heldActions() {
-    const keyboard = keyboardActions(this.keys);
+    const keyboard = keyboardActionRecord(this.keys, this.keyboardBindings);
     const sources = [keyboard, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire, grenade: this.pointer.grenade ?? false } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
     return Object.fromEntries(BUFFERED_ACTIONS.map((action) => [action, sources.some((source) => source[action])]));
   }
@@ -152,7 +144,7 @@ export class InputState {
   }
 
   setKey(code, down, atMs) {
-    if (!GAMEPLAY_KEYS.has(code)) return false;
+    if (!this.gameplayKeys.has(code)) return false;
     const before = this.heldActions();
     const at = this.markDevice('keyboard-mouse', atMs);
     if (down) this.keys.add(code);
@@ -236,7 +228,7 @@ export class InputState {
     const bufferedEntries = [...this.pendingActions.entries()];
     const buffered = new Set(bufferedEntries.map(([action]) => action));
     const movementCandidates = [];
-    const keyboard = keyboardMove(this.keys);
+    const keyboard = normalizeDirection(...Object.values(keyboardMovement(this.keys, this.keyboardBindings)));
     if (hasDirection(keyboard)) movementCandidates.push({ value: keyboard, at: this.keyboardAt });
     if (this.touch && hasDirection(this.touch.move)) movementCandidates.push({ value: this.touch.move, at: this.touchAt });
     if (this.gamepad && hasDirection(this.gamepad.move)) movementCandidates.push({ value: this.gamepad.move, at: this.gamepadAt });
@@ -262,7 +254,7 @@ export class InputState {
       ? { x: selectedAim.value.x, y: selectedAim.value.y, active: true }
       : { x: 0, y: 0, active: false };
 
-    const keyboardActionState = keyboardActions(this.keys);
+    const keyboardActionState = keyboardActionRecord(this.keys, this.keyboardBindings);
     const sources = [keyboardActionState, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire, grenade: this.pointer.grenade ?? false } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
     const actions = {
       move: { ...move },
@@ -293,7 +285,7 @@ export class InputState {
   }
 }
 
-export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
+export function computeTouchControlLayout({ width, height, safeInsets = {}, leftHanded = false, controlScale = 1 }) {
   const viewportWidth = finite(width, 'touch viewport width');
   const viewportHeight = finite(height, 'touch viewport height');
   if (viewportWidth <= 0 || viewportHeight <= 0) throw new TypeError('touch viewport dimensions must be positive');
@@ -304,11 +296,14 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
     left: Math.max(0, finite(safeInsets.left ?? 0, 'safe left')),
   };
   const shortEdge = Math.min(viewportWidth, viewportHeight);
+  const scale = finite(controlScale, 'touch control scale');
+  if (scale < 0.75 || scale > 1.5) throw new TypeError('touch control scale must be in [0.75, 1.5]');
   // Device playtest: eight controls crowded a phone screen and the movement
   // stick could not be worked reliably. Keep the compact movement, aim, power,
   // weapon-swap, and pause set. Firing remains automatic when a target is in
   // range (see `createAimState` autofire), so a fire button is redundant.
-  const radius = Math.max(38, Math.min(72, shortEdge * 0.15));
+  const baseRadius = Math.max(38, Math.min(72, shortEdge * 0.15));
+  const radius = Math.min(baseRadius * scale, (viewportWidth - safe.left - safe.right) / 4.68);
   const margin = Math.max(14, radius * 0.34);
   const buttonRadius = Math.max(26, radius * 0.56);
 
@@ -360,7 +355,11 @@ export function computeTouchControlLayout({ width, height, safeInsets = {} }) {
     weapon: { x: weaponX, y: powerY, radius: buttonRadius },
     pause: { x: pauseX, y: moveStick.y, radius: buttonRadius },
   };
-  return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, moveStick, aimStick, buttons });
+  const layoutSticks = leftHanded ? { moveStick: aimStick, aimStick: moveStick } : { moveStick, aimStick };
+  const layoutButtons = leftHanded
+    ? { power: { ...buttons.power, x: buttons.weapon.x }, weapon: { ...buttons.weapon, x: buttons.power.x }, pause: buttons.pause }
+    : buttons;
+  return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, ...layoutSticks, buttons: layoutButtons });
 }
 
 export function createBrowserInputController({ input, target, windowRef = globalThis.window, documentRef = globalThis.document, now = () => performance.now() }) {
@@ -374,7 +373,7 @@ export function createBrowserInputController({ input, target, windowRef = global
     listeners.push(() => source.removeEventListener(type, callback, options));
   };
   const key = (down) => (event) => {
-    if (!GAMEPLAY_KEYS.has(event.code)) return;
+    if (!input.gameplayKeys.has(event.code)) return;
     event.preventDefault?.();
     input.setKey(event.code, down, now());
   };

@@ -1,6 +1,7 @@
 import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
 import { RUN_UPGRADE_CATALOG } from './run-progression.mjs';
 import { resolveComboPresentation } from './combo-feedback.mjs';
+import { actionHelpRows } from './action-map.mjs';
 
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
@@ -12,7 +13,7 @@ function integerText(value) {
   return Math.max(0, Math.round(Number(value) || 0)).toLocaleString('en-US');
 }
 
-const SAFE_DYNAMIC_TAGS = new Set(['button', 'div', 'details', 'summary', 'span', 'strong', 'b', 'p', 'li']);
+const SAFE_DYNAMIC_TAGS = new Set(['button', 'div', 'details', 'summary', 'span', 'strong', 'b', 'p', 'li', 'dt', 'dd', 'small']);
 const PAUSE_SETTING_KEYS = Object.freeze({
   musicEnabled: 'hmhSettingMusic',
   screenShake: 'hmhSettingScreenShake',
@@ -33,6 +34,7 @@ export function createCockpitUi({
   onMenuToggle = () => {},
   onMusicToggle = () => {},
   onSettingToggle = () => {},
+  onBindingChange = () => {},
   onResume = () => {},
   onRestart = () => {},
   onExit = () => {},
@@ -65,11 +67,15 @@ export function createCockpitUi({
     settings: Object.fromEntries(Object.entries(PAUSE_SETTING_KEYS).map(([key, id]) => [key, required(documentRef, id)])),
     buildEmpty: required(documentRef, 'hmhBuildEmpty'),
     buildSummary: required(documentRef, 'hmhBuildSummary'),
+    controlsCard: required(documentRef, 'hmhControlsCard'),
     upgradePanel: required(documentRef, 'hmhUpgradePanel'),
     upgradeQueue: required(documentRef, 'hmhUpgradeQueue'),
     upgradeChoices: required(documentRef, 'hmhUpgradeChoices'),
   };
   let musicEnabled = true;
+  let sessionMode = 'free';
+  let currentSettings = {};
+  let awaitingActionId = null;
   const listeners = [];
   const listen = (element, type, handler) => {
     element.addEventListener(type, handler);
@@ -105,6 +111,47 @@ export function createCockpitUi({
       }
     });
   }
+
+  const keyboardLabel = (code) => String(code ?? '')
+    .replace(/^Key/, '')
+    .replace(/^Digit/, '')
+    .replace('ShiftLeft', 'Left Shift')
+    .replace('ShiftRight', 'Right Shift');
+  const renderControls = () => {
+    elements.controlsCard.replaceChildren();
+    for (const row of actionHelpRows(currentSettings.keyboardBindings)) {
+      const wrapper = createSafeTextElement(documentRef, 'div');
+      const label = createSafeTextElement(documentRef, 'dt', { text: row.label });
+      const value = createSafeTextElement(documentRef, 'dd');
+      const binding = createSafeTextElement(documentRef, 'button', { className: 'hmh-binding-button', text: keyboardLabel(row.keyboard) });
+      binding.type = 'button';
+      binding.disabled = sessionMode === 'ranked';
+      binding.dataset.actionId = row.id;
+      binding.setAttribute('aria-label', binding.disabled
+        ? `${row.label}: ${keyboardLabel(row.keyboard)}. Locked during ranked play.`
+        : `Rebind ${row.label}; currently ${keyboardLabel(row.keyboard)}`);
+      binding.addEventListener('click', () => {
+        if (binding.disabled) return;
+        awaitingActionId = row.id;
+        binding.textContent = 'Press a key…';
+      });
+      const deviceHelp = [row.gamepad, row.touch].filter(Boolean).join(' · ');
+      const help = createSafeTextElement(documentRef, 'small', { text: deviceHelp || row.help });
+      value.append(binding, help);
+      wrapper.append(label, value);
+      elements.controlsCard.append(wrapper);
+    }
+  };
+  const handleBindingKey = (event) => {
+    if (!awaitingActionId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const actionId = awaitingActionId;
+    awaitingActionId = null;
+    try { onBindingChange(actionId, event.code); } catch { renderControls(); }
+  };
+  listen(documentRef, 'keydown', handleBindingKey);
+  renderControls();
 
   // M1 first-run hint: dismissible, and it retires itself after a bounded
   // on-screen time so it never covers sustained play.
@@ -148,6 +195,7 @@ export function createCockpitUi({
       elements.comboStat.setAttribute('aria-label', presentation.label);
     },
     setSession(payload, adapterStatus) {
+      sessionMode = payload.mode;
       elements.profileName.textContent = payload.profile.displayName;
       elements.profileHero.textContent = payload.heroId;
       elements.profileMode.textContent = payload.mode;
@@ -155,6 +203,7 @@ export function createCockpitUi({
       elements.adapter.textContent = adapterStatus.label;
       elements.exit.disabled = !adapterStatus || adapterStatus.authority !== 'portal';
       elements.exit.textContent = elements.exit.disabled ? 'Arcade exit unavailable' : 'Exit to arcade';
+      renderControls();
     },
     setMusicEnabled(enabled) {
       musicEnabled = Boolean(enabled);
@@ -163,10 +212,12 @@ export function createCockpitUi({
       elements.settings.musicEnabled.checked = musicEnabled;
     },
     setSettings(nextSettings = {}) {
+      currentSettings = nextSettings;
       for (const [key, input] of Object.entries(elements.settings)) input.checked = Boolean(nextSettings[key]);
       musicEnabled = Boolean(nextSettings.musicEnabled);
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));
+      renderControls();
     },
     setPaused(paused) {
       elements.pausePanel.hidden = !paused;
@@ -233,6 +284,7 @@ export function createCockpitUi({
       if (elements.controlsHint) elements.controlsHint.hidden = true;
     },
     destroy() {
+      awaitingActionId = null;
       for (const remove of listeners.splice(0)) remove();
       elements.upgradeChoices.replaceChildren();
     },

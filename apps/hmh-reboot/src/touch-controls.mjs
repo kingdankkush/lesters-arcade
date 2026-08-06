@@ -156,6 +156,8 @@ export function createTouchControlAdapter({
   stickRadius = 72,
   deadZone = 0.12,
   sensitivity = 1,
+  controlScale = 1,
+  leftHanded = false,
   getSafeInsets = null,
   onPause = null,
 } = {}) {
@@ -284,7 +286,7 @@ export function createTouchControlAdapter({
     const visual = windowRef.visualViewport ?? null;
     const width = Math.max(1, Number(visual?.width) || Number(windowRef.innerWidth) || Number(root.clientWidth) || Number(documentRef.documentElement?.clientWidth) || 1);
     const height = Math.max(1, Number(visual?.height) || Number(windowRef.innerHeight) || Number(root.clientHeight) || Number(documentRef.documentElement?.clientHeight) || 1);
-    const layout = computeTouchControlLayout({ width, height, safeInsets });
+    const layout = computeTouchControlLayout({ width, height, safeInsets, controlScale, leftHanded });
     for (const role of ['move', 'aim']) {
       const descriptor = layout[`${role}Stick`];
       Object.assign(elements[role].style, {

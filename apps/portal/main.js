@@ -7,6 +7,7 @@ if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
+import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
@@ -996,8 +997,10 @@ const combatAudio = {
   sfxLoadAttempted: false,
 };
 
-// Player-facing game settings (persisted to localStorage so they survive
-// reloads). Wired into the functional Settings screen.
+// Versioned HMH preferences persist as bounded controls/gameplay/audio/
+// accessibility domains. The flat object remains a compatibility view for the
+// legacy parent renderer until that renderer is retired.
+let hmhPlayerSettings = HMH_PLAYER_SETTINGS_DEFAULTS;
 const gameSettings = {
   screenShake: true,
   gore: true,
@@ -1009,15 +1012,50 @@ const gameSettings = {
   touchLeftHanded: false,
   touchControlOpacity: 0.4,
 };
+function applyHmhSettingsCompatibilityView(value) {
+  Object.assign(gameSettings, value.gameplay, {
+    reduceMotion: value.accessibility.reduceMotion,
+    reduceFlash: value.accessibility.reduceFlash,
+    colorblindTags: value.accessibility.colorblindTags,
+    touchLeftHanded: value.controls.touchLeftHanded,
+    touchControlOpacity: value.controls.touchOpacity,
+  });
+}
 (function loadGameSettings() {
   try {
     const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('hmh-settings') : null;
-    if (raw) Object.assign(gameSettings, JSON.parse(raw));
-    if (typeof combatAudio !== 'undefined') {} // no-op guard
-  } catch { /* ignore corrupt prefs */ }
+    hmhPlayerSettings = normalizeHmhPlayerSettings(raw ? JSON.parse(raw) : HMH_PLAYER_SETTINGS_DEFAULTS);
+  } catch {
+    hmhPlayerSettings = HMH_PLAYER_SETTINGS_DEFAULTS;
+  }
+  applyHmhSettingsCompatibilityView(hmhPlayerSettings);
 })();
+function persistHmhPlayerSettings() {
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem('hmh-settings', JSON.stringify(hmhPlayerSettings)); } catch { /* ignore */ }
+}
 function saveGameSettings() {
-  try { if (typeof localStorage !== 'undefined') localStorage.setItem('hmh-settings', JSON.stringify(gameSettings)); } catch { /* ignore */ }
+  hmhPlayerSettings = normalizeHmhPlayerSettings({
+    ...hmhPlayerSettings,
+    controls: {
+      ...hmhPlayerSettings.controls,
+      touchLeftHanded: gameSettings.touchLeftHanded,
+      touchOpacity: gameSettings.touchControlOpacity,
+    },
+    gameplay: {
+      ...hmhPlayerSettings.gameplay,
+      screenShake: gameSettings.screenShake,
+      gore: gameSettings.gore,
+      autoEnterFullscreen: gameSettings.autoEnterFullscreen,
+      autoAimAssist: gameSettings.autoAimAssist,
+    },
+    accessibility: {
+      ...hmhPlayerSettings.accessibility,
+      reduceMotion: gameSettings.reduceMotion,
+      reduceFlash: gameSettings.reduceFlash,
+      colorblindTags: gameSettings.colorblindTags,
+    },
+  });
+  persistHmhPlayerSettings();
 }
 
 function applyGameplayAccessibilitySettings() {
@@ -1239,14 +1277,19 @@ async function toggleArcadeMusicPlay() {
   return ensureArcadeMusicPlayer(combat.active ? 'gameplay' : 'menu', true);
 }
 
-function toggleArcadeMusicMute() {
-  arcadeMusic.muted = !arcadeMusic.muted;
-  combat.musicEnabled = !arcadeMusic.muted;
+function setArcadeMusicEnabled(enabled) {
+  const musicOn = Boolean(enabled);
+  arcadeMusic.muted = !musicOn;
+  combat.musicEnabled = musicOn;
   const audio = arcadeMusicAudio();
-  if (audio) audio.muted = arcadeMusic.muted;
+  if (audio) audio.muted = !musicOn;
   renderArcadeMusicPlayer();
   syncCombatOverlay();
-  return !arcadeMusic.muted;
+  return musicOn;
+}
+
+function toggleArcadeMusicMute() {
+  return setArcadeMusicEnabled(arcadeMusic.muted);
 }
 
 async function nextArcadeMusicTrack({ autoplay = arcadeMusic.playing } = {}) {
@@ -1459,9 +1502,13 @@ function playSfxCue(cue, volume = 0.05) {
   // (or permanently, if the sample failed to load).
   const voice = allocateSfxVoice(plan, now);
   if (!voice) return false;
-  if (plan.samplePreferred && playSfxSample(cue, plan.volume, voice)) return true;
+  const busLevel = plan.family === 'ui' ? hmhPlayerSettings.audio.uiVolume : hmhPlayerSettings.audio.sfxVolume;
+  const dynamicGain = hmhPlayerSettings.audio.dynamicRange === 'night' ? 0.75 : hmhPlayerSettings.audio.dynamicRange === 'wide' ? 1.08 : 1;
+  const mixedVolume = Math.max(0, Math.min(1, plan.volume * busLevel * dynamicGain));
+  if (mixedVolume <= 0) { releaseSfxVoice(voice); return false; }
+  if (plan.samplePreferred && playSfxSample(cue, mixedVolume, voice)) return true;
   loadSfxSample(cue);
-  const played = playSfxSynth(cue, plan.volume, plan.synth, voice);
+  const played = playSfxSynth(cue, mixedVolume, plan.synth, voice);
   if (!played) releaseSfxVoice(voice);
   return played;
 }
@@ -3612,6 +3659,50 @@ function renderCombatSettingsPanel() {
     quickGrid.append(button);
   }
 
+  const tuningTitle = el('h4', { className: 'combat-settings-title', textContent: 'Audio & Input' });
+  const tuningCopy = el('p', { className: 'combat-settings-copy', textContent: 'Bounded runtime controls. Changes persist to this browser and are projected into the active child session.' });
+  const tuningGrid = el('div', { className: 'combat-settings-range-grid' });
+  const tuningSettings = [
+    { domain: 'audio', key: 'musicVolume', label: 'Music', min: 0, max: 1, step: 0.05 },
+    { domain: 'audio', key: 'sfxVolume', label: 'SFX', min: 0, max: 1, step: 0.05 },
+    { domain: 'audio', key: 'uiVolume', label: 'UI cues', min: 0, max: 1, step: 0.05 },
+    { domain: 'controls', key: 'gamepadDeadzone', label: 'Gamepad deadzone', min: 0.05, max: 0.45, step: 0.01 },
+    { domain: 'controls', key: 'gamepadSensitivity', label: 'Gamepad sensitivity', min: 0.5, max: 2, step: 0.05 },
+    { domain: 'controls', key: 'touchSensitivity', label: 'Touch sensitivity', min: 0.5, max: 2, step: 0.05 },
+    { domain: 'controls', key: 'touchScale', label: 'Touch scale', min: 0.75, max: 1.5, step: 0.05 },
+    { domain: 'controls', key: 'aimAssistStrength', label: 'Aim assist', min: 0, max: 1, step: 0.05 },
+    { domain: 'display', key: 'hudScale', label: 'HUD scale', min: 0.75, max: 1.3, step: 0.05 },
+  ];
+  for (const setting of tuningSettings) {
+    const row = el('label', { className: 'combat-setting-range' });
+    const name = el('span', { textContent: setting.label });
+    const output = el('output', { textContent: Number(hmhPlayerSettings[setting.domain][setting.key]).toFixed(2) });
+    const input = el('input', { type: 'range' });
+    input.min = String(setting.min);
+    input.max = String(setting.max);
+    input.step = String(setting.step);
+    input.value = String(hmhPlayerSettings[setting.domain][setting.key]);
+    input.setAttribute('aria-label', setting.label);
+    input.addEventListener('input', () => {
+      hmhPlayerSettings = normalizeHmhPlayerSettings({
+        ...hmhPlayerSettings,
+        [setting.domain]: { ...hmhPlayerSettings[setting.domain], [setting.key]: Number(input.value) },
+      });
+      applyHmhSettingsCompatibilityView(hmhPlayerSettings);
+      persistHmhPlayerSettings();
+      applyHmhAudioSettings();
+      applyGameplayAccessibilitySettings();
+      pushHmhRebootSettings();
+      output.textContent = Number(input.value).toFixed(2);
+    });
+    row.append(name, output, input);
+    tuningGrid.append(row);
+  }
+  const controlSummary = el('p', {
+    className: 'combat-settings-copy combat-control-summary',
+    textContent: `Keyboard: ${Object.entries(hmhPlayerSettings.controls.keyboardBindings).map(([action, code]) => `${action} ${code}`).join(' · ')}. Rebind from the in-game pause panel; ranked bindings are locked.`,
+  });
+
   const accessibility = buildCombatAccessibilitySettingsModel({
     reduceMotion: gameSettings.reduceMotion,
     screenShake: gameSettings.screenShake,
@@ -3659,7 +3750,7 @@ function renderCombatSettingsPanel() {
     button.addEventListener('click', () => action.run());
     touchGrid.append(button);
   }
-  dom.combatSettingsPanel.replaceChildren(quickTitle, quickCopy, quickGrid, accessibilityTitle, accessibilityCopy, accessibilityGrid, touchTitle, touchCopy, touchGrid);
+  dom.combatSettingsPanel.replaceChildren(quickTitle, quickCopy, quickGrid, tuningTitle, tuningCopy, tuningGrid, controlSummary, accessibilityTitle, accessibilityCopy, accessibilityGrid, touchTitle, touchCopy, touchGrid);
 }
 
 async function restartCombatRun() {
@@ -4549,14 +4640,45 @@ function hmhRebootHeroId() {
 }
 
 function hmhRebootSettings() {
-  return {
-    musicEnabled: Boolean(combat.musicEnabled),
-    screenShake: Boolean(gameSettings.screenShake),
-    gore: Boolean(gameSettings.gore),
-    reduceMotion: Boolean(gameSettings.reduceMotion),
-    reduceFlash: Boolean(gameSettings.reduceFlash),
-    colorblindTags: Boolean(gameSettings.colorblindTags),
-  };
+  return projectHmhRuntimeSettings(normalizeHmhPlayerSettings({
+    ...hmhPlayerSettings,
+    gameplay: {
+      ...hmhPlayerSettings.gameplay,
+      screenShake: gameSettings.screenShake,
+      gore: gameSettings.gore,
+      autoEnterFullscreen: gameSettings.autoEnterFullscreen,
+      autoAimAssist: gameSettings.autoAimAssist,
+    },
+    audio: { ...hmhPlayerSettings.audio, musicEnabled: Boolean(combat.musicEnabled) },
+    accessibility: {
+      ...hmhPlayerSettings.accessibility,
+      reduceMotion: gameSettings.reduceMotion,
+      reduceFlash: gameSettings.reduceFlash,
+      colorblindTags: gameSettings.colorblindTags,
+    },
+  }));
+}
+
+function applyHmhAudioSettings() {
+  combatAudio.sfxEnabled = hmhPlayerSettings.audio.sfxEnabled && hmhPlayerSettings.audio.sfxVolume > 0;
+  const audio = arcadeMusicAudio();
+  if (audio) {
+    const baseline = combat.active ? 0.38 : 0.26;
+    audio.volume = Math.max(0, Math.min(1, baseline * (hmhPlayerSettings.audio.musicVolume / HMH_PLAYER_SETTINGS_DEFAULTS.audio.musicVolume)));
+  }
+}
+
+function acceptHmhRebootSettings(message) {
+  const runtimeSettings = message?.payload?.settings;
+  hmhPlayerSettings = mergeHmhRuntimeSettings(hmhPlayerSettings, runtimeSettings, {
+    rankedActive: Boolean(hmhRebootActive && currentSession?.mode === 'ranked'),
+  });
+  applyHmhSettingsCompatibilityView(hmhPlayerSettings);
+  persistHmhPlayerSettings();
+  if (typeof runtimeSettings?.musicEnabled === 'boolean') setArcadeMusicEnabled(runtimeSettings.musicEnabled);
+  applyHmhAudioSettings();
+  applyGameplayAccessibilitySettings();
+  debugRuntimeLog('[HMH reboot settings]', hmhPlayerSettings);
 }
 
 function pushHmhRebootSettings() {
@@ -4656,7 +4778,7 @@ function mountHmhRebootSession() {
           payload: { achievementId: message.payload.achievementId },
         });
       },
-      onSettings: (message) => debugRuntimeLog('[HMH reboot settings]', message.payload.settings),
+      onSettings: acceptHmhRebootSettings,
       onError: (error) => {
         console.error('[HMH reboot bridge]', error);
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Reboot runtime error: ${error.message}`;

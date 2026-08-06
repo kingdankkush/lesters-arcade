@@ -112,6 +112,16 @@ test('one-way ledges permit authored downward drops but never upward cliff climb
   assert.equal(resolveTraversalTransition(low, high, { x: 0, y: -1 }).allowed, false);
 });
 
+test('M5 swept one-way drops preserve deterministic landing authority for feedback', () => {
+  const queryGround = (_x, y) => y < 5
+    ? { surfaceId: 'ledge-top', kind: 'ledge', groundZ: 48, walkable: true, oneWayDrop: { x: 0, y: 1 } }
+    : { surfaceId: 'ledge-bottom', kind: 'ground', groundZ: 0, walkable: true };
+  const result = resolveSweptTraversalPath({ start: { x: 0, y: 0 }, end: { x: 0, y: 10 }, queryGround, maxSampleDistance: 2 });
+  assert.equal(result.allowed, true);
+  assert.equal(result.dropped, true);
+  assert.equal(result.dropDeltaZ, -48);
+});
+
 test('curb tolerance requires visible authored step metadata', () => {
   const current = { surfaceId: 'road', kind: 'ground', groundZ: 0, walkable: true };
   const visibleCurb = { surfaceId: 'curb', kind: 'ground', groundZ: 6, walkable: true, visibleStepId: 'curb-mesh' };

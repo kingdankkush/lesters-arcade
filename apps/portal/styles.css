@@ -950,6 +950,30 @@ svg.arcade-icon {
   gap: 10px;
 }
 
+.combat-settings-range-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.combat-setting-range {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 10px;
+  padding: 9px 10px;
+  border: 1px solid rgba(148, 234, 255, 0.2);
+  border-radius: 8px;
+  color: #eafcff;
+  font-size: 0.78rem;
+  background: rgba(5, 17, 29, 0.7);
+}
+
+.combat-setting-range output { color: var(--neon-yellow); font-variant-numeric: tabular-nums; }
+.combat-setting-range input { grid-column: 1 / -1; width: 100%; accent-color: var(--neon-cyan); }
+.combat-control-summary { overflow-wrap: anywhere; line-height: 1.45; }
+
+
 .combat-accessibility-grid {
   margin-top: 14px;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

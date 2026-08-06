@@ -302,7 +302,10 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hmh-controls-card { display: grid; gap: 5px; margin: 0; }
 .hmh-controls-card div { display: flex; justify-content: space-between; gap: 12px; padding-top: 5px; border-top: 1px solid rgba(143,243,255,0.13); }
 .hmh-controls-card dt { color: #82a5b7; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; }
-.hmh-controls-card dd { margin: 0; color: #effbff; font-size: 0.7rem; font-weight: 800; text-align: right; }
+.hmh-controls-card dd { display: grid; justify-items: end; gap: 3px; margin: 0; color: #effbff; font-size: 0.7rem; font-weight: 800; text-align: right; }
+.hmh-controls-card small { max-width: 170px; color: var(--ink-muted); font-size: 0.57rem; font-weight: 600; line-height: 1.2; }
+.hmh-binding-button { min-width: 86px; min-height: 30px; padding: 4px 8px; border: 1px solid rgba(143,243,255,0.34); border-radius: 8px; color: #effbff; background: rgba(10,39,56,0.72); cursor: pointer; font-size: 0.67rem; font-weight: 900; }
+.hmh-binding-button:disabled { cursor: not-allowed; opacity: 0.58; border-style: dashed; }
 
 .hmh-controls-hint {
   position: absolute;

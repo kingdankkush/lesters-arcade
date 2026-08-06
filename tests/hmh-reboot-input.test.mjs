@@ -91,6 +91,14 @@ test('gamepad mapping applies radial deadzones and standard action buttons', () 
   assert.deepEqual(mapped.actions, { fire: true, melee: true, grenade: true, dash: true, pause: true, weaponSlot: 0, weaponNext: true });
 });
 
+test('M3 gamepad sensitivity and response curves stay bounded and preserve radial direction', () => {
+  const linear = mapGamepadSnapshot({ axes: [0.6, 0, 0, 0], buttons: [] }, { deadzone: 0.2, sensitivity: 1, responseCurve: 1 });
+  const precise = mapGamepadSnapshot({ axes: [0.6, 0, 0, 0], buttons: [] }, { deadzone: 0.2, sensitivity: 0.7, responseCurve: 1.5 });
+  assert.ok(precise.move.x > 0 && precise.move.x < linear.move.x);
+  const boosted = normalizeAxisPair(1, 1, 0, { sensitivity: 2, responseCurve: 0.5 });
+  assert.ok(Math.hypot(boosted.x, boosted.y) <= 1 + 1e-12);
+});
+
 test('keyboard pointer touch and gamepad produce parity-equivalent canonical actions', () => {
   const keyboard = new InputState();
   keyboard.setKey('KeyD', true, 1);
@@ -237,6 +245,21 @@ test('touch layout respects safe areas and adapts to portrait and landscape rota
   );
   assert.ok(weaponDistance >= portrait.buttons.weapon.radius + portrait.buttons.pause.radius + 8);
   assert.ok(portrait.buttons.power.x > portrait.viewport.width - 100, 'power stays under the aiming thumb');
+  const scaled = computeTouchControlLayout({ width: 390, height: 844, controlScale: 1.2 });
+  assert.ok(scaled.moveStick.radius > portrait.moveStick.radius);
+});
+
+test('M3 left-handed touch layout mirrors control roles without overlap or unsafe containment', () => {
+  const standard = computeTouchControlLayout({ width: 390, height: 844 });
+  const left = computeTouchControlLayout({ width: 390, height: 844, leftHanded: true });
+  assert.equal(left.moveStick.x, standard.aimStick.x);
+  assert.equal(left.aimStick.x, standard.moveStick.x);
+  assert.equal(left.buttons.power.x, standard.buttons.weapon.x);
+  assert.equal(left.buttons.weapon.x, standard.buttons.power.x);
+  for (const control of [left.moveStick, left.aimStick, ...Object.values(left.buttons)]) {
+    assert.ok(control.x - control.radius >= 0 && control.x + control.radius <= 390);
+    assert.ok(control.y - control.radius >= 0 && control.y + control.radius <= 844);
+  }
 });
 
 test('landscape touch utility buttons stay left of the authored minimap exclusion zone', () => {

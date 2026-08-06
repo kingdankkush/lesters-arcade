@@ -82,6 +82,20 @@ test('HMH music is standalone-only, user-gated, looped, and obeys music settings
   assert.equal(FakeAudio.instances[0].pauseCalls, 1);
 });
 
+test('X2 music, SFX, and UI buses have independent bounded runtime consumers', async () => {
+  const audio = fresh({ standalone: true, musicEnabled: true });
+  audio.setBusLevels({ musicVolume: 0.5, sfxVolume: 0.25, uiVolume: 0.75, dynamicRange: 'night' });
+  await audio.unlock();
+  const music = FakeAudio.instances[0];
+  assert.equal(music.volume, 0.2);
+  audio.play('weapon-fire', { now: 100, volume: 0.4 });
+  const sfx = FakeAudio.instances[1];
+  audio.play('menu-click', { now: 200, volume: 0.4 });
+  const ui = FakeAudio.instances[2];
+  assert.ok(sfx.volume > 0 && sfx.volume < ui.volume);
+  assert.deepEqual(audio.status().buses, { music: 0.5, sfx: 0.25, ui: 0.75, dynamicRange: 'night' });
+});
+
 test('unknown cues fail closed without allocating voices', () => {
   const audio = fresh();
   assert.deepEqual(audio.play('not-a-cue', { now: 1 }), { played: false, reason: 'unknown-cue' });

@@ -208,8 +208,23 @@ export function followCameraTarget(camera, target, viewport, { dtSeconds = 1 / 6
   camera.lookAheadX = desiredLookX * lookScale;
   camera.lookAheadY = desiredLookY * lookScale;
 
-  const lookedTargetX = targetX + camera.lookAheadX;
-  const lookedTargetY = targetY + camera.lookAheadY;
+  let focusPullX = 0;
+  let focusPullY = 0;
+  if (target?.focusX !== undefined && target?.focusY !== undefined) {
+    const focusX = finite(target.focusX, 'camera target.focusX');
+    const focusY = finite(target.focusY, 'camera target.focusY');
+    const focusWeight = clamp(finite(target.focusWeight ?? 0.18, 'camera target.focusWeight'), 0, 0.25);
+    const focusDeltaX = focusX - targetX;
+    const focusDeltaY = focusY - targetY;
+    const focusDistance = Math.hypot(focusDeltaX, focusDeltaY);
+    const boundedFocusDistance = Math.min(focusDistance, Math.min(view.width, view.height) * 0.4 / camera.zoom);
+    if (focusDistance > 0) {
+      focusPullX = focusDeltaX / focusDistance * boundedFocusDistance * focusWeight;
+      focusPullY = focusDeltaY / focusDistance * boundedFocusDistance * focusWeight;
+    }
+  }
+  const lookedTargetX = targetX + camera.lookAheadX + focusPullX;
+  const lookedTargetY = targetY + camera.lookAheadY + focusPullY;
   const deadHalfX = camera.deadZone.width / 2;
   const deadHalfY = camera.deadZone.height / 2;
   const deltaX = lookedTargetX - camera.x;

@@ -9,15 +9,9 @@ import {
   validateParentMessage,
 } from '../sdk/hmh-bridge-protocol.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS as summaryCatalogs } from '../sdk/hmh-run-summary-schema.mjs';
+import { projectHmhRuntimeSettings } from '../apps/portal/src/hmh-player-settings.mjs';
 
-const settings = Object.freeze({
-  musicEnabled: true,
-  screenShake: true,
-  gore: false,
-  reduceMotion: false,
-  reduceFlash: false,
-  colorblindTags: false,
-});
+const settings = projectHmhRuntimeSettings();
 
 function parentInit(overrides = {}) {
   return createBridgeEnvelope({

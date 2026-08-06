@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { DEFAULT_KEYBOARD_BINDINGS, actionHelpRows } from '../apps/hmh-reboot/src/action-map.mjs';
 
 /**
  * Upgrade program M1. Desktop weapon slots (Digit1-4) and several other
@@ -47,13 +48,11 @@ test('the controls card is styled and readable on mobile', async () => {
 
 test('the documented bindings match the real input map', async () => {
   const html = await readFile(indexUrl, 'utf8');
-  const input = await readFile(new URL('../apps/hmh-reboot/src/input.mjs', import.meta.url), 'utf8');
-  const panel = html.slice(html.indexOf('hmhPausePanel'), html.indexOf('hmh-menu-actions'));
-  // Guard against the card drifting from the code: each key the card claims
-  // must actually be a gameplay key.
-  const gameplayKeys = input.slice(input.indexOf('GAMEPLAY_KEYS'), input.indexOf('ACTION_DEFAULTS'));
+  const cockpit = await readFile(cockpitUrl, 'utf8');
+  const documentedCodes = new Set(actionHelpRows(DEFAULT_KEYBOARD_BINDINGS).map((row) => row.keyboard));
   for (const code of ['KeyW', 'Space', 'KeyE', 'KeyF', 'ShiftLeft', 'Escape', 'Digit1', 'Digit4']) {
-    assert.ok(gameplayKeys.includes(code), `${code} must be a real gameplay key`);
+    assert.ok(documentedCodes.has(code), `${code} must be a canonical documented gameplay key`);
   }
-  assert.ok(panel.length > 0);
+  assert.ok(html.includes('hmhControlsCard'));
+  assert.match(cockpit, /actionHelpRows\(currentSettings\.keyboardBindings\)/);
 });

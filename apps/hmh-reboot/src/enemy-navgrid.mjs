@@ -154,6 +154,106 @@ export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CE
   });
 }
 
+function defaultNavGridIdleYield() {
+  return new Promise((resolve) => {
+    if (typeof globalThis.requestIdleCallback === 'function') globalThis.requestIdleCallback(() => resolve(), { timeout: 32 });
+    else setTimeout(resolve, 0);
+  });
+}
+
+export async function createEnemyNavGridChunked({
+  world,
+  queryGround,
+  cellSize = ENEMY_NAV_CELL_SIZE,
+  cellsPerSlice = 128,
+  scheduleYield = defaultNavGridIdleYield,
+} = {}) {
+  if (!world?.bounds || !Array.isArray(world.collisionBlockers)) throw new TypeError('world with bounds and collisionBlockers is required');
+  if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
+  if (!Number.isFinite(cellSize) || cellSize <= 0) throw new TypeError('cellSize must be positive');
+  if (!Number.isInteger(cellsPerSlice) || cellsPerSlice < 1) throw new TypeError('cellsPerSlice must be a positive integer');
+  if (typeof scheduleYield !== 'function') throw new TypeError('scheduleYield must be a function');
+  const { minX, minY, maxX, maxY } = world.bounds;
+  const columns = Math.ceil((maxX - minX) / cellSize);
+  const rows = Math.ceil((maxY - minY) / cellSize);
+  const total = columns * rows;
+  const walkable = new Uint8Array(total);
+  const edges = new Uint8Array(total);
+  const centreX = (column) => minX + (column + 0.5) * cellSize;
+  const centreY = (row) => minY + (row + 0.5) * cellSize;
+  const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const sampleOffsets = [0.1, 0.5, 0.9];
+
+  for (let start = 0; start < total; start += cellsPerSlice) {
+    const end = Math.min(total, start + cellsPerSlice);
+    for (let cell = start; cell < end; cell += 1) {
+      const column = cell % columns;
+      const row = (cell - column) / columns;
+      const ground = queryGround(centreX(column), centreY(row));
+      let open = !(ground.kind === 'water' && ground.deepWater);
+      if (open) {
+        blocked: for (const blocker of world.collisionBlockers) {
+          for (const oy of sampleOffsets) {
+            for (const ox of sampleOffsets) {
+              const x = minX + (column + ox) * cellSize;
+              const y = minY + (row + oy) * cellSize;
+              if (pointInsideInflatedShape(blocker.shape, x, y, ENEMY_CLEARANCE_RADIUS)) {
+                open = false;
+                break blocked;
+              }
+            }
+          }
+        }
+      }
+      walkable[cell] = open ? 1 : 0;
+    }
+    if (end < total) await scheduleYield();
+  }
+
+  for (let start = 0; start < total; start += cellsPerSlice) {
+    const end = Math.min(total, start + cellsPerSlice);
+    for (let from = start; from < end; from += 1) {
+      if (!walkable[from]) continue;
+      const column = from % columns;
+      const row = (from - column) / columns;
+      let mask = 0;
+      for (let k = 0; k < neighbours.length; k += 1) {
+        const nc = column + neighbours[k][0];
+        const nr = row + neighbours[k][1];
+        if (nc < 0 || nr < 0 || nc >= columns || nr >= rows || !walkable[nr * columns + nc]) continue;
+        const traversal = resolveSweptTraversalPath({
+          start: { x: centreX(column), y: centreY(row) },
+          end: { x: centreX(nc), y: centreY(nr) },
+          queryGround,
+          maxSampleDistance: cellSize / 4,
+          transitionOptions: CONSERVATIVE_TRANSITION,
+        });
+        if (traversal.allowed) mask |= 1 << k;
+      }
+      edges[from] = mask;
+    }
+    if (end < total) await scheduleYield();
+  }
+
+  const cellAt = (x, y) => {
+    const column = Math.floor((x - minX) / cellSize);
+    const row = Math.floor((y - minY) / cellSize);
+    if (column < 0 || row < 0 || column >= columns || row >= rows) return -1;
+    return row * columns + column;
+  };
+  return Object.freeze({
+    columns, rows, cellSize, minX, minY, walkable, edges, neighbours, cellAt, centreX, centreY,
+    isWalkableCell(column, row) {
+      if (column < 0 || row < 0 || column >= columns || row >= rows) return false;
+      return walkable[row * columns + column] === 1;
+    },
+    isWalkableAt(x, y) {
+      const cell = cellAt(x, y);
+      return cell >= 0 && walkable[cell] === 1;
+    },
+  });
+}
+
 // Flow field: BFS outward from the target cell. Expansion from cell B to
 // neighbour A requires the DIRECTED edge A->B (an enemy at A must be able to
 // step toward B), so one-way drops propagate correctly. Neighbour order is

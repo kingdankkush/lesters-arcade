@@ -22,7 +22,22 @@ const SAMPLE_PATHS = Object.freeze({
   'combo-milestone': '../assets/audio/sfx/pickup.ogg',
   'combo-boss-threshold': '../assets/audio/sfx/boss-warning.ogg',
   pickup: '../assets/audio/sfx/pickup.ogg',
+  'health-pickup': '../assets/audio/sfx/pickup.ogg',
+  'ammo-pickup': '../assets/audio/sfx/pickup.ogg',
+  'level-up': '../assets/audio/sfx/level-start.ogg',
+  'upgrade-offer': '../assets/audio/sfx/level-start.ogg',
+  'upgrade-pick': '../assets/audio/sfx/pickup.ogg',
+  dash: '../assets/audio/sfx/jump.ogg',
+  land: '../assets/audio/sfx/land.ogg',
+  'footstep-dirt': '../assets/audio/sfx/land.ogg',
+  'footstep-road': '../assets/audio/sfx/land.ogg',
+  pause: '../assets/audio/sfx/menu-click.ogg',
+  resume: '../assets/audio/sfx/menu-click.ogg',
+  'low-health': '../assets/audio/sfx/boss-warning.ogg',
+  'game-over': '../assets/audio/sfx/game-over.ogg',
+  'menu-click': '../assets/audio/sfx/menu-click.ogg',
 });
+const PAUSED_CUE_ALLOWLIST = new Set(['pause', 'upgrade-offer']);
 const MUSIC_PATH = '../assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3';
 // Longest authored combat sample is well under a second; anything still held
 // after this is a voice that will never report completion.
@@ -46,6 +61,10 @@ export function createCombatAudio({
   let paused = false;
   let unlocked = false;
   let allowMusic = Boolean(musicEnabled);
+  let musicLevel = 0.7;
+  let sfxLevel = 1;
+  let uiLevel = 1;
+  let dynamicRange = 'standard';
   let music = null;
   const lastPlayed = new Map();
   let voices = [];
@@ -75,13 +94,13 @@ export function createCombatAudio({
       music = new AudioCtor(MUSIC_PATH);
       music.loop = true;
       music.preload = 'auto';
-      music.volume = 0.28;
+      music.volume = 0.4 * musicLevel;
     }
     try { await music.play(); } catch {}
   };
 
   const play = (cue, { now = globalThis.performance?.now?.() ?? Date.now(), volume = 0.1 } = {}) => {
-    if (paused) return Object.freeze({ played: false, reason: 'paused' });
+    if (paused && !PAUSED_CUE_ALLOWLIST.has(cue)) return Object.freeze({ played: false, reason: 'paused' });
     const samplePath = SAMPLE_PATHS[cue];
     if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) return Object.freeze({ played: false, reason: 'unknown-cue' });
     cleanup(now);
@@ -106,7 +125,9 @@ export function createCombatAudio({
     }
     const audio = new AudioCtor(samplePath);
     audio.preload = 'auto';
-    audio.volume = plan.volume;
+    const busLevel = plan.family === 'ui' ? uiLevel : sfxLevel;
+    const rangeGain = dynamicRange === 'night' ? 0.75 : 1;
+    audio.volume = Math.min(1, plan.volume * busLevel * rangeGain);
     const voice = {
       id: voiceId,
       family: plan.family,
@@ -161,6 +182,19 @@ export function createCombatAudio({
       if (!allowMusic && music) music.pause();
       else void ensureMusic();
     },
+    setBusLevels({ musicVolume = musicLevel, sfxVolume = sfxLevel, uiVolume = uiLevel, dynamicRange: nextRange = dynamicRange } = {}) {
+      const level = (value, name) => {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric) || numeric < 0 || numeric > 1) throw new TypeError(`${name} must be in [0, 1]`);
+        return numeric;
+      };
+      if (!['standard', 'night', 'wide'].includes(nextRange)) throw new TypeError('dynamicRange is invalid');
+      musicLevel = level(musicVolume, 'musicVolume');
+      sfxLevel = level(sfxVolume, 'sfxVolume');
+      uiLevel = level(uiVolume, 'uiVolume');
+      dynamicRange = nextRange;
+      if (music) music.volume = 0.4 * musicLevel;
+    },
     status() {
       cleanup();
       return Object.freeze({
@@ -170,6 +204,7 @@ export function createCombatAudio({
         unlocked,
         musicEnabled: allowMusic,
         musicActive: Boolean(music && !music.paused),
+        buses: Object.freeze({ music: musicLevel, sfx: sfxLevel, ui: uiLevel, dynamicRange }),
       });
     },
     destroy() {

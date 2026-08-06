@@ -192,6 +192,8 @@ export function resolveSweptTraversalPath({
   const sampleCount = Math.max(1, Math.ceil(distance / maxSampleDistance));
   let position = origin;
   let ground = queryGround(origin.x, origin.y);
+  let dropped = false;
+  let dropDeltaZ = 0;
   for (let index = 1; index <= sampleCount; index += 1) {
     const time = index / sampleCount;
     const candidate = { x: origin.x + delta.x * time, y: origin.y + delta.y * time };
@@ -208,13 +210,18 @@ export function resolveSweptTraversalPath({
         ground,
         attemptedGround: candidateGround,
         time: (index - 1) / sampleCount,
-        dropped: false,
+        dropped,
+        dropDeltaZ,
       });
+    }
+    if (transition.dropped) {
+      dropped = true;
+      dropDeltaZ += transition.deltaZ;
     }
     position = candidate;
     ground = candidateGround;
   }
-  return freezeDeep({ allowed: true, reason: 'complete', position: target, ground, attemptedGround: ground, time: 1, dropped: false });
+  return freezeDeep({ allowed: true, reason: 'complete', position: target, ground, attemptedGround: ground, time: 1, dropped, dropDeltaZ });
 }
 
 export function movementSpeedMultiplierForTransition(current, next, horizontalDistance) {

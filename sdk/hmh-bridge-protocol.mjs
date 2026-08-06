@@ -47,11 +47,37 @@ function serializedSize(value) {
 }
 
 function validateSettings(value) {
-  const fields = ['musicEnabled', 'screenShake', 'gore', 'reduceMotion', 'reduceFlash', 'colorblindTags'];
-  const keyError = exactKeys(value, fields, 'settings');
-  if (keyError) return keyError;
-  for (const field of fields) {
+  const booleanFields = ['musicEnabled', 'screenShake', 'gore', 'reduceMotion', 'reduceFlash', 'colorblindTags'];
+  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio'];
+  if (!isPlainRecord(value)) return 'settings must be a plain object';
+  const allowed = new Set([...booleanFields, ...optionalFields]);
+  for (const key of Object.keys(value)) if (!allowed.has(key)) return `settings has unexpected field: ${key}`;
+  for (const field of booleanFields) {
+    if (!Object.hasOwn(value, field)) return `settings is missing field: ${field}`;
     if (typeof value[field] !== 'boolean') return `settings.${field} must be boolean`;
+  }
+  for (const field of ['touchLeftHanded', 'autoAimAssist', 'captionCriticalAudio']) {
+    if (Object.hasOwn(value, field) && typeof value[field] !== 'boolean') return `settings.${field} must be boolean`;
+  }
+  for (const [field, min, max] of [
+    ['gamepadDeadzone', 0.05, 0.5], ['gamepadSensitivity', 0.5, 2], ['touchSensitivity', 0.5, 2],
+    ['touchScale', 0.75, 1.5], ['aimAssistStrength', 0, 1],
+    ['musicVolume', 0, 1], ['sfxVolume', 0, 1], ['uiVolume', 0, 1], ['hudScale', 0.8, 1.3],
+  ]) {
+    if (Object.hasOwn(value, field) && (!Number.isFinite(value[field]) || value[field] < min || value[field] > max)) return `settings.${field} is out of range`;
+  }
+  if (Object.hasOwn(value, 'dynamicRange') && !['standard', 'night', 'wide'].includes(value.dynamicRange)) return 'settings.dynamicRange is invalid';
+  if (Object.hasOwn(value, 'keyboardBindings')) {
+    const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'fire', 'melee', 'grenade', 'dash', 'pause', 'weaponNext', 'weaponSlot1', 'weaponSlot2', 'weaponSlot3', 'weaponSlot4'];
+    const bindingError = exactKeys(value.keyboardBindings, actionIds, 'settings.keyboardBindings');
+    if (bindingError) return bindingError;
+    const unique = new Set();
+    for (const actionId of actionIds) {
+      const code = value.keyboardBindings[actionId];
+      if (typeof code !== 'string' || !BINDING_PATTERN.test(code)) return `settings.keyboardBindings.${actionId} is invalid`;
+      if (unique.has(code)) return `settings.keyboardBindings.${actionId} conflicts with another action`;
+      unique.add(code);
+    }
   }
   return '';
 }

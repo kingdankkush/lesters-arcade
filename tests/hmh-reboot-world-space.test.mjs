@@ -141,6 +141,19 @@ test('camera uses critically damped render-time smoothing and bounded velocity/a
   assert.ok(Math.abs(camera.velocityY) < 1e-9);
 });
 
+test('M7 boss framing adds a bounded focus pull without abandoning the player', () => {
+  const viewport = { width: 200, height: 120 };
+  const bounds = { minX: -1000, minY: -1000, maxX: 1000, maxY: 1000 };
+  const baseline = createCameraState({ x: 0, y: 0, bounds, deadZone: { width: 0, height: 0 } });
+  const camera = createCameraState({ x: 0, y: 0, bounds, deadZone: { width: 0, height: 0 } });
+  followCameraTarget(baseline, { x: 0, y: 0 }, viewport, { smoothTime: 0 });
+  followCameraTarget(camera, { x: 0, y: 0, focusX: 1000, focusY: 0, focusWeight: 0.2 }, viewport, { smoothTime: 0 });
+  const focusPull = camera.x - baseline.x;
+  assert.ok(focusPull > 0, 'boss focus should enter the frame');
+  assert.ok(focusPull <= 20, 'focus pull stays bounded so the player remains the anchor');
+  assert.equal(camera.y, baseline.y);
+});
+
 test('camera clamps to finite authored bounds without boundary drift at every zoom', () => {
   for (const zoom of [0.75, 1, 2]) {
     const camera = createCameraState({ x: 50, y: 50, zoom, deadZone: { width: 0, height: 0 }, bounds: { minX: 0, minY: 0, maxX: 200, maxY: 100 } });

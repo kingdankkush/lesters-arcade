@@ -21,7 +21,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
-import { computeEnemyFlowField, createEnemyNavGrid, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
+import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
@@ -73,6 +73,7 @@ import {
   traceHeightAwareLineOfSight,
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
+import { rebindKeyboardAction } from './action-map.mjs';
 import { createGrenadeSystem, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
 import { buildGrenadeDangerProjection } from './grenade-vfx.mjs';
 import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
@@ -210,6 +211,10 @@ function deterministicUnit(key) {
   }
   return hash / 0x1_0000_0000;
 }
+
+function firstInteractiveFrame() {
+  return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+}
 // How long the authored hurt frames stay up after the player takes a hit.
 const PLAYER_HURT_POSE_TICKS = 14;
 // Full-screen damage flash duration, and the health fraction below which the
@@ -246,9 +251,9 @@ const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 const queryGround = createLevelOneGroundQuery();
 const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
-// Deterministic navgrid built once from authored world data; the flow field
+// Deterministic navgrid bakes after the first interactive frame; the flow field
 // refreshes on a fixed tick cadence inside the simulation step.
-const ENEMY_NAV_GRID = createEnemyNavGrid({ world: LEVEL_ONE_WORLD, queryGround });
+let ENEMY_NAV_GRID = null;
 const ENEMY_FLOW_REFRESH_TICKS = 30;
 let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
@@ -788,9 +793,15 @@ async function boot() {
   let runProgression = null;
   const PAUSE_SETTING_KEYS = new Set(['musicEnabled', 'screenShake', 'reduceMotion', 'reduceFlash']);
   const syncRuntimeSettings = (nextSettings, { notify = false } = {}) => {
-    settings = { ...nextSettings };
+    const rankedActive = Boolean(sessionPayload?.mode === 'ranked' && simulation);
+    const keyboardBindings = rankedActive ? sessionPayload.settings.keyboardBindings : nextSettings.keyboardBindings;
+    settings = { ...settings, ...nextSettings, keyboardBindings };
     if (sessionPayload) sessionPayload = { ...sessionPayload, settings: { ...settings } };
     combatAudio.setMusicEnabled(settings.musicEnabled);
+    combatAudio.setBusLevels(settings);
+    document.documentElement.style.fontSize = `${(settings.hudScale ?? 1) * 100}%`;
+    dataset.captionCriticalAudio = String(Boolean(settings.captionCriticalAudio));
+    if (input && simulation && !rankedActive) input.setKeyboardBindings(settings.keyboardBindings);
     cockpit?.setSettings(settings);
     dataset.settingMusic = String(settings.musicEnabled);
     dataset.settingScreenShake = String(settings.screenShake);
@@ -855,6 +866,7 @@ async function boot() {
   let lastCombatResolution = null;
   let lastWeaponFire = null;
   let lastPlayerHit = null;
+  let lowHealthWarned = false;
   let lastDashDirection = null;
   let shakeStartTick = -1;
   let shakeMagnitude = 0;
@@ -1407,6 +1419,11 @@ async function boot() {
           } else if (event.type === 'dash-ready') {
             combatVisuals.circle(center.x, center.y, 34 + age * 2.6)
               .stroke({ color: 0x8ff3ff, width: 4, alpha: alpha * 0.8 });
+          } else if (event.type === 'landing') {
+            const spread = 18 + age * 3.2;
+            combatVisuals.ellipse(center.x, center.y + 8, spread, Math.max(3, spread * 0.28))
+              .fill({ color: 0xc9b184, alpha: alpha * 0.18 })
+              .stroke({ color: 0xe8d5a8, width: 2, alpha: alpha * 0.52 });
           }
         }
       }
@@ -1774,6 +1791,7 @@ async function boot() {
     lastCombatResolution = null;
     lastWeaponFire = null;
     lastPlayerHit = null;
+    lowHealthWarned = false;
     lastDashDirection = null;
     shakeStartTick = -1;
     shakeMagnitude = 0;
@@ -1850,7 +1868,11 @@ async function boot() {
     actor.groundZ = lastGround.groundZ;
     actor.z = lastGround.groundZ;
     motion = createPlayerMotionState({ x: actor.x, y: actor.y, maxSpeed: LEVEL_ONE_WORLD.player.maxSpeed });
-    aimState = createAimState({ autoFireEnabled: !rosterPreviewEnabled, manualHoldTicks: 8 });
+    aimState = createAimState({
+      autoFireEnabled: !rosterPreviewEnabled,
+      manualHoldTicks: 8,
+      aimMagnetism: settings.aimAssistStrength ?? (settings.autoAimAssist ? 0.25 : 0),
+    });
     aimIntent = null;
     const previewSpawns = Object.freeze({
       'bagholder-rusher': Object.freeze({ x: 1120, y: 2400 }),
@@ -1960,7 +1982,7 @@ async function boot() {
       deadZone: { width: 160, height: 90 },
       bounds: WORLD_BOUNDS,
     });
-    input = new InputState();
+    input = new InputState({ keyboardBindings: settings.keyboardBindings });
     gamepadWasActive = false;
     inputController = createBrowserInputController({ input, target: app.canvas, windowRef: window, documentRef: document });
     touchController = createTouchControlAdapter({
@@ -1968,6 +1990,9 @@ async function boot() {
       root: stageElement,
       windowRef: window,
       documentRef: document,
+      sensitivity: settings.touchSensitivity ?? 1,
+      controlScale: settings.touchScale ?? 1,
+      leftHanded: Boolean(settings.touchLeftHanded),
       onPause: () => {
         if (simulation?.state === 'paused') resumeRuntime('user');
         else pauseRuntime('user');
@@ -2013,6 +2038,7 @@ async function boot() {
         motion.recoilVy = 0;
         lastDashReady = false;
         lastDashDirection = { ...dashState.direction };
+        combatAudio.play('dash', { volume: 0.12 });
       }
       const dashFrame = stepDash(dashState, { tick });
       if (dashFrame.active) {
@@ -2111,6 +2137,14 @@ async function boot() {
         }
         zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
       }
+      if (lastTraversal?.dropped) {
+        combatAudio.play('land', { volume: 0.11 });
+        pushCombatVisualEvent({
+          type: 'landing',
+          tick,
+          point: { x: motion.x, y: motion.y, z: lastGround.groundZ },
+        });
+      }
       for (const enemy of grayboxEnemies) enemy.groundZ = queryGround(enemy.x, enemy.y).groundZ;
       for (const contact of lastCollision.contacts) {
         const inwardVelocity = motion.vx * contact.normal.x + motion.vy * contact.normal.y;
@@ -2133,6 +2167,10 @@ async function boot() {
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
+      if (actor.locomotion === 'moving' && tick % 12 === 0) {
+        const footstepCue = /road|bridge|slab/i.test(lastGround.surfaceId ?? '') ? 'footstep-road' : 'footstep-dirt';
+        combatAudio.play(footstepCue, { volume: 0.035 });
+      }
       if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
 
       const viewForDirector = viewport();
@@ -2271,7 +2309,7 @@ async function boot() {
           cockpit?.updateRun(xpSnapshot);
           if (xpSnapshot.pendingLevels > 0) upgradePending = true;
         }
-        combatAudio.play('pickup', { volume: 0.16 });
+        combatAudio.play(event.kind === 'heal' ? 'health-pickup' : event.kind === 'ammo-refill' ? 'ammo-pickup' : 'pickup', { volume: 0.16 });
         if (placement) pushCombatVisualEvent({
           type: 'pickup',
           tick,
@@ -2604,7 +2642,9 @@ async function boot() {
         });
       }
       for (const event of lastBossStep?.events ?? []) {
-        if (event.type === 'arena-change') combatAudio.play('boss-phase', { volume: 0.14 });
+        if (event.type === 'arena-change') { combatAudio.play('boss-phase', { volume: 0.14 });
+          if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: Liquidator phase changing.');
+        }
         if (event.type !== 'attack' && event.type !== 'add-wave') continue;
         const resolved = resolveLiquidatorAttack({
           event,
@@ -2706,6 +2746,13 @@ async function boot() {
           }
         }
         if (lastCombatResolution.targets.player) playerHealth = lastCombatResolution.targets.player.health;
+        if (playerHealth <= maxPlayerHealth * 0.25 && !lowHealthWarned) {
+          lowHealthWarned = true;
+          combatAudio.play('low-health', { volume: 0.11 });
+          if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: low health.');
+        } else if (playerHealth > maxPlayerHealth * 0.35) {
+          lowHealthWarned = false;
+        }
         for (const damageEvent of lastCombatResolution.damageEvents) {
           if (damageEvent.damageApplied <= 0) continue;
           recordRunDamage(runSummaryAccumulator, damageEvent);
@@ -2728,6 +2775,7 @@ async function boot() {
             color: damageEvent.shielded ? 0x8bb8ff : damageEvent.critical ? 0xfff06a : 0xff8c5a,
           });
           if (damageEvent.targetId === 'player') {
+            if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
             lastPlayerHit = { tick, sourceId: damageEvent.sourceId };
             updateRunCombo(0);
             triggerCameraShake(tick, 5);
@@ -2833,7 +2881,8 @@ async function boot() {
         if (defeatTransition) {
           simulation.gameOver();
           app.ticker.stop();
-          combatAudio.pause();
+          combatAudio.setMusicEnabled(false);
+          combatAudio.play('game-over', { volume: 0.18 });
           setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
           if (bridge?.initialized) {
             const runSnapshot = getRunProgressionSnapshot(runProgression);
@@ -2870,6 +2919,7 @@ async function boot() {
         : meleeFrame.attacked ? 'melee' : 'ready';
       const dashStatusAfterStep = getDashStatus(dashState, tick);
       if (dashStatusAfterStep.ready && !lastDashReady && dashState.startedTick >= 0) {
+        combatAudio.play('resume', { volume: 0.055 });
         pushCombatVisualEvent({
           type: 'dash-ready',
           tick,
@@ -2885,6 +2935,7 @@ async function boot() {
       simulation.enterUpgrade();
       recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
       combatAudio.pause();
+      combatAudio.play('upgrade-offer', { volume: 0.14 });
       cockpit?.showUpgrade(progressionSnapshot);
       app.ticker.stop();
       renderActor = actor;
@@ -2919,6 +2970,7 @@ async function boot() {
     simulation.pause();
     app.ticker.stop();
     combatAudio.pause();
+    combatAudio.play('pause', { volume: 0.06 });
     cockpit?.setPaused(true);
     setStatus(bridge?.initialized ? 'Portal session paused' : 'Standalone session paused', `Paused by ${source}.`);
     if (bridge?.initialized) {
@@ -2932,6 +2984,7 @@ async function boot() {
     simulation.resume();
     app.ticker.start();
     combatAudio.resume();
+    combatAudio.play('resume', { volume: 0.06 });
     cockpit?.setPaused(false);
     setStatus(bridge?.initialized ? 'Portal session connected' : 'Standalone session ready', `Resumed by ${source}.`);
     if (bridge?.initialized) {
@@ -2944,6 +2997,7 @@ async function boot() {
     if (simulation?.state !== 'upgrade' || !runProgression) return;
     const before = getRunProgressionSnapshot(runProgression);
     const selection = selectRunUpgrade(runProgression, upgradeId);
+    combatAudio.play('upgrade-pick', { volume: 0.13 });
     recordRunUpgradeSelection(runSummaryAccumulator, upgradeId);
     const healthGain = selection.effects.maxHealthBonus - before.effects.maxHealthBonus;
     const grenadeGain = selection.effects.bonusGrenadeCharges - before.effects.bonusGrenadeCharges;
@@ -2975,6 +3029,13 @@ async function boot() {
     },
     onMusicToggle: (enabled) => applyPauseSetting('musicEnabled', enabled),
     onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
+    onBindingChange: (actionId, code) => {
+      const keyboardBindings = rebindKeyboardAction(settings.keyboardBindings, actionId, code, {
+        rankedActive: sessionPayload?.mode === 'ranked',
+      });
+      syncRuntimeSettings({ ...settings, keyboardBindings }, { notify: true });
+      combatAudio.play('menu-click', { volume: 0.08 });
+    },
     onResume: () => resumeRuntime('user'),
     onRestart: () => {
       if (!sessionPayload) return;
@@ -3005,7 +3066,11 @@ async function boot() {
     const nowMs = performance.now();
     const gamepad = [...(navigator.getGamepads?.() ?? [])].find(Boolean);
     if (gamepad) {
-      const mapped = mapGamepadSnapshot(gamepad);
+      const mapped = mapGamepadSnapshot(gamepad, {
+        deadzone: settings.gamepadDeadzone ?? 0.2,
+        sensitivity: settings.gamepadSensitivity ?? 1,
+        responseCurve: 1.25,
+      });
       const active = mapped.move.x !== 0 || mapped.move.y !== 0 || mapped.aim.x !== 0 || mapped.aim.y !== 0
         || Object.values(mapped.actions).some(Boolean);
       if (active || gamepadWasActive) {
@@ -3033,6 +3098,7 @@ async function boot() {
         recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
         simulation.enterUpgrade();
         combatAudio.pause();
+        combatAudio.play('upgrade-offer', { volume: 0.14 });
         cockpit?.showUpgrade(progressionSnapshot);
       }
     }
@@ -3042,6 +3108,11 @@ async function boot() {
       ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
       aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
+      ...(liquidatorBoss.active && simulation.tick >= liquidatorBoss.startTick ? {
+        focusX: liquidatorBoss.x,
+        focusY: liquidatorBoss.y,
+        focusWeight: 0.18,
+      } : {}),
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });
     // Shake offsets the render container only. It deliberately does NOT touch
     // camera.shakeX/Y: those are read back by screenToGround, so shaking the
@@ -3083,6 +3154,17 @@ async function boot() {
     else pauseRuntime('user');
   };
   window.addEventListener('keydown', handleExitKey);
+
+  // Paint the shell and active controls before the expensive 16k-cell bake.
+  // READY stays behind the completed grid, so the simulation never observes
+  // partial navigation authority.
+  setStatus('Renderer ready', 'Preparing tactical navigation…');
+  await firstInteractiveFrame();
+  dataset.bootFirstFrame = 'true';
+  const navGridStartedAt = performance.now();
+  ENEMY_NAV_GRID = await createEnemyNavGridChunked({ world: LEVEL_ONE_WORLD, queryGround, cellsPerSlice: 512 });
+  dataset.navGridBootMs = (performance.now() - navGridStartedAt).toFixed(1);
+  dataset.navGridReady = 'true';
 
   if (window.parent !== window) {
     bridge = createHmhChildBridge({
