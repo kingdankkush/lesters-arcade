@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 hero-motion head: `e0c9aa20`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 completion head: `e3712fc3`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -106,9 +106,10 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | Wave 5 A14 role profiles | `dfcd216a` | Forkrunner fork-slash and gas-bomber canister-lob anticipation/strike/recovery replace the last shared ordinary-enemy poses. |
 | Wave 5 A15 phase beat | `4ee4f0fb` | Liquidator grows 18% and settles over 45 ticks at the three authored phase entries, projection-only. |
 | Wave 5 A13 hero motion | `e0c9aa20` | Four canonical heroes receive distinct Blender-authored motion profiles inside the existing 648-frame atlas and runtime contracts. |
+| Wave 5 A13 selector | `e3712fc3` | Deterministic 1.15× alpha-bounds framing makes all 32 selector turntable frames larger and grounded without runtime or resolution changes. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,042** (expected failures still 51). The seven-actor enemy roster
+**1,852 → 2,043** (expected failures still 51). The seven-actor enemy roster
 holds 1,368 frames in 5,005,462 atlas bytes.
 
 ### New pipelines you can reuse
@@ -455,11 +456,44 @@ Authenticated proof served both configured HTML routes, the raw-identical child,
 all four byte-identical hero atlases with matching profile metadata, and the
 byte-identical selector JSON/PNG. Production and LitVM were not touched.
 
-### Next: continue Wave 5 character presentation
+### Wave 5 A13 selector-presentation slice is complete
 
-Proceed with remaining A13 character-select presentation polish, A14
-damage-state/full-role polish and A15 phase audio/remaining telegraph polish as
-projection-only work using existing atlas budgets. **A12 256px hero escalation remains a separate owner
+Implementation commit `e3712fc3` closes A13 by upgrading the existing selector
+atlas to pipeline v2. The deterministic builder crops each four-layer production
+composite to its alpha bounds, scales it 1.15× with Lanczos, centers it and
+grounds it at y = 150 with a 10px bottom margin inside the unchanged 160×160
+cell. Generated metadata records the framing policy, per-frame scale and alpha
+bounds. No Blender/source hero atlas, hero pose, runtime layout/CSS, source
+resolution, gameplay body, collision, combat, progression or unlock changed.
+
+The selector contract was observed RED and then passed 4/4. All 32 frames keep
+x >= 6, y >= 4, right <= 154 and bottom = 150. Native atlas and fresh
+desktop/mobile selector evidence passed independent visual review; the canonical
+smoke confirmed rotator advancement, nonblank frames, desktop single-row layout,
+portrait swipe across four cards, a 1,717px document under the 1,800px cap and
+zero browser errors. The selector is 498,000 / 524,288 bytes with 26,288 bytes
+headroom. Release passed 2,043 entries (1,992 current passes and 51 expected
+failures); the complete release, syntax, design, asset, visual, portal, character,
+browser, network, performance and metadata chain passed. One unrelated
+Lit Commando torso-direction sample failed once, immediately passed alone, and
+the complete chain then passed without source changes.
+
+The child remains byte-identical at 1,050,000 bytes, SHA-256
+`2e4691e1fad6f4e986c5f67c9e4d46b6e5ee931b5c88e9587d63a0995e19a21c`.
+Frozen implementation diff
+`b81904115eae4860f1e933f18bc2d4813c0a59dc75bcbe6cbb0e020ddabb6eaa`
+received exact text/authority and visual reviews with `BLOCKERS: none`.
+GitHub deployment `5779505340` binds `e3712fc3` to Ready Preview
+`dpl_BQSRA7daz8Sj7VRiNGwCRVUprhP3` at
+`https://lesters-arcade-p8xqq9pmm-justin-agent-projects.vercel.app`.
+Authenticated proof served both HTML routes plus byte-identical child, v2 selector
+JSON and selector PNG. Production and LitVM were not touched. A13 is complete.
+
+### Next: continue Wave 5 enemy/boss presentation
+
+Proceed with A14 damage-state/full-role polish and A15 phase audio/remaining
+telegraph polish as projection-only work using existing atlas budgets. **A12
+256px hero escalation remains a separate owner
 budget gate**: do not raise the hero atlas budget or start the full-resolution
 batch without explicit approval.
 
@@ -520,7 +554,7 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2042 / 1991 passed / 51 expected failures    PASS
+test:release        2043 / 1992 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
 bundle              1,050,000 / 1,050,000                        PASS (0 B left)
@@ -528,12 +562,13 @@ prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
 enemy roster        1,368 frames / 5,005,462 B, reproducible     PASS
 hero atlases        2,592 frames / 12,279,348 B, reproducible    PASS
+selector atlas      498,000 / 524,288                            PASS
 portal E2E          all implemented flows                        PASS
 cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
 staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
-exact review        ec50ea8a...43fcc1, BLOCKERS: none             PASS
-Vercel Preview      dpl_ERKAoPvn3RZFGg8sMpweUKwLjJr5            READY
+exact review        b8190411...abb6eaa, BLOCKERS: none             PASS
+Vercel Preview      dpl_BQSRA7daz8Sj7VRiNGwCRVUprhP3            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security

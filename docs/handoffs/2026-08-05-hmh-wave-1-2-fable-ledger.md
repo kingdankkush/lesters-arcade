@@ -1,8 +1,8 @@
-# Cycle ledger — upgrade program through Wave 5 A13 hero motion
+# Cycle ledger — upgrade program through Wave 5 A13 completion
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 hero-motion head: `e0c9aa20`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 completion head: `e3712fc3`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
 The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
@@ -37,9 +37,10 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | Wave 5 A14 role profiles | `dfcd216a` | Role-native fork-slash and canister-lob anticipation/strike/recovery replace the last two shared ordinary-enemy pose profiles. |
 | Wave 5 A15 phase beat | `4ee4f0fb` | A bounded 18%/45-tick Liquidator scale pulse marks the three authored phase entries. |
 | Wave 5 A13 hero motion | `e0c9aa20` | Four manifest-owned hero motion profiles create distinct action weight inside the existing atlas/runtime contract. |
+| Wave 5 A13 selector | `e3712fc3` | Selector v2 enlarges and grounds all 32 production composites inside unchanged 160px cells. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,042**, expected failures still
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,043**, expected failures still
 51. Enemy roster: 7 actors, 1,368 frames and 5,005,462 atlas bytes.
 
 ## Non-art pipelines added
@@ -331,8 +332,42 @@ Preview `dpl_ERKAoPvn3RZFGg8sMpweUKwLjJr5` at
 Authenticated verification covered `/games/hard-money-heroes/play`,
 `/hmh-reboot/`, the raw-identical child, four raw-identical hero atlases with
 matching profile metadata and the raw-identical selector JSON/PNG. Production
-and LitVM remained untouched. This is an A13 hero-motion slice; character-select
-presentation still remains before final A13 completion.
+and LitVM remained untouched. At that implementation checkpoint, character-select
+presentation remained before final A13 completion.
+
+## Wave 5 A13 selector-presentation slice
+
+Implementation commit `e3712fc3` upgrades the deterministic selector builder to
+v2. Each existing four-layer production composite is alpha-cropped, enlarged
+1.15× with Lanczos, centered and grounded with a 10px bottom margin in the same
+160×160 cell. Metadata records the global policy and each frame's scale/bounds.
+Source hero atlases, Blender sources, poses, resolution, runtime layout/CSS,
+gameplay bodies, collision, combat, progression and unlock authority are
+unchanged.
+
+Focused selector tests passed 4/4 after the framing contract was observed RED.
+Every frame keeps x >= 6, y >= 4, right <= 154 and bottom = 150. Native and live
+desktop/mobile evidence passed independent visual review. The live smoke proved
+turntable advancement, all 32 frames, desktop single-row layout, portrait swipe,
+1,717px document height under the 1,800px cap and zero browser errors. Selector
+size is 498,000 / 524,288 bytes (26,288 headroom), SHA-256
+`e13ccf50ef17dd2abbac5fc4d796de2a3fee269edb56603e8495baa0de3a6f16`.
+
+Release `2043/1992 + 51` and the complete syntax, long-run, weapon, asset,
+12-scene visual, portal, cockpit, collectible, four-hero, enemy, selector,
+five-profile browser, network, performance and metadata chain passed. One
+unrelated Lit Commando timing sample failed once, passed immediately alone, and
+the complete chain then passed with no source changes. The child remained
+byte-identical at 1,050,000 bytes. Exact staged text/authority and visual reviews
+for digest `b81904115eae4860f1e933f18bc2d4813c0a59dc75bcbe6cbb0e020ddabb6eaa`
+returned `PASS` with `BLOCKERS: none`.
+
+GitHub deployment `5779505340` binds the implementation to Ready Preview
+`dpl_BQSRA7daz8Sj7VRiNGwCRVUprhP3` at
+`https://lesters-arcade-p8xqq9pmm-justin-agent-projects.vercel.app`.
+Authenticated verification proved both configured routes and byte-identical
+child, selector v2 JSON and selector PNG. Production and LitVM remained
+untouched. This closes A13.
 
 ## Standing debts
 
@@ -376,10 +411,10 @@ presentation still remains before final A13 completion.
 - **A15 remains partial after `4ee4f0fb`.** Phase art, telegraphs and a visible
   transition beat are live. Phase-change audio remains in X1, and the child has
   zero byte headroom for additional runtime presentation.
-- **A13 remains partial after `e0c9aa20`.** All four heroes now have distinct
-  deterministic action weight inside the existing animation contract. Remaining
-  character-select presentation polish must stay within the established selector
-  and hero-atlas budgets unless the owner explicitly approves A12 escalation.
+- **A13 is complete after `e0c9aa20` + `e3712fc3`.** Four heroes own distinct
+  deterministic motion profiles and selector v2 gives all 32 turntable views
+  bounded, larger framing. A12 256px escalation remains a separate owner gate,
+  not unfinished A13 scope.
 - **Audio still thin beyond weapons:** X1 (footsteps by surface, level-up,
   boss phase cues) and X2 (volume categories, ducking) remain. The synth
   pipeline added here is the obvious vehicle for them.
@@ -389,8 +424,8 @@ presentation still remains before final A13 completion.
 Production was NOT promoted and remains the owner's call from the Vercel
 dashboard. The latest protected Preview was verified with authenticated read-only
 fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
-child and generated-hero/selector byte comparison. The implementation passed the
-2,042-entry release suite (1,991 current passes and 51 expected failures), syntax,
+child and selector-v2 byte comparison. The implementation passed the 2,043-entry
+release suite (1,992 current passes and 51 expected failures), syntax,
 generated assets, long-run/weapon evidence, 12-scene visual regression,
 four-scenario network audit, portal E2E, cockpit, collectibles, all four hero
 smokes, selector, five-profile browser certification and performance.
