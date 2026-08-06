@@ -3,7 +3,7 @@
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
 Recipient: Hermes agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 completion head: `e3712fc3`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 damage-response head: `491bcb86`)
 
 Supersedes nothing. The task backlog is still
 `2026-08-03-hmh-upgrade-program-hermes-tasks.md` — read it for the full
@@ -107,10 +107,11 @@ cannot — conifer taper 0.635 vs crown-over-trunk 0.458.
 | Wave 5 A15 phase beat | `4ee4f0fb` | Liquidator grows 18% and settles over 45 ticks at the three authored phase entries, projection-only. |
 | Wave 5 A13 hero motion | `e0c9aa20` | Four canonical heroes receive distinct Blender-authored motion profiles inside the existing 648-frame atlas and runtime contracts. |
 | Wave 5 A13 selector | `e3712fc3` | Deterministic 1.15× alpha-bounds framing makes all 32 selector turntable frames larger and grounded without runtime or resolution changes. |
+| Wave 5 A14 damage responses | `491bcb86` | Six ordinary roles gain manifest-owned, two-frame directional hit reactions; certification browser gates were hardened without relaxing budgets. |
 
 Authored-prop manifest **100 assets**. Visual scenes **8 → 12**. Tests
-**1,852 → 2,043** (expected failures still 51). The seven-actor enemy roster
-holds 1,368 frames in 5,005,462 atlas bytes.
+**1,852 → 2,046** (expected failures still 51). The seven-actor enemy roster
+holds 1,368 frames in 4,985,197 atlas bytes.
 
 ### New pipelines you can reuse
 
@@ -489,10 +490,12 @@ GitHub deployment `5779505340` binds `e3712fc3` to Ready Preview
 Authenticated proof served both HTML routes plus byte-identical child, v2 selector
 JSON and selector PNG. Production and LitVM were not touched. A13 is complete.
 
-### Next: continue Wave 5 enemy/boss presentation
+### Next: finish Wave 5 enemy/boss presentation
 
-Proceed with A14 damage-state/full-role polish and A15 phase audio/remaining
-telegraph polish as projection-only work using existing atlas budgets. **A12
+A14 now has role-native attack and damage-state presentation. Proceed with the
+gas-bomber's separate thrown-canister projectile presentation and final full-role
+certification, then A15 phase audio/remaining telegraph polish as projection-only
+work using existing asset budgets. **A12
 256px hero escalation remains a separate owner
 budget gate**: do not raise the hero atlas budget or start the full-resolution
 batch without explicit approval.
@@ -508,10 +511,11 @@ batch without explicit approval.
 - **P5 now covers 12 production scenes**, including camp, water, foliage, all six
   district landmarks, combat and three ruined-neighborhood views. Transient C2
   recoil/impact timing remains live-probe evidence rather than a paused baseline.
-- **A14 is not complete.** All six ordinary roles now own distinct attack
-  profiles, but explicit damage-state art and the gas-bomber's separate thrown
-  projectile presentation remain. Treat `dfcd216a` as the role-animation slice,
-  not final enemy-wave certification.
+- **A14 is not complete.** All six ordinary roles now own distinct attack and
+  two-frame directional damage-response profiles. The gas-bomber's separate
+  thrown-projectile presentation and final full-role certification remain. Treat
+  `dfcd216a` and `491bcb86` as bounded animation slices, not final enemy-wave
+  certification.
 - **A15 is not complete.** Phase geometry, telegraphs and the transition scale
   beat are live, but phase-change audio belongs to X1 and remains. The child has
   zero byte headroom, so any further child-code presentation must first recover
@@ -554,21 +558,21 @@ to commit if HEAD is behind origin.** Two agents share this branch.
 ## 6. Current gate state
 
 ```
-test:release        2043 / 1992 passed / 51 expected failures    PASS
+test:release        2046 / 1995 passed / 51 expected failures    PASS
 visual regression   12 scenes, zero delta                        PASS
 performance         p95 7.1 ms desktop / 7.0 ms mobile           PASS
 bundle              1,050,000 / 1,050,000                        PASS (0 B left)
 prop atlas          259,679 / 524,288                            PASS
 authored pipeline   100/100 frames, reproducible                 PASS
-enemy roster        1,368 frames / 5,005,462 B, reproducible     PASS
+enemy roster        1,368 frames / 4,985,197 B, reproducible     PASS
 hero atlases        2,592 frames / 12,279,348 B, reproducible    PASS
 selector atlas      498,000 / 524,288                            PASS
 portal E2E          all implemented flows                        PASS
 cockpit             desktop/tablet/mobile/landscape              PASS
 network audit       4 clean/warm scenarios, zero errors          PASS
 staged security     secrets/paths/eval/wallet/deploy: 0 hits     PASS
-exact review        b8190411...abb6eaa, BLOCKERS: none             PASS
-Vercel Preview      dpl_BQSRA7daz8Sj7VRiNGwCRVUprhP3            READY
+exact review        f5618821...fc21d19, BLOCKERS: none             PASS
+Vercel Preview      dpl_Dj385aPHrL1LTBAzPbsMA8QaahSX            READY
 ```
 
 Serve `apps/portal` on 8899 and pass `HMH_REBOOT_ORIGIN`. The Vercel Security

@@ -1,8 +1,8 @@
-# Cycle ledger — upgrade program through Wave 5 A13 completion
+# Cycle ledger — upgrade program through Wave 5 A14 damage responses
 
 Date: 2026-08-06 PDT
 Author: Claude Fable 5 + Hermes Agent
-Branch: `reboot/hmh-aaa-continuous` (Wave 5 A13 completion head: `e3712fc3`)
+Branch: `reboot/hmh-aaa-continuous` (Wave 5 A14 damage-response head: `491bcb86`)
 Program: `docs/handoffs/2026-08-03-hmh-upgrade-program-hermes-tasks.md`
 
 The original fifteen Wave 1/2 tasks and the subsequent Wave 3/4 and bounded
@@ -38,10 +38,11 @@ the Vercel dashboard. Pushing the branch creates a Preview only.
 | Wave 5 A15 phase beat | `4ee4f0fb` | A bounded 18%/45-tick Liquidator scale pulse marks the three authored phase entries. |
 | Wave 5 A13 hero motion | `e0c9aa20` | Four manifest-owned hero motion profiles create distinct action weight inside the existing atlas/runtime contract. |
 | Wave 5 A13 selector | `e3712fc3` | Selector v2 enlarges and grounds all 32 production composites inside unchanged 160px cells. |
+| Wave 5 A14 damage responses | `491bcb86` | Six ordinary roles gain manifest-owned, two-frame directional hit reactions; browser certification waits were made non-vacuous and deterministic. |
 
 Authored-prop manifest: **100 assets**. Prop atlas 259,679 B against a 524,288 B
-cap. Visual scenes 8 → 12. Test count 1,852 → **2,043**, expected failures still
-51. Enemy roster: 7 actors, 1,368 frames and 5,005,462 atlas bytes.
+cap. Visual scenes 8 → 12. Test count 1,852 → **2,046**, expected failures still
+51. Enemy roster: 7 actors, 1,368 frames and 4,985,197 atlas bytes.
 
 ## Non-art pipelines added
 
@@ -369,6 +370,48 @@ Authenticated verification proved both configured routes and byte-identical
 child, selector v2 JSON and selector PNG. Production and LitVM remained
 untouched. This closes A13.
 
+## Wave 5 A14 damage-response slice
+
+Implementation commit `491bcb86` adds six fail-closed, manifest-owned damage
+profiles without changing health, damage, AI, collision, navigation, attack
+cadence, spawning, RNG, gameplay-body authority or runtime JavaScript:
+
+- `snapback-stumble-v1` — bagholder rusher;
+- `crossed-fork-guard-break-v1` — forkrunner;
+- `rifle-shoulder-recoil-v1` — liquidator agent;
+- `armored-shoulder-absorb-v1` — whale enforcer;
+- `canister-protective-stagger-v1` — gas bomber;
+- `staff-braced-shock-v1` — validator cultist.
+
+The deterministic roster pipeline rebuilt all 1,368 frames with zero duplicates,
+zero tolerated frames, byte-exact reproducibility and 4,985,197 total atlas bytes.
+All 96 hit frames passed 8-connected alpha audit with no component below 126
+pixels. The editable Blender source contains seven actor IDs, one 13-bone
+`HMH_Enemy_Rig`, `prop_socket`, and zero external libraries. Native 8-direction
+damage sheets and fresh desktop/portrait runtime evidence received independent
+visual `PASS`.
+
+Release passed 2,046 entries (1,995 current passes and 51 expected failures),
+syntax 336 JavaScript and 49 Python files, plus long-run, weapon, asset, 12-scene
+visual, portal, cockpit, collectible, four-hero, enemy-detail, selector,
+five-profile browser, network, performance, metadata and whitespace gates. The
+production-hero smoke now requires a nonempty bounded torso-aim set independent
+of movement; selector row checks use transform-independent `offsetTop`; and the
+performance leak window starts only after exact hazard assets and simulation tick
+720. The existing 16 MiB heap cap and all frame/particle budgets remain unchanged.
+
+Exact text/authority and visual reviews for frozen digest
+`f56188212582eb732dbbd4d0a724a38ee54103346e2935c3dbfe83078fc21d19`
+both returned `PASS` with `BLOCKERS: none`. The child remains exactly 1,050,000
+bytes, SHA-256
+`2e4691e1fad6f4e986c5f67c9e4d46b6e5ee931b5c88e9587d63a0995e19a21c`.
+GitHub deployment `5780992477` binds the implementation to Ready Preview
+`dpl_Dj385aPHrL1LTBAzPbsMA8QaahSX` at
+`https://lesters-arcade-ow15iycli-justin-agent-projects.vercel.app`.
+Authenticated verification proved both configured routes, the raw-identical
+child, metrics, and all six changed atlas JSON/PNG pairs. Production and LitVM
+remained untouched.
+
 ## Standing debts
 
 - **`balanced-boulder` and `driftwood-log` are in the atlas but held out of
@@ -405,9 +448,9 @@ untouched. This closes A13.
 - **Wave 3 complete — A6, W2, A9, T4 and P5:** implementation commit `c4680a68`,
   exact reviewed diff `0c507bc1...f51e88`, 100 deterministic authored props,
   12 visual scenes and Ready Preview `dpl_FFMKT6g7cFZ9u2nMDjRGKfUjN1cw`.
-- **A14 remains partial after `dfcd216a`.** All six ordinary enemy roles now own
-  distinct attack profiles. Explicit damage-state art and the gas-bomber's
-  separate thrown-projectile presentation remain before final A14 certification.
+- **A14 remains partial after `dfcd216a` + `491bcb86`.** All six ordinary enemy
+  roles now own distinct attack and damage-response profiles. The gas-bomber's
+  separate thrown-projectile presentation remains before final A14 certification.
 - **A15 remains partial after `4ee4f0fb`.** Phase art, telegraphs and a visible
   transition beat are live. Phase-change audio remains in X1, and the child has
   zero byte headroom for additional runtime presentation.
@@ -424,8 +467,9 @@ untouched. This closes A13.
 Production was NOT promoted and remains the owner's call from the Vercel
 dashboard. The latest protected Preview was verified with authenticated read-only
 fetches against `/games/hard-money-heroes/play` and `/hmh-reboot/`, plus exact
-child and selector-v2 byte comparison. The implementation passed the 2,043-entry
-release suite (1,992 current passes and 51 expected failures), syntax,
+child, metrics, and six changed enemy-atlas JSON/PNG comparisons. The
+implementation passed the 2,046-entry release suite (1,995 current passes and 51
+expected failures), syntax,
 generated assets, long-run/weapon evidence, 12-scene visual regression,
 four-scenario network audit, portal E2E, cockpit, collectibles, all four hero
 smokes, selector, five-profile browser certification and performance.
