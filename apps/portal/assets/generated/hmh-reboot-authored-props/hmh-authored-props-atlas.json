@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 101,
+  "assetCount": 103,
   "atlasSize": {
     "width": 1024,
     "height": 1024
@@ -26,7 +26,7 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 419,
+        "x": 550,
         "y": 713,
         "w": 57,
         "h": 22
@@ -267,7 +267,7 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 534,
+        "x": 665,
         "y": 713,
         "w": 28,
         "h": 21
@@ -670,7 +670,7 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 369,
+        "x": 500,
         "y": 713,
         "w": 47,
         "h": 23
@@ -818,7 +818,7 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 81,
+        "x": 130,
         "y": 713,
         "w": 44,
         "h": 32
@@ -1448,7 +1448,7 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 231,
+        "x": 362,
         "y": 713,
         "w": 91,
         "h": 27
@@ -1580,7 +1580,7 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 128,
+        "x": 259,
         "y": 713,
         "w": 38,
         "h": 29
@@ -1676,7 +1676,7 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 169,
+        "x": 300,
         "y": 713,
         "w": 59,
         "h": 29
@@ -1732,6 +1732,70 @@
       "trimmed": true
     },
     {
+      "id": "lightning-ledger",
+      "assetId": "lightning-ledger",
+      "category": "weapon",
+      "shape": "arc-rifle",
+      "itemUrl": "./items/lightning-ledger.png",
+      "districts": [],
+      "runtimeScale": 0.64,
+      "frame": {
+        "x": 177,
+        "y": 713,
+        "w": 79,
+        "h": 30
+      },
+      "moduleFamily": null,
+      "landmarkId": null,
+      "collisionProxy": null,
+      "townPlacements": [],
+      "pivot": {
+        "x": 30,
+        "y": 26
+      },
+      "anchor": {
+        "x": 0.379747,
+        "y": 0.866667
+      },
+      "opaquePixels": 1048,
+      "massCentroidY": 0.513852,
+      "sourcePixelSha256": "1cfaae4de47d34ac20c66a8afa75f69c22dd6a9e619fbee96b727bac40934f2d",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "lightning-ledger-cache",
+      "assetId": "lightning-ledger-cache",
+      "category": "pickup",
+      "shape": "ledger-cache",
+      "itemUrl": "./items/lightning-ledger-cache.png",
+      "districts": [],
+      "runtimeScale": 0.9,
+      "frame": {
+        "x": 881,
+        "y": 668,
+        "w": 28,
+        "h": 34
+      },
+      "moduleFamily": null,
+      "landmarkId": null,
+      "collisionProxy": null,
+      "townPlacements": [],
+      "pivot": {
+        "x": 14,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.882353
+      },
+      "opaquePixels": 680,
+      "massCentroidY": 0.618449,
+      "sourcePixelSha256": "351f3547853dd632748f3a0635f5480b4cd9378752865291f3295ae4c4e4fa7f",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "lily-pads",
       "assetId": "lily-pads",
       "category": "world-prop",
@@ -1774,7 +1838,7 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 663,
+        "x": 794,
         "y": 713,
         "w": 24,
         "h": 15
@@ -1843,7 +1907,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 881,
+        "x": 912,
         "y": 668,
         "w": 38,
         "h": 34
@@ -2121,7 +2185,7 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 325,
+        "x": 456,
         "y": 713,
         "w": 41,
         "h": 26
@@ -2297,7 +2361,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 922,
+        "x": 953,
         "y": 668,
         "w": 46,
         "h": 34
@@ -2363,8 +2427,8 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 971,
-        "y": 668,
+        "x": 3,
+        "y": 713,
         "w": 46,
         "h": 34
       },
@@ -2463,7 +2527,7 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 690,
+        "x": 821,
         "y": 713,
         "w": 24,
         "h": 15
@@ -2627,7 +2691,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 479,
+        "x": 610,
         "y": 713,
         "w": 52,
         "h": 22
@@ -2753,7 +2817,7 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 634,
+        "x": 765,
         "y": 713,
         "w": 26,
         "h": 18
@@ -2849,7 +2913,7 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 565,
+        "x": 696,
         "y": 713,
         "w": 66,
         "h": 20
@@ -3276,7 +3340,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
+        "x": 52,
         "y": 713,
         "w": 46,
         "h": 34
@@ -3311,7 +3375,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 52,
+        "x": 101,
         "y": 713,
         "w": 26,
         "h": 34

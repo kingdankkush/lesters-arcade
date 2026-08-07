@@ -6,8 +6,9 @@ import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
+import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
-import { computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
+import { compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -100,6 +101,7 @@ import {
   grantRunXp,
   recordRunDefeat,
   selectRunUpgrade,
+  unlockRunProgressionWeapon,
 } from './run-progression.mjs';
 import { resolveComboFeedback } from './combo-feedback.mjs';
 import { buildRunResultMessages, getWeb3AdapterStatus } from './run-adapters.mjs';
@@ -112,6 +114,7 @@ import {
   recordRunGrenadeDetonation,
   recordRunHealing,
   recordRunKill,
+  recordRunLightningLedgerEvent,
   recordRunProjectileContacts,
   recordRunProjectileResolution,
   recordRunTick,
@@ -176,7 +179,7 @@ import {
   getWeaponReadabilityStatus,
   grantWeaponPickup,
   refillWeaponLoadout,
-  pistolProgressionByWeapon,
+  progressionByWeapon as buildProgressionByWeapon,
   selectWeapon,
   stepWeaponLoadout,
 } from './weapon-system.mjs';
@@ -234,13 +237,14 @@ const CRITICAL_CHANCE_CAP = 0.45;
 const BASE_CRITICAL_CHANCE = 0.08;
 const BASE_CRITICAL_MULTIPLIER = 1.75;
 
-const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail']);
+const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger']);
 const WEAPON_KNOCKBACK = Object.freeze({
   'coin-blaster': 8,
   'scatter-shotgun': 18,
   'auto-miner': 5,
   'launcher-rig': 24,
   'hash-rail': 38,
+  'lightning-ledger': 4,
 });
 const WEAPON_COLORS = Object.freeze({
   'coin-blaster': 0xffd166,
@@ -248,6 +252,7 @@ const WEAPON_COLORS = Object.freeze({
   'auto-miner': 0x83f28f,
   'launcher-rig': 0xc497ff,
   'hash-rail': 0x8ff3ff,
+  'lightning-ledger': 0x7df9ff,
 });
 const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
@@ -444,6 +449,7 @@ async function boot() {
   ]);
   let authoredPropDisplay = null;
   let authoredHeldWeaponDisplay = null;
+  let lightningLedgerEventPlacement = null;
   let authoredPropLoadError = null;
   // Decals load on their own promise, deliberately NOT inside the prop
   // Promise.all: that array is destructured positionally, so adding an entry
@@ -483,10 +489,11 @@ async function boot() {
     heldWeaponLayer.addChild(heldWeaponDisplay.container);
     authoredPropDisplay = display;
     authoredHeldWeaponDisplay = heldWeaponDisplay;
+    if (lightningLedgerEventPlacement) display.addPlacement(lightningLedgerEventPlacement);
     worldProduction.layers.townBlockers.visible = false;
     worldProduction.layers.landmarks.visible = false;
     dataset.authoredPropStatus = 'ready';
-    dataset.authoredPropCount = String(placements.length);
+    dataset.authoredPropCount = String(display.entries.length);
   }).catch((error) => {
     authoredPropLoadError = error;
     dataset.authoredPropStatus = 'fallback';
@@ -729,7 +736,9 @@ async function boot() {
   // Evidence-only arsenal: pre-grants every pickup weapon so switching and
   // reload evidence does not depend on cache traversal. Gated behind
   // evidenceSafe exactly like the other pilots; a real run starts pistol-only.
-  const weaponPilotEnabled = evidenceSafeEnabled && runtimeParams.get('weaponPilot') === '1';
+  const lightningLedgerPilotEnabled = evidenceSafeEnabled && runtimeParams.get('lightningLedgerPilot') === '1';
+  const lightningEventPilot = evidenceSafeEnabled ? runtimeParams.get('lightningEventPilot') : null;
+  const weaponPilotEnabled = evidenceSafeEnabled && (runtimeParams.get('weaponPilot') === '1' || lightningLedgerPilotEnabled);
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
@@ -867,6 +876,7 @@ async function boot() {
   let lastProjectileHit = null;
   let lastCombatResolution = null;
   let lastWeaponFire = null;
+  let lastLightningLedgerPulse = null;
   let lastPlayerHit = null;
   let lowHealthWarned = false;
   let lastDashDirection = null;
@@ -1117,14 +1127,18 @@ async function boot() {
     }
     if (renderState && camera) {
       renderAuthoredTerrain(view);
+      const authoredPropTick = simulation?.tick ?? 0;
+      const hiddenAuthoredPropIds = lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick
+        ? new Set([...(collectibleState?.collectedIds ?? []), lightningLedgerEventPlacement.id])
+        : collectibleState?.collectedIds ?? null;
       const authoredPropReport = authoredPropDisplay?.render({
         camera,
         view,
         worldToScreen,
         queryGround,
-        tick: simulation?.tick ?? 0,
+        tick: authoredPropTick,
         cullMargin: performanceProfile.worldCullMargin ?? 220,
-        hiddenPlacementIds: collectibleState?.collectedIds ?? null,
+        hiddenPlacementIds: hiddenAuthoredPropIds,
         reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
       });
       if (releaseTelemetryEnabled || debugGridEnabled) {
@@ -1340,7 +1354,25 @@ async function boot() {
           const alpha = Math.max(0.08, 1 - age / HIT_FEEDBACK_TICKS);
           const center = worldToScreen(event.point, camera, view);
           if (!isScreenPointVisible(center, view, 128)) continue;
-          if (event.type === 'muzzle') {
+          if (event.type === 'lightning-ledger') {
+            for (let linkIndex = 0; linkIndex < event.links.length; linkIndex += 1) {
+              const link = event.links[linkIndex];
+              const start = worldToScreen(link.from, camera, view);
+              const end = worldToScreen(link.to, camera, view);
+              const normalX = end.y - start.y;
+              const normalY = -(end.x - start.x);
+              const normalLength = Math.hypot(normalX, normalY) || 1;
+              const jitter = (deterministicUnit(`${event.tick}:ledger:${linkIndex}`) - 0.5) * 18 * camera.zoom;
+              const midX = (start.x + end.x) / 2 + normalX / normalLength * jitter;
+              const midY = (start.y + end.y) / 2 + normalY / normalLength * jitter;
+              combatVisuals.moveTo(start.x, start.y).lineTo(midX, midY).lineTo(end.x, end.y)
+                .stroke({ color: event.color, width: 8, alpha: alpha * 0.34, cap: 'round', join: 'round' });
+              combatVisuals.moveTo(start.x, start.y).lineTo(midX, midY).lineTo(end.x, end.y)
+                .stroke({ color: 0xeaffff, width: 3, alpha: alpha * 0.95, cap: 'round', join: 'round' });
+              combatVisuals.circle(end.x, end.y, 8 + age * 0.8)
+                .stroke({ color: event.color, width: 3, alpha: alpha * 0.8 });
+            }
+          } else if (event.type === 'muzzle') {
             // Shrink and brighten: a growing circle read as a smoke puff.
             const flashRadius = Math.max(2, 14 - age * 1.6);
             combatVisuals.circle(center.x, center.y, flashRadius).fill({ color: 0xffffff, alpha: alpha * 0.55 });
@@ -1550,7 +1582,7 @@ async function boot() {
       const weaponStatus = weaponLoadout
         ? getWeaponReadabilityStatus(weaponLoadout, {
           tick: simulation?.tick ?? 0,
-          progressionByWeapon: runProgression ? pistolProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {},
+          progressionByWeapon: runProgression ? buildProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {},
         })
         : null;
       const weaponHud = weaponStatus?.hudLabel ?? 'NO WEAPON 0/0';
@@ -1562,8 +1594,14 @@ async function boot() {
       const activePowerupIds = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId) ?? [];
       const activePowerupLabels = collectibleSnapshot?.activeEffects.map((effect) => `${effect.effectId.toUpperCase()} ${Math.max(0, Math.ceil((effect.expiresTick - collectibleSnapshot.tick) / 60))}S`) ?? [];
       const powerupHud = activePowerupLabels.length > 0 ? ` // POWER ${activePowerupLabels.join('+')}` : '';
-      const combatHud = `${weaponHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
-      const compactCombatHud = `${weaponHud} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
+      const compactWeaponHud = compactWeaponHudLabel({ weaponId: weaponStatus?.weaponId ?? 'none', hudLabel: weaponHud });
+      const lightningLedgerHud = weaponStatus?.weaponId === 'lightning-ledger' && !combatStatusLayout.compact;
+      const combatHud = lightningLedgerHud
+        ? `${weaponHud}\n${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`
+        : `${weaponHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
+      const compactCombatHud = weaponStatus?.weaponId === 'lightning-ledger'
+        ? `${compactWeaponHud}\n${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`
+        : `${compactWeaponHud} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
       const landscapeCombatHud = `HP ${playerHealth} // ${weaponHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
       const accessibleCombatStatus = `${weaponStatus?.accessibleLabel ?? 'No weapon'}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats${activePowerupIds.length > 0 ? `, active powerups ${activePowerupIds.join(', ')}` : ''}`;
       if (dashStatusElement) {
@@ -1587,7 +1625,7 @@ async function boot() {
       // The narrow debug/evidence view adds two diagnostic rows. Offset that
       // taller block below the cockpit cards so its weapon/reload line cannot
       // hide behind score/level chrome on portrait phones.
-      const combatStatusY = combatStatusLayout.y + (narrowDebug ? 32 : 0);
+      const combatStatusY = combatStatusLayout.y + (narrowDebug ? 32 : 0) + (lightningLedgerHud ? 22 : 0);
       label.position.set(combatStatusX, combatStatusY);
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
@@ -1696,6 +1734,15 @@ async function boot() {
         dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
         dataset.weaponChargeStartedTick = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).chargeStartedTick ?? '' : '');
         dataset.weaponChargeReady = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).chargeReadyAnnounced : false);
+        dataset.lightningLedgerPulses = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.pulses ?? 0);
+        dataset.lightningLedgerRamp = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.maxRampPermille ?? 1000);
+        dataset.lightningLedgerCells = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.cellsRemaining ?? 0);
+        dataset.lightningLedgerActive = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.active === true);
+        dataset.lightningLedgerLastHits = String(lastLightningLedgerPulse?.hits ?? 0);
+        dataset.lightningLedgerLastRamp = String(lastLightningLedgerPulse?.rampPermille ?? 1000);
+        dataset.lightningLedgerEventId = String(lightningLedgerEventPlacement?.id ?? '');
+        dataset.lightningLedgerEventTick = String(lightningLedgerEventPlacement?.availableTick ?? '');
+        dataset.lightningLedgerEventCollected = String(Boolean(lightningLedgerEventPlacement && collectibleState?.collectedIds.has(lightningLedgerEventPlacement.id)));
         dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
         dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
         dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
@@ -1800,6 +1847,7 @@ async function boot() {
     lastProjectileHit = null;
     lastCombatResolution = null;
     lastWeaponFire = null;
+    lastLightningLedgerPulse = null;
     lastPlayerHit = null;
     lowHealthWarned = false;
     lastDashDirection = null;
@@ -1953,15 +2001,44 @@ async function boot() {
       for (const weaponId of WEAPON_ORDER) {
         if (weaponId !== weaponLoadout.activeWeaponId) {
           grantWeaponPickup(weaponLoadout, { tick: 0, weaponId, select: false });
+          unlockRunProgressionWeapon(runProgression, weaponId);
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId });
         }
+      }
+      if (lightningLedgerPilotEnabled) {
+        selectWeapon(weaponLoadout, 'lightning-ledger', { tick: 0 });
+        recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: 'lightning-ledger' });
       }
     }
     if (collectibleAmmoPilotEnabled) weaponLoadout.weapons['coin-blaster'].ammoInClip = 1;
     meleeState = createMeleeState();
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
     dashState = createDashState({ cooldownTier: 0 });
-    collectibleState = createCollectibleState({ placements: authoredPointOfInterestPlacements });
+    let lightningLedgerEvent = createLightningLedgerRareEvent({
+      seed: payload.session.seed,
+      candidates: authoredPointOfInterestPlacements.filter((placement) => ['liquidity-crossing', 'hashwood', 'mining-camp'].includes(placement.districtId)),
+      protectedPoints: authoredPointOfInterestPlacements,
+      queryGround,
+      isBlocked: spawnPointBlocked,
+      isRouteReachable: (point, ground) => ground.kind !== 'deep-water'
+        && point.x >= WORLD_BOUNDS.minX && point.x <= WORLD_BOUNDS.maxX
+        && point.y >= WORLD_BOUNDS.minY && point.y <= WORLD_BOUNDS.maxY,
+    });
+    if (lightningEventPilot === 'preview' || lightningEventPilot === 'collect') {
+      lightningLedgerEvent = Object.freeze({ ...lightningLedgerEvent, availableTick: 0 });
+      actor.x = lightningLedgerEvent.x + (lightningEventPilot === 'preview' ? -240 : 0);
+      actor.y = lightningLedgerEvent.y;
+      actor.groundZ = queryGround(actor.x, actor.y).groundZ;
+      actor.z = actor.groundZ;
+      motion.x = actor.x;
+      motion.y = actor.y;
+      motion.vx = 0;
+      motion.vy = 0;
+    }
+    if (lightningLedgerEventPlacement && authoredPropDisplay) authoredPropDisplay.removePlacement(lightningLedgerEventPlacement.id);
+    lightningLedgerEventPlacement = lightningLedgerEvent;
+    if (authoredPropDisplay) authoredPropDisplay.addPlacement(lightningLedgerEventPlacement);
+    collectibleState = createCollectibleState({ placements: [...authoredPointOfInterestPlacements, lightningLedgerEventPlacement] });
     collectibleSnapshot = getCollectibleSnapshot(collectibleState, { tick: 0 });
     lastCollectibleEvent = null;
     lastDashReady = true;
@@ -2035,7 +2112,7 @@ async function boot() {
       // Resolved before movement: the mobility upgrades feed the movement step,
       // and this was previously declared further down the same tick.
       const runEffects = getRunProgressionSnapshot(runProgression).effects;
-      const progressionByWeapon = pistolProgressionByWeapon(runProgression.ranks);
+      const progressionByWeapon = buildProgressionByWeapon(runProgression.ranks);
       const dashPressed = tickInput.dash && !previousDash;
       const dashStart = dashPressed
         ? beginDash(dashState, { tick, direction: tickInput.move, fallbackDirection: aimIntent.direction })
@@ -2290,7 +2367,13 @@ async function boot() {
           // A weapon cache grants ownership plus authored finite reserve.
           const previousWeaponId = weaponLoadout.activeWeaponId;
           grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true, progressionByWeapon });
+          unlockRunProgressionWeapon(runProgression, event.weaponId);
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.weaponId });
+          if (event.bonusWeaponId) {
+            grantWeaponPickup(weaponLoadout, { tick, weaponId: event.bonusWeaponId, select: false, progressionByWeapon });
+            unlockRunProgressionWeapon(runProgression, event.bonusWeaponId);
+            recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.bonusWeaponId });
+          }
           if (weaponLoadout.activeWeaponId !== previousWeaponId) recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: event.weaponId });
         } else if (event.kind === 'ammo-refill') {
           refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
@@ -2412,6 +2495,11 @@ async function boot() {
         activeProjectiles = [];
       }
 
+      const lightningTargets = [
+        ...grayboxEnemies.filter((enemy) => enemy.active),
+        ...(liquidatorBoss.active && liquidatorBoss.health > 0 ? [liquidatorBoss] : []),
+      ];
+
       // Switching only cycles weapons the player actually owns: the pistol is
       // always owned, everything else is a pickup (Cycle 036 Priority D).
       const ownsWeapon = (id) => weaponLoadout.weapons[id]?.owned === true;
@@ -2438,7 +2526,11 @@ async function boot() {
       const requestedWeaponId = directWeaponId ?? nextWeaponId;
       let switchedWeapon = false;
       if (requestedWeaponId && requestedWeaponId !== weaponLoadout.activeWeaponId) {
-        selectWeapon(weaponLoadout, requestedWeaponId, { tick });
+        const selection = selectWeapon(weaponLoadout, requestedWeaponId, { tick });
+        if (selection.interrupted) {
+          recordRunLightningLedgerEvent(runSummaryAccumulator, selection.interrupted);
+          combatAudio.play('hmh-lightning-interrupt', { volume: HMH_WEAPON_SFX['hmh-lightning-interrupt'].gain });
+        }
         recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
         switchedWeapon = true;
       }
@@ -2451,6 +2543,14 @@ async function boot() {
           releaseCharged: aimIntent.source === 'autofire',
           direction: aimIntent.direction,
           progressionByWeapon,
+          channelOrigin: { x: actor.x, y: actor.y, z: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT },
+          channelTargets: lightningTargets,
+          channelLineOfSight: (from, to) => traceHeightAwareLineOfSight({
+            from: { x: from.x, y: from.y, z: Number.isFinite(from.z) ? from.z : (from.groundZ ?? queryGround(from.x, from.y).groundZ) + PROJECTILE_FLIGHT_HEIGHT },
+            to: { x: to.x, y: to.y, z: Number.isFinite(to.z) ? to.z : (to.groundZ ?? queryGround(to.x, to.y).groundZ) + PROJECTILE_FLIGHT_HEIGHT },
+            blockers: WORLD_BLOCKERS,
+          }).clear,
+          channelStopReason: dashFrame.active ? 'dodge' : '',
         });
       // C1: reload and the dry-fire fallback get their own cues. Both events
       // already existed and were silent, so the player learned about an empty
@@ -2458,13 +2558,63 @@ async function boot() {
       // trap went unnoticed.
       for (const event of weaponFrame.events) {
         recordRunWeaponLifecycleEvent(runSummaryAccumulator, event);
+        if (event.type.startsWith('ledger:') || event.type === 'weapon:channel-pulse') {
+          recordRunLightningLedgerEvent(runSummaryAccumulator, event);
+        }
         if (event.type === 'weapon:charge-start') {
           combatAudio.play('hmh-hash-rail-charge', { volume: HMH_WEAPON_SFX['hmh-hash-rail-charge'].gain });
         } else if (event.type === 'weapon:reload-start') {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
         } else if (event.type === 'weapon:auto-fallback') {
           combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
+        } else if (event.type === 'ledger:overheat') {
+          combatAudio.play('hmh-lightning-overheat', { volume: HMH_WEAPON_SFX['hmh-lightning-overheat'].gain });
+        } else if (event.type === 'ledger:empty') {
+          combatAudio.play('hmh-lightning-empty', { volume: HMH_WEAPON_SFX['hmh-lightning-empty'].gain });
+        } else if (['ledger:release', 'ledger:dodge', 'ledger:target-loss', 'ledger:invalid-target'].includes(event.type)) {
+          combatAudio.play('hmh-lightning-interrupt', { volume: HMH_WEAPON_SFX['hmh-lightning-interrupt'].gain });
         }
+      }
+      for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:channel-pulse')) {
+        lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
+        lastLightningLedgerPulse = { tick, attackId: event.attackId, hits: event.hits.length, rampPermille: event.rampPermille };
+        recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: event.hits.length, attackId: event.attackId });
+        if (event.hits.length > 0) {
+          recordRunWeaponTriggerContact(runSummaryAccumulator, { weaponId: event.weaponId });
+          recordRunProjectileContacts(runSummaryAccumulator, { weaponId: event.weaponId, count: event.hits.length });
+        }
+        for (const hit of event.hits) {
+          const dx = hit.point.x - hit.from.x;
+          const dy = hit.point.y - hit.from.y;
+          const length = Math.hypot(dx, dy) || 1;
+          combatHitIntents.push({
+            id: hit.id,
+            tick,
+            time: 0,
+            targetId: hit.targetId,
+            sourceId: 'player',
+            weaponId: event.weaponId,
+            damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
+            criticalChance: 0,
+            criticalMultiplier: 1,
+            armorPiercing: false,
+            direction: { x: dx / length, y: dy / length },
+            knockback: WEAPON_KNOCKBACK[event.weaponId] * (hit.knockbackMultiplier ?? 1),
+            point: { ...hit.point, z: hit.point.z + 28 },
+          });
+        }
+        const rampAudioGain = 0.62 + Math.max(0, Math.min(1, (event.rampPermille - 1000) / 2000)) * 0.38;
+        combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) * rampAudioGain });
+        pushCombatVisualEvent({
+          type: 'lightning-ledger',
+          tick,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT },
+          color: WEAPON_COLORS[event.weaponId],
+          links: event.hits.map((hit) => ({
+            from: { x: hit.from.x, y: hit.from.y, z: (hit.from.z ?? hit.from.groundZ ?? queryGround(hit.from.x, hit.from.y).groundZ) + PROJECTILE_FLIGHT_HEIGHT },
+            to: { x: hit.point.x, y: hit.point.y, z: hit.point.z + 28 },
+          })),
+        });
       }
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:fire')) {
         lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };

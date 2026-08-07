@@ -14,6 +14,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'auto-miner',
     'launcher-rig',
     'hash-rail',
+    'lightning-ledger',
     'litecoin-knife',
     'satoshi-frag',
     'nuke-liquidation',
@@ -26,6 +27,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'launcher-rig-cache',
     'litecoin-token',
     'hash-rail-core',
+    'lightning-ledger-cache',
     'time-dilation',
     'berserk-candle',
     'nuke-liquidation',
@@ -43,6 +45,10 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'hot-wallet',
     'layer-two',
     'hardened-wallet',
+    'ledger-conductivity',
+    'ledger-voltage',
+    'ledger-reconciliation',
+    'proof-of-network',
   ]),
   districts: Object.freeze([
     'frontier-relay',
@@ -91,9 +97,11 @@ const rows = (value, ids, idKey, fields, label) => {
 };
 
 export function validateRunSummaryPayload(payload) {
-  let error = keys(payload, ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'], 'game:run-summary payload');
+  if (![1, 2, 3].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
+  const payloadFields = ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'];
+  if (payload.schemaVersion >= 3) payloadFields.push('lightningLedger');
+  let error = keys(payload, payloadFields, 'game:run-summary payload');
   if (error) return error;
-  if (![1, 2].includes(payload.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
   const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
   error = keys(payload.identity, identityFields, 'game:run-summary identity');
   if (error) return error;
@@ -134,6 +142,25 @@ export function validateRunSummaryPayload(payload) {
     if (payload.schemaVersion >= 2 && (weapon.chargesCancelled > weapon.chargesStarted
       || weapon.chargedShots > weapon.chargesStarted
       || weapon.zeroHitShots + weapon.oneHitShots + weapon.twoHitShots + weapon.threePlusHitShots > weapon.chargedShots)) return `game:run-summary weapons[${index}] charge totals are inconsistent`;
+  }
+
+  if (payload.schemaVersion >= 3) {
+    const ledgerFields = ['pulses', 'chainedHits', 'longestChain', 'maxRampPermille', 'heldTicks', 'secondsHeld', 'cellsSpent', 'cellsRefunded', 'fullChains', 'overheats', 'capstonePulses', 'interruptions'];
+    error = keys(payload.lightningLedger, ledgerFields, 'game:run-summary lightningLedger');
+    if (error) return error;
+    for (const field of ledgerFields.filter((field) => !['secondsHeld', 'interruptions'].includes(field))) {
+      if (!integer(payload.lightningLedger[field])) return `game:run-summary lightningLedger.${field} is invalid`;
+    }
+    if (!finite(payload.lightningLedger.secondsHeld)) return 'game:run-summary lightningLedger.secondsHeld is invalid';
+    const interruptionFields = ['release', 'switch', 'dodge', 'empty', 'overheat', 'invalidTarget', 'other'];
+    error = keys(payload.lightningLedger.interruptions, interruptionFields, 'game:run-summary lightningLedger.interruptions');
+    if (error) return error;
+    for (const field of interruptionFields) if (!integer(payload.lightningLedger.interruptions[field])) return `game:run-summary lightningLedger.interruptions.${field} is invalid`;
+    if (payload.lightningLedger.longestChain > 8
+      || payload.lightningLedger.maxRampPermille > 3000
+      || payload.lightningLedger.fullChains > payload.lightningLedger.pulses
+      || payload.lightningLedger.capstonePulses > payload.lightningLedger.pulses
+      || payload.lightningLedger.secondsHeld !== Number((payload.lightningLedger.heldTicks / 60).toFixed(3))) return 'game:run-summary lightningLedger totals are inconsistent';
   }
 
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');

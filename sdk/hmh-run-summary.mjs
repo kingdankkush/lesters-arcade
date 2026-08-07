@@ -39,6 +39,9 @@ export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, sta
     grenades: Array(6).fill(0),
     collectibles: rows(C.collectibles, 2),
     upgrades: rows(C.upgrades, 2),
+    lightningLedger: Array(10).fill(0),
+    lightningLedgerInterruptions: Array(7).fill(0),
+    lightningLedgerChannelStartTick: null,
     exploration: [0, 0, 0], // district mask, POI mask, accepted distance
     lastPosition: point(startPosition, 'startPosition'),
     lastTick: startTick,
@@ -110,6 +113,51 @@ export function recordRunWeaponLifecycleEvent(state, event) {
     row[15] += 1;
     row[17] += count(event.chargeTicks, 'cancelled charge ticks');
   }
+}
+
+export function recordRunLightningLedgerEvent(state, event = {}) {
+  if (!state || !Array.isArray(state.lightningLedger) || state.finalized) throw new TypeError('active run summary state is required');
+  const tick = count(event.tick, 'Lightning Ledger event tick');
+  const metrics = state.lightningLedger;
+  if (event.type === 'ledger:channel-start') {
+    if (state.lightningLedgerChannelStartTick !== null) throw new Error('Lightning Ledger channel is already active');
+    state.lightningLedgerChannelStartTick = tick;
+    return;
+  }
+  if (event.type === 'ledger:pulse') return state;
+  if (event.type === 'weapon:channel-pulse') {
+    if (!Array.isArray(event.hits) || event.hits.length > 8) throw new TypeError('Lightning Ledger pulse hits must be bounded to eight');
+    const rampPermille = count(event.rampPermille, 'Lightning Ledger ramp');
+    const proofDamagePermille = count(event.proofDamagePermille ?? 1000, 'Lightning Ledger proof damage');
+    metrics[0] += 1;
+    metrics[1] += event.hits.length;
+    metrics[2] = Math.max(metrics[2], event.hits.length);
+    metrics[3] = Math.max(metrics[3], rampPermille);
+    if (event.hits.length === 8) metrics[7] += 1;
+    if (proofDamagePermille > 1000) metrics[9] += 1;
+    return;
+  }
+  if (event.type === 'ledger:cell-drain') {
+    metrics[5] += count(event.consumed, 'Lightning Ledger cells consumed');
+    return;
+  }
+  if (event.type === 'ledger:cell-refund') {
+    metrics[6] += 1;
+    return;
+  }
+  if (event.type === 'ledger:channel-break' || event.type === 'ledger:overheat') {
+    if (state.lightningLedgerChannelStartTick !== null) {
+      if (tick < state.lightningLedgerChannelStartTick) throw new TypeError('Lightning Ledger interruption precedes channel start');
+      metrics[4] += tick - state.lightningLedgerChannelStartTick;
+      state.lightningLedgerChannelStartTick = null;
+    }
+    const reason = event.type === 'ledger:overheat' ? 'overheat' : event.reason;
+    const interruptionIndex = { release: 0, switch: 1, dodge: 2, empty: 3, overheat: 4, 'invalid-target': 5 }[reason] ?? 6;
+    state.lightningLedgerInterruptions[interruptionIndex] += 1;
+    if (reason === 'overheat') metrics[8] += 1;
+    return;
+  }
+  throw new TypeError(`unknown Lightning Ledger event ${String(event.type)}`);
 }
 
 export function recordRunDamage(state, event = {}) {
@@ -190,6 +238,11 @@ export function finalizeRunSummary(state, {
   if (!['defeated', 'completed', 'abandoned', 'runtime-error'].includes(terminalReason)) throw new TypeError('terminalReason is invalid');
   for (const [value, label] of [[score, 'score'], [level, 'level'], [xp, 'xp'], [currentCombo, 'currentCombo'], [maxCombo, 'maxCombo'], [revealedCells, 'revealedCells'], [totalCells, 'totalCells']]) count(value, label);
   if (level < 1 || revealedCells > totalCells || currentCombo > maxCombo) throw new TypeError('final run-summary totals are inconsistent');
+  if (state.lightningLedgerChannelStartTick !== null) {
+    if (endTick < state.lightningLedgerChannelStartTick) throw new TypeError('endTick precedes active Lightning Ledger channel');
+    state.lightningLedger[4] += endTick - state.lightningLedgerChannelStartTick;
+    state.lightningLedgerChannelStartTick = null;
+  }
   state.finalized = true;
   for (const attack of state.weaponAttacks.values()) {
     const row = state.weapons[attack.weaponIndex];
@@ -202,7 +255,7 @@ export function finalizeRunSummary(state, {
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
   const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
   const summary = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     identity: { ...state.identity, terminalReason, endTick },
     totals: {
       survivalTicks: endTick - state.identity.startTick,
@@ -226,6 +279,20 @@ export function finalizeRunSummary(state, {
       boss: state.bossKills ?? 0,
     },
     weapons,
+    lightningLedger: {
+      pulses: state.lightningLedger[0],
+      chainedHits: state.lightningLedger[1],
+      longestChain: state.lightningLedger[2],
+      maxRampPermille: state.lightningLedger[3],
+      heldTicks: state.lightningLedger[4],
+      secondsHeld: Number((state.lightningLedger[4] / 60).toFixed(3)),
+      cellsSpent: state.lightningLedger[5],
+      cellsRefunded: state.lightningLedger[6],
+      fullChains: state.lightningLedger[7],
+      overheats: state.lightningLedger[8],
+      capstonePulses: state.lightningLedger[9],
+      interruptions: Object.fromEntries(['release', 'switch', 'dodge', 'empty', 'overheat', 'invalidTarget', 'other'].map((reason, i) => [reason, state.lightningLedgerInterruptions[i]])),
+    },
     grenades: Object.fromEntries(['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'].map((field, i) => [field, state.grenades[i]])),
     collectibles: C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),
     upgrades: C.upgrades.map((upgradeId, i) => ({ upgradeId, offered: state.upgrades[i][0], selected: state.upgrades[i][1] })),

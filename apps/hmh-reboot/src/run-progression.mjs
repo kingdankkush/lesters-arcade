@@ -134,6 +134,51 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     effect: 'maxHealthBonus',
     amount: 6,
   },
+  'ledger-conductivity': {
+    id: 'ledger-conductivity',
+    branch: 'lightning-ledger',
+    title: 'Conductivity',
+    mechanicalLabel: 'Longer and denser chain mesh',
+    description: 'Extend jump range, add bounded arcs, and preserve late-chain damage.',
+    maxRank: 3,
+    requiresWeaponId: 'lightning-ledger',
+    effect: 'ledgerConductivityTier',
+    amount: 1,
+  },
+  'ledger-voltage': {
+    id: 'ledger-voltage',
+    branch: 'lightning-ledger',
+    title: 'Voltage',
+    mechanicalLabel: 'Harder contact and faster ramp',
+    description: 'Raise contact damage, accelerate ramp, and empower the last arc.',
+    maxRank: 3,
+    requiresWeaponId: 'lightning-ledger',
+    effect: 'ledgerVoltageTier',
+    amount: 1,
+  },
+  'ledger-reconciliation': {
+    id: 'ledger-reconciliation',
+    branch: 'lightning-ledger',
+    title: 'Reconciliation',
+    mechanicalLabel: 'Reserve, recovery, and full-chain refund',
+    description: 'Carry more cells, reload faster, and refund one bounded full-chain cell.',
+    maxRank: 3,
+    requiresWeaponId: 'lightning-ledger',
+    effect: 'ledgerReconciliationTier',
+    amount: 1,
+  },
+  'proof-of-network': {
+    id: 'proof-of-network',
+    branch: 'lightning-ledger-capstone',
+    title: 'Proof of Network',
+    mechanicalLabel: 'Every fifth pulse gains 25% damage',
+    description: 'Deterministically amplify every fifth pulse without adding targets.',
+    maxRank: 1,
+    requiresWeaponId: 'lightning-ledger',
+    requiresRanks: { 'ledger-conductivity': 3, 'ledger-voltage': 3, 'ledger-reconciliation': 3 },
+    effect: 'ledgerProofOfNetworkTier',
+    amount: 1,
+  },
 });
 
 const EFFECT_DEFAULTS = Object.freeze({
@@ -146,6 +191,10 @@ const EFFECT_DEFAULTS = Object.freeze({
   moveSpeedMultiplier: 1,
   criticalChanceBonus: 0,
   criticalDamageBonus: 0,
+  ledgerConductivityTier: 0,
+  ledgerVoltageTier: 0,
+  ledgerReconciliationTier: 0,
+  ledgerProofOfNetworkTier: 0,
 });
 
 const COMBO_MILESTONE_XP = Object.freeze({ 5: 120, 10: 240, 20: 480, 30: 900 });
@@ -189,13 +238,28 @@ function remainingRankCapacity(state) {
   return capacity;
 }
 
+function isUpgradeEligible(state, upgrade) {
+  if ((state.ranks[upgrade.id] ?? 0) >= upgrade.maxRank) return false;
+  if (upgrade.requiresWeaponId && !state.ownedWeaponIds.has(upgrade.requiresWeaponId)) return false;
+  if (upgrade.requiresRanks && Object.entries(upgrade.requiresRanks).some(([id, rank]) => (state.ranks[id] ?? 0) < rank)) return false;
+  return true;
+}
+
+export function getEligibleRunUpgradeIds(state) {
+  if (!state || !(state.ownedWeaponIds instanceof Set)) throw new TypeError('run progression state is required');
+  return Object.freeze(Object.values(RUN_UPGRADE_CATALOG)
+    .filter((upgrade) => isUpgradeEligible(state, upgrade))
+    .map((upgrade) => upgrade.id)
+    .sort((left, right) => left < right ? -1 : left > right ? 1 : 0));
+}
+
 function resolveChoices(state) {
   if (state.pendingLevels <= 0) return Object.freeze([]);
   const salt = `${state.level}:${state.pendingLevels}:${state.selectionSequence}`;
   const choices = Object.values(RUN_UPGRADE_CATALOG)
-    .filter((upgrade) => (state.ranks[upgrade.id] ?? 0) < upgrade.maxRank)
+    .filter((upgrade) => isUpgradeEligible(state, upgrade))
     .map((upgrade) => ({ upgrade, order: hashChoice(state.seed, `${salt}:${upgrade.id}`) }))
-    .sort((a, b) => a.order - b.order || a.upgrade.id.localeCompare(b.upgrade.id))
+    .sort((a, b) => a.order - b.order || (a.upgrade.id < b.upgrade.id ? -1 : a.upgrade.id > b.upgrade.id ? 1 : 0))
     // Cycle 036 handoff, Priority E: every level-up offers exactly TWO
     // deterministic options. The pair is a pure function of seed, level,
     // ranks and selection sequence.
@@ -208,7 +272,12 @@ function resolveChoices(state) {
   return Object.freeze(choices);
 }
 
-export function createRunProgression({ seed = 0 } = {}) {
+export function createRunProgression({ seed = 0, ownedWeaponIds = ['coin-blaster'] } = {}) {
+  if (!Array.isArray(ownedWeaponIds) || ownedWeaponIds.length < 1 || ownedWeaponIds.length > 32) throw new TypeError('ownedWeaponIds must be a bounded non-empty array');
+  const normalizedWeaponIds = ownedWeaponIds.map((id) => {
+    if (typeof id !== 'string' || !id || id.length > 64) throw new TypeError('owned weapon ID must be a bounded string');
+    return id;
+  });
   return {
     seed: validSeed(seed),
     score: 0,
@@ -217,13 +286,22 @@ export function createRunProgression({ seed = 0 } = {}) {
     pendingLevels: 0,
     selectionSequence: 0,
     ranks: Object.fromEntries(Object.keys(RUN_UPGRADE_CATALOG).map((id) => [id, 0])),
+    ownedWeaponIds: new Set(normalizedWeaponIds),
     recordedEnemyIds: new Set(),
     lastEvent: null,
   };
 }
 
+export function unlockRunProgressionWeapon(state, weaponId) {
+  if (!state || !(state.ownedWeaponIds instanceof Set)) throw new TypeError('run progression state is required');
+  if (typeof weaponId !== 'string' || !weaponId || weaponId.length > 64) throw new TypeError('weaponId must be a bounded string');
+  const alreadyOwned = state.ownedWeaponIds.has(weaponId);
+  state.ownedWeaponIds.add(weaponId);
+  return freezeDeep({ weaponId, alreadyOwned, eligibleUpgradeIds: getEligibleRunUpgradeIds(state) });
+}
+
 export function getRunProgressionSnapshot(state) {
-  if (!state || !(state.recordedEnemyIds instanceof Set)) throw new TypeError('run progression state is required');
+  if (!state || !(state.recordedEnemyIds instanceof Set) || !(state.ownedWeaponIds instanceof Set)) throw new TypeError('run progression state is required');
   const currentFloor = state.level === 1 ? 0 : nextLevelThreshold(state.level - 1);
   const nextThreshold = nextLevelThreshold(state.level);
   return freezeDeep({
@@ -236,6 +314,7 @@ export function getRunProgressionSnapshot(state) {
     pendingLevels: state.pendingLevels,
     pendingChoices: resolveChoices(state),
     ranks: { ...state.ranks },
+    ownedWeaponIds: [...state.ownedWeaponIds].sort((left, right) => left < right ? -1 : left > right ? 1 : 0),
     effects: resolveEffects(state),
     recordedDefeats: state.recordedEnemyIds.size,
     lastEvent: state.lastEvent ? { ...state.lastEvent } : null,

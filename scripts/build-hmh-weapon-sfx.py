@@ -219,6 +219,36 @@ CUES = {
             {'kind': 'noise', 'gain': 0.78, 'start': 0.38, 'length': 0.34, 'attack': 0.002, 'decay': 0.72, 'curve': 3.0},
         ],
     },
+    'hmh-fire-lightning-ledger': {
+        'seed': 0x11E6E220, 'durationMs': 130, 'lowpassHz': 7_600, 'drive': 1.55, 'peak': 0.58,
+        'layers': [
+            {'kind': 'square', 'gain': 0.36, 'freq': 760, 'sweep': 2.8, 'length': 0.72, 'attack': 0.002, 'decay': 0.82, 'curve': 2.0},
+            {'kind': 'tone', 'gain': 0.48, 'freq': 2_200, 'sweep': 0.42, 'length': 0.54, 'attack': 0.001, 'decay': 0.72, 'curve': 2.7},
+            {'kind': 'noise', 'gain': 0.42, 'start': 0.08, 'length': 0.66, 'attack': 0.002, 'decay': 0.78, 'curve': 3.0},
+        ],
+    },
+    'hmh-lightning-interrupt': {
+        'seed': 0x11E6E221, 'durationMs': 180, 'lowpassHz': 5_800, 'drive': 1.35, 'peak': 0.52,
+        'layers': [
+            {'kind': 'square', 'gain': 0.34, 'freq': 980, 'sweep': 0.22, 'attack': 0.001, 'decay': 0.62, 'curve': 2.4},
+            {'kind': 'noise', 'gain': 0.38, 'attack': 0.001, 'decay': 0.45, 'curve': 3.2},
+        ],
+    },
+    'hmh-lightning-overheat': {
+        'seed': 0x11E6E222, 'durationMs': 480, 'lowpassHz': 4_800, 'drive': 1.65, 'peak': 0.66,
+        'layers': [
+            {'kind': 'square', 'gain': 0.46, 'freq': 1_520, 'sweep': 0.14, 'attack': 0.002, 'decay': 0.78, 'curve': 1.8},
+            {'kind': 'tone', 'gain': 0.52, 'freq': 380, 'sweep': 0.28, 'start': 0.20, 'length': 0.80, 'attack': 0.01, 'decay': 0.90, 'curve': 1.5},
+            {'kind': 'noise', 'gain': 0.44, 'start': 0.12, 'length': 0.70, 'attack': 0.002, 'decay': 0.72, 'curve': 2.1},
+        ],
+    },
+    'hmh-lightning-empty': {
+        'seed': 0x11E6E223, 'durationMs': 210, 'lowpassHz': 6_400, 'drive': 1.3, 'peak': 0.50,
+        'layers': [
+            {'kind': 'tone', 'gain': 0.46, 'freq': 1_180, 'sweep': 0.30, 'attack': 0.001, 'decay': 0.55, 'curve': 3.0},
+            {'kind': 'noise', 'gain': 0.28, 'start': 0.34, 'length': 0.42, 'attack': 0.003, 'decay': 0.80, 'curve': 3.6},
+        ],
+    },
     'hmh-hash-rail-charge': {
         'seed': 0xC4A26311, 'durationMs': 920, 'lowpassHz': 6_800, 'drive': 1.25, 'peak': 0.46,
         'layers': [

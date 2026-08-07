@@ -92,8 +92,8 @@ test('authored world dressing and gameplay POIs are deterministic and bounded', 
   const pointsOfInterest = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
   assert.equal(pointsOfInterest.length, 10);
   assert.deepEqual(new Set(pointsOfInterest.map((placement) => placement.assetId)), new Set([
-    ...AUTHORED_PROP_ASSETS.weapons.filter((assetId) => assetId !== 'hash-rail'),
-    ...AUTHORED_PROP_ASSETS.pickups,
+    ...AUTHORED_PROP_ASSETS.weapons.filter((assetId) => !['hash-rail', 'lightning-ledger'].includes(assetId)),
+    ...AUTHORED_PROP_ASSETS.pickups.filter((assetId) => assetId !== 'lightning-ledger-cache'),
   ]));
   assert.deepEqual(pointsOfInterest.map(({ pointOfInterestId, hook, x, y }) => ({ pointOfInterestId, hook, x, y })), LEVEL_ONE_WORLD.pointsOfInterest.map((point) => ({ pointOfInterestId: point.id, hook: point.hook, x: point.anchor.x, y: point.anchor.y })));
   assert.ok(pointsOfInterest.every((placement) => placement.category === 'point-of-interest' && placement.runtimeAuthority === 'projection-only'));
@@ -208,7 +208,7 @@ test('runtime wires reduced motion and animated landmark telemetry into the rend
   assert.match(visual, /reducedMotionEvidence/);
 });
 
-test('held weapon display can select all four authored weapons', async () => {
+test('held weapon display can select all six authored weapons', async () => {
   const index = createAuthoredPropAtlasIndex(await loadMetadata());
   const display = createAuthoredHeldWeaponDisplay({ index, atlasTexture: fakeAtlasTexture, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle });
   for (const weaponId of AUTHORED_PROP_ASSETS.weapons) {

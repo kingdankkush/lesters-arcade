@@ -84,6 +84,17 @@
       "runtimeScale": 0.68
     },
     {
+      "assetId": "lightning-ledger",
+      "category": "weapon",
+      "shape": "arc-rifle",
+      "palette": {
+        "primary": "#74e9f2",
+        "secondary": "#162b3d",
+        "accent": "#d8ffff"
+      },
+      "runtimeScale": 0.64
+    },
+    {
       "assetId": "bonus-life",
       "category": "pickup",
       "shape": "life-token",
@@ -104,6 +115,17 @@
         "accent": "#49ddff"
       },
       "runtimeScale": 0.86
+    },
+    {
+      "assetId": "lightning-ledger-cache",
+      "category": "pickup",
+      "shape": "ledger-cache",
+      "palette": {
+        "primary": "#35cfe0",
+        "secondary": "#173349",
+        "accent": "#e5ffff"
+      },
+      "runtimeScale": 0.9
     },
     {
       "assetId": "time-dilation",

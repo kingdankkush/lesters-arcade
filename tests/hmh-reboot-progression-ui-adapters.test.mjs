@@ -41,17 +41,16 @@ test('run progression is deterministic, bounded, and exposes two concrete upgrad
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
-test('skill tree has nine core upgrades plus repeatable mastery picks and applies only offered choices', () => {
+test('skill tree has thirteen core upgrades plus repeatable mastery picks and applies only offered choices', () => {
   const core = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable !== true);
   const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
-  // Seven core: the mobility branch gained a movement-speed pick, which was
-  // the only branch with a single upgrade capped at two ranks.
-  // Nine core after S3 added the critical-strike branch (Precision Ledger,
-  // Hard Fork Rounds) to the power line.
-  assert.equal(core.length, 9);
+  // Nine shared core upgrades plus three Lightning Ledger branches and their
+  // prerequisite-gated single-rank capstone.
+  assert.equal(core.length, 13);
   assert.equal(repeatable.length, 3);
-  assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set(['power', 'survival', 'mobility', 'utility']));
-  assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => upgrade.title && upgrade.mechanicalLabel && upgrade.maxRank >= 2));
+  assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set(['power', 'survival', 'mobility', 'utility', 'lightning-ledger', 'lightning-ledger-capstone']));
+  assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => upgrade.title && upgrade.mechanicalLabel && upgrade.maxRank >= 1));
+  assert.ok(core.filter((upgrade) => upgrade.id !== 'proof-of-network').every((upgrade) => upgrade.maxRank >= 2));
   // Mastery ranks must stay individually weaker than the core ranks they echo.
   assert.ok(RUN_UPGRADE_CATALOG['compound-interest'].amount < RUN_UPGRADE_CATALOG['proof-of-work'].amount);
   assert.ok(RUN_UPGRADE_CATALOG['hardened-wallet'].amount < RUN_UPGRADE_CATALOG['diamond-hands'].amount);

@@ -1,4 +1,11 @@
 import { freezeDeep } from './value-guards.mjs';
+import {
+  LIGHTNING_LEDGER_CONFIG,
+  createLightningLedgerState,
+  refillLightningLedgerCells,
+  resolveLightningLedgerUpgradePolicy,
+  stepLightningLedger,
+} from './lightning-ledger.mjs';
 const TICKS_PER_SECOND = 60;
 const UINT32_MAX = 0xffff_ffff;
 const EPSILON = 1e-12;
@@ -136,6 +143,24 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     pickupReserveAmmo: 15,
     policy: { type: 'pierce', maxTargets: 2 },
   },
+  'lightning-ledger': {
+    id: 'lightning-ledger',
+    title: 'The Lightning Ledger',
+    displayName: 'Lightning Ledger',
+    kind: 'channel',
+    damage: 5,
+    fireRatePerSecond: 10,
+    reloadSeconds: 2.4,
+    clipSize: 6,
+    projectileSpeed: 0,
+    range: 900,
+    projectileRadius: 0,
+    spreadRadians: 0,
+    pelletCount: 1,
+    recoil: 5,
+    pickupReserveAmmo: 12,
+    policy: STOP_POLICY,
+  },
   'launcher-rig': {
     id: 'launcher-rig',
     compatibilityId: 'launcher-rig',
@@ -209,6 +234,18 @@ export const pistolProgressionByWeapon = (ranks = {}) => ({
   } },
 });
 
+export const progressionByWeapon = (ranks = {}) => ({
+  ...pistolProgressionByWeapon(ranks),
+  'lightning-ledger': {
+    branches: {
+      conductivity: ranks['ledger-conductivity'] ?? 0,
+      voltage: ranks['ledger-voltage'] ?? 0,
+      reconciliation: ranks['ledger-reconciliation'] ?? 0,
+    },
+    capstoneId: (ranks['proof-of-network'] ?? 0) > 0 ? 'proof-of-network' : null,
+  },
+});
+
 // Tier-three capstones. Before this, five of these tags were inert: a player
 // spent three tiers and received only the numeric bonus, with the named
 // capability doing nothing at all.
@@ -244,9 +281,40 @@ function evolutionFamilyForWeapon(weaponId) {
   return weaponId === 'launcher-rig' ? 'crypto-bombs' : weaponId;
 }
 
-export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = null } = {}) {
+export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = null, capstoneId = null } = {}) {
   const definition = HMH_WEAPON_DEFINITIONS[weaponId];
   if (!definition) throw new TypeError(`unknown weapon ${String(weaponId)}`);
+  if (weaponId === 'lightning-ledger') {
+    if (evolutionId !== null) throw new TypeError('Lightning Ledger does not use projectile evolutions');
+    const channelPolicy = resolveLightningLedgerUpgradePolicy({ branches, capstoneId });
+    const damage = Number((definition.damage * channelPolicy.contactDamagePermille / 1000).toFixed(6));
+    return freezeDeep({
+      weaponId,
+      damage,
+      damageFlatBonus: damage - definition.damage,
+      fireRateMultiplier: 1,
+      reloadMultiplier: channelPolicy.reloadMultiplier,
+      cadenceTicks: LIGHTNING_LEDGER_CONFIG.pulseIntervalTicks,
+      reloadTicks: Math.max(1, Math.ceil(definition.reloadSeconds * TICKS_PER_SECOND / channelPolicy.reloadMultiplier)),
+      clipSize: definition.clipSize,
+      reserveAmmoGrant: channelPolicy.reserveAmmoGrant,
+      specials: [],
+      pelletCount: definition.pelletCount,
+      spreadRadians: definition.spreadRadians,
+      projectileSpeed: definition.projectileSpeed,
+      range: definition.range,
+      burstCount: 1,
+      burstIntervalTicks: 0,
+      projectileTag: null,
+      projectilePolicy: definition.policy,
+      shock: null,
+      heatPerShot: 0,
+      maxHeat: 0,
+      heatRecoveryPerTick: 0,
+      heatResumeThreshold: 0,
+      channelPolicy,
+    });
+  }
   const tree = UPGRADE_TREES[weaponId];
   let fireRateMultiplier = 1;
   let damageFlatBonus = 0;
@@ -352,6 +420,7 @@ function createPerWeaponState(id, { owned = false } = {}) {
     burstRemaining: 0,
     chargeStartedTick: null,
     chargeReadyAnnounced: false,
+    channelState: definition.kind === 'channel' ? createLightningLedgerState({ cellsRemaining: progression.clipSize }) : null,
   };
 }
 
@@ -398,11 +467,17 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
   const weapon = getActiveWeaponState(state);
   const definition = HMH_WEAPON_DEFINITIONS[weapon.id];
   const progression = applyWeaponProgression(weapon.id, progressionByWeapon?.[weapon.id]);
+  const channel = weapon.channelState;
   let mode = 'ready';
   let ticksRemaining = 0;
   if (weapon.reloadCompleteTick !== null) {
     mode = 'reloading';
     ticksRemaining = Math.max(0, weapon.reloadCompleteTick - currentTick);
+  } else if (channel?.active) {
+    mode = 'channeling';
+  } else if (channel && currentTick < channel.cooldownUntilTick) {
+    mode = 'cooldown';
+    ticksRemaining = channel.cooldownUntilTick - currentTick;
   } else if (weapon.overheated) {
     mode = 'overheated';
   } else if (currentTick < state.switchReadyTick) {
@@ -412,10 +487,20 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
     mode = 'empty';
   }
   const secondsRemaining = Number((ticksRemaining / TICKS_PER_SECOND).toFixed(1));
-  const ammoLabel = `${definition.displayName.toUpperCase()} ${weapon.ammoInClip}/${progression.clipSize}`;
+  const channelCells = channel
+    ? ` ${'▮'.repeat(weapon.ammoInClip)}${'▯'.repeat(Math.max(0, progression.clipSize - weapon.ammoInClip))}`
+    : '';
+  const ammoLabel = `${definition.displayName.toUpperCase()} ${weapon.ammoInClip}/${progression.clipSize}${channelCells}`;
   let statusLabel = '';
   let accessibleState = '';
-  if (mode === 'reloading') {
+  if (mode === 'channeling') {
+    const ramp = (channel.maxRampPermille / 1000).toFixed(1);
+    statusLabel = `CHANNEL ${ramp}X`;
+    accessibleState = `channeling at ${ramp} times damage`;
+  } else if (mode === 'cooldown') {
+    statusLabel = `COOLDOWN ${secondsRemaining.toFixed(1)}S`;
+    accessibleState = `cooldown, ${secondsRemaining.toFixed(1)} seconds remaining`;
+  } else if (mode === 'reloading') {
     statusLabel = `RELOAD ${secondsRemaining.toFixed(1)}S`;
     accessibleState = `reloading, ${secondsRemaining.toFixed(1)} seconds remaining`;
   } else if (mode === 'overheated') {
@@ -445,7 +530,7 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
     ticksRemaining,
     secondsRemaining,
     hudLabel: statusLabel ? `${ammoLabel} // ${statusLabel}` : ammoLabel,
-    accessibleLabel: `${definition.displayName}, ${weapon.ammoInClip} of ${progression.clipSize} rounds, ${accessibleState}`,
+    accessibleLabel: `${definition.displayName}, ${weapon.ammoInClip} of ${progression.clipSize} ${channel ? 'cells' : 'rounds'}, ${accessibleState}`,
   });
 }
 
@@ -460,11 +545,15 @@ export function selectWeapon(state, weaponId, { tick } = {}) {
   if (!state.weapons?.[weaponId]) throw new TypeError(`unknown weapon ${String(weaponId)}`);
   if (!state.weapons[weaponId].owned) throw new TypeError(`weapon ${String(weaponId)} is unowned`);
   const previousWeaponId = state.activeWeaponId;
-  state.weapons[previousWeaponId].chargeStartedTick = null;
-  state.weapons[previousWeaponId].chargeReadyAnnounced = false;
+  const previousWeapon = state.weapons[previousWeaponId];
+  const interrupted = previousWeapon.channelState?.active
+    ? stepLightningLedger(previousWeapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
+    : null;
+  previousWeapon.chargeStartedTick = null;
+  previousWeapon.chargeReadyAnnounced = false;
   state.activeWeaponId = weaponId;
   state.switchReadyTick = tick + state.switchTicks;
-  return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick });
+  return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick, interrupted });
 }
 
 export function grantWeaponPickup(state, { tick, weaponId, select = false, progressionByWeapon = {} } = {}) {
@@ -475,13 +564,14 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   if (!weapon) throw new TypeError(`unknown weapon ${id}`);
   const definition = HMH_WEAPON_DEFINITIONS[id];
   const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
-  const authored = definition.pickupReserveAmmo;
+  const authored = progression.reserveAmmoGrant ?? definition.pickupReserveAmmo;
   const alreadyOwned = weapon.owned;
   weapon.owned = true;
   // The pickup includes a loaded weapon plus an authored reserve. Repeat
   // pickups add reserve, bounded at twice the authored grant so hoarding
   // cannot trivialize the finite-ammo economy.
   weapon.ammoInClip = progression.clipSize;
+  if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
   weapon.reloadStartedTick = null;
   weapon.reloadCompleteTick = null;
   if (authored !== null) {
@@ -517,11 +607,12 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     // A refill services what the player carries; it never grants ownership.
     if (!weapon.owned) continue;
     const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
-    const authored = HMH_WEAPON_DEFINITIONS[id].pickupReserveAmmo;
+    const authored = progression.reserveAmmoGrant ?? HMH_WEAPON_DEFINITIONS[id].pickupReserveAmmo;
     if (authored !== null) {
       weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
     }
     weapon.ammoInClip = progression.clipSize;
+    if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;
     weapon.heat = 0;
@@ -551,6 +642,7 @@ function completeReloads(state, tick, progressionByWeapon, events) {
       weapon.ammoInClip += loaded;
       weapon.reserveAmmo -= loaded;
     }
+    if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, weapon.ammoInClip);
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;
     events.push(freezeDeep({ type: 'weapon:reload-complete', tick, weaponId: id, ammoInClip: weapon.ammoInClip, reserveAmmo: weapon.reserveAmmo }));
@@ -632,6 +724,10 @@ export function stepWeaponLoadout(state, {
   releaseCharged = false,
   direction,
   progressionByWeapon = {},
+  channelOrigin = { x: 0, y: 0 },
+  channelTargets = [],
+  channelLineOfSight = () => true,
+  channelStopReason = '',
 } = {}) {
   assertMonotonic(state, tick);
   const events = [];
@@ -657,6 +753,54 @@ export function stepWeaponLoadout(state, {
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
   if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
+  if (definition.kind === 'channel') {
+    const channelFrame = stepLightningLedger(weapon.channelState, {
+      tick,
+      fire,
+      validPrimary: channelTargets.length > 0,
+      origin: channelOrigin,
+      targets: channelTargets,
+      lineOfSight: channelLineOfSight,
+      stopReason: channelStopReason,
+      policy: progression.channelPolicy,
+    });
+    weapon.ammoInClip = channelFrame.cellsRemaining;
+    events.push(...channelFrame.events);
+    for (const pulse of channelFrame.events.filter((event) => event.type === 'ledger:pulse')) {
+      const targetById = new Map(channelTargets.map((target) => [String(target.id), target]));
+      let from = channelOrigin;
+      const hits = [];
+      for (const [jumpIndex, targetId] of pulse.chainIds.entries()) {
+        const target = targetById.get(String(targetId));
+        if (!target) continue;
+        const jumpDamagePermille = pulse.jumpDamagePermille[jumpIndex] ?? 1000;
+        const damage = Number((progression.damage * pulse.rampPermille * pulse.proofDamagePermille * jumpDamagePermille / 1_000_000_000).toFixed(6));
+        hits.push(freezeDeep({
+          id: `lightning-ledger:${String(pulse.pulse).padStart(8, '0')}:${String(targetId)}`,
+          targetId: String(targetId),
+          from: { x: from.x, y: from.y },
+          point: { x: target.x, y: target.y, z: target.z ?? target.groundZ ?? 0 },
+          damage,
+          jumpIndex,
+          damagePermille: jumpDamagePermille,
+          knockbackMultiplier: jumpIndex === pulse.chainIds.length - 1 ? pulse.lastArcKnockbackMultiplier : 1,
+        }));
+        from = target;
+      }
+      events.push(freezeDeep({
+        type: 'weapon:channel-pulse',
+        tick,
+        attackId: `lightning-ledger:${String(pulse.pulse).padStart(8, '0')}`,
+        weaponId: definition.id,
+        rampPermille: pulse.rampPermille,
+        proofDamagePermille: pulse.proofDamagePermille,
+        refundedCell: pulse.refundedCell,
+        hits,
+      }));
+    }
+    if (weapon.ammoInClip <= 0) startReload(weapon, progression, tick, events);
+    return freezeDeep({ tick, channel: channelFrame, events });
+  }
   if (weapon.ammoInClip <= 0) {
     startReload(weapon, progression, tick, events);
     return freezeDeep({ tick, events });

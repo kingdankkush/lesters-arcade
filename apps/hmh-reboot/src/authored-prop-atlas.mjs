@@ -5,8 +5,8 @@ export const AUTHORED_PROP_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-au
 export const AUTHORED_PROP_ITEM_ROOT = '/assets/generated/hmh-reboot-authored-props/items';
 
 export const AUTHORED_PROP_ASSETS = Object.freeze({
-  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig hash-rail'.split(' ')),
-  pickups: Object.freeze('bonus-life hash-rail-core time-dilation berserk-candle nuke-liquidation'.split(' ')),
+  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig hash-rail lightning-ledger'.split(' ')),
+  pickups: Object.freeze('bonus-life hash-rail-core lightning-ledger-cache time-dilation berserk-candle nuke-liquidation'.split(' ')),
   powerUps: Object.freeze('proof-of-work diamond-hands gas-optimization cold-storage block-reward validator-training compound-interest hardened-wallet hot-wallet layer-two precision-ledger hard-fork-rounds'.split(' ')),
 
 });
@@ -422,7 +422,7 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
   effects.zIndex = -1_000_000;
   container.addChild(effects);
   const textureById = new Map();
-  const entries = placements.map((placement) => {
+  const createEntry = (placement) => {
     const frame = index.frameFor(placement.assetId);
     if (!frame) throw new RangeError(`missing authored prop frame ${placement.assetId}`);
     let texture = textureById.get(frame.assetId);
@@ -436,7 +436,22 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
     sprite.productionAssetId = frame.assetId;
     container.addChild(sprite);
     return { placement, frame, sprite };
-  });
+  };
+  const entries = placements.map(createEntry);
+  const addPlacement = (placement) => {
+    if (!placement || typeof placement.id !== 'string' || entries.some((entry) => entry.placement.id === placement.id)) throw new TypeError('unique authored prop placement is required');
+    const entry = createEntry(freezeDeep({ ...placement }));
+    entries.push(entry);
+    return Object.freeze({ placementId: placement.id, assetId: placement.assetId });
+  };
+  const removePlacement = (placementId) => {
+    const entryIndex = entries.findIndex((entry) => entry.placement.id === placementId);
+    if (entryIndex < 0) return false;
+    const [entry] = entries.splice(entryIndex, 1);
+    container.removeChild(entry.sprite);
+    entry.sprite.destroy?.();
+    return true;
+  };
 
   const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160, hiddenPlacementIds = null, reduceMotion = false } = {}) => {
     effects.clear();
@@ -504,5 +519,12 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
       animatedSignalOnscreenCount,
     });
   };
-  return Object.freeze({ container, effects, entries: Object.freeze(entries), render });
+  return Object.freeze({
+    container,
+    effects,
+    get entries() { return Object.freeze([...entries]); },
+    addPlacement,
+    removePlacement,
+    render,
+  });
 }

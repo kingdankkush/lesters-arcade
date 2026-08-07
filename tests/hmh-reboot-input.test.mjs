@@ -9,7 +9,7 @@ import {
   computeTouchControlLayout,
   createBrowserInputController,
 } from '../apps/hmh-reboot/src/input.mjs';
-import { computeCombatStatusLayout, computeHudMinimapLayout } from '../apps/hmh-reboot/src/hud-layout.mjs';
+import { compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from '../apps/hmh-reboot/src/hud-layout.mjs';
 import { FIXED_STEP_MS, DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
 import { createCameraState } from '../apps/hmh-reboot/src/world-space.mjs';
 
@@ -280,7 +280,7 @@ test('landscape touch utility buttons stay left of the authored minimap exclusio
   }
 });
 
-test('touch landscape combat status clears top chrome while desktop and portrait retain their layouts', () => {
+test('touch combat status clears top chrome and portrait help while desktop retains its layout', () => {
   const phoneLandscape = computeCombatStatusLayout({ width: 844, height: 390, touchUiEnabled: true });
   const tabletLandscape = computeCombatStatusLayout({ width: 1_024, height: 768, touchUiEnabled: true });
   const phonePortrait = computeCombatStatusLayout({ width: 390, height: 844, touchUiEnabled: true });
@@ -289,8 +289,13 @@ test('touch landscape combat status clears top chrome while desktop and portrait
     [phoneLandscape.compact, phoneLandscape.y, tabletLandscape.compact, tabletLandscape.y],
     [true, 76, true, 240],
   );
-  assert.deepEqual([phonePortrait.multiline, phonePortrait.y], [true, 202]);
+  assert.deepEqual([phonePortrait.multiline, phonePortrait.y], [true, 272]);
   assert.deepEqual([desktop.compact, desktop.multiline, desktop.y, desktop.fontSize], [false, false, 82, 18]);
+});
+
+test('portrait Lightning Ledger label is bounded without changing other weapon labels', () => {
+  assert.equal(compactWeaponHudLabel({ weaponId: 'lightning-ledger', hudLabel: 'LIGHTNING LEDGER 6/6 ■■■■■■ // CHANNEL 1.1X' }), 'LEDGER 6/6 ■■■■■■ // CH 1.1X');
+  assert.equal(compactWeaponHudLabel({ weaponId: 'coin-blaster', hudLabel: 'COIN BLASTER 10/10' }), 'COIN BLASTER 10/10');
 });
 
 class FakeEventTarget {

@@ -79,6 +79,13 @@ export function computeHudMinimapLayout({ width, height, worldWidth, worldHeight
   });
 }
 
+export function compactWeaponHudLabel({ weaponId, hudLabel } = {}) {
+  if (typeof weaponId !== 'string' || typeof hudLabel !== 'string') throw new TypeError('weaponId and hudLabel are required');
+  return weaponId === 'lightning-ledger'
+    ? hudLabel.replace('LIGHTNING LEDGER', 'LEDGER').replace('CHANNEL', 'CH')
+    : hudLabel;
+}
+
 export function computeCombatStatusLayout({ width, height, touchUiEnabled = false } = {}) {
   const viewportWidth = finite(width, 'viewport width');
   const viewportHeight = finite(height, 'viewport height');
@@ -88,7 +95,7 @@ export function computeCombatStatusLayout({ width, height, touchUiEnabled = fals
   const compactLandscape = touchLandscape && isCompactLandscape({ width: viewportWidth, height: viewportHeight });
   return freezeDeep({
     x: viewportWidth * 0.5,
-    y: compactLandscape ? 76 : touchLandscape ? 240 : narrow ? 202 : 82,
+    y: compactLandscape ? 76 : touchLandscape ? 240 : narrow ? 272 : 82,
     fontSize: narrow || touchLandscape ? 12 : 18,
     compact: touchLandscape,
     multiline: narrow && !touchLandscape,

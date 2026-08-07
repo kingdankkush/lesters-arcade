@@ -13,6 +13,7 @@
 //   scatter-shotgun broadband, long tail   -- a heavy boom plus shell rattle
 //   auto-miner      buzzy, mechanical      -- fast industrial chatter
 //   launcher-rig    low, swept, hollow     -- a thump with a departing whoosh
+//   lightning-ledger bright, stepped arc   -- a compact electrical chain snap
 
 export const HMH_WEAPON_SFX = Object.freeze({
   'hmh-fire-coin-blaster': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-coin-blaster.wav', gain: 0.10 }),
@@ -20,6 +21,10 @@ export const HMH_WEAPON_SFX = Object.freeze({
   'hmh-fire-auto-miner': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-auto-miner.wav', gain: 0.08 }),
   'hmh-fire-launcher-rig': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-launcher-rig.wav', gain: 0.17 }),
   'hmh-fire-hash-rail': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-hash-rail.wav', gain: 0.14 }),
+  'hmh-fire-lightning-ledger': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-lightning-ledger.wav', gain: 0.07 }),
+  'hmh-lightning-interrupt': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-interrupt.wav', gain: 0.07 }),
+  'hmh-lightning-overheat': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-overheat.wav', gain: 0.085 }),
+  'hmh-lightning-empty': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-empty.wav', gain: 0.075 }),
   'hmh-hash-rail-charge': Object.freeze({ src: '../assets/audio/sfx/hmh-hash-rail-charge.wav', gain: 0.08 }),
   'hmh-weapon-reload': Object.freeze({ src: '../assets/audio/sfx/hmh-weapon-reload.wav', gain: 0.11 }),
   'hmh-weapon-empty': Object.freeze({ src: '../assets/audio/sfx/hmh-weapon-empty.wav', gain: 0.09 }),
@@ -31,6 +36,7 @@ const FIRE_CUE_BY_WEAPON = Object.freeze({
   'auto-miner': 'hmh-fire-auto-miner',
   'launcher-rig': 'hmh-fire-launcher-rig',
   'hash-rail': 'hmh-fire-hash-rail',
+  'lightning-ledger': 'hmh-fire-lightning-ledger',
 });
 
 // Falls back rather than throwing: this is called from inside the frame loop,

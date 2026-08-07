@@ -17,7 +17,13 @@ const digest = (value) => createHash('sha256').update(JSON.stringify(value)).dig
 
 test('all ten authored POIs map to deterministic collectible effects', () => {
   assert.equal(placements.length, 10);
-  assert.deepEqual(Object.keys(COLLECTIBLE_EFFECTS).sort(), [...new Set(placements.map((placement) => placement.assetId))].sort());
+  assert.ok(placements.every((placement) => COLLECTIBLE_EFFECTS[placement.assetId]));
+  assert.deepEqual(COLLECTIBLE_EFFECTS['lightning-ledger-cache'], {
+    effectId: 'lightning-ledger-cache',
+    kind: 'weapon-cache',
+    weaponId: 'lightning-ledger',
+    xpGain: 220,
+  });
   const state = createCollectibleState({ placements });
   const snapshot = getCollectibleSnapshot(state, { tick: 0 });
   assert.equal(snapshot.collectedCount, 0);
@@ -58,6 +64,27 @@ function runSchedule(renderHz) {
   }
   return { events, snapshot: getCollectibleSnapshot(state, { tick: simulation.tick }) };
 }
+
+test('scheduled rare collectible is unavailable before its fixed tick and collectible exactly once after it', () => {
+  const rare = {
+    id: 'rare-ledger:0000002a',
+    pointOfInterestId: 'hashwood-shrine',
+    assetId: 'lightning-ledger-cache',
+    districtId: 'hashwood',
+    x: 6880,
+    y: 3200,
+    availableTick: 3600,
+  };
+  const state = createCollectibleState({ placements: [...placements, rare], collectionRadius: 80 });
+  const before = stepCollectibles(state, { tick: 3599, player: rare });
+  assert.equal(before.events.length, 0);
+  assert.equal(before.snapshot.remainingCount, 11);
+  const collected = stepCollectibles(state, { tick: 3600, player: rare });
+  assert.equal(collected.events.length, 1);
+  assert.equal(collected.events[0].weaponId, 'lightning-ledger');
+  assert.equal(collected.events[0].availableTick, 3600);
+  assert.equal(stepCollectibles(state, { tick: 3601, player: rare }).events.length, 0);
+});
 
 test('collectible events and expiries are identical at 60, 30, and 20 render schedules', () => {
   const results = [60, 30, 20].map(runSchedule);

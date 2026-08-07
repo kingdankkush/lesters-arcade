@@ -96,7 +96,7 @@ function exerciseAccumulator() {
 
 test('canonical run summary records real bounded authority values and finalizes once', () => {
   const summary = exerciseAccumulator();
-  assert.equal(summary.schemaVersion, 2);
+  assert.equal(summary.schemaVersion, 3);
   assert.deepEqual(summary.identity, {
     seed: 42,
     buildHash: 'site-106:hmh-wave-6a',

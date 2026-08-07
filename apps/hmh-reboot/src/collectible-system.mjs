@@ -17,13 +17,14 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
   'auto-miner': { effectId: 'auto-miner-cache', kind: 'weapon-cache', weaponId: 'auto-miner' },
   'launcher-rig': { effectId: 'launcher-rig-cache', kind: 'weapon-cache', weaponId: 'launcher-rig' },
   'hash-rail-core': { effectId: 'hash-rail-core', kind: 'weapon-cache', weaponId: 'hash-rail', xpGain: 160 },
+  'lightning-ledger-cache': { effectId: 'lightning-ledger-cache', kind: 'weapon-cache', weaponId: 'lightning-ledger', xpGain: 220 },
   'time-dilation': { effectId: 'time-dilation', kind: 'timed', durationTicks: 600, speedMultiplier: 1.2 },
   'berserk-candle': { effectId: 'berserk-candle', kind: 'timed', durationTicks: 600, damageMultiplier: 2 },
   'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999 },
 });
 
 export function createCollectibleState({ placements, collectionRadius = 80 } = {}) {
-  if (!Array.isArray(placements) || placements.length !== 10) throw new TypeError('ten authored collectible placements are required');
+  if (!Array.isArray(placements) || placements.length < 10 || placements.length > 11) throw new TypeError('ten authored placements and at most one scheduled rare placement are required');
   if (!Number.isFinite(collectionRadius) || collectionRadius <= 0) throw new TypeError('collectionRadius must be positive');
   const ids = new Set();
   const entries = placements.map((placement) => {
@@ -32,7 +33,9 @@ export function createCollectibleState({ placements, collectionRadius = 80 } = {
     finitePoint(placement, `collectible ${placement.id}`);
     const effect = COLLECTIBLE_EFFECTS[placement.assetId];
     if (!effect) throw new TypeError(`unsupported collectible asset ${String(placement.assetId)}`);
-    return Object.freeze({ placement, effect });
+    const availableTick = placement.availableTick ?? 0;
+    if (!Number.isInteger(availableTick) || availableTick < 0 || availableTick > 28_800) throw new TypeError('collectible availableTick must be within the first eight minutes');
+    return Object.freeze({ placement: Object.freeze({ ...placement, availableTick }), effect });
   }).sort((left, right) => left.placement.id.localeCompare(right.placement.id));
   return {
     entries: Object.freeze(entries),
@@ -81,6 +84,7 @@ export function stepCollectibles(state, { tick, player } = {}) {
   for (const entry of state.entries) {
     const placement = entry.placement;
     if (state.collectedIds.has(placement.id)) continue;
+    if (tick < placement.availableTick) continue;
     if (Math.hypot(player.x - placement.x, player.y - placement.y) > state.collectionRadius) continue;
     state.collectedIds.add(placement.id);
     const effect = entry.effect;
@@ -91,6 +95,7 @@ export function stepCollectibles(state, { tick, player } = {}) {
       placementId: placement.id,
       pointOfInterestId: placement.pointOfInterestId,
       assetId: placement.assetId,
+      availableTick: placement.availableTick,
       effectId: effect.effectId,
       kind: effect.kind,
       ...effect,

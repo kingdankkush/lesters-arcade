@@ -205,6 +205,18 @@ def build_asset(asset: dict) -> dict:
             add(torus(f'{asset_id}_Coil_{x}', (x, 0.0, 0.72), 0.15, 0.025, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
         add(cube(f'{asset_id}_Grip', (-0.18, 0.0, 0.39), (0.10, 0.12, 0.24), secondary, asset_id, rotation=(0.0, math.radians(-10), 0.0)))
         add(cube(f'{asset_id}_Sight', (0.02, -0.20, 0.86), (0.18, 0.045, 0.055), accent, asset_id))
+    elif shape == 'arc-rifle':
+        # Compact forked emitter with six exposed capacitor cells. The cyan
+        # ladder silhouette is intentionally shorter and taller than Hash Rail.
+        add(cube(f'{asset_id}_Stock', (-0.42, 0.0, 0.58), (0.22, 0.18, 0.18), secondary, asset_id, rotation=(0.0, math.radians(-14), 0.0)))
+        add(cube(f'{asset_id}_Receiver', (-0.08, 0.0, 0.70), (0.34, 0.22, 0.20), primary, asset_id))
+        for index, x in enumerate((-0.30, -0.18, -0.06, 0.06, 0.18, 0.30)):
+            add(cylinder(f'{asset_id}_Cell_{index}', (x, -0.24, 0.73), 0.045, 0.14, accent, asset_id, rotation=(math.radians(90), 0.0, 0.0), vertices=16))
+        for y in (-0.12, 0.12):
+            add(cube(f'{asset_id}_Fork_{y}', (0.48, y, 0.74), (0.38, 0.045, 0.045), secondary, asset_id, rotation=(0.0, 0.0, math.radians(3 if y > 0 else -3))))
+            add(sphere(f'{asset_id}_Emitter_{y}', (0.84, y, 0.77), (0.075, 0.075, 0.075), accent, asset_id))
+        add(torus(f'{asset_id}_ArcGate', (0.40, 0.0, 0.74), 0.19, 0.028, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(cube(f'{asset_id}_Grip', (-0.17, 0.0, 0.38), (0.10, 0.13, 0.25), secondary, asset_id, rotation=(0.0, math.radians(-10), 0.0)))
     elif shape == 'life-token':
         # A med kit with a bold cross on its lid. The previous sphere-and-halo
         # read as a featureless circle from above, which is the single most
@@ -222,6 +234,16 @@ def build_asset(asset: dict) -> dict:
         add(torus(f'{asset_id}_RingB', (0.0, 0.0, 0.62), 0.38, 0.045, secondary, asset_id, rotation=(0.0, math.radians(90), 0.0)))
         add(cube(f'{asset_id}_RailTop', (0.0, 0.0, 1.02), (0.18, 0.08, 0.045), primary, asset_id))
         add(cube(f'{asset_id}_RailBase', (0.0, 0.0, 0.22), (0.18, 0.08, 0.045), primary, asset_id))
+    elif shape == 'ledger-cache':
+        # A six-cell field case with a forked lightning terminal. It echoes the
+        # carried weapon without sharing Hash Rail's floating ring silhouette.
+        add(cube(f'{asset_id}_Case', (0.0, 0.0, 0.34), (0.48, 0.38, 0.28), secondary, asset_id, bevel=0.035))
+        add(cube(f'{asset_id}_Lid', (0.0, 0.0, 0.61), (0.50, 0.40, 0.08), primary, asset_id, bevel=0.025))
+        for index, x in enumerate((-0.30, -0.18, -0.06, 0.06, 0.18, 0.30)):
+            add(cylinder(f'{asset_id}_Cell_{index}', (x, -0.43, 0.46), 0.045, 0.16, accent, asset_id, rotation=(math.radians(90), 0.0, 0.0), vertices=16))
+        add(cube(f'{asset_id}_TerminalStem', (0.0, 0.0, 0.86), (0.055, 0.06, 0.23), accent, asset_id))
+        add(cube(f'{asset_id}_TerminalLeft', (-0.11, 0.0, 1.04), (0.14, 0.055, 0.045), accent, asset_id, rotation=(0.0, math.radians(-22), 0.0)))
+        add(cube(f'{asset_id}_TerminalRight', (0.11, 0.0, 1.04), (0.14, 0.055, 0.045), accent, asset_id, rotation=(0.0, math.radians(22), 0.0)))
     elif shape == 'litecoin-token':
         # Upright silver/blue token with a raised stylized Ł mark. Facing the
         # certified camera preserves the circular silhouette and symbol.

@@ -35,7 +35,7 @@ function weaponState(state, id = state.activeWeaponId) {
 
 test('weapon definitions preserve retained IDs and exact approved numeric values', () => {
   const legacyById = Object.fromEntries(LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.map((weapon) => [weapon.id, weapon]));
-  assert.deepEqual(Object.keys(HMH_WEAPON_DEFINITIONS).sort(), ['auto-miner', 'coin-blaster', 'hash-rail', 'launcher-rig', 'scatter-shotgun']);
+  assert.deepEqual(Object.keys(HMH_WEAPON_DEFINITIONS).sort(), ['auto-miner', 'coin-blaster', 'hash-rail', 'launcher-rig', 'lightning-ledger', 'scatter-shotgun']);
   for (const id of ['coin-blaster', 'scatter-shotgun', 'auto-miner']) {
     const actual = HMH_WEAPON_DEFINITIONS[id];
     const legacy = legacyById[id];
@@ -48,6 +48,10 @@ test('weapon definitions preserve retained IDs and exact approved numeric values
   assert.equal(HMH_WEAPON_DEFINITIONS['scatter-shotgun'].pelletCount, 8);
   assert.equal(HMH_WEAPON_DEFINITIONS['launcher-rig'].grenadeId, 'satoshi-frag');
   assert.equal(HMH_WEAPON_DEFINITIONS['launcher-rig'].compatibilityId, 'launcher-rig');
+  assert.deepEqual(
+    Object.fromEntries(['damage', 'fireRatePerSecond', 'reloadSeconds', 'clipSize', 'range'].map((key) => [key, HMH_WEAPON_DEFINITIONS['lightning-ledger'][key]])),
+    { damage: 5, fireRatePerSecond: 10, reloadSeconds: 2.4, clipSize: 6, range: 900 },
+  );
   assert.equal(Object.isFrozen(HMH_WEAPON_DEFINITIONS), true);
   assert.equal(Object.isFrozen(HMH_WEAPON_DEFINITIONS['coin-blaster']), true);
 });
