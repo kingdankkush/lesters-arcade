@@ -33,6 +33,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const portalDir = resolve(__dirname, 'apps/portal');
 const portalEntry = resolve(portalDir, 'main.js');
 const hmhRebootEntry = resolve(__dirname, 'apps/hmh-reboot/src/main.mjs');
+const hmhPixiVendor = resolve(__dirname, 'apps/hmh-reboot/src/pixi-vendor.mjs');
+const pixiModule = resolve(__dirname, 'node_modules/pixi.js/dist/pixi.mjs');
 const outdir = resolve(portalDir, 'dist');
 
 const wantMeta = process.argv.includes('--metafile');
@@ -56,10 +58,20 @@ async function run() {
     entryPoints: {
       main: portalEntry,
       'hmh-reboot/game': hmhRebootEntry,
+      'chunks/hmh-pixi': hmhPixiVendor,
     },
-    alias: {
-      'pixi.js': resolve(__dirname, 'node_modules/pixi.js/dist/pixi.mjs'),
-    },
+    plugins: [{
+      name: 'hmh-pixi-vendor',
+      setup(buildApi) {
+        buildApi.onResolve({ filter: /^pixi\.js$/ }, (args) => {
+          const importer = args.importer.replaceAll('\\', '/');
+          if (importer.includes('/apps/hmh-reboot/src/') && !importer.endsWith('/pixi-vendor.mjs')) {
+            return { path: '../chunks/hmh-pixi.js', external: true };
+          }
+          return { path: pixiModule };
+        });
+      },
+    }],
     bundle: true,
     splitting: true,        // preserve dynamic import() code-split chunks
     format: 'esm',          // app loads main.js as <script type="module">
@@ -79,8 +91,10 @@ async function run() {
 
   const outMain = resolve(outdir, 'main.js');
   const outChild = resolve(outdir, 'hmh-reboot/game.js');
+  const outChildVendor = resolve(outdir, 'chunks/hmh-pixi.js');
   const minSize = statSync(outMain).size;
   const childMinSize = statSync(outChild).size;
+  const childVendorSize = statSync(outChildVendor).size;
   const entryDeltaPct = 100 * (minSize / rawSize - 1);
   const childDeltaPct = 100 * (childMinSize / childRawSize - 1);
 
@@ -98,7 +112,9 @@ async function run() {
   console.log(`Source main.js:     ${human(rawSize)}`);
   console.log(`Bundled main.js:    ${human(minSize)}  (${entryDeltaPct >= 0 ? '+' : ''}${entryDeltaPct.toFixed(1)}% vs source entry; imports included)`);
   console.log(`HMH reboot source:  ${human(childRawSize)}`);
-  console.log(`HMH reboot bundle:  ${human(childMinSize)}  (${childDeltaPct >= 0 ? '+' : ''}${childDeltaPct.toFixed(1)}% vs child source; Pixi included/shared)`);
+  console.log(`HMH reboot entry:   ${human(childMinSize)}  (${childDeltaPct >= 0 ? '+' : ''}${childDeltaPct.toFixed(1)}% vs child source)`);
+  console.log(`HMH Pixi vendor:    ${human(childVendorSize)}  (stable preloaded module)`);
+  console.log(`HMH initial JS:     ${human(childMinSize + childVendorSize)}`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
   console.log(`Output dir:         apps/portal/dist/`);
 }
