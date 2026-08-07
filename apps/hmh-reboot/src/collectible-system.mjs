@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 function validTick(value) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError('tick must be a non-negative integer');
@@ -18,13 +19,14 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
   'launcher-rig': { effectId: 'launcher-rig-cache', kind: 'weapon-cache', weaponId: 'launcher-rig' },
   'hash-rail-core': { effectId: 'hash-rail-core', kind: 'weapon-cache', weaponId: 'hash-rail', xpGain: 160 },
   'lightning-ledger-cache': { effectId: 'lightning-ledger-cache', kind: 'weapon-cache', weaponId: 'lightning-ledger', xpGain: 220 },
+  'bear-market-burner-cache': { effectId: 'bear-market-burner-cache', kind: 'weapon-cache', weaponId: 'bear-market-burner', xpGain: 260 },
   'time-dilation': { effectId: 'time-dilation', kind: 'timed', durationTicks: 600, speedMultiplier: 1.2 },
   'berserk-candle': { effectId: 'berserk-candle', kind: 'timed', durationTicks: 600, damageMultiplier: 2 },
   'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999 },
 });
 
 export function createCollectibleState({ placements, collectionRadius = 80 } = {}) {
-  if (!Array.isArray(placements) || placements.length < 10 || placements.length > 11) throw new TypeError('ten authored placements and at most one scheduled rare placement are required');
+  if (!Array.isArray(placements) || placements.length < 10 || placements.length > 12) throw new TypeError('ten authored placements and at most two scheduled rare placements are required');
   if (!Number.isFinite(collectionRadius) || collectionRadius <= 0) throw new TypeError('collectionRadius must be positive');
   const ids = new Set();
   const entries = placements.map((placement) => {
@@ -34,9 +36,9 @@ export function createCollectibleState({ placements, collectionRadius = 80 } = {
     const effect = COLLECTIBLE_EFFECTS[placement.assetId];
     if (!effect) throw new TypeError(`unsupported collectible asset ${String(placement.assetId)}`);
     const availableTick = placement.availableTick ?? 0;
-    if (!Number.isInteger(availableTick) || availableTick < 0 || availableTick > 28_800) throw new TypeError('collectible availableTick must be within the first eight minutes');
+    if (!Number.isInteger(availableTick) || availableTick < 0 || availableTick > 32_400) throw new TypeError('collectible availableTick must be within the first nine minutes');
     return Object.freeze({ placement: Object.freeze({ ...placement, availableTick }), effect });
-  }).sort((left, right) => left.placement.id.localeCompare(right.placement.id));
+  }).sort((left, right) => lexical(left.placement.id, right.placement.id));
   return {
     entries: Object.freeze(entries),
     collectionRadius,
@@ -51,7 +53,7 @@ export function getCollectibleSnapshot(state, { tick } = {}) {
   validTick(tick);
   const activeEffects = [...state.activeEffects.values()]
     .filter((effect) => tick < effect.expiresTick)
-    .sort((left, right) => left.effectId.localeCompare(right.effectId))
+    .sort((left, right) => lexical(left.effectId, right.effectId))
     .map((effect) => freezeDeep({ ...effect }));
   return freezeDeep({
     tick,
@@ -70,7 +72,7 @@ export function stepCollectibles(state, { tick, player } = {}) {
   if (tick <= state.lastTick) throw new TypeError('collectible tick must be monotonic');
   state.lastTick = tick;
   const events = [];
-  for (const [effectId, active] of [...state.activeEffects.entries()].sort(([left], [right]) => left.localeCompare(right))) {
+  for (const [effectId, active] of [...state.activeEffects.entries()].sort(([left], [right]) => lexical(left, right))) {
     if (tick < active.expiresTick) continue;
     state.activeEffects.delete(effectId);
     events.push(freezeDeep({

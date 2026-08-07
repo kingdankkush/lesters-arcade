@@ -15,6 +15,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'launcher-rig',
     'hash-rail',
     'lightning-ledger',
+    'bear-market-burner',
     'litecoin-knife',
     'satoshi-frag',
     'nuke-liquidation',
@@ -28,6 +29,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'litecoin-token',
     'hash-rail-core',
     'lightning-ledger-cache',
+    'bear-market-burner-cache',
     'time-dilation',
     'berserk-candle',
     'nuke-liquidation',
@@ -97,9 +99,10 @@ const rows = (value, ids, idKey, fields, label) => {
 };
 
 export function validateRunSummaryPayload(payload) {
-  if (![1, 2, 3].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
+  if (![1, 2, 3, 4].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
   const payloadFields = ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'];
   if (payload.schemaVersion >= 3) payloadFields.push('lightningLedger');
+  if (payload.schemaVersion >= 4) payloadFields.push('bearMarketBurner');
   let error = keys(payload, payloadFields, 'game:run-summary payload');
   if (error) return error;
   const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
@@ -161,6 +164,17 @@ export function validateRunSummaryPayload(payload) {
       || payload.lightningLedger.fullChains > payload.lightningLedger.pulses
       || payload.lightningLedger.capstonePulses > payload.lightningLedger.pulses
       || payload.lightningLedger.secondsHeld !== Number((payload.lightningLedger.heldTicks / 60).toFixed(3))) return 'game:run-summary lightningLedger totals are inconsistent';
+  }
+
+  if (payload.schemaVersion >= 4) {
+    const burnerFields = ['pulses', 'contacts', 'fuelSpent', 'burnTicks', 'scorchZonesCreated', 'maxActiveBurns', 'totalSelloffPulses', 'emergencyRefills'];
+    error = keys(payload.bearMarketBurner, burnerFields, 'game:run-summary bearMarketBurner');
+    if (error) return error;
+    for (const field of burnerFields) if (!integer(payload.bearMarketBurner[field])) return `game:run-summary bearMarketBurner.${field} is invalid`;
+    if (payload.bearMarketBurner.maxActiveBurns > 64
+      || payload.bearMarketBurner.totalSelloffPulses > payload.bearMarketBurner.pulses
+      || payload.bearMarketBurner.contacts > payload.bearMarketBurner.pulses * 12
+      || payload.bearMarketBurner.emergencyRefills > 1) return 'game:run-summary bearMarketBurner totals are inconsistent';
   }
 
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');

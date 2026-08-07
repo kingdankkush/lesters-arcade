@@ -22,6 +22,7 @@ export const HMH_WEAPON_SFX = Object.freeze({
   'hmh-fire-launcher-rig': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-launcher-rig.wav', gain: 0.17 }),
   'hmh-fire-hash-rail': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-hash-rail.wav', gain: 0.14 }),
   'hmh-fire-lightning-ledger': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-lightning-ledger.wav', gain: 0.07 }),
+  'hmh-fire-bear-market-burner': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-bear-market-burner.wav', gain: 0.065 }),
   'hmh-lightning-interrupt': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-interrupt.wav', gain: 0.07 }),
   'hmh-lightning-overheat': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-overheat.wav', gain: 0.085 }),
   'hmh-lightning-empty': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-empty.wav', gain: 0.075 }),
@@ -37,6 +38,7 @@ const FIRE_CUE_BY_WEAPON = Object.freeze({
   'launcher-rig': 'hmh-fire-launcher-rig',
   'hash-rail': 'hmh-fire-hash-rail',
   'lightning-ledger': 'hmh-fire-lightning-ledger',
+  'bear-market-burner': 'hmh-fire-bear-market-burner',
 });
 
 // Falls back rather than throwing: this is called from inside the frame loop,

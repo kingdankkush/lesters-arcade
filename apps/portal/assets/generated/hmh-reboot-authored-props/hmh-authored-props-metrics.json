@@ -4,8 +4,8 @@
   "pipelineId": "hmh-reboot-authored-props-v1",
   "blenderVersion": "5.1.2",
   "runtimeAuthority": "projection-only",
-  "assetCount": 103,
-  "uniqueSourceFrames": 103,
+  "assetCount": 105,
+  "uniqueSourceFrames": 105,
   "duplicateFrames": 0,
   "emptyFrames": 0,
   "transparentCornerFailures": 0,
@@ -14,9 +14,9 @@
     "width": 1024,
     "height": 1024
   },
-  "sourceBlendSha256": "b36d66bff17ab939e2a0d4c116224d02023aaa7e96b4d2d4cb4ccbfc52428c48",
-  "manifestSha256": "4679a4c8d5cf9a8f561b7619274571432839010f4c96d746baf64373291d6662",
-  "atlasSha256": "4b6854159c0e5630f2cb42b89eb6072478c8505435964e456bff175c3fd4c9c8",
-  "metadataSha256": "914f0cac797ed3163d4b4b882ea10110523e5d55b28a8a23fd9d18a7526ea7e5",
-  "contactSheetSha256": "ae30b0157b6ca4be57f1ea602a298741dd68ca5a3393087122584524794c3fc0"
+  "sourceBlendSha256": "ef0d247dd057698f98eb346579ebdd97166ccd983d15d1c8b098bebab3505546",
+  "manifestSha256": "b7269e4c25e6ded6bc47285e6b8728fd8308e1002b2e7e7ab87b112d0e6c003d",
+  "atlasSha256": "ce9df6c2699d33830152c12cea3e04bd1c58b20782a7248c171d353fddff9a7f",
+  "metadataSha256": "302e5aa69fe65154ff7343433b462333cfe4b4670f0d2dd3c2f430e198195b3a",
+  "contactSheetSha256": "12ffb6bda38222aa173b42a134f16d6b2a8bcd4756a56f0cfb2d8a894fa5da8d"
 }

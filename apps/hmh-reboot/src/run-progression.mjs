@@ -179,6 +179,32 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     effect: 'ledgerProofOfNetworkTier',
     amount: 1,
   },
+  'burner-liquidity': {
+    id: 'burner-liquidity', branch: 'bear-market-burner', title: 'Liquidity',
+    mechanicalLabel: 'More fuel and faster canister swaps',
+    description: 'Increase fuel capacity, improve efficiency, and unlock one emergency refill.',
+    maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerLiquidityTier', amount: 1,
+  },
+  'burner-volatility': {
+    id: 'burner-volatility', branch: 'bear-market-burner', title: 'Volatility',
+    mechanicalLabel: 'Harder flame and longer burn pressure',
+    description: 'Raise contact pressure, extend burn duration, and unlock bounded defeat spread.',
+    maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerVolatilityTier', amount: 1,
+  },
+  'burner-contagion': {
+    id: 'burner-contagion', branch: 'bear-market-burner', title: 'Contagion',
+    mechanicalLabel: 'Wider cone, longer reach, and scorch hazard',
+    description: 'Expand the cone, preserve edge damage, and add capped deterministic scorch zones.',
+    maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerContagionTier', amount: 1,
+  },
+  'total-selloff': {
+    id: 'total-selloff', branch: 'bear-market-burner-capstone', title: 'Total Selloff',
+    mechanicalLabel: 'Sustained fire triggers one bounded pressure pulse',
+    description: 'After a fixed fuel threshold, amplify one pulse and enter a deterministic cooldown.',
+    maxRank: 1, requiresWeaponId: 'bear-market-burner',
+    requiresRanks: { 'burner-liquidity': 3, 'burner-volatility': 3, 'burner-contagion': 3 },
+    effect: 'burnerTotalSelloffTier', amount: 1,
+  },
 });
 
 const EFFECT_DEFAULTS = Object.freeze({
@@ -195,6 +221,10 @@ const EFFECT_DEFAULTS = Object.freeze({
   ledgerVoltageTier: 0,
   ledgerReconciliationTier: 0,
   ledgerProofOfNetworkTier: 0,
+  burnerLiquidityTier: 0,
+  burnerVolatilityTier: 0,
+  burnerContagionTier: 0,
+  burnerTotalSelloffTier: 0,
 });
 
 const COMBO_MILESTONE_XP = Object.freeze({ 5: 120, 10: 240, 20: 480, 30: 900 });

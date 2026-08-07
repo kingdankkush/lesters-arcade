@@ -42,6 +42,7 @@ export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, sta
     lightningLedger: Array(10).fill(0),
     lightningLedgerInterruptions: Array(7).fill(0),
     lightningLedgerChannelStartTick: null,
+    bearMarketBurner: Array(8).fill(0),
     exploration: [0, 0, 0], // district mask, POI mask, accepted distance
     lastPosition: point(startPosition, 'startPosition'),
     lastTick: startTick,
@@ -160,6 +161,30 @@ export function recordRunLightningLedgerEvent(state, event = {}) {
   throw new TypeError(`unknown Lightning Ledger event ${String(event.type)}`);
 }
 
+export function recordRunBearMarketBurnerEvent(state, event = {}) {
+  if (!state || !Array.isArray(state.bearMarketBurner) || state.finalized) throw new TypeError('active run summary state is required');
+  count(event.tick, 'Bear Market Burner event tick');
+  const metrics = state.bearMarketBurner;
+  if (event.type === 'weapon:flame-pulse') {
+    if (!Array.isArray(event.hits) || event.hits.length > 12) throw new TypeError('Burner pulse hits must be bounded to twelve');
+    metrics[0] += 1;
+    metrics[1] += event.hits.length;
+    if ((event.pressurePermille ?? 1000) > 1000) metrics[6] += 1;
+    return;
+  }
+  if (event.type === 'burner:pulse') {
+    metrics[5] = Math.max(metrics[5], count(event.activeBurns ?? 0, 'active burns'));
+    return;
+  }
+  if (event.type === 'burner:fuel') { metrics[2] += count(event.consumed, 'fuel consumed'); return; }
+  if (event.type === 'burner:burn-tick') { metrics[3] += 1; return; }
+  if (event.type === 'burner:scorch-created') { metrics[4] += 1; return; }
+  if (event.type === 'burner:total-selloff') { return; }
+  if (event.type === 'burner:emergency-refill') { metrics[7] += 1; return; }
+  if (['burner:empty', 'burner:burn-expired'].includes(event.type)) return;
+  throw new TypeError(`unknown Bear Market Burner event ${String(event.type)}`);
+}
+
 export function recordRunDamage(state, event = {}) {
   const amount = finite(event.damageApplied, 'damageApplied');
   if (event.targetId === 'player') {
@@ -255,7 +280,7 @@ export function finalizeRunSummary(state, {
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
   const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
   const summary = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     identity: { ...state.identity, terminalReason, endTick },
     totals: {
       survivalTicks: endTick - state.identity.startTick,
@@ -292,6 +317,16 @@ export function finalizeRunSummary(state, {
       overheats: state.lightningLedger[8],
       capstonePulses: state.lightningLedger[9],
       interruptions: Object.fromEntries(['release', 'switch', 'dodge', 'empty', 'overheat', 'invalidTarget', 'other'].map((reason, i) => [reason, state.lightningLedgerInterruptions[i]])),
+    },
+    bearMarketBurner: {
+      pulses: state.bearMarketBurner[0],
+      contacts: state.bearMarketBurner[1],
+      fuelSpent: state.bearMarketBurner[2],
+      burnTicks: state.bearMarketBurner[3],
+      scorchZonesCreated: state.bearMarketBurner[4],
+      maxActiveBurns: state.bearMarketBurner[5],
+      totalSelloffPulses: state.bearMarketBurner[6],
+      emergencyRefills: state.bearMarketBurner[7],
     },
     grenades: Object.fromEntries(['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'].map((field, i) => [field, state.grenades[i]])),
     collectibles: C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),

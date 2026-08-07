@@ -95,6 +95,17 @@
       "runtimeScale": 0.64
     },
     {
+      "assetId": "bear-market-burner",
+      "category": "weapon",
+      "shape": "flame-projector",
+      "palette": {
+        "primary": "#d95f2a",
+        "secondary": "#262d32",
+        "accent": "#ffc857"
+      },
+      "runtimeScale": 0.67
+    },
+    {
       "assetId": "bonus-life",
       "category": "pickup",
       "shape": "life-token",
@@ -126,6 +137,17 @@
         "accent": "#e5ffff"
       },
       "runtimeScale": 0.9
+    },
+    {
+      "assetId": "bear-market-burner-cache",
+      "category": "pickup",
+      "shape": "burner-cache",
+      "palette": {
+        "primary": "#c94b24",
+        "secondary": "#2a3036",
+        "accent": "#ffd166"
+      },
+      "runtimeScale": 0.92
     },
     {
       "assetId": "time-dilation",

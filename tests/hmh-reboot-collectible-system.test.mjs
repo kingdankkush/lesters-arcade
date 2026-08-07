@@ -19,10 +19,10 @@ test('all ten authored POIs map to deterministic collectible effects', () => {
   assert.equal(placements.length, 10);
   assert.ok(placements.every((placement) => COLLECTIBLE_EFFECTS[placement.assetId]));
   assert.deepEqual(COLLECTIBLE_EFFECTS['lightning-ledger-cache'], {
-    effectId: 'lightning-ledger-cache',
-    kind: 'weapon-cache',
-    weaponId: 'lightning-ledger',
-    xpGain: 220,
+    effectId: 'lightning-ledger-cache', kind: 'weapon-cache', weaponId: 'lightning-ledger', xpGain: 220,
+  });
+  assert.deepEqual(COLLECTIBLE_EFFECTS['bear-market-burner-cache'], {
+    effectId: 'bear-market-burner-cache', kind: 'weapon-cache', weaponId: 'bear-market-burner', xpGain: 260,
   });
   const state = createCollectibleState({ placements });
   const snapshot = getCollectibleSnapshot(state, { tick: 0 });
@@ -84,6 +84,15 @@ test('scheduled rare collectible is unavailable before its fixed tick and collec
   assert.equal(collected.events[0].weaponId, 'lightning-ledger');
   assert.equal(collected.events[0].availableTick, 3600);
   assert.equal(stepCollectibles(state, { tick: 3601, player: rare }).events.length, 0);
+});
+
+test('two scheduled weapon events remain independently unavailable and collectible', () => {
+  const ledger = { id: 'rare-ledger:a', pointOfInterestId: 'hashwood', assetId: 'lightning-ledger-cache', districtId: 'hashwood', x: 100, y: 100, availableTick: 3_600 };
+  const burner = { id: 'rare-burner:a', pointOfInterestId: 'yard', assetId: 'bear-market-burner-cache', districtId: 'liquidation-yard', x: 500, y: 500, availableTick: 32_400 };
+  const state = createCollectibleState({ placements: [...placements, ledger, burner], collectionRadius: 80 });
+  assert.equal(stepCollectibles(state, { tick: 3_600, player: ledger }).events[0].weaponId, 'lightning-ledger');
+  assert.equal(stepCollectibles(state, { tick: 32_399, player: burner }).events.length, 0);
+  assert.equal(stepCollectibles(state, { tick: 32_400, player: burner }).events[0].weaponId, 'bear-market-burner');
 });
 
 test('collectible events and expiries are identical at 60, 30, and 20 render schedules', () => {

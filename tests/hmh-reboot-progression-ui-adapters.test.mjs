@@ -41,16 +41,25 @@ test('run progression is deterministic, bounded, and exposes two concrete upgrad
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
-test('skill tree has thirteen core upgrades plus repeatable mastery picks and applies only offered choices', () => {
+test('skill tree has seventeen core upgrades plus repeatable mastery picks and applies only offered choices', () => {
   const core = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable !== true);
   const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
-  // Nine shared core upgrades plus three Lightning Ledger branches and their
-  // prerequisite-gated single-rank capstone.
-  assert.equal(core.length, 13);
+  // Nine shared core upgrades plus three branches and a prerequisite-gated
+  // single-rank capstone for both Lightning Ledger and Bear Market Burner.
+  assert.equal(core.length, 17);
   assert.equal(repeatable.length, 3);
-  assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set(['power', 'survival', 'mobility', 'utility', 'lightning-ledger', 'lightning-ledger-capstone']));
+  assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set([
+    'power',
+    'survival',
+    'mobility',
+    'utility',
+    'lightning-ledger',
+    'lightning-ledger-capstone',
+    'bear-market-burner',
+    'bear-market-burner-capstone',
+  ]));
   assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => upgrade.title && upgrade.mechanicalLabel && upgrade.maxRank >= 1));
-  assert.ok(core.filter((upgrade) => upgrade.id !== 'proof-of-network').every((upgrade) => upgrade.maxRank >= 2));
+  assert.ok(core.filter((upgrade) => !['proof-of-network', 'total-selloff'].includes(upgrade.id)).every((upgrade) => upgrade.maxRank >= 2));
   // Mastery ranks must stay individually weaker than the core ranks they echo.
   assert.ok(RUN_UPGRADE_CATALOG['compound-interest'].amount < RUN_UPGRADE_CATALOG['proof-of-work'].amount);
   assert.ok(RUN_UPGRADE_CATALOG['hardened-wallet'].amount < RUN_UPGRADE_CATALOG['diamond-hands'].amount);

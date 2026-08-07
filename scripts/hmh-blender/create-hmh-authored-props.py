@@ -217,6 +217,18 @@ def build_asset(asset: dict) -> dict:
             add(sphere(f'{asset_id}_Emitter_{y}', (0.84, y, 0.77), (0.075, 0.075, 0.075), accent, asset_id))
         add(torus(f'{asset_id}_ArcGate', (0.40, 0.0, 0.74), 0.19, 0.028, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
         add(cube(f'{asset_id}_Grip', (-0.17, 0.0, 0.38), (0.10, 0.13, 0.25), secondary, asset_id, rotation=(0.0, math.radians(-10), 0.0)))
+    elif shape == 'flame-projector':
+        # Short industrial projector: rear fuel tank, armored pump body, heat
+        # shield, and flared nozzle distinguish it from every ballistic weapon.
+        add(cylinder(f'{asset_id}_Tank', (-0.40, 0.0, 0.61), 0.22, 0.52, primary, asset_id, rotation=(math.radians(90), 0.0, 0.0), vertices=20))
+        add(torus(f'{asset_id}_TankBandA', (-0.40, -0.20, 0.61), 0.22, 0.028, accent, asset_id, rotation=(math.radians(90), 0.0, 0.0)))
+        add(torus(f'{asset_id}_TankBandB', (-0.40, 0.20, 0.61), 0.22, 0.028, accent, asset_id, rotation=(math.radians(90), 0.0, 0.0)))
+        add(cube(f'{asset_id}_Pump', (-0.02, 0.0, 0.67), (0.30, 0.20, 0.20), secondary, asset_id, bevel=0.035))
+        add(cylinder(f'{asset_id}_Barrel', (0.38, 0.0, 0.70), 0.09, 0.70, primary, asset_id, rotation=(0.0, math.radians(90), 0.0), vertices=20))
+        add(cone(f'{asset_id}_Nozzle', (0.76, 0.0, 0.70), 0.18, 0.28, secondary, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(torus(f'{asset_id}_Igniter', (0.76, 0.0, 0.70), 0.15, 0.025, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(cube(f'{asset_id}_HeatShield', (0.30, 0.0, 0.84), (0.30, 0.24, 0.045), accent, asset_id))
+        add(cube(f'{asset_id}_Grip', (-0.10, 0.0, 0.36), (0.11, 0.13, 0.25), secondary, asset_id, rotation=(0.0, math.radians(-10), 0.0)))
     elif shape == 'life-token':
         # A med kit with a bold cross on its lid. The previous sphere-and-halo
         # read as a featureless circle from above, which is the single most
@@ -244,6 +256,17 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_TerminalStem', (0.0, 0.0, 0.86), (0.055, 0.06, 0.23), accent, asset_id))
         add(cube(f'{asset_id}_TerminalLeft', (-0.11, 0.0, 1.04), (0.14, 0.055, 0.045), accent, asset_id, rotation=(0.0, math.radians(-22), 0.0)))
         add(cube(f'{asset_id}_TerminalRight', (0.11, 0.0, 1.04), (0.14, 0.055, 0.045), accent, asset_id, rotation=(0.0, math.radians(22), 0.0)))
+    elif shape == 'burner-cache':
+        # Twin orange fuel canisters in a dark field rack. The broad hazard bars
+        # remain readable at gameplay scale and do not resemble the cyan Ledger.
+        add(cube(f'{asset_id}_Rack', (0.0, 0.0, 0.30), (0.52, 0.38, 0.22), secondary, asset_id, bevel=0.035))
+        for index, x in enumerate((-0.24, 0.24)):
+            add(cylinder(f'{asset_id}_Canister_{index}', (x, 0.0, 0.66), 0.18, 0.64, primary, asset_id, vertices=20))
+            add(torus(f'{asset_id}_Band_{index}', (x, 0.0, 0.66), 0.18, 0.035, accent, asset_id))
+            add(cube(f'{asset_id}_Valve_{index}', (x, 0.0, 1.02), (0.08, 0.08, 0.07), secondary, asset_id))
+        add(cube(f'{asset_id}_HazardA', (-0.18, -0.40, 0.34), (0.16, 0.045, 0.055), accent, asset_id, rotation=(0.0, math.radians(-18), 0.0)))
+        add(cube(f'{asset_id}_HazardB', (0.18, -0.40, 0.34), (0.16, 0.045, 0.055), accent, asset_id, rotation=(0.0, math.radians(-18), 0.0)))
+        add(cube(f'{asset_id}_Handle', (0.0, 0.0, 1.11), (0.25, 0.06, 0.06), secondary, asset_id))
     elif shape == 'litecoin-token':
         # Upright silver/blue token with a raised stylized Ł mark. Facing the
         # certified camera preserves the circular silhouette and symbol.

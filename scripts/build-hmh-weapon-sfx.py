@@ -227,6 +227,14 @@ CUES = {
             {'kind': 'noise', 'gain': 0.42, 'start': 0.08, 'length': 0.66, 'attack': 0.002, 'decay': 0.78, 'curve': 3.0},
         ],
     },
+    'hmh-fire-bear-market-burner': {
+        'seed': 0xBEA4F11E, 'durationMs': 170, 'lowpassHz': 3_800, 'drive': 1.72, 'peak': 0.62,
+        'layers': [
+            {'kind': 'noise', 'gain': 0.72, 'length': 0.98, 'attack': 0.025, 'decay': 0.92, 'curve': 1.25},
+            {'kind': 'tone', 'gain': 0.34, 'freq': 96, 'sweep': 1.8, 'length': 0.94, 'attack': 0.018, 'decay': 0.90, 'curve': 1.1},
+            {'kind': 'square', 'gain': 0.18, 'freq': 220, 'sweep': 0.62, 'start': 0.08, 'length': 0.72, 'attack': 0.012, 'decay': 0.84, 'curve': 1.5},
+        ],
+    },
     'hmh-lightning-interrupt': {
         'seed': 0x11E6E221, 'durationMs': 180, 'lowpassHz': 5_800, 'drive': 1.35, 'peak': 0.52,
         'layers': [

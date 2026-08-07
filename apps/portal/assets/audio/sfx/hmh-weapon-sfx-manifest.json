@@ -21,6 +21,20 @@
         "layers": 3
       }
     },
+    "hmh-fire-bear-market-burner": {
+      "src": "./assets/audio/sfx/hmh-fire-bear-market-burner.wav",
+      "bytes": 7540,
+      "format": "wav",
+      "durationMs": 170,
+      "sha256": "75ad5444268dc36b4961a9f9a1419f16ccff9f2232a87964e3e26401585e22d4",
+      "synth": {
+        "seed": 3198480670,
+        "lowpassHz": 3800,
+        "drive": 1.72,
+        "peak": 0.62,
+        "layers": 3
+      }
+    },
     "hmh-fire-coin-blaster": {
       "src": "./assets/audio/sfx/hmh-fire-coin-blaster.wav",
       "bytes": 6658,

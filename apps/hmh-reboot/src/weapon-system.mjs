@@ -1,3 +1,10 @@
+import {
+  BEAR_MARKET_BURNER_CONFIG,
+  createBearMarketBurnerState,
+  getBearMarketBurnerSnapshot,
+  resolveBearMarketBurnerPolicy,
+  stepBearMarketBurner,
+} from './bear-market-burner.mjs';
 import { freezeDeep } from './value-guards.mjs';
 import {
   LIGHTNING_LEDGER_CONFIG,
@@ -161,6 +168,24 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     pickupReserveAmmo: 12,
     policy: STOP_POLICY,
   },
+  'bear-market-burner': {
+    id: 'bear-market-burner',
+    title: 'Bear Market Burner',
+    displayName: 'Flame Projector',
+    kind: 'flame-channel',
+    damage: BEAR_MARKET_BURNER_CONFIG.directDamage,
+    fireRatePerSecond: 10,
+    reloadSeconds: BEAR_MARKET_BURNER_CONFIG.swapTicks / TICKS_PER_SECOND,
+    clipSize: BEAR_MARKET_BURNER_CONFIG.tankCapacity,
+    projectileSpeed: 0,
+    range: BEAR_MARKET_BURNER_CONFIG.range,
+    projectileRadius: 0,
+    spreadRadians: Math.PI * BEAR_MARKET_BURNER_CONFIG.halfAngleDegrees / 180,
+    pelletCount: 1,
+    recoil: 2,
+    pickupReserveAmmo: BEAR_MARKET_BURNER_CONFIG.reserveFuel,
+    policy: STOP_POLICY,
+  },
   'launcher-rig': {
     id: 'launcher-rig',
     compatibilityId: 'launcher-rig',
@@ -244,6 +269,14 @@ export const progressionByWeapon = (ranks = {}) => ({
     },
     capstoneId: (ranks['proof-of-network'] ?? 0) > 0 ? 'proof-of-network' : null,
   },
+  'bear-market-burner': {
+    branches: {
+      liquidity: ranks['burner-liquidity'] ?? 0,
+      volatility: ranks['burner-volatility'] ?? 0,
+      contagion: ranks['burner-contagion'] ?? 0,
+    },
+    capstoneId: (ranks['total-selloff'] ?? 0) > 0 ? 'total-selloff' : null,
+  },
 });
 
 // Tier-three capstones. Before this, five of these tags were inert: a player
@@ -313,6 +346,36 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       heatRecoveryPerTick: 0,
       heatResumeThreshold: 0,
       channelPolicy,
+    });
+  }
+  if (weaponId === 'bear-market-burner') {
+    if (evolutionId !== null) throw new TypeError('Bear Market Burner does not use projectile evolutions');
+    const burnerPolicy = resolveBearMarketBurnerPolicy({ branches, capstoneId });
+    return freezeDeep({
+      weaponId,
+      damage: burnerPolicy.directDamage,
+      damageFlatBonus: burnerPolicy.directDamage - definition.damage,
+      fireRateMultiplier: 1,
+      reloadMultiplier: BEAR_MARKET_BURNER_CONFIG.swapTicks / burnerPolicy.swapTicks,
+      cadenceTicks: BEAR_MARKET_BURNER_CONFIG.pulseIntervalTicks,
+      reloadTicks: burnerPolicy.swapTicks,
+      clipSize: burnerPolicy.tankCapacity,
+      reserveAmmoGrant: burnerPolicy.reserveFuel,
+      specials: [],
+      pelletCount: definition.pelletCount,
+      spreadRadians: Math.PI * burnerPolicy.halfAngleDegrees / 180,
+      projectileSpeed: 0,
+      range: burnerPolicy.range,
+      burstCount: 1,
+      burstIntervalTicks: 0,
+      projectileTag: null,
+      projectilePolicy: definition.policy,
+      shock: null,
+      heatPerShot: 0,
+      maxHeat: 0,
+      heatRecoveryPerTick: 0,
+      heatResumeThreshold: 0,
+      burnerPolicy,
     });
   }
   const tree = UPGRADE_TREES[weaponId];
@@ -421,6 +484,9 @@ function createPerWeaponState(id, { owned = false } = {}) {
     chargeStartedTick: null,
     chargeReadyAnnounced: false,
     channelState: definition.kind === 'channel' ? createLightningLedgerState({ cellsRemaining: progression.clipSize }) : null,
+    burnerState: definition.kind === 'flame-channel'
+      ? createBearMarketBurnerState({ fuel: progression.clipSize, reserveFuel: isOwned ? progression.reserveAmmoGrant : 0 })
+      : null,
   };
 }
 
@@ -487,10 +553,13 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
     mode = 'empty';
   }
   const secondsRemaining = Number((ticksRemaining / TICKS_PER_SECOND).toFixed(1));
+  const burner = weapon.burnerState;
   const channelCells = channel
     ? ` ${'▮'.repeat(weapon.ammoInClip)}${'▯'.repeat(Math.max(0, progression.clipSize - weapon.ammoInClip))}`
     : '';
-  const ammoLabel = `${definition.displayName.toUpperCase()} ${weapon.ammoInClip}/${progression.clipSize}${channelCells}`;
+  const ammoLabel = burner
+    ? `BEAR MARKET BURNER ${weapon.ammoInClip}/${progression.clipSize}`
+    : `${definition.displayName.toUpperCase()} ${weapon.ammoInClip}/${progression.clipSize}${channelCells}`;
   let statusLabel = '';
   let accessibleState = '';
   if (mode === 'channeling') {
@@ -530,7 +599,7 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
     ticksRemaining,
     secondsRemaining,
     hudLabel: statusLabel ? `${ammoLabel} // ${statusLabel}` : ammoLabel,
-    accessibleLabel: `${definition.displayName}, ${weapon.ammoInClip} of ${progression.clipSize} ${channel ? 'cells' : 'rounds'}, ${accessibleState}`,
+    accessibleLabel: `${definition.displayName}, ${weapon.ammoInClip} of ${progression.clipSize} ${channel ? 'cells' : burner ? 'fuel' : 'rounds'}, ${accessibleState}`,
   });
 }
 
@@ -577,6 +646,11 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   if (authored !== null) {
     weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
   }
+  if (weapon.burnerState) {
+    weapon.burnerState.fuel = weapon.ammoInClip;
+    weapon.burnerState.reserveFuel = weapon.reserveAmmo ?? 0;
+    weapon.burnerState.emptySignaled = false;
+  }
   const previousWeaponId = state.activeWeaponId;
   if (select) {
     state.weapons[previousWeaponId].chargeStartedTick = null;
@@ -613,6 +687,11 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     }
     weapon.ammoInClip = progression.clipSize;
     if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
+    if (weapon.burnerState) {
+      weapon.burnerState.fuel = weapon.ammoInClip;
+      weapon.burnerState.reserveFuel = weapon.reserveAmmo ?? 0;
+      weapon.burnerState.emptySignaled = false;
+    }
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;
     weapon.heat = 0;
@@ -643,6 +722,11 @@ function completeReloads(state, tick, progressionByWeapon, events) {
       weapon.reserveAmmo -= loaded;
     }
     if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, weapon.ammoInClip);
+    if (weapon.burnerState) {
+      weapon.burnerState.fuel = weapon.ammoInClip;
+      weapon.burnerState.reserveFuel = weapon.reserveAmmo ?? 0;
+      weapon.burnerState.emptySignaled = false;
+    }
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;
     events.push(freezeDeep({ type: 'weapon:reload-complete', tick, weaponId: id, ammoInClip: weapon.ammoInClip, reserveAmmo: weapon.reserveAmmo }));
@@ -753,6 +837,44 @@ export function stepWeaponLoadout(state, {
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
   if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
+  if (definition.kind === 'flame-channel') {
+    const burnerFrame = stepBearMarketBurner(weapon.burnerState, {
+      tick,
+      fire,
+      origin: channelOrigin,
+      direction,
+      targets: channelTargets,
+      lineOfSight: channelLineOfSight,
+      policy: progression.burnerPolicy,
+    });
+    weapon.ammoInClip = weapon.burnerState.fuel;
+    weapon.reserveAmmo = weapon.burnerState.reserveFuel;
+    events.push(...burnerFrame.events);
+    const targetById = new Map(channelTargets.map((target) => [String(target.id), target]));
+    for (const pulse of burnerFrame.events.filter((event) => event.type === 'burner:pulse')) {
+      const hits = pulse.contacts.map((contact) => {
+        const target = targetById.get(contact.targetId);
+        return freezeDeep({
+          id: `bear-market-burner:${String(pulse.sequence).padStart(8, '0')}:${contact.targetId}`,
+          targetId: contact.targetId,
+          point: { x: target?.x ?? channelOrigin.x, y: target?.y ?? channelOrigin.y, z: target?.z ?? target?.groundZ ?? 0 },
+          damage: contact.directDamage,
+          damagePermille: contact.damagePermille,
+          knockbackMultiplier: 1,
+        });
+      });
+      events.push(freezeDeep({
+        type: 'weapon:flame-pulse',
+        tick,
+        attackId: `bear-market-burner:${String(pulse.sequence).padStart(8, '0')}`,
+        weaponId: definition.id,
+        pressurePermille: pulse.pressurePermille,
+        hits,
+      }));
+    }
+    if (weapon.ammoInClip <= 0 && weapon.reserveAmmo > 0) startReload(weapon, progression, tick, events);
+    return freezeDeep({ tick, burner: getBearMarketBurnerSnapshot(weapon.burnerState), events });
+  }
   if (definition.kind === 'channel') {
     const channelFrame = stepLightningLedger(weapon.channelState, {
       tick,
