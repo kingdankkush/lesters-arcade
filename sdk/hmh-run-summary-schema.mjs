@@ -51,6 +51,10 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'ledger-voltage',
     'ledger-reconciliation',
     'proof-of-network',
+    'burner-liquidity',
+    'burner-volatility',
+    'burner-contagion',
+    'total-selloff',
   ]),
   districts: Object.freeze([
     'frontier-relay',

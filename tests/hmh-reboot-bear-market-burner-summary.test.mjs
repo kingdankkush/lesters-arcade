@@ -27,3 +27,19 @@ test('W9A summary stores bounded Burner aggregates without target or tick histor
   assert.equal(JSON.stringify(result).includes('targetId'), false);
   assert.equal(JSON.stringify(result).includes('zone'), false);
 });
+
+test('W9A summary accepts every Burner upgrade offer and selection without stopping the fixed tick', () => {
+  const state = summary.createRunSummaryAccumulator({ seed: 9, buildHash: 'wave9a-upgrades', mode: 'free', heroId: 'hero-hodler', startTick: 0, startPosition: { x: 0, y: 0 } });
+  const upgradeIds = ['burner-liquidity', 'burner-volatility', 'burner-contagion', 'total-selloff'];
+  summary.recordRunUpgradeOffer(state, upgradeIds);
+  for (const upgradeId of upgradeIds) summary.recordRunUpgradeSelection(state, upgradeId);
+  const result = summary.finalizeRunSummary(state, {
+    endTick: 1, elapsedMs: 1000 / 60, terminalReason: 'completed', score: 0, level: 1, xp: 0,
+    currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 1,
+  });
+  for (const upgradeId of upgradeIds) {
+    const row = result.upgrades.find((entry) => entry.upgradeId === upgradeId);
+    assert.deepEqual(row, { upgradeId, offered: 1, selected: 1 });
+  }
+  assert.equal(validateRunSummaryPayload(result), '');
+});
