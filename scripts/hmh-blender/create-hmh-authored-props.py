@@ -194,6 +194,17 @@ def build_asset(asset: dict) -> dict:
         add(cylinder(f'{asset_id}_Muzzle', (0.58, 0.0, 0.68), 0.24, 0.16, secondary, asset_id, rotation=(0.0, math.radians(90), 0.0)))
         add(cube(f'{asset_id}_Grip', (-0.12, 0.0, 0.40), (0.10, 0.12, 0.25), secondary, asset_id))
         add(cube(f'{asset_id}_Sight', (0.12, -0.19, 0.82), (0.14, 0.06, 0.06), accent, asset_id))
+    elif shape == 'railgun':
+        # Long silver body, separated twin rails, and blue charge coils create
+        # a silhouette that cannot be mistaken for the launcher or shotgun.
+        add(cube(f'{asset_id}_Stock', (-0.46, 0.0, 0.62), (0.28, 0.16, 0.16), secondary, asset_id, rotation=(0.0, math.radians(-6), 0.0)))
+        add(cube(f'{asset_id}_Receiver', (-0.08, 0.0, 0.69), (0.34, 0.18, 0.18), primary, asset_id))
+        for y in (-0.085, 0.085):
+            add(cylinder(f'{asset_id}_Rail_{y}', (0.50, y, 0.72), 0.038, 1.14, primary, asset_id, rotation=(0.0, math.radians(90), 0.0), vertices=16))
+        for x in (0.18, 0.42, 0.66):
+            add(torus(f'{asset_id}_Coil_{x}', (x, 0.0, 0.72), 0.15, 0.025, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(cube(f'{asset_id}_Grip', (-0.18, 0.0, 0.39), (0.10, 0.12, 0.24), secondary, asset_id, rotation=(0.0, math.radians(-10), 0.0)))
+        add(cube(f'{asset_id}_Sight', (0.02, -0.20, 0.86), (0.18, 0.045, 0.055), accent, asset_id))
     elif shape == 'life-token':
         # A med kit with a bold cross on its lid. The previous sphere-and-halo
         # read as a featureless circle from above, which is the single most
@@ -203,6 +214,14 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_CrossBar', (0.0, 0.0, 0.66), (0.30, 0.10, 0.05), accent, asset_id))
         add(cube(f'{asset_id}_CrossStem', (0.0, 0.0, 0.66), (0.10, 0.30, 0.05), accent, asset_id))
         add(cube(f'{asset_id}_Handle', (0.0, -0.34, 0.56), (0.16, 0.05, 0.08), secondary, asset_id))
+    elif shape == 'hash-rail-core':
+        # Floating blue capacitor core: a bright faceted cell nested inside
+        # two orthogonal induction rings. It must not read as spendable coin.
+        add(sphere(f'{asset_id}_Core', (0.0, 0.0, 0.62), (0.24, 0.24, 0.32), accent, asset_id))
+        add(torus(f'{asset_id}_RingA', (0.0, 0.0, 0.62), 0.38, 0.045, primary, asset_id, rotation=(math.radians(90), 0.0, 0.0)))
+        add(torus(f'{asset_id}_RingB', (0.0, 0.0, 0.62), 0.38, 0.045, secondary, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(cube(f'{asset_id}_RailTop', (0.0, 0.0, 1.02), (0.18, 0.08, 0.045), primary, asset_id))
+        add(cube(f'{asset_id}_RailBase', (0.0, 0.0, 0.22), (0.18, 0.08, 0.045), primary, asset_id))
     elif shape == 'litecoin-token':
         # Upright silver/blue token with a raised stylized Ł mark. Facing the
         # certified camera preserves the circular silhouette and symbol.

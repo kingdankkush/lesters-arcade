@@ -5,11 +5,12 @@ export const AUTHORED_PROP_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-au
 export const AUTHORED_PROP_ITEM_ROOT = '/assets/generated/hmh-reboot-authored-props/items';
 
 export const AUTHORED_PROP_ASSETS = Object.freeze({
-  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig'.split(' ')),
+  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig hash-rail'.split(' ')),
   pickups: Object.freeze('bonus-life hash-rail-core time-dilation berserk-candle nuke-liquidation'.split(' ')),
   powerUps: Object.freeze('proof-of-work diamond-hands gas-optimization cold-storage block-reward validator-training compound-interest hardened-wallet hot-wallet layer-two precision-ledger hard-fork-rounds'.split(' ')),
 
 });
+
 
 // Cycle 038: trees, boulders, wrecked cars, fencing and a shack join the
 // district dressing. Hashwood carries a denser per-district count so it reads
@@ -389,8 +390,9 @@ export function createAuthoredHeldWeaponDisplay({ index, atlasTexture, Container
   sprite.anchor.set(0.5, 0.5);
   container.addChild(sprite);
   container.applyWeapon = ({ weaponId, screen, aimScreen, cameraZoom = 1 } = {}) => {
-    const frame = index.frameFor(weaponId);
-    const texture = textures.get(weaponId);
+    const assetId = weaponId;
+    const frame = index.frameFor(assetId);
+    const texture = textures.get(assetId);
     if (!frame || !texture || !screen || !aimScreen) {
       container.visible = false;
       return null;

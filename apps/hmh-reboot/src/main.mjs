@@ -234,18 +234,20 @@ const CRITICAL_CHANCE_CAP = 0.45;
 const BASE_CRITICAL_CHANCE = 0.08;
 const BASE_CRITICAL_MULTIPLIER = 1.75;
 
-const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']);
+const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail']);
 const WEAPON_KNOCKBACK = Object.freeze({
   'coin-blaster': 8,
   'scatter-shotgun': 18,
   'auto-miner': 5,
   'launcher-rig': 24,
+  'hash-rail': 38,
 });
 const WEAPON_COLORS = Object.freeze({
   'coin-blaster': 0xffd166,
   'scatter-shotgun': 0xff8c5a,
   'auto-miner': 0x83f28f,
   'launcher-rig': 0xc497ff,
+  'hash-rail': 0x8ff3ff,
 });
 const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
@@ -1463,6 +1465,12 @@ async function boot() {
         const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
+        if (heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
+          const chargeRatio = Math.min(1, ((simulation?.tick ?? 0) - heldWeapon.chargeStartedTick) / HMH_WEAPON_DEFINITIONS['hash-rail'].chargeTicks);
+          const chargeEnd = worldToScreen({ x: renderState.x + heldAim.x * 900, y: renderState.y + heldAim.y * 900, z: renderState.z + 44 }, camera, view);
+          aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)
+            .stroke({ color: 0x8ff3ff, width: 1 + chargeRatio, alpha: 0.18 + chargeRatio * 0.42 });
+        }
         authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom });
       }
       if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
@@ -1686,6 +1694,8 @@ async function boot() {
         dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
         dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
         dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
+        dataset.weaponChargeStartedTick = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).chargeStartedTick ?? '' : '');
+        dataset.weaponChargeReady = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).chargeReadyAnnounced : false);
         dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
         dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
         dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
@@ -2383,7 +2393,8 @@ async function boot() {
               damage: hit.damage,
               criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
               criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
-              armorPiercing: shot.policy.type === 'pierce',
+              armorPiercing: shot.projectileTag === 'armor-piercing',
+              armorPenetration: shot.projectileTag === 'deep-proof' && hit.targetId === 'boss-liquidator' ? 0.6 : 0,
               direction: { x: shot.vx, y: shot.vy },
               knockback: (WEAPON_KNOCKBACK[shot.weaponId] ?? 6) * shot.knockbackMultiplier,
               point: hit.point,
@@ -2437,6 +2448,7 @@ async function boot() {
         : stepWeaponLoadout(weaponLoadout, {
           tick,
           fire: aimIntent.fire,
+          releaseCharged: aimIntent.source === 'autofire',
           direction: aimIntent.direction,
           progressionByWeapon,
         });
@@ -2446,7 +2458,9 @@ async function boot() {
       // trap went unnoticed.
       for (const event of weaponFrame.events) {
         recordRunWeaponLifecycleEvent(runSummaryAccumulator, event);
-        if (event.type === 'weapon:reload-start') {
+        if (event.type === 'weapon:charge-start') {
+          combatAudio.play('hmh-hash-rail-charge', { volume: HMH_WEAPON_SFX['hmh-hash-rail-charge'].gain });
+        } else if (event.type === 'weapon:reload-start') {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
         } else if (event.type === 'weapon:auto-fallback') {
           combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
@@ -2485,11 +2499,11 @@ async function boot() {
             direction: aimIntent.direction,
             damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
           });
-          recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: launch.spawned ? 1 : 0 });
+          recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: launch.spawned ? 1 : 0, attackId: event.attackId });
           if (!launch.spawned && launch.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
           continue;
         }
-        recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: Math.min(event.shots.length, MAX_ACTIVE_PROJECTILES - activeProjectiles.length) });
+        recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: Math.min(event.shots.length, MAX_ACTIVE_PROJECTILES - activeProjectiles.length), attackId: event.attackId });
         const trigger = { contacted: false };
         for (const shot of event.shots) {
           if (activeProjectiles.length >= MAX_ACTIVE_PROJECTILES) {
@@ -2755,7 +2769,9 @@ async function boot() {
         }
         for (const damageEvent of lastCombatResolution.damageEvents) {
           if (damageEvent.damageApplied <= 0) continue;
-          recordRunDamage(runSummaryAccumulator, damageEvent);
+          recordRunDamage(runSummaryAccumulator, damageEvent.targetId === 'player'
+            ? { ...damageEvent, equippedWeaponId: weaponLoadout.activeWeaponId }
+            : damageEvent);
           if (damageEvent.targetId === 'player' && damageEvent.weaponId === 'satoshi-frag') {
             recordRunGrenade(runSummaryAccumulator, { type: 'self-damage', amount: damageEvent.damageApplied });
           }

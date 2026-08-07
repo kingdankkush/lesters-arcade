@@ -73,6 +73,17 @@
       "runtimeScale": 0.62
     },
     {
+      "assetId": "hash-rail",
+      "category": "weapon",
+      "shape": "railgun",
+      "palette": {
+        "primary": "#cbd5df",
+        "secondary": "#25303c",
+        "accent": "#58d8ff"
+      },
+      "runtimeScale": 0.68
+    },
+    {
       "assetId": "bonus-life",
       "category": "pickup",
       "shape": "life-token",
@@ -86,7 +97,7 @@
     {
       "assetId": "hash-rail-core",
       "category": "pickup",
-      "shape": "litecoin-token",
+      "shape": "hash-rail-core",
       "palette": {
         "primary": "#d9f8ff",
         "secondary": "#2e65a6",

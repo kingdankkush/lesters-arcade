@@ -22,6 +22,7 @@ test('expected hit damage mirrors rounded combat branches and caps critical chan
   assert.equal(expectedCombatHitDamage({ damage: 10, armor: 2, criticalChance: 0.25, criticalMultiplier: 2 }), 6.25);
   assert.equal(expectedCombatHitDamage({ damage: 10, armor: 2, criticalChance: 2, criticalMultiplier: 2 }), 10);
   assert.equal(expectedCombatHitDamage({ damage: 10, armor: 4, armorPiercing: true, critChance: 0.5, critMultiplier: 2 }), 15);
+  assert.equal(expectedCombatHitDamage({ damage: 40, armor: 4, armorPenetration: 0.6, criticalChance: 0 }), 18);
 });
 
 function fireAt(state, tick, options = {}) {
@@ -34,7 +35,7 @@ function weaponState(state, id = state.activeWeaponId) {
 
 test('weapon definitions preserve retained IDs and exact approved numeric values', () => {
   const legacyById = Object.fromEntries(LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.map((weapon) => [weapon.id, weapon]));
-  assert.deepEqual(Object.keys(HMH_WEAPON_DEFINITIONS).sort(), ['auto-miner', 'coin-blaster', 'launcher-rig', 'scatter-shotgun']);
+  assert.deepEqual(Object.keys(HMH_WEAPON_DEFINITIONS).sort(), ['auto-miner', 'coin-blaster', 'hash-rail', 'launcher-rig', 'scatter-shotgun']);
   for (const id of ['coin-blaster', 'scatter-shotgun', 'auto-miner']) {
     const actual = HMH_WEAPON_DEFINITIONS[id];
     const legacy = legacyById[id];

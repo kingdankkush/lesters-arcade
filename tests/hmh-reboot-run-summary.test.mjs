@@ -96,7 +96,7 @@ function exerciseAccumulator() {
 
 test('canonical run summary records real bounded authority values and finalizes once', () => {
   const summary = exerciseAccumulator();
-  assert.equal(summary.schemaVersion, 1);
+  assert.equal(summary.schemaVersion, 2);
   assert.deepEqual(summary.identity, {
     seed: 42,
     buildHash: 'site-106:hmh-wave-6a',
@@ -152,6 +152,16 @@ test('canonical run summary records real bounded authority values and finalizes 
     kills: 1,
     criticalHits: 1,
     overkill: 2,
+    chargesStarted: 0,
+    chargesCancelled: 0,
+    chargedShots: 0,
+    cancelledChargeTicks: 0,
+    zeroHitShots: 0,
+    oneHitShots: 0,
+    twoHitShots: 0,
+    threePlusHitShots: 0,
+    bossHits: 0,
+    damageTakenWhileEquipped: 0,
   });
   assert.deepEqual(summary.grenades, {
     thrown: 1,
@@ -183,6 +193,32 @@ test('canonical run summary records real bounded authority values and finalizes 
   assert.equal(summary.exploration.revealedPermille, 300);
   assert.equal(summary.exploration.distanceMilli, 5000);
   assert.equal(Object.isFrozen(summary), true);
+});
+
+test('Hash Rail run telemetry records charge outcomes, hit histogram, boss hits, and equipped damage', () => {
+  const state = createRunSummaryAccumulator({ seed: 9, buildHash: 'wave8-hash-rail', mode: 'free', heroId: 'lit-commando', startPosition: { x: 0, y: 0 } });
+  recordRunWeaponLifecycleEvent(state, { type: 'weapon:charge-start', weaponId: 'hash-rail' });
+  recordRunWeaponLifecycleEvent(state, { type: 'weapon:charge-cancel', weaponId: 'hash-rail', chargeTicks: 24 });
+  recordRunWeaponLifecycleEvent(state, { type: 'weapon:charge-start', weaponId: 'hash-rail' });
+  recordRunWeaponFire(state, { weaponId: 'hash-rail', emitted: 1, attackId: 'hash-rail:00000000' });
+  recordRunProjectileResolution(state, { weaponId: 'hash-rail', attackId: 'hash-rail:00000000', trigger: { contacted: false } }, [
+    { targetId: 'enemy-1' }, { targetId: 'boss-liquidator' },
+  ]);
+  recordRunDamage(state, { targetId: 'player', sourceId: 'enemy-1', weaponId: 'enemy-rifle', equippedWeaponId: 'hash-rail', damageApplied: 7 });
+  const summary = finalizeRunSummary(state, { endTick: 120, elapsedMs: 2000, terminalReason: 'completed', score: 100, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 1 });
+  const rail = summary.weapons.find((row) => row.weaponId === 'hash-rail');
+  assert.deepEqual({
+    chargesStarted: rail.chargesStarted,
+    chargesCancelled: rail.chargesCancelled,
+    chargedShots: rail.chargedShots,
+    cancelledChargeTicks: rail.cancelledChargeTicks,
+    zeroHitShots: rail.zeroHitShots,
+    oneHitShots: rail.oneHitShots,
+    twoHitShots: rail.twoHitShots,
+    threePlusHitShots: rail.threePlusHitShots,
+    bossHits: rail.bossHits,
+    damageTakenWhileEquipped: rail.damageTakenWhileEquipped,
+  }, { chargesStarted: 2, chargesCancelled: 1, chargedShots: 1, cancelledChargeTicks: 24, zeroHitShots: 0, oneHitShots: 0, twoHitShots: 1, threePlusHitShots: 0, bossHits: 1, damageTakenWhileEquipped: 7 });
 });
 
 test('runtime adapters preserve lifecycle metrics and exclude self-hits from launcher accuracy', () => {

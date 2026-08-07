@@ -84,6 +84,7 @@ function validateHit(hit) {
   const criticalChance = nonNegative(hit.criticalChance ?? 0.08, `hit ${hit.id} criticalChance`);
   if (criticalChance > 1) throw new TypeError(`hit ${hit.id} criticalChance must not exceed one`);
   positive(hit.criticalMultiplier ?? 1.75, `hit ${hit.id} criticalMultiplier`);
+  if (nonNegative(hit.armorPenetration ?? 0, `hit ${hit.id} armorPenetration`) > 1) throw new TypeError(`hit ${hit.id} armorPenetration must not exceed one`);
   nonNegative(hit.knockback ?? 0, `hit ${hit.id} knockback`);
   return { ...hit, tick: hit.tick ?? 0, time, criticalChance };
 }
@@ -92,13 +93,15 @@ export function expectedCombatHitDamage({
   damage,
   armor = 1,
   armorPiercing = false,
+  armorPenetration = 0,
   criticalChance,
   criticalMultiplier,
   critChance,
   critMultiplier,
 } = {}) {
   const baseDamage = positive(damage, 'damage');
-  const armorDivisor = armorPiercing === true ? 1 : positive(armor, 'armor');
+  const penetration = Math.min(1, nonNegative(armorPenetration, 'armorPenetration'));
+  const armorDivisor = armorPiercing === true ? 1 : 1 + (positive(armor, 'armor') - 1) * (1 - penetration);
   const chance = Math.min(1, nonNegative(criticalChance ?? critChance ?? 0.08, 'criticalChance'));
   const multiplier = positive(criticalMultiplier ?? critMultiplier ?? 1.75, 'criticalMultiplier');
   const normalDamage = Math.max(1, Math.round(baseDamage / armorDivisor));
@@ -141,7 +144,7 @@ export function resolveCombatHits({ sessionSeed, hits = [], targets = [] } = {})
       target.shieldCharges -= 1;
       shielded = true;
     } else {
-      const armorDivisor = hit.armorPiercing === true ? 1 : target.armor;
+      const armorDivisor = hit.armorPiercing === true ? 1 : 1 + (target.armor - 1) * (1 - (hit.armorPenetration ?? 0));
       damageApplied = Math.max(1, Math.round(rawDamage / armorDivisor));
       target.health = Math.max(0, target.health - damageApplied);
     }

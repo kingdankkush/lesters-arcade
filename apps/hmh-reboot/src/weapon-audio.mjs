@@ -19,6 +19,8 @@ export const HMH_WEAPON_SFX = Object.freeze({
   'hmh-fire-scatter-shotgun': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-scatter-shotgun.wav', gain: 0.15 }),
   'hmh-fire-auto-miner': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-auto-miner.wav', gain: 0.08 }),
   'hmh-fire-launcher-rig': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-launcher-rig.wav', gain: 0.17 }),
+  'hmh-fire-hash-rail': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-hash-rail.wav', gain: 0.14 }),
+  'hmh-hash-rail-charge': Object.freeze({ src: '../assets/audio/sfx/hmh-hash-rail-charge.wav', gain: 0.08 }),
   'hmh-weapon-reload': Object.freeze({ src: '../assets/audio/sfx/hmh-weapon-reload.wav', gain: 0.11 }),
   'hmh-weapon-empty': Object.freeze({ src: '../assets/audio/sfx/hmh-weapon-empty.wav', gain: 0.09 }),
 });
@@ -28,6 +30,7 @@ const FIRE_CUE_BY_WEAPON = Object.freeze({
   'scatter-shotgun': 'hmh-fire-scatter-shotgun',
   'auto-miner': 'hmh-fire-auto-miner',
   'launcher-rig': 'hmh-fire-launcher-rig',
+  'hash-rail': 'hmh-fire-hash-rail',
 });
 
 // Falls back rather than throwing: this is called from inside the frame loop,

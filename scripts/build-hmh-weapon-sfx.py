@@ -211,6 +211,21 @@ CUES = {
             {'kind': 'noise', 'gain': 0.30, 'start': 0.30, 'length': 0.70, 'attack': 0.22, 'decay': 0.95, 'curve': 1.5},
         ],
     },
+    'hmh-fire-hash-rail': {
+        'seed': 0x8A571A11, 'durationMs': 460, 'lowpassHz': 7_200, 'drive': 1.7, 'peak': 0.72,
+        'layers': [
+            {'kind': 'tone', 'gain': 0.38, 'freq': 110, 'sweep': 5.8, 'length': 0.42, 'attack': 0.08, 'decay': 0.94, 'curve': 1.2},
+            {'kind': 'square', 'gain': 0.44, 'freq': 440, 'sweep': 3.0, 'start': 0.28, 'length': 0.38, 'attack': 0.02, 'decay': 0.80, 'curve': 2.0},
+            {'kind': 'noise', 'gain': 0.78, 'start': 0.38, 'length': 0.34, 'attack': 0.002, 'decay': 0.72, 'curve': 3.0},
+        ],
+    },
+    'hmh-hash-rail-charge': {
+        'seed': 0xC4A26311, 'durationMs': 920, 'lowpassHz': 6_800, 'drive': 1.25, 'peak': 0.46,
+        'layers': [
+            {'kind': 'tone', 'gain': 0.34, 'freq': 82, 'sweep': 8.0, 'length': 0.98, 'attack': 0.18, 'decay': 0.9, 'curve': 0.8},
+            {'kind': 'square', 'gain': 0.18, 'freq': 330, 'sweep': 2.7, 'start': 0.36, 'length': 0.6, 'attack': 0.08, 'decay': 0.82, 'curve': 1.4},
+        ],
+    },
     'hmh-weapon-reload': {
         'seed': 0x2E10AD77, 'durationMs': 320, 'lowpassHz': 5_400, 'drive': 1.4, 'peak': 0.58,
         'layers': [

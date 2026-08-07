@@ -34,7 +34,8 @@ export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, sta
     identity: { seed, buildHash, mode, heroId, startTick },
     totals: [0, 0, 0], // damage dealt, damage taken, healing
     enemyKills: Array(C.enemyRoles.length).fill(0),
-    weapons: rows(C.weapons, 14),
+    weapons: rows(C.weapons, 24),
+    weaponAttacks: new Map(),
     grenades: Array(6).fill(0),
     collectibles: rows(C.collectibles, 2),
     upgrades: rows(C.upgrades, 2),
@@ -58,10 +59,15 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
   for (const id of activeEffectIds) state.collectibles[index(C.collectibles, id, 'collectible effect')][1] += 1;
 }
 
-export function recordRunWeaponFire(state, { weaponId, emitted } = {}) {
-  const row = state.weapons[index(C.weapons, weaponId, 'weapon')];
+export function recordRunWeaponFire(state, { weaponId, emitted, attackId } = {}) {
+  const weaponIndex = index(C.weapons, weaponId, 'weapon');
+  const row = state.weapons[weaponIndex];
   row[2] += 1;
   row[4] += count(emitted, 'emitted projectiles');
+  if (weaponId === 'hash-rail') {
+    row[16] += 1;
+    if (typeof attackId === 'string' && attackId) state.weaponAttacks.set(attackId, { weaponIndex, contacts: 0, bossHits: 0 });
+  }
 }
 
 export function recordRunWeaponTriggerContact(state, { weaponId } = {}) {
@@ -73,6 +79,11 @@ export function recordRunProjectileContacts(state, { weaponId, count: contacts =
 }
 
 export function recordRunProjectileResolution(state, shot, hits) {
+  const attack = state.weaponAttacks.get(shot.attackId);
+  if (attack) {
+    attack.contacts += hits.length;
+    attack.bossHits += hits.reduce((total, hit) => total + Number(hit.targetId === 'boss-liquidator'), 0);
+  }
   if (!hits.length) return;
   recordRunProjectileContacts(state, { weaponId: shot.weaponId, count: hits.length });
   if (shot.trigger.contacted) return;
@@ -93,6 +104,11 @@ export function recordRunWeaponLifecycleEvent(state, event) {
   else if (event.type === 'weapon:auto-fallback') {
     recordRunWeaponEvent(state, { type: 'empty', weaponId: event.previousWeaponId });
     recordRunWeaponEvent(state, { type: 'swap', weaponId: event.weaponId });
+  } else if (event.type === 'weapon:charge-start') state.weapons[index(C.weapons, event.weaponId, 'weapon')][14] += 1;
+  else if (event.type === 'weapon:charge-cancel') {
+    const row = state.weapons[index(C.weapons, event.weaponId, 'weapon')];
+    row[15] += 1;
+    row[17] += count(event.chargeTicks, 'cancelled charge ticks');
   }
 }
 
@@ -100,6 +116,7 @@ export function recordRunDamage(state, event = {}) {
   const amount = finite(event.damageApplied, 'damageApplied');
   if (event.targetId === 'player') {
     state.totals[1] += amount;
+    if (event.equippedWeaponId) state.weapons[index(C.weapons, event.equippedWeaponId, 'equipped weapon')][23] += amount;
     return;
   }
   if (event.sourceId !== 'player') return;
@@ -174,13 +191,18 @@ export function finalizeRunSummary(state, {
   for (const [value, label] of [[score, 'score'], [level, 'level'], [xp, 'xp'], [currentCombo, 'currentCombo'], [maxCombo, 'maxCombo'], [revealedCells, 'revealedCells'], [totalCells, 'totalCells']]) count(value, label);
   if (level < 1 || revealedCells > totalCells || currentCombo > maxCombo) throw new TypeError('final run-summary totals are inconsistent');
   state.finalized = true;
+  for (const attack of state.weaponAttacks.values()) {
+    const row = state.weapons[attack.weaponIndex];
+    row[18 + Math.min(3, attack.contacts)] += 1;
+    row[22] += attack.bossHits;
+  }
   const distanceMilli = Math.round(state.exploration[2] * 1000);
   const byEnemyRole = C.enemyRoles.map((enemyRoleId, i) => ({ enemyRoleId, count: state.enemyKills[i] }));
   const byWeapon = C.weapons.map((weaponId, i) => ({ weaponId, count: state.weapons[i][11] }));
-  const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill'];
+  const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
   const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
   const summary = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     identity: { ...state.identity, terminalReason, endTick },
     totals: {
       survivalTicks: endTick - state.identity.startTick,

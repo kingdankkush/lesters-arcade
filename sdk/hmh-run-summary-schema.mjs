@@ -13,6 +13,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'scatter-shotgun',
     'auto-miner',
     'launcher-rig',
+    'hash-rail',
     'litecoin-knife',
     'satoshi-frag',
     'nuke-liquidation',
@@ -24,6 +25,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'auto-miner-cache',
     'launcher-rig-cache',
     'litecoin-token',
+    'hash-rail-core',
     'time-dilation',
     'berserk-candle',
     'nuke-liquidation',
@@ -91,7 +93,7 @@ const rows = (value, ids, idKey, fields, label) => {
 export function validateRunSummaryPayload(payload) {
   let error = keys(payload, ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'], 'game:run-summary payload');
   if (error) return error;
-  if (payload.schemaVersion !== 1) return 'game:run-summary schemaVersion is invalid';
+  if (![1, 2].includes(payload.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
   const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
   error = keys(payload.identity, identityFields, 'game:run-summary identity');
   if (error) return error;
@@ -122,12 +124,16 @@ export function validateRunSummaryPayload(payload) {
     || payload.kills.elite > payload.kills.total || payload.kills.boss > payload.kills.total) return 'game:run-summary kill totals are inconsistent';
 
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill'];
+  if (payload.schemaVersion >= 2) weaponFields.push('chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped');
   error = rows(payload.weapons, HMH_RUN_SUMMARY_CATALOGS.weapons, 'weaponId', weaponFields, 'game:run-summary weapons');
   if (error) return error;
   for (let index = 0; index < payload.weapons.length; index += 1) {
     const weapon = payload.weapons[index];
     if (weapon.triggerContacts > weapon.triggers || weapon.reloadCompletes > weapon.reloadStarts
       || weapon.kills !== payload.kills.byWeapon[index].count) return `game:run-summary weapons[${index}] totals are inconsistent`;
+    if (payload.schemaVersion >= 2 && (weapon.chargesCancelled > weapon.chargesStarted
+      || weapon.chargedShots > weapon.chargesStarted
+      || weapon.zeroHitShots + weapon.oneHitShots + weapon.twoHitShots + weapon.threePlusHitShots > weapon.chargedShots)) return `game:run-summary weapons[${index}] charge totals are inconsistent`;
   }
 
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');

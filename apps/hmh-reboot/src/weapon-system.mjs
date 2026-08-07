@@ -118,6 +118,24 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     heatResumeThreshold: 35,
     policy: STOP_POLICY,
   },
+  'hash-rail': {
+    id: 'hash-rail',
+    displayName: 'Rail Gun',
+    kind: 'projectile',
+    damage: 54,
+    fireRatePerSecond: 0.7,
+    reloadSeconds: 2.6,
+    clipSize: 3,
+    chargeTicks: 72,
+    projectileSpeed: 2_000,
+    range: 1_100,
+    projectileRadius: 2,
+    spreadRadians: 0,
+    pelletCount: 1,
+    recoil: 38,
+    pickupReserveAmmo: 15,
+    policy: { type: 'pierce', maxTargets: 2 },
+  },
   'launcher-rig': {
     id: 'launcher-rig',
     compatibilityId: 'launcher-rig',
@@ -170,6 +188,11 @@ const UPGRADE_TREES = freezeDeep({
     damage: [{ flatBonus: 0.5 }, { flatBonus: 1 }, { flatBonus: 2, special: 'tracer-rounds' }],
     reloadSpeed: [{ multiplier: 1.25 }, { multiplier: 1.56 }, { multiplier: 1.95, special: 'drum-mag' }],
   },
+  'hash-rail': {
+    rateOfFire: [{ multiplier: 1.08 }, { multiplier: 1.18 }, { multiplier: 1.3, special: 'fast-rounds' }],
+    damage: [{ flatBonus: 6 }, { flatBonus: 12 }, { flatBonus: 20, special: 'deep-proof' }],
+    reloadSpeed: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.45, special: 'extended-mag' }],
+  },
   // The launcher was the only carryable weapon with no upgrade path at all.
   'launcher-rig': {
     rateOfFire: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.42, special: 'twin-tube' }],
@@ -192,6 +215,7 @@ export const pistolProgressionByWeapon = (ranks = {}) => ({
 const SPECIAL_EFFECTS = freezeDeep({
   // Rounds punch through a target and keep going.
   'armor-piercing': { policy: { type: 'pierce', maxTargets: 3 } },
+  'deep-proof': { policy: { type: 'pierce', maxTargets: 3 }, projectileTag: 'deep-proof' },
   ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
   // Shells detonate on impact.
   explosive: { policy: { type: 'splash', radius: 58 } },
@@ -326,6 +350,8 @@ function createPerWeaponState(id, { owned = false } = {}) {
     overheated: false,
     heatUpdatedTick: 0,
     burstRemaining: 0,
+    chargeStartedTick: null,
+    chargeReadyAnnounced: false,
   };
 }
 
@@ -434,6 +460,8 @@ export function selectWeapon(state, weaponId, { tick } = {}) {
   if (!state.weapons?.[weaponId]) throw new TypeError(`unknown weapon ${String(weaponId)}`);
   if (!state.weapons[weaponId].owned) throw new TypeError(`weapon ${String(weaponId)} is unowned`);
   const previousWeaponId = state.activeWeaponId;
+  state.weapons[previousWeaponId].chargeStartedTick = null;
+  state.weapons[previousWeaponId].chargeReadyAnnounced = false;
   state.activeWeaponId = weaponId;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick });
@@ -461,6 +489,8 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   }
   const previousWeaponId = state.activeWeaponId;
   if (select) {
+    state.weapons[previousWeaponId].chargeStartedTick = null;
+    state.weapons[previousWeaponId].chargeReadyAnnounced = false;
     state.activeWeaponId = id;
     state.switchReadyTick = tick + state.switchTicks;
   }
@@ -473,6 +503,7 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     reserveAmmo: weapon.reserveAmmo,
     previousWeaponId,
     activeWeaponId: state.activeWeaponId,
+    readyTick: select ? state.switchReadyTick : tick,
   });
 }
 
@@ -496,6 +527,8 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     weapon.heat = 0;
     weapon.overheated = false;
     weapon.heatUpdatedTick = tick;
+    weapon.chargeStartedTick = null;
+    weapon.chargeReadyAnnounced = false;
   }
   const previousWeaponId = state.activeWeaponId;
   // Selection through a refill honors ownership exactly like selectWeapon.
@@ -596,6 +629,7 @@ function buildShots({ definition, progression, state, direction, attackId }) {
 export function stepWeaponLoadout(state, {
   tick,
   fire = false,
+  releaseCharged = false,
   direction,
   progressionByWeapon = {},
 } = {}) {
@@ -613,22 +647,54 @@ export function stepWeaponLoadout(state, {
     && active.reserveAmmo !== null && active.reserveAmmo <= 0
     && active.reloadCompleteTick === null) {
     const previousWeaponId = state.activeWeaponId;
+    active.chargeStartedTick = null;
+    active.chargeReadyAnnounced = false;
     state.activeWeaponId = 'coin-blaster';
     state.switchReadyTick = tick + state.switchTicks;
     events.push(freezeDeep({ type: 'weapon:auto-fallback', tick, previousWeaponId, weaponId: 'coin-blaster', readyTick: state.switchReadyTick }));
   }
-  if (!fire || tick < state.switchReadyTick) return freezeDeep({ tick, events });
-  const normalizedDirection = normalize(direction);
   const weapon = state.weapons[state.activeWeaponId];
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
-  if (weapon.overheated) return freezeDeep({ tick, events });
-  if (weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
+  if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
   if (weapon.ammoInClip <= 0) {
     startReload(weapon, progression, tick, events);
     return freezeDeep({ tick, events });
   }
   if (tick < weapon.nextFireTick) return freezeDeep({ tick, events });
+  if (definition.chargeTicks) {
+    let chargedRelease = false;
+    if (fire) {
+      if (weapon.chargeStartedTick === null) {
+        weapon.chargeStartedTick = tick;
+        weapon.chargeReadyAnnounced = false;
+        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + definition.chargeTicks }));
+        return freezeDeep({ tick, events });
+      } else if (tick - weapon.chargeStartedTick >= definition.chargeTicks) {
+        if (!releaseCharged) {
+          if (!weapon.chargeReadyAnnounced) {
+            weapon.chargeReadyAnnounced = true;
+            events.push(freezeDeep({ type: 'weapon:charge-ready', tick, weaponId: definition.id }));
+          }
+          return freezeDeep({ tick, events });
+        }
+        weapon.chargeStartedTick = null;
+        weapon.chargeReadyAnnounced = false;
+        chargedRelease = true;
+      } else return freezeDeep({ tick, events });
+    }
+    if (!chargedRelease) {
+      if (weapon.chargeStartedTick === null) return freezeDeep({ tick, events });
+      const chargeTicks = tick - weapon.chargeStartedTick;
+      weapon.chargeStartedTick = null;
+      weapon.chargeReadyAnnounced = false;
+      if (chargeTicks < definition.chargeTicks) {
+        events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks }));
+        return freezeDeep({ tick, events });
+      }
+    }
+  } else if (!fire) return freezeDeep({ tick, events });
+  const normalizedDirection = normalize(direction);
   const attackId = `${definition.id}:${String(state.sequence).padStart(8, '0')}`;
   state.sequence += 1;
   const shots = buildShots({ definition, progression, state, direction: normalizedDirection, attackId });

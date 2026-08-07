@@ -19,10 +19,10 @@ function awardSchedule(ticks) {
   return getRunProgressionSnapshot(state);
 }
 
-test('S2 Litecoin pickup and combo milestones award bounded authored XP', () => {
+test('S2 Hash Rail cache and combo milestones award bounded authored XP', () => {
   assert.match(RUN_UPGRADE_CATALOG['validator-training'].description, /every source/i);
   assert.doesNotMatch(RUN_UPGRADE_CATALOG['validator-training'].description, /enemy defeats/i);
-  assert.equal(COLLECTIBLE_EFFECTS['hash-rail-core'].effectId, 'litecoin-token');
+  assert.equal(COLLECTIBLE_EFFECTS['hash-rail-core'].effectId, 'hash-rail-core');
   assert.equal(COLLECTIBLE_EFFECTS['hash-rail-core'].xpGain, 160);
   assert.deepEqual([0, 4, 5, 10, 20, 30, 31].map(comboMilestoneXp), [0, 0, 120, 240, 480, 900, 0]);
   const snapshot = awardSchedule([1, 2]);

@@ -35,6 +35,20 @@
         "layers": 3
       }
     },
+    "hmh-fire-hash-rail": {
+      "src": "./assets/audio/sfx/hmh-fire-hash-rail.wav",
+      "bytes": 20330,
+      "format": "wav",
+      "durationMs": 460,
+      "sha256": "89d20dda2adbae629befb6158f06c5eaada7b9525b8c84fd00c36e47be3d052b",
+      "synth": {
+        "seed": 2320964113,
+        "lowpassHz": 7200,
+        "drive": 1.7,
+        "peak": 0.72,
+        "layers": 3
+      }
+    },
     "hmh-fire-launcher-rig": {
       "src": "./assets/audio/sfx/hmh-fire-launcher-rig.wav",
       "bytes": 22976,
@@ -61,6 +75,20 @@
         "drive": 2.1,
         "peak": 0.76,
         "layers": 3
+      }
+    },
+    "hmh-hash-rail-charge": {
+      "src": "./assets/audio/sfx/hmh-hash-rail-charge.wav",
+      "bytes": 40616,
+      "format": "wav",
+      "durationMs": 920,
+      "sha256": "d3d86b0959990010e857ffa7e8a629255babc6351225958dca75439aa75a9220",
+      "synth": {
+        "seed": 3298976529,
+        "lowpassHz": 6800,
+        "drive": 1.25,
+        "peak": 0.46,
+        "layers": 2
       }
     },
     "hmh-weapon-empty": {
