@@ -5,6 +5,8 @@ import { getEnemyArchetype } from './enemy-archetypes.mjs';
 
 const EPSILON = 1e-9;
 export const ENEMY_CAPACITY = 192;
+export const ENEMY_SPATIAL_CELL_SIZE = 96;
+const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 export const AI_LOD_BANDS = Object.freeze([
   Object.freeze({ id: 'near', maxDistance: 640, cadenceTicks: 1 }),
   Object.freeze({ id: 'mid', maxDistance: 1400, cadenceTicks: 3 }),
@@ -167,7 +169,7 @@ export function attemptScheduledEnemyInsertion({
 
   const state = createEnemyState({ ...candidate, visualMode });
   population.active.push(state);
-  population.active.sort((a, b) => a.id.localeCompare(b.id));
+  population.active.sort((a, b) => lexical(a.id, b.id));
   population.seenIds.add(state.id);
   population.activeThreat += archetype.costs.threat;
   population.insertedCount += 1;
@@ -253,7 +255,7 @@ export function allocateAttackTokens({
     .sort((a, b) => {
       const aReserved = a.enemy.attackPhase === 'tell' || a.enemy.attackPhase === 'attack' ? 0 : 1;
       const bReserved = b.enemy.attackPhase === 'tell' || b.enemy.attackPhase === 'attack' ? 0 : 1;
-      return aReserved - bReserved || a.distance - b.distance || a.enemy.id.localeCompare(b.enemy.id);
+      return aReserved - bReserved || a.distance - b.distance || lexical(a.enemy.id, b.enemy.id);
     });
   const tokens = new Map();
   for (const candidate of candidates) {
@@ -277,6 +279,7 @@ export function computeEnemySeparation(enemies, {
   maxNeighbors = 8,
   strength = 0.35,
   maxStep = MAX_ENEMY_SEPARATION_STEP,
+  cellSize = ENEMY_SPATIAL_CELL_SIZE,
 } = {}) {
   if (!Array.isArray(enemies)) throw new TypeError('enemies must be an array');
   finite(neighborRadius, 'neighborRadius');
@@ -284,14 +287,39 @@ export function computeEnemySeparation(enemies, {
   positiveInteger(maxNeighbors, 'maxNeighbors');
   finite(strength, 'strength');
   finite(maxStep, 'maxStep');
+  finite(cellSize, 'cellSize');
   if (maxStep <= 0) throw new TypeError('maxStep must be positive');
+  if (cellSize <= 0) throw new TypeError('cellSize must be positive');
   if (strength < 0 || strength > 1) throw new TypeError('strength must be in [0, 1]');
-  const ordered = enemies.filter((enemy) => enemy?.active).sort((a, b) => a.id.localeCompare(b.id));
+  const ordered = enemies.filter((enemy) => enemy?.active).sort((a, b) => lexical(a.id, b.id));
+  if (ordered.length > ENEMY_CAPACITY) throw new TypeError(`active enemy count cannot exceed capacity ${ENEMY_CAPACITY}`);
+  const grid = new Map();
+  const cellKey = (x, y) => `${x},${y}`;
+  for (const enemy of ordered) {
+    const cellX = Math.floor(finite(enemy.x, `${enemy.id}.x`) / cellSize);
+    const cellY = Math.floor(finite(enemy.y, `${enemy.id}.y`) / cellSize);
+    const key = cellKey(cellX, cellY);
+    const bucket = grid.get(key) ?? [];
+    bucket.push(enemy);
+    grid.set(key, bucket);
+  }
+  const cellReach = Math.ceil(neighborRadius / cellSize);
   const deltas = new Map();
   let maxNeighborsObserved = 0;
+  let broadphaseCandidateChecks = 0;
   for (const enemy of ordered) {
-    const neighbors = ordered
-      .filter((other) => other !== enemy)
+    const cellX = Math.floor(enemy.x / cellSize);
+    const cellY = Math.floor(enemy.y / cellSize);
+    const localCandidates = [];
+    for (let offsetY = -cellReach; offsetY <= cellReach; offsetY += 1) {
+      for (let offsetX = -cellReach; offsetX <= cellReach; offsetX += 1) {
+        for (const other of grid.get(cellKey(cellX + offsetX, cellY + offsetY)) ?? []) {
+          if (other !== enemy) localCandidates.push(other);
+        }
+      }
+    }
+    broadphaseCandidateChecks += localCandidates.length;
+    const neighbors = localCandidates
       .map((other) => ({
         other,
         dx: enemy.x - other.x,
@@ -299,7 +327,7 @@ export function computeEnemySeparation(enemies, {
         distance: Math.hypot(enemy.x - other.x, enemy.y - other.y),
       }))
       .filter((candidate) => candidate.distance <= neighborRadius)
-      .sort((a, b) => a.distance - b.distance || a.other.id.localeCompare(b.other.id))
+      .sort((a, b) => a.distance - b.distance || lexical(a.other.id, b.other.id))
       .slice(0, maxNeighbors);
     maxNeighborsObserved = Math.max(maxNeighborsObserved, neighbors.length);
     let x = 0;
@@ -322,7 +350,12 @@ export function computeEnemySeparation(enemies, {
     }
     deltas.set(enemy.id, Object.freeze({ x, y }));
   }
-  return Object.freeze({ deltas, maxNeighborsObserved });
+  return Object.freeze({
+    deltas,
+    maxNeighborsObserved,
+    broadphaseCandidateChecks,
+    naiveCandidateChecks: ordered.length * Math.max(0, ordered.length - 1),
+  });
 }
 
 export function stepEnemyPopulation({
@@ -344,7 +377,7 @@ export function stepEnemyPopulation({
   if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
   if (typeof preservePrevious !== 'boolean') throw new TypeError('preservePrevious must be boolean');
 
-  const ordered = population.active.filter((enemy) => enemy.active && enemy.health > 0).sort((a, b) => a.id.localeCompare(b.id));
+  const ordered = population.active.filter((enemy) => enemy.active && enemy.health > 0).sort((a, b) => lexical(a.id, b.id));
   const separation = computeEnemySeparation(ordered);
   let decisions = 0;
   let safetySteps = 0;

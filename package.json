@@ -127,6 +127,7 @@
     "assets:hmh:weapon-sfx:verify": "python scripts/build-hmh-weapon-sfx.py --verify-reproducible",
     "smoke:hmh:mobile-controls": "node scripts/hmh-reboot-mobile-controls-browser-smoke.mjs",
     "bench:hmh:weapons": "node scripts/hmh-reboot-weapon-benchmark.mjs",
+    "bench:hmh:enemies": "node scripts/hmh-reboot-enemy-simulation-benchmark.mjs",
     "smoke:hmh:bear-market-burner": "node scripts/hmh-reboot-bear-market-burner-browser-matrix.mjs",
     "bench:hmh:bear-market-burner": "node scripts/hmh-reboot-bear-market-burner-benchmark.mjs",
     "smoke:hmh:forked-standard": "node scripts/hmh-reboot-forked-standard-browser-matrix.mjs",

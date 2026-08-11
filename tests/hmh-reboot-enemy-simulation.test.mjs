@@ -11,6 +11,7 @@ import {
   AI_LOD_BANDS,
   DEFAULT_ATTACK_TOKEN_BUDGET,
   ENEMY_CAPACITY,
+  ENEMY_SPATIAL_CELL_SIZE,
   allocateAttackTokens,
   attemptScheduledEnemyInsertion,
   MAX_ENEMY_SEPARATION_STEP,
@@ -100,6 +101,31 @@ test('stable bounded separation is independent of source order and caps neighbor
   assert.deepEqual([...a.deltas.entries()], [...b.deltas.entries()]);
   assert.ok(a.maxNeighborsObserved <= 4);
   assert.ok([...a.deltas.values()].some((delta) => Math.hypot(delta.x, delta.y) > 0));
+});
+
+test('spatial separation broadphase prunes distant work while preserving deterministic local pushes', () => {
+  assert.equal(ENEMY_SPATIAL_CELL_SIZE, 96);
+  const clustered = Array.from({ length: 12 }, (_, index) => enemy(
+    'bagholder-rusher',
+    `cluster-${String(index).padStart(2, '0')}`,
+    index % 4,
+    Math.floor(index / 4),
+  ));
+  const distant = Array.from({ length: 116 }, (_, index) => enemy(
+    'bagholder-rusher',
+    `distant-${String(index).padStart(3, '0')}`,
+    1000 + index * 500,
+    (index % 2) * 500,
+  ));
+  const roster = [...clustered, ...distant];
+  const forward = computeEnemySeparation(roster);
+  const reverse = computeEnemySeparation([...roster].reverse());
+  assert.deepEqual([...forward.deltas.entries()], [...reverse.deltas.entries()]);
+  assert.equal(forward.naiveCandidateChecks, roster.length * (roster.length - 1));
+  assert.ok(forward.broadphaseCandidateChecks < forward.naiveCandidateChecks / 8);
+  assert.ok(clustered.some((member) => Math.hypot(...Object.values(forward.deltas.get(member.id))) > 0));
+  const overflow = Array.from({ length: ENEMY_CAPACITY + 1 }, (_, index) => enemy('bagholder-rusher', `overflow-${String(index).padStart(3, '0')}`, -1000 - index * 500));
+  assert.throws(() => computeEnemySeparation(overflow), /capacity/i);
 });
 
 test('scheduled insertion advances timers and burst counters only after a real exact-candidate insertion', () => {
@@ -239,6 +265,7 @@ test('enemy state validates collision identity and accepts certified production 
 
 test('runtime integrates six production roles in deterministic movement, hurtbox, attack, then combat-authority order', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const simulationSource = readFileSync(new URL('../apps/hmh-reboot/src/enemy-simulation.mjs', import.meta.url), 'utf8');
   const movement = source.indexOf('lastEnemyStep = stepEnemyPopulation');
   const hurtboxes = source.indexOf('const hurtTargets =');
   const attacks = source.indexOf('lastEnemyAttack = stepEnemyAttacks');
@@ -252,6 +279,7 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyArchetypes/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemySafetySteps/);
   assert.doesNotMatch(source, /wallet|settlement|contractAddress|localStorage/);
+  assert.doesNotMatch(simulationSource, /localeCompare/, 'authoritative ordering must use explicit lexical comparison');
 });
 
 test('separation push is bounded so overlapping bodies slide apart instead of popping', () => {
