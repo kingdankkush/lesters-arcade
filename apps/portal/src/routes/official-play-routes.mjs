@@ -106,7 +106,7 @@ export function createOfficialPlayRoutes({
         // Lazy-load the game's art and data manifests the first time the player
         // selects this cabinet. The heavy HMH bundles live in games/<id>/loader.mjs,
         // fetched over HTTP only on demand, so the portal shell stays small.
-        if (cabinet.gameId === 'chikun' && DEV_CABINETS_ENABLED) {
+        if (cabinet.gameId === 'chikun') {
           card.classList.add('is-loading');
           card.setAttribute('aria-busy', 'true');
           try {
@@ -226,10 +226,14 @@ export function createOfficialPlayRoutes({
     const { officialSelectedMode, hmhRebootActive } = getContext();
     const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
     const game = selectedGame();
+    if (dom.officialGameplay) dom.officialGameplay.dataset.gameId = game.id;
     if (game.id === 'chikun') {
       dom.officialGameModeTitle.textContent = `${game.title} // ${modeLabel}`;
+      if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = officialSelectedMode === 'ranked'
+        ? 'Starting an isolated, parent-issued Ranked flight. Final input evidence must pass deterministic replay before score-board or profile writes.'
+        : 'Starting isolated Free practice. No profile, leaderboard, settlement, or chain write can occur.';
       if (dom.combatStatus) {
-        dom.combatStatus.textContent = "Chikun's Escape vertical slice is running through Cabinet SDK v1. Tap-to-flap scoring feeds the same free/ranked parent session rails.";
+        dom.combatStatus.textContent = "Chikun's Escape is loading in its sandboxed canvas runtime. Tap, click, or press Space to flap.";
       }
       return;
     }

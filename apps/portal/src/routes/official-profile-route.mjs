@@ -381,6 +381,16 @@ export function createOfficialProfileRoute({
     const hmhStats = routeState.gameId === 'lester-blaster'
       ? buildHardMoneyHeroesStatsModule(state, connectedWallet, routeState.gameId)
       : null;
+    const chikunRuns = routeState.gameId === 'chikun'
+      ? Object.values(state.sessions ?? {}).filter((session) => session.gameId === 'chikun' && session.wallet === connectedWallet)
+      : [];
+    const chikunTotals = chikunRuns.reduce((totals, session) => {
+      totals.coins += session.runStats?.coinsCollected ?? 0;
+      totals.forks += session.runStats?.forksPassed ?? 0;
+      totals.flaps += session.runStats?.flapCount ?? 0;
+      totals.awards += session.runStats?.achievements?.length ?? 0;
+      return totals;
+    }, { coins: 0, forks: 0, flaps: 0, awards: 0 });
     if (!gp || (gp.paidRuns + gp.freeRuns) === 0) {
       const empty = el('div', { className: 'profile-empty-state' });
       appendText(empty, 'strong', `No runs recorded for ${getGame(routeState.gameId).title} yet.`);
@@ -388,7 +398,16 @@ export function createOfficialProfileRoute({
       statsCard.append(empty);
     } else {
       const bestScore = hmhStats?.bestScore ?? Math.max(gp.bestPaidScore ?? 0, gp.bestFreeScore ?? 0);
-      const stats = [
+      const stats = routeState.gameId === 'chikun' ? [
+        ['Best Score', bestScore.toLocaleString()],
+        ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
+        ['Longest Flight', formatSeconds(gp.longestRunSeconds ?? 0)],
+        ['Coins', chikunTotals.coins.toLocaleString()],
+        ['Forks Cleared', chikunTotals.forks.toLocaleString()],
+        ['Flaps', chikunTotals.flaps.toLocaleString()],
+        ['Awards', chikunTotals.awards.toLocaleString()],
+        ['Integrity', 'Replay verified'],
+      ] : [
         ['Best Score', bestScore.toLocaleString()],
         ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
         ['Longest Run', hmhStats?.longestSurvivalLabel ?? formatSeconds(gp.longestRunSeconds ?? 0)],
@@ -417,14 +436,18 @@ export function createOfficialProfileRoute({
 
       const breakdown = el('div', { className: 'profile-breakdown-grid' });
       const enemyCard = el('div', { className: 'profile-breakdown-card' });
-      appendText(enemyCard, 'span', 'Enemy breakdown', 'cabinet-status-label');
-      const enemyCopy = hmhStats?.enemyBreakdown?.length
+      appendText(enemyCard, 'span', routeState.gameId === 'chikun' ? 'Flight ledger' : 'Enemy breakdown', 'cabinet-status-label');
+      const enemyCopy = routeState.gameId === 'chikun'
+        ? `${chikunTotals.coins} coins collected · ${chikunTotals.forks} forks cleared · ${chikunTotals.flaps} recorded flaps.`
+        : hmhStats?.enemyBreakdown?.length
         ? hmhStats.enemyBreakdown.slice(0, 3).map((enemy) => `${enemy.title}: ${enemy.kills}`).join(' · ')
         : 'No typed enemy kills recorded yet.';
       appendText(enemyCard, 'small', enemyCopy);
       const bossCard = el('div', { className: 'profile-breakdown-card' });
-      appendText(bossCard, 'span', 'Boss ledger', 'cabinet-status-label');
-      const bossCopy = hmhStats?.bossBreakdown?.length
+      appendText(bossCard, 'span', routeState.gameId === 'chikun' ? 'Ranked integrity' : 'Boss ledger', 'cabinet-status-label');
+      const bossCopy = routeState.gameId === 'chikun'
+        ? 'Ranked results are accepted only after the parent replays the child input evidence against the issued seed, build, and season.'
+        : hmhStats?.bossBreakdown?.length
         ? hmhStats.bossBreakdown.slice(0, 3).map((boss) => `${boss.title}: ${boss.kills}`).join(' · ')
         : `${gp.bossKills ?? 0} boss kill(s) recorded.`;
       appendText(bossCard, 'small', bossCopy);
@@ -442,7 +465,9 @@ export function createOfficialProfileRoute({
           const row = el('div', { className: 'game-history-row' });
           const rs = s.runStats ?? {};
           appendText(row, 'span', `${(s.score ?? rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
-          appendText(row, 'span', `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${s.survivalLabel ?? formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
+          appendText(row, 'span', routeState.gameId === 'chikun'
+            ? `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.coinsCollected ?? 0} coins · ${rs.forksPassed ?? 0} forks · ${s.survivalLabel ?? formatSurvive(rs.elapsedSeconds ?? 0)}`
+            : `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${s.survivalLabel ?? formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
           appendText(row, 'span', s.trust?.label ?? (s.settlement?.primaryTxHash ? 'Settled' : 'Prototype'), `game-history-chain trust-${s.trust?.tone ?? 'muted'}`);
           if (s.detailHref) {
             const link = el('a', { className: 'game-history-link', href: s.detailHref, textContent: 'Open run' });
@@ -455,7 +480,7 @@ export function createOfficialProfileRoute({
     }
     dom.officialCabinetGrid.append(statsCard);
 
-    if (hmhRunHistory) {
+    if (hmhRunHistory && routeState.gameId === 'lester-blaster') {
       const historyCard = el('article', { className: 'official-info-card canonical-run-history-card' });
       appendText(historyCard, 'span', 'CANONICAL RUN HISTORY', 'cabinet-status-label');
       appendText(historyCard, 'strong', `${hmhRunHistory.totalCanonicalRuns} verified-format run${hmhRunHistory.totalCanonicalRuns === 1 ? '' : 's'} on this device`);

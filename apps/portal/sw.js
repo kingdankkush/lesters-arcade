@@ -10,7 +10,7 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v9-hmh-pixi-vendor';
+const CACHE_VERSION = 'lesters-arcade-v10-chikun-runtime';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
@@ -22,6 +22,11 @@ const PRECACHE_URLS = [
   '/hmh-reboot/styles.css',
   '/dist/hmh-reboot/game.js',
   '/dist/chunks/hmh-pixi.js',
+  '/chikun/index.html',
+  '/chikun/game.css',
+  '/dist/chikun/game.js',
+  '/assets/generated/chikun-game/chikun-coast.webp',
+  '/assets/generated/chikun-game/chikun-fall.webp',
 ];
 
 const CACHE_FIRST_DESTINATIONS = new Set(['image', 'font', 'audio', 'video']);

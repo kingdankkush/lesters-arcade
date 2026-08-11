@@ -667,7 +667,8 @@
   color: rgba(159, 233, 255, 0.82);
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   line-height: 1.5;
-  word-break: break-all;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 .profile-hero-stats {
   display: grid;
@@ -1377,13 +1378,20 @@
   opacity: 0.6;
   border: 1px solid rgba(25,247,255,0.28);
   background: rgba(8,14,32,0.7);
+  color: rgba(214, 246, 255, 0.88);
   cursor: pointer;
 }
 .leaderboard-game-tab.is-active {
   opacity: 1;
+  color: #ffe84d;
   border-color: #ffe84d;
   box-shadow: 0 0 10px rgba(255,232,77,0.4);
   background: linear-gradient(135deg, rgba(255,232,77,0.14), rgba(25,247,255,0.1));
+}
+
+@media (max-width: 520px) {
+  .achievements-head { align-items: flex-start; flex-wrap: wrap; }
+  .achievements-count { white-space: normal; }
 }
 .leaderboard-game-tab.is-locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.6); }
 .leaderboard-game-tab-title { font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; }

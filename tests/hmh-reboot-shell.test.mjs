@@ -243,12 +243,22 @@ test('built child bundle exists after the project build', async () => {
   assert.ok(info.size > 100_000);
 });
 
-test('service worker versions only the minimal reboot shell for offline startup', async () => {
+test('service worker versions both playable cabinet shells for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v9-hmh-pixi-vendor'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v10-chikun-runtime'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
-  for (const asset of ['/hmh-reboot/index.html', '/hmh-reboot/styles.css', '/dist/hmh-reboot/game.js', '/dist/chunks/hmh-pixi.js']) {
+  for (const asset of [
+    '/hmh-reboot/index.html',
+    '/hmh-reboot/styles.css',
+    '/dist/hmh-reboot/game.js',
+    '/dist/chunks/hmh-pixi.js',
+    '/chikun/index.html',
+    '/chikun/game.css',
+    '/dist/chikun/game.js',
+    '/assets/generated/chikun-game/chikun-coast.webp',
+    '/assets/generated/chikun-game/chikun-fall.webp',
+  ]) {
     assert.match(preCache, new RegExp(asset.replace(/[./]/g, '\\$&')));
   }
-  assert.doesNotMatch(preCache, /\/assets\//, 'heavy art and audio packages must remain lazy');
+  assert.doesNotMatch(preCache, /hmh-reboot.*(?:atlas|audio)|assets\/audio/, 'heavy HMH art and audio packages must remain lazy');
 });

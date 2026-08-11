@@ -97,6 +97,7 @@ export function createOfficialLeaderboardRoute({
       tab.addEventListener('click', () => {
         if (routeState.gameId === cabinet.gameId) return;
         routeState.gameId = cabinet.gameId;
+        if (cabinet.gameId === 'chikun') routeState.source = 'local';
         routeState.search = '';
         routeState.sortKey = 'score';
         routeState.sortDir = 'desc';
@@ -238,15 +239,16 @@ export function createOfficialLeaderboardRoute({
     const term = routeState.search.trim().toLowerCase();
     let rows = term ? ranked.filter((e) => (e.displayName || '').toLowerCase().includes(term)) : ranked.slice();
     const dir = routeState.sortDir === 'asc' ? 1 : -1;
+    const chikunBoard = routeState.gameId === 'chikun';
     const getVal = (e, key) => {
       switch (key) {
         case 'name': return (e.displayName || '').toLowerCase();
         case 'date': return e.recordedAt || '';
-        case 'kills': return e.runStats?.kills ?? 0;
+        case 'kills': return chikunBoard ? (e.runStats?.coinsCollected ?? 0) : (e.runStats?.kills ?? 0);
         case 'survive': return e.runStats?.surviveSeconds ?? e.runStats?.elapsedSeconds ?? 0;
-        case 'level': return e.runStats?.level ?? 0;
-        case 'combo': return e.runStats?.maxCombo ?? 0;
-        case 'powerups': return (e.runStats?.collectedPowerUps?.length ?? e.runStats?.powerUpsCollected ?? 0);
+        case 'level': return chikunBoard ? (e.runStats?.forksPassed ?? 0) : (e.runStats?.level ?? 0);
+        case 'combo': return chikunBoard ? (e.runStats?.flapCount ?? 0) : (e.runStats?.maxCombo ?? 0);
+        case 'powerups': return chikunBoard ? (e.runStats?.achievements?.length ?? 0) : (e.runStats?.collectedPowerUps?.length ?? e.runStats?.powerUpsCollected ?? 0);
         default: return e.score;
       }
     };
@@ -264,11 +266,11 @@ export function createOfficialLeaderboardRoute({
       ['rank', '#', 'rank'],
       ['name', 'DISPLAY NAME', 'name'],
       ['score', 'SCORE', 'score'],
-      ['kills', 'KILLS', 'kills'],
+      ['kills', chikunBoard ? 'COINS' : 'KILLS', 'kills'],
       ['survive', 'SURVIVED', 'survive'],
-      ['level', 'LVL', 'level'],
-      ['combo', 'COMBO', 'combo'],
-      ['powerups', 'PWR', 'powerups'],
+      ['level', chikunBoard ? 'FORKS' : 'LVL', 'level'],
+      ['combo', chikunBoard ? 'FLAPS' : 'COMBO', 'combo'],
+      ['powerups', chikunBoard ? 'AWARDS' : 'PWR', 'powerups'],
       ['trust', 'TRUST', 'trust'],
       ['detail', 'RUN', 'date'],
       ['date', 'POSTED', 'date'],
@@ -315,11 +317,11 @@ export function createOfficialLeaderboardRoute({
       else appendText(nameCell, 'span', provenance.label, 'lt-house-score');
       row.append(nameCell);
       appendText(row, 'strong', entry.score.toLocaleString(), 'lt-score');
-      appendText(row, 'span', String(entry.runStats?.kills ?? '—'), 'lt-kills');
+      appendText(row, 'span', String(chikunBoard ? (entry.runStats?.coinsCollected ?? 0) : (entry.runStats?.kills ?? '—')), 'lt-kills');
       appendText(row, 'span', formatSurvive(entry.runStats?.surviveSeconds ?? entry.runStats?.elapsedSeconds ?? 0), 'lt-survive');
-      appendText(row, 'span', `L${entry.runStats?.level ?? 1}`, 'lt-level');
-      appendText(row, 'span', `×${entry.runStats?.maxCombo ?? 0}`, 'lt-combo');
-      appendText(row, 'span', String(entry.runStats?.collectedPowerUps?.length ?? entry.runStats?.powerUpsCollected ?? 0), 'lt-powerups');
+      appendText(row, 'span', chikunBoard ? String(entry.runStats?.forksPassed ?? 0) : `L${entry.runStats?.level ?? 1}`, 'lt-level');
+      appendText(row, 'span', chikunBoard ? String(entry.runStats?.flapCount ?? 0) : `×${entry.runStats?.maxCombo ?? 0}`, 'lt-combo');
+      appendText(row, 'span', String(chikunBoard ? (entry.runStats?.achievements?.length ?? 0) : (entry.runStats?.collectedPowerUps?.length ?? entry.runStats?.powerUpsCollected ?? 0)), 'lt-powerups');
       const trustBadge = el('span', { className: `lt-trust lt-trust-${entry.trust?.tone ?? 'muted'}` });
       trustBadge.textContent = provenance.official ? (entry.trust?.label ?? 'Pending') : provenance.label.replace('HOUSE SCORE', 'House Score');
       if (entry.trust?.flags?.length) {
@@ -343,7 +345,9 @@ export function createOfficialLeaderboardRoute({
       you.append(renderAvatarChip(connectedWallet, active.playerEntry.displayName, 'leaderboard-row-avatar'));
       appendText(you, 'span', `YOUR RANK #${active.playerRank}`, 'leaderboard-you-rank');
       appendText(you, 'strong', `${active.playerEntry.score.toLocaleString()} pts`, 'leaderboard-you-score');
-      appendText(you, 'small', `${active.playerEntry.runStats?.kills ?? 0} kills · ${formatSurvive(active.playerEntry.runStats?.surviveSeconds ?? active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`, 'leaderboard-you-detail');
+      appendText(you, 'small', chikunBoard
+        ? `${active.playerEntry.runStats?.coinsCollected ?? 0} coins · ${active.playerEntry.runStats?.forksPassed ?? 0} forks · ${formatSurvive(active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`
+        : `${active.playerEntry.runStats?.kills ?? 0} kills · ${formatSurvive(active.playerEntry.runStats?.surviveSeconds ?? active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`, 'leaderboard-you-detail');
       board.append(you);
     } else if (connectedWallet) {
       appendText(board, 'small', 'You have no ranked score in this period yet. Play Ranked and submit at game over.');

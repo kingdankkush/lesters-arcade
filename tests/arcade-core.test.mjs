@@ -478,7 +478,6 @@ test('parent session allocator issues deterministic seed, build, and season bind
     gameId: 'chikun',
     mode: 'paid',
     sessionNonce: '123e4567-e89b-42d3-a456-426614174000',
-    allowDevCabinet: true,
   };
   const a = startPlaySession(common);
   const b = startPlaySession(common);
@@ -489,7 +488,7 @@ test('parent session allocator issues deterministic seed, build, and season bind
   assert.notEqual(a.seed, changed.seed);
   assert.equal(Number.isInteger(a.seed), true);
   assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
-  assert.equal(a.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.2.0');
+  assert.equal(a.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.3.0');
   assert.equal(a.seasonId, 'chikun-season-preview-1');
   assert.equal(a.canonicalContext.seed, a.seed);
   assert.equal(a.canonicalContext.buildHash, a.buildHash);
@@ -829,28 +828,27 @@ test('free score submission remains practice-only and does not track progress, a
   assert.equal(snapshot.transactions.length, 0);
 });
 
-test('initial arcade state exposes only shipped public cabinets as playable', () => {
+test('initial arcade state exposes every shipped public cabinet as playable', () => {
   const state = createInitialArcadeState();
   const playable = ARCADE_GAMES.filter((game) => game.status === 'playable');
   const playableIds = playable.map((game) => game.id);
   const chikun = ARCADE_GAMES.find((game) => game.id === 'chikun');
 
-  assert.deepEqual(playableIds, ['lester-blaster']);
+  assert.deepEqual(playableIds, ['lester-blaster', 'chikun']);
   assert.equal(playable[0].title, 'Hard Money Heroes');
-  assert.equal(chikun.status, 'coming-soon');
-  assert.equal(chikun.publicPlayable, false);
+  assert.equal(chikun.status, 'playable');
+  assert.equal(chikun.publicPlayable, true);
   assert.equal(state.games.length >= 4, true);
 });
 
-test('public play sessions reject coming-soon cabinets unless the dev harness explicitly opts in', () => {
+test('public Chikun sessions start without the development-cabinet bypass', () => {
   const wallet = '0x' + '1'.repeat(40);
-  assert.throws(
-    () => startPlaySession({ wallet, gameId: 'chikun', mode: 'paid' }),
-    /not playable yet/,
-  );
-  const devSession = startPlaySession({ wallet, gameId: 'chikun', mode: 'free', allowDevCabinet: true });
-  assert.equal(devSession.gameId, 'chikun');
-  assert.equal(devSession.leaderboardEligible, false);
+  const freeSession = startPlaySession({ wallet, gameId: 'chikun', mode: 'free' });
+  const rankedSession = startPlaySession({ wallet, gameId: 'chikun', mode: 'paid' });
+  assert.equal(freeSession.gameId, 'chikun');
+  assert.equal(freeSession.leaderboardEligible, false);
+  assert.equal(rankedSession.gameId, 'chikun');
+  assert.equal(rankedSession.leaderboardEligible, true);
 });
 
 test('Hard Money Heroes canon captures Justin confirmed title, tone, world, economy, audio, and brand direction', () => {
@@ -884,9 +882,9 @@ test('game selection model presents arcade cabinets as SNES-style cartridges con
   assert.equal(lesterBlaster.playable, true);
   assert.equal(lesterBlaster.routePath, '/play/hard-money-heroes');
   const chikun = cartridges.find((cartridge) => cartridge.id === 'chikun');
-  assert.equal(chikun.playable, false);
-  assert.equal(chikun.status, 'coming-soon');
-  assert.equal(chikun.routePath, null);
+  assert.equal(chikun.playable, true);
+  assert.equal(chikun.status, 'playable');
+  assert.equal(chikun.routePath, '/play/chikun');
   assert.equal(chikun.devRoutePath, '/play/chikun?devCabinets=1');
   assert.equal(chikun.discoveryTags.includes('tap'), true);
 });
@@ -2009,7 +2007,7 @@ test('UI quality guide model covers controls, tooltips, instructions, branding, 
   assert.equal(LESTER_ARCADE_UI_QUALITY_SYSTEM.instructions.some((instruction) => instruction.title.includes('Survive')), true);
 });
 
-test('Chikun mode selection uses canonical title, game-specific copy, and temporary dev art without changing launch gates', () => {
+test('Chikun mode selection uses canonical title, supplied production art, and truthful score rails', () => {
   const hardMoneyHeroes = buildGameModeSelectModel('lester-blaster');
   assert.equal(hardMoneyHeroes.title, 'Hard Money Heroes');
   assert.equal(hardMoneyHeroes.artStatus, 'production');
@@ -2018,23 +2016,25 @@ test('Chikun mode selection uses canonical title, game-specific copy, and tempor
 
   const chikun = buildGameModeSelectModel('chikun');
   assert.equal(chikun.title, "Chikun's Escape");
-  assert.equal(chikun.artStatus, 'temporary-derived');
-  assert.match(chikun.copy, /development harness/i);
+  assert.equal(chikun.artStatus, 'production');
+  assert.match(chikun.copy, /endless guest practice/i);
   assert.match(chikun.free.copy, /local score only/i);
-  assert.equal(chikun.ranked.official, false);
+  assert.equal(chikun.ranked.official, true);
   assert.equal(chikun.ranked.requiresZkLtc, false);
   assert.match(chikun.ranked.copy, /parent replay verification/i);
-  assert.match(chikun.ranked.copy, /publishing remains disabled/i);
-  assert.match(chikun.free.bannerAlt, /cyan synthwave grid/i);
-  assert.match(chikun.ranked.bannerAlt, /Big Corp tower.*red synthwave grid/i);
+  assert.match(chikun.ranked.copy, /on-chain publishing remains safely gated/i);
+  assert.match(chikun.free.bannerAlt, /bright blue sky.*green pipes/i);
+  assert.match(chikun.ranked.bannerAlt, /stormy lightning sky.*green pipes/i);
   assert.equal(chikun.backgroundPosition, 'right center');
-  assert.equal(chikun.free.bannerAsset, chikun.ranked.bannerAsset);
-  assert.equal(chikun.backgroundAsset, chikun.free.bannerAsset);
-  assert.equal(chikun.free.bannerPosition, 'left center');
-  assert.equal(chikun.ranked.bannerPosition, 'right center');
+  assert.notEqual(chikun.free.bannerAsset, chikun.ranked.bannerAsset);
+  assert.equal(chikun.backgroundAsset, chikun.ranked.bannerAsset);
+  assert.equal(chikun.free.bannerPosition, 'center center');
+  assert.equal(chikun.ranked.bannerPosition, 'center center');
 
-  const assetPath = fileURLToPath(new URL(`../apps/portal/${chikun.backgroundAsset.replace('./', '')}`, import.meta.url));
-  assert.equal(existsSync(assetPath) && statSync(assetPath).size > 100_000, true, `${chikun.backgroundAsset} exists`);
+  for (const bannerAsset of [chikun.free.bannerAsset, chikun.ranked.bannerAsset]) {
+    const assetPath = fileURLToPath(new URL(`../apps/portal/${bannerAsset.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(assetPath) && statSync(assetPath).size > 100_000, true, `${bannerAsset} exists`);
+  }
 
   const portalHtml = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const portalMain = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
@@ -2052,8 +2052,8 @@ test('Chikun mode selection uses canonical title, game-specific copy, and tempor
   const chikunGame = ARCADE_GAMES.find((game) => game.id === 'chikun');
   const chikunCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'chikun');
   assert.equal(chikunGame.title, "Chikun's Escape");
-  assert.equal(chikunGame.publicPlayable, false);
-  assert.equal(chikunCabinet.playable, false);
+  assert.equal(chikunGame.publicPlayable, true);
+  assert.equal(chikunCabinet.playable, true);
 });
 
 test('V2 app shell hides prototype chrome behind full-screen wallet profile, cabinet, and leaderboard navigation', () => {
@@ -2088,12 +2088,13 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
     assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
   }
   const chikunCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'chikun');
-  assert.equal(chikunCabinet.status, 'coming-soon');
-  assert.equal(chikunCabinet.playable, false);
+  assert.equal(chikunCabinet.status, 'playable');
+  assert.equal(chikunCabinet.playable, true);
   assert.equal(chikunCabinet.devPlayable, true);
-  assert.match(chikunCabinet.description, /In development by Louie/);
+  assert.equal(chikunCabinet.leaderboardEligible, true);
+  assert.match(chikunCabinet.description, /replay-verified Ranked scores/i);
   assert.equal(chikunCabinet.desktopCabinetSprite.id, 'chikun-cabinet');
-  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 1);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 2);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.durationSeconds, 8);

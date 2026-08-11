@@ -53,7 +53,8 @@ function git(args) {
 }
 
 const allFiles = await walkFiles(root);
-const gitDir = path.join(root, '.git');
+const gitDirValue = git(['rev-parse', '--git-dir']);
+const gitDir = gitDirValue ? path.resolve(root, gitDirValue) : path.join(root, '.git');
 const gitFiles = await walkFiles(gitDir);
 const tracked = git(['ls-files']).split('\n').filter(Boolean);
 const status = git(['status', '--short', '--branch']);

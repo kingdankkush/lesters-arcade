@@ -61,7 +61,7 @@ The active HMH direction is a deterministic top-down 2.5D roguelike run-and-gun 
 - 60 FPS desktop and 30 FPS mobile targets with 100+ enemy pressure.
 - Parent-owned profiles, sessions, leaderboards, and future verified LitVM publication.
 
-The controlling roadmap is [.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md](.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md).
+The ongoing roadmap and certification history are maintained in [docs/handoffs/](docs/handoffs/).
 
 ---
 

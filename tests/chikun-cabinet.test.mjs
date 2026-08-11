@@ -40,8 +40,8 @@ test('WO-55 Chikun ships one valid playable ranked Cabinet SDK manifest', () => 
   assert.equal(result.manifest.id, 'chikun');
   assert.equal(result.manifest.version, CHIKUN_CABINET_VERSION);
   assert.equal(raw.runtimeVersion, CHIKUN_RUNTIME_VERSION);
-  assert.equal(CHIKUN_CABINET_VERSION, '0.2.0');
-  assert.equal(CHIKUN_RUNTIME_VERSION, 'deterministic-core-v2');
+  assert.equal(CHIKUN_CABINET_VERSION, '0.3.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v1');
   assert.equal(result.manifest.status, 'playable');
   assert.equal(result.manifest.controlScheme, 'tap');
   assert.equal(result.manifest.rankedEligible, true);
@@ -123,7 +123,7 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
 
   const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
   assert.equal(ctx.seed, session.seed);
-  assert.equal(ctx.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.2.0');
+  assert.equal(ctx.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.3.0');
   assert.equal(ctx.seasonId, 'chikun-season-preview-1');
   assert.equal(result.seed, session.seed);
   assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));
@@ -195,22 +195,21 @@ test('WO-55 Chikun cabinet emits replay evidence through the public adapter path
   assert.equal(parentPacket.scoreClaim.runStats.survivalTime, result.survivalTime);
 });
 
-test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () => {
+test('Chikun is publicly playable while retaining its deterministic development harness', () => {
   const game = getGame('chikun');
-  assert.equal(game.status, 'coming-soon');
+  assert.equal(game.status, 'playable');
   assert.equal(game.devPlayable, true);
   assert.equal(game.systemRole, 'child-dapp-cartridge');
   assert.equal(game.cabinetVersion, CHIKUN_CABINET_VERSION);
   assert.equal(game.rankedSeasonId, 'chikun-season-preview-1');
   assert.equal(game.presentation.cartridgeAsset.endsWith('cartridge-chikun.svg'), true);
   const cartridge = getCartridgeSelectModel().find((entry) => entry.id === 'chikun');
-  assert.equal(cartridge.status, 'coming-soon');
-  assert.equal(cartridge.playable, false);
-  assert.equal(cartridge.routePath, null);
+  assert.equal(cartridge.status, 'playable');
+  assert.equal(cartridge.playable, true);
+  assert.equal(cartridge.routePath, '/play/chikun');
   assert.equal(cartridge.devRoutePath, '/play/chikun?devCabinets=1');
 
-  assert.throws(() => startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'free' }), /not playable yet/);
-  const free = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'free', allowDevCabinet: true });
+  const free = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'free' });
   assert.equal(free.leaderboardEligible, false);
   assert.equal(free.entryFeeMicroUsdc, 0);
   const ranked = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000055', sequenceNumber: 55, allowDevCabinet: true });

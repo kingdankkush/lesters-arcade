@@ -7,6 +7,8 @@ if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
+import { createChikunHost } from './src/chikun-host.mjs';
+import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
@@ -1749,6 +1751,9 @@ const bootRuntimeSearch = window.location.search;
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
+let chikunHost = null;
+let chikunLifecycle = null;
+let chikunActive = false;
 let lastCompletedSession = null;
 let lastRunResult = null;
 let lastRunScore = 0;
@@ -3956,6 +3961,11 @@ async function cycleCombatViewport() {
 }
 
 function returnToOfficialGameMenu() {
+  if (chikunActive && combat.active && !combat.gameOver) {
+    if (combat.paused) chikunHost?.resume();
+    else chikunHost?.pause();
+    return;
+  }
   if (hmhRebootActive && combat.active && !combat.gameOver) {
     void toggleCombatPause();
     return;
@@ -3976,6 +3986,7 @@ function returnToOfficialGameMenu() {
   }
   // No active run: behave as a normal return to the pre-match menu.
   destroyHmhRebootSession();
+  destroyChikunSession();
   if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
@@ -3992,6 +4003,7 @@ function returnToOfficialGameMenu() {
 
 function exitToArcade() {
   destroyHmhRebootSession();
+  destroyChikunSession();
   if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
@@ -4010,8 +4022,8 @@ function exitToArcade() {
     dom.combatGameOverSummary.replaceChildren();
   }
   dom.combatStatus.textContent = connectedWallet
-    ? 'Exited Hard Money Heroes back to the Lester’s Arcade cabinet row. No hidden ranked submit occurred.'
-    : 'Exited Hard Money Heroes back to the Lester’s Arcade splash. No hidden ranked submit occurred.';
+    ? 'Exited the active cabinet back to the Lester’s Arcade cabinet row. No hidden ranked submit occurred.'
+    : 'Exited the active cabinet back to the Lester’s Arcade splash. No hidden ranked submit occurred.';
   renderOfficialApp();
   syncCombatOverlay();
 }
@@ -4812,6 +4824,107 @@ function mountHmhRebootSession() {
   });
 }
 
+function destroyChikunSession() {
+  chikunHost?.destroy();
+  chikunHost = null;
+  chikunLifecycle = null;
+  chikunActive = false;
+}
+
+async function restartChikunSession() {
+  destroyChikunSession();
+  await startMode(officialSelectedMode === 'ranked' ? 'paid' : 'free');
+  setOfficialView('gameplay');
+  mountChikunSession();
+}
+
+function mountChikunSession() {
+  if (!dom.officialCombatMount || !currentSession || currentSession.gameId !== 'chikun') return null;
+  destroyHmhRebootSession();
+  const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
+  const initContext = buildCabinetInitContextFromSession(currentSession, {
+    displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest Flyer',
+    locale: document.documentElement.lang || navigator.language || 'en-US',
+    aspect: 'landscape',
+    reducedMotion: Boolean(gameSettings.reduceMotion),
+  });
+  chikunLifecycle = createChikunPortalLifecycle({
+    state,
+    session: currentSession,
+    recordScoreRef: recordScore,
+    persist: persistArcadeStateSoon,
+    onComplete: (result) => {
+      lastCompletedSession = currentSession;
+      lastRunResult = result;
+      lastRunScore = result.canonical.score;
+      lastRunElapsedSeconds = result.canonical.survivalTime;
+      combat.active = false;
+      combat.gameOver = true;
+      combat.paused = false;
+      if (dom.officialGameStateCopy) {
+        dom.officialGameStateCopy.textContent = result.acceptedForGlobalLeaderboard
+          ? `Ranked score ${result.canonical.score.toLocaleString()} accepted for your profile and Chikun’s Escape score boards.`
+          : `Free score ${result.canonical.score.toLocaleString()} verified locally. No profile or leaderboard write occurred.`;
+      }
+    },
+  });
+  chikunHost = createChikunHost({
+    mount: dom.officialCombatMount,
+    expectedOrigin: window.location.origin,
+    onReady: () => {
+      chikunActive = true;
+      combat.active = true;
+      combat.gameOver = false;
+      combat.paused = false;
+      if (dom.officialGameModeTitle) dom.officialGameModeTitle.textContent = `Chikun’s Escape // ${initContext.mode === 'ranked' ? 'Ranked Mode' : 'Free Mode'}`;
+      if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = initContext.mode === 'ranked'
+        ? 'Parent-issued Ranked session connected. Final input evidence will be replayed before any profile or score-board write.'
+        : 'Free practice connected. No profile, leaderboard, settlement, or chain write can occur.';
+    },
+    onState: (message) => {
+      combat.paused = Boolean(message.payload.paused);
+      combat.active = message.payload.status === 'running' || message.payload.status === 'paused';
+      combat.gameOver = message.payload.status === 'game-over';
+      if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Resume' : 'Pause';
+    },
+    onResult: (message) => {
+      const result = chikunLifecycle?.handleResult(message.payload);
+      if (!result?.ok) {
+        console.error('[Chikun lifecycle]', result?.error ?? result?.reason ?? 'Unknown result failure');
+        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Chikun score rejected: ${result?.reason ?? 'verification failed'}`;
+      }
+    },
+    onRestartRequest: () => { void restartChikunSession(); },
+    onExitRequest: () => exitToArcade(),
+    onError: (error) => {
+      console.error('[Chikun bridge]', error);
+      if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Chikun runtime error: ${error.message}`;
+    },
+  });
+  chikunActive = true;
+  combat.active = true;
+  combat.gameOver = false;
+  return chikunHost.mountSession({
+    sessionId: currentSession.urlSessionId ?? currentSession.sessionId,
+    gameId: 'chikun',
+    mode: initContext.mode,
+    profile: {
+      displayName: initContext.displayName,
+      locale: initContext.locale,
+    },
+    session: {
+      seed: initContext.seed,
+      buildHash: initContext.buildHash,
+      seasonId: initContext.seasonId,
+      rankedEligible: initContext.rankedEligible,
+    },
+    settings: {
+      musicEnabled: gameSettings.musicEnabled !== false,
+      reduceMotion: Boolean(gameSettings.reduceMotion),
+    },
+  });
+}
+
 const officialPlayRoutes = createOfficialPlayRoutes({
   appendText,
   applyGameModeSelectBackground,
@@ -4956,6 +5069,7 @@ async function startOfficialMode(mode) {
     combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
   }
   setOfficialView(selectedGameId === 'lester-blaster' ? 'character-select' : 'gameplay');
+  if (selectedGameId === 'chikun') mountChikunSession();
 }
 
 // Ranked PRE-FLIGHT modal. Returns Promise<boolean> — true when the wallet is on
@@ -14165,9 +14279,22 @@ dom.officialLevelBackButton?.addEventListener('click', () => { playSfxCue('menu-
 dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
 
-dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
-dom.combatMenuIconButton?.addEventListener('click', () => toggleCombatPause());
-dom.combatRestartButton?.addEventListener('click', restartCombatRun);
+dom.combatPauseButton?.addEventListener('click', () => {
+  if (chikunActive) {
+    if (combat.paused) chikunHost?.resume();
+    else chikunHost?.pause();
+  } else toggleCombatPause();
+});
+dom.combatMenuIconButton?.addEventListener('click', () => {
+  if (chikunActive) {
+    if (combat.paused) chikunHost?.resume();
+    else chikunHost?.pause();
+  } else toggleCombatPause();
+});
+dom.combatRestartButton?.addEventListener('click', () => {
+  if (chikunActive) void restartChikunSession();
+  else restartCombatRun();
+});
 dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
 dom.combatShakeButton?.addEventListener('click', toggleCombatShakeSetting);
 dom.combatGoreButton?.addEventListener('click', toggleCombatGoreSetting);

@@ -34,6 +34,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const portalDir = resolve(__dirname, 'apps/portal');
 const portalEntry = resolve(portalDir, 'main.js');
 const hmhRebootEntry = resolve(__dirname, 'apps/hmh-reboot/src/main.mjs');
+const chikunEntry = resolve(__dirname, 'apps/chikun/src/main.mjs');
 const hmhPixiVendor = resolve(__dirname, 'apps/hmh-reboot/src/pixi-vendor.mjs');
 const nodeModulesDir = resolve(__dirname, 'node_modules');
 const pixiModule = resolve(nodeModulesDir, 'pixi.js/lib/index.mjs');
@@ -98,6 +99,7 @@ function human(bytes) {
 async function run() {
   const rawSize = statSync(portalEntry).size;
   const childRawSize = statSync(hmhRebootEntry).size;
+  const chikunRawSize = statSync(chikunEntry).size;
 
   // Clean only our own output dir, never source.
   if (existsSync(outdir)) rmSync(outdir, { recursive: true, force: true });
@@ -107,6 +109,7 @@ async function run() {
     entryPoints: {
       main: portalEntry,
       'hmh-reboot/game': hmhRebootEntry,
+      'chikun/game': chikunEntry,
     },
     plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],
     bundle: true,
@@ -149,9 +152,11 @@ async function run() {
 
   const outMain = resolve(outdir, 'main.js');
   const outChild = resolve(outdir, 'hmh-reboot/game.js');
+  const outChikun = resolve(outdir, 'chikun/game.js');
   const outChildVendor = resolve(outdir, 'chunks/hmh-pixi.js');
   const minSize = statSync(outMain).size;
   const childMinSize = statSync(outChild).size;
+  const chikunMinSize = statSync(outChikun).size;
   const childVendorSize = statSync(outChildVendor).size;
   const hmhBudget = assertHmhInitialJsBudget({
     entryBytes: childMinSize,
@@ -160,6 +165,7 @@ async function run() {
   });
   const entryDeltaPct = 100 * (minSize / rawSize - 1);
   const childDeltaPct = 100 * (childMinSize / childRawSize - 1);
+  const chikunDeltaPct = 100 * (chikunMinSize / chikunRawSize - 1);
 
   if (wantMeta) {
     const { writeFileSync } = await import('node:fs');
@@ -176,6 +182,8 @@ async function run() {
   console.log(`Bundled main.js:    ${human(minSize)}  (${entryDeltaPct >= 0 ? '+' : ''}${entryDeltaPct.toFixed(1)}% vs source entry; imports included)`);
   console.log(`HMH reboot source:  ${human(childRawSize)}`);
   console.log(`HMH reboot entry:   ${human(childMinSize)}  (${childDeltaPct >= 0 ? '+' : ''}${childDeltaPct.toFixed(1)}% vs child source)`);
+  console.log(`Chikun source:      ${human(chikunRawSize)}`);
+  console.log(`Chikun entry:       ${human(chikunMinSize)}  (${chikunDeltaPct >= 0 ? '+' : ''}${chikunDeltaPct.toFixed(1)}% vs child source)`);
   console.log(`HMH Pixi vendor:    ${human(childVendorSize)}  (stable preloaded module)`);
   console.log(`HMH initial JS:     ${human(hmhBudget.combinedInitialChildBytes)} / ${human(hmhBudget.cap)} raw aggregate`);
   console.log(`HMH headroom:       ${human(hmhBudget.remaining)}`);

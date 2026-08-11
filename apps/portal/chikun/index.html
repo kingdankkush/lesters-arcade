@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Chikun's Escape</title>
+  <link rel="stylesheet" href="./game.css">
+</head>
+<body>
+  <main class="game-shell" id="gameShell" data-mode="free">
+    <section class="game-frame" id="gameFrame" aria-label="Chikun's Escape game">
+      <canvas id="chikunCanvas" width="1280" height="720" tabindex="0" aria-label="Tap, click, or press Space to flap Chikun through the fork gaps"></canvas>
+      <div class="hud" aria-hidden="true">
+        <div class="hud-cluster">
+          <strong id="scoreValue">0</strong><span>score</span>
+        </div>
+        <div class="hud-cluster hud-secondary">
+          <strong id="coinValue">0</strong><span>Ł coins</span>
+          <strong id="forkValue">0</strong><span>forks</span>
+        </div>
+        <div class="hud-actions">
+          <button id="pauseButton" type="button" aria-label="Pause game">Ⅱ</button>
+          <button id="muteButton" type="button" aria-label="Mute sound">♪</button>
+          <button id="fullscreenButton" type="button" aria-label="Enter fullscreen">⛶</button>
+          <button id="exitButton" type="button" aria-label="Exit to arcade">↩</button>
+        </div>
+      </div>
+      <div class="overlay" id="startOverlay">
+        <p class="eyebrow" id="modeLabel">Free Mode</p>
+        <h1>Chikun's<br><em>Escape</em></h1>
+        <p id="modeCopy">Practice forever. Your score stays local.</p>
+        <button class="primary-button" id="startButton" type="button">Tap to Escape</button>
+        <small>Space · click · tap to flap</small>
+      </div>
+      <div class="overlay is-hidden" id="pauseOverlay">
+        <p class="eyebrow">Flight suspended</p>
+        <h2>Paused</h2>
+        <button class="primary-button" id="resumeButton" type="button">Resume</button>
+      </div>
+      <div class="overlay is-hidden" id="resultOverlay">
+        <p class="eyebrow" id="resultEyebrow">Run complete</p>
+        <h2 id="resultScore">0</h2>
+        <p id="resultCopy">Score saved locally.</p>
+        <div class="result-stats" id="resultStats"></div>
+        <div class="result-actions">
+          <button class="primary-button" id="restartButton" type="button">Fly Again</button>
+          <button class="secondary-button" id="resultExitButton" type="button">Exit to Arcade</button>
+        </div>
+      </div>
+      <p class="sr-only" id="liveStatus" aria-live="polite">Waiting for Lester's Arcade.</p>
+    </section>
+  </main>
+  <script type="module" src="../dist/chikun/game.js"></script>
+</body>
+</html>
