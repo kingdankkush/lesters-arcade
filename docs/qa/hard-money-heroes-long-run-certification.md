@@ -23,15 +23,15 @@ This is a deterministic baseline-player balance simulation. It certifies data-mo
 
 ## Hero × weapon × enemy matrix
 
-- Combinations: 96
-- Matrix runs: 192
-- Levels per minute (median): 2.033
+- Combinations: 192
+- Matrix runs: 384
+- Levels per minute (median): 2.067
 - Choices seen: armor, block-buster, coin-value, combo-retention, critical-chance, critical-damage, damage-alpha, dash-cooldown, dash-distance, evolve-crit-candle, evolve-crypto-bomb-orbit, evolve-hashstorm-overdrive, evolve-settler-rail, grenade-capacity, grenade-damage, grenade-radius, health-regen, homing-cluster, launcher-rig, magazine-size, max-health, move-speed, pickup-radius, pierce, power-up-luck, projectile-speed, rate-of-fire, reload-hands, revive, spread-control, xp-gain
 - Dead offers: 0 (0.00%)
-- Damage growth (median): 1.602x
+- Damage growth (median): 1.592x
 - Survival: 100.0%
 - Median upgrade interval: 27s
-- Matrix digest: `6a6f21c3`
+- Matrix digest: `cff02089`
 
 ### Weapon medians
 
@@ -40,30 +40,34 @@ This is a deterministic baseline-player balance simulation. It certifies data-mo
 | coin-blaster | 48 | 100.0% | 34.24 | 1.784 | 1.484x |
 | scatter-shotgun | 48 | 100.0% | 47.6 | 2.05 | 1.571x |
 | auto-miner | 48 | 100.0% | 55 | 2.117 | 1.75x |
+| hash-rail | 48 | 100.0% | 57.38 | 2.25 | 1.643x |
+| lightning-ledger | 48 | 100.0% | 40.42 | 1.933 | 1.439x |
+| bear-market-burner | 48 | 100.0% | 66.6 | 2.333 | 1.593x |
+| forked-standard | 48 | 100.0% | 48.32 | 2.067 | 1.707x |
 | launcher-rig | 48 | 100.0% | 50.72 | 2.167 | 1.644x |
 
 ### Enemy medians
 
 | Enemy | Runs | Survival | Kills/min | Median damage taken |
 | --- | ---: | ---: | ---: | ---: |
-| bagholder-rusher | 32 | 100.0% | 59.04 | 114.81 |
-| forkrunner | 32 | 100.0% | 63.22 | 127.34 |
-| liquidator-agent | 32 | 100.0% | 45.74 | 92.68 |
-| whale-enforcer | 32 | 100.0% | 31.6 | 168.9 |
-| gas-bomber | 32 | 100.0% | 46.38 | 117.36 |
-| validator-cultist | 32 | 100.0% | 44.15 | 0 |
+| bagholder-rusher | 64 | 100.0% | 63.47 | 104.04 |
+| forkrunner | 64 | 100.0% | 66.27 | 124.6 |
+| liquidator-agent | 64 | 100.0% | 47.8 | 94.52 |
+| whale-enforcer | 64 | 100.0% | 32.97 | 164.84 |
+| gas-bomber | 64 | 100.0% | 49.3 | 115.69 |
+| validator-cultist | 64 | 100.0% | 46.94 | 0 |
 
 ## Encounter band evidence
 
-Measured player KPM range: 34.24–55.
+Measured player KPM range: 34.24–66.6.
 
 | Band | Spawn / min | Pressure | Body cap | Threat cap | Attack tokens | Role weights |
 | --- | ---: | --- | ---: | ---: | --- | --- |
 | opening | 30 | recovery | 32 | 64 | melee:2, ranged:1, area:1, support:0 | rusher:14, flanker:6 |
 | build | 40 | matched | 64 | 128 | melee:3, ranged:2, area:1, support:1 | rusher:11, flanker:6, suppressor:3 |
-| pressure | 60 | accumulating | 100 | 240 | melee:4, ranged:3, area:2, support:1 | rusher:6, flanker:4, suppressor:3, heavy:3, demolition:2, support:2 |
+| pressure | 60 | matched | 100 | 240 | melee:4, ranged:3, area:2, support:1 | rusher:6, flanker:4, suppressor:3, heavy:3, demolition:2, support:2 |
 | elite | 80 | accumulating | 128 | 360 | melee:5, ranged:4, area:3, support:2 | rusher:5, flanker:4, suppressor:3, heavy:3, demolition:3, support:2 |
-| boss | 60 | accumulating | 128 | 512 | melee:3, ranged:3, area:3, support:2 | rusher:4, flanker:3, suppressor:3, heavy:4, demolition:3, support:3 |
+| boss | 60 | matched | 128 | 512 | melee:3, ranged:3, area:3, support:2 | rusher:4, flanker:3, suppressor:3, heavy:4, demolition:3, support:3 |
 | endurance | 120 | accumulating | 160 | 640 | melee:6, ranged:5, area:4, support:2 | rusher:4, flanker:4, suppressor:3, heavy:3, demolition:3, support:3 |
 
 ## Hero medians

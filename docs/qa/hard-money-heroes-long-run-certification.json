@@ -9603,6 +9603,10 @@
       "coin-blaster",
       "scatter-shotgun",
       "auto-miner",
+      "hash-rail",
+      "lightning-ledger",
+      "bear-market-burner",
+      "forked-standard",
       "launcher-rig"
     ],
     "enemyIds": [
@@ -9643,6 +9647,38 @@
         "medianDamageGrowth": 1.75
       },
       {
+        "weaponId": "hash-rail",
+        "runs": 48,
+        "survivalRate": 1,
+        "medianKillsPerMinute": 57.38,
+        "medianLevelsPerMinute": 2.25,
+        "medianDamageGrowth": 1.643
+      },
+      {
+        "weaponId": "lightning-ledger",
+        "runs": 48,
+        "survivalRate": 1,
+        "medianKillsPerMinute": 40.42,
+        "medianLevelsPerMinute": 1.933,
+        "medianDamageGrowth": 1.439
+      },
+      {
+        "weaponId": "bear-market-burner",
+        "runs": 48,
+        "survivalRate": 1,
+        "medianKillsPerMinute": 66.6,
+        "medianLevelsPerMinute": 2.333,
+        "medianDamageGrowth": 1.593
+      },
+      {
+        "weaponId": "forked-standard",
+        "runs": 48,
+        "survivalRate": 1,
+        "medianKillsPerMinute": 48.32,
+        "medianLevelsPerMinute": 2.067,
+        "medianDamageGrowth": 1.707
+      },
+      {
         "weaponId": "launcher-rig",
         "runs": 48,
         "survivalRate": 1,
@@ -9654,53 +9690,53 @@
     "enemySummaries": [
       {
         "enemyArchetypeId": "bagholder-rusher",
-        "runs": 32,
+        "runs": 64,
         "survivalRate": 1,
-        "medianKillsPerMinute": 59.04,
-        "medianDamageTaken": 114.81
+        "medianKillsPerMinute": 63.47,
+        "medianDamageTaken": 104.04
       },
       {
         "enemyArchetypeId": "forkrunner",
-        "runs": 32,
+        "runs": 64,
         "survivalRate": 1,
-        "medianKillsPerMinute": 63.22,
-        "medianDamageTaken": 127.34
+        "medianKillsPerMinute": 66.27,
+        "medianDamageTaken": 124.6
       },
       {
         "enemyArchetypeId": "liquidator-agent",
-        "runs": 32,
+        "runs": 64,
         "survivalRate": 1,
-        "medianKillsPerMinute": 45.74,
-        "medianDamageTaken": 92.68
+        "medianKillsPerMinute": 47.8,
+        "medianDamageTaken": 94.52
       },
       {
         "enemyArchetypeId": "whale-enforcer",
-        "runs": 32,
+        "runs": 64,
         "survivalRate": 1,
-        "medianKillsPerMinute": 31.6,
-        "medianDamageTaken": 168.9
+        "medianKillsPerMinute": 32.97,
+        "medianDamageTaken": 164.84
       },
       {
         "enemyArchetypeId": "gas-bomber",
-        "runs": 32,
+        "runs": 64,
         "survivalRate": 1,
-        "medianKillsPerMinute": 46.38,
-        "medianDamageTaken": 117.36
+        "medianKillsPerMinute": 49.3,
+        "medianDamageTaken": 115.69
       },
       {
         "enemyArchetypeId": "validator-cultist",
-        "runs": 32,
+        "runs": 64,
         "survivalRate": 1,
-        "medianKillsPerMinute": 44.15,
+        "medianKillsPerMinute": 46.94,
         "medianDamageTaken": 0
       }
     ],
     "summary": {
-      "combinations": 96,
-      "totalRuns": 192,
-      "validRuns": 192,
+      "combinations": 192,
+      "totalRuns": 384,
+      "validRuns": 384,
       "invalidRuns": 0,
-      "completedRuns": 192,
+      "completedRuns": 384,
       "survivalRate": 1,
       "choicesSeen": [
         "armor",
@@ -9737,11 +9773,11 @@
       ],
       "deadOfferCount": 0,
       "deadOfferRate": 0,
-      "medianLevelsPerMinute": 2.033,
-      "medianDamageGrowth": 1.602,
+      "medianLevelsPerMinute": 2.067,
+      "medianDamageGrowth": 1.592,
       "medianSecondsBetweenUpgrades": 27
     },
-    "digest": "6a6f21c3",
+    "digest": "cff02089",
     "runDigests": [
       {
         "heroId": "lit-commando",
@@ -10030,6 +10066,390 @@
         "seed": 4102,
         "terminalReason": "time-limit",
         "digest": "2c0cad6b"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "872173b1"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "dff23719"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "9da1512c"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "f8433aa3"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "ccf77fa0"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "c9a589eb"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "c6f221ea"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "ecc27295"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "cfb4d58a"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "b54e2b94"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "88ec338e"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "f62c8cf3"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "d6629b1b"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "2fa7ee8a"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "1d667c5b"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "cd5c1506"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "85998bf1"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "ae553b2f"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "e9337ac9"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "fc55f8e6"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "470656b6"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "3d780d5a"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "ff393ab2"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "c836c70d"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "298a3102"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "753072fd"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "bc9c48a6"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "a1a2eb1d"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "4ff70b1f"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "384217b9"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "168f99f4"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "92097bea"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "b4694af9"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "99769d58"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "37aa5a8d"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "9b0a8e34"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "dae493fd"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "0878e7a1"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "881a9eb9"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "3f956a49"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "c21b54c0"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "27f933e2"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "9c21096b"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "821f191d"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "2347bf92"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "83701fb0"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "6447a34c"
+      },
+      {
+        "heroId": "lit-commando",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "a43f867d"
       },
       {
         "heroId": "lit-commando",
@@ -10417,6 +10837,390 @@
       },
       {
         "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "db814433"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "ce8e7a67"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "debb2aed"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "817e3bdc"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "f6ffd0f0"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "e7f1ccc8"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "5eca3362"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "150d440c"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "7bdf3659"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "607ea95e"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "7c516b30"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "13da3fb8"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "bf62a62f"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "47603e1c"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "e8cac9d2"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "71a8dea1"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "1a8a7ce2"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "dea9512b"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "ad7b032f"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "21684932"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "30086831"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "1e96a944"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "608f69fa"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "f8336ed6"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "720e2e45"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "96549c6d"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "24de5bfd"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "a13e47b1"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "b629019c"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "f219900c"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "161a7e11"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "188231e7"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "bca3660d"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "79aaab3b"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "48f847e6"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "a81d4b64"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "d2e81637"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "2c7f0bf4"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "4f912c8b"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "24c2f334"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "a9287883"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "44267b06"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "36eae420"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "d10fe465"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "f803f596"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "2d0e9318"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "15be1367"
+      },
+      {
+        "heroId": "lit-valkyrie",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "301b40c3"
+      },
+      {
+        "heroId": "lit-valkyrie",
         "weaponId": "launcher-rig",
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
@@ -10798,6 +11602,390 @@
         "seed": 4102,
         "terminalReason": "time-limit",
         "digest": "b52365fc"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "e5086ad2"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "fc0e860a"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "aefc540b"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "6e7a95ce"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "bd1fe67a"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "5e182c21"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "cb65673c"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "308f7184"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "35e1265f"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "44852bb9"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "a6cbecf4"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "ff7e49a6"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "ec5fc557"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "3924ea31"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "4c771336"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "0a473f6c"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "4e4ab2db"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "e1abed67"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "ed42db63"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "566a0387"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "dd0d9ebd"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "7eb1d19c"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "b0dacb59"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "c90d83ca"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "3148fbdd"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "9c8d9837"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "8b00a7ac"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "061f82d7"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "1c4d12e6"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "f5652e4f"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "311cb02b"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "9afb0209"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "2223cfa5"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "e423aad7"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "1bcd1e97"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "710444ae"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "497759fc"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "07f80e4e"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "9dcafd2d"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "6319b1a2"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "31c3e180"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "8bac02fc"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "1133cbf5"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "3202edaa"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "7aa41e5e"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "cd89701a"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "4fffe2e2"
+      },
+      {
+        "heroId": "lester-original",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "128f2c2f"
       },
       {
         "heroId": "lester-original",
@@ -11185,6 +12373,390 @@
       },
       {
         "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "57a8a88d"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "1af58eaa"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "12bba8ce"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "8511c712"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "175b9036"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "7fc1ef75"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "2785ccc0"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "55abc91c"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "bbb80154"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "6db53972"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "af162cae"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "hash-rail",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "38886d11"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "5d1bcfbb"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "4d2bee71"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "b75fe7c8"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "777f6fd2"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "23015ddb"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "4eb9c8a5"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "8987fe7f"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "4bf929e4"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "1a506df6"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "cfaedefa"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "94744f78"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "lightning-ledger",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "40baaa64"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "926fd570"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "8653b3c8"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "ab32e540"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "adfb20bc"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "e51836a2"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "67ff4ce7"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "0b2fcb70"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "6eb5f861"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "8bd2b209"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "c490eb73"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "199a808d"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "bear-market-burner",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "42ec2461"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "450c20c2"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "bagholder-rusher",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "cce3a2a8"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "f2d6387a"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "forkrunner",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "714756bc"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "37fbd146"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "liquidator-agent",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "6ce61a01"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "a7ff04a8"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "whale-enforcer",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "953a6651"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "6bcf17c6"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "gas-bomber",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "9c50151d"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4101,
+        "terminalReason": "time-limit",
+        "digest": "e3627892"
+      },
+      {
+        "heroId": "lilly",
+        "weaponId": "forked-standard",
+        "enemyArchetypeId": "validator-cultist",
+        "seed": 4102,
+        "terminalReason": "time-limit",
+        "digest": "72a14380"
+      },
+      {
+        "heroId": "lilly",
         "weaponId": "launcher-rig",
         "enemyArchetypeId": "bagholder-rusher",
         "seed": 4101,
@@ -11283,7 +12855,7 @@
   },
   "measuredPlayerKpm": {
     "minimum": 34.24,
-    "maximum": 55
+    "maximum": 66.6
   },
   "encounterBandEvidence": [
     {
@@ -11324,7 +12896,7 @@
     {
       "bandId": "pressure",
       "spawnPerMinute": 60,
-      "pressureRelation": "accumulating",
+      "pressureRelation": "matched",
       "bodyCap": 100,
       "threatCap": 240,
       "attackTokens": {
@@ -11366,7 +12938,7 @@
     {
       "bandId": "boss",
       "spawnPerMinute": 60,
-      "pressureRelation": "accumulating",
+      "pressureRelation": "matched",
       "bodyCap": 128,
       "threatCap": 512,
       "attackTokens": {
