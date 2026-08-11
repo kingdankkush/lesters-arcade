@@ -22,7 +22,7 @@ test('production caching keeps hashed chunks immutable and forces stable child b
     'public, max-age=31536000, immutable',
   );
   assert.equal(
-    headersBySource.get('/dist/hmh-reboot/(.*)')?.get('Cache-Control'),
+    headersBySource.get('/dist/(hmh-reboot|chikun)/(.*)')?.get('Cache-Control'),
     'public, max-age=0, must-revalidate',
   );
   assert.equal(

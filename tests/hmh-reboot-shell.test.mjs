@@ -191,7 +191,7 @@ test('production build emits a dedicated HMH reboot entry', async () => {
 test('same-origin child framing and the Pixi CSP exception remain isolated from the parent portal', async () => {
   const vercel = JSON.parse(await read('../vercel.json'));
   const childRule = vercel.headers.find((rule) => rule.source === '/hmh-reboot/(.*)');
-  const parentRule = vercel.headers.find((rule) => rule.source === '/((?!hmh-reboot/).*)');
+  const parentRule = vercel.headers.find((rule) => rule.headers?.some((header) => header.key === 'Content-Security-Policy' && header.value.includes("frame-ancestors 'none'")));
   const childCsp = childRule?.headers.find((header) => header.key === 'Content-Security-Policy')?.value ?? '';
   const parentCsp = parentRule?.headers.find((header) => header.key === 'Content-Security-Policy')?.value ?? '';
   assert.match(childCsp, /script-src 'self' 'unsafe-eval'/);

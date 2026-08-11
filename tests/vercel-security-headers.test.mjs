@@ -23,8 +23,8 @@ function findSecurityHeader(key, source = null) {
   return null;
 }
 
-test('production Vercel config keeps portal framing closed except for the reboot child', () => {
-  const portalSource = '/((?!hmh-reboot/).*)';
+test('production Vercel config keeps portal framing closed except for same-origin playable children', () => {
+  const portalSource = '/((?!(?:hmh-reboot|chikun)/).*)';
   const found = findSecurityHeader('Content-Security-Policy', portalSource);
   assert.ok(found, 'portal Content-Security-Policy header should be configured');
 
@@ -35,14 +35,16 @@ test('production Vercel config keeps portal framing closed except for the reboot
   assert.deepEqual(csp.get('frame-ancestors'), ["'none'"]);
   assert.equal(csp.has('upgrade-insecure-requests'), true);
 
-  const child = findSecurityHeader('Content-Security-Policy', '/hmh-reboot/(.*)');
-  assert.ok(child, 'reboot child Content-Security-Policy header should be configured');
-  const childCsp = parseCsp(child.header.value);
-  assert.deepEqual(childCsp.get('frame-ancestors'), ["'self'"], 'only the same-origin portal may embed the child');
-  assert.deepEqual(childCsp.get('default-src'), ["'self'"]);
-  assert.deepEqual(childCsp.get('object-src'), ["'none'"]);
-  assert.equal(childCsp.get('script-src').includes("'unsafe-inline'"), false);
-  assert.equal(childCsp.get('style-src').includes("'unsafe-inline'"), false);
+  for (const childSource of ['/hmh-reboot/(.*)', '/chikun/(.*)']) {
+    const child = findSecurityHeader('Content-Security-Policy', childSource);
+    assert.ok(child, `${childSource} Content-Security-Policy header should be configured`);
+    const childCsp = parseCsp(child.header.value);
+    assert.deepEqual(childCsp.get('frame-ancestors'), ["'self'"], 'only the same-origin portal may embed the child');
+    assert.deepEqual(childCsp.get('default-src'), ["'self'"]);
+    assert.deepEqual(childCsp.get('object-src'), ["'none'"]);
+    assert.equal(childCsp.get('script-src').includes("'unsafe-inline'"), false);
+    assert.equal(childCsp.get('style-src').includes("'unsafe-inline'"), false);
+  }
 
   const scriptSrc = csp.get('script-src') ?? [];
   assert.equal(scriptSrc.includes("'self'"), true);

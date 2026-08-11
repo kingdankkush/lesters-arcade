@@ -15,7 +15,7 @@
       ]
     },
     {
-      "source": "/dist/hmh-reboot/(.*)",
+      "source": "/dist/(hmh-reboot|chikun)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -42,7 +42,16 @@
       ]
     },
     {
-      "source": "/((?!hmh-reboot/).*)",
+      "source": "/chikun/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/((?!(?:hmh-reboot|chikun)/).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",

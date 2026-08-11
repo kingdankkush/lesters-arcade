@@ -40,3 +40,19 @@ test('Chikun runtime uses production sprites and gives Free/Ranked distinct visu
   assert.match(source, /game:result/);
   assert.doesNotMatch(source, /Math\.random\(/, 'canonical or player-visible runtime must not use unseeded randomness');
 });
+
+test('Vercel headers permit only the same-origin portal to frame the Chikun child', () => {
+  const config = JSON.parse(text('../vercel.json'));
+  const chikun = config.headers.find((rule) => rule.source === '/chikun/(.*)');
+  assert.ok(chikun, 'Chikun requires a dedicated hosted CSP route');
+  const csp = chikun.headers.find((header) => header.key === 'Content-Security-Policy')?.value ?? '';
+  assert.match(csp, /frame-ancestors 'self'/);
+  assert.doesNotMatch(csp, /frame-ancestors 'none'/);
+  assert.doesNotMatch(csp, /unsafe-eval/);
+
+  const general = config.headers.find((rule) => rule.headers?.some((header) => header.value?.includes("frame-ancestors 'none'")));
+  assert.match(general?.source ?? '', /chikun/, 'the parent CSP route must exclude the framed Chikun child path');
+
+  const childBundleCache = config.headers.find((rule) => rule.source.includes('dist/') && rule.source.includes('chikun'));
+  assert.ok(childBundleCache?.headers?.some((header) => header.key === 'Cache-Control' && header.value.includes('must-revalidate')));
+});
