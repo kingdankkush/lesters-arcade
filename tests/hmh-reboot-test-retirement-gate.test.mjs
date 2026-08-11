@@ -116,8 +116,10 @@ test('retirement gate rejects missing or inconsistent aggregate summaries', () =
 
 test('Vercel uses the ledger-checked release suite without weakening raw npm test', async () => {
   const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  const gateSource = await readFile(new URL('../scripts/hmh-reboot-test-retirement-gate.mjs', import.meta.url), 'utf8');
   assert.equal(packageJson.scripts.test, 'node --test tests/*.test.mjs tests/projectile-pool.test.mjs');
   assert.equal(packageJson.scripts['test:release'], 'node scripts/hmh-reboot-test-retirement-gate.mjs');
   assert.match(packageJson.scripts['vercel:build'], /npm run test:release/);
   assert.doesNotMatch(packageJson.scripts['vercel:build'], /(?:^|&&\s*)npm test(?:\s*&&|$)/);
+  assert.match(gateSource, /--test-concurrency=1/, 'release suite must serialize test files so CPU timing assertions are not distorted by shared CI cores');
 });

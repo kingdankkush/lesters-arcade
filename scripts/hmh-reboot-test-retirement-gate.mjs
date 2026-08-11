@@ -106,7 +106,7 @@ export function runRetirementGate({ repoRoot = process.cwd() } = {}) {
     .sort()
     .map((name) => path.join('tests', name));
   const reporter = './scripts/hmh-reboot-test-retirement-reporter.mjs';
-  const child = spawnSync(process.execPath, ['--test', `--test-reporter=${reporter}`, ...testFiles], {
+  const child = spawnSync(process.execPath, ['--test', '--test-concurrency=1', `--test-reporter=${reporter}`, ...testFiles], {
     cwd: repoRoot,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
