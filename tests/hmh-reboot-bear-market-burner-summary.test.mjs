@@ -18,7 +18,7 @@ test('W9A summary stores bounded Burner aggregates without target or tick histor
     endTick: 120, elapsedMs: 2000, terminalReason: 'completed', score: 0, level: 1, xp: 0,
     currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 1,
   });
-  assert.equal(result.schemaVersion, 4);
+  assert.equal(result.schemaVersion, 5);
   assert.deepEqual(result.bearMarketBurner, {
     pulses: 2, contacts: 2, fuelSpent: 5, burnTicks: 1, scorchZonesCreated: 1,
     maxActiveBurns: 3, totalSelloffPulses: 1, emergencyRefills: 1,

@@ -235,6 +235,14 @@ CUES = {
             {'kind': 'square', 'gain': 0.18, 'freq': 220, 'sweep': 0.62, 'start': 0.08, 'length': 0.72, 'attack': 0.012, 'decay': 0.84, 'curve': 1.5},
         ],
     },
+    'hmh-fire-forked-standard': {
+        'seed': 0xF04C3D11, 'durationMs': 240, 'lowpassHz': 6_800, 'drive': 1.45, 'peak': 0.60,
+        'layers': [
+            {'kind': 'noise', 'gain': 0.58, 'length': 0.72, 'attack': 0.035, 'decay': 0.92, 'curve': 1.8},
+            {'kind': 'tone', 'gain': 0.38, 'freq': 310, 'sweep': 2.4, 'length': 0.70, 'attack': 0.025, 'decay': 0.88, 'curve': 1.7},
+            {'kind': 'tone', 'gain': 0.48, 'freq': 1_520, 'sweep': 0.42, 'start': 0.54, 'length': 0.34, 'attack': 0.002, 'decay': 0.72, 'curve': 3.0},
+        ],
+    },
     'hmh-lightning-interrupt': {
         'seed': 0x11E6E221, 'durationMs': 180, 'lowpassHz': 5_800, 'drive': 1.35, 'peak': 0.52,
         'layers': [

@@ -205,6 +205,32 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     requiresRanks: { 'burner-liquidity': 3, 'burner-volatility': 3, 'burner-contagion': 3 },
     effect: 'burnerTotalSelloffTier', amount: 1,
   },
+  'standard-reach': {
+    id: 'standard-reach', branch: 'forked-standard', title: 'Longer Tines',
+    mechanicalLabel: 'Longer reach and wider attack arcs',
+    description: 'Extend both attacks while preserving bounded contact caps.',
+    maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardReachTier', amount: 1,
+  },
+  'standard-force': {
+    id: 'standard-force', branch: 'forked-standard', title: 'Hard Consensus',
+    mechanicalLabel: 'More damage and knockback',
+    description: 'Increase thrust and sweep pressure without adding contacts.',
+    maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardForceTier', amount: 1,
+  },
+  'standard-tempo': {
+    id: 'standard-tempo', branch: 'forked-standard', title: 'Fast Finality',
+    mechanicalLabel: 'Faster cadence and shorter whiff recovery',
+    description: 'Shorten fixed-tick recovery while retaining a finite whiff cost.',
+    maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardTempoTier', amount: 1,
+  },
+  'canonical-fork': {
+    id: 'canonical-fork', branch: 'forked-standard-capstone', title: 'Canonical Fork',
+    mechanicalLabel: 'Every fourth attack gains 25% damage',
+    description: 'Deterministically empower every fourth attack without raising target caps.',
+    maxRank: 1, requiresWeaponId: 'forked-standard',
+    requiresRanks: { 'standard-reach': 3, 'standard-force': 3, 'standard-tempo': 3 },
+    effect: 'standardCanonicalForkTier', amount: 1,
+  },
 });
 
 const EFFECT_DEFAULTS = Object.freeze({
@@ -225,6 +251,10 @@ const EFFECT_DEFAULTS = Object.freeze({
   burnerVolatilityTier: 0,
   burnerContagionTier: 0,
   burnerTotalSelloffTier: 0,
+  standardReachTier: 0,
+  standardForceTier: 0,
+  standardTempoTier: 0,
+  standardCanonicalForkTier: 0,
 });
 
 const COMBO_MILESTONE_XP = Object.freeze({ 5: 120, 10: 240, 20: 480, 30: 900 });

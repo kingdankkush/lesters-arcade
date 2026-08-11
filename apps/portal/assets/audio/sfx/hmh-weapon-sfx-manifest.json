@@ -49,6 +49,20 @@
         "layers": 3
       }
     },
+    "hmh-fire-forked-standard": {
+      "src": "./assets/audio/sfx/hmh-fire-forked-standard.wav",
+      "bytes": 10628,
+      "format": "wav",
+      "durationMs": 240,
+      "sha256": "32fc412288b0ee3a8b64b46060b4a714c6999a460d54037e21da3a7e42342b70",
+      "synth": {
+        "seed": 4031528209,
+        "lowpassHz": 6800,
+        "drive": 1.45,
+        "peak": 0.6,
+        "layers": 3
+      }
+    },
     "hmh-fire-hash-rail": {
       "src": "./assets/audio/sfx/hmh-fire-hash-rail.wav",
       "bytes": 20330,

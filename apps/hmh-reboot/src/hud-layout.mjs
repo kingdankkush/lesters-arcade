@@ -81,9 +81,9 @@ export function computeHudMinimapLayout({ width, height, worldWidth, worldHeight
 
 export function compactWeaponHudLabel({ weaponId, hudLabel } = {}) {
   if (typeof weaponId !== 'string' || typeof hudLabel !== 'string') throw new TypeError('weaponId and hudLabel are required');
-  return weaponId === 'lightning-ledger'
-    ? hudLabel.replace('LIGHTNING LEDGER', 'LEDGER').replace('CHANNEL', 'CH')
-    : hudLabel;
+  if (weaponId === 'lightning-ledger') return hudLabel.replace('LIGHTNING LEDGER', 'LEDGER').replace('CHANNEL', 'CH');
+  if (weaponId === 'forked-standard') return hudLabel.replace('FORKED STANDARD // ', 'STANDARD ').replace(' NEXT', '');
+  return hudLabel;
 }
 
 export function computeCombatStatusLayout({ width, height, touchUiEnabled = false } = {}) {

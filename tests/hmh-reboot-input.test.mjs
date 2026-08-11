@@ -293,8 +293,9 @@ test('touch combat status clears top chrome and portrait help while desktop reta
   assert.deepEqual([desktop.compact, desktop.multiline, desktop.y, desktop.fontSize], [false, false, 82, 18]);
 });
 
-test('portrait Lightning Ledger label is bounded without changing other weapon labels', () => {
+test('portrait long-weapon labels are bounded without changing other weapon labels', () => {
   assert.equal(compactWeaponHudLabel({ weaponId: 'lightning-ledger', hudLabel: 'LIGHTNING LEDGER 6/6 ■■■■■■ // CHANNEL 1.1X' }), 'LEDGER 6/6 ■■■■■■ // CH 1.1X');
+  assert.equal(compactWeaponHudLabel({ weaponId: 'forked-standard', hudLabel: 'FORKED STANDARD // SWEEP NEXT // RECOVER 0.5S' }), 'STANDARD SWEEP // RECOVER 0.5S');
   assert.equal(compactWeaponHudLabel({ weaponId: 'coin-blaster', hudLabel: 'COIN BLASTER 10/10' }), 'COIN BLASTER 10/10');
 });
 

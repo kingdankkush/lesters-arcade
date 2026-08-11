@@ -5,6 +5,13 @@ import {
   resolveBearMarketBurnerPolicy,
   stepBearMarketBurner,
 } from './bear-market-burner.mjs';
+import {
+  FORKED_STANDARD_CONFIG,
+  createForkedStandardState,
+  getForkedStandardSnapshot,
+  resolveForkedStandardPolicy,
+  stepForkedStandard,
+} from './forked-standard.mjs';
 import { freezeDeep } from './value-guards.mjs';
 import {
   LIGHTNING_LEDGER_CONFIG,
@@ -186,6 +193,25 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     pickupReserveAmmo: BEAR_MARKET_BURNER_CONFIG.reserveFuel,
     policy: STOP_POLICY,
   },
+  'forked-standard': {
+    id: 'forked-standard',
+    title: 'The Forked Standard',
+    displayName: 'Forked Standard',
+    kind: 'melee-alternating',
+    ammoModel: 'none',
+    damage: FORKED_STANDARD_CONFIG.thrust.damage,
+    fireRatePerSecond: TICKS_PER_SECOND / FORKED_STANDARD_CONFIG.thrust.cooldownTicks,
+    reloadSeconds: 0,
+    clipSize: 1,
+    projectileSpeed: 0,
+    range: FORKED_STANDARD_CONFIG.thrust.range,
+    projectileRadius: 0,
+    spreadRadians: FORKED_STANDARD_CONFIG.sweep.arcRadians,
+    pelletCount: 1,
+    recoil: 10,
+    pickupReserveAmmo: 0,
+    policy: STOP_POLICY,
+  },
   'launcher-rig': {
     id: 'launcher-rig',
     compatibilityId: 'launcher-rig',
@@ -276,6 +302,14 @@ export const progressionByWeapon = (ranks = {}) => ({
       contagion: ranks['burner-contagion'] ?? 0,
     },
     capstoneId: (ranks['total-selloff'] ?? 0) > 0 ? 'total-selloff' : null,
+  },
+  'forked-standard': {
+    branches: {
+      reach: ranks['standard-reach'] ?? 0,
+      force: ranks['standard-force'] ?? 0,
+      tempo: ranks['standard-tempo'] ?? 0,
+    },
+    capstoneId: (ranks['canonical-fork'] ?? 0) > 0 ? 'canonical-fork' : null,
   },
 });
 
@@ -376,6 +410,36 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       heatRecoveryPerTick: 0,
       heatResumeThreshold: 0,
       burnerPolicy,
+    });
+  }
+  if (weaponId === 'forked-standard') {
+    if (evolutionId !== null) throw new TypeError('Forked Standard does not use projectile evolutions');
+    const standardPolicy = resolveForkedStandardPolicy({ branches, capstoneId });
+    return freezeDeep({
+      weaponId,
+      damage: standardPolicy.thrust.damage,
+      damageFlatBonus: standardPolicy.thrust.damage - definition.damage,
+      fireRateMultiplier: FORKED_STANDARD_CONFIG.thrust.cooldownTicks / standardPolicy.thrust.cooldownTicks,
+      reloadMultiplier: 1,
+      cadenceTicks: standardPolicy.thrust.cooldownTicks,
+      reloadTicks: 0,
+      clipSize: 1,
+      reserveAmmoGrant: 0,
+      specials: capstoneId ? [capstoneId] : [],
+      pelletCount: 1,
+      spreadRadians: standardPolicy.sweep.arcRadians,
+      projectileSpeed: 0,
+      range: standardPolicy.thrust.range,
+      burstCount: 1,
+      burstIntervalTicks: 0,
+      projectileTag: null,
+      projectilePolicy: STOP_POLICY,
+      shock: null,
+      heatPerShot: 0,
+      maxHeat: 0,
+      heatRecoveryPerTick: 0,
+      heatResumeThreshold: 0,
+      standardPolicy,
     });
   }
   const tree = UPGRADE_TREES[weaponId];
@@ -487,6 +551,7 @@ function createPerWeaponState(id, { owned = false } = {}) {
     burnerState: definition.kind === 'flame-channel'
       ? createBearMarketBurnerState({ fuel: progression.clipSize, reserveFuel: isOwned ? progression.reserveAmmoGrant : 0 })
       : null,
+    standardState: definition.kind === 'melee-alternating' ? createForkedStandardState() : null,
   };
 }
 
@@ -549,6 +614,9 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
   } else if (currentTick < state.switchReadyTick) {
     mode = 'switching';
     ticksRemaining = state.switchReadyTick - currentTick;
+  } else if (weapon.standardState && currentTick < weapon.standardState.nextAttackTick) {
+    mode = 'recovery';
+    ticksRemaining = weapon.standardState.nextAttackTick - currentTick;
   } else if (weapon.ammoInClip <= 0) {
     mode = 'empty';
   }
@@ -557,7 +625,10 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
   const channelCells = channel
     ? ` ${'▮'.repeat(weapon.ammoInClip)}${'▯'.repeat(Math.max(0, progression.clipSize - weapon.ammoInClip))}`
     : '';
-  const ammoLabel = burner
+  const standard = weapon.standardState;
+  const ammoLabel = standard
+    ? `FORKED STANDARD // ${standard.sequence % 2 === 0 ? 'THRUST' : 'SWEEP'} NEXT`
+    : burner
     ? `BEAR MARKET BURNER ${weapon.ammoInClip}/${progression.clipSize}`
     : `${definition.displayName.toUpperCase()} ${weapon.ammoInClip}/${progression.clipSize}${channelCells}`;
   let statusLabel = '';
@@ -569,6 +640,9 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
   } else if (mode === 'cooldown') {
     statusLabel = `COOLDOWN ${secondsRemaining.toFixed(1)}S`;
     accessibleState = `cooldown, ${secondsRemaining.toFixed(1)} seconds remaining`;
+  } else if (mode === 'recovery') {
+    statusLabel = `RECOVER ${secondsRemaining.toFixed(1)}S`;
+    accessibleState = `melee recovery, ${secondsRemaining.toFixed(1)} seconds remaining`;
   } else if (mode === 'reloading') {
     statusLabel = `RELOAD ${secondsRemaining.toFixed(1)}S`;
     accessibleState = `reloading, ${secondsRemaining.toFixed(1)} seconds remaining`;
@@ -585,7 +659,7 @@ export function getWeaponReadabilityStatus(state, { tick, progressionByWeapon = 
     statusLabel = `HEAT ${Math.round(weapon.heat)}%`;
     accessibleState = `ready, heat ${Math.round(weapon.heat)} percent`;
   } else {
-    accessibleState = 'ready';
+    accessibleState = standard ? `ammo-free, ${standard.sequence % 2 === 0 ? 'thrust' : 'sweep'} attack ready` : 'ready';
   }
   return freezeDeep({
     weaponId: weapon.id,
@@ -812,6 +886,10 @@ export function stepWeaponLoadout(state, {
   channelTargets = [],
   channelLineOfSight = () => true,
   channelStopReason = '',
+  meleeOrigin = { x: 0, y: 0, z: 0 },
+  meleeTargets = [],
+  meleeBlockers = [],
+  meleeDownwardDropDirection = null,
 } = {}) {
   assertMonotonic(state, tick);
   const events = [];
@@ -823,6 +901,7 @@ export function stepWeaponLoadout(state, {
   // pistol immediately and deterministically.
   const active = state.weapons[state.activeWeaponId];
   if (state.activeWeaponId !== 'coin-blaster'
+    && HMH_WEAPON_DEFINITIONS[active.id].ammoModel !== 'none'
     && active.ammoInClip <= 0
     && active.reserveAmmo !== null && active.reserveAmmo <= 0
     && active.reloadCompleteTick === null) {
@@ -837,6 +916,33 @@ export function stepWeaponLoadout(state, {
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
   if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
+  if (definition.kind === 'melee-alternating') {
+    const standardFrame = stepForkedStandard(weapon.standardState, {
+      tick,
+      fire,
+      origin: meleeOrigin,
+      direction,
+      targets: meleeTargets,
+      blockers: meleeBlockers,
+      downwardDropDirection: meleeDownwardDropDirection,
+      policy: progression.standardPolicy,
+    });
+    events.push(...standardFrame.events);
+    if (standardFrame.attacked) {
+      events.push(freezeDeep({
+        type: 'weapon:melee-strike',
+        tick,
+        attackId: standardFrame.strike.attackId,
+        weaponId: definition.id,
+        form: standardFrame.strike.form,
+        capstone: standardFrame.strike.capstone,
+        whiff: standardFrame.strike.whiff,
+        droppedContacts: standardFrame.strike.droppedContacts,
+        hits: standardFrame.hits,
+      }));
+    }
+    return freezeDeep({ tick, standard: getForkedStandardSnapshot(weapon.standardState), events });
+  }
   if (definition.kind === 'flame-channel') {
     const burnerFrame = stepBearMarketBurner(weapon.burnerState, {
       tick,

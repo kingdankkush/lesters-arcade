@@ -92,8 +92,8 @@ test('authored world dressing and gameplay POIs are deterministic and bounded', 
   const pointsOfInterest = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
   assert.equal(pointsOfInterest.length, 10);
   assert.deepEqual(new Set(pointsOfInterest.map((placement) => placement.assetId)), new Set([
-    ...AUTHORED_PROP_ASSETS.weapons.filter((assetId) => !['hash-rail', 'lightning-ledger', 'bear-market-burner'].includes(assetId)),
-    ...AUTHORED_PROP_ASSETS.pickups.filter((assetId) => !['lightning-ledger-cache', 'bear-market-burner-cache'].includes(assetId)),
+    ...AUTHORED_PROP_ASSETS.weapons.filter((assetId) => !['hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard'].includes(assetId)),
+    ...AUTHORED_PROP_ASSETS.pickups.filter((assetId) => !['lightning-ledger-cache', 'bear-market-burner-cache', 'forked-standard-cache'].includes(assetId)),
   ]));
   assert.deepEqual(pointsOfInterest.map(({ pointOfInterestId, hook, x, y }) => ({ pointOfInterestId, hook, x, y })), LEVEL_ONE_WORLD.pointsOfInterest.map((point) => ({ pointOfInterestId: point.id, hook: point.hook, x: point.anchor.x, y: point.anchor.y })));
   assert.ok(pointsOfInterest.every((placement) => placement.category === 'point-of-interest' && placement.runtimeAuthority === 'projection-only'));

@@ -25,8 +25,8 @@ const readJson = async (url) => JSON.parse(await readFile(url, 'utf8'));
 test('A9 authors one deterministic multi-part Blender set-piece per district', async () => {
   const manifest = await readJson(sourceManifestUrl);
   const generated = await readJson(generatedManifestUrl);
-  assert.equal(manifest.assets.length, 105);
-  assert.equal(generated.assetCount, 105);
+  assert.equal(manifest.assets.length, 107);
+  assert.equal(generated.assetCount, 107);
   const index = createAuthoredPropAtlasIndex(generated);
   const sourceById = new Map(manifest.assets.map((asset) => [asset.assetId, asset]));
   for (const [landmarkId, assetId] of SETPIECES) {

@@ -16,6 +16,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'hash-rail',
     'lightning-ledger',
     'bear-market-burner',
+    'forked-standard',
     'litecoin-knife',
     'satoshi-frag',
     'nuke-liquidation',
@@ -30,6 +31,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'hash-rail-core',
     'lightning-ledger-cache',
     'bear-market-burner-cache',
+    'forked-standard-cache',
     'time-dilation',
     'berserk-candle',
     'nuke-liquidation',
@@ -55,6 +57,10 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'burner-volatility',
     'burner-contagion',
     'total-selloff',
+    'standard-reach',
+    'standard-force',
+    'standard-tempo',
+    'canonical-fork',
   ]),
   districts: Object.freeze([
     'frontier-relay',
@@ -103,10 +109,11 @@ const rows = (value, ids, idKey, fields, label) => {
 };
 
 export function validateRunSummaryPayload(payload) {
-  if (![1, 2, 3, 4].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
+  if (![1, 2, 3, 4, 5].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
   const payloadFields = ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'];
   if (payload.schemaVersion >= 3) payloadFields.push('lightningLedger');
   if (payload.schemaVersion >= 4) payloadFields.push('bearMarketBurner');
+  if (payload.schemaVersion >= 5) payloadFields.push('forkedStandard');
   let error = keys(payload, payloadFields, 'game:run-summary payload');
   if (error) return error;
   const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
@@ -179,6 +186,17 @@ export function validateRunSummaryPayload(payload) {
       || payload.bearMarketBurner.totalSelloffPulses > payload.bearMarketBurner.pulses
       || payload.bearMarketBurner.contacts > payload.bearMarketBurner.pulses * 12
       || payload.bearMarketBurner.emergencyRefills > 1) return 'game:run-summary bearMarketBurner totals are inconsistent';
+  }
+
+  if (payload.schemaVersion >= 5) {
+    const standardFields = ['attacks', 'contacts', 'whiffs', 'thrusts', 'sweeps', 'capstoneAttacks', 'droppedContacts'];
+    error = keys(payload.forkedStandard, standardFields, 'game:run-summary forkedStandard');
+    if (error) return error;
+    for (const field of standardFields) if (!integer(payload.forkedStandard[field])) return `game:run-summary forkedStandard.${field} is invalid`;
+    if (payload.forkedStandard.contacts > payload.forkedStandard.attacks * 6
+      || payload.forkedStandard.whiffs > payload.forkedStandard.attacks
+      || payload.forkedStandard.thrusts + payload.forkedStandard.sweeps !== payload.forkedStandard.attacks
+      || payload.forkedStandard.capstoneAttacks > payload.forkedStandard.attacks) return 'game:run-summary forkedStandard totals are inconsistent';
   }
 
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');

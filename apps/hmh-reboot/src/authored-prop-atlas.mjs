@@ -5,8 +5,8 @@ export const AUTHORED_PROP_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-au
 export const AUTHORED_PROP_ITEM_ROOT = '/assets/generated/hmh-reboot-authored-props/items';
 
 export const AUTHORED_PROP_ASSETS = Object.freeze({
-  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig hash-rail lightning-ledger bear-market-burner'.split(' ')),
-  pickups: Object.freeze('bonus-life hash-rail-core lightning-ledger-cache bear-market-burner-cache time-dilation berserk-candle nuke-liquidation'.split(' ')),
+  weapons: Object.freeze('coin-blaster scatter-shotgun auto-miner launcher-rig hash-rail lightning-ledger bear-market-burner forked-standard'.split(' ')),
+  pickups: Object.freeze('bonus-life hash-rail-core lightning-ledger-cache bear-market-burner-cache forked-standard-cache time-dilation berserk-candle nuke-liquidation'.split(' ')),
   powerUps: Object.freeze('proof-of-work diamond-hands gas-optimization cold-storage block-reward validator-training compound-interest hardened-wallet hot-wallet layer-two precision-ledger hard-fork-rounds'.split(' ')),
 
 });

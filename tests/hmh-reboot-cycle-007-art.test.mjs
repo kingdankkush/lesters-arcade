@@ -82,8 +82,8 @@ test('Cycle 007 prop manifest covers weapons, P0 pickups, power-ups and world dr
   assert.equal(manifest.render.cameraPitchDegrees, 55);
   assert.equal(manifest.runtimeAuthority, 'projection-only');
   const byCategory = Object.groupBy(manifest.assets, (asset) => asset.category);
-  assert.deepEqual(byCategory.weapon.map((asset) => asset.assetId).sort(), ['auto-miner', 'bear-market-burner', 'coin-blaster', 'hash-rail', 'launcher-rig', 'lightning-ledger', 'scatter-shotgun']);
-  assert.deepEqual(byCategory.pickup.map((asset) => asset.assetId).sort(), ['bear-market-burner-cache', 'berserk-candle', 'bonus-life', 'hash-rail-core', 'lightning-ledger-cache', 'nuke-liquidation', 'time-dilation']);
+  assert.deepEqual(byCategory.weapon.map((asset) => asset.assetId).sort(), ['auto-miner', 'bear-market-burner', 'coin-blaster', 'forked-standard', 'hash-rail', 'launcher-rig', 'lightning-ledger', 'scatter-shotgun']);
+  assert.deepEqual(byCategory.pickup.map((asset) => asset.assetId).sort(), ['bear-market-burner-cache', 'berserk-candle', 'bonus-life', 'forked-standard-cache', 'hash-rail-core', 'lightning-ledger-cache', 'nuke-liquidation', 'time-dilation']);
   assert.equal(byCategory.pickup.find((asset) => asset.assetId === 'hash-rail-core').shape, 'hash-rail-core');
   const metadata = await loadJson(new URL('../apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json', import.meta.url));
   assert.equal(metadata.frames.find((frame) => frame.assetId === 'hash-rail-core').shape, 'hash-rail-core');

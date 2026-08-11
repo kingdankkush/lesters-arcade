@@ -20,13 +20,14 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
   'hash-rail-core': { effectId: 'hash-rail-core', kind: 'weapon-cache', weaponId: 'hash-rail', xpGain: 160 },
   'lightning-ledger-cache': { effectId: 'lightning-ledger-cache', kind: 'weapon-cache', weaponId: 'lightning-ledger', xpGain: 220 },
   'bear-market-burner-cache': { effectId: 'bear-market-burner-cache', kind: 'weapon-cache', weaponId: 'bear-market-burner', xpGain: 260 },
+  'forked-standard-cache': { effectId: 'forked-standard-cache', kind: 'weapon-cache', weaponId: 'forked-standard', xpGain: 240 },
   'time-dilation': { effectId: 'time-dilation', kind: 'timed', durationTicks: 600, speedMultiplier: 1.2 },
   'berserk-candle': { effectId: 'berserk-candle', kind: 'timed', durationTicks: 600, damageMultiplier: 2 },
   'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999 },
 });
 
 export function createCollectibleState({ placements, collectionRadius = 80 } = {}) {
-  if (!Array.isArray(placements) || placements.length < 10 || placements.length > 12) throw new TypeError('ten authored placements and at most two scheduled rare placements are required');
+  if (!Array.isArray(placements) || placements.length < 10 || placements.length > 13) throw new TypeError('ten authored placements and at most three scheduled rare placements are required');
   if (!Number.isFinite(collectionRadius) || collectionRadius <= 0) throw new TypeError('collectionRadius must be positive');
   const ids = new Set();
   const entries = placements.map((placement) => {

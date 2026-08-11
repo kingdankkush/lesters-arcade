@@ -106,6 +106,17 @@
       "runtimeScale": 0.67
     },
     {
+      "assetId": "forked-standard",
+      "category": "weapon",
+      "shape": "forked-spear",
+      "palette": {
+        "primary": "#c7d1da",
+        "secondary": "#26313a",
+        "accent": "#7edcff"
+      },
+      "runtimeScale": 0.76
+    },
+    {
       "assetId": "bonus-life",
       "category": "pickup",
       "shape": "life-token",
@@ -148,6 +159,17 @@
         "accent": "#ffd166"
       },
       "runtimeScale": 0.92
+    },
+    {
+      "assetId": "forked-standard-cache",
+      "category": "pickup",
+      "shape": "standard-cache",
+      "palette": {
+        "primary": "#aebbc5",
+        "secondary": "#27333d",
+        "accent": "#7edcff"
+      },
+      "runtimeScale": 0.96
     },
     {
       "assetId": "time-dilation",

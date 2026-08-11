@@ -5,7 +5,7 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
-  "assetCount": 105,
+  "assetCount": 107,
   "atlasSize": {
     "width": 1024,
     "height": 1024
@@ -26,7 +26,7 @@
       "districts": [],
       "runtimeScale": 0.6,
       "frame": {
-        "x": 685,
+        "x": 726,
         "y": 713,
         "w": 57,
         "h": 22
@@ -139,7 +139,7 @@
       "districts": [],
       "runtimeScale": 0.67,
       "frame": {
-        "x": 226,
+        "x": 267,
         "y": 713,
         "w": 83,
         "h": 31
@@ -171,7 +171,7 @@
       "districts": [],
       "runtimeScale": 0.92,
       "frame": {
-        "x": 321,
+        "x": 354,
         "y": 668,
         "w": 50,
         "h": 37
@@ -235,7 +235,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 274,
+        "x": 307,
         "y": 668,
         "w": 44,
         "h": 38
@@ -299,7 +299,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 423,
+        "x": 456,
         "y": 668,
         "w": 46,
         "h": 34
@@ -331,7 +331,7 @@
       "districts": [],
       "runtimeScale": 0.78,
       "frame": {
-        "x": 800,
+        "x": 841,
         "y": 713,
         "w": 28,
         "h": 21
@@ -365,7 +365,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 472,
+        "x": 505,
         "y": 668,
         "w": 26,
         "h": 34
@@ -734,7 +734,7 @@
       "districts": [],
       "runtimeScale": 0.52,
       "frame": {
-        "x": 635,
+        "x": 676,
         "y": 713,
         "w": 47,
         "h": 23
@@ -766,7 +766,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 501,
+        "x": 534,
         "y": 668,
         "w": 46,
         "h": 34
@@ -798,7 +798,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 550,
+        "x": 583,
         "y": 668,
         "w": 46,
         "h": 34
@@ -882,7 +882,7 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 179,
+        "x": 220,
         "y": 713,
         "w": 44,
         "h": 32
@@ -946,7 +946,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 599,
+        "x": 632,
         "y": 668,
         "w": 46,
         "h": 34
@@ -1196,6 +1196,70 @@
       "trimmed": true
     },
     {
+      "id": "forked-standard",
+      "assetId": "forked-standard",
+      "category": "weapon",
+      "shape": "forked-spear",
+      "itemUrl": "./items/forked-standard.png",
+      "districts": [],
+      "runtimeScale": 0.76,
+      "frame": {
+        "x": 872,
+        "y": 713,
+        "w": 108,
+        "h": 20
+      },
+      "moduleFamily": null,
+      "landmarkId": null,
+      "collisionProxy": null,
+      "townPlacements": [],
+      "pivot": {
+        "x": 44,
+        "y": 19
+      },
+      "anchor": {
+        "x": 0.407407,
+        "y": 0.95
+      },
+      "opaquePixels": 1039,
+      "massCentroidY": 0.577022,
+      "sourcePixelSha256": "5757a671cecd31b55cd329e0e183ce219cf292968818d488e2f3b2ed7e96b814",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
+      "id": "forked-standard-cache",
+      "assetId": "forked-standard-cache",
+      "category": "pickup",
+      "shape": "standard-cache",
+      "itemUrl": "./items/forked-standard-cache.png",
+      "districts": [],
+      "runtimeScale": 0.96,
+      "frame": {
+        "x": 168,
+        "y": 668,
+        "w": 30,
+        "h": 40
+      },
+      "moduleFamily": null,
+      "landmarkId": null,
+      "collisionProxy": null,
+      "townPlacements": [],
+      "pivot": {
+        "x": 15,
+        "y": 36
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9
+      },
+      "opaquePixels": 724,
+      "massCentroidY": 0.633872,
+      "sourcePixelSha256": "9dff536d56a3f995657e001c3b42f1a14f1ef9966e2890c700233b79e0c0bbe0",
+      "rotated": false,
+      "trimmed": true
+    },
+    {
       "id": "fuel-drum",
       "assetId": "fuel-drum",
       "category": "world-prop",
@@ -1207,7 +1271,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 648,
+        "x": 681,
         "y": 668,
         "w": 38,
         "h": 34
@@ -1288,7 +1352,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 689,
+        "x": 722,
         "y": 668,
         "w": 46,
         "h": 34
@@ -1448,7 +1512,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 738,
+        "x": 771,
         "y": 668,
         "w": 46,
         "h": 34
@@ -1480,7 +1544,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 787,
+        "x": 820,
         "y": 668,
         "w": 46,
         "h": 34
@@ -1512,7 +1576,7 @@
       "districts": [],
       "runtimeScale": 0.68,
       "frame": {
-        "x": 497,
+        "x": 538,
         "y": 713,
         "w": 91,
         "h": 27
@@ -1544,7 +1608,7 @@
       "districts": [],
       "runtimeScale": 0.86,
       "frame": {
-        "x": 374,
+        "x": 407,
         "y": 668,
         "w": 46,
         "h": 36
@@ -1644,7 +1708,7 @@
       ],
       "runtimeScale": 1.1,
       "frame": {
-        "x": 394,
+        "x": 435,
         "y": 713,
         "w": 38,
         "h": 29
@@ -1708,7 +1772,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 836,
+        "x": 869,
         "y": 668,
         "w": 46,
         "h": 34
@@ -1740,7 +1804,7 @@
       "districts": [],
       "runtimeScale": 0.62,
       "frame": {
-        "x": 435,
+        "x": 476,
         "y": 713,
         "w": 59,
         "h": 29
@@ -1772,7 +1836,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 885,
+        "x": 918,
         "y": 668,
         "w": 46,
         "h": 34
@@ -1804,7 +1868,7 @@
       "districts": [],
       "runtimeScale": 0.64,
       "frame": {
-        "x": 312,
+        "x": 353,
         "y": 713,
         "w": 79,
         "h": 30
@@ -1836,7 +1900,7 @@
       "districts": [],
       "runtimeScale": 0.9,
       "frame": {
-        "x": 934,
+        "x": 967,
         "y": 668,
         "w": 28,
         "h": 34
@@ -1902,8 +1966,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 929,
-        "y": 713,
+        "x": 101,
+        "y": 750,
         "w": 24,
         "h": 15
       },
@@ -1971,8 +2035,8 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 965,
-        "y": 668,
+        "x": 3,
+        "y": 713,
         "w": 38,
         "h": 34
       },
@@ -2215,7 +2279,7 @@
       "districts": [],
       "runtimeScale": 0.88,
       "frame": {
-        "x": 168,
+        "x": 201,
         "y": 668,
         "w": 44,
         "h": 40
@@ -2249,7 +2313,7 @@
       ],
       "runtimeScale": 1.15,
       "frame": {
-        "x": 591,
+        "x": 632,
         "y": 713,
         "w": 41,
         "h": 26
@@ -2425,7 +2489,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 3,
+        "x": 44,
         "y": 713,
         "w": 46,
         "h": 34
@@ -2491,7 +2555,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 52,
+        "x": 93,
         "y": 713,
         "w": 46,
         "h": 34
@@ -2591,8 +2655,8 @@
       ],
       "runtimeScale": 1.4,
       "frame": {
-        "x": 956,
-        "y": 713,
+        "x": 128,
+        "y": 750,
         "w": 24,
         "h": 15
       },
@@ -2755,7 +2819,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 745,
+        "x": 786,
         "y": 713,
         "w": 52,
         "h": 22
@@ -2881,8 +2945,8 @@
       ],
       "runtimeScale": 1.25,
       "frame": {
-        "x": 900,
-        "y": 713,
+        "x": 72,
+        "y": 750,
         "w": 26,
         "h": 18
       },
@@ -2977,8 +3041,8 @@
       "districts": [],
       "runtimeScale": 0.58,
       "frame": {
-        "x": 831,
-        "y": 713,
+        "x": 3,
+        "y": 750,
         "w": 66,
         "h": 20
       },
@@ -3041,7 +3105,7 @@
       "districts": [],
       "runtimeScale": 0.8,
       "frame": {
-        "x": 215,
+        "x": 248,
         "y": 668,
         "w": 56,
         "h": 40
@@ -3404,7 +3468,7 @@
       "districts": [],
       "runtimeScale": 0.44,
       "frame": {
-        "x": 101,
+        "x": 142,
         "y": 713,
         "w": 46,
         "h": 34
@@ -3439,7 +3503,7 @@
       ],
       "runtimeScale": 1.05,
       "frame": {
-        "x": 150,
+        "x": 191,
         "y": 713,
         "w": 26,
         "h": 34

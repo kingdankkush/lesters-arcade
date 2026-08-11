@@ -229,6 +229,18 @@ def build_asset(asset: dict) -> dict:
         add(torus(f'{asset_id}_Igniter', (0.76, 0.0, 0.70), 0.15, 0.025, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
         add(cube(f'{asset_id}_HeatShield', (0.30, 0.0, 0.84), (0.30, 0.24, 0.045), accent, asset_id))
         add(cube(f'{asset_id}_Grip', (-0.10, 0.0, 0.36), (0.11, 0.13, 0.25), secondary, asset_id, rotation=(0.0, math.radians(-10), 0.0)))
+    elif shape == 'forked-spear':
+        # Long two-tine polearm. The shaft stays broad enough to survive atlas
+        # scale, while the open fork silhouette makes it unmistakable in-hand.
+        add(cylinder(f'{asset_id}_Shaft', (0.02, 0.0, 0.62), 0.055, 1.48, secondary, asset_id, rotation=(0.0, math.radians(90), 0.0), vertices=12))
+        add(cylinder(f'{asset_id}_RearCap', (-0.73, 0.0, 0.62), 0.095, 0.16, primary, asset_id, rotation=(0.0, math.radians(90), 0.0), vertices=12))
+        add(torus(f'{asset_id}_GripBandA', (-0.34, 0.0, 0.62), 0.078, 0.022, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(torus(f'{asset_id}_GripBandB', (-0.12, 0.0, 0.62), 0.078, 0.022, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(cube(f'{asset_id}_ForkCollar', (0.69, 0.0, 0.62), (0.16, 0.20, 0.11), primary, asset_id, bevel=0.025))
+        for index, y in enumerate((-0.13, 0.13)):
+            add(cube(f'{asset_id}_Tine_{index}', (0.90, y, 0.66), (0.25, 0.045, 0.045), primary, asset_id, rotation=(0.0, 0.0, math.radians(4 if y > 0 else -4))))
+            add(cone(f'{asset_id}_Tip_{index}', (1.17, y, 0.68), 0.085, 0.30, accent, asset_id, rotation=(0.0, math.radians(90), 0.0)))
+        add(cube(f'{asset_id}_CrossGuard', (0.61, 0.0, 0.62), (0.055, 0.30, 0.055), accent, asset_id, bevel=0.014))
     elif shape == 'life-token':
         # A med kit with a bold cross on its lid. The previous sphere-and-halo
         # read as a featureless circle from above, which is the single most
@@ -267,6 +279,17 @@ def build_asset(asset: dict) -> dict:
         add(cube(f'{asset_id}_HazardA', (-0.18, -0.40, 0.34), (0.16, 0.045, 0.055), accent, asset_id, rotation=(0.0, math.radians(-18), 0.0)))
         add(cube(f'{asset_id}_HazardB', (0.18, -0.40, 0.34), (0.16, 0.045, 0.055), accent, asset_id, rotation=(0.0, math.radians(-18), 0.0)))
         add(cube(f'{asset_id}_Handle', (0.0, 0.0, 1.11), (0.25, 0.06, 0.06), secondary, asset_id))
+    elif shape == 'standard-cache':
+        # Field rack with a bright fork crest. The upright icon is readable as
+        # a weapon cache rather than another fuel or capacitor container.
+        add(cube(f'{asset_id}_Case', (0.0, 0.0, 0.28), (0.50, 0.38, 0.24), secondary, asset_id, bevel=0.035))
+        add(cube(f'{asset_id}_Lid', (0.0, 0.0, 0.51), (0.52, 0.40, 0.07), primary, asset_id, bevel=0.025))
+        add(cube(f'{asset_id}_Shaft', (0.0, -0.41, 0.82), (0.045, 0.045, 0.34), primary, asset_id, bevel=0.012))
+        add(cube(f'{asset_id}_Collar', (0.0, -0.41, 1.04), (0.18, 0.050, 0.055), accent, asset_id, bevel=0.012))
+        for index, x in enumerate((-0.14, 0.14)):
+            add(cube(f'{asset_id}_Tine_{index}', (x, -0.41, 1.18), (0.045, 0.045, 0.22), accent, asset_id, rotation=(0.0, math.radians(-8 if x < 0 else 8), 0.0)))
+            add(cone(f'{asset_id}_Tip_{index}', (x, -0.41, 1.43), 0.065, 0.18, accent, asset_id))
+        add(cube(f'{asset_id}_Latch', (0.0, -0.41, 0.33), (0.16, 0.035, 0.07), accent, asset_id, bevel=0.012))
     elif shape == 'litecoin-token':
         # Upright silver/blue token with a raised stylized Ł mark. Facing the
         # certified camera preserves the circular silhouette and symbol.

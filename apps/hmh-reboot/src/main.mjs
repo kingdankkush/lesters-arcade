@@ -8,6 +8,7 @@ import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
 import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './bear-market-burner.mjs';
+import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
 import { compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
@@ -118,6 +119,7 @@ import {
   recordRunKill,
   recordRunLightningLedgerEvent,
   recordRunBearMarketBurnerEvent,
+  recordRunForkedStandardEvent,
   recordRunProjectileContacts,
   recordRunProjectileResolution,
   recordRunTick,
@@ -241,7 +243,7 @@ const CRITICAL_CHANCE_CAP = 0.45;
 const BASE_CRITICAL_CHANCE = 0.08;
 const BASE_CRITICAL_MULTIPLIER = 1.75;
 
-const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner']);
+const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard']);
 const WEAPON_KNOCKBACK = Object.freeze({
   'coin-blaster': 8,
   'scatter-shotgun': 18,
@@ -250,6 +252,7 @@ const WEAPON_KNOCKBACK = Object.freeze({
   'hash-rail': 38,
   'lightning-ledger': 4,
   'bear-market-burner': 2,
+  'forked-standard': 18,
 });
 const WEAPON_COLORS = Object.freeze({
   'coin-blaster': 0xffd166,
@@ -259,6 +262,7 @@ const WEAPON_COLORS = Object.freeze({
   'hash-rail': 0x8ff3ff,
   'lightning-ledger': 0x7df9ff,
   'bear-market-burner': 0xff7a2f,
+  'forked-standard': 0xd7fbff,
 });
 const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
@@ -473,6 +477,7 @@ async function boot() {
   let authoredHeldWeaponDisplay = null;
   let lightningLedgerEventPlacement = null;
   let bearMarketBurnerEventPlacement = null;
+  let forkedStandardEventPlacement = null;
   let authoredPropLoadError = null;
   // Decals load on their own promise, deliberately NOT inside the prop
   // Promise.all: that array is destructured positionally, so adding an entry
@@ -514,6 +519,7 @@ async function boot() {
     authoredHeldWeaponDisplay = heldWeaponDisplay;
     if (lightningLedgerEventPlacement) display.addPlacement(lightningLedgerEventPlacement);
     if (bearMarketBurnerEventPlacement) display.addPlacement(bearMarketBurnerEventPlacement);
+    if (forkedStandardEventPlacement) display.addPlacement(forkedStandardEventPlacement);
     worldProduction.layers.townBlockers.visible = false;
     worldProduction.layers.landmarks.visible = false;
     dataset.authoredPropStatus = 'ready';
@@ -762,9 +768,11 @@ async function boot() {
   // evidenceSafe exactly like the other pilots; a real run starts pistol-only.
   const lightningLedgerPilotEnabled = evidenceSafeEnabled && runtimeParams.get('lightningLedgerPilot') === '1';
   const bearMarketBurnerPilotEnabled = evidenceSafeEnabled && runtimeParams.get('bearMarketBurnerPilot') === '1';
+  const forkedStandardPilotEnabled = evidenceSafeEnabled && runtimeParams.get('forkedStandardPilot') === '1';
   const lightningEventPilot = evidenceSafeEnabled ? runtimeParams.get('lightningEventPilot') : null;
   const burnerEventPilot = evidenceSafeEnabled ? runtimeParams.get('burnerEventPilot') : null;
-  const weaponPilotEnabled = evidenceSafeEnabled && (runtimeParams.get('weaponPilot') === '1' || lightningLedgerPilotEnabled || bearMarketBurnerPilotEnabled);
+  const standardEventPilot = evidenceSafeEnabled ? runtimeParams.get('standardEventPilot') : null;
+  const weaponPilotEnabled = evidenceSafeEnabled && (runtimeParams.get('weaponPilot') === '1' || lightningLedgerPilotEnabled || bearMarketBurnerPilotEnabled || forkedStandardPilotEnabled);
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
@@ -904,6 +912,7 @@ async function boot() {
   let lastWeaponFire = null;
   let lastLightningLedgerPulse = null;
   let lastBearMarketBurnerPulse = null;
+  let lastForkedStandardStrike = null;
   let lastPlayerHit = null;
   let lowHealthWarned = false;
   let lastDashDirection = null;
@@ -1158,6 +1167,7 @@ async function boot() {
       const hiddenAuthoredPropIds = new Set(collectibleState?.collectedIds ?? []);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
+      if (forkedStandardEventPlacement && authoredPropTick < forkedStandardEventPlacement.availableTick) hiddenAuthoredPropIds.add(forkedStandardEventPlacement.id);
       const authoredPropReport = authoredPropDisplay?.render({
         camera,
         view,
@@ -1441,6 +1451,33 @@ async function boot() {
                 Math.max(2, (7 - ember) * camera.zoom),
               ).fill({ color: ember === 1 ? 0xfff0a6 : 0xff7a2f, alpha: alpha * 0.72 });
             }
+          } else if (event.type === 'forked-standard') {
+            const facing = worldToScreen({
+              x: event.point.x + event.direction.x,
+              y: event.point.y + event.direction.y,
+              z: event.point.z,
+            }, camera, view);
+            const angle = Math.atan2(facing.y - center.y, facing.x - center.x);
+            const glow = event.capstone ? 0xffd166 : event.color;
+            if (event.form === 'thrust') {
+              const reach = 94 * camera.zoom;
+              const tipX = center.x + Math.cos(angle) * reach;
+              const tipY = center.y + Math.sin(angle) * reach;
+              combatVisuals.moveTo(center.x, center.y).lineTo(tipX, tipY)
+                .stroke({ color: glow, width: 12, alpha: alpha * 0.28, cap: 'round' });
+              combatVisuals.moveTo(center.x, center.y).lineTo(tipX, tipY)
+                .stroke({ color: 0xf4fdff, width: 4, alpha: alpha * 0.94, cap: 'round' });
+              const normalX = -Math.sin(angle) * 9 * camera.zoom;
+              const normalY = Math.cos(angle) * 9 * camera.zoom;
+              combatVisuals.moveTo(tipX + normalX, tipY + normalY).lineTo(tipX, tipY).lineTo(tipX - normalX, tipY - normalY)
+                .stroke({ color: glow, width: 4, alpha: alpha * 0.9, cap: 'round', join: 'round' });
+            } else {
+              const radius = 76 * camera.zoom;
+              combatVisuals.arc(center.x, center.y, radius, angle - 1.02, angle + 1.02)
+                .stroke({ color: glow, width: 16, alpha: alpha * 0.28, cap: 'round' });
+              combatVisuals.arc(center.x, center.y, radius, angle - 1.02, angle + 1.02)
+                .stroke({ color: 0xf4fdff, width: 5, alpha: alpha * 0.9, cap: 'round' });
+            }
           } else if (event.type === 'muzzle') {
             // Shrink and brighten: a growing circle read as a smoke puff.
             const flashRadius = Math.max(2, 14 - age * 1.6);
@@ -1665,10 +1702,11 @@ async function boot() {
       const powerupHud = activePowerupLabels.length > 0 ? ` // POWER ${activePowerupLabels.join('+')}` : '';
       const compactWeaponHud = compactWeaponHudLabel({ weaponId: weaponStatus?.weaponId ?? 'none', hudLabel: weaponHud });
       const lightningLedgerHud = weaponStatus?.weaponId === 'lightning-ledger' && !combatStatusLayout.compact;
+      const stackedCompactWeaponHud = ['lightning-ledger', 'forked-standard'].includes(weaponStatus?.weaponId);
       const combatHud = lightningLedgerHud
         ? `${weaponHud}\n${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`
         : `${weaponHud} // ${dashHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // HP ${playerHealth} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
-      const compactCombatHud = weaponStatus?.weaponId === 'lightning-ledger'
+      const compactCombatHud = stackedCompactWeaponHud
         ? `${compactWeaponHud}\n${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`
         : `${compactWeaponHud} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
       const landscapeCombatHud = `HP ${playerHealth} // ${weaponHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
@@ -1746,6 +1784,8 @@ async function boot() {
         dataset.actorY = renderState.y.toFixed(3);
         dataset.targetX = grayboxEnemies[0]?.x.toFixed(3) ?? '';
         dataset.aimSource = aimIntent?.source ?? 'none';
+        dataset.aimDirectionX = String(aimState?.stableDirection?.x ?? 0);
+        dataset.aimDirectionY = String(aimState?.stableDirection?.y ?? 0);
         dataset.firing = String(aimIntent?.fire === true);
         dataset.collisionBlocker = lastCollision?.contacts.at(-1)?.blockerId ?? '';
         dataset.collisionStalls = String(zeroDisplacementFrames);
@@ -1821,6 +1861,14 @@ async function boot() {
         dataset.bearMarketBurnerActiveBurns = String(weaponLoadout?.weapons['bear-market-burner']?.burnerState?.burns?.size ?? 0);
         dataset.bearMarketBurnerScorchZones = String(weaponLoadout?.weapons['bear-market-burner']?.burnerState?.scorchZones?.length ?? 0);
         dataset.bearMarketBurnerFlameVisuals = String(combatVisualEvents.filter((event) => event.type === 'bear-market-burner').length);
+        dataset.forkedStandardEventId = String(forkedStandardEventPlacement?.id ?? '');
+        dataset.forkedStandardEventTick = String(forkedStandardEventPlacement?.availableTick ?? '');
+        dataset.forkedStandardEventCollected = String(Boolean(forkedStandardEventPlacement && collectibleState?.collectedIds.has(forkedStandardEventPlacement.id)));
+        dataset.forkedStandardAttacks = String(weaponLoadout?.weapons['forked-standard']?.standardState?.attacks ?? 0);
+        dataset.forkedStandardLastForm = String(lastForkedStandardStrike?.form ?? '');
+        dataset.forkedStandardLastHits = String(lastForkedStandardStrike?.hits ?? 0);
+        dataset.forkedStandardWhiffs = String(weaponLoadout?.weapons['forked-standard']?.standardState?.whiffs ?? 0);
+        dataset.forkedStandardVisuals = String(combatVisualEvents.filter((event) => event.type === 'forked-standard').length);
         dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
         dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
         dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
@@ -1927,6 +1975,7 @@ async function boot() {
     lastWeaponFire = null;
     lastLightningLedgerPulse = null;
     lastBearMarketBurnerPulse = null;
+    lastForkedStandardStrike = null;
     lastPlayerHit = null;
     lowHealthWarned = false;
     lastDashDirection = null;
@@ -2020,7 +2069,16 @@ async function boot() {
       'gas-bomber': Object.freeze({ x: 520, y: 2720 }),
       'validator-cultist': Object.freeze({ x: 1100, y: 2050 }),
     });
-    const rosterPreviewOffsets = Object.freeze(bearMarketBurnerPilotEnabled ? {
+    const rosterPreviewOffsets = Object.freeze(forkedStandardPilotEnabled ? {
+      // Evidence-only melee corridor: three nearby human/zombie targets prove
+      // thrust/sweep contacts without changing canonical encounter placement.
+      'bagholder-rusher': Object.freeze({ x: -54, y: -8 }),
+      forkrunner: Object.freeze({ x: -68, y: 0 }),
+      'liquidator-agent': Object.freeze({ x: -82, y: 10 }),
+      'whale-enforcer': Object.freeze({ x: 120, y: -100 }),
+      'gas-bomber': Object.freeze({ x: 140, y: 20 }),
+      'validator-cultist': Object.freeze({ x: 100, y: 140 }),
+    } : bearMarketBurnerPilotEnabled ? {
       // Evidence-only close corridor: three human/zombie targets sit inside
       // the Burner's base 25-degree cone while the remaining roster stays
       // visible behind the player. Canonical encounter placement is unchanged.
@@ -2101,6 +2159,9 @@ async function boot() {
       } else if (bearMarketBurnerPilotEnabled) {
         selectWeapon(weaponLoadout, 'bear-market-burner', { tick: 0 });
         recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: 'bear-market-burner' });
+      } else if (forkedStandardPilotEnabled) {
+        selectWeapon(weaponLoadout, 'forked-standard', { tick: 0 });
+        recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: 'forked-standard' });
       }
     }
     if (collectibleAmmoPilotEnabled) weaponLoadout.weapons['coin-blaster'].ammoInClip = 1;
@@ -2149,15 +2210,39 @@ async function boot() {
       motion.vx = 0;
       motion.vy = 0;
     }
+    let forkedStandardEvent = createForkedStandardEvent({
+      seed: payload.session.seed,
+      candidates: authoredPointOfInterestPlacements.filter((placement) => ['hashwood', 'mining-camp', 'liquidation-yard'].includes(placement.districtId)),
+      protectedPoints: [...authoredPointOfInterestPlacements, lightningLedgerEvent, bearMarketBurnerEvent],
+      queryGround,
+      isBlocked: spawnPointBlocked,
+      isRouteReachable: (point, ground) => ground.kind !== 'deep-water'
+        && point.x >= WORLD_BOUNDS.minX && point.x <= WORLD_BOUNDS.maxX
+        && point.y >= WORLD_BOUNDS.minY && point.y <= WORLD_BOUNDS.maxY,
+    });
+    if (standardEventPilot === 'preview' || standardEventPilot === 'collect') {
+      forkedStandardEvent = Object.freeze({ ...forkedStandardEvent, availableTick: 0 });
+      actor.x = forkedStandardEvent.x + (standardEventPilot === 'preview' ? -220 : 0);
+      actor.y = forkedStandardEvent.y;
+      actor.groundZ = queryGround(actor.x, actor.y).groundZ;
+      actor.z = actor.groundZ;
+      motion.x = actor.x;
+      motion.y = actor.y;
+      motion.vx = 0;
+      motion.vy = 0;
+    }
     if (lightningLedgerEventPlacement && authoredPropDisplay) authoredPropDisplay.removePlacement(lightningLedgerEventPlacement.id);
     if (bearMarketBurnerEventPlacement && authoredPropDisplay) authoredPropDisplay.removePlacement(bearMarketBurnerEventPlacement.id);
+    if (forkedStandardEventPlacement && authoredPropDisplay) authoredPropDisplay.removePlacement(forkedStandardEventPlacement.id);
     lightningLedgerEventPlacement = lightningLedgerEvent;
     bearMarketBurnerEventPlacement = bearMarketBurnerEvent;
+    forkedStandardEventPlacement = forkedStandardEvent;
     if (authoredPropDisplay) {
       authoredPropDisplay.addPlacement(lightningLedgerEventPlacement);
       authoredPropDisplay.addPlacement(bearMarketBurnerEventPlacement);
+      authoredPropDisplay.addPlacement(forkedStandardEventPlacement);
     }
-    collectibleState = createCollectibleState({ placements: [...authoredPointOfInterestPlacements, lightningLedgerEventPlacement, bearMarketBurnerEventPlacement] });
+    collectibleState = createCollectibleState({ placements: [...authoredPointOfInterestPlacements, lightningLedgerEventPlacement, bearMarketBurnerEventPlacement, forkedStandardEventPlacement] });
     collectibleSnapshot = getCollectibleSnapshot(collectibleState, { tick: 0 });
     lastCollectibleEvent = null;
     lastDashReady = true;
@@ -2670,6 +2755,10 @@ async function boot() {
             blockers: WORLD_BLOCKERS,
           }).clear,
           channelStopReason: dashFrame.active ? 'dodge' : '',
+          meleeOrigin: { x: actor.x, y: actor.y, z: actor.groundZ },
+          meleeTargets,
+          meleeBlockers: WORLD_BLOCKERS,
+          meleeDownwardDropDirection: lastGround.oneWayDrop,
         });
       activeBurnerHazards = weaponLoadout.weapons['bear-market-burner']?.burnerState?.scorchZones ?? [];
       // C1: reload and the dry-fire fallback get their own cues. Both events
@@ -2683,6 +2772,9 @@ async function boot() {
         }
         if (event.type.startsWith('burner:') || event.type === 'weapon:flame-pulse') {
           recordRunBearMarketBurnerEvent(runSummaryAccumulator, event);
+        }
+        if (event.type.startsWith('standard:') || event.type === 'weapon:melee-strike') {
+          recordRunForkedStandardEvent(runSummaryAccumulator, event);
         }
         if (event.type === 'weapon:charge-start') {
           combatAudio.play('hmh-hash-rail-charge', { volume: HMH_WEAPON_SFX['hmh-hash-rail-charge'].gain });
@@ -2778,6 +2870,30 @@ async function boot() {
           criticalChance: 0, criticalMultiplier: 1, armorPiercing: false,
           direction: { x: 0, y: 0 }, knockback: 0,
           point: { x: target.x, y: target.y, z: (target.z ?? target.groundZ ?? 0) + 22 },
+        });
+      }
+      for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:melee-strike')) {
+        lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
+        lastForkedStandardStrike = { tick, attackId: event.attackId, form: event.form, hits: event.hits.length };
+        lastMeleeAttack = { tick, hits: event.hits.length };
+        recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: 1, attackId: event.attackId });
+        if (event.hits.length > 0) {
+          recordRunWeaponTriggerContact(runSummaryAccumulator, { weaponId: event.weaponId });
+          recordRunProjectileContacts(runSummaryAccumulator, { weaponId: event.weaponId, count: event.hits.length });
+        }
+        for (const hit of event.hits) combatHitIntents.push({
+          ...hit,
+          tick,
+          sourceId: 'player',
+          weaponId: event.weaponId,
+          damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
+        });
+        combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) });
+        pushCombatVisualEvent({
+          type: 'forked-standard', tick, form: event.form, capstone: event.capstone,
+          point: { x: actor.x, y: actor.y, z: actor.groundZ + 30 },
+          direction: { ...aimIntent.direction },
+          color: WEAPON_COLORS[event.weaponId],
         });
       }
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:fire')) {

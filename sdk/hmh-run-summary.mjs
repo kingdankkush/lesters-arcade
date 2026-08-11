@@ -43,6 +43,7 @@ export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, sta
     lightningLedgerInterruptions: Array(7).fill(0),
     lightningLedgerChannelStartTick: null,
     bearMarketBurner: Array(8).fill(0),
+    forkedStandard: Array(7).fill(0),
     exploration: [0, 0, 0], // district mask, POI mask, accepted distance
     lastPosition: point(startPosition, 'startPosition'),
     lastTick: startTick,
@@ -185,6 +186,25 @@ export function recordRunBearMarketBurnerEvent(state, event = {}) {
   throw new TypeError(`unknown Bear Market Burner event ${String(event.type)}`);
 }
 
+export function recordRunForkedStandardEvent(state, event = {}) {
+  if (!state || !Array.isArray(state.forkedStandard) || state.finalized) throw new TypeError('active run summary state is required');
+  count(event.tick, 'Forked Standard event tick');
+  if (event.type === 'standard:strike') return state;
+  if (event.type !== 'weapon:melee-strike') throw new TypeError(`unknown Forked Standard event ${String(event.type)}`);
+  if (!Array.isArray(event.hits) || event.hits.length > 6) throw new TypeError('Forked Standard hits must be bounded to six');
+  if (!['thrust', 'sweep'].includes(event.form)) throw new TypeError('Forked Standard form is invalid');
+  if (typeof event.whiff !== 'boolean' || typeof event.capstone !== 'boolean') throw new TypeError('Forked Standard flags are invalid');
+  if (event.whiff && event.hits.length > 0) throw new TypeError('Forked Standard whiff cannot contain hits');
+  const metrics = state.forkedStandard;
+  metrics[0] += 1;
+  metrics[1] += event.hits.length;
+  metrics[2] += Number(event.whiff);
+  metrics[event.form === 'thrust' ? 3 : 4] += 1;
+  metrics[5] += Number(event.capstone);
+  metrics[6] += count(event.droppedContacts ?? 0, 'Forked Standard dropped contacts');
+  return state;
+}
+
 export function recordRunDamage(state, event = {}) {
   const amount = finite(event.damageApplied, 'damageApplied');
   if (event.targetId === 'player') {
@@ -280,7 +300,7 @@ export function finalizeRunSummary(state, {
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
   const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
   const summary = {
-    schemaVersion: 4,
+    schemaVersion: 5,
     identity: { ...state.identity, terminalReason, endTick },
     totals: {
       survivalTicks: endTick - state.identity.startTick,
@@ -327,6 +347,15 @@ export function finalizeRunSummary(state, {
       maxActiveBurns: state.bearMarketBurner[5],
       totalSelloffPulses: state.bearMarketBurner[6],
       emergencyRefills: state.bearMarketBurner[7],
+    },
+    forkedStandard: {
+      attacks: state.forkedStandard[0],
+      contacts: state.forkedStandard[1],
+      whiffs: state.forkedStandard[2],
+      thrusts: state.forkedStandard[3],
+      sweeps: state.forkedStandard[4],
+      capstoneAttacks: state.forkedStandard[5],
+      droppedContacts: state.forkedStandard[6],
     },
     grenades: Object.fromEntries(['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'].map((field, i) => [field, state.grenades[i]])),
     collectibles: C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),
