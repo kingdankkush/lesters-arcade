@@ -58,6 +58,10 @@ try {
   const cabinet = page.locator('.official-cabinet-card.playable').filter({ hasText: "Chikun's Escape" });
   await cabinet.waitFor({ state: 'visible' });
   assert.equal(await cabinet.isDisabled(), false, 'public Chikun cabinet must be enabled');
+  await page.waitForFunction(() => [...document.querySelectorAll('.official-cabinet-card.playable')].some((card) => (
+    card.textContent?.toUpperCase().includes("CHIKUN'S ESCAPE")
+      && [...card.querySelectorAll('img')].some((image) => image.complete && image.naturalWidth > 0)
+  )), null, { timeout: 15_000 });
   const cabinetArt = await cabinet.locator('img').evaluateAll((images) => images.map((image) => ({
     src: image.getAttribute('src'),
     width: image.naturalWidth,
