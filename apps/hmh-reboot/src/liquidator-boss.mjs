@@ -2,6 +2,7 @@ import { freezeDeep } from './value-guards.mjs';
 const EPSILON = 1e-9;
 export const LIQUIDATOR_TARGET_FIGHT_TICKS = 3_600;
 export const MAX_BOSS_EVENTS_PER_TICK = 8;
+export const LIQUIDATOR_ROLE_CHECK_MULTIPLIER = 1.15;
 
 
 export const LIQUIDATOR_READABILITY_BUDGET = freezeDeep({
@@ -235,13 +236,42 @@ export function resolveLiquidatorAttack({ event, player } = {}) {
   return freezeDeep({ hit, damage: hit ? event.damage : 0, reason: hit ? null : 'outside-hit-geometry' });
 }
 
-export function applyLiquidatorDamage({ boss, amount, tick } = {}) {
+export function getLiquidatorRoleCheck({
+  weaponId,
+  critical = false,
+  distance = 0,
+  chainTargets = 0,
+  hazardOverlap = false,
+  targetKind = 'boss',
+} = {}) {
+  if (typeof weaponId !== 'string' || weaponId.length === 0) throw new TypeError('weaponId is required');
+  if (typeof critical !== 'boolean') throw new TypeError('critical must be boolean');
+  finite(distance, 'distance');
+  nonNegativeInteger(chainTargets, 'chainTargets');
+  if (typeof hazardOverlap !== 'boolean') throw new TypeError('hazardOverlap must be boolean');
+  if (!['boss', 'add'].includes(targetKind)) throw new TypeError('targetKind must be boss or add');
+  let roleId = null;
+  if (weaponId === 'hash-rail' && targetKind === 'boss' && distance >= 480) roleId = 'rail-punish';
+  else if (weaponId === 'lightning-ledger' && targetKind === 'add' && chainTargets >= 2) roleId = 'ledger-add-clear';
+  else if (weaponId === 'bear-market-burner' && targetKind === 'boss' && hazardOverlap) roleId = 'burner-zone-control';
+  else if (weaponId === 'forked-standard' && targetKind === 'boss' && distance <= 120) roleId = 'standard-close-punish';
+  return freezeDeep({
+    roleId,
+    multiplier: roleId ? LIQUIDATOR_ROLE_CHECK_MULTIPLIER : 1,
+    applied: roleId !== null,
+  });
+}
+
+export function applyLiquidatorDamage({ boss, amount, tick, multiplier = 1 } = {}) {
   if (!boss) throw new TypeError('boss state is required');
   finite(amount, 'damage amount');
+  finite(multiplier, 'damage multiplier');
   if (amount < 0) throw new TypeError('damage amount must be non-negative');
+  if (multiplier < 1 || multiplier > LIQUIDATOR_ROLE_CHECK_MULTIPLIER) throw new TypeError('damage multiplier exceeds the role-check bound');
   nonNegativeInteger(tick, 'tick');
   if (boss.defeated) return freezeDeep({ defeated: true, damageApplied: 0, remainingHealth: 0, runEvent: null });
-  const applied = Math.min(boss.health, amount);
+  const scaledAmount = Math.round(amount * multiplier * 1_000_000) / 1_000_000;
+  const applied = Math.min(boss.health, scaledAmount);
   boss.health -= applied;
   if (boss.health > 0) return freezeDeep({ defeated: false, damageApplied: applied, remainingHealth: boss.health, runEvent: null });
   boss.active = false;

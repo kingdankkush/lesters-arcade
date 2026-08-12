@@ -55,6 +55,7 @@ import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
   createLiquidatorBoss,
+  getLiquidatorRoleCheck,
   resolveLiquidatorAttack,
   stepLiquidatorBoss,
 } from './liquidator-boss.mjs';
@@ -276,6 +277,7 @@ let ENEMY_NAV_GRID = null;
 const ENEMY_FLOW_REFRESH_TICKS = 30;
 let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
+let enemyFlowReplanRequestedTick = -1;
 let activeBurnerHazards = [];
 // Minimap discovery is per-run projection bookkeeping (what the player has
 // seen); it resets with the session like the flow field does.
@@ -287,6 +289,9 @@ let minimapRevealCache = { snapshot: null, set: null };
 let minimapModelCache = { tick: -1, model: null };
 const enemyNavigation = Object.freeze({
   lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(ENEMY_NAV_GRID, fromX, fromY, toX, toY),
+  requestReplan: (_enemyId, tick) => {
+    if (Number.isInteger(tick) && tick >= 0) enemyFlowReplanRequestedTick = Math.max(enemyFlowReplanRequestedTick, tick);
+  },
   flowDirectionAt: (x, y) => {
     const base = sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y);
     if (bearMarketBurnerHazardCostAt(activeBurnerHazards, { x, y }) <= 0) return base;
@@ -884,6 +889,7 @@ async function boot() {
   let bossDeathVisualUntilTick = -1;
   let lastBossStep = null;
   let lastEnemyStep = null;
+  let lastBossRoleCheck = null;
   let lastEnemyAttack = null;
   let playerBody = null;
   let lastCollision = null;
@@ -1914,7 +1920,15 @@ async function boot() {
         dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
         dataset.enemyTells = String(enemyTellCount);
         dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
+        dataset.enemyDecisionBudget = String(lastEnemyStep?.decisionBudget ?? 0);
+        dataset.enemyDeferredDecisions = String(lastEnemyStep?.deferredDecisions ?? 0);
         dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
+        dataset.enemyRouteReplans = String(lastEnemyStep?.routeReplans ?? 0);
+        dataset.enemyStuckRecoveries = String(lastEnemyStep?.stuckRecoveries ?? 0);
+        dataset.enemyPoolPressure = `${lastEnemyStep?.activeCount ?? 0}/${enemyPopulation?.capacity ?? 0}`;
+        dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
+        dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;
+        dataset.effectPoolPressure = `${combatVisualEvents.length}/${MAX_COMBAT_VISUAL_EVENTS}`;
         dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
         dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
         dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
@@ -1932,6 +1946,8 @@ async function boot() {
         dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
         dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
         dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
+        dataset.bossLastRoleCheck = lastBossRoleCheck?.roleId ?? '';
+        dataset.bossLastRoleCheckTick = String(lastBossRoleCheck?.tick ?? -1);
         dataset.worldId = LEVEL_ONE_WORLD.id;
         dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
         dataset.worldHeight = String(WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY);
@@ -1966,6 +1982,7 @@ async function boot() {
     bossDeathVisualUntilTick = -1;
     lastBossStep = null;
     lastEnemyStep = null;
+    lastBossRoleCheck = null;
     lastEnemyAttack = null;
     resetEnemyMarkers([]);
     clearEnemyDeathMarkers();
@@ -2036,6 +2053,7 @@ async function boot() {
     // pursuit with stale data and break same-seed determinism.
     enemyFlowField = null;
     enemyFlowFieldTick = -1;
+    enemyFlowReplanRequestedTick = -1;
     activeBurnerHazards = [];
     minimapDiscovery.discoveredPoiIds.clear();
     minimapRevealCache = { snapshot: null, set: null };
@@ -2510,9 +2528,10 @@ async function boot() {
         : null;
 
       if (!rosterPreviewEnabled && openingEnemyMovementEnabled(tick)) {
-        if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS) {
+        if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS || enemyFlowReplanRequestedTick > enemyFlowFieldTick) {
           enemyFlowField = computeEnemyFlowField({ grid: ENEMY_NAV_GRID, targetX: actor.x, targetY: actor.y });
           enemyFlowFieldTick = tick;
+          enemyFlowReplanRequestedTick = -1;
         }
         lastEnemyStep = stepEnemyPopulation({
           population: enemyPopulation,
@@ -2524,9 +2543,10 @@ async function boot() {
           queryGround,
           preservePrevious: true,
           navigation: enemyNavigation,
+          fullAiCap: getEncounterSnapshot(tick).fullAiCap,
         });
       } else {
-        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0 });
+        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0 });
       }
 
       const hurtTargets = [];
@@ -3224,9 +3244,31 @@ async function boot() {
           shieldCharges: 0,
           knockbackResistance: 1,
         });
+        const roleChecksByHitId = new Map();
+        const roleCheckedCombatHitIntents = authoritativeCombatHitIntents.map((hit) => {
+          const targetKind = hit.targetId === liquidatorBoss.id
+            ? 'boss'
+            : String(hit.targetId).includes(':bad-debt-summon:')
+              ? 'add'
+              : null;
+          if (!targetKind) return hit;
+          const roleCheck = getLiquidatorRoleCheck({
+            weaponId: hit.weaponId,
+            distance: targetKind === 'boss' ? Math.hypot(actor.x - liquidatorBoss.x, actor.y - liquidatorBoss.y) : 0,
+            chainTargets: hit.weaponId === 'lightning-ledger'
+              ? authoritativeCombatHitIntents.filter((candidate) => candidate.weaponId === 'lightning-ledger').length
+              : 0,
+            hazardOverlap: hit.weaponId === 'bear-market-burner' && targetKind === 'boss'
+              && bearMarketBurnerHazardCostAt(activeBurnerHazards, { x: liquidatorBoss.x, y: liquidatorBoss.y }) > 0,
+            targetKind,
+          });
+          if (!roleCheck.applied) return hit;
+          roleChecksByHitId.set(hit.id, roleCheck);
+          return { ...hit, damage: hit.damage * roleCheck.multiplier };
+        });
         lastCombatResolution = resolveCombatHits({
           sessionSeed: payload.session.seed,
-          hits: authoritativeCombatHitIntents,
+          hits: roleCheckedCombatHitIntents,
           targets: combatTargets,
         });
         for (const enemy of grayboxEnemies) {
@@ -3283,7 +3325,9 @@ async function boot() {
             continue;
           }
           if (damageEvent.targetId === liquidatorBoss.id) {
+            const roleCheck = roleChecksByHitId.get(damageEvent.hitId) ?? Object.freeze({ roleId: null, multiplier: 1, applied: false });
             const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.damageApplied, tick });
+            if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
             if (bossDamage.runEvent) {
               bossDeathVisualUntilTick = tick + 45;
               triggerCameraShake(tick, 12);

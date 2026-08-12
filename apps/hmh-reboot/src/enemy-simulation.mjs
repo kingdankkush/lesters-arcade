@@ -6,6 +6,8 @@ import { getEnemyArchetype } from './enemy-archetypes.mjs';
 const EPSILON = 1e-9;
 export const ENEMY_CAPACITY = 192;
 export const ENEMY_SPATIAL_CELL_SIZE = 96;
+export const STUCK_PROGRESS_WINDOW_TICKS = 30;
+export const STUCK_PROGRESS_EPSILON = 0.5;
 const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 export const AI_LOD_BANDS = Object.freeze([
   Object.freeze({ id: 'near', maxDistance: 640, cadenceTicks: 1 }),
@@ -102,6 +104,10 @@ export function createEnemyState({
     velocity: { x: 0, y: 0 },
     intent: null,
     nextDecisionTick: 1,
+    progressAnchorX: positionX,
+    progressAnchorY: positionY,
+    progressAnchorTick: 0,
+    stuckRecoveries: 0,
     attackPhase: 'ready',
     attackPhaseUntilTick: 0,
     attackRecoveryUntilTick: 0,
@@ -370,6 +376,7 @@ export function stepEnemyPopulation({
   queryGround,
   preservePrevious = false,
   navigation = null,
+  fullAiCap = ENEMY_CAPACITY,
 } = {}) {
   if (!population || !Array.isArray(population.active)) throw new TypeError('population is required');
   nonNegativeInteger(tick, 'tick');
@@ -378,13 +385,28 @@ export function stepEnemyPopulation({
   if (!Array.isArray(blockers)) throw new TypeError('blockers must be an array');
   if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
   if (typeof preservePrevious !== 'boolean') throw new TypeError('preservePrevious must be boolean');
+  nonNegativeInteger(fullAiCap, 'fullAiCap');
 
   const ordered = population.active.filter((enemy) => enemy.active && enemy.health > 0).sort((a, b) => lexical(a.id, b.id));
   const separation = computeEnemySeparation(ordered);
+  const decisionCandidates = ordered
+    .filter((enemy) => enemy.attackPhase !== 'tell' && (!enemy.intent || tick >= enemy.nextDecisionTick))
+    .map((enemy) => ({ enemy, distance: Math.hypot(player.x - enemy.x, player.y - enemy.y) }))
+    .sort((a, b) => {
+      const aPriority = ['tell', 'attack'].includes(a.enemy.attackPhase) ? 0 : 1;
+      const bPriority = ['tell', 'attack'].includes(b.enemy.attackPhase) ? 0 : 1;
+      return aPriority - bPriority
+        || a.enemy.nextDecisionTick - b.enemy.nextDecisionTick
+        || a.distance - b.distance
+        || lexical(a.enemy.id, b.enemy.id);
+    });
+  const decisionIds = new Set(decisionCandidates.slice(0, fullAiCap).map(({ enemy }) => enemy.id));
   let decisions = 0;
   let safetySteps = 0;
   let collisionContacts = 0;
   let traversalBlocks = 0;
+  let routeReplans = 0;
+  let stuckRecoveries = 0;
 
   for (const enemy of ordered) {
     if (!preservePrevious) {
@@ -395,7 +417,7 @@ export function stepEnemyPopulation({
     const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
     const lod = getEnemyLod(distance);
     const movementLocked = enemy.attackPhase === 'tell';
-    if (!movementLocked && (!enemy.intent || tick >= enemy.nextDecisionTick)) {
+    if (!movementLocked && decisionIds.has(enemy.id)) {
       enemy.intent = planEnemyIntent(enemy, { player, tick, navigation });
       enemy.velocity = { ...enemy.intent.velocity };
       enemy.nextDecisionTick = tick + lod.cadenceTicks;
@@ -434,15 +456,41 @@ export function stepEnemyPopulation({
     enemy.x = traversal.position.x;
     enemy.y = traversal.position.y;
     enemy.groundZ = traversal.ground.groundZ;
+
+    if (movementLocked) {
+      enemy.progressAnchorX = enemy.x;
+      enemy.progressAnchorY = enemy.y;
+      enemy.progressAnchorTick = tick;
+    } else if (tick - enemy.progressAnchorTick >= STUCK_PROGRESS_WINDOW_TICKS) {
+      const progress = Math.hypot(enemy.x - enemy.progressAnchorX, enemy.y - enemy.progressAnchorY);
+      const requestedDistance = Math.hypot(requested.x, requested.y);
+      if (requestedDistance > STUCK_PROGRESS_EPSILON && progress < STUCK_PROGRESS_EPSILON) {
+        enemy.intent = null;
+        enemy.velocity = { x: 0, y: 0 };
+        enemy.nextDecisionTick = tick + 1;
+        enemy.stuckRecoveries += 1;
+        navigation?.requestReplan?.(enemy.id, tick);
+        routeReplans += 1;
+        stuckRecoveries += 1;
+      }
+      enemy.progressAnchorX = enemy.x;
+      enemy.progressAnchorY = enemy.y;
+      enemy.progressAnchorTick = tick;
+    }
   }
 
   return freezeDeep({
     tick,
     activeCount: ordered.length,
     decisions,
+    decisionBudget: fullAiCap,
+    decisionCandidates: decisionCandidates.length,
+    deferredDecisions: Math.max(0, decisionCandidates.length - decisionIds.size),
     safetySteps,
     collisionContacts,
     traversalBlocks,
+    routeReplans,
+    stuckRecoveries,
     maxNeighborsObserved: separation.maxNeighborsObserved,
   });
 }

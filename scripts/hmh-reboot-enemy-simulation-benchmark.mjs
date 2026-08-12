@@ -4,7 +4,9 @@ import { performance } from 'node:perf_hooks';
 import {
   ENEMY_CAPACITY,
   computeEnemySeparation,
+  createEnemyPopulation,
   createEnemyState,
+  stepEnemyPopulation,
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 
 const roster = Array.from({ length: 128 }, (_, index) => createEnemyState({
@@ -15,6 +17,35 @@ const roster = Array.from({ length: 128 }, (_, index) => createEnemyState({
   visualMode: 'prototype',
 }));
 assert.ok(roster.length >= 100 && roster.length <= ENEMY_CAPACITY);
+
+const flatGround = () => ({ kind: 'ground', groundZ: 0, surfaceId: 'benchmark-flat' });
+const runBudgetedSimulation = (members) => {
+  const population = createEnemyPopulation({ capacity: ENEMY_CAPACITY, threatCapacity: 512 });
+  population.active.push(...members);
+  const totals = { decisions: 0, safetySteps: 0, deferredDecisions: 0, routeReplans: 0 };
+  for (let tick = 1; tick <= 120; tick += 1) {
+    const report = stepEnemyPopulation({
+      population,
+      player: { x: 6_000, y: 0, groundZ: 0 },
+      tick,
+      dtSeconds: 1 / 60,
+      blockers: [],
+      bounds: { minX: -1_000, minY: -1_000, maxX: 12_000, maxY: 6_000, visibleBoundaryId: 'benchmark-bounds' },
+      queryGround: flatGround,
+      fullAiCap: 32,
+    });
+    totals.decisions += report.decisions;
+    totals.safetySteps += report.safetySteps;
+    totals.deferredDecisions += report.deferredDecisions;
+    totals.routeReplans += report.routeReplans;
+  }
+  return { totals, states: population.active.map(({ id, x, y, nextDecisionTick }) => ({ id, x, y, nextDecisionTick })).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0) };
+};
+const budgetedForward = runBudgetedSimulation(roster.map((member) => structuredClone(member)));
+const budgetedReverse = runBudgetedSimulation(roster.map((member) => structuredClone(member)).reverse());
+assert.deepEqual(budgetedForward, budgetedReverse);
+assert.equal(budgetedForward.totals.safetySteps, roster.length * 120);
+assert.ok(budgetedForward.totals.deferredDecisions > 0, '128-body benchmark must exercise the full-AI cap');
 
 const forward = computeEnemySeparation(roster);
 const reverse = computeEnemySeparation([...roster].reverse());
@@ -46,5 +77,6 @@ console.log(JSON.stringify({
   naiveCandidateChecks: forward.naiveCandidateChecks,
   candidateReductionPct: Number(((1 - forward.broadphaseCandidateChecks / forward.naiveCandidateChecks) * 100).toFixed(2)),
   maxNeighborsObserved: forward.maxNeighborsObserved,
+  budgetedSimulation: budgetedForward.totals,
   digest,
 }));

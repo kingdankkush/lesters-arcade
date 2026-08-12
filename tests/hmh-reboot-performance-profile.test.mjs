@@ -82,6 +82,10 @@ test('runtime routes profile into Pixi and world projection, and owns a browser 
   assert.match(main, /performanceProfile,/);
   assert.match(main, /selectAnimatedEnemyIds/);
   assert.match(main, /Math\.min\(performanceProfile\.maxAnimatedEnemies, encounterAnimationCap\)/);
+  assert.match(main, /(?:stageElement\.dataset|dataset)\.enemyPoolPressure/);
+  assert.match(main, /(?:stageElement\.dataset|dataset)\.enemyThreatPressure/);
+  assert.match(main, /(?:stageElement\.dataset|dataset)\.projectilePoolPressure/);
+  assert.match(main, /(?:stageElement\.dataset|dataset)\.effectPoolPressure/);
   assert.match(world, /isScreenPointVisible/);
   assert.match(world, /particlesPerHazard/);
   assert.equal(pkg.scripts['smoke:hmh:performance'], 'node scripts/hmh-reboot-performance-browser-smoke.mjs');

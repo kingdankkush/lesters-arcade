@@ -12,6 +12,7 @@ import {
   DEFAULT_ATTACK_TOKEN_BUDGET,
   ENEMY_CAPACITY,
   ENEMY_SPATIAL_CELL_SIZE,
+  STUCK_PROGRESS_WINDOW_TICKS,
   allocateAttackTokens,
   attemptScheduledEnemyInsertion,
   MAX_ENEMY_SEPARATION_STEP,
@@ -177,6 +178,103 @@ test('retirement releases active body and threat capacity without allowing stabl
   assert.deepEqual({ count: population.active.length, threat: population.activeThreat, inserted: population.insertedCount, retired: population.retiredCount }, { count: 1, threat: 2, inserted: 2, retired: 1 });
 });
 
+test('AI full-decision budget deterministically prioritizes bosses, tells, then distance without skipping safety', () => {
+  const population = createEnemyPopulation({ capacity: 8, threatCapacity: 64 });
+  const ordinary = [
+    enemy('bagholder-rusher', 'near-idle', 100),
+    enemy('bagholder-rusher', 'mid-attack', 700),
+    enemy('bagholder-rusher', 'mid-tell', 800),
+    enemy('bagholder-rusher', 'far-idle', 1_600),
+  ];
+  ordinary[1].attackPhase = 'attack';
+  ordinary[2].attackPhase = 'tell';
+  population.active.push(...ordinary);
+  const report = stepEnemyPopulation({
+    population,
+    player: { x: 0, y: 0, groundZ: 0 }, tick: 1, dtSeconds: 1 / 60,
+    blockers: [], bounds, queryGround: flatGround, fullAiCap: 1,
+  });
+  assert.equal(report.decisions, 1);
+  assert.equal(report.decisionBudget, 1);
+  assert.equal(report.decisionCandidates, 3);
+  assert.equal(report.deferredDecisions, 2);
+  assert.equal(report.safetySteps, 4);
+  assert.equal(ordinary.find((member) => member.id === 'mid-attack').intent?.tick, 1);
+  assert.equal(ordinary.find((member) => member.id === 'near-idle').intent, null);
+  assert.equal(ordinary.find((member) => member.id === 'mid-tell').intent, null);
+  const nextTickReport = stepEnemyPopulation({
+    population,
+    player: { x: 0, y: 0, groundZ: 0 }, tick: 2, dtSeconds: 1 / 60,
+    blockers: [], bounds, queryGround: flatGround, fullAiCap: 1,
+  });
+  assert.equal(nextTickReport.decisions, 1);
+  assert.equal(nextTickReport.deferredDecisions, 1);
+  assert.equal(ordinary.find((member) => member.id === 'near-idle').intent?.tick, 2);
+  assert.equal(ordinary.find((member) => member.id === 'far-idle').intent, null);
+});
+
+test('deferred full-AI decisions age into the bounded budget instead of starving at distance', () => {
+  const population = createEnemyPopulation({ capacity: 8, threatCapacity: 64 });
+  const near = enemy('bagholder-rusher', 'near', 100);
+  const far = enemy('bagholder-rusher', 'far', 1_600);
+  population.active.push(near, far);
+  for (let tick = 1; tick <= 4; tick += 1) stepEnemyPopulation({
+    population,
+    player: { x: 0, y: 0, groundZ: 0 }, tick, dtSeconds: 1 / 60,
+    blockers: [], bounds, queryGround: flatGround, fullAiCap: 1,
+  });
+  assert.equal(far.intent?.tick, 2, 'older deferred far work must enter the next available decision slot');
+  assert.ok(near.intent?.tick > far.intent.tick, 'near actor continues its cadence after the deferred far refresh');
+});
+
+test('blocked cached movement triggers a bounded deterministic replan without teleporting', () => {
+  assert.equal(STUCK_PROGRESS_WINDOW_TICKS, 30);
+  const makeRun = (reverse = false) => {
+    const population = createEnemyPopulation({ capacity: 4, threatCapacity: 20 });
+    const members = [enemy('bagholder-rusher', 'stuck-a', 0), enemy('bagholder-rusher', 'stuck-b', 0, 80)];
+    population.active.push(...(reverse ? members.reverse() : members));
+    const wall = createStaticBlocker({
+      id: 'stuck-wall',
+      shape: { type: 'polygon', vertices: [{ x: 45, y: -200 }, { x: 60, y: -200 }, { x: 60, y: 200 }, { x: 45, y: 200 }] },
+      visibleAssetId: 'visible-stuck-wall', minZ: 0, maxZ: 100,
+    });
+    const reports = [];
+    const replanRequests = [];
+    const navigation = { requestReplan: (enemyId, tick) => replanRequests.push(`${tick}:${enemyId}`) };
+    for (let tick = 1; tick <= 90; tick += 1) reports.push(stepEnemyPopulation({
+      population,
+      player: { x: 1_800, y: 0, groundZ: 0 }, tick, dtSeconds: 1 / 60,
+      blockers: [wall], bounds, queryGround: flatGround, navigation,
+    }));
+    return {
+      enemies: population.active
+        .map(({ id, x, y, nextDecisionTick }) => ({ id, x, y, nextDecisionTick }))
+        .sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+      replans: reports.reduce((sum, report) => sum + report.routeReplans, 0),
+      recoveries: reports.reduce((sum, report) => sum + report.stuckRecoveries, 0),
+      replanRequests: [...replanRequests].sort(),
+      safetySteps: reports.reduce((sum, report) => sum + report.safetySteps, 0),
+    };
+  };
+  const forward = makeRun(false);
+  const reverse = makeRun(true);
+  assert.deepEqual(forward, reverse);
+  assert.ok(forward.replans >= 2, 'each blocked enemy should request at least one bounded replan');
+  assert.equal(forward.replans, forward.recoveries);
+  assert.equal(forward.replanRequests.length, forward.replans);
+  assert.equal(forward.safetySteps, 180);
+  assert.ok(forward.enemies.every((member) => member.x <= 27.001), 'recovery must not teleport through the blocker');
+  const nearMissPopulation = createEnemyPopulation({ capacity: 2, threatCapacity: 10 });
+  const nearMiss = enemy('bagholder-rusher', 'near-miss', 0);
+  nearMissPopulation.active.push(nearMiss);
+  for (let tick = 1; tick <= STUCK_PROGRESS_WINDOW_TICKS; tick += 1) stepEnemyPopulation({
+    population: nearMissPopulation,
+    player: { x: 1_800, y: 0, groundZ: 0 }, tick, dtSeconds: 1 / 60,
+    blockers: [], bounds, queryGround: flatGround,
+  });
+  assert.equal(nearMiss.stuckRecoveries, 0, 'ordinary forward movement must not trigger false stuck recovery');
+});
+
 test('cached far decisions still traverse canonical collision every fixed tick without tunneling', () => {
   const population = createEnemyPopulation({ capacity: 4, threatCapacity: 20 });
   population.active.push(enemy('bagholder-rusher', 'runner', 0));
@@ -187,6 +285,7 @@ test('cached far decisions still traverse canonical collision every fixed tick w
   });
   let safetySteps = 0;
   let decisions = 0;
+  let routeReplans = 0;
   for (let tick = 1; tick <= 240; tick += 1) {
     const report = stepEnemyPopulation({
       population,
@@ -199,11 +298,13 @@ test('cached far decisions still traverse canonical collision every fixed tick w
     });
     safetySteps += report.safetySteps;
     decisions += report.decisions;
+    routeReplans += report.routeReplans;
   }
   const runner = population.active[0];
   assert.ok(runner.x <= 32.001, `runner tunneled through wall to x=${runner.x}`);
   assert.equal(safetySteps, 240);
-  assert.equal(decisions, 20, 'far cadence should refresh every 12 ticks while collision still runs every tick');
+  assert.equal(routeReplans, 7, 'a blocked far enemy replans at most once per thirty-tick progress window');
+  assert.equal(decisions, 23, 'far cadence remains bounded while stuck recovery forces only three additional next-tick refreshes');
 });
 
 test('locked attack tells stop AI tracking while preserving canonical safety steps', () => {
@@ -276,8 +377,14 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /ENEMY_ARCHETYPE_IDS\.map/);
   assert.match(source, /visualMode: 'normal'/);
   assert.match(source, /resolveEnemyAttackAgainstPlayer\(event/);
+  assert.match(source, /fullAiCap:\s*getEncounterSnapshot\(tick\)\.fullAiCap/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyArchetypes/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDecisions/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDecisionBudget/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDeferredDecisions/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemySafetySteps/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyRouteReplans/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyStuckRecoveries/);
   assert.doesNotMatch(source, /wallet|settlement|contractAddress|localStorage/);
   assert.doesNotMatch(simulationSource, /localeCompare/, 'authoritative ordering must use explicit lexical comparison');
 });

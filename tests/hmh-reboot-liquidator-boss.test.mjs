@@ -12,6 +12,7 @@ import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
   createLiquidatorBoss,
+  getLiquidatorRoleCheck,
   resolveLiquidatorAttack,
   simulateLiquidatorDps,
   stepLiquidatorBoss,
@@ -196,6 +197,32 @@ test('bad-debt summon creates one deterministic bounded candidate per locked tel
   assert.throws(() => createLiquidatorAddCandidates({ event: { ...addWave, geometry: { type: 'summon-sites', sites: new Array(7).fill({ x: 0, y: 0 }) } } }), /active add budget/);
 });
 
+test('boss role checks reward authored weapon jobs without immunities', () => {
+  const cases = [
+    ['hash-rail', { critical: true, distance: 720, targetKind: 'boss' }, 'rail-punish'],
+    ['lightning-ledger', { chainTargets: 3, targetKind: 'add' }, 'ledger-add-clear'],
+    ['bear-market-burner', { hazardOverlap: true, targetKind: 'boss' }, 'burner-zone-control'],
+    ['forked-standard', { distance: 84, targetKind: 'boss' }, 'standard-close-punish'],
+  ];
+  for (const [weaponId, context, roleId] of cases) {
+    const result = getLiquidatorRoleCheck({ weaponId, ...context });
+    assert.deepEqual(result, { roleId, multiplier: 1.15, applied: true });
+  }
+  assert.deepEqual(getLiquidatorRoleCheck({ weaponId: 'coin-blaster', targetKind: 'boss' }), {
+    roleId: null, multiplier: 1, applied: false,
+  });
+  assert.deepEqual(getLiquidatorRoleCheck({ weaponId: 'hash-rail', distance: 479.999, targetKind: 'boss' }), { roleId: null, multiplier: 1, applied: false });
+  assert.deepEqual(getLiquidatorRoleCheck({ weaponId: 'lightning-ledger', chainTargets: 1, targetKind: 'add' }), { roleId: null, multiplier: 1, applied: false });
+  assert.deepEqual(getLiquidatorRoleCheck({ weaponId: 'forked-standard', distance: 120.001, targetKind: 'boss' }), { roleId: null, multiplier: 1, applied: false });
+  const boss = createLiquidatorBoss({ id: 'role-check-liquidator', x: 0, y: 0, startTick: 0 });
+  const baseline = applyLiquidatorDamage({ boss, amount: 100, tick: 1, multiplier: 1 });
+  const rewarded = applyLiquidatorDamage({ boss, amount: 100, tick: 2, multiplier: 1.15 });
+  assert.equal(baseline.damageApplied, 100);
+  assert.equal(rewarded.damageApplied, 115);
+  assert.ok(boss.health < boss.maxHealth, 'non-role weapons must still damage the boss');
+  assert.throws(() => applyLiquidatorDamage({ boss, amount: 10, tick: 3, multiplier: 1.16 }), /role-check bound/);
+});
+
 test('boss events are bounded and the body contract prevents hard pin traps', () => {
   assert.equal(MAX_BOSS_EVENTS_PER_TICK, 8);
   const boss = createLiquidatorBoss({ id: 'liquidator', x: 0, y: 0, startTick: 0 });
@@ -229,6 +256,16 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.match(source, /stepLiquidatorBoss/);
   assert.match(source, /resolveLiquidatorAttack/);
   assert.match(source, /applyLiquidatorDamage/);
+  assert.match(source, /getLiquidatorRoleCheck/);
+  assert.match(source, /roleCheckedCombatHitIntents/);
+  assert.match(source, /roleChecksByHitId/);
+  assert.match(source, /const roleCheckedCombatHitIntents = authoritativeCombatHitIntents\.map/);
+  assert.match(source, /hits: roleCheckedCombatHitIntents/);
+  assert.ok(source.indexOf('roleCheckedCombatHitIntents') < source.indexOf('lastCombatResolution = resolveCombatHits'));
+  assert.ok(source.indexOf('lastCombatResolution = resolveCombatHits') < source.indexOf('applyLiquidatorDamage({ boss: liquidatorBoss'));
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.bossLastRoleCheck/);
+  assert.match(source, /return \{ \.\.\.hit, damage: hit\.damage \* roleCheck\.multiplier \}/);
+  assert.doesNotMatch(source, /hit\.damage \*=|damageEvent\.damageApplied \*=/);
   assert.match(source, /createLiquidatorAddCandidates/);
   assert.match(source, /attemptScheduledEnemyInsertion/);
   assert.ok(source.indexOf('lastBossStep = stepLiquidatorBoss') < source.indexOf('resolveCombatHits'));

@@ -119,6 +119,14 @@ test('a session restart resets the flow field so runs cannot inherit stale state
   const initBody = source.slice(source.indexOf('const initializeSession = (payload) => {'), source.indexOf('const sessionHeroSelection'));
   assert.match(initBody, /enemyFlowField = null/, 'initializeSession must clear the flow field');
   assert.match(initBody, /enemyFlowFieldTick = -1/, 'initializeSession must reset the flow field tick');
+  assert.match(initBody, /enemyFlowReplanRequestedTick = -1/, 'initializeSession must clear pending replan demand');
+});
+
+test('runtime consumes a bounded stuck-recovery request by refreshing the shared flow field', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /requestReplan:\s*\(_enemyId, tick\)/);
+  assert.match(source, /enemyFlowReplanRequestedTick > enemyFlowFieldTick/);
+  assert.match(source, /enemyFlowReplanRequestedTick = -1/);
 });
 
 test('a walled-off enemy makes real progress toward the player with navigation', () => {
