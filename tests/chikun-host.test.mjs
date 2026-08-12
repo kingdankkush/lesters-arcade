@@ -75,7 +75,7 @@ test('Chikun host queues pause/resume until child READY and destroys on ready ti
   assert.deepEqual(first.bridges[0].sent, []);
   iframe.emit('load');
   assert.deepEqual(first.bridges[0].sent, [], 'iframe load is not child READY');
-  first.bridges[0].options.onMessage({ type: 'game:ready', payload: { runtimeVersion: '0.4.0' } });
+  first.bridges[0].options.onMessage({ type: 'game:ready', payload: { runtimeVersion: '0.5.0' } });
   assert.deepEqual(first.bridges[0].sent.map((entry) => entry.type), ['portal:pause', 'portal:resume', 'portal:restart']);
 
   const timed = fixture();

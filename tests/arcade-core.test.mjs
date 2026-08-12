@@ -490,7 +490,7 @@ test('parent session allocator issues deterministic seed, build, and season bind
   assert.notEqual(a.seed, changed.seed);
   assert.equal(Number.isInteger(a.seed), true);
   assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
-  assert.equal(a.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.4.0');
+  assert.equal(a.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.5.0');
   assert.equal(a.seasonId, 'chikun-season-preview-1');
   assert.equal(a.canonicalContext.seed, a.seed);
   assert.equal(a.canonicalContext.buildHash, a.buildHash);

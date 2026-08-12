@@ -47,6 +47,10 @@ try {
       on: (event, listener) => listeners.set(event, listener),
       removeListener: (event) => listeners.delete(event),
     };
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async (payload) => { globalThis.__chikunSharedPayload = payload; },
+    });
   });
 
   await page.goto(`${origin}/?chikunRankedSmoke=1`, { waitUntil: 'networkidle' });
@@ -135,6 +139,43 @@ try {
   const scoreText = await frame.locator('#resultScore').textContent();
   const score = Number.parseInt(scoreText ?? '', 10);
   assert.ok(Number.isInteger(score) && score > 0, `ranked runtime did not produce a score: ${scoreText}`);
+  const resultUi = await frame.locator('#resultOverlay').evaluate(() => {
+    const timeline = document.querySelector('#replayTimeline');
+    const share = document.querySelector('#shareRunButton');
+    const timelineRect = timeline?.getBoundingClientRect();
+    const shareRect = share?.getBoundingClientRect();
+    const actionRects = [...document.querySelectorAll('#resultOverlay button')].map((button) => {
+      const rect = button.getBoundingClientRect();
+      return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    });
+    return {
+      bars: timeline?.children.length ?? 0,
+      timelineLabel: timeline?.getAttribute('aria-label') ?? '',
+      timelineVisible: Boolean(timelineRect && timelineRect.width > 0 && timelineRect.height > 0),
+      shareVisible: Boolean(shareRect && shareRect.width > 0 && shareRect.height > 0),
+      shareRight: shareRect?.right ?? 0,
+      viewportWidth: innerWidth,
+      viewportHeight: innerHeight,
+      actionRects,
+    };
+  });
+  assert.equal(resultUi.bars, 24, `Chikun replay timeline must render 24 bounded bins: ${JSON.stringify(resultUi)}`);
+  assert.match(resultUi.timelineLabel, /flaps across this run/i);
+  assert.equal(resultUi.timelineVisible, true);
+  assert.equal(resultUi.shareVisible, true);
+  assert.ok(resultUi.shareRight <= resultUi.viewportWidth, `Chikun share control overflows: ${JSON.stringify(resultUi)}`);
+  assert.ok(resultUi.actionRects.every((rect) => (
+    rect.left >= 0 && rect.right <= resultUi.viewportWidth && rect.top >= 0 && rect.bottom <= resultUi.viewportHeight
+  )), `Chikun result controls must fit entirely inside the child viewport: ${JSON.stringify(resultUi)}`);
+  await frame.locator('#shareRunButton').click();
+  await frame.locator('#shareRunButton').filter({ hasText: 'Shared' }).waitFor({ state: 'visible' });
+  const sharedPayload = await frame.locator('body').evaluate(() => globalThis.__chikunSharedPayload);
+  assert.equal(sharedPayload?.title, "Chikun's Escape");
+  assert.equal(sharedPayload?.url, 'https://lestersarcade.io');
+  assert.match(sharedPayload?.text ?? '', /Replay Verified Ranked/i);
+  assert.match(sharedPayload?.text ?? '', new RegExp(`${score.toLocaleString('en-US')} points`, 'i'));
+  assert.doesNotMatch(sharedPayload?.text ?? '', /0x[a-f0-9]{40}|session-/i);
+  await frameNode.screenshot({ path: resolve(dirname(evidencePath), 'chikun-ranked-result.png') });
   await page.waitForFunction(() => /accepted for your profile/i.test(document.querySelector('#officialGameStateCopy')?.textContent ?? ''), null, { timeout: 10_000 });
   await frame.locator('#resultExitButton').click();
   await page.locator('#officialArcadeFloor:not([hidden])').waitFor({ state: 'visible', timeout: 10_000 });
@@ -161,7 +202,7 @@ try {
 
   await page.screenshot({ path: resolve(evidencePath), fullPage: true });
   assert.deepEqual(issues, [], `browser console/runtime issues:\n${issues.join('\n')}`);
-  console.log(JSON.stringify({ status: 'PASS', viewport, score, cabinetArt, modeArt, controlRects, upgradeHud, scoreBoard: true, profile: true, gameplayScreenshot: gameplayPath, screenshot: evidencePath }, null, 2));
+  console.log(JSON.stringify({ status: 'PASS', viewport, score, cabinetArt, modeArt, controlRects, upgradeHud, resultUi, sharedPayload, scoreBoard: true, profile: true, gameplayScreenshot: gameplayPath, screenshot: evidencePath }, null, 2));
 } catch (error) {
   const state = await page?.evaluate(() => ({
     path: location.pathname,

@@ -10,6 +10,8 @@ import {
   validateChikunParentMessage,
   validateChikunChildMessage,
 } from '../../portal/src/chikun-bridge-protocol.mjs';
+import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
+import { buildChikunReplayTimeline, buildChikunShareText } from './presentation.mjs';
 
 const canvas = document.querySelector('#chikunCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
@@ -37,6 +39,8 @@ const resultEyebrow = document.querySelector('#resultEyebrow');
 const resultScore = document.querySelector('#resultScore');
 const resultCopy = document.querySelector('#resultCopy');
 const resultStats = document.querySelector('#resultStats');
+const replayTimeline = document.querySelector('#replayTimeline');
+const shareRunButton = document.querySelector('#shareRunButton');
 const liveStatus = document.querySelector('#liveStatus');
 
 const STEP_MS = 1000 / CHIKUN_FIXED_STEP_HZ;
@@ -46,6 +50,7 @@ const coastSprite = new Image();
 const fallSprite = new Image();
 coastSprite.src = '/assets/generated/chikun-game/chikun-coast.webp';
 fallSprite.src = '/assets/generated/chikun-game/chikun-fall.webp';
+Promise.allSettled([coastSprite.decode?.(), fallSprite.decode?.()]);
 
 let port = null;
 let sessionId = '';
@@ -69,6 +74,12 @@ let previousCoins = 0;
 let previousForks = 0;
 let previousNearMisses = 0;
 let previousDifficultyLevel = 1;
+let activeParticles = [];
+let activeShake = null;
+let activeFlash = null;
+let crashVfxPlayed = false;
+let lastCompletedResult = null;
+let vfxFrame = 0;
 
 function setLive(message) {
   liveStatus.textContent = message;
@@ -83,6 +94,26 @@ function showCallout(message) {
   eventCallout.classList.add('is-visible');
   if (calloutTimer !== null) clearTimeout(calloutTimer);
   calloutTimer = setTimeout(() => eventCallout.classList.remove('is-visible'), reduceMotion() ? 500 : 900);
+}
+
+function spawnVfx(event, x = latestSnapshot?.chikun?.x ?? 280, y = latestSnapshot?.chikun?.y ?? 360) {
+  const plan = planChikunVfx({ event, x, y, tick: latestSnapshot?.tick ?? 0, reduceMotion: reduceMotion() });
+  const particles = plan.particles.map((particle) => ({ ...particle, bornFrame: vfxFrame }));
+  activeParticles = [...activeParticles, ...particles].slice(-MAX_CHIKUN_PARTICLES);
+  activeShake = plan.shake > 0 ? { amount: plan.shake, bornFrame: vfxFrame, lifeTicks: plan.lifeTicks } : null;
+  activeFlash = plan.flash > 0 ? { alpha: plan.flash, bornFrame: vfxFrame, lifeTicks: Math.min(18, plan.lifeTicks) } : null;
+}
+
+function renderReplayTimeline(evidence) {
+  const timeline = buildChikunReplayTimeline(evidence, 24);
+  replayTimeline.replaceChildren();
+  for (const count of timeline.bins) {
+    const bar = document.createElement('span');
+    bar.style.height = `${Math.max(8, timeline.peak ? (count / timeline.peak) * 100 : 8)}%`;
+    bar.title = `${count} flap${count === 1 ? '' : 's'}`;
+    replayTimeline.append(bar);
+  }
+  replayTimeline.setAttribute('aria-label', `${timeline.totalFlaps} flaps across this run`);
 }
 
 function send(type, payload) {
@@ -161,6 +192,11 @@ function startRun() {
   previousForks = 0;
   previousNearMisses = 0;
   previousDifficultyLevel = 1;
+  activeParticles = [];
+  activeShake = null;
+  activeFlash = null;
+  crashVfxPlayed = false;
+  lastCompletedResult = null;
   startOverlay.classList.add('is-hidden');
   pauseOverlay.classList.add('is-hidden');
   resultOverlay.classList.add('is-hidden');
@@ -183,6 +219,8 @@ function finishRun() {
   phase = 'game-over';
   paused = false;
   const result = runtime.result();
+  lastCompletedResult = result;
+  if (!crashVfxPlayed) { spawnVfx('crash'); crashVfxPlayed = true; }
   const replayClaim = buildChikunReplayClaim({
     buildHash: initPayload.session.buildHash,
     seasonId: initPayload.session.seasonId,
@@ -214,6 +252,7 @@ function finishRun() {
     chip.textContent = label;
     resultStats.append(chip);
   }
+  renderReplayTimeline(result.evidence);
   restartButton.disabled = false;
   restartButton.textContent = 'Fly Again';
   resultOverlay.classList.remove('is-hidden');
@@ -369,8 +408,37 @@ function drawChikun(snapshot) {
   ctx.restore();
 }
 
+function drawVfx(snapshot) {
+  activeParticles = activeParticles.filter((particle) => vfxFrame - particle.bornFrame < particle.lifeTicks);
+  for (const particle of activeParticles) {
+    const age = Math.max(0, vfxFrame - particle.bornFrame);
+    const progress = age / particle.lifeTicks;
+    ctx.globalAlpha = Math.max(0, 1 - progress);
+    ctx.fillStyle = particle.color;
+    ctx.beginPath();
+    ctx.arc(particle.x + particle.vx * age, particle.y + particle.vy * age + age * age * 0.012, particle.size * (1 - progress * 0.55), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  if (activeFlash) {
+    const age = vfxFrame - activeFlash.bornFrame;
+    if (age < activeFlash.lifeTicks) {
+      ctx.fillStyle = `rgba(255,255,255,${Math.max(0, activeFlash.alpha * (1 - age / activeFlash.lifeTicks))})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else activeFlash = null;
+  }
+}
+
 function draw(snapshot = latestSnapshot) {
+  vfxFrame += 1;
   ctx.save();
+  if (activeShake && !reduceMotion()) {
+    const age = vfxFrame - activeShake.bornFrame;
+    if (age < activeShake.lifeTicks) {
+      const strength = activeShake.amount * (1 - age / activeShake.lifeTicks);
+      ctx.translate(Math.sin(age * 2.1) * strength, Math.cos(age * 1.7) * strength * 0.6);
+    } else activeShake = null;
+  }
   drawSky(snapshot);
   for (const fork of snapshot?.forks ?? []) drawFork(fork);
   if (snapshot?.tick < 240) {
@@ -385,6 +453,7 @@ function draw(snapshot = latestSnapshot) {
     }
   }
   if (snapshot?.chikun) drawChikun(snapshot);
+  drawVfx(snapshot);
   ctx.restore();
 }
 
@@ -405,12 +474,13 @@ function frame(now) {
         }
         accumulator -= STEP_MS;
         steps += 1;
-        if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); }
-        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); }
+        if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); spawnVfx('coin'); }
+        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); spawnVfx('near-miss'); }
         if (latestSnapshot.forksPassed > previousForks) {
           previousForks = latestSnapshot.forksPassed;
           tone(660, 0.09, 0.03, 'square');
-          if (latestSnapshot.forksPassed % 5 === 0) showCallout(`${latestSnapshot.forksPassed} fork streak`);
+          spawnVfx('fork');
+          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} fork streak`); spawnVfx('milestone'); }
         }
         if (latestSnapshot.difficulty.level > previousDifficultyLevel) {
           previousDifficultyLevel = latestSnapshot.difficulty.level;
@@ -452,7 +522,7 @@ function handleParentMessage(event) {
     prepareRun();
     phase = 'ready';
     startOverlay.classList.remove('is-hidden');
-    send('game:ready', { runtimeVersion: '0.4.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
+    send('game:ready', { runtimeVersion: '0.5.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
     sendState('ready');
     setLive(`Ready for ${mode === 'ranked' ? 'Ranked' : 'Free'} Mode.`);
   } else if (message.type === 'portal:pause') togglePause('portal', true);
@@ -508,6 +578,22 @@ fullscreenButton.addEventListener('click', () => {
 document.addEventListener('fullscreenchange', () => fullscreenButton.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen'));
 exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
+shareRunButton.addEventListener('click', async () => {
+  if (!lastCompletedResult) return;
+  const text = buildChikunShareText(lastCompletedResult, mode);
+  try {
+    if (navigator.share) await navigator.share({ title: "Chikun's Escape", text, url: 'https://lestersarcade.io' });
+    else if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    else throw new Error('Sharing is unavailable');
+    shareRunButton.textContent = navigator.share ? 'Shared' : 'Copied';
+    setLive(navigator.share ? 'Run shared.' : 'Run summary copied to clipboard.');
+  } catch (error) {
+    if (error?.name === 'AbortError') return;
+    shareRunButton.textContent = 'Share unavailable';
+    setLive('Sharing is unavailable in this browser.');
+  }
+  setTimeout(() => { shareRunButton.textContent = 'Share Run'; }, 1_500);
+});
 restartButton.addEventListener('click', () => {
   restartButton.disabled = true;
   restartButton.textContent = 'Requesting new run…';

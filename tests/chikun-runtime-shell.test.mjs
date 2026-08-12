@@ -20,6 +20,8 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(html, /id="comboValue"/);
   assert.match(html, /id="nearMissValue"/);
   assert.match(html, /id="eventCallout"/);
+  assert.match(html, /id="replayTimeline"/);
+  assert.match(html, /id="shareRunButton"/);
 
   const source = text('../apps/chikun/src/main.mjs');
   assert.match(source, /createChikunRuntime/);
@@ -30,6 +32,9 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(source, /MAX_CATCH_UP_STEPS = 4/);
   assert.match(source, /reduceMotion/);
   assert.match(source, /nearMisses/);
+  assert.match(source, /planChikunVfx/);
+  assert.match(source, /navigator\.share|navigator\.clipboard/);
+  assert.match(source, /coastSprite\.decode/);
 
   const build = text('../build.mjs');
   assert.match(build, /'chikun\/game': chikunEntry/);

@@ -43,8 +43,8 @@ test("Chikun's Escape is a public playable cabinet with production Free and Rank
   const cabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((entry) => entry.gameId === 'chikun');
   const mode = buildGameModeSelectModel('chikun');
 
-  assert.equal(CHIKUN_CABINET_VERSION, '0.4.0');
-  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v2');
+  assert.equal(CHIKUN_CABINET_VERSION, '0.5.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v3');
   assert.equal(game.status, 'playable');
   assert.equal(cabinet.status, 'playable');
   assert.equal(cabinet.playable, true);

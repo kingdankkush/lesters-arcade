@@ -1,8 +1,8 @@
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
-export const CHIKUN_CABINET_VERSION = '0.4.0';
-export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v2';
+export const CHIKUN_CABINET_VERSION = '0.5.0';
+export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v3';
 export const CHIKUN_FIXED_STEP_HZ = 60;
 export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
 const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;

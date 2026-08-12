@@ -40,8 +40,8 @@ test('WO-55 Chikun ships one valid playable ranked Cabinet SDK manifest', () => 
   assert.equal(result.manifest.id, 'chikun');
   assert.equal(result.manifest.version, CHIKUN_CABINET_VERSION);
   assert.equal(raw.runtimeVersion, CHIKUN_RUNTIME_VERSION);
-  assert.equal(CHIKUN_CABINET_VERSION, '0.4.0');
-  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v2');
+  assert.equal(CHIKUN_CABINET_VERSION, '0.5.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v3');
   assert.equal(result.manifest.status, 'playable');
   assert.equal(result.manifest.controlScheme, 'tap');
   assert.equal(result.manifest.rankedEligible, true);
@@ -126,7 +126,7 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
 
   const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
   assert.equal(ctx.seed, session.seed);
-  assert.equal(ctx.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.4.0');
+  assert.equal(ctx.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.5.0');
   assert.equal(ctx.seasonId, 'chikun-season-preview-1');
   assert.equal(result.seed, session.seed);
   assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));
