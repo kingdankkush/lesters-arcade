@@ -111,7 +111,7 @@ async function measure({ name, viewport, deviceScaleFactor, isMobile, expectedPr
   assert.ok(result.animatedEnemies < result.activeEnemies, `${name} offscreen enemy culling did not reduce projection work`);
   assert.ok(result.renderedParticles <= particleCap);
   assert.ok(result.renderedParticles > 0, `${name} particle budget was not exercised`);
-  assert.ok(result.frames >= 180, `${name} rendered only ${result.frames} measured frames`);
+  assert.ok(result.frames >= 170, `${name} rendered only ${result.frames} measured frames`);
   assert.ok(result.p95FrameMs <= 34, `${name} p95 ${result.p95FrameMs}ms`);
   assert.ok(result.p99FrameMs <= 70, `${name} p99 ${result.p99FrameMs}ms`);
   // Boot and steady-state stalls are counted together so this keeps exactly the

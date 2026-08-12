@@ -8,6 +8,7 @@ import {
   RUNTIME_PERFORMANCE_PROFILES,
   compactExpiredEventsInPlace,
   isScreenPointVisible,
+  selectAnimatedEnemyIds,
   selectRuntimePerformanceProfile,
 } from '../apps/hmh-reboot/src/runtime-performance.mjs';
 
@@ -53,6 +54,24 @@ test('effect compaction mutates one array in stable order without replacement al
   assert.deepEqual(events.map((event) => event.id), ['keep-a', 'keep-b']);
 });
 
+test('animation budget prioritizes visible combat readability before distance with stable ties', () => {
+  const entries = [
+    { id: 'idle-near', visible: true, distance: 5, state: 'idle' },
+    { id: 'idle-tie-b', visible: true, distance: 20, state: 'idle' },
+    { id: 'idle-tie-a', visible: true, distance: 20, state: 'idle' },
+    { id: 'tell-far', visible: true, distance: 900, state: 'tell' },
+    { id: 'hit-far', visible: true, distance: 800, state: 'hit' },
+    { id: 'spawn-far', visible: true, distance: 700, state: 'idle', spawnCue: true },
+    { id: 'elite-far', visible: true, distance: 600, state: 'idle', elite: true },
+    { id: 'hidden-tell', visible: false, distance: 1, state: 'tell' },
+  ];
+  const selected = selectAnimatedEnemyIds(entries, 6);
+  assert.deepEqual([...selected], ['tell-far', 'hit-far', 'spawn-far', 'elite-far', 'idle-near', 'idle-tie-a']);
+  assert.deepEqual([...selectAnimatedEnemyIds([...entries].reverse(), 6)], [...selected]);
+  assert.deepEqual([...selectAnimatedEnemyIds(entries, 0)], []);
+  assert.throws(() => selectAnimatedEnemyIds(entries, -1), /cap/);
+});
+
 test('runtime routes profile into Pixi and world projection, and owns a browser performance gate', () => {
   const main = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/main.mjs'), 'utf8');
   const world = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/world-production-art.mjs'), 'utf8');
@@ -61,6 +80,8 @@ test('runtime routes profile into Pixi and world projection, and owns a browser 
   assert.match(main, /antialias: performanceProfile\.antialias/);
   assert.match(main, /resolution: performanceProfile\.resolution/);
   assert.match(main, /performanceProfile,/);
+  assert.match(main, /selectAnimatedEnemyIds/);
+  assert.match(main, /Math\.min\(performanceProfile\.maxAnimatedEnemies, encounterAnimationCap\)/);
   assert.match(world, /isScreenPointVisible/);
   assert.match(world, /particlesPerHazard/);
   assert.equal(pkg.scripts['smoke:hmh:performance'], 'node scripts/hmh-reboot-performance-browser-smoke.mjs');

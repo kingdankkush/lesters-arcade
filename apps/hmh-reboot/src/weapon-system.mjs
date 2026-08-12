@@ -721,9 +721,9 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
   }
   if (weapon.burnerState) {
-    weapon.burnerState.fuel = weapon.ammoInClip;
-    weapon.burnerState.reserveFuel = weapon.reserveAmmo ?? 0;
-    weapon.burnerState.emptySignaled = false;
+    const burnerState = createBearMarketBurnerState({ fuel: weapon.ammoInClip, reserveFuel: weapon.reserveAmmo ?? 0 });
+    burnerState.lastTick = Math.max(-1, state.lastTick);
+    weapon.burnerState = burnerState;
   }
   const previousWeaponId = state.activeWeaponId;
   if (select) {
@@ -762,9 +762,9 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     weapon.ammoInClip = progression.clipSize;
     if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
     if (weapon.burnerState) {
-      weapon.burnerState.fuel = weapon.ammoInClip;
-      weapon.burnerState.reserveFuel = weapon.reserveAmmo ?? 0;
-      weapon.burnerState.emptySignaled = false;
+      const burnerState = createBearMarketBurnerState({ fuel: weapon.ammoInClip, reserveFuel: weapon.reserveAmmo ?? 0 });
+      burnerState.lastTick = Math.max(-1, state.lastTick);
+      weapon.burnerState = burnerState;
     }
     weapon.reloadStartedTick = null;
     weapon.reloadCompleteTick = null;

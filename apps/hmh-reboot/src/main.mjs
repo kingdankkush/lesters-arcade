@@ -24,7 +24,7 @@ import {
   isEliteEnemyProjection,
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
-import { createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
+import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
 import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
@@ -53,6 +53,7 @@ import {
 import { createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
 import {
   applyLiquidatorDamage,
+  createLiquidatorAddCandidates,
   createLiquidatorBoss,
   resolveLiquidatorAttack,
   stepLiquidatorBoss,
@@ -133,6 +134,7 @@ import {
 import {
   compactExpiredEventsInPlace,
   isScreenPointVisible,
+  selectAnimatedEnemyIds,
   selectRuntimePerformanceProfile,
 } from './runtime-performance.mjs';
 import { createTouchControlAdapter } from './touch-controls.mjs';
@@ -1191,6 +1193,21 @@ async function boot() {
       overlayVisuals.clear();
       bossVisual.visible = false;
       if (releaseTelemetryEnabled) dataset.gasCanisterProgress = '';
+      const encounterAnimationCap = getEncounterSnapshot(simulation?.tick ?? 0).animationCap;
+      const animationBudget = Math.min(performanceProfile.maxAnimatedEnemies, encounterAnimationCap);
+      const animationCandidates = grayboxEnemies.map((enemy) => {
+        const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
+        const state = resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0);
+        return {
+          id: enemy.id,
+          visible: enemy.active && isScreenPointVisible(enemyScreen, view, performanceProfile.enemyCullMargin),
+          distance: Math.hypot(enemyScreen.x - screen.x, enemyScreen.y - screen.y),
+          state,
+          spawnCue: Number.isInteger(enemy.spawnedTick) && (simulation?.tick ?? 0) - enemy.spawnedTick <= 30,
+          elite: isEliteEnemyProjection(enemy.id),
+        };
+      });
+      const animatedEnemyIds = selectAnimatedEnemyIds(animationCandidates, animationBudget);
       let animatedEnemyCount = 0;
       let bossTelegraphPrimitiveCount = 0;
       const enemyHealthPips = [];
@@ -1204,8 +1221,7 @@ async function boot() {
         }
         const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
         const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
-        const markerVisible = isScreenPointVisible(enemyScreen, view, performanceProfile.enemyCullMargin)
-          && animatedEnemyCount < performanceProfile.maxAnimatedEnemies;
+        const markerVisible = animatedEnemyIds.has(enemy.id);
         enemyMarker.visible = markerVisible;
         if (markerVisible) {
           animatedEnemyCount += 1;
@@ -1751,7 +1767,7 @@ async function boot() {
       if (liquidatorBoss?.active && (simulation?.tick ?? 0) >= liquidatorBoss.startTick) {
         const barWidth = Math.min(420, view.width * 0.52);
         const barX = view.width / 2 - barWidth / 2;
-        const bossBarY = view.width < 560 ? 276 : 124;
+        const bossBarY = view.width < 560 ? 292 : 124;
         const ratio = Math.max(0, Math.min(1, liquidatorBoss.health / liquidatorBoss.maxHealth));
         bossLabel.text = `THE LIQUIDATOR // ${liquidatorBoss.phaseId.replaceAll('-', ' ').toUpperCase()}`;
         bossLabel.position.set(view.width / 2, bossBarY - 5);
@@ -3089,7 +3105,41 @@ async function boot() {
         if (event.type === 'arena-change') { combatAudio.play('boss-phase', { volume: 0.14 });
           if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: Liquidator phase changing.');
         }
-        if (event.type !== 'attack' && event.type !== 'add-wave') continue;
+        if (event.type === 'tell') {
+          combatAudio.play('boss-phase', { volume: event.attackId.includes('super') ? 0.14 : 0.09 });
+          if (settings.captionCriticalAudio) {
+            const warning = event.attackId.includes('super') ? 'super attack' : event.attackId.replaceAll('-', ' ');
+            setAccessibleCombatStatus(`Critical audio: Liquidator warning, ${warning}.`);
+          }
+          continue;
+        }
+        if (event.type === 'add-wave') {
+          const schedule = { nextSpawnTick: tick, intervalTicks: 1, burstRemaining: 1 };
+          let inserted = false;
+          const activeLiquidatorAddIds = grayboxEnemies
+            .filter((enemy) => enemy.active && enemy.id.includes(':bad-debt-summon:'))
+            .map((enemy) => enemy.id);
+          for (const candidate of createLiquidatorAddCandidates({ event, activeAddIds: activeLiquidatorAddIds })) {
+            const ground = queryGround(candidate.x, candidate.y);
+            const result = attemptScheduledEnemyInsertion({
+              population: enemyPopulation,
+              schedule,
+              candidate: { ...candidate, groundZ: ground.groundZ },
+              tick,
+              placementAllowed: ground.kind !== 'deep-water' && !spawnPointBlocked(candidate),
+              visualMode: 'normal',
+              threatRemaining: getEncounterSnapshot(tick).threatCap - enemyPopulation.activeThreat,
+            });
+            if (result.inserted) {
+              inserted = true;
+              schedule.nextSpawnTick = tick;
+              schedule.burstRemaining = 1;
+            }
+          }
+          if (inserted) resetEnemyMarkers(grayboxEnemies);
+          continue;
+        }
+        if (event.type !== 'attack') continue;
         const resolved = resolveLiquidatorAttack({
           event,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },

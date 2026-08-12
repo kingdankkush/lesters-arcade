@@ -4,6 +4,7 @@ import test from 'node:test';
 import * as burner from '../apps/hmh-reboot/src/bear-market-burner.mjs';
 import { BEAR_MARKET_BURNER_EVENT_BOUNDS, createBearMarketBurnerEvent } from '../apps/hmh-reboot/src/bear-market-burner-event.mjs';
 import * as progression from '../apps/hmh-reboot/src/run-progression.mjs';
+import { createWeaponLoadout, refillWeaponLoadout } from '../apps/hmh-reboot/src/weapon-system.mjs';
 
 const targets = Object.freeze([
   Object.freeze({ id: 'near-a', x: 120, y: 0, active: true, boss: false }),
@@ -119,6 +120,33 @@ test('W9A sustained contact creates capped scorch and defeat spread stays bounde
     ],
   });
   assert.deepEqual(spread.targetIds, ['spread-a', 'spread-b']);
+});
+
+test('Burner refill resets stale per-run channel and hazard state without changing the authored fuel grant', () => {
+  const loadout = createWeaponLoadout({ weaponIds: ['coin-blaster', 'bear-market-burner'], activeWeaponId: 'bear-market-burner' });
+  const weapon = loadout.weapons['bear-market-burner'];
+  const staleBurnerState = weapon.burnerState;
+  weapon.burnerState.burns.set('stale-burn', { targetId: 'stale-burn', boss: false, appliedTick: 1, refreshedTick: 1, expiresTick: 999, nextDamageTick: 30, damage: 2 });
+  weapon.burnerState.contactTicks.set('stale-burn', 48);
+  weapon.burnerState.scorchZones.push({ id: 'stale-zone', createdTick: 1, expiresTick: 999, x: 0, y: 0, radius: 84, sourceTargetId: 'stale-burn' });
+  weapon.burnerState.emergencyRefillUsed = true;
+  weapon.burnerState.swapReadyTick = 200;
+  weapon.burnerState.channelFuelSpent = 250;
+  weapon.burnerState.pulses = 9;
+
+  refillWeaponLoadout(loadout, { tick: 10, weaponId: 'bear-market-burner' });
+  const resetWeapon = loadout.weapons['bear-market-burner'];
+  assert.notEqual(resetWeapon.burnerState, staleBurnerState);
+  const snapshot = burner.getBearMarketBurnerSnapshot(resetWeapon.burnerState);
+  assert.equal(snapshot.fuel, resetWeapon.ammoInClip);
+  assert.equal(snapshot.reserveFuel, resetWeapon.reserveAmmo);
+  assert.deepEqual(snapshot.burns, []);
+  assert.deepEqual(snapshot.contactTicks, []);
+  assert.deepEqual(snapshot.scorchZones, []);
+  assert.equal(snapshot.emergencyRefillUsed, false);
+  assert.equal(snapshot.swapReadyTick, null);
+  assert.equal(snapshot.channelFuelSpent, 0);
+  assert.equal(snapshot.pulses, 0);
 });
 
 test('W9A acquisition event is seed-stable, schedule-bounded, and fails closed on unsafe terrain', () => {

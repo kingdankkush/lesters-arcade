@@ -23,7 +23,7 @@ test('the runtime projects the phase beat through boss visuals only', async () =
   assert.match(source, /const bossPhaseTick = lastBossStep\?\.elapsedTick \?\? 45/);
   assert.match(source, /bossVisual\.scale\.set\([^\n]*bossPhaseTick < 2_445 && Math\.max\(0, 45 - \(bossPhaseTick % 1_200\)\) \/ 250/);
   assert.match(source, /const bossLabel = new Text/);
-  assert.match(source, /const bossBarY = view\.width < 560 \? 276 : 124/);
+  assert.match(source, /const bossBarY = view\.width < 560 \? 292 : 124/);
   assert.match(source, /bossLabel\.text = `THE LIQUIDATOR \/\/ \$\{liquidatorBoss\.phaseId\.replaceAll\('-', ' '\)\.toUpperCase\(\)\}`/);
   assert.doesNotMatch(source, /bossVisual\.alpha[^\n]*lastBossStep/);
   assert.doesNotMatch(source, /Math\.max\(0, 45[^\n]*(damage|collision|health|attackCooldown|spawn)/i);

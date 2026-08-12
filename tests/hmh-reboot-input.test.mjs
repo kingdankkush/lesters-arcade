@@ -289,7 +289,7 @@ test('touch combat status clears top chrome and portrait help while desktop reta
     [phoneLandscape.compact, phoneLandscape.y, tabletLandscape.compact, tabletLandscape.y],
     [true, 76, true, 240],
   );
-  assert.deepEqual([phonePortrait.multiline, phonePortrait.y], [true, 272]);
+  assert.deepEqual([phonePortrait.multiline, phonePortrait.y], [true, 232]);
   assert.deepEqual([desktop.compact, desktop.multiline, desktop.y, desktop.fontSize], [false, false, 82, 18]);
 });
 

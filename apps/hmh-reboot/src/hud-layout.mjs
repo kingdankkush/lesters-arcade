@@ -95,7 +95,7 @@ export function computeCombatStatusLayout({ width, height, touchUiEnabled = fals
   const compactLandscape = touchLandscape && isCompactLandscape({ width: viewportWidth, height: viewportHeight });
   return freezeDeep({
     x: viewportWidth * 0.5,
-    y: compactLandscape ? 76 : touchLandscape ? 240 : narrow ? 272 : 82,
+    y: compactLandscape ? 76 : touchLandscape ? 240 : narrow ? 232 : 82,
     fontSize: narrow || touchLandscape ? 12 : 18,
     compact: touchLandscape,
     multiline: narrow && !touchLandscape,

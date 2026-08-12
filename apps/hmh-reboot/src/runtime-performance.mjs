@@ -65,6 +65,30 @@ export function isScreenPointVisible(point, view, margin = 0) {
   return x >= -margin && x <= width + margin && y >= -margin && y <= height + margin;
 }
 
+export function selectAnimatedEnemyIds(entries, cap) {
+  if (!Array.isArray(entries)) throw new TypeError('entries must be an array');
+  if (!Number.isInteger(cap) || cap < 0) throw new TypeError('animation cap must be a non-negative integer');
+  const priority = (entry) => {
+    if (entry.state === 'tell' || entry.state === 'attack') return 0;
+    if (entry.state === 'hit' || entry.state === 'death') return 1;
+    if (entry.spawnCue === true) return 2;
+    if (entry.elite === true) return 3;
+    return 4;
+  };
+  return new Set(entries
+    .filter((entry) => entry?.visible === true && typeof entry.id === 'string' && entry.id.length > 0)
+    .map((entry, sourceIndex) => ({
+      entry,
+      sourceIndex,
+      distance: nonNegativeFinite(entry.distance, `${entry.id}.distance`),
+    }))
+    .sort((left, right) => priority(left.entry) - priority(right.entry)
+      || left.distance - right.distance
+      || (left.entry.id < right.entry.id ? -1 : left.entry.id > right.entry.id ? 1 : left.sourceIndex - right.sourceIndex))
+    .slice(0, cap)
+    .map(({ entry }) => entry.id));
+}
+
 export function compactExpiredEventsInPlace(events, currentTick, maxAgeTicks) {
   if (!Array.isArray(events)) throw new TypeError('events must be an array');
   if (!Number.isInteger(currentTick) || currentTick < 0) throw new TypeError('currentTick must be a non-negative integer');

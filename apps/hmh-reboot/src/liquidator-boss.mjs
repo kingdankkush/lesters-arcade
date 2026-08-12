@@ -194,6 +194,28 @@ function distanceToSegment(point, start, end) {
   return Math.hypot(point.x - (start.x + dx * t), point.y - (start.y + dy * t));
 }
 
+export function createLiquidatorAddCandidates({ event, activeAddIds = [] } = {}) {
+  if (event?.type !== 'add-wave' || event.attackId !== 'bad-debt-summon' || event.geometry?.type !== 'summon-sites') {
+    throw new TypeError('resolved bad-debt add-wave event is required');
+  }
+  const sites = event.geometry.sites;
+  if (!Array.isArray(sites) || sites.length > LIQUIDATOR_READABILITY_BUDGET.activeAdds) {
+    throw new TypeError('summon sites exceed the active add budget');
+  }
+  if (!Array.isArray(activeAddIds) || activeAddIds.some((id) => typeof id !== 'string' || id.length === 0)) {
+    throw new TypeError('active add IDs must be strings');
+  }
+  const availableSlots = Math.max(0, LIQUIDATOR_READABILITY_BUDGET.activeAdds - new Set(activeAddIds).size);
+  const archetypeIds = ['bagholder-rusher', 'forkrunner', 'liquidator-agent'];
+  return freezeDeep(sites.slice(0, availableSlots).map((site, index) => ({
+    id: `${event.telegraphId}:add-${String(index + 1).padStart(2, '0')}`,
+    archetypeId: archetypeIds[index % archetypeIds.length],
+    x: finite(site?.x, `summon site ${index}.x`),
+    y: finite(site?.y, `summon site ${index}.y`),
+    groundZ: finite(event.groundZ, 'groundZ'),
+  })));
+}
+
 export function resolveLiquidatorAttack({ event, player } = {}) {
   if (!event?.geometry || !['attack', 'add-wave'].includes(event.type)) throw new TypeError('resolved boss event is required');
   const point = { x: finite(player?.x, 'player.x'), y: finite(player?.y, 'player.y') };

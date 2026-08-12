@@ -19,6 +19,8 @@ test('U9/X2 projected accessibility and audio settings have real runtime consume
   assert.match(child, /combatAudio\.setBusLevels\(settings\)/);
   assert.match(child, /style\.fontSize = `\$\{\(settings\.hudScale \?\? 1\) \* 100\}%`/);
   assert.match(child, /captionCriticalAudio/);
+  assert.match(child, /event\.type === 'tell'.*boss-phase/s);
+  assert.match(child, /Critical audio: Liquidator warning/);
 });
 
 test('M4 child-originated settings persist in the parent without changing ranked bindings', () => {

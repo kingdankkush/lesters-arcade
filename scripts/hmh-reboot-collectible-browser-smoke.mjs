@@ -24,7 +24,7 @@ try {
     remaining: Number(element.dataset.collectibleRemaining),
     actorX: Number(element.dataset.actorX),
   }));
-  assert.deepEqual({ count: before.count, remaining: before.remaining }, { count: 0, remaining: 10 });
+  assert.deepEqual({ count: before.count, remaining: before.remaining }, { count: 0, remaining: 13 });
   assert.ok(Math.abs(before.actorX - 9_200) < 12, `world-tour spawn drifted: ${before.actorX}`);
 
     await page.keyboard.down('d');
@@ -40,7 +40,7 @@ try {
     ammo: Number(element.dataset.weaponAmmo),
     actorX: Number(element.dataset.actorX),
   }));
-  assert.deepEqual({ count: collected.count, remaining: collected.remaining }, { count: 1, remaining: 9 });
+  assert.deepEqual({ count: collected.count, remaining: collected.remaining }, { count: 1, remaining: 12 });
   assert.equal(collected.last, 'auto-miner-cache');
   assert.equal(collected.active, '');
   assert.equal(collected.weaponId, 'auto-miner');
@@ -55,7 +55,7 @@ try {
     const element = document.querySelector('#hmhRebootStage');
     return element?.dataset.weaponId === 'coin-blaster'
       && Number(element.dataset.collectibleCount) === 0
-      && Number(element.dataset.collectibleRemaining) === 10;
+      && Number(element.dataset.collectibleRemaining) === 13;
   }, null, { timeout: 5000 });
   const reset = await page.locator('#hmhRebootStage').evaluate((element) => ({
     count: Number(element.dataset.collectibleCount),
@@ -64,7 +64,7 @@ try {
     weaponId: element.dataset.weaponId,
     handGrenades: Number(element.dataset.handGrenades),
   }));
-  assert.deepEqual(reset, { count: 0, remaining: 10, active: '', weaponId: 'coin-blaster', handGrenades: 3 });
+  assert.deepEqual(reset, { count: 0, remaining: 13, active: '', weaponId: 'coin-blaster', handGrenades: 3 });
 
   const timedPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
   timedPage.on('pageerror', (error) => errors.push(error.message));
@@ -89,7 +89,7 @@ try {
     active: element.dataset.collectibleActive,
   }));
   const accessibleStatus = await timedPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
-  assert.deepEqual({ count: timed.count, remaining: timed.remaining }, { count: 1, remaining: 9 });
+  assert.deepEqual({ count: timed.count, remaining: timed.remaining }, { count: 1, remaining: 12 });
   assert.equal(timed.last, 'time-dilation');
   assert.equal(timed.active, 'time-dilation');
   assert.match(accessibleStatus, /active powerups time-dilation/i);

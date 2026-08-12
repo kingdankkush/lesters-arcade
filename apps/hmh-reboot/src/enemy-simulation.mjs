@@ -90,6 +90,7 @@ export function createEnemyState({
     previousY: positionY,
     groundZ: z,
     previousGroundZ: z,
+    spawnedTick: 0,
     radius: archetype.radius,
     health: archetype.maxHealth,
     maxHealth: archetype.maxHealth,
@@ -168,6 +169,7 @@ export function attemptScheduledEnemyInsertion({
   if (archetype.costs.threat > remaining || population.activeThreat + archetype.costs.threat > population.threatCapacity) return reject('threat-capacity');
 
   const state = createEnemyState({ ...candidate, visualMode });
+  state.spawnedTick = tick;
   population.active.push(state);
   population.active.sort((a, b) => lexical(a.id, b.id));
   population.seenIds.add(state.id);

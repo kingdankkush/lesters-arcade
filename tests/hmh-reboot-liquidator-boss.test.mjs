@@ -10,6 +10,7 @@ import {
   LIQUIDATOR_TARGET_FIGHT_TICKS,
   MAX_BOSS_EVENTS_PER_TICK,
   applyLiquidatorDamage,
+  createLiquidatorAddCandidates,
   createLiquidatorBoss,
   resolveLiquidatorAttack,
   simulateLiquidatorDps,
@@ -174,6 +175,27 @@ test('super attacks expose strong safe zones and resolve outside rather than ins
   assert.equal(resolveLiquidatorAttack({ event: superAttack, player: { x: 500, y: 500, groundZ: 0 } }).hit, true);
 });
 
+test('bad-debt summon creates one deterministic bounded candidate per locked tell site', () => {
+  const boss = createLiquidatorBoss({ id: 'summon-liquidator', x: 0, y: 0, startTick: 0 });
+  let addWave;
+  for (let tick = 1; tick <= 1_890; tick += 1) {
+    addWave = stepLiquidatorBoss({ boss, tick, player: PLAYER }).events.find((event) => event.type === 'add-wave') ?? addWave;
+  }
+  const forward = createLiquidatorAddCandidates({ event: addWave });
+  const repeated = createLiquidatorAddCandidates({ event: addWave });
+  assert.deepEqual(forward, repeated);
+  assert.equal(forward.length, addWave.geometry.sites.length);
+  assert.ok(forward.length <= LIQUIDATOR_READABILITY_BUDGET.activeAdds);
+  assert.deepEqual(forward.map((candidate) => candidate.archetypeId), ['bagholder-rusher', 'forkrunner', 'liquidator-agent']);
+  assert.deepEqual(forward.map((candidate) => ({ x: candidate.x, y: candidate.y })), addWave.geometry.sites);
+  assert.ok(forward.every((candidate) => candidate.id.startsWith(`${addWave.telegraphId}:add-`)));
+  const fiveActive = Array.from({ length: 5 }, (_, index) => `existing-liquidator-add-${index}`);
+  assert.equal(createLiquidatorAddCandidates({ event: addWave, activeAddIds: fiveActive }).length, 1);
+  assert.equal(createLiquidatorAddCandidates({ event: addWave, activeAddIds: [...fiveActive].reverse() }).length, 1);
+  assert.deepEqual(createLiquidatorAddCandidates({ event: addWave, activeAddIds: [...fiveActive, 'existing-liquidator-add-5'] }), []);
+  assert.throws(() => createLiquidatorAddCandidates({ event: { ...addWave, geometry: { type: 'summon-sites', sites: new Array(7).fill({ x: 0, y: 0 }) } } }), /active add budget/);
+});
+
 test('boss events are bounded and the body contract prevents hard pin traps', () => {
   assert.equal(MAX_BOSS_EVENTS_PER_TICK, 8);
   const boss = createLiquidatorBoss({ id: 'liquidator', x: 0, y: 0, startTick: 0 });
@@ -207,6 +229,8 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.match(source, /stepLiquidatorBoss/);
   assert.match(source, /resolveLiquidatorAttack/);
   assert.match(source, /applyLiquidatorDamage/);
+  assert.match(source, /createLiquidatorAddCandidates/);
+  assert.match(source, /attemptScheduledEnemyInsertion/);
   assert.ok(source.indexOf('lastBossStep = stepLiquidatorBoss') < source.indexOf('resolveCombatHits'));
   assert.match(source, /eventType:\s*'boss-defeated'/);
 });
