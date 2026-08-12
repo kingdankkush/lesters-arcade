@@ -353,6 +353,45 @@ export function sampleFlowDirection(grid, field, x, y) {
 
 // Supercover raycast on the walkable grid: true when the straight segment
 // crosses any unwalkable cell. Used to decide when direct pursuit is honest.
+export function sampleCoverDirection(grid, fromX, fromY, targetX, targetY, {
+  stableSide = 1,
+  maxCells = 4,
+} = {}) {
+  if (!grid?.walkable) throw new TypeError('grid is required');
+  for (const [value, name] of [[fromX, 'fromX'], [fromY, 'fromY'], [targetX, 'targetX'], [targetY, 'targetY']]) {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+  }
+  if (![1, -1].includes(stableSide)) throw new TypeError('stableSide must be 1 or -1');
+  if (!Number.isInteger(maxCells) || maxCells < 1 || maxCells > 8) throw new TypeError('maxCells must be an integer in [1, 8]');
+  const dx = targetX - fromX;
+  const dy = targetY - fromY;
+  const magnitude = Math.hypot(dx, dy);
+  if (magnitude <= 1e-9) return null;
+  const lateral = { x: (-dy / magnitude) * stableSide, y: (dx / magnitude) * stableSide };
+  for (const side of [1, -1]) {
+    for (let cell = 1; cell <= maxCells; cell += 1) {
+      const target = Object.freeze({
+        x: fromX + lateral.x * grid.cellSize * cell * side,
+        y: fromY + lateral.y * grid.cellSize * cell * side,
+      });
+      if (!grid.isWalkableAt(target.x, target.y)) continue;
+      if (navLineBlocked(grid, fromX, fromY, target.x, target.y)) continue;
+      if (!navLineBlocked(grid, target.x, target.y, targetX, targetY)) continue;
+      const coverDx = target.x - fromX;
+      const coverDy = target.y - fromY;
+      const coverMagnitude = Math.hypot(coverDx, coverDy);
+      if (coverMagnitude <= 1e-9) continue;
+      return Object.freeze({
+        direction: Object.freeze({ x: coverDx / coverMagnitude, y: coverDy / coverMagnitude }),
+        target,
+        side: stableSide * side,
+        distanceCells: cell,
+      });
+    }
+  }
+  return null;
+}
+
 export function navLineBlocked(grid, fromX, fromY, toX, toY) {
   if (!grid) return false;
   const steps = Math.max(1, Math.ceil(Math.hypot(toX - fromX, toY - fromY) / (grid.cellSize / 3)));

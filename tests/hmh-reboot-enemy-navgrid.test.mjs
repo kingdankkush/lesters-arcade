@@ -5,6 +5,7 @@ import {
   ENEMY_NAV_CELL_SIZE,
   createEnemyNavGrid,
   computeEnemyFlowField,
+  sampleCoverDirection,
   sampleFlowDirection,
   navLineBlocked,
 } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
@@ -108,6 +109,44 @@ test('planEnemyIntent uses the flow direction only when the direct line is block
   const openEnemy = createEnemyState({ archetypeId: 'bagholder-rusher', id: 'nav-open', x: 900, y: 2_500 });
   const openIntent = planEnemyIntent(openEnemy, { player: { x: 800, y: 2_400 }, tick: 0, navigation });
   assert.ok(openIntent.facing.x < 0 && openIntent.facing.y < 0, 'open-field enemy keeps direct pursuit');
+});
+
+test('cover sampling chooses the first stable walkable lateral cell that breaks player line of sight', () => {
+  const grid = buildGrid();
+  const player = { x: 10_640, y: 300 };
+  const enemyPosition = { x: 10_140, y: 300 };
+  const first = sampleCoverDirection(grid, enemyPosition.x, enemyPosition.y, player.x, player.y, { stableSide: 1 });
+  const repeated = sampleCoverDirection(grid, enemyPosition.x, enemyPosition.y, player.x, player.y, { stableSide: 1 });
+  assert.deepEqual(first, repeated);
+  assert.ok(first, 'ranged role should find authored fence cover');
+  assert.equal(navLineBlocked(grid, first.target.x, first.target.y, player.x, player.y), true);
+  assert.equal(grid.isWalkableAt(first.target.x, first.target.y), true);
+  assert.equal(navLineBlocked(grid, enemyPosition.x, enemyPosition.y, first.target.x, first.target.y), false, 'cover route must not cross an authored blocker');
+  assert.ok(Math.abs(Math.hypot(first.direction.x, first.direction.y) - 1) < 1e-9);
+  const opposite = sampleCoverDirection(grid, enemyPosition.x, enemyPosition.y, player.x, player.y, { stableSide: -1 });
+  const oppositeRepeated = sampleCoverDirection(grid, enemyPosition.x, enemyPosition.y, player.x, player.y, { stableSide: -1 });
+  assert.deepEqual(opposite, oppositeRepeated);
+  assert.ok(opposite === null || [1, -1].includes(opposite.side));
+  assert.throws(() => sampleCoverDirection(grid, 0, 0, 0, 0, { stableSide: 0 }), /stableSide/);
+});
+
+test('cover-aware suppressor intent uses authored cover only outside committed attack tells', () => {
+  const grid = buildGrid();
+  const player = { x: 10_640, y: 300 };
+  const field = computeEnemyFlowField({ grid, targetX: player.x, targetY: player.y });
+  const navigation = {
+    lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(grid, fromX, fromY, toX, toY),
+    flowDirectionAt: (x, y) => sampleFlowDirection(grid, field, x, y),
+    coverDirectionAt: (x, y, targetX, targetY, options) => sampleCoverDirection(grid, x, y, targetX, targetY, options),
+  };
+  const suppressor = createEnemyState({ archetypeId: 'liquidator-agent', id: 'cover-suppressor', x: 10_140, y: 300 });
+  const coverIntent = planEnemyIntent(suppressor, { player, tick: 1, navigation });
+  assert.equal(coverIntent.coverSeeking, true);
+  assert.ok(coverIntent.coverTarget);
+  assert.equal(navLineBlocked(grid, coverIntent.coverTarget.x, coverIntent.coverTarget.y, player.x, player.y), true);
+  suppressor.attackPhase = 'tell';
+  const locked = planEnemyIntent(suppressor, { player, tick: 2, navigation });
+  assert.equal(locked.coverSeeking, false, 'a committed tell cannot refresh cover steering');
 });
 
 test('a session restart resets the flow field so runs cannot inherit stale state', () => {

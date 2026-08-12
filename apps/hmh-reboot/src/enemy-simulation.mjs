@@ -218,9 +218,26 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
   }
   const tangent = { x: -direct.y * stableSign(enemy.id), y: direct.x * stableSign(enemy.id) };
   let direction = direct;
-  if (archetype.role === 'flanker') {
+  let coverSeeking = false;
+  let coverTarget = null;
+  const coverRoles = ['suppressor', 'demolition', 'support'];
+  const directLineBlocked = coverRoles.includes(archetype.role)
+    && enemy.attackPhase !== 'tell'
+    && navigation && typeof navigation.lineBlocked === 'function'
+    && navigation.lineBlocked(enemy.x, enemy.y, player.x, player.y);
+  if (coverRoles.includes(archetype.role) && enemy.attackPhase !== 'tell' && !directLineBlocked
+    && navigation && typeof navigation.coverDirectionAt === 'function'
+    && distance >= archetype.preferredDistance - 70) {
+    const cover = navigation.coverDirectionAt(enemy.x, enemy.y, player.x, player.y, { stableSide: stableSign(enemy.id) });
+    if (cover) {
+      direction = normalize(cover.direction.x, cover.direction.y);
+      coverSeeking = true;
+      coverTarget = freezeDeep({ ...cover.target });
+    }
+  }
+  if (!coverSeeking && archetype.role === 'flanker') {
     direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
-  } else if (['suppressor', 'demolition', 'support'].includes(archetype.role)) {
+  } else if (!coverSeeking && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
     const near = distance < archetype.preferredDistance - 70;
     const far = distance > archetype.preferredDistance + 90;
     if (near) direction = { x: -direct.x, y: -direct.y };
@@ -234,6 +251,8 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
     facing: direction,
     distance,
     lod: getEnemyLod(distance).id,
+    coverSeeking,
+    coverTarget,
   });
 }
 

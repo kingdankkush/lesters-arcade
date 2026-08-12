@@ -12,6 +12,7 @@ import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
   createLiquidatorBoss,
+  getLiquidatorPunishWindow,
   getLiquidatorRoleCheck,
   resolveLiquidatorAttack,
   simulateLiquidatorDps,
@@ -232,6 +233,25 @@ test('boss events are bounded and the body contract prevents hard pin traps', ()
   }
 });
 
+test('final phase exposes bounded deterministic punish windows only during authored recoveries', () => {
+  assert.deepEqual(getLiquidatorPunishWindow({ phaseId: 'market-open', attackId: 'crash-lane', ticksSinceResolve: 1 }), {
+    active: false, multiplier: 1, windowId: null,
+  });
+  assert.deepEqual(getLiquidatorPunishWindow({ phaseId: 'total-liquidation', attackId: 'total-liquidation-super', ticksSinceResolve: 0 }), {
+    active: true, multiplier: 1.1, windowId: 'total-liquidation-super-recovery',
+  });
+  assert.deepEqual(getLiquidatorPunishWindow({ phaseId: 'total-liquidation', attackId: 'total-liquidation-super', ticksSinceResolve: 59 }), {
+    active: true, multiplier: 1.1, windowId: 'total-liquidation-super-recovery',
+  });
+  assert.deepEqual(getLiquidatorPunishWindow({ phaseId: 'total-liquidation', attackId: 'total-liquidation-super', ticksSinceResolve: 60 }), {
+    active: false, multiplier: 1, windowId: null,
+  });
+  assert.deepEqual(getLiquidatorPunishWindow({ phaseId: 'total-liquidation', attackId: 'crash-lane', ticksSinceResolve: 10 }), {
+    active: false, multiplier: 1, windowId: null,
+  });
+  assert.throws(() => getLiquidatorPunishWindow({ phaseId: 'total-liquidation', attackId: 'total-liquidation-super', ticksSinceResolve: -1 }), /non-negative/);
+});
+
 test('damage simulations cover no-hit, normal, high-DPS, and low-DPS one-minute outcomes', () => {
   assert.deepEqual(simulateLiquidatorDps({ damagePerTick: 0 }), { defeated: false, defeatTick: null, remainingHealth: 12_000 });
   assert.deepEqual(simulateLiquidatorDps({ damagePerTick: 20 }), { defeated: true, defeatTick: 600, remainingHealth: 0 });
@@ -264,7 +284,10 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.ok(source.indexOf('roleCheckedCombatHitIntents') < source.indexOf('lastCombatResolution = resolveCombatHits'));
   assert.ok(source.indexOf('lastCombatResolution = resolveCombatHits') < source.indexOf('applyLiquidatorDamage({ boss: liquidatorBoss'));
   assert.match(source, /(?:stageElement\.dataset|dataset)\.bossLastRoleCheck/);
-  assert.match(source, /return \{ \.\.\.hit, damage: hit\.damage \* roleCheck\.multiplier \}/);
+  assert.match(source, /getLiquidatorPunishWindow/);
+  assert.match(source, /lastBossPunishWindow/);
+  assert.match(source, /punishMultiplier/);
+  assert.match(source, /damage: hit\.damage \* roleCheck\.multiplier \* punishMultiplier/);
   assert.doesNotMatch(source, /hit\.damage \*=|damageEvent\.damageApplied \*=/);
   assert.match(source, /createLiquidatorAddCandidates/);
   assert.match(source, /attemptScheduledEnemyInsertion/);

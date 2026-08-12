@@ -10,7 +10,7 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v14-chikun-replay-vfx';
+const CACHE_VERSION = 'lesters-arcade-v15-chikun-replay-hmh-cover';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.

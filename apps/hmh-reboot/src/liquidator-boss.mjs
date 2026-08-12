@@ -3,6 +3,8 @@ const EPSILON = 1e-9;
 export const LIQUIDATOR_TARGET_FIGHT_TICKS = 3_600;
 export const MAX_BOSS_EVENTS_PER_TICK = 8;
 export const LIQUIDATOR_ROLE_CHECK_MULTIPLIER = 1.15;
+export const LIQUIDATOR_PUNISH_WINDOW_MULTIPLIER = 1.1;
+export const LIQUIDATOR_PUNISH_WINDOW_TICKS = 60;
 
 
 export const LIQUIDATOR_READABILITY_BUDGET = freezeDeep({
@@ -234,6 +236,20 @@ export function resolveLiquidatorAttack({ event, player } = {}) {
     hit = !geometry.zones.some((zone) => Math.hypot(point.x - zone.x, point.y - zone.y) <= geometry.radius);
   }
   return freezeDeep({ hit, damage: hit ? event.damage : 0, reason: hit ? null : 'outside-hit-geometry' });
+}
+
+export function getLiquidatorPunishWindow({ phaseId, attackId, ticksSinceResolve } = {}) {
+  if (typeof phaseId !== 'string' || phaseId.length === 0) throw new TypeError('phaseId is required');
+  if (typeof attackId !== 'string' || attackId.length === 0) throw new TypeError('attackId is required');
+  nonNegativeInteger(ticksSinceResolve, 'ticksSinceResolve');
+  const active = phaseId === 'total-liquidation'
+    && attackId === 'total-liquidation-super'
+    && ticksSinceResolve < LIQUIDATOR_PUNISH_WINDOW_TICKS;
+  return freezeDeep({
+    active,
+    multiplier: active ? LIQUIDATOR_PUNISH_WINDOW_MULTIPLIER : 1,
+    windowId: active ? 'total-liquidation-super-recovery' : null,
+  });
 }
 
 export function getLiquidatorRoleCheck({

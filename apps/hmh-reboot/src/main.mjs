@@ -25,7 +25,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
-import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleFlowDirection } from './enemy-navgrid.mjs';
+import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleCoverDirection, sampleFlowDirection } from './enemy-navgrid.mjs';
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
@@ -55,6 +55,7 @@ import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
   createLiquidatorBoss,
+  getLiquidatorPunishWindow,
   getLiquidatorRoleCheck,
   resolveLiquidatorAttack,
   stepLiquidatorBoss,
@@ -289,6 +290,9 @@ let minimapRevealCache = { snapshot: null, set: null };
 let minimapModelCache = { tick: -1, model: null };
 const enemyNavigation = Object.freeze({
   lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(ENEMY_NAV_GRID, fromX, fromY, toX, toY),
+  coverDirectionAt: (fromX, fromY, toX, toY, options) => ENEMY_NAV_GRID
+    ? sampleCoverDirection(ENEMY_NAV_GRID, fromX, fromY, toX, toY, options)
+    : null,
   requestReplan: (_enemyId, tick) => {
     if (Number.isInteger(tick) && tick >= 0) enemyFlowReplanRequestedTick = Math.max(enemyFlowReplanRequestedTick, tick);
   },
@@ -890,6 +894,8 @@ async function boot() {
   let lastBossStep = null;
   let lastEnemyStep = null;
   let lastBossRoleCheck = null;
+  let lastBossResolvedAttack = null;
+  let lastBossPunishWindow = null;
   let lastEnemyAttack = null;
   let playerBody = null;
   let lastCollision = null;
@@ -1948,6 +1954,8 @@ async function boot() {
         dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
         dataset.bossLastRoleCheck = lastBossRoleCheck?.roleId ?? '';
         dataset.bossLastRoleCheckTick = String(lastBossRoleCheck?.tick ?? -1);
+        dataset.bossPunishWindow = lastBossPunishWindow?.windowId ?? '';
+        dataset.bossPunishMultiplier = String(lastBossPunishWindow?.multiplier ?? 1);
         dataset.worldId = LEVEL_ONE_WORLD.id;
         dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
         dataset.worldHeight = String(WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY);
@@ -1983,6 +1991,8 @@ async function boot() {
     lastBossStep = null;
     lastEnemyStep = null;
     lastBossRoleCheck = null;
+    lastBossResolvedAttack = null;
+    lastBossPunishWindow = null;
     lastEnemyAttack = null;
     resetEnemyMarkers([]);
     clearEnemyDeathMarkers();
@@ -2525,6 +2535,15 @@ async function boot() {
 
       lastBossStep = liquidatorBoss.active && tick >= liquidatorBoss.startTick
         ? stepLiquidatorBoss({ boss: liquidatorBoss, tick, player: { x: actor.x, y: actor.y, groundZ: actor.groundZ } })
+        : null;
+      const resolvedBossAttack = lastBossStep?.events.find((event) => event.type === 'attack') ?? null;
+      if (resolvedBossAttack) lastBossResolvedAttack = { attackId: resolvedBossAttack.attackId, tick };
+      lastBossPunishWindow = lastBossResolvedAttack
+        ? getLiquidatorPunishWindow({
+          phaseId: liquidatorBoss.phaseId,
+          attackId: lastBossResolvedAttack.attackId,
+          ticksSinceResolve: tick - lastBossResolvedAttack.tick,
+        })
         : null;
 
       if (!rosterPreviewEnabled && openingEnemyMovementEnabled(tick)) {
@@ -3262,9 +3281,12 @@ async function boot() {
               && bearMarketBurnerHazardCostAt(activeBurnerHazards, { x: liquidatorBoss.x, y: liquidatorBoss.y }) > 0,
             targetKind,
           });
-          if (!roleCheck.applied) return hit;
-          roleChecksByHitId.set(hit.id, roleCheck);
-          return { ...hit, damage: hit.damage * roleCheck.multiplier };
+          const punishMultiplier = targetKind === 'boss' && lastBossPunishWindow?.active
+            ? lastBossPunishWindow.multiplier
+            : 1;
+          if (!roleCheck.applied && punishMultiplier === 1) return hit;
+          if (roleCheck.applied) roleChecksByHitId.set(hit.id, roleCheck);
+          return { ...hit, damage: hit.damage * roleCheck.multiplier * punishMultiplier };
         });
         lastCombatResolution = resolveCombatHits({
           sessionSeed: payload.session.seed,
