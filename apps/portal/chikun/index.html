@@ -18,6 +18,8 @@
         <div class="hud-cluster hud-secondary">
           <strong id="coinValue">0</strong><span>Ł coins</span>
           <strong id="forkValue">0</strong><span>forks</span>
+          <strong id="comboValue">0</strong><span>combo</span>
+          <strong id="nearMissValue">0</strong><span>near</span>
         </div>
         <div class="hud-actions">
           <button id="pauseButton" type="button" aria-label="Pause game">Ⅱ</button>
@@ -26,12 +28,13 @@
           <button id="exitButton" type="button" aria-label="Exit to arcade">↩</button>
         </div>
       </div>
+      <p class="event-callout" id="eventCallout" aria-hidden="true"></p>
       <div class="overlay" id="startOverlay">
         <p class="eyebrow" id="modeLabel">Free Mode</p>
         <h1>Chikun's<br><em>Escape</em></h1>
-        <p id="modeCopy">Practice forever. Your score stays local.</p>
+        <p id="modeCopy">Practice forever. Your score stays local. Clear Big Corp forks, collect Litecoin, and skim the edges for near-miss bonuses.</p>
         <button class="primary-button" id="startButton" type="button">Tap to Escape</button>
-        <small>Space · click · tap to flap</small>
+        <small>Space · ↑ · Enter · click · tap to flap · P/Esc pause · M mute</small>
       </div>
       <div class="overlay is-hidden" id="pauseOverlay">
         <p class="eyebrow">Flight suspended</p>

@@ -17,6 +17,9 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(html, /<canvas[^>]+id="chikunCanvas"/);
   assert.match(html, /\.\.\/dist\/chikun\/game\.js/);
   assert.match(html, /aria-live="polite"/);
+  assert.match(html, /id="comboValue"/);
+  assert.match(html, /id="nearMissValue"/);
+  assert.match(html, /id="eventCallout"/);
 
   const source = text('../apps/chikun/src/main.mjs');
   assert.match(source, /createChikunRuntime/);
@@ -24,6 +27,9 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(source, /validateChikunConnectMessage/);
   assert.match(source, /requestAnimationFrame/);
   assert.match(source, /visibilitychange/);
+  assert.match(source, /MAX_CATCH_UP_STEPS = 4/);
+  assert.match(source, /reduceMotion/);
+  assert.match(source, /nearMisses/);
 
   const build = text('../build.mjs');
   assert.match(build, /'chikun\/game': chikunEntry/);

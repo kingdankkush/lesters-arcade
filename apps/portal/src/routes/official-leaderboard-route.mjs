@@ -346,7 +346,7 @@ export function createOfficialLeaderboardRoute({
       appendText(you, 'span', `YOUR RANK #${active.playerRank}`, 'leaderboard-you-rank');
       appendText(you, 'strong', `${active.playerEntry.score.toLocaleString()} pts`, 'leaderboard-you-score');
       appendText(you, 'small', chikunBoard
-        ? `${active.playerEntry.runStats?.coinsCollected ?? 0} coins · ${active.playerEntry.runStats?.forksPassed ?? 0} forks · ${formatSurvive(active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`
+        ? `${active.playerEntry.runStats?.coinsCollected ?? 0} coins · ${active.playerEntry.runStats?.forksPassed ?? 0} forks · ${active.playerEntry.runStats?.nearMisses ?? 0} near misses · ${formatSurvive(active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`
         : `${active.playerEntry.runStats?.kills ?? 0} kills · ${formatSurvive(active.playerEntry.runStats?.surviveSeconds ?? active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`, 'leaderboard-you-detail');
       board.append(you);
     } else if (connectedWallet) {

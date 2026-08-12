@@ -17,6 +17,9 @@ const shell = document.querySelector('#gameShell');
 const scoreValue = document.querySelector('#scoreValue');
 const coinValue = document.querySelector('#coinValue');
 const forkValue = document.querySelector('#forkValue');
+const comboValue = document.querySelector('#comboValue');
+const nearMissValue = document.querySelector('#nearMissValue');
+const eventCallout = document.querySelector('#eventCallout');
 const startOverlay = document.querySelector('#startOverlay');
 const pauseOverlay = document.querySelector('#pauseOverlay');
 const resultOverlay = document.querySelector('#resultOverlay');
@@ -37,6 +40,7 @@ const resultStats = document.querySelector('#resultStats');
 const liveStatus = document.querySelector('#liveStatus');
 
 const STEP_MS = 1000 / CHIKUN_FIXED_STEP_HZ;
+const MAX_CATCH_UP_STEPS = 4;
 const MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
 const coastSprite = new Image();
 const fallSprite = new Image();
@@ -53,15 +57,32 @@ let phase = 'waiting';
 let paused = false;
 let muted = false;
 let flapQueued = false;
+let flapBufferFrames = 0;
 let accumulator = 0;
 let previousFrameAt = 0;
 let latestSnapshot = null;
 let lastStateTick = -1;
 let audioContext = null;
 let disposed = false;
+let calloutTimer = null;
+let previousCoins = 0;
+let previousForks = 0;
+let previousNearMisses = 0;
+let previousDifficultyLevel = 1;
 
 function setLive(message) {
   liveStatus.textContent = message;
+}
+
+function reduceMotion() {
+  return initPayload?.settings.reduceMotion === true || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+}
+
+function showCallout(message) {
+  eventCallout.textContent = message;
+  eventCallout.classList.add('is-visible');
+  if (calloutTimer !== null) clearTimeout(calloutTimer);
+  calloutTimer = setTimeout(() => eventCallout.classList.remove('is-visible'), reduceMotion() ? 500 : 900);
 }
 
 function send(type, payload) {
@@ -85,6 +106,9 @@ function sendState(status = phase === 'running' ? 'running' : phase === 'game-ov
     score: Math.max(0, Math.round(snapshot?.score ?? 0)),
     coinsCollected: Math.max(0, Math.round(snapshot?.coinsCollected ?? 0)),
     forksPassed: Math.max(0, Math.round(snapshot?.forksPassed ?? 0)),
+    nearMisses: Math.max(0, Math.round(snapshot?.nearMisses ?? 0)),
+    bestCombo: Math.max(0, Math.round(snapshot?.bestCombo ?? 0)),
+    difficultyLevel: Math.max(1, Math.round(snapshot?.difficulty?.level ?? 1)),
     survivalTicks: Math.max(0, Math.round(snapshot?.tick ?? 0)),
     paused,
   });
@@ -94,6 +118,7 @@ function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') 
   if (muted || initPayload?.settings.musicEnabled === false) return;
   try {
     audioContext ??= new AudioContext();
+    if (audioContext.state === 'suspended') audioContext.resume?.();
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
     oscillator.type = type;
@@ -128,9 +153,14 @@ function startRun() {
   phase = 'running';
   paused = false;
   flapQueued = true;
+  flapBufferFrames = 2;
   accumulator = 0;
   previousFrameAt = performance.now();
   lastStateTick = -1;
+  previousCoins = 0;
+  previousForks = 0;
+  previousNearMisses = 0;
+  previousDifficultyLevel = 1;
   startOverlay.classList.add('is-hidden');
   pauseOverlay.classList.add('is-hidden');
   resultOverlay.classList.add('is-hidden');
@@ -144,6 +174,8 @@ function updateHud() {
   scoreValue.textContent = String(latestSnapshot?.score ?? 0);
   coinValue.textContent = String(latestSnapshot?.coinsCollected ?? 0);
   forkValue.textContent = String(latestSnapshot?.forksPassed ?? 0);
+  comboValue.textContent = String(latestSnapshot?.combo ?? 0);
+  nearMissValue.textContent = String(latestSnapshot?.nearMisses ?? 0);
 }
 
 function finishRun() {
@@ -162,6 +194,8 @@ function finishRun() {
     survivalTicks: result.survivalTicks,
     coinsCollected: result.coinsCollected,
     forksPassed: result.forksPassed,
+    nearMisses: result.nearMisses,
+    bestCombo: result.bestCombo,
     achievements: result.achievements,
     evidence: result.evidence,
     finalState: result.finalState,
@@ -169,14 +203,13 @@ function finishRun() {
   };
   tone(96, 0.38, 0.07, 'sawtooth');
   send('game:result', payload);
-  sendState('game-over');
   resultEyebrow.textContent = mode === 'ranked' ? 'Ranked run sent for parent replay' : 'Free flight complete';
   resultScore.textContent = String(result.score);
   resultCopy.textContent = mode === 'ranked'
     ? 'Lester’s Arcade is verifying this input log. Accepted scores update your profile and the Chikun’s Escape score boards.'
     : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
   resultStats.replaceChildren();
-  for (const label of [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} forks`, `${result.survivalTime.toFixed(1)} seconds`]) {
+  for (const label of [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} forks`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`]) {
     const chip = document.createElement('span');
     chip.textContent = label;
     resultStats.append(chip);
@@ -195,6 +228,7 @@ function togglePause(source = 'user', force = null) {
   send('game:pause', { paused, source });
   sendState(paused ? 'paused' : 'running');
   if (!paused) {
+    accumulator = 0;
     previousFrameAt = performance.now();
     canvas.focus();
   }
@@ -206,6 +240,7 @@ function queueFlap(event) {
   if (phase === 'ready') startRun();
   else if (phase === 'running' && !paused) {
     flapQueued = true;
+    flapBufferFrames = 2;
     tone(560, 0.055, 0.025, 'square');
   }
 }
@@ -226,10 +261,11 @@ function drawSky(snapshot) {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const tick = snapshot?.tick ?? 0;
+  const motionTick = reduceMotion() ? 0 : tick;
   if (!ranked) {
     ctx.fillStyle = 'rgba(255,255,255,.78)';
     for (let index = 0; index < 7; index += 1) {
-      const x = ((index * 263 - tick * (0.12 + index * 0.01)) % 1580 + 1580) % 1580 - 150;
+      const x = ((index * 263 - motionTick * (0.12 + index * 0.01)) % 1580 + 1580) % 1580 - 150;
       const y = 72 + (index * 83) % 310;
       const size = 28 + (index % 3) * 14;
       ctx.beginPath();
@@ -242,11 +278,11 @@ function drawSky(snapshot) {
     ctx.strokeStyle = 'rgba(190,220,255,.32)';
     ctx.lineWidth = 2;
     for (let index = 0; index < 70; index += 1) {
-      const x = ((index * 73 - tick * 8) % 1400 + 1400) % 1400 - 60;
-      const y = (index * 137 + tick * 13) % 760 - 40;
+      const x = ((index * 73 - motionTick * 8) % 1400 + 1400) % 1400 - 60;
+      const y = (index * 137 + motionTick * 13) % 760 - 40;
       ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 13, y + 35); ctx.stroke();
     }
-    if (tick % 420 < 4) {
+    if (!reduceMotion() && tick % 420 < 4) {
       ctx.fillStyle = 'rgba(235,245,255,.32)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.strokeStyle = '#eaf4ff';
@@ -259,7 +295,7 @@ function drawSky(snapshot) {
   for (let index = 0; index < 18; index += 1) {
     const width = 60 + (index * 29) % 70;
     const height = 90 + (index * 47) % 170;
-    const x = index * 82 - (tick * 0.25) % 82;
+    const x = index * 82 - (motionTick * 0.25) % 82;
     ctx.fillRect(x, canvas.height - 42 - height, width, height);
   }
   ctx.fillStyle = ranked ? '#02040b' : '#20344d';
@@ -337,6 +373,17 @@ function draw(snapshot = latestSnapshot) {
   ctx.save();
   drawSky(snapshot);
   for (const fork of snapshot?.forks ?? []) drawFork(fork);
+  if (snapshot?.tick < 240) {
+    const nextFork = snapshot.forks.find((fork) => !fork.passed && fork.x > 280);
+    if (nextFork) {
+      ctx.save();
+      ctx.strokeStyle = mode === 'ranked' ? 'rgba(255,225,56,.55)' : 'rgba(45,255,92,.55)';
+      ctx.setLineDash([12, 12]);
+      ctx.lineWidth = 3;
+      ctx.strokeRect(nextFork.x - 5, nextFork.gapTop + 5, nextFork.width + 10, nextFork.gapBottom - nextFork.gapTop - 10);
+      ctx.restore();
+    }
+  }
   if (snapshot?.chikun) drawChikun(snapshot);
   ctx.restore();
 }
@@ -350,16 +397,28 @@ function frame(now) {
     accumulator += elapsed;
     let steps = 0;
     try {
-      while (accumulator >= STEP_MS && !runtime.terminal && steps < 6) {
-        const beforeCoins = latestSnapshot?.coinsCollected ?? 0;
-        const beforeForks = latestSnapshot?.forksPassed ?? 0;
+      while (accumulator >= STEP_MS && !runtime.terminal && steps < MAX_CATCH_UP_STEPS) {
         latestSnapshot = runtime.step({ flap: flapQueued });
-        flapQueued = false;
+        if (flapQueued) {
+          flapQueued = false;
+          flapBufferFrames = 0;
+        }
         accumulator -= STEP_MS;
         steps += 1;
-        if (latestSnapshot.coinsCollected > beforeCoins) tone(880, 0.12, 0.04, 'sine');
-        if (latestSnapshot.forksPassed > beforeForks) tone(660, 0.09, 0.03, 'square');
+        if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); }
+        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); }
+        if (latestSnapshot.forksPassed > previousForks) {
+          previousForks = latestSnapshot.forksPassed;
+          tone(660, 0.09, 0.03, 'square');
+          if (latestSnapshot.forksPassed % 5 === 0) showCallout(`${latestSnapshot.forksPassed} fork streak`);
+        }
+        if (latestSnapshot.difficulty.level > previousDifficultyLevel) {
+          previousDifficultyLevel = latestSnapshot.difficulty.level;
+          showCallout(`Pressure level ${previousDifficultyLevel}`);
+        }
       }
+      if (flapQueued && steps === 0 && flapBufferFrames > 0) flapBufferFrames -= 1;
+      if (flapQueued && flapBufferFrames <= 0) flapQueued = false;
     } catch (error) {
       phase = 'error';
       send('game:error', { code: 'runtime-error', message: error instanceof Error ? error.message.slice(0, 240) : 'Runtime failure' });
@@ -372,7 +431,7 @@ function frame(now) {
     if (runtime.terminal) finishRun();
   }
   draw(latestSnapshot);
-  requestAnimationFrame(frame);
+  if (!disposed) requestAnimationFrame(frame);
 }
 
 function handleParentMessage(event) {
@@ -393,7 +452,7 @@ function handleParentMessage(event) {
     prepareRun();
     phase = 'ready';
     startOverlay.classList.remove('is-hidden');
-    send('game:ready', { runtimeVersion: '0.3.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
+    send('game:ready', { runtimeVersion: '0.4.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
     sendState('ready');
     setLive(`Ready for ${mode === 'ranked' ? 'Ranked' : 'Free'} Mode.`);
   } else if (message.type === 'portal:pause') togglePause('portal', true);
@@ -406,6 +465,9 @@ function handleParentMessage(event) {
   } else if (message.type === 'portal:dispose') {
     disposed = true;
     phase = 'disposed';
+    if (calloutTimer !== null) clearTimeout(calloutTimer);
+    audioContext?.close?.();
+    audioContext = null;
     port.onmessage = null;
     port.close?.();
   }
@@ -434,7 +496,7 @@ canvas.addEventListener('pointerdown', queueFlap);
 canvas.addEventListener('keydown', (event) => {
   if (event.code === 'Space' || event.code === 'ArrowUp' || event.key === 'Enter') { event.preventDefault(); queueFlap(event); }
   else if (event.key.toLowerCase() === 'p' || event.key === 'Escape') { event.preventDefault(); togglePause('user'); }
-  else if (event.key.toLowerCase() === 'm') { muted = !muted; muteButton.textContent = muted ? '×' : '♪'; }
+  else if (event.key.toLowerCase() === 'm') { muted = !muted; muteButton.textContent = muted ? '×' : '♪'; muteButton.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound'); }
 });
 pauseButton.addEventListener('click', () => togglePause('user'));
 resumeButton.addEventListener('click', () => togglePause('user', false));
@@ -443,6 +505,7 @@ fullscreenButton.addEventListener('click', () => {
   if (document.fullscreenElement) document.exitFullscreen?.();
   else document.documentElement.requestFullscreen?.();
 });
+document.addEventListener('fullscreenchange', () => fullscreenButton.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen'));
 exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
 restartButton.addEventListener('click', () => {
@@ -452,6 +515,7 @@ restartButton.addEventListener('click', () => {
 });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden' && phase === 'running' && !paused) togglePause('visibility', true);
+  else if (document.visibilityState === 'visible') { accumulator = 0; previousFrameAt = performance.now(); }
 });
 
 latestSnapshot = createChikunRuntime({ seed: 1, maxTicks: MAX_RUN_TICKS }).snapshot();

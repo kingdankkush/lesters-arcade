@@ -27,6 +27,7 @@ export function createChikunHost({
   let activeBridge = null;
   let activeFrame = null;
   let ready = false;
+  let childReady = false;
   let pendingCommands = [];
   let readyTimer = null;
 
@@ -47,6 +48,7 @@ export function createChikunHost({
     activeBridge = null;
     activeFrame = null;
     ready = false;
+    childReady = false;
     pendingCommands = [];
     mount.replaceChildren();
   };
@@ -55,7 +57,13 @@ export function createChikunHost({
     destroy();
   };
   const routeMessage = (message) => {
-    if (message.type === 'game:ready') { clearReadyTimer(); onReady(message); }
+    if (message.type === 'game:ready') {
+      clearReadyTimer();
+      childReady = true;
+      for (const command of pendingCommands) activeBridge?.send(command.type, command.payload);
+      pendingCommands = [];
+      onReady(message);
+    }
     else if (message.type === 'game:state' || message.type === 'game:pause') onState(message);
     else if (message.type === 'game:result') onResult(message);
     else if (message.type === 'game:restart-request') onRestartRequest(message);
@@ -69,7 +77,7 @@ export function createChikunHost({
   };
   const sendCommand = (type, payload) => {
     const bridge = requireBridge();
-    if (ready) return bridge.send(type, payload);
+    if (ready && childReady) return bridge.send(type, payload);
     if (pendingCommands.length >= 16) throw new Error('Chikun command queue is full');
     pendingCommands.push({ type, payload });
     return null;
@@ -100,8 +108,6 @@ export function createChikunHost({
       try {
         bridge.connect();
         ready = true;
-        for (const command of pendingCommands) bridge.send(command.type, command.payload);
-        pendingCommands = [];
       } catch (error) { fail(error); }
     }, { once: true });
     iframe.addEventListener('error', () => fail(new Error('Chikun iframe failed to load')), { once: true });

@@ -3330,6 +3330,7 @@ body.suggest-landscape.ingame::after {
 }
 
 body.suggest-landscape.hide-rotate-hint::after,
+html[data-embedded-cabinet="chikun"] body.suggest-landscape::after,
 body.suggest-landscape:has(#combatMenuPanel:not([hidden]))::after,
 body.suggest-landscape:has(#levelUpOverlay:not([hidden]))::after {
   display: none !important;

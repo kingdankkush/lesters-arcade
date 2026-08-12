@@ -107,8 +107,22 @@ try {
     controlRects.every((rect) => rect.left >= 0 && rect.right <= rect.viewportWidth),
     `Chikun utility controls overflow the child viewport: ${JSON.stringify(controlRects)}`,
   );
+  const upgradeHud = await frame.locator('.hud-secondary').evaluate((hud) => {
+    const rect = hud.getBoundingClientRect();
+    return {
+      combo: document.querySelector('#comboValue')?.textContent,
+      nearMisses: document.querySelector('#nearMissValue')?.textContent,
+      visible: getComputedStyle(hud).display !== 'none',
+      left: rect.left,
+      right: rect.right,
+      viewportWidth: innerWidth,
+    };
+  });
+  assert.equal(upgradeHud.visible, true, 'Chikun combo and near-miss HUD must remain visible');
+  assert.ok(upgradeHud.left >= 0 && upgradeHud.right <= upgradeHud.viewportWidth, `Chikun upgrade HUD overflows: ${JSON.stringify(upgradeHud)}`);
   await page.waitForTimeout(650);
-  await page.screenshot({ path: resolve(dirname(evidencePath), 'chikun-ranked-gameplay.png'), fullPage: true });
+  const gameplayPath = resolve(dirname(evidencePath), 'chikun-ranked-gameplay.png');
+  await frameNode.screenshot({ path: gameplayPath });
   await frame.locator('#resultScore').evaluate((node) => new Promise((resolve, reject) => {
     const deadline = performance.now() + 15_000;
     const check = () => {
@@ -133,18 +147,21 @@ try {
   assert.match(scoreBoardText, /CHIKUN'S ESCAPE/i);
   assert.match(scoreBoardText, /COINS/i);
   assert.match(scoreBoardText, /FORKS/i);
+  assert.match(scoreBoardText, /NEAR MISS/i);
 
   await page.getByRole('button', { name: 'Profile', exact: true }).click();
   const chikunProfileTab = page.locator('.profile-game-tabs .leaderboard-game-tab').filter({ hasText: "Chikun's Escape" });
   await chikunProfileTab.click();
   const profileText = (await page.locator('.game-stats-card').innerText()).replace(/\s+/g, ' ');
   assert.match(profileText, /LONGEST FLIGHT/i);
+  assert.match(profileText, /NEAR MISSES/i);
+  assert.match(profileText, /BEST COMBO/i);
   assert.match(profileText, /REPLAY VERIFIED/i);
   assert.match(profileText, new RegExp(String(score)));
 
   await page.screenshot({ path: resolve(evidencePath), fullPage: true });
   assert.deepEqual(issues, [], `browser console/runtime issues:\n${issues.join('\n')}`);
-  console.log(JSON.stringify({ status: 'PASS', viewport, score, cabinetArt, modeArt, controlRects, scoreBoard: true, profile: true, screenshot: evidencePath }, null, 2));
+  console.log(JSON.stringify({ status: 'PASS', viewport, score, cabinetArt, modeArt, controlRects, upgradeHud, scoreBoard: true, profile: true, gameplayScreenshot: gameplayPath, screenshot: evidencePath }, null, 2));
 } catch (error) {
   const state = await page?.evaluate(() => ({
     path: location.pathname,

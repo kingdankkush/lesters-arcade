@@ -5318,6 +5318,8 @@ export function buildParentSyncPacket(session, { score = null, survivalTime = nu
     survivalTicks: replayed.survivalTicks,
     coinsCollected: replayed.coinsCollected,
     forksPassed: replayed.forksPassed,
+    nearMisses: replayed.nearMisses,
+    bestCombo: replayed.bestCombo,
     achievements: replayed.achievements,
   }) : Object.freeze({ ...submittedRunStats });
   const canonicalReplayClaim = replayed ? Object.freeze({

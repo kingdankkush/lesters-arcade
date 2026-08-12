@@ -52,7 +52,7 @@ test('Chikun parent bridge rejects wrong origins, child session drift, and repla
   bridge.connect();
   const ready = createChikunBridgeEnvelope({
     type: 'game:ready', sessionId: 'game-session-000000001', messageId: 'game-1',
-    payload: { runtimeVersion: '0.3.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] },
+    payload: { runtimeVersion: '0.4.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] },
   });
   port1.emit(ready);
   port1.emit(ready);

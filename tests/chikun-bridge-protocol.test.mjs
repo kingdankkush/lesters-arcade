@@ -58,7 +58,7 @@ test('Chikun bridge rejects mode/eligibility drift, unknown fields, oversized pa
   assert.equal(validateChikunChildMessage(oversized).ok, false);
 
   const wrongSession = envelope('game:state', {
-    status: 'running', score: 42, coinsCollected: 1, forksPassed: 0, survivalTicks: 120, paused: false,
+    status: 'running', score: 42, coinsCollected: 1, forksPassed: 0, nearMisses: 0, bestCombo: 0, difficultyLevel: 1, survivalTicks: 120, paused: false,
   });
   wrongSession.sessionId = 'other:session:1234';
   const validShape = validateChikunChildMessage(wrongSession);
@@ -78,6 +78,8 @@ test('Chikun child result and restart-request contracts validate canonical repla
     survivalTicks: canonical.survivalTicks,
     coinsCollected: canonical.coinsCollected,
     forksPassed: canonical.forksPassed,
+    nearMisses: canonical.nearMisses,
+    bestCombo: canonical.bestCombo,
     achievements: canonical.achievements,
     evidence: canonical.evidence,
     finalState: canonical.finalState,

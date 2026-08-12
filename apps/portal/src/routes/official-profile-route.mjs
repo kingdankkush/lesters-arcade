@@ -387,10 +387,12 @@ export function createOfficialProfileRoute({
     const chikunTotals = chikunRuns.reduce((totals, session) => {
       totals.coins += session.runStats?.coinsCollected ?? 0;
       totals.forks += session.runStats?.forksPassed ?? 0;
+      totals.nearMisses = (totals.nearMisses ?? 0) + (session.runStats?.nearMisses ?? 0);
+      totals.bestCombo = Math.max(totals.bestCombo ?? 0, session.runStats?.bestCombo ?? 0);
       totals.flaps += session.runStats?.flapCount ?? 0;
       totals.awards += session.runStats?.achievements?.length ?? 0;
       return totals;
-    }, { coins: 0, forks: 0, flaps: 0, awards: 0 });
+    }, { coins: 0, forks: 0, nearMisses: 0, bestCombo: 0, flaps: 0, awards: 0 });
     if (!gp || (gp.paidRuns + gp.freeRuns) === 0) {
       const empty = el('div', { className: 'profile-empty-state' });
       appendText(empty, 'strong', `No runs recorded for ${getGame(routeState.gameId).title} yet.`);
@@ -404,6 +406,8 @@ export function createOfficialProfileRoute({
         ['Longest Flight', formatSeconds(gp.longestRunSeconds ?? 0)],
         ['Coins', chikunTotals.coins.toLocaleString()],
         ['Forks Cleared', chikunTotals.forks.toLocaleString()],
+        ['Near Misses', chikunTotals.nearMisses.toLocaleString()],
+        ['Best Combo', chikunTotals.bestCombo.toLocaleString()],
         ['Flaps', chikunTotals.flaps.toLocaleString()],
         ['Awards', chikunTotals.awards.toLocaleString()],
         ['Integrity', 'Replay verified'],
@@ -438,7 +442,7 @@ export function createOfficialProfileRoute({
       const enemyCard = el('div', { className: 'profile-breakdown-card' });
       appendText(enemyCard, 'span', routeState.gameId === 'chikun' ? 'Flight ledger' : 'Enemy breakdown', 'cabinet-status-label');
       const enemyCopy = routeState.gameId === 'chikun'
-        ? `${chikunTotals.coins} coins collected · ${chikunTotals.forks} forks cleared · ${chikunTotals.flaps} recorded flaps.`
+        ? `${chikunTotals.coins} coins collected · ${chikunTotals.forks} forks cleared · ${chikunTotals.nearMisses} near misses · ${chikunTotals.flaps} recorded flaps.`
         : hmhStats?.enemyBreakdown?.length
         ? hmhStats.enemyBreakdown.slice(0, 3).map((enemy) => `${enemy.title}: ${enemy.kills}`).join(' · ')
         : 'No typed enemy kills recorded yet.';
@@ -466,7 +470,7 @@ export function createOfficialProfileRoute({
           const rs = s.runStats ?? {};
           appendText(row, 'span', `${(s.score ?? rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
           appendText(row, 'span', routeState.gameId === 'chikun'
-            ? `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.coinsCollected ?? 0} coins · ${rs.forksPassed ?? 0} forks · ${s.survivalLabel ?? formatSurvive(rs.elapsedSeconds ?? 0)}`
+            ? `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.coinsCollected ?? 0} coins · ${rs.forksPassed ?? 0} forks · ${rs.nearMisses ?? 0} near misses · ${s.survivalLabel ?? formatSurvive(rs.elapsedSeconds ?? 0)}`
             : `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${s.survivalLabel ?? formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
           appendText(row, 'span', s.trust?.label ?? (s.settlement?.primaryTxHash ? 'Settled' : 'Prototype'), `game-history-chain trust-${s.trust?.tone ?? 'muted'}`);
           if (s.detailHref) {

@@ -9,6 +9,8 @@ function normalizeResultPayload(payload = {}) {
       survivalTicks: payload.survivalTicks,
       coinsCollected: payload.coinsCollected,
       forksPassed: payload.forksPassed,
+      nearMisses: payload.nearMisses,
+      bestCombo: payload.bestCombo,
       flapCount: payload.evidence?.flapSteps?.length ?? 0,
       achievements: payload.achievements,
       replayClaim: payload.replayClaim,

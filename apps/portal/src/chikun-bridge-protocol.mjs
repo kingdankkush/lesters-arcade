@@ -71,10 +71,10 @@ function validateInit(payload) {
 }
 
 function validateState(payload) {
-  const error = exactKeys(payload, ['status', 'score', 'coinsCollected', 'forksPassed', 'survivalTicks', 'paused'], 'game:state payload');
+  const error = exactKeys(payload, ['status', 'score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'difficultyLevel', 'survivalTicks', 'paused'], 'game:state payload');
   if (error) return error;
   if (!['ready', 'running', 'paused', 'game-over'].includes(payload.status)) return 'game:state status is invalid';
-  for (const field of ['score', 'coinsCollected', 'forksPassed', 'survivalTicks']) {
+  for (const field of ['score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'difficultyLevel', 'survivalTicks']) {
     if (!integer(payload[field], 0, 1_000_000_000)) return `game:state ${field} is invalid`;
   }
   if (typeof payload.paused !== 'boolean') return 'game:state paused must be boolean';
@@ -96,10 +96,10 @@ function validateEvidence(value) {
 }
 
 function validateFinalState(value) {
-  const error = exactKeys(value, ['step', 'y', 'velocity', 'score', 'coinsCollected', 'forksPassed', 'survivalTicks', 'survivalTime', 'crashed', 'terminalReason'], 'finalState');
+  const error = exactKeys(value, ['step', 'y', 'velocity', 'score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks', 'survivalTime', 'crashed', 'terminalReason'], 'finalState');
   if (error) return error;
   if (!integer(value.step, 0, 216_000) || !finite(value.y, -10_000, 10_000) || !finite(value.velocity, -1_000, 1_000)) return 'finalState motion values are invalid';
-  for (const field of ['score', 'coinsCollected', 'forksPassed', 'survivalTicks']) if (!integer(value[field], 0, 1_000_000_000)) return `finalState ${field} is invalid`;
+  for (const field of ['score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks']) if (!integer(value[field], 0, 1_000_000_000)) return `finalState ${field} is invalid`;
   if (!finite(value.survivalTime, 0, 3_600) || typeof value.crashed !== 'boolean') return 'finalState terminal values are invalid';
   if (!['run-complete', 'ceiling', 'ground', 'fork'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
   return '';
@@ -114,9 +114,9 @@ function validateReplayClaim(value) {
 }
 
 function validateResult(payload) {
-  const error = exactKeys(payload, ['score', 'survivalTime', 'survivalTicks', 'coinsCollected', 'forksPassed', 'achievements', 'evidence', 'finalState', 'replayClaim'], 'game:result payload');
+  const error = exactKeys(payload, ['score', 'survivalTime', 'survivalTicks', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'achievements', 'evidence', 'finalState', 'replayClaim'], 'game:result payload');
   if (error) return error;
-  for (const field of ['score', 'survivalTicks', 'coinsCollected', 'forksPassed']) if (!integer(payload[field], 0, 1_000_000_000)) return `game:result ${field} is invalid`;
+  for (const field of ['score', 'survivalTicks', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo']) if (!integer(payload[field], 0, 1_000_000_000)) return `game:result ${field} is invalid`;
   if (!finite(payload.survivalTime, 0, 3_600)) return 'game:result survivalTime is invalid';
   if (!Array.isArray(payload.achievements) || payload.achievements.length > 32 || payload.achievements.some((value) => typeof value !== 'string' || !ID_PATTERN.test(value))) return 'game:result achievements are invalid';
   return validateEvidence(payload.evidence) || validateFinalState(payload.finalState) || validateReplayClaim(payload.replayClaim);

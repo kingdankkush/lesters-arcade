@@ -68,12 +68,14 @@ test('Chikun host routes result/restart messages and fails closed on unknown chi
   assert.deepEqual(mount.children, []);
 });
 
-test('Chikun host queues pause/resume until load and destroys on ready timeout', () => {
+test('Chikun host queues pause/resume until child READY and destroys on ready timeout', () => {
   const first = fixture();
   const iframe = first.host.mountSession(first.session);
   first.host.pause(); first.host.resume(); first.host.restart();
   assert.deepEqual(first.bridges[0].sent, []);
   iframe.emit('load');
+  assert.deepEqual(first.bridges[0].sent, [], 'iframe load is not child READY');
+  first.bridges[0].options.onMessage({ type: 'game:ready', payload: { runtimeVersion: '0.4.0' } });
   assert.deepEqual(first.bridges[0].sent.map((entry) => entry.type), ['portal:pause', 'portal:resume', 'portal:restart']);
 
   const timed = fixture();
