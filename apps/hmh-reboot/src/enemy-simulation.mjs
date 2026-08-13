@@ -218,14 +218,22 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
   }
   const tangent = { x: -direct.y * stableSign(enemy.id), y: direct.x * stableSign(enemy.id) };
   let direction = direct;
+  let hazardAvoiding = false;
   let coverSeeking = false;
   let coverTarget = null;
+  if (enemy.attackPhase !== 'tell' && navigation && typeof navigation.hazardDirectionAt === 'function') {
+    const hazard = navigation.hazardDirectionAt(enemy.x, enemy.y, direct, { stableSide: stableSign(enemy.id) });
+    if (hazard) {
+      direction = normalize(hazard.direction.x, hazard.direction.y);
+      hazardAvoiding = true;
+    }
+  }
   const coverRoles = ['suppressor', 'demolition', 'support'];
   const directLineBlocked = coverRoles.includes(archetype.role)
     && enemy.attackPhase !== 'tell'
     && navigation && typeof navigation.lineBlocked === 'function'
     && navigation.lineBlocked(enemy.x, enemy.y, player.x, player.y);
-  if (coverRoles.includes(archetype.role) && enemy.attackPhase !== 'tell' && !directLineBlocked
+  if (!hazardAvoiding && coverRoles.includes(archetype.role) && enemy.attackPhase !== 'tell' && !directLineBlocked
     && navigation && typeof navigation.coverDirectionAt === 'function'
     && distance >= archetype.preferredDistance - 70) {
     const cover = navigation.coverDirectionAt(enemy.x, enemy.y, player.x, player.y, { stableSide: stableSign(enemy.id) });
@@ -235,9 +243,9 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
       coverTarget = freezeDeep({ ...cover.target });
     }
   }
-  if (!coverSeeking && archetype.role === 'flanker') {
+  if (!hazardAvoiding && !coverSeeking && archetype.role === 'flanker') {
     direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
-  } else if (!coverSeeking && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
+  } else if (!hazardAvoiding && !coverSeeking && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
     const near = distance < archetype.preferredDistance - 70;
     const far = distance > archetype.preferredDistance + 90;
     if (near) direction = { x: -direct.x, y: -direct.y };
@@ -251,6 +259,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
     facing: direction,
     distance,
     lod: getEnemyLod(distance).id,
+    hazardAvoiding,
     coverSeeking,
     coverTarget,
   });
@@ -426,6 +435,7 @@ export function stepEnemyPopulation({
   let traversalBlocks = 0;
   let routeReplans = 0;
   let stuckRecoveries = 0;
+  let hazardAvoiding = 0;
 
   for (const enemy of ordered) {
     if (!preservePrevious) {
@@ -442,6 +452,7 @@ export function stepEnemyPopulation({
       enemy.nextDecisionTick = tick + lod.cadenceTicks;
       decisions += 1;
     }
+    if (enemy.intent?.hazardAvoiding) hazardAvoiding += 1;
 
     const currentGround = queryGround(enemy.x, enemy.y);
     const archetype = getEnemyArchetype(enemy.archetypeId);
@@ -510,6 +521,7 @@ export function stepEnemyPopulation({
     traversalBlocks,
     routeReplans,
     stuckRecoveries,
+    hazardAvoiding,
     maxNeighborsObserved: separation.maxNeighborsObserved,
   });
 }

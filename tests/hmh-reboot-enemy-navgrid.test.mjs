@@ -7,6 +7,7 @@ import {
   computeEnemyFlowField,
   sampleCoverDirection,
   sampleFlowDirection,
+  sampleHazardAwareDirection,
   navLineBlocked,
 } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
 import { readFileSync } from 'node:fs';
@@ -109,6 +110,41 @@ test('planEnemyIntent uses the flow direction only when the direct line is block
   const openEnemy = createEnemyState({ archetypeId: 'bagholder-rusher', id: 'nav-open', x: 900, y: 2_500 });
   const openIntent = planEnemyIntent(openEnemy, { player: { x: 800, y: 2_400 }, tick: 0, navigation });
   assert.ok(openIntent.facing.x < 0 && openIntent.facing.y < 0, 'open-field enemy keeps direct pursuit');
+});
+
+test('hazard-aware steering chooses the lowest-cost validated walkable direction without changing collision truth', () => {
+  const grid = buildGrid();
+  const from = { x: 10_140, y: 300 };
+  const base = Object.freeze({ x: 1, y: 0 });
+  const hazard = Object.freeze({ x: 10_200, y: 300, radius: 100 });
+  const costAt = (x, y) => Math.hypot(x - hazard.x, y - hazard.y) <= hazard.radius ? 18 : 0;
+  const first = sampleHazardAwareDirection(grid, from.x, from.y, base, { costAt, stableSide: 1 });
+  const repeated = sampleHazardAwareDirection(grid, from.x, from.y, base, { costAt, stableSide: 1 });
+  assert.deepEqual(first, repeated);
+  assert.ok(first, 'a bounded walkable detour must be available');
+  assert.ok(first.hazardCost < costAt(from.x + base.x * grid.cellSize, from.y + base.y * grid.cellSize));
+  assert.equal(grid.isWalkableAt(first.target.x, first.target.y), true);
+  assert.equal(navLineBlocked(grid, from.x, from.y, first.target.x, first.target.y), false);
+  assert.ok(Math.abs(Math.hypot(first.direction.x, first.direction.y) - 1) < 1e-9);
+  const noHazard = sampleHazardAwareDirection(grid, from.x, from.y, base, { costAt: () => 0, stableSide: 1 });
+  assert.deepEqual(noHazard.direction, base, 'zero-cost terrain preserves the canonical flow direction');
+  assert.throws(() => sampleHazardAwareDirection(grid, from.x, from.y, base, { costAt: () => -1 }), /non-negative/);
+});
+
+test('enemy intent consumes bounded hazard steering outside locked attack tells', () => {
+  const enemy = createEnemyState({ archetypeId: 'bagholder-rusher', id: 'hazard-runner', x: 1_000, y: 1_000 });
+  const player = { x: 1_400, y: 1_000 };
+  const navigation = {
+    lineBlocked: () => false,
+    hazardDirectionAt: () => Object.freeze({ direction: Object.freeze({ x: 0, y: 1 }), hazardCost: 0 }),
+  };
+  const intent = planEnemyIntent(enemy, { player, tick: 1, navigation });
+  assert.equal(intent.hazardAvoiding, true);
+  assert.deepEqual(intent.facing, { x: 0, y: 1 });
+  enemy.attackPhase = 'tell';
+  const locked = planEnemyIntent(enemy, { player, tick: 2, navigation });
+  assert.equal(locked.hazardAvoiding, false);
+  assert.deepEqual(locked.facing, { x: 1, y: 0 }, 'locked tells do not refresh hazard steering');
 });
 
 test('cover sampling chooses the first stable walkable lateral cell that breaks player line of sight', () => {

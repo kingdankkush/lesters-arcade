@@ -25,7 +25,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
-import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleCoverDirection, sampleFlowDirection } from './enemy-navgrid.mjs';
+import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleCoverDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
@@ -293,25 +293,23 @@ const enemyNavigation = Object.freeze({
   coverDirectionAt: (fromX, fromY, toX, toY, options) => ENEMY_NAV_GRID
     ? sampleCoverDirection(ENEMY_NAV_GRID, fromX, fromY, toX, toY, options)
     : null,
+  hazardDirectionAt: (x, y, baseDirection, options) => {
+    if (!ENEMY_NAV_GRID || activeBurnerHazards.length === 0) return null;
+    const currentCost = bearMarketBurnerHazardCostAt(activeBurnerHazards, { x, y });
+    const forwardCost = bearMarketBurnerHazardCostAt(activeBurnerHazards, {
+      x: x + baseDirection.x * ENEMY_NAV_GRID.cellSize,
+      y: y + baseDirection.y * ENEMY_NAV_GRID.cellSize,
+    });
+    if (currentCost <= 0 && forwardCost <= 0) return null;
+    return sampleHazardAwareDirection(ENEMY_NAV_GRID, x, y, baseDirection, {
+      ...options,
+      costAt: (targetX, targetY) => bearMarketBurnerHazardCostAt(activeBurnerHazards, { x: targetX, y: targetY }),
+    });
+  },
   requestReplan: (_enemyId, tick) => {
     if (Number.isInteger(tick) && tick >= 0) enemyFlowReplanRequestedTick = Math.max(enemyFlowReplanRequestedTick, tick);
   },
-  flowDirectionAt: (x, y) => {
-    const base = sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y);
-    if (bearMarketBurnerHazardCostAt(activeBurnerHazards, { x, y }) <= 0) return base;
-    const nearest = activeBurnerHazards.reduce((best, zone) => {
-      const distance = Math.hypot(x - zone.x, y - zone.y);
-      return best === null || distance < best.distance ? { zone, distance } : best;
-    }, null);
-    if (!nearest) return base;
-    const dx = x - nearest.zone.x;
-    const dy = y - nearest.zone.y;
-    const length = Math.hypot(dx, dy) || 1;
-    const combinedX = (base?.x ?? 0) + dx / length * 0.8;
-    const combinedY = (base?.y ?? 0) + dy / length * 0.8;
-    const combinedLength = Math.hypot(combinedX, combinedY) || 1;
-    return Object.freeze({ x: combinedX / combinedLength, y: combinedY / combinedLength });
-  },
+  flowDirectionAt: (x, y) => sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y),
 });
 const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
@@ -1931,6 +1929,7 @@ async function boot() {
         dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
         dataset.enemyRouteReplans = String(lastEnemyStep?.routeReplans ?? 0);
         dataset.enemyStuckRecoveries = String(lastEnemyStep?.stuckRecoveries ?? 0);
+        dataset.enemyHazardAvoiding = String(lastEnemyStep?.hazardAvoiding ?? 0);
         dataset.enemyPoolPressure = `${lastEnemyStep?.activeCount ?? 0}/${enemyPopulation?.capacity ?? 0}`;
         dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
         dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;
@@ -2565,7 +2564,7 @@ async function boot() {
           fullAiCap: getEncounterSnapshot(tick).fullAiCap,
         });
       } else {
-        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0 });
+        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0 });
       }
 
       const hurtTargets = [];

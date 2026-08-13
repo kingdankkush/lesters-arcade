@@ -351,6 +351,52 @@ export function sampleFlowDirection(grid, field, x, y) {
   return primary;
 }
 
+// Bounded hazard-aware steering samples one validated nav step from the shared
+// flow direction. It changes only intent: canonical swept collision, traversal,
+// elevation, and bounds remain authoritative every fixed tick.
+export function sampleHazardAwareDirection(grid, fromX, fromY, baseDirection, {
+  costAt,
+  stableSide = 1,
+  sampleCells = 2,
+} = {}) {
+  if (!grid?.walkable) throw new TypeError('grid is required');
+  for (const [value, name] of [[fromX, 'fromX'], [fromY, 'fromY'], [baseDirection?.x, 'baseDirection.x'], [baseDirection?.y, 'baseDirection.y']]) {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+  }
+  if (typeof costAt !== 'function') throw new TypeError('costAt must be a function');
+  if (![1, -1].includes(stableSide)) throw new TypeError('stableSide must be 1 or -1');
+  if (!Number.isInteger(sampleCells) || sampleCells < 1 || sampleCells > 4) throw new TypeError('sampleCells must be an integer in [1, 4]');
+  const magnitude = Math.hypot(baseDirection.x, baseDirection.y);
+  if (magnitude <= 1e-9) return null;
+  const base = { x: baseDirection.x / magnitude, y: baseDirection.y / magnitude };
+  const tangent = { x: -base.y * stableSide, y: base.x * stableSide };
+  const headings = [
+    base,
+    { x: base.x * Math.SQRT1_2 + tangent.x * Math.SQRT1_2, y: base.y * Math.SQRT1_2 + tangent.y * Math.SQRT1_2 },
+    tangent,
+    { x: base.x * Math.SQRT1_2 - tangent.x * Math.SQRT1_2, y: base.y * Math.SQRT1_2 - tangent.y * Math.SQRT1_2 },
+    { x: -tangent.x, y: -tangent.y },
+  ];
+  const distance = grid.cellSize * sampleCells;
+  let selected = null;
+  for (let index = 0; index < headings.length; index += 1) {
+    const direction = headings[index];
+    const target = Object.freeze({ x: fromX + direction.x * distance, y: fromY + direction.y * distance });
+    if (!grid.isWalkableAt(target.x, target.y) || navLineBlocked(grid, fromX, fromY, target.x, target.y)) continue;
+    const hazardCost = costAt(target.x, target.y);
+    if (!Number.isFinite(hazardCost) || hazardCost < 0) throw new TypeError('hazard cost must be finite and non-negative');
+    const candidate = { direction, target, hazardCost, order: index };
+    if (!selected || candidate.hazardCost < selected.hazardCost
+      || (candidate.hazardCost === selected.hazardCost && candidate.order < selected.order)) selected = candidate;
+  }
+  if (!selected) return null;
+  return Object.freeze({
+    direction: Object.freeze({ ...selected.direction }),
+    target: selected.target,
+    hazardCost: selected.hazardCost,
+  });
+}
+
 // Supercover raycast on the walkable grid: true when the straight segment
 // crosses any unwalkable cell. Used to decide when direct pursuit is honest.
 export function sampleCoverDirection(grid, fromX, fromY, targetX, targetY, {
