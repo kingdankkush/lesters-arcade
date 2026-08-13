@@ -8,6 +8,9 @@ export const ENEMY_CAPACITY = 192;
 export const ENEMY_SPATIAL_CELL_SIZE = 96;
 export const STUCK_PROGRESS_WINDOW_TICKS = 30;
 export const STUCK_PROGRESS_EPSILON = 0.5;
+export const MAX_ENEMY_FORMATION_BIAS = 0.18;
+export const ENEMY_RING_MIN_MEMBERS = 6;
+export const ENEMY_RING_DISTANCE_TOLERANCE = 32;
 const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 export const AI_LOD_BANDS = Object.freeze([
   Object.freeze({ id: 'near', maxDistance: 640, cadenceTicks: 1 }),
@@ -40,10 +43,14 @@ function normalize(x, y, fallback = { x: 1, y: 0 }) {
   return { x: x / magnitude, y: y / magnitude };
 }
 
-function stableSign(id) {
+function stableHash(id) {
   let hash = 2166136261;
   for (const char of String(id)) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
-  return (hash & 1) === 0 ? 1 : -1;
+  return hash;
+}
+
+function stableSign(id) {
+  return (stableHash(id) & 1) === 0 ? 1 : -1;
 }
 
 function stableNormal(idA, idB = '') {
@@ -57,6 +64,46 @@ export function getEnemyLod(distance) {
   finite(distance, 'distance');
   if (distance < 0) throw new TypeError('distance must be non-negative');
   return AI_LOD_BANDS.find((band) => distance <= band.maxDistance) ?? AI_LOD_BANDS.at(-1);
+}
+
+export function getEnemyFormationBias(enemies, {
+  player,
+  minimumRingMembers = ENEMY_RING_MIN_MEMBERS,
+  ringTolerance = ENEMY_RING_DISTANCE_TOLERANCE,
+  maxBias = MAX_ENEMY_FORMATION_BIAS,
+} = {}) {
+  if (!Array.isArray(enemies)) throw new TypeError('enemies must be an array');
+  const playerX = finite(player?.x, 'player.x');
+  const playerY = finite(player?.y, 'player.y');
+  positiveInteger(minimumRingMembers, 'minimumRingMembers');
+  finite(ringTolerance, 'ringTolerance');
+  finite(maxBias, 'maxBias');
+  if (ringTolerance <= 0) throw new TypeError('ringTolerance must be positive');
+  if (maxBias <= 0 || maxBias > MAX_ENEMY_FORMATION_BIAS) {
+    throw new TypeError(`maxBias must be in (0, ${MAX_ENEMY_FORMATION_BIAS}]`);
+  }
+  const radial = enemies
+    .filter((enemy) => enemy?.active && enemy.health > 0)
+    .map((enemy) => ({
+      id: validId(enemy.id),
+      distance: Math.hypot(finite(enemy.x, `${enemy.id}.x`) - playerX, finite(enemy.y, `${enemy.id}.y`) - playerY),
+    }))
+    .sort((a, b) => a.distance - b.distance || lexical(a.id, b.id));
+  if (radial.length > ENEMY_CAPACITY) throw new TypeError(`active enemy count cannot exceed capacity ${ENEMY_CAPACITY}`);
+
+  const biases = new Map(radial.map(({ id }) => [id, 0]));
+  let left = 0;
+  let right = 0;
+  for (let index = 0; index < radial.length; index += 1) {
+    while (radial[index].distance - radial[left].distance > ringTolerance) left += 1;
+    if (right < index) right = index;
+    while (right + 1 < radial.length && radial[right + 1].distance - radial[index].distance <= ringTolerance) right += 1;
+    if (right - left + 1 < minimumRingMembers) continue;
+    const hash = stableHash(radial[index].id);
+    const magnitude = maxBias * (0.6 + ((hash >>> 1) % 3) * 0.2);
+    biases.set(radial[index].id, (hash & 1) === 0 ? magnitude : -magnitude);
+  }
+  return new Map([...biases.entries()].sort(([leftId], [rightId]) => lexical(leftId, rightId)));
 }
 
 export function createEnemyState({
@@ -201,12 +248,14 @@ export function retireEnemyFromPopulation(population, id, { tick, reason = 'reti
   return freezeDeep({ retired: true, id: enemy.id, archetypeId: enemy.archetypeId, tick, reason: reason.trim() });
 }
 
-export function planEnemyIntent(enemy, { player, tick, navigation = null } = {}) {
+export function planEnemyIntent(enemy, { player, tick, navigation = null, formationBias = 0 } = {}) {
   const archetype = getEnemyArchetype(enemy?.archetypeId);
   nonNegativeInteger(tick, 'tick');
   const dx = finite(player?.x, 'player.x') - finite(enemy?.x, 'enemy.x');
   const dy = finite(player?.y, 'player.y') - finite(enemy?.y, 'enemy.y');
   const distance = Math.hypot(dx, dy);
+  finite(formationBias, 'formationBias');
+  if (Math.abs(formationBias) > MAX_ENEMY_FORMATION_BIAS) throw new TypeError('formationBias exceeds the bounded maximum');
   let direct = normalize(dx, dy);
   // When authored structure blocks the straight line, pursue along the world
   // flow field instead of pressing into the wall. The field is deterministic
@@ -217,10 +266,12 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
     if (flow) direct = normalize(flow.x, flow.y);
   }
   const tangent = { x: -direct.y * stableSign(enemy.id), y: direct.x * stableSign(enemy.id) };
+  const formationTangent = { x: -direct.y, y: direct.x };
   let direction = direct;
   let hazardAvoiding = false;
   let coverSeeking = false;
   let coverTarget = null;
+  let formationAdjusted = false;
   if (enemy.attackPhase !== 'tell' && navigation && typeof navigation.hazardDirectionAt === 'function') {
     const hazard = navigation.hazardDirectionAt(enemy.x, enemy.y, direct, { stableSide: stableSign(enemy.id) });
     if (hazard) {
@@ -251,6 +302,13 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
     if (near) direction = { x: -direct.x, y: -direct.y };
     else if (!far) direction = normalize(tangent.x * 0.82 + direct.x * 0.18, tangent.y * 0.82 + direct.y * 0.18);
   }
+  if (!hazardAvoiding && !coverSeeking && enemy.attackPhase !== 'tell' && Math.abs(formationBias) > EPSILON) {
+    direction = normalize(
+      direction.x + formationTangent.x * formationBias,
+      direction.y + formationTangent.y * formationBias,
+    );
+    formationAdjusted = true;
+  }
   const velocity = { x: direction.x * archetype.speed, y: direction.y * archetype.speed };
   return freezeDeep({
     tick,
@@ -262,6 +320,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null } = {})
     hazardAvoiding,
     coverSeeking,
     coverTarget,
+    formationAdjusted,
   });
 }
 
@@ -417,6 +476,7 @@ export function stepEnemyPopulation({
 
   const ordered = population.active.filter((enemy) => enemy.active && enemy.health > 0).sort((a, b) => lexical(a.id, b.id));
   const separation = computeEnemySeparation(ordered);
+  const formationBiases = getEnemyFormationBias(ordered, { player });
   const decisionCandidates = ordered
     .filter((enemy) => enemy.attackPhase !== 'tell' && (!enemy.intent || tick >= enemy.nextDecisionTick))
     .map((enemy) => ({ enemy, distance: Math.hypot(player.x - enemy.x, player.y - enemy.y) }))
@@ -436,6 +496,7 @@ export function stepEnemyPopulation({
   let routeReplans = 0;
   let stuckRecoveries = 0;
   let hazardAvoiding = 0;
+  let formationAdjusted = 0;
 
   for (const enemy of ordered) {
     if (!preservePrevious) {
@@ -447,12 +508,18 @@ export function stepEnemyPopulation({
     const lod = getEnemyLod(distance);
     const movementLocked = enemy.attackPhase === 'tell';
     if (!movementLocked && decisionIds.has(enemy.id)) {
-      enemy.intent = planEnemyIntent(enemy, { player, tick, navigation });
+      enemy.intent = planEnemyIntent(enemy, {
+        player,
+        tick,
+        navigation,
+        formationBias: formationBiases.get(enemy.id) ?? 0,
+      });
       enemy.velocity = { ...enemy.intent.velocity };
       enemy.nextDecisionTick = tick + lod.cadenceTicks;
       decisions += 1;
     }
     if (enemy.intent?.hazardAvoiding) hazardAvoiding += 1;
+    if (enemy.intent?.formationAdjusted) formationAdjusted += 1;
 
     const currentGround = queryGround(enemy.x, enemy.y);
     const archetype = getEnemyArchetype(enemy.archetypeId);
@@ -522,6 +589,7 @@ export function stepEnemyPopulation({
     routeReplans,
     stuckRecoveries,
     hazardAvoiding,
+    formationAdjusted,
     maxNeighborsObserved: separation.maxNeighborsObserved,
   });
 }

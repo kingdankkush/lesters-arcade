@@ -1930,6 +1930,7 @@ async function boot() {
         dataset.enemyRouteReplans = String(lastEnemyStep?.routeReplans ?? 0);
         dataset.enemyStuckRecoveries = String(lastEnemyStep?.stuckRecoveries ?? 0);
         dataset.enemyHazardAvoiding = String(lastEnemyStep?.hazardAvoiding ?? 0);
+        dataset.enemyFormationAdjusted = String(lastEnemyStep?.formationAdjusted ?? 0);
         dataset.enemyPoolPressure = `${lastEnemyStep?.activeCount ?? 0}/${enemyPopulation?.capacity ?? 0}`;
         dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
         dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;
@@ -2564,7 +2565,7 @@ async function boot() {
           fullAiCap: getEncounterSnapshot(tick).fullAiCap,
         });
       } else {
-        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0 });
+        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
       }
 
       const hurtTargets = [];

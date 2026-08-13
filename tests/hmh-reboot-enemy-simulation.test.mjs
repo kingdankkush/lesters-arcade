@@ -20,6 +20,7 @@ import {
   createEnemyPopulation,
   createEnemySpawnSchedule,
   createEnemyState,
+  getEnemyFormationBias,
   getEnemyLod,
   planEnemyIntent,
   retireEnemyFromPopulation,
@@ -68,6 +69,58 @@ test('six role planners produce truthful direct, flank, retreat, heavy, area, an
     assert.ok(Number.isFinite(plan.velocity.x) && Number.isFinite(plan.velocity.y));
     assert.ok(Object.isFrozen(plan));
   }
+});
+
+test('bounded formation bias breaks perfect rings without changing attack tells or source-order determinism', () => {
+  const roster = Array.from({ length: 8 }, (_, index) => enemy(
+    'bagholder-rusher',
+    `ring-${String(index).padStart(2, '0')}`,
+    Math.cos((index / 8) * Math.PI * 2) * 180,
+    Math.sin((index / 8) * Math.PI * 2) * 180,
+  ));
+  const forward = getEnemyFormationBias(roster, { player: { x: 0, y: 0 } });
+  const reverse = getEnemyFormationBias([...roster].reverse(), { player: { x: 0, y: 0 } });
+  assert.deepEqual([...forward.entries()], [...reverse.entries()]);
+  assert.ok([...forward.values()].some((bias) => Math.abs(bias) > 0), 'ring members must receive a bounded lateral bias');
+  assert.ok([...forward.values()].every((bias) => Math.abs(bias) <= 0.18), 'formation bias must stay subordinate to canonical pursuit');
+
+  const player = { x: 0, y: 0, groundZ: 0 };
+  const member = roster[0];
+  const baseline = planEnemyIntent(member, { player, tick: 1 });
+  const biased = planEnemyIntent(member, { player, tick: 1, formationBias: forward.get(member.id) });
+  assert.equal(biased.formationAdjusted, true);
+  assert.notDeepEqual(biased.facing, baseline.facing);
+  member.attackPhase = 'tell';
+  const locked = planEnemyIntent(member, { player, tick: 2, formationBias: forward.get(member.id) });
+  assert.equal(locked.formationAdjusted, false);
+  assert.deepEqual(locked.facing, baseline.facing, 'committed tells must ignore formation steering');
+
+  const simulate = (members) => {
+    const population = createEnemyPopulation({ capacity: 12, threatCapacity: 40 });
+    population.active.push(...members);
+    const report = stepEnemyPopulation({
+      population,
+      player,
+      tick: 1,
+      dtSeconds: 1 / 60,
+      blockers: [],
+      bounds,
+      queryGround: flatGround,
+      fullAiCap: 12,
+    });
+    return {
+      formationAdjusted: report.formationAdjusted,
+      safetySteps: report.safetySteps,
+      states: population.active
+        .map(({ id, x, y }) => ({ id, x, y }))
+        .sort((left, right) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0),
+    };
+  };
+  const simulatedForward = simulate(roster.map((entry) => structuredClone(entry)));
+  const simulatedReverse = simulate(roster.map((entry) => structuredClone(entry)).reverse());
+  assert.deepEqual(simulatedForward, simulatedReverse);
+  assert.ok(simulatedForward.formationAdjusted > 0);
+  assert.equal(simulatedForward.safetySteps, roster.length);
 });
 
 test('attack tokens obey independent family caps, stable ordering, and no distant melee reservation', () => {
@@ -385,6 +438,7 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemySafetySteps/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyRouteReplans/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyStuckRecoveries/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyFormationAdjusted/);
   assert.doesNotMatch(source, /wallet|settlement|contractAddress|localStorage/);
   assert.doesNotMatch(simulationSource, /localeCompare/, 'authoritative ordering must use explicit lexical comparison');
 });
