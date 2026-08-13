@@ -1,6 +1,6 @@
 # Hard Money Heroes — next-session master roadmap and task handoff
 
-> **Historical planning snapshot (2026-08-06):** the reboot branch has advanced since this was written. Reconcile the current branch, deployed production identity, and completed wave evidence before using any task or commit checkpoint below.
+> **Historical design reference (2026-08-06):** use `docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md` for current source, production, remaining items, wave status, and the ready-to-paste next-session prompt. Retain this roadmap for detailed design intent only.
 
 Date: 2026-08-06 PDT
 Prepared for: the next Hermes/Fable implementation session

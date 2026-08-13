@@ -1,6 +1,6 @@
 # Hard Money Heroes — Remaining Waves Execution Guide
 
-> **Historical planning snapshot (2026-08-06):** the reboot branch has advanced since this was written. Reconcile the current branch, deployed production identity, and completed wave evidence before using any task or commit checkpoint below.
+> **Historical detailed execution reference (2026-08-06):** use `docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md` for current source, production, completed Wave 10 work, remaining items, and the next-session prompt. Retain this guide for detailed acceptance criteria only.
 
 Date: 2026-08-06 PDT
 Repository: `C:\Users\just_\Desktop\Projects\Web3 Gaming\Lesters-Arcade`
