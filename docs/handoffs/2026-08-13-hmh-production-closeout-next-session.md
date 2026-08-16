@@ -15,7 +15,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Local and `origin/reboot/hmh-aaa-continuous` matched at `b14fbbeb` before Cycle 050 work began.
 - `origin/main`: `fa9585be7014db6515c536f9a09fdba5a3a2572f`
 - Cycle 050 is locally committed as `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba` on top of `b14fbbeb`; it has not been pushed or deployed. `origin/reboot/hmh-aaa-continuous` therefore remains at `b14fbbeb`.
-- Cycle 050 documentation closeout was `576b6388`. Cycle 051 implementation and evidence are locally committed as `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`; inherited visual-baseline drift remains open. Reconcile live Git before editing it.
+- Cycle 050 documentation closeout was `576b6388`. Cycle 051 implementation and evidence are locally committed as `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`. Cycle 052 browser-endurance source/evidence is locally committed as `7837888af7592c195eaf526921305b77a3307472`; inherited visual-baseline drift remains open. Reconcile live Git before editing it.
 
 ### Production
 
@@ -31,6 +31,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Active cache marker: `lesters-arcade-v17-hmh-formation-pressure`
 - Cycle 050 local candidate cache marker: `lesters-arcade-v18-hmh-heavy-chokepoints` (not deployed)
 - Cycle 051 local candidate cache marker: `lesters-arcade-v19-hmh-endurance-pressure` (not deployed)
+- Cycle 052 local candidate cache marker: `lesters-arcade-v20-hmh-browser-endurance` (not deployed)
 
 ### Current certification
 
@@ -88,16 +89,38 @@ The independent offline hash-bound review returned `PASS` with no blockers. The 
 - Hosted independent review was unavailable because the configured Nous delegation provider had no access token; no unavailable reviewer was counted as PASS. An offline `qwen3.5-4b-64k` correction review returned structured `PASS` with no findings for staged SHA-256 `e7170ce2753f159a61463b0d01b67771c1a0d915fd058fb8da263426485d10fb`. That exact patch was committed as `dcd4a9ba`, and the one-parent commit patch has the same hash.
 - Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, paid services, and LitVM writes were untouched.
 
+### Cycle 052 local source certification (2026-08-16; committed locally)
+
+- Slice: serial desktop/mobile wall-clock browser proof with `128` real active enemies through existing spawn/population, fixed-tick safety, token, projectile, effect, and production-art authority.
+- Exact source commit: `7837888af7592c195eaf526921305b77a3307472`; one-parent patch SHA-256: `9381fc018b413c16d5e5ceee08c0661feb8ed73e6a893bc527546ad5c3a8f843`.
+- Release ledger: **2,201 evaluated = 2,150 passed + 51 exact expected legacy failures**; unexpected failures **0**. Focused final set: **54/54 PASS**. Syntax: **342 JavaScript modules + 49 Python scripts**.
+- Desktop 1440×900, 30 seconds: bodies **128–128**, threat **497/640**, all **17** family tokens, p95 **7.1 ms**, median **144.93 FPS**, **0** catch-up saturation/dropped time/long tasks/runtime errors, retained heap **-43,918,661 bytes**.
+- Mobile 390×844, 30 seconds run serially after desktop: bodies **128–128**, threat **497/640**, all **17** family tokens, p95 **7.0 ms**, median **144.93 FPS**, **0** catch-up saturation/dropped time/long tasks/runtime errors, retained heap **+2,598,348 bytes** under the **32 MiB** ceiling; all five touch controls visible.
+- Both profiles required production Blender hero art, production enemy-roster atlas art, authored props/terrain, max **64** animated enemies, `128` canonical safety steps per tick, and non-vacuous projectile/effect pressure.
+- Build: HMH entry **388,054 bytes**; Pixi **575,891 bytes**; initial aggregate **963,945 / 1,048,576 bytes**; headroom **84,631 bytes**.
+- Generic browser performance, local clean/warm network audit, assets, contracts, deterministic long-run, security, and repo-health gates passed.
+- The visual gate remains blocked only by the same inherited `frontier-relay-mobile` and `combat-engaged-desktop` signatures; no baseline was weakened or accepted.
+- Hosted delegation remained unavailable because the configured Nous provider has no token. A local offline correction review returned `PASS` with no blockers for the exact frozen source hash after factually invalid first-pass pseudo-findings were rejected.
+- Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, paid services, and LitVM writes were untouched.
+
 ## 2. Latest completed slice
 
-Cycle 051 closes the deterministic benchmark half of the Wave 10 soak-truth gap:
+Cycle 052 closes the remaining real-browser half of the Wave 10 soak-truth gap:
+
+- A fail-closed route requires both `evidenceSafe=1` and `endurancePressurePilot=1`.
+- Deterministic candidates are selected from the existing endurance role policy and routed one by one through `attemptScheduledEnemyInsertion(...)`; no second population or movement authority was added.
+- The route observes all `128` bodies for serial desktop/mobile 30-second wall-clock windows while sampling body/threat/token/projectile/effect pressure, frame time, heap, long tasks, fixed-tick catch-up/dropped time, network, console, page errors, production art, canvas, and touch controls.
+- Normal opening composition, movement/attack grace, director cadence, fixed-tick authority, and caps remain unchanged.
+- Wave 10's deterministic 128-body and real-browser 128-body evidence requirements are now both locally complete. Release visual-signature reconciliation remains separate and open.
+
+Cycle 051 closed the deterministic benchmark half of the Wave 10 soak-truth gap:
 
 - `runEnemyEnduranceSoak(...)` reads the existing enemy population, collision/traversal, attack-token, Auto Miner, projectile-flight, and effect-compaction authorities rather than duplicating gameplay.
 - Runtime projectile/effect caps and effect lifetime now have one immutable source consumed by both the browser and evidence seam, without changing their values.
 - The existing benchmark now self-certifies same-seed equality, different-seed divergence, one-versus-four fixed-step partition equality, two recurring windows, non-vacuous blocker contacts, all family-token peaks, and independent capacity maxima.
 - Browser-visible gameplay semantics are unchanged; the child bundle increases by only `103` bytes.
 
-The remaining Wave 10 closeout item is real wall-clock desktop/mobile 100+ active-body endurance. Current browser performance evidence uses 11 active enemies and must not be mislabeled as the 100+ body proof.
+The serial desktop/mobile 100+ active-body endurance requirement is now locally complete in Cycle 052. The existing generic browser performance smoke still reports its separate 11-enemy route and is not used as the 128-body proof.
 
 Cycle 050 adds the bounded Whale Enforcer heavy-role contract requested by the prior handoff:
 
@@ -158,12 +181,11 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ### Immediate remaining items
 
-1. **Close Wave 10 with the remaining role-specific depth and soak truth.**
-   - The Whale Enforcer heavy gap is locally complete; audit flankers, gas bombers, and validators for one remaining justified behavior gap at a time.
-   - Implement one bounded role behavior at a time only where a current behavioral gap exists.
-   - Deterministic 128-body attack-token/projectile/effect pressure, seed, recurrence, and low-FPS blocker assertions are locally complete in Cycle 051.
-   - Add the remaining serial desktop/mobile real-time 100+ active-body endurance proof, including frame/heap/network/runtime errors and the same pressure telemetry.
-   - Reconcile the two inherited visual signatures against the last accepted baseline before accepting any visual update.
+1. **Reconcile the inherited release visual signatures.**
+   - `frontier-relay-mobile` and `combat-engaged-desktop` reproduce unchanged from the isolated baseline-HEAD build documented in Cycle 051.
+   - Compare them with the last accepted visual baseline and explain the player-visible delta before accepting any update.
+   - Do not use `--accept` as a shortcut and do not weaken visual tolerances.
+   - Wave 10 deterministic and serial real-browser 128-body endurance evidence is locally complete in Cycles 051–052.
 
 2. **Finish Wave 11 Liquidator build checks.**
    - Add or verify one authored positional mechanic per phase without rewriting the boss.
@@ -191,21 +213,21 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ## 4. Recommended next bounded slice
 
-Finish **Wave 10 real-browser 100+ active-body endurance** before adding another role rule.
+Reconcile **`frontier-relay-mobile` and `combat-engaged-desktop` against the last accepted visual baseline** before beginning new gameplay work.
 
 Why this slice:
 
-- Cycle 051 now closes deterministic pressure truth, seed divergence, recurrence, and low-FPS blocker safety.
-- Existing browser performance passes on desktop/mobile but only reports 11 active enemies; it is not the requested 100+ body endurance evidence.
-- A serial evidence-safe 128-body browser route can consume current authority and telemetry without adding AI or combat behavior.
+- Cycle 052 now closes the requested serial desktop/mobile real-browser 128-body evidence.
+- The only repository-wide gate still open for the current continuation is the pair of inherited visual signatures.
+- Resolving baseline authority before new Wave 11 work prevents a future legitimate visual change from being mixed with unexplained drift.
 
 Proposed contract:
 
-1. Use an evidence-safe route or bounded query to seed 128 real active enemies through existing spawn/population authority; never ship an acquisition shortcut in normal play.
-2. Run desktop and mobile serially over a meaningful wall-clock interval; sample frame p95/p99, retained heap, long tasks, catch-up saturation, network/console/page errors, and body/threat/token/projectile/effect pressure.
-3. Require all 128 bodies and all pressure fields to be observed non-vacuously; keep existing caps and fixed-tick safety.
-4. Reconcile `frontier-relay-mobile` and `combat-engaged-desktop` against the last accepted visual baseline commit; do not use `--accept` until player-visible review explains the delta.
-5. Keep reviewed Cycle 051 commit `dcd4a9ba` fixed; implement browser endurance and visual reconciliation as a separate reviewed slice without push or deployment.
+1. Identify the exact last accepted baseline commit and compare both changed signatures with baseline HEAD and Cycle 052 from identical browser/build conditions.
+2. Determine whether the deltas are environment nondeterminism, stale baseline metadata, or an intentional earlier player-visible change.
+3. Accept a baseline only after visual inspection and a documented explanation; otherwise fix the deterministic source of drift.
+4. Require two zero-delta visual passes after reconciliation.
+5. Keep reviewed Cycle 052 commit `7837888a` fixed and implement reconciliation as a separate reviewed slice without push or deployment.
 
 ## 5. Exact workflow for the next session
 
@@ -230,9 +252,9 @@ Then:
 7. Run `npm run check`, `npm run test:release`, `npm run build`, long-run, serial browser/network/performance, and visual review.
 8. Fetch/reconcile origin again before staging.
 9. Stage only intended paths, run credential/diff checks, freeze `git diff --cached --binary | sha256sum`, and require a hash-bound exact-index review.
-10. Commit and push the runtime slice.
-11. Build immutable Vercel Preview, verify cache/runtime markers and browser/network/performance evidence, then promote that exact Preview only when the active user request authorizes production.
-12. Verify the production deployment ID, routes, markers, browser/network/performance, rollback, clean tree, and stopped listeners.
+10. Commit the runtime slice locally; push only when the active user request explicitly authorizes it.
+11. Build an immutable Vercel Preview only with explicit deployment approval; verify cache/runtime markers and browser/network/performance evidence before any promotion.
+12. Promote only when separately authorized, then verify the production deployment ID, routes, markers, browser/network/performance, rollback, clean tree, and stopped listeners.
 
 ## 6. Non-negotiable boundaries
 
@@ -249,5 +271,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production; Cycle 051 is locally committed as dcd4a9ba, so do not overwrite or reimplement it. Verify the 128-body deterministic soak and focused tests, then finish the remaining Wave 10 real-browser desktop/mobile 100+ active-body endurance proof using existing population/combat authority and truthful body/threat/token/projectile/effect telemetry. Also reproduce and diagnose the inherited frontier-relay-mobile and combat-engaged-desktop visual signatures from the last accepted baseline; do not weaken or accept baselines without player-visible review. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing the new slice, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production; Cycle 052 source/evidence is locally committed as 7837888a and closes the serial desktop/mobile 128-body browser endurance requirement, so do not overwrite or reimplement it. Reproduce and diagnose the inherited frontier-relay-mobile and combat-engaged-desktop visual signatures against the exact last accepted baseline under identical build/browser conditions. Do not weaken tolerances or use --accept until visual inspection explains the player-visible delta, and require two zero-delta passes after reconciliation. Then select the smallest Wave 11 Liquidator build-matrix slice using existing phase/damage-window telemetry. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
 ```
