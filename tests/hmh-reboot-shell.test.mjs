@@ -63,9 +63,9 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.match(source, /isDashInvulnerable\(/);
   assert.match(source, /previousDash/);
   assert.match(source, /actor\.locomotion = dashFrame\.active \? 'dash'/);
-  assert.match(source, /MAX_ACTIVE_PROJECTILES\s*=\s*128/);
+  assert.match(source, /MAX_ACTIVE_PROJECTILES\s*=\s*RUNTIME_MAX_ACTIVE_PROJECTILES/);
   assert.match(source, /MAX_ACTIVE_GRENADES\s*=\s*16/);
-  assert.match(source, /MAX_COMBAT_VISUAL_EVENTS\s*=\s*64/);
+  assert.match(source, /MAX_COMBAT_VISUAL_EVENTS\s*=\s*RUNTIME_MAX_COMBAT_VISUAL_EVENTS/);
   assert.match(source, /pushCombatVisualEvent\(/);
   assert.match(source, /PROJECTILE_GRID_THRESHOLD\s*=\s*64/);
   assert.match(source, /new UniformHurtboxGrid\(/);
@@ -245,7 +245,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions both playable cabinet shells for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v18-hmh-heavy-chokepoints'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v19-hmh-endurance-pressure'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of [
     '/hmh-reboot/index.html',

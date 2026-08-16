@@ -431,6 +431,8 @@ Execute in small reviewed slices:
 10. Rank animation budget by boss/tell/hit/death/elite/distance readability.
 11. Prove same-seed equality, different-seed divergence, two recurring spawn cycles, low-FPS blocker safety, and 100+ active-body desktop/mobile soak.
 
+**2026-08-16 status:** Cycle 051 locally closes the deterministic benchmark portion of items 1 and 11: 128 active bodies, truthful body/threat/token/projectile/effect maxima, all four token families, same-seed equality, different-seed divergence, two non-vacuous recurrence windows, and one-versus-four fixed-step blocker safety. The real wall-clock desktop/mobile 100+ active-body browser soak remains open; current passing browser performance evidence has only 11 active enemies and must not be used as that proof. Two inherited visual signatures also require baseline reconciliation before Wave 10 closeout.
+
 Do not reduce enemy counts to make the benchmark pass. Optimize queries, cadence, pooling, and projection first.
 
 ## 8. Wave 11 — Liquidator, Power-Ups, and Build Checks

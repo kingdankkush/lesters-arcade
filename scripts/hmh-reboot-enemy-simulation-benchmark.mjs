@@ -9,6 +9,7 @@ import {
   createEnemyState,
   stepEnemyPopulation,
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
+import { runEnemyEnduranceSoak } from './hmh-reboot-enemy-endurance-soak.mjs';
 
 const roster = Array.from({ length: 128 }, (_, index) => createEnemyState({
   archetypeId: index % 8 === 0 ? 'whale-enforcer' : 'bagholder-rusher',
@@ -101,6 +102,47 @@ assert.ok(
   'heavy chokepoint fixture must exercise canonical fixed-step movement instead of a traversal-blocked intent-only path',
 );
 
+const enduranceSoak = runEnemyEnduranceSoak({
+  seed: 1337,
+  activeEnemies: roster.length,
+  cycles: 2,
+  ticksPerCycle: 180,
+  fixedStepsPerFrame: 4,
+});
+const enduranceRepeat = runEnemyEnduranceSoak({
+  seed: 1337,
+  activeEnemies: roster.length,
+  cycles: 2,
+  ticksPerCycle: 180,
+  fixedStepsPerFrame: 4,
+});
+const enduranceOneStepFrames = runEnemyEnduranceSoak({
+  seed: 1337,
+  activeEnemies: roster.length,
+  cycles: 2,
+  ticksPerCycle: 180,
+  fixedStepsPerFrame: 1,
+});
+const enduranceDifferentSeed = runEnemyEnduranceSoak({
+  seed: 1338,
+  activeEnemies: roster.length,
+  cycles: 2,
+  ticksPerCycle: 180,
+  fixedStepsPerFrame: 4,
+});
+assert.deepEqual(enduranceRepeat, enduranceSoak);
+assert.deepEqual(enduranceOneStepFrames, enduranceSoak);
+assert.notEqual(enduranceDifferentSeed.stateDigest, enduranceSoak.stateDigest);
+assert.notDeepEqual(enduranceDifferentSeed.seedSignature, enduranceSoak.seedSignature);
+assert.equal(enduranceSoak.totals.safetySteps, roster.length * enduranceSoak.ticksSimulated);
+assert.equal(enduranceSoak.totals.teleportViolations, 0);
+assert.ok(enduranceSoak.totals.collisionContacts > 0, 'endurance soak must exercise blocker safety');
+assert.equal(enduranceSoak.cyclesCompleted, 2);
+assert.ok(enduranceSoak.cycles.every((cycle) => cycle.attackEvents > 0));
+assert.ok(enduranceSoak.maxima.attackTokens > 0 && enduranceSoak.maxima.attackTokens <= enduranceSoak.limits.attackTokens);
+assert.ok(enduranceSoak.maxima.projectiles > 0 && enduranceSoak.maxima.projectiles <= enduranceSoak.limits.projectiles);
+assert.ok(enduranceSoak.maxima.effects > 0 && enduranceSoak.maxima.effects <= enduranceSoak.limits.effects);
+
 const forward = computeEnemySeparation(roster);
 const reverse = computeEnemySeparation([...roster].reverse());
 assert.deepEqual([...forward.deltas.entries()], [...reverse.deltas.entries()]);
@@ -133,5 +175,13 @@ console.log(JSON.stringify({
   maxNeighborsObserved: forward.maxNeighborsObserved,
   budgetedSimulation: budgetedForward.totals,
   heavyChokepointSimulation: heavyChokepointForward,
+  enduranceSoak,
+  enduranceCertification: {
+    sameSeedEqual: true,
+    differentSeedDiverged: true,
+    oneVsFourFixedStepFramesEqual: true,
+    recurringCycles: enduranceSoak.cyclesCompleted,
+    differentSeedDigest: enduranceDifferentSeed.stateDigest,
+  },
   digest,
 }));

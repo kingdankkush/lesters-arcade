@@ -151,6 +151,10 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: locally certified and committed as `fc6ad3da` on 2026-08-16; production unchanged
   - Exact commit patch SHA-256: `f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e`
   - Cycle ledger: `cycles/CYCLE-050.md`
+- [x] Cycle 051: truthful 128-body attack-token, projectile, effect, recurring-cycle, and low-FPS safety evidence
+  - Status: local source verified; inherited visual-baseline drift and exact-index review remain open; production unchanged
+  - Benchmark: `128` bodies, `46,080` canonical safety steps, all `17` attack tokens, projectile/effect peaks `8 / 12`, no pool drops or teleports
+  - Cycle ledger: `cycles/CYCLE-051.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -162,9 +166,10 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 050 Whale Enforcer authored-nav chokepoint pressure is locally certified and committed; push and deployment were not performed
-- Cycle 050 runtime source: `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba`
-- Exact Cycle 050 commit patch SHA-256: `f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e`
+- Status: Cycle 051 endurance-pressure evidence is locally source-verified on top of baseline `576b6388`; exact-index review and commit are pending because the visual gate retains two baseline-HEAD-reproducible signature drifts
+- Latest committed source: Cycle 050 documentation closeout `576b6388`
+- Cycle 051 candidate entry: `384,919` bytes; combined child + Pixi initial JavaScript `960,810 / 1,048,576` bytes; headroom `87,766` bytes
+- Cycle 051 benchmark: same-seed equal, seed-divergent, one-versus-four fixed-step partition invariant, two active recurrence windows, `0` teleports
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
-- Production remains the deployment recorded in that handoff; this local commit was not pushed or deployed
+- Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement: disabled; hardened Web3 remains outside this release

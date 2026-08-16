@@ -8,6 +8,18 @@ function nonNegativeFinite(value, name) {
   return value;
 }
 
+// Shared runtime pressure limits. The browser runtime, deterministic endurance
+// benchmark, and evidence contracts consume this one source so pool telemetry
+// cannot silently certify a different cap than the player-visible build.
+export const MAX_ACTIVE_PROJECTILES = 128;
+export const MAX_COMBAT_VISUAL_EVENTS = 64;
+export const COMBAT_VISUAL_EVENT_LIFETIME_TICKS = 12;
+export const RUNTIME_PRESSURE_LIMITS = Object.freeze({
+  projectiles: MAX_ACTIVE_PROJECTILES,
+  combatVisualEvents: MAX_COMBAT_VISUAL_EVENTS,
+  visualEventLifetimeTicks: COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
+});
+
 export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
   desktop: Object.freeze({
     id: 'desktop',

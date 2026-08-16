@@ -134,6 +134,9 @@ import {
   recordRunWeaponTriggerContact,
 } from '../../../sdk/hmh-run-summary.mjs';
 import {
+  COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
+  MAX_ACTIVE_PROJECTILES as RUNTIME_MAX_ACTIVE_PROJECTILES,
+  MAX_COMBAT_VISUAL_EVENTS as RUNTIME_MAX_COMBAT_VISUAL_EVENTS,
   compactExpiredEventsInPlace,
   isScreenPointVisible,
   selectAnimatedEnemyIds,
@@ -204,7 +207,7 @@ import {
 } from './world-space.mjs';
 
 const RUNTIME_VERSION = '0.5.0';
-const MAX_ACTIVE_PROJECTILES = 128;
+const MAX_ACTIVE_PROJECTILES = RUNTIME_MAX_ACTIVE_PROJECTILES;
 // The archetype table tops out at threat 6; the Liquidator is the run's
 // capstone kill and gets its own authored score/XP weight.
 const LIQUIDATOR_THREAT_COST = 48;
@@ -238,9 +241,9 @@ const LOW_HEALTH_VIGNETTE_THRESHOLD = 0.35;
 // screen-to-ground transform, never simulation state.
 const SHAKE_DECAY_TICKS = 9;
 const MAX_ACTIVE_GRENADES = 16;
-const MAX_COMBAT_VISUAL_EVENTS = 64;
+const MAX_COMBAT_VISUAL_EVENTS = RUNTIME_MAX_COMBAT_VISUAL_EVENTS;
 const PROJECTILE_GRID_THRESHOLD = 64;
-const HIT_FEEDBACK_TICKS = 12;
+const HIT_FEEDBACK_TICKS = COMBAT_VISUAL_EVENT_LIFETIME_TICKS;
 // Criticals stay a spike rather than the baseline: even a full crit-chance
 // build tops out here, so the damage curve keeps its shape.
 const CRITICAL_CHANCE_CAP = 0.45;

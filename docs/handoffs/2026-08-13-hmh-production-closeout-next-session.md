@@ -15,6 +15,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Local and `origin/reboot/hmh-aaa-continuous` matched at `b14fbbeb` before Cycle 050 work began.
 - `origin/main`: `fa9585be7014db6515c536f9a09fdba5a3a2572f`
 - Cycle 050 is locally committed as `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba` on top of `b14fbbeb`; it has not been pushed or deployed. `origin/reboot/hmh-aaa-continuous` therefore remains at `b14fbbeb`.
+- Cycle 050 documentation closeout is local HEAD `576b6388`. Cycle 051 is a coherent uncommitted candidate on top: source verification is complete, but inherited visual-baseline drift and exact-index review remain open. Reconcile live Git before editing it.
 
 ### Production
 
@@ -29,6 +30,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Retained rollback deployment: `dpl_8wxJAwqrJKD3cMPscMS5QBG383GJ`
 - Active cache marker: `lesters-arcade-v17-hmh-formation-pressure`
 - Cycle 050 local candidate cache marker: `lesters-arcade-v18-hmh-heavy-chokepoints` (not deployed)
+- Cycle 051 local candidate cache marker: `lesters-arcade-v19-hmh-endurance-pressure` (not deployed)
 
 ### Current certification
 
@@ -73,7 +75,29 @@ f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e
 
 The independent offline hash-bound review returned `PASS` with no blockers. The failed hosted-auth attempts and the looping/partial first offline attempt were not counted as review verdicts.
 
+### Cycle 051 local source verification (2026-08-16; uncommitted)
+
+- Slice: truthful 128-body attack-token, projectile/effect-pressure, recurrence, and low-FPS blocker evidence.
+- Release ledger: **2,199 evaluated = 2,148 passed + 51 exact expected legacy failures**; unexpected failures **0**.
+- Focused endurance/performance tests: **10/10 PASS**; post-build shell: **12/12 PASS**; syntax: **341 JavaScript modules + 49 Python scripts**.
+- Benchmark: **128** bodies over **360** fixed ticks and **46,080** safety steps; body/threat **128/192** and **496/640**; token families **6/5/4/2** and total **17/17**; projectile/effect peaks **8/128** and **12/64**; **4,475** blocker contacts, **148** attack events, and **0** drops/teleports.
+- Determinism: same-seed reports equal; seed `1337` digest `2e38a09a` diverges from seed `1338` digest `2de9efbe`; one-step and four-catch-up frame partitions are equal; both 180-tick recurrence windows are non-vacuous.
+- Build: HMH entry **384,919 bytes**; Pixi **575,891 bytes**; initial aggregate **960,810 / 1,048,576 bytes**; headroom **87,766 bytes**.
+- Browser: six-archetype desktop/mobile detail smoke PASS; all five responsive profiles had zero changed anchor pixels; performance p95 **8.2 / 8.1 ms** desktop/mobile; heap deltas **-97,631 / -4,384,170 bytes**; network/console audit had zero errors.
+- Visual baseline blocker: `frontier-relay-mobile` and `combat-engaged-desktop` fail the signature gate with the exact same metrics from an isolated clean build of baseline HEAD `576b6388`. The candidate did not cause the drift; no baseline was weakened or accepted.
+- Hosted independent review was unavailable because the configured Nous delegation provider had no access token. Exact-index review and commit remain pending; no unavailable reviewer was counted as PASS.
+- Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, paid services, and LitVM writes were untouched.
+
 ## 2. Latest completed slice
+
+Cycle 051 closes the deterministic benchmark half of the Wave 10 soak-truth gap:
+
+- `runEnemyEnduranceSoak(...)` reads the existing enemy population, collision/traversal, attack-token, Auto Miner, projectile-flight, and effect-compaction authorities rather than duplicating gameplay.
+- Runtime projectile/effect caps and effect lifetime now have one immutable source consumed by both the browser and evidence seam, without changing their values.
+- The existing benchmark now self-certifies same-seed equality, different-seed divergence, one-versus-four fixed-step partition equality, two recurring windows, non-vacuous blocker contacts, all family-token peaks, and independent capacity maxima.
+- Browser-visible gameplay semantics are unchanged; the child bundle increases by only `103` bytes.
+
+The remaining Wave 10 closeout item is real wall-clock desktop/mobile 100+ active-body endurance. Current browser performance evidence uses 11 active enemies and must not be mislabeled as the 100+ body proof.
 
 Cycle 050 adds the bounded Whale Enforcer heavy-role contract requested by the prior handoff:
 
@@ -137,8 +161,9 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 1. **Close Wave 10 with the remaining role-specific depth and soak truth.**
    - The Whale Enforcer heavy gap is locally complete; audit flankers, gas bombers, and validators for one remaining justified behavior gap at a time.
    - Implement one bounded role behavior at a time only where a current behavioral gap exists.
-   - Add attack-token occupancy and projectile/effect-pressure assertions to the 100+ body soak if still absent.
-   - Prove same-seed equality, different-seed divergence, two recurring spawn cycles, low-FPS blocker safety, and real desktop/mobile 100+ active-body endurance in one consolidated closeout report.
+   - Deterministic 128-body attack-token/projectile/effect pressure, seed, recurrence, and low-FPS blocker assertions are locally complete in Cycle 051.
+   - Add the remaining serial desktop/mobile real-time 100+ active-body endurance proof, including frame/heap/network/runtime errors and the same pressure telemetry.
+   - Reconcile the two inherited visual signatures against the last accepted baseline before accepting any visual update.
 
 2. **Finish Wave 11 Liquidator build checks.**
    - Add or verify one authored positional mechanic per phase without rewriting the boss.
@@ -166,24 +191,21 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ## 4. Recommended next bounded slice
 
-Close the **Wave 10 100+ body soak-truth gap** before adding another role rule.
+Finish **Wave 10 real-browser 100+ active-body endurance** before adding another role rule.
 
 Why this slice:
 
-- Heavy chokepoint depth is now non-vacuously integrated and certified.
-- The existing 128-body benchmark proves deterministic movement and safety but still does not report attack-token occupancy or projectile/effect-pressure maxima.
-- Extending the read-only benchmark/telemetry seam is smaller and safer than inventing another AI behavior before Wave 10's endurance evidence is complete.
+- Cycle 051 now closes deterministic pressure truth, seed divergence, recurrence, and low-FPS blocker safety.
+- Existing browser performance passes on desktop/mobile but only reports 11 active enemies; it is not the requested 100+ body endurance evidence.
+- A serial evidence-safe 128-body browser route can consume current authority and telemetry without adding AI or combat behavior.
 
 Proposed contract:
 
-1. Reuse the fixed-tick enemy/combat resolver; do not create a second combat engine.
-2. Add truthful attack-token occupancy plus projectile/effect-pressure maxima to the 100+ body soak.
-3. Prove same-seed equality, different-seed divergence, and at least two recurring encounter cycles.
-4. Add a low-FPS/four-catch-up blocker-safety case with no teleport or skipped canonical safety steps.
-5. Preserve independent body, threat, token, projectile, and VFX caps; do not lower enemy counts to pass.
-6. Run the benchmark, release ledger, long-run, serial desktop/mobile browser performance, and exact-index review.
-
-Likely files are the existing enemy/combat benchmark script, focused benchmark tests or contracts, and runtime telemetry only where current reports lack a truthful source field.
+1. Use an evidence-safe route or bounded query to seed 128 real active enemies through existing spawn/population authority; never ship an acquisition shortcut in normal play.
+2. Run desktop and mobile serially over a meaningful wall-clock interval; sample frame p95/p99, retained heap, long tasks, catch-up saturation, network/console/page errors, and body/threat/token/projectile/effect pressure.
+3. Require all 128 bodies and all pressure fields to be observed non-vacuously; keep existing caps and fixed-tick safety.
+4. Reconcile `frontier-relay-mobile` and `combat-engaged-desktop` against the last accepted visual baseline commit; do not use `--accept` until player-visible review explains the delta.
+5. Freeze Cycle 051 only after exact-index review completes; then commit locally without push or deployment.
 
 ## 5. Exact workflow for the next session
 
@@ -227,5 +249,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and https://lestersarcade.io. Cycle 050 locally completed deterministic Whale Enforcer authored-nav chokepoint pressure; verify its exact commit/index status rather than reimplementing it. Begin with the remaining Wave 10 soak-truth gap: extend the existing 100+ body benchmark with truthful attack-token occupancy plus projectile/effect-pressure maxima, same-seed equality, different-seed divergence, two recurring encounter cycles, and low-FPS blocker safety. Keep the benchmark read-only over existing fixed-tick enemy/combat authority; do not create another combat engine or lower caps. Use RED-GREEN TDD, run focused and full certification, obtain exact-index review, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval. After the slice, update this handoff again.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production; Cycle 051 is currently an uncommitted candidate on baseline 576b6388, so do not overwrite it. Verify the 128-body deterministic soak and focused tests, then finish the remaining Wave 10 real-browser desktop/mobile 100+ active-body endurance proof using existing population/combat authority and truthful body/threat/token/projectile/effect telemetry. Also reproduce and diagnose the inherited frontier-relay-mobile and combat-engaged-desktop visual signatures from the last accepted baseline; do not weaken or accept baselines without player-visible review. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
 ```

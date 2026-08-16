@@ -5,7 +5,11 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import {
+  COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
+  MAX_ACTIVE_PROJECTILES,
+  MAX_COMBAT_VISUAL_EVENTS,
   RUNTIME_PERFORMANCE_PROFILES,
+  RUNTIME_PRESSURE_LIMITS,
   compactExpiredEventsInPlace,
   isScreenPointVisible,
   selectAnimatedEnemyIds,
@@ -13,6 +17,20 @@ import {
 } from '../apps/hmh-reboot/src/runtime-performance.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+test('runtime pressure caps have one immutable source for the browser and endurance evidence', () => {
+  assert.deepEqual(RUNTIME_PRESSURE_LIMITS, {
+    projectiles: MAX_ACTIVE_PROJECTILES,
+    combatVisualEvents: MAX_COMBAT_VISUAL_EVENTS,
+    visualEventLifetimeTicks: COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
+  });
+  assert.deepEqual(RUNTIME_PRESSURE_LIMITS, {
+    projectiles: 128,
+    combatVisualEvents: 64,
+    visualEventLifetimeTicks: 12,
+  });
+  assert.equal(Object.isFrozen(RUNTIME_PRESSURE_LIMITS), true);
+});
 
 test('desktop and mobile performance profiles are immutable, bounded, and deterministic', () => {
   const desktop = selectRuntimePerformanceProfile({ width: 1440, devicePixelRatio: 2, coarsePointer: false, reduceMotion: false });
