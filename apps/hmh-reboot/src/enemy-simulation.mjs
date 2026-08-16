@@ -271,6 +271,9 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
   let hazardAvoiding = false;
   let coverSeeking = false;
   let coverTarget = null;
+  let chokepointSeeking = false;
+  let chokepointHolding = false;
+  let chokepointTarget = null;
   let formationAdjusted = false;
   if (enemy.attackPhase !== 'tell' && navigation && typeof navigation.hazardDirectionAt === 'function') {
     const hazard = navigation.hazardDirectionAt(enemy.x, enemy.y, direct, { stableSide: stableSign(enemy.id) });
@@ -294,22 +297,35 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       coverTarget = freezeDeep({ ...cover.target });
     }
   }
-  if (!hazardAvoiding && !coverSeeking && archetype.role === 'flanker') {
+  if (!hazardAvoiding && !coverSeeking && archetype.id === 'whale-enforcer' && enemy.attackPhase !== 'tell'
+    && distance > archetype.attack.reserveRange && distance <= 520
+    && navigation && typeof navigation.chokepointDirectionAt === 'function') {
+    const chokepoint = navigation.chokepointDirectionAt(enemy.x, enemy.y, player.x, player.y);
+    if (chokepoint) {
+      direction = chokepoint.holding ? direct : normalize(chokepoint.direction.x, chokepoint.direction.y);
+      chokepointSeeking = !chokepoint.holding;
+      chokepointHolding = chokepoint.holding;
+      chokepointTarget = freezeDeep({ ...chokepoint.target });
+    }
+  }
+  if (!hazardAvoiding && !coverSeeking && !chokepointTarget && archetype.role === 'flanker') {
     direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
-  } else if (!hazardAvoiding && !coverSeeking && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
+  } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
     const near = distance < archetype.preferredDistance - 70;
     const far = distance > archetype.preferredDistance + 90;
     if (near) direction = { x: -direct.x, y: -direct.y };
     else if (!far) direction = normalize(tangent.x * 0.82 + direct.x * 0.18, tangent.y * 0.82 + direct.y * 0.18);
   }
-  if (!hazardAvoiding && !coverSeeking && enemy.attackPhase !== 'tell' && Math.abs(formationBias) > EPSILON) {
+  if (!hazardAvoiding && !coverSeeking && !chokepointTarget && enemy.attackPhase !== 'tell' && Math.abs(formationBias) > EPSILON) {
     direction = normalize(
       direction.x + formationTangent.x * formationBias,
       direction.y + formationTangent.y * formationBias,
     );
     formationAdjusted = true;
   }
-  const velocity = { x: direction.x * archetype.speed, y: direction.y * archetype.speed };
+  const velocity = chokepointHolding
+    ? { x: 0, y: 0 }
+    : { x: direction.x * archetype.speed, y: direction.y * archetype.speed };
   return freezeDeep({
     tick,
     role: archetype.role,
@@ -320,6 +336,9 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
     hazardAvoiding,
     coverSeeking,
     coverTarget,
+    chokepointSeeking,
+    chokepointHolding,
+    chokepointTarget,
     formationAdjusted,
   });
 }
@@ -496,6 +515,8 @@ export function stepEnemyPopulation({
   let routeReplans = 0;
   let stuckRecoveries = 0;
   let hazardAvoiding = 0;
+  let chokepointSeeking = 0;
+  let chokepointHolding = 0;
   let formationAdjusted = 0;
 
   for (const enemy of ordered) {
@@ -519,6 +540,8 @@ export function stepEnemyPopulation({
       decisions += 1;
     }
     if (enemy.intent?.hazardAvoiding) hazardAvoiding += 1;
+    if (!movementLocked && enemy.intent?.chokepointSeeking) chokepointSeeking += 1;
+    if (!movementLocked && enemy.intent?.chokepointHolding) chokepointHolding += 1;
     if (enemy.intent?.formationAdjusted) formationAdjusted += 1;
 
     const currentGround = queryGround(enemy.x, enemy.y);
@@ -589,6 +612,8 @@ export function stepEnemyPopulation({
     routeReplans,
     stuckRecoveries,
     hazardAvoiding,
+    chokepointSeeking,
+    chokepointHolding,
     formationAdjusted,
     maxNeighborsObserved: separation.maxNeighborsObserved,
   });

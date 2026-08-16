@@ -438,6 +438,78 @@ export function sampleCoverDirection(grid, fromX, fromY, targetX, targetY, {
   return null;
 }
 
+// A chokepoint is derived from the existing authored navigation graph rather
+// than a second lane map: exactly two opposite legal exits identify a narrow
+// through-cell. The bounded graph walk accepts only connected candidates that
+// make progress toward the player and returns the first stable legal edge.
+// Canonical swept collision/traversal still owns every movement step.
+export function sampleChokepointDirection(grid, fromX, fromY, targetX, targetY, {
+  maxCells = 4,
+  holdingRadius = null,
+} = {}) {
+  if (!grid?.walkable || !grid?.edges) throw new TypeError('grid is required');
+  for (const [value, name] of [[fromX, 'fromX'], [fromY, 'fromY'], [targetX, 'targetX'], [targetY, 'targetY']]) {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+  }
+  if (!Number.isInteger(maxCells) || maxCells < 1 || maxCells > 8) throw new TypeError('maxCells must be an integer in [1, 8]');
+  const holdRadius = holdingRadius === null ? grid.cellSize * 0.65 : holdingRadius;
+  if (!Number.isFinite(holdRadius) || holdRadius <= 0 || holdRadius > grid.cellSize) throw new TypeError('holdingRadius must be in (0, cellSize]');
+  const originCell = grid.cellAt(fromX, fromY);
+  if (originCell < 0) return null;
+  const playerDistance = Math.hypot(targetX - fromX, targetY - fromY);
+  if (playerDistance <= 1e-9) return null;
+  const towardPlayer = { x: (targetX - fromX) / playerDistance, y: (targetY - fromY) / playerDistance };
+  const queue = [{ cell: originCell, depth: 0, firstCell: originCell }];
+  const visited = new Set([originCell]);
+  let selected = null;
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const node = queue[cursor];
+    const column = node.cell % grid.columns;
+    const row = (node.cell - column) / grid.columns;
+    const x = grid.centreX(column);
+    const y = grid.centreY(row);
+    const dx = x - fromX;
+    const dy = y - fromY;
+    const distance = Math.hypot(dx, dy);
+    const exits = grid.edges[node.cell];
+    if ((exits === 0b0011 || exits === 0b1100)
+      && (distance <= holdRadius || (dx * towardPlayer.x + dy * towardPlayer.y) > 0)
+      && Math.hypot(targetX - x, targetY - y) < playerDistance) {
+      const candidate = { cell: node.cell, firstCell: node.firstCell, x, y, distance };
+      if (!selected || candidate.distance < selected.distance
+        || (candidate.distance === selected.distance && candidate.cell < selected.cell)) selected = candidate;
+    }
+    if (node.depth >= maxCells) continue;
+    for (let neighbourIndex = 0; neighbourIndex < grid.neighbours.length; neighbourIndex += 1) {
+      if ((exits & (1 << neighbourIndex)) === 0) continue;
+      const nextColumn = column + grid.neighbours[neighbourIndex][0];
+      const nextRow = row + grid.neighbours[neighbourIndex][1];
+      if (nextColumn < 0 || nextRow < 0 || nextColumn >= grid.columns || nextRow >= grid.rows) continue;
+      const nextCell = nextRow * grid.columns + nextColumn;
+      if (grid.walkable[nextCell] !== 1 || visited.has(nextCell)) continue;
+      visited.add(nextCell);
+      queue.push({
+        cell: nextCell,
+        depth: node.depth + 1,
+        firstCell: node.depth === 0 ? nextCell : node.firstCell,
+      });
+    }
+  }
+  if (!selected) return null;
+  const holding = selected.distance <= holdRadius;
+  const firstColumn = selected.firstCell % grid.columns;
+  const firstRow = (selected.firstCell - firstColumn) / grid.columns;
+  const stepX = grid.centreX(firstColumn) - fromX;
+  const stepY = grid.centreY(firstRow) - fromY;
+  const stepDistance = Math.hypot(stepX, stepY);
+  return Object.freeze({
+    direction: Object.freeze(holding || stepDistance <= 1e-9 ? { x: 0, y: 0 } : { x: stepX / stepDistance, y: stepY / stepDistance }),
+    target: Object.freeze({ x: selected.x, y: selected.y }),
+    holding,
+    openSides: 2,
+  });
+}
+
 export function navLineBlocked(grid, fromX, fromY, toX, toY) {
   if (!grid) return false;
   const steps = Math.max(1, Math.ceil(Math.hypot(toX - fromX, toY - fromY) / (grid.cellSize / 3)));

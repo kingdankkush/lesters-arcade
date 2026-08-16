@@ -11,9 +11,10 @@ Branch: `reboot/hmh-aaa-continuous`
 ### Git
 
 - Runtime source commit: `e3679552b06781b34fe63e10a2260e7d3a3433a8`
-- Local and `origin/reboot/hmh-aaa-continuous` matched at closeout.
+- Published continuation head: `b14fbbebbebd76609563d8825f0824c661c3622b`
+- Local and `origin/reboot/hmh-aaa-continuous` matched at `b14fbbeb` before Cycle 050 work began.
 - `origin/main`: `fa9585be7014db6515c536f9a09fdba5a3a2572f`
-- Runtime worktree was clean after publication.
+- Cycle 050 is a verified local candidate staged on top of `b14fbbeb`; it has not been committed, pushed, or deployed. Independent exact-index review is blocked by unavailable reviewer authentication.
 
 ### Production
 
@@ -27,6 +28,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Immutable production URL: `https://lesters-arcade-ebvbhfyek-justin-agent-projects.vercel.app`
 - Retained rollback deployment: `dpl_8wxJAwqrJKD3cMPscMS5QBG383GJ`
 - Active cache marker: `lesters-arcade-v17-hmh-formation-pressure`
+- Cycle 050 local candidate cache marker: `lesters-arcade-v18-hmh-heavy-chokepoints` (not deployed)
 
 ### Current certification
 
@@ -46,6 +48,23 @@ Branch: `reboot/hmh-aaa-continuous`
 - Five-profile local and production browser certification: PASS, zero anchor-pixel changes.
 - Production performance: PASS on desktop and mobile, zero runtime errors and no measured long tasks.
 
+### Cycle 050 local candidate verification (2026-08-15; revalidated 2026-08-16)
+
+- Slice: deterministic Whale Enforcer authored-nav chokepoint pressure.
+- Release ledger: **2,195 evaluated = 2,144 passed + 51 exact expected legacy failures**; unexpected failures **0**.
+- Focused enemy/nav/runtime tests: **35/35 PASS**; shell after build: **12/12 PASS**.
+- Syntax: **336 JavaScript modules + 49 Python scripts**.
+- HMH entry: **384,816 bytes**; Pixi vendor: **575,891 bytes**; combined initial HMH JavaScript: **960,707 bytes**; headroom: **87,869 bytes**.
+- 128-enemy benchmark: **90.45%** broadphase reduction, **15,360** canonical safety steps, deterministic forward/reversed equality, and a non-vacuous **2/2** heavy chokepoint fixture whose actors each advance exactly one `1.6`-unit canonical fixed step.
+- Thirty-minute deterministic long-run certification: PASS.
+- Desktop/mobile production-roster browser smoke: PASS, zero errors and no overflow.
+- Five-profile release browser certification rerun: PASS; all five profiles had **zero changed anchor pixels**, and touch/control geometry was contained.
+- Browser performance rerun: desktop/mobile p95 **8.2 / 8.2 ms**; retained-heap deltas **-511,220 / -559,015 bytes**; zero steady-state long tasks and zero runtime errors.
+- The 2026-08-16 scheduled run revalidated the candidate from the live checkout: focused tests **35/35**, benchmark, syntax, release **2,195 / 2,144 / 51 / 0**, build, shell **12/12**, long-run, serial browser/network/performance, asset QA, security, Web3 read-only, repo-health/CDN, and docs-link gates completed with their expected verdicts. Bundle bytes stayed **384,816 + 575,891 = 960,707 / 1,048,576**. Current desktop/mobile p95 was **8.5 / 8.1 ms**, retained heap **-4,244,591 / -3,883,414 bytes**, zero steady-state long tasks/runtime errors, and all five responsive profiles again reported zero changed anchor pixels with contained touch controls.
+- Evidence and screenshots are local under `.hermes/evidence/cron-wave10-heavy-chokepoints/` and remain uncommitted.
+- Independent exact-index review did not complete: Hermes delegation lacked its configured Nous token, the local Codex CLI returned `401 Unauthorized`, and the scheduled-run Claude reviewer returned `401 OAuth access token has been revoked`. Do not call this candidate certified or committed until a reviewer verifies the frozen staged patch.
+- Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, and LitVM writes were untouched.
+
 The exact staged binary-diff SHA-256 for the v17 runtime slice was:
 
 ```text
@@ -56,7 +75,18 @@ An independent hash-bound review returned `PASS` with no blockers.
 
 ## 2. Latest completed slice
 
-Wave 10 now includes bounded anti-perfect-ring formation pressure:
+Cycle 050 adds the bounded Whale Enforcer heavy-role contract requested by the prior handoff:
+
+- `sampleChokepointDirection(...)` derives a choke from the shared authored-nav graph: a walkable cell with exactly two opposite legal exits.
+- The bounded four-hop graph scan requires progress toward the player, follows the first stable legal edge around blocked direct segments, and rejects disconnected candidates.
+- The Whale Enforcer approaches and holds a validated choke only outside its attack reservation and within a 520-unit activation window.
+- Hazards retain priority; committed attack tells cannot refresh the heavy decision; formation pressure remains subordinate.
+- Holding faces the player with zero velocity; approach movement still uses canonical fixed-tick collision, traversal, elevation, bounds, and safety.
+- Immutable intent distinguishes `chokepointSeeking` from actual `chokepointHolding`, carries `chokepointTarget`, and exposes separate aggregate/runtime dataset counts.
+- Synthetic and real Level One tests prove blocked-direct-segment rerouting, disconnected-candidate rejection, source-order equality, no teleporting, and a 120-tick authored-nav hold just outside the attack reservation.
+- The benchmark's former ad-hoc flat-ground stub was replaced with the canonical authored elevation query after a RED non-vacuity assertion proved that the stub rejected both movement steps.
+
+The previous bounded anti-perfect-ring formation pressure remains integrated and unchanged:
 
 - `getEnemyFormationBias(...)` detects six-or-more active enemies occupying a narrow radial band around the player.
 - Selection and tie behavior are stable by enemy ID and independent of source-array order.
@@ -90,6 +120,7 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
   - bounded stuck recovery and replan requests;
   - locked attack-tell intent;
   - bounded cover behavior for suppressor/demolition/support roles;
+  - bounded authored-nav chokepoint pressure for the Whale Enforcer heavy;
   - Burner hazard path costs;
   - bounded anti-clumping and anti-perfect-ring behavior;
   - animation readability priority;
@@ -103,8 +134,8 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ### Immediate remaining items
 
-1. **Close Wave 10 with missing role-specific depth and soak truth.**
-   - Audit whether flankers, heavies, gas bombers, and validators have behavior beyond generic steering/cover.
+1. **Close Wave 10 with the remaining role-specific depth and soak truth.**
+   - The Whale Enforcer heavy gap is locally complete; audit flankers, gas bombers, and validators for one remaining justified behavior gap at a time.
    - Implement one bounded role behavior at a time only where a current behavioral gap exists.
    - Add attack-token occupancy and projectile/effect-pressure assertions to the 100+ body soak if still absent.
    - Prove same-seed equality, different-seed divergence, two recurring spawn cycles, low-FPS blocker safety, and real desktop/mobile 100+ active-body endurance in one consolidated closeout report.
@@ -135,36 +166,24 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ## 4. Recommended next bounded slice
 
-Start with **Wave 10 role-depth closure for the Whale Enforcer heavy**.
+Close the **Wave 10 100+ body soak-truth gap** before adding another role rule.
 
 Why this slice:
 
-- The heavy currently pursues like a direct bruiser while the roadmap calls for readable chokepoint pressure.
-- It can reuse current authored nav, stable intent planning, attack tells, telemetry, fixed-tick collision, and benchmark infrastructure.
-- It stays smaller and safer than expanding the Liquidator or adding new power-ups.
+- Heavy chokepoint depth is now non-vacuously integrated and certified.
+- The existing 128-body benchmark proves deterministic movement and safety but still does not report attack-token occupancy or projectile/effect-pressure maxima.
+- Extending the read-only benchmark/telemetry seam is smaller and safer than inventing another AI behavior before Wave 10's endurance evidence is complete.
 
 Proposed contract:
 
-1. Audit authored choke/cover metadata already available to the runtime. Do not invent a parallel nav authority.
-2. RED-test a bounded heavy lane/chokepoint intent that activates only with a validated walkable target.
-3. Keep hazard avoidance above the heavy role decision.
-4. Lock the heavy decision during committed tells.
-5. Keep collision, traversal, elevation, bounds, and damage canonical each tick.
-6. Add immutable `chokepointHolding` intent and aggregate telemetry only if behavior is actually integrated.
-7. Prove source-order independence, blocked-route rejection, low-FPS collision safety, and no teleporting.
-8. Re-run the 128-body benchmark and focused browser/network/performance gates.
+1. Reuse the fixed-tick enemy/combat resolver; do not create a second combat engine.
+2. Add truthful attack-token occupancy plus projectile/effect-pressure maxima to the 100+ body soak.
+3. Prove same-seed equality, different-seed divergence, and at least two recurring encounter cycles.
+4. Add a low-FPS/four-catch-up blocker-safety case with no teleport or skipped canonical safety steps.
+5. Preserve independent body, threat, token, projectile, and VFX caps; do not lower enemy counts to pass.
+6. Run the benchmark, release ledger, long-run, serial desktop/mobile browser performance, and exact-index review.
 
-If the audit proves no suitable authored choke metadata exists, do not manufacture broad world metadata in the same patch. Select the next smallest role gap, preferably flanker side-lane separation using the existing stable-side/nav-grid contracts.
-
-Likely files:
-
-- `apps/hmh-reboot/src/enemy-navgrid.mjs`
-- `apps/hmh-reboot/src/enemy-simulation.mjs`
-- `apps/hmh-reboot/src/main.mjs`
-- `tests/hmh-reboot-enemy-navgrid.test.mjs`
-- `tests/hmh-reboot-enemy-simulation.test.mjs`
-- `scripts/hmh-reboot-enemy-simulation-benchmark.mjs`
-- service-worker and matching tests only if runtime bytes change.
+Likely files are the existing enemy/combat benchmark script, focused benchmark tests or contracts, and runtime telemetry only where current reports lack a truthful source field.
 
 ## 5. Exact workflow for the next session
 
@@ -208,5 +227,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and https://lestersarcade.io. Load the HMH continuous-improvement, software-delivery, TDD, deterministic game-system review, release-candidate review, and deployment skills. Begin with the earliest incomplete Wave 10 role-depth gap. Audit whether the Whale Enforcer can gain a bounded authored chokepoint-holding intent using existing nav/world metadata. If the metadata is insufficient, choose the smallest existing-contract role gap instead rather than broadening scope. Use RED-GREEN TDD, preserve fixed-step collision/traversal/elevation/bounds/tells/hazards/damage, run focused and full certification, obtain exact-index review, and only publish through exact commit → immutable Preview → verified promotion. Do not perform any wallet, contract, settlement, transaction, or LitVM action. After the slice, update this handoff again.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and https://lestersarcade.io. Cycle 050 locally completed deterministic Whale Enforcer authored-nav chokepoint pressure; verify its exact commit/index status rather than reimplementing it. Begin with the remaining Wave 10 soak-truth gap: extend the existing 100+ body benchmark with truthful attack-token occupancy plus projectile/effect-pressure maxima, same-seed equality, different-seed divergence, two recurring encounter cycles, and low-FPS blocker safety. Keep the benchmark read-only over existing fixed-tick enemy/combat authority; do not create another combat engine or lower caps. Use RED-GREEN TDD, run focused and full certification, obtain exact-index review, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval. After the slice, update this handoff again.
 ```

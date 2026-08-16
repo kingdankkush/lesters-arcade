@@ -10,7 +10,7 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v17-hmh-formation-pressure';
+const CACHE_VERSION = 'lesters-arcade-v18-hmh-heavy-chokepoints';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.

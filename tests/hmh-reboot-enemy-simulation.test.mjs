@@ -439,6 +439,8 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyRouteReplans/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyStuckRecoveries/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyFormationAdjusted/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyChokepointSeeking/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyChokepointHolding/);
   assert.doesNotMatch(source, /wallet|settlement|contractAddress|localStorage/);
   assert.doesNotMatch(simulationSource, /localeCompare/, 'authoritative ordering must use explicit lexical comparison');
 });
@@ -460,4 +462,56 @@ test('separation stays deterministic and symmetric under the bound', () => {
   const second = computeEnemySeparation(pair().reverse(), { neighborRadius: 96, maxNeighbors: 8, strength: 0.35 });
   assert.deepEqual(first.deltas.get('whale-a'), second.deltas.get('whale-a'));
   assert.deepEqual(first.deltas.get('whale-b'), second.deltas.get('whale-b'));
+});
+
+test('heavy chokepoint intent is source-order independent, telemetry-truthful, and uses canonical movement', () => {
+  const player = { x: 300, y: 0, groundZ: 0 };
+  const navigation = {
+    lineBlocked: () => false,
+    chokepointDirectionAt: (x, y) => Object.freeze({
+      direction: Object.freeze({ x: 1, y: 0 }),
+      target: Object.freeze({ x: x + 60, y }),
+      holding: false,
+      openSides: 2,
+    }),
+  };
+  const simulate = (members) => {
+    const population = createEnemyPopulation({ capacity: 4, threatCapacity: 20 });
+    population.active.push(...members);
+    const report = stepEnemyPopulation({
+      population, player, tick: 1, dtSeconds: 1 / 60,
+      blockers: [], bounds, queryGround: flatGround, navigation, fullAiCap: 4,
+    });
+    return {
+      chokepointSeeking: report.chokepointSeeking,
+      chokepointHolding: report.chokepointHolding,
+      safetySteps: report.safetySteps,
+      states: population.active
+        .map(({ id, x, y, intent }) => ({ id, x, y, chokepointSeeking: intent.chokepointSeeking, chokepointHolding: intent.chokepointHolding }))
+        .sort((left, right) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0),
+    };
+  };
+  const roster = [enemy('whale-enforcer', 'heavy-b', 0, 80), enemy('whale-enforcer', 'heavy-a', 0, -80)];
+  const forward = simulate(roster.map((member) => structuredClone(member)));
+  const reverse = simulate(roster.map((member) => structuredClone(member)).reverse());
+  assert.deepEqual(forward, reverse);
+  assert.equal(forward.chokepointSeeking, 2);
+  assert.equal(forward.chokepointHolding, 0);
+  assert.equal(forward.safetySteps, 2);
+  assert.ok(forward.states.every((member) => member.x > 0 && member.x <= 96 / 60 + 1e-9), 'heavy movement must use its ordinary 96 units/second fixed step without teleporting');
+
+  const lockedPopulation = createEnemyPopulation({ capacity: 2, threatCapacity: 10 });
+  const lockedHeavy = enemy('whale-enforcer', 'locked-heavy', 0, 0);
+  lockedHeavy.intent = planEnemyIntent(lockedHeavy, { player, tick: 1, navigation });
+  lockedHeavy.velocity = { ...lockedHeavy.intent.velocity };
+  lockedHeavy.attackPhase = 'tell';
+  lockedHeavy.attackPhaseUntilTick = 20;
+  lockedPopulation.active.push(lockedHeavy);
+  const lockedReport = stepEnemyPopulation({
+    population: lockedPopulation, player, tick: 2, dtSeconds: 1 / 60,
+    blockers: [], bounds, queryGround: flatGround, navigation, fullAiCap: 2,
+  });
+  assert.equal(lockedReport.chokepointSeeking, 0, 'a cached seek intent is not active telemetry while a tell locks movement');
+  assert.equal(lockedReport.chokepointHolding, 0);
+  assert.equal(lockedHeavy.x, 0);
 });

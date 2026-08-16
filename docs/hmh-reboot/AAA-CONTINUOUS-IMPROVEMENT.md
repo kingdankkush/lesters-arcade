@@ -147,6 +147,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - [x] Cycle 036: mobile weapon access and deterministic reload/switch/overheat readability
   - Status: committed on continuation as `15629eba`; production unchanged
   - Cycle ledger: `cycles/CYCLE-036.md`
+- [x] Cycle 050: deterministic Whale Enforcer authored-nav chokepoint pressure and truthful heavy-role telemetry
+  - Status: locally reverified 2026-08-16; independent exact-index review and commit pending; production unchanged
+  - Cycle ledger: `cycles/CYCLE-050.md`
 
 ## Cycle 020 final local candidate (historical)
 

@@ -25,7 +25,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
-import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleCoverDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
+import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleChokepointDirection, sampleCoverDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
@@ -292,6 +292,9 @@ const enemyNavigation = Object.freeze({
   lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(ENEMY_NAV_GRID, fromX, fromY, toX, toY),
   coverDirectionAt: (fromX, fromY, toX, toY, options) => ENEMY_NAV_GRID
     ? sampleCoverDirection(ENEMY_NAV_GRID, fromX, fromY, toX, toY, options)
+    : null,
+  chokepointDirectionAt: (fromX, fromY, toX, toY, options) => ENEMY_NAV_GRID
+    ? sampleChokepointDirection(ENEMY_NAV_GRID, fromX, fromY, toX, toY, options)
     : null,
   hazardDirectionAt: (x, y, baseDirection, options) => {
     if (!ENEMY_NAV_GRID || activeBurnerHazards.length === 0) return null;
@@ -1930,6 +1933,8 @@ async function boot() {
         dataset.enemyRouteReplans = String(lastEnemyStep?.routeReplans ?? 0);
         dataset.enemyStuckRecoveries = String(lastEnemyStep?.stuckRecoveries ?? 0);
         dataset.enemyHazardAvoiding = String(lastEnemyStep?.hazardAvoiding ?? 0);
+        dataset.enemyChokepointSeeking = String(lastEnemyStep?.chokepointSeeking ?? 0);
+        dataset.enemyChokepointHolding = String(lastEnemyStep?.chokepointHolding ?? 0);
         dataset.enemyFormationAdjusted = String(lastEnemyStep?.formationAdjusted ?? 0);
         dataset.enemyPoolPressure = `${lastEnemyStep?.activeCount ?? 0}/${enemyPopulation?.capacity ?? 0}`;
         dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;

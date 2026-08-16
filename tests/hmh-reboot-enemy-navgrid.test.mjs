@@ -6,6 +6,7 @@ import {
   createEnemyNavGrid,
   computeEnemyFlowField,
   sampleCoverDirection,
+  sampleChokepointDirection,
   sampleFlowDirection,
   sampleHazardAwareDirection,
   navLineBlocked,
@@ -262,4 +263,117 @@ test('corner smoothing blends a diagonal only when the diagonal is walkable', ()
   }
   assert.ok(checked > 500, 'smoothing sweep must cover the map');
   assert.ok(blended > 0, 'at least some cells must blend a smooth diagonal');
+});
+
+test('chokepoint sampling selects only reachable walkable two-sided authored-nav cells', () => {
+  const columns = 5;
+  const rows = 5;
+  const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const walkable = new Uint8Array(columns * rows).fill(1);
+  const edges = new Uint8Array(columns * rows).fill(0b1111);
+  edges[2 * columns + 2] = 0b0011;
+  const grid = {
+    columns, rows, cellSize: 60, minX: 0, minY: 0, walkable, edges, neighbours,
+    cellAt: (x, y) => {
+      const column = Math.floor(x / 60);
+      const row = Math.floor(y / 60);
+      return column < 0 || row < 0 || column >= columns || row >= rows ? -1 : row * columns + column;
+    },
+    centreX: (column) => (column + 0.5) * 60,
+    centreY: (row) => (row + 0.5) * 60,
+    isWalkableAt(x, y) {
+      const cell = this.cellAt(x, y);
+      return cell >= 0 && this.walkable[cell] === 1;
+    },
+  };
+  const selected = sampleChokepointDirection(grid, 30, 150, 270, 150, { maxCells: 4 });
+  assert.ok(selected);
+  assert.deepEqual(selected.target, { x: 150, y: 150 });
+  assert.deepEqual(selected.direction, { x: 1, y: 0 });
+  assert.equal(selected.holding, false);
+  assert.equal(selected.openSides, 2);
+
+  const blocked = { ...grid, walkable: Uint8Array.from(walkable) };
+  blocked.walkable[2 * columns + 1] = 0;
+  const rerouted = sampleChokepointDirection(blocked, 30, 150, 270, 150, { maxCells: 4 });
+  assert.deepEqual(rerouted.target, { x: 150, y: 150 });
+  assert.deepEqual(rerouted.direction, { x: 0, y: 1 }, 'a blocked direct segment must use the first stable authored-nav step around it');
+
+  const disconnected = { ...grid, edges: new Uint8Array(columns * rows) };
+  disconnected.edges[2 * columns + 2] = 0b0011;
+  assert.equal(sampleChokepointDirection(disconnected, 30, 150, 270, 150, { maxCells: 4 }), null, 'walkable cells without an authored-nav edge route must be rejected');
+});
+
+test('Whale Enforcer holds a validated chokepoint without overriding hazards or committed tells', () => {
+  const heavy = createEnemyState({ archetypeId: 'whale-enforcer', id: 'heavy-choke', x: 0, y: 0 });
+  const player = { x: 300, y: 0 };
+  const target = Object.freeze({ x: 10, y: 0 });
+  const chokepoint = Object.freeze({
+    direction: Object.freeze({ x: 0, y: 0 }), target, holding: true, openSides: 2,
+  });
+  const navigation = {
+    lineBlocked: () => false,
+    chokepointDirectionAt: () => chokepoint,
+  };
+  const holding = planEnemyIntent(heavy, { player, tick: 1, navigation });
+  assert.equal(holding.chokepointHolding, true);
+  assert.equal(holding.chokepointSeeking, false);
+  assert.deepEqual(holding.chokepointTarget, target);
+  assert.deepEqual(holding.velocity, { x: 0, y: 0 });
+
+  const hazard = planEnemyIntent(heavy, {
+    player,
+    tick: 2,
+    navigation: {
+      ...navigation,
+      hazardDirectionAt: () => Object.freeze({ direction: Object.freeze({ x: 0, y: 1 }), hazardCost: 0 }),
+    },
+  });
+  assert.equal(hazard.hazardAvoiding, true);
+  assert.equal(hazard.chokepointHolding, false);
+  assert.equal(hazard.chokepointSeeking, false);
+  assert.deepEqual(hazard.facing, { x: 0, y: 1 });
+
+  heavy.attackPhase = 'tell';
+  const locked = planEnemyIntent(heavy, { player, tick: 3, navigation });
+  assert.equal(locked.chokepointHolding, false);
+  assert.equal(locked.chokepointSeeking, false);
+  assert.equal(locked.chokepointTarget, null);
+});
+
+test('Whale Enforcer reaches and holds an actual authored-nav chokepoint through canonical fixed steps', () => {
+  const grid = buildGrid();
+  const player = { x: 3_510, y: 1_230, groundZ: queryGround(3_510, 1_230).groundZ };
+  const field = computeEnemyFlowField({ grid, targetX: player.x, targetY: player.y });
+  const navigation = {
+    lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(grid, fromX, fromY, toX, toY),
+    flowDirectionAt: (x, y) => sampleFlowDirection(grid, field, x, y),
+    chokepointDirectionAt: (fromX, fromY, toX, toY, options) => sampleChokepointDirection(grid, fromX, fromY, toX, toY, options),
+  };
+  const population = createEnemyPopulation({ capacity: 2, threatCapacity: 20 });
+  const heavy = createEnemyState({
+    archetypeId: 'whale-enforcer', id: 'authored-choke-heavy', x: 3_510, y: 1_470,
+    groundZ: queryGround(3_510, 1_470).groundZ,
+  });
+  population.active.push(heavy);
+  let safetySteps = 0;
+  let chokepointTicks = 0;
+  for (let tick = 1; tick <= 120; tick += 1) {
+    const previous = { x: heavy.x, y: heavy.y };
+    const report = stepEnemyPopulation({
+      population, player, tick, dtSeconds: 1 / 60,
+      blockers: LEVEL_ONE_WORLD.collisionBlockers, bounds: LEVEL_ONE_WORLD.bounds,
+      queryGround, navigation,
+    });
+    safetySteps += report.safetySteps;
+    chokepointTicks += report.chokepointHolding;
+    assert.ok(Math.hypot(heavy.x - previous.x, heavy.y - previous.y) <= 96 / 60 + 1e-9, 'heavy may not teleport to the nav target');
+  }
+  assert.equal(safetySteps, 120);
+  assert.ok(chokepointTicks > 0);
+  assert.equal(heavy.intent.chokepointHolding, true);
+  assert.equal(heavy.intent.chokepointSeeking, false);
+  assert.deepEqual(heavy.intent.velocity, { x: 0, y: 0 });
+  assert.ok(Math.hypot(heavy.x - heavy.intent.chokepointTarget.x, heavy.y - heavy.intent.chokepointTarget.y) <= grid.cellSize * 0.65);
+  assert.ok(Math.hypot(heavy.x - player.x, heavy.y - player.y) > 210, 'the heavy holds just beyond its attack reservation instead of silently consuming a token');
 });
