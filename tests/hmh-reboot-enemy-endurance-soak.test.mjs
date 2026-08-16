@@ -111,6 +111,7 @@ test('browser endurance gate exercises serial desktop/mobile real-time pressure 
   assert.match(source, /endurancePressurePilot=1/);
   assert.match(source, /TARGET_ENEMIES = 128/);
   assert.match(source, /MAX_P95_FRAME_MS = 28/);
+  assert.match(source, /p99: Number\(percentile\(frameDeltas, 0\.99\)/);
   assert.match(source, /MIN_MEDIAN_FPS = 45/);
   assert.match(source, /enemyAttackTokensSupport/);
   assert.match(source, /simulationCatchUpSaturationFrames/);

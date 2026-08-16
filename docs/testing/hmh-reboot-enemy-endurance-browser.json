@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runtime": "hmh-reboot",
   "status": "PASS",
-  "generatedAt": "2026-08-16T22:52:50.204Z",
+  "generatedAt": "2026-08-16T23:06:20.543Z",
   "targetEnemies": 128,
   "profiles": [
     {
@@ -11,13 +11,14 @@
         "width": 1440,
         "height": 900
       },
-      "seconds": 30.753,
+      "seconds": 30.963,
       "status": "PASS",
-      "sampleCount": 89,
+      "sampleCount": 90,
       "frameTimeMs": {
         "median": 6.9,
         "p95": 7.1,
-        "max": 20.9
+        "p99": 7.2,
+        "max": 21
       },
       "medianFps": 144.93,
       "longTasks": {
@@ -25,7 +26,7 @@
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1787,
+        "tickAdvance": 1799,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
@@ -46,12 +47,12 @@
         "maxSafetyStepsPerTick": 128,
         "maxCollisionContactsPerTick": 3,
         "maxTraversalBlocksPerTick": 0,
-        "maxAudioVoices": 5
+        "maxAudioVoices": 4
       },
       "retainedHeap": {
-        "beforeBytes": 83459207,
-        "afterBytes": 39540546,
-        "growthBytes": -43918661
+        "beforeBytes": 58092559,
+        "afterBytes": 83429701,
+        "growthBytes": 25337142
       },
       "consoleIssues": [],
       "networkIssues": [],
@@ -64,13 +65,14 @@
         "width": 390,
         "height": 844
       },
-      "seconds": 30.644,
+      "seconds": 30.763,
       "status": "PASS",
-      "sampleCount": 93,
+      "sampleCount": 99,
       "frameTimeMs": {
         "median": 6.9,
         "p95": 7,
-        "max": 8.7
+        "p99": 7.1,
+        "max": 14
       },
       "medianFps": 144.93,
       "longTasks": {
@@ -95,16 +97,16 @@
           "support": 2
         },
         "maxProjectiles": 1,
-        "maxEffects": 13,
+        "maxEffects": 12,
         "maxSafetyStepsPerTick": 128,
         "maxCollisionContactsPerTick": 3,
         "maxTraversalBlocksPerTick": 0,
         "maxAudioVoices": 4
       },
       "retainedHeap": {
-        "beforeBytes": 65211736,
-        "afterBytes": 67810084,
-        "growthBytes": 2598348
+        "beforeBytes": 47876797,
+        "afterBytes": 61426481,
+        "growthBytes": 13549684
       },
       "consoleIssues": [],
       "networkIssues": [],

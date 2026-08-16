@@ -173,6 +173,8 @@ async function runProfile(browser, origin, profile) {
   await sleep(500);
   const heapBefore = await page.evaluate(() => performance.memory?.usedJSHeapSize ?? null);
   const samples = [];
+  const mobileAimBox = profile.isMobile ? await page.locator('[data-hmh-control="aim"]').boundingBox() : null;
+  const mobileCdp = profile.isMobile ? await context.newCDPSession(page) : null;
   const startedAt = Date.now();
   const movement = ['KeyD', 'KeyS', 'KeyA', 'KeyW'];
   let movementIndex = 0;
@@ -184,6 +186,17 @@ async function runProfile(browser, origin, profile) {
     await page.keyboard.down('Space');
     await sleep(45);
     await page.keyboard.up('Space');
+    if (mobileAimBox && mobileCdp && movementIndex % 8 === 0) {
+      const x = mobileAimBox.x + mobileAimBox.width * 0.5;
+      const y = mobileAimBox.y + mobileAimBox.height * 0.5;
+      const fireX = mobileAimBox.x + mobileAimBox.width * 0.88;
+      const touchPoint = (clientX) => [{ x: clientX, y, id: 91, radiusX: 10, radiusY: 10, force: 1 }];
+      await mobileCdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: touchPoint(x) });
+      await mobileCdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: touchPoint(fireX) });
+      await sleep(100);
+      samples.push({ atSeconds: Number(((Date.now() - startedAt) / 1000).toFixed(3)), ...await readStage(page) });
+      await mobileCdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    }
     samples.push({ atSeconds: Number(((Date.now() - startedAt) / 1000).toFixed(3)), ...await readStage(page) });
     movementIndex += 1;
     await sleep(130);
@@ -249,7 +262,7 @@ async function runProfile(browser, origin, profile) {
     seconds: Number(elapsedSeconds.toFixed(3)),
     status: failures.length ? 'FAIL' : 'PASS',
     sampleCount: samples.length,
-    frameTimeMs: { median: Number(medianFrameMs.toFixed(3)), p95: Number(p95FrameMs.toFixed(3)), max: Number(Math.max(...frameDeltas).toFixed(3)) },
+    frameTimeMs: { median: Number(medianFrameMs.toFixed(3)), p95: Number(p95FrameMs.toFixed(3)), p99: Number(percentile(frameDeltas, 0.99).toFixed(3)), max: Number(Math.max(...frameDeltas).toFixed(3)) },
     medianFps: Number(medianFps.toFixed(2)),
     longTasks: { count: perf.longTasks.length, maxMs: Number(maxLongTaskMs.toFixed(3)) },
     simulation: { tickAdvance, saturationFrames, catchUpSaturationRatio: Number(catchUpSaturationRatio.toFixed(5)), droppedMs: Number(droppedMs.toFixed(3)) },
@@ -309,8 +322,8 @@ async function main() {
       profiles,
     };
     await writeFile(REPORT_JSON, `${JSON.stringify(report, null, 2)}\n`);
-    await writeFile(REPORT_MD, `# HMH Reboot 100+ Enemy Browser Endurance\n\n- Status: **${report.status}**\n- Runtime: \`${report.runtime}\`\n- Active-body target: ${report.targetEnemies}\n- Duration: ${seconds}s per profile, serial desktop then mobile\n\n${profiles.map((profile) => `## ${profile.profile}\n\n- Status: **${profile.status}**\n- Viewport: ${profile.viewport.width}×${profile.viewport.height}\n- Median FPS: ${profile.medianFps}\n- P95 frame: ${profile.frameTimeMs.p95} ms\n- Bodies: ${profile.occupancy.minBodies}–${profile.occupancy.maxBodies}\n- Animated-enemy peak: ${profile.occupancy.maxAnimatedEnemies}\n- Threat peak: ${profile.occupancy.maxThreat}/640\n- Token maxima: ${Object.entries(profile.occupancy.tokenFamilies).map(([family, value]) => `${family} ${value}/${TOKEN_LIMITS[family]}`).join(', ')}\n- Projectile/effect peaks: ${profile.occupancy.maxProjectiles}/${profile.occupancy.maxEffects}\n- Safety steps/tick peak: ${profile.occupancy.maxSafetyStepsPerTick}\n- Collision/traversal peaks: ${profile.occupancy.maxCollisionContactsPerTick}/${profile.occupancy.maxTraversalBlocksPerTick}\n- Simulation advance: ${profile.simulation.tickAdvance} ticks; dropped ${profile.simulation.droppedMs} ms\n- Catch-up saturation: ${(profile.simulation.catchUpSaturationRatio * 100).toFixed(2)}%\n- Long tasks: ${profile.longTasks.count}; max ${profile.longTasks.maxMs} ms\n- Retained heap growth: ${profile.retainedHeap.growthBytes} bytes\n- Console/network issues: ${profile.consoleIssues.length}/${profile.networkIssues.length}\n- Screenshot: \`${profile.screenshot}\`\n- Failures: ${profile.failures.length ? profile.failures.join('; ') : 'none'}\n`).join('\n')}`);
-    console.log(JSON.stringify({ status: report.status, profiles: profiles.map(({ profile, status, medianFps, frameTimeMs, occupancy, simulation }) => ({ profile, status, medianFps, p95FrameMs: frameTimeMs.p95, bodies: [occupancy.minBodies, occupancy.maxBodies], simulation })) }));
+    await writeFile(REPORT_MD, `# HMH Reboot 100+ Enemy Browser Endurance\n\n- Status: **${report.status}**\n- Runtime: \`${report.runtime}\`\n- Active-body target: ${report.targetEnemies}\n- Duration: ${seconds}s per profile, serial desktop then mobile\n\n${profiles.map((profile) => `## ${profile.profile}\n\n- Status: **${profile.status}**\n- Viewport: ${profile.viewport.width}×${profile.viewport.height}\n- Median FPS: ${profile.medianFps}\n- P95 frame: ${profile.frameTimeMs.p95} ms\n- P99 frame: ${profile.frameTimeMs.p99} ms\n- Bodies: ${profile.occupancy.minBodies}–${profile.occupancy.maxBodies}\n- Animated-enemy peak: ${profile.occupancy.maxAnimatedEnemies}\n- Threat peak: ${profile.occupancy.maxThreat}/640\n- Token maxima: ${Object.entries(profile.occupancy.tokenFamilies).map(([family, value]) => `${family} ${value}/${TOKEN_LIMITS[family]}`).join(', ')}\n- Projectile/effect peaks: ${profile.occupancy.maxProjectiles}/${profile.occupancy.maxEffects}\n- Safety steps/tick peak: ${profile.occupancy.maxSafetyStepsPerTick}\n- Collision/traversal peaks: ${profile.occupancy.maxCollisionContactsPerTick}/${profile.occupancy.maxTraversalBlocksPerTick}\n- Simulation advance: ${profile.simulation.tickAdvance} ticks; dropped ${profile.simulation.droppedMs} ms\n- Catch-up saturation: ${(profile.simulation.catchUpSaturationRatio * 100).toFixed(2)}%\n- Long tasks: ${profile.longTasks.count}; max ${profile.longTasks.maxMs} ms\n- Retained heap growth: ${profile.retainedHeap.growthBytes} bytes\n- Console/network issues: ${profile.consoleIssues.length}/${profile.networkIssues.length}\n- Screenshot: \`${profile.screenshot}\`\n- Failures: ${profile.failures.length ? profile.failures.join('; ') : 'none'}\n`).join('\n')}`);
+    console.log(JSON.stringify({ status: report.status, profiles: profiles.map(({ profile, status, medianFps, frameTimeMs, occupancy, simulation }) => ({ profile, status, medianFps, p95FrameMs: frameTimeMs.p95, p99FrameMs: frameTimeMs.p99, bodies: [occupancy.minBodies, occupancy.maxBodies], simulation })) }));
     if (report.status !== 'PASS') process.exitCode = 1;
   } finally {
     await browser?.close();
