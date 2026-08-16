@@ -50,7 +50,7 @@ import {
   openingEnemyAttacksEnabled,
   openingEnemyMovementEnabled,
 } from './opening-balance.mjs';
-import { createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
+import { buildEnduranceEncounterCandidates, createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
 import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
@@ -770,12 +770,14 @@ async function boot() {
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
+  const endurancePressurePilotEnabled = evidenceSafeEnabled && runtimeParams.get('endurancePressurePilot') === '1';
   const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams.get('rosterPreview') === '1';
   const rosterCombatEnabled = rosterPreviewEnabled && runtimeParams.get('rosterCombat') === '1';
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
   const terminalPilotEnabled = evidenceSafeEnabled && runtimeParams.get('terminalPilot') === '1';
   const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
+  const runtimeEncounterSnapshot = (tick) => getEncounterSnapshot(tick + (endurancePressurePilotEnabled ? 75_600 : 0));
   const collectibleHealthPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleHealthPilot') === '1';
   const collectibleAmmoPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleAmmoPilot') === '1';
   // Evidence-only arsenal: pre-grants every pickup weapon so switching and
@@ -897,6 +899,7 @@ async function boot() {
   let bossDeathVisualUntilTick = -1;
   let lastBossStep = null;
   let lastEnemyStep = null;
+  let catchUpSaturationFrames = 0;
   let lastBossRoleCheck = null;
   let lastBossResolvedAttack = null;
   let lastBossPunishWindow = null;
@@ -1209,7 +1212,7 @@ async function boot() {
       overlayVisuals.clear();
       bossVisual.visible = false;
       if (releaseTelemetryEnabled) dataset.gasCanisterProgress = '';
-      const encounterAnimationCap = getEncounterSnapshot(simulation?.tick ?? 0).animationCap;
+      const encounterAnimationCap = runtimeEncounterSnapshot(simulation?.tick ?? 0).animationCap;
       const animationBudget = Math.min(performanceProfile.maxAnimatedEnemies, encounterAnimationCap);
       const animationCandidates = grayboxEnemies.map((enemy) => {
         const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
@@ -1933,6 +1936,8 @@ async function boot() {
         dataset.enemyDecisionBudget = String(lastEnemyStep?.decisionBudget ?? 0);
         dataset.enemyDeferredDecisions = String(lastEnemyStep?.deferredDecisions ?? 0);
         dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
+        dataset.enemyCollisionContacts = String(lastEnemyStep?.collisionContacts ?? 0);
+        dataset.enemyTraversalBlocks = String(lastEnemyStep?.traversalBlocks ?? 0);
         dataset.enemyRouteReplans = String(lastEnemyStep?.routeReplans ?? 0);
         dataset.enemyStuckRecoveries = String(lastEnemyStep?.stuckRecoveries ?? 0);
         dataset.enemyHazardAvoiding = String(lastEnemyStep?.hazardAvoiding ?? 0);
@@ -1943,11 +1948,21 @@ async function boot() {
         dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
         dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;
         dataset.effectPoolPressure = `${combatVisualEvents.length}/${MAX_COMBAT_VISUAL_EVENTS}`;
+        const tokenFamilies = Object.fromEntries(['melee', 'ranged', 'area', 'support'].map((family) => [
+          family,
+          lastEnemyAttack?.tokens.filter((token) => token.family === family).length ?? 0,
+        ]));
+        dataset.enemyAttackTokens = String(lastEnemyAttack?.tokens.length ?? 0);
+        dataset.enemyAttackTokensMelee = String(tokenFamilies.melee);
+        dataset.enemyAttackTokensRanged = String(tokenFamilies.ranged);
+        dataset.enemyAttackTokensArea = String(tokenFamilies.area);
+        dataset.enemyAttackTokensSupport = String(tokenFamilies.support);
         dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
         dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
         dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
-        const encounterSnapshot = getEncounterSnapshot(simulation?.tick ?? 0);
+        const encounterSnapshot = runtimeEncounterSnapshot(simulation?.tick ?? 0);
         dataset.encounterBand = encounterSnapshot.bandId;
+        dataset.endurancePressurePilot = String(endurancePressurePilotEnabled);
         dataset.directorInsertions = String(encounterDirector?.insertedCount ?? 0);
         dataset.directorRejections = String(encounterDirector?.rejectedCount ?? 0);
         dataset.directorLastReason = lastDirectorStep?.reason ?? '';
@@ -1998,6 +2013,7 @@ async function boot() {
     bossDeathVisualUntilTick = -1;
     lastBossStep = null;
     lastEnemyStep = null;
+    catchUpSaturationFrames = 0;
     lastBossRoleCheck = null;
     lastBossResolvedAttack = null;
     lastBossPunishWindow = null;
@@ -2148,7 +2164,10 @@ async function boot() {
       'gas-bomber': Object.freeze({ x: 0, y: 160 }),
       'validator-cultist': Object.freeze({ x: 120, y: 140 }),
     });
-    enemyPopulation = createEnemyPopulation({ capacity: 192, threatCapacity: 1024 });
+    enemyPopulation = createEnemyPopulation({
+      capacity: 192,
+      threatCapacity: endurancePressurePilotEnabled ? runtimeEncounterSnapshot(0).threatCap : 1024,
+    });
     const openingEnemyByArchetypeId = new Map(ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
       const offset = rosterPreviewOffsets[archetypeId];
       const position = rosterPreviewEnabled
@@ -2164,22 +2183,47 @@ async function boot() {
       });
       return [archetypeId, enemy];
     }));
-    const initialEnemyArchetypeIds = rosterPreviewEnabled ? ENEMY_ARCHETYPE_IDS : HMH_OPENING_ENEMY_ARCHETYPE_IDS;
-    grayboxEnemies = initialEnemyArchetypeIds.map((archetypeId) => {
-      const enemy = openingEnemyByArchetypeId.get(archetypeId);
-      const openingHealth = HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE[archetypeId];
-      if (Number.isFinite(openingHealth)) {
-        enemy.health = openingHealth;
-        enemy.maxHealth = openingHealth;
+    if (endurancePressurePilotEnabled) {
+      const candidates = buildEnduranceEncounterCandidates({
+        count: 128,
+        seed: payload.session.seed,
+        origin: runtimePlayerSpawn,
+        bounds: WORLD_BOUNDS,
+        queryGround,
+        isBlocked: spawnPointBlocked,
+      });
+      for (const candidate of candidates) {
+        const result = attemptScheduledEnemyInsertion({
+          population: enemyPopulation,
+          schedule: { nextSpawnTick: 0, intervalTicks: 1, burstRemaining: 1 },
+          candidate,
+          tick: 0,
+          placementAllowed: true,
+          visualMode: 'normal',
+          threatRemaining: runtimeEncounterSnapshot(0).threatCap - enemyPopulation.activeThreat,
+        });
+        if (!result.inserted) throw new Error(`Endurance pressure pilot insertion rejected: ${result.reason}`);
       }
-      return enemy;
-    });
-    enemyPopulation.active = grayboxEnemies;
-    enemyPopulation.activeThreat = grayboxEnemies.reduce((sum, enemy) => sum + ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat, 0);
-    enemyPopulation.insertedCount = grayboxEnemies.length;
-    for (const enemy of grayboxEnemies) enemyPopulation.seenIds.add(enemy.id);
+      grayboxEnemies = enemyPopulation.active;
+    } else {
+      const initialEnemyArchetypeIds = rosterPreviewEnabled ? ENEMY_ARCHETYPE_IDS : HMH_OPENING_ENEMY_ARCHETYPE_IDS;
+      grayboxEnemies = initialEnemyArchetypeIds.map((archetypeId) => {
+        const enemy = openingEnemyByArchetypeId.get(archetypeId);
+        const openingHealth = HMH_OPENING_ENEMY_HEALTH_BY_ARCHETYPE[archetypeId];
+        if (Number.isFinite(openingHealth)) {
+          enemy.health = openingHealth;
+          enemy.maxHealth = openingHealth;
+        }
+        return enemy;
+      });
+      enemyPopulation.active = grayboxEnemies;
+      enemyPopulation.activeThreat = grayboxEnemies.reduce((sum, enemy) => sum + ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat, 0);
+      enemyPopulation.insertedCount = grayboxEnemies.length;
+      for (const enemy of grayboxEnemies) enemyPopulation.seenIds.add(enemy.id);
+    }
+    const normalNextSpawnTick = rosterPreviewEnabled ? Number.MAX_SAFE_INTEGER : directorDebugEnabled ? 1 : 600;
     encounterDirector = createEncounterDirector({
-      nextSpawnTick: rosterPreviewEnabled ? Number.MAX_SAFE_INTEGER : directorDebugEnabled ? 1 : 600,
+      nextSpawnTick: endurancePressurePilotEnabled ? Number.MAX_SAFE_INTEGER : normalNextSpawnTick,
       seed: payload.session.seed,
     });
     const bossSpawn = bossDebugEnabled ? { x: 1380, y: 2400 } : LEVEL_ONE_WORLD.encounterArenas.at(-1).anchor;
@@ -2523,9 +2567,11 @@ async function boot() {
         maxX: camera.x + viewForDirector.width * 0.5 / camera.zoom,
         maxY: camera.y + viewForDirector.height * 0.5 / camera.zoom,
       };
-      lastDirectorStep = rosterPreviewEnabled
-        ? Object.freeze({ inserted: false, reason: 'roster-preview', tick, bandId: getEncounterSnapshot(tick).bandId })
-        : stepEncounterDirector({
+      lastDirectorStep = endurancePressurePilotEnabled
+        ? Object.freeze({ inserted: false, reason: 'endurance-pressure-pilot', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
+        : rosterPreviewEnabled
+          ? Object.freeze({ inserted: false, reason: 'roster-preview', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
+          : stepEncounterDirector({
           state: encounterDirector,
           population: enemyPopulation,
           tick,
@@ -2554,7 +2600,8 @@ async function boot() {
         })
         : null;
 
-      if (!rosterPreviewEnabled && openingEnemyMovementEnabled(tick)) {
+      const openingMovementAllowed = !rosterPreviewEnabled && openingEnemyMovementEnabled(tick);
+      if (endurancePressurePilotEnabled || openingMovementAllowed) {
         if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS || enemyFlowReplanRequestedTick > enemyFlowFieldTick) {
           enemyFlowField = computeEnemyFlowField({ grid: ENEMY_NAV_GRID, targetX: actor.x, targetY: actor.y });
           enemyFlowFieldTick = tick;
@@ -2570,7 +2617,7 @@ async function boot() {
           queryGround,
           preservePrevious: true,
           navigation: enemyNavigation,
-          fullAiCap: getEncounterSnapshot(tick).fullAiCap,
+          fullAiCap: runtimeEncounterSnapshot(tick).fullAiCap,
         });
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
@@ -3113,12 +3160,13 @@ async function boot() {
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
-      if ((!rosterPreviewEnabled || rosterCombatEnabled) && openingEnemyAttacksEnabled(tick)) {
+      const openingAttacksAllowed = (!rosterPreviewEnabled || rosterCombatEnabled) && openingEnemyAttacksEnabled(tick);
+      if (endurancePressurePilotEnabled || openingAttacksAllowed) {
         lastEnemyAttack = stepEnemyAttacks({
           enemies: grayboxEnemies,
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
           tick,
-          budgets: getEncounterSnapshot(tick).attackTokens,
+          budgets: runtimeEncounterSnapshot(tick).attackTokens,
         });
       } else {
         lastEnemyAttack = Object.freeze({ tick, tokens: Object.freeze([]), events: Object.freeze([]), droppedEvents: 0 });
@@ -3175,7 +3223,7 @@ async function boot() {
               tick,
               placementAllowed: ground.kind !== 'deep-water' && !spawnPointBlocked(candidate),
               visualMode: 'normal',
-              threatRemaining: getEncounterSnapshot(tick).threatCap - enemyPopulation.activeThreat,
+              threatRemaining: runtimeEncounterSnapshot(tick).threatCap - enemyPopulation.activeThreat,
             });
             if (result.inserted) {
               inserted = true;
@@ -3673,6 +3721,11 @@ async function boot() {
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
     if (debugGridEnabled) dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions);
+    if (frame.steps >= simulation.maxCatchUpSteps) catchUpSaturationFrames += 1;
+    const simulationLoss = simulation.getLossMetrics();
+    dataset.simulationFrameSteps = String(frame.steps);
+    dataset.simulationCatchUpSaturationFrames = String(catchUpSaturationFrames);
+    dataset.simulationDroppedMs = simulationLoss.totalDroppedMs.toFixed(3);
     if (frame.steps > 0) input.consumeBufferedActions(snapshot.sequence);
     if (upgradePending && simulation.state === 'active' && (!progressionPilotEnabled || simulation.tick >= 2)) {
       const progressionSnapshot = getRunProgressionSnapshot(runProgression);

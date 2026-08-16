@@ -174,10 +174,12 @@ test('runtime consumes the director before enemy movement and exposes bounded te
   assert.match(source, /createEncounterDirector/);
   assert.match(source, /createEncounterDirector\(\{[^}]*seed: payload\.session\.seed/s);
   assert.match(source, /stepEncounterDirector/);
-  assert.match(source, /budgets: getEncounterSnapshot\(tick\)\.attackTokens/);
-  assert.ok(source.indexOf('lastDirectorStep = stepEncounterDirector') < source.indexOf('lastEnemyStep = stepEnemyPopulation'));
+  assert.match(source, /budgets: runtimeEncounterSnapshot\(tick\)\.attackTokens/);
+  assert.match(source, /runtimeEncounterSnapshot = \(tick\) => getEncounterSnapshot\(tick \+ \(endurancePressurePilotEnabled \? 75_600 : 0\)\)/);
+  assert.ok(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled') < source.indexOf('lastEnemyStep = stepEnemyPopulation'));
   assert.match(source, /dataset\.encounterBand/);
   assert.match(source, /dataset\.directorInsertions/);
+  assert.match(source, /dataset\.enemyAttackTokensSupport/);
 });
 
 test('a saturated ranged cap advances the spawn ordinal instead of deadlocking every spawn', () => {

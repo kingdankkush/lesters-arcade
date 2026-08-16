@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "runtime": "hmh-reboot",
+  "status": "PASS",
+  "generatedAt": "2026-08-16T22:52:50.204Z",
+  "targetEnemies": 128,
+  "profiles": [
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "seconds": 30.753,
+      "status": "PASS",
+      "sampleCount": 89,
+      "frameTimeMs": {
+        "median": 6.9,
+        "p95": 7.1,
+        "max": 20.9
+      },
+      "medianFps": 144.93,
+      "longTasks": {
+        "count": 0,
+        "maxMs": 0
+      },
+      "simulation": {
+        "tickAdvance": 1787,
+        "saturationFrames": 0,
+        "catchUpSaturationRatio": 0,
+        "droppedMs": 0
+      },
+      "occupancy": {
+        "maxBodies": 128,
+        "minBodies": 128,
+        "maxAnimatedEnemies": 64,
+        "maxThreat": 497,
+        "tokenFamilies": {
+          "melee": 6,
+          "ranged": 5,
+          "area": 4,
+          "support": 2
+        },
+        "maxProjectiles": 1,
+        "maxEffects": 13,
+        "maxSafetyStepsPerTick": 128,
+        "maxCollisionContactsPerTick": 3,
+        "maxTraversalBlocksPerTick": 0,
+        "maxAudioVoices": 5
+      },
+      "retainedHeap": {
+        "beforeBytes": 83459207,
+        "afterBytes": 39540546,
+        "growthBytes": -43918661
+      },
+      "consoleIssues": [],
+      "networkIssues": [],
+      "failures": [],
+      "screenshot": "docs/testing/VISUAL_BASELINES/current/enemy-endurance/hmh-reboot-enemy-endurance-desktop.png"
+    },
+    {
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "seconds": 30.644,
+      "status": "PASS",
+      "sampleCount": 93,
+      "frameTimeMs": {
+        "median": 6.9,
+        "p95": 7,
+        "max": 8.7
+      },
+      "medianFps": 144.93,
+      "longTasks": {
+        "count": 0,
+        "maxMs": 0
+      },
+      "simulation": {
+        "tickAdvance": 1784,
+        "saturationFrames": 0,
+        "catchUpSaturationRatio": 0,
+        "droppedMs": 0
+      },
+      "occupancy": {
+        "maxBodies": 128,
+        "minBodies": 128,
+        "maxAnimatedEnemies": 64,
+        "maxThreat": 497,
+        "tokenFamilies": {
+          "melee": 6,
+          "ranged": 5,
+          "area": 4,
+          "support": 2
+        },
+        "maxProjectiles": 1,
+        "maxEffects": 13,
+        "maxSafetyStepsPerTick": 128,
+        "maxCollisionContactsPerTick": 3,
+        "maxTraversalBlocksPerTick": 0,
+        "maxAudioVoices": 4
+      },
+      "retainedHeap": {
+        "beforeBytes": 65211736,
+        "afterBytes": 67810084,
+        "growthBytes": 2598348
+      },
+      "consoleIssues": [],
+      "networkIssues": [],
+      "failures": [],
+      "screenshot": "docs/testing/VISUAL_BASELINES/current/enemy-endurance/hmh-reboot-enemy-endurance-mobile.png"
+    }
+  ]
+}

@@ -430,7 +430,7 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /ENEMY_ARCHETYPE_IDS\.map/);
   assert.match(source, /visualMode: 'normal'/);
   assert.match(source, /resolveEnemyAttackAgainstPlayer\(event/);
-  assert.match(source, /fullAiCap:\s*getEncounterSnapshot\(tick\)\.fullAiCap/);
+  assert.match(source, /fullAiCap:\s*runtimeEncounterSnapshot\(tick\)\.fullAiCap/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyArchetypes/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDecisions/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDecisionBudget/);
