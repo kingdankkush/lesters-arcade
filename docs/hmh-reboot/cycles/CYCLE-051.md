@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 051
 
 Date: `2026-08-16`
-Status: `LOCAL SOURCE VERIFIED · PRE-EXISTING VISUAL BASELINE DRIFT OPEN · PREVIEW/PRODUCTION UNCHANGED`
+Status: `LOCAL SOURCE VERIFIED · COMMITTED dcd4a9ba · PRE-EXISTING VISUAL BASELINE DRIFT OPEN · PREVIEW/PRODUCTION UNCHANGED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `576b6388` (Cycle 050 documentation closeout)
 
@@ -67,7 +67,7 @@ Two attempted commands from stale handoff wording (`npm run design:hmh:long-run`
 
 The exact same two signatures and metrics reproduced after building and running the visual gate from an isolated clean worktree at baseline HEAD `576b6388`. Therefore they are inherited baseline drift, not a Cycle 051 visual regression. Baselines were not weakened or accepted without review. This prevents a full visual PASS and remains an explicit next-run blocker.
 
-Independent hosted review was unavailable because Hermes delegation could not authenticate to the configured Nous provider. No timeout, partial output, or unavailable reviewer was counted as PASS. Exact-index review and local commit remain pending.
+Independent hosted review was unavailable because Hermes delegation could not authenticate to the configured Nous provider. No timeout, partial output, or unavailable reviewer was counted as PASS. The frozen staged binary patch was then reviewed by the offline local `qwen3.5-4b-64k` model. Its first clean response incorrectly relabeled inherited/out-of-scope gates as patch blockers and was rejected; a bounded correction adjudicated those concrete claims against the patch and returned structured `PASS` with no findings for SHA-256 `e7170ce2753f159a61463b0d01b67771c1a0d915fd058fb8da263426485d10fb`. That exact patch was committed as `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`; its one-parent binary patch has the same SHA-256.
 
 ## Boundaries
 
@@ -79,4 +79,4 @@ Independent hosted review was unavailable because Hermes delegation could not au
 
 ## Recommended next bounded slice
 
-Finish Wave 10 evidence closure with a serial desktop/mobile **100+ active-body browser endurance** route that reads the same token/projectile/effect pressure fields over wall-clock time, captures frame/heap/network errors, and does not grant gameplay authority to evidence code. In parallel, diagnose the two inherited visual signatures against the last accepted baseline commit; do not accept new baselines until the player-visible difference is reviewed. After those gates, freeze and obtain an exact-index review for Cycle 051 before committing.
+Finish Wave 10 evidence closure as a separate slice with a serial desktop/mobile **100+ active-body browser endurance** route that reads the same token/projectile/effect pressure fields over wall-clock time, captures frame/heap/network errors, and does not grant gameplay authority to evidence code. In parallel, diagnose the two inherited visual signatures against the last accepted baseline commit; do not accept new baselines until the player-visible difference is reviewed. Keep the reviewed Cycle 051 implementation commit fixed.

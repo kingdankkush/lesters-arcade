@@ -15,7 +15,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Local and `origin/reboot/hmh-aaa-continuous` matched at `b14fbbeb` before Cycle 050 work began.
 - `origin/main`: `fa9585be7014db6515c536f9a09fdba5a3a2572f`
 - Cycle 050 is locally committed as `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba` on top of `b14fbbeb`; it has not been pushed or deployed. `origin/reboot/hmh-aaa-continuous` therefore remains at `b14fbbeb`.
-- Cycle 050 documentation closeout is local HEAD `576b6388`. Cycle 051 is a coherent uncommitted candidate on top: source verification is complete, but inherited visual-baseline drift and exact-index review remain open. Reconcile live Git before editing it.
+- Cycle 050 documentation closeout was `576b6388`. Cycle 051 implementation and evidence are locally committed as `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`; inherited visual-baseline drift remains open. Reconcile live Git before editing it.
 
 ### Production
 
@@ -75,7 +75,7 @@ f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e
 
 The independent offline hash-bound review returned `PASS` with no blockers. The failed hosted-auth attempts and the looping/partial first offline attempt were not counted as review verdicts.
 
-### Cycle 051 local source verification (2026-08-16; uncommitted)
+### Cycle 051 local source verification (2026-08-16; committed locally)
 
 - Slice: truthful 128-body attack-token, projectile/effect-pressure, recurrence, and low-FPS blocker evidence.
 - Release ledger: **2,199 evaluated = 2,148 passed + 51 exact expected legacy failures**; unexpected failures **0**.
@@ -85,7 +85,7 @@ The independent offline hash-bound review returned `PASS` with no blockers. The 
 - Build: HMH entry **384,919 bytes**; Pixi **575,891 bytes**; initial aggregate **960,810 / 1,048,576 bytes**; headroom **87,766 bytes**.
 - Browser: six-archetype desktop/mobile detail smoke PASS; all five responsive profiles had zero changed anchor pixels; performance p95 **8.2 / 8.1 ms** desktop/mobile; heap deltas **-97,631 / -4,384,170 bytes**; network/console audit had zero errors.
 - Visual baseline blocker: `frontier-relay-mobile` and `combat-engaged-desktop` fail the signature gate with the exact same metrics from an isolated clean build of baseline HEAD `576b6388`. The candidate did not cause the drift; no baseline was weakened or accepted.
-- Hosted independent review was unavailable because the configured Nous delegation provider had no access token. Exact-index review and commit remain pending; no unavailable reviewer was counted as PASS.
+- Hosted independent review was unavailable because the configured Nous delegation provider had no access token; no unavailable reviewer was counted as PASS. An offline `qwen3.5-4b-64k` correction review returned structured `PASS` with no findings for staged SHA-256 `e7170ce2753f159a61463b0d01b67771c1a0d915fd058fb8da263426485d10fb`. That exact patch was committed as `dcd4a9ba`, and the one-parent commit patch has the same hash.
 - Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, paid services, and LitVM writes were untouched.
 
 ## 2. Latest completed slice
@@ -205,7 +205,7 @@ Proposed contract:
 2. Run desktop and mobile serially over a meaningful wall-clock interval; sample frame p95/p99, retained heap, long tasks, catch-up saturation, network/console/page errors, and body/threat/token/projectile/effect pressure.
 3. Require all 128 bodies and all pressure fields to be observed non-vacuously; keep existing caps and fixed-tick safety.
 4. Reconcile `frontier-relay-mobile` and `combat-engaged-desktop` against the last accepted visual baseline commit; do not use `--accept` until player-visible review explains the delta.
-5. Freeze Cycle 051 only after exact-index review completes; then commit locally without push or deployment.
+5. Keep reviewed Cycle 051 commit `dcd4a9ba` fixed; implement browser endurance and visual reconciliation as a separate reviewed slice without push or deployment.
 
 ## 5. Exact workflow for the next session
 
@@ -249,5 +249,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production; Cycle 051 is currently an uncommitted candidate on baseline 576b6388, so do not overwrite it. Verify the 128-body deterministic soak and focused tests, then finish the remaining Wave 10 real-browser desktop/mobile 100+ active-body endurance proof using existing population/combat authority and truthful body/threat/token/projectile/effect telemetry. Also reproduce and diagnose the inherited frontier-relay-mobile and combat-engaged-desktop visual signatures from the last accepted baseline; do not weaken or accept baselines without player-visible review. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production; Cycle 051 is locally committed as dcd4a9ba, so do not overwrite or reimplement it. Verify the 128-body deterministic soak and focused tests, then finish the remaining Wave 10 real-browser desktop/mobile 100+ active-body endurance proof using existing population/combat authority and truthful body/threat/token/projectile/effect telemetry. Also reproduce and diagnose the inherited frontier-relay-mobile and combat-engaged-desktop visual signatures from the last accepted baseline; do not weaken or accept baselines without player-visible review. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing the new slice, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
 ```

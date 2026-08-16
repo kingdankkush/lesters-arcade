@@ -152,7 +152,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Exact commit patch SHA-256: `f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e`
   - Cycle ledger: `cycles/CYCLE-050.md`
 - [x] Cycle 051: truthful 128-body attack-token, projectile, effect, recurring-cycle, and low-FPS safety evidence
-  - Status: local source verified; inherited visual-baseline drift and exact-index review remain open; production unchanged
+  - Status: local source verified and committed as `dcd4a9ba`; inherited visual-baseline drift remains open; production unchanged
+  - Exact commit patch SHA-256: `e7170ce2753f159a61463b0d01b67771c1a0d915fd058fb8da263426485d10fb`
   - Benchmark: `128` bodies, `46,080` canonical safety steps, all `17` attack tokens, projectile/effect peaks `8 / 12`, no pool drops or teleports
   - Cycle ledger: `cycles/CYCLE-051.md`
 
@@ -166,8 +167,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 051 endurance-pressure evidence is locally source-verified on top of baseline `576b6388`; exact-index review and commit are pending because the visual gate retains two baseline-HEAD-reproducible signature drifts
-- Latest committed source: Cycle 050 documentation closeout `576b6388`
+- Status: Cycle 051 endurance-pressure evidence is locally source-verified and committed; the visual gate retains two baseline-HEAD-reproducible signature drifts
+- Latest committed runtime/documentation source: `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`
+- Exact Cycle 051 commit patch SHA-256: `e7170ce2753f159a61463b0d01b67771c1a0d915fd058fb8da263426485d10fb`
 - Cycle 051 candidate entry: `384,919` bytes; combined child + Pixi initial JavaScript `960,810 / 1,048,576` bytes; headroom `87,766` bytes
 - Cycle 051 benchmark: same-seed equal, seed-divergent, one-versus-four fixed-step partition invariant, two active recurrence windows, `0` teleports
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
