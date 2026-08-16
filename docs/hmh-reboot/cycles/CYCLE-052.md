@@ -101,7 +101,7 @@ Tracked reports:
 - console/network issues: `0/0`;
 - all five shipped touch controls were visible and real touch aim/fire made projectile pressure non-vacuous.
 
-Production Blender hero art, production enemy-roster atlas art, authored props, authored terrain, and canvas visibility were required on every sample. Screenshots were captured locally to the ignored `docs/testing/VISUAL_BASELINES/current/enemy-endurance/` evidence directory. Pixel checks confirmed nonblank full-size captures: desktop `1440×900`, `2,368,160` bytes, `94,519` unique colors; mobile DPR capture `488×1055`, `793,572` bytes, `93,016` unique colors. Screenshots remain supporting evidence, not the sole performance verdict.
+Production Blender hero art, production enemy-roster atlas art, authored props, authored terrain, and canvas visibility were required on every sample. Screenshots were captured locally to the ignored `docs/testing/VISUAL_BASELINES/current/enemy-endurance/` evidence directory. Final pixel checks confirmed nonblank full-size captures at desktop `1440×900` and mobile DPR `488×1055`, each with more than `90,000` unique colors. Screenshots remain supporting evidence, not the sole performance verdict.
 
 ## Broader verification
 
