@@ -148,7 +148,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: committed on continuation as `15629eba`; production unchanged
   - Cycle ledger: `cycles/CYCLE-036.md`
 - [x] Cycle 050: deterministic Whale Enforcer authored-nav chokepoint pressure and truthful heavy-role telemetry
-  - Status: locally reverified 2026-08-16; independent exact-index review and commit pending; production unchanged
+  - Status: locally certified and committed as `fc6ad3da` on 2026-08-16; production unchanged
+  - Exact commit patch SHA-256: `f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e`
   - Cycle ledger: `cycles/CYCLE-050.md`
 
 ## Cycle 020 final local candidate (historical)
@@ -161,9 +162,9 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 036 mobile weapon access, deterministic combat-state readability, exact-index review, and desktop/mobile visual/browser review certified
-- Cycle 036 runtime source: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
-- Exact Cycle 036 commit patch SHA-256: `5fa3e71570a20d1ca5b4166df06c041e244e9a7315645ae74f797752686847d6`
-- Current handoff: `../handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md`
-- Production source remains the Cycle 032/Vercel-fix release: `e8f7a73e8f23e055dd77300c2e5e7c59ec4c38e3`
+- Status: Cycle 050 Whale Enforcer authored-nav chokepoint pressure is locally certified and committed; push and deployment were not performed
+- Cycle 050 runtime source: `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba`
+- Exact Cycle 050 commit patch SHA-256: `f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e`
+- Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
+- Production remains the deployment recorded in that handoff; this local commit was not pushed or deployed
 - Settlement: disabled; hardened Web3 remains outside this release

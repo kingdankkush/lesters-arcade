@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 050
 
-Date: `2026-08-15` (scheduled-run revalidation: `2026-08-16`)
-Status: `LOCAL REVERIFIED · EXACT-INDEX REVIEW BLOCKED · PRODUCTION UNCHANGED`
+Date: `2026-08-15` (scheduled-run certification and commit: `2026-08-16`)
+Status: `LOCAL CERTIFIED · COMMITTED fc6ad3da · PRODUCTION UNCHANGED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `b14fbbeb` (Wave 10 formation-pressure closeout and handoff)
 
@@ -42,6 +42,8 @@ GREEN coverage includes synthetic open/rerouted/disconnected nav fixtures, real 
 
 Scheduled-run revalidation on 2026-08-16 independently reran the live checkout rather than relying on the prior transcript: focused enemy/nav tests `35/35`, the 128-body benchmark, syntax, release ledger, build, shell `12/12`, long-run certification, desktop/mobile enemy-detail smoke, the serial five-profile browser matrix, browser performance, four-scenario network/console audit, asset QA, security checks, Web3 read-only audits, strict repository health, CDN gate, and documentation links all completed with their expected verdicts. The rebuilt HMH entry remained `384,816` bytes and Pixi vendor `575,891` bytes (`960,707 / 1,048,576` combined; `87,869` bytes headroom). Current browser p95 was desktop/mobile `8.5 / 8.1 ms`, retained-heap deltas `-4,244,591 / -3,883,414` bytes, with zero steady-state long tasks or runtime errors. All five responsive profiles again had zero changed anchor pixels and contained touch/control geometry.
 
+Final closeout on 2026-08-16 reran the focused `35/35` tests, 128-body benchmark, syntax gate, release retirement gate (`2,195 / 2,144 / 51 / 0`), build, and post-build shell suite (`12/12`) against the frozen index. An independent offline `qwen3.5-4b-64k` review returned `PASS` with no blockers for staged binary SHA-256 `f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e`. That exact reviewed patch was committed as `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba`; its one-parent binary patch has the same SHA-256.
+
 A combined Node invocation of the load-speed test and shell test briefly failed because the load-speed test intentionally rebuilds and atomically replaces `dist` while Node ran the shell stat concurrently. This was a test-process race, not a candidate failure: the project build passed and the shell suite passed `12/12` when run serially, matching repository browser-serialization policy.
 
 ## Boundaries
@@ -50,7 +52,7 @@ A combined Node invocation of the load-speed test and shell test briefly failed 
 - No branch was pushed and `main` was not changed.
 - No wallet, contract, settlement, RPC-write, transaction, paid service, asset upload, or LitVM action occurred.
 - Parent authority and `SETTLEMENT_LIVE=false` remain unchanged.
-- The exact staged patch is frozen, but independent review could not run: Hermes delegation lacked its configured Nous token, the local Codex CLI returned `401 Unauthorized`, and the scheduled-run Claude reviewer also returned `401 OAuth access token has been revoked`. No exact-index certification or commit is claimed.
+- The first three hosted reviewer paths were unavailable: Hermes delegation lacked its configured Nous token, the local Codex CLI returned `401 Unauthorized`, and the scheduled-run Claude reviewer returned `401 OAuth access token has been revoked`. The final frozen index was instead reviewed by the independent offline local model named above before commit; no timeout or partial transcript was counted as approval.
 
 ## Recommended next bounded slice
 

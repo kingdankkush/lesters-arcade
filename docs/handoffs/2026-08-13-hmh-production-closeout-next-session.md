@@ -14,7 +14,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Published continuation head: `b14fbbebbebd76609563d8825f0824c661c3622b`
 - Local and `origin/reboot/hmh-aaa-continuous` matched at `b14fbbeb` before Cycle 050 work began.
 - `origin/main`: `fa9585be7014db6515c536f9a09fdba5a3a2572f`
-- Cycle 050 is a verified local candidate staged on top of `b14fbbeb`; it has not been committed, pushed, or deployed. Independent exact-index review is blocked by unavailable reviewer authentication.
+- Cycle 050 is locally committed as `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba` on top of `b14fbbeb`; it has not been pushed or deployed. `origin/reboot/hmh-aaa-continuous` therefore remains at `b14fbbeb`.
 
 ### Production
 
@@ -48,7 +48,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Five-profile local and production browser certification: PASS, zero anchor-pixel changes.
 - Production performance: PASS on desktop and mobile, zero runtime errors and no measured long tasks.
 
-### Cycle 050 local candidate verification (2026-08-15; revalidated 2026-08-16)
+### Cycle 050 local certification (2026-08-15; committed 2026-08-16)
 
 - Slice: deterministic Whale Enforcer authored-nav chokepoint pressure.
 - Release ledger: **2,195 evaluated = 2,144 passed + 51 exact expected legacy failures**; unexpected failures **0**.
@@ -62,16 +62,16 @@ Branch: `reboot/hmh-aaa-continuous`
 - Browser performance rerun: desktop/mobile p95 **8.2 / 8.2 ms**; retained-heap deltas **-511,220 / -559,015 bytes**; zero steady-state long tasks and zero runtime errors.
 - The 2026-08-16 scheduled run revalidated the candidate from the live checkout: focused tests **35/35**, benchmark, syntax, release **2,195 / 2,144 / 51 / 0**, build, shell **12/12**, long-run, serial browser/network/performance, asset QA, security, Web3 read-only, repo-health/CDN, and docs-link gates completed with their expected verdicts. Bundle bytes stayed **384,816 + 575,891 = 960,707 / 1,048,576**. Current desktop/mobile p95 was **8.5 / 8.1 ms**, retained heap **-4,244,591 / -3,883,414 bytes**, zero steady-state long tasks/runtime errors, and all five responsive profiles again reported zero changed anchor pixels with contained touch controls.
 - Evidence and screenshots are local under `.hermes/evidence/cron-wave10-heavy-chokepoints/` and remain uncommitted.
-- Independent exact-index review did not complete: Hermes delegation lacked its configured Nous token, the local Codex CLI returned `401 Unauthorized`, and the scheduled-run Claude reviewer returned `401 OAuth access token has been revoked`. Do not call this candidate certified or committed until a reviewer verifies the frozen staged patch.
+- The hosted reviewer paths remained unavailable: Hermes delegation lacked its configured Nous token, the local Codex CLI returned `401 Unauthorized`, and the scheduled-run Claude reviewer returned `401 OAuth access token has been revoked`. An independent offline `qwen3.5-4b-64k` exact-index review then completed against the full frozen patch and returned `PASS` with no blockers. The exact reviewed index was committed as `fc6ad3da`.
 - Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, and LitVM writes were untouched.
 
-The exact staged binary-diff SHA-256 for the v17 runtime slice was:
+The exact Cycle 050 staged and one-parent commit-patch SHA-256 is:
 
 ```text
-82f7122e3aab35bd191e12f59421c441f28b1bc684bbfdd6a8a0216fdddd192b
+f6a1c656ed045c0d0cb3f86589fec83ff76f1cb0f0f2882c7fd090b181be533e
 ```
 
-An independent hash-bound review returned `PASS` with no blockers.
+The independent offline hash-bound review returned `PASS` with no blockers. The failed hosted-auth attempts and the looping/partial first offline attempt were not counted as review verdicts.
 
 ## 2. Latest completed slice
 
