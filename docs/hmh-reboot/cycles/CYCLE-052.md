@@ -1,11 +1,13 @@
 # HMH AAA Continuous Improvement Cycle 052
 
 Date: `2026-08-16`
-Status: `LOCAL SOURCE CERTIFIED · COMMITTED 7837888a · BROWSER ENDURANCE PASS · INHERITED VISUAL BASELINE DRIFT OPEN · PREVIEW/PRODUCTION UNCHANGED`
+Status: `LOCAL SOURCE CERTIFIED · RUNTIME 7837888a · EVIDENCE CORRECTION 94209018 · BROWSER ENDURANCE PASS · INHERITED VISUAL BASELINE DRIFT OPEN · PREVIEW/PRODUCTION UNCHANGED`
 Branch: `reboot/hmh-aaa-continuous`
 Baseline: `a4cb02da7244d9f87d968ae783449036a72b76ed`
 Source commit: `7837888af7592c195eaf526921305b77a3307472`
 Exact source patch SHA-256: `9381fc018b413c16d5e5ceee08c0661feb8ed73e6a893bc527546ad5c3a8f843`
+Evidence correction commit: `94209018b747b590fa4bf6949a411204032c1108`
+Evidence correction patch SHA-256: `9cae773394eb46ab8a1bba1f8257cf23ab0f4f019a01fb069bcfe413d6046788`
 
 ## Bounded slice
 
@@ -68,13 +70,14 @@ Tracked reports:
 - projectile/effect peaks: `1/13`;
 - fixed-tick safety steps per tick: `128`;
 - collision/traversal peak: `3/0`;
-- simulation advance: `1,787` ticks;
+- simulation advance: `1,799` ticks;
 - median FPS: `144.93`;
 - p95 frame time: `7.1 ms` against `28 ms` ceiling;
+- p99 frame time: `7.2 ms`;
 - catch-up saturation: `0%`;
 - dropped simulation time: `0 ms`;
 - long tasks: `0`;
-- retained heap delta after explicit GC: `-43,918,661` bytes;
+- retained heap delta after explicit GC: `+25,337,142` bytes against `32 MiB` ceiling;
 - console/network issues: `0/0`.
 
 ### Mobile touch — 390×844 CSS viewport
@@ -84,18 +87,19 @@ Tracked reports:
 - threat peak: `497/640`;
 - token peaks: melee `6/6`, ranged `5/5`, area `4/4`, support `2/2`;
 - animated-enemy peak: `64`;
-- projectile/effect peaks: `1/13`;
+- projectile/effect peaks: `1/12`;
 - fixed-tick safety steps per tick: `128`;
 - collision/traversal peak: `3/0`;
 - simulation advance: `1,784` ticks;
 - median FPS: `144.93`;
 - p95 frame time: `7.0 ms` against `28 ms` ceiling;
+- p99 frame time: `7.1 ms`;
 - catch-up saturation: `0%`;
 - dropped simulation time: `0 ms`;
 - long tasks: `0`;
-- retained heap delta after explicit GC: `+2,598,348` bytes against `32 MiB` ceiling;
+- retained heap delta after explicit GC: `+13,549,684` bytes against `32 MiB` ceiling;
 - console/network issues: `0/0`;
-- all five shipped touch controls were visible.
+- all five shipped touch controls were visible and real touch aim/fire made projectile pressure non-vacuous.
 
 Production Blender hero art, production enemy-roster atlas art, authored props, authored terrain, and canvas visibility were required on every sample. Screenshots were captured locally to the ignored `docs/testing/VISUAL_BASELINES/current/enemy-endurance/` evidence directory. Pixel checks confirmed nonblank full-size captures: desktop `1440×900`, `2,368,160` bytes, `94,519` unique colors; mobile DPR capture `488×1055`, `793,572` bytes, `93,016` unique colors. Screenshots remain supporting evidence, not the sole performance verdict.
 
@@ -134,6 +138,8 @@ The frozen staged patch SHA-256 was:
 ```
 
 Hosted Hermes delegation could not start because the configured Nous provider had no token. A first local offline review produced findings contradicted by the patch (it claimed direct array insertion despite the explicit `attemptScheduledEnemyInsertion(...)` loop, assumed an immutable boot parameter could toggle, and treated the exact endurance-band boundary as arbitrary), so it was not counted. A bounded correction review against the same frozen hash returned `PASS` with no blockers. The one-parent binary commit patch for `7837888a` matches the reviewed hash exactly.
+
+The first source closeout omitted the requested p99 field, so a separate evidence correction added p99 to JSON/Markdown/console output and replaced the flaky mobile keyboard-only projectile probe with a real CDP touch drag on the existing aim/fire control. The final 30-second rerun passed with non-vacuous mobile projectile pressure. Exact correction hash `9cae773394eb46ab8a1bba1f8257cf23ab0f4f019a01fb069bcfe413d6046788` received an offline `PASS` with no blockers and matches commit `94209018`.
 
 ## Files changed
 
