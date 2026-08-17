@@ -47,6 +47,22 @@ export const LIQUIDATOR_BUILD_PROFILES = freezeDeep({
     chainTargets: 0,
     targetKind: 'boss',
   },
+  'melee-heavy': {
+    weaponId: 'forked-standard',
+    damagePerTick: 4,
+    distance: 80,
+    hazardOverlap: false,
+    chainTargets: 0,
+    targetKind: 'boss',
+  },
+  'crowd-control': {
+    weaponId: 'lightning-ledger',
+    damagePerTick: 2,
+    distance: 200,
+    hazardOverlap: false,
+    chainTargets: 0,
+    targetKind: 'boss',
+  },
 });
 
 function closePhase(phases, phaseId, exitTick, damage) {
@@ -80,6 +96,7 @@ export function runLiquidatorBuildMatrix({
   let lastResolvedAttack = null;
   let punishContacts = 0;
   let addCount = 0;
+  let addRoleContacts = 0;
   const activeAddIds = [];
   let accumulator = 0;
   let lastTick = startTick;
@@ -127,6 +144,14 @@ export function runLiquidatorBuildMatrix({
         chainTargets: profile.chainTargets,
         targetKind: profile.targetKind,
       });
+      const addRoleCheck = getLiquidatorRoleCheck({
+        weaponId: profile.weaponId,
+        distance: profile.distance,
+        hazardOverlap: profile.hazardOverlap,
+        chainTargets: activeAddIds.length,
+        targetKind: 'add',
+      });
+      if (addRoleCheck.applied) addRoleContacts += 1;
 
       if (profile.damagePerTick > 0) {
         const amount = Math.round(profile.damagePerTick * roleCheck.multiplier * punish.multiplier * 1_000_000) / 1_000_000;
@@ -158,6 +183,7 @@ export function runLiquidatorBuildMatrix({
     remainingHealth: Math.round(boss.health * 1_000_000) / 1_000_000,
     punishContacts,
     addCount,
+    addRoleContacts,
     perPhaseDamage,
     phases,
   });

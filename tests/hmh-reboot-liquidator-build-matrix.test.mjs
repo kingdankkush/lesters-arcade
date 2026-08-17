@@ -15,7 +15,9 @@ function digest(report) {
 }
 
 test('build profiles stay frozen and reuse existing weapon identities', () => {
-  assert.deepEqual(Object.keys(LIQUIDATOR_BUILD_PROFILES), ['no-hit', 'baseline', 'high-dps', 'low-dps']);
+  assert.deepEqual(Object.keys(LIQUIDATOR_BUILD_PROFILES), [
+    'no-hit', 'baseline', 'high-dps', 'low-dps', 'melee-heavy', 'crowd-control',
+  ]);
   assert.ok(Object.isFrozen(LIQUIDATOR_BUILD_PROFILES));
   assert.equal(LIQUIDATOR_BUILD_PROFILES.baseline.weaponId, 'coin-blaster');
   assert.equal(LIQUIDATOR_BUILD_PROFILES['high-dps'].weaponId, 'hash-rail');
@@ -26,7 +28,7 @@ test('build profiles stay frozen and reuse existing weapon identities', () => {
 });
 
 test('unknown build, partition, and seed fail closed', () => {
-  assert.throws(() => runLiquidatorBuildMatrix({ buildId: 'melee-heavy' }), /unknown liquidator build/);
+  assert.throws(() => runLiquidatorBuildMatrix({ buildId: 'overclocked' }), /unknown liquidator build/);
   assert.throws(() => runLiquidatorBuildMatrix({ buildId: 'baseline', partition: 2 }), /partition must be 1 or 4/);
   assert.throws(() => runLiquidatorBuildMatrix({ buildId: 'baseline', seed: -1 }), /non-negative/);
 });
@@ -99,6 +101,48 @@ test('phase timeline records entry, exit, and damage without rewriting boss auth
       + baseline.perPhaseDamage['total-liquidation'],
     12_000,
   );
+});
+
+test('melee-heavy Forked Standard close-punish dies before the punish window', () => {
+  const melee = runLiquidatorBuildMatrix({ buildId: 'melee-heavy', seed: 1337 });
+  const baseline = runLiquidatorBuildMatrix({ buildId: 'baseline', seed: 1337 });
+  assert.equal(melee.weaponId, 'forked-standard');
+  assert.equal(melee.roleMultiplier, LIQUIDATOR_ROLE_CHECK_MULTIPLIER);
+  assert.equal(melee.defeated, true);
+  assert.equal(melee.defeatTick, 2_609);
+  assert.ok(melee.defeatTick < baseline.defeatTick);
+  assert.equal(melee.punishContacts, 0);
+  assert.ok(melee.addCount >= 3);
+  assert.equal(melee.addRoleContacts, 0);
+  assert.ok(melee.perPhaseDamage['total-liquidation'] > 0);
+});
+
+test('crowd-control Ledger applies add-clear only after Bad Debt summons', () => {
+  const crowd = runLiquidatorBuildMatrix({ buildId: 'crowd-control', seed: 1337 });
+  const low = runLiquidatorBuildMatrix({ buildId: 'low-dps', seed: 1337 });
+  assert.equal(crowd.weaponId, 'lightning-ledger');
+  assert.equal(crowd.roleMultiplier, 1);
+  assert.equal(crowd.defeated, low.defeated);
+  assert.equal(crowd.defeatTick, low.defeatTick);
+  assert.equal(crowd.remainingHealth, low.remainingHealth);
+  assert.equal(crowd.punishContacts, low.punishContacts);
+  assert.ok(crowd.addCount >= 3);
+  assert.ok(crowd.addRoleContacts > 0);
+  assert.equal(low.addRoleContacts, 0);
+  assert.ok(crowd.addRoleContacts < 3_600);
+});
+
+test('melee-heavy and crowd-control stay partition invariant', () => {
+  for (const buildId of ['melee-heavy', 'crowd-control']) {
+    const one = runLiquidatorBuildMatrix({ buildId, seed: 1337, partition: 1 });
+    const four = runLiquidatorBuildMatrix({ buildId, seed: 1337, partition: 4 });
+    assert.equal(one.defeatTick, four.defeatTick);
+    assert.equal(one.remainingHealth, four.remainingHealth);
+    assert.equal(one.punishContacts, four.punishContacts);
+    assert.equal(one.addCount, four.addCount);
+    assert.equal(one.addRoleContacts, four.addRoleContacts);
+    assert.deepEqual(one.perPhaseDamage, four.perPhaseDamage);
+  }
 });
 
 test('punish window stays 1.1 on ticks 0-59 and role check stays 1.15', () => {
