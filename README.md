@@ -16,7 +16,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 > **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md`](docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md)
 
-> Production facts above were measured on 2026-08-17 via `curl https://lestersarcade.io/sw.js` and `npx vercel inspect https://lestersarcade.io`. Reconcile live Git and Vercel state before trusting them in a later session. Note that the deployed source sits on a hotfix branch taken from `e3679552`, not on the tip of `reboot/hmh-aaa-continuous`; the hotfix has since been merged back onto the continuation branch, but continuation work after `e3679552` is not deployed.
+> Production facts above were measured on 2026-08-17 via `curl https://lestersarcade.io/sw.js` and `npx vercel inspect https://lestersarcade.io`. Run `npm run docs:production` to fail closed if the recorded cache marker has drifted from the live service worker, then reconcile live Git and Vercel state before trusting the deployment fields. Note that the deployed source sits on a hotfix branch taken from `e3679552`, not on the tip of `reboot/hmh-aaa-continuous`; the hotfix has since been merged back onto the continuation branch, but continuation work after `e3679552` is not deployed.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -421,6 +421,7 @@ npm run smoke:portal:interactions
 npm run repo:health:strict
 npm run repo:cdn-gate
 npm run docs:links
+npm run docs:production
 ```
 
 ---

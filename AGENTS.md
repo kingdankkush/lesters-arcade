@@ -149,7 +149,10 @@ npm run design:web3-live
 npm run repo:health:strict
 npm run repo:cdn-gate
 npm run docs:links
+npm run docs:production
 ```
+
+`docs:production` is the intentional network-backed production-marker check. Keep `docs:links` offline and deterministic; use the production check when certifying or reconciling a deployment.
 
 `pnpm run build` is blocked on this machine by a parent user-level package-manager declaration. `npm run build` is the verified repository path.
 
