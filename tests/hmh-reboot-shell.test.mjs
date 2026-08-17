@@ -245,7 +245,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions both playable cabinet shells for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v17-hmh-formation-pressure'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v18-hmh-mobile-character-start'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of [
     '/hmh-reboot/index.html',

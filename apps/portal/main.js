@@ -3676,7 +3676,7 @@ function renderCombatSettingsPanel() {
     { domain: 'controls', key: 'touchSensitivity', label: 'Touch sensitivity', min: 0.5, max: 2, step: 0.05 },
     { domain: 'controls', key: 'touchScale', label: 'Touch scale', min: 0.75, max: 1.5, step: 0.05 },
     { domain: 'controls', key: 'aimAssistStrength', label: 'Aim assist', min: 0, max: 1, step: 0.05 },
-    { domain: 'display', key: 'hudScale', label: 'HUD scale', min: 0.75, max: 1.3, step: 0.05 },
+    { domain: 'accessibility', key: 'hudScale', label: 'HUD scale', min: 0.75, max: 1.3, step: 0.05 },
   ];
   for (const setting of tuningSettings) {
     const row = el('label', { className: 'combat-setting-range' });

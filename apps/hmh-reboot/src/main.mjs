@@ -333,6 +333,47 @@ async function boot() {
   });
   const touchUiEnabled = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 900;
   const app = new Application();
+  let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
+  let bridge = null;
+  if (window.parent !== window) {
+    bridge = createHmhChildBridge({
+      windowRef: window,
+      expectedParentOrigin: window.location.origin,
+      runtimeInfo: { runtimeVersion: RUNTIME_VERSION, renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements'] },
+      deferInitialization: true,
+      onInit: (payload) => {
+        initializeSession(payload);
+        setStatus('Portal session connected', `${payload.mode.toUpperCase()} // ${payload.heroId} // seed ${payload.session.seed}`);
+        queueMicrotask(() => bridge?.send('game:state', statePayload('running')));
+      },
+      onMessage: (message) => {
+        if (message.type === 'portal:pause') {
+          pauseRuntime('portal');
+        } else if (message.type === 'portal:resume') {
+          resumeRuntime('portal');
+        } else if (message.type === 'portal:settings') {
+          syncRuntimeSettings(message.payload.settings, { notify: true });
+        } else if (message.type === 'portal:restart') {
+          initializeSession(sessionPayload);
+          marker.scale.set(1);
+          bridge.send('game:state', statePayload('running'));
+        } else if (message.type === 'portal:dispose') {
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+          window.removeEventListener('keydown', handleExitKey);
+          window.removeEventListener('pointerdown', unlockCombatAudio, true);
+          window.removeEventListener('keydown', unlockCombatAudio, true);
+          app.renderer.off('resize', handleResize);
+          app.ticker.stop();
+          combatAudio.destroy();
+          cockpit?.destroy();
+          stopCurrentSession();
+          app.destroy(true);
+        }
+      },
+      onProtocolError: (error) => handleBridgeProtocolError(error),
+    });
+    bridge.start();
+  }
   await app.init({
     resizeTo: stageElement,
     background: '#071522',
@@ -832,6 +873,11 @@ async function boot() {
     musicEnabled: settings.musicEnabled,
     maxVoices: 16,
   });
+  handleBridgeProtocolError = (error) => {
+    app.ticker.stop();
+    combatAudio.pause();
+    setStatus('Bridge protocol error', error.message);
+  };
   const unlockCombatAudio = () => {
     window.removeEventListener('pointerdown', unlockCombatAudio, true);
     window.removeEventListener('keydown', unlockCombatAudio, true);
@@ -840,7 +886,6 @@ async function boot() {
   window.addEventListener('pointerdown', unlockCombatAudio, { once: true, capture: true });
   window.addEventListener('keydown', unlockCombatAudio, { once: true, capture: true });
   let elapsedMs = 0;
-  let bridge = null;
   let cockpit = null;
   let sessionPayload = null;
   let simulation = null;
@@ -954,6 +999,11 @@ async function boot() {
   let runSummaryAccumulator = null;
   let runEventSequence = 0;
   let lastAccessibleCombatStatus = '';
+  const setAccessibleCombatStatus = (message) => {
+    if (!combatStatusElement || message === lastAccessibleCombatStatus) return;
+    combatStatusElement.value = message;
+    lastAccessibleCombatStatus = message;
+  };
   let combatVisualEvents = [];
   let revealState = createLevelOneRevealState();
   revealLevelOneAt(revealState, runtimePlayerSpawn);
@@ -3741,52 +3791,11 @@ async function boot() {
   dataset.navGridBootMs = (performance.now() - navGridStartedAt).toFixed(1);
   dataset.navGridReady = 'true';
 
-  if (window.parent !== window) {
-    bridge = createHmhChildBridge({
-      windowRef: window,
-      expectedParentOrigin: window.location.origin,
-      runtimeInfo: { runtimeVersion: RUNTIME_VERSION, renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements'] },
-      onInit: (payload) => {
-        initializeSession(payload);
-        setStatus('Portal session connected', `${payload.mode.toUpperCase()} // ${payload.heroId} // seed ${payload.session.seed}`);
-        queueMicrotask(() => bridge?.send('game:state', statePayload('running')));
-      },
-      onMessage: (message) => {
-        if (message.type === 'portal:pause') {
-          pauseRuntime('portal');
-        } else if (message.type === 'portal:resume') {
-          resumeRuntime('portal');
-        } else if (message.type === 'portal:settings') {
-          syncRuntimeSettings(message.payload.settings, { notify: true });
-        } else if (message.type === 'portal:restart') {
-          initializeSession(sessionPayload);
-          marker.scale.set(1);
-          bridge.send('game:state', statePayload('running'));
-        } else if (message.type === 'portal:dispose') {
-          document.removeEventListener('visibilitychange', handleVisibilityChange);
-          window.removeEventListener('keydown', handleExitKey);
-          window.removeEventListener('pointerdown', unlockCombatAudio, true);
-          window.removeEventListener('keydown', unlockCombatAudio, true);
-          app.renderer.off('resize', handleResize);
-          app.ticker.stop();
-          combatAudio.destroy();
-          cockpit?.destroy();
-          stopCurrentSession();
-          app.destroy(true);
-        }
-      },
-      onProtocolError: (error) => {
-        app.ticker.stop();
-        combatAudio.pause();
-        setStatus('Bridge protocol error', error.message);
-      },
-    });
-    bridge.start();
+  if (bridge) {
     setStatus('Renderer ready', 'Waiting for portal session…');
+    bridge.activate();
   } else {
-    const payload = window.parent === window
-      ? createStandaloneInitPayload({ heroId: productionHeroSelection.actorId })
-      : null;
+    const payload = createStandaloneInitPayload({ heroId: productionHeroSelection.actorId });
     initializeSession(payload);
     setStatus('Standalone session ready', `${payload.mode.toUpperCase()} // seed ${payload.session.seed} // no portal authority`);
   }

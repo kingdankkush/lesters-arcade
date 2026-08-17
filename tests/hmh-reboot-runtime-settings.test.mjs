@@ -23,6 +23,15 @@ test('U9/X2 projected accessibility and audio settings have real runtime consume
   assert.match(child, /Critical audio: Liquidator warning/);
 });
 
+test('critical audio captions update the live region without crashing the active ticker', () => {
+  assert.match(child, /const setAccessibleCombatStatus = \(message\) => \{.*combatStatusElement\.value = message/s);
+});
+
+test('HUD scale tuning reads the normalized accessibility settings domain', () => {
+  assert.match(parent, /\{ domain: 'accessibility', key: 'hudScale', label: 'HUD scale'/);
+  assert.doesNotMatch(parent, /\{ domain: 'display', key: 'hudScale'/);
+});
+
 test('M4 child-originated settings persist in the parent without changing ranked bindings', () => {
   assert.match(parent, /mergeHmhRuntimeSettings/);
   assert.match(parent, /rankedActive: Boolean\(hmhRebootActive && currentSession\?\.mode === 'ranked'\)/);

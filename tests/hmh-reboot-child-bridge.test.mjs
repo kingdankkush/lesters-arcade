@@ -42,7 +42,7 @@ const init = createBridgeEnvelope({
 });
 const connect = { protocol: HMH_BRIDGE_PROTOCOL, type: 'portal:connect', nonce: 'nonce-1234567890abcdef' };
 
-function fixture() {
+function fixture({ deferInitialization = false } = {}) {
   const windowRef = new FakeWindow();
   const port = new FakePort();
   const initializations = [];
@@ -52,6 +52,7 @@ function fixture() {
     windowRef,
     expectedParentOrigin: 'https://arcade.test',
     runtimeInfo: { runtimeVersion: '0.1.0', renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize'] },
+    deferInitialization,
     onInit: (payload) => initializations.push(payload),
     onMessage: (message) => received.push(message),
     onProtocolError: (error) => errors.push(error),
@@ -94,6 +95,41 @@ test('child binds transferred port and sends ready only after validated init', (
   assert.equal(validateChildMessage(port.sent[0]).ok, true);
   assert.equal(port.sent[0].type, 'game:ready');
   assert.equal(port.sent[0].sessionId, init.sessionId);
+});
+
+test('child can capture an early portal init without advertising READY before runtime activation', () => {
+  const { windowRef, port, bridge, initializations, received, errors } = fixture({ deferInitialization: true });
+  handshake(windowRef, port);
+  port.emit(init);
+  const pause = createBridgeEnvelope({ type: 'portal:pause', sessionId: init.sessionId, messageId: 'portal-2', payload: {} });
+  port.emit(pause);
+  assert.equal(bridge.connected, true);
+  assert.equal(bridge.initialized, false);
+  assert.equal(initializations.length, 0);
+  assert.equal(received.length, 0);
+  assert.equal(errors.length, 0);
+  assert.equal(port.sent.length, 0);
+
+  bridge.activate();
+  assert.equal(bridge.initialized, true);
+  assert.equal(initializations.length, 1);
+  assert.equal(initializations[0].heroId, 'male-commando');
+  assert.equal(received.length, 1);
+  assert.equal(received[0].type, 'portal:pause');
+  assert.equal(port.sent.length, 1);
+  assert.equal(port.sent[0].type, 'game:ready');
+});
+
+test('deferred parent dispose still closes the child bridge during activation', () => {
+  const { windowRef, port, bridge, received, errors } = fixture({ deferInitialization: true });
+  handshake(windowRef, port);
+  port.emit(init);
+  port.emit(createBridgeEnvelope({ type: 'portal:dispose', sessionId: init.sessionId, messageId: 'portal-2', payload: {} }));
+  bridge.activate();
+  assert.deepEqual(received.map((message) => message.type), ['portal:dispose']);
+  assert.equal(port.closed, true);
+  assert.equal(bridge.connected, false);
+  assert.equal(errors.length, 0);
 });
 
 test('child rejects mismatched sessions and replayed parent message ids', () => {

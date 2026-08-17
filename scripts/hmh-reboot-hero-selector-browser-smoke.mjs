@@ -65,7 +65,53 @@ try {
     }
     assert.deepEqual(errors, []);
     await page.screenshot({ path: path.join(evidenceRoot, `${profile.id}.png`), fullPage: true });
-    report.push({ id: profile.id, evidence, errors });
+
+    const selectedHero = page.locator('#officialCharacterRoster .hero-card.active').first();
+    await selectedHero.click();
+    await page.waitForSelector('#officialLevelIntro:not([hidden])');
+    await page.waitForTimeout(100);
+    const startTransition = await page.evaluate(() => {
+      const intro = document.querySelector('#officialLevelIntro');
+      const begin = document.querySelector('#officialBeginLevelButton');
+      const introRect = intro?.getBoundingClientRect();
+      const beginRect = begin?.getBoundingClientRect();
+      return {
+        activeView: [...document.querySelectorAll('.official-view')].find((node) => !node.hidden)?.id ?? null,
+        scrollY,
+        viewportHeight: innerHeight,
+        introTop: introRect?.top ?? null,
+        beginTop: beginRect?.top ?? null,
+        beginBottom: beginRect?.bottom ?? null,
+      };
+    });
+    assert.equal(startTransition.activeView, 'officialLevelIntro', `${profile.id}: hero selection did not advance to level intro`);
+    assert.ok(
+      startTransition.beginTop >= 0 && startTransition.beginBottom <= startTransition.viewportHeight,
+      `${profile.id}: Begin Level CTA must be visible immediately after hero selection: ${JSON.stringify(startTransition)}`,
+    );
+    await page.screenshot({ path: path.join(evidenceRoot, `${profile.id}-level-intro.png`) });
+    await page.click('#officialBeginLevelButton');
+    await page.waitForSelector('#officialGameplay:not([hidden])', { timeout: 15_000 });
+    await page.waitForSelector('#officialCombatMount iframe[data-runtime="hmh-reboot"]', { timeout: 20_000 });
+    const childDeadline = Date.now() + 45_000;
+    let childStatus = '';
+    while (Date.now() < childDeadline) {
+      const child = page.frames().find((frame) => {
+        try { return new URL(frame.url()).pathname === '/hmh-reboot/index.html'; } catch { return false; }
+      });
+      if (child) {
+        try {
+          childStatus = await child.locator('#hmhRebootStatus').textContent({ timeout: 1_000 }) ?? '';
+          if (childStatus === 'Portal session connected') break;
+        } catch {
+          childStatus = 'frame-transition';
+        }
+      }
+      await page.waitForTimeout(250);
+    }
+    assert.equal(childStatus, 'Portal session connected', `${profile.id}: Begin Level did not connect the HMH child runtime`);
+    assert.deepEqual(errors, []);
+    report.push({ id: profile.id, evidence, startTransition, childStatus, errors });
     await page.close();
   }
   console.log(JSON.stringify({ status: 'PASS', profiles: report }, null, 2));

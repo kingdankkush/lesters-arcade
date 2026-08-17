@@ -15,6 +15,7 @@ export function createHmhChildBridge({
   windowRef = window,
   expectedParentOrigin,
   runtimeInfo,
+  deferInitialization = false,
   onInit = () => {},
   onMessage = () => {},
   onProtocolError = () => {},
@@ -24,6 +25,9 @@ export function createHmhChildBridge({
   let port = null;
   let sessionId = '';
   let messageSequence = 0;
+  let runtimeActivated = !deferInitialization;
+  let pendingInit = null;
+  const pendingParentMessages = [];
   const seenParentMessageIds = new Set();
 
   const send = (type, payload) => {
@@ -42,6 +46,24 @@ export function createHmhChildBridge({
 
   const report = (message) => onProtocolError(message instanceof Error ? message : new Error(String(message)));
 
+  const initializeFromMessage = (message) => {
+    pendingInit = null;
+    state = 'initialized';
+    onInit(message.payload);
+    send('game:ready', {
+      runtimeVersion: runtimeInfo.runtimeVersion,
+      renderer: runtimeInfo.renderer,
+      capabilities: [...runtimeInfo.capabilities],
+    });
+    for (const queuedMessage of pendingParentMessages.splice(0)) {
+      onMessage(queuedMessage);
+      if (queuedMessage.type === 'portal:dispose') {
+        stop();
+        break;
+      }
+    }
+  };
+
   const handlePortMessage = (event) => {
     const validation = validateParentMessage(event.data);
     if (!validation.ok) {
@@ -56,13 +78,28 @@ export function createHmhChildBridge({
       }
       sessionId = message.sessionId;
       seenParentMessageIds.add(message.messageId);
-      state = 'initialized';
-      onInit(message.payload);
-      send('game:ready', {
-        runtimeVersion: runtimeInfo.runtimeVersion,
-        renderer: runtimeInfo.renderer,
-        capabilities: [...runtimeInfo.capabilities],
-      });
+      if (runtimeActivated) initializeFromMessage(message);
+      else {
+        pendingInit = message;
+        state = 'awaiting-activation';
+      }
+      return;
+    }
+    if (state === 'awaiting-activation') {
+      if (message.sessionId !== sessionId) {
+        report('parent message session does not match the bound session');
+        return;
+      }
+      if (seenParentMessageIds.has(message.messageId)) {
+        report('parent message replay rejected');
+        return;
+      }
+      if (pendingParentMessages.length >= 32) {
+        report('pending parent message queue is full');
+        return;
+      }
+      seenParentMessageIds.add(message.messageId);
+      pendingParentMessages.push(message);
       return;
     }
     if (state !== 'initialized') {
@@ -109,9 +146,18 @@ export function createHmhChildBridge({
     windowRef.addEventListener('message', handleWindowMessage);
   };
 
+  const activate = () => {
+    if (state === 'closed') throw new Error('HMH child bridge is closed');
+    if (runtimeActivated) return;
+    runtimeActivated = true;
+    if (state === 'awaiting-activation') initializeFromMessage(pendingInit);
+  };
+
   function stop() {
     if (state === 'closed') return;
     state = 'closed';
+    pendingInit = null;
+    pendingParentMessages.length = 0;
     windowRef.removeEventListener('message', handleWindowMessage);
     if (port) {
       port.onmessage = null;
@@ -121,9 +167,10 @@ export function createHmhChildBridge({
 
   return {
     start,
+    activate,
     send,
     stop,
-    get connected() { return state === 'connected' || state === 'initialized'; },
+    get connected() { return state === 'connected' || state === 'awaiting-activation' || state === 'initialized'; },
     get initialized() { return state === 'initialized'; },
   };
 }

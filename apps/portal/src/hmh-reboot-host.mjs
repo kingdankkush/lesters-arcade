@@ -20,7 +20,7 @@ export function createHmhRebootHost({
   onScoreResult = () => {},
   onAchievement = () => {},
   onSettings = () => {},
-  readyTimeoutMs = 8000,
+  readyTimeoutMs = 45_000,
   setTimeoutRef = globalThis.setTimeout,
   clearTimeoutRef = globalThis.clearTimeout,
   runtimeSearch = '',
