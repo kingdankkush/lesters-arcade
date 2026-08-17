@@ -118,4 +118,9 @@ test('browser endurance gate exercises serial desktop/mobile real-time pressure 
   assert.match(source, /consoleIssues\.length/);
   assert.match(source, /networkIssues\.length/);
   assert.match(source, /page\.screenshot/);
+  assert.match(source, /async function latchProjectilePeak/);
+  assert.match(source, /requestAnimationFrame\(poll\)/);
+  assert.match(source, /latchedProjectilePeak/);
+  assert.match(source, /projectilePeak <= 0/);
+  assert.doesNotMatch(source, /movementIndex % 8/);
 });

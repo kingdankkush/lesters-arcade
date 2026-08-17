@@ -83,6 +83,20 @@ async function waitForHttp(url) {
   throw new Error(`Timed out waiting for ${url}`);
 }
 
+async function latchProjectilePeak(page, holdMs) {
+  return page.evaluate((ms) => new Promise((resolve) => {
+    let peak = 0;
+    const started = performance.now();
+    const poll = () => {
+      const count = Number(document.querySelector('#hmhRebootStage')?.dataset.projectileCount ?? 0);
+      if (Number.isFinite(count) && count > peak) peak = count;
+      if (performance.now() - started >= ms) resolve(peak);
+      else requestAnimationFrame(poll);
+    };
+    poll();
+  }), holdMs);
+}
+
 async function readStage(page) {
   return page.evaluate(() => {
     const stage = document.querySelector('#hmhRebootStage');
@@ -178,28 +192,29 @@ async function runProfile(browser, origin, profile) {
   const startedAt = Date.now();
   const movement = ['KeyD', 'KeyS', 'KeyA', 'KeyW'];
   let movementIndex = 0;
+  let latchedProjectilePeak = 0;
   while (Date.now() - startedAt < seconds * 1000) {
     const code = movement[movementIndex % movement.length];
     await page.keyboard.down(code);
     await sleep(120);
     await page.keyboard.up(code);
     await page.keyboard.down('Space');
-    await sleep(45);
+    latchedProjectilePeak = Math.max(latchedProjectilePeak, await latchProjectilePeak(page, 180));
     await page.keyboard.up('Space');
-    if (mobileAimBox && mobileCdp && movementIndex % 8 === 0) {
+    samples.push({ atSeconds: Number(((Date.now() - startedAt) / 1000).toFixed(3)), ...await readStage(page) });
+    if (mobileAimBox && mobileCdp) {
       const x = mobileAimBox.x + mobileAimBox.width * 0.5;
       const y = mobileAimBox.y + mobileAimBox.height * 0.5;
       const fireX = mobileAimBox.x + mobileAimBox.width * 0.88;
       const touchPoint = (clientX) => [{ x: clientX, y, id: 91, radiusX: 10, radiusY: 10, force: 1 }];
       await mobileCdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: touchPoint(x) });
       await mobileCdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: touchPoint(fireX) });
-      await sleep(100);
-      samples.push({ atSeconds: Number(((Date.now() - startedAt) / 1000).toFixed(3)), ...await readStage(page) });
+      latchedProjectilePeak = Math.max(latchedProjectilePeak, await latchProjectilePeak(page, 220));
       await mobileCdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      samples.push({ atSeconds: Number(((Date.now() - startedAt) / 1000).toFixed(3)), ...await readStage(page) });
     }
-    samples.push({ atSeconds: Number(((Date.now() - startedAt) / 1000).toFixed(3)), ...await readStage(page) });
     movementIndex += 1;
-    await sleep(130);
+    await sleep(80);
   }
   await page.evaluate(() => globalThis.gc?.());
   await sleep(350);
@@ -235,7 +250,9 @@ async function runProfile(browser, origin, profile) {
   for (const [family, limit] of Object.entries(TOKEN_LIMITS)) {
     if (!(familyMaxima[family] > 0 && familyMaxima[family] <= limit)) failures.push(`${family} attack token occupancy ${familyMaxima[family]} outside 1..${limit}`);
   }
-  if (Math.max(...samples.map((sample) => sample.projectileCount)) <= 0) failures.push('projectile pool was not exercised');
+  const sampledProjectilePeak = Math.max(0, ...samples.map((sample) => sample.projectileCount));
+  const projectilePeak = Math.max(sampledProjectilePeak, latchedProjectilePeak);
+  if (projectilePeak <= 0) failures.push('projectile pool was not exercised');
   if (Math.max(...effectPressures.map(({ active }) => active)) <= 0) failures.push('effect pool was not exercised');
   if (Math.max(...samples.map((sample) => sample.safetySteps)) < MIN_RETAINED_ENEMIES) failures.push('enemy safety resolver was not exercised at 100+ bodies');
   if (samples.some((sample) => sample.health <= 0 || !sample.canvasVisible)) failures.push('evidence-safe player or canvas became unavailable');
@@ -272,7 +289,8 @@ async function runProfile(browser, origin, profile) {
       maxAnimatedEnemies: Math.max(...samples.map((sample) => sample.animatedEnemies)),
       maxThreat: Math.max(...threatPressures.map(({ active }) => active)),
       tokenFamilies: familyMaxima,
-      maxProjectiles: Math.max(...projectilePressures.map(({ active }) => active)),
+      maxProjectiles: Math.max(latchedProjectilePeak, ...projectilePressures.map(({ active }) => active)),
+      latchedProjectilePeak,
       maxEffects: Math.max(...effectPressures.map(({ active }) => active)),
       maxSafetyStepsPerTick: Math.max(...samples.map((sample) => sample.safetySteps)),
       maxCollisionContactsPerTick: Math.max(...samples.map((sample) => sample.collisionContacts)),

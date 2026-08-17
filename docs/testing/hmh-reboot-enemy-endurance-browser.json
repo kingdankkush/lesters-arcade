@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runtime": "hmh-reboot",
   "status": "PASS",
-  "generatedAt": "2026-08-16T23:06:20.543Z",
+  "generatedAt": "2026-08-17T06:39:39.726Z",
   "targetEnemies": 128,
   "profiles": [
     {
@@ -11,22 +11,22 @@
         "width": 1440,
         "height": 900
       },
-      "seconds": 30.963,
+      "seconds": 30.84,
       "status": "PASS",
-      "sampleCount": 90,
+      "sampleCount": 65,
       "frameTimeMs": {
-        "median": 6.9,
-        "p95": 7.1,
-        "p99": 7.2,
-        "max": 21
+        "median": 13.8,
+        "p95": 20.8,
+        "p99": 21,
+        "max": 34.8
       },
-      "medianFps": 144.93,
+      "medianFps": 72.46,
       "longTasks": {
         "count": 0,
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1799,
+        "tickAdvance": 1781,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
@@ -43,16 +43,17 @@
           "support": 2
         },
         "maxProjectiles": 1,
-        "maxEffects": 13,
+        "latchedProjectilePeak": 1,
+        "maxEffects": 14,
         "maxSafetyStepsPerTick": 128,
         "maxCollisionContactsPerTick": 3,
         "maxTraversalBlocksPerTick": 0,
         "maxAudioVoices": 4
       },
       "retainedHeap": {
-        "beforeBytes": 58092559,
-        "afterBytes": 83429701,
-        "growthBytes": 25337142
+        "beforeBytes": 48594135,
+        "afterBytes": 53727730,
+        "growthBytes": 5133595
       },
       "consoleIssues": [],
       "networkIssues": [],
@@ -65,22 +66,22 @@
         "width": 390,
         "height": 844
       },
-      "seconds": 30.763,
+      "seconds": 31.436,
       "status": "PASS",
-      "sampleCount": 99,
+      "sampleCount": 82,
       "frameTimeMs": {
-        "median": 6.9,
-        "p95": 7,
-        "p99": 7.1,
-        "max": 14
+        "median": 7,
+        "p95": 13.9,
+        "p99": 14,
+        "max": 27.9
       },
-      "medianFps": 144.93,
+      "medianFps": 142.86,
       "longTasks": {
         "count": 0,
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1784,
+        "tickAdvance": 1817,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
@@ -97,16 +98,17 @@
           "support": 2
         },
         "maxProjectiles": 1,
-        "maxEffects": 12,
+        "latchedProjectilePeak": 1,
+        "maxEffects": 13,
         "maxSafetyStepsPerTick": 128,
         "maxCollisionContactsPerTick": 3,
         "maxTraversalBlocksPerTick": 0,
         "maxAudioVoices": 4
       },
       "retainedHeap": {
-        "beforeBytes": 47876797,
-        "afterBytes": 61426481,
-        "growthBytes": 13549684
+        "beforeBytes": 68790050,
+        "afterBytes": 51154679,
+        "growthBytes": -17635371
       },
       "consoleIssues": [],
       "networkIssues": [],
