@@ -1,9 +1,31 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 export const RETIREMENT_LEDGER_SCHEMA = 'hmh-reboot-legacy-test-retirement-v1';
+export const GATE_REPORT_RELATIVE_PATH = 'docs/testing/hmh-reboot-test-retirement-gate.json';
+
+export function buildGateReport(result) {
+  return {
+    schemaVersion: 1,
+    gate: 'hmh-reboot-test-retirement',
+    status: result?.ok ? 'PASS' : 'FAIL',
+    counts: result?.summary?.counts ?? null,
+    expectedFailureCount: result?.expectedFailureCount ?? null,
+    errors: result?.errors ?? [],
+  };
+}
+
+// Never throws: a report-writing problem must not mask or replace the gate's
+// own verdict, which is the thing the caller actually needs.
+function writeGateReport(repoRoot, result) {
+  try {
+    const target = path.join(repoRoot, GATE_REPORT_RELATIVE_PATH);
+    mkdirSync(path.dirname(target), { recursive: true });
+    writeFileSync(target, `${JSON.stringify(buildGateReport(result), null, 2)}\n`, 'utf8');
+  } catch {}
+}
 
 function normalizeAssertion(value) {
   return String(value ?? '').replace(/\s+\(\d+(?:\.\d+)?ms\)$/, '').trim();
@@ -131,6 +153,18 @@ export function runRetirementGate({ repoRoot = process.cwd() } = {}) {
   if (String(child.stderr ?? '').trim()) result.errors.push(`test reporter stderr was not empty: ${String(child.stderr).trim()}`);
   result.ok = result.errors.length === 0;
 
+  // The verdict prints to stdout but the diagnosis printed to stderr, so any
+  // caller piping this gate through grep/tail kept "FAIL" and silently dropped
+  // every reason for it. A promote was held on 2026-08-17 by exactly that: one
+  // unreproducible FAIL whose cause had already been discarded. The report file
+  // survives piping, so the next failure stays diagnosable.
+  //
+  // Note the three non-test failure modes above — child exit status, non-empty
+  // stderr, and termination by signal. Each reports FAIL with zero failing
+  // tests, so "which errors are present" is the difference between broken code
+  // and a hiccup in the test process environment.
+  writeGateReport(repoRoot, result);
+
   if (result.ok) {
     const counts = result.summary.counts;
     console.log(`HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=${counts.tests} passed=${counts.passed} expected_failures=${result.expectedFailureCount}`);
@@ -139,6 +173,7 @@ export function runRetirementGate({ repoRoot = process.cwd() } = {}) {
 
   console.error('HMH_REBOOT_TEST_RETIREMENT_GATE FAIL');
   for (const error of result.errors) console.error(`- ${error}`);
+  console.error(`- full report written to ${GATE_REPORT_RELATIVE_PATH}`);
   return 1;
 }
 

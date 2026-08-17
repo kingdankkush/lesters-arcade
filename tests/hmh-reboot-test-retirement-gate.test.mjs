@@ -3,7 +3,11 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
-import { verifyRetirementGate } from '../scripts/hmh-reboot-test-retirement-gate.mjs';
+import {
+  GATE_REPORT_RELATIVE_PATH,
+  buildGateReport,
+  verifyRetirementGate,
+} from '../scripts/hmh-reboot-test-retirement-gate.mjs';
 
 const repoRoot = path.resolve('retirement-gate-fixture-repo');
 const legacyFile = path.join(repoRoot, 'tests', 'legacy-art.test.mjs');
@@ -112,6 +116,53 @@ test('retirement gate rejects missing or inconsistent aggregate summaries', () =
   const inconsistent = verifyRetirementGate({ ledger, events: inconsistentEvents, repoRoot });
   assert.equal(inconsistent.ok, false);
   assert.match(inconsistent.errors.join('\n'), /summary failed count 2 does not match observed failures 1/i);
+});
+
+test('gate report keeps the failure diagnosis, which stderr alone did not survive piping', () => {
+  const events = exactEvents();
+  events.splice(1, 0, {
+    type: 'test:fail',
+    name: 'new runtime regression',
+    file: runtimeFile,
+    detailsType: 'test',
+    nesting: 0,
+  });
+  events.at(-1).counts.failed = 2;
+  events.at(-1).counts.tests = 3;
+
+  const report = buildGateReport(verifyRetirementGate({ ledger, events, repoRoot }));
+  assert.equal(report.status, 'FAIL');
+  assert.equal(report.gate, 'hmh-reboot-test-retirement');
+  assert.match(report.errors.join('\n'), /unexpected failure.*new runtime regression/i);
+});
+
+test('gate report records the passing counts a promote decision is made from', () => {
+  const report = buildGateReport(verifyRetirementGate({ ledger, events: exactEvents(), repoRoot }));
+  assert.equal(report.status, 'PASS');
+  assert.deepEqual(report.errors, []);
+  assert.equal(report.expectedFailureCount, 1);
+  assert.equal(report.counts.tests, 2);
+  assert.equal(report.counts.passed, 1);
+});
+
+test('gate report survives the failure modes that leave no aggregate summary', () => {
+  // Child exit status, non-empty stderr, and termination by signal all report
+  // FAIL with no summary event. That is precisely when the reasons matter, so
+  // building the report must not throw on the missing counts.
+  const noSummary = buildGateReport(verifyRetirementGate({ ledger, events: exactEvents().slice(0, 1), repoRoot }));
+  assert.equal(noSummary.status, 'FAIL');
+  assert.equal(noSummary.counts, null);
+  assert.match(noSummary.errors.join('\n'), /aggregate test summary is missing/i);
+
+  const empty = buildGateReport({});
+  assert.equal(empty.status, 'FAIL');
+  assert.equal(empty.counts, null);
+  assert.equal(empty.expectedFailureCount, null);
+  assert.deepEqual(empty.errors, []);
+});
+
+test('gate report is written where the other release evidence lives', () => {
+  assert.equal(GATE_REPORT_RELATIVE_PATH, 'docs/testing/hmh-reboot-test-retirement-gate.json');
 });
 
 test('Vercel uses the ledger-checked release suite without weakening raw npm test', async () => {
