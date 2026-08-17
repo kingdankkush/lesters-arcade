@@ -183,9 +183,17 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: locally committed as `6bf8faf4`; production unchanged
   - Cycle ledger: `cycles/CYCLE-058.md`
 - [x] Cycle 059: height-aware authored-cover counterplay for locked Liquidator line pressure
-  - Status: locally exact-index certified; commit pending; production unchanged
+  - Status: locally exact-index certified and committed as `31db9e9a`; production unchanged
   - Evidence: `2,219` release tests, twelve zero-delta visual scenes, desktop/mobile browser/network/performance PASS
   - Cycle ledger: `cycles/CYCLE-059.md`
+- [x] Cycle 060: fixed-tick Liquidator production phase art/audio presentation
+  - Status: locally source/browser certified and committed as `c5c87101`; production unchanged
+  - Evidence: production phase atlas/audio, one-time transition cues, responsive desktop/mobile proof, entry `389,400` bytes
+  - Cycle ledger: `cycles/CYCLE-060.md`
+- [x] Cycle 061: deterministic Margin Call safe-sector rotation
+  - Status: locally source/browser certified; local commit pending; production unchanged
+  - Evidence: locked `east-west -> north-south` safe circles, exact boundary behavior, 60/30/20 equality, desktop/mobile browser proof
+  - Cycle ledger: `cycles/CYCLE-061.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -197,12 +205,13 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 059 closes the first open Wave 11 positional seam by routing locked boss lines through existing authored combat cover and shared height-aware LOS
-- Latest committed source before Cycle 059: `6bf8faf4`; Cycle 059 exact-index review is complete and its local commit remains pending
-- Candidate entry: `389,007` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `964,898 / 1,048,576` bytes; headroom `83,678` bytes
-- Release evidence: `2,219` evaluated = `2,168` passed + `51` exact expected legacy failures; unexpected failures `0`
-- Browser evidence: desktop/portrait-touch/world-tour combat PASS, four network scenarios with zero errors, desktop/mobile performance PASS, and all twelve visual scenes exact `0 / 0 / 0`
-- Wave 11 matrix now covers no-hit, baseline, high/low DPS, melee-heavy, and crowd-control. Next bounded seam: one deterministic phase-two safe-sector rotation using existing tell/resolution authority
+- Status: Cycle 061 completes the bounded Wave 11 phase-two positional seam by rotating two locked Circuit Breaker safe-circle layouts through the existing tell/renderer/resolution authority
+- Starting source: `c5c87101`; the Cycle 061 local commit is pending
+- Candidate entry: `389,579` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `965,470 / 1,048,576` bytes; headroom `83,106` bytes
+- Release evidence: `2,224` evaluated = `2,173` passed + `51` exact expected legacy failures; unexpected failures `0`
+- Browser evidence: desktop/mobile safe-sector sequence PASS, four network scenarios with zero errors, desktop/mobile performance PASS, and all twelve visual scenes exact `0 / 0 / 0`
+- Wave 11 now covers no-hit, baseline, high/low DPS, melee-heavy, crowd-control, authored height-aware cover, production phase presentation, and deterministic phase-two safe-sector rotation
+- Next bounded seam: return to Priority C with one canonical crit-upgrade offer/selection routed through the real weapon-to-Liquidator long-run benchmark
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
-- Settlement: disabled; hardened Web3 remains outside this release
+- Settlement and Web3 writes remain outside this release

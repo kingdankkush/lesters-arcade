@@ -45,6 +45,7 @@ const telegraphProjection = (point) => ({ x: point.x * 0.5 + 12, y: point.y * 0.
 function runTimeline(partition) {
   const boss = createLiquidatorBoss({ id: 'liquidator', x: 0, y: 0, startTick: 0 });
   const events = [];
+  const safeSectorEvents = [];
   let accumulator = 0;
   for (let frame = 0; boss.elapsedTick < LIQUIDATOR_TARGET_FIGHT_TICKS; frame += 1) {
     accumulator += partition;
@@ -52,10 +53,18 @@ function runTimeline(partition) {
       const tick = boss.elapsedTick + 1;
       const report = stepLiquidatorBoss({ boss, tick, player: PLAYER });
       events.push(...report.events.map((event) => `${tick}:${event.type}:${event.attackId ?? event.phaseId}`));
+      safeSectorEvents.push(...report.events
+        .filter((event) => event.attackId === 'circuit-breaker')
+        .map((event) => ({
+          tick,
+          type: event.type,
+          telegraphId: event.telegraphId,
+          geometry: event.geometry,
+        })));
       accumulator -= 1;
     }
   }
-  return { boss, events };
+  return { boss, events, safeSectorEvents };
 }
 
 test('Liquidator defines a frozen one-minute three-phase fight with six primitives and two supers', () => {
@@ -81,8 +90,12 @@ test('attack order and phase events are identical across 60/30/20 render partiti
   const a = runTimeline(1);
   const b = runTimeline(2);
   const c = runTimeline(3);
+  const repeated = runTimeline(1);
   assert.deepEqual(a.events, b.events);
   assert.deepEqual(a.events, c.events);
+  assert.deepEqual(a.safeSectorEvents, b.safeSectorEvents);
+  assert.deepEqual(a.safeSectorEvents, c.safeSectorEvents);
+  assert.deepEqual(a.safeSectorEvents, repeated.safeSectorEvents);
   const tells = a.events.filter((event) => event.includes(':tell:'));
   const resolves = a.events.filter((event) => event.includes(':attack:') || event.includes(':add-wave:'));
   assert.equal(tells.length, LIQUIDATOR_ATTACK_PLAN.length);
@@ -249,6 +262,56 @@ test('super attacks expose strong safe zones and resolve outside rather than ins
   assert.equal(resolveLiquidatorAttack({ event: superAttack, player: { x: 500, y: 500, groundZ: 0 } }).hit, true);
 });
 
+test('Margin Call rotates two locked safe-sector tells through the existing safe-circle resolver', () => {
+  const boss = createLiquidatorBoss({ id: 'sector-liquidator', x: 0, y: 0, startTick: 0 });
+  const tells = [];
+  const attacks = [];
+  for (let tick = 1; tick <= 2_160; tick += 1) {
+    const report = stepLiquidatorBoss({ boss, tick, player: PLAYER });
+    tells.push(...report.events.filter((event) => event.type === 'tell' && event.attackId === 'circuit-breaker'));
+    attacks.push(...report.events.filter((event) => event.type === 'attack' && event.attackId === 'circuit-breaker'));
+  }
+
+  assert.deepEqual(tells.map((event) => event.tick), [1_260, 2_040]);
+  assert.deepEqual(attacks.map((event) => event.tick), [1_380, 2_160]);
+  assert.deepEqual(tells.map((event) => event.geometry.sectorId), ['east-west', 'north-south']);
+  assert.deepEqual(tells.map((event) => event.geometry.zones), [
+    [{ x: -150, y: 0 }, { x: 150, y: 0 }],
+    [{ x: 0, y: -150 }, { x: 0, y: 150 }],
+  ]);
+  assert.ok(tells.every((event) => event.geometry.type === 'safe-circles' && event.geometry.radius === 76));
+  for (let index = 0; index < tells.length; index += 1) {
+    assert.strictEqual(attacks[index].geometry, tells[index].geometry, 'resolution must reuse the geometry locked at tell start');
+    const safe = attacks[index].geometry.zones[0];
+    const radius = attacks[index].geometry.radius;
+    assert.equal(resolveLiquidatorAttack({
+      event: attacks[index],
+      player: { x: safe.x + radius, y: safe.y, groundZ: 0 },
+    }).hit, false, 'the exact safe-circle boundary remains safe');
+    assert.equal(resolveLiquidatorAttack({
+      event: attacks[index],
+      player: { x: safe.x + radius + 1e-6, y: safe.y, groundZ: 0 },
+    }).hit, true, 'the first point outside the locked safe circle is unsafe');
+
+    const graphics = new RecordingGraphics();
+    const rendered = renderLiquidatorTelegraph({
+      graphics,
+      pending: tells[index],
+      groundZ: tells[index].groundZ,
+      cameraZoom: 1,
+      worldToScreen: telegraphProjection,
+    });
+    assert.equal(rendered.primitiveCount, 2);
+    assert.equal(graphics.calls.filter(([operation]) => operation === 'circle').length, 2);
+  }
+
+  assert.deepEqual(getLiquidatorPunishWindow({
+    phaseId: 'margin-call',
+    attackId: 'circuit-breaker',
+    ticksSinceResolve: 0,
+  }), { active: false, multiplier: 1, windowId: null });
+});
+
 test('bad-debt summon creates one deterministic bounded candidate per locked tell site', () => {
   const boss = createLiquidatorBoss({ id: 'summon-liquidator', x: 0, y: 0, startTick: 0 });
   let addWave;
@@ -344,6 +407,7 @@ test('boss defeat emits exactly one run-event without score, wallet, or settleme
 
 test('runtime routes boss attacks and defeat through canonical combat and run-event boundaries', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const browserSmoke = readFileSync(new URL('../scripts/hmh-reboot-enemy-boss-presentation-browser-smoke.mjs', import.meta.url), 'utf8');
   assert.match(source, /createLiquidatorBoss/);
   assert.match(source, /stepLiquidatorBoss/);
   assert.match(source, /resolveLiquidatorAttack/);
@@ -357,6 +421,11 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.ok(source.indexOf('roleCheckedCombatHitIntents') < source.indexOf('lastCombatResolution = resolveCombatHits'));
   assert.ok(source.indexOf('lastCombatResolution = resolveCombatHits') < source.indexOf('applyLiquidatorDamage({ boss: liquidatorBoss'));
   assert.match(source, /(?:stageElement\.dataset|dataset)\.bossLastRoleCheck/);
+  assert.match(source, /dataset\.bossSafeSector/);
+  assert.match(source, /pending\.geometry\?\.sectorId/);
+  assert.match(browserSmoke, /bossSafeSector === 'east-west'/);
+  assert.match(browserSmoke, /bossSafeSector === 'north-south'/);
+  assert.match(browserSmoke, /bossSafeZoneCount.*2/);
   assert.match(source, /getLiquidatorPunishWindow/);
   assert.match(source, /lastBossPunishWindow/);
   assert.match(source, /punishMultiplier/);

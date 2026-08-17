@@ -2023,6 +2023,9 @@ async function boot() {
         dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
         dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
         dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
+        const pendingSafeSector = liquidatorBoss?.pendingAttacks.find((pending) => pending.geometry?.sectorId);
+        dataset.bossSafeSector = pendingSafeSector?.geometry.sectorId ?? '';
+        dataset.bossSafeZoneCount = String(pendingSafeSector?.geometry.zones.length ?? 0);
         dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
         dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
         dataset.bossLastRoleCheck = lastBossRoleCheck?.roleId ?? '';

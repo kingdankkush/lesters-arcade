@@ -41,16 +41,21 @@ export const LIQUIDATOR_ATTACK_DEFINITIONS = freezeDeep({
   'total-liquidation-super': defineAttack({ id: 'total-liquidation-super', tier: 'super', tellTicks: 150, recoveryTicks: 150, damage: 30, telegraph: 'three final safe circles', geometry: { type: 'safe-circles', radius: 68, count: 3 } }),
 });
 
+const MARGIN_CALL_SAFE_SECTOR_SEQUENCE = freezeDeep([
+  { id: 'east-west', offsets: [{ x: -150, y: 0 }, { x: 150, y: 0 }] },
+  { id: 'north-south', offsets: [{ x: 0, y: -150 }, { x: 0, y: 150 }] },
+]);
+
 export const LIQUIDATOR_ATTACK_PLAN = freezeDeep([
   { startTick: 60, attackId: 'crash-lane' },
   { startTick: 300, attackId: 'debt-collection' },
   { startTick: 540, attackId: 'liquidation-zone' },
   { startTick: 780, attackId: 'short-squeeze-burst' },
   { startTick: 1_020, attackId: 'crash-lane' },
-  { startTick: 1_260, attackId: 'circuit-breaker' },
+  { startTick: 1_260, attackId: 'circuit-breaker', safeSectorIndex: 0 },
   { startTick: 1_560, attackId: 'margin-call-dash' },
   { startTick: 1_800, attackId: 'bad-debt-summon' },
-  { startTick: 2_040, attackId: 'liquidation-zone' },
+  { startTick: 2_040, attackId: 'circuit-breaker', safeSectorIndex: 1 },
   { startTick: 2_280, attackId: 'crash-lane' },
   { startTick: 2_460, attackId: 'total-liquidation-super' },
   { startTick: 2_820, attackId: 'bad-debt-summon' },
@@ -83,7 +88,7 @@ function plannedStarts(elapsedTick) {
   if (elapsedTick < LIQUIDATOR_ENDLESS_LOOP_START_TICK) {
     return LIQUIDATOR_ATTACK_PLAN
       .filter((entry) => entry.startTick === elapsedTick)
-      .map((entry) => ({ attackId: entry.attackId, planKey: String(entry.startTick) }));
+      .map((entry) => ({ attackId: entry.attackId, planKey: String(entry.startTick), safeSectorIndex: entry.safeSectorIndex }));
   }
   const loopTick = elapsedTick - LIQUIDATOR_ENDLESS_LOOP_START_TICK;
   const cycleIndex = Math.floor(loopTick / LIQUIDATOR_ENDLESS_CYCLE_TICKS);
@@ -93,7 +98,7 @@ function plannedStarts(elapsedTick) {
     .map((entry) => ({ attackId: entry.attackId, planKey: `loop${cycleIndex}-${entry.offset}` }));
 }
 
-function geometryFor(definition, boss, target) {
+function geometryFor(definition, boss, target, plan) {
   const origin = { x: boss.x, y: boss.y };
   if (definition.geometry.type === 'line') return freezeDeep({ type: 'line', origin, target, width: definition.geometry.width });
   if (definition.geometry.type === 'circle') return freezeDeep({ type: 'circle', center: target, radius: definition.geometry.radius });
@@ -102,6 +107,16 @@ function geometryFor(definition, boss, target) {
   if (definition.geometry.type === 'summon-sites') return freezeDeep({ type: 'summon-sites', sites: [{ x: origin.x - 180, y: origin.y - 120 }, { x: origin.x + 180, y: origin.y - 120 }, { x: origin.x, y: origin.y + 190 }] });
   const count = definition.geometry.count;
   const radius = definition.geometry.radius;
+  if (definition.id === 'circuit-breaker') {
+    const sector = MARGIN_CALL_SAFE_SECTOR_SEQUENCE[plan.safeSectorIndex];
+    if (!sector) throw new TypeError('circuit-breaker safe sector is required');
+    return freezeDeep({
+      type: 'safe-circles',
+      sectorId: sector.id,
+      zones: sector.offsets.map((offset) => ({ x: origin.x + offset.x, y: origin.y + offset.y })),
+      radius,
+    });
+  }
   const zones = count === 2
     ? [{ x: origin.x - 150, y: origin.y }, { x: origin.x + 150, y: origin.y }]
     : [{ x: origin.x - 170, y: origin.y - 80 }, { x: origin.x + 170, y: origin.y - 80 }, { x: origin.x, y: origin.y + 170 }];
@@ -164,7 +179,7 @@ export function stepLiquidatorBoss({ boss, tick, player } = {}) {
       telegraphId,
       target,
       origin: freezeDeep({ x: boss.x, y: boss.y }),
-      geometry: geometryFor(definition, boss, target),
+      geometry: geometryFor(definition, boss, target, plan),
       groundZ: boss.groundZ,
       resolveTick: tick + definition.tellTicks,
     };

@@ -6,7 +6,7 @@ Branch: `reboot/hmh-aaa-continuous`
 
 > **Current continuation authority:** this document supersedes the execution status and first-action instructions in the 2026-08-06 HMH handoffs. Keep those documents for detailed weapon, world, art, and acceptance-criteria intent. Reconcile live Git and Vercel state before trusting any checkpoint below.
 
-> **2026-08-17 continuation update:** Cycles 054–058 are committed through `6bf8faf4`. Cycle 059 is locally exact-index certified on top of that commit and awaits its local commit. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–059 continuation work was pushed, deployed, or promoted.
+> **2026-08-17 continuation update:** Cycles 054–060 are committed through `c5c87101`. Cycle 061 is locally source/browser certified on top of that commit and awaits its local commit. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–061 continuation work was pushed, deployed, or promoted.
 
 ## 1. Live checkpoint
 
@@ -117,17 +117,19 @@ The independent offline hash-bound review returned `PASS` with no blockers. The 
 - Release ledger remains **2,201 evaluated = 2,150 passed + 51 exact expected legacy failures**; syntax, build, assets, contracts, and strict repo health pass.
 - Production still serves cache marker `lesters-arcade-v17-hmh-formation-pressure`; `SETTLEMENT_LIVE=false`; no push, deployment, promotion, wallet, contract, settlement, transaction, or LitVM write occurred.
 
-### Cycles 054–059 continuation update (2026-08-17)
+### Cycles 054–061 continuation update (2026-08-17)
 
 - Cycle 054 merged the deployed mobile-character-start hotfix into continuation so later promotion cannot regress the shipped startup fix.
 - Cycles 055 and 058 complete the six named deterministic Liquidator build profiles: no-hit, baseline, high-DPS, low-DPS, melee-heavy, and crowd-control.
 - Cycle 056 hardened the 128-body real-browser projectile observation without weakening the non-vacuity gate.
 - Cycle 057 reconciled README and agent policy with current deployed HMH/Chikun truth.
 - Cycle 059 routes locked Liquidator line pressure through the existing authored `combatCover` blockers and shared height-aware LOS resolver. Tall cover protects; low/non-cover props do not; the real Liquidation Market east lean-to is behavior-tested from the arena origin.
-- Cycle 059 release ledger: **2,219 evaluated = 2,168 passed + 51 exact expected legacy failures**; unexpected failures **0**.
-- Child entry/vendor/combined initial JS: **389,007 / 575,891 / 964,898 bytes**; headroom **83,678 bytes**.
-- Desktop, portrait-touch, and world-tour combat browser evidence passes with no console/page errors. Network audit passes all four scenarios. Desktop/mobile performance passes. All twelve visual scenes are exact zero delta.
-- Production, Preview, aliases, rollback, `main`, wallets, contracts, settlement, transactions, paid/external services, asset uploads, and LitVM writes remain untouched. `SETTLEMENT_LIVE=false`.
+- Cycle 060 binds fixed-tick Liquidator phase transitions to production phase atlases and one-time boss-warning audio while keeping presentation outside simulation authority.
+- Cycle 061 completes the phase-two positional seam with locked `east-west -> north-south` Circuit Breaker safe circles at authored ticks 1,260 and 2,040, exact boundary behavior, and desktop/mobile runtime evidence.
+- Cycle 061 release ledger: **2,224 evaluated = 2,173 passed + 51 exact expected legacy failures**; unexpected failures **0**.
+- Child entry/vendor/combined initial JS: **389,579 / 575,891 / 965,470 bytes**; headroom **83,106 bytes**.
+- Desktop/mobile phase-two browser evidence passes with two safe zones and two telegraph primitives in each tell, positive player health, and no overflow/errors. Network audit passes all four scenarios. Desktop/mobile performance passes. All twelve visual scenes are exact zero delta.
+- Production, Preview, aliases, rollback, `main`, wallets, contracts, settlement, transactions, paid/external services, asset uploads, and LitVM writes remain untouched.
 
 ## 2. Latest completed slice
 
@@ -205,20 +207,21 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
   - bounded anti-clumping and anti-perfect-ring behavior;
   - animation readability priority;
   - 128-body deterministic benchmark and canonical per-tick safety proof.
-- Wave 11 partially complete:
+- Wave 11 substantially complete:
   - Liquidator deterministic phase timeline and certified presentation;
   - bounded Bad Debt adds;
   - boss warning captions;
   - weapon-role checks without hard immunity;
+  - authored height-aware cover counterplay;
+  - deterministic phase-two safe-sector rotation;
   - final-phase 60-tick recovery punish window.
 
 ### Immediate remaining items
 
-1. **Finish Wave 11 Liquidator positional checks.**
-   - Six-profile build-matrix coverage is complete in Cycles 055/058.
-   - Phase-one cover counterplay is complete in Cycle 059 using existing authored blockers and height-aware LOS.
-   - Add one deterministic phase-two safe-sector rotation through the existing tell/resolution seam; do not rewrite boss AI.
-   - Preserve the existing final-phase punish window, ordinary-weapon damage, role multiplier `1.15`, punish multiplier `1.1`, and ticks `0–59` active / tick `60` inactive.
+1. **Return to Priority C with one canonical weapon-upgrade benchmark seam.**
+   - The real ordinary weapon -> combat resolver -> Liquidator benchmark is already present and deterministic.
+   - Route one existing crit upgrade through canonical offer/selection data into that benchmark; do not add a second progression or combat authority.
+   - Preserve ordinary-weapon viability, fixed-tick damage authority, role multiplier `1.15`, final-phase punish multiplier `1.1`, and partition equality.
 
 2. **Wave 11 power-up audit before expansion.**
    - Audit heal, caches, time dilation, berserk, nuke, stack/reset policy, boss safety, silhouette, audio, and telemetry.
@@ -240,22 +243,22 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ## 4. Recommended next bounded slice
 
-Complete the smallest **Wave 11 Liquidator phase-two safe-sector rotation seam** using the existing phase, locked-tell, safe-zone geometry, telegraph renderer, attack resolver, and authored arena authority.
+Complete the smallest **Priority C weapon-upgrade -> long-run benchmark seam** using the existing run-progression offer/selection data, weapon system, combat resolver, and deterministic Liquidator target.
 
 Why this slice:
 
-- Cycles 055/058 close all six named build profiles.
-- Cycle 059 adds phase-one cover counterplay without changing tell geometry or damage authority.
-- The final phase already has its bounded authored recovery punish window.
-- Phase two is now the smallest remaining positional gap and can reuse safe-zone geometry already understood by runtime and renderer.
+- Cycle 061 closes the remaining bounded Wave 11 phase-two positional gap without a boss-AI rewrite.
+- Cycle 059 already connects one ordinary weapon to the real combat resolver and deterministic boss target.
+- The next evidence gap is upgrade/build variance through canonical progression data, not another boss attack or simulator-only damage table.
+- A single crit upgrade crosses progression, weapon damage, boss outcome, telemetry, and long-run certification while staying bounded.
 
 Proposed contract:
 
-1. Author one bounded phase-two safe-sector sequence from stable tick/phase data; no runtime randomness and no second boss authority.
-2. Lock each sector at tell start and route damage through the existing safe-zone geometry resolver.
-3. Reuse the existing telegraph renderer and keep a visibly strong safe option on desktop and portrait touch.
-4. Prove same-seed equality, 60/30/20 render partition invariance, exact boundary behavior, ordinary-weapon viability, and no overlap with final-phase punish authority.
-5. Re-run focused boss tests, release ledger, build/bundle accounting, desktop/mobile browser combat, network, performance, and visual regression. Do not push or deploy.
+1. Select one existing canonical crit card and exercise the real legal offer plus selection contract rather than injecting a private simulator-only multiplier.
+2. Feed the resulting canonical upgrade snapshot into the existing weapon-to-Liquidator bridge; keep combat resolution read-only and fixed-tick.
+3. Record the offered/selected upgrade id and resulting boss damage/outcome without inventing a second summary schema.
+4. Prove ordinary baseline viability, bounded crit uplift, same-seed equality, and 60/30/20 render partition invariance.
+5. Re-run focused progression/weapon/boss/long-run tests, release ledger, build/bundle accounting, browser/network/performance, and visual regression. Do not push or deploy.
 
 ## 5. Exact workflow for the next session
 
@@ -299,5 +302,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production. Cycle 052 runtime is locally committed as 7837888a with p99/touch correction 94209018 and closes serial desktop/mobile 128-body browser endurance. Cycle 053 visual-baseline reconciliation is committed as b4a66b02, traces the inherited pair to intentional combo/HUD work, and has two exact zero-delta twelve-scene passes; do not overwrite or reaccept it. Select the smallest Wave 11 Liquidator baseline-versus-high/low-DPS build-matrix seam using existing boss phase, damage-window, add, combat, and run-summary telemetry. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production. Cycle 061 closes Wave 11 phase-two positioning with deterministic locked east-west then north-south Circuit Breaker safe circles, desktop/mobile runtime proof, 2,224-test retirement-ledger PASS, and 83,106 bytes of initial-JS headroom; do not rewrite or duplicate its boss/tell/resolution authority. Select the smallest Priority C canonical crit-upgrade offer/selection -> real weapon/combat resolver -> deterministic Liquidator benchmark seam. Preserve fixed 60 Hz/four-catch-up authority, ordinary-weapon viability, all caps, parent authority, and Web3 HALT boundaries. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
 ```
