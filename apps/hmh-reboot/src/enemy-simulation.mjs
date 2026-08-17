@@ -274,6 +274,8 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
   let chokepointSeeking = false;
   let chokepointHolding = false;
   let chokepointTarget = null;
+  let flankLaneSeeking = false;
+  let flankLaneTarget = null;
   let formationAdjusted = false;
   if (enemy.attackPhase !== 'tell' && navigation && typeof navigation.hazardDirectionAt === 'function') {
     const hazard = navigation.hazardDirectionAt(enemy.x, enemy.y, direct, { stableSide: stableSign(enemy.id) });
@@ -309,7 +311,19 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
     }
   }
   if (!hazardAvoiding && !coverSeeking && !chokepointTarget && archetype.role === 'flanker') {
-    direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
+    // The flank lane replaces the raw perpendicular with a navgrid-validated
+    // one at the same blend ratio. When no legal lane exists the sampler
+    // returns null and the original blend is used unchanged.
+    const lane = enemy.attackPhase !== 'tell' && navigation && typeof navigation.flankLaneDirectionAt === 'function'
+      ? navigation.flankLaneDirectionAt(enemy.x, enemy.y, player.x, player.y, { stableSide: stableSign(enemy.id) })
+      : null;
+    if (lane) {
+      direction = normalize(direct.x * 0.55 + lane.direction.x * 0.9, direct.y * 0.55 + lane.direction.y * 0.9);
+      flankLaneSeeking = true;
+      flankLaneTarget = freezeDeep({ ...lane.target });
+    } else {
+      direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
+    }
   } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
     const near = distance < archetype.preferredDistance - 70;
     const far = distance > archetype.preferredDistance + 90;
@@ -339,6 +353,8 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
     chokepointSeeking,
     chokepointHolding,
     chokepointTarget,
+    flankLaneSeeking,
+    flankLaneTarget,
     formationAdjusted,
   });
 }
@@ -517,6 +533,7 @@ export function stepEnemyPopulation({
   let hazardAvoiding = 0;
   let chokepointSeeking = 0;
   let chokepointHolding = 0;
+  let flankLaneSeeking = 0;
   let formationAdjusted = 0;
 
   for (const enemy of ordered) {
@@ -542,6 +559,7 @@ export function stepEnemyPopulation({
     if (enemy.intent?.hazardAvoiding) hazardAvoiding += 1;
     if (!movementLocked && enemy.intent?.chokepointSeeking) chokepointSeeking += 1;
     if (!movementLocked && enemy.intent?.chokepointHolding) chokepointHolding += 1;
+    if (!movementLocked && enemy.intent?.flankLaneSeeking) flankLaneSeeking += 1;
     if (enemy.intent?.formationAdjusted) formationAdjusted += 1;
 
     const currentGround = queryGround(enemy.x, enemy.y);
@@ -614,6 +632,7 @@ export function stepEnemyPopulation({
     hazardAvoiding,
     chokepointSeeking,
     chokepointHolding,
+    flankLaneSeeking,
     formationAdjusted,
     maxNeighborsObserved: separation.maxNeighborsObserved,
   });

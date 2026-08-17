@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "benchmark": "hmh-flank-lane-browser-v1",
+  "status": "PASS",
+  "targetEnemies": 128,
+  "profiles": [
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "seconds": 20,
+      "status": "PASS",
+      "sampleCount": 76,
+      "ticksAdvanced": 1190,
+      "maxEnemies": 128,
+      "flankLaneSeekingPeak": 24,
+      "chokepointHoldingPeak": 0,
+      "failures": []
+    },
+    {
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "seconds": 20,
+      "status": "PASS",
+      "sampleCount": 76,
+      "ticksAdvanced": 1187,
+      "maxEnemies": 128,
+      "flankLaneSeekingPeak": 24,
+      "chokepointHoldingPeak": 0,
+      "failures": []
+    }
+  ]
+}

@@ -349,6 +349,7 @@ const NODE_CHECK_FILES = [
   "scripts/hmh-reboot-projectile-benchmark.mjs",
   "scripts/hmh-reboot-enemy-endurance-soak.mjs",
   "scripts/hmh-reboot-enemy-endurance-browser-smoke.mjs",
+  "scripts/hmh-reboot-flank-lane-browser-smoke.mjs",
   "scripts/hmh-reboot-enemy-simulation-benchmark.mjs",
   "scripts/hmh-reboot-projectile-fuzz.mjs",
   "scripts/hmh-reboot-projectile-soak.mjs",

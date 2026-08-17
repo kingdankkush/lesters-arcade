@@ -130,6 +130,7 @@
     "smoke:hmh:mobile-controls": "node scripts/hmh-reboot-mobile-controls-browser-smoke.mjs",
     "bench:hmh:weapons": "node scripts/hmh-reboot-weapon-benchmark.mjs",
     "bench:hmh:enemies": "node scripts/hmh-reboot-enemy-simulation-benchmark.mjs",
+    "smoke:hmh:flank-lane": "node scripts/hmh-reboot-flank-lane-browser-smoke.mjs",
     "smoke:hmh:enemy-endurance": "node scripts/hmh-reboot-enemy-endurance-browser-smoke.mjs",
     "smoke:hmh:bear-market-burner": "node scripts/hmh-reboot-bear-market-burner-browser-matrix.mjs",
     "bench:hmh:bear-market-burner": "node scripts/hmh-reboot-bear-market-burner-benchmark.mjs",

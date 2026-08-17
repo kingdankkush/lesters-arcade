@@ -7,6 +7,7 @@ import {
   computeEnemyFlowField,
   sampleCoverDirection,
   sampleChokepointDirection,
+  sampleFlankLaneDirection,
   sampleFlowDirection,
   sampleHazardAwareDirection,
   navLineBlocked,
@@ -376,4 +377,115 @@ test('Whale Enforcer reaches and holds an actual authored-nav chokepoint through
   assert.deepEqual(heavy.intent.velocity, { x: 0, y: 0 });
   assert.ok(Math.hypot(heavy.x - heavy.intent.chokepointTarget.x, heavy.y - heavy.intent.chokepointTarget.y) <= grid.cellSize * 0.65);
   assert.ok(Math.hypot(heavy.x - player.x, heavy.y - player.y) > 210, 'the heavy holds just beyond its attack reservation instead of silently consuming a token');
+});
+
+// Wave 10 role depth: the flanker was the only steering branch that never
+// consulted the navgrid. hazard/cover/chokepoint each resolve through a
+// validated sampler, but the flank lane was a raw perpendicular blend, so a
+// flanker could commit its lane into a blocker and fall through to generic
+// stuck recovery. These tests encode a validated flank lane on the existing
+// stable-side contract. Canonical swept collision/traversal still owns motion.
+
+test('sampleFlankLaneDirection only returns walkable, reachable lanes', () => {
+  const grid = buildGrid();
+  const player = { x: 11_150, y: 1_150 };
+  for (const stableSide of [1, -1]) {
+    for (let step = 0; step < 48; step += 1) {
+      const fromX = 10_600 + step * 40;
+      const fromY = 900;
+      const lane = sampleFlankLaneDirection(grid, fromX, fromY, player.x, player.y, { stableSide });
+      if (!lane) continue;
+      assert.equal(grid.isWalkableAt(lane.target.x, lane.target.y), true,
+        `lane target must be walkable from ${fromX},${fromY}`);
+      assert.equal(navLineBlocked(grid, fromX, fromY, lane.target.x, lane.target.y), false,
+        'lane must be reachable without crossing a blocker');
+      assert.equal(navLineBlocked(grid, lane.target.x, lane.target.y, player.x, player.y), false,
+        'a flank lane must keep the player exposed, unlike cover');
+      assert.ok([1, -1].includes(lane.side));
+      assert.ok(Number.isInteger(lane.distanceCells) && lane.distanceCells >= 1);
+      const magnitude = Math.hypot(lane.direction.x, lane.direction.y);
+      assert.ok(Math.abs(magnitude - 1) < 1e-9, 'lane direction must be a unit vector');
+    }
+  }
+});
+
+test('sampleFlankLaneDirection is deterministic and fail-closed', () => {
+  const grid = buildGrid();
+  const args = [10_900, 900, 11_150, 1_150];
+  const first = sampleFlankLaneDirection(grid, ...args, { stableSide: 1 });
+  const second = sampleFlankLaneDirection(grid, ...args, { stableSide: 1 });
+  assert.deepEqual(first, second, 'same inputs must produce the same lane');
+  assert.equal(sampleFlankLaneDirection(grid, 11_150, 1_150, 11_150, 1_150, { stableSide: 1 }), null,
+    'a zero-length player vector must fail closed');
+  assert.throws(() => sampleFlankLaneDirection(grid, 0, 0, 10, 10, { stableSide: 0 }),
+    /stableSide must be 1 or -1/);
+  assert.throws(() => sampleFlankLaneDirection(grid, Number.NaN, 0, 10, 10, { stableSide: 1 }),
+    /fromX must be finite/);
+});
+
+test('flanker intent consults the navgrid and falls back to the raw blend', () => {
+  const grid = buildGrid();
+  const player = { x: 11_150, y: 1_150 };
+  const enemy = createEnemyState({ id: 'flanker-nav-1', archetypeId: 'forkrunner', x: 10_900, y: 900 });
+  const navigation = {
+    lineBlocked: (ax, ay, bx, by) => navLineBlocked(grid, ax, ay, bx, by),
+    flankLaneDirectionAt: (ax, ay, bx, by, options) => sampleFlankLaneDirection(grid, ax, ay, bx, by, options),
+  };
+  const withNav = planEnemyIntent(enemy, { player, tick: 120, navigation });
+  const withoutNav = planEnemyIntent(enemy, { player, tick: 120 });
+  assert.equal(withNav.role, 'flanker');
+  // Non-vacuous: this position must actually resolve a lane, otherwise the
+  // test would silently prove nothing but the fallback path.
+  assert.equal(withNav.flankLaneSeeking, true, 'this position must resolve a validated lane');
+  assert.ok(withNav.flankLaneTarget, 'an integrated lane must expose its target');
+  assert.equal(grid.isWalkableAt(withNav.flankLaneTarget.x, withNav.flankLaneTarget.y), true);
+  assert.notDeepEqual(withNav.velocity, withoutNav.velocity,
+    'a resolved lane must actually change steering');
+  assert.equal(withoutNav.flankLaneSeeking, false, 'no navigation means no lane claim');
+
+  // Both branches must be reachable across the sweep, and the validated lane
+  // must never aim into a blocker where the raw blend could.
+  let seeking = 0;
+  let fallback = 0;
+  let rawAimedIntoBlocker = 0;
+  let laneAimedIntoBlocker = 0;
+  for (let step = 0; step < 60; step += 1) {
+    const walker = createEnemyState({ id: `flank-sweep-${step}`, archetypeId: 'forkrunner', x: 10_600 + step * 20, y: 900 });
+    const navIntent = planEnemyIntent(walker, { player, tick: 120, navigation });
+    const rawIntent = planEnemyIntent(walker, { player, tick: 120 });
+    if (navIntent.flankLaneSeeking) seeking += 1; else fallback += 1;
+    const rawProbe = { x: walker.x + rawIntent.facing.x * grid.cellSize, y: walker.y + rawIntent.facing.y * grid.cellSize };
+    const laneProbe = { x: walker.x + navIntent.facing.x * grid.cellSize, y: walker.y + navIntent.facing.y * grid.cellSize };
+    if (!grid.isWalkableAt(rawProbe.x, rawProbe.y)) rawAimedIntoBlocker += 1;
+    if (navIntent.flankLaneSeeking && !grid.isWalkableAt(laneProbe.x, laneProbe.y)) laneAimedIntoBlocker += 1;
+    if (!navIntent.flankLaneSeeking) {
+      assert.deepEqual(navIntent.velocity, rawIntent.velocity,
+        'with no valid lane the flanker must behave exactly as before');
+    }
+  }
+  assert.ok(seeking > 0, 'the sweep must exercise the validated lane branch');
+  assert.ok(fallback > 0, 'the sweep must exercise the fail-closed fallback branch');
+  assert.ok(rawAimedIntoBlocker > 0, 'the raw blend must demonstrate the defect this slice fixes');
+  assert.equal(laneAimedIntoBlocker, 0, 'a validated lane must never steer into a blocker');
+});
+
+test('the flank lane is source-order independent and same-seed stable', () => {
+  const grid = buildGrid();
+  const player = { x: 11_150, y: 1_150 };
+  const navigation = {
+    flankLaneDirectionAt: (ax, ay, bx, by, options) => sampleFlankLaneDirection(grid, ax, ay, bx, by, options),
+  };
+  const ids = ['forkrunner-a', 'forkrunner-b', 'forkrunner-c', 'forkrunner-d'];
+  const build = (order) => order.map((id, index) => planEnemyIntent(
+    createEnemyState({ id, archetypeId: 'forkrunner', x: 10_780 + index * 30, y: 900 }),
+    { player, tick: 240, navigation },
+  ));
+  const forward = build(ids);
+  const reversed = build([...ids].reverse()).reverse();
+  // Each enemy keeps its own lane regardless of where it sat in the array.
+  for (let index = 0; index < ids.length; index += 1) {
+    const match = reversed.find((intent, position) => ids[ids.length - 1 - position] === ids[index]);
+    assert.ok(match, 'every enemy must resolve an intent in both orders');
+  }
+  assert.deepEqual(build(ids), forward, 'same inputs must produce identical intents');
 });

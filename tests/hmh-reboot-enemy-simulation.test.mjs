@@ -26,6 +26,8 @@ import {
   retireEnemyFromPopulation,
   stepEnemyPopulation,
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
+import { createEnemyNavGrid, sampleFlankLaneDirection } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
+import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
 const FLAT = createElevationSurface({
   id: 'flat', kind: 'ground', area: { type: 'rect', minX: -2000, minY: -2000, maxX: 4000, maxY: 4000 },
@@ -514,4 +516,34 @@ test('heavy chokepoint intent is source-order independent, telemetry-truthful, a
   assert.equal(lockedReport.chokepointSeeking, 0, 'a cached seek intent is not active telemetry while a tell locks movement');
   assert.equal(lockedReport.chokepointHolding, 0);
   assert.equal(lockedHeavy.x, 0);
+});
+
+test('population telemetry counts flank lanes truthfully and resets to zero', () => {
+  const grid = createEnemyNavGrid({ world: LEVEL_ONE_WORLD, queryGround: createLevelOneGroundQuery() });
+  const navigation = {
+    flankLaneDirectionAt: (ax, ay, bx, by, options) => sampleFlankLaneDirection(grid, ax, ay, bx, by, options),
+  };
+  const population = createEnemyPopulation({ capacity: 8, threatCapacity: 512 });
+  const player = { x: 11_150, y: 1_150 };
+  for (let index = 0; index < 4; index += 1) {
+    population.active.push(createEnemyState({
+      id: `flank-telemetry-${index}`,
+      archetypeId: 'forkrunner',
+      x: 10_820 + index * 30,
+      y: 900,
+    }));
+  }
+  const queryGround = createLevelOneGroundQuery();
+  const bounds = { minX: 0, minY: 0, maxX: 20_000, maxY: 20_000, visibleBoundaryId: 'visible-test-edge' };
+  const withNav = stepEnemyPopulation({
+    population, player, tick: 120, dtSeconds: 1 / 60, blockers: [], bounds, queryGround, fullAiCap: 8, navigation,
+  });
+  assert.ok(Number.isInteger(withNav.flankLaneSeeking), 'flankLaneSeeking must be an integer count');
+  assert.ok(withNav.flankLaneSeeking > 0, 'this arrangement must record at least one flank lane');
+  assert.ok(withNav.flankLaneSeeking <= population.active.length, 'the count cannot exceed active enemies');
+
+  const withoutNav = stepEnemyPopulation({
+    population, player, tick: 121, dtSeconds: 1 / 60, blockers: [], bounds, queryGround, fullAiCap: 8,
+  });
+  assert.equal(withoutNav.flankLaneSeeking, 0, 'no navigation means the count resets to zero');
 });

@@ -11,6 +11,9 @@ import { resolveSweptTraversalPath } from './elevation.mjs';
 // rails keeps two walkable rows, coarse enough that the full grid (200 x 80)
 // builds in well under a second at boot and a BFS costs microseconds.
 export const ENEMY_NAV_CELL_SIZE = 60;
+// A flank lane is perpendicular, so it always lengthens the player vector.
+// This bounds how much widening counts as flanking rather than retreating.
+export const MAX_FLANK_WIDENING = 1.25;
 
 // The strictest movement limits across every ordinary archetype, so one
 // shared field is legal for all of them (gas-bomber: drop 12, ascent 48).
@@ -429,6 +432,59 @@ export function sampleCoverDirection(grid, fromX, fromY, targetX, targetY, {
       if (coverMagnitude <= 1e-9) continue;
       return Object.freeze({
         direction: Object.freeze({ x: coverDx / coverMagnitude, y: coverDy / coverMagnitude }),
+        target,
+        side: stableSide * side,
+        distanceCells: cell,
+      });
+    }
+  }
+  return null;
+}
+
+// A flank lane is the inverse of cover on the same lateral contract: cover
+// wants a cell that BREAKS line to the player, a flank wants one that keeps
+// the player exposed while moving off the direct approach. Candidates must be
+// walkable, reachable without crossing a blocker, and must not retreat. The
+// enemy's own stable side is tried first so a flanker keeps committing to one
+// lane instead of oscillating; the opposite side is only a fallback. Returns
+// null when no legal lane exists, which leaves the caller's prior behaviour
+// untouched. Canonical swept collision/traversal still owns every step.
+export function sampleFlankLaneDirection(grid, fromX, fromY, targetX, targetY, {
+  stableSide = 1,
+  maxCells = 4,
+} = {}) {
+  if (!grid?.walkable) throw new TypeError('grid is required');
+  for (const [value, name] of [[fromX, 'fromX'], [fromY, 'fromY'], [targetX, 'targetX'], [targetY, 'targetY']]) {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+  }
+  if (![1, -1].includes(stableSide)) throw new TypeError('stableSide must be 1 or -1');
+  if (!Number.isInteger(maxCells) || maxCells < 1 || maxCells > 8) throw new TypeError('maxCells must be an integer in [1, 8]');
+  const dx = targetX - fromX;
+  const dy = targetY - fromY;
+  const magnitude = Math.hypot(dx, dy);
+  if (magnitude <= 1e-9) return null;
+  const lateral = { x: (-dy / magnitude) * stableSide, y: (dx / magnitude) * stableSide };
+  for (const side of [1, -1]) {
+    for (let cell = 1; cell <= maxCells; cell += 1) {
+      const target = Object.freeze({
+        x: fromX + lateral.x * grid.cellSize * cell * side,
+        y: fromY + lateral.y * grid.cellSize * cell * side,
+      });
+      if (!grid.isWalkableAt(target.x, target.y)) continue;
+      if (navLineBlocked(grid, fromX, fromY, target.x, target.y)) continue;
+      // Unlike cover, the player must stay exposed from the lane.
+      if (navLineBlocked(grid, target.x, target.y, targetX, targetY)) continue;
+      // A lateral step always lengthens the player vector slightly, so the
+      // retreat guard is a bounded widening factor rather than a strict
+      // decrease. This keeps wide arcs legal at range while rejecting sideways
+      // flings when the flanker is already close.
+      if (Math.hypot(targetX - target.x, targetY - target.y) > magnitude * MAX_FLANK_WIDENING) continue;
+      const laneDx = target.x - fromX;
+      const laneDy = target.y - fromY;
+      const laneMagnitude = Math.hypot(laneDx, laneDy);
+      if (laneMagnitude <= 1e-9) continue;
+      return Object.freeze({
+        direction: Object.freeze({ x: laneDx / laneMagnitude, y: laneDy / laneMagnitude }),
         target,
         side: stableSide * side,
         distanceCells: cell,
