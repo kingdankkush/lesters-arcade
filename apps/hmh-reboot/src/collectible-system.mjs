@@ -105,15 +105,24 @@ export function stepCollectibles(state, { tick, player } = {}) {
     };
     state.sequence += 1;
     if (effect.kind === 'timed') {
+      // Timed effects never stack multiplicatively. A second authored pickup
+      // restarts the same bounded 600-tick window and exposes that refresh in
+      // deterministic telemetry so balance audits can distinguish first
+      // activation from extension without reading presentation state.
+      const previous = state.activeEffects.get(effect.effectId) ?? null;
       const active = freezeDeep({
         effectId: effect.effectId,
         collectedTick: tick,
         expiresTick: tick + effect.durationTicks,
         damageMultiplier: effect.damageMultiplier ?? 1,
         speedMultiplier: effect.speedMultiplier ?? 1,
+        refreshCount: (previous?.refreshCount ?? 0) + Number(previous !== null),
       });
       state.activeEffects.set(effect.effectId, active);
       event.expiresTick = active.expiresTick;
+      event.refreshed = previous !== null;
+      event.previousExpiresTick = previous?.expiresTick ?? null;
+      event.refreshCount = active.refreshCount;
     }
     events.push(freezeDeep(event));
   }

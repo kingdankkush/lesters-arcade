@@ -112,6 +112,37 @@ try {
   assert.deepEqual(mobile, { count: 1, active: 'time-dilation', speedMultiplier: 1.2 });
   await mobilePage.close();
 
+  const timedResetPage = await browser.newPage({ viewport: { width: 1024, height: 720 }, deviceScaleFactor: 1 });
+  timedResetPage.on('pageerror', (error) => errors.push(error.message));
+  timedResetPage.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+  });
+  await timedResetPage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=ravine`, { waitUntil: 'networkidle' });
+  await timedResetPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'coin-blaster');
+  await timedResetPage.keyboard.down('d');
+  await timedResetPage.keyboard.down('w');
+  await timedResetPage.waitForTimeout(550);
+  await timedResetPage.keyboard.up('w');
+  await timedResetPage.keyboard.up('d');
+  await timedResetPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === 'time-dilation', null, { timeout: 5000 });
+  await timedResetPage.reload({ waitUntil: 'networkidle' });
+  await timedResetPage.waitForFunction(() => {
+    const element = document.querySelector('#hmhRebootStage');
+    return element?.dataset.weaponId === 'coin-blaster'
+      && element.dataset.collectibleActive === ''
+      && Number(element.dataset.collectibleCount) === 0
+      && Number(element.dataset.collectibleRemaining) === 13;
+  }, null, { timeout: 5000 });
+  const timedReset = await timedResetPage.locator('#hmhRebootStage').evaluate((element) => ({
+    count: Number(element.dataset.collectibleCount),
+    remaining: Number(element.dataset.collectibleRemaining),
+    active: element.dataset.collectibleActive,
+    weaponId: element.dataset.weaponId,
+    handGrenades: Number(element.dataset.handGrenades),
+  }));
+  assert.deepEqual(timedReset, { count: 0, remaining: 13, active: '', weaponId: 'coin-blaster', handGrenades: 3 });
+  await timedResetPage.close();
+
   const landscapePage = await browser.newPage({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2 });
   landscapePage.on('pageerror', (error) => errors.push(error.message));
   landscapePage.on('console', (message) => {
@@ -178,6 +209,34 @@ try {
     canonical.push({ pointOfInterestId, ...observed });
     await casePage.close();
   }
+  const bossSafetyPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  bossSafetyPage.on('pageerror', (error) => errors.push(error.message));
+  bossSafetyPage.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+  });
+  await bossSafetyPage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&boss=1&worldTour=collectible-crossing-fuel-depot`, { waitUntil: 'networkidle' });
+  await bossSafetyPage.waitForFunction(() => {
+    const element = document.querySelector('#hmhRebootStage');
+    return Number(element?.dataset.collectibleCount) === 1
+      && element?.dataset.bossActive === 'true'
+      && Number(element?.dataset.bossHealth) < 12_000;
+  }, null, { timeout: 5000 });
+  const bossSafety = await bossSafetyPage.locator('#hmhRebootStage').evaluate((element) => ({
+    effectId: element.dataset.collectibleLast,
+    bossActive: element.dataset.bossActive,
+    bossHealth: Number(element.dataset.bossHealth),
+    enemyCount: Number(element.dataset.enemyCount),
+    handGrenades: Number(element.dataset.handGrenades),
+  }));
+  assert.deepEqual(bossSafety, {
+    effectId: 'nuke-liquidation',
+    bossActive: 'true',
+    bossHealth: 11_001,
+    enemyCount: 0,
+    handGrenades: 4,
+  });
+  await bossSafetyPage.close();
+
   await timedPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === '', null, { timeout: 12000 });
   const expired = await timedPage.locator('#hmhRebootStage').evaluate((element) => ({
     active: element.dataset.collectibleActive,
@@ -185,7 +244,7 @@ try {
   }));
   assert.deepEqual(expired, { active: '', speedMultiplier: 1 });
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, mobile, landscape, expired, accessibleStatus, canonical, errors }));
+  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, mobile, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
 } finally {
   await browser.close();
 }

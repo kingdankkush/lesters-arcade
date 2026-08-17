@@ -455,6 +455,8 @@ Do not reduce enemy counts to make the benchmark pass. Optimize queries, cadence
 - Keep every effect deterministic, non-stacking or explicitly refresh-based, bounded, reset-safe, and boss-safe.
 - Add desktop/mobile safe-area and expiry evidence.
 
+**2026-08-17 Cycle 066 status:** the existing-power-up lifecycle/boss-safety audit is locally complete. Capped healing, repeated weapon-cache reserve limits, explicit non-stacking timed-effect refresh, exact expiry/reset, summary telemetry, 60/30/20 equality, all nine canonical browser pickups, and healthy-Liquidator nuke safety are certified. No new power-up was added. The smallest remaining Wave 11 presentation seam is a shared deterministic timed-effect countdown/refresh readout for desktop/mobile HUD and accessibility output; pickup rarity/silhouette/audio can then be audited against the already-authored atlas before any new effect is considered.
+
 ## 9. Wave 12 — Production Art, Terrain, Lighting, Animation, and VFX
 
 A12 remains excluded without explicit owner approval.

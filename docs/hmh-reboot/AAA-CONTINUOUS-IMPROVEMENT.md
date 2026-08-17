@@ -208,6 +208,11 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Evidence: rank-1 crit chance `0.08 -> 0.14`, identical `128` shots and `16 / 15` reload starts/completes, damage `411 -> 423`, 60/30/20 equality
   - Release and bundle: `2,237 / 2,186 / 51 / 0`; combined initial JavaScript `967,183 / 1,048,576`, headroom `81,393` bytes
   - Cycle ledger: `cycles/CYCLE-065.md`
+- [x] Cycle 066: bounded timed-power-up refresh telemetry and Liquidator-safe nuke lifecycle certification
+  - Status: locally source/browser certified; production unchanged
+  - Evidence: explicit refresh boundary/count, healing/cache/reset telemetry, 60/30/20 equality, ordinary enemies retired while healthy Liquidator remains active at `11,001 / 12,000` HP
+  - Release and bundle: `2,246 / 2,195 / 51 / 0`; combined initial JavaScript `967,364 / 1,050,000`, enforced headroom `82,636` bytes
+  - Cycle ledger: `cycles/CYCLE-066.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -219,13 +224,13 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 065 closes the Priority C canonical crit-upgrade benchmark seam after Cycles 062/064 completed navgrid validation for flanker and ranged-role steering
-- Current implementation baseline before Cycle 065: `47326841`
-- Candidate entry: `391,292` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `967,183 / 1,048,576` bytes; headroom `81,393` bytes
-- Release evidence: `2,237` evaluated = `2,186` passed + `51` exact expected legacy failures; unexpected failures `0`
-- Benchmark evidence: legal first-level control/Precision Ledger selection, real Coin Blaster cadence/reloads, seeded combat criticals, Liquidator role/punish/boss authority, and 60/30/20 partition equality
-- Browser evidence: four network scenarios with zero errors, desktop/mobile p95 `7.0 / 7.0 ms`, p99 `7.1 / 7.1 ms`, and all twelve visual scenes exact `0 / 0 / 0`
-- Next bounded seam: Wave 11 existing-power-up lifecycle/boss-safety audit before adding any new power-up
+- Status: Cycle 066 closes the first Wave 11 existing-power-up lifecycle/boss-safety audit seam after Cycle 065 completed the canonical crit-upgrade benchmark
+- Current implementation baseline before Cycle 066: `6dbab610`
+- Candidate entry: `391,473` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `967,364 / 1,050,000` bytes; enforced headroom `82,636` bytes
+- Release evidence: `2,246` evaluated = `2,195` passed + `51` exact expected legacy failures; unexpected failures `0`
+- Lifecycle evidence: capped healing, repeated-cache reserve bounds, explicit non-stacking timed-effect refresh, exact expiry/reset, bounded summary telemetry, and 60/30/20 partition equality
+- Browser evidence: all nine canonical pickups, desktop/portrait/landscape timed-effect proof, boss-active nuke at `11,001 / 12,000` Liquidator HP, four zero-error network scenarios, and desktop/mobile p95 `13.9 / 7.0 ms`
+- Next bounded seam: shared deterministic timed-effect countdown/refresh presentation for desktop/mobile HUD and accessibility output; do not add a new power-up first
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement and Web3 writes remain outside this release
