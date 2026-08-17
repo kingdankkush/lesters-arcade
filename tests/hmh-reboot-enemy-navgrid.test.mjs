@@ -489,3 +489,73 @@ test('the flank lane is source-order independent and same-seed stable', () => {
   }
   assert.deepEqual(build(ids), forward, 'same inputs must produce identical intents');
 });
+
+// Wave 10 role depth, second pass: suppressor/demolition/support had the same
+// unvalidated-steering hole as the flanker, in two places. The near-range
+// backoff drove straight away from the player without checking what was
+// behind, and the mid-range strafe blended a raw perpendicular. Measured over
+// a 2D sweep of walkable origins on the authored level, the backoff aimed into
+// a blocker 24/217 times and the strafe 11/193. Both now reuse the existing
+// lane sampler and lineBlocked contract; no new navigation authority.
+
+const RANGED_ROLE_ARCHETYPES = ['liquidator-agent', 'gas-bomber', 'validator-cultist'];
+
+test('ranged roles never steer into a blocker once navigation is supplied', () => {
+  const grid = buildGrid();
+  const player = { x: 11_150, y: 1_150 };
+  const navigation = {
+    lineBlocked: (ax, ay, bx, by) => navLineBlocked(grid, ax, ay, bx, by),
+    flankLaneDirectionAt: (ax, ay, bx, by, options) => sampleFlankLaneDirection(grid, ax, ay, bx, by, options),
+  };
+  let sampled = 0;
+  let rawBlocked = 0;
+  let navBlocked = 0;
+  let laneUsed = 0;
+  for (const archetypeId of RANGED_ROLE_ARCHETYPES) {
+    for (let gx = 0; gx < 26; gx += 1) {
+      for (let gy = 0; gy < 26; gy += 1) {
+        const x = 10_300 + gx * 70;
+        const y = 500 + gy * 70;
+        if (!grid.isWalkableAt(x, y)) continue;
+        const enemy = createEnemyState({ id: `ranged-${archetypeId}-${gx}-${gy}`, archetypeId, x, y });
+        const withNav = planEnemyIntent(enemy, { player, tick: 120, navigation });
+        const raw = planEnemyIntent(enemy, { player, tick: 120 });
+        const probe = (intent) => ({ x: x + intent.facing.x * grid.cellSize, y: y + intent.facing.y * grid.cellSize });
+        sampled += 1;
+        if (withNav.flankLaneSeeking) laneUsed += 1;
+        const rawProbe = probe(raw);
+        const navProbe = probe(withNav);
+        if (!grid.isWalkableAt(rawProbe.x, rawProbe.y)) rawBlocked += 1;
+        if (!grid.isWalkableAt(navProbe.x, navProbe.y)) navBlocked += 1;
+      }
+    }
+  }
+  assert.ok(sampled > 200, 'the sweep must cover a meaningful sample of walkable ground');
+  assert.ok(rawBlocked > 0, 'the unvalidated steering must demonstrate the defect this slice fixes');
+  assert.ok(laneUsed > 0, 'validated lanes must actually be taken by ranged roles');
+  assert.ok(navBlocked < rawBlocked,
+    `validated steering must reduce blocker aims (raw ${rawBlocked}, nav ${navBlocked})`);
+});
+
+test('ranged roles fall back to prior behaviour with no navigation', () => {
+  const grid = buildGrid();
+  const player = { x: 11_150, y: 1_150 };
+  // A sampler that never yields a lane and reports every backoff clear must
+  // reproduce the original steering exactly.
+  const inertNavigation = { lineBlocked: () => false, flankLaneDirectionAt: () => null };
+  let compared = 0;
+  for (const archetypeId of RANGED_ROLE_ARCHETYPES) {
+    for (let step = 0; step < 24; step += 1) {
+      const x = 10_600 + step * 40;
+      const y = 900;
+      if (!grid.isWalkableAt(x, y)) continue;
+      const enemy = createEnemyState({ id: `ranged-inert-${archetypeId}-${step}`, archetypeId, x, y });
+      const inert = planEnemyIntent(enemy, { player, tick: 120, navigation: inertNavigation });
+      const bare = planEnemyIntent(enemy, { player, tick: 120 });
+      assert.deepEqual(inert.velocity, bare.velocity, 'no lane and a clear backoff must not change steering');
+      assert.equal(inert.flankLaneSeeking, false);
+      compared += 1;
+    }
+  }
+  assert.ok(compared > 0, 'the comparison must actually run');
+});

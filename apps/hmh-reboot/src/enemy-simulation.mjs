@@ -9,6 +9,8 @@ export const ENEMY_SPATIAL_CELL_SIZE = 96;
 export const STUCK_PROGRESS_WINDOW_TICKS = 30;
 export const STUCK_PROGRESS_EPSILON = 0.5;
 export const MAX_ENEMY_FORMATION_BIAS = 0.18;
+// One navgrid cell: how far ahead a ranged backoff is probed for blockers.
+export const RANGED_BACKOFF_PROBE_DISTANCE = 60;
 export const ENEMY_RING_MIN_MEMBERS = 6;
 export const ENEMY_RING_DISTANCE_TOLERANCE = 32;
 const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
@@ -325,10 +327,43 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
     }
   } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
+    // Ranged roles had the same unvalidated steering as the flanker, in two
+    // places: the near-range backoff drove straight away from the player
+    // without checking what was behind it, and the mid-range strafe blended a
+    // raw perpendicular. Both now reuse the lane sampler and the existing
+    // lineBlocked contract. Either falls back to the prior vector unchanged.
     const near = distance < archetype.preferredDistance - 70;
     const far = distance > archetype.preferredDistance + 90;
-    if (near) direction = { x: -direct.x, y: -direct.y };
-    else if (!far) direction = normalize(tangent.x * 0.82 + direct.x * 0.18, tangent.y * 0.82 + direct.y * 0.18);
+    const lane = enemy.attackPhase !== 'tell' && navigation && typeof navigation.flankLaneDirectionAt === 'function'
+      ? navigation.flankLaneDirectionAt(enemy.x, enemy.y, player.x, player.y, { stableSide: stableSign(enemy.id) })
+      : null;
+    if (near) {
+      const backoff = { x: -direct.x, y: -direct.y };
+      const backoffBlocked = navigation && typeof navigation.lineBlocked === 'function'
+        ? navigation.lineBlocked(
+          enemy.x,
+          enemy.y,
+          enemy.x + backoff.x * RANGED_BACKOFF_PROBE_DISTANCE,
+          enemy.y + backoff.y * RANGED_BACKOFF_PROBE_DISTANCE,
+        )
+        : false;
+      if (backoffBlocked && lane) {
+        // Backing into a blocker reads as bumping a wall; sidestep instead.
+        direction = lane.direction;
+        flankLaneSeeking = true;
+        flankLaneTarget = freezeDeep({ ...lane.target });
+      } else {
+        direction = backoff;
+      }
+    } else if (!far) {
+      if (lane) {
+        direction = normalize(lane.direction.x * 0.82 + direct.x * 0.18, lane.direction.y * 0.82 + direct.y * 0.18);
+        flankLaneSeeking = true;
+        flankLaneTarget = freezeDeep({ ...lane.target });
+      } else {
+        direction = normalize(tangent.x * 0.82 + direct.x * 0.18, tangent.y * 0.82 + direct.y * 0.18);
+      }
+    }
   }
   if (!hazardAvoiding && !coverSeeking && !chokepointTarget && enemy.attackPhase !== 'tell' && Math.abs(formationBias) > EPSILON) {
     direction = normalize(

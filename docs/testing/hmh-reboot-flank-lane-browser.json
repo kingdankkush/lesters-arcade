@@ -13,9 +13,9 @@
       "seconds": 20,
       "status": "PASS",
       "sampleCount": 76,
-      "ticksAdvanced": 1190,
+      "ticksAdvanced": 1195,
       "maxEnemies": 128,
-      "flankLaneSeekingPeak": 24,
+      "flankLaneSeekingPeak": 68,
       "chokepointHoldingPeak": 0,
       "failures": []
     },
@@ -28,9 +28,9 @@
       "seconds": 20,
       "status": "PASS",
       "sampleCount": 76,
-      "ticksAdvanced": 1187,
+      "ticksAdvanced": 1199,
       "maxEnemies": 128,
-      "flankLaneSeekingPeak": 24,
+      "flankLaneSeekingPeak": 69,
       "chokepointHoldingPeak": 0,
       "failures": []
     }

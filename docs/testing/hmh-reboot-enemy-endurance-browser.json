@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runtime": "hmh-reboot",
   "status": "PASS",
-  "generatedAt": "2026-08-17T15:52:45.806Z",
+  "generatedAt": "2026-08-17T16:14:07.777Z",
   "targetEnemies": 128,
   "profiles": [
     {
@@ -11,22 +11,22 @@
         "width": 1440,
         "height": 900
       },
-      "seconds": 30.87,
+      "seconds": 31.303,
       "status": "PASS",
-      "sampleCount": 70,
+      "sampleCount": 67,
       "frameTimeMs": {
-        "median": 7,
-        "p95": 13.9,
-        "p99": 14,
-        "max": 21
+        "median": 13.8,
+        "p95": 14,
+        "p99": 20.9,
+        "max": 48.6
       },
-      "medianFps": 142.86,
+      "medianFps": 72.46,
       "longTasks": {
         "count": 0,
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1786,
+        "tickAdvance": 1795,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
@@ -44,16 +44,16 @@
         },
         "maxProjectiles": 1,
         "latchedProjectilePeak": 1,
-        "maxEffects": 12,
+        "maxEffects": 14,
         "maxSafetyStepsPerTick": 128,
-        "maxCollisionContactsPerTick": 1,
+        "maxCollisionContactsPerTick": 2,
         "maxTraversalBlocksPerTick": 0,
         "maxAudioVoices": 4
       },
       "retainedHeap": {
-        "beforeBytes": 69866005,
-        "afterBytes": 83427746,
-        "growthBytes": 13561741
+        "beforeBytes": 62508655,
+        "afterBytes": 55523408,
+        "growthBytes": -6985247
       },
       "consoleIssues": [],
       "networkIssues": [],
@@ -66,14 +66,14 @@
         "width": 390,
         "height": 844
       },
-      "seconds": 31.241,
+      "seconds": 31.139,
       "status": "PASS",
-      "sampleCount": 82,
+      "sampleCount": 78,
       "frameTimeMs": {
         "median": 7,
-        "p95": 14,
-        "p99": 20.9,
-        "max": 43.2
+        "p95": 13.9,
+        "p99": 14.1,
+        "max": 48.7
       },
       "medianFps": 142.86,
       "longTasks": {
@@ -81,7 +81,7 @@
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1807,
+        "tickAdvance": 1795,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
@@ -99,16 +99,16 @@
         },
         "maxProjectiles": 1,
         "latchedProjectilePeak": 1,
-        "maxEffects": 12,
+        "maxEffects": 13,
         "maxSafetyStepsPerTick": 128,
         "maxCollisionContactsPerTick": 2,
         "maxTraversalBlocksPerTick": 0,
         "maxAudioVoices": 4
       },
       "retainedHeap": {
-        "beforeBytes": 64595392,
-        "afterBytes": 59145474,
-        "growthBytes": -5449918
+        "beforeBytes": 78161462,
+        "afterBytes": 68733067,
+        "growthBytes": -9428395
       },
       "consoleIssues": [],
       "networkIssues": [],
