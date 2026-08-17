@@ -18,6 +18,7 @@ import {
   simulateLiquidatorDps,
   stepLiquidatorBoss,
 } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { renderLiquidatorTelegraph } from '../apps/hmh-reboot/src/liquidator-telegraph-renderer.mjs';
 
 const PLAYER = { x: 160, y: 0, groundZ: 0 };
@@ -108,6 +109,77 @@ test('locked lane tell does not track a player who dodges after tell start', () 
   assert.deepEqual(attack.target, { x: 160, y: 0 });
   assert.equal(resolveLiquidatorAttack({ event: attack, player: { x: 160, y: 160, groundZ: 0 } }).hit, false);
   assert.equal(resolveLiquidatorAttack({ event: attack, player: PLAYER }).hit, true);
+});
+
+test('authored combat cover blocks Liquidator line pressure without changing the locked tell', () => {
+  const event = Object.freeze({
+    type: 'attack',
+    attackId: 'crash-lane',
+    telegraphId: 'liquidator:crash-lane:cover-contract',
+    origin: Object.freeze({ x: 0, y: 0 }),
+    target: Object.freeze({ x: 200, y: 0 }),
+    geometry: Object.freeze({
+      type: 'line',
+      origin: Object.freeze({ x: 0, y: 0 }),
+      target: Object.freeze({ x: 200, y: 0 }),
+      width: 54,
+    }),
+    groundZ: 0,
+    damage: 14,
+  });
+  const player = { x: 160, y: 0, groundZ: 0 };
+  const cover = Object.freeze({
+    id: 'arena-cover',
+    solid: true,
+    combatCover: true,
+    minZ: 0,
+    maxZ: 96,
+    shape: Object.freeze({ type: 'circle', x: 80, y: 0, radius: 20 }),
+  });
+
+  assert.deepEqual(resolveLiquidatorAttack({ event, player }), {
+    hit: true, damage: 14, reason: null,
+  });
+  const lockedGeometry = event.geometry;
+  assert.deepEqual(resolveLiquidatorAttack({ event, player, blockers: [cover] }), {
+    hit: false, damage: 0, reason: 'cover', blockerId: 'arena-cover',
+  });
+  assert.strictEqual(event.geometry, lockedGeometry, 'cover resolution must not replace locked geometry');
+});
+
+test('the authored Liquidation Market lean-to protects its far lane from the arena boss origin', () => {
+  const event = {
+    type: 'attack', attackId: 'crash-lane', origin: { x: 11_000, y: 2_550 },
+    geometry: {
+      type: 'line', origin: { x: 11_000, y: 2_550 }, target: { x: 11_800, y: 3_400 }, width: 54,
+    },
+    groundZ: 0, damage: 14,
+  };
+  const resolved = resolveLiquidatorAttack({
+    event,
+    player: { x: 11_800, y: 3_400, groundZ: 0 },
+    blockers: LEVEL_ONE_WORLD.collisionBlockers,
+  });
+
+  assert.deepEqual(resolved, {
+    hit: false, damage: 0, reason: 'cover', blockerId: 'town-east-lean-to',
+  });
+});
+
+test('Liquidator lanes ignore non-cover and below-flight blockers but fail closed on malformed blocker lists', () => {
+  const event = {
+    type: 'attack', attackId: 'crash-lane', origin: { x: 0, y: 0 },
+    geometry: { type: 'line', origin: { x: 0, y: 0 }, target: { x: 200, y: 0 }, width: 54 },
+    groundZ: 0, damage: 14,
+  };
+  const player = { x: 160, y: 0, groundZ: 0 };
+  const shape = { type: 'circle', x: 80, y: 0, radius: 20 };
+  const nonCover = { id: 'visual-only', solid: true, combatCover: false, minZ: 0, maxZ: 96, shape };
+  const lowCover = { id: 'ankle-high', solid: true, combatCover: true, minZ: 0, maxZ: 12, shape };
+
+  assert.equal(resolveLiquidatorAttack({ event, player, blockers: [nonCover] }).hit, true);
+  assert.equal(resolveLiquidatorAttack({ event, player, blockers: [lowCover] }).hit, true);
+  assert.throws(() => resolveLiquidatorAttack({ event, player, blockers: 'not-an-array' }), /blockers must be an array/);
 });
 
 test('every damaging resolution has visible matching geometry and support adds never damage the player', () => {
@@ -275,6 +347,7 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.match(source, /createLiquidatorBoss/);
   assert.match(source, /stepLiquidatorBoss/);
   assert.match(source, /resolveLiquidatorAttack/);
+  assert.match(source, /resolveLiquidatorAttack\(\{[\s\S]*?blockers:\s*WORLD_BLOCKERS/);
   assert.match(source, /applyLiquidatorDamage/);
   assert.match(source, /getLiquidatorRoleCheck/);
   assert.match(source, /roleCheckedCombatHitIntents/);

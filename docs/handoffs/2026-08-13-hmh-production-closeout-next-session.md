@@ -6,6 +6,8 @@ Branch: `reboot/hmh-aaa-continuous`
 
 > **Current continuation authority:** this document supersedes the execution status and first-action instructions in the 2026-08-06 HMH handoffs. Keep those documents for detailed weapon, world, art, and acceptance-criteria intent. Reconcile live Git and Vercel state before trusting any checkpoint below.
 
+> **2026-08-17 continuation update:** Cycles 054–058 are committed through `6bf8faf4`. Cycle 059 is locally exact-index certified on top of that commit and awaits its local commit. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–059 continuation work was pushed, deployed, or promoted.
+
 ## 1. Live checkpoint
 
 ### Git
@@ -115,6 +117,18 @@ The independent offline hash-bound review returned `PASS` with no blockers. The 
 - Release ledger remains **2,201 evaluated = 2,150 passed + 51 exact expected legacy failures**; syntax, build, assets, contracts, and strict repo health pass.
 - Production still serves cache marker `lesters-arcade-v17-hmh-formation-pressure`; `SETTLEMENT_LIVE=false`; no push, deployment, promotion, wallet, contract, settlement, transaction, or LitVM write occurred.
 
+### Cycles 054–059 continuation update (2026-08-17)
+
+- Cycle 054 merged the deployed mobile-character-start hotfix into continuation so later promotion cannot regress the shipped startup fix.
+- Cycles 055 and 058 complete the six named deterministic Liquidator build profiles: no-hit, baseline, high-DPS, low-DPS, melee-heavy, and crowd-control.
+- Cycle 056 hardened the 128-body real-browser projectile observation without weakening the non-vacuity gate.
+- Cycle 057 reconciled README and agent policy with current deployed HMH/Chikun truth.
+- Cycle 059 routes locked Liquidator line pressure through the existing authored `combatCover` blockers and shared height-aware LOS resolver. Tall cover protects; low/non-cover props do not; the real Liquidation Market east lean-to is behavior-tested from the arena origin.
+- Cycle 059 release ledger: **2,219 evaluated = 2,168 passed + 51 exact expected legacy failures**; unexpected failures **0**.
+- Child entry/vendor/combined initial JS: **389,007 / 575,891 / 964,898 bytes**; headroom **83,678 bytes**.
+- Desktop, portrait-touch, and world-tour combat browser evidence passes with no console/page errors. Network audit passes all four scenarios. Desktop/mobile performance passes. All twelve visual scenes are exact zero delta.
+- Production, Preview, aliases, rollback, `main`, wallets, contracts, settlement, transactions, paid/external services, asset uploads, and LitVM writes remain untouched. `SETTLEMENT_LIVE=false`.
+
 ## 2. Latest completed slice
 
 Cycle 053 closes the inherited release visual-signature blocker:
@@ -200,11 +214,11 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ### Immediate remaining items
 
-1. **Finish Wave 11 Liquidator build checks.**
-   - Add or verify one authored positional mechanic per phase without rewriting the boss.
-   - Complete no-hit, baseline, high/low DPS, melee-heavy, and crowd-control build matrices.
-   - Record phase times, damage windows, adds, per-phase damage, and defeat tick through bounded existing telemetry.
-   - Preserve ordinary-weapon damage, role multiplier `1.15`, punish multiplier `1.1`, and ticks `0–59` active / tick `60` inactive.
+1. **Finish Wave 11 Liquidator positional checks.**
+   - Six-profile build-matrix coverage is complete in Cycles 055/058.
+   - Phase-one cover counterplay is complete in Cycle 059 using existing authored blockers and height-aware LOS.
+   - Add one deterministic phase-two safe-sector rotation through the existing tell/resolution seam; do not rewrite boss AI.
+   - Preserve the existing final-phase punish window, ordinary-weapon damage, role multiplier `1.15`, punish multiplier `1.1`, and ticks `0–59` active / tick `60` inactive.
 
 2. **Wave 11 power-up audit before expansion.**
    - Audit heal, caches, time dilation, berserk, nuke, stack/reset policy, boss safety, silhouette, audio, and telemetry.
@@ -226,21 +240,22 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ## 4. Recommended next bounded slice
 
-Complete the smallest **Wave 11 Liquidator baseline-versus-high/low-DPS build-matrix seam** using the existing phase, damage-window, add, combat, and run-summary authorities.
+Complete the smallest **Wave 11 Liquidator phase-two safe-sector rotation seam** using the existing phase, locked-tell, safe-zone geometry, telegraph renderer, attack resolver, and authored arena authority.
 
 Why this slice:
 
-- Cycle 052 closes deterministic and serial desktop/mobile 128-body evidence.
-- Cycle 053 closes the inherited release visual-signature gate with exact provenance and two zero-delta runs.
-- The smallest remaining cross-system seam now measures build viability against the existing deterministic Liquidator instead of rewriting boss AI.
+- Cycles 055/058 close all six named build profiles.
+- Cycle 059 adds phase-one cover counterplay without changing tell geometry or damage authority.
+- The final phase already has its bounded authored recovery punish window.
+- Phase two is now the smallest remaining positional gap and can reuse safe-zone geometry already understood by runtime and renderer.
 
 Proposed contract:
 
-1. Reuse the existing boss phase resolver, damage-window policy, add-wave behavior, fixed-tick combat resolver, and run-summary telemetry.
-2. Establish a deterministic baseline build plus bounded high- and low-DPS variants; do not add a second simulator or boss authority.
-3. Record phase entry/exit ticks, punish-window contacts, add counts, per-phase damage, and defeat tick.
-4. Prove same-seed equality and fixed-step partition invariance; keep ordinary weapons viable and preserve current role/punish multipliers.
-5. Keep Cycle 053 baseline commit `b4a66b02` fixed and complete the new slice without push or deployment.
+1. Author one bounded phase-two safe-sector sequence from stable tick/phase data; no runtime randomness and no second boss authority.
+2. Lock each sector at tell start and route damage through the existing safe-zone geometry resolver.
+3. Reuse the existing telegraph renderer and keep a visibly strong safe option on desktop and portrait touch.
+4. Prove same-seed equality, 60/30/20 render partition invariance, exact boundary behavior, ordinary-weapon viability, and no overlap with final-phase punish authority.
+5. Re-run focused boss tests, release ledger, build/bundle accounting, desktop/mobile browser combat, network, performance, and visual regression. Do not push or deploy.
 
 ## 5. Exact workflow for the next session
 

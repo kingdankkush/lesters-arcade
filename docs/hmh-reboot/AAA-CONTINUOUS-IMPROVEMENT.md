@@ -167,6 +167,25 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Exact commit patch SHA-256: `7cf865b02766ef8b36eed02f672dd1b09529ec040574c7ae37c15e0f9fdde132`
   - Provenance: last passing revision `428be2e4`; intentional cockpit combo feedback first changes the signatures at `cbab316e`; verified portrait HUD placement settles at `319547f5`
   - Cycle ledger: `cycles/CYCLE-053.md`
+- [x] Cycle 054: merge the production mobile-character-start hotfix into continuation without promotion
+  - Status: locally merged as `afbff304`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-054.md`
+- [x] Cycle 055: deterministic Liquidator no-hit, baseline, high-DPS, and low-DPS build matrix
+  - Status: locally committed as `1c5dfee6`; no second boss/combat authority; production unchanged
+  - Cycle ledger: `cycles/CYCLE-055.md`
+- [x] Cycle 056: non-vacuous 128-body browser projectile-probe hardening
+  - Status: locally committed as `64fae5ce`; runtime and bundle unchanged
+  - Cycle ledger: `cycles/CYCLE-056.md`
+- [x] Cycle 057: README and agent-policy reconciliation against deployed source truth
+  - Status: locally committed as `9e8d27ae`; no runtime change
+  - Cycle ledger: `cycles/CYCLE-057.md`
+- [x] Cycle 058: Liquidator melee-heavy and crowd-control matrix completion
+  - Status: locally committed as `6bf8faf4`; production unchanged
+  - Cycle ledger: `cycles/CYCLE-058.md`
+- [x] Cycle 059: height-aware authored-cover counterplay for locked Liquidator line pressure
+  - Status: locally exact-index certified; commit pending; production unchanged
+  - Evidence: `2,219` release tests, twelve zero-delta visual scenes, desktop/mobile browser/network/performance PASS
+  - Cycle ledger: `cycles/CYCLE-059.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -178,12 +197,12 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 053 closes the inherited visual-signature blocker after commit-level provenance reconstruction and two exact zero-delta twelve-scene passes
-- Latest committed runtime source: `7837888af7592c195eaf526921305b77a3307472`; latest evidence correction: `94209018b747b590fa4bf6949a411204032c1108`; visual baseline reconciliation: `b4a66b02`
-- Exact Cycle 053 commit patch SHA-256: `7cf865b02766ef8b36eed02f672dd1b09529ec040574c7ae37c15e0f9fdde132`
-- Cycle 052 candidate entry: `388,054` bytes; combined child + Pixi initial JavaScript `963,945 / 1,048,576` bytes; headroom `84,631` bytes
-- Cycle 052 browser evidence: `128–128` bodies for serial `30s` desktop/mobile profiles; all family tokens; p95 `7.1 / 7.0 ms`; p99 `7.2 / 7.1 ms`; no catch-up saturation, dropped time, long tasks, or runtime errors
-- Cycle 053 visual evidence: all twelve scenes exact `0 / 0 / 0` for mean/max/changed cells on two successive runs; visual schema and tolerance unchanged
+- Status: Cycle 059 closes the first open Wave 11 positional seam by routing locked boss lines through existing authored combat cover and shared height-aware LOS
+- Latest committed source before Cycle 059: `6bf8faf4`; Cycle 059 exact-index review is complete and its local commit remains pending
+- Candidate entry: `389,007` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `964,898 / 1,048,576` bytes; headroom `83,678` bytes
+- Release evidence: `2,219` evaluated = `2,168` passed + `51` exact expected legacy failures; unexpected failures `0`
+- Browser evidence: desktop/portrait-touch/world-tour combat PASS, four network scenarios with zero errors, desktop/mobile performance PASS, and all twelve visual scenes exact `0 / 0 / 0`
+- Wave 11 matrix now covers no-hit, baseline, high/low DPS, melee-heavy, and crowd-control. Next bounded seam: one deterministic phase-two safe-sector rotation using existing tell/resolution authority
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement: disabled; hardened Web3 remains outside this release

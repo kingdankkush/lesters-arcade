@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { traceHeightAwareLineOfSight } from './elevation.mjs';
 const EPSILON = 1e-9;
 export const LIQUIDATOR_TARGET_FIGHT_TICKS = 3_600;
 export const MAX_BOSS_EVENTS_PER_TICK = 8;
@@ -219,8 +220,9 @@ export function createLiquidatorAddCandidates({ event, activeAddIds = [] } = {})
   })));
 }
 
-export function resolveLiquidatorAttack({ event, player } = {}) {
+export function resolveLiquidatorAttack({ event, player, blockers = [] } = {}) {
   if (!event?.geometry || !['attack', 'add-wave'].includes(event.type)) throw new TypeError('resolved boss event is required');
+  if (!Array.isArray(blockers)) throw new TypeError('blockers must be an array');
   const point = { x: finite(player?.x, 'player.x'), y: finite(player?.y, 'player.y') };
   const groundZ = finite(player?.groundZ, 'player.groundZ');
   if (event.type === 'add-wave' || event.damage <= 0) return freezeDeep({ hit: false, damage: 0, reason: 'non-damaging' });
@@ -234,6 +236,22 @@ export function resolveLiquidatorAttack({ event, player } = {}) {
     hit = distance >= geometry.innerRadius && distance <= geometry.outerRadius;
   } else if (geometry.type === 'safe-circles') {
     hit = !geometry.zones.some((zone) => Math.hypot(point.x - zone.x, point.y - zone.y) <= geometry.radius);
+  }
+  if (hit && geometry.type === 'line') {
+    // Market-crash lanes use the exact geometry locked at tell start, but tall
+    // authored combat cover still protects a player who rotated behind it.
+    // The shared height-aware LOS resolver keeps this interaction consistent
+    // with projectile/auto-aim cover and lets low props remain readable rather
+    // than becoming invisible full-height shields.
+    const cover = blockers.filter((blocker) => blocker?.solid !== false && blocker?.combatCover === true);
+    const lineOfSight = traceHeightAwareLineOfSight({
+      from: { x: geometry.origin.x, y: geometry.origin.y, z: event.groundZ + 24 },
+      to: { x: point.x, y: point.y, z: groundZ + 24 },
+      blockers: cover,
+    });
+    if (!lineOfSight.clear) {
+      return freezeDeep({ hit: false, damage: 0, reason: 'cover', blockerId: lineOfSight.blockerId });
+    }
   }
   return freezeDeep({ hit, damage: hit ? event.damage : 0, reason: hit ? null : 'outside-hit-geometry' });
 }

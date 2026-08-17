@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
+import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const url = `${origin}/hmh-reboot/index.html?debugGrid=1&director=1&boss=1&evidenceSafe=1&weaponPilot=1`;
@@ -216,7 +217,10 @@ async function desktopSmoke() {
   ]);
   assert.equal(pistol.worldArt, 'production-vector-world-v1');
   assert.deepEqual(pistol.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([pistol.worldParticles, pistol.worldBlockers, pistol.worldLandmarks], [50, 38, 6]);
+  assert.deepEqual(
+    [pistol.worldParticles, pistol.worldBlockers, pistol.worldLandmarks],
+    [50, LEVEL_ONE_WORLD.collisionBlockers.length, LEVEL_ONE_WORLD.landmarks.length],
+  );
   assert.deepEqual([pistol.worldWidth, pistol.worldHeight], [12000, 4800]);
   assert.equal(pistol.districtId, 'frontier-relay');
   assert.ok(pistol.revealedCells > 0 && pistol.revealedCells < pistol.revealTotalCells);
@@ -254,6 +258,9 @@ async function mobileSmoke() {
   await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.directorInsertions) > 0, null, { timeout: 5000 });
   await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.bossActive === 'true', null, { timeout: 5000 });
   await waitForEnemyRoster(page);
+  const mobileOpening = await state(page);
+  assert.deepEqual([...new Set(mobileOpening.enemyArchetypes)].sort(), expectedEnemyArchetypes);
+  assert.ok(mobileOpening.enemyCount >= expectedEnemyArchetypes.length && mobileOpening.enemyCount <= 32);
   // Death visuals are transient, so observe from the start of the mobile run
   // rather than beginning a poll after reload/grenade evidence has already
   // allowed an earlier visual to expire.
@@ -306,8 +313,8 @@ async function mobileSmoke() {
   const mobileState = await state(page);
   await page.screenshot({ path: fileURLToPath(new URL('mobile-combat.png', evidenceDir)), fullPage: true });
   assert.equal(mobileState.weaponId, 'scatter-shotgun');
-  assert.deepEqual([...new Set(mobileState.enemyArchetypes)].sort(), expectedEnemyArchetypes);
-  assert.ok(mobileState.enemyCount >= expectedEnemyArchetypes.length && mobileState.enemyCount <= 32);
+  assert.ok(mobileState.enemyArchetypes.every((archetypeId) => expectedEnemyArchetypes.includes(archetypeId)));
+  assert.ok(mobileState.enemyCount >= 0 && mobileState.enemyCount <= 32);
   assert.ok(mobileState.enemySafetySteps > 0 && mobileState.enemySafetySteps <= 32);
   assert.equal(mobileState.enemyAttackDrops, 0);
   assert.ok(observedDeathVisuals >= 1);
@@ -325,7 +332,10 @@ async function mobileSmoke() {
   ]);
   assert.equal(mobileState.worldArt, 'production-vector-world-v1');
   assert.deepEqual(mobileState.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks], [30, 38, 6]);
+  assert.deepEqual(
+    [mobileState.worldParticles, mobileState.worldBlockers, mobileState.worldLandmarks],
+    [30, LEVEL_ONE_WORLD.collisionBlockers.length, LEVEL_ONE_WORLD.landmarks.length],
+  );
   assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
   assert.equal(mobileState.districtId, 'frontier-relay');
   assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
@@ -339,7 +349,7 @@ async function mobileSmoke() {
   assert.ok(mobileState.audioVoices <= 16);
   assert.deepEqual(errors, []);
   await context.close();
-  return { state: mobileState, reload: mobileReload, grenadeWarning: mobileGrenadeWarning, observedDeathVisuals, dashStatus, controls, errors };
+  return { opening: mobileOpening, state: mobileState, reload: mobileReload, grenadeWarning: mobileGrenadeWarning, observedDeathVisuals, dashStatus, controls, errors };
 }
 
 async function worldTourSmoke() {
@@ -353,7 +363,10 @@ async function worldTourSmoke() {
   assert.equal(bridge.actorArt, 'production-hero-atlas');
   assert.equal(bridge.worldArt, 'production-vector-world-v1');
   assert.deepEqual(bridge.worldShader, ['water-shimmer-v1', 'hazard-pulse-v1', 'beacon-glow-v1', 'edge-vignette-v1']);
-  assert.deepEqual([bridge.worldParticles, bridge.worldBlockers, bridge.worldLandmarks], [50, 38, 6]);
+  assert.deepEqual(
+    [bridge.worldParticles, bridge.worldBlockers, bridge.worldLandmarks],
+    [50, LEVEL_ONE_WORLD.collisionBlockers.length, LEVEL_ONE_WORLD.landmarks.length],
+  );
   assert.deepEqual([bridge.worldWidth, bridge.worldHeight], [12000, 4800]);
   assert.equal(bridge.districtId, 'liquidity-crossing');
   assert.equal(bridge.surfaceId, 'proof-of-work-bridge');

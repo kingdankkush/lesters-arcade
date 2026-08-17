@@ -3288,6 +3288,7 @@ async function boot() {
         const resolved = resolveLiquidatorAttack({
           event,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
+          blockers: WORLD_BLOCKERS,
         });
         if (!resolved.hit) continue;
         const directionMagnitude = Math.hypot(actor.x - event.origin.x, actor.y - event.origin.y) || 1;
