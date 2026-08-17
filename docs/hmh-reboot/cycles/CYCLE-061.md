@@ -79,6 +79,12 @@ No generated art, simulation schema, replay/session id, save, score, leaderboard
 | `npm run repo:cdn-gate` | PASS — approval-gated report only; generated report drift reverted |
 | `git diff --check` | PASS |
 
+### Exact-index closeout
+
+- Implementation commit: `59f6f0b4c744f73876f0c164c389efb19180e7fc`.
+- Frozen staged and one-parent commit-patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`.
+- Independent offline `qwen3.5-4b-64k` hash-bound review: `PASS`, no findings; completed response and hash match were verified from `.hermes/evidence/cycle061-exact-index-review.json`.
+
 ### Browser evidence
 
 - Desktop first sector: tick `1261`, `east-west`, 2 safe zones, 2 primitives, HP `56`.

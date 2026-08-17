@@ -6,7 +6,7 @@ Branch: `reboot/hmh-aaa-continuous`
 
 > **Current continuation authority:** this document supersedes the execution status and first-action instructions in the 2026-08-06 HMH handoffs. Keep those documents for detailed weapon, world, art, and acceptance-criteria intent. Reconcile live Git and Vercel state before trusting any checkpoint below.
 
-> **2026-08-17 continuation update:** Cycles 054–060 are committed through `c5c87101`. Cycle 061 is locally source/browser certified on top of that commit and awaits its local commit. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–061 continuation work was pushed, deployed, or promoted.
+> **2026-08-17 continuation update:** Cycles 054–061 are committed locally through implementation commit `59f6f0b4`. Cycle 061 exact implementation patch SHA-256 is `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–061 continuation work was pushed, deployed, or promoted.
 
 ## 1. Live checkpoint
 
@@ -27,10 +27,10 @@ Branch: `reboot/hmh-aaa-continuous`
   - `https://lestersarcade.io/games/hard-money-heroes/play`
 - Verified immutable Preview: `dpl_GW6Kkk8v3urJQRfpPasggePk9xhn`
 - Preview URL: `https://lesters-arcade-9stogfwhw-justin-agent-projects.vercel.app`
-- Current production deployment: `dpl_EdLJRnpmh55bEe8fNWj3x3oCVotA`
-- Immutable production URL: `https://lesters-arcade-ebvbhfyek-justin-agent-projects.vercel.app`
+- Current production deployment: `dpl_Hm2bB5eEgnr6VvacT9xWU7SxVRJr` (read-only Vercel inspection, 2026-08-17)
+- Immutable production URL: `https://lesters-arcade-r60lkwo2p-justin-agent-projects.vercel.app`
 - Retained rollback deployment: `dpl_8wxJAwqrJKD3cMPscMS5QBG383GJ`
-- Active cache marker: `lesters-arcade-v17-hmh-formation-pressure`
+- Active cache marker: `lesters-arcade-v18-hmh-mobile-character-start`
 - Cycle 050 local candidate cache marker: `lesters-arcade-v18-hmh-heavy-chokepoints` (not deployed)
 - Cycle 051 local candidate cache marker: `lesters-arcade-v19-hmh-endurance-pressure` (not deployed)
 - Cycle 052 local candidate cache marker: `lesters-arcade-v20-hmh-browser-endurance` (not deployed)

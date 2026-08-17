@@ -191,7 +191,8 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Evidence: production phase atlas/audio, one-time transition cues, responsive desktop/mobile proof, entry `389,400` bytes
   - Cycle ledger: `cycles/CYCLE-060.md`
 - [x] Cycle 061: deterministic Margin Call safe-sector rotation
-  - Status: locally source/browser certified; local commit pending; production unchanged
+  - Status: locally source/browser certified and committed as `59f6f0b4`; production unchanged
+  - Exact implementation commit patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`
   - Evidence: locked `east-west -> north-south` safe circles, exact boundary behavior, 60/30/20 equality, desktop/mobile browser proof
   - Cycle ledger: `cycles/CYCLE-061.md`
 
@@ -206,7 +207,7 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 ## Current continuation candidate
 
 - Status: Cycle 061 completes the bounded Wave 11 phase-two positional seam by rotating two locked Circuit Breaker safe-circle layouts through the existing tell/renderer/resolution authority
-- Starting source: `c5c87101`; the Cycle 061 local commit is pending
+- Cycle 061 implementation commit: `59f6f0b4`; exact implementation patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`
 - Candidate entry: `389,579` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `965,470 / 1,048,576` bytes; headroom `83,106` bytes
 - Release evidence: `2,224` evaluated = `2,173` passed + `51` exact expected legacy failures; unexpected failures `0`
 - Browser evidence: desktop/mobile safe-sector sequence PASS, four network scenarios with zero errors, desktop/mobile performance PASS, and all twelve visual scenes exact `0 / 0 / 0`
