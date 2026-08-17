@@ -54,7 +54,9 @@ Active HMH actors must visibly read as human survivors or zombies. Do not use an
 
 Playable characters must follow `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`: reference-faithful detailed Blender models, ordinary enemies at comparable human scale, and hitbox changes isolated into measured deterministic gameplay cycles.
 
-Chikun's Escape remains a Coming Soon development cabinet. Its deterministic parent replay and SDK boundary must remain intact. Do not make it public playable without full production and browser certification.
+Chikun's Escape is public playable and Ranked-eligible as of `54aab311` (2026-08-11), which is an ancestor of the deployed production source. Its deterministic parent replay and SDK boundary must remain intact.
+
+What shipped is the `0.5.0` vertical slice, not the creator's full original game. Do not restore the vaulted React/Supabase source, and do not treat these as settled: written commercial-use, modification, hosting, and redistribution rights for the creator's art are still pending; `devWallet` is `null`; and the revenue split is an unconfigured skeleton with `entryFeeMicroUsdc` resolving to `0`. Enabling paid entry or third-party settlement needs separate explicit approval.
 
 ## Git and deployment safety
 

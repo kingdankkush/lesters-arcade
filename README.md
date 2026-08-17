@@ -6,15 +6,19 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Current HMH production source:** `a81f1c8f830f3339ebb568de166c108e58f695d3` (Cycle 021)
+**Current production source:** `5d4db8ee318f6a8d9f21b550ef5f18a290bfaac5` (`hotfix/hmh-mobile-character-start`)
 
-**Immutable production deployment:** https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
+**Production deployment:** `dpl_Hm2bB5eEgnr6VvacT9xWU7SxVRJr`
 
-**Immutable Cycle 021 preview:** https://lesters-arcade-fgzvqbcjk-justin-agent-projects.vercel.app
+**Immutable production deployment:** https://lesters-arcade-r60lkwo2p-justin-agent-projects.vercel.app
 
-> **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md`](docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md)
+**Production cache marker:** `lesters-arcade-v18-hmh-mobile-character-start`
 
-> `lestersarcade.io` now serves the Cycle 021 bundle. Public desktop, ultrawide, tablet, mobile portrait, mobile landscape, cockpit, and collectible routes were reverified after promotion. `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
+> **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md`](docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md)
+
+> Production facts above were measured on 2026-08-17 via `curl https://lestersarcade.io/sw.js` and `npx vercel inspect https://lestersarcade.io`. Reconcile live Git and Vercel state before trusting them in a later session. Note that the deployed source sits on a hotfix branch taken from `e3679552`, not on the tip of `reboot/hmh-aaa-continuous`; the hotfix has since been merged back onto the continuation branch, but continuation work after `e3679552` is not deployed.
+
+> `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
 ---
 
@@ -23,7 +27,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable reboot candidate | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Coming Soon, dev harness only | Third-party one-button arcade integration with Cabinet SDK, deterministic parent-seeded replay, fail-closed mode configuration, and cabinet art |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---
@@ -81,20 +85,32 @@ Implemented:
 - Parent-provided Ranked seed, build hash, and season binding.
 - Canonical replay and result verification.
 - Fail-closed missing mode configuration.
-- Coming Soon public gate with a development-only harness.
+
+Chikun launched publicly in [`54aab311`](https://github.com/kingdankkush/Lesters-Arcade/commit/54aab311a813bf4d5ce622d54633ade32dd24bf1) on 2026-08-11, which is an ancestor of the deployed production source. The cabinet is `status: 'playable'` with `publicPlayable: true` and `rankedEligible: true`, and the portal serves it at `/play/chikun`. It is the working proof that third-party Cabinet SDK onboarding produces a shippable cabinet.
 
 Current canonical files:
 
+- `apps/chikun/src/main.mjs`
+- `apps/portal/chikun/`
 - `apps/portal/src/chikun-cabinet.mjs`
+- `apps/portal/src/chikun-host.mjs`
+- `apps/portal/src/chikun-bridge.mjs`
+- `apps/portal/src/chikun-bridge-protocol.mjs`
+- `apps/portal/src/chikun-portal-lifecycle.mjs`
 - `apps/portal/src/games/chikun/loader.mjs`
 - `apps/portal/games/chikun/game.manifest.json`
 - `apps/portal/games/chikun/main.mjs`
 - `apps/portal/assets/generated/chikun-cabinet/`
 - `apps/portal/assets/generated/chikun-mode-select/`
+- `apps/portal/assets/generated/chikun-game/`
 
 The historical full React/Supabase source handoff was vaulted out of the active tree and remains inspectable in commit [`51def63a`](https://github.com/kingdankkush/Lesters-Arcade/commit/51def63af5ebbc84bab3b0dd51273d5c805b47b5) and [PR #2](https://github.com/kingdankkush/Lesters-Arcade/pull/2). It must not be restored without reconciling current parent authority, deterministic replay, security, persistence, and bundle constraints.
 
-Chikun remains `playable: false` and `devPlayable: true` until its production game, art, audio, browser, SDK, and public-launch gates are complete.
+What shipped is the `0.5.0` vertical slice, not the creator's full original game. These remain open and must not be described as settled:
+
+- Public approval and written commercial-use, modification, hosting, and redistribution rights for the creator's source art are pending (`docs/THIRD_PARTY_GAME_ONBOARDING.md`).
+- `devWallet` is `null` in both `game-registry.mjs` and `game.manifest.json`, so third-party revenue routing is unwired.
+- The registry revenue split is a skeleton and `entryFeeMicroUsdc` resolves to `DEFAULT_ENTRY_FEE_MICRO_USDC = 0`. No paid entry is live.
 
 ## Hard Money Heroes reboot
 
