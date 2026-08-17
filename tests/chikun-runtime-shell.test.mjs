@@ -33,6 +33,8 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(source, /reduceMotion/);
   assert.match(source, /nearMisses/);
   assert.match(source, /planChikunVfx/);
+  assert.match(source, /bindChikunDailyChallenge|chikunDailyChallengeForSeed/);
+  assert.match(source, /ghostYAt/);
   assert.match(source, /navigator\.share|navigator\.clipboard/);
   assert.match(source, /coastSprite\.decode/);
 

@@ -47,4 +47,7 @@ test('share text reports mode and mastery stats without wallet or session data',
   assert.match(text, /4 near misses/i);
   assert.match(text, /Replay Verified/i);
   assert.doesNotMatch(text, /0x[a-f0-9]{40}/i);
+  const daily = buildChikunShareText({ score: 88, forksPassed: 2, nearMisses: 1, bestCombo: 2, survivalTime: 8 }, 'free', 'Daily 2026-08-17');
+  assert.match(daily, /Daily 2026-08-17/);
+  assert.doesNotMatch(daily, /Free Practice/);
 });

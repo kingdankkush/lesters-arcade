@@ -19,8 +19,12 @@ export function buildChikunReplayTimeline(evidence = {}, binCount = 24) {
   });
 }
 
-export function buildChikunShareText(result = {}, mode = 'free') {
-  const label = mode === 'ranked' ? 'Replay Verified Ranked' : 'Free Practice';
+export function buildChikunShareText(result = {}, mode = 'free', dailyLabel = '') {
+  const label = mode === 'ranked'
+    ? 'Replay Verified Ranked'
+    : dailyLabel
+      ? dailyLabel
+      : 'Free Practice';
   const seconds = Math.max(0, Number(result.survivalTime) || 0).toFixed(1);
   return `I scored ${number(result.score).toLocaleString('en-US')} points in Chikun's Escape: ${number(result.forksPassed)} forks, ${number(result.nearMisses)} near misses, ${number(result.bestCombo)} best combo, ${seconds}s flight. ${label} at lestersarcade.io`;
 }

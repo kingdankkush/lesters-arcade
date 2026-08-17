@@ -63,6 +63,7 @@ Release target: Chikun cabinet 0.5.0 (second improvement wave)
 ## Future upgrades after this wave
 
 - Daily seeded challenge and ghost/replay comparison.
+  - First slice (2026-08-17, `grok/chikun-daily-challenge`): parent-owned UTC daily seed binds Free Chikun only. Ranked session seeds stay unique. Same-seed ghost is projection-only local best and is not an official Daily Seed board.
 - Additional obstacle families with deterministic telegraphs.
 - Unlockable Chikun cosmetic trails and cabinet themes earned through achievements.
 - Dedicated authored music loop and layered adaptive mix.

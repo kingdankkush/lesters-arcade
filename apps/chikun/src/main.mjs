@@ -12,6 +12,14 @@ import {
 } from '../../portal/src/chikun-bridge-protocol.mjs';
 import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
 import { buildChikunReplayTimeline, buildChikunShareText } from './presentation.mjs';
+import {
+  chikunDailyChallengeForSeed,
+  compareChikunGhost,
+  createChikunGhostRecord,
+  ghostYAt,
+  readChikunGhostRecord,
+  writeChikunGhostRecord,
+} from '../../portal/src/chikun-daily-challenge.mjs';
 
 const canvas = document.querySelector('#chikunCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
@@ -80,6 +88,8 @@ let activeFlash = null;
 let crashVfxPlayed = false;
 let lastCompletedResult = null;
 let vfxFrame = 0;
+let dailyChallenge = null;
+let ghostTrack = null;
 
 function setLive(message) {
   liveStatus.textContent = message;
@@ -162,13 +172,30 @@ function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') 
   } catch { /* audio is optional */ }
 }
 
+function loadGhostForSeed(seed) {
+  try {
+    const record = readChikunGhostRecord(globalThis.localStorage, seed);
+    ghostTrack = record?.samples?.length ? record : null;
+  } catch {
+    ghostTrack = null;
+  }
+}
+
 function setModePresentation() {
   const ranked = mode === 'ranked';
+  dailyChallenge = ranked ? null : chikunDailyChallengeForSeed(initPayload?.session?.seed);
   shell.dataset.mode = mode;
-  modeLabel.textContent = ranked ? 'Ranked Mode · Replay Verified' : 'Free Mode · Practice Flight';
+  modeLabel.textContent = ranked
+    ? 'Ranked Mode · Replay Verified'
+    : dailyChallenge
+      ? `${dailyChallenge.label} · Shared Course`
+      : 'Free Mode · Practice Flight';
   modeCopy.textContent = ranked
     ? 'Your parent-issued run is replayed by Lester’s Arcade before it reaches your profile and the Chikun score boards.'
-    : 'Practice forever. Your score stays in this flight and never enters Ranked boards.';
+    : dailyChallenge
+      ? `Everyone flies the ${dailyChallenge.dayKey} course today. Your best local ghost stays on this seed and never enters Ranked boards.`
+      : 'Practice forever. Your score stays in this flight and never enters Ranked boards.';
+  loadGhostForSeed(initPayload?.session?.seed);
 }
 
 function prepareRun() {
@@ -201,7 +228,8 @@ function startRun() {
   pauseOverlay.classList.add('is-hidden');
   resultOverlay.classList.add('is-hidden');
   canvas.focus();
-  setLive(`${mode === 'ranked' ? 'Ranked' : 'Free'} flight started. Tap or press Space to flap.`);
+  const flightLabel = mode === 'ranked' ? 'Ranked' : dailyChallenge ? dailyChallenge.label : 'Free';
+  setLive(`${flightLabel} flight started. Tap or press Space to flap.`);
   tone(420, 0.1, 0.04, 'square');
   sendState('running');
 }
@@ -220,6 +248,14 @@ function finishRun() {
   paused = false;
   const result = runtime.result();
   lastCompletedResult = result;
+  let ghostComparison = null;
+  if (ghostTrack && ghostTrack.seed === result.seed) {
+    try { ghostComparison = compareChikunGhost({ run: result, ghost: ghostTrack }); } catch { ghostComparison = null; }
+  }
+  try {
+    const stored = writeChikunGhostRecord(globalThis.localStorage, createChikunGhostRecord(result));
+    if (stored?.samples?.length) ghostTrack = stored;
+  } catch { /* local ghost storage is optional */ }
   if (!crashVfxPlayed) { spawnVfx('crash'); crashVfxPlayed = true; }
   const replayClaim = buildChikunReplayClaim({
     buildHash: initPayload.session.buildHash,
@@ -241,13 +277,21 @@ function finishRun() {
   };
   tone(96, 0.38, 0.07, 'sawtooth');
   send('game:result', payload);
-  resultEyebrow.textContent = mode === 'ranked' ? 'Ranked run sent for parent replay' : 'Free flight complete';
+  resultEyebrow.textContent = mode === 'ranked'
+    ? 'Ranked run sent for parent replay'
+    : dailyChallenge
+      ? `${dailyChallenge.label} complete`
+      : 'Free flight complete';
   resultScore.textContent = String(result.score);
   resultCopy.textContent = mode === 'ranked'
     ? 'Lester’s Arcade is verifying this input log. Accepted scores update your profile and the Chikun’s Escape score boards.'
-    : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
+    : ghostComparison
+      ? `${ghostComparison.beatGhost ? 'You beat your ghost' : 'Ghost still leads'} by ${Math.abs(ghostComparison.scoreDelta)} points. Practice score only.`
+      : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
   resultStats.replaceChildren();
-  for (const label of [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} forks`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`]) {
+  const statLabels = [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} forks`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`];
+  if (ghostComparison) statLabels.push(`ghost ${ghostComparison.scoreDelta >= 0 ? '+' : ''}${ghostComparison.scoreDelta}`);
+  for (const label of statLabels) {
     const chip = document.createElement('span');
     chip.textContent = label;
     resultStats.append(chip);
@@ -389,6 +433,30 @@ function drawFork(fork) {
   }
 }
 
+function drawGhost(snapshot) {
+  const y = ghostYAt(ghostTrack, snapshot?.tick ?? 0);
+  if (y == null) return;
+  const x = snapshot?.chikun?.x ?? 280;
+  ctx.save();
+  ctx.globalAlpha = reduceMotion() ? 0.28 : 0.38;
+  ctx.translate(x, y);
+  ctx.fillStyle = '#fff8c8';
+  ctx.strokeStyle = 'rgba(5,6,7,.55)';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 40, 28, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#e8c23b';
+  ctx.beginPath();
+  ctx.moveTo(34, -6);
+  ctx.lineTo(64, 2);
+  ctx.lineTo(34, 10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawChikun(snapshot) {
   const bird = snapshot.chikun;
   const sprite = bird.velocityY > 1.6 ? fallSprite : coastSprite;
@@ -452,7 +520,10 @@ function draw(snapshot = latestSnapshot) {
       ctx.restore();
     }
   }
-  if (snapshot?.chikun) drawChikun(snapshot);
+  if (snapshot?.chikun) {
+    drawGhost(snapshot);
+    drawChikun(snapshot);
+  }
   drawVfx(snapshot);
   ctx.restore();
 }
@@ -580,7 +651,7 @@ exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
 shareRunButton.addEventListener('click', async () => {
   if (!lastCompletedResult) return;
-  const text = buildChikunShareText(lastCompletedResult, mode);
+  const text = buildChikunShareText(lastCompletedResult, mode, dailyChallenge?.label ?? '');
   try {
     if (navigator.share) await navigator.share({ title: "Chikun's Escape", text, url: 'https://lestersarcade.io' });
     else if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
@@ -595,6 +666,10 @@ shareRunButton.addEventListener('click', async () => {
   setTimeout(() => { shareRunButton.textContent = 'Share Run'; }, 1_500);
 });
 restartButton.addEventListener('click', () => {
+  if (mode !== 'ranked') {
+    startRun();
+    return;
+  }
   restartButton.disabled = true;
   restartButton.textContent = 'Requesting new run…';
   send('game:restart-request', {});

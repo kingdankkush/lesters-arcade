@@ -9,6 +9,7 @@ import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
+import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
@@ -4840,6 +4841,9 @@ async function restartChikunSession() {
 
 function mountChikunSession() {
   if (!dom.officialCombatMount || !currentSession || currentSession.gameId !== 'chikun') return null;
+  if (!currentSession.leaderboardEligible) {
+    currentSession = bindChikunDailyChallenge(currentSession);
+  }
   destroyHmhRebootSession();
   const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
   const initContext = buildCabinetInitContextFromSession(currentSession, {

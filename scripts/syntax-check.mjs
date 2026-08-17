@@ -333,6 +333,8 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/critical-liquidator-benchmark.mjs",
   "tests/hmh-reboot-critical-liquidator-benchmark.test.mjs",
   "tests/production-doc-drift-check.test.mjs",
+  "apps/portal/src/chikun-daily-challenge.mjs",
+  "tests/chikun-daily-challenge.test.mjs",
   "tests/hmh-reboot-host.test.mjs",
   "tests/hmh-reboot-input.test.mjs",
   "tests/hmh-reboot-mobile-weapon-readability.test.mjs",
