@@ -195,6 +195,14 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Exact implementation commit patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`
   - Evidence: locked `east-west -> north-south` safe circles, exact boundary behavior, 60/30/20 equality, desktop/mobile browser proof
   - Cycle ledger: `cycles/CYCLE-061.md`
+- [x] Cycle 062: Wave 10 flanker navgrid-validated lane
+  - Status: locally committed as `bac9679e`; production unchanged
+  - Evidence: 60-position sweep 6 blocked raw blends / 0 validated; desktop/mobile `smoke:hmh:flank-lane` peak 24; `2,229` release tests
+  - Cycle ledger: `cycles/CYCLE-062.md`
+- [x] Cycle 063: canonical Precision Ledger offer/selection routed through the live combat resolver into the Liquidator benchmark
+  - Status: local isolated branch `grok/wave11-crit-upgrade-benchmark`, rebased onto `bac9679e`; production unchanged
+  - Evidence: seed `1337` ordinary TTK `2,837` vs upgraded `2,721`; same-seed equality; 1-vs-4 catch-up; fail-closed when the card is not offered
+  - Cycle ledger: `cycles/CYCLE-063.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -206,13 +214,14 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 061 completes the bounded Wave 11 phase-two positional seam by rotating two locked Circuit Breaker safe-circle layouts through the existing tell/renderer/resolution authority
+- Status: Cycle 062 lands the Wave 10 flanker validated lane; Cycle 063 closes the Priority C crit-upgrade evidence gap by selecting `precision-ledger` through the real first-level offer and feeding the live `8%/1.75x` combat resolver into Liquidator damage
+- Cycle 062 implementation commit: `bac9679e`
 - Cycle 061 implementation commit: `59f6f0b4`; exact implementation patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`
-- Candidate entry: `389,579` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `965,470 / 1,048,576` bytes; headroom `83,106` bytes
-- Release evidence: `2,224` evaluated = `2,173` passed + `51` exact expected legacy failures; unexpected failures `0`
-- Browser evidence: desktop/mobile safe-sector sequence PASS, four network scenarios with zero errors, desktop/mobile performance PASS, and all twelve visual scenes exact `0 / 0 / 0`
-- Wave 11 now covers no-hit, baseline, high/low DPS, melee-heavy, crowd-control, authored height-aware cover, production phase presentation, and deterministic phase-two safe-sector rotation
-- Next bounded seam: return to Priority C with one canonical crit-upgrade offer/selection routed through the real weapon-to-Liquidator long-run benchmark
+- Candidate entry: Cycle 062 measured `944.1 KB / 81.2 KB` headroom. Cycle 063 does not import into `main.mjs`
+- Release evidence: Cycle 062 `2,229` evaluated = `2,178` passed + `51` expected; Cycle 063 added 7 focused tests on the isolated parent
+- Browser evidence: Cycle 062 `smoke:hmh:flank-lane` desktop/mobile peak 24. Cycle 063 is evidence-only and does not change that record
+- Wave 10 now includes the validated flanker lane. Wave 11 now covers no-hit, baseline, high/low DPS, melee-heavy, crowd-control, authored height-aware cover, production phase presentation, deterministic phase-two safe-sector rotation, and one canonical crit-upgrade combat benchmark
+- Next bounded seam: Wave 11 power-up audit (heal/caches/dilation/berserk/nuke) before any new pickups. Wave 10 leftover suppressor/demolition/support tangent stays with the flanker owner
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement and Web3 writes remain outside this release
