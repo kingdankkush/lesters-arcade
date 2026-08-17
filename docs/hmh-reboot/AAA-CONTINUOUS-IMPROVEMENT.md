@@ -195,6 +195,19 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Exact implementation commit patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`
   - Evidence: locked `east-west -> north-south` safe circles, exact boundary behavior, 60/30/20 equality, desktop/mobile browser proof
   - Cycle ledger: `cycles/CYCLE-061.md`
+- [x] Cycle 062: navgrid-validated stable-side flanker lanes
+  - Status: locally source/browser certified and committed as `bac9679e`; production unchanged
+  - Evidence: non-vacuous validated/fallback branches, blocker aims reduced from `6/60` to `0/60`, desktop/mobile 128-body lane telemetry
+  - Cycle ledger: `cycles/CYCLE-062.md`
+- [x] Cycle 064: navgrid-validated ranged-role backoff and strafe lanes
+  - Status: locally source/browser certified and committed as `47326841`; production unchanged
+  - Evidence: blocker aims reduced from `58/1,671` to `24/1,671`, desktop/mobile lane peaks `68 / 69`, release `2,231 / 2,180 / 51 / 0`
+  - Cycle ledger: `cycles/CYCLE-064.md`
+- [x] Cycle 065: canonical Precision Ledger offer/selection through real Coin Blaster cadence, combat resolver, and Liquidator authority
+  - Status: locally source/browser certified; production unchanged
+  - Evidence: rank-1 crit chance `0.08 -> 0.14`, identical `128` shots and `16 / 15` reload starts/completes, damage `411 -> 423`, 60/30/20 equality
+  - Release and bundle: `2,237 / 2,186 / 51 / 0`; combined initial JavaScript `967,183 / 1,048,576`, headroom `81,393` bytes
+  - Cycle ledger: `cycles/CYCLE-065.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -206,13 +219,13 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 061 completes the bounded Wave 11 phase-two positional seam by rotating two locked Circuit Breaker safe-circle layouts through the existing tell/renderer/resolution authority
-- Cycle 061 implementation commit: `59f6f0b4`; exact implementation patch SHA-256: `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`
-- Candidate entry: `389,579` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `965,470 / 1,048,576` bytes; headroom `83,106` bytes
-- Release evidence: `2,224` evaluated = `2,173` passed + `51` exact expected legacy failures; unexpected failures `0`
-- Browser evidence: desktop/mobile safe-sector sequence PASS, four network scenarios with zero errors, desktop/mobile performance PASS, and all twelve visual scenes exact `0 / 0 / 0`
-- Wave 11 now covers no-hit, baseline, high/low DPS, melee-heavy, crowd-control, authored height-aware cover, production phase presentation, and deterministic phase-two safe-sector rotation
-- Next bounded seam: return to Priority C with one canonical crit-upgrade offer/selection routed through the real weapon-to-Liquidator long-run benchmark
+- Status: Cycle 065 closes the Priority C canonical crit-upgrade benchmark seam after Cycles 062/064 completed navgrid validation for flanker and ranged-role steering
+- Current implementation baseline before Cycle 065: `47326841`
+- Candidate entry: `391,292` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `967,183 / 1,048,576` bytes; headroom `81,393` bytes
+- Release evidence: `2,237` evaluated = `2,186` passed + `51` exact expected legacy failures; unexpected failures `0`
+- Benchmark evidence: legal first-level control/Precision Ledger selection, real Coin Blaster cadence/reloads, seeded combat criticals, Liquidator role/punish/boss authority, and 60/30/20 partition equality
+- Browser evidence: four network scenarios with zero errors, desktop/mobile p95 `7.0 / 7.0 ms`, p99 `7.1 / 7.1 ms`, and all twelve visual scenes exact `0 / 0 / 0`
+- Next bounded seam: Wave 11 existing-power-up lifecycle/boss-safety audit before adding any new power-up
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement and Web3 writes remain outside this release

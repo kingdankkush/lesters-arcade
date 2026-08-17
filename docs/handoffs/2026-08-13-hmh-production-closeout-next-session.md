@@ -8,6 +8,8 @@ Branch: `reboot/hmh-aaa-continuous`
 
 > **2026-08-17 continuation update:** Cycles 054–061 are committed locally through implementation commit `59f6f0b4`. Cycle 061 exact implementation patch SHA-256 is `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–061 continuation work was pushed, deployed, or promoted.
 
+> **2026-08-17 Cycle 065 update:** continuation now includes Cycle 062 flanker validation (`bac9679e`), Cycle 064 ranged-role validation (`47326841`), and a locally certified Cycle 065 canonical Precision Ledger benchmark on top. Cycle 065 legally selects one rank from the real first-level offer, retains Coin Blaster cadence/reloads, routes seeded hits through combat and Liquidator role/punish authority, and is 60/30/20 partition-invariant. Release is `2,237 / 2,186 / 51 / 0`; initial child JavaScript is `391,292 + 575,891 = 967,183 / 1,048,576` bytes. Production, Preview, aliases, main, wallets, contracts, settlement, transactions, external services, and LitVM writes remain untouched. The next bounded slice is the existing Wave 11 power-up lifecycle/boss-safety audit, not a new power-up.
+
 ## 1. Live checkpoint
 
 ### Git
@@ -218,47 +220,43 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ### Immediate remaining items
 
-1. **Return to Priority C with one canonical weapon-upgrade benchmark seam.**
-   - The real ordinary weapon -> combat resolver -> Liquidator benchmark is already present and deterministic.
-   - Route one existing crit upgrade through canonical offer/selection data into that benchmark; do not add a second progression or combat authority.
-   - Preserve ordinary-weapon viability, fixed-tick damage authority, role multiplier `1.15`, final-phase punish multiplier `1.1`, and partition equality.
-
-2. **Wave 11 power-up audit before expansion.**
-   - Audit heal, caches, time dilation, berserk, nuke, stack/reset policy, boss safety, silhouette, audio, and telemetry.
+1. **Wave 11 existing-power-up audit before expansion.**
+   - Audit heal, weapon caches, time dilation, berserk, and nuke through their real collection/runtime/summary paths.
+   - Prove exact fixed-tick refresh/expiry and reset policy, capped refill/selection behavior, non-deleting Liquidator nuke behavior, bounded telemetry, silhouette/audio truth, and desktop/mobile safe-area evidence.
    - Add Block Shield, Fee Holiday, Flash Crash, or Liquidity Magnet only after the existing set is behaviorally certified.
 
-3. **Wave 12 production-art and presentation work.**
+2. **Wave 12 production-art and presentation work.**
    - Industrial/mining kit, wet-bank/foam/scree transitions, interior/secret kits, all-weapon model coverage, lighting, animation transitions, and pooled VFX caps.
    - A12/256 px hero work remains owner-gated.
 
-4. **Wave 13 authored-world expansion.**
+3. **Wave 13 authored-world expansion.**
    - Ruined-neighborhood interiors, vertical set-pieces, secrets, atmosphere, encounter staging, visible blockers, traversal tests, and visual scenes.
 
-5. **Wave 14 onboarding, accessibility, meta UI, docs, analytics, and active endurance.**
+4. **Wave 14 onboarding, accessibility, meta UI, docs, analytics, and active endurance.**
    - Hero comparison/accessibility, truthful cabinets, three-action start flow, achievement progress, wallet-state copy audit, privacy-conscious analytics, colorblind/caption/remapping/touch/HUD-scale work, and a real-interaction desktop/mobile endurance pass.
 
-6. **Wave 15 Litecoin City first vertical slice.**
+5. **Wave 15 Litecoin City first vertical slice.**
    - Reconcile all legacy non-human concepts before runtime use.
    - Build only Litecoin Square → one connector → one optional POI → one human/zombie mini-boss → extraction/return before expansion.
 
 ## 4. Recommended next bounded slice
 
-Complete the smallest **Priority C weapon-upgrade -> long-run benchmark seam** using the existing run-progression offer/selection data, weapon system, combat resolver, and deterministic Liquidator target.
+Complete the smallest **existing-power-up lifecycle -> runtime -> summary certification seam** before adding any new power-up.
 
 Why this slice:
 
-- Cycle 061 closes the remaining bounded Wave 11 phase-two positional gap without a boss-AI rewrite.
-- Cycle 059 already connects one ordinary weapon to the real combat resolver and deterministic boss target.
-- The next evidence gap is upgrade/build variance through canonical progression data, not another boss attack or simulator-only damage table.
-- A single crit upgrade crosses progression, weapon damage, boss outcome, telemetry, and long-run certification while staying bounded.
+- Cycle 065 closes the canonical crit-upgrade benchmark with real cadence, seeded combat resolution, boss punish authority, and partition equality.
+- Wave 11 explicitly requires certifying heal, weapon caches, time dilation, berserk, and nuke before expansion.
+- Existing pure tests prove single-use collection and one timed expiry, but do not yet close duplicate-effect refresh policy, full reset behavior, capped cache refill/selection, Liquidator nuke safety, or bounded summary truth together.
+- This audit crosses collection, fixed-tick effects, combat/boss safety, telemetry, audio/presentation, and desktop/mobile evidence without adding a new mechanic or asset.
 
 Proposed contract:
 
-1. Select one existing canonical crit card and exercise the real legal offer plus selection contract rather than injecting a private simulator-only multiplier.
-2. Feed the resulting canonical upgrade snapshot into the existing weapon-to-Liquidator bridge; keep combat resolution read-only and fixed-tick.
-3. Record the offered/selected upgrade id and resulting boss damage/outcome without inventing a second summary schema.
-4. Prove ordinary baseline viability, bounded crit uplift, same-seed equality, and 60/30/20 render partition invariance.
-5. Re-run focused progression/weapon/boss/long-run tests, release ledger, build/bundle accounting, browser/network/performance, and visual regression. Do not push or deploy.
+1. Audit the current authored placements and effect definitions; do not add Block Shield, Fee Holiday, Flash Crash, or Liquidity Magnet.
+2. RED-test duplicate timed-effect refresh/expiry, 60/30/20 equality, complete run reset, heal caps, weapon-cache refill/selection caps, and malformed input.
+3. Prove nuke damage routes through ordinary combat/boss authority, cannot delete the Liquidator, and does not bypass boss defeat/reward state.
+4. Close bounded run-summary counters plus existing pickup/audio/silhouette truth without per-event histories or new projection authority.
+5. Capture transient desktop/mobile collection and expiry evidence, then rerun release, build/bundle, network, performance, visual, security, and exact-index gates. Do not push or deploy.
 
 ## 5. Exact workflow for the next session
 
@@ -302,5 +300,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production. Cycle 061 closes Wave 11 phase-two positioning with deterministic locked east-west then north-south Circuit Breaker safe circles, desktop/mobile runtime proof, 2,224-test retirement-ledger PASS, and 83,106 bytes of initial-JS headroom; do not rewrite or duplicate its boss/tell/resolution authority. Select the smallest Priority C canonical crit-upgrade offer/selection -> real weapon/combat resolver -> deterministic Liquidator benchmark seam. Preserve fixed 60 Hz/four-catch-up authority, ordinary-weapon viability, all caps, parent authority, and Web3 HALT boundaries. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, every HMH worktree, the index/worktree, and production. Cycle 065 closes the canonical Precision Ledger offer/selection -> real Coin Blaster cadence -> seeded combat resolver -> Liquidator benchmark seam with 60/30/20 equality, 2,237-test retirement-ledger PASS, and 81,393 bytes of initial-JS headroom; do not merge the older competing benchmark branches or duplicate combat authority. Select the smallest Wave 11 existing-power-up lifecycle/boss-safety audit for heal, caches, time dilation, berserk, and nuke before adding any new power-up. Preserve fixed 60 Hz/four-catch-up authority, caps, parent authority, and Web3 HALT boundaries. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
 ```
