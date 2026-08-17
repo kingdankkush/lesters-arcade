@@ -162,6 +162,11 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Evidence correction SHA-256: `9cae773394eb46ab8a1bba1f8257cf23ab0f4f019a01fb069bcfe413d6046788`
   - Browser evidence: `128–128` bodies for `30s` per profile, all `17` family tokens, desktop/mobile p95 `7.1 / 7.0 ms`, p99 `7.2 / 7.1 ms`, `0` catch-up saturation/dropped time/long tasks/runtime errors
   - Cycle ledger: `cycles/CYCLE-052.md`
+- [x] Cycle 053: exact visual-baseline authority reconstruction and cockpit/HUD signature reconciliation
+  - Status: locally certified and committed as `b4a66b02`; two complete twelve-scene runs are exact zero delta; production unchanged
+  - Exact commit patch SHA-256: `7cf865b02766ef8b36eed02f672dd1b09529ec040574c7ae37c15e0f9fdde132`
+  - Provenance: last passing revision `428be2e4`; intentional cockpit combo feedback first changes the signatures at `cbab316e`; verified portrait HUD placement settles at `319547f5`
+  - Cycle ledger: `cycles/CYCLE-053.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -173,11 +178,12 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 052 closes the remaining Wave 10 real-browser 100+ body endurance evidence; the visual gate retains two baseline-HEAD-reproducible signature drifts
-- Latest committed runtime source: `7837888af7592c195eaf526921305b77a3307472`; latest evidence correction: `94209018b747b590fa4bf6949a411204032c1108`
-- Exact Cycle 052 commit patch SHA-256: `9381fc018b413c16d5e5ceee08c0661feb8ed73e6a893bc527546ad5c3a8f843`
+- Status: Cycle 053 closes the inherited visual-signature blocker after commit-level provenance reconstruction and two exact zero-delta twelve-scene passes
+- Latest committed runtime source: `7837888af7592c195eaf526921305b77a3307472`; latest evidence correction: `94209018b747b590fa4bf6949a411204032c1108`; visual baseline reconciliation: `b4a66b02`
+- Exact Cycle 053 commit patch SHA-256: `7cf865b02766ef8b36eed02f672dd1b09529ec040574c7ae37c15e0f9fdde132`
 - Cycle 052 candidate entry: `388,054` bytes; combined child + Pixi initial JavaScript `963,945 / 1,048,576` bytes; headroom `84,631` bytes
 - Cycle 052 browser evidence: `128–128` bodies for serial `30s` desktop/mobile profiles; all family tokens; p95 `7.1 / 7.0 ms`; p99 `7.2 / 7.1 ms`; no catch-up saturation, dropped time, long tasks, or runtime errors
+- Cycle 053 visual evidence: all twelve scenes exact `0 / 0 / 0` for mean/max/changed cells on two successive runs; visual schema and tolerance unchanged
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement: disabled; hardened Web3 remains outside this release

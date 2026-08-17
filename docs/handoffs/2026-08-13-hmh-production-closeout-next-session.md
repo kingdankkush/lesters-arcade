@@ -15,7 +15,7 @@ Branch: `reboot/hmh-aaa-continuous`
 - Local and `origin/reboot/hmh-aaa-continuous` matched at `b14fbbeb` before Cycle 050 work began.
 - `origin/main`: `fa9585be7014db6515c536f9a09fdba5a3a2572f`
 - Cycle 050 is locally committed as `fc6ad3da15d4cd134f565f1e6e579a7d63a087ba` on top of `b14fbbeb`; it has not been pushed or deployed. `origin/reboot/hmh-aaa-continuous` therefore remains at `b14fbbeb`.
-- Cycle 050 documentation closeout was `576b6388`. Cycle 051 implementation and evidence are locally committed as `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`. Cycle 052 runtime is locally committed as `7837888af7592c195eaf526921305b77a3307472`, with p99/touch evidence correction `94209018b747b590fa4bf6949a411204032c1108`; inherited visual-baseline drift remains open. Reconcile live Git before editing it.
+- Cycle 050 documentation closeout was `576b6388`. Cycle 051 implementation and evidence are locally committed as `dcd4a9ba79eec28c770a11920030afcd2a57cbaf`. Cycle 052 runtime is locally committed as `7837888af7592c195eaf526921305b77a3307472`, with p99/touch evidence correction `94209018b747b590fa4bf6949a411204032c1108`. Cycle 053 visual-baseline reconciliation is locally committed as `b4a66b02`; its documentation closeout follows that commit. Reconcile live Git before editing it.
 
 ### Production
 
@@ -104,15 +104,33 @@ The independent offline hash-bound review returned `PASS` with no blockers. The 
 - Hosted delegation remained unavailable because the configured Nous provider has no token. A local offline correction review returned `PASS` with no blockers for the exact frozen source hash after factually invalid first-pass pseudo-findings were rejected.
 - Production, Preview, aliases, rollback, `main`, settlement, wallets, contracts, transactions, external uploads, paid services, and LitVM writes were untouched.
 
+### Cycle 053 visual-baseline reconciliation (2026-08-16; committed locally)
+
+- Exact last tracked baseline writer: `c4680a68`.
+- Same-browser/build history reconstruction: `428be2e4` passes; intentional cockpit combo feedback at `cbab316e` is the first revision with the inherited pair; verified portrait HUD placement at `319547f5` produces the final mobile signature.
+- The significant pixel deltas are localized to the upper cockpit/combat-status regions, not authored terrain, actors, depth sorting, or world props.
+- The repository-owned acceptance path refreshed all twelve signatures without changing schema, scene list, viewport, target tick, grid, script, or tolerance.
+- Two subsequent full visual runs reported exact `meanDelta=0`, `maxDelta=0`, and `changedCells=0` for every one of the twelve scenes.
+- Exact commit: `b4a66b02`; one-parent patch SHA-256: `7cf865b02766ef8b36eed02f672dd1b09529ec040574c7ae37c15e0f9fdde132`.
+- Release ledger remains **2,201 evaluated = 2,150 passed + 51 exact expected legacy failures**; syntax, build, assets, contracts, and strict repo health pass.
+- Production still serves cache marker `lesters-arcade-v17-hmh-formation-pressure`; `SETTLEMENT_LIVE=false`; no push, deployment, promotion, wallet, contract, settlement, transaction, or LitVM write occurred.
+
 ## 2. Latest completed slice
 
-Cycle 052 closes the remaining real-browser half of the Wave 10 soak-truth gap:
+Cycle 053 closes the inherited release visual-signature blocker:
+
+- Baseline provenance is commit-level rather than inferred from the latest handoff.
+- The player-visible change is explained by intentional combo/cockpit and portrait HUD work, not Cycle 051/052 runtime drift or nondeterministic rendering.
+- All twelve signatures now represent one current local candidate, and two complete reruns are exact zero delta.
+- No runtime, renderer, asset, budget, tolerance, or authority changed.
+
+Cycle 052 closed the remaining real-browser half of the Wave 10 soak-truth gap:
 
 - A fail-closed route requires both `evidenceSafe=1` and `endurancePressurePilot=1`.
 - Deterministic candidates are selected from the existing endurance role policy and routed one by one through `attemptScheduledEnemyInsertion(...)`; no second population or movement authority was added.
 - The route observes all `128` bodies for serial desktop/mobile 30-second wall-clock windows while sampling body/threat/token/projectile/effect pressure, frame time, heap, long tasks, fixed-tick catch-up/dropped time, network, console, page errors, production art, canvas, and touch controls.
 - Normal opening composition, movement/attack grace, director cadence, fixed-tick authority, and caps remain unchanged.
-- Wave 10's deterministic 128-body and real-browser 128-body evidence requirements are now both locally complete. Release visual-signature reconciliation remains separate and open.
+- Wave 10's deterministic 128-body and real-browser 128-body evidence requirements are now both locally complete. Cycle 053 separately closes the release visual-signature reconciliation.
 
 Cycle 051 closed the deterministic benchmark half of the Wave 10 soak-truth gap:
 
@@ -182,53 +200,47 @@ The previous bounded hazard-aware pathing slice remains production-live and unch
 
 ### Immediate remaining items
 
-1. **Reconcile the inherited release visual signatures.**
-   - `frontier-relay-mobile` and `combat-engaged-desktop` reproduce unchanged from the isolated baseline-HEAD build documented in Cycle 051.
-   - Compare them with the last accepted visual baseline and explain the player-visible delta before accepting any update.
-   - Do not use `--accept` as a shortcut and do not weaken visual tolerances.
-   - Wave 10 deterministic and serial real-browser 128-body endurance evidence is locally complete in Cycles 051–052.
-
-2. **Finish Wave 11 Liquidator build checks.**
+1. **Finish Wave 11 Liquidator build checks.**
    - Add or verify one authored positional mechanic per phase without rewriting the boss.
    - Complete no-hit, baseline, high/low DPS, melee-heavy, and crowd-control build matrices.
    - Record phase times, damage windows, adds, per-phase damage, and defeat tick through bounded existing telemetry.
    - Preserve ordinary-weapon damage, role multiplier `1.15`, punish multiplier `1.1`, and ticks `0–59` active / tick `60` inactive.
 
-3. **Wave 11 power-up audit before expansion.**
+2. **Wave 11 power-up audit before expansion.**
    - Audit heal, caches, time dilation, berserk, nuke, stack/reset policy, boss safety, silhouette, audio, and telemetry.
    - Add Block Shield, Fee Holiday, Flash Crash, or Liquidity Magnet only after the existing set is behaviorally certified.
 
-4. **Wave 12 production-art and presentation work.**
+3. **Wave 12 production-art and presentation work.**
    - Industrial/mining kit, wet-bank/foam/scree transitions, interior/secret kits, all-weapon model coverage, lighting, animation transitions, and pooled VFX caps.
    - A12/256 px hero work remains owner-gated.
 
-5. **Wave 13 authored-world expansion.**
+4. **Wave 13 authored-world expansion.**
    - Ruined-neighborhood interiors, vertical set-pieces, secrets, atmosphere, encounter staging, visible blockers, traversal tests, and visual scenes.
 
-6. **Wave 14 onboarding, accessibility, meta UI, docs, analytics, and active endurance.**
+5. **Wave 14 onboarding, accessibility, meta UI, docs, analytics, and active endurance.**
    - Hero comparison/accessibility, truthful cabinets, three-action start flow, achievement progress, wallet-state copy audit, privacy-conscious analytics, colorblind/caption/remapping/touch/HUD-scale work, and a real-interaction desktop/mobile endurance pass.
 
-7. **Wave 15 Litecoin City first vertical slice.**
+6. **Wave 15 Litecoin City first vertical slice.**
    - Reconcile all legacy non-human concepts before runtime use.
    - Build only Litecoin Square → one connector → one optional POI → one human/zombie mini-boss → extraction/return before expansion.
 
 ## 4. Recommended next bounded slice
 
-Reconcile **`frontier-relay-mobile` and `combat-engaged-desktop` against the last accepted visual baseline** before beginning new gameplay work.
+Complete the smallest **Wave 11 Liquidator baseline-versus-high/low-DPS build-matrix seam** using the existing phase, damage-window, add, combat, and run-summary authorities.
 
 Why this slice:
 
-- Cycle 052 now closes the requested serial desktop/mobile real-browser 128-body evidence.
-- The only repository-wide gate still open for the current continuation is the pair of inherited visual signatures.
-- Resolving baseline authority before new Wave 11 work prevents a future legitimate visual change from being mixed with unexplained drift.
+- Cycle 052 closes deterministic and serial desktop/mobile 128-body evidence.
+- Cycle 053 closes the inherited release visual-signature gate with exact provenance and two zero-delta runs.
+- The smallest remaining cross-system seam now measures build viability against the existing deterministic Liquidator instead of rewriting boss AI.
 
 Proposed contract:
 
-1. Identify the exact last accepted baseline commit and compare both changed signatures with baseline HEAD and Cycle 052 from identical browser/build conditions.
-2. Determine whether the deltas are environment nondeterminism, stale baseline metadata, or an intentional earlier player-visible change.
-3. Accept a baseline only after visual inspection and a documented explanation; otherwise fix the deterministic source of drift.
-4. Require two zero-delta visual passes after reconciliation.
-5. Keep reviewed Cycle 052 commit `7837888a` fixed and implement reconciliation as a separate reviewed slice without push or deployment.
+1. Reuse the existing boss phase resolver, damage-window policy, add-wave behavior, fixed-tick combat resolver, and run-summary telemetry.
+2. Establish a deterministic baseline build plus bounded high- and low-DPS variants; do not add a second simulator or boss authority.
+3. Record phase entry/exit ticks, punish-window contacts, add counts, per-phase damage, and defeat tick.
+4. Prove same-seed equality and fixed-step partition invariance; keep ordinary weapons viable and preserve current role/punish multipliers.
+5. Keep Cycle 053 baseline commit `b4a66b02` fixed and complete the new slice without push or deployment.
 
 ## 5. Exact workflow for the next session
 
@@ -272,5 +284,5 @@ Then:
 ## 7. Ready-to-paste first prompt
 
 ```text
-Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production; Cycle 052 runtime is locally committed as 7837888a with p99/touch evidence correction 94209018 and closes the serial desktop/mobile 128-body browser endurance requirement, so do not overwrite or reimplement it. Reproduce and diagnose the inherited frontier-relay-mobile and combat-engaged-desktop visual signatures against the exact last accepted baseline under identical build/browser conditions. Do not weaken tolerances or use --accept until visual inspection explains the player-visible delta, and require two zero-delta passes after reconciliation. Then select the smallest Wave 11 Liquidator build-matrix slice using existing phase/damage-window telemetry. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
+Continue Hard Money Heroes from docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md on branch reboot/hmh-aaa-continuous. First reconcile local HEAD, origin/reboot/hmh-aaa-continuous, the worktree/index, and production. Cycle 052 runtime is locally committed as 7837888a with p99/touch correction 94209018 and closes serial desktop/mobile 128-body browser endurance. Cycle 053 visual-baseline reconciliation is committed as b4a66b02, traces the inherited pair to intentional combo/HUD work, and has two exact zero-delta twelve-scene passes; do not overwrite or reaccept it. Select the smallest Wave 11 Liquidator baseline-versus-high/low-DPS build-matrix seam using existing boss phase, damage-window, add, combat, and run-summary telemetry. Preserve fixed 60 Hz/four-catch-up authority and all caps. Obtain exact-index review before committing, and do not push, deploy, promote, publish, use paid services, or perform any wallet, contract, settlement, transaction, or LitVM action without separate live approval.
 ```
