@@ -21,7 +21,7 @@ class FakeDocument {
   }
 }
 
-function fixture({ runtimeSearch = '' } = {}) {
+function fixture({ runtimeSearch = '', readyTimeoutMs = 5000 } = {}) {
   const mount = { children: [], replaceChildren(...children) { this.children = children; for (const child of children) child.contentWindow = {}; } };
   const bridges = [];
   const ready = [];
@@ -63,7 +63,7 @@ function fixture({ runtimeSearch = '' } = {}) {
     onScoreResult: (message) => scoreResults.push(message),
     onAchievement: (message) => achievements.push(message),
     onSettings: (message) => settingEvents.push(message),
-    readyTimeoutMs: 5000,
+    readyTimeoutMs: readyTimeoutMs ?? undefined,
     setTimeoutRef(callback, delay) {
       const timer = { callback, delay, cleared: false };
       timers.push(timer);
@@ -190,6 +190,12 @@ test('host destroys the child and reports an error when READY times out', () => 
   assert.match(errors[0].message, /timed out/i);
   assert.equal(bridges[0].destroyed, true);
   assert.deepEqual(mount.children, []);
+});
+
+test('default READY budget covers deterministic navigation boot on slower devices', () => {
+  const { host, timers, session } = fixture({ readyTimeoutMs: null });
+  host.mountSession(session);
+  assert.equal(timers[0].delay, 45_000);
 });
 
 test('game ready clears the startup timeout', () => {

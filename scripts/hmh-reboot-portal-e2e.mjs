@@ -370,8 +370,8 @@ if (isMain) {
       await page.waitForSelector('#combatSettingsPanel:not([hidden])', { timeout: 10_000 });
       await page.click('#combatSettingsPanel [data-action="gore"]');
       const after = await page.evaluate(() => JSON.parse(localStorage.getItem('hmh-settings') ?? '{}'));
-      assert.notEqual(after.gore, before.gore ?? true, 'gore toggle did not persist to hmh-settings');
-      expectedGore = after.gore;
+      assert.notEqual(after.gameplay?.gore, before.gameplay?.gore ?? true, 'gore toggle did not persist to hmh-settings');
+      expectedGore = after.gameplay?.gore;
       await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
       await page.waitForTimeout(400);
       await page.goto(`${origin}/`, { waitUntil: 'domcontentloaded' });
@@ -380,7 +380,7 @@ if (isMain) {
         settings: JSON.parse(localStorage.getItem('hmh-settings') ?? '{}'),
         save: JSON.parse(localStorage.getItem('lesters-arcade-save-v1') ?? 'null'),
       }));
-      assert.equal(persisted.settings.gore, expectedGore, 'hmh-settings did not survive reload');
+      assert.equal(persisted.settings.gameplay?.gore, expectedGore, 'hmh-settings did not survive reload');
       assert.ok(persisted.save, 'arcade save missing after reload');
       assert.equal(persisted.save.version, 3);
       child = null;

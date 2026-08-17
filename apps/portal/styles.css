@@ -1568,6 +1568,27 @@ svg.arcade-icon {
   .gameplay-view .gameplay-topbar #officialGameStateCopy { display: none; }
   .gameplay-view .gameplay-topbar h2 { font-size: 0.95rem; margin: 0; }
   .gameplay-view .gameplay-topbar { margin-bottom: 4px; }
+
+  /* Character selection advances to a long boot card below the mobile shell.
+     Put the required start action immediately after the level title so the
+     transition cannot look inert and the player never has to discover it below
+     a full screen of instructions. This reorders presentation only. */
+  .level-intro-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .level-intro-card > * { order: 5; }
+  .level-intro-card > #officialLevelBackButton { order: 0; align-self: flex-start; }
+  .level-intro-card > .eyebrow { order: 1; }
+  .level-intro-card > h2 { order: 2; }
+  .level-intro-card > #officialBeginLevelButton {
+    order: 3;
+    width: 100%;
+    min-width: 0;
+    margin: 12px 0 18px;
+  }
+  .level-intro-card > .machine-copy { order: 4; }
 }
 
 @media (max-width: 390px) and (orientation: portrait) {

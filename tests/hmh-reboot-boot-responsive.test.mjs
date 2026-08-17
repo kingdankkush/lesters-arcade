@@ -9,13 +9,27 @@ import { createLevelOneGroundQuery, LEVEL_ONE_WORLD } from '../apps/hmh-reboot/s
 test('M2 renders one interactive frame before building the full deterministic navgrid', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /let ENEMY_NAV_GRID = null/);
+  const appInit = source.indexOf('await app.init');
   const frameAwait = source.indexOf('await firstInteractiveFrame()');
   const navBuild = source.indexOf('ENEMY_NAV_GRID = await createEnemyNavGridChunked');
-  const bridgeStart = source.indexOf('bridge.start()', navBuild);
-  assert.ok(frameAwait > 0 && navBuild > frameAwait, 'first frame must precede full navgrid construction');
-  assert.ok(bridgeStart > navBuild, 'the child must not advertise readiness before gameplay navigation is authoritative');
+  const bridgeStart = source.indexOf('bridge.start()');
+  const bridgeActivate = source.indexOf('bridge.activate()', navBuild);
+  assert.ok(bridgeStart > 0 && bridgeStart < appInit, 'the child must capture the parent handshake before its first asynchronous boot yield');
+  assert.ok(frameAwait > appInit && navBuild > frameAwait, 'first frame must precede full navgrid construction');
+  assert.ok(bridgeActivate > navBuild, 'the child must not advertise readiness before gameplay navigation is authoritative');
   assert.match(source, /dataset\.bootFirstFrame = 'true'/);
   assert.match(source, /dataset\.navGridReady = 'true'/);
+});
+
+test('early bridge protocol errors do not access runtime services before initialization', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const fallback = source.indexOf('let handleBridgeProtocolError =');
+  const bridgeStart = source.indexOf('bridge.start()');
+  const audioReady = source.indexOf('const combatAudio = createCombatAudio');
+  const upgraded = source.indexOf('handleBridgeProtocolError = (error)', audioReady);
+  assert.ok(fallback > 0 && fallback < bridgeStart);
+  assert.match(source, /onProtocolError: \(error\) => handleBridgeProtocolError\(error\)/);
+  assert.ok(upgraded > audioReady);
 });
 
 test('M6 idle-sliced navgrid is byte-identical to synchronous authority and yields repeatedly', async () => {
