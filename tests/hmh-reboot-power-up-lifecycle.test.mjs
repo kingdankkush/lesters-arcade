@@ -10,6 +10,7 @@ import {
 } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { createEnemyState } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { createGrenadeSystem, rechargeHandGrenades } from '../apps/hmh-reboot/src/grenades.mjs';
+import { buildTimedEffectPresentation } from '../apps/hmh-reboot/src/hud-layout.mjs';
 import { applyLiquidatorDamage, createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
 import {
@@ -157,6 +158,47 @@ test('timed power-ups expose an explicit bounded refresh policy and expire on th
   const expired = stepCollectibles(state, { tick: 900, player: { x: -10_000, y: 0 } });
   assert.equal(expired.snapshot.speedMultiplier, 1);
   assert.deepEqual(expired.events.map((event) => event.type), ['collectible:expired']);
+});
+
+test('timed-effect presentation shares one fixed-tick countdown and refresh contract across HUD and accessibility', () => {
+  const activeEffects = [
+    { effectId: 'time-dilation', collectedTick: 300, expiresTick: 900, damageMultiplier: 1, speedMultiplier: 1.2, refreshCount: 1 },
+    { effectId: 'berserk-candle', collectedTick: 400, expiresTick: 1_000, damageMultiplier: 2, speedMultiplier: 1, refreshCount: 0 },
+  ];
+  const presentation = buildTimedEffectPresentation({ tick: 450, activeEffects });
+  assert.deepEqual(presentation, {
+    active: true,
+    hudLabel: 'BERSERK 10S + DILATION 8S R1',
+    accessibleLabel: 'Active powerups: Berserk, 10 seconds remaining; Time Dilation, 8 seconds remaining, refreshed 1 time.',
+    effects: [
+      { effectId: 'berserk-candle', remainingTicks: 550, remainingSeconds: 10, refreshCount: 0 },
+      { effectId: 'time-dilation', remainingTicks: 450, remainingSeconds: 8, refreshCount: 1 },
+    ],
+  });
+  assert.ok(Object.isFrozen(presentation));
+  assert.ok(Object.isFrozen(presentation.effects));
+
+  assert.deepEqual(buildTimedEffectPresentation({ tick: 899, activeEffects: [activeEffects[0]] }), {
+    active: true,
+    hudLabel: 'DILATION 1S R1',
+    accessibleLabel: 'Active powerups: Time Dilation, 1 second remaining, refreshed 1 time.',
+    effects: [{ effectId: 'time-dilation', remainingTicks: 1, remainingSeconds: 1, refreshCount: 1 }],
+  });
+  assert.deepEqual(buildTimedEffectPresentation({ tick: 900, activeEffects: [activeEffects[0]] }), {
+    active: false,
+    hudLabel: '',
+    accessibleLabel: 'No active powerups.',
+    effects: [],
+  });
+});
+
+test('runtime projects timed-effect refresh and expiry through the shared HUD/accessibility presentation without gaining authority', async () => {
+  const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(main, /buildTimedEffectPresentation\(collectibleSnapshot/);
+  assert.match(main, /powerupPresentation\.hudLabel/);
+  assert.match(main, /powerupPresentation\.accessibleLabel/);
+  assert.match(main, /collectibleRefreshPilotEnabled = evidenceSafeEnabled/);
+  assert.match(main, /collectibleRefreshCount = String\(powerupPresentation\.effects/);
 });
 
 test('canonical Hash Rail cache events stay bounded through third pickup', () => {

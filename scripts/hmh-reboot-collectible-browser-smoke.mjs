@@ -87,12 +87,16 @@ try {
     remaining: Number(element.dataset.collectibleRemaining),
     last: element.dataset.collectibleLast,
     active: element.dataset.collectibleActive,
+    countdown: element.dataset.collectibleCountdown,
+    refreshCount: Number(element.dataset.collectibleRefreshCount),
   }));
   const accessibleStatus = await timedPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
   assert.deepEqual({ count: timed.count, remaining: timed.remaining }, { count: 1, remaining: 12 });
   assert.equal(timed.last, 'time-dilation');
   assert.equal(timed.active, 'time-dilation');
-  assert.match(accessibleStatus, /active powerups time-dilation/i);
+  assert.match(timed.countdown, /^DILATION (?:9|10)S$/);
+  assert.equal(timed.refreshCount, 0);
+  assert.match(accessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining/i);
 
   const mobilePage = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
   mobilePage.on('pageerror', (error) => errors.push(error.message));
@@ -108,9 +112,46 @@ try {
     count: Number(element.dataset.collectibleCount),
     active: element.dataset.collectibleActive,
     speedMultiplier: Number(element.dataset.collectibleSpeedMultiplier),
+    countdown: element.dataset.collectibleCountdown,
   }));
-  assert.deepEqual(mobile, { count: 1, active: 'time-dilation', speedMultiplier: 1.2 });
+  assert.equal(mobile.count, 1);
+  assert.equal(mobile.active, 'time-dilation');
+  assert.equal(mobile.speedMultiplier, 1.2);
+  assert.match(mobile.countdown, /^DILATION (?:9|10)S$/);
   await mobilePage.close();
+
+  const refreshPage = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  refreshPage.on('pageerror', (error) => errors.push(error.message));
+  refreshPage.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+  });
+  await refreshPage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&collectibleRefreshPilot=1&worldTour=collectible-ravine-overlook-cache`, { waitUntil: 'networkidle' });
+  await refreshPage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleRefreshCount) === 1, null, { timeout: 5000 });
+  if (process.env.HMH_COLLECTIBLE_REFRESH_SCREENSHOT) {
+    await refreshPage.screenshot({ path: process.env.HMH_COLLECTIBLE_REFRESH_SCREENSHOT, fullPage: true });
+  }
+  const refreshed = await refreshPage.locator('#hmhRebootStage').evaluate((element) => ({
+    count: Number(element.dataset.collectibleCount),
+    active: element.dataset.collectibleActive,
+    countdown: element.dataset.collectibleCountdown,
+    refreshCount: Number(element.dataset.collectibleRefreshCount),
+  }));
+  const refreshedAccessibleStatus = await refreshPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
+  assert.equal(refreshed.count, 2);
+  assert.equal(refreshed.active, 'time-dilation');
+  assert.match(refreshed.countdown, /^DILATION (?:9|10)S R1$/);
+  assert.equal(refreshed.refreshCount, 1);
+  assert.match(refreshedAccessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining, refreshed 1 time/i);
+  await refreshPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === '', null, { timeout: 14_000 });
+  const refreshedExpired = await refreshPage.locator('#hmhRebootStage').evaluate((element) => ({
+    active: element.dataset.collectibleActive,
+    countdown: element.dataset.collectibleCountdown,
+    refreshCount: Number(element.dataset.collectibleRefreshCount),
+  }));
+  const expiredAccessibleStatus = await refreshPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
+  assert.deepEqual(refreshedExpired, { active: '', countdown: '', refreshCount: 0 });
+  assert.match(expiredAccessibleStatus, /no active powerups/i);
+  await refreshPage.close();
 
   const timedResetPage = await browser.newPage({ viewport: { width: 1024, height: 720 }, deviceScaleFactor: 1 });
   timedResetPage.on('pageerror', (error) => errors.push(error.message));
@@ -157,8 +198,12 @@ try {
     count: Number(element.dataset.collectibleCount),
     active: element.dataset.collectibleActive,
     speedMultiplier: Number(element.dataset.collectibleSpeedMultiplier),
+    countdown: element.dataset.collectibleCountdown,
   }));
-  assert.deepEqual(landscape, { count: 1, active: 'time-dilation', speedMultiplier: 1.2 });
+  assert.equal(landscape.count, 1);
+  assert.equal(landscape.active, 'time-dilation');
+  assert.equal(landscape.speedMultiplier, 1.2);
+  assert.match(landscape.countdown, /^DILATION (?:9|10)S$/);
   await landscapePage.close();
 
   const canonicalCases = [
@@ -244,7 +289,7 @@ try {
   }));
   assert.deepEqual(expired, { active: '', speedMultiplier: 1 });
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, mobile, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
+  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, mobile, refreshed, refreshedExpired, refreshedAccessibleStatus, expiredAccessibleStatus, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
 } finally {
   await browser.close();
 }

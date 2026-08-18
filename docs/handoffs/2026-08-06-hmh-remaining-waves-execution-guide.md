@@ -455,7 +455,9 @@ Do not reduce enemy counts to make the benchmark pass. Optimize queries, cadence
 - Keep every effect deterministic, non-stacking or explicitly refresh-based, bounded, reset-safe, and boss-safe.
 - Add desktop/mobile safe-area and expiry evidence.
 
-**2026-08-17 Cycle 066 status:** the existing-power-up lifecycle/boss-safety audit is locally complete. Capped healing, repeated weapon-cache reserve limits, explicit non-stacking timed-effect refresh, exact expiry/reset, summary telemetry, 60/30/20 equality, all nine canonical browser pickups, and healthy-Liquidator nuke safety are certified. No new power-up was added. The smallest remaining Wave 11 presentation seam is a shared deterministic timed-effect countdown/refresh readout for desktop/mobile HUD and accessibility output; pickup rarity/silhouette/audio can then be audited against the already-authored atlas before any new effect is considered.
+**2026-08-17 Cycle 066 status:** the existing-power-up lifecycle/boss-safety audit is locally complete. Capped healing, repeated weapon-cache reserve limits, explicit non-stacking timed-effect refresh, exact expiry/reset, summary telemetry, 60/30/20 equality, all nine canonical browser pickups, and healthy-Liquidator nuke safety are certified. No new power-up was added.
+
+**2026-08-17 Cycle 067 status (current):** the shared deterministic timed-effect countdown/refresh readout is locally complete. One fixed-tick-derived presentation object now drives desktop/mobile HUD, `aria-live` wording, and browser telemetry; desktop/portrait/landscape prove the active countdown, a double-gated portrait pilot proves refresh plus exact expiry, and normal 13-placement composition is unchanged. The smallest remaining Wave 11 seam is projection-only Time Dilation/Berserk silhouette-and-audio identity from the same snapshot, reusing bounded pooled presentation paths before any new effect is considered.
 
 ## 9. Wave 12 — Production Art, Terrain, Lighting, Animation, and VFX
 

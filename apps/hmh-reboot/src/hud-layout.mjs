@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { finite, freezeDeep } from './value-guards.mjs';
 export const COMPACT_LANDSCAPE_MAX_HEIGHT = 520;
 export const COMPACT_LANDSCAPE_MINIMAP_WIDTH = 140;
 // The minimap's distance from the viewport edge, and the padding of its frame.
@@ -9,6 +9,55 @@ export const MINIMAP_OUTER_PADDING = 6;
 export const MINIMAP_MAX_WIDTH = 220;
 export const COMPACT_PORTRAIT_MINIMAP_WIDTH = 120;
 export const MINIMAP_WIDTH_FRACTION = 0.34;
+export const TIMED_EFFECT_TICKS_PER_SECOND = 60;
+
+const TIMED_EFFECT_PRESENTATION = Object.freeze({
+  'berserk-candle': Object.freeze({ hud: 'BERSERK', accessible: 'Berserk' }),
+  'time-dilation': Object.freeze({ hud: 'DILATION', accessible: 'Time Dilation' }),
+});
+
+export function buildTimedEffectPresentation(snapshot = {}) {
+  const tick = snapshot?.tick;
+  if (!Number.isInteger(tick) || tick < 0) throw new TypeError('timed-effect presentation tick must be a non-negative integer');
+  if (!Array.isArray(snapshot.activeEffects)) throw new TypeError('timed-effect presentation activeEffects must be an array');
+
+  const effects = snapshot.activeEffects
+    .map((effect) => {
+      const labels = TIMED_EFFECT_PRESENTATION[effect?.effectId];
+      if (!labels) throw new TypeError(`unsupported timed effect ${String(effect?.effectId)}`);
+      if (!Number.isInteger(effect.expiresTick) || effect.expiresTick < 0) throw new TypeError('timed-effect expiresTick must be a non-negative integer');
+      const refreshCount = effect.refreshCount ?? 0;
+      if (!Number.isInteger(refreshCount) || refreshCount < 0) throw new TypeError('timed-effect refreshCount must be a non-negative integer');
+      const remainingTicks = effect.expiresTick - tick;
+      if (remainingTicks <= 0) return null;
+      const remainingSeconds = Math.ceil(remainingTicks / TIMED_EFFECT_TICKS_PER_SECOND);
+      return {
+        effectId: effect.effectId,
+        remainingTicks,
+        remainingSeconds,
+        refreshCount,
+        labels,
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.effectId.localeCompare(right.effectId));
+
+  if (effects.length === 0) return freezeDeep({
+    active: false,
+    hudLabel: '',
+    accessibleLabel: 'No active powerups.',
+    effects: [],
+  });
+
+  const secondsText = (seconds) => `${seconds} second${seconds === 1 ? '' : 's'} remaining`;
+  const refreshText = (count) => count > 0 ? `, refreshed ${count} time${count === 1 ? '' : 's'}` : '';
+  return freezeDeep({
+    active: true,
+    hudLabel: effects.map((effect) => `${effect.labels.hud} ${effect.remainingSeconds}S${effect.refreshCount > 0 ? ` R${effect.refreshCount}` : ''}`).join(' + '),
+    accessibleLabel: `Active powerups: ${effects.map((effect) => `${effect.labels.accessible}, ${secondsText(effect.remainingSeconds)}${refreshText(effect.refreshCount)}`).join('; ')}.`,
+    effects: effects.map(({ labels: _labels, ...effect }) => effect),
+  });
+}
 
 export function minimapWidthFor({ width, height } = {}) {
   const viewportWidth = finite(width, 'viewport width');
@@ -31,9 +80,6 @@ export function minimapExclusionLeft({ width, height } = {}) {
     - MINIMAP_EDGE_GUTTER
     - MINIMAP_OUTER_PADDING;
 }
-
-import { finite } from './value-guards.mjs';
-
 
 export function isCompactLandscape({ width, height } = {}) {
   const viewportWidth = finite(width, 'viewport width');

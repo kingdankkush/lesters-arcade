@@ -11,7 +11,7 @@ import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './
 import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
-import { compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
+import { buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -824,6 +824,7 @@ async function boot() {
   const runtimeEncounterSnapshot = (tick) => getEncounterSnapshot(tick + (endurancePressurePilotEnabled ? 75_600 : 0));
   const collectibleHealthPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleHealthPilot') === '1';
   const collectibleAmmoPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleAmmoPilot') === '1';
+  const collectibleRefreshPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleRefreshPilot') === '1';
   // Evidence-only arsenal: pre-grants every pickup weapon so switching and
   // reload evidence does not depend on cache traversal. Gated behind
   // evidenceSafe exactly like the other pilots; a real run starts pistol-only.
@@ -1785,9 +1786,9 @@ async function boot() {
       const dashAccessible = dashStatus?.active ? 'Dash active' : dashStatus?.ready ? 'Dash ready' : `Dash ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
-      const activePowerupIds = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId) ?? [];
-      const activePowerupLabels = collectibleSnapshot?.activeEffects.map((effect) => `${effect.effectId.toUpperCase()} ${Math.max(0, Math.ceil((effect.expiresTick - collectibleSnapshot.tick) / 60))}S`) ?? [];
-      const powerupHud = activePowerupLabels.length > 0 ? ` // POWER ${activePowerupLabels.join('+')}` : '';
+      const powerupPresentation = buildTimedEffectPresentation(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
+      const activePowerupLabels = powerupPresentation.active ? [powerupPresentation.hudLabel] : [];
+      const powerupHud = powerupPresentation.active ? ` // POWER ${powerupPresentation.hudLabel}` : '';
       const compactWeaponHud = compactWeaponHudLabel({ weaponId: weaponStatus?.weaponId ?? 'none', hudLabel: weaponHud });
       const lightningLedgerHud = weaponStatus?.weaponId === 'lightning-ledger' && !combatStatusLayout.compact;
       const stackedCompactWeaponHud = ['lightning-ledger', 'forked-standard'].includes(weaponStatus?.weaponId);
@@ -1798,7 +1799,7 @@ async function boot() {
         ? `${compactWeaponHud}\n${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`
         : `${compactWeaponHud} // ${dashHud} // HP ${playerHealth}\nFRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${powerupHud}`;
       const landscapeCombatHud = `HP ${playerHealth} // ${weaponHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
-      const accessibleCombatStatus = `${weaponStatus?.accessibleLabel ?? 'No weapon'}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats${activePowerupIds.length > 0 ? `, active powerups ${activePowerupIds.join(', ')}` : ''}`;
+      const accessibleCombatStatus = `${weaponStatus?.accessibleLabel ?? 'No weapon'}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats, ${powerupPresentation.accessibleLabel}`;
       if (dashStatusElement) {
         dashStatusElement.textContent = dashAccessible;
         dashStatusElement.dataset.ready = String(dashStatus?.ready === true);
@@ -1971,6 +1972,8 @@ async function boot() {
         dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
         dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
         dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
+        dataset.collectibleCountdown = powerupPresentation.hudLabel;
+        dataset.collectibleRefreshCount = String(powerupPresentation.effects.reduce((total, effect) => total + effect.refreshCount, 0));
         dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
         dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
         dataset.audioVoices = String(combatAudio.status().activeVoices);
@@ -2395,7 +2398,19 @@ async function boot() {
       authoredPropDisplay.addPlacement(bearMarketBurnerEventPlacement);
       authoredPropDisplay.addPlacement(forkedStandardEventPlacement);
     }
-    collectibleState = createCollectibleState({ placements: [...authoredPointOfInterestPlacements, lightningLedgerEventPlacement, bearMarketBurnerEventPlacement, forkedStandardEventPlacement] });
+    const scheduledCollectiblePlacements = [lightningLedgerEventPlacement, bearMarketBurnerEventPlacement, forkedStandardEventPlacement];
+    if (collectibleRefreshPilotEnabled) scheduledCollectiblePlacements.pop();
+    const collectiblePlacements = [...authoredPointOfInterestPlacements, ...scheduledCollectiblePlacements];
+    if (collectibleRefreshPilotEnabled) {
+      const timeDilationPlacement = authoredPointOfInterestPlacements.find((placement) => placement.assetId === 'time-dilation');
+      if (!timeDilationPlacement) throw new Error('time-dilation refresh pilot requires the authored pickup');
+      collectiblePlacements.push(Object.freeze({
+        ...timeDilationPlacement,
+        id: `${timeDilationPlacement.id}:refresh-pilot`,
+        availableTick: 120,
+      }));
+    }
+    collectibleState = createCollectibleState({ placements: collectiblePlacements });
     collectibleSnapshot = getCollectibleSnapshot(collectibleState, { tick: 0 });
     lastCollectibleEvent = null;
     lastDashReady = true;

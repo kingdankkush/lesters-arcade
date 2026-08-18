@@ -213,6 +213,12 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Evidence: explicit refresh boundary/count, healing/cache/reset telemetry, 60/30/20 equality, ordinary enemies retired while healthy Liquidator remains active at `11,001 / 12,000` HP
   - Release and bundle: `2,246 / 2,195 / 51 / 0`; combined initial JavaScript `967,364 / 1,050,000`, enforced headroom `82,636` bytes
   - Cycle ledger: `cycles/CYCLE-066.md`
+- [x] Cycle 067: shared fixed-tick timed-effect countdown/refresh HUD and accessibility truth
+  - Status: locally source/browser certified; production unchanged
+  - Evidence: one normalized presentation drives desktop/mobile HUD, `aria-live` status, and browser telemetry; refresh reads `DILATION 10S R1`; exact expiry clears all three paths
+  - Release and bundle: `2,248 / 2,197 / 51 / 0`; combined initial JavaScript `969,259 / 1,050,000`, enforced headroom `80,741` bytes
+  - Browser/performance: desktop/portrait/landscape plus refreshed portrait PASS, four network scenarios at zero errors, p95 desktop/mobile `7.0 / 7.0 ms`, 12 visual scenes exact zero delta
+  - Cycle ledger: `cycles/CYCLE-067.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -224,13 +230,13 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 066 closes the first Wave 11 existing-power-up lifecycle/boss-safety audit seam after Cycle 065 completed the canonical crit-upgrade benchmark
-- Current implementation baseline before Cycle 066: `6dbab610`
-- Candidate entry: `391,473` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `967,364 / 1,050,000` bytes; enforced headroom `82,636` bytes
-- Release evidence: `2,246` evaluated = `2,195` passed + `51` exact expected legacy failures; unexpected failures `0`
-- Lifecycle evidence: capped healing, repeated-cache reserve bounds, explicit non-stacking timed-effect refresh, exact expiry/reset, bounded summary telemetry, and 60/30/20 partition equality
-- Browser evidence: all nine canonical pickups, desktop/portrait/landscape timed-effect proof, boss-active nuke at `11,001 / 12,000` Liquidator HP, four zero-error network scenarios, and desktop/mobile p95 `13.9 / 7.0 ms`
-- Next bounded seam: shared deterministic timed-effect countdown/refresh presentation for desktop/mobile HUD and accessibility output; do not add a new power-up first
+- Status: Cycle 067 closes the shared timed-effect HUD/accessibility truth seam after Cycle 066 certified existing power-up lifecycle and boss safety
+- Current implementation baseline before Cycle 067: `8f5448c0`
+- Candidate entry: `393,368` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `969,259 / 1,050,000` bytes; enforced headroom `80,741` bytes
+- Release evidence: `2,248` evaluated = `2,197` passed + `51` exact expected legacy failures; unexpected failures `0`
+- Lifecycle evidence: one fixed-tick-derived presentation object drives compact HUD countdown, refresh marker, full accessible wording, and browser telemetry; exact expiry clears every presentation path
+- Browser evidence: desktop/portrait/landscape active countdown, refreshed portrait `DILATION 10S R1`, exact expiry, all nine canonical pickups, four zero-error network scenarios, desktop/mobile p95 `7.0 / 7.0 ms`, and 12 visual scenes at zero delta
+- Next bounded seam: projection-only Time Dilation/Berserk silhouette-and-audio identity from the same active-effect snapshot; reuse bounded pooled presentation paths and do not add a new power-up first
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
 - Settlement and Web3 writes remain outside this release
