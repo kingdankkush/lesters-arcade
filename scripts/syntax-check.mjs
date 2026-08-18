@@ -335,6 +335,8 @@ const NODE_CHECK_FILES = [
   "tests/production-doc-drift-check.test.mjs",
   "apps/portal/src/chikun-daily-challenge.mjs",
   "tests/chikun-daily-challenge.test.mjs",
+  "apps/chikun/src/replay-viewer.mjs",
+  "tests/chikun-replay-viewer.test.mjs",
   "tests/hmh-reboot-host.test.mjs",
   "tests/hmh-reboot-input.test.mjs",
   "tests/hmh-reboot-mobile-weapon-readability.test.mjs",

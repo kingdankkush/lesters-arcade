@@ -12,6 +12,7 @@ import {
 } from '../../portal/src/chikun-bridge-protocol.mjs';
 import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
 import { buildChikunReplayTimeline, buildChikunShareText } from './presentation.mjs';
+import { createChikunReplayPlayback, replayPlayheadRatio } from './replay-viewer.mjs';
 import {
   chikunDailyChallengeForSeed,
   compareChikunGhost,
@@ -48,6 +49,7 @@ const resultScore = document.querySelector('#resultScore');
 const resultCopy = document.querySelector('#resultCopy');
 const resultStats = document.querySelector('#resultStats');
 const replayTimeline = document.querySelector('#replayTimeline');
+const watchReplayButton = document.querySelector('#watchReplayButton');
 const shareRunButton = document.querySelector('#shareRunButton');
 const liveStatus = document.querySelector('#liveStatus');
 
@@ -90,6 +92,8 @@ let lastCompletedResult = null;
 let vfxFrame = 0;
 let dailyChallenge = null;
 let ghostTrack = null;
+let replayPlayback = null;
+let replayPlaying = false;
 
 function setLive(message) {
   liveStatus.textContent = message;
@@ -123,7 +127,82 @@ function renderReplayTimeline(evidence) {
     bar.title = `${count} flap${count === 1 ? '' : 's'}`;
     replayTimeline.append(bar);
   }
-  replayTimeline.setAttribute('aria-label', `${timeline.totalFlaps} flaps across this run`);
+  const playhead = document.createElement('i');
+  playhead.className = 'replay-playhead';
+  playhead.setAttribute('aria-hidden', 'true');
+  replayTimeline.append(playhead);
+  replayTimeline.setAttribute('aria-label', `${timeline.totalFlaps} flaps across this run. Click to scrub the replay.`);
+  updateReplayPlayhead();
+}
+
+function replayPlayheadEl() {
+  return replayTimeline.querySelector('.replay-playhead');
+}
+
+function updateReplayPlayhead() {
+  const duration = replayPlayback?.durationTicks ?? lastCompletedResult?.survivalTicks ?? 1;
+  const tick = replayPlayback?.tick ?? duration;
+  const ratio = replayPlayheadRatio(tick, duration);
+  const playhead = replayPlayheadEl();
+  if (playhead) playhead.style.left = `${ratio * 100}%`;
+  replayTimeline.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+}
+
+function stopReplayViewer() {
+  replayPlaying = false;
+  replayPlayback = null;
+  resultOverlay.classList.remove('is-replaying');
+  if (watchReplayButton) watchReplayButton.textContent = 'Watch Replay';
+}
+
+function startReplayViewer() {
+  if (!lastCompletedResult?.evidence || !watchReplayButton) return;
+  replayPlayback = createChikunReplayPlayback(lastCompletedResult.evidence);
+  resultOverlay.classList.add('is-replaying');
+  if (reduceMotion()) {
+    replayPlaying = false;
+    latestSnapshot = replayPlayback.seek(replayPlayback.durationTicks);
+    watchReplayButton.textContent = 'Play Replay';
+    setLive('Replay parked on the final frame. Play Replay to watch, or scrub the timeline.');
+  } else {
+    replayPlaying = true;
+    latestSnapshot = replayPlayback.seek(0);
+    watchReplayButton.textContent = 'Pause Replay';
+    setLive('Watching canonical replay. Score is already final.');
+  }
+  accumulator = 0;
+  previousFrameAt = performance.now();
+  updateReplayPlayhead();
+}
+
+function toggleReplayViewer() {
+  if (phase !== 'game-over' || !lastCompletedResult) return;
+  if (!replayPlayback) {
+    startReplayViewer();
+    return;
+  }
+  if (replayPlayback.terminal && !replayPlaying) {
+    latestSnapshot = replayPlayback.seek(0);
+    replayPlaying = !reduceMotion();
+    watchReplayButton.textContent = replayPlaying ? 'Pause Replay' : 'Play Replay';
+    updateReplayPlayhead();
+    return;
+  }
+  replayPlaying = !replayPlaying;
+  watchReplayButton.textContent = replayPlaying ? 'Pause Replay' : 'Play Replay';
+}
+
+function seekReplayFromEvent(event) {
+  if (phase !== 'game-over' || !lastCompletedResult) return;
+  if (!replayPlayback) startReplayViewer();
+  if (!replayPlayback) return;
+  const rect = replayTimeline.getBoundingClientRect();
+  const ratio = rect.width > 0 ? Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) : 0;
+  latestSnapshot = replayPlayback.seek(Math.round(ratio * replayPlayback.durationTicks));
+  replayPlaying = false;
+  watchReplayButton.textContent = replayPlayback.terminal ? 'Replay Again' : 'Play Replay';
+  updateReplayPlayhead();
+  setLive('Replay scrubbed. Score is unchanged.');
 }
 
 function send(type, payload) {
@@ -207,6 +286,7 @@ function prepareRun() {
 
 function startRun() {
   if (!initPayload || disposed) return;
+  stopReplayViewer();
   prepareRun();
   phase = 'running';
   paused = false;
@@ -297,8 +377,10 @@ function finishRun() {
     resultStats.append(chip);
   }
   renderReplayTimeline(result.evidence);
+  stopReplayViewer();
   restartButton.disabled = false;
   restartButton.textContent = 'Fly Again';
+  if (watchReplayButton) watchReplayButton.textContent = 'Watch Replay';
   resultOverlay.classList.remove('is-hidden');
   setLive(`Game over. Score ${result.score}. ${result.coinsCollected} coins and ${result.forksPassed} forks.`);
 }
@@ -320,6 +402,10 @@ function togglePause(source = 'user', force = null) {
 
 function queueFlap(event) {
   if (event?.target?.closest?.('button')) return;
+  if (phase === 'game-over' && replayPlayback) {
+    toggleReplayViewer();
+    return;
+  }
   if (phase === 'ready') startRun();
   else if (phase === 'running' && !paused) {
     flapQueued = true;
@@ -521,7 +607,7 @@ function draw(snapshot = latestSnapshot) {
     }
   }
   if (snapshot?.chikun) {
-    drawGhost(snapshot);
+    if (!replayPlayback) drawGhost(snapshot);
     drawChikun(snapshot);
   }
   drawVfx(snapshot);
@@ -570,6 +656,20 @@ function frame(now) {
       sendState('running');
     }
     if (runtime.terminal) finishRun();
+  } else if (phase === 'game-over' && replayPlaying && replayPlayback) {
+    accumulator += elapsed;
+    let steps = 0;
+    while (accumulator >= STEP_MS && !replayPlayback.terminal && steps < MAX_CATCH_UP_STEPS) {
+      latestSnapshot = replayPlayback.step();
+      accumulator -= STEP_MS;
+      steps += 1;
+    }
+    updateReplayPlayhead();
+    if (replayPlayback.terminal) {
+      replayPlaying = false;
+      if (watchReplayButton) watchReplayButton.textContent = 'Replay Again';
+      setLive('Replay finished. Score is unchanged.');
+    }
   }
   draw(latestSnapshot);
   if (!disposed) requestAnimationFrame(frame);
@@ -664,6 +764,20 @@ shareRunButton.addEventListener('click', async () => {
     setLive('Sharing is unavailable in this browser.');
   }
   setTimeout(() => { shareRunButton.textContent = 'Share Run'; }, 1_500);
+});
+watchReplayButton?.addEventListener('click', () => toggleReplayViewer());
+replayTimeline.addEventListener('pointerdown', seekReplayFromEvent);
+replayTimeline.addEventListener('keydown', (event) => {
+  if (phase !== 'game-over' || !lastCompletedResult) return;
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  if (!replayPlayback) startReplayViewer();
+  if (!replayPlayback) return;
+  const delta = event.key === 'ArrowRight' ? 15 : -15;
+  latestSnapshot = replayPlayback.seek(replayPlayback.tick + delta);
+  replayPlaying = false;
+  watchReplayButton.textContent = replayPlayback.terminal ? 'Replay Again' : 'Play Replay';
+  updateReplayPlayhead();
 });
 restartButton.addEventListener('click', () => {
   if (mode !== 'ranked') {
