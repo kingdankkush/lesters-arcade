@@ -63,10 +63,12 @@ Release target: Chikun cabinet 0.5.0 (second improvement wave)
 ## Future upgrades after this wave
 
 - Daily seeded challenge and ghost/replay comparison.
+  - First slice (2026-08-17, `grok/chikun-daily-challenge`): parent-owned UTC daily seed binds Free Chikun only. Ranked session seeds stay unique. Same-seed ghost is projection-only local best and is not an official Daily Seed board.
 - Additional obstacle families with deterministic telegraphs.
 - Unlockable Chikun cosmetic trails and cabinet themes earned through achievements.
 - Dedicated authored music loop and layered adaptive mix.
 - Full animated replay viewer and rendered share-card images (the 0.5.0 timeline/text share is the lightweight first slice).
+  - First slice (2026-08-18, `grok/chikun-daily-challenge`): result-screen Watch Replay plays canonical flap evidence on the live canvas. Seek-safe, 60 Hz, four-step catch-up. Reduced-motion parks on the final frame. Not a share-card image.
 - Optional practice modifiers such as slow training speed and visible collision bounds, excluded from Ranked.
 - More achievements and long-form mastery medals.
 - Seasonal score-board resets once authoritative verification/settlement policy is ready.

@@ -46,9 +46,10 @@
         <h2 id="resultScore">0</h2>
         <p id="resultCopy">Score saved locally.</p>
         <div class="result-stats" id="resultStats"></div>
-        <div class="replay-timeline" id="replayTimeline" aria-label="Flap rhythm replay timeline"></div>
+        <div class="replay-timeline" id="replayTimeline" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Flap rhythm replay timeline" tabindex="0"></div>
         <div class="result-actions">
           <button class="primary-button" id="restartButton" type="button">Fly Again</button>
+          <button class="secondary-button" id="watchReplayButton" type="button">Watch Replay</button>
           <button class="secondary-button" id="shareRunButton" type="button">Share Run</button>
           <button class="secondary-button" id="resultExitButton" type="button">Exit to Arcade</button>
         </div>

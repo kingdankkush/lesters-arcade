@@ -21,6 +21,7 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(html, /id="nearMissValue"/);
   assert.match(html, /id="eventCallout"/);
   assert.match(html, /id="replayTimeline"/);
+  assert.match(html, /id="watchReplayButton"/);
   assert.match(html, /id="shareRunButton"/);
 
   const source = text('../apps/chikun/src/main.mjs');
@@ -33,6 +34,9 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(source, /reduceMotion/);
   assert.match(source, /nearMisses/);
   assert.match(source, /planChikunVfx/);
+  assert.match(source, /bindChikunDailyChallenge|chikunDailyChallengeForSeed/);
+  assert.match(source, /ghostYAt/);
+  assert.match(source, /createChikunReplayPlayback/);
   assert.match(source, /navigator\.share|navigator\.clipboard/);
   assert.match(source, /coastSprite\.decode/);
 
