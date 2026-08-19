@@ -70,19 +70,36 @@ export async function loadCabinetManifests(manifestDir = MANIFEST_DIR) {
   return manifests.sort((a, b) => a.id.localeCompare(b.id));
 }
 
+const ROSTER_HEADING = '## Current game roster';
+
 // The README roster is a Markdown table keyed by the cabinet's display name.
 // The second column carries a runtime game ID (`lester-blaster`) that is not
 // always the manifest ID (`hard-money-heroes`), so the name is the stable join.
+//
+// Only the roster section is parsed. The README holds several other three-column
+// tables, and a bare document-wide scan would fold their rows into the same map;
+// one future row whose first cell matched a cabinet name would silently shadow
+// the real roster row and quietly disarm this gate.
 export function parseReadmeRoster(source) {
+  const start = source.indexOf(ROSTER_HEADING);
+  if (start === -1) {
+    throw new Error(`README is missing the \`${ROSTER_HEADING}\` section.`);
+  }
+  const afterHeading = start + ROSTER_HEADING.length;
+  const nextHeading = source.slice(afterHeading).search(/^##\s/m);
+  const section = nextHeading === -1
+    ? source.slice(afterHeading)
+    : source.slice(afterHeading, afterHeading + nextHeading);
+
   const rows = new Map();
   const rowPattern = /^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/gm;
-  for (const match of source.matchAll(rowPattern)) {
+  for (const match of section.matchAll(rowPattern)) {
     const cabinet = match[1];
     if (cabinet === 'Cabinet' || /^-+$/.test(cabinet)) continue;
     rows.set(cabinet, { cabinet, gameId: match[2], state: match[3] });
   }
   if (rows.size === 0) {
-    throw new Error('README is missing the `## Current game roster` table rows.');
+    throw new Error(`README \`${ROSTER_HEADING}\` section has no table rows.`);
   }
   return rows;
 }

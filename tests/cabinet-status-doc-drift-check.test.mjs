@@ -71,8 +71,33 @@ test('roster parsing keys rows by cabinet name and skips the header separator', 
   assert.equal(rows.get('Future cabinets').state, 'Coming Soon');
 });
 
-test('roster parsing fails closed when the table is absent', () => {
-  assert.throws(() => parseReadmeRoster('# Lesters Arcade\n\nNo table here.\n'), /Current game roster/);
+test('roster parsing fails closed when the section or its rows are absent', () => {
+  assert.throws(() => parseReadmeRoster('# Lesters Arcade\n\nNo table here.\n'), /missing the `## Current game roster` section/);
+  assert.throws(
+    () => parseReadmeRoster('## Current game roster\n\nNothing tabular yet.\n\n## Next\n'),
+    /section has no table rows/,
+  );
+});
+
+// The README carries several other three-column tables. A document-wide scan
+// would fold their rows into the roster map, and one future row whose first cell
+// matched a cabinet name would silently shadow the real roster row.
+test('roster parsing ignores three-column tables outside the roster section', () => {
+  const source = [
+    roster(),
+    '## Current continuation status',
+    '',
+    '| Gate | Result | Notes |',
+    '| --- | --- | --- |',
+    "| Chikun's Escape | Coming Soon | a colliding row in an unrelated table |",
+    '| Chikun entry | 20.3 KB | bundle size |',
+    '',
+  ].join('\n');
+
+  const rows = parseReadmeRoster(source);
+  assert.deepEqual([...rows.keys()], ["Chikun's Escape", 'Future cabinets']);
+  assert.equal(rows.get("Chikun's Escape").state, 'Public playable, Ranked-eligible (`0.5.0`)');
+  assert.deepEqual(checkRosterRow(CHIKUN, rows.get("Chikun's Escape")), []);
 });
 
 test('a playable cabinet described as Coming Soon is a roster failure', () => {
