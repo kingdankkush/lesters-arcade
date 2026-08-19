@@ -332,6 +332,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-liquidator-build-matrix.test.mjs",
   "apps/hmh-reboot/src/critical-liquidator-benchmark.mjs",
   "tests/hmh-reboot-critical-liquidator-benchmark.test.mjs",
+  "apps/hmh-reboot/src/liquidator-upgrade-benchmark.mjs",
+  "tests/hmh-reboot-liquidator-upgrade-benchmark.test.mjs",
   "apps/hmh-reboot/src/collectible-system.mjs",
   "tests/hmh-reboot-collectible-system.test.mjs",
   "tests/hmh-reboot-power-up-lifecycle.test.mjs",

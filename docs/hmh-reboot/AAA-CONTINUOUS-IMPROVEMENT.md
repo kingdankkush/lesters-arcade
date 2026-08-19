@@ -199,6 +199,11 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Status: locally source/browser certified and committed as `bac9679e`; production unchanged
   - Evidence: non-vacuous validated/fallback branches, blocker aims reduced from `6/60` to `0/60`, desktop/mobile 128-body lane telemetry
   - Cycle ledger: `cycles/CYCLE-062.md`
+- [x] Cycle 063: canonical Precision Ledger offer/selection routed through the live combat resolver into the Liquidator benchmark
+  - Status: authored on `grok/wave11-crit-upgrade-benchmark`, merged to `main` during the 2026-08-19 publish integration; production unchanged
+  - Evidence: seed `1337` ordinary TTK `2,837` vs upgraded `2,721`; same-seed equality; 1-vs-4 catch-up; fail-closed when the card is not offered
+  - Evidence-only parent; not imported into `main.mjs`, so the bundle budget is unchanged
+  - Cycle ledger: `cycles/CYCLE-063.md`
 - [x] Cycle 064: navgrid-validated ranged-role backoff and strafe lanes
   - Status: locally source/browser certified and committed as `47326841`; production unchanged
   - Evidence: blocker aims reduced from `58/1,671` to `24/1,671`, desktop/mobile lane peaks `68 / 69`, release `2,231 / 2,180 / 51 / 0`
@@ -236,6 +241,7 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 - Release evidence: `2,248` evaluated = `2,197` passed + `51` exact expected legacy failures; unexpected failures `0`
 - Lifecycle evidence: one fixed-tick-derived presentation object drives compact HUD countdown, refresh marker, full accessible wording, and browser telemetry; exact expiry clears every presentation path
 - Browser evidence: desktop/portrait/landscape active countdown, refreshed portrait `DILATION 10S R1`, exact expiry, all nine canonical pickups, four zero-error network scenarios, desktop/mobile p95 `7.0 / 7.0 ms`, and 12 visual scenes at zero delta
+- Wave 10 includes the validated flanker lane. Wave 11 covers no-hit, baseline, high/low DPS, melee-heavy, crowd-control, authored height-aware cover, production phase presentation, deterministic phase-two safe-sector rotation, one canonical crit-upgrade combat benchmark (Cycle 063), and the power-up audit closed by Cycles 066 and 067
 - Next bounded seam: projection-only Time Dilation/Berserk silhouette-and-audio identity from the same active-effect snapshot; reuse bounded pooled presentation paths and do not add a new power-up first
 - Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
 - Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
