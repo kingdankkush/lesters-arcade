@@ -19,7 +19,7 @@ import argparse, asyncio, json, re, time
 from pathlib import Path
 from typing import Any
 from mcp import ClientSession
-from mcp.client.streamable_http import streamablehttp_client
+from mcp.client.streamable_http import streamable_http_client
 
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = ROOT / "apps/portal/assets/generated/hmh-animated-roster/gen8dir-ledger.json"
@@ -120,7 +120,7 @@ async def queue(limit):
     server = load_server()
     led = load_ledger()
     n = 0
-    async with streamablehttp_client(server["url"], headers=server.get("headers",{})) as (r,w,_):
+    async with streamable_http_client(server["url"], headers=server.get("headers",{})) as (r,w,_):
         async with ClientSession(r,w) as sess:
             await sess.initialize()
             for key, cid, name, desc in all_jobs():
