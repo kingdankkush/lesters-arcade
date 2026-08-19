@@ -88,7 +88,7 @@ Implemented:
 
 Chikun launched publicly in [`54aab311`](https://github.com/kingdankkush/Lesters-Arcade/commit/54aab311a813bf4d5ce622d54633ade32dd24bf1) on 2026-08-11, which is an ancestor of the deployed production source. The cabinet is `status: 'playable'` with `publicPlayable: true` and `rankedEligible: true`, and the portal serves it at `/play/chikun`. It is the working proof that third-party Cabinet SDK onboarding produces a shippable cabinet.
 
-Shipped since the public launch, both landed on `main` on 2026-08-19:
+Shipped since the public launch, integrated 2026-08-19:
 
 - **Parent-owned daily course.** The parent issues one UTC daily seed, so every Free run on a given day races the same forks and a remount does not reroll the course. Ranked session seeds stay unique and parent-issued. This is a shared course, not an official Daily Seed leaderboard; official boards remain an owner product decision.
 - **Same-seed ghost.** A translucent projection of the player's best local flight on that seed. Projection only: it has no collision, no score contribution, and no Ranked write.
@@ -206,13 +206,13 @@ The Vercel CLI is currently unavailable locally, so Vercel `dpl_...` identifiers
 
 This is source truth only. It is **not** the production deployment.
 
-Measured at `adfcd5a99dd29d069ccde4d105496f017589f4f0` on 2026-08-19, the publish integration that landed Cycle 063, the Chikun daily/ghost/replay wave, the PixelLab sprite expansion pipeline, and the cabinet status doc gate.
+Measured at `9205ad082bc702dd214a288f7ceb0c232570da90` on 2026-08-19, the publish integration that landed Cycle 063, the Chikun daily/ghost/replay wave, the PixelLab sprite expansion pipeline, and the cabinet status doc gate.
 
 | Gate | Result |
 | --- | --- |
 | Branch | `main`, fed from `reboot/hmh-aaa-continuous` |
 | Latest closed cycle | 067, shared fixed-tick timed-effect countdown and accessibility truth |
-| Release ledger | 2,275 evaluated, 2,224 passing, exactly 51 accepted legacy failures, 0 unexpected |
+| Release ledger | 2,276 evaluated, 2,225 passing, exactly 51 accepted legacy failures, 0 unexpected |
 | Syntax | 361 JavaScript modules and 49 Python scripts |
 | HMH initial JavaScript | 946.5 KB, headroom 78.8 KB |
 | HMH reboot entry | 384.1 KB; Pixi vendor 562.4 KB stable preloaded |
