@@ -349,13 +349,14 @@ def load_jobs() -> dict[str, Any]:
         job.setdefault("status", "not_started")
         merged.append(job)
     data["jobs"] = merged
-    data["updated_at"] = now_iso()
-    data["desired_asset_count"] = 500
+    data.setdefault("desired_asset_count", 500)
     return data
 
 
 def save_jobs(data: dict[str, Any]) -> None:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
+    data["updated_at"] = now_iso()
+    data["desired_asset_count"] = 500
     JOBS_PATH.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
@@ -729,7 +730,6 @@ def package() -> None:
 
 def status() -> None:
     data = load_jobs()
-    save_jobs(data)
     print(json.dumps(summarize(data), indent=2))
 
 
