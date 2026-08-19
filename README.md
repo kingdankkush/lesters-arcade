@@ -27,7 +27,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable reboot candidate | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---
@@ -88,10 +88,18 @@ Implemented:
 
 Chikun launched publicly in [`54aab311`](https://github.com/kingdankkush/Lesters-Arcade/commit/54aab311a813bf4d5ce622d54633ade32dd24bf1) on 2026-08-11, which is an ancestor of the deployed production source. The cabinet is `status: 'playable'` with `publicPlayable: true` and `rankedEligible: true`, and the portal serves it at `/play/chikun`. It is the working proof that third-party Cabinet SDK onboarding produces a shippable cabinet.
 
+Shipped since the public launch, both landed on `main` on 2026-08-19:
+
+- **Parent-owned daily course.** The parent issues one UTC daily seed, so every Free run on a given day races the same forks and a remount does not reroll the course. Ranked session seeds stay unique and parent-issued. This is a shared course, not an official Daily Seed leaderboard; official boards remain an owner product decision.
+- **Same-seed ghost.** A translucent projection of the player's best local flight on that seed. Projection only: it has no collision, no score contribution, and no Ranked write.
+- **Seek-safe animated replay viewer.** `Watch Replay` on the result screen plays the just-submitted flap log back on the live canvas at 60 Hz, with a scrubbable timeline, 15-tick arrow-key nudges, and space/tap pause. Reduced motion parks on the crash frame rather than autoplaying. The canonical score is already final and the viewer cannot change it.
+
 Current canonical files:
 
 - `apps/chikun/src/main.mjs`
+- `apps/chikun/src/replay-viewer.mjs`
 - `apps/portal/chikun/`
+- `apps/portal/src/chikun-daily-challenge.mjs`
 - `apps/portal/src/chikun-cabinet.mjs`
 - `apps/portal/src/chikun-host.mjs`
 - `apps/portal/src/chikun-bridge.mjs`
@@ -134,7 +142,7 @@ The reboot now includes:
 - Parent-owned profile, session, leaderboard, and settlement integration.
 - Release certification, Chrome/Edge matrices, security gates, network audits, soaks, and artifact-verified previews.
 
-### AAA cycles 001-028
+### AAA cycles 001-067
 
 The bounded cycle ledger is the authoritative implementation history. Highlights:
 
@@ -150,8 +158,15 @@ The bounded cycle ledger is the authoritative implementation history. Highlights
 - Cycle 026: one shared light rig, mobility upgrades, and clearer current-build progression.
 - Cycle 027: Forkrunner/Gas Bomber role equipment, collision-readable enemy projection scale, stable desktop/mobile roster preview, and current-candidate browser certification.
 - Cycle 028: user-reference model contract for all four heroes, a 48-part Lester combat rebuild, reproducible four-hero atlas/selector regeneration, and corrected production-hero mobile/asset certification rails.
+- Cycles 029-031: reference-faithful Blender rebuilds for Lilly, Lit Commando, and Lit Valkyrie.
+- Cycles 032-036: projection-only zombie scale parity, forgiving deterministic hurtboxes, Bagholder Rusher and Whale Enforcer close-range readability, Liquidator Agent and Validator Cultist role art, and mobile weapon access with truthful reload/switch/overheat readability.
+- Cycles 050-053: authored-nav chokepoint pressure for the heavy role, 128-body attack-token and low-FPS safety evidence, serial desktop/mobile real-browser endurance certification, and exact visual-baseline authority reconstruction.
+- Cycles 054-057: the production mobile-character-start hotfix merged into continuation without promotion, the deterministic Liquidator no-hit/baseline/high-DPS/low-DPS build matrix, non-vacuous 128-body browser projectile probes, and README/agent-policy reconciliation against deployed source truth.
+- Cycles 058-061: Liquidator melee-heavy and crowd-control matrix completion, height-aware authored-cover counterplay, fixed-tick production phase art and audio, and deterministic Margin Call safe-sector rotation.
+- Cycles 062-065: navgrid-validated flanker lanes, the canonical Precision Ledger crit-upgrade benchmark routed through the live combat resolver into Liquidator damage, navgrid-validated ranged-role backoff and strafe lanes, and Precision Ledger selection through real Coin Blaster cadence.
+- Cycles 066-067: bounded timed-power-up refresh telemetry with Liquidator-safe nuke lifecycle certification, and one shared fixed-tick timed-effect countdown driving the desktop HUD, the mobile HUD, and `aria-live` accessibility wording from a single source.
 
-See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 028](docs/hmh-reboot/cycles/CYCLE-028.md), and the [current Claude handoff](docs/handoffs/2026-07-28-hmh-cycle-028-claude-handoff.md).
+See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 067](docs/hmh-reboot/cycles/CYCLE-067.md), and the [current HMH production closeout handoff](docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md).
 
 ---
 
@@ -422,7 +437,10 @@ npm run repo:health:strict
 npm run repo:cdn-gate
 npm run docs:links
 npm run docs:production
+npm run docs:cabinets
 ```
+
+`docs:production` needs the network: it proves the README cache marker against the live service worker. `docs:cabinets` is offline and deterministic, so it also runs inside `npm test` and therefore inside `test:release` and the Vercel build.
 
 ---
 
@@ -437,7 +455,8 @@ npm run docs:production
 7. Resolve current/previous Vercel `dpl_...` identifiers and verify rollback before any future production request.
 8. Add branch protection/CI or preserve the current manual exact-index, preview, soak and public-verification discipline.
 9. Keep hardened verifier/attestation and LitVM deployment work blocked until separate explicit HALT approval.
-10. Decide whether Chikun's development harness should become a production public vertical slice.
+10. Resolve Chikun's open commercial items: written art rights, a real `devWallet`, and the revenue split. The technical launch question is closed, the cabinet is public and Ranked-eligible; what remains is contractual.
+11. Certify Chikun 16:9 play. `aspectSupport` declares both orientations, but only 9:16 has certification evidence under `tests/`.
 
 ---
 

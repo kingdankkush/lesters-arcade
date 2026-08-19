@@ -101,13 +101,23 @@ Every cabinet ships a `game.manifest.json`:
 
 ## 5. Chikun's Escape — Reference Implementation
 
-Chikun's Escape is the first third-party game being onboarded, but it is **not public-playable yet**. The public arcade card remains COMING SOON until Louie's actual game is integrated.
+Chikun's Escape is the first third-party game onboarded through Cabinet SDK v1, and it is **public-playable and Ranked-eligible**. It cleared the public gate in Cycle 057 and is no longer behind a developer flag.
 
-Developer harness:
+Current canonical state:
 
-1. Open the portal with `?devCabinets=1` (for example `/games?devCabinets=1`).
-2. The Chikun cabinet becomes clickable and loads the reference SDK slice.
-3. Public users without the flag see a desaturated COMING SOON cabinet and no leaderboard filter.
+| Source of truth | Field | Value |
+| --- | --- | --- |
+| `apps/portal/games/chikun/game.manifest.json` | `status` | `playable` |
+| `apps/portal/games/chikun/game.manifest.json` | `rankedEligible` | `true` |
+| `apps/portal/games/chikun/game.manifest.json` | `version` / `runtimeVersion` | `0.5.0` / `canvas-runtime-v3` |
+| `apps/portal/src/arcade-core.mjs` | cabinet `status` / `playable` / `leaderboardEligible` | `playable` / `true` / `true` |
+| `apps/portal/src/game-registry.mjs` | `status` | `live` |
+
+Public users see a clickable cabinet, the Free and Ranked mode select, and a Chikun leaderboard filter. No query flag is required. `?devCabinets=1` still exists in `apps/portal/main.js`, but it now only unlocks cabinets whose cartridge sets `devPlayable` without `playable`; it is not Chikun's gate.
+
+Shipped since the public flip: parent-owned UTC daily seed with same-seed ghost projection, and a seek-safe animated replay viewer on the result screen. Both are presentation-only and cannot alter a canonical score.
+
+What is still open on Chikun is commercial, not technical: `devWallet` is `null` in both the manifest and the registry, so asset rights, the creator wallet, and the revenue split remain unresolved. Those are owner decisions, not launch gates that were skipped.
 
 - **Manifest**: `apps/portal/games/chikun/game.manifest.json` (canonical)
 - **Cabinet art**: `apps/portal/assets/generated/chikun-cabinet/` (6 angle sprites)
@@ -118,12 +128,13 @@ Developer harness:
 - [x] Create the canonical `apps/portal/games/chikun/` loader and manifest path
 - [x] Implement the deterministic reference vertical slice and parent replay verification
 - [x] Emit the parent SDK session/score/game-over path without direct wallet access
-- [x] Pass the third-party security and public Coming Soon regression gates
-- [ ] Port Louie's complete game into the sandboxed cabinet runtime
-- [ ] Support and visually certify both 9:16 and 16:9 play
+- [x] Pass the third-party security and public cabinet regression gates
+- [x] Flip `status` to `playable` and `rankedEligible` to `true` after the public-launch gates passed (Cycle 057)
+- [x] Port the playable game into the sandboxed cabinet runtime at `0.5.0` / `canvas-runtime-v3`
+- [x] Ship the daily UTC seed, same-seed ghost, and seek-safe animated replay viewer
+- [ ] Visually certify 16:9 play (`aspectSupport` declares both, but only 9:16 has certification evidence in `tests/`)
 - [ ] Replace temporary mode-selection art and complete production gameplay art
-- [ ] Complete Louie/Justin QA and resolve asset rights, creator wallet, and revenue split
-- [ ] Flip `status` from `coming-soon` only after all public-launch gates pass
+- [ ] Complete Louie/Justin QA and resolve asset rights, creator wallet (`devWallet` is still `null`), and revenue split
 
 ### Chikun art production request
 

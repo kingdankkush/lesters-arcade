@@ -11,6 +11,7 @@
     "design:tokens": "node scripts/design-token-guard.mjs",
     "docs:links": "node scripts/docs-link-check.mjs",
     "docs:production": "node scripts/production-doc-drift-check.mjs",
+    "docs:cabinets": "node scripts/cabinet-status-doc-drift-check.mjs",
     "assets:slice": "python scripts/slice-hmh-generated-assets.py",
     "assets:lester": "python scripts/slice-lester-production-sprites.py",
     "assets:hmh:user": "python scripts/ingest-hard-money-heroes-user-assets.py",
