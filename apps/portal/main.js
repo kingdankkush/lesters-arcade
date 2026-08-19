@@ -1828,6 +1828,8 @@ const combat = {
   combo: 0,
   maxCombo: 0,
   damageCombo: 0,
+  _heroMoving: false,
+  lastShotFrame: -999,
   maxDamageCombo: 0,
   noDamageSeconds: 0,
   invulnerableFrames: 0,
