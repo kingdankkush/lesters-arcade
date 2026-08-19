@@ -204,21 +204,26 @@ The Vercel CLI is currently unavailable locally, so Vercel `dpl_...` identifiers
 
 ## Current continuation status
 
-This is source/preview truth only. It is **not** the production deployment.
+This is source truth only. It is **not** the production deployment.
 
-| Gate | Cycle 028 continuation result |
+Measured at `adfcd5a99dd29d069ccde4d105496f017589f4f0` on 2026-08-19, the publish integration that landed Cycle 063, the Chikun daily/ghost/replay wave, the PixelLab sprite expansion pipeline, and the cabinet status doc gate.
+
+| Gate | Result |
 | --- | --- |
-| Branch | `reboot/hmh-aaa-continuous` |
-| Certified runtime/art source | `fe8153f08c42500a57cce96f907ce5c117f0f8bc` |
-| Exact commit patch SHA-256 | `e7baade05a4f1876a8449ab3c82f3638670166e7a7526c83362c2bd14b6de6ca` |
-| Release ledger | 1,777 total, 1,725 passing, exactly 52 accepted legacy failures, 0 unexpected |
-| Authored hero pipeline | 4 actors, 2,592 frames, exact A/B reproducibility |
-| Lester reference model | 48 authored parts; desktop and 390x844 mobile PASS |
-| Local candidate browser matrix | Desktop, ultrawide, tablet, mobile portrait, and mobile landscape PASS |
-| Performance | Desktop/mobile p95 7 ms / 7 ms |
-| HMH bundle | 1,021,358 / 1,050,000 bytes |
-| Security and network | Zero security findings; four network scenarios with zero failures |
-| Production promotion | Not performed; Cycle 021 remains live |
+| Branch | `main`, fed from `reboot/hmh-aaa-continuous` |
+| Latest closed cycle | 067, shared fixed-tick timed-effect countdown and accessibility truth |
+| Release ledger | 2,275 evaluated, 2,224 passing, exactly 51 accepted legacy failures, 0 unexpected |
+| Syntax | 361 JavaScript modules and 49 Python scripts |
+| HMH initial JavaScript | 946.5 KB, headroom 78.8 KB |
+| HMH reboot entry | 384.1 KB; Pixi vendor 562.4 KB stable preloaded |
+| Chikun entry | 20.3 KB |
+| Cabinet status docs | PASS across 3 manifests and 3 governed docs |
+| Documentation links | PASS across 8 current/public documents |
+| Production promotion | Not performed |
+
+Browser, visual, soak, network, and security matrices were last certified per cycle and are recorded in each cycle ledger; the table above is the repeatable source-side gate set, not a re-run of those matrices.
+
+> **Production lag.** Production is still `5d4db8ee` (`v18-hmh-mobile-character-start`, 2026-08-16). Cycles 054 through 067, the Cycle 063 benchmark, and the entire Chikun daily/ghost/replay wave are on `main` but not in front of players. Promoting requires an authenticated Vercel session.
 
 ---
 
