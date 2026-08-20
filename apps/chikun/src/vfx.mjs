@@ -39,7 +39,7 @@ export function planChikunVfx({ event, x = 0, y = 0, tick = 0, reduceMotion = fa
     event: typeof event === 'string' ? event : 'fork',
     particles: Object.freeze(particles),
     shake: reduceMotion ? 0 : style.shake,
-    flash: style.flash,
+    flash: reduceMotion ? 0 : style.flash,
     bornTick: Math.max(0, Math.floor(Number(tick) || 0)),
     lifeTicks: style.lifeTicks,
   });

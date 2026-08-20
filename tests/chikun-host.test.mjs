@@ -48,7 +48,7 @@ test('Chikun host mounts an input-owning same-origin sandbox with no navigation 
   assert.equal(iframe.src, 'https://arcade.test/chikun/index.html');
   assert.equal(iframe.title, "Chikun's Escape runtime");
   assert.equal(iframe.attributes.get('sandbox'), 'allow-scripts allow-same-origin');
-  assert.equal(iframe.attributes.get('allow'), 'fullscreen');
+  assert.equal(iframe.attributes.get('allow'), 'fullscreen; web-share');
   assert.equal(iframe.attributes.get('sandbox').includes('allow-top-navigation'), false);
   assert.equal(documentRef.documentElement.dataset.embeddedCabinet, 'chikun');
   iframe.emit('load');

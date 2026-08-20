@@ -91,7 +91,7 @@ export function createChikunHost({
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-    iframe.setAttribute('allow', 'fullscreen');
+    iframe.setAttribute('allow', 'fullscreen; web-share');
     iframe.setAttribute('allowfullscreen', '');
     iframe.dataset.runtime = 'chikun';
     mount.replaceChildren(iframe);

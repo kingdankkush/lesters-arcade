@@ -23,10 +23,10 @@ test('Chikun VFX plans bounded deterministic particles without gameplay randomne
   assert.equal(Object.isFrozen(a.particles), true);
 });
 
-test('reduced motion keeps event feedback but removes shake and limits particles', () => {
+test('reduced motion keeps restrained event feedback but removes shake and flashes', () => {
   const plan = planChikunVfx({ event: 'crash', x: 280, y: 360, tick: 900, reduceMotion: true });
   assert.equal(plan.shake, 0);
-  assert.ok(plan.flash > 0);
+  assert.equal(plan.flash, 0);
   assert.ok(plan.particles.length <= 2);
 });
 

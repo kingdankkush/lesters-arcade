@@ -37,6 +37,9 @@ const resultOverlay = document.querySelector('#resultOverlay');
 const startButton = document.querySelector('#startButton');
 const pauseButton = document.querySelector('#pauseButton');
 const resumeButton = document.querySelector('#resumeButton');
+const pauseExitButton = document.querySelector('#pauseExitButton');
+const pauseMuteButton = document.querySelector('#pauseMuteButton');
+const pauseFullscreenButton = document.querySelector('#pauseFullscreenButton');
 const muteButton = document.querySelector('#muteButton');
 const fullscreenButton = document.querySelector('#fullscreenButton');
 const exitButton = document.querySelector('#exitButton');
@@ -55,6 +58,7 @@ const liveStatus = document.querySelector('#liveStatus');
 
 const STEP_MS = 1000 / CHIKUN_FIXED_STEP_HZ;
 const MAX_CATCH_UP_STEPS = 4;
+const MAX_AUDIO_VOICES = 8;
 const MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
 const coastSprite = new Image();
 const fallSprite = new Image();
@@ -78,6 +82,7 @@ let previousFrameAt = 0;
 let latestSnapshot = null;
 let lastStateTick = -1;
 let audioContext = null;
+const activeAudioVoices = new Set();
 let disposed = false;
 let calloutTimer = null;
 let previousCoins = 0;
@@ -237,16 +242,27 @@ function sendState(status = phase === 'running' ? 'running' : phase === 'game-ov
 function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') {
   if (muted || initPayload?.settings.musicEnabled === false) return;
   try {
-    audioContext ??= new AudioContext();
+    if (activeAudioVoices.size >= MAX_AUDIO_VOICES) return;
+    const AudioContextCtor = globalThis.AudioContext ?? globalThis.webkitAudioContext;
+    if (!AudioContextCtor) return;
+    audioContext ??= new AudioContextCtor();
     if (audioContext.state === 'suspended') audioContext.resume?.();
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
+    const voice = { oscillator, gain };
+    oscillator.addEventListener('ended', () => {
+      activeAudioVoices.delete(voice);
+      try { oscillator.disconnect(); gain.disconnect(); } catch { /* already released */ }
+    }, { once: true });
     oscillator.type = type;
     oscillator.frequency.value = frequency;
     gain.gain.setValueAtTime(gainValue, audioContext.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
     oscillator.connect(gain).connect(audioContext.destination);
     oscillator.start();
+    // Counted only once the node is actually running: a throw before this point
+    // would otherwise strand the voice in the set and silence audio at the cap.
+    activeAudioVoices.add(voice);
     oscillator.stop(audioContext.currentTime + duration);
   } catch { /* audio is optional */ }
 }
@@ -270,11 +286,46 @@ function setModePresentation() {
       ? `${dailyChallenge.label} · Shared Course`
       : 'Free Mode · Practice Flight';
   modeCopy.textContent = ranked
-    ? 'Your parent-issued run is replayed by Lester’s Arcade before it reaches your profile and the Chikun score boards.'
+    ? 'Clear Big Corp forks, collect Litecoin, and skim the edges for bonuses. Lester’s Arcade replays every input before the score reaches your profile and Ranked boards.'
     : dailyChallenge
-      ? `Everyone flies the ${dailyChallenge.dayKey} course today. Your best local ghost stays on this seed and never enters Ranked boards.`
-      : 'Practice forever. Your score stays in this flight and never enters Ranked boards.';
+      ? `Clear Big Corp forks, collect Litecoin, and skim the edges for bonuses. Everyone flies the ${dailyChallenge.dayKey} course today, and your best local ghost stays on this seed without entering Ranked boards.`
+      : 'Clear Big Corp forks, collect Litecoin, and skim the edges for bonuses. This practice score never enters your profile or Ranked boards.';
   loadGhostForSeed(initPayload?.session?.seed);
+}
+
+function syncAudioControl() {
+  const parentDisabled = initPayload?.settings.musicEnabled === false;
+  const disabled = parentDisabled || muted;
+  muteButton.disabled = parentDisabled;
+  muteButton.textContent = disabled ? '×' : '♪';
+  muteButton.setAttribute('aria-pressed', String(disabled));
+  muteButton.setAttribute('aria-label', parentDisabled ? 'Sound disabled in arcade settings' : muted ? 'Unmute sound' : 'Mute sound');
+  pauseMuteButton.disabled = parentDisabled;
+  pauseMuteButton.textContent = parentDisabled ? 'Sound Off' : muted ? 'Unmute' : 'Mute';
+  pauseMuteButton.setAttribute('aria-pressed', String(disabled));
+  pauseMuteButton.setAttribute('aria-label', parentDisabled ? 'Sound disabled in arcade settings' : muted ? 'Unmute sound' : 'Mute sound');
+}
+
+function syncFullscreenControl() {
+  const supported = Boolean(document.fullscreenEnabled && document.documentElement.requestFullscreen);
+  fullscreenButton.hidden = !supported;
+  fullscreenButton.disabled = !supported;
+  fullscreenButton.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen');
+  pauseFullscreenButton.hidden = !supported;
+  pauseFullscreenButton.disabled = !supported;
+  pauseFullscreenButton.textContent = document.fullscreenElement ? 'Windowed' : 'Fullscreen';
+  pauseFullscreenButton.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen');
+}
+
+function toggleMute() {
+  if (initPayload?.settings.musicEnabled === false) return;
+  muted = !muted;
+  syncAudioControl();
+}
+
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen?.();
+  else document.documentElement.requestFullscreen?.();
 }
 
 function prepareRun() {
@@ -402,6 +453,8 @@ function togglePause(source = 'user', force = null) {
 
 function queueFlap(event) {
   if (event?.target?.closest?.('button')) return;
+  event?.preventDefault?.();
+  canvas.focus({ preventScroll: true });
   if (phase === 'game-over' && replayPlayback) {
     toggleReplayViewer();
     return;
@@ -411,6 +464,7 @@ function queueFlap(event) {
     flapQueued = true;
     flapBufferFrames = 2;
     tone(560, 0.055, 0.025, 'square');
+    spawnVfx('flap');
   }
 }
 
@@ -620,7 +674,7 @@ function frame(now) {
   const elapsed = Math.min(100, Math.max(0, now - previousFrameAt));
   previousFrameAt = now;
   if (phase === 'running' && !paused && runtime) {
-    accumulator += elapsed;
+    accumulator = Math.min(accumulator + elapsed, STEP_MS * MAX_CATCH_UP_STEPS);
     let steps = 0;
     try {
       while (accumulator >= STEP_MS && !runtime.terminal && steps < MAX_CATCH_UP_STEPS) {
@@ -690,6 +744,8 @@ function handleParentMessage(event) {
     initPayload = message.payload;
     mode = initPayload.mode;
     setModePresentation();
+    syncAudioControl();
+    syncFullscreenControl();
     prepareRun();
     phase = 'ready';
     startOverlay.classList.remove('is-hidden');
@@ -703,10 +759,15 @@ function handleParentMessage(event) {
     else startRun();
   } else if (message.type === 'portal:settings') {
     initPayload.settings = { ...message.payload.settings };
+    syncAudioControl();
   } else if (message.type === 'portal:dispose') {
     disposed = true;
     phase = 'disposed';
     if (calloutTimer !== null) clearTimeout(calloutTimer);
+    for (const voice of activeAudioVoices) {
+      try { voice.oscillator.stop(); voice.oscillator.disconnect(); voice.gain.disconnect(); } catch { /* already released */ }
+    }
+    activeAudioVoices.clear();
     audioContext?.close?.();
     audioContext = null;
     port.onmessage = null;
@@ -735,18 +796,19 @@ window.addEventListener('message', (event) => {
 startButton.addEventListener('click', startRun);
 canvas.addEventListener('pointerdown', queueFlap);
 canvas.addEventListener('keydown', (event) => {
+  if (event.repeat) return;
   if (event.code === 'Space' || event.code === 'ArrowUp' || event.key === 'Enter') { event.preventDefault(); queueFlap(event); }
   else if (event.key.toLowerCase() === 'p' || event.key === 'Escape') { event.preventDefault(); togglePause('user'); }
-  else if (event.key.toLowerCase() === 'm') { muted = !muted; muteButton.textContent = muted ? '×' : '♪'; muteButton.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound'); }
+  else if (event.key.toLowerCase() === 'm') toggleMute();
 });
 pauseButton.addEventListener('click', () => togglePause('user'));
 resumeButton.addEventListener('click', () => togglePause('user', false));
-muteButton.addEventListener('click', () => { muted = !muted; muteButton.textContent = muted ? '×' : '♪'; muteButton.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound'); });
-fullscreenButton.addEventListener('click', () => {
-  if (document.fullscreenElement) document.exitFullscreen?.();
-  else document.documentElement.requestFullscreen?.();
-});
-document.addEventListener('fullscreenchange', () => fullscreenButton.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Enter fullscreen'));
+pauseExitButton.addEventListener('click', () => send('game:exit-request', {}));
+muteButton.addEventListener('click', toggleMute);
+pauseMuteButton.addEventListener('click', toggleMute);
+fullscreenButton.addEventListener('click', toggleFullscreen);
+pauseFullscreenButton.addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', syncFullscreenControl);
 exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
 shareRunButton.addEventListener('click', async () => {
@@ -794,5 +856,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 latestSnapshot = createChikunRuntime({ seed: 1, maxTicks: MAX_RUN_TICKS }).snapshot();
+syncAudioControl();
+syncFullscreenControl();
 draw(latestSnapshot);
 requestAnimationFrame(frame);

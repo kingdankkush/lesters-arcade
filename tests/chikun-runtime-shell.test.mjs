@@ -23,6 +23,9 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(html, /id="replayTimeline"/);
   assert.match(html, /id="watchReplayButton"/);
   assert.match(html, /id="shareRunButton"/);
+  assert.match(html, /id="pauseExitButton"/);
+  assert.match(html, /id="pauseMuteButton"/);
+  assert.match(html, /id="pauseFullscreenButton"/);
 
   const source = text('../apps/chikun/src/main.mjs');
   assert.match(source, /createChikunRuntime/);
@@ -39,6 +42,16 @@ test('Chikun ships a standalone sandbox child shell and bundle entry', () => {
   assert.match(source, /createChikunReplayPlayback/);
   assert.match(source, /navigator\.share|navigator\.clipboard/);
   assert.match(source, /coastSprite\.decode/);
+  assert.match(source, /Math\.min\(accumulator \+ elapsed, STEP_MS \* MAX_CATCH_UP_STEPS\)/);
+  assert.match(source, /event\.repeat/);
+  assert.match(source, /preventDefault\(\)/);
+
+  const css = text('../apps/portal/chikun/game.css');
+  assert.match(css, /\.hud-actions button\{[^}]*min-width:44px[^}]*min-height:44px/);
+  assert.match(css, /#resultOverlay button[^}]*min-height:44px/);
+
+  const portalCss = text('../apps/portal/styles.css');
+  assert.match(portalCss, /data-game-id="chikun"[^\n]*#combatMenuIconButton/);
 
   const build = text('../build.mjs');
   assert.match(build, /'chikun\/game': chikunEntry/);

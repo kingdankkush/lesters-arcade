@@ -39,7 +39,12 @@
       <div class="overlay is-hidden" id="pauseOverlay">
         <p class="eyebrow">Flight suspended</p>
         <h2>Paused</h2>
-        <button class="primary-button" id="resumeButton" type="button">Resume</button>
+        <div class="pause-actions">
+          <button class="primary-button" id="resumeButton" type="button">Resume</button>
+          <button class="secondary-button" id="pauseMuteButton" type="button" aria-label="Mute sound">Sound</button>
+          <button class="secondary-button" id="pauseFullscreenButton" type="button" aria-label="Enter fullscreen">Fullscreen</button>
+          <button class="secondary-button" id="pauseExitButton" type="button">Exit to Arcade</button>
+        </div>
       </div>
       <div class="overlay is-hidden" id="resultOverlay">
         <p class="eyebrow" id="resultEyebrow">Run complete</p>

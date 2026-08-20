@@ -5185,6 +5185,8 @@ html[data-embedded-cabinet] #touchControls { display: none !important; }
 .gameplay-view[data-game-id="chikun"] #combatGoreButton,
 .gameplay-view[data-game-id="chikun"] #combatCharacterButton { display: none !important; }
 
+.gameplay-view[data-game-id="chikun"] #combatMenuIconButton { display: none !important; }
+
 .gameplay-view[data-game-id="chikun"] .official-combat-mount {
   aspect-ratio: 16 / 9;
   min-height: 0;
