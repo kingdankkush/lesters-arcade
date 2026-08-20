@@ -211,7 +211,10 @@ try {
       return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
     });
     return {
-      bars: timeline?.children.length ?? 0,
+      // Count the bins only. The replay playhead is also a child of the timeline,
+      // so children.length is 25 once the replay viewer is present.
+      bars: timeline?.querySelectorAll('span').length ?? 0,
+      playheads: timeline?.querySelectorAll('.replay-playhead').length ?? 0,
       timelineLabel: timeline?.getAttribute('aria-label') ?? '',
       timelineVisible: Boolean(timelineRect && timelineRect.width > 0 && timelineRect.height > 0),
       shareVisible: Boolean(shareRect && shareRect.width > 0 && shareRect.height > 0),
@@ -222,6 +225,7 @@ try {
     };
   });
   assert.equal(resultUi.bars, 24, `Chikun replay timeline must render 24 bounded bins: ${JSON.stringify(resultUi)}`);
+  assert.equal(resultUi.playheads, 1, `Chikun replay timeline must render exactly one playhead: ${JSON.stringify(resultUi)}`);
   assert.match(resultUi.timelineLabel, /flaps across this run/i);
   assert.equal(resultUi.timelineVisible, true);
   assert.equal(resultUi.shareVisible, true);
@@ -234,7 +238,9 @@ try {
   const sharedPayload = await frame.locator('body').evaluate(() => globalThis.__chikunSharedPayload);
   assert.equal(sharedPayload?.title, "Chikun's Escape");
   assert.equal(sharedPayload?.url, 'https://lestersarcade.io');
-  assert.match(sharedPayload?.text ?? '', ranked ? /Replay Verified Ranked/i : /Free Practice/i);
+  // Free mode carries the daily-challenge label when one is active for the session
+  // seed, and falls back to Free Practice only when it is not.
+  assert.match(sharedPayload?.text ?? '', ranked ? /Replay Verified Ranked/i : /Free Practice|Daily \d{4}-\d{2}-\d{2}/i);
   assert.match(sharedPayload?.text ?? '', new RegExp(`${score.toLocaleString('en-US')} points`, 'i'));
   assert.doesNotMatch(sharedPayload?.text ?? '', /0x[a-f0-9]{40}|session-/i);
   await frameNode.screenshot({ path: resolve(dirname(evidencePath), `chikun-${mode}-result.png`) });
