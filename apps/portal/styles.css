@@ -1559,11 +1559,12 @@ svg.arcade-icon {
 }
 
 /* --- Mobile gameplay: maximize the game window ----------------------------
-   On phones the 8-button control bar + verbose sandbox copy buried the canvas
-   in the bottom quarter of the screen. Every one of those buttons also lives
-   in the pause menu, and the touch layer has its own pause button — so during
-   gameplay we collapse them and let the game window own the viewport. */
-@media (max-width: 720px) {
+   On phones and short landscape viewports, the 8-button control bar + verbose
+   sandbox copy bury the canvas in the bottom quarter of the screen. Every one
+   of those buttons also lives in the pause menu, and the touch layer has its
+   own pause button — so during gameplay we collapse them and let the game
+   window own the viewport. */
+@media (max-width: 720px), (max-height: 500px) and (orientation: landscape) {
   .gameplay-view .gameplay-control-bar { display: none; }
   .gameplay-view .gameplay-topbar #officialGameStateCopy { display: none; }
   .gameplay-view .gameplay-topbar h2 { font-size: 0.95rem; margin: 0; }
@@ -1589,6 +1590,17 @@ svg.arcade-icon {
     margin: 12px 0 18px;
   }
   .level-intro-card > .machine-copy { order: 4; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  #officialApp[data-step="level-one-intro"] .arcade-music-player {
+    display: none;
+  }
+
+  .level-intro-card > #officialBeginLevelButton {
+    margin: 2px 0 8px;
+    padding-block: 10px;
+  }
 }
 
 @media (max-width: 390px) and (orientation: portrait) {

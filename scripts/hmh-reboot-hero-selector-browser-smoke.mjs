@@ -14,6 +14,7 @@ await mkdir(evidenceRoot, { recursive: true });
 const profiles = [
   { id: 'desktop', viewport: { width: 1440, height: 900 }, mobile: false },
   { id: 'mobile-portrait', viewport: { width: 390, height: 844 }, mobile: true },
+  { id: 'phone-landscape', viewport: { width: 844, height: 390 }, mobile: null },
 ];
 
 const { chromium } = await import('../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
@@ -57,7 +58,7 @@ try {
       assert.ok(evidence.documentHeight < 1800, `mobile selector too tall: ${evidence.documentHeight}`);
       assert.ok(evidence.cards.every((card) => card.rect.width <= 340 && card.rect.width >= 300));
       assert.ok(evidence.cards.every((card) => Math.abs(card.layoutTop - evidence.cards[0].layoutTop) <= 1));
-    } else {
+    } else if (profile.mobile === false) {
       assert.equal(swipeHintVisible, false);
       assert.equal(jukeboxVisible, false, 'desktop jukebox must not cover locked hero cards');
       assert.ok(evidence.roster.scrollWidth <= evidence.roster.clientWidth + 2, 'desktop roster must not scroll horizontally');
@@ -73,8 +74,10 @@ try {
     const startTransition = await page.evaluate(() => {
       const intro = document.querySelector('#officialLevelIntro');
       const begin = document.querySelector('#officialBeginLevelButton');
+      const jukebox = document.querySelector('#arcadeMusicPlayer');
       const introRect = intro?.getBoundingClientRect();
       const beginRect = begin?.getBoundingClientRect();
+      const jukeboxRect = jukebox?.getBoundingClientRect();
       return {
         activeView: [...document.querySelectorAll('.official-view')].find((node) => !node.hidden)?.id ?? null,
         scrollY,
@@ -82,6 +85,13 @@ try {
         introTop: introRect?.top ?? null,
         beginTop: beginRect?.top ?? null,
         beginBottom: beginRect?.bottom ?? null,
+        beginLeft: beginRect?.left ?? null,
+        beginRight: beginRect?.right ?? null,
+        jukeboxVisible: Boolean(jukebox && getComputedStyle(jukebox).display !== 'none' && jukeboxRect?.width && jukeboxRect?.height),
+        jukeboxTop: jukeboxRect?.top ?? null,
+        jukeboxBottom: jukeboxRect?.bottom ?? null,
+        jukeboxLeft: jukeboxRect?.left ?? null,
+        jukeboxRight: jukeboxRect?.right ?? null,
       };
     });
     assert.equal(startTransition.activeView, 'officialLevelIntro', `${profile.id}: hero selection did not advance to level intro`);
@@ -89,6 +99,15 @@ try {
       startTransition.beginTop >= 0 && startTransition.beginBottom <= startTransition.viewportHeight,
       `${profile.id}: Begin Level CTA must be visible immediately after hero selection: ${JSON.stringify(startTransition)}`,
     );
+    if (startTransition.jukeboxVisible) {
+      const overlapsJukebox = !(
+        startTransition.beginBottom <= startTransition.jukeboxTop
+        || startTransition.beginTop >= startTransition.jukeboxBottom
+        || startTransition.beginRight <= startTransition.jukeboxLeft
+        || startTransition.beginLeft >= startTransition.jukeboxRight
+      );
+      assert.equal(overlapsJukebox, false, `${profile.id}: jukebox obscures Begin Level CTA: ${JSON.stringify(startTransition)}`);
+    }
     await page.screenshot({ path: path.join(evidenceRoot, `${profile.id}-level-intro.png`) });
     await page.click('#officialBeginLevelButton');
     await page.waitForSelector('#officialGameplay:not([hidden])', { timeout: 15_000 });
