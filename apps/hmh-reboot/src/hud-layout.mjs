@@ -16,6 +16,27 @@ const TIMED_EFFECT_PRESENTATION = Object.freeze({
   'time-dilation': Object.freeze({ hud: 'DILATION', accessible: 'Time Dilation' }),
 });
 
+const TIMED_EFFECT_IDENTITY = Object.freeze({
+  'berserk-candle': Object.freeze({ color: 0xff6b35, accentColor: 0xffd166, silhouette: 'spiked-ring', pulsePeriodTicks: 30, radius: 34, audioCue: 'berserk-activate' }),
+  'time-dilation': Object.freeze({ color: 0x6fd8ff, accentColor: 0xc9f4ff, silhouette: 'clock-orbit', pulsePeriodTicks: 60, radius: 40, audioCue: 'time-dilation-activate' }),
+});
+const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
+
+export function buildTimedEffectIdentity(snapshot = {}) {
+  const tick = snapshot?.tick;
+  if (!Number.isInteger(tick) || tick < 0) throw new TypeError('timed-effect identity tick must be a non-negative integer');
+  if (!Array.isArray(snapshot.activeEffects)) throw new TypeError('timed-effect identity activeEffects must be an array');
+  const effects = snapshot.activeEffects
+    .filter((effect) => Number.isInteger(effect?.expiresTick) && effect.expiresTick > tick)
+    .map((effect) => {
+      const identity = TIMED_EFFECT_IDENTITY[effect.effectId];
+      if (!identity) throw new TypeError(`unsupported timed effect identity ${String(effect?.effectId)}`);
+      return { effectId: effect.effectId, ...identity };
+    })
+    .sort((left, right) => lexical(left.effectId, right.effectId));
+  return freezeDeep({ active: effects.length > 0, effects });
+}
+
 export function buildTimedEffectPresentation(snapshot = {}) {
   const tick = snapshot?.tick;
   if (!Number.isInteger(tick) || tick < 0) throw new TypeError('timed-effect presentation tick must be a non-negative integer');
@@ -40,7 +61,7 @@ export function buildTimedEffectPresentation(snapshot = {}) {
       };
     })
     .filter(Boolean)
-    .sort((left, right) => left.effectId.localeCompare(right.effectId));
+    .sort((left, right) => lexical(left.effectId, right.effectId));
 
   if (effects.length === 0) return freezeDeep({
     active: false,

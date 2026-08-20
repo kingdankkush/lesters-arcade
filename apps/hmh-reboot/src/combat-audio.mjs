@@ -22,6 +22,8 @@ const SAMPLE_PATHS = Object.freeze({
   'combo-milestone': '../assets/audio/sfx/pickup.ogg',
   'combo-boss-threshold': '../assets/audio/sfx/boss-warning.ogg',
   pickup: '../assets/audio/sfx/pickup.ogg',
+  'time-dilation-activate': '../assets/audio/sfx/level-start.ogg',
+  'berserk-activate': '../assets/audio/sfx/boss-warning.ogg',
   'health-pickup': '../assets/audio/sfx/pickup.ogg',
   'ammo-pickup': '../assets/audio/sfx/pickup.ogg',
   'level-up': '../assets/audio/sfx/level-start.ogg',

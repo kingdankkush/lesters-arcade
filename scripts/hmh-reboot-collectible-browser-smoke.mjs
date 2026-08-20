@@ -89,6 +89,8 @@ try {
     active: element.dataset.collectibleActive,
     countdown: element.dataset.collectibleCountdown,
     refreshCount: Number(element.dataset.collectibleRefreshCount),
+    silhouettes: element.dataset.timedEffectSilhouettes,
+    audioCues: element.dataset.timedEffectAudioCues,
   }));
   const accessibleStatus = await timedPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
   assert.deepEqual({ count: timed.count, remaining: timed.remaining }, { count: 1, remaining: 12 });
@@ -96,6 +98,8 @@ try {
   assert.equal(timed.active, 'time-dilation');
   assert.match(timed.countdown, /^DILATION (?:9|10)S$/);
   assert.equal(timed.refreshCount, 0);
+  assert.equal(timed.silhouettes, 'clock-orbit');
+  assert.equal(timed.audioCues, 'time-dilation-activate');
   assert.match(accessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining/i);
 
   const mobilePage = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
@@ -113,11 +117,15 @@ try {
     active: element.dataset.collectibleActive,
     speedMultiplier: Number(element.dataset.collectibleSpeedMultiplier),
     countdown: element.dataset.collectibleCountdown,
+    silhouettes: element.dataset.timedEffectSilhouettes,
+    audioCues: element.dataset.timedEffectAudioCues,
   }));
   assert.equal(mobile.count, 1);
   assert.equal(mobile.active, 'time-dilation');
   assert.equal(mobile.speedMultiplier, 1.2);
   assert.match(mobile.countdown, /^DILATION (?:9|10)S$/);
+  assert.equal(mobile.silhouettes, 'clock-orbit');
+  assert.equal(mobile.audioCues, 'time-dilation-activate');
   await mobilePage.close();
 
   const refreshPage = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
@@ -135,12 +143,16 @@ try {
     active: element.dataset.collectibleActive,
     countdown: element.dataset.collectibleCountdown,
     refreshCount: Number(element.dataset.collectibleRefreshCount),
+    silhouettes: element.dataset.timedEffectSilhouettes,
+    audioCues: element.dataset.timedEffectAudioCues,
   }));
   const refreshedAccessibleStatus = await refreshPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
   assert.equal(refreshed.count, 2);
   assert.equal(refreshed.active, 'time-dilation');
   assert.match(refreshed.countdown, /^DILATION (?:9|10)S R1$/);
   assert.equal(refreshed.refreshCount, 1);
+  assert.equal(refreshed.silhouettes, 'clock-orbit');
+  assert.equal(refreshed.audioCues, 'time-dilation-activate');
   assert.match(refreshedAccessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining, refreshed 1 time/i);
   await refreshPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === '', null, { timeout: 14_000 });
   const refreshedExpired = await refreshPage.locator('#hmhRebootStage').evaluate((element) => ({
@@ -199,11 +211,15 @@ try {
     active: element.dataset.collectibleActive,
     speedMultiplier: Number(element.dataset.collectibleSpeedMultiplier),
     countdown: element.dataset.collectibleCountdown,
+    silhouettes: element.dataset.timedEffectSilhouettes,
+    audioCues: element.dataset.timedEffectAudioCues,
   }));
   assert.equal(landscape.count, 1);
   assert.equal(landscape.active, 'time-dilation');
   assert.equal(landscape.speedMultiplier, 1.2);
   assert.match(landscape.countdown, /^DILATION (?:9|10)S$/);
+  assert.equal(landscape.silhouettes, 'clock-orbit');
+  assert.equal(landscape.audioCues, 'time-dilation-activate');
   await landscapePage.close();
 
   const canonicalCases = [
@@ -228,6 +244,9 @@ try {
     const ammoPilot = pointOfInterestId === 'crossing-bank-cache' ? '&collectibleAmmoPilot=1' : '';
     await casePage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=collectible-${pointOfInterestId}${healthPilot}${ammoPilot}`, { waitUntil: 'networkidle' });
     await casePage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleCount) === 1, null, { timeout: 5000 });
+    if (effectId === 'berserk-candle' && process.env.HMH_COLLECTIBLE_BERSERK_SCREENSHOT) {
+      await casePage.screenshot({ path: process.env.HMH_COLLECTIBLE_BERSERK_SCREENSHOT, fullPage: true });
+    }
     if (effectId === 'nuke-liquidation') {
       await casePage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.enemyCount) === 0, null, { timeout: 5000 });
     }
@@ -241,6 +260,8 @@ try {
       playerHealth: Number(element.dataset.playerHealth),
       ammo: Number(element.dataset.weaponAmmo),
       runXp: Number(element.dataset.runXp),
+      silhouettes: element.dataset.timedEffectSilhouettes,
+      audioCues: element.dataset.timedEffectAudioCues,
     }));
     if (effectId === 'hash-rail-core') {
       assert.equal(observed.ammo, 3, 'Hash Rail pickup did not load its bounded magazine');
@@ -249,7 +270,13 @@ try {
       const expectedRunXp = effectId === 'nuke-liquidation' ? 260 : 0;
       assert.equal(observed.runXp, expectedRunXp, `${effectId} XP drifted`);
     }
-    const { ammo, runXp, ...contract } = observed;
+    const expectedIdentity = effectId === 'time-dilation'
+      ? { silhouettes: 'clock-orbit', audioCues: 'time-dilation-activate' }
+      : effectId === 'berserk-candle'
+        ? { silhouettes: 'spiked-ring', audioCues: 'berserk-activate' }
+        : { silhouettes: '', audioCues: '' };
+    assert.deepEqual({ silhouettes: observed.silhouettes, audioCues: observed.audioCues }, expectedIdentity, `${effectId} identity drifted`);
+    const { ammo, runXp, silhouettes: _silhouettes, audioCues: _audioCues, ...contract } = observed;
     assert.deepEqual(contract, { effectId, weaponId, damageMultiplier, speedMultiplier, handGrenades, enemyCount: effectId === 'nuke-liquidation' ? 0 : 2, playerHealth: 100 }, pointOfInterestId);
     canonical.push({ pointOfInterestId, ...observed });
     await casePage.close();

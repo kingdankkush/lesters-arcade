@@ -11,6 +11,8 @@ export const HMH_SFX_CUE_REGISTRY = Object.freeze({
   grenade: Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 180, tone: Object.freeze([110, 220]), synth: 'square', gainMul: 1.0, samplePreferred: true }),
   'grenade-boom': Object.freeze({ family: 'impact', priority: 5, cooldownMs: 260, tone: Object.freeze([72, 110, 220, 82]), synth: 'square', gainMul: 1.25, samplePreferred: false }),
   pickup: Object.freeze({ family: 'reward', priority: 3, cooldownMs: 95, tone: Object.freeze([660, 880, 990]), synth: 'triangle', gainMul: 0.95, samplePreferred: true }),
+  'time-dilation-activate': Object.freeze({ family: 'reward', priority: 4, cooldownMs: 601, tone: Object.freeze([1047, 784, 523]), synth: 'sine', gainMul: 0.88, samplePreferred: true }),
+  'berserk-activate': Object.freeze({ family: 'reward', priority: 4, cooldownMs: 601, tone: Object.freeze([165, 330, 660, 990]), synth: 'square', gainMul: 0.96, samplePreferred: true }),
   'xp-pickup': Object.freeze({ family: 'reward', priority: 1, cooldownMs: 38, tone: Object.freeze([880, 1175]), synth: 'triangle', gainMul: 0.46, samplePreferred: false }),
   'level-up': Object.freeze({ family: 'reward', priority: 5, cooldownMs: 420, tone: Object.freeze([523, 784, 1047, 1568]), synth: 'triangle', gainMul: 1.25, samplePreferred: false }),
   'enemy-hit': Object.freeze({ family: 'impact', priority: 2, cooldownMs: 38, tone: Object.freeze([220, 165]), synth: 'square', gainMul: 0.7, samplePreferred: true }),

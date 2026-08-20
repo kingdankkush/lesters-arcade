@@ -10,7 +10,8 @@ import {
 } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { createEnemyState } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { createGrenadeSystem, rechargeHandGrenades } from '../apps/hmh-reboot/src/grenades.mjs';
-import { buildTimedEffectPresentation } from '../apps/hmh-reboot/src/hud-layout.mjs';
+import { buildTimedEffectIdentity, buildTimedEffectPresentation } from '../apps/hmh-reboot/src/hud-layout.mjs';
+import { HMH_SFX_CUE_REGISTRY } from '../apps/portal/src/hmh-audio-system.mjs';
 import { applyLiquidatorDamage, createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
 import {
@@ -190,6 +191,40 @@ test('timed-effect presentation shares one fixed-tick countdown and refresh cont
     accessibleLabel: 'No active powerups.',
     effects: [],
   });
+});
+
+test('timed power-up identity derives bounded silhouettes and distinct activation audio from the shared snapshot', () => {
+  const snapshot = {
+    tick: 450,
+    activeEffects: [
+      { effectId: 'time-dilation', expiresTick: 900, refreshCount: 1 },
+      { effectId: 'berserk-candle', expiresTick: 1_000, refreshCount: 0 },
+    ],
+  };
+  const identity = buildTimedEffectIdentity(snapshot);
+  assert.deepEqual(identity, {
+    active: true,
+    effects: [
+      { effectId: 'berserk-candle', color: 0xff6b35, accentColor: 0xffd166, silhouette: 'spiked-ring', pulsePeriodTicks: 30, radius: 34, audioCue: 'berserk-activate' },
+      { effectId: 'time-dilation', color: 0x6fd8ff, accentColor: 0xc9f4ff, silhouette: 'clock-orbit', pulsePeriodTicks: 60, radius: 40, audioCue: 'time-dilation-activate' },
+    ],
+  });
+  assert.ok(Object.isFrozen(identity));
+  assert.ok(Object.isFrozen(identity.effects));
+  assert.equal(HMH_SFX_CUE_REGISTRY['time-dilation-activate'].family, 'reward');
+  assert.equal(HMH_SFX_CUE_REGISTRY['berserk-activate'].family, 'reward');
+  assert.deepEqual(buildTimedEffectIdentity({ tick: 900, activeEffects: [snapshot.activeEffects[0]] }), { active: false, effects: [] });
+});
+
+test('runtime renders and sounds timed-effect identity from the shared active-effect snapshot', async () => {
+  const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const audio = await readFile(new URL('../apps/hmh-reboot/src/combat-audio.mjs', import.meta.url), 'utf8');
+  assert.match(main, /buildTimedEffectIdentity\(collectibleSnapshot/);
+  assert.match(main, /timedEffectIdentity\.effects/);
+  assert.match(main, /effectIdentity\.audioCue/);
+  assert.match(main, /dataset\.timedEffectSilhouettes/);
+  assert.match(audio, /time-dilation-activate/);
+  assert.match(audio, /berserk-activate/);
 });
 
 test('runtime projects timed-effect refresh and expiry through the shared HUD/accessibility presentation without gaining authority', async () => {

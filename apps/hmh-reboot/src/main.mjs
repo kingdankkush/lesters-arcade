@@ -11,7 +11,7 @@ import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './
 import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
-import { buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
+import { buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -1484,6 +1484,39 @@ async function boot() {
           .fill({ color: 0x8b2c16, alpha: 0.24 * pulse })
           .stroke({ color: 0xff7a2f, width: 3, alpha: 0.72 * pulse });
       }
+      const timedEffectIdentity = buildTimedEffectIdentity(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
+      if (timedEffectIdentity.active && renderState) {
+        const heroGround = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 2 }, camera, view);
+        const identityTick = simulation?.tick ?? 0;
+        for (const effectIdentity of timedEffectIdentity.effects) {
+          const phase = settings.reduceMotion ? 0 : (identityTick % effectIdentity.pulsePeriodTicks) / effectIdentity.pulsePeriodTicks;
+          const radius = effectIdentity.radius * camera.zoom;
+          const pulse = 0.92 + Math.sin(phase * Math.PI * 2) * 0.08;
+          combatVisuals.ellipse(heroGround.x, heroGround.y + 8, radius * pulse, radius * 0.42 * pulse)
+            .stroke({ color: effectIdentity.color, width: 3, alpha: 0.72 });
+          if (effectIdentity.silhouette === 'spiked-ring') {
+            for (let spike = 0; spike < 8; spike += 1) {
+              const angle = spike / 8 * Math.PI * 2 + phase * 0.35;
+              combatVisuals.moveTo(
+                heroGround.x + Math.cos(angle) * radius * 0.72,
+                heroGround.y + 8 + Math.sin(angle) * radius * 0.30,
+              ).lineTo(
+                heroGround.x + Math.cos(angle) * radius,
+                heroGround.y + 8 + Math.sin(angle) * radius * 0.42,
+              ).stroke({ color: effectIdentity.accentColor, width: 3, alpha: 0.82 });
+            }
+          } else {
+            for (let marker = 0; marker < 4; marker += 1) {
+              const angle = marker / 4 * Math.PI * 2 + phase * Math.PI * 2;
+              combatVisuals.circle(
+                heroGround.x + Math.cos(angle) * radius * 0.82,
+                heroGround.y + 8 + Math.sin(angle) * radius * 0.34,
+                3.5,
+              ).fill({ color: effectIdentity.accentColor, alpha: 0.9 });
+            }
+          }
+        }
+      }
       if (simulation) {
         compactExpiredEventsInPlace(combatVisualEvents, simulation.tick, HIT_FEEDBACK_TICKS);
         for (const event of combatVisualEvents) {
@@ -1974,6 +2007,8 @@ async function boot() {
         dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
         dataset.collectibleCountdown = powerupPresentation.hudLabel;
         dataset.collectibleRefreshCount = String(powerupPresentation.effects.reduce((total, effect) => total + effect.refreshCount, 0));
+        dataset.timedEffectSilhouettes = timedEffectIdentity.effects.map((effect) => effect.silhouette).join(',');
+        dataset.timedEffectAudioCues = timedEffectIdentity.effects.map((effect) => effect.audioCue).join(',');
         dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
         dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
         dataset.audioVoices = String(combatAudio.status().activeVoices);
@@ -2788,7 +2823,12 @@ async function boot() {
           cockpit?.updateRun(xpSnapshot);
           if (xpSnapshot.pendingLevels > 0) upgradePending = true;
         }
-        combatAudio.play(event.kind === 'heal' ? 'health-pickup' : event.kind === 'ammo-refill' ? 'ammo-pickup' : 'pickup', { volume: 0.16 });
+        if (event.kind === 'timed') {
+          const effectIdentity = buildTimedEffectIdentity({ tick, activeEffects: [event] }).effects[0];
+          combatAudio.play(effectIdentity.audioCue, { volume: 0.16 });
+        } else {
+          combatAudio.play(event.kind === 'heal' ? 'health-pickup' : event.kind === 'ammo-refill' ? 'ammo-pickup' : 'pickup', { volume: 0.16 });
+        }
         if (placement) pushCombatVisualEvent({
           type: 'pickup',
           tick,
