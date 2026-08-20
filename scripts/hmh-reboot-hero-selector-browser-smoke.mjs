@@ -81,6 +81,7 @@ try {
       return {
         activeView: [...document.querySelectorAll('.official-view')].find((node) => !node.hidden)?.id ?? null,
         scrollY,
+        viewportWidth: innerWidth,
         viewportHeight: innerHeight,
         introTop: introRect?.top ?? null,
         beginTop: beginRect?.top ?? null,
@@ -96,8 +97,15 @@ try {
     });
     assert.equal(startTransition.activeView, 'officialLevelIntro', `${profile.id}: hero selection did not advance to level intro`);
     assert.ok(
-      startTransition.beginTop >= 0 && startTransition.beginBottom <= startTransition.viewportHeight,
-      `${profile.id}: Begin Level CTA must be visible immediately after hero selection: ${JSON.stringify(startTransition)}`,
+      Number.isFinite(startTransition.beginTop)
+        && Number.isFinite(startTransition.beginBottom)
+        && Number.isFinite(startTransition.beginLeft)
+        && Number.isFinite(startTransition.beginRight)
+        && startTransition.beginTop >= 0
+        && startTransition.beginBottom <= startTransition.viewportHeight
+        && startTransition.beginLeft >= 0
+        && startTransition.beginRight <= startTransition.viewportWidth,
+      `${profile.id}: Begin Level CTA must be fully visible immediately after hero selection: ${JSON.stringify(startTransition)}`,
     );
     if (startTransition.jukeboxVisible) {
       const overlapsJukebox = !(
