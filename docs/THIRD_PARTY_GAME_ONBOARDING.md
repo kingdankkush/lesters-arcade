@@ -132,7 +132,7 @@ What is still open on Chikun is commercial, not technical: `devWallet` is `null`
 - [x] Flip `status` to `playable` and `rankedEligible` to `true` after the public-launch gates passed (Cycle 057)
 - [x] Port the playable game into the sandboxed cabinet runtime at `0.5.0` / `canvas-runtime-v3`
 - [x] Ship the daily UTC seed, same-seed ghost, and seek-safe animated replay viewer
-- [ ] Visually certify 16:9 play (`aspectSupport` declares both, but only 9:16 has certification evidence in `tests/`)
+- [x] Visually certify both declared aspect families in production — desktop child framing covers 16:9 and 390×844 mobile covers 9:16; Ranked/Free flows, 44 px controls, and frame p95 `7–7.1 ms` passed on 2026-08-20
 - [ ] Replace temporary mode-selection art and complete production gameplay art
 - [ ] Complete Louie/Justin QA and resolve asset rights, creator wallet (`devWallet` is still `null`), and revenue split
 

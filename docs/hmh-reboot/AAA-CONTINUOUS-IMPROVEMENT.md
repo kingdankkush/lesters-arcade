@@ -219,11 +219,17 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Release and bundle: `2,246 / 2,195 / 51 / 0`; combined initial JavaScript `967,364 / 1,050,000`, enforced headroom `82,636` bytes
   - Cycle ledger: `cycles/CYCLE-066.md`
 - [x] Cycle 067: shared fixed-tick timed-effect countdown/refresh HUD and accessibility truth
-  - Status: locally source/browser certified; production unchanged
+  - Status: locally source/browser certified; production unchanged at that cycle boundary
   - Evidence: one normalized presentation drives desktop/mobile HUD, `aria-live` status, and browser telemetry; refresh reads `DILATION 10S R1`; exact expiry clears all three paths
   - Release and bundle: `2,248 / 2,197 / 51 / 0`; combined initial JavaScript `969,259 / 1,050,000`, enforced headroom `80,741` bytes
   - Browser/performance: desktop/portrait/landscape plus refreshed portrait PASS, four network scenarios at zero errors, p95 desktop/mobile `7.0 / 7.0 ms`, 12 visual scenes exact zero delta
   - Cycle ledger: `cycles/CYCLE-067.md`
+- [x] Cycle 068: existing Time Dilation/Berserk silhouette and activation-audio identity plus live release closure
+  - Implementation recovery commit: `cb888c24`; certified runtime boundary: `aa396ee5`
+  - Evidence: one immutable active-effect identity drives clock-orbit/spiked-ring projection, distinct bounded audio cues, desktop/portrait/landscape browser telemetry, and exact expiry; simulation authority unchanged
+  - Release: `2,279 / 2,228 / 51 / 0`; HMH entry `395,325 / 1,050,000`; desktop/mobile p95 `7 / 7 ms`; 12 visual scenes exact zero delta
+  - Production: HMH five-profile and Chikun Ranked/Free desktop/mobile PASS at `dpl_7k35eG9qYnKShLXJ5ySfV5fWJYRv`; exact CSS/service-worker bytes verified
+  - Cycle ledger: `cycles/CYCLE-068.md`
 
 ## Cycle 020 final local candidate (historical)
 
@@ -235,14 +241,14 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 067 closes the shared timed-effect HUD/accessibility truth seam after Cycle 066 certified existing power-up lifecycle and boss safety
-- Current implementation baseline before Cycle 067: `8f5448c0`
-- Candidate entry: `393,368` bytes; Pixi vendor: `575,891` bytes; combined initial JavaScript `969,259 / 1,050,000` bytes; enforced headroom `80,741` bytes
-- Release evidence: `2,248` evaluated = `2,197` passed + `51` exact expected legacy failures; unexpected failures `0`
-- Lifecycle evidence: one fixed-tick-derived presentation object drives compact HUD countdown, refresh marker, full accessible wording, and browser telemetry; exact expiry clears every presentation path
-- Browser evidence: desktop/portrait/landscape active countdown, refreshed portrait `DILATION 10S R1`, exact expiry, all nine canonical pickups, four zero-error network scenarios, desktop/mobile p95 `7.0 / 7.0 ms`, and 12 visual scenes at zero delta
-- Wave 10 includes the validated flanker lane. Wave 11 covers no-hit, baseline, high/low DPS, melee-heavy, crowd-control, authored height-aware cover, production phase presentation, deterministic phase-two safe-sector rotation, one canonical crit-upgrade combat benchmark (Cycle 063), and the power-up audit closed by Cycles 066 and 067
-- Next bounded seam: projection-only Time Dilation/Berserk silhouette-and-audio identity from the same active-effect snapshot; reuse bounded pooled presentation paths and do not add a new power-up first
-- Current handoff: `../handoffs/2026-08-13-hmh-production-closeout-next-session.md`
-- Production remains the deployment recorded in that handoff; this local candidate was not pushed or deployed
+- Status: Cycle 068 closes the existing timed-effect identity seam and the reconciled runtime is certified live
+- Runtime implementation boundary: `aa396ee54a49406ddc29842278847eb8b607fa7e`
+- Exact certified range SHA-256: `6d992c4abdd63b1f7100e527f84181e31b1281e61a6c85c21e3ebc182bfb9029`
+- Candidate HMH entry: `395,325 / 1,050,000` bytes
+- Release evidence: `2,279` evaluated = `2,228` passed + `51` exact expected legacy failures; unexpected failures `0`
+- Identity evidence: Time Dilation uses clock-orbit/cool activation audio; Berserk uses spiked-ring/warm warning audio; one immutable active-effect snapshot drives projection and telemetry
+- Browser evidence: HMH five-profile local/production PASS; Chikun Ranked/Free desktop/mobile PASS; desktop/mobile p95 `7 / 7 ms`; 12 visual scenes exact zero delta
+- Production runtime release: `dpl_7k35eG9qYnKShLXJ5ySfV5fWJYRv`; rollback `dpl_DmNJPPf1q7SeG79XcgZComK32uzk`; cache `v22-hmh-landscape-character-start`
+- Current handoff: `../handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`
+- Next generated-art phase remains locked until Justin explicitly says `go`; no new power-up should ship without its source/art/provenance/readability contract
 - Settlement and Web3 writes remain outside this release

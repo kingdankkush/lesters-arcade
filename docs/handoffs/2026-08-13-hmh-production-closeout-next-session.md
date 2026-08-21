@@ -4,7 +4,9 @@ Date: 2026-08-13 PDT
 Repository: `C:\Users\just_\Desktop\Projects\Web3 Gaming\Lesters-Arcade`
 Branch: `reboot/hmh-aaa-continuous`
 
-> **Current continuation authority:** this document supersedes the execution status and first-action instructions in the 2026-08-06 HMH handoffs. Keep those documents for detailed weapon, world, art, and acceptance-criteria intent. Reconcile live Git and Vercel state before trusting any checkpoint below.
+> **Superseded live checkpoint:** `2026-08-20-lesters-arcade-hmh-chikun-live-release.md` is now authoritative for current Git, production, rollback, Cycle 068, Chikun certification, and next actions. Keep this file for Wave 10/11 implementation history only.
+
+> **Historical continuation authority:** this document superseded the execution status and first-action instructions in the 2026-08-06 HMH handoffs at the time it was written. Keep those documents for detailed weapon, world, art, and acceptance-criteria intent. Reconcile live Git and Vercel state before trusting any checkpoint below.
 
 > **2026-08-17 continuation update:** Cycles 054–061 are committed locally through implementation commit `59f6f0b4`. Cycle 061 exact implementation patch SHA-256 is `11ed26cbea6a54e149a17ba01310056c09286e0f03a473658f289acd3d05247e`. This update supersedes the older “latest completed slice” and next-slice text later in this file. No Cycle 054–061 continuation work was pushed, deployed, or promoted.
 

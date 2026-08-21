@@ -22,6 +22,15 @@ Release target: Chikun cabinet 0.5.0 (second improvement wave)
    - Production sprites are decoded eagerly to reduce first-flap fallback art.
    - Cabinet/runtime/cache identities advance together to `0.5.0`, `canvas-runtime-v3`, and cache v14.
 
+## 2026-08-20 production closure
+
+- Parent-owned UTC daily Free seed is live; Ranked keeps unique parent-issued session seeds.
+- Same-seed local ghost is projection-only and cannot collide, score, or write Ranked state.
+- Seek-safe animated replay viewer runs canonical flap evidence at 60 Hz with four-step catch-up; reduced motion parks on the terminal frame.
+- Ranked and Free flows passed desktop and 390×844 production browser smokes. Ranked recorded profile/score state; Free remained isolated.
+- Both declared aspect families are now certified: 16:9 through desktop child framing and 9:16 through the mobile child frame, with contained 44 px controls and frame p95 `7–7.1 ms`.
+- Production runtime boundary: `aa396ee5`; deployment `dpl_7k35eG9qYnKShLXJ5ySfV5fWJYRv`.
+
 ## Shipping in this wave
 
 1. **Progressive difficulty with no abrupt cliffs**
@@ -62,13 +71,14 @@ Release target: Chikun cabinet 0.5.0 (second improvement wave)
 
 ## Future upgrades after this wave
 
-- Daily seeded challenge and ghost/replay comparison.
-  - First slice (2026-08-17, `grok/chikun-daily-challenge`): parent-owned UTC daily seed binds Free Chikun only. Ranked session seeds stay unique. Same-seed ghost is projection-only local best and is not an official Daily Seed board.
+- [x] Daily seeded challenge and ghost/replay comparison.
+  - Shipped: parent-owned UTC daily seed binds Free Chikun only. Ranked session seeds stay unique. Same-seed ghost is projection-only local best and is not an official Daily Seed board.
 - Additional obstacle families with deterministic telegraphs.
 - Unlockable Chikun cosmetic trails and cabinet themes earned through achievements.
 - Dedicated authored music loop and layered adaptive mix.
-- Full animated replay viewer and rendered share-card images (the 0.5.0 timeline/text share is the lightweight first slice).
-  - First slice (2026-08-18, `grok/chikun-daily-challenge`): result-screen Watch Replay plays canonical flap evidence on the live canvas. Seek-safe, 60 Hz, four-step catch-up. Reduced-motion parks on the final frame. Not a share-card image.
+- [x] Full animated replay viewer.
+  - Shipped: result-screen Watch Replay plays canonical flap evidence on the live canvas. Seek-safe, 60 Hz, four-step catch-up. Reduced-motion parks on the final frame.
+- Rendered share-card images remain open; the current text share is bounded and privacy-safe.
 - Optional practice modifiers such as slow training speed and visible collision bounds, excluded from Ranked.
 - More achievements and long-form mastery medals.
 - Seasonal score-board resets once authoritative verification/settlement policy is ready.

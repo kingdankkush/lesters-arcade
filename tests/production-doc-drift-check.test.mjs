@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import http from 'node:http';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -30,6 +30,18 @@ test('production marker parsers read the canonical README and service-worker fie
 test('production marker parsers fail closed when their canonical field is absent', () => {
   assert.throws(() => parseReadmeProductionMarker('# no marker'), /Production cache marker/);
   assert.throws(() => parseServiceWorkerMarker('self.addEventListener("fetch", () => {});'), /CACHE_VERSION/);
+});
+
+test('repository README production marker matches the current service worker marker', async () => {
+  const [readmeSource, serviceWorkerSource] = await Promise.all([
+    readFile(new URL('../README.md', import.meta.url), 'utf8'),
+    readFile(new URL('../apps/portal/sw.js', import.meta.url), 'utf8'),
+  ]);
+  assert.equal(
+    parseReadmeProductionMarker(readmeSource),
+    parseServiceWorkerMarker(serviceWorkerSource),
+    'README production truth must advance in the same release wave as the service-worker cache marker',
+  );
 });
 
 test('production drift check passes matching live content and rejects stale README content', async (t) => {

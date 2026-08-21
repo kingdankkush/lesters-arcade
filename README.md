@@ -6,17 +6,19 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Current production source:** `5d4db8ee318f6a8d9f21b550ef5f18a290bfaac5` (`hotfix/hmh-mobile-character-start`)
+**Certified production runtime implementation:** `aa396ee54a49406ddc29842278847eb8b607fa7e` (`main`)
 
-**Production deployment:** `dpl_Hm2bB5eEgnr6VvacT9xWU7SxVRJr`
+**Verified runtime release deployment:** `dpl_7k35eG9qYnKShLXJ5ySfV5fWJYRv`
 
-**Immutable production deployment:** https://lesters-arcade-r60lkwo2p-justin-agent-projects.vercel.app
+**Immutable runtime release:** https://lesters-arcade-p8lo55m7r-justin-agent-projects.vercel.app
 
-**Production cache marker:** `lesters-arcade-v18-hmh-mobile-character-start`
+**Retained rollback:** `dpl_DmNJPPf1q7SeG79XcgZComK32uzk`
 
-> **Current Hard Money Heroes continuation handoff:** [`docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md`](docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md)
+**Production cache marker:** `lesters-arcade-v22-hmh-landscape-character-start`
 
-> Production facts above were measured on 2026-08-17 via `curl https://lestersarcade.io/sw.js` and `npx vercel inspect https://lestersarcade.io`. Run `npm run docs:production` to fail closed if the recorded cache marker has drifted from the live service worker, then reconcile live Git and Vercel state before trusting the deployment fields. Note that the deployed source sits on a hotfix branch taken from `e3679552`, not on the tip of `reboot/hmh-aaa-continuous`; the hotfix has since been merged back onto the continuation branch, but continuation work after `e3679552` is not deployed.
+> **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
+
+> Runtime release facts above were verified on 2026-08-20 through Git read-back, Vercel deployment/alias inspection, exact production CSS/service-worker byte comparison, five-profile HMH browser certification, and Ranked/Free Chikun desktop/mobile smoke. A later documentation-only build may have a newer Vercel deployment ID while remaining byte-identical to runtime implementation `aa396ee5`; reconcile the public alias before any future release action.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -142,7 +144,7 @@ The reboot now includes:
 - Parent-owned profile, session, leaderboard, and settlement integration.
 - Release certification, Chrome/Edge matrices, security gates, network audits, soaks, and artifact-verified previews.
 
-### AAA cycles 001-067
+### AAA cycles 001-068
 
 The bounded cycle ledger is the authoritative implementation history. Highlights:
 
@@ -165,65 +167,57 @@ The bounded cycle ledger is the authoritative implementation history. Highlights
 - Cycles 058-061: Liquidator melee-heavy and crowd-control matrix completion, height-aware authored-cover counterplay, fixed-tick production phase art and audio, and deterministic Margin Call safe-sector rotation.
 - Cycles 062-065: navgrid-validated flanker lanes, the canonical Precision Ledger crit-upgrade benchmark routed through the live combat resolver into Liquidator damage, navgrid-validated ranged-role backoff and strafe lanes, and Precision Ledger selection through real Coin Blaster cadence.
 - Cycles 066-067: bounded timed-power-up refresh telemetry with Liquidator-safe nuke lifecycle certification, and one shared fixed-tick timed-effect countdown driving the desktop HUD, the mobile HUD, and `aria-live` accessibility wording from a single source.
+- Cycle 068: projection-only Time Dilation/Berserk silhouette and audio identity recovered onto current integration, followed by exact candidate review, full serial certification, and live production proof for HMH and Chikun.
 
-See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 067](docs/hmh-reboot/cycles/CYCLE-067.md), and the [current HMH production closeout handoff](docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md).
+See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 068](docs/hmh-reboot/cycles/CYCLE-068.md), and the [current live-release handoff](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md).
 
 ---
 
-## Current Cycle 021 production status
+## Current production runtime status
 
-| Gate | Result |
+| Gate | Verified 2026-08-20 result |
 | --- | --- |
-| Source | `a81f1c8f830f3339ebb568de166c108e58f695d3` |
-| Cycle 021 commit diff SHA-256 | `7239e8c66ec7275bbf556c59de999fa8a7d35893aa0a6817aeffad7fa080daeb` |
-| Release ledger | 1,721 total, 1,669 passing, exactly 52 accepted legacy failures, 0 unexpected |
-| Syntax | 332 JavaScript modules and 49 Python scripts |
-| Deterministic visual regression | 8/8 unchanged; reduced motion verified with 0 animated signals |
-| Public browser matrix | Desktop, ultrawide, tablet landscape, mobile portrait, and mobile landscape PASS |
-| Public cockpit | Desktop, tablet, mobile portrait, and short landscape PASS |
-| Public collectibles | All nine effects, reset, timed expiry, portrait, and landscape PASS |
-| Network/console | Four scenarios; zero HTTP, request, console, or page errors |
+| Runtime implementation | `aa396ee54a49406ddc29842278847eb8b607fa7e` |
+| Exact certified range SHA-256 | `6d992c4abdd63b1f7100e527f84181e31b1281e61a6c85c21e3ebc182bfb9029` |
+| Release ledger | 2,279 evaluated, 2,228 passing, exactly 51 accepted legacy failures, 0 unexpected |
+| Syntax | 361 JavaScript modules and 49 Python scripts |
+| Deterministic visual suite | 12/12 unchanged; every scene `0 / 0 / 0` delta |
+| HMH browser matrix | Desktop, ultrawide, tablet landscape, mobile portrait, mobile landscape PASS locally and on production |
+| Chikun browser matrix | Ranked/Free desktop/mobile PASS; Ranked recorded, Free isolated |
+| Network/console | Public homepage, HMH, and Chikun routes HTTP 200; browser issues 0 |
 | Performance | Desktop/mobile p95 7 ms / 7 ms |
-| HMH bundle | 1,012,139 / 1,050,000 bytes |
-| HMH bundle SHA-256 | `7e6938dbad83dd1b36d71cc2cdc03008f36b30213754b2fb36bc13d4643492da` |
-| Security | 5/5; sandbox 3/3; settlement boundary 9/9 |
-| Web3 live readiness | PARTIAL 3/4; hardened publication remains blocked |
+| HMH entry bundle | 395,325 / 1,050,000 bytes |
+| Security/Web3 | Security 5/5, findings 0; Web3 source audit 9/9; `SETTLEMENT_LIVE=false` |
 
-### Production identities verified 2026-07-27
+### Runtime release identities
 
 - Public domain: https://lestersarcade.io
-- GitHub production deployment record: `5626423782`
-- Immutable production URL: https://lesters-arcade-gsbj7uxer-justin-agent-projects.vercel.app
-- GitHub preview deployment record: `5626388771`
-- Immutable preview URL: https://lesters-arcade-fgzvqbcjk-justin-agent-projects.vercel.app
-- Current service worker: 3,508 bytes; SHA-256 `8146ed967e426c70d9dc439494168c85be32892720fec8e9794347a10d6b504a`
-- Immediate previous production source: `9ff359eaf28b81a792a10a41b0d59db5f9ae5440`
-- Immediate previous immutable production URL: https://lesters-arcade-g242ggtb8-justin-agent-projects.vercel.app
+- Verified production deployment: `dpl_7k35eG9qYnKShLXJ5ySfV5fWJYRv`
+- Immutable production URL: https://lesters-arcade-p8lo55m7r-justin-agent-projects.vercel.app
+- Retained rollback deployment: `dpl_DmNJPPf1q7SeG79XcgZComK32uzk`
+- Retained rollback URL: https://lesters-arcade-9ml2rtdvk-justin-agent-projects.vercel.app
+- Active runtime cache marker: `lesters-arcade-v22-hmh-landscape-character-start`
+- Exact production `styles.css` and `sw.js` bytes matched the certified local runtime.
 
-The Vercel CLI is currently unavailable locally, so Vercel `dpl_...` identifiers and rollback status must be resolved through an authenticated Vercel session or dashboard before any future production action.
+A later documentation-only commit can create a newer runtime-identical Vercel deployment. Treat `aa396ee5` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
 
 ## Current continuation status
 
-This is source truth only. It is **not** the production deployment.
-
-Measured at `9205ad082bc702dd214a288f7ceb0c232570da90` on 2026-08-19, the publish integration that landed Cycle 063, the Chikun daily/ghost/replay wave, the PixelLab sprite expansion pipeline, and the cabinet status doc gate.
+Runtime implementation `aa396ee54a49406ddc29842278847eb8b607fa7e` is certified and live. This documentation wave records that immutable boundary without claiming its own future commit SHA.
 
 | Gate | Result |
 | --- | --- |
-| Branch | `main`, fed from `reboot/hmh-aaa-continuous` |
-| Latest closed cycle | 067, shared fixed-tick timed-effect countdown and accessibility truth |
-| Release ledger | 2,276 evaluated, 2,225 passing, exactly 51 accepted legacy failures, 0 unexpected |
+| Integration branch | `claude/publish-integration`, synchronized with `origin/main` at runtime release |
+| Latest closed cycle | 068, existing timed-effect silhouette/audio identity and live release closure |
+| Release ledger | 2,279 evaluated, 2,228 passing, exactly 51 accepted legacy failures, 0 unexpected |
 | Syntax | 361 JavaScript modules and 49 Python scripts |
-| HMH initial JavaScript | 946.5 KB, headroom 78.8 KB |
-| HMH reboot entry | 384.1 KB; Pixi vendor 562.4 KB stable preloaded |
-| Chikun entry | 20.3 KB |
-| Cabinet status docs | PASS across 3 manifests and 3 governed docs |
-| Documentation links | PASS across 8 current/public documents |
-| Production promotion | Not performed |
+| HMH entry / cap | 395,325 / 1,050,000 bytes |
+| Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
+| Cabinet status docs | PASS across canonical manifests and governed docs |
+| Production marker | `lesters-arcade-v22-hmh-landscape-character-start`; local README parity and live network gate required |
+| Production runtime | LIVE at the verified `aa396ee5` implementation boundary |
 
-Browser, visual, soak, network, and security matrices were last certified per cycle and are recorded in each cycle ledger; the table above is the repeatable source-side gate set, not a re-run of those matrices.
-
-> **Production lag.** Production is still `5d4db8ee` (`v18-hmh-mobile-character-start`, 2026-08-16). Cycles 054 through 067, the Cycle 063 benchmark, and the entire Chikun daily/ghost/replay wave are on `main` but not in front of players. Promoting requires an authenticated Vercel session.
+The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.
 
 ---
 

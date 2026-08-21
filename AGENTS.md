@@ -4,30 +4,15 @@
 
 Before changing code, read:
 
-0. `docs/handoffs/2026-08-02-hmh-cycle-049-fable-handoff.md` — **current**; cycles 041-049 production state, verified operational facts (Vercel promote works from this environment; Security Checkpoint blocks automated production verification; never parallel browser smokes; heap-gate variance), and the prioritized objective list
-1. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — standing architecture boundaries, bridge contract, and Web3 truth (still authoritative for those contracts)
-2. `docs/hmh-reboot/cycles/CYCLE-036.md`
-3. `docs/handoffs/2026-07-29-hmh-cycle-035-hermes-handoff.md`
-4. `docs/hmh-reboot/cycles/CYCLE-035.md`
-5. `docs/handoffs/2026-07-29-hmh-cycle-034-hermes-handoff.md`
-6. `docs/hmh-reboot/cycles/CYCLE-034.md`
-7. `docs/handoffs/2026-07-29-hmh-cycle-033-hermes-handoff.md`
-8. `docs/hmh-reboot/cycles/CYCLE-033.md`
-9. `docs/hmh-reboot/cycles/CYCLE-032.md`
-10. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-11. `docs/handoffs/2026-07-29-hmh-cycle-031-hermes-handoff.md`
-12. `docs/hmh-reboot/cycles/CYCLE-031.md`
-13. `docs/hmh-reboot/cycles/CYCLE-030.md`
-14. `docs/handoffs/2026-07-28-hmh-cycle-027-claude-handoff.md`
-15. `docs/handoffs/2026-07-27-hmh-cycle-026-hermes-handoff.md`
-16. `docs/handoffs/2026-07-27-hmh-cycle-021-production-claude-handoff.md`
-17. `docs/handoffs/2026-07-25-hmh-art-pipeline-hermes-handoff.md`
-18. `docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md`
-19. `.hermes/plans/2026-07-23_225852-hmh-aaa-continuous-improvement-master-plan.md`
-20. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md`
-21. Latest `docs/hmh-reboot/RELEASE-CERTIFICATION-*.md`
-22. Latest `docs/hmh-reboot/PREVIEW-VERIFICATION-*.md`
-23. `docs/hmh-reboot/COMPATIBILITY.json`
+0. `docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md` — **current**; certified runtime boundary, live deployment/rollback, HMH Cycle 068, Chikun production truth, open gates, and next safe work
+1. `docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md` — detailed Wave 10/11 history through Cycle 067; historical checkpoint values are superseded by the current handoff
+2. `docs/handoffs/2026-08-02-hmh-cycle-049-fable-handoff.md` — standing operational lessons: never parallel browser smokes, heap-gate variance, and Vercel workflow
+3. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — standing architecture boundaries, bridge contract, and Web3 truth
+4. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md` — active cycle ledger
+5. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
+6. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
+7. `docs/hmh-reboot/COMPATIBILITY.json`
+8. Older cycle handoffs only when their specific implementation history is needed
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
