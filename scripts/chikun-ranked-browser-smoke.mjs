@@ -24,6 +24,10 @@ const viewport = { width: Number(viewportMatch[1]), height: Number(viewportMatch
 const mode = process.env.CHIKUN_MODE ?? 'ranked';
 if (!['free', 'ranked'].includes(mode)) throw new Error('CHIKUN_MODE must be free or ranked.');
 const ranked = mode === 'ranked';
+const MIN_TOUCH_TARGET_PX = 44;
+const BROWSER_GEOMETRY_EPSILON_PX = 0.05;
+const meetsTouchTarget = (value) => Number.isFinite(value)
+  && value >= MIN_TOUCH_TARGET_PX - BROWSER_GEOMETRY_EPSILON_PX;
 const browser = await chromium.launch({ executablePath: chromePath, headless: true });
 let page;
 const issues = [];
@@ -108,6 +112,9 @@ try {
   await frameNode.waitFor({ state: 'visible', timeout: 15_000 });
   const frame = page.frameLocator('iframe.chikun-game-frame');
   await frame.locator('#startButton').waitFor({ state: 'visible', timeout: 15_000 });
+  await frame.locator('#liveStatus').filter({
+    hasText: ranked ? 'Ready for Ranked Mode.' : 'Ready for Free Mode.',
+  }).waitFor({ state: 'visible', timeout: 15_000 });
   const startUi = await frame.locator('#startOverlay').evaluate((overlay) => {
     const viewport = { width: innerWidth, height: innerHeight };
     const nodes = [...overlay.querySelectorAll('h1,p,button,small')].filter((node) => getComputedStyle(node).display !== 'none');
@@ -118,7 +125,7 @@ try {
   });
   assert.ok(startUi.controls.every((rect) => rect.left >= -1 && rect.right <= startUi.viewport.width + 1 && rect.top >= -1 && rect.bottom <= startUi.viewport.height + 1), `Chikun start UI overflows: ${JSON.stringify(startUi)}`);
   const startButtonRect = startUi.controls.find((rect) => rect.id === 'startButton');
-  assert.ok(startButtonRect?.height >= 44, `Chikun start control is too small: ${JSON.stringify(startButtonRect)}`);
+  assert.ok(meetsTouchTarget(startButtonRect?.height), `Chikun start control is too small: ${JSON.stringify(startButtonRect)}`);
   await frame.locator('#startButton').click();
   const canvas = frame.locator('#chikunCanvas');
   await canvas.focus();
@@ -135,7 +142,7 @@ try {
     const rect = button.getBoundingClientRect();
     return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, viewportWidth: innerWidth, viewportHeight: innerHeight };
   }));
-  assert.ok(pauseControls.every((rect) => rect.left >= 0 && rect.right <= rect.viewportWidth && rect.top >= 0 && rect.bottom <= rect.viewportHeight && rect.height >= 44), `Chikun pause controls are not mobile-safe: ${JSON.stringify(pauseControls)}`);
+  assert.ok(pauseControls.every((rect) => rect.left >= 0 && rect.right <= rect.viewportWidth && rect.top >= 0 && rect.bottom <= rect.viewportHeight && meetsTouchTarget(rect.height)), `Chikun pause controls are not mobile-safe: ${JSON.stringify(pauseControls)}`);
   await frame.locator('#resumeButton').click();
   await frame.locator('#pauseOverlay.is-hidden').waitFor({ state: 'attached' });
 
@@ -156,7 +163,7 @@ try {
     return { id: button.id, left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, viewportWidth: innerWidth, viewportHeight: innerHeight };
   }));
   assert.ok(
-    controlRects.every((rect) => rect.left >= 0 && rect.right <= rect.viewportWidth && rect.top >= 0 && rect.bottom <= rect.viewportHeight && rect.width >= 44 && rect.height >= 44),
+    controlRects.every((rect) => rect.left >= 0 && rect.right <= rect.viewportWidth && rect.top >= 0 && rect.bottom <= rect.viewportHeight && meetsTouchTarget(rect.width) && meetsTouchTarget(rect.height)),
     `Chikun utility controls overflow the child viewport: ${JSON.stringify(controlRects)}`,
   );
   const upgradeHud = await frame.locator('.hud-secondary').evaluate((hud) => {
@@ -231,7 +238,7 @@ try {
   assert.equal(resultUi.shareVisible, true);
   assert.ok(resultUi.shareRight <= resultUi.viewportWidth, `Chikun share control overflows: ${JSON.stringify(resultUi)}`);
   assert.ok(resultUi.actionRects.every((rect) => (
-    rect.left >= 0 && rect.right <= resultUi.viewportWidth && rect.top >= 0 && rect.bottom <= resultUi.viewportHeight && rect.bottom - rect.top >= 44
+    rect.left >= 0 && rect.right <= resultUi.viewportWidth && rect.top >= 0 && rect.bottom <= resultUi.viewportHeight && meetsTouchTarget(rect.bottom - rect.top)
   )), `Chikun result controls must fit entirely inside the child viewport: ${JSON.stringify(resultUi)}`);
   await frame.locator('#shareRunButton').click();
   await frame.locator('#shareRunButton').filter({ hasText: 'Shared' }).waitFor({ state: 'visible' });
