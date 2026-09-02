@@ -117,6 +117,7 @@
     "vault:status": "node scripts/vault-sync.mjs status",
     "ship:gate": "node scripts/ship-gate.mjs",
     "smoke:portal:e2e": "node scripts/hmh-reboot-portal-e2e.mjs",
+    "smoke:portal:e2e:mobile": "node scripts/hmh-reboot-portal-e2e.mjs --profile=mobile",
     "smoke:hmh:hero-selector": "node scripts/hmh-reboot-hero-selector-browser-smoke.mjs",
     "visual:reboot": "node scripts/hmh-reboot-visual-regression.mjs",
     "visual:reboot:accept": "node scripts/hmh-reboot-visual-regression.mjs --accept",

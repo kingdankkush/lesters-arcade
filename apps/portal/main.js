@@ -11,6 +11,7 @@ import { createChikunHost } from './src/chikun-host.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
+import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from './src/arcade-music-transport.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
@@ -981,6 +982,7 @@ const arcadeMusic = {
   unlocked: false,
   playing: false,
   muted: false,
+  volume: 0.7,
   expanded: false,
   shuffle: false,
   renderQueued: false,
@@ -1031,6 +1033,8 @@ function applyHmhSettingsCompatibilityView(value) {
   } catch {
     hmhPlayerSettings = HMH_PLAYER_SETTINGS_DEFAULTS;
   }
+  arcadeMusic.volume = arcadeMusicVolume(hmhPlayerSettings.audio.musicVolume);
+  arcadeMusic.muted = !hmhPlayerSettings.audio.musicEnabled;
   applyHmhSettingsCompatibilityView(hmhPlayerSettings);
 })();
 function persistHmhPlayerSettings() {
@@ -1104,7 +1108,15 @@ function loadArcadeMusicTrack(track = currentArcadeMusicTrack()) {
 
 function renderArcadeMusicPlayer() {
   if (!dom.arcadeMusicPlayer) return;
-  dom.arcadeMusicPlayer.hidden = officialAppStep === 'gameplay';
+  const gameplayPaused = officialAppStep === 'gameplay' && combat.paused;
+  const visible = shouldShowArcadeMusicPlayer({
+    appStep: officialAppStep,
+    gameplayPaused,
+    pendingBegin: combat.pendingBegin,
+    levelUpPaused: combat.levelUpPaused,
+  });
+  dom.arcadeMusicPlayer.hidden = !visible;
+  dom.arcadeMusicPlayer.dataset.surface = gameplayPaused ? 'pause-menu' : 'global';
   const track = currentArcadeMusicTrack();
   const audio = arcadeMusicAudio();
   if (audio && track && audio.dataset.trackId !== track.id) loadArcadeMusicTrack(track);
@@ -1130,6 +1142,16 @@ function renderArcadeMusicPlayer() {
   if (dom.arcadeMusicTime) dom.arcadeMusicTime.textContent = model.progress.label;
   if (dom.arcadeMusicDuration) dom.arcadeMusicDuration.textContent = model.durationLabel;
   if (dom.arcadeMusicProgressFill) dom.arcadeMusicProgressFill.style.width = `${model.progress.percent.toFixed(1)}%`;
+  if (dom.arcadeMusicSeek) {
+    dom.arcadeMusicSeek.value = String(Math.round(model.progress.percent * 10));
+    dom.arcadeMusicSeek.setAttribute('aria-valuetext', model.progress.label);
+  }
+  if (dom.arcadeMusicVolume) {
+    const percent = Math.round(arcadeMusic.volume * 100);
+    dom.arcadeMusicVolume.value = String(percent);
+    dom.arcadeMusicVolume.setAttribute('aria-valuetext', `${percent}%`);
+    if (dom.arcadeMusicVolumeValue) dom.arcadeMusicVolumeValue.textContent = `${percent}%`;
+  }
   if (dom.arcadeMusicPlayButton) {
     setButtonIcon(dom.arcadeMusicPlayButton, model.playing ? 'pause' : 'play');
     dom.arcadeMusicPlayButton.setAttribute('aria-label', model.playing ? 'Pause arcade music' : 'Play arcade music');
@@ -1207,13 +1229,32 @@ function scheduleArcadeMusicRender() {
   });
 }
 
+function arcadeMusicContextGain(reason = 'menu') {
+  if (reason === 'gameplay') return 0.55;
+  if (reason === 'game-over') return 0.26;
+  return 0.38;
+}
+
+function arcadeMusicRuntimeContext() {
+  if (combat.gameOver) return 'game-over';
+  if (officialAppStep === 'gameplay') return 'gameplay';
+  return 'menu';
+}
+
+function applyArcadeMusicVolume(reason = arcadeMusicRuntimeContext()) {
+  const audio = arcadeMusicAudio();
+  if (!audio) return 0;
+  audio.volume = arcadeMusicVolume(arcadeMusic.volume) * arcadeMusicContextGain(reason);
+  return audio.volume;
+}
+
 async function ensureArcadeMusicPlayer(reason = 'menu', autoplay = false) {
   const audio = loadArcadeMusicTrack();
   if (!audio) {
     renderArcadeMusicPlayer();
     return false;
   }
-  audio.volume = reason === 'game-over' ? 0.18 : reason === 'gameplay' ? 0.38 : 0.26;
+  applyArcadeMusicVolume(reason);
   audio.muted = arcadeMusic.muted;
   if (!autoplay) {
     renderArcadeMusicPlayer();
@@ -1284,11 +1325,42 @@ function setArcadeMusicEnabled(enabled) {
   const musicOn = Boolean(enabled);
   arcadeMusic.muted = !musicOn;
   combat.musicEnabled = musicOn;
+  hmhPlayerSettings = normalizeHmhPlayerSettings({
+    ...hmhPlayerSettings,
+    audio: { ...hmhPlayerSettings.audio, musicEnabled: musicOn },
+  });
+  persistHmhPlayerSettings();
   const audio = arcadeMusicAudio();
   if (audio) audio.muted = !musicOn;
   renderArcadeMusicPlayer();
   syncCombatOverlay();
   return musicOn;
+}
+
+function setArcadeMusicVolume(value) {
+  arcadeMusic.volume = arcadeMusicVolume(value, arcadeMusic.volume);
+  hmhPlayerSettings = normalizeHmhPlayerSettings({
+    ...hmhPlayerSettings,
+    audio: { ...hmhPlayerSettings.audio, musicVolume: arcadeMusic.volume },
+  });
+  persistHmhPlayerSettings();
+  applyArcadeMusicVolume();
+  pushHmhRebootSettings();
+  renderArcadeMusicPlayer();
+  return arcadeMusic.volume;
+}
+
+function seekArcadeMusic(progressValue) {
+  const audio = arcadeMusicAudio();
+  const track = currentArcadeMusicTrack();
+  if (!audio || !track) return 0;
+  const durationSeconds = Number.isFinite(audio.duration) && audio.duration > 0
+    ? audio.duration
+    : track.durationSeconds;
+  const seconds = musicSeekSeconds({ fraction: Number(progressValue) / 1000, durationSeconds });
+  try { audio.currentTime = seconds; } catch { return 0; }
+  renderArcadeMusicPlayer();
+  return seconds;
 }
 
 function toggleArcadeMusicMute() {
@@ -1569,6 +1641,9 @@ const dom = {
   arcadeMusicTime: document.querySelector('#arcadeMusicTime'),
   arcadeMusicDuration: document.querySelector('#arcadeMusicDuration'),
   arcadeMusicProgressFill: document.querySelector('#arcadeMusicProgressFill'),
+  arcadeMusicSeek: document.querySelector('#arcadeMusicSeek'),
+  arcadeMusicVolume: document.querySelector('#arcadeMusicVolume'),
+  arcadeMusicVolumeValue: document.querySelector('#arcadeMusicVolumeValue'),
   arcadeMusicPreviousButton: document.querySelector('#arcadeMusicPreviousButton'),
   arcadeMusicPlayButton: document.querySelector('#arcadeMusicPlayButton'),
   arcadeMusicMuteButton: document.querySelector('#arcadeMusicMuteButton'),
@@ -1904,7 +1979,7 @@ const combat = {
   waveEnemiesSpawned: 0,
   nextWaveSpawnFrame: 0,
   stagedEnemiesDefeated: 0,
-  musicEnabled: true,
+  musicEnabled: hmhPlayerSettings.audio.musicEnabled !== false,
   viewportMode: DEFAULT_VIEWPORT_MODE,
   keys: new Set(),
   lastTimestamp: 0,
@@ -3441,6 +3516,14 @@ function clearInactiveCombatOverlay() {
 function syncCombatOverlay() {
   if (combat.levelUpPaused) document.documentElement.dataset.levelUp = 'true';
   else delete document.documentElement.dataset.levelUp;
+  const gameplayPauseSurface = officialAppStep === 'gameplay'
+    && combat.paused
+    && !combat.pendingBegin
+    && !combat.levelUpPaused
+    && !combat.gameOver;
+  if (gameplayPauseSurface) document.documentElement.dataset.gameplayPaused = 'true';
+  else delete document.documentElement.dataset.gameplayPaused;
+  renderArcadeMusicPlayer();
   const menuOwnsFocus = !combat.pendingBegin && Boolean(combat.paused || combat.gameOver || combat.levelUpPaused);
   document.body.classList.toggle('hide-rotate-hint', menuOwnsFocus);
   // Auto-submit a finished ranked run to LitVM the moment the game-over state
@@ -4676,10 +4759,11 @@ function hmhRebootSettings() {
 
 function applyHmhAudioSettings() {
   combatAudio.sfxEnabled = hmhPlayerSettings.audio.sfxEnabled && hmhPlayerSettings.audio.sfxVolume > 0;
+  arcadeMusic.volume = arcadeMusicVolume(hmhPlayerSettings.audio.musicVolume, arcadeMusic.volume);
   const audio = arcadeMusicAudio();
   if (audio) {
-    const baseline = combat.active ? 0.38 : 0.26;
-    audio.volume = Math.max(0, Math.min(1, baseline * (hmhPlayerSettings.audio.musicVolume / HMH_PLAYER_SETTINGS_DEFAULTS.audio.musicVolume)));
+    audio.muted = hmhPlayerSettings.audio.musicEnabled === false;
+    applyArcadeMusicVolume();
   }
 }
 
@@ -14331,6 +14415,12 @@ dom.arcadeMusicShuffleButton?.addEventListener('click', () => {
 dom.arcadeMusicExpandButton?.addEventListener('click', () => {
   playSfxCue('menu-click');
   toggleArcadeMusicExpanded();
+});
+dom.arcadeMusicSeek?.addEventListener('input', (event) => {
+  seekArcadeMusic(event.currentTarget.value);
+});
+dom.arcadeMusicVolume?.addEventListener('input', (event) => {
+  setArcadeMusicVolume(Number(event.currentTarget.value) / 100);
 });
 dom.arcadeMusicAudio?.addEventListener('loadedmetadata', renderArcadeMusicPlayer);
 dom.arcadeMusicAudio?.addEventListener('durationchange', renderArcadeMusicPlayer);

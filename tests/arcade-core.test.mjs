@@ -2190,7 +2190,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-aaa-cycle-001'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-aaa-cycle-070-pause-deck'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2370,6 +2370,8 @@ test('Lester Arcade music player overlay is wired into the public UI without for
 
   assert.equal(indexSource.includes('arcadeMusicPlayer'), true);
   assert.equal(indexSource.includes('arcadeMusicProgressFill'), true);
+  assert.equal(indexSource.includes('arcadeMusicSeek'), true);
+  assert.equal(indexSource.includes('arcadeMusicVolume'), true);
   assert.equal(indexSource.includes('arcadeMusicPreviousButton'), true);
   assert.equal(indexSource.includes('arcadeMusicNextButton'), true);
   assert.equal(indexSource.includes('arcadeMusicMuteButton'), true);
@@ -2385,15 +2387,21 @@ test('Lester Arcade music player overlay is wired into the public UI without for
   // Level/game start picks a random opening track rather than forcing track 0.
   assert.equal(mainSource.includes('chooseArcadeMusicStartIndex'), true);
   assert.equal(mainSource.includes('normalizedIndex'), true);
-  assert.equal(mainSource.includes('dom.arcadeMusicPlayer.hidden = officialAppStep === \'gameplay\''), true, 'global jukebox must be hidden while the HMH canvas is active');
+  assert.equal(mainSource.includes('shouldShowArcadeMusicPlayer'), true, 'shared jukebox visibility must be controlled by the gameplay pause contract');
+  assert.equal(mainSource.includes('musicEnabled: hmhPlayerSettings.audio.musicEnabled !== false'), true, 'combat music initializes from canonical settings after combat state exists');
+  assert.equal(mainSource.includes('combat.musicEnabled = hmhPlayerSettings.audio.musicEnabled;'), false, 'settings boot must not write combat state before it is initialized');
+  assert.equal(mainSource.includes("document.documentElement.dataset.gameplayPaused = 'true'"), true, 'parent pause state must expose the soundtrack deck');
+  assert.equal(mainSource.includes('seekArcadeMusic'), true);
+  assert.equal(mainSource.includes('setArcadeMusicVolume'), true);
   assert.equal(mainSource.includes('renderOfficialApp()'), true);
-  assert.equal(styleSource.includes('html[data-ingame="true"] .arcade-music-player'), true, 'global jukebox must be suppressed while root ingame mode is active');
+  assert.equal(styleSource.includes('html[data-ingame="true"]:not([data-gameplay-paused="true"]) .arcade-music-player'), true, 'global jukebox stays off the live combat canvas');
+  assert.equal(styleSource.includes('html[data-gameplay-paused="true"] .arcade-music-player:not([hidden])'), true, 'shared jukebox returns only on the gameplay pause surface');
   assert.equal(styleSource.includes('.arcade-music-player[hidden]'), true, 'hidden music player needs explicit CSS because class display overrides user-agent hidden');
   assert.equal(styleSource.includes('.arcade-music-player'), true);
   assert.equal(styleSource.includes('.arcade-music-progress-fill'), true);
   assert.equal(styleSource.includes('[data-expanded="true"]'), true);
   assert.equal(styleSource.includes('[data-shuffle="true"]'), true);
-  assert.equal(styleSource.includes('#officialApp[data-step="officialGameplay"] .arcade-music-player'), true, 'global jukebox must not overlay the HMH spawn/combat canvas');
+  assert.equal(indexSource.indexOf('id="arcadeMusicPlayer"') < indexSource.indexOf('id="officialWalletSplash"'), true, 'portal-owned jukebox stays inside the official app shell and ahead of routed views');
   assert.equal(smokeScript.includes('arcadeMusicPlayer'), true);
   assert.equal(smokeScript.includes('arcadeMusicShuffleButton'), true);
   assert.equal(smokeScript.includes('Hard Money Heroes — Main Theme'), true);
@@ -3024,7 +3032,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-aaa-cycle-001'), true);
+  assert.equal(smokeScript.includes('hmh-aaa-cycle-070-pause-deck'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

@@ -11,6 +11,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
   "sourceFiles": [
     "apps/portal/main.js",
     "apps/portal/src/arcade-core.mjs",
+    "apps/portal/src/arcade-music-transport.mjs",
     "apps/portal/src/arcade-playlist-manifest.mjs",
     "apps/portal/src/arcade-router.mjs",
     "apps/portal/src/arcade-sandbox.mjs",
@@ -25,6 +26,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/chikun-bridge-protocol.mjs",
     "apps/portal/src/chikun-bridge.mjs",
     "apps/portal/src/chikun-cabinet.mjs",
+    "apps/portal/src/chikun-daily-challenge.mjs",
     "apps/portal/src/chikun-host.mjs",
     "apps/portal/src/chikun-portal-lifecycle.mjs",
     "apps/portal/src/combat-damage.mjs",

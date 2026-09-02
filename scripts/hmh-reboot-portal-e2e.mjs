@@ -161,7 +161,34 @@ export function startPortalStaticServer({ rootDir, host = '127.0.0.1', port = 0 
         response.end('not found');
         return;
       }
-      response.writeHead(200, { 'content-type': MIME_TYPES[path.extname(filePath).toLowerCase()] ?? 'application/octet-stream' });
+      const extension = path.extname(filePath).toLowerCase();
+      const contentType = MIME_TYPES[extension] ?? 'application/octet-stream';
+      const range = request.headers.range;
+      if (range && ['.mp3', '.wav', '.mp4', '.webm'].includes(extension)) {
+        const size = statSync(filePath).size;
+        const match = /^bytes=(\d+)-(\d*)$/.exec(range);
+        if (!match) {
+          response.writeHead(416, { 'content-range': `bytes */${size}` });
+          response.end();
+          return;
+        }
+        const start = Number(match[1]);
+        const end = match[2] ? Math.min(Number(match[2]), size - 1) : size - 1;
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || start > end || start >= size) {
+          response.writeHead(416, { 'content-range': `bytes */${size}` });
+          response.end();
+          return;
+        }
+        response.writeHead(206, {
+          'accept-ranges': 'bytes',
+          'content-range': `bytes ${start}-${end}/${size}`,
+          'content-length': end - start + 1,
+          'content-type': contentType,
+        });
+        createReadStream(filePath, { start, end }).pipe(response);
+        return;
+      }
+      response.writeHead(200, { 'content-type': contentType });
       createReadStream(filePath).pipe(response);
     } catch (error) {
       response.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
@@ -210,7 +237,9 @@ if (isMain) {
   const results = [];
   const consoleErrors = [];
   let heroSelectorEvidence = null;
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const browserProfile = process.argv.includes('--profile=mobile') || process.env.PORTAL_E2E_PROFILE === 'mobile' ? 'mobile' : 'desktop';
+  const viewport = browserProfile === 'mobile' ? { width: 390, height: 844 } : { width: 1440, height: 900 };
+  const page = await browser.newPage({ viewport, deviceScaleFactor: browserProfile === 'mobile' ? 2 : 1, hasTouch: browserProfile === 'mobile', isMobile: browserProfile === 'mobile' });
   page.on('pageerror', (error) => consoleErrors.push(`page: ${error.stack || error.message}`));
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(`console: ${message.text()}`); });
 
@@ -334,15 +363,76 @@ if (isMain) {
 
     await runFlow('pause-resume', async () => {
       assert.ok(child, 'requires guest-free-run');
+      assert.equal(await page.locator('#arcadeMusicPlayer').isVisible(), false, 'shared soundtrack deck must stay off the live combat canvas');
       await openPauseMenu();
       await child.waitForFunction(() => document.querySelector('#hmhRebootStatus')?.textContent === 'Portal session paused', undefined, { timeout: 10_000 });
       assert.equal(await page.locator('#officialCombatMount').getAttribute('data-paused'), 'true');
+      await page.waitForSelector('#arcadeMusicPlayer[data-surface="pause-menu"]:not([hidden])', { timeout: 10_000 });
       await assertRendererFrozen('pause-resume');
+      await page.click('#arcadeMusicExpandButton');
+      const controls = await page.locator('#arcadeMusicPlayer button, #arcadeMusicPlayer input[type="range"]').evaluateAll((elements) => elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { id: element.id, left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, height: rect.height, width: rect.width };
+      }));
+      const viewport = page.viewportSize();
+      assert.ok(viewport, 'browser viewport unavailable');
+      assert.ok(controls.every((rect) => rect.left >= 0 && rect.top >= 0 && rect.right <= viewport.width && rect.bottom <= viewport.height && rect.height >= 44 && rect.width >= 44), `pause soundtrack controls are clipped or below 44px: ${JSON.stringify(controls)}`);
+      const pauseSurfaceGeometry = await page.evaluate(() => {
+        const rect = (selector) => {
+          const bounds = document.querySelector(selector)?.getBoundingClientRect();
+          return bounds ? { left: bounds.left, top: bounds.top, right: bounds.right, bottom: bounds.bottom } : null;
+        };
+        const deck = rect('#arcadeMusicPlayer');
+        const menu = rect('#combatMenuPanel');
+        const overlapWidth = deck && menu ? Math.max(0, Math.min(deck.right, menu.right) - Math.max(deck.left, menu.left)) : 0;
+        const overlapHeight = deck && menu ? Math.max(0, Math.min(deck.bottom, menu.bottom) - Math.max(deck.top, menu.top)) : 0;
+        return { deck, menu, overlapArea: overlapWidth * overlapHeight };
+      });
+      if (browserProfile === 'desktop') {
+        assert.equal(pauseSurfaceGeometry.overlapArea, 0, `pause soundtrack overlaps the primary pause menu: ${JSON.stringify(pauseSurfaceGeometry)}`);
+      } else {
+        assert.ok(pauseSurfaceGeometry.overlapArea > 0, 'mobile soundtrack should open as an explicit contained drawer over the pause surface');
+      }
+      assert.ok(controls.every((rect) => rect.left >= pauseSurfaceGeometry.deck.left && rect.right <= pauseSurfaceGeometry.deck.right && rect.top >= pauseSurfaceGeometry.deck.top && rect.bottom <= pauseSurfaceGeometry.deck.bottom), `pause soundtrack controls escape their deck: ${JSON.stringify({ controls, deck: pauseSurfaceGeometry.deck })}`);
+      await page.locator('#arcadeMusicVolume').fill('42');
+      const volume = await page.evaluate(() => ({
+        setting: JSON.parse(localStorage.getItem('hmh-settings') ?? '{}').audio?.musicVolume,
+        audio: document.querySelector('#arcadeMusicAudio')?.volume,
+      }));
+      assert.equal(volume.setting, 0.42, 'soundtrack volume did not persist through canonical HMH settings');
+      assert.ok(Math.abs(volume.audio - (0.42 * 0.55)) < 0.0001, `pause soundtrack did not apply gameplay mix gain: ${JSON.stringify(volume)}`);
+      const titleBefore = await page.locator('#arcadeMusicTitle').textContent();
+      await page.click('#arcadeMusicPlayButton');
+      await page.waitForFunction(() => {
+        const audio = document.querySelector('#arcadeMusicAudio');
+        return Boolean(audio && !audio.paused && Number.isFinite(audio.duration) && audio.duration > 0);
+      }, undefined, { timeout: 15_000 });
+      await page.locator('#arcadeMusicSeek').fill('500');
+      const playback = await page.evaluate(() => {
+        const audio = document.querySelector('#arcadeMusicAudio');
+        return { paused: audio?.paused, duration: audio?.duration, currentTime: audio?.currentTime, currentSrc: audio?.currentSrc };
+      });
+      assert.equal(playback.paused, false, 'pause soundtrack did not enter playing state');
+      assert.ok(playback.currentSrc, 'pause soundtrack has no media source');
+      assert.ok(Math.abs(playback.currentTime - (playback.duration * 0.5)) < 1, `seek did not reach midpoint: ${JSON.stringify(playback)}`);
+      await page.click('#arcadeMusicNextButton');
+      await page.waitForFunction((before) => document.querySelector('#arcadeMusicTitle')?.textContent !== before, titleBefore, { timeout: 10_000 });
+      const titleAfter = await page.locator('#arcadeMusicTitle').textContent();
+      assert.notEqual(titleAfter, titleBefore, 'next-track transport did not advance the queue');
       await page.screenshot({ path: evidencePath('03-paused'), fullPage: false });
-      await page.click('#combatMenuIconButton');
+      if (browserProfile === 'mobile') {
+        await page.click('#arcadeMusicExpandButton');
+        await page.waitForSelector('#arcadeMusicPlayer[data-expanded="false"]', { timeout: 10_000 });
+        const launcher = await page.locator('#arcadeMusicPlayer').boundingBox();
+        assert.ok(launcher && launcher.width <= 64 && launcher.height <= 64 && launcher.x >= viewport.width - 80 && launcher.y <= 80, `collapsed mobile soundtrack launcher is too large or blocks the pause title: ${JSON.stringify(launcher)}`);
+        await page.screenshot({ path: evidencePath('03b-paused-soundtrack-launcher'), fullPage: false });
+      }
+      if (browserProfile === 'mobile') await page.click('#combatMenuActionGrid [data-action="resume"]');
+      else await page.click('#combatMenuIconButton');
       await child.waitForFunction(() => document.querySelector('#hmhRebootStatus')?.textContent === 'Portal session connected', undefined, { timeout: 10_000 });
+      assert.equal(await page.locator('#arcadeMusicPlayer').isVisible(), false, 'shared soundtrack deck must hide when combat resumes');
       await assertRendererAnimating('pause-resume');
-      return { pausedSurfaces: ['#combatMenuPanel', '#hmhPausePanel'] };
+      return { pausedSurfaces: ['#combatMenuPanel', '#hmhPausePanel', '#arcadeMusicPlayer'], soundtrack: { controls: controls.length, geometry: pauseSurfaceGeometry, volume, playback, titleBefore, titleAfter } };
     });
 
     await runFlow('mid-run-restart', async () => {
@@ -437,6 +527,8 @@ if (isMain) {
   const summary = {
     schema: PORTAL_E2E_FLOW_SCHEMA,
     origin,
+    browserProfile,
+    viewport,
     implementedFlows: PORTAL_E2E_FLOWS.filter((flow) => flow.status === 'implemented').map((flow) => flow.id),
     deferredFlows: PORTAL_E2E_FLOWS.filter((flow) => flow.status === 'deferred').map((flow) => ({ id: flow.id, reason: flow.reason })),
     results,

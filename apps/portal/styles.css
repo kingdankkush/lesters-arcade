@@ -1593,7 +1593,7 @@ svg.arcade-icon {
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
-  #officialApp[data-step="level-one-intro"] .arcade-music-player {
+  body:has(#officialApp[data-step="level-one-intro"]) .arcade-music-player {
     display: none;
   }
 
@@ -2470,13 +2470,31 @@ button.menu-card.menu-option.interactive:active {
 
 .arcade-music-player audio { display: none; }
 
-html[data-ingame="true"] .arcade-music-player,
+html[data-ingame="true"]:not([data-gameplay-paused="true"]) .arcade-music-player,
 .arcade-music-player[hidden] {
   display: none !important;
 }
 
-#officialApp[data-step="officialGameplay"] .arcade-music-player {
-  display: none;
+html[data-gameplay-paused="true"] .arcade-music-player:not([hidden]) {
+  display: block;
+}
+
+.arcade-music-player[data-surface="pause-menu"] {
+  right: auto;
+  left: 10px;
+  z-index: 10030;
+  width: min(320px, calc(100vw - 20px));
+  border-color: rgba(255, 232, 77, 0.58);
+  box-shadow: 0 0 38px rgba(0, 0, 0, 0.5), 0 0 28px rgba(25, 247, 255, 0.22);
+}
+
+.arcade-music-player[data-surface="pause-menu"] .arcade-music-kicker::after {
+  content: " // PAUSE DECK";
+  color: var(--neon-yellow);
+}
+
+.arcade-music-player[data-surface="pause-menu"] .arcade-music-button {
+  min-height: 44px;
 }
 
 .arcade-music-now {
@@ -2512,19 +2530,52 @@ html[data-ingame="true"] .arcade-music-player,
 }
 
 .arcade-music-progress {
-  height: 5px;
-  margin: 8px 0;
-  overflow: hidden;
+  position: relative;
+  display: block;
+  height: 44px;
+  margin: 0;
+  overflow: visible;
+}
+
+.arcade-music-progress::before {
+  content: "";
+  position: absolute;
+  inset: 18px 0;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
 }
 
+.arcade-music-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.arcade-music-progress input[type="range"] {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .arcade-music-progress-fill {
+  position: absolute;
+  top: 18px;
+  left: 0;
   display: block;
   width: 0%;
-  height: 100%;
-  border-radius: inherit;
+  height: 8px;
+  border-radius: 999px;
   background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green), var(--neon-yellow));
   box-shadow: 0 0 12px rgba(69, 255, 138, 0.48);
   transition: width 0.2s linear;
@@ -2532,12 +2583,14 @@ html[data-ingame="true"] .arcade-music-player,
 
 .arcade-music-controls {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 6px;
 }
 
 .arcade-music-button {
+  min-width: 0;
   min-height: 30px;
+  padding-inline: 0;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   color: var(--text);
@@ -2574,6 +2627,33 @@ html[data-ingame="true"] .arcade-music-player,
 
 .arcade-music-player[data-expanded="true"] .arcade-music-expanded-panel {
   display: block;
+}
+
+.arcade-music-progress:focus-within::before {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(25, 247, 255, 0.34);
+}
+
+.arcade-music-volume-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.arcade-music-volume-row input[type="range"] {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--neon-cyan);
+}
+
+.arcade-music-volume-row output {
+  min-width: 3ch;
+  color: white;
+  text-align: right;
 }
 
 .arcade-music-queue {
@@ -2649,6 +2729,60 @@ html[data-ingame="true"] .arcade-music-player,
 }
 
 @media (max-width: 720px) {
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] {
+    right: 20px;
+    top: 20px;
+    bottom: auto;
+    left: auto;
+    transform: translateX(calc(100vw - 88px));
+    width: 52px;
+    height: 52px;
+    padding: 3px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] .arcade-music-now,
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] .arcade-music-progress,
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] .arcade-music-button:not(#arcadeMusicExpandButton) {
+    display: none;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] .arcade-music-controls {
+    display: block;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] #arcadeMusicExpandButton {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] #arcadeMusicExpandButton .arcade-svg-icon {
+    display: none;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] #arcadeMusicExpandButton::before {
+    content: "♫";
+    color: var(--neon-cyan);
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="true"] {
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    width: auto;
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+
+  .arcade-music-player[data-surface="pause-menu"][data-expanded="true"] .arcade-music-queue {
+    max-height: 20dvh;
+  }
+
   .arcade-shell { width: min(100vw - 18px, 1280px); padding-top: 12px; }
   .hero-panel, .panel { padding: 16px; }
   .account-flow,

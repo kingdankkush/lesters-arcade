@@ -14,7 +14,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_DmNJPPf1q7SeG79XcgZComK32uzk`
 
-**Production cache marker:** `lesters-arcade-v22-hmh-landscape-character-start`
+**Production cache marker:** `lesters-arcade-v23-hmh-pause-soundtrack`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
@@ -196,7 +196,7 @@ See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHAR
 - Immutable production URL: https://lesters-arcade-p8lo55m7r-justin-agent-projects.vercel.app
 - Retained rollback deployment: `dpl_DmNJPPf1q7SeG79XcgZComK32uzk`
 - Retained rollback URL: https://lesters-arcade-9ml2rtdvk-justin-agent-projects.vercel.app
-- Active runtime cache marker: `lesters-arcade-v22-hmh-landscape-character-start`
+- Active runtime cache marker: `lesters-arcade-v23-hmh-pause-soundtrack`
 - Exact production `styles.css` and `sw.js` bytes matched the certified local runtime.
 
 A later documentation-only commit can create a newer runtime-identical Vercel deployment. Treat `aa396ee5` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
@@ -214,7 +214,7 @@ Runtime implementation `aa396ee54a49406ddc29842278847eb8b607fa7e` is certified a
 | HMH entry / cap | 395,325 / 1,050,000 bytes |
 | Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
 | Cabinet status docs | PASS across canonical manifests and governed docs |
-| Production marker | `lesters-arcade-v22-hmh-landscape-character-start`; local README parity and live network gate required |
+| Production marker | `lesters-arcade-v23-hmh-pause-soundtrack`; local README parity and live network gate required |
 | Production runtime | LIVE at the verified `aa396ee5` implementation boundary |
 
 The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.

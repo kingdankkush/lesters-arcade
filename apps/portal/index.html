@@ -43,15 +43,15 @@
       .official-app { position: relative; }
       .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
     </style>
-    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-aaa-cycle-001" />
+    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-aaa-cycle-070-pause-deck" />
     <link rel="preload" href="./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" as="image" fetchpriority="high" />
-    <link rel="modulepreload" href="./dist/main.js?v=hmh-aaa-cycle-001" />
+    <link rel="modulepreload" href="./dist/main.js?v=hmh-aaa-cycle-070-pause-deck" />
     <!-- Deferred stylesheets -->
-    <link rel="preload" href="./styles.css?v=hmh-aaa-cycle-001" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-aaa-cycle-001" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles.css?v=hmh-aaa-cycle-070-pause-deck" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-aaa-cycle-070-pause-deck" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
-      <link rel="stylesheet" href="./styles.css?v=hmh-aaa-cycle-001" />
-      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-aaa-cycle-001" />
+      <link rel="stylesheet" href="./styles.css?v=hmh-aaa-cycle-070-pause-deck" />
+      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-aaa-cycle-070-pause-deck" />
     </noscript>
   </head>
   <body>
@@ -116,9 +116,11 @@
             <strong id="arcadeMusicTitle">Lester's Arcade Playlist</strong>
             <span id="arcadeMusicTime" class="arcade-music-time">0:00 / 0:00</span>
           </div>
-          <div class="arcade-music-progress" aria-hidden="true">
+          <label class="arcade-music-progress">
+            <span class="arcade-music-sr-only">Seek arcade music</span>
             <span id="arcadeMusicProgressFill" class="arcade-music-progress-fill"></span>
-          </div>
+            <input id="arcadeMusicSeek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek arcade music">
+          </label>
           <div class="arcade-music-controls" aria-label="Arcade music controls">
             <button id="arcadeMusicPreviousButton" class="arcade-music-button" type="button" aria-label="Previous song"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#previous"></use></svg></button>
             <button id="arcadeMusicPlayButton" class="arcade-music-button primary" type="button" aria-label="Play arcade music"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#play"></use></svg></button>
@@ -128,6 +130,11 @@
             <button id="arcadeMusicExpandButton" class="arcade-music-button" type="button" aria-label="Expand arcade music player"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#chevron-down"></use></svg></button>
           </div>
           <div class="arcade-music-expanded-panel">
+            <div class="arcade-music-volume-row">
+              <label for="arcadeMusicVolume">Volume</label>
+              <input id="arcadeMusicVolume" type="range" min="0" max="100" step="1" value="70">
+              <output id="arcadeMusicVolumeValue" for="arcadeMusicVolume">70%</output>
+            </div>
             <span class="arcade-music-duration-label">Length <strong id="arcadeMusicDuration">0:00</strong></span>
             <ol id="arcadeMusicQueueList" class="arcade-music-queue"></ol>
           </div>
@@ -284,7 +291,7 @@
       </section>
     </main>
 
-    <script type="module" src="./dist/main.js?v=hmh-aaa-cycle-001"></script>
+    <script type="module" src="./dist/main.js?v=hmh-aaa-cycle-070-pause-deck"></script>
     <script>
       // Register the service worker for offline + repeat-visit caching. Fails
       // silently on unsupported browsers / file:// and never blocks the app.

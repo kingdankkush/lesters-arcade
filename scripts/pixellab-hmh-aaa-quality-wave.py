@@ -33,8 +33,13 @@ except ModuleNotFoundError:
 
 try:
     from mcp import ClientSession
-    from mcp.client.streamable_http import streamablehttp_client
-except ModuleNotFoundError:
+    try:
+        # MCP <2 exported the historical unseparated name. MCP 2 renamed the
+        # transport factory but kept the same async-context-manager contract.
+        from mcp.client.streamable_http import streamablehttp_client
+    except ImportError:
+        from mcp.client.streamable_http import streamable_http_client as streamablehttp_client
+except (ImportError, ModuleNotFoundError):
     ClientSession = None
     streamablehttp_client = None
 
