@@ -84,7 +84,7 @@ Release cache contract for this candidate:
 
 ## Exact release and production proof
 
-- exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dc702664dd976498`;
+- exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dcda8a63fc161b93`;
 - independent exact-patch review: digest matched, verdict `PASS`, blockers `[]`;
 - verified Preview: `dpl_ZJy8VnfdXa3wKWEqdDpLoCPR1L9t` at https://lesters-arcade-ku4ul7bsr-justin-agent-projects.vercel.app;
 - production: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ` at https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app;

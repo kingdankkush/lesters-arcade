@@ -12,7 +12,7 @@ This is the current canonical release handoff. It supersedes the live checkpoint
 - Release branch: `hermes/hmh-cycle-070-gameplay-ui-music`
 - Remote release-branch head: `200757e2092b4632903affde91df53a1b56ad72a`
 - Audit/base source: `origin/main @ a17c37cd6cb39f74758bb4e9ae0bb56d2a1e07bb`
-- Exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dc702664dd976498`
+- Exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dcda8a63fc161b93`
 - Independent exact-patch review: digest matched; verdict `PASS`; blockers `[]`.
 - Runtime commit: [`200757e2`](https://github.com/kingdankkush/Lesters-Arcade/commit/200757e2092b4632903affde91df53a1b56ad72a)
 

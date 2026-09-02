@@ -179,7 +179,7 @@ See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHAR
 | Gate | Verified 2026-09-02 result |
 | --- | --- |
 | Runtime implementation | `200757e2092b4632903affde91df53a1b56ad72a` |
-| Exact certified patch SHA-256 | `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dc702664dd976498` |
+| Exact certified patch SHA-256 | `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dcda8a63fc161b93` |
 | Release ledger | 2,282 evaluated, 2,231 passing, exactly 51 accepted legacy failures, 0 unexpected |
 | Syntax | 361 JavaScript modules and 49 Python scripts |
 | Deterministic visual suite | 12/12 unchanged; every scene `0 / 0 / 0` delta |
