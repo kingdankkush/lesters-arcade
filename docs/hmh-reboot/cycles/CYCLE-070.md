@@ -1,9 +1,10 @@
 # HMH AAA Continuous Improvement Cycle 070
 
 Date: `2026-09-01`
-Status: `PAUSE SOUNDTRACK TRANSPORT SOURCE + LOCAL BROWSER CERTIFIED · RELEASE GATE GREEN · PREVIEW PENDING`
+Status: `PAUSE SOUNDTRACK TRANSPORT CERTIFIED · PREVIEW VERIFIED · PRODUCTION LIVE`
 Branch: `hermes/hmh-cycle-070-gameplay-ui-music`
 Base: `origin/main @ a17c37cd`
+Runtime commit: `200757e2092b4632903affde91df53a1b56ad72a`
 
 ## Bounded slice
 
@@ -81,13 +82,27 @@ Release cache contract for this candidate:
 - portal token: `hmh-aaa-cycle-070-pause-deck`;
 - service-worker namespace: `lesters-arcade-v23-hmh-pause-soundtrack`.
 
+## Exact release and production proof
+
+- exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dc702664dd976498`;
+- independent exact-patch review: digest matched, verdict `PASS`, blockers `[]`;
+- verified Preview: `dpl_ZJy8VnfdXa3wKWEqdDpLoCPR1L9t` at https://lesters-arcade-ku4ul7bsr-justin-agent-projects.vercel.app;
+- production: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ` at https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app;
+- public alias: https://lestersarcade.io resolved to the production ID above;
+- retained rollback: `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs` at https://lesters-arcade-8jdteejx4-justin-agent-projects.vercel.app, still `Ready` with the prior service-worker marker;
+- Preview and production bytes matched for `styles.css`, `sw.js`, `src/arcade-music-transport.mjs`, `dist/main.js`, and `dist/hmh-reboot/game.js`;
+- root, HMH deep link, child shell, CSS, module, and MP3 range requests passed; the MP3 range returned HTTP 206 and `audio/mpeg`;
+- clean production desktop gameplay hid the player while active, exposed the full deck on pause, changed tracks, played real audio, and preserved playback through resume;
+- clean production `390 × 844` gameplay showed a contained `[318, 26, 52, 52]` launcher and a contained `[16, 26, 358, 414.8]` expanded drawer with all transport actions at least `51 × 45` px;
+- desktop/mobile production sessions reported no failed resources or media errors.
+
 ## Preserved boundaries
 
 - Fixed 60 Hz simulation and maximum four catch-up steps unchanged.
 - RNG, replay, movement, collision, damage, enemy state, progression, save schema, session authority, and run-summary authority unchanged.
 - Human/zombie-only actor canon unchanged.
 - HMH child combat audio remains separate from the portal playlist.
-- Production, wallet signatures, settlement, contracts, testnet/mainnet transactions, and LitVM writes were untouched during local certification. `SETTLEMENT_LIVE=false` remains unchanged.
+- Wallet signatures, settlement, contracts, testnet/mainnet transactions, and LitVM writes were untouched. Production serves `SETTLEMENT_LIVE=false`; the website-only promotion did not authorize or perform any Web3 write.
 
 ## Next safe work
 

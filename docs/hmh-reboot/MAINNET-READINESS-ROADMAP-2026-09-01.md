@@ -3,7 +3,7 @@
 Date: `2026-09-01`
 Audit source: `origin/main @ a17c37cd`
 Local improvement branch: `hermes/hmh-cycle-070-gameplay-ui-music`
-Production: unchanged by this audit
+Release update: Cycle 070 runtime `200757e2` promoted to production on `2026-09-02`; `SETTLEMENT_LIVE=false`
 
 ## Executive assessment
 
@@ -23,8 +23,8 @@ The gap to a credible Mainnet release is not “add everything.” It is to clos
 | performance | desktop/mobile/reduced-motion profiles; culling and animation caps; shared runtime projectile and visual-event caps |
 | UI/accessibility | cockpit HUD, pause/settings, minimap discovery, keyboard/gamepad/touch action map, reduced motion/flash, screen-shake and colorblind settings |
 | platform authority | portal owns wallet/profile/session/leaderboard/settlement rails; HMH child remains deterministic gameplay authority |
-| last certified production | `aa396ee5`; release `2,279 / 2,228 / 51 / 0`, browser/mobile/performance/assets/security/Web3 source gates PASS; `SETTLEMENT_LIVE=false` |
-| Cycle 070 local slice | pause-only soundtrack deck with seek/volume/queue; desktop and portrait mobile 7/7 portal flows PASS; production unchanged |
+| last certified production | `200757e2`; production `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`; release `2,282 / 2,231 / 51 / 0`; browser/mobile/performance/assets/security/Web3 source gates PASS; `SETTLEMENT_LIVE=false` |
+| Cycle 070 live slice | pause-only soundtrack deck with seek/volume/queue; desktop and portrait mobile 7/7 portal flows PASS; exact Preview and production desktop/mobile verification complete |
 
 ## Release blockers to close first
 
@@ -32,7 +32,7 @@ The gap to a credible Mainnet release is not “add everything.” It is to clos
 
 Cycle 070 repaired the two unexpected WO119 failures through MCP 1/2 import compatibility in the PixelLab owner script. The canonical retirement gate now passes with `2,282` tests, `2,231` passes, `51` expected legacy failures, and `0` unexpected failures. Do not expand the retirement ledger.
 
-Before promotion, rerun the complete canonical gate sequence from the handoff: syntax, release ledger, visual reboot, browser certification, mobile controls, asset QA, security, Web3 source audit, portal E2E, performance, and docs checks. Freeze and independently review the exact staged patch before any Preview or production action.
+Cycle 070 completed the canonical gate sequence, exact patch review, protected Preview byte proof, production promotion, and hosted desktop/mobile verification. Preserve this sequence for every later runtime candidate; do not infer release health from Cycle 070 after new source changes.
 
 ### P0. Reconcile two source-of-truth mismatches
 
@@ -175,8 +175,8 @@ Generated-art Phase 2, Tripo, PixelLab uploads, paid credits, and external gener
 
 ## Recommended implementation order
 
-1. Finish Cycle 070 source review and keep production unchanged.
-2. Restore the green release gate and reconcile role/projectile truth.
+1. Keep the release gate green while reconciling role/projectile truth.
+2. Add direct canonical authority-module tests before numeric tuning.
 3. Implement one destructible-cover vertical slice.
 4. Add deterministic balance matrix + dual-profile active-combat soak.
 5. Implement one reward/medbay POI and its UI/minimap feedback.

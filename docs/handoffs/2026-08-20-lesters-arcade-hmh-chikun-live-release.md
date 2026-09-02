@@ -1,131 +1,149 @@
-# Lester's Arcade / HMH / Chikun — 2026-08-20 live-release handoff
+# Lester's Arcade / HMH / Chikun — 2026-09-02 live-release handoff
 
-Date: `2026-08-20 PDT`
-Current implementation boundary: `aa396ee54a49406ddc29842278847eb8b607fa7e`
+Date: `2026-09-02 PDT`
+Runtime implementation boundary: `200757e2092b4632903affde91df53a1b56ad72a`
 Public site: https://lestersarcade.io
 Settlement: `SETTLEMENT_LIVE=false`
 
-This handoff supersedes the live checkpoint, current-status, and first-action instructions in the 2026-08-13 and earlier handoffs. Keep those documents for detailed cycle history and architecture rationale.
+This is the current canonical release handoff. It supersedes the live checkpoint, production identity, and next-action instructions in earlier handoffs while preserving their cycle history and architecture rationale. A later documentation-only commit cannot name its own final SHA; keep that docs commit separate from the runtime implementation boundary above.
 
-## 1. Certified Git and runtime identity
+## 1. Certified Git and candidate identity
 
-- Integration branch at release: `claude/publish-integration`
-- Remote `main` and integration branch were read back at `aa396ee5`.
-- Certified runtime range base: `5bd3dfe9efc9a91a0d3c3746848d36e7b59e6b4e`
-- Exact binary range SHA-256: `6d992c4abdd63b1f7100e527f84181e31b1281e61a6c85c21e3ebc182bfb9029`
-- Exact review: hash-guarded independent content review, `FINDINGS: NONE`, `VERDICT: PASS`.
-- The inactive local `main` pointer remained at `5bd3dfe9`; do not use that local pointer as remote truth without fetch.
+- Release branch: `hermes/hmh-cycle-070-gameplay-ui-music`
+- Remote release-branch head: `200757e2092b4632903affde91df53a1b56ad72a`
+- Audit/base source: `origin/main @ a17c37cd6cb39f74758bb4e9ae0bb56d2a1e07bb`
+- Exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dc702664dd976498`
+- Independent exact-patch review: digest matched; verdict `PASS`; blockers `[]`.
+- Runtime commit: [`200757e2`](https://github.com/kingdankkush/Lesters-Arcade/commit/200757e2092b4632903affde91df53a1b56ad72a)
 
-A later documentation-only commit cannot name its own final SHA. Treat `aa396ee5` as the served runtime implementation boundary and keep any later docs commit/deployment identity separate.
+Cycle 070 restores the portal-owned Lester's Arcade soundtrack during paused HMH gameplay without adding a second playlist owner or changing deterministic gameplay authority. Active combat hides the player; pause exposes seek, volume, queue, previous/next, play/pause, mute, shuffle, elapsed time, and duration. Desktop uses a non-overlapping sidecar; portrait mobile uses a contained launcher and drawer.
 
-## 2. Production and rollback
+## 2. Preview, production, and rollback
 
-- Verified runtime production ID: `dpl_7k35eG9qYnKShLXJ5ySfV5fWJYRv`
-- Immutable runtime URL: https://lesters-arcade-p8lo55m7r-justin-agent-projects.vercel.app
+- Verified Preview ID: `dpl_ZJy8VnfdXa3wKWEqdDpLoCPR1L9t`
+- Immutable Preview URL: https://lesters-arcade-ku4ul7bsr-justin-agent-projects.vercel.app
+- Verified production ID: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
+- Immutable production URL: https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
 - Public alias: https://lestersarcade.io
-- Immediate rollback ID: `dpl_DmNJPPf1q7SeG79XcgZComK32uzk`
-- Rollback URL: https://lesters-arcade-9ml2rtdvk-justin-agent-projects.vercel.app
-- Runtime cache marker: `lesters-arcade-v22-hmh-landscape-character-start`
+- Immediate rollback ID: `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs`
+- Rollback URL: https://lesters-arcade-8jdteejx4-justin-agent-projects.vercel.app
+- Portal cache token: `hmh-aaa-cycle-070-pause-deck`
+- Service-worker namespace: `lesters-arcade-v23-hmh-pause-soundtrack`
 - Output root: `apps/portal`
 
-Exact production proof:
+Vercel reported both the Preview and promotion-created production deployment `Ready`. Custom-domain inspection resolved `lestersarcade.io` to `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`. The retained rollback deployment remained `Ready` and still served the prior `lesters-arcade-v22-hmh-landscape-character-start` service-worker marker.
 
-- `styles.css` SHA-256: `d4167aaf6a0ebc5e557c6d9fad5a1647844fa1065c6101db6dc20ece835e116f`
-- `sw.js` SHA-256: `116a350bab8afbe308001ccf7aabf8dc688972d459c1ec5f88c2bea7623d8a0b`
-- local, immutable deployment, and public alias matched for both files;
-- `/`, `/hmh-reboot/index.html`, and `/play/chikun` returned HTTP 200;
-- Vercel alias inspection resolved to the same runtime production deployment.
+### Exact hosted artifact proof
 
-A later docs-only push may create a newer runtime-identical deployment. Re-inspect the alias; do not rewrite this historical runtime release record.
+Production SHA-256 values:
 
-## 3. Hard Money Heroes
+- `index.html`: `af72b0e4eaa84b05510518a043a416fd23e2a2f0eb646e66b080eb0dc7e780b5`
+- `styles.css`: `941bece09b287a9cd9741df01e9aeeeee6ff947611f43532b2dca74ff00f00a1`
+- `sw.js`: `049242fc30e5747256388335e6e7b901caf54786ee4efe1d17d0ec6811d5b9bb`
+- `src/arcade-music-transport.mjs`: `67e7a067e268848d360f0acfda111e5036986f9743fbf803b32e735c19a93e5b`
+- `dist/main.js`: `969516db92addb3fa4b870b443f8215d86a4410a92c662430cc122c803c2a8bb`
+- `dist/hmh-reboot/game.js`: `e44d2ffcddaccf435d25f52b2c340e2420b458842185527bd3bf681d58595fbb`
 
-Current direction remains deterministic PixiJS 8.19.0 top-down 2.5D authored run-and-gun.
+The Preview and production hashes matched for CSS, service worker, transport module, portal bundle, and HMH child bundle. Preview `index.html` differed only by Vercel's injected feedback script; production HTML contained the certified cache token.
 
-Latest closed cycle: **068**.
+Hosted routing/media proof:
 
-Cycle 068 closes the existing timed-effect identity seam:
+- `/`, `/play/hard-money-heroes`, and `/hmh-reboot/index.html` returned HTTP 200 with the expected HTML content type.
+- `styles.css` returned CSS and the transport module returned JavaScript.
+- a production playlist MP3 byte-range request returned HTTP 206, `audio/mpeg`, and the expected `Content-Range`.
+- no failed production resource entries or media decode errors were observed in clean desktop/mobile browser sessions.
 
-- Time Dilation: clock-orbit silhouette and cool activation cue;
-- Berserk Candle: spiked-ring silhouette and warm activation cue;
-- both derive from the same immutable active-effect snapshot as HUD/accessibility truth;
-- reduced motion stops pulsing motion;
-- identity remains projection/audio only.
+## 3. Hard Money Heroes Cycle 070 verification
 
-Final runtime evidence:
+Local exact-candidate gates:
 
-- release `2,279 / 2,228 / 51 / 0`;
-- syntax `361 JS + 49 Python`;
-- HMH entry `395,325 / 1,050,000` bytes;
-- visual 12/12 exact zero delta;
-- five-profile local and production browser certification PASS;
-- mobile controls 4/4;
-- desktop/mobile p95 `7 / 7 ms`;
-- assets/security/Web3 source gates PASS.
+- release ledger: `2,282` evaluated, `2,231` passing, exactly `51` accepted legacy failures, `0` unexpected;
+- syntax: `361` JavaScript modules and `49` Python scripts;
+- production build: PASS;
+- HMH initial JS: `948.5 KB / 1.00 MB`, `76.9 KB` headroom;
+- visual regression: 12/12 scenes unchanged, zero changed cells;
+- HMH browser certification: desktop, ultrawide, tablet landscape, mobile portrait, and mobile landscape PASS;
+- mobile controls: 4/4 profiles PASS;
+- desktop/mobile performance p95: `7 / 7 ms`;
+- asset QA, repository/CDN, documentation links, security `5/5`, third-party sandbox `3/3`, and Web3 source audit `9/9` PASS;
+- Web3 live readiness remained intentionally PARTIAL `3/4` because on-chain registry/economy approval is still blocked;
+- desktop and portrait portal E2E: 7/7 implemented flows each, with zero page/console errors;
+- network/console audit: 4/4 scenarios, zero HTTP/request/page/console errors.
 
-No new power-up should ship without its source/art/provenance/readability packet.
+`forge test` was unavailable on this Windows host. The portable contract structure check passed, no contract file changed, and this website promotion did not deploy or mutate contracts.
 
-## 4. Chikun's Escape
+### Production desktop proof
 
-Production cabinet remains `0.5.0` / `canvas-runtime-v3`, public playable and Ranked-eligible.
+A clean guest session reached HMH Free Mode, selected Lit Commando, launched the live child renderer, and entered active gameplay. The child canvas rendered at `2520 × 1223`; active combat hid the soundtrack player. On pause:
 
-Shipped and verified:
+- the player appeared and expanded to a `320 × 526` desktop sidecar;
+- seek and all six transport buttons remained at least 44 px in both dimensions;
+- the title changed from `Hard Money Heroes — Main Theme` to `Hard Money Heroes — Mempool Mayhem` after Next;
+- trusted Play started the real MP3 (`paused=false`, advancing time, contextual volume `0.385`);
+- resume hid the player while audio continued from the same track/time;
+- the HMH child had one visible canvas and no media or failed-resource errors.
 
-- deterministic 60 Hz core and parent replay;
-- parent-owned daily Free seed;
-- same-seed projection-only local ghost;
-- seek-safe animated replay viewer;
-- bounded 8-voice audio and four-step catch-up;
-- 44 px start, HUD, pause, and result controls;
-- reduced-motion flash suppression;
-- 9:16 and 16:9 production certification;
-- Ranked/Free desktop/mobile smoke with frame p95 `7–7.1 ms`;
-- Ranked records profile/score state; Free writes neither.
+### Production portrait-mobile proof
 
-Still open:
+At `390 × 844`, the clean guest flow reached active HMH gameplay. On pause:
 
-- written creator art rights and final Louie/Justin QA;
-- `devWallet` and revenue routing;
-- replacement of temporary mode-selection art;
-- rendered share-card images;
-- deterministic new obstacle family or Free-only practice modifiers as the next code-first candidate.
+- the collapsed launcher was fully contained at `[318, 26, 52, 52]`;
+- the expanded drawer was fully contained at `[16, 26, 358, 414.8]`;
+- seek and volume were 44 px high;
+- all six transport actions were `51 × 45` px;
+- Next changed the track title;
+- resume hid the player;
+- no failed resources or media errors were observed.
 
-## 5. Lester's Arcade platform
+## 4. Preserved authority and Mainnet boundary
 
-- Parent retains wallet, profile, session, leaderboard, achievement, analytics, and settlement authority.
-- Cabinet status documentation gate is offline/deterministic.
-- Production marker gate is network-backed; local README/service-worker parity is now separately test-gated.
-- The 844×390 HMH level-intro path keeps Begin Level fully contained and hides the jukebox only for that short intro state.
-- `hermes/u10-portal-modularization` has five patch-equivalent commits already present in current `main`; do not merge it again.
+- Fixed 60 Hz simulation and four-step catch-up cap are unchanged.
+- RNG, replay, movement, collision, damage, enemy state, progression, save schema, session authority, and run-summary authority are unchanged.
+- The portal remains the sole shared-playlist owner; HMH continues to own combat audio and gameplay.
+- Parent wallet/profile/session/leaderboard/achievement/analytics/settlement authority is unchanged.
+- Production serves `export const SETTLEMENT_LIVE = false;`; a true export is absent.
+- No wallet signature, transaction, contract deployment, LitVM write, Mainnet activation, or real-fund movement occurred.
 
-## 6. Next work and approval gates
+Website publication approval never authorizes Web3 writes. Contracts, addresses, chain/operator/verifier configuration, economy policy, settlement activation, and real funds require separate explicit review and approval.
 
-1. **Generated-art Phase 2 is locked.** Do not research, generate, upload, spend credits, or start Tripo/PixelLab work until Justin explicitly says `go`.
-2. **Chikun code-first candidate:** one deterministic obstacle family with a bounded telegraph, or one Free-only practice modifier. Write RED replay/authority coverage before implementation.
-3. **HMH code-first candidate:** bounded instrumentation or an already-authored seam that does not require a new asset. Do not add a power-up with placeholder art.
-4. **Cleanup:** rejected dirty files, stale marker-only `REBASE_HEAD` files, branches, and worktrees still require separate cleanup approval.
-5. **Web3:** no contract, wallet, settlement, testnet/mainnet, or LitVM write without separate HALT approval.
+## 5. Chikun's Escape
+
+Chikun remains `0.5.0` / `canvas-runtime-v3`, public playable and Ranked-eligible. Cycle 070 did not change Chikun gameplay or authority. Its known open items remain written creator art rights, final owner QA, `devWallet`/revenue routing, temporary mode art, and rendered share cards. No paid entry is live.
+
+## 6. Next safe work
+
+1. Reconcile encounter role `heavy` versus Whale Enforcer archetype role `bruiser`, with direct final-archetype role tests.
+2. Reconcile encounter projectile caps up to `220` versus the live runtime pool cap `128`.
+3. Add direct canonical tests for movement, encounter director, enemy archetypes, Liquidator, progression, and runtime-performance modules before tuning numbers.
+4. Implement one bounded deterministic town-interaction slice: destructible `yard-container-lock`, then a single-use `yard-medbay-cache` with minimap/prompt feedback.
+5. Add fixed-seed balance telemetry and phase-aware Liquidator simulation before movement, XP, spawn, or boss tuning.
+6. Make reduced-flash a true zero-flash path, gate gore on the existing setting, and browser-prove HUD/touch/caption/colorblind consumers.
+7. Keep generated-art uploads/paid credits and every Web3 write separately approval-gated.
 
 ## 7. Working release sequence
 
 ```bash
 git fetch origin --prune
 git status --short --branch
-git rev-parse HEAD origin/main origin/claude/publish-integration
-npm run check
-npm run test:release
+git rev-parse HEAD origin/main origin/hermes/hmh-cycle-070-gameplay-ui-music
+rm -rf apps/portal/dist
+npm run vercel:build
 npm run visual:reboot
 # serve apps/portal on 127.0.0.1:8791 before browser certification
 npm run certify:hmh:browser
 npm run smoke:hmh:mobile-controls
 npm run assets:qa:hmh-reboot
 npm run design:security-audit
+npm run design:third-party-security
 npm run design:web3-audit
+npm run design:web3-live
 npm run smoke:portal:e2e
+PORTAL_E2E_EVIDENCE_DIR=.hermes/evidence/portal-e2e-mobile npm run smoke:portal:e2e:mobile
 npm run smoke:hmh:performance
+npm run audit:hmh:network
 npm run docs:cabinets
 npm run docs:production
 npm run docs:links
 ```
 
-Run browser batches serially. `visual:regression` remains broken for the reboot and is not release evidence. Stop task-owned listeners. Exact-review every candidate. Website publication approval never authorizes Web3 writes.
+Run browser batches serially, stop task-owned listeners, freeze and independently review every runtime candidate, promote only the exact verified Preview, and retain the prior production deployment as rollback.
