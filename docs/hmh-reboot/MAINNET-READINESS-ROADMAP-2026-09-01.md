@@ -34,14 +34,14 @@ Cycle 070 repaired the two unexpected WO119 failures through MCP 1/2 import comp
 
 Cycle 070 completed the canonical gate sequence, exact patch review, protected Preview byte proof, production promotion, and hosted desktop/mobile verification. Preserve this sequence for every later runtime candidate; do not infer release health from Cycle 070 after new source changes.
 
-### P0. Reconcile two source-of-truth mismatches
+### P0. Source-of-truth mismatches — completed in Cycle 071
 
-1. **Enemy role truth:** `encounter-director.mjs` requests/maps role `heavy`, while `enemy-archetypes.mjs` identifies `whale-enforcer` as `bruiser`. Reconcile the canonical role and add a final-archetype role assertion so telemetry, lane tells, weighting, and UI never claim a role the selected enemy does not have.
-2. **Projectile budget truth:** late encounter bands advertise projectile caps `160`, `192`, and `220`, while `runtime-performance.mjs` and `main.mjs` enforce `MAX_ACTIVE_PROJECTILES = 128`. Either clamp the public encounter snapshot to runtime authority or intentionally raise and certify the runtime cap; do not expose unreachable budgets.
+1. **Enemy role truth:** the encounter director now uses canonical role `bruiser` for Whale Enforcer throughout allowed roles, district gates, weighting, and selection. A cross-district/cross-band test requires every `roleApplied: true` result to match the final archetype role.
+2. **Projectile budget truth:** all exported encounter-band projectile budgets now consume `MAX_ACTIVE_PROJECTILES = 128`; no public snapshot advertises unreachable `160 / 192 / 220` capacity.
 
-### P0. Add direct tests for the live HMH authority modules
+### P0. Direct tests for live HMH authority modules — completed before/through Cycle 071
 
-The root test suite contains broad portal, physics, presentation, and retired-pipeline coverage, but no root test directly imports the current `apps/hmh-reboot/src/` movement, encounter-director, enemy-archetype, progression, Liquidator, or runtime-performance modules. Before numeric balancing, add focused authority tests against those exact files rather than relying on similarly named portal or benchmark implementations.
+The current root suite directly imports and behavior-tests `apps/hmh-reboot/src/` movement, encounter director, enemy archetypes, progression, Liquidator, runtime performance, run-summary consumers, and long-run balance. Cycle 071 extends that live harness rather than creating a parallel implementation.
 
 Minimum contracts:
 
@@ -88,17 +88,17 @@ Current encounter bands:
 | opening | 0–1 min | 120 ticks | 32 / 64 | 24 / 32 | 64 |
 | build | 1–5 min | 90 | 64 / 128 | 28 / 40 | 96 |
 | pressure | 5–10 min | 60 | 100 / 240 | 32 / 48 | 128 |
-| elite | 10–20 min | 45 | 128 / 360 | 32 / 56 | 160 declared |
-| boss | 20–21 min | 60 | 128 / 512 | 40 / 64 | 192 declared |
-| endurance | 21+ min | 30 | 160 / 640 | 32 / 64 | 220 declared |
+| elite | 10–20 min | 45 | 128 / 360 | 32 / 56 | 128 |
+| boss | 20–21 min | 60 | 128 / 512 | 40 / 64 | 128 |
+| endurance | 21+ min | 30 | 160 / 640 | 32 / 64 | 128 |
 
 Actions:
 
-- reconcile declared versus enforced projectile caps;
-- run deterministic same-seed band snapshots and long-run object accounting;
-- run real active-combat desktop and portrait/mobile soaks, not mounted-canvas checks;
-- report enemy bodies, full-AI bodies, animated bodies, projectiles, visual events, audio voices, dropped fixed time, p95/p99 update/render time, and median retained heap separately;
-- tune with the smallest numeric/data change only after evidence.
+- [x] reconcile declared versus enforced projectile caps (Cycle 071);
+- [x] run deterministic same-seed band snapshots and long-run object accounting;
+- [x] run real active-combat desktop and portrait/mobile soaks, not mounted-canvas checks;
+- [x] report enemy bodies, full-AI bodies, animated bodies, projectiles, visual events, audio voices, dropped fixed time, p95/p99 update/render time, and median retained heap separately;
+- [ ] tune with the smallest numeric/data change only after new evidence identifies a gameplay need.
 
 ### P1. Balance progression with telemetry before changing values
 

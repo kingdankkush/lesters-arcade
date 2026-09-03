@@ -65,10 +65,10 @@ Measured player KPM range: 34.24–66.6.
 | --- | ---: | --- | ---: | ---: | --- | --- |
 | opening | 30 | recovery | 32 | 64 | melee:2, ranged:1, area:1, support:0 | rusher:14, flanker:6 |
 | build | 40 | matched | 64 | 128 | melee:3, ranged:2, area:1, support:1 | rusher:11, flanker:6, suppressor:3 |
-| pressure | 60 | matched | 100 | 240 | melee:4, ranged:3, area:2, support:1 | rusher:6, flanker:4, suppressor:3, heavy:3, demolition:2, support:2 |
-| elite | 80 | accumulating | 128 | 360 | melee:5, ranged:4, area:3, support:2 | rusher:5, flanker:4, suppressor:3, heavy:3, demolition:3, support:2 |
-| boss | 60 | matched | 128 | 512 | melee:3, ranged:3, area:3, support:2 | rusher:4, flanker:3, suppressor:3, heavy:4, demolition:3, support:3 |
-| endurance | 120 | accumulating | 160 | 640 | melee:6, ranged:5, area:4, support:2 | rusher:4, flanker:4, suppressor:3, heavy:3, demolition:3, support:3 |
+| pressure | 60 | matched | 100 | 240 | melee:4, ranged:3, area:2, support:1 | rusher:6, flanker:4, suppressor:3, bruiser:3, demolition:2, support:2 |
+| elite | 80 | accumulating | 128 | 360 | melee:5, ranged:4, area:3, support:2 | rusher:5, flanker:4, suppressor:3, bruiser:3, demolition:3, support:2 |
+| boss | 60 | matched | 128 | 512 | melee:3, ranged:3, area:3, support:2 | rusher:4, flanker:3, suppressor:3, bruiser:4, demolition:3, support:3 |
+| endurance | 120 | accumulating | 160 | 640 | melee:6, ranged:5, area:4, support:2 | rusher:4, flanker:4, suppressor:3, bruiser:3, demolition:3, support:3 |
 
 ## Hero medians
 

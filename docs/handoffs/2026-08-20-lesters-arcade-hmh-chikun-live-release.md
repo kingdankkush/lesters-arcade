@@ -10,7 +10,8 @@ This is the current canonical release handoff. It supersedes the live checkpoint
 ## 1. Certified Git and candidate identity
 
 - Release branch: `hermes/hmh-cycle-070-gameplay-ui-music`
-- Remote release-branch head: `200757e2092b4632903affde91df53a1b56ad72a`
+- Remote release-branch/documentation head: `12150acc939e311754eeedb3352f79362e9c85f9`
+- Deployed runtime implementation boundary: `200757e2092b4632903affde91df53a1b56ad72a`
 - Audit/base source: `origin/main @ a17c37cd6cb39f74758bb4e9ae0bb56d2a1e07bb`
 - Exact staged binary-diff SHA-256: `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dcda8a63fc161b93`
 - Independent exact-patch review: digest matched; verdict `PASS`; blockers `[]`.
@@ -112,13 +113,12 @@ Chikun remains `0.5.0` / `canvas-runtime-v3`, public playable and Ranked-eligibl
 
 ## 6. Next safe work
 
-1. Reconcile encounter role `heavy` versus Whale Enforcer archetype role `bruiser`, with direct final-archetype role tests.
-2. Reconcile encounter projectile caps up to `220` versus the live runtime pool cap `128`.
-3. Add direct canonical tests for movement, encounter director, enemy archetypes, Liquidator, progression, and runtime-performance modules before tuning numbers.
-4. Implement one bounded deterministic town-interaction slice: destructible `yard-container-lock`, then a single-use `yard-medbay-cache` with minimap/prompt feedback.
-5. Add fixed-seed balance telemetry and phase-aware Liquidator simulation before movement, XP, spawn, or boss tuning.
-6. Make reduced-flash a true zero-flash path, gate gore on the existing setting, and browser-prove HUD/touch/caption/colorblind consumers.
-7. Keep generated-art uploads/paid credits and every Web3 write separately approval-gated.
+1. Complete Cycle 071 exact-index review, commit, Preview, promotion, and production verification.
+2. Begin reconciled Phase 0 task P-4 as its own bounded cycle: move the existing enemy roster from Workbench to EEVE...[truncated]
+3. Preserve and extend the direct canonical authority tests already present for movement, encounter director, enemy archetypes, Liquidator, progression, runtime performance, run summary, and long-run balance.
+4. Build the external-model importer/skinned-action schema on a throwaway committed test fixture before accepting owner-supplied hero meshes.
+5. Implement one bounded deterministic town-interaction slice after Phase 0 truth/plumbing: destructible `yard-container-lock`, then a single-use `yard-medbay-cache` with minimap/prompt feedback.
+6. Keep generated-art uploads/paid credits and every Web3 write separately approval-gated.
 
 ## 7. Working release sequence
 

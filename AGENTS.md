@@ -4,15 +4,17 @@
 
 Before changing code, read:
 
-0. `docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md` — **current**; certified runtime boundary, live deployment/rollback, HMH Cycle 068, Chikun production truth, open gates, and next safe work
-1. `docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md` — detailed Wave 10/11 history through Cycle 067; historical checkpoint values are superseded by the current handoff
-2. `docs/handoffs/2026-08-02-hmh-cycle-049-fable-handoff.md` — standing operational lessons: never parallel browser smokes, heap-gate variance, and Vercel workflow
-3. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — standing architecture boundaries, bridge contract, and Web3 truth
-4. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md` — active cycle ledger
-5. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
-6. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-7. `docs/hmh-reboot/COMPATIBILITY.json`
-8. Older cycle handoffs only when their specific implementation history is needed
+0. `docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md` — **current**; certified Cycle 070 runtime boundary, live deployment/rollback, Chikun production truth, open gates, and next safe work
+1. `docs/hmh-reboot/AAA-ROADMAP.md` — standing dependency order, AAA acceptance bars, completed-item reconciliation, and owner gates
+2. `docs/hmh-reboot/MAINNET-READINESS-ROADMAP-2026-09-01.md` — source-backed gameplay and separately approval-gated Mainnet readiness
+3. `docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md` — detailed Wave 10/11 history through Cycle 067; historical checkpoint values are superseded by the current handoff
+4. `docs/handoffs/2026-08-02-hmh-cycle-049-fable-handoff.md` — standing operational lessons: never parallel browser smokes, heap-gate variance, and Vercel workflow
+5. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — standing architecture boundaries, bridge contract, and Web3 truth
+6. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md` — active cycle ledger
+7. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
+8. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
+9. `docs/hmh-reboot/COMPATIBILITY.json`
+10. Older cycle handoffs only when their specific implementation history is needed
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 

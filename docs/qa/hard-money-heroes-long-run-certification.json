@@ -12909,7 +12909,7 @@
         "rusher": 6,
         "flanker": 4,
         "suppressor": 3,
-        "heavy": 3,
+        "bruiser": 3,
         "demolition": 2,
         "support": 2
       }
@@ -12930,7 +12930,7 @@
         "rusher": 5,
         "flanker": 4,
         "suppressor": 3,
-        "heavy": 3,
+        "bruiser": 3,
         "demolition": 3,
         "support": 2
       }
@@ -12951,7 +12951,7 @@
         "rusher": 4,
         "flanker": 3,
         "suppressor": 3,
-        "heavy": 4,
+        "bruiser": 4,
         "demolition": 3,
         "support": 3
       }
@@ -12972,7 +12972,7 @@
         "rusher": 4,
         "flanker": 4,
         "suppressor": 3,
-        "heavy": 3,
+        "bruiser": 3,
         "demolition": 3,
         "support": 3
       }

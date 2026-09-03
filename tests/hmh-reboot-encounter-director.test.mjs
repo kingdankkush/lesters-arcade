@@ -15,6 +15,7 @@ import {
 } from '../apps/hmh-reboot/src/encounter-director.mjs';
 import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { createEnemyPopulation, createEnemyState } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
+import { MAX_ACTIVE_PROJECTILES } from '../apps/hmh-reboot/src/runtime-performance.mjs';
 
 const CAMERA = { minX: -480, minY: -270, maxX: 480, maxY: 270 };
 const PLAYER = { x: 0, y: 0, groundZ: 0 };
@@ -57,6 +58,7 @@ test('six immutable pacing bands expose independent fixed budgets and exact boun
     for (const key of ['threatCap', 'rangedCap', 'projectileCap', 'effectCap', 'fullAiCap', 'animationCap']) {
       assert.ok(Number.isInteger(band.budgets[key]) && band.budgets[key] >= 0, `${band.id}.${key}`);
     }
+    assert.ok(band.budgets.projectileCap <= MAX_ACTIVE_PROJECTILES, `${band.id}.projectileCap must not exceed runtime authority`);
     assert.ok(band.budgets.fullAiCap <= band.budgets.bodyCap);
     assert.ok(band.budgets.animationCap <= band.budgets.bodyCap);
     assert.ok(Object.isFrozen(band.budgets.attackTokens));
@@ -72,15 +74,15 @@ test('six immutable pacing bands expose independent fixed budgets and exact boun
 test('5/10/20/30-minute snapshots are deterministic and preserve elite/boss reservations', () => {
   assert.deepEqual([5, 10, 20, 30].map((minute) => getEncounterSnapshot(minute * 60 * 60)), [
     { tick: 18_000, minute: 5, bandId: 'pressure', bodyCap: 100, ordinaryBodyCap: 96, threatCap: 240, rangedCap: 16, projectileCap: 128, effectCap: 160, fullAiCap: 32, animationCap: 48, attackTokens: { melee: 4, ranged: 3, area: 2, support: 1 }, eliteReserve: 4, bossReserve: 0 },
-    { tick: 36_000, minute: 10, bandId: 'elite', bodyCap: 128, ordinaryBodyCap: 120, threatCap: 360, rangedCap: 20, projectileCap: 160, effectCap: 192, fullAiCap: 32, animationCap: 56, attackTokens: { melee: 5, ranged: 4, area: 3, support: 2 }, eliteReserve: 8, bossReserve: 0 },
-    { tick: 72_000, minute: 20, bandId: 'boss', bodyCap: 128, ordinaryBodyCap: 111, threatCap: 512, rangedCap: 18, projectileCap: 192, effectCap: 256, fullAiCap: 40, animationCap: 64, attackTokens: { melee: 3, ranged: 3, area: 3, support: 2 }, eliteReserve: 8, bossReserve: 1 },
-    { tick: 108_000, minute: 30, bandId: 'endurance', bodyCap: 160, ordinaryBodyCap: 143, threatCap: 640, rangedCap: 28, projectileCap: 220, effectCap: 320, fullAiCap: 32, animationCap: 64, attackTokens: { melee: 6, ranged: 5, area: 4, support: 2 }, eliteReserve: 16, bossReserve: 1 },
+    { tick: 36_000, minute: 10, bandId: 'elite', bodyCap: 128, ordinaryBodyCap: 120, threatCap: 360, rangedCap: 20, projectileCap: 128, effectCap: 192, fullAiCap: 32, animationCap: 56, attackTokens: { melee: 5, ranged: 4, area: 3, support: 2 }, eliteReserve: 8, bossReserve: 0 },
+    { tick: 72_000, minute: 20, bandId: 'boss', bodyCap: 128, ordinaryBodyCap: 111, threatCap: 512, rangedCap: 18, projectileCap: 128, effectCap: 256, fullAiCap: 40, animationCap: 64, attackTokens: { melee: 3, ranged: 3, area: 3, support: 2 }, eliteReserve: 8, bossReserve: 1 },
+    { tick: 108_000, minute: 30, bandId: 'endurance', bodyCap: 160, ordinaryBodyCap: 143, threatCap: 640, rangedCap: 28, projectileCap: 128, effectCap: 320, fullAiCap: 32, animationCap: 64, attackTokens: { melee: 6, ranged: 5, area: 4, support: 2 }, eliteReserve: 16, bossReserve: 1 },
   ]);
 });
 
 test('district role gates and stable ordinal selection never mislabel fallback roles', () => {
   assert.deepEqual(DISTRICT_ROLE_GATES['frontier-relay'], ['rusher', 'flanker']);
-  assert.deepEqual(DISTRICT_ROLE_GATES['liquidation-yard'], ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support']);
+  assert.deepEqual(DISTRICT_ROLE_GATES['liquidation-yard'], ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support']);
   const a = selectEncounterArchetype({ districtId: 'frontier-relay', bandId: 'opening', spawnOrdinal: 0 });
   const b = selectEncounterArchetype({ districtId: 'frontier-relay', bandId: 'opening', spawnOrdinal: 14 });
   assert.deepEqual([a.archetypeId, a.requestedRole, a.roleApplied], ['bagholder-rusher', 'rusher', true]);
@@ -88,6 +90,17 @@ test('district role gates and stable ordinal selection never mislabel fallback r
   const fallback = selectEncounterArchetype({ districtId: 'liquidity-crossing', bandId: 'opening', spawnOrdinal: 2, requestedRole: 'suppressor' });
   assert.deepEqual([fallback.archetypeId, fallback.requestedRole, fallback.roleApplied, fallback.fallbackReason], ['bagholder-rusher', 'suppressor', false, 'band-gated-role']);
   assert.throws(() => selectEncounterArchetype({ districtId: 'unknown', bandId: 'opening', spawnOrdinal: 0 }), /districtId/);
+});
+
+test('every applied encounter role matches the final selected archetype role', () => {
+  for (const districtId of Object.keys(DISTRICT_ROLE_GATES)) {
+    for (const band of ENCOUNTER_BANDS) {
+      for (let spawnOrdinal = 0; spawnOrdinal < 20; spawnOrdinal += 1) {
+        const selected = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal, seed: 0 });
+        if (selected.roleApplied) assert.equal(ENEMY_ARCHETYPES[selected.archetypeId].role, selected.requestedRole, `${districtId}/${band.id}/${spawnOrdinal}`);
+      }
+    }
+  }
 });
 
 test('S5 weighted role cycles apply authored per-band mixes deterministically', () => {

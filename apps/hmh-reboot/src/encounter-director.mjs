@@ -5,6 +5,7 @@ import {
   attemptScheduledEnemyInsertion,
   createEnemySpawnSchedule,
 } from './enemy-simulation.mjs';
+import { MAX_ACTIVE_PROJECTILES } from './runtime-performance.mjs';
 
 const TICKS_PER_MINUTE = 3_600;
 const REST_INTERVAL_TICKS = 18_000;
@@ -21,15 +22,15 @@ function nonNegativeInteger(value, name) {
 import { finite } from './value-guards.mjs';
 
 const defineBand = (definition) => freezeDeep(definition);
-const roleWeights = (rusher, flanker, suppressor = 0, heavy = 0, demolition = 0, support = 0) => ({ rusher, flanker, suppressor, heavy, demolition, support });
+const roleWeights = (rusher, flanker, suppressor = 0, bruiser = 0, demolition = 0, support = 0) => ({ rusher, flanker, suppressor, bruiser, demolition, support });
 
 export const ENCOUNTER_BANDS = Object.freeze([
   defineBand({ id: 'opening', minTick: 0, maxTick: 3_599, spawnIntervalTicks: 120, allowedRoles: ['rusher', 'flanker'], roleWeights: roleWeights(14, 6), eliteReserve: 0, bossReserve: 0, reservedBossBodies: 0, reservedThreat: 0, budgets: { bodyCap: 32, threatCap: 64, rangedCap: 4, projectileCap: 64, effectCap: 96, fullAiCap: 24, animationCap: 32, attackTokens: { melee: 2, ranged: 1, area: 1, support: 0 } } }),
   defineBand({ id: 'build', minTick: 3_600, maxTick: 17_999, spawnIntervalTicks: 90, allowedRoles: ['rusher', 'flanker', 'suppressor'], roleWeights: roleWeights(11, 6, 3), eliteReserve: 2, bossReserve: 0, reservedBossBodies: 0, reservedThreat: 8, budgets: { bodyCap: 64, threatCap: 128, rangedCap: 8, projectileCap: 96, effectCap: 128, fullAiCap: 28, animationCap: 40, attackTokens: { melee: 3, ranged: 2, area: 1, support: 1 } } }),
-  defineBand({ id: 'pressure', minTick: 18_000, maxTick: 35_999, spawnIntervalTicks: 60, allowedRoles: ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support'], roleWeights: roleWeights(6, 4, 3, 3, 2, 2), eliteReserve: 4, bossReserve: 0, reservedBossBodies: 0, reservedThreat: 16, budgets: { bodyCap: 100, threatCap: 240, rangedCap: 16, projectileCap: 128, effectCap: 160, fullAiCap: 32, animationCap: 48, attackTokens: { melee: 4, ranged: 3, area: 2, support: 1 } } }),
-  defineBand({ id: 'elite', minTick: 36_000, maxTick: 71_999, spawnIntervalTicks: 45, allowedRoles: ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support'], roleWeights: roleWeights(5, 4, 3, 3, 3, 2), eliteReserve: 8, bossReserve: 0, reservedBossBodies: 0, reservedThreat: 48, budgets: { bodyCap: 128, threatCap: 360, rangedCap: 20, projectileCap: 160, effectCap: 192, fullAiCap: 32, animationCap: 56, attackTokens: { melee: 5, ranged: 4, area: 3, support: 2 } } }),
-  defineBand({ id: 'boss', minTick: 72_000, maxTick: 75_599, spawnIntervalTicks: 60, allowedRoles: ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support'], roleWeights: roleWeights(4, 3, 3, 4, 3, 3), eliteReserve: 8, bossReserve: 1, reservedBossBodies: 9, reservedThreat: 128, budgets: { bodyCap: 128, threatCap: 512, rangedCap: 18, projectileCap: 192, effectCap: 256, fullAiCap: 40, animationCap: 64, attackTokens: { melee: 3, ranged: 3, area: 3, support: 2 } } }),
-  defineBand({ id: 'endurance', minTick: 75_600, maxTick: Infinity, spawnIntervalTicks: 30, allowedRoles: ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support'], roleWeights: roleWeights(4, 4, 3, 3, 3, 3), eliteReserve: 16, bossReserve: 1, reservedBossBodies: 1, reservedThreat: 96, budgets: { bodyCap: 160, threatCap: 640, rangedCap: 28, projectileCap: 220, effectCap: 320, fullAiCap: 32, animationCap: 64, attackTokens: { melee: 6, ranged: 5, area: 4, support: 2 } } }),
+  defineBand({ id: 'pressure', minTick: 18_000, maxTick: 35_999, spawnIntervalTicks: 60, allowedRoles: ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support'], roleWeights: roleWeights(6, 4, 3, 3, 2, 2), eliteReserve: 4, bossReserve: 0, reservedBossBodies: 0, reservedThreat: 16, budgets: { bodyCap: 100, threatCap: 240, rangedCap: 16, projectileCap: MAX_ACTIVE_PROJECTILES, effectCap: 160, fullAiCap: 32, animationCap: 48, attackTokens: { melee: 4, ranged: 3, area: 2, support: 1 } } }),
+  defineBand({ id: 'elite', minTick: 36_000, maxTick: 71_999, spawnIntervalTicks: 45, allowedRoles: ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support'], roleWeights: roleWeights(5, 4, 3, 3, 3, 2), eliteReserve: 8, bossReserve: 0, reservedBossBodies: 0, reservedThreat: 48, budgets: { bodyCap: 128, threatCap: 360, rangedCap: 20, projectileCap: MAX_ACTIVE_PROJECTILES, effectCap: 192, fullAiCap: 32, animationCap: 56, attackTokens: { melee: 5, ranged: 4, area: 3, support: 2 } } }),
+  defineBand({ id: 'boss', minTick: 72_000, maxTick: 75_599, spawnIntervalTicks: 60, allowedRoles: ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support'], roleWeights: roleWeights(4, 3, 3, 4, 3, 3), eliteReserve: 8, bossReserve: 1, reservedBossBodies: 9, reservedThreat: 128, budgets: { bodyCap: 128, threatCap: 512, rangedCap: 18, projectileCap: MAX_ACTIVE_PROJECTILES, effectCap: 256, fullAiCap: 40, animationCap: 64, attackTokens: { melee: 3, ranged: 3, area: 3, support: 2 } } }),
+  defineBand({ id: 'endurance', minTick: 75_600, maxTick: Infinity, spawnIntervalTicks: 30, allowedRoles: ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support'], roleWeights: roleWeights(4, 4, 3, 3, 3, 3), eliteReserve: 16, bossReserve: 1, reservedBossBodies: 1, reservedThreat: 96, budgets: { bodyCap: 160, threatCap: 640, rangedCap: 28, projectileCap: MAX_ACTIVE_PROJECTILES, effectCap: 320, fullAiCap: 32, animationCap: 64, attackTokens: { melee: 6, ranged: 5, area: 4, support: 2 } } }),
 ]);
 
 export const DISTRICT_ROLE_GATES = freezeDeep({
@@ -37,15 +38,15 @@ export const DISTRICT_ROLE_GATES = freezeDeep({
   'rugpull-ravine': ['rusher', 'flanker', 'suppressor'],
   'liquidity-crossing': ['rusher', 'flanker', 'suppressor', 'demolition'],
   hashwood: ['rusher', 'flanker', 'demolition', 'support'],
-  'mining-camp': ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support'],
-  'liquidation-yard': ['rusher', 'flanker', 'suppressor', 'heavy', 'demolition', 'support'],
+  'mining-camp': ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support'],
+  'liquidation-yard': ['rusher', 'flanker', 'suppressor', 'bruiser', 'demolition', 'support'],
 });
 
 const ROLE_ARCHETYPES = freezeDeep({
   rusher: ['bagholder-rusher'],
   flanker: ['forkrunner'],
   suppressor: ['liquidator-agent'],
-  heavy: ['whale-enforcer'],
+  bruiser: ['whale-enforcer'],
   demolition: ['gas-bomber'],
   support: ['validator-cultist'],
 });

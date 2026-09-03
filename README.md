@@ -14,7 +14,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs`
 
-**Production cache marker:** `lesters-arcade-v23-hmh-pause-soundtrack`
+**Production cache marker:** `lesters-arcade-v24-hmh-encounter-truth`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
@@ -169,8 +169,9 @@ The bounded cycle ledger is the authoritative implementation history. Highlights
 - Cycles 066-067: bounded timed-power-up refresh telemetry with Liquidator-safe nuke lifecycle certification, and one shared fixed-tick timed-effect countdown driving the desktop HUD, the mobile HUD, and `aria-live` accessibility wording from a single source.
 - Cycle 068: projection-only Time Dilation/Berserk silhouette and audio identity recovered onto current integration, followed by exact candidate review, full serial certification, and live production proof for HMH and Chikun.
 - Cycle 070: portal-owned pause-only soundtrack transport with accessible seek/volume/queue controls, a non-overlapping desktop sidecar, a contained portrait-mobile launcher/drawer, MCP 1/2 PixelLab owner-script compatibility, exact Preview proof, and live desktop/mobile production verification.
+- Cycle 071: canonical `bruiser` encounter-role truth, exported projectile budgets clamped to the live 128-projectile authority, direct cross-band tests, and source-backed reconciliation of the Fable roadmap.
 
-See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [the continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 070](docs/hmh-reboot/cycles/CYCLE-070.md), and the [current live-release handoff](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md).
+See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 071](docs/hmh-reboot/cycles/CYCLE-071.md), and the [current live-release handoff](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md).
 
 ---
 
@@ -197,7 +198,7 @@ See [the reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHAR
 - Immutable production URL: https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
 - Retained rollback deployment: `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs`
 - Retained rollback URL: https://lesters-arcade-8jdteejx4-justin-agent-projects.vercel.app
-- Active runtime cache marker: `lesters-arcade-v23-hmh-pause-soundtrack`
+- Active runtime cache marker: `lesters-arcade-v24-hmh-encounter-truth`
 - Exact production CSS, service worker, transport module, portal bundle, and HMH child bundle bytes matched the verified Preview.
 
 A later documentation-only commit can create a newer Preview without changing production. Treat `200757e2` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
@@ -215,7 +216,7 @@ Runtime implementation `200757e2092b4632903affde91df53a1b56ad72a` is certified a
 | HMH initial JS / cap | 948.5 KB / 1.00 MB; 76.9 KB headroom |
 | Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
 | Cabinet status docs | PASS across canonical manifests and governed docs |
-| Production marker | `lesters-arcade-v23-hmh-pause-soundtrack`; local README parity and live network gate PASS |
+| Production marker | `lesters-arcade-v24-hmh-encounter-truth`; local README parity and live network gate PASS |
 | Production runtime | LIVE at the verified `200757e2` implementation boundary |
 
 The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.
