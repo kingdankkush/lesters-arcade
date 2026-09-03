@@ -234,10 +234,11 @@ This ledger continues the certified reboot after `reboot-20` without changing th
   - Runtime implementation boundary: `200757e2092b4632903affde91df53a1b56ad72a`; documentation head: `12150acc939e311754eeedb3352f79362e9c85f9`
   - Release: `2,282 / 2,231 / 51 / 0`; HMH initial JavaScript `971,216 / 1,050,000`; production `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
   - Cycle ledger: `cycles/CYCLE-070.md`
-- [ ] Cycle 071: roadmap reconciliation plus canonical encounter-role/projectile-budget truth
-  - Status: source green; full certification and deployment pending
+- [x] Cycle 071: roadmap reconciliation plus canonical encounter-role/projectile-budget truth
+  - Status: live and verified
   - Focused evidence: `26 / 26` authority tests, `56 / 56` build/shell tests, desktop/mobile 128-body endurance PASS
-  - Candidate HMH initial JavaScript: `971,228 / 1,050,000`; headroom `78,772` bytes
+  - Release: `2,283 / 2,232 / 51 / 0`; HMH initial JavaScript `971,228 / 1,050,000`; headroom `78,772` bytes
+  - Runtime `f2328177`; production `dpl_5HbBQf21BFoPzucGvijjcefygcDS`; rollback `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
   - Cycle ledger: `cycles/CYCLE-071.md`
 
 ## Cycle 020 final local candidate (historical)
@@ -250,11 +251,11 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 071 source is certified; exact-index review and Preview promotion are pending
-- Certified production runtime boundary: `200757e2092b4632903affde91df53a1b56ad72a` (Cycle 070)
-- Local Cycle 071 scope: canonical `bruiser` encounter role, shared 128-projectile budget authority, and reconciled AAA roadmap
-- Candidate HMH entry: `395,337` bytes; Pixi vendor `575,891` bytes; combined `971,228 / 1,050,000`; headroom `78,772` bytes
-- Focused evidence: `26 / 26` authority tests, `56 / 56` build/shell tests, deterministic long-run PASS, desktop/mobile 128-body endurance PASS
-- Production remains Cycle 070 deployment `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`; rollback `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs`; cache `lesters-arcade-v23-hmh-pause-soundtrack`
+- Status: Cycle 071 is live and verified
+- Certified production runtime boundary: `f232817782509c49ea6e2b6f76ed9a61f82fc4b9`
+- Cycle 071 scope: canonical `bruiser` encounter role, shared 128-projectile budget authority, and reconciled AAA roadmap
+- HMH entry: `395,337` bytes; Pixi vendor `575,891` bytes; combined `971,228 / 1,050,000`; headroom `78,772` bytes
+- Release evidence: `2,283 / 2,232 / 51 / 0`; deterministic long-run PASS; five-profile live browser, four-profile touch, and four-scenario network audits PASS
+- Production `dpl_5HbBQf21BFoPzucGvijjcefygcDS`; rollback `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`; cache `lesters-arcade-v24-hmh-encounter-truth`
 - Current handoff: `../handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`
 - Mainnet settlement remains separately approval-gated and `SETTLEMENT_LIVE=false`

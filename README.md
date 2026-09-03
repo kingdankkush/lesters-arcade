@@ -6,19 +6,19 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Certified production runtime implementation:** `200757e2092b4632903affde91df53a1b56ad72a` (`hermes/hmh-cycle-070-gameplay-ui-music`)
+**Certified production runtime implementation:** `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` (`hermes/hmh-cycle-070-gameplay-ui-music`)
 
-**Verified runtime release deployment:** `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
+**Verified runtime release deployment:** `dpl_5HbBQf21BFoPzucGvijjcefygcDS`
 
-**Immutable runtime release:** https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
+**Immutable runtime release:** https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app
 
-**Retained rollback:** `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs`
+**Retained rollback:** `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
 
 **Production cache marker:** `lesters-arcade-v24-hmh-encounter-truth`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
-> Runtime release facts above were verified on 2026-09-02 through Git read-back, exact Preview review and artifact comparison, Vercel promotion/alias inspection, exact production bundle/CSS/service-worker/module byte comparison, and clean desktop plus `390 × 844` HMH pause-soundtrack browser flows. A later documentation-only build may create another Preview; the production runtime boundary remains `200757e2` unless a separately certified runtime is promoted.
+> Runtime release facts above were verified on 2026-09-02 through exact-index review, Git/Preview artifact identity, Vercel promotion and custom-domain deployment-ID inspection, exact Preview/production hashes for stable bundles, and live five-profile HMH plus four-profile mobile-control browser certification. The deployed runtime boundary is `f2328177`; later documentation-only commits do not replace it.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -179,45 +179,46 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 
 | Gate | Verified 2026-09-02 result |
 | --- | --- |
-| Runtime implementation | `200757e2092b4632903affde91df53a1b56ad72a` |
-| Exact certified patch SHA-256 | `0d4d74cbdd07ea58d5bce81fbc0cd7ebad62cad53fefc935dcda8a63fc161b93` |
-| Release ledger | 2,282 evaluated, 2,231 passing, exactly 51 accepted legacy failures, 0 unexpected |
+| Runtime implementation | `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` |
+| Exact certified patch SHA-256 | `e08e6e91430a02afe177add51a3cf87db0834b6997590e7998cb9a549ded7094` |
+| Release ledger | 2,283 evaluated, 2,232 passing, exactly 51 accepted legacy failures, 0 unexpected |
 | Syntax | 361 JavaScript modules and 49 Python scripts |
 | Deterministic visual suite | 12/12 unchanged; every scene `0 / 0 / 0` delta |
-| HMH browser matrix | Desktop, ultrawide, tablet landscape, mobile portrait, mobile landscape PASS locally; clean desktop and `390 × 844` pause-soundtrack flows PASS on production |
-| Pause soundtrack | Active gameplay hidden; paused transport/seek/volume/queue visible; desktop and mobile resume continuity PASS |
-| Network/console | Public homepage, HMH deep link, child shell, CSS, module, and ranged MP3 requests PASS; browser issues 0 |
-| Performance | Desktop/mobile p95 7 ms / 7 ms |
-| HMH initial JS | 948.5 KB / 1.00 MB; 76.9 KB headroom |
+| HMH browser matrix | Desktop, ultrawide, tablet landscape, mobile portrait, and mobile landscape PASS locally and on production |
+| Mobile controls | iPhone 13, Pixel 7, iPhone SE portrait, and iPhone 13 landscape real-pointer PASS |
+| Network/console | Four clean/warm portal/HMH production scenarios; 0 HTTP/request/console/page errors |
+| Performance | Desktop/mobile p95 7.1 ms / 7.0 ms |
+| HMH initial JS | 395,337-byte entry + 575,891-byte Pixi vendor = 971,228 / 1,050,000 bytes; 78,772 bytes headroom |
 | Security/Web3 | Security 5/5, findings 0; Web3 source audit 9/9; `SETTLEMENT_LIVE=false` |
 
 ### Runtime release identities
 
 - Public domain: https://lestersarcade.io
-- Verified production deployment: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
-- Immutable production URL: https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
-- Retained rollback deployment: `dpl_GBtodAeLfrK7hVL3HWWaZ12RHFHs`
-- Retained rollback URL: https://lesters-arcade-8jdteejx4-justin-agent-projects.vercel.app
+- Verified Preview deployment: `dpl_4aBPFKqRSU8YSdJk8HoTG2JfAjeG`
+- Verified production deployment: `dpl_5HbBQf21BFoPzucGvijjcefygcDS`
+- Immutable production URL: https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app
+- Retained rollback deployment: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
+- Retained rollback URL: https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
 - Active runtime cache marker: `lesters-arcade-v24-hmh-encounter-truth`
-- Exact production CSS, service worker, transport module, portal bundle, and HMH child bundle bytes matched the verified Preview.
+- Exact service-worker, portal bundle, HMH child bundle, and Pixi vendor bytes matched between the verified Preview and production.
 
-A later documentation-only commit can create a newer Preview without changing production. Treat `200757e2` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
+A later documentation-only commit can create a newer Preview without changing production. Treat `f2328177` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
 
 ## Current continuation status
 
-Runtime implementation `200757e2092b4632903affde91df53a1b56ad72a` is certified and live. This documentation wave records that immutable boundary without claiming its own future commit SHA.
+Runtime implementation `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` is certified and live. This documentation wave records that immutable boundary without claiming its own future commit SHA.
 
 | Gate | Result |
 | --- | --- |
-| Release branch | `hermes/hmh-cycle-070-gameplay-ui-music` at `200757e2` |
-| Latest closed cycle | 070, pause soundtrack transport and live desktop/mobile release closure |
-| Release ledger | 2,282 evaluated, 2,231 passing, exactly 51 accepted legacy failures, 0 unexpected |
+| Release branch | `hermes/hmh-cycle-070-gameplay-ui-music` at runtime boundary `f2328177` |
+| Latest closed cycle | 071, roadmap reconciliation and encounter-role/projectile-budget truth |
+| Release ledger | 2,283 evaluated, 2,232 passing, exactly 51 accepted legacy failures, 0 unexpected |
 | Syntax | 361 JavaScript modules and 49 Python scripts |
-| HMH initial JS / cap | 948.5 KB / 1.00 MB; 76.9 KB headroom |
+| HMH initial JS / cap | 971,228 / 1,050,000 bytes; 78,772 bytes headroom |
 | Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
 | Cabinet status docs | PASS across canonical manifests and governed docs |
 | Production marker | `lesters-arcade-v24-hmh-encounter-truth`; local README parity and live network gate PASS |
-| Production runtime | LIVE at the verified `200757e2` implementation boundary |
+| Production runtime | LIVE at the verified `f2328177` implementation boundary |
 
 The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.
 

@@ -40,6 +40,17 @@ standing authority.
   byte checks, and real-browser production verification succeeded without it. Treat a
   bypass secret as a contingency only if deployment protection starts returning 403.
 
+### Current live override — Cycle 071
+
+- Runtime commit: `f232817782509c49ea6e2b6f76ed9a61f82fc4b9`.
+- Production: `dpl_5HbBQf21BFoPzucGvijjcefygcDS`; immediate rollback:
+  `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`.
+- Release ledger: `2,283` evaluated, `2,232` passing, `51` accepted legacy failures,
+  `0` unexpected.
+- Cache: `lesters-arcade-v24-hmh-encounter-truth`.
+- Hosted desktop, ultrawide, tablet, portrait, landscape, touch-control, portal, and
+  network/console checks passed on `https://lestersarcade.io`.
+
 ### Work already completed after the original review baseline
 
 Current source and focused tests prove these roadmap outcomes already exist. Do not
