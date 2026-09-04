@@ -29,6 +29,19 @@ body { background: radial-gradient(circle at 50% 25%, #153b50 0%, #071522 46%, #
 button { font: inherit; }
 button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 [hidden] { display: none !important; }
+/* U-2: developer telemetry never renders without ?debugHud=1. The nodes stay
+   in the DOM because the embedded, portal-e2e and hero-selector smokes read
+   their textContent, and hidden elements still expose it. */
+html:not([data-debug-hud="1"]) [data-debug-only] { display: none !important; }
+/* Under ?debugHud=1 the Pixi telemetry strip returns to the top-centre band,
+   where the shipped cockpit would cover it, so the cockpit docks to the bottom
+   for the duration of the debug session. Developer-only: no certification or
+   smoke profile sets this flag. */
+html[data-debug-hud="1"] .hmh-run-rail { top: auto !important; bottom: max(14px, env(safe-area-inset-bottom)); }
+html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
+/* The first-run hint retires anyway, but a boss encounter that starts while it
+   is still up must never share the band with the boss bar. */
+.hmh-run-rail:has(#hmhBossBar:not([hidden])) ~ .hmh-controls-hint { display: none !important; }
 .hmh-reboot-shell { position: relative; min-height: 320px; isolation: isolate; }
 .hmh-reboot-stage, .hmh-reboot-stage canvas { display: block; width: 100%; height: 100%; }
 
@@ -51,7 +64,11 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   left: max(14px, env(safe-area-inset-left));
   display: grid;
   gap: 4px;
-  width: min(330px, calc(100% - 28px));
+  /* U-2 shrinks this card to a command chip by default, so it must size to its
+     visible content or it would reach across the cockpit bar. It expands back
+     to the full panel width under ?debugHud=1. */
+  width: fit-content;
+  max-width: min(330px, calc(100% - 28px));
   padding: 12px 14px;
   border-radius: 16px;
 }
@@ -76,19 +93,27 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hmh-command-button:hover,
 .hmh-command-button[aria-pressed="true"] { border-color: rgba(143,243,255,0.75); background: rgba(27, 87, 108, 0.76); }
 
+/* U-3 cockpit. The rail is now a two-row command bar: vitals + run stats on
+   top, loadout underneath. It keeps its class and every pinned id because
+   release certification dereferences its rect on three touch profiles.
+   `pointer-events: none` is load-bearing: the mobile-controls smoke resolves
+   `elementFromPoint` at each touch-control centre, and the bar has no
+   interactive children of its own. The desktop width stops short of the
+   minimap exclusion zone (viewport - map - 22px). */
 .hmh-run-rail {
   position: absolute;
   z-index: 7;
   top: max(14px, env(safe-area-inset-top));
   left: 50%;
   display: grid;
-  grid-template-columns: auto auto auto minmax(150px, 240px) auto;
-  gap: 1px;
-  align-items: stretch;
-  padding: 5px;
-  border-radius: 14px;
+  gap: 5px;
+  width: min(940px, calc(100% - 500px));
+  padding: 6px;
+  border-radius: 16px;
+  pointer-events: none;
   transform: translateX(-50%);
 }
+.hmh-hud-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: stretch; min-width: 0; }
 .hmh-run-stat { display: grid; align-content: center; min-width: 72px; padding: 5px 11px; border-right: 1px solid rgba(143,243,255,0.14); }
 .hmh-run-stat span { color: #8aafc0; font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
 .hmh-run-stat strong { color: #fff; font-size: 0.98rem; font-variant-numeric: tabular-nums; }
@@ -102,11 +127,188 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hmh-run-combo[data-tier="overload"] strong { color: #ff6688; font-size: 1.15rem; text-shadow: 0 0 10px rgba(255, 72, 114, 0.65); }
 .hmh-run-combo[data-tier="legend"] { background: linear-gradient(135deg, rgba(255, 209, 102, 0.22), rgba(73, 221, 255, 0.14)); box-shadow: inset 0 0 20px rgba(255, 209, 102, 0.2), 0 0 14px rgba(255, 209, 102, 0.18); transform: translateY(-1px) scale(1.02); }
 .hmh-run-combo[data-tier="legend"] strong { color: #fff1a8; font-size: 1.2rem; text-shadow: 0 0 12px rgba(255, 209, 102, 0.8); }
-.hmh-run-stat--wide { gap: 4px; }
+.hmh-run-stat--wide { flex: 1 1 176px; gap: 4px; min-width: 150px; border-right: 0; }
 .hmh-xp-track { width: 100%; height: 5px; overflow: hidden; border-radius: 999px; background: rgba(3,12,20,0.78); }
 .hmh-xp-track i { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gold), #fff0a8); box-shadow: 0 0 12px rgba(255,209,102,0.56); transition: width 180ms ease-out; }
 .hmh-reboot-dash-status { display: grid; place-items: center; min-width: 82px; padding: 5px 9px; border-radius: 9px; color: #bdd0d8; font-size: 0.61rem; font-weight: 900; letter-spacing: 0.07em; text-transform: uppercase; }
 .hmh-reboot-dash-status[data-ready="true"] { color: #f1feff; background: rgba(21, 88, 108, 0.7); box-shadow: 0 0 16px rgba(73, 221, 255, 0.26); }
+
+/* ---- U-3 vitals ---------------------------------------------------------- */
+.hmh-hud-pilot { display: flex; gap: 9px; align-items: center; padding: 3px 11px 3px 3px; border-right: 1px solid rgba(143,243,255,0.14); }
+.hmh-hud-crest {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 11px;
+  color: var(--text-inverse);
+  background: linear-gradient(150deg, var(--accent), var(--litecoin-blue-bright));
+  box-shadow: inset 0 -7px 14px rgba(0,0,0,0.3), 0 0 14px rgba(25, 247, 255, 0.28);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.hmh-hud-crest[data-hero="lit-valkyrie"] { background: linear-gradient(150deg, var(--fiat-magenta), var(--litecoin-blue-bright)); box-shadow: inset 0 -7px 14px rgba(0,0,0,0.3), 0 0 14px rgba(255, 61, 242, 0.26); }
+.hmh-hud-crest[data-hero="lester-original"] { background: linear-gradient(150deg, var(--warning), var(--fiat-orange)); box-shadow: inset 0 -7px 14px rgba(0,0,0,0.3), 0 0 14px rgba(255, 232, 77, 0.26); }
+.hmh-hud-crest[data-hero="lilly"] { background: linear-gradient(150deg, var(--crypto-green), var(--brass-bright)); box-shadow: inset 0 -7px 14px rgba(0,0,0,0.3), 0 0 14px rgba(69, 255, 138, 0.26); }
+.hmh-hud-health { display: grid; gap: 3px; min-width: 138px; }
+.hmh-hud-health-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.hmh-hud-health-head span { color: #8aafc0; font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.hmh-hud-health-head strong { color: #fff; font-family: var(--font-mono); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.hmh-hud-health-track {
+  position: relative;
+  display: block;
+  height: 13px;
+  overflow: hidden;
+  border: 1px solid rgba(143, 243, 255, 0.24);
+  border-radius: 4px;
+  background: rgba(3, 12, 20, 0.88);
+}
+.hmh-hud-health-track > i { position: absolute; inset: 0 auto 0 0; width: var(--hp, 100%); background: linear-gradient(90deg, var(--success), #b8ffd2); box-shadow: 0 0 12px rgba(69, 255, 138, 0.4); transition: width 140ms linear; }
+.hmh-hud-health-track[data-band="mid"] > i { background: linear-gradient(90deg, var(--warning), #fff5b0); box-shadow: 0 0 12px rgba(255, 232, 77, 0.4); }
+.hmh-hud-health-track[data-band="low"] > i { background: linear-gradient(90deg, var(--danger), #ff9dae); box-shadow: 0 0 14px rgba(255, 71, 111, 0.55); animation: hmh-hud-critical 900ms ease-in-out infinite; }
+.hmh-hud-pips--health { position: absolute; inset: 0; display: flex; }
+.hmh-hud-pips--health b { flex: 1 1 0; border-right: 1px solid rgba(3, 12, 20, 0.9); }
+.hmh-hud-pips--health b:last-child { border-right: 0; }
+.hmh-hud-pips--health b[data-filled="false"] { background: rgba(3, 12, 20, 0.62); }
+@keyframes hmh-hud-critical { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.45); } }
+
+/* ---- U-3 weapon card ----------------------------------------------------- */
+.hmh-hud-weapon { display: flex; gap: 9px; align-items: center; min-width: 252px; padding: 4px 11px 4px 4px; border-right: 1px solid rgba(143,243,255,0.14); }
+.hmh-hud-ring {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) calc(var(--progress, 1) * 360deg), rgba(143, 243, 255, 0.14) 0deg);
+  box-shadow: 0 0 13px rgba(25, 247, 255, 0.2);
+}
+.hmh-hud-ring[data-active="true"] { background: conic-gradient(var(--warning) calc(var(--progress, 0) * 360deg), rgba(255, 232, 77, 0.15) 0deg); box-shadow: 0 0 15px rgba(255, 232, 77, 0.3); }
+.hmh-hud-ring-core { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(4, 13, 21, 0.96); box-shadow: inset 0 0 11px rgba(0,0,0,0.62); }
+.hmh-hud-ring-core::after { color: var(--accent); font-family: var(--font-mono); font-size: 0.47rem; font-weight: 900; letter-spacing: 0.02em; }
+.hmh-hud-weapon[data-weapon="coin-blaster"] .hmh-hud-ring-core::after { content: "PST"; }
+.hmh-hud-weapon[data-weapon="scatter-shotgun"] .hmh-hud-ring-core::after { content: "SHG"; }
+.hmh-hud-weapon[data-weapon="auto-miner"] .hmh-hud-ring-core::after { content: "MG"; }
+.hmh-hud-weapon[data-weapon="launcher-rig"] .hmh-hud-ring-core::after { content: "GL"; }
+.hmh-hud-weapon[data-weapon="hash-rail"] .hmh-hud-ring-core::after { content: "RAIL"; }
+.hmh-hud-weapon[data-weapon="lightning-ledger"] .hmh-hud-ring-core::after { content: "LDGR"; }
+.hmh-hud-weapon[data-weapon="bear-market-burner"] .hmh-hud-ring-core::after { content: "BURN"; }
+.hmh-hud-weapon[data-weapon="forked-standard"] .hmh-hud-ring-core::after { content: "STD"; }
+.hmh-hud-weapon-body { display: grid; gap: 3px; flex: 1 1 auto; min-width: 0; }
+#hmhHudWeaponName { color: #fff; font-size: 0.77rem; letter-spacing: 0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hmh-hud-pips--ammo { display: flex; flex-wrap: wrap; gap: 2px; }
+.hmh-hud-pips--ammo b { width: 7px; height: 13px; border-radius: 2px; background: rgba(143, 243, 255, 0.14); box-shadow: inset 0 0 0 1px rgba(143, 243, 255, 0.24); }
+.hmh-hud-pips--ammo b[data-filled="true"] { background: linear-gradient(180deg, #dcfcff, var(--accent)); box-shadow: 0 0 8px rgba(25, 247, 255, 0.5); }
+/* Lightning Ledger meters six discrete channel cells, not rounds. */
+.hmh-hud-weapon[data-mode="cells"] .hmh-hud-pips--ammo b { width: 13px; border-radius: 3px; }
+.hmh-hud-weapon[data-mode="cells"] .hmh-hud-pips--ammo b[data-filled="true"] { background: linear-gradient(180deg, #fff6bd, var(--warning)); box-shadow: 0 0 9px rgba(255, 232, 77, 0.55); }
+/* A 120-round drum and a 1,200-unit fuel tank cannot be pips. */
+.hmh-hud-ammo-bar { display: none; height: 11px; overflow: hidden; border-radius: 3px; background: rgba(3, 12, 20, 0.88); box-shadow: inset 0 0 0 1px rgba(143, 243, 255, 0.22); }
+.hmh-hud-weapon[data-mode="bar"] .hmh-hud-ammo-bar { display: block; }
+.hmh-hud-weapon[data-mode="bar"] .hmh-hud-pips--ammo,
+.hmh-hud-weapon[data-mode="melee"] .hmh-hud-pips--ammo { display: none; }
+.hmh-hud-ammo-bar i { display: block; width: var(--ammo, 0%); height: 100%; background: linear-gradient(90deg, var(--accent), #dcfcff); box-shadow: 0 0 12px rgba(25, 247, 255, 0.42); transition: width 120ms linear; }
+.hmh-hud-weapon[data-weapon="bear-market-burner"] .hmh-hud-ammo-bar i { background: linear-gradient(90deg, var(--fiat-orange), var(--warning)); box-shadow: 0 0 12px rgba(255, 123, 47, 0.45); }
+.hmh-hud-ammo-line { display: flex; align-items: baseline; gap: 3px; font-family: var(--font-mono); }
+#hmhHudAmmoText { color: #fff; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+#hmhHudAmmoCap { color: #8aafc0; font-size: 0.6rem; }
+#hmhHudReserve { margin-left: 7px; color: var(--ink-muted); font-size: 0.6rem; font-style: normal; }
+#hmhHudReserve:not(:empty)::before { content: 'RES '; color: #6f8ea1; }
+.hmh-hud-weapon-state { align-self: center; flex: 0 0 auto; color: var(--warning); font-family: var(--font-mono); font-size: 0.55rem; font-weight: 900; letter-spacing: 0.05em; text-align: right; }
+.hmh-hud-weapon-state:empty { display: none; }
+.hmh-hud-weapon[data-state="empty"] .hmh-hud-weapon-state,
+.hmh-hud-weapon[data-state="overheated"] .hmh-hud-weapon-state { color: var(--danger); }
+
+/* ---- U-3 arsenal strip --------------------------------------------------- */
+/* Slots 1-4 are the only keyboard hotkeys (Digit1-Digit4); weapons five to
+   eight are reached with the cycle binding, so the strip must not imply keys
+   that do not exist. */
+.hmh-hud-arsenal { display: grid; flex: 1 1 auto; gap: 4px; align-content: center; justify-items: center; padding: 3px 11px; border-right: 1px solid rgba(143,243,255,0.14); }
+.hmh-hud-slots { display: flex; gap: 3px; }
+.hmh-hud-slots b {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 31px;
+  height: 21px;
+  padding: 0 4px;
+  border-radius: 6px;
+  color: #587286;
+  background: rgba(6, 20, 32, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(143, 243, 255, 0.12);
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+.hmh-hud-slots b[data-owned="true"] { color: #dff8ff; background: rgba(12, 55, 74, 0.82); box-shadow: inset 0 0 0 1px rgba(143, 243, 255, 0.38); }
+.hmh-hud-slots b[data-active="true"] { color: var(--text-inverse); background: linear-gradient(180deg, #dcfcff, var(--accent)); box-shadow: 0 0 12px rgba(25, 247, 255, 0.45); }
+.hmh-hud-slots b[data-key]::after { content: attr(data-key); position: absolute; top: -5px; right: -3px; min-width: 12px; padding: 0 2px; border-radius: 4px; color: var(--text-inverse); background: var(--warning); font-size: 0.42rem; line-height: 12px; text-align: center; }
+.hmh-hud-slots-cycle { color: #6f8ea1; font-size: 0.47rem; font-weight: 800; letter-spacing: 0.11em; text-align: center; text-transform: uppercase; }
+
+/* ---- U-3 grenades, dash ring, power-ups ---------------------------------- */
+.hmh-hud-utility { display: flex; flex: 0 0 auto; gap: 10px; align-items: center; padding-left: 3px; }
+.hmh-hud-frag { display: grid; gap: 4px; }
+.hmh-hud-utility-label { color: #8aafc0; font-size: 0.52rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.hmh-hud-utility-label b { color: #fff; font-family: var(--font-mono); font-size: 0.7rem; font-variant-numeric: tabular-nums; }
+.hmh-hud-pips--frag { display: flex; gap: 3px; }
+.hmh-hud-pips--frag b { width: 9px; height: 13px; border-radius: 5px 5px 3px 3px; background: rgba(143, 243, 255, 0.13); box-shadow: inset 0 0 0 1px rgba(143, 243, 255, 0.2); }
+.hmh-hud-pips--frag b[data-filled="true"] { background: linear-gradient(180deg, #ffd7a4, var(--fiat-orange)); box-shadow: 0 0 8px rgba(255, 123, 47, 0.45); }
+.hmh-hud-dash {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border-radius: 12px;
+  background: conic-gradient(var(--success) calc(var(--progress, 1) * 360deg), rgba(143, 243, 255, 0.12) 0deg);
+}
+.hmh-hud-dash[data-ready="false"] { background: conic-gradient(var(--warning) calc(var(--progress, 0) * 360deg), rgba(255, 232, 77, 0.12) 0deg); }
+.hmh-hud-dash .hmh-reboot-dash-status { background: rgba(4, 15, 26, 0.94); }
+.hmh-hud-dash .hmh-reboot-dash-status[data-ready="true"] { background: rgba(9, 54, 46, 0.9); box-shadow: 0 0 16px rgba(69, 255, 138, 0.22); }
+.hmh-hud-powerups { display: flex; gap: 5px; align-items: center; margin-left: 4px; }
+.hmh-hud-powerups b {
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: var(--text-inverse);
+  background: linear-gradient(120deg, var(--warning), var(--fiat-orange));
+  box-shadow: 0 0 13px rgba(255, 232, 77, 0.35);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+/* ---- U-3 boss bar (DOM; replaces the Pixi bar and its phase label) -------- */
+.hmh-boss-bar {
+  display: grid;
+  justify-self: center;
+  gap: 5px;
+  width: min(520px, 100%);
+  margin-top: 1px;
+  padding: 8px 13px;
+  border: 1px solid rgba(255, 71, 111, 0.45);
+  border-radius: 13px;
+  background: linear-gradient(160deg, rgba(44, 7, 17, 0.9), rgba(9, 4, 10, 0.84));
+  box-shadow: inset 0 0 26px rgba(255, 71, 111, 0.12);
+  pointer-events: none;
+}
+.hmh-boss-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.hmh-boss-head strong { color: #ffe7ec; font-size: 0.74rem; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; }
+.hmh-boss-phase { color: var(--danger); font-family: var(--font-mono); font-size: 0.6rem; font-weight: 900; letter-spacing: 0.1em; }
+.hmh-boss-track { position: relative; display: block; height: 13px; overflow: hidden; border-radius: 7px; background: rgba(9, 14, 20, 0.94); box-shadow: inset 0 0 0 1px rgba(255, 71, 111, 0.3); }
+.hmh-boss-track > i { position: absolute; inset: 0 auto 0 0; width: calc(var(--ratio, 1) * 100%); background: linear-gradient(90deg, var(--danger), #ff9dae); box-shadow: 0 0 15px rgba(255, 71, 111, 0.5); transition: width 140ms linear; }
+/* Phase boundaries, so fight progress reads at a glance. */
+.hmh-boss-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent calc(33.333% - 1px), rgba(5, 9, 13, 0.92) calc(33.333% - 1px), rgba(5, 9, 13, 0.92) calc(33.333% + 1px),
+    transparent calc(33.333% + 1px), transparent calc(66.667% - 1px), rgba(5, 9, 13, 0.92) calc(66.667% - 1px),
+    rgba(5, 9, 13, 0.92) calc(66.667% + 1px), transparent calc(66.667% + 1px));
+}
 
 .hmh-profile-panel { position: absolute; z-index: 10; top: 150px; left: 14px; width: 280px; padding: 16px; border-radius: 16px; }
 .hmh-profile-panel > strong { display: block; margin: 5px 0 12px; font-size: 1.05rem; }
@@ -188,8 +390,11 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 @media (hover: none) and (pointer: coarse), (max-width: 900px) {
   .hmh-touch-controls { display: block; }
-  .hmh-reboot-status-card { width: min(290px, calc(100% - 100px)); }
-  .hmh-run-rail { top: 165px; width: calc(100% - 24px); grid-template-columns: 0.75fr 0.55fr 1.4fr 0.8fr; }
+  .hmh-reboot-status-card { max-width: min(290px, calc(100% - 100px)); }
+  /* Before U-3 this declared four grid tracks for five children, so the dash
+     readout wrapped to an implicit row on every touch profile. The cockpit is
+     an explicit two-row flex bar now, so the tracks are gone entirely. */
+  .hmh-run-rail { top: 165px; width: calc(100% - 24px); }
   .hmh-run-stat { min-width: 0; padding-inline: 7px; }
   .hmh-run-stat strong { font-size: 0.82rem; }
   .hmh-profile-panel { top: 190px; }
@@ -201,14 +406,26 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 }
 
 @media (max-width: 600px) {
-  .hmh-reboot-status-card { top: 8px; left: 8px; width: min(282px, calc(100% - 98px)); padding: 9px 10px; border-radius: 12px; }
+  .hmh-reboot-status-card { top: 8px; left: 8px; max-width: min(282px, calc(100% - 98px)); padding: 9px 10px; border-radius: 12px; }
   .hmh-command-button { min-height: 27px; padding: 4px 7px; font-size: 0.58rem; }
   .hmh-adapter-status { display: none; }
-  .hmh-run-rail { top: 136px; width: calc(100% - 16px); padding: 3px; border-radius: 11px; }
+  .hmh-run-rail { top: 136px; width: calc(100% - 16px); padding: 4px; border-radius: 12px; }
   .hmh-run-stat { padding: 4px 5px; }
   .hmh-run-stat span { font-size: 0.5rem; }
   .hmh-run-stat--wide span { white-space: nowrap; }
   .hmh-reboot-dash-status { min-width: 0; padding-inline: 4px; font-size: 0.52rem; }
+  /* Phone portrait: vitals and the weapon card each take their own full-width
+     band so the health bar and the ammo readout stay legible at 100 percent. */
+  .hmh-hud-pilot { flex: 1 1 100%; gap: 8px; padding: 1px 0 4px; border-right: 0; border-bottom: 1px solid rgba(143,243,255,0.14); }
+  .hmh-hud-crest { width: 30px; height: 30px; border-radius: 9px; font-size: 0.62rem; }
+  .hmh-hud-health { flex: 1 1 auto; min-width: 0; }
+  .hmh-hud-weapon { flex: 1 1 100%; min-width: 0; padding: 1px 0 4px; border-right: 0; border-bottom: 1px solid rgba(143,243,255,0.14); }
+  .hmh-hud-ring { width: 36px; height: 36px; }
+  .hmh-hud-ring-core { width: 27px; height: 27px; }
+  .hmh-hud-arsenal { flex: 1 1 100%; padding: 2px 0; border-right: 0; }
+  .hmh-hud-slots b { min-width: 26px; height: 19px; padding: 0 3px; font-size: 0.44rem; }
+  .hmh-hud-utility { flex: 1 1 100%; gap: 8px; justify-content: space-between; padding-left: 0; }
+  .hmh-hud-powerups { flex: 1 1 100%; margin-left: 0; }
   .hmh-profile-panel { top: 172px; left: 8px; width: min(280px, calc(100% - 16px)); }
   .hmh-modal-layer { padding: 10px; }
   .hmh-menu-panel {
@@ -258,6 +475,7 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
     left: 8px;
     display: block;
     width: auto;
+    max-width: none;
     padding: 4px 6px;
     border-radius: 10px;
   }
@@ -267,10 +485,14 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .hmh-adapter-status { display: none; }
   .hmh-command-row { margin: 0; }
   .hmh-command-button { min-height: 38px; padding: 4px 7px; font-size: 0.56rem; }
+  /* Landscape phones: the command chip owns the top-left and the minimap the
+     top-right, so the cockpit lives in the band between them. The right edge
+     stays clear of the minimap exclusion zone (viewport - 140 - 22). */
   .hmh-run-rail {
     top: 8px;
     left: 210px;
-    width: min(380px, calc(100% - 452px));
+    width: min(456px, calc(100% - 388px));
+    gap: 3px;
     padding: 3px;
     border-radius: 11px;
     transform: none;
@@ -279,17 +501,36 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .hmh-run-stat span { font-size: 0.48rem; }
   .hmh-run-stat strong { font-size: 0.76rem; }
   .hmh-reboot-dash-status { min-width: 0; padding: 3px 4px; font-size: 0.48rem; }
+  .hmh-hud-pilot { gap: 6px; padding: 1px 7px 1px 1px; }
+  .hmh-hud-crest { width: 26px; height: 26px; border-radius: 8px; font-size: 0.55rem; }
+  .hmh-hud-health { min-width: 96px; gap: 2px; }
+  .hmh-hud-health-head strong { font-size: 0.72rem; }
+  .hmh-hud-health-track { height: 9px; }
+  .hmh-hud-weapon { flex: 1 1 100%; min-width: 0; gap: 6px; padding: 1px 6px 1px 1px; border-right: 0; }
+  .hmh-hud-ring { width: 30px; height: 30px; }
+  .hmh-hud-ring-core { width: 23px; height: 23px; }
+  .hmh-hud-ring-core::after { font-size: 0.38rem; }
+  #hmhHudWeaponName { font-size: 0.66rem; }
+  #hmhHudAmmoText { font-size: 0.74rem; }
+  .hmh-hud-pips--ammo b { width: 5px; height: 10px; }
+  .hmh-hud-arsenal { padding: 1px 6px; }
+  .hmh-hud-slots b { min-width: 22px; height: 16px; padding: 0 2px; font-size: 0.4rem; }
+  .hmh-hud-slots b[data-key]::after { top: -4px; font-size: 0.36rem; line-height: 10px; }
+  .hmh-hud-slots-cycle { display: none; }
+  .hmh-hud-utility { gap: 7px; padding-left: 0; }
+  .hmh-hud-pips--frag b { width: 7px; height: 10px; }
+  .hmh-hud-powerups b { padding: 3px 6px; font-size: 0.48rem; }
+  .hmh-boss-bar { padding: 5px 9px; }
+  .hmh-boss-track { height: 9px; }
 }
 
 @media (max-width: 700px) and (max-height: 520px) and (orientation: landscape) {
-  .hmh-run-rail { left: 190px; width: calc(100% - 422px); }
-  .hmh-run-stat:first-child { display: none; }
+  .hmh-run-rail { left: 190px; width: calc(100% - 368px); }
 }
 
 @media (max-width: 620px) and (max-height: 520px) and (orientation: landscape) {
   .hmh-reboot-status-card { display: none; }
-  .hmh-run-rail { left: 8px; width: calc(100% - 250px); }
-  .hmh-run-stat:first-child { display: grid; }
+  .hmh-run-rail { left: 8px; width: calc(100% - 186px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -341,6 +582,16 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   line-height: 1;
 }
 @media (max-width: 600px) {
-  /* On a phone the sticks own the bottom; lift the hint clear of them. */
-  .hmh-controls-hint { bottom: auto; top: max(210px, env(safe-area-inset-top)); font-size: 0.62rem; }
+  /* On a phone the sticks own the bottom and the cockpit owns the top band;
+     the hint sits in the gap between the two. */
+  .hmh-controls-hint {
+    display: block;
+    bottom: auto;
+    top: max(406px, env(safe-area-inset-top));
+    padding: 8px 34px 8px 12px;
+    font-size: 0.6rem;
+  }
+  /* Flex items made every word its own column at this width, which pushed the
+     dismiss control outside the pill. */
+  .hmh-controls-hint button { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); }
 }

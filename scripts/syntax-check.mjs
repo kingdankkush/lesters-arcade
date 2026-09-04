@@ -370,6 +370,8 @@ const NODE_CHECK_FILES = [
   "scripts/cabinet-status-doc-drift-check.mjs",
   "scripts/hmh-post-anchor-work-orders.mjs",
   "apps/hmh-reboot/src/cockpit-ui.mjs",
+  "apps/hmh-reboot/src/hud.mjs",
+  "tests/hmh-reboot-hud.test.mjs",
   "apps/hmh-reboot/src/production-hero-atlas.mjs",
   "apps/hmh-reboot/src/enemy-roster-atlas.mjs",
   "apps/hmh-reboot/src/authored-prop-atlas.mjs",

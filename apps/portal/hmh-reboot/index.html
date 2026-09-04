@@ -14,10 +14,15 @@
     <main id="hmhRebootShell" class="hmh-reboot-shell">
       <div id="hmhRebootStage" class="hmh-reboot-stage" role="img" aria-label="Hard Money Heroes top-down reboot renderer"></div>
 
+      <!-- U-2: the kicker, runtime status and session line are developer
+           telemetry. They stay in the DOM (the embedded, portal and
+           hero-selector smokes read their textContent) but only render under
+           ?debugHud=1. The adapter status is NOT gated: it is the explicit
+           simulated-wallet disclosure the trust bar requires. -->
       <aside class="hmh-reboot-status-card" aria-live="polite">
-        <span class="hmh-reboot-kicker">HMH // FORKED FRONTIER</span>
-        <strong id="hmhRebootStatus">Starting PixiJS renderer…</strong>
-        <span id="hmhRebootSession">Standalone shell</span>
+        <span class="hmh-reboot-kicker" data-debug-only>HMH // FORKED FRONTIER</span>
+        <strong id="hmhRebootStatus" data-debug-only>Starting PixiJS renderer…</strong>
+        <span id="hmhRebootSession" data-debug-only>Standalone shell</span>
         <div class="hmh-command-row" aria-label="Runtime controls">
           <button id="hmhMusicToggle" class="hmh-command-button" type="button" aria-pressed="true">Music on</button>
           <button id="hmhMenuToggle" class="hmh-command-button" type="button" aria-controls="hmhPausePanel" aria-expanded="false">Menu</button>
@@ -26,18 +31,81 @@
         <span id="hmhAdapterStatus" class="hmh-adapter-status">Offline run · no wallet requested</span>
       </aside>
 
-      <section class="hmh-run-rail" aria-label="Current run progress">
-        <div class="hmh-run-stat"><span>Score</span><strong id="hmhRunScore">0</strong></div>
-        <div class="hmh-run-stat"><span>Level</span><strong id="hmhRunLevel">1</strong></div>
-        <div id="hmhRunComboStat" class="hmh-run-stat hmh-run-combo" data-tier="idle">
-          <span id="hmhRunComboLabel">Combo reset</span><strong id="hmhRunCombo">×0</strong>
+      <!-- U-3 cockpit. This keeps the class `.hmh-run-rail` and every pinned id
+           because release certification dereferences the rail's rect on three
+           touch profiles and the cockpit smoke reads the run stats. Every
+           purely visual cluster is aria-hidden; the screen-reader path stays
+           the two live regions (#hmhRebootDashStatus here and the sr-only
+           #hmhRebootCombatStatus at the end of the shell), which is why the
+           rail root itself is not aria-hidden. Pips, cells and slot chips are
+           authored here so the runtime never creates a node per frame. -->
+      <section class="hmh-run-rail" id="hmhHud" aria-label="Current run progress">
+        <div class="hmh-hud-row hmh-hud-row--vitals">
+          <div class="hmh-hud-pilot" aria-hidden="true">
+            <i id="hmhHudHero" class="hmh-hud-crest" data-hero="lit-commando">LC</i>
+            <div class="hmh-hud-health">
+              <span class="hmh-hud-health-head"><span>Vitality</span><strong id="hmhHudHealthText">100</strong></span>
+              <span id="hmhHudHealthTrack" class="hmh-hud-health-track" data-band="high">
+                <i id="hmhHudHealthFill"></i>
+                <span id="hmhHudHealthPips" class="hmh-hud-pips hmh-hud-pips--health"><b data-filled="true"></b><b data-filled="true"></b><b data-filled="true"></b><b data-filled="true"></b></span>
+              </span>
+            </div>
+          </div>
+          <div class="hmh-run-stat"><span>Score</span><strong id="hmhRunScore">0</strong></div>
+          <div class="hmh-run-stat"><span>Level</span><strong id="hmhRunLevel">1</strong></div>
+          <div id="hmhRunComboStat" class="hmh-run-stat hmh-run-combo" data-tier="idle">
+            <span id="hmhRunComboLabel">Combo reset</span><strong id="hmhRunCombo">×0</strong>
+          </div>
+          <div class="hmh-run-stat"><span>Kills</span><strong id="hmhHudKills">0</strong></div>
+          <div class="hmh-run-stat hmh-run-stat--wide">
+            <span><b id="hmhRunXp">0</b> / <b id="hmhRunXpNext">300</b> XP</span>
+            <div class="hmh-xp-track" aria-hidden="true"><i id="hmhRunXpFill"></i></div>
+          </div>
         </div>
-        <div class="hmh-run-stat hmh-run-stat--wide">
-          <span><b id="hmhRunXp">0</b> / <b id="hmhRunXpNext">300</b> XP</span>
-          <div class="hmh-xp-track" aria-hidden="true"><i id="hmhRunXpFill"></i></div>
+        <div class="hmh-hud-row hmh-hud-row--loadout">
+          <div id="hmhHudWeapon" class="hmh-hud-weapon" data-weapon="coin-blaster" data-mode="pips" data-state="ready" aria-hidden="true">
+            <span id="hmhHudReloadRing" class="hmh-hud-ring" data-active="false"><b class="hmh-hud-ring-core"></b></span>
+            <span class="hmh-hud-weapon-body">
+              <strong id="hmhHudWeaponName">Pistol</strong>
+              <span id="hmhHudAmmoPips" class="hmh-hud-pips hmh-hud-pips--ammo"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b hidden></b><b hidden></b><b hidden></b><b hidden></b></span>
+              <span class="hmh-hud-ammo-bar"><i id="hmhHudAmmoFill"></i></span>
+              <span class="hmh-hud-ammo-line"><b id="hmhHudAmmoText">8</b><span id="hmhHudAmmoCap">/8</span><em id="hmhHudReserve">∞</em></span>
+            </span>
+            <span id="hmhHudWeaponState" class="hmh-hud-weapon-state"></span>
+          </div>
+          <div class="hmh-hud-arsenal" aria-hidden="true">
+            <div id="hmhHudWeaponSlots" class="hmh-hud-slots">
+              <b data-slot="0" data-key="1" data-owned="true" data-active="true">PST</b>
+              <b data-slot="1" data-key="2" data-owned="false" data-active="false">SHG</b>
+              <b data-slot="2" data-key="3" data-owned="false" data-active="false">MG</b>
+              <b data-slot="3" data-key="4" data-owned="false" data-active="false">GL</b>
+              <b data-slot="4" data-owned="false" data-active="false">RAIL</b>
+              <b data-slot="5" data-owned="false" data-active="false">LDGR</b>
+              <b data-slot="6" data-owned="false" data-active="false">BURN</b>
+              <b data-slot="7" data-owned="false" data-active="false">STD</b>
+            </div>
+            <span class="hmh-hud-slots-cycle">Q cycles</span>
+          </div>
+          <div class="hmh-hud-utility">
+            <span class="hmh-hud-frag" aria-hidden="true">
+              <span class="hmh-hud-utility-label">Frag <b id="hmhHudGrenadeCount">3</b></span>
+              <span id="hmhHudGrenades" class="hmh-hud-pips hmh-hud-pips--frag"><b data-filled="true"></b><b data-filled="true"></b><b data-filled="true"></b><b data-filled="false"></b><b data-filled="false"></b></span>
+            </span>
+            <span id="hmhHudDashRing" class="hmh-hud-dash" data-ready="true">
+              <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Dash ready</output>
+            </span>
+          </div>
+          <div id="hmhHudPowerups" class="hmh-hud-powerups" aria-hidden="true"><b hidden></b><b hidden></b></div>
         </div>
-        <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Dash ready</output>
+        <!-- The boss bar is the cockpit's last row rather than a floating
+             overlay: docked here it can never land on the run rows, the touch
+             controls or the minimap on any certified profile. -->
+        <div id="hmhBossBar" class="hmh-boss-bar" hidden aria-hidden="true">
+          <span class="hmh-boss-head"><strong>The Liquidator</strong><span id="hmhBossPhase" class="hmh-boss-phase"></span></span>
+          <span class="hmh-boss-track"><i id="hmhBossFill"></i></span>
+        </div>
       </section>
+
 
       <aside id="hmhControlsHint" class="hmh-controls-hint" role="status" aria-live="polite">
         <strong>WASD</strong> move · <strong>Mouse</strong> aim · <strong>Right click</strong> grenade · <strong>1-4</strong> weapons · <strong>Esc</strong> for all controls

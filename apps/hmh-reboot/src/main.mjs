@@ -11,6 +11,7 @@ import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './
 import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
+import { createHud } from './hud.mjs';
 import { buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
@@ -64,6 +65,7 @@ import {
 } from './liquidator-boss.mjs';
 import { renderLiquidatorTelegraph } from './liquidator-telegraph-renderer.mjs';
 import {
+  DASH_COOLDOWN_TICKS_BY_TIER,
   beginDash,
   createDashState,
   filterDashInvulnerableHits,
@@ -378,6 +380,7 @@ async function boot() {
           app.ticker.stop();
           combatAudio.destroy();
           cockpit?.destroy();
+          hud?.destroy();
           stopCurrentSession();
           app.destroy(true);
         }
@@ -853,6 +856,14 @@ async function boot() {
   };
 
   const debugGridEnabled = runtimeParams.get('debugGrid') === '1';
+  // U-2: the top-centre telemetry strip, the runtime status line and the
+  // session line are developer surfaces. They stay wired and byte-identical
+  // (browser evidence reads them) but only render under ?debugHud=1. The
+  // dataset flag drives the CSS gate on [data-debug-only]; the Pixi strip is
+  // gated with `label.visible` so its pinned layout code is untouched.
+  const debugHudEnabled = debugGridEnabled || runtimeParams.get('debugHud') === '1';
+  document.documentElement.dataset.debugHud = debugHudEnabled ? '1' : '0';
+  label.visible = debugHudEnabled;
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
@@ -941,6 +952,7 @@ async function boot() {
   window.addEventListener('keydown', unlockCombatAudio, { once: true, capture: true });
   let elapsedMs = 0;
   let cockpit = null;
+  let hud = null;
   let sessionPayload = null;
   let simulation = null;
   let runProgression = null;
@@ -1890,10 +1902,11 @@ async function boot() {
       const narrowDebug = debugGridEnabled && combatStatusLayout.multiline;
       label.style.fontSize = combatStatusLayout.fontSize;
       label.style.align = 'center';
+      const activeProgressionByWeapon = runProgression ? buildProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {};
       const weaponStatus = weaponLoadout
         ? getWeaponReadabilityStatus(weaponLoadout, {
           tick: simulation?.tick ?? 0,
-          progressionByWeapon: runProgression ? buildProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {},
+          progressionByWeapon: activeProgressionByWeapon,
         })
         : null;
       const weaponHud = weaponStatus?.hudLabel ?? 'NO WEAPON 0/0';
@@ -1939,6 +1952,48 @@ async function boot() {
       // hide behind score/level chrome on portrait phones.
       const combatStatusY = combatStatusLayout.y + (narrowDebug ? 32 : 0) + (lightningLedgerHud ? 22 : 0);
       label.position.set(combatStatusX, combatStatusY);
+      // U-3: feed the shipped DOM cockpit. Everything here is a primitive the
+      // HUD diffs before it touches a node, and the ring denominators come
+      // from the exported progression and dash tables rather than from new
+      // fields on the deepEqual-pinned readability status.
+      if (hud) {
+        const activeWeaponState = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
+        let ownedWeaponMask = 0;
+        for (let slot = 0; slot < WEAPON_ORDER.length; slot += 1) {
+          if (weaponLoadout?.weapons?.[WEAPON_ORDER[slot]]?.owned) ownedWeaponMask |= 1 << slot;
+        }
+        const reloadTicksTotal = weaponStatus?.mode === 'reloading'
+          ? applyWeaponProgression(weaponStatus.weaponId, activeProgressionByWeapon[weaponStatus.weaponId]).reloadTicks
+          : 0;
+        const dashCooldownTicks = DASH_COOLDOWN_TICKS_BY_TIER[dashStatus?.cooldownTier ?? 0] ?? DASH_COOLDOWN_TICKS_BY_TIER[0];
+        hud.update({
+          health: playerHealth,
+          maxHealth: maxPlayerHealth,
+          weaponId: weaponStatus?.weaponId ?? 'none',
+          weaponName: weaponStatus?.displayName ?? 'No weapon',
+          mode: weaponStatus?.mode ?? 'ready',
+          ammoInClip: weaponStatus?.ammoInClip ?? 0,
+          clipSize: weaponStatus?.clipSize ?? 0,
+          // A null reserve is the pistol's unlimited carry, not zero.
+          reserveAmmo: weaponStatus ? weaponStatus.reserveAmmo : 0,
+          heat: weaponStatus?.heat ?? 0,
+          ticksRemaining: weaponStatus?.ticksRemaining ?? 0,
+          secondsRemaining: weaponStatus?.secondsRemaining ?? 0,
+          reloadTicksTotal,
+          meleeNext: activeWeaponState?.standardState
+            ? (activeWeaponState.standardState.sequence % 2 === 0 ? 'THRUST' : 'SWEEP')
+            : '',
+          ownedMask: ownedWeaponMask,
+          activeSlot: WEAPON_ORDER.indexOf(weaponLoadout?.activeWeaponId ?? ''),
+          grenades: grenadeSystem?.handCharges ?? 0,
+          maxGrenades: grenadeSystem?.maxHandCharges ?? 5,
+          dashProgress: dashStatus ? 1 - dashStatus.cooldownTicksRemaining / dashCooldownTicks : 1,
+          dashReady: dashStatus?.ready === true,
+          dashActive: dashStatus?.active === true,
+          kills: runKills,
+          powerupHudLabel: powerupPresentation.hudLabel,
+        });
+      }
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
       // the low-health vignette. All projection-only.
       for (const pip of enemyHealthPips) {
@@ -1953,20 +2008,31 @@ async function boot() {
           .fill({ color: pip.ratio > 0.5 ? 0x8ef5a8 : pip.ratio > 0.25 ? 0xffd166 : 0xff5c7a, alpha: 0.96 });
       }
       bossLabel.visible = false;
-      if (liquidatorBoss?.active && (simulation?.tick ?? 0) >= liquidatorBoss.startTick) {
+      // U-3: the shipped boss bar is DOM (#hmhBossBar). The Pixi bar and its
+      // phase label are kept for the debug overlay only -- their construction
+      // and phase string stay source-pinned by the liquidator phase test --
+      // so the fight never draws two bars at once.
+      const bossEngaged = Boolean(liquidatorBoss?.active) && (simulation?.tick ?? 0) >= (liquidatorBoss?.startTick ?? 0);
+      const bossHealthRatio = bossEngaged
+        ? Math.max(0, Math.min(1, liquidatorBoss.health / liquidatorBoss.maxHealth))
+        : 0;
+      hud?.setBoss(bossEngaged, bossHealthRatio, liquidatorBoss?.phaseId ?? '');
+      if (bossEngaged) {
         const barWidth = Math.min(420, view.width * 0.52);
         const barX = view.width / 2 - barWidth / 2;
         const bossBarY = view.width < 560 ? 292 : 124;
-        const ratio = Math.max(0, Math.min(1, liquidatorBoss.health / liquidatorBoss.maxHealth));
+        const ratio = bossHealthRatio;
         bossLabel.text = `THE LIQUIDATOR // ${liquidatorBoss.phaseId.replaceAll('-', ' ').toUpperCase()}`;
         bossLabel.position.set(view.width / 2, bossBarY - 5);
-        bossLabel.visible = true;
-        overlayVisuals.roundRect(barX - 2, bossBarY - 2, barWidth + 4, 14, 7).fill({ color: 0x05090d, alpha: 0.82 });
-        overlayVisuals.roundRect(barX, bossBarY, barWidth, 10, 5).fill({ color: 0x1b2733, alpha: 0.95 });
-        overlayVisuals.roundRect(barX, bossBarY, barWidth * ratio, 10, 5).fill({ color: 0xff496c, alpha: 0.98 });
-        // Phase boundaries so the player can read fight progress.
-        for (const marker of [1 / 3, 2 / 3]) {
-          overlayVisuals.rect(barX + barWidth * marker, bossBarY, 2, 10).fill({ color: 0x05090d, alpha: 0.9 });
+        bossLabel.visible = debugHudEnabled;
+        if (debugHudEnabled) {
+          overlayVisuals.roundRect(barX - 2, bossBarY - 2, barWidth + 4, 14, 7).fill({ color: 0x05090d, alpha: 0.82 });
+          overlayVisuals.roundRect(barX, bossBarY, barWidth, 10, 5).fill({ color: 0x1b2733, alpha: 0.95 });
+          overlayVisuals.roundRect(barX, bossBarY, barWidth * ratio, 10, 5).fill({ color: 0xff496c, alpha: 0.98 });
+          // Phase boundaries so the player can read fight progress.
+          for (const marker of [1 / 3, 2 / 3]) {
+            overlayVisuals.rect(barX + barWidth * marker, bossBarY, 2, 10).fill({ color: 0x05090d, alpha: 0.9 });
+          }
         }
       }
       const damageAge = lastPlayerHit && simulation ? simulation.tick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
@@ -2168,6 +2234,7 @@ async function boot() {
       }
     } else {
       minimap.clear();
+      hud?.setBoss(false, 0, '');
       actorVisual.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
     }
@@ -2293,6 +2360,9 @@ async function boot() {
       rankedEligible: payload.session.rankedEligible,
     }));
     cockpit?.updateRun(getRunProgressionSnapshot(runProgression));
+    hud?.setHero(payload.heroId);
+    hud?.setVisible(true);
+    hud?.setBoss(false, 0, '');
     actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });
     runSummaryAccumulator = createRunSummaryAccumulator({
       seed: payload.session.seed,
@@ -3848,6 +3918,8 @@ async function boot() {
     app.ticker.start();
     if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
   };
+
+  hud = createHud({ documentRef: document, weaponOrder: WEAPON_ORDER });
 
   cockpit = createCockpitUi({
     documentRef: document,
