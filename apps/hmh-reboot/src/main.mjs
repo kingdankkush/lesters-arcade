@@ -50,7 +50,7 @@ import {
   openingEnemyAttacksEnabled,
   openingEnemyMovementEnabled,
 } from './opening-balance.mjs';
-import { buildEnduranceEncounterCandidates, createEncounterDirector, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
+import { buildEnduranceEncounterCandidates, createEncounterDirector, directorViewBounds, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
 import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
@@ -2667,13 +2667,6 @@ async function boot() {
       }
       if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
 
-      const viewForDirector = viewport();
-      const directorCameraBounds = {
-        minX: camera.x - viewForDirector.width * 0.5 / camera.zoom,
-        minY: camera.y - viewForDirector.height * 0.5 / camera.zoom,
-        maxX: camera.x + viewForDirector.width * 0.5 / camera.zoom,
-        maxY: camera.y + viewForDirector.height * 0.5 / camera.zoom,
-      };
       lastDirectorStep = endurancePressurePilotEnabled
         ? Object.freeze({ inserted: false, reason: 'endurance-pressure-pilot', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
         : rosterPreviewEnabled
@@ -2684,7 +2677,10 @@ async function boot() {
           tick,
           districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
-          camera: directorCameraBounds,
+          // K-1: a fixed logical view centred on the SIMULATED actor. Spawn
+          // exclusion must not depend on render zoom, viewport size, DPR, or the
+          // frame-timed render camera.
+          camera: directorViewBounds({ x: actor.x, y: actor.y }),
           spawnPoints: authoredSpawnPoints,
           nearRewardPoi: LEVEL_ONE_WORLD.pointsOfInterest.some((poi) => poi.hook === 'reward' && Math.hypot(actor.x - poi.anchor.x, actor.y - poi.anchor.y) <= 240),
           queryGround,

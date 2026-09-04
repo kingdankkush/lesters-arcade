@@ -42,7 +42,9 @@ Body, threat, ranged, projectile, effect, attack-token-family, full-AI, and anim
 Only authored spawn points are candidates. Every attempted insertion must pass all of these checks:
 
 - correct district and authored region;
-- outside the active camera bounds;
+- outside the fixed `720 x 450` logical view centred on the simulated player
+  (`DIRECTOR_VIEW_HALF_EXTENTS` / `directorViewBounds`), never the render camera,
+  render zoom, real viewport size, or device pixel ratio;
 - outside the protected hero radius;
 - not inside collision blockers;
 - not in deep water or illegal elevation deltas;

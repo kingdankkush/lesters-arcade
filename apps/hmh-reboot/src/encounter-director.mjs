@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { finite, freezeDeep } from './value-guards.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
 import {
   ENEMY_CAPACITY,
@@ -13,13 +13,28 @@ const REST_DURATION_TICKS = 900;
 const PROTECTED_HERO_RADIUS = 560;
 const MAX_SPAWN_ELEVATION_DELTA = 64;
 
+// K-1: the spawn-exclusion rectangle is a fixed LOGICAL view in world units,
+// sized once from the 1440x900 desktop design viewport at zoom 1. Render zoom,
+// real viewport size, device pixel ratio, and the frame-timed render camera
+// never reach the simulation, so one seed produces one spawn sequence on every
+// device and at every frame rate.
+export const DIRECTOR_VIEW_HALF_EXTENTS = Object.freeze({ x: 720, y: 450 });
+
+export function directorViewBounds(center) {
+  const x = finite(center?.x, 'view center.x');
+  const y = finite(center?.y, 'view center.y');
+  return Object.freeze({
+    minX: x - DIRECTOR_VIEW_HALF_EXTENTS.x,
+    minY: y - DIRECTOR_VIEW_HALF_EXTENTS.y,
+    maxX: x + DIRECTOR_VIEW_HALF_EXTENTS.x,
+    maxY: y + DIRECTOR_VIEW_HALF_EXTENTS.y,
+  });
+}
 
 function nonNegativeInteger(value, name) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
   return value;
 }
-
-import { finite } from './value-guards.mjs';
 
 const defineBand = (definition) => freezeDeep(definition);
 const roleWeights = (rusher, flanker, suppressor = 0, bruiser = 0, demolition = 0, support = 0) => ({ rusher, flanker, suppressor, bruiser, demolition, support });
@@ -215,6 +230,9 @@ export function validateEncounterSpawn({
   finite(player?.x, 'player.x');
   finite(player?.y, 'player.y');
   finite(player?.groundZ, 'player.groundZ');
+  // `camera` is the fixed logical view rectangle produced by
+  // directorViewBounds(), not the render camera. It must never be derived from
+  // render zoom, real viewport size, or device pixel ratio.
   if (!camera || ![camera.minX, camera.minY, camera.maxX, camera.maxY].every(Number.isFinite)) throw new TypeError('camera bounds are required');
   if (typeof queryGround !== 'function' || typeof isBlocked !== 'function' || typeof isRouteReachable !== 'function') throw new TypeError('spawn safety callbacks are required');
   if (x >= camera.minX && x <= camera.maxX && y >= camera.minY && y <= camera.maxY) return freezeDeep({ allowed: false, reason: 'on-camera', groundZ: null });

@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
+  DIRECTOR_VIEW_HALF_EXTENTS,
   DISTRICT_ROLE_GATES,
   ENCOUNTER_BANDS,
   createEncounterDirector,
+  directorViewBounds,
   getEncounterBand,
   getEncounterSnapshot,
   isEncounterRestWindow,
@@ -217,4 +219,98 @@ test('a saturated ranged cap advances the spawn ordinal instead of deadlocking e
   }
   assert.ok(state.spawnOrdinal > 2, 'a selection-class rejection must advance the ordinal');
   assert.ok(inserted >= 1, 'melee spawns must not be blocked by a saturated ranged cap');
+});
+
+test('director view bounds are a fixed logical view independent of zoom, viewport, and DPR', () => {
+  assert.deepEqual({ ...DIRECTOR_VIEW_HALF_EXTENTS }, { x: 720, y: 450 });
+  assert.ok(Object.isFrozen(DIRECTOR_VIEW_HALF_EXTENTS));
+  assert.equal(directorViewBounds.length, 1);
+  const bounds = directorViewBounds({ x: 800, y: 2_400 });
+  assert.deepEqual({ ...bounds }, { minX: 80, minY: 1_950, maxX: 1_520, maxY: 2_850 });
+  assert.ok(Object.isFrozen(bounds));
+  assert.deepEqual({ ...directorViewBounds({ x: 0, y: 0 }) }, { minX: -720, minY: -450, maxX: 720, maxY: 450 });
+  assert.throws(() => directorViewBounds({ x: Number.NaN, y: 0 }), /finite/);
+  assert.throws(() => directorViewBounds({ x: 0, y: Number.POSITIVE_INFINITY }), /finite/);
+  assert.throws(() => directorViewBounds(), /finite/);
+});
+
+test('one seed produces one spawn sequence under every zoom, viewport, and camera-lag setting', () => {
+  // regionId is shared so the authored sort falls through to id: 'a-near-east'
+  // is evaluated before 'b-far-east'.
+  const NEAR = Object.freeze({ id: 'a-near-east', regionId: 'r', districtId: 'frontier-relay', x: 700, y: 0, routeValid: true });
+  const FAR = Object.freeze({ id: 'b-far-east', regionId: 'r', districtId: 'frontier-relay', x: 900, y: 0, routeValid: true });
+  // The exact main.mjs rectangle this cycle deletes: render camera centre +/-
+  // viewport half-extents divided by render zoom.
+  const legacyBounds = (profile, center) => ({
+    minX: center.x - profile.width * 0.5 / profile.zoom,
+    minY: center.y - profile.height * 0.5 / profile.zoom,
+    maxX: center.x + profile.width * 0.5 / profile.zoom,
+    maxY: center.y + profile.height * 0.5 / profile.zoom,
+  });
+  const PROFILES = [
+    { id: 'desktop', width: 1_440, height: 900, zoom: 1 },
+    { id: 'mobile-portrait', width: 390, height: 844, zoom: 1 },
+    { id: 'ultrawide-zoomed', width: 1_920, height: 800, zoom: 2 },
+  ];
+  const runSequence = (camera) => {
+    const state = createEncounterDirector({ seed: 424_242 });
+    const population = createEnemyPopulation({ capacity: 192, threatCapacity: 1_024 });
+    const sequence = [];
+    for (let tick = 0; tick <= 2_400; tick += 1) {
+      const report = stepEncounterDirector({
+        state,
+        population,
+        tick,
+        districtId: 'frontier-relay',
+        player: PLAYER,
+        camera,
+        spawnPoints: [NEAR, FAR],
+        nearRewardPoi: false,
+        queryGround: FLAT,
+        isBlocked: () => false,
+        isRouteReachable: () => true,
+        visualMode: 'prototype',
+      });
+      if (report.inserted) sequence.push([report.tick, report.enemyId, report.archetypeId, report.spawnPointId]);
+    }
+    return sequence;
+  };
+
+  // The legacy rectangle made one seed produce different spawn sequences per
+  // device, and different sequences on one device once the render-smoothed
+  // camera lagged behind the simulated actor.
+  const legacyByProfile = PROFILES.map((profile) => runSequence(legacyBounds(profile, PLAYER)));
+  assert.notDeepEqual(legacyByProfile[0], legacyByProfile[1]);
+  assert.notDeepEqual(legacyByProfile[0], legacyByProfile[2]);
+  assert.equal(legacyByProfile[0][0][3], 'b-far-east');
+  assert.equal(legacyByProfile[1][0][3], 'a-near-east');
+  const laggedCamera = runSequence(legacyBounds(PROFILES[0], { x: -64, y: 0 }));
+  assert.notDeepEqual(legacyByProfile[0], laggedCamera);
+
+  // The fixed logical view is centred on the simulated actor and reads no
+  // profile at all, so every device and every camera-lag state agree.
+  const fixed = runSequence(directorViewBounds(PLAYER));
+  assert.ok(fixed.length > 0);
+  assert.equal(fixed[0][3], 'b-far-east');
+  assert.equal(fixed[0][1], 'encounter-000000');
+  for (const profile of PROFILES) {
+    assert.deepEqual(runSequence(directorViewBounds(PLAYER)), fixed, profile.id);
+  }
+  assert.deepEqual(runSequence(directorViewBounds({ x: PLAYER.x, y: PLAYER.y })), fixed);
+});
+
+test('runtime director bounds never read camera.zoom, the viewport, or the render camera', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /viewForDirector/);
+  assert.doesNotMatch(source, /directorCameraBounds/);
+  assert.match(source, /directorViewBounds/);
+  assert.match(source, /camera: directorViewBounds\(\{ x: actor\.x, y: actor\.y \}\)/);
+  const start = source.indexOf('lastDirectorStep = endurancePressurePilotEnabled');
+  const end = source.indexOf('lastBossStep = liquidatorBoss.active');
+  assert.ok(start > 0 && end > start);
+  const block = source.slice(start, end);
+  assert.doesNotMatch(block, /camera\.zoom/);
+  assert.doesNotMatch(block, /viewport\(\)/);
+  assert.doesNotMatch(block, /camera\.x/);
+  assert.doesNotMatch(block, /camera\.y/);
 });

@@ -3,6 +3,7 @@ import { performance } from 'node:perf_hooks';
 
 import {
   createEncounterDirector,
+  directorViewBounds,
   getEncounterSnapshot,
   stepEncounterDirector,
 } from '../apps/hmh-reboot/src/encounter-director.mjs';
@@ -22,7 +23,9 @@ ensureExplicitGc(import.meta.url);
 
 const sha = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const PLAYER = Object.freeze({ x: 0, y: 0, groundZ: 0 });
-const CAMERA = Object.freeze({ minX: -480, minY: -270, maxX: 480, maxY: 270 });
+// K-1: the soak exercises the same fixed logical view the runtime uses, centred
+// on the simulated player rather than an ad-hoc render-sized rectangle.
+const CAMERA = directorViewBounds(PLAYER);
 const DISTRICT_BY_BAND = Object.freeze({
   opening: 'frontier-relay',
   build: 'frontier-relay',
