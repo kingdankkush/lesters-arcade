@@ -518,7 +518,7 @@ function drawBlocker(graphic, feature, kit, camera, worldToScreen) {
         }
         graphic.circle(x + lean - canopy * 0.18, y - canopy * 0.95, canopy * 0.3)
           .fill({ color: mixColor(kit.baseColor, kit.accentColor, 0.42), alpha: 0.7 });
-        graphic.arc(x + lean, y - canopy * 0.72, canopy * 0.74, Math.PI * 1.12, Math.PI * 1.72)
+        arcFrom(graphic, x + lean, y - canopy * 0.72, canopy * 0.74, Math.PI * 1.12, Math.PI * 1.72)
           .stroke({ color: kit.accentColor, width: Math.max(1, 1.8 * camera.zoom), alpha: 0.5 });
       } else {
         graphic.roundRect(x - 3, y - 10 * camera.zoom, 6, 20 * camera.zoom, 2).fill({ color: kit.accentColor, alpha: 0.88 });
@@ -567,7 +567,7 @@ function drawLandmark(graphic, landmark, kit, center, zoom, glow) {
   if (landmark.visualKind === 'signal-tower') {
     graphic.moveTo(center.x, center.y + 32 * s).lineTo(center.x, center.y - 34 * s).stroke({ color: kit.baseColor, width: 12 * s });
     graphic.moveTo(center.x, center.y - 12 * s).lineTo(center.x - 18 * s, center.y - 28 * s).moveTo(center.x, center.y - 12 * s).lineTo(center.x + 18 * s, center.y - 28 * s).stroke({ color: kit.accentColor, width: 5 * s });
-    for (const radius of [18, 28, 38]) graphic.arc(center.x, center.y - 24 * s, radius * s, Math.PI * 1.15, Math.PI * 1.85).stroke({ color: kit.accentColor, width: 2, alpha: 0.4 + glow * 0.45 });
+    for (const radius of [18, 28, 38]) arcFrom(graphic, center.x, center.y - 24 * s, radius * s, Math.PI * 1.15, Math.PI * 1.85).stroke({ color: kit.accentColor, width: 2, alpha: 0.4 + glow * 0.45 });
   } else if (landmark.visualKind === 'forked-cliff') {
     graphic.poly([center.x - 32*s,center.y+30*s,center.x-12*s,center.y-30*s,center.x,center.y-5*s,center.x+15*s,center.y-36*s,center.x+34*s,center.y+30*s]).fill({ color: kit.baseColor }).stroke({ color: kit.accentColor, width: 4 });
   } else if (landmark.visualKind === 'bridge') {

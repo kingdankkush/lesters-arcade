@@ -388,6 +388,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-camp-props.test.mjs",
   "tests/hmh-reboot-contact-shadows.test.mjs",
   "tests/hmh-reboot-grenade-feedback.test.mjs",
+  "tests/hmh-reboot-graphics-arc-origin.test.mjs",
   "tests/hmh-reboot-cycle-007-art.test.mjs",
   "tests/hmh-reboot-external-model-pipeline.test.mjs",
   "tests/hmh-reboot-terrain-rebuild.test.mjs",

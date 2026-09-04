@@ -251,7 +251,10 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 072 is live and verified
+- Status: Cycle 073 source green; full local certification passed; production promotion pending
+- Cycle 073 scope: EEVEE enemy roster with the quantiser removed and the hero budget gate, per-weapon combat VFX and surface impacts, grenade feedback set, level-up card tiers and SFX slider, ledge fronts and rock cliffs, density pass with spawn camps, LFS policy, anchor warm-up, navgrid readiness, arc-origin fix
+- Cycle 073 evidence: `2,429 / 2,378 / 51 / 0`; entry `444,168` + vendor `575,891` = `1,020,059 / 1,050,000`, headroom `29,941`; visual 12/12 re-accepted with intent plus enemy-crop checks; five-profile certification zero-delta anchors; desktop/mobile p95 `8.4 / 8.1 ms`; mobile controls 4/4
+- Previous status: Cycle 072 is live and verified
 - Cycle 072 scope: lit micro-terrain and macro tile scale, roads without an outline, shore/scree bands, ground contact shadows, real HUD with gated developer telemetry, encounter-director view decoupled from the render camera, external-model import path
 - Cycle 072 evidence: `2,339 / 2,288 / 51 / 0`; entry `410,065` + vendor `575,891` = `985,956 / 1,050,000`, headroom `64,044`; visual 12/12 re-accepted with intent; five-profile certification zero-delta anchors; desktop/mobile p95 `7.1 / 7.1 ms`; mobile controls 4/4
 - Cycle 072 excluded P-4 (enemy EEVEE) at the reproducibility gate: `68 / 1,368` frames drift; tolerance not widened and art not shipped

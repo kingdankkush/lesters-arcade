@@ -1848,9 +1848,11 @@ async function boot() {
                 .stroke({ color: glow, width: 4, alpha: alpha * 0.9, cap: 'round', join: 'round' });
             } else {
               const radius = 76 * camera.zoom;
-              combatVisuals.arc(center.x, center.y, radius, angle - 1.02, angle + 1.02)
+              combatVisuals.moveTo(center.x + Math.cos(angle - 1.02) * radius, center.y + Math.sin(angle - 1.02) * radius)
+                .arc(center.x, center.y, radius, angle - 1.02, angle + 1.02)
                 .stroke({ color: glow, width: 16, alpha: alpha * 0.28, cap: 'round' });
-              combatVisuals.arc(center.x, center.y, radius, angle - 1.02, angle + 1.02)
+              combatVisuals.moveTo(center.x + Math.cos(angle - 1.02) * radius, center.y + Math.sin(angle - 1.02) * radius)
+                .arc(center.x, center.y, radius, angle - 1.02, angle + 1.02)
                 .stroke({ color: 0xf4fdff, width: 5, alpha: alpha * 0.9, cap: 'round' });
             }
           } else if (event.type === 'muzzle') {
@@ -1922,7 +1924,8 @@ async function boot() {
           } else if (event.type === 'melee') {
             const facing = worldToScreen({ x: event.point.x + event.direction.x, y: event.point.y + event.direction.y, z: event.point.z }, camera, view);
             const angle = Math.atan2(facing.y - center.y, facing.x - center.x);
-            combatVisuals.arc(center.x, center.y, 58 * camera.zoom, angle - 0.72, angle + 0.72)
+            combatVisuals.moveTo(center.x + Math.cos(angle - 0.72) * 58 * camera.zoom, center.y + Math.sin(angle - 0.72) * 58 * camera.zoom)
+              .arc(center.x, center.y, 58 * camera.zoom, angle - 0.72, angle + 0.72)
               .stroke({ color: 0xd7fbff, width: 10, alpha: alpha * 0.68 });
           } else if (event.type === 'blast') {
             // grenade feedback (V-3): a bounded core flash, a shockwave ring
