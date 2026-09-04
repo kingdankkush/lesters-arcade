@@ -42,3 +42,33 @@ test('reboot release certification owns deterministic anchors, responsive geomet
   assert.match(source, /dist\/hmh-reboot\/game\.js/);
   assert.match(source, /sw\.js/);
 });
+
+test('Cycle 073 anchor warm-up is a bounded loop that stops on two hash-identical frames, and live runs prove navigation authority preceded the first tick', () => {
+  const source = fs.readFileSync(scriptPath, 'utf8');
+  // The Cycle 072 mobile-portrait flake (28,886 antialiased DOM-edge pixels at
+  // delta 19) survived a single throwaway screenshot. The warm-up must keep
+  // rasterising until two consecutive captures agree, with a hard cap so a
+  // frame that never settles still reaches the strict 32 px / delta 2 gate
+  // instead of looping forever, and the count must reach the report so the
+  // cycle record can quote it.
+  assert.match(source, /const MAX_ANCHOR_WARMUP_SCREENSHOTS = 6;/);
+  assert.match(source, /async function warmCompositor\(/);
+  assert.match(source, /two consecutive/);
+  assert.match(source, /warmup:/);
+  assert.match(source, /stable/);
+  // Exactly one anchor capture remains after the warm-up loop.
+  const captureAnchor = source.slice(source.indexOf('async function captureAnchor('), source.indexOf('async function captureLiveInteraction('));
+  assert.match(captureAnchor, /await warmCompositor\(page/);
+  assert.equal((captureAnchor.match(/page\.screenshot\(/g) ?? []).length, 1, 'captureAnchor must take exactly one screenshot outside warmCompositor');
+  // Thresholds and comparators are untouched: the flake is recorded, never widened.
+  assert.match(source, /changedPixels <= 32/);
+  assert.match(source, /maxChannelDelta <= 2/);
+  assert.doesNotMatch(source, /changedPixels <= (?!32\b)\d+/);
+  assert.doesNotMatch(source, /maxChannelDelta <= (?!2\b)\d+/);
+  // K-7: the live path asserts the navgrid was authoritative before tick 4 and
+  // records how long the idle-sliced build took per profile.
+  const live = source.slice(source.indexOf('async function captureLiveInteraction('));
+  assert.match(live, /dataset\.navGridReady/);
+  assert.match(live, /navGridBootMs/);
+  assert.match(live, /before navigation authority/);
+});

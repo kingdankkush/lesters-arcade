@@ -64,9 +64,13 @@ async function measure({ name, viewport, deviceScaleFactor, isMobile, expectedPr
   await page.waitForTimeout(2_000);
   // Read boot's long tasks before the sampler runs. The buffer gets cleared
   // below, and dropping it outright would silently retire this gate's only
-  // coverage of boot-time stalls -- the navgrid build is ~400 ms and blocks
-  // first paint, so that signal has to survive the restructure.
+  // coverage of boot-time stalls -- the navgrid build is ~400 ms of compute,
+  // idle-sliced after the first interactive frame since 1c941196 and
+  // time-budgeted per slice since Cycle 073 (K-7); a regression to a blocking
+  // build would surface here as a boot long task, so the signal must survive.
   const bootLongTasks = await page.evaluate(() => [...globalThis.__hmhPerformance.longTasks]);
+  // Recorded, not gated (Cycle 073): wall time of the idle-sliced navgrid build.
+  const navGridBootMs = Number(await page.locator('#hmhRebootStage').getAttribute('data-nav-grid-boot-ms'));
   const heapBeforeSamples = await sampleRetainedHeap(page);
   // Forcing collections stalls the main thread, and boot frames are not steady
   // state either. Discard everything recorded so far so the frame percentiles
@@ -102,6 +106,7 @@ async function measure({ name, viewport, deviceScaleFactor, isMobile, expectedPr
   const heapAfterSamples = await sampleRetainedHeap(page);
   Object.assign(result, summarizeHeapSamples({ before: heapBeforeSamples, after: heapAfterSamples }));
   result.bootLongTasks = bootLongTasks;
+  result.navGridBootMs = navGridBootMs;
   assert.equal(result.profile, expectedProfile);
   assert.ok(result.configuredResolution <= resolutionCap);
   assert.ok(result.actualResolutionX <= resolutionCap + 0.02);

@@ -387,6 +387,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-external-model-pipeline.test.mjs",
   "tests/hmh-reboot-terrain-rebuild.test.mjs",
   "tests/hmh-reboot-terrain-strip-render.test.mjs",
+  "scripts/hmh-source-model-lfs-check.mjs",
+  "tests/hmh-source-model-lfs-policy.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 

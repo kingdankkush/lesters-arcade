@@ -5,3 +5,16 @@
 *.gif binary
 *.ico binary
 *.svg text eol=lf
+
+# Source models (roadmap P-5). External GLB/FBX actors and their sidecar
+# buffers/textures under apps/hmh-reboot/assets/source/models/ travel through
+# Git LFS. These lines come after the generic binary macros above on purpose:
+# gitattributes resolves later matching lines last, and `-text` keeps Git from
+# ever autodetecting a GLB as text. Per-file cap 40 MB, PNG textures <= 2048 px
+# per edge, verified by `npm run assets:hmh:models:lfs-check`.
+apps/hmh-reboot/assets/source/models/**/*.glb filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.bin filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.png filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.jpeg filter=lfs diff=lfs merge=lfs -text

@@ -120,7 +120,13 @@ async function openPage(device, { shrinkVisualViewport = false } = {}) {
   await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&telemetry=1&worldTour=mining`, { waitUntil: 'networkidle' });
   const stage = page.locator('#hmhRebootStage');
   await stage.waitFor({ state: 'attached' });
-  return { context, page, stage, errors };
+  // K-7 (Cycle 073): the session, and therefore the hero, cannot exist until
+  // the idle-sliced navgrid is authoritative. Waiting for it here turns a slow
+  // build into a visible timeout instead of a flaky "hero position is not
+  // observable"; it does not hide latency, which is recorded as navGridBootMs.
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.navGridReady === 'true', null, { timeout: 30_000 });
+  const navGridBootMs = Number(await stage.getAttribute('data-nav-grid-boot-ms'));
+  return { context, page, stage, errors, navGridBootMs };
 }
 
 for (const device of DEVICES) {
@@ -128,7 +134,7 @@ for (const device of DEVICES) {
   try {
     const opened = await openPage(device);
     context = opened.context;
-    const { page, stage, errors } = opened;
+    const { page, stage, errors, navGridBootMs } = opened;
 
     // The overlay must be reachable at all: the media query decides that.
     assert.equal(await page.locator('.hmh-touch-controls').isVisible(), true, 'touch overlay hidden on a touch device');
@@ -244,6 +250,7 @@ for (const device of DEVICES) {
       status: 'PASS',
       travelReal: Number(travelReal.toFixed(2)),
       travelSurface: Number(travelSurface.toFixed(2)),
+      navGridBootMs,
     });
   } catch (error) {
     failures += 1;

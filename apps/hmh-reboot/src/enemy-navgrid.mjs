@@ -8,8 +8,10 @@ import { resolveSweptTraversalPath } from './elevation.mjs';
 // across ticks, so same-seed replays stay stable.
 
 // 60 world units: fine enough that the 216-unit corridor between the bridge
-// rails keeps two walkable rows, coarse enough that the full grid (200 x 80)
-// builds in well under a second at boot and a BFS costs microseconds.
+// rails keeps two walkable rows, coarse enough that the full grid (200 x 80 =
+// 16,000 cells, ~400 ms of compute in Node) is idle-sliced after the first
+// interactive frame (createEnemyNavGridChunked, since 1c941196) with every
+// slice bounded by a time budget (Cycle 073), and a BFS costs microseconds.
 export const ENEMY_NAV_CELL_SIZE = 60;
 // A flank lane is perpendicular, so it always lengthens the player vector.
 // This bounds how much widening counts as flanking rather than retreating.
@@ -157,24 +159,49 @@ export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CE
   });
 }
 
+// Resolves with the IdleDeadline when the host provides one, so a slice can
+// shrink to the idle time actually left in the frame; undefined otherwise.
 function defaultNavGridIdleYield() {
   return new Promise((resolve) => {
-    if (typeof globalThis.requestIdleCallback === 'function') globalThis.requestIdleCallback(() => resolve(), { timeout: 32 });
+    if (typeof globalThis.requestIdleCallback === 'function') globalThis.requestIdleCallback(resolve, { timeout: 32 });
     else setTimeout(resolve, 0);
   });
 }
 
+function defaultNavGridClock() {
+  return typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now();
+}
+
+// Slice budget for the next slice: the caller's budget, shortened to the idle
+// deadline's remaining time when the host reports one (a timed-out deadline
+// reports 0 and falls back to the full budget so a busy thread still makes
+// progress). Never affects output, only how many yields the build takes.
+function sliceBudgetFor(deadline, sliceBudgetMs) {
+  const remaining = typeof deadline?.timeRemaining === 'function' ? deadline.timeRemaining() : 0;
+  return remaining > 0 ? Math.min(sliceBudgetMs, remaining) : sliceBudgetMs;
+}
+
+// Idle-sliced construction of the same grid `createEnemyNavGrid` builds. Cells
+// are processed in the same fixed order, so the result is byte-identical; the
+// arrays stay local until the frozen return, so a partial grid can never be
+// observed by a consumer. A slice ends when it has processed `cellsPerSlice`
+// cells OR when `now()` reports `sliceBudgetMs` elapsed (checked after every
+// cell, so a slice overruns by at most one cell), whichever comes first.
 export async function createEnemyNavGridChunked({
   world,
   queryGround,
   cellSize = ENEMY_NAV_CELL_SIZE,
   cellsPerSlice = 128,
+  sliceBudgetMs = 4,
+  now = defaultNavGridClock,
   scheduleYield = defaultNavGridIdleYield,
 } = {}) {
   if (!world?.bounds || !Array.isArray(world.collisionBlockers)) throw new TypeError('world with bounds and collisionBlockers is required');
   if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
   if (!Number.isFinite(cellSize) || cellSize <= 0) throw new TypeError('cellSize must be positive');
   if (!Number.isInteger(cellsPerSlice) || cellsPerSlice < 1) throw new TypeError('cellsPerSlice must be a positive integer');
+  if (typeof sliceBudgetMs !== 'number' || !(sliceBudgetMs > 0)) throw new TypeError('sliceBudgetMs must be a positive number');
+  if (typeof now !== 'function') throw new TypeError('now must be a function');
   if (typeof scheduleYield !== 'function') throw new TypeError('scheduleYield must be a function');
   const { minX, minY, maxX, maxY } = world.bounds;
   const columns = Math.ceil((maxX - minX) / cellSize);
@@ -187,56 +214,64 @@ export async function createEnemyNavGridChunked({
   const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]];
   const sampleOffsets = [0.1, 0.5, 0.9];
 
-  for (let start = 0; start < total; start += cellsPerSlice) {
-    const end = Math.min(total, start + cellsPerSlice);
-    for (let cell = start; cell < end; cell += 1) {
-      const column = cell % columns;
-      const row = (cell - column) / columns;
-      const ground = queryGround(centreX(column), centreY(row));
-      let open = !(ground.kind === 'water' && ground.deepWater);
-      if (open) {
-        blocked: for (const blocker of world.collisionBlockers) {
-          for (const oy of sampleOffsets) {
-            for (const ox of sampleOffsets) {
-              const x = minX + (column + ox) * cellSize;
-              const y = minY + (row + oy) * cellSize;
-              if (pointInsideInflatedShape(blocker.shape, x, y, ENEMY_CLEARANCE_RADIUS)) {
-                open = false;
-                break blocked;
-              }
+  let budget = sliceBudgetMs;
+  const runSliced = async (processCell) => {
+    for (let start = 0; start < total;) {
+      const sliceStartedAt = now();
+      const hardEnd = Math.min(total, start + cellsPerSlice);
+      let cell = start;
+      while (cell < hardEnd) {
+        processCell(cell);
+        cell += 1;
+        if (now() - sliceStartedAt >= budget) break;
+      }
+      start = cell;
+      if (start < total) budget = sliceBudgetFor(await scheduleYield(), sliceBudgetMs);
+    }
+  };
+
+  await runSliced((cell) => {
+    const column = cell % columns;
+    const row = (cell - column) / columns;
+    const ground = queryGround(centreX(column), centreY(row));
+    let open = !(ground.kind === 'water' && ground.deepWater);
+    if (open) {
+      blocked: for (const blocker of world.collisionBlockers) {
+        for (const oy of sampleOffsets) {
+          for (const ox of sampleOffsets) {
+            const x = minX + (column + ox) * cellSize;
+            const y = minY + (row + oy) * cellSize;
+            if (pointInsideInflatedShape(blocker.shape, x, y, ENEMY_CLEARANCE_RADIUS)) {
+              open = false;
+              break blocked;
             }
           }
         }
       }
-      walkable[cell] = open ? 1 : 0;
     }
-    if (end < total) await scheduleYield();
-  }
+    walkable[cell] = open ? 1 : 0;
+  });
 
-  for (let start = 0; start < total; start += cellsPerSlice) {
-    const end = Math.min(total, start + cellsPerSlice);
-    for (let from = start; from < end; from += 1) {
-      if (!walkable[from]) continue;
-      const column = from % columns;
-      const row = (from - column) / columns;
-      let mask = 0;
-      for (let k = 0; k < neighbours.length; k += 1) {
-        const nc = column + neighbours[k][0];
-        const nr = row + neighbours[k][1];
-        if (nc < 0 || nr < 0 || nc >= columns || nr >= rows || !walkable[nr * columns + nc]) continue;
-        const traversal = resolveSweptTraversalPath({
-          start: { x: centreX(column), y: centreY(row) },
-          end: { x: centreX(nc), y: centreY(nr) },
-          queryGround,
-          maxSampleDistance: cellSize / 4,
-          transitionOptions: CONSERVATIVE_TRANSITION,
-        });
-        if (traversal.allowed) mask |= 1 << k;
-      }
-      edges[from] = mask;
+  await runSliced((from) => {
+    if (!walkable[from]) return;
+    const column = from % columns;
+    const row = (from - column) / columns;
+    let mask = 0;
+    for (let k = 0; k < neighbours.length; k += 1) {
+      const nc = column + neighbours[k][0];
+      const nr = row + neighbours[k][1];
+      if (nc < 0 || nr < 0 || nc >= columns || nr >= rows || !walkable[nr * columns + nc]) continue;
+      const traversal = resolveSweptTraversalPath({
+        start: { x: centreX(column), y: centreY(row) },
+        end: { x: centreX(nc), y: centreY(nr) },
+        queryGround,
+        maxSampleDistance: cellSize / 4,
+        transitionOptions: CONSERVATIVE_TRANSITION,
+      });
+      if (traversal.allowed) mask |= 1 << k;
     }
-    if (end < total) await scheduleYield();
-  }
+    edges[from] = mask;
+  });
 
   const cellAt = (x, y) => {
     const column = Math.floor((x - minX) / cellSize);
@@ -253,6 +288,30 @@ export async function createEnemyNavGridChunked({
     isWalkableAt(x, y) {
       const cell = cellAt(x, y);
       return cell >= 0 && walkable[cell] === 1;
+    },
+  });
+}
+
+// Readiness authority for the boot-time grid (K-7, Cycle 073). The grid is
+// null until a COMPLETE frozen grid is adopted; `require()` is the only way a
+// simulation may obtain it and throws while the build is in flight, so no
+// simulation step can ever run on partial navigation authority. Pure
+// bookkeeping: it never changes what the grid contains.
+export function createNavGridAuthority() {
+  let grid = null;
+  const adopt = (candidate) => {
+    if (!candidate?.walkable || !candidate?.edges || !Object.isFrozen(candidate)) throw new TypeError('navgrid authority requires a complete navgrid');
+    grid = candidate;
+    return grid;
+  };
+  return Object.freeze({
+    get grid() { return grid; },
+    get ready() { return grid !== null; },
+    adopt,
+    async build(options) { return adopt(await createEnemyNavGridChunked(options)); },
+    require() {
+      if (grid === null) throw new Error('navgrid not ready: the simulation requested navigation authority before the idle-sliced build completed');
+      return grid;
     },
   });
 }

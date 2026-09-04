@@ -22,6 +22,13 @@ const profiles = [
 ];
 const anchorQuery = 'evidenceSafe=1&progressionPilot=1&releaseAnchor=1&telemetry=1&seed=424242';
 const liveQuery = 'evidenceSafe=1&combatPilot=1&weaponPilot=1&telemetry=1&seed=424242';
+// Anchor warm-up bound (Cycle 073). A fresh context's first rasterisations can
+// differ on antialiased DOM edges (Cycle 072 recorded 28,886 px at delta 19 on
+// mobile-portrait after ONE throwaway shot). The warm-up now keeps shooting
+// until two consecutive captures hash identically, capped here so a frame that
+// never settles still reaches the strict comparator instead of looping.
+const MAX_ANCHOR_WARMUP_SCREENSHOTS = 6;
+const ANCHOR_WARMUP_SETTLE_MS = 50;
 
 await mkdir(evidenceRoot, { recursive: true });
 const browser = await chromium.launch({
@@ -222,6 +229,23 @@ async function assertTouchComposition(page, profile, controls) {
   return composition;
 }
 
+// Rasterise until two consecutive screenshots are hash-identical, or give up
+// after `maxScreenshots`. Returns the count and whether it stabilised; a
+// non-stable warm-up is recorded, never hidden, and the caller's thresholds
+// still decide the verdict.
+async function warmCompositor(page, { maxScreenshots = MAX_ANCHOR_WARMUP_SCREENSHOTS, settleMs = ANCHOR_WARMUP_SETTLE_MS } = {}) {
+  let previous = null;
+  let screenshots = 0;
+  while (screenshots < maxScreenshots) {
+    const hash = digest(await page.screenshot({ type: 'png' }));
+    screenshots += 1;
+    await page.waitForTimeout(settleMs);
+    if (previous !== null && hash === previous) return { screenshots, stable: true };
+    previous = hash;
+  }
+  return { screenshots, stable: false };
+}
+
 async function captureAnchor(profile, pass) {
   const { context, page, candidate } = await openCandidatePage(profile);
   const errors = [];
@@ -250,17 +274,18 @@ async function captureAnchor(profile, pass) {
     });
     await page.waitForTimeout(250);
     // Warm the DPR/GPU compositor before collecting the strict zero-delta anchor.
-    // Without this first rasterization, fresh mobile contexts can differ by one
-    // channel step even though geometry and deterministic game state are equal.
-    await page.screenshot({ type: 'png' });
-    await page.waitForTimeout(50);
+    // Fresh contexts can differ on antialiased DOM edges for the first few
+    // rasterisations even though geometry and deterministic game state are
+    // equal, so keep shooting until two consecutive frames hash identically
+    // (bounded by MAX_ANCHOR_WARMUP_SCREENSHOTS).
+    const warmup = await warmCompositor(page);
     const geometry = await assertResponsiveGeometry(page, profile);
     const image = await page.screenshot({ type: 'png' });
     await writeFile(path.join(evidenceRoot, `${profile.name}-anchor-pass-${pass}.png`), image);
     if (pass === 1) await writeFile(path.join(evidenceRoot, `${profile.name}-anchor.png`), image);
     assert.deepEqual(errors, [], `${profile.name} anchor errors`);
     assert.equal(candidate.candidateBundleRequests, 1, `${profile.name} anchor did not execute the current candidate bundle exactly once`);
-    return { hash: digest(image), geometry, image };
+    return { hash: digest(image), geometry, image, warmup };
   } finally {
     await context.close();
   }
@@ -280,6 +305,14 @@ async function captureLiveInteraction(profile) {
     await page.goto(`${origin}/hmh-reboot/?${liveQuery}&candidate=${Date.now()}`, { waitUntil: 'networkidle' });
     await rejectAuthenticationPage(page);
     await page.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick) >= 4);
+    // K-7 (Cycle 073): the idle-sliced navgrid must have been authoritative
+    // before any simulation tick ran; record how long the build took.
+    const navigation = await page.locator('#hmhRebootStage').evaluate((stage) => ({
+      navGridReady: stage.dataset.navGridReady,
+      navGridBootMs: Number(stage.dataset.navGridBootMs),
+    }));
+    assert.equal(navigation.navGridReady, 'true', `${profile.name} first ticks ran before navigation authority`);
+    assert.ok(Number.isFinite(navigation.navGridBootMs) && navigation.navGridBootMs > 0, `${profile.name} navGridBootMs is not recorded`);
     const canvasFocused = await page.locator('#hmhRebootStage canvas').evaluate((target) => {
       target.tabIndex = 0;
       target.focus({ preventScroll: true });
@@ -308,7 +341,7 @@ async function captureLiveInteraction(profile) {
     await writeFile(path.join(evidenceRoot, `${profile.name}-live.png`), image);
     assert.deepEqual(errors, [], `${profile.name} live errors`);
     assert.equal(candidate.candidateBundleRequests, 1, `${profile.name} live run did not execute the current candidate bundle exactly once`);
-    return { before, after, pausedTick, touchControls, touchComposition, liveHash: digest(image) };
+    return { before, after, pausedTick, touchControls, touchComposition, navigation, liveHash: digest(image) };
   } finally {
     await context.close();
   }
@@ -336,7 +369,7 @@ try {
     assert.ok(anchorDiff.maxChannelDelta <= 2, `${profile.name} anchor max channel delta ${anchorDiff.maxChannelDelta}`);
     const live = await captureLiveInteraction(profile);
     assert.notEqual(live.liveHash, first.hash, `${profile.name} live evidence matches deterministic anchor`);
-    results.push({ profile: profile.name, anchorHashes: [first.hash, second.hash], anchorDiff, geometry: first.geometry, live });
+    results.push({ profile: profile.name, anchorHashes: [first.hash, second.hash], anchorDiff, warmup: [first.warmup, second.warmup], geometry: first.geometry, live });
   }
   const report = { origin, browserExecutable, profiles: results };
   await writeFile(path.join(evidenceRoot, reportName), `${JSON.stringify(report, null, 2)}\n`);

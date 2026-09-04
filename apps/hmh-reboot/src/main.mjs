@@ -26,7 +26,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
-import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampleChokepointDirection, sampleCoverDirection, sampleFlankLaneDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
+import { computeEnemyFlowField, createEnemyNavGridChunked, createNavGridAuthority, navLineBlocked, sampleChokepointDirection, sampleCoverDirection, sampleFlankLaneDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
@@ -281,8 +281,12 @@ const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 const queryGround = createLevelOneGroundQuery();
 const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
 // Deterministic navgrid bakes after the first interactive frame; the flow field
-// refreshes on a fixed tick cadence inside the simulation step.
+// refreshes on a fixed tick cadence inside the simulation step. The authority
+// (K-7) is the only path a session may take to the grid: `require()` throws
+// until the idle-sliced build has been adopted, so no simulation step can run
+// on partial navigation authority.
 let ENEMY_NAV_GRID = null;
+const navGridAuthority = createNavGridAuthority();
 const ENEMY_FLOW_REFRESH_TICKS = 30;
 let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
@@ -2331,6 +2335,10 @@ async function boot() {
   };
 
   const initializeSession = (payload) => {
+    // K-7: fail loud, never on a partial grid. Boot order guarantees the
+    // authority holds the completed grid before bridge.activate() or the
+    // standalone payload can reach here; this is the invariant, not a wait.
+    const navGrid = navGridAuthority.require();
     stopCurrentSession();
     // The flow field is per-run simulation state: a restart resets the tick
     // counter, so carrying the previous run's field would steer blocked
@@ -2864,7 +2872,7 @@ async function boot() {
       const openingMovementAllowed = !rosterPreviewEnabled && openingEnemyMovementEnabled(tick);
       if (endurancePressurePilotEnabled || openingMovementAllowed) {
         if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS || enemyFlowReplanRequestedTick > enemyFlowFieldTick) {
-          enemyFlowField = computeEnemyFlowField({ grid: ENEMY_NAV_GRID, targetX: actor.x, targetY: actor.y });
+          enemyFlowField = computeEnemyFlowField({ grid: navGrid, targetX: actor.x, targetY: actor.y });
           enemyFlowFieldTick = tick;
           enemyFlowReplanRequestedTick = -1;
         }
@@ -4068,6 +4076,7 @@ async function boot() {
   dataset.bootFirstFrame = 'true';
   const navGridStartedAt = performance.now();
   ENEMY_NAV_GRID = await createEnemyNavGridChunked({ world: LEVEL_ONE_WORLD, queryGround, cellsPerSlice: 512 });
+  navGridAuthority.adopt(ENEMY_NAV_GRID);
   dataset.navGridBootMs = (performance.now() - navGridStartedAt).toFixed(1);
   dataset.navGridReady = 'true';
 

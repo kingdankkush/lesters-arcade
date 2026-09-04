@@ -226,8 +226,14 @@ Every artefact that gate produces — GLB, `.blend`, raw frames, atlas, metadata
 contact sheet — is an ignored intermediate under `.tmp/hmh-skinned-test-actor/`
 and is never a runtime asset.
 
-Git LFS is installed on the build host but `.gitattributes` has no LFS rule yet.
-Task P-5 must land before the first real source model is committed.
+Source models travel through Git LFS (roadmap P-5, Cycle 073). `.gitattributes`
+carries `filter=lfs diff=lfs merge=lfs -text` for `glb`, `fbx`, `bin`, `png`,
+`jpg` and `jpeg` under `apps/hmh-reboot/assets/source/models/**`; the per-file
+cap is 40 MB and PNG textures are at most 2048 px per edge. Before committing a
+model: `git add` it, confirm `git lfs ls-files` lists it, then run
+`npm run assets:hmh:models:lfs-check` (offline; passes with zero models today).
+The clean-clone proof (`--clean-clone <dir>`) is a first-commit ritual, not a
+Cycle 073 fact: the models directory is still empty.
 
 Full contract, CLI, layer-split rules, look-dev constants and known limitations:
 `docs/hmh-reboot/EXTERNAL-MODEL-PIPELINE.md`.

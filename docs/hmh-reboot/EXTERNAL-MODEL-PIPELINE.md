@@ -34,8 +34,66 @@ The committed file **is** repo-owned source, exactly like a `.blend`. Its
 SHA-256 goes in the manifest and the importer refuses to run if the file on disk
 disagrees. Reference sheets and concept art stay outside Git.
 
-Git LFS is installed on the build host but `.gitattributes` carries no LFS rule
-yet. **Task P-5 must land before the first real model is committed.**
+### Git LFS policy (P-5, Cycle 073)
+
+Source models are large opaque binaries, so they travel through Git LFS rather
+than as ordinary blobs. `.gitattributes` carries one rule per extension under the
+models root, written by hand (not `git lfs track`, which rewrites the file) so the
+policy stays readable and test-pinned:
+
+```gitattributes
+apps/hmh-reboot/assets/source/models/**/*.glb  filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.fbx  filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.bin  filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.png  filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.jpg  filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+```
+
+The `-text` is load-bearing: before these rules a `.glb` under that path
+resolved `text: auto` and was subject to end-of-line autodetection. `**` matches
+zero or more directories, so both `models/lester.glb` and
+`models/lester/lester.glb` are covered.
+
+Limits, enforced by `npm run assets:hmh:models:lfs-check`
+(`scripts/hmh-source-model-lfs-check.mjs`):
+
+| Limit | Value | Why |
+| --- | --- | --- |
+| Per-file cap | **40 MB** (`41,943,040` bytes) | a GLB with packed 2048 textures lands well under this; anything above is an unpacked texture set or an undecimated scan |
+| Texture edge | **2048** px per edge, checked on the PNG IHDR | the exporter renders frames at the manifest `frameSize` (256 px in the pilot), so texture detail above 2048 never reaches a sprite and only costs LFS quota |
+| Textures | packed into the GLB (see the delivery table) | `external_dependencies()` must count zero |
+
+The offline check runs with no network and passes honestly on a repository with
+zero models (`trackedModels: 0`): the rules exist, `git check-attr` resolves
+`filter: lfs` for a probe path per extension, every tracked model under the root
+is listed by `git lfs ls-files`, its HEAD blob is a pointer
+(`version https://git-lfs.github.com/spec/v1`), the smudged file is under the
+cap, and PNG dimensions are within the edge limit.
+
+**First-commit ritual** for a new model (`git lfs install` is already system-wide
+on the build host, `filter.lfs.required=true`):
+
+1. `git add apps/hmh-reboot/assets/source/models/<actor>.glb`
+2. `git lfs ls-files` lists the file (`*` = the object is present locally).
+3. after committing, `git show HEAD:apps/hmh-reboot/assets/source/models/<actor>.glb | head -1`
+   prints the pointer's `version` line, not binary.
+4. `npm run assets:hmh:models:lfs-check` passes with `trackedModels` >= 1.
+5. once, before pushing the first model, prove a clean clone can pull it:
+   `node scripts/hmh-source-model-lfs-check.mjs --clean-clone <empty-dir>`
+   clones with `GIT_LFS_SKIP_SMUDGE=1`, runs `git lfs pull`, and compares each
+   model's SHA-256 with the manifest's `sourceSha256`. This is a ritual to run
+   when a model exists, not a fact Cycle 073 could exercise: the models
+   directory is still empty and `git lfs ls-files --all` is `0`.
+
+Hosting notes: Vercel's Git LFS setting stays **off**. `npm run vercel:build`
+never reads `apps/hmh-reboot/assets/source`, so pointer files in the Vercel
+checkout are inert; if a future exporter runs inside the Vercel build, that
+setting must be enabled first (owner action). GitHub's free LFS quota is about
+1 GiB of storage and 1 GiB/month of bandwidth, which roughly 25 models at the
+cap would exhaust; and `npm run repo:health:strict` counts the smudged
+working-tree bytes of LFS files against its 350 MiB tracked-size budget exactly
+like committed binaries.
 
 ---
 
