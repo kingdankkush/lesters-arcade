@@ -380,6 +380,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-enemy-roster-atlas.test.mjs",
   "tests/hmh-reboot-authored-prop-atlas.test.mjs",
   "tests/hmh-reboot-cycle-007-art.test.mjs",
+  "tests/hmh-reboot-external-model-pipeline.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 
@@ -433,7 +434,10 @@ const PY_COMPILE_FILES = [
   "scripts/run-hmh-enemy-roster-pipeline.py",
   "scripts/hmh-blender/create-hmh-authored-props.py",
   "scripts/hmh-blender/export-hmh-authored-props.py",
-  "scripts/run-hmh-authored-props-pipeline.py"
+  "scripts/run-hmh-authored-props-pipeline.py",
+  "scripts/hmh-blender/import-hmh-external-model.py",
+  "scripts/hmh-blender/create-hmh-skinned-test-actor.py",
+  "scripts/run-hmh-skinned-test-pipeline.py"
 ];
 
 let failures = 0;

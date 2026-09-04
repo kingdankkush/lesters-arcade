@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 import bpy
+from bpy_extras import anim_utils
 
 
 def blender_args() -> argparse.Namespace:
@@ -166,6 +167,69 @@ def apply_pose(rig, layer: str, state: str, frame_index: int, frame_count: int, 
             socket.location.z = -0.04 - 0.51 * collapse
 
 
+def resolve_rig(manifest: dict, entry: dict):
+    """The armature this entry renders with.
+
+    Procedural actors share one rig named by the manifest; an imported actor
+    brings its own, so the name is overridable per entry.
+    """
+    name = entry.get("armature", manifest["scene"]["armature"])
+    rig = bpy.data.objects.get(name)
+    if rig is None or rig.type != "ARMATURE":
+        raise RuntimeError(f"Missing armature: {name}")
+    if rig.rotation_mode != "XYZ":
+        # A glTF/FBX armature object arrives in QUATERNION mode, where the
+        # per-direction `rig.rotation_euler[2]` assignment below is silently
+        # ignored and all eight directions render identically. Blender's
+        # rotation_mode setter converts the existing value, so this preserves
+        # whatever rotation the object already carried.
+        rig.rotation_mode = "XYZ"
+    return rig
+
+
+def set_clip_action(rig, action_name: str):
+    """Bind one imported action to the rig.
+
+    Deliberately does NOT touch pose_bone.rotation_mode. Imported glTF/Mixamo
+    actions key rotation_quaternion, and forcing XYZ (what reset_pose does for
+    the trigonometric branch) would leave every quaternion channel unevaluated
+    and freeze the actor at rest.
+    """
+    action = bpy.data.actions.get(action_name)
+    if action is None:
+        raise RuntimeError(f"Missing clip action: {action_name}")
+    adt = rig.animation_data or rig.animation_data_create()
+    # The glTF importer stashes every action in its own NLA track; an unmuted
+    # stash would evaluate on top of the action assigned here.
+    for track in adt.nla_tracks:
+        track.mute = True
+    adt.action = action
+    slot = anim_utils.action_get_first_suitable_slot(action, "OBJECT")
+    if slot is None:
+        raise RuntimeError(f"Action has no object slot: {action_name}")
+    adt.action_slot = slot
+    return action
+
+
+def sample_clip_frame(action, frame_index: int, frame_count: int, loop: bool) -> int:
+    """Sample `frame_count` poses evenly across the action's own frame range.
+
+    A looping clip stops one step short of the end so the loop does not repeat
+    its first pose as its last; a one-shot clip lands exactly on the last frame.
+    """
+    start, end = action.frame_range
+    span = float(end) - float(start)
+    if span < frame_count - 1:
+        raise RuntimeError(f"Action {action.name!r} spans {span} frames, too short for {frame_count} samples")
+    if loop:
+        offset = math.floor(span * frame_index / max(frame_count, 1))
+    else:
+        offset = round(span * frame_index / max(frame_count - 1, 1))
+    frame = int(round(float(start) + offset))
+    bpy.context.scene.frame_set(frame)
+    return frame
+
+
 def active_actor_objects(actor_id: str):
     return [obj for obj in bpy.data.objects if obj.get("hmh_actor_id") == actor_id]
 
@@ -177,9 +241,16 @@ def main() -> None:
     report_output = Path(args.report_output).resolve()
     raw_output.mkdir(parents=True, exist_ok=True)
 
+    pilot = next((item for item in manifest["pilots"] if item["actorId"] == args.actor_id), None)
+    if pilot is None:
+        raise RuntimeError(f"Unknown production actor: {args.actor_id}")
+
     scene = bpy.context.scene
-    scene.render.resolution_x = manifest["render"]["frameSize"][0]
-    scene.render.resolution_y = manifest["render"]["frameSize"][1]
+    # An imported actor can render at its own frame size; the runner scales the
+    # pivot to match so the ground contact is unchanged.
+    frame_size = pilot.get("frameSize", manifest["render"]["frameSize"])
+    scene.render.resolution_x = frame_size[0]
+    scene.render.resolution_y = frame_size[1]
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = True
     scene.render.image_settings.file_format = "PNG"
@@ -187,14 +258,11 @@ def main() -> None:
     scene.render.image_settings.color_depth = "8"
     scene.render.image_settings.compression = 20
 
-    pilot = next((item for item in manifest["pilots"] if item["actorId"] == args.actor_id), None)
-    if pilot is None:
-        raise RuntimeError(f"Unknown production actor: {args.actor_id}")
-    rig = bpy.data.objects.get(manifest["scene"]["armature"])
-    if rig is None or rig.type != "ARMATURE":
-        raise RuntimeError(f"Missing armature: {manifest['scene']['armature']}")
+    rig = resolve_rig(manifest, pilot)
     if manifest["scene"]["weaponSocket"] not in rig.pose.bones:
         raise RuntimeError("Missing weapon_socket pose bone")
+    clip_actions = pilot.get("clipActions")
+    skinned = bool(clip_actions)
 
     actor_objects = active_actor_objects(pilot["actorId"])
     if not actor_objects:
@@ -212,10 +280,14 @@ def main() -> None:
         for obj in actor_objects:
             obj.hide_render = obj.get("hmh_layer") != layer
         for state, clip in pilot["clips"][layer].items():
+            action = set_clip_action(rig, clip_actions[state]) if skinned else None
             for direction in manifest["directions"]:
                 rig.rotation_euler[2] = math.radians(manifest["directionAngles"][direction])
                 for frame_index in range(clip["frames"]):
-                    apply_pose(rig, layer, state, frame_index, clip["frames"], pilot["animationProfile"])
+                    if skinned:
+                        sample_clip_frame(action, frame_index, clip["frames"], clip.get("loop", True))
+                    else:
+                        apply_pose(rig, layer, state, frame_index, clip["frames"], pilot["animationProfile"])
                     bpy.context.view_layer.update()
                     filename = f"{pilot['actorId']}__{layer}__{state}__{direction}__{frame_index:03d}.png"
                     scene.render.filepath = str(raw_output / filename)
@@ -225,7 +297,13 @@ def main() -> None:
     for obj in production_objects:
         obj.hide_render = True
 
-    reset_pose(rig)
+    if skinned:
+        adt = rig.animation_data
+        if adt is not None:
+            adt.action = None
+        scene.frame_set(scene.frame_start)
+    else:
+        reset_pose(rig)
     rig.rotation_euler[2] = 0.0
     bpy.context.view_layer.update()
     report = {
@@ -233,6 +311,8 @@ def main() -> None:
         "actorId": pilot["actorId"],
         "variantId": pilot["variantId"],
         "animationProfile": pilot["animationProfile"],
+        "mode": "clip-actions" if skinned else "trig-pose",
+        "frameSize": list(frame_size),
         "frameCount": len(rendered),
         "frames": rendered,
         "layerObjectCounts": layer_counts,

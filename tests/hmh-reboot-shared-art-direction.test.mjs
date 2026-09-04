@@ -21,6 +21,10 @@ const PIPELINES = [
   'create-hmh-character-template.py',
   'create-hmh-enemy-roster.py',
   'create-hmh-authored-props.py',
+  // The external-model importer builds its own EEVEE scene when it runs
+  // standalone, and it reads the rim colour for the look-dev group. It is the
+  // newest place a fifth light rig could be pasted in.
+  'import-hmh-external-model.py',
 ];
 
 const readPipeline = (name) =>

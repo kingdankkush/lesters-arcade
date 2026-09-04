@@ -190,6 +190,48 @@ node --test tests/hmh-reboot-mannequin-atlas.test.mjs
 node --test tests/hmh-reboot-shell.test.mjs
 ```
 
+## External model sources
+
+Cycle 072 added a second, additive source path beside the procedural builders: a
+GLB/FBX authored outside the repository (ChatGPT concept sheet, Tripo, Mixamo),
+committed under `apps/hmh-reboot/assets/source/models/` with its SHA-256 in the
+manifest. Roadmap 1.2 makes such a committed mesh repo-owned source, exactly
+like a `.blend`; what must stay reproducible is the render out of the exporter.
+
+`scripts/hmh-blender/import-hmh-external-model.py` normalises one of those files
+into the shape this pipeline already understands: height scaled on a parent
+Empty, origin at ground contact, the single skinned mesh split at the waist into
+`lower-body` and `torso-head` objects sharing one armature, weapon meshes moved
+to a created `weapon_socket` bone, and every material rebuilt on the shared
+`HMH_LookDev_v1` toon group whose rim colour comes from `hmh-light-rig.json`.
+
+Both actor manifests carry optional per-entry `sourceModel`, `frameSize`,
+`clipActions`, `lookDev` and `armature` keys as siblings of `clips`. When an
+entry declares `clipActions`, the exporter plays the named Blender Action and
+samples `frames` poses across its range instead of calling the trigonometric
+`apply_pose`. Actors without those keys are completely unaffected; the four
+shipped heroes and the whole enemy roster remain procedural.
+
+Textures must be packed into the source file, because `external_dependencies()`
+counts any image with a filepath and the runner requires a zero count.
+
+The path is proven on a throwaway generated fixture, not on a shipped actor:
+
+```bash
+npm run assets:hmh:skinned-test
+npm run assets:hmh:skinned-test:verify
+```
+
+Every artefact that gate produces — GLB, `.blend`, raw frames, atlas, metadata,
+contact sheet — is an ignored intermediate under `.tmp/hmh-skinned-test-actor/`
+and is never a runtime asset.
+
+Git LFS is installed on the build host but `.gitattributes` has no LFS rule yet.
+Task P-5 must land before the first real source model is committed.
+
+Full contract, CLI, layer-split rules, look-dev constants and known limitations:
+`docs/hmh-reboot/EXTERNAL-MODEL-PIPELINE.md`.
+
 ## Authority boundary
 
 This pipeline has no gameplay authority. Blender objects, render layers, sprite pivots, atlas metadata, and Pixi display containers are projection data only. Gameplay continues to use the existing deterministic actor, movement, collision, combat, scoring, bridge, and session state. The default runtime path remains the graybox until a later phase explicitly replaces it after review.

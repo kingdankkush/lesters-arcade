@@ -1,5 +1,5 @@
 {
-  "schema": "hmh-reboot-production-heroes-v1",
+  "schema": "hmh-reboot-production-heroes-v2",
   "pipelineId": "hmh-reboot-production-hero-pilot-v1",
   "classification": "production-art",
   "gameplayBodyProfile": "human-medium-collision-v1",

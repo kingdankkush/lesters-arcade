@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 
 import bpy
+from bpy_extras import anim_utils
 
 
 def blender_args() -> argparse.Namespace:
@@ -345,6 +346,64 @@ def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int,
         raise RuntimeError(f"Unknown enemy visual state: {state}")
 
 
+
+def resolve_rig(manifest: dict, entry: dict):
+    """The armature this entry renders with.
+
+    Procedural actors share one rig named by the manifest; an actor imported
+    from a committed GLB/FBX brings its own, so the name is overridable.
+    """
+    name = entry.get("armature", manifest["scene"]["armature"])
+    rig = bpy.data.objects.get(name)
+    if rig is None or rig.type != "ARMATURE":
+        raise RuntimeError(f"Missing armature: {name}")
+    if rig.rotation_mode != "XYZ":
+        # A glTF/FBX armature object arrives in QUATERNION mode, where the
+        # per-direction `rig.rotation_euler[2]` assignment below is silently
+        # ignored and all eight directions render identically. Blender's
+        # rotation_mode setter converts the existing value, so this preserves
+        # whatever rotation the object already carried.
+        rig.rotation_mode = "XYZ"
+    return rig
+
+
+def set_clip_action(rig, action_name: str):
+    """Bind one imported action to the rig.
+
+    Deliberately does NOT touch pose_bone.rotation_mode. Imported glTF/Mixamo
+    actions key rotation_quaternion, and forcing XYZ (what reset_pose does for
+    the trigonometric branch) would leave every quaternion channel unevaluated
+    and freeze the actor at rest.
+    """
+    action = bpy.data.actions.get(action_name)
+    if action is None:
+        raise RuntimeError(f"Missing clip action: {action_name}")
+    adt = rig.animation_data or rig.animation_data_create()
+    for track in adt.nla_tracks:
+        track.mute = True
+    adt.action = action
+    slot = anim_utils.action_get_first_suitable_slot(action, "OBJECT")
+    if slot is None:
+        raise RuntimeError(f"Action has no object slot: {action_name}")
+    adt.action_slot = slot
+    return action
+
+
+def sample_clip_frame(action, frame_index: int, frame_count: int, loop: bool) -> int:
+    """Sample `frame_count` poses evenly across the action's own frame range."""
+    start, end = action.frame_range
+    span = float(end) - float(start)
+    if span < frame_count - 1:
+        raise RuntimeError(f"Action {action.name!r} spans {span} frames, too short for {frame_count} samples")
+    if loop:
+        offset = math.floor(span * frame_index / max(frame_count, 1))
+    else:
+        offset = round(span * frame_index / max(frame_count - 1, 1))
+    frame = int(round(float(start) + offset))
+    bpy.context.scene.frame_set(frame)
+    return frame
+
+
 def main() -> None:
     args = blender_args()
     manifest = json.loads(Path(args.manifest).resolve().read_text(encoding="utf-8"))
@@ -366,9 +425,7 @@ def main() -> None:
     camera = scene.camera
     default_ortho = manifest["render"]["cameraOrthoScale"]
 
-    rig = bpy.data.objects.get(manifest["scene"]["armature"])
-    if rig is None or rig.type != "ARMATURE":
-        raise RuntimeError(f"Missing armature: {manifest['scene']['armature']}")
+    rig = resolve_rig(manifest, manifest["scene"])
 
     all_actor_objects = [obj for obj in bpy.data.objects if obj.get("hmh_actor_id")]
     for obj in all_actor_objects:
@@ -376,6 +433,7 @@ def main() -> None:
 
     rendered = []
     per_actor = {}
+    skinned = False
     selected_actors = [actor for actor in manifest["actors"] if actor["actorId"] == args.actor_id]
     if len(selected_actors) != 1:
         raise RuntimeError(f"Unknown enemy actor id: {args.actor_id}")
@@ -395,6 +453,13 @@ def main() -> None:
         scene.render.resolution_x = actor_frame_size[0] * render_scale
         scene.render.resolution_y = actor_frame_size[1] * render_scale
         stoop = actor["build"]["stoop"]
+        # An actor imported from a committed model drives named Blender actions
+        # instead of the trigonometric poser below. No shipped roster actor uses
+        # this yet: the roster stays Workbench/procedural until P-4.
+        clip_actions = actor.get("clipActions")
+        skinned = bool(clip_actions)
+        if skinned:
+            rig = resolve_rig(manifest, actor)
         phases = list(actor.get("phaseVisuals", {})) or [None]
         count = 0
         for boss_phase in phases:
@@ -404,10 +469,14 @@ def main() -> None:
                 phase_visible = phase_tag is None or phase_tag == boss_phase
                 obj.hide_render = not (same_actor and phase_visible)
             for state, clip in manifest["clips"].items():
+                action = set_clip_action(rig, clip_actions[state]) if skinned else None
                 for direction in manifest["directions"]:
                     rig.rotation_euler[2] = math.radians(manifest["directionAngles"][direction])
                     for frame_index in range(clip["frames"]):
-                        apply_pose(rig, actor, state, frame_index, clip["frames"], stoop)
+                        if skinned:
+                            sample_clip_frame(action, frame_index, clip["frames"], clip.get("loop", True))
+                        else:
+                            apply_pose(rig, actor, state, frame_index, clip["frames"], stoop)
                         bpy.context.view_layer.update()
                         phase_token = f"__{boss_phase}" if boss_phase else ""
                         filename = f"{actor_id}__body{phase_token}__{state}__{direction}__{frame_index:03d}.png"
@@ -419,7 +488,13 @@ def main() -> None:
 
     for obj in all_actor_objects:
         obj.hide_render = True
-    reset_pose(rig)
+    if skinned:
+        adt = rig.animation_data
+        if adt is not None:
+            adt.action = None
+        scene.frame_set(scene.frame_start)
+    else:
+        reset_pose(rig)
     rig.rotation_euler[2] = 0.0
     bpy.context.view_layer.update()
 

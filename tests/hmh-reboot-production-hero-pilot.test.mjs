@@ -18,7 +18,7 @@ async function loadJson(url) {
 
 test('production hero manifest locks approved starter variants without changing gameplay-body parity', async () => {
   const manifest = await loadJson(manifestUrl);
-  assert.equal(manifest.schema, 'hmh-reboot-production-heroes-v1');
+  assert.equal(manifest.schema, 'hmh-reboot-production-heroes-v2');
   assert.equal(manifest.classification, 'production-art');
   assert.equal(manifest.gameplayBodyProfile, 'human-medium-collision-v1');
   assert.deepEqual(manifest.selection, {

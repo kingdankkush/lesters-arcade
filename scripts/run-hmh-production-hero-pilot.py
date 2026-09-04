@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from collections import defaultdict
 import hashlib
 import json
@@ -19,6 +20,16 @@ MANIFEST_PATH = ROOT / "apps/hmh-reboot/assets/source/blender/hmh-production-her
 GENERATOR_PATH = ROOT / "scripts/hmh-blender/create-hmh-production-hero-pilot.py"
 EXPORTER_PATH = ROOT / "scripts/hmh-blender/export-hmh-production-hero-pilot.py"
 BLENDER = Path(r"D:\Apps\Blender\blender.exe")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Build the HMH production hero atlases.")
+    # The throwaway skinned-actor gate drives this same pipeline from its own
+    # manifest into its own .tmp output root, so the shipped hero atlases are
+    # never touched by a pipeline test.
+    parser.add_argument("--manifest", default=str(MANIFEST_PATH))
+    parser.add_argument("--output-root", default="")
+    return parser.parse_args()
 
 
 def read_json(path: Path) -> dict:
@@ -194,13 +205,31 @@ def shelf_pack(records: list[dict], padding: int, max_size: int) -> tuple[int, d
     raise RuntimeError(f"Frames exceed max atlas size {max_size}")
 
 
+def pilot_frame_size(manifest: dict, pilot: dict) -> tuple[int, int]:
+    return tuple(pilot.get("frameSize", manifest["render"]["frameSize"]))
+
+
+def pilot_pivot(manifest: dict, pilot: dict) -> tuple[int, int]:
+    """The pivot is authored against the manifest's default frame.
+
+    An actor rendered at another size keeps the same ground contact only if the
+    pivot scales with it, the same rule run-hmh-enemy-roster-pipeline.py uses
+    for the boss.
+    """
+    default_size = manifest["render"]["frameSize"]
+    frame_size = pilot_frame_size(manifest, pilot)
+    source = manifest["pivot"]["sourcePixels"]
+    return tuple(round(source[axis] * frame_size[axis] / default_size[axis]) for axis in (0, 1))
+
+
 def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -> tuple[Path, Path, dict]:
     padding = manifest["atlas"]["padding"]
     atlas_size, placements = shelf_pack(analysis["records"], padding, manifest["atlas"]["maxSize"])
     atlas = Image.new("RGBA", (atlas_size, atlas_size), (0, 0, 0, 0))
     metadata_frames = []
     record_by_id = {record["id"]: record for record in analysis["records"]}
-    source_pivot = tuple(manifest["pivot"]["sourcePixels"])
+    frame_size = pilot_frame_size(manifest, pilot)
+    source_pivot = pilot_pivot(manifest, pilot)
     for frame in expected_frames(manifest, pilot):
         record = record_by_id[frame["id"]]
         x0, y0, x1, y1 = record["bbox"]
@@ -212,7 +241,7 @@ def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -
         metadata_frames.append({
             "id": frame["id"], "layer": frame["layer"], "state": frame["state"], "direction": frame["direction"], "frameIndex": frame["frameIndex"], "fps": frame["fps"], "loop": frame["loop"],
             "frame": {"x": atlas_x, "y": atlas_y, "w": width, "h": height}, "rotated": False, "trimmed": True,
-            "sourceSize": {"w": manifest["render"]["frameSize"][0], "h": manifest["render"]["frameSize"][1]},
+            "sourceSize": {"w": frame_size[0], "h": frame_size[1]},
             "spriteSourceSize": {"x": x0, "y": y0, "w": width, "h": height},
             "sourcePivot": {"x": source_pivot[0], "y": source_pivot[1]}, "pivot": {"x": pivot_x, "y": pivot_y},
             "anchor": {"x": round(pivot_x / width, 6), "y": round(pivot_y / height, 6)},
@@ -242,7 +271,23 @@ def composite_frame(directory: Path, actor_id: str, direction: str, lower_state:
 
 
 def build_contact_sheet(manifest: dict, pilot: dict, directory: Path, output_dir: Path) -> Path:
-    frame_size = tuple(manifest["render"]["frameSize"])
+    frame_size = pilot_frame_size(manifest, pilot)
+
+    def renderable(row) -> bool:
+        # composite_frame opens one PNG per layer per row, so a row naming a
+        # state an actor does not have would crash the sheet. Imported actors
+        # can carry a reduced clip table.
+        _, lower_state, lower_index, torso_state, torso_index, weapon_state, weapon_index = row
+        for layer, state, index in (
+            ("lower-body", lower_state, lower_index),
+            ("torso-head", torso_state, torso_index),
+            ("weapon", weapon_state, weapon_index),
+        ):
+            clips = pilot["clips"].get(layer, {})
+            if not (state in pilot["clips"].get(layer, {}) and index < clips[state]["frames"]):
+                return False
+        return True
+
     rows = [("IDLE / AIM", "idle", 0, "aim", 0, "aim", 0)]
     rows += [(f"RUN {index + 1}/6", "run", index, "aim", index % 2, "aim", index % 2) for index in range(6)]
     rows += [(f"PISTOL FIRE {index + 1}/3", "idle", index % 2, "pistol-fire", index, "pistol-fire", index) for index in range(3)]
@@ -250,9 +295,14 @@ def build_contact_sheet(manifest: dict, pilot: dict, directory: Path, output_dir
     # Action contact rows make the new authored coverage human-inspectable
     # without expanding the sheet to every intermediate frame.
     for state in ("dash", "melee", "grenade", "death"):
+        if not (state in pilot["clips"].get("torso-head", {})):
+            continue
         count = pilot["clips"]["torso-head"][state]["frames"]
         for index in sorted({0, count // 2, count - 1}):
             rows.append((f"{state.upper()} {index + 1}/{count}", state, index, state, index, state, index))
+    rows = [row for row in rows if renderable(row)]
+    if not rows:
+        raise RuntimeError(f"No contact-sheet row survives the clip table for {pilot['actorId']}")
     label_width = 190
     header_height = 104
     sheet = Image.new("RGBA", (label_width + frame_size[0] * len(manifest["directions"]), header_height + frame_size[1] * len(rows)), (7, 12, 27, 255))
@@ -276,13 +326,13 @@ def build_contact_sheet(manifest: dict, pilot: dict, directory: Path, output_dir
     return path
 
 
-def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Path, inspection: dict, actual_version: str) -> dict:
+def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Path, inspection: dict, actual_version: str, manifest_path: Path, generated_root: Path) -> dict:
     actor_temp = temp_root / pilot["actorId"]
     run_a = actor_temp / "run-a"
     run_b = actor_temp / "run-b"
     report_a = actor_temp / "run-a-report.json"
     report_b = actor_temp / "run-b-report.json"
-    output_root = ROOT / manifest["atlas"]["outputDirectory"] / pilot["actorId"]
+    output_root = generated_root / pilot["actorId"]
     run_a.mkdir(parents=True, exist_ok=True)
     run_b.mkdir(parents=True, exist_ok=True)
     output_root.mkdir(parents=True, exist_ok=True)
@@ -290,7 +340,7 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
     for raw_output, report_output, label in ((run_a, report_a, "render run A"), (run_b, report_b, "render run B")):
         run_checked([
             str(BLENDER), "--background", str(source_blend), "--python", str(EXPORTER_PATH), "--",
-            "--manifest", str(MANIFEST_PATH), "--actor-id", pilot["actorId"],
+            "--manifest", str(manifest_path), "--actor-id", pilot["actorId"],
             "--raw-output", str(raw_output), "--report-output", str(report_output),
         ], f"{pilot['actorId']} {label}")
 
@@ -302,8 +352,8 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
     )
     if len(frames) != declared_frame_count:
         raise RuntimeError(f"Manifest frame contract drifted for {pilot['actorId']}: {len(frames)} != {declared_frame_count}")
-    frame_size = tuple(manifest["render"]["frameSize"])
-    pivot = tuple(manifest["pivot"]["sourcePixels"])
+    frame_size = pilot_frame_size(manifest, pilot)
+    pivot = pilot_pivot(manifest, pilot)
     threshold = manifest["render"]["alphaThreshold"]
     analysis_a = analyze_frame_set(run_a, frames, frame_size, pivot, threshold)
     analyze_frame_set(run_b, frames, frame_size, pivot, threshold)
@@ -341,6 +391,8 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
         "duplicateDecodedFrameGroups": analysis_a["duplicateGroups"], "emptyFrameCount": len(analysis_a["empty"]), "transparentCornerFailureCount": len(analysis_a["cornerFailures"]),
         "externalDependencyCount": inspection["externalDependencyCount"], "weaponSocket": inspection["weaponSocket"], "boneCount": len(inspection["bones"]),
         "reproducibility": "pass", "reproducibilityMode": "bounded-premultiplied-rgba-v1", "reproducibilityBudget": budget, "reproducibilityObserved": observed,
+        "frameSize": list(frame_size), "pivotPixels": list(pivot), "mode": report.get("mode", "trig-pose"),
+        "sourceModelSha256": pilot.get("sourceModel", {}).get("sourceSha256"),
         "atlasSize": atlas_size, "sourceBlendSha256": sha256_file(source_blend), "atlasSha256": sha256_file(atlas_path), "metadataSha256": sha256_file(metadata_path),
         "contactSheetSha256": sha256_file(contact_sheet_path),
     }
@@ -352,10 +404,13 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
     }
 
 
-def main() -> None:
+def main(args: argparse.Namespace | None = None) -> None:
+    if args is None:
+        args = parse_args()
     if not BLENDER.exists():
         raise RuntimeError(f"Blender not found: {BLENDER}")
-    manifest = read_json(MANIFEST_PATH)
+    manifest_path = Path(args.manifest).resolve()
+    manifest = read_json(manifest_path)
     required_version = manifest["scene"]["blenderVersion"]
     actual_version = blender_version()
     if actual_version != required_version:
@@ -363,12 +418,12 @@ def main() -> None:
     source_blend = ROOT / manifest["scene"]["sourceBlend"]
     temp_root = ROOT / manifest["render"]["rawOutputDirectory"]
     inspection_path = temp_root / "source-inspection.json"
-    generated_output_root = ROOT / manifest["atlas"]["outputDirectory"]
+    generated_output_root = Path(args.output_root).resolve() if args.output_root else ROOT / manifest["atlas"]["outputDirectory"]
     shutil.rmtree(temp_root, ignore_errors=True)
     shutil.rmtree(generated_output_root, ignore_errors=True)
     temp_root.mkdir(parents=True, exist_ok=True)
 
-    run_checked([str(BLENDER), "--background", "--factory-startup", "--python", str(GENERATOR_PATH), "--", "--manifest", str(MANIFEST_PATH), "--source-blend", str(source_blend), "--inspection-output", str(inspection_path)], "source generation")
+    run_checked([str(BLENDER), "--background", "--factory-startup", "--python", str(GENERATOR_PATH), "--", "--manifest", str(manifest_path), "--source-blend", str(source_blend), "--inspection-output", str(inspection_path)], "source generation")
     backup = source_blend.with_suffix(source_blend.suffix + "1")
     if backup.exists():
         backup.unlink()
@@ -376,7 +431,10 @@ def main() -> None:
     if set(inspection.get("actors", {})) != {pilot["actorId"] for pilot in manifest["pilots"]}:
         raise RuntimeError(f"Source actor inspection mismatch: {inspection}")
 
-    summaries = [process_pilot(manifest, pilot, source_blend, temp_root, inspection, actual_version) for pilot in manifest["pilots"]]
+    summaries = [
+        process_pilot(manifest, pilot, source_blend, temp_root, inspection, actual_version, manifest_path, generated_output_root)
+        for pilot in manifest["pilots"]
+    ]
     print(json.dumps({"status": "pass", "actors": summaries}, sort_keys=True))
 
 

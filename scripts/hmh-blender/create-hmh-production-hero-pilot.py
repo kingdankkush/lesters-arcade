@@ -20,8 +20,8 @@ def blender_args() -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def load_module(path: Path):
-    spec = importlib.util.spec_from_file_location("hmh_commando_concepts", path)
+def load_module(path: Path, module_name: str = "hmh_commando_concepts"):
+    spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Unable to load concept generator: {path}")
     module = importlib.util.module_from_spec(spec)
@@ -649,16 +649,58 @@ def main() -> None:
     scene.camera.rotation_euler = (camera_target - scene.camera.location).to_track_quat("-Z", "Y").to_euler()
     scene.render.filepath = ""
 
-    rig = concept.create_rig()
-    rig.name = manifest["scene"]["armature"]
-    rig.data.name = manifest["scene"]["armature"]
-    rig["hmh_gameplay_body_profile"] = manifest["gameplayBodyProfile"]
-    rig["hmh_runtime_authority"] = "projection-only"
+    # The shared procedural rig exists only for procedural pilots. An
+    # external-model pilot brings its own armature out of the importer, and
+    # building a second rig under the manifest's armature name would collide
+    # with it.
+    procedural_pilots = [entry for entry in manifest["pilots"] if "sourceModel" not in entry]
+    external_pilots = [entry for entry in manifest["pilots"] if "sourceModel" in entry]
+    rig = None
+    if procedural_pilots:
+        rig = concept.create_rig()
+        rig.name = manifest["scene"]["armature"]
+        rig.data.name = manifest["scene"]["armature"]
+        rig["hmh_gameplay_body_profile"] = manifest["gameplayBodyProfile"]
+        rig["hmh_runtime_authority"] = "projection-only"
+    importer = None
+    if external_pilots:
+        importer = load_module(
+            repo_root / "scripts/hmh-blender/import-hmh-external-model.py",
+            "hmh_external_model_importer",
+        )
 
     objects_by_actor = {}
     variants_by_actor = {}
     reference_reports = {}
+    external_armatures = {}
     for pilot in manifest["pilots"]:
+        # An external-model pilot must branch before the four hardcoded actor
+        # ids below: find_reference_model fails closed on an unknown actorId,
+        # and none of the concept/reference detail kits apply to an imported
+        # mesh.
+        if "sourceModel" in pilot:
+            collection = bpy.data.collections.new(f"Production__{pilot['actorId']}__{pilot['variantId']}")
+            scene.collection.children.link(collection)
+            report = importer.import_external_actor(manifest, pilot, repo_root, collection)
+            objects_by_layer = {layer: list(names) for layer, names in report["objectsByLayer"].items()}
+            if set(layer for layer, objects in objects_by_layer.items() if objects) != set(pilot["layers"]):
+                raise RuntimeError(f"Layer assignment incomplete for {pilot['actorId']}: {objects_by_layer}")
+            objects_by_actor[pilot["actorId"]] = objects_by_layer
+            variants_by_actor[pilot["actorId"]] = pilot["variantId"]
+            external_armatures[pilot["actorId"]] = bpy.data.objects[report["armature"]]
+            reference_reports[pilot["actorId"]] = {
+                "modelSpecId": pilot.get("modelSpecId"),
+                "implementationStatus": "external-model",
+                "detailKitKind": None,
+                "authoredReferencePartCount": 0,
+                "authoredReferenceParts": [],
+                "sourceSha256": report["sourceSha256"],
+                "armature": report["armature"],
+                "actions": sorted(report["actions"]),
+                "lookDev": report["lookDev"],
+                "contentSha256": report["contentSha256"],
+            }
+            continue
         if pilot["actorId"] in {"lester-original", "lilly", "lit-commando", "lit-valkyrie"}:
             actor = {"id": pilot["actorId"]}
             variant = {"id": pilot["variantId"]}
@@ -708,20 +750,25 @@ def main() -> None:
         variants_by_actor[actor["id"]] = variant["id"]
         reference_reports[actor["id"]] = reference_report
 
-    bpy.context.view_layer.objects.active = rig
-    rig.select_set(True)
-    bpy.ops.object.mode_set(mode="POSE")
-    for pose_bone in rig.pose.bones:
-        pose_bone.rotation_mode = "XYZ"
-        pose_bone.matrix_basis.identity()
-    bpy.ops.object.mode_set(mode="OBJECT")
+    if rig is not None:
+        # Procedural rig only. Forcing XYZ on an imported quaternion-keyed
+        # armature would leave every rotation channel unevaluated and freeze
+        # the actor at rest for every rendered frame.
+        bpy.context.view_layer.objects.active = rig
+        rig.select_set(True)
+        bpy.ops.object.mode_set(mode="POSE")
+        for pose_bone in rig.pose.bones:
+            pose_bone.rotation_mode = "XYZ"
+            pose_bone.matrix_basis.identity()
+        bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.update()
     bpy.ops.wm.save_as_mainfile(filepath=str(source_blend), compress=True)
 
     external_dependencies = concept.external_dependencies()
-    bones = sorted(bone.name for bone in rig.data.bones)
+    inspection_rig = rig if rig is not None else external_armatures[sorted(external_armatures)[0]]
+    bones = sorted(bone.name for bone in inspection_rig.data.bones)
     inspection = {
-        "armature": rig.name,
+        "armature": inspection_rig.name,
         "bones": bones,
         "weaponSocket": manifest["scene"]["weaponSocket"] in bones,
         "actors": {
@@ -735,8 +782,8 @@ def main() -> None:
         },
         "externalDependencies": external_dependencies,
         "externalDependencyCount": len(external_dependencies),
-        "gameplayBodyProfile": rig["hmh_gameplay_body_profile"],
-        "runtimeAuthority": rig["hmh_runtime_authority"],
+        "gameplayBodyProfile": inspection_rig["hmh_gameplay_body_profile"],
+        "runtimeAuthority": inspection_rig["hmh_runtime_authority"],
     }
     write_lf_json(inspection_output, inspection)
     object_count = sum(len(objects) for layers in objects_by_actor.values() for objects in layers.values())
