@@ -51,6 +51,21 @@ standing authority.
 - Hosted desktop, ultrawide, tablet, portrait, landscape, touch-control, portal, and
   network/console checks passed on `https://lestersarcade.io`.
 
+### Current live override — Cycle 072
+
+- Runtime commit: `414fc3049`.
+- Production: `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`; immediate rollback: `dpl_5HbBQf21BFoPzucGvijjcefygcDS`.
+- Release ledger: `2,339` evaluated, `2,288` passing, `51` accepted legacy failures, `0` unexpected.
+- Combined initial JS: `985,956 / 1,050,000`; headroom `64,044`.
+- Cache: `lesters-arcade-v25-hmh-visual-facelift`.
+- Completed this cycle: `W-1`, `W-3`, `W-4` (partial: shore and scree bands; shallows
+  band still open), `W-14`, `U-2`, `U-3`, `K-1`, `P-1`, `P-2`, `P-3`.
+- `P-4` attempted and deliberately not shipped: the two-run reproducibility gate
+  failed with `68 / 1,368` frames drifting under EEVEE. Tolerance was not widened.
+  Next step is recorded in `cycles/CYCLE-072.md`.
+- Hosted desktop, ultrawide, tablet, portrait, landscape and network checks passed on
+  `https://lestersarcade.io`.
+
 ### Work already completed after the original review baseline
 
 Current source and focused tests prove these roadmap outcomes already exist. Do not

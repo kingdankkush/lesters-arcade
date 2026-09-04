@@ -6,19 +6,19 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Certified production runtime implementation:** `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` (`hermes/hmh-cycle-070-gameplay-ui-music`)
+**Certified production runtime implementation:** `414fc3049` (`fable/hmh-cycle-072-visual-facelift`)
 
-**Verified runtime release deployment:** `dpl_5HbBQf21BFoPzucGvijjcefygcDS`
+**Verified runtime release deployment:** `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`
 
-**Immutable runtime release:** https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app
+**Immutable runtime release:** https://lesters-arcade-qkk7kcv56-justin-agent-projects.vercel.app
 
-**Retained rollback:** `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
+**Retained rollback:** `dpl_5HbBQf21BFoPzucGvijjcefygcDS`
 
 **Production cache marker:** `lesters-arcade-v25-hmh-visual-facelift`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
-> Runtime release facts above were verified on 2026-09-02 through exact-index review, Git/Preview artifact identity, Vercel promotion and custom-domain deployment-ID inspection, exact Preview/production hashes for stable bundles, and live five-profile HMH plus four-profile mobile-control browser certification. The deployed runtime boundary is `f2328177`; later documentation-only commits do not replace it.
+> Runtime release facts above were verified on 2026-09-04 through exact-index review, Git/Preview artifact identity, Vercel promotion and custom-domain deployment-ID inspection, exact Preview/production hashes for stable bundles, and live five-profile HMH plus four-profile mobile-control browser certification. The deployed runtime boundary is `414fc3049`; later documentation-only commits do not replace it.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -180,7 +180,7 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 
 | Gate | Verified 2026-09-02 result |
 | --- | --- |
-| Runtime implementation | `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` |
+| Runtime implementation | `414fc3049` |
 | Exact certified patch SHA-256 | `e08e6e91430a02afe177add51a3cf87db0834b6997590e7998cb9a549ded7094` |
 | Release ledger | 2,283 evaluated, 2,232 passing, exactly 51 accepted legacy failures, 0 unexpected |
 | Syntax | 361 JavaScript modules and 49 Python scripts |
@@ -195,11 +195,11 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 ### Runtime release identities
 
 - Public domain: https://lestersarcade.io
-- Verified Preview deployment: `dpl_4aBPFKqRSU8YSdJk8HoTG2JfAjeG`
-- Verified production deployment: `dpl_5HbBQf21BFoPzucGvijjcefygcDS`
-- Immutable production URL: https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app
-- Retained rollback deployment: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
-- Retained rollback URL: https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
+- Verified Preview deployment: `dpl_Gn7CJuYMMEvw6Kyak7yfGEu31v9u`
+- Verified production deployment: `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`
+- Immutable production URL: https://lesters-arcade-qkk7kcv56-justin-agent-projects.vercel.app
+- Retained rollback deployment: `dpl_5HbBQf21BFoPzucGvijjcefygcDS`
+- Retained rollback URL: https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app
 - Active runtime cache marker: `lesters-arcade-v25-hmh-visual-facelift`
 - Exact service-worker, portal bundle, HMH child bundle, and Pixi vendor bytes matched between the verified Preview and production.
 
@@ -207,7 +207,7 @@ A later documentation-only commit can create a newer Preview without changing pr
 
 ## Current continuation status
 
-Runtime implementation `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` is certified and live. This documentation wave records that immutable boundary without claiming its own future commit SHA.
+Runtime implementation `414fc3049` is certified and live. This documentation wave records that immutable boundary without claiming its own future commit SHA.
 
 | Gate | Result |
 | --- | --- |

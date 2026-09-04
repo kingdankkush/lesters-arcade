@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 072
 
 Date: `2026-09-03`
-Status: `LOCAL GATES PASSED`
+Status: `LIVE · VERIFIED`
 Branch: `fable/hmh-cycle-072-visual-facelift`
 Baseline: `dc6fd00a` (Cycle 071 live lineage `5046c0f3` plus the committed 2026-09-02 review)
 
@@ -174,3 +174,43 @@ wallet, transaction, or real-fund behaviour changed. No paid generation or exter
 asset upload. Parent authority over wallets, profiles, leaderboards, analytics,
 sessions and settlement is unchanged; the child still owns only input, simulation and
 projection.
+
+## Exact review and release identity
+
+- Runtime commit: `414fc3049` on `fable/hmh-cycle-072-visual-facelift`
+- Frozen staged patch SHA-256: `16c34b984f26dd73353fa171d307f8530aabcae46c2ccb0379b30185ac2cad13`
+- Preview: `dpl_Gn7CJuYMMEvw6Kyak7yfGEu31v9u` — <https://lesters-arcade-oh1d0gdhu-justin-agent-projects.vercel.app>
+  (preview byte verification was not possible: preview deployments sit behind
+  Vercel Authentication and return 302 to automated clients; verification was
+  performed on the public production alias instead)
+- Production: `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w` — <https://lesters-arcade-qkk7kcv56-justin-agent-projects.vercel.app>
+- Public alias: <https://lestersarcade.io>
+- Immediate rollback retained: `dpl_5HbBQf21BFoPzucGvijjcefygcDS` — <https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app>, confirmed `Ready`
+
+### Hosted artifact proof (production, byte-identical to the local build)
+
+- `sw.js`: `bef4737dbea4a14b11f6f336…` (3,710 bytes)
+- `dist/main.js`: `969516db92addb3fa4b870b4…` (1,134,738 bytes)
+- `dist/hmh-reboot/game.js`: `df26e190d968bc9a06b45d46…` (410,065 bytes)
+- `dist/chunks/hmh-pixi.js`: `d8bc671038603d2f523ef2b7…` (575,891 bytes)
+- `styles.css`: `941bece09b287a9cd9741df0…` (148,941 bytes)
+
+Live HTML contains `hmh-aaa-cycle-072-visual-facelift` and no Cycle 071 token; the
+live service worker contains `lesters-arcade-v25-hmh-visual-facelift`.
+
+### Hosted verification
+
+- Five-profile browser certification against `https://lestersarcade.io`: PASS on
+  desktop, ultrawide, tablet landscape, mobile portrait and mobile landscape, every
+  anchor `changedPixels: 0` / `maxChannelDelta: 0`, live runs advanced ticks under
+  real keyboard input and pause froze the authoritative tick
+- Production network/console audit: PASS, zero failures
+- `npm run docs:production`: live service-worker marker matches the README
+- Live desktop capture inspected by eye: lit granular terrain with no visible tile
+  grid, roads without the black outline, enemies carrying contact shadows, and the
+  HUD showing a live reload state
+
+The embedded in-app browser pane reports `document.visibilityState === 'hidden'`
+even when fronted, so the runtime correctly defers boot there; that pane remains
+unusable for gameplay verification, as recorded in Cycle 049.
+
