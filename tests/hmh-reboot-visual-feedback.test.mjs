@@ -74,6 +74,9 @@ test('live grenades project their authoritative blast radius as an accessibility
   assert.match(source, /worldToScreen\(point, camera, view\)/);
   assert.match(source, /activeGrenadeWarnings/);
   assert.match(source, /activeGrenadeWarningRadius/);
+  // V-3: grenade fragments report under their own key so the world hazard
+  // particle cap (dataset.worldRenderedParticles) is never inflated by them.
+  assert.match(source, /dataset\.grenadeFxParticles/);
 });
 
 test('enemies face their movement direction instead of a fixed side', async () => {

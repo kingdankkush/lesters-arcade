@@ -87,6 +87,21 @@ import { InputState, createBrowserInputController, mapGamepadSnapshot } from './
 import { rebindKeyboardAction } from './action-map.mjs';
 import { createGrenadeSystem, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
 import { buildGrenadeDangerProjection } from './grenade-vfx.mjs';
+// grenade feedback (V-3): pure projection resolvers for the arc shadow, fuse
+// blink, bounce puffs, fragment burst, shockwave ring and per-class shake.
+import {
+  MAX_GRENADE_FX_EVENTS,
+  BOUNCE_PUFF_LIFETIME_TICKS,
+  buildBouncePuff,
+  buildFragmentBurst,
+  buildShockwaveRing,
+  capGrenadeFxParticles,
+  grenadeBlastShake,
+  grenadeFragmentCount,
+  grenadeModeFromId,
+  resolveGrenadeArcShadow,
+  resolveGrenadeFuseBlink,
+} from './grenade-feedback.mjs';
 import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
 import {
   applyRecoilImpulse,
@@ -1093,6 +1108,10 @@ async function boot() {
   let lastMeleeAttack = null;
   let lastGrenadeThrow = null;
   let lastGrenadeDetonation = null;
+  // grenade feedback (V-3): render-side queue for bounce puffs. Kept apart
+  // from the 64-slot combat pool so puffs never evict impact feedback and
+  // dataset.effectPoolPressure stays untouched.
+  let grenadeFxEvents = [];
   let playerDefeatController = null;
   let playerHealth = 100;
   let collectibleState = null;
@@ -1564,6 +1583,9 @@ async function boot() {
       let activeGrenadeWarnings = 0;
       let activeGrenadeWarningRadius = 0;
       let activeGrenadeWarningUrgent = 0;
+      // grenade feedback (V-3): fragments drawn this frame, reported under its
+      // own key and never folded into worldRenderedParticles.
+      let drawnGrenadeFxParticles = 0;
       for (const grenade of grenadeSystem?.active ?? []) {
         const ground = queryGround(grenade.position.x, grenade.position.y);
         const warning = buildGrenadeDangerProjection({
@@ -1585,26 +1607,71 @@ async function boot() {
 
         const grenadeGround = worldToScreen({ x: grenade.position.x, y: grenade.position.y, z: ground.groundZ }, camera, view);
         const grenadeScreen = worldToScreen(grenade.position, camera, view);
-        const fuseRatio = Math.max(0, Math.min(1, (grenade.detonateTick - (simulation?.tick ?? 0)) / 39));
+        // grenade feedback (V-3): arc shadow, always-on fuse core and a
+        // strobing outer ring that doubles twice on the way to detonation.
         // A thrown grenade is the one thing in the run that is genuinely
-        // airborne, so its shadow stays pinned to the ground point and softens
-        // with height instead of tracking the projectile.
+        // airborne, so its shadow stays pinned to the ground point and shrinks
+        // and fades with height instead of tracking the projectile.
+        const arcShadow = resolveGrenadeArcShadow({
+          mode: grenade.mode,
+          lift: grenade.position.z - ground.groundZ,
+          zoom: camera.zoom,
+        });
         if (contactShadowPool) {
           contactShadowPool.place({
             x: grenadeGround.x,
             y: grenadeGround.y,
-            footprintPx: 9 * camera.zoom,
-            lift: Math.max(0, grenade.position.z - ground.groundZ),
-            alpha: 0.35,
+            footprintPx: arcShadow.footprintPx,
+            lift: arcShadow.lift,
+            alpha: arcShadow.baseAlpha,
           });
         } else {
-          grenadeVisuals.ellipse(grenadeGround.x, grenadeGround.y, 9, 4).fill({ color: 0x000000, alpha: 0.35 });
+          grenadeVisuals.ellipse(grenadeGround.x, grenadeGround.y, arcShadow.footprintPx, arcShadow.footprintPx * 0.46)
+            .fill({ color: 0x000000, alpha: arcShadow.alpha });
         }
-        grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, grenade.mode === 'launcher' ? 7 : 6)
+        const fuse = resolveGrenadeFuseBlink({
+          tick: simulation?.tick ?? grenade.spawnTick,
+          spawnTick: grenade.spawnTick,
+          detonateTick: grenade.detonateTick,
+          reduceFlash: settings.reduceFlash,
+        });
+        const bodyRadius = (grenade.mode === 'launcher' ? 7 : 6) * arcShadow.bodyScale;
+        grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, bodyRadius)
           .fill({ color: grenade.mode === 'launcher' ? WEAPON_COLORS['launcher-rig'] : 0xffd166, alpha: 0.98 })
           .stroke({ color: 0xffffff, width: 2, alpha: 0.9 });
-        grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, 10 + (1 - fuseRatio) * 5)
-          .stroke({ color: 0xff5c7a, width: 2, alpha: 0.35 + (1 - fuseRatio) * 0.55 });
+        // The core ring never blinks, so reduce-flash users keep a steady cue
+        // and the intensity ramp alone still says the fuse is short.
+        grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, bodyRadius + 3)
+          .stroke({ color: 0xff5c7a, width: 2, alpha: 0.3 + fuse.intensity * 0.45 });
+        if (fuse.on) {
+          grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, bodyRadius + 7 + fuse.intensity * 5)
+            .stroke({ color: 0xff5c7a, width: 2.5, alpha: fuse.intensity });
+        }
+      }
+      // grenade feedback (V-3): bounce dust puffs from the simulation's own
+      // bounce reports, drawn with the other combat feedback and retired on
+      // their own ten-tick life.
+      if (simulation) {
+        compactExpiredEventsInPlace(grenadeFxEvents, simulation.tick, BOUNCE_PUFF_LIFETIME_TICKS);
+        for (const event of grenadeFxEvents) {
+          if (event.type !== 'grenade-bounce') continue;
+          const center = worldToScreen(event.point, camera, view);
+          if (!isScreenPointVisible(center, view, 64)) continue;
+          const puff = buildBouncePuff({
+            seed: `${event.grenadeId}:${event.tick}`,
+            kind: event.kind,
+            age: simulation.tick - event.tick,
+            zoom: camera.zoom,
+          });
+          if (puff.alpha <= 0) continue;
+          combatVisuals.ellipse(center.x, center.y + puff.offsetY, puff.spreadX, puff.spreadY)
+            .fill({ color: 0xc9b184, alpha: puff.alpha })
+            .stroke({ color: 0xe8d5a8, width: 2, alpha: puff.strokeAlpha });
+          for (const lobe of puff.lobes) {
+            combatVisuals.circle(center.x + lobe.dx, center.y + puff.offsetY + lobe.dy, lobe.radius)
+              .fill({ color: 0xe8dcbd, alpha: puff.lobeAlpha });
+          }
+        }
       }
       const burnerZones = weaponLoadout?.weapons['bear-market-burner']?.burnerState?.scorchZones ?? [];
       for (const zone of burnerZones) {
@@ -1652,6 +1719,12 @@ async function boot() {
       }
       if (simulation) {
         compactExpiredEventsInPlace(combatVisualEvents, simulation.tick, HIT_FEEDBACK_TICKS);
+        // grenade feedback (V-3): per-frame fragment budget across every live
+        // blast, newest fans kept whole and the oldest trimmed first.
+        const blastEvents = combatVisualEvents.filter((event) => event.type === 'blast');
+        const blastFragmentAllowance = new Map(capGrenadeFxParticles(
+          blastEvents.map((event) => ({ tick: event.tick, count: grenadeFragmentCount({ mode: event.mode, particleScale }) })),
+        ).map((count, index) => [blastEvents[index], count]));
         for (const event of combatVisualEvents) {
           const age = simulation.tick - event.tick;
           const alpha = Math.max(0.08, 1 - age / HIT_FEEDBACK_TICKS);
@@ -1774,10 +1847,38 @@ async function boot() {
             combatVisuals.arc(center.x, center.y, 58 * camera.zoom, angle - 0.72, angle + 0.72)
               .stroke({ color: 0xd7fbff, width: 10, alpha: alpha * 0.68 });
           } else if (event.type === 'blast') {
-            const radius = event.radius * camera.zoom * (0.38 + age / HIT_FEEDBACK_TICKS * 0.62);
-            combatVisuals.circle(center.x, center.y, radius)
-              .fill({ color: 0xff8c5a, alpha: alpha * 0.18 })
-              .stroke({ color: 0xffd166, width: 6, alpha: alpha * 0.85 });
+            // grenade feedback (V-3): a bounded core flash, a shockwave ring
+            // eased onto the exact danger boundary the player was shown, and a
+            // seeded radial fragment fan under the per-frame particle cap.
+            const ring = buildShockwaveRing({
+              radius: event.radius,
+              age,
+              zoom: camera.zoom,
+              mode: event.mode,
+              reduceFlash: settings.reduceFlash,
+            });
+            const blastColor = event.mode === 'launcher' ? WEAPON_COLORS['launcher-rig'] : 0xffd166;
+            if (ring.coreFlash) {
+              combatVisuals.circle(center.x, center.y, ring.coreRadius).fill({ color: 0xfff6dc, alpha: ring.coreAlpha });
+            }
+            combatVisuals.circle(center.x, center.y, ring.radius)
+              .fill({ color: 0xff8c5a, alpha: ring.fillAlpha })
+              .stroke({ color: blastColor, width: ring.width, alpha: ring.alpha });
+            const fragments = buildFragmentBurst({
+              seed: `${event.tick}:${event.point.x}:${event.point.y}`,
+              mode: event.mode,
+              radius: event.radius,
+              age,
+              zoom: camera.zoom,
+              particleScale,
+              maxCount: blastFragmentAllowance.get(event) ?? 0,
+            });
+            for (const fragment of fragments) {
+              combatVisuals.moveTo(center.x + Math.cos(fragment.angle) * fragment.inner, center.y + Math.sin(fragment.angle) * fragment.inner)
+                .lineTo(center.x + Math.cos(fragment.angle) * fragment.outer, center.y + Math.sin(fragment.angle) * fragment.outer)
+                .stroke({ color: age < 3 ? 0xfff06a : 0xff8c5a, width: fragment.width, alpha: fragment.alpha });
+            }
+            drawnGrenadeFxParticles += fragments.length;
           } else if (event.type === 'impact') {
             combatVisuals.circle(center.x, center.y, 7 + age * 1.4)
               .stroke({ color: event.color, width: event.critical ? 6 : 3, alpha });
@@ -2185,6 +2286,10 @@ async function boot() {
         dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
         dataset.activeGrenadeWarningUrgent = String(activeGrenadeWarningUrgent);
         dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
+        // grenade feedback (V-3): new keys only; the grenade keys above and
+        // worldRenderedParticles stay byte-identical for the browser smokes.
+        dataset.grenadeFxParticles = String(drawnGrenadeFxParticles);
+        dataset.grenadeFxEvents = String(grenadeFxEvents.length);
         dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
         dataset.dashActive = String(dashStatus?.active === true);
         dataset.dashInvulnerable = String(dashStatus?.invulnerable === true);
@@ -2342,6 +2447,7 @@ async function boot() {
     lastMeleeAttack = null;
     lastGrenadeThrow = null;
     lastGrenadeDetonation = null;
+    grenadeFxEvents = [];
     combatVisualEvents = [];
     lastAccessibleCombatStatus = '';
     playerDefeatController = null;
@@ -3460,12 +3566,19 @@ async function boot() {
         blockers: WORLD_BLOCKERS,
         targets: playerHurtTarget ? [...hurtTargets, playerHurtTarget] : hurtTargets,
       });
+      // grenade feedback (V-3): the simulation already reports every bounce;
+      // queue a render-side dust puff for each (no sim state is read back).
+      for (const bounce of grenadeFrame.bounces) {
+        if (grenadeFxEvents.length >= MAX_GRENADE_FX_EVENTS) grenadeFxEvents.shift();
+        grenadeFxEvents.push(Object.freeze({ type: 'grenade-bounce', tick, kind: bounce.kind, point: bounce.point, grenadeId: bounce.grenadeId }));
+      }
       for (const detonation of grenadeFrame.detonations) {
         recordRunGrenadeDetonation(runSummaryAccumulator, detonation);
         lastGrenadeDetonation = { tick, reason: detonation.reason, grenadeId: detonation.grenadeId };
         combatAudio.play('grenade-boom', { volume: 0.16 });
-        pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius });
-        triggerCameraShake(tick, 10);
+        const mode = grenadeModeFromId(detonation.grenadeId);
+        pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius, mode });
+        triggerCameraShake(tick, grenadeBlastShake({ mode, radius: detonation.radius }));
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
       }
 
