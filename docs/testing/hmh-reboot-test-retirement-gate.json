@@ -3,13 +3,13 @@
   "gate": "hmh-reboot-test-retirement",
   "status": "PASS",
   "counts": {
-    "tests": 2283,
+    "tests": 2339,
     "failed": 51,
-    "passed": 2232,
+    "passed": 2288,
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "topLevel": 2216,
+    "topLevel": 2272,
     "suites": 8
   },
   "expectedFailureCount": 51,

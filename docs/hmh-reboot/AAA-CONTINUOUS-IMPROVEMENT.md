@@ -251,7 +251,11 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 071 is live and verified
+- Status: Cycle 072 source green; full local certification passed; production promotion pending
+- Cycle 072 scope: lit micro-terrain and macro tile scale, roads without an outline, shore/scree bands, ground contact shadows, real HUD with gated developer telemetry, encounter-director view decoupled from the render camera, external-model import path
+- Cycle 072 evidence: `2,339 / 2,288 / 51 / 0`; entry `410,065` + vendor `575,891` = `985,956 / 1,050,000`, headroom `64,044`; visual 12/12 re-accepted with intent; five-profile certification zero-delta anchors; desktop/mobile p95 `7.1 / 7.1 ms`; mobile controls 4/4
+- Cycle 072 excluded P-4 (enemy EEVEE) at the reproducibility gate: `68 / 1,368` frames drift; tolerance not widened and art not shipped
+- Previous status: Cycle 071 is live and verified
 - Certified production runtime boundary: `f232817782509c49ea6e2b6f76ed9a61f82fc4b9`
 - Cycle 071 scope: canonical `bruiser` encounter role, shared 128-projectile budget authority, and reconciled AAA roadmap
 - HMH entry: `395,337` bytes; Pixi vendor `575,891` bytes; combined `971,228 / 1,050,000`; headroom `78,772` bytes

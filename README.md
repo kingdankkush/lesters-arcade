@@ -14,7 +14,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
 
-**Production cache marker:** `lesters-arcade-v24-hmh-encounter-truth`
+**Production cache marker:** `lesters-arcade-v25-hmh-visual-facelift`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
@@ -170,8 +170,9 @@ The bounded cycle ledger is the authoritative implementation history. Highlights
 - Cycle 068: projection-only Time Dilation/Berserk silhouette and audio identity recovered onto current integration, followed by exact candidate review, full serial certification, and live production proof for HMH and Chikun.
 - Cycle 070: portal-owned pause-only soundtrack transport with accessible seek/volume/queue controls, a non-overlapping desktop sidecar, a contained portrait-mobile launcher/drawer, MCP 1/2 PixelLab owner-script compatibility, exact Preview proof, and live desktop/mobile production verification.
 - Cycle 071: canonical `bruiser` encounter-role truth, exported projectile budgets clamped to the live 128-projectile authority, direct cross-band tests, and source-backed reconciliation of the Fable roadmap.
+- Cycle 072: the gameworld facelift. Terrain rebaked as lit micro-terrain with the 67-pixel tile grid removed, roads without the black outline, shore and scree edge bands, ground contact shadows, a real in-game HUD with developer telemetry behind `?debugHud=1`, the encounter director decoupled from the render camera, and the external-model import path for owner-supplied GLB/FBX actors.
 
-See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 071](docs/hmh-reboot/cycles/CYCLE-071.md), and the [current live-release handoff](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md).
+See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-derived character model brief](docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md), [continuous-improvement ledger](docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md), [Cycle 072](docs/hmh-reboot/cycles/CYCLE-072.md), and the [current live-release handoff](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md).
 
 ---
 
@@ -199,7 +200,7 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 - Immutable production URL: https://lesters-arcade-57ws1fm9l-justin-agent-projects.vercel.app
 - Retained rollback deployment: `dpl_HAeCyfAG6SDK5x1LruxTMix2CBmQ`
 - Retained rollback URL: https://lesters-arcade-5eb8u80mm-justin-agent-projects.vercel.app
-- Active runtime cache marker: `lesters-arcade-v24-hmh-encounter-truth`
+- Active runtime cache marker: `lesters-arcade-v25-hmh-visual-facelift`
 - Exact service-worker, portal bundle, HMH child bundle, and Pixi vendor bytes matched between the verified Preview and production.
 
 A later documentation-only commit can create a newer Preview without changing production. Treat `f2328177` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
@@ -217,7 +218,7 @@ Runtime implementation `f232817782509c49ea6e2b6f76ed9a61f82fc4b9` is certified a
 | HMH initial JS / cap | 971,228 / 1,050,000 bytes; 78,772 bytes headroom |
 | Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
 | Cabinet status docs | PASS across canonical manifests and governed docs |
-| Production marker | `lesters-arcade-v24-hmh-encounter-truth`; local README parity and live network gate PASS |
+| Production marker | `lesters-arcade-v25-hmh-visual-facelift`; local README parity and live network gate PASS |
 | Production runtime | LIVE at the verified `f2328177` implementation boundary |
 
 The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.
