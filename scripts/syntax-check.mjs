@@ -381,6 +381,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-visual-regression.test.mjs",
   "tests/hmh-reboot-production-hero-atlas.test.mjs",
   "tests/hmh-reboot-enemy-roster-atlas.test.mjs",
+  "tests/hmh-reboot-enemy-roster-reproducibility.test.mjs",
   "tests/hmh-reboot-authored-prop-atlas.test.mjs",
   "tests/hmh-reboot-contact-shadows.test.mjs",
   "tests/hmh-reboot-cycle-007-art.test.mjs",

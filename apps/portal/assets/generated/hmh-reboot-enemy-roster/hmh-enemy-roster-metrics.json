@@ -3,86 +3,384 @@
   "actors": [
     {
       "actorId": "bagholder-rusher",
-      "atlasBytes": 577642,
+      "atlasBytes": 894268,
       "atlasSize": 1024,
-      "contactSheetBytes": 72114,
+      "contactSheetBytes": 99200,
       "frameCount": 152,
       "metadataBytes": 98798,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "forkrunner",
-      "atlasBytes": 552685,
+      "atlasBytes": 795251,
       "atlasSize": 1024,
-      "contactSheetBytes": 67777,
+      "contactSheetBytes": 89786,
       "frameCount": 152,
-      "metadataBytes": 97862,
+      "metadataBytes": 97861,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "liquidator-agent",
-      "atlasBytes": 552755,
+      "atlasBytes": 872970,
       "atlasSize": 1024,
-      "contactSheetBytes": 62760,
+      "contactSheetBytes": 92380,
       "frameCount": 152,
-      "metadataBytes": 98781,
+      "metadataBytes": 98787,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "whale-enforcer",
-      "atlasBytes": 874790,
+      "atlasBytes": 1442465,
       "atlasSize": 2048,
-      "contactSheetBytes": 107157,
+      "contactSheetBytes": 161500,
       "frameCount": 152,
-      "metadataBytes": 98722,
+      "metadataBytes": 98723,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "gas-bomber",
-      "atlasBytes": 552808,
+      "atlasBytes": 876685,
       "atlasSize": 1024,
-      "contactSheetBytes": 69986,
+      "contactSheetBytes": 98926,
       "frameCount": 152,
-      "metadataBytes": 97933,
+      "metadataBytes": 97943,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "validator-cultist",
-      "atlasBytes": 591641,
+      "atlasBytes": 886475,
       "atlasSize": 1024,
-      "contactSheetBytes": 74858,
+      "contactSheetBytes": 100878,
       "frameCount": 152,
-      "metadataBytes": 98895,
+      "metadataBytes": 98890,
       "uniqueSourceFrames": 152
     },
     {
       "actorId": "the-liquidator",
-      "atlasBytes": 1282876,
+      "atlasBytes": 2025648,
       "atlasSize": 2048,
-      "contactSheetBytes": 110411,
+      "contactSheetBytes": 183699,
       "frameCount": 456,
-      "metadataBytes": 305724,
+      "metadataBytes": 305729,
       "uniqueSourceFrames": 456
     }
   ],
   "blender": "Blender 5.1.2",
   "duplicateFrames": 0,
+  "engine": "BLENDER_EEVEE",
   "pipelineId": "hmh-reboot-enemy-roster-v1",
   "reproducibilityPolicy": {
-    "kind": "exact-or-single-lsb",
-    "maxChannelDelta": 1,
-    "maxDifferingSubpixelsPerFrame": 8,
-    "metadataExactExceptDerivedPixelSha": true,
-    "rgbCanonicalization": {
-      "kind": "nearest-step",
-      "maxChannelDelta": 4,
-      "preserveAlpha": true,
-      "step": 8
+    "budget": {
+      "maxChangedVisiblePixels": 8,
+      "maxChannelDelta": 2,
+      "maxTotalChannelDelta": 32
     },
-    "toleratedFrames": {}
+    "coldSceneRebuild": true,
+    "comparedSpace": "premultiplied-rgba-8bit-unquantised",
+    "kind": "bounded-premultiplied-rgba-v1",
+    "metadataExactExceptDerivedPixelSha": true,
+    "observed": {
+      "driftedFrameCount": 58,
+      "maxChangedVisiblePixels": 4,
+      "maxChannelDelta": 2,
+      "maxTotalChannelDelta": 4,
+      "worstFrameId": "forkrunner__body__death__north__002"
+    },
+    "toleratedFrames": {
+      "forkrunner__body__death__east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "forkrunner__body__death__north__002.png": {
+        "changed": 4,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "forkrunner__body__hit__east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "forkrunner__body__run__south-east__001.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "forkrunner__body__run__south-east__002.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "forkrunner__body__run__south-east__004.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "forkrunner__body__run__south-east__005.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "forkrunner__body__run__south-west__001.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "forkrunner__body__run__south-west__002.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "forkrunner__body__run__south-west__004.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "forkrunner__body__run__south-west__005.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "forkrunner__body__tell__north-east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "forkrunner__body__tell__north__000.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "forkrunner__body__tell__north__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__attack__north-east__002.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__attack__north-west__001.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__attack__south-east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__attack__south__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__death__north-east__003.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__death__south__000.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__hit__north-east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__hit__south-east__001.png": {
+        "changed": 3,
+        "maxDelta": 1,
+        "totalDelta": 3
+      },
+      "gas-bomber__body__idle__north__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__idle__south-west__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "gas-bomber__body__run__north-west__001.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__north-west__002.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__north-west__004.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__north-west__005.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__south__001.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__south__002.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__south__004.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__run__south__005.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "gas-bomber__body__tell__east__001.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "liquidator-agent__body__hit__south__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "liquidator-agent__body__run__north__000.png": {
+        "changed": 2,
+        "maxDelta": 2,
+        "totalDelta": 3
+      },
+      "liquidator-agent__body__run__north__003.png": {
+        "changed": 2,
+        "maxDelta": 2,
+        "totalDelta": 3
+      },
+      "liquidator-agent__body__tell__south-east__000.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 3
+      },
+      "liquidator-agent__body__tell__west__000.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "the-liquidator__body__margin-call__death__south-west__000.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "the-liquidator__body__margin-call__idle__south-west__000.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "the-liquidator__body__market-open__idle__south-west__000.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "the-liquidator__body__market-open__tell__north-west__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "the-liquidator__body__total-liquidation__hit__south__000.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "the-liquidator__body__total-liquidation__idle__south-west__000.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 2
+      },
+      "validator-cultist__body__attack__north__002.png": {
+        "changed": 4,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "validator-cultist__body__attack__south-west__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "validator-cultist__body__hit__north-east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "validator-cultist__body__run__north-east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "validator-cultist__body__run__north-east__002.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "validator-cultist__body__run__north-east__004.png": {
+        "changed": 1,
+        "maxDelta": 2,
+        "totalDelta": 2
+      },
+      "validator-cultist__body__run__north-east__005.png": {
+        "changed": 1,
+        "maxDelta": 2,
+        "totalDelta": 2
+      },
+      "validator-cultist__body__tell__south-west__000.png": {
+        "changed": 3,
+        "maxDelta": 1,
+        "totalDelta": 3
+      },
+      "whale-enforcer__body__attack__south__000.png": {
+        "changed": 2,
+        "maxDelta": 1,
+        "totalDelta": 3
+      },
+      "whale-enforcer__body__hit__east__001.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "whale-enforcer__body__hit__north__000.png": {
+        "changed": 3,
+        "maxDelta": 1,
+        "totalDelta": 3
+      },
+      "whale-enforcer__body__hit__south-west__000.png": {
+        "changed": 1,
+        "maxDelta": 1,
+        "totalDelta": 1
+      },
+      "whale-enforcer__body__run__south__001.png": {
+        "changed": 4,
+        "maxDelta": 1,
+        "totalDelta": 4
+      },
+      "whale-enforcer__body__run__south__002.png": {
+        "changed": 4,
+        "maxDelta": 1,
+        "totalDelta": 4
+      }
+    }
   },
   "reproducibleVerified": true,
   "status": "pass",
-  "totalAtlasBytes": 4985197,
+  "totalAtlasBytes": 7793762,
   "totalFrames": 1368
 }

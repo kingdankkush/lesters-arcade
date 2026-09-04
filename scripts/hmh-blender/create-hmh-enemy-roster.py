@@ -826,56 +826,58 @@ def build_actor(actor: dict, rig, collection) -> dict:
     }
 
 
+# Cycle 072 (P-4): the roster renders under the same EEVEE contract as the
+# heroes. Every value below is read from the manifest so one file describes the
+# render, and the light energies/colours still come from the shared rig.
+#
+# Only property names verified present on Blender 5.1.2 are used. The legacy
+# EEVEE soft-shadow, ambient-occlusion, bloom and cube-shadow-size toggles were
+# removed in this build; assigning one raises, so a test pins their absence.
+ENEMY_LIGHT_PLACEMENT = (
+    ("key", (2.6, -3.4, 4.4), (48.0, 0.0, 38.0)),
+    ("fill", (-3.2, -2.2, 2.6), (66.0, 0.0, -52.0)),
+    ("rim", (0.4, 3.6, 3.4), (-56.0, 0.0, 8.0)),
+)
+
+
 def build_lighting(manifest: dict):
     scene = bpy.context.scene
     scene.render.engine = manifest["render"]["engine"]
     scene.render.dither_intensity = manifest["render"]["ditherIntensity"]
+    scene.render.filter_size = manifest["render"]["filterSize"]
+    scene.render.film_transparent = manifest["render"]["transparentFilm"]
     scene.eevee.taa_render_samples = manifest["render"]["taaRenderSamples"]
-    scene.render.film_transparent = True
+    scene.eevee.use_shadows = manifest["render"]["castShadows"]
+    scene.eevee.shadow_ray_count = manifest["render"]["shadowRayCount"]
+    scene.eevee.shadow_step_count = manifest["render"]["shadowStepCount"]
+    scene.eevee.shadow_resolution_scale = manifest["render"]["shadowResolutionScale"]
+    scene.eevee.use_raytracing = manifest["render"]["useRaytracing"]
     world = bpy.data.worlds.new("HMH_Enemy_World")
     world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.03, 0.04, 1.0)
-    world.node_tree.nodes["Background"].inputs[1].default_value = 0.42
+    background = world.node_tree.nodes["Background"]
+    background.inputs["Color"].default_value = tuple(manifest["render"]["world"]["color"]) + (1.0,)
+    background.inputs["Strength"].default_value = manifest["render"]["world"]["strength"]
     scene.world = world
-    if hasattr(scene, "view_settings"):
-        scene.view_settings.exposure = manifest["render"]["exposure"]
-    scene.display.shading.light = manifest["render"]["workbenchLight"]
-    scene.display.shading.color_type = manifest["render"]["workbenchColorType"]
-    scene.display.shading.show_shadows = True
-    scene.display.shading.show_cavity = manifest["render"]["workbenchCavityEnabled"]
-    scene.display.shading.cavity_type = manifest["render"]["workbenchCavity"]
-    scene.display.shading.show_specular_highlight = True
+    scene.view_settings.view_transform = manifest["render"]["viewTransform"]
+    scene.view_settings.look = manifest["render"]["look"]
+    scene.view_settings.exposure = manifest["render"]["exposure"]
 
     _channels = dict((name, (color, energy)) for name, color, energy in shared_light_channels("enemy"))
-    key = bpy.data.lights.new("HMH_Enemy_Key", type="AREA")
-    key.energy = _channels["key"][1]
-    key.color = _channels["key"][0]
-    key.size = 5.0
-    key.use_shadow = manifest["render"]["castShadows"]
-    key_obj = bpy.data.objects.new("HMH_Enemy_Key", key)
-    key_obj.location = (2.6, -3.4, 4.4)
-    key_obj.rotation_euler = (math.radians(48), 0.0, math.radians(38))
-    scene.collection.objects.link(key_obj)
-
-    fill = bpy.data.lights.new("HMH_Enemy_Fill", type="AREA")
-    fill.energy = _channels["fill"][1]
-    fill.color = _channels["fill"][0]
-    fill.size = 6.0
-    fill.use_shadow = manifest["render"]["castShadows"]
-    fill_obj = bpy.data.objects.new("HMH_Enemy_Fill", fill)
-    fill_obj.location = (-3.2, -2.2, 2.6)
-    fill_obj.rotation_euler = (math.radians(66), 0.0, math.radians(-52))
-    scene.collection.objects.link(fill_obj)
-
-    rim = bpy.data.lights.new("HMH_Enemy_Rim", type="AREA")
-    rim.energy = _channels["rim"][1]
-    rim.color = _channels["rim"][0]
-    rim.size = 4.0
-    rim.use_shadow = manifest["render"]["castShadows"]
-    rim_obj = bpy.data.objects.new("HMH_Enemy_Rim", rim)
-    rim_obj.location = (0.4, 3.6, 3.4)
-    rim_obj.rotation_euler = (math.radians(-56), 0.0, math.radians(8))
-    scene.collection.objects.link(rim_obj)
+    for channel, location, rotation_degrees in ENEMY_LIGHT_PLACEMENT:
+        name = f"HMH_Enemy_{channel.capitalize()}"
+        light_color, light_energy = _channels[channel]
+        light_data = bpy.data.lights.new(name, type="AREA")
+        light_data.energy = light_energy
+        light_data.color = light_color
+        light_data.shape = manifest["render"]["lightShape"]
+        light_data.size = manifest["render"]["lightSizes"][channel]
+        light_data.use_shadow = manifest["render"]["castShadows"]
+        light_data.shadow_filter_radius = manifest["render"]["shadowFilterRadius"]
+        light_data.use_shadow_jitter = manifest["render"]["useShadowJitter"]
+        light_object = bpy.data.objects.new(name, light_data)
+        light_object.location = tuple(location)
+        light_object.rotation_euler = tuple(math.radians(angle) for angle in rotation_degrees)
+        scene.collection.objects.link(light_object)
 
     camera_data = bpy.data.cameras.new("HMH_Enemy_Camera")
     camera_data.type = "ORTHO"

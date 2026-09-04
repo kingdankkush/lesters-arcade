@@ -110,13 +110,14 @@ test('the hero manifest advertises schema v2 and keeps the four shipped pilots p
   }
 });
 
-test('the enemy manifest advertises schema 2 and stays on Workbench for this cycle', async () => {
+test('the enemy manifest advertises schema 2 and, since Cycle 073, renders under EEVEE', async () => {
   const manifest = await readJson(ENEMY_MANIFEST);
   assert.equal(manifest.schema, 2);
   assert.equal(typeof manifest.schema, 'number', 'the enemy schema field has always been numeric');
   assert.equal(manifest.pipelineId, 'hmh-reboot-enemy-roster-v1');
-  // P-4 moves the roster to EEVEE in its own cycle. This slice is schema-only.
-  assert.equal(manifest.render.engine, 'BLENDER_WORKBENCH');
+  // P-4 (Cycle 073) moved the roster to the hero EEVEE contract. The schema v2
+  // keys beside `clips` are unchanged by that flip.
+  assert.equal(manifest.render.engine, 'BLENDER_EEVEE');
   for (const actor of manifest.actors) {
     assertOptionalExternalModelShape(actor, `enemy ${actor.actorId}`);
     assert.ok(!('sourceModel' in actor), `${actor.actorId} must stay procedural`);

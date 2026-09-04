@@ -7,6 +7,13 @@ ground contact.
 
 Outputs are projection-only. Collision radius, damage, AI and spawn behaviour
 come from enemy-archetypes.mjs and are never derived from these files.
+
+Reproducibility (Cycle 073): `--verify-reproducible` rebuilds the scene cold,
+renders every frame twice and compares the two normalised passes in the hero
+pipeline's budget form -- premultiplied RGBA, unquantised, per frame against
+the manifest `reproducibilityBudget`. The Cycle 035 nearest-8 RGB quantiser is
+gone: it turned a one-LSB EEVEE flip on a bucket edge into an eight-step
+failure and posterised every gradient to 32 levels per channel.
 """
 from __future__ import annotations
 
@@ -20,7 +27,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 from hmh_pipeline_lock import exclusive_pipeline_lock
 
@@ -90,10 +97,11 @@ def render_roster_by_actor(
         ], f"{label}: {actor_id}")
 
 
-LSB_TOLERANCE_MAX_CHANNEL_DELTA = 1
-LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME = 8
-RGB_CANONICALIZATION_STEP = 8
-RGB_CANONICALIZATION_OFFSET = RGB_CANONICALIZATION_STEP // 2
+REPRODUCIBILITY_POLICY_KIND = "bounded-premultiplied-rgba-v1"
+# The exact Blender output is kept beside the runtime frame so a drifted run
+# can be classified (renderer jitter vs scene-build drift) without re-rendering.
+SUPERSAMPLED_DIRNAME = "supersampled"
+DRIFT_REPORT_PATH = ROOT / ".tmp" / "hmh-enemy-roster-drift-report.json"
 
 
 def roster_json_drift_is_derived(first_path: Path, second_path: Path, tolerated_frames: set[str]) -> bool:
@@ -119,39 +127,197 @@ def roster_json_drift_is_derived(first_path: Path, second_path: Path, tolerated_
     return True
 
 
-def frames_within_lsb_tolerance(first_dir: Path, second_dir: Path, frame_names: list[str]):
-    """Return {frame: differing_subpixels} if every drifted frame is within the
-    documented Workbench rasterizer jitter (<=1 LSB on <=8 subpixels), else None.
+def premultiplied_rgba(pixel) -> tuple[int, int, int, int]:
+    alpha = pixel[3]
+    return (
+        round(pixel[0] * alpha / 255),
+        round(pixel[1] * alpha / 255),
+        round(pixel[2] * alpha / 255),
+        alpha,
+    )
 
-    Three consecutive cold rebuilds on 2026-07-31 flipped one LSB on a
-    different frame each run - including an actor whose source had not changed
-    at all - so an exact-byte gate on this renderer is structurally flaky. Real
-    non-determinism (geometry, pose, material or alpha drift) changes hundreds
-    of subpixels and still fails. Metadata JSON must remain byte-exact.
+
+def compare_frames_premultiplied(first_dir: Path, second_dir: Path, frame_names: list[str]) -> dict[str, dict]:
+    """Per-frame drift between two passes in the hero pipeline's budget form.
+
+    RGB is premultiplied by alpha before differencing, so a large straight-RGB
+    delta under near-zero alpha counts for what it contributes on screen (one
+    level) while every visible channel counts at full weight. Frames are read
+    through canonical_rgba, so colour under alpha 0 can never register. This
+    mirrors compare_premultiplied in run-hmh-production-hero-pilot.py, which
+    Lester observes at 0/0/0 under the same EEVEE contract.
+
+    Returns {frame: {"changed": pixels, "maxDelta": levels, "totalDelta": levels}}.
     """
     report = {}
     for name in frame_names:
         first_path = first_dir / name
         second_path = second_dir / name
         if not first_path.exists() or not second_path.exists():
-            return None
+            raise RuntimeError(f"cannot compare {name}: the frame is missing from one pass")
         first = canonical_rgba(Image.open(first_path))
         second = canonical_rgba(Image.open(second_path))
         if first.size != second.size:
-            return None
-        a = first.tobytes()
-        b = second.tobytes()
-        differing = 0
-        for index in range(len(a)):
-            delta = a[index] - b[index]
-            if delta:
-                if abs(delta) > LSB_TOLERANCE_MAX_CHANNEL_DELTA:
-                    return None
-                differing += 1
-                if differing > LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME:
-                    return None
-        report[name] = differing
+            raise RuntimeError(f"cannot compare {name}: pass sizes differ {first.size} vs {second.size}")
+        changed = 0
+        max_delta = 0
+        total_delta = 0
+        for pixel_a, pixel_b in zip(first.get_flattened_data(), second.get_flattened_data()):
+            if pixel_a == pixel_b:
+                continue
+            deltas = [abs(a - b) for a, b in zip(premultiplied_rgba(pixel_a), premultiplied_rgba(pixel_b))]
+            pixel_delta = max(deltas)
+            if pixel_delta == 0:
+                continue
+            changed += 1
+            max_delta = max(max_delta, pixel_delta)
+            total_delta += sum(deltas)
+        report[name] = {"changed": changed, "maxDelta": max_delta, "totalDelta": total_delta}
     return report
+
+
+def frames_exceeding_budget(report: dict[str, dict], budget: dict) -> list[str]:
+    """Frames whose drift exceeds any axis of the manifest reproducibilityBudget."""
+    return [
+        name for name, entry in report.items()
+        if entry["changed"] > budget["maxChangedVisiblePixels"]
+        or entry["maxDelta"] > budget["maxChannelDelta"]
+        or entry["totalDelta"] > budget["maxTotalChannelDelta"]
+    ]
+
+
+def summarize_observed_drift(report: dict[str, dict]) -> dict:
+    """The worst observed value per budget axis, plus the frame that carried it."""
+    observed = {
+        "maxChangedVisiblePixels": 0,
+        "maxChannelDelta": 0,
+        "maxTotalChannelDelta": 0,
+        "driftedFrameCount": 0,
+        "worstFrameId": None,
+    }
+    worst = None
+    for name, entry in report.items():
+        if not entry["changed"]:
+            continue
+        observed["driftedFrameCount"] += 1
+        observed["maxChangedVisiblePixels"] = max(observed["maxChangedVisiblePixels"], entry["changed"])
+        observed["maxChannelDelta"] = max(observed["maxChannelDelta"], entry["maxDelta"])
+        observed["maxTotalChannelDelta"] = max(observed["maxTotalChannelDelta"], entry["totalDelta"])
+        candidate = (entry["changed"], entry["maxDelta"], entry["totalDelta"])
+        if worst is None or candidate > worst[0]:
+            worst = (candidate, name.removesuffix(".png"))
+    observed["worstFrameId"] = worst[1] if worst else None
+    return observed
+
+
+def build_reproducibility_policy(budget: dict, report, verified: bool) -> dict:
+    """The policy block published in hmh-enemy-roster-metrics.json."""
+    report = report or {}
+    return {
+        "kind": REPRODUCIBILITY_POLICY_KIND,
+        "budget": dict(budget),
+        "comparedSpace": "premultiplied-rgba-8bit-unquantised",
+        "coldSceneRebuild": True,
+        "metadataExactExceptDerivedPixelSha": True,
+        "observed": summarize_observed_drift(report) if verified else None,
+        "toleratedFrames": dict(report) if verified else None,
+    }
+
+
+def supersampled_drift_histogram(first_dir: Path, second_dir: Path) -> dict:
+    """Straight-RGBA delta histogram of the byte-exact Blender frames of two passes.
+
+    Measured on the supersampled frames before Lanczos, so the renderer's own
+    jitter can be told apart from anything the normalisation adds or hides.
+    ImageChops keeps 1,368 x 320x320 frames cheap.
+    """
+    names = sorted(path.name for path in first_dir.glob("*.png"))
+    rgb_hist: dict[int, int] = defaultdict(int)
+    alpha_hist: dict[int, int] = defaultdict(int)
+    drifted = 0
+    for name in names:
+        second_path = second_dir / name
+        if not second_path.exists():
+            raise RuntimeError(f"supersampled frame {name} is missing from the second pass")
+        first = canonical_rgba(Image.open(first_dir / name))
+        second = canonical_rgba(Image.open(second_path))
+        if first.size != second.size:
+            raise RuntimeError(f"supersampled frame {name} sizes differ {first.size} vs {second.size}")
+        difference = ImageChops.difference(first, second)
+        # Pillow's getbbox() defaults to alpha_only=True on RGBA, which would
+        # report an RGB-only drift under full alpha as "identical".
+        if difference.getbbox(alpha_only=False) is None:
+            continue
+        drifted += 1
+        histogram = difference.histogram()
+        for channel in range(3):
+            for delta in range(1, 256):
+                count = histogram[channel * 256 + delta]
+                if count:
+                    rgb_hist[delta] += count
+        for delta in range(1, 256):
+            count = histogram[768 + delta]
+            if count:
+                alpha_hist[delta] += count
+    return {
+        "framesCompared": len(names),
+        "driftedFrames": drifted,
+        "rgbDeltaHistogram": {str(key): value for key, value in sorted(rgb_hist.items())},
+        "alphaDeltaHistogram": {str(key): value for key, value in sorted(alpha_hist.items())},
+        "maxRgbDelta": max(rgb_hist) if rgb_hist else 0,
+        "differingRgbSubpixels": sum(rgb_hist.values()),
+        "differingAlphaSubpixels": sum(alpha_hist.values()),
+    }
+
+
+def write_drift_report(
+    path: Path,
+    first_dir: Path,
+    second_dir: Path,
+    frame_names: list[str],
+    report: dict[str, dict],
+    budget: dict,
+    supersampled: dict | None = None,
+) -> dict:
+    """Machine-readable evidence for a verify run, written before the gate decides.
+
+    Carries the premultiplied delta histogram, the alpha band of every drifted
+    subpixel and a per-actor count so a failure can be argued from numbers
+    rather than re-rendered. Written on success too, so the ledger can quote
+    the observed drift of the pass that shipped.
+    """
+    histogram: dict[int, int] = defaultdict(int)
+    alpha_band: dict[int, int] = defaultdict(int)
+    per_actor: dict[str, int] = defaultdict(int)
+    for name in frame_names:
+        first = canonical_rgba(Image.open(first_dir / name))
+        second = canonical_rgba(Image.open(second_dir / name))
+        drifted = False
+        for pixel_a, pixel_b in zip(first.get_flattened_data(), second.get_flattened_data()):
+            if pixel_a == pixel_b:
+                continue
+            for a, b in zip(premultiplied_rgba(pixel_a), premultiplied_rgba(pixel_b)):
+                delta = abs(a - b)
+                if delta:
+                    histogram[delta] += 1
+                    alpha_band[max(pixel_a[3], pixel_b[3])] += 1
+                    drifted = True
+        if drifted:
+            per_actor[name.split("__", 1)[0]] += 1
+    payload = {
+        "schema": "hmh-enemy-roster-drift-report-v1",
+        "policy": REPRODUCIBILITY_POLICY_KIND,
+        "budget": dict(budget),
+        "observed": summarize_observed_drift(report),
+        "exceededFrames": frames_exceeding_budget(report, budget),
+        "frames": report,
+        "premultipliedDeltaHistogram": {str(key): value for key, value in sorted(histogram.items())},
+        "alphaBandOfDriftedSubpixels": {str(key): value for key, value in sorted(alpha_band.items())},
+        "perActor": dict(sorted(per_actor.items())),
+        "supersampled": supersampled,
+    }
+    write_lf_json(path, payload)
+    return payload
 
 
 def generated_artifact_hashes() -> dict[str, str]:
@@ -176,30 +342,25 @@ def decoded_frame_hashes(raw_dir: Path) -> dict[str, str]:
 
 
 def canonical_rgba(image: Image.Image) -> Image.Image:
-    return image.convert("RGBA") if image.mode != "RGBA" else image
+    """Decode to RGBA and zero the colour of fully transparent pixels.
 
-
-def canonicalize_rendered_rgb(image: Image.Image) -> Image.Image:
-    """Remove bounded backend RGB jitter without changing authored alpha.
-
-    Round visible RGB to the nearest 8-value bucket (maximum adjustment 4)
-    and zero invisible RGB. A floor mask is intentionally not used: preserved
-    cold-pass evidence showed one-LSB values straddling a floor boundary.
+    EEVEE writes undefined RGB under alpha 0 on a transparent film, and it is
+    not stable across cold rebuilds. Every read of a rendered frame goes
+    through this function, so zeroing here puts the canonical form ahead of
+    the three places it matters: the Lanczos downsample (which would otherwise
+    smear invisible colour into the visible edge), the decoded frame hash, and
+    the premultiplied comparison -- all three read all four channels.
     """
-    image = canonical_rgba(image)
-    data = bytearray(image.tobytes())
-    for index in range(0, len(data), 4):
-        if data[index + 3] == 0:
-            data[index:index + 3] = b"\0\0\0"
-            continue
-        for channel in range(3):
-            value = data[index + channel]
-            data[index + channel] = min(
-                255,
-                ((value + RGB_CANONICALIZATION_OFFSET) // RGB_CANONICALIZATION_STEP)
-                * RGB_CANONICALIZATION_STEP,
-            )
-    return Image.frombytes("RGBA", image.size, bytes(data))
+    image = image.convert("RGBA") if image.mode != "RGBA" else image
+    red, green, blue, alpha = image.split()
+    visible = alpha.point(lambda value: 255 if value else 0)
+    zero = Image.new("L", image.size, 0)
+    return Image.merge("RGBA", (
+        Image.composite(red, zero, visible),
+        Image.composite(green, zero, visible),
+        Image.composite(blue, zero, visible),
+        alpha,
+    ))
 
 
 def remove_tiny_alpha_components(
@@ -251,6 +412,8 @@ def normalize_rendered_frames(manifest: dict, raw_dir: Path) -> None:
     if not isinstance(render_scale, int) or render_scale < 1:
         raise RuntimeError(f"renderScale must be a positive integer, received {render_scale!r}")
     default_size = tuple(manifest["render"]["frameSize"])
+    supersampled_dir = raw_dir / SUPERSAMPLED_DIRNAME
+    supersampled_dir.mkdir(parents=True, exist_ok=True)
     for actor in manifest["actors"]:
         actor_id = actor["actorId"]
         target_size = tuple(actor.get("frameSize", default_size))
@@ -268,13 +431,17 @@ def normalize_rendered_frames(manifest: dict, raw_dir: Path) -> None:
                             raise RuntimeError(
                                 f"Unexpected supersampled dimensions for {filename}: {image.size}; expected {rendered_size}"
                             )
+                        # Keep the byte-exact Blender output in the supersampled
+                        # sibling before the in-place overwrite below destroys it.
+                        # Cycle 072 could not say whether its drift was renderer
+                        # jitter or scene-build drift because this frame was gone.
+                        shutil.copyfile(path, supersampled_dir / filename)
                         normalized = image.resize(target_size, Image.Resampling.LANCZOS)
                         normalized = remove_tiny_alpha_components(
                             normalized,
                             manifest["render"]["alphaThreshold"],
                             manifest["render"]["minAlphaComponentPixels"],
                         )
-                        normalized = canonicalize_rendered_rgb(normalized)
                         normalized.save(
                             path, optimize=False, compress_level=9,
                         )
@@ -485,7 +652,8 @@ def main() -> None:
         records = analyse(actor, manifest, raw_dir)
         results.append(build_atlas(actor, manifest, records, OUTPUT_ROOT / actor["actorId"]))
 
-    tolerated_frames = {}
+    budget = manifest["reproducibilityBudget"]
+    drift_report: dict[str, dict] = {}
     if args.verify_reproducible:
         first_pass = generated_artifact_hashes()
         first_frame_pass = decoded_frame_hashes(raw_dir)
@@ -512,34 +680,44 @@ def main() -> None:
         drifted_frames = sorted(
             name for name, digest in first_frame_pass.items() if second_frame_pass.get(name) != digest
         )
-        tolerated_frames = {}
+        # Compared premultiplied and unquantised, per frame, against the same
+        # budget the hero pilot uses. The drift report is written on every
+        # verify run so the numbers exist whether or not the gate passes.
+        drift_report = compare_frames_premultiplied(repro_snapshot, raw_dir, drifted_frames) if drifted_frames else {}
+        exceeded = frames_exceeding_budget(drift_report, budget)
+        supersampled = supersampled_drift_histogram(repro_snapshot / SUPERSAMPLED_DIRNAME, raw_dir / SUPERSAMPLED_DIRNAME)
+        write_drift_report(DRIFT_REPORT_PATH, repro_snapshot, raw_dir, drifted_frames, drift_report, budget, supersampled)
         if drifted:
-            report = None
-            if drifted_frames:
-                report = frames_within_lsb_tolerance(repro_snapshot, raw_dir, drifted_frames)
-            if report is not None:
-                # Atlas JSON drift is acceptable only as a pure derivative of
-                # the tolerated pixels: each drifted JSON may differ solely in
-                # the sourcePixelSha256 of exactly those frames.
-                tolerated_set = set(report)
-                for name in (n for n in drifted if n.endswith(".json")):
-                    if not roster_json_drift_is_derived(
-                        artifact_snapshot / name, OUTPUT_ROOT / name, tolerated_set,
-                    ):
-                        report = None
-                        break
-            if report is None:
+            # Atlas JSON drift is acceptable only as a pure derivative of the
+            # tolerated pixels: each drifted JSON may differ solely in the
+            # sourcePixelSha256 of exactly those frames. An artifact that
+            # drifted without any decoded frame drifting is real nondeterminism.
+            derived = bool(drifted_frames) and all(
+                roster_json_drift_is_derived(artifact_snapshot / name, OUTPUT_ROOT / name, set(drift_report))
+                for name in drifted if name.endswith(".json")
+            )
+            if exceeded or not derived:
                 raise RuntimeError(
-                    "generated art is not reproducible across cold scene rebuilds: "
-                    f"artifacts={drifted}; decodedFrames={drifted_frames}"
+                    "generated art is not reproducible across cold scene rebuilds within the budget: "
+                    f"budget={budget} observed={summarize_observed_drift(drift_report)} "
+                    f"exceededFrames={len(exceeded)}/{len(drifted_frames)} {exceeded[:12]}; "
+                    f"metadataDerived={derived}; artifacts={drifted[:12]}; "
+                    f"drift report at {DRIFT_REPORT_PATH.relative_to(ROOT).as_posix()}; "
+                    f"supersampled frames preserved under {repro_snapshot.relative_to(ROOT).as_posix()}/"
+                    f"{SUPERSAMPLED_DIRNAME} and {raw_dir.relative_to(ROOT).as_posix()}/{SUPERSAMPLED_DIRNAME}"
                 )
-            tolerated_frames = report
-            # Within the documented one-LSB rasterizer jitter: bless the FIRST
-            # pass so the shipped artifact is a deterministic choice rather
-            # than whichever render happened to finish last. Raw frames are
-            # restored with it so a later --skip-render run compares against
-            # the pass that actually shipped.
+            # Within budget: bless the FIRST pass so the shipped artifact is a
+            # deterministic choice rather than whichever render happened to
+            # finish last. Raw frames are restored with it so a later
+            # --skip-render run compares against the pass that actually shipped.
             shutil.copytree(artifact_snapshot, OUTPUT_ROOT, dirs_exist_ok=True)
+            # The second pass's byte-exact Blender frames survive a passing gate
+            # so the raw drift can be re-derived after the first pass is restored.
+            second_supersampled = ROOT / ".tmp" / "hmh-enemy-roster-repro-second-supersampled"
+            if second_supersampled.exists():
+                shutil.rmtree(second_supersampled)
+            if (raw_dir / SUPERSAMPLED_DIRNAME).exists():
+                shutil.move(str(raw_dir / SUPERSAMPLED_DIRNAME), str(second_supersampled))
             shutil.rmtree(raw_dir)
             shutil.copytree(repro_snapshot, raw_dir)
             # Review finding (Cycle 037): the byte ledger below must describe
@@ -556,20 +734,9 @@ def main() -> None:
     metrics = {
         "status": "pass",
         "pipelineId": manifest["pipelineId"],
-        "reproducibilityPolicy": {
-            "kind": "exact-or-single-lsb",
-            "maxChannelDelta": LSB_TOLERANCE_MAX_CHANNEL_DELTA,
-            "maxDifferingSubpixelsPerFrame": LSB_TOLERANCE_MAX_SUBPIXELS_PER_FRAME,
-            "metadataExactExceptDerivedPixelSha": True,
-            "rgbCanonicalization": {
-                "kind": "nearest-step",
-                "step": RGB_CANONICALIZATION_STEP,
-                "maxChannelDelta": RGB_CANONICALIZATION_OFFSET,
-                "preserveAlpha": True,
-            },
-            "toleratedFrames": tolerated_frames if args.verify_reproducible else None,
-        },
+        "reproducibilityPolicy": build_reproducibility_policy(budget, drift_report, verified=args.verify_reproducible),
         "blender": EXPECTED_BLENDER_VERSION,
+        "engine": manifest["render"]["engine"],
         "actorCount": len(results),
         "totalFrames": sum(entry["frameCount"] for entry in results),
         "totalAtlasBytes": sum(entry["atlasBytes"] for entry in results),

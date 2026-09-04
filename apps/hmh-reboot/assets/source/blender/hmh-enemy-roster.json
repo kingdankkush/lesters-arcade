@@ -29,26 +29,45 @@
     "south-west": 315
   },
   "render": {
-    "engine": "BLENDER_WORKBENCH",
+    "engine": "BLENDER_EEVEE",
     "frameSize": [
       160,
       160
     ],
+    "viewTransform": "AgX",
+    "look": "AgX - Medium High Contrast",
     "ditherIntensity": 0,
-    "taaRenderSamples": 1,
+    "taaRenderSamples": 64,
+    "filterSize": 1.5,
     "renderScale": 2,
     "minAlphaComponentPixels": 9,
-    "castShadows": false,
+    "castShadows": true,
+    "shadowRayCount": 1,
+    "shadowStepCount": 6,
+    "shadowResolutionScale": 1,
+    "shadowFilterRadius": 1,
+    "useShadowJitter": false,
+    "useRaytracing": false,
+    "lightShape": "DISK",
+    "lightSizes": {
+      "key": 3.0,
+      "fill": 2.6,
+      "rim": 2.2
+    },
+    "world": {
+      "color": [
+        0.015,
+        0.02,
+        0.05
+      ],
+      "strength": 0.22
+    },
     "specularIorLevel": 0,
     "transparentFilm": true,
     "rawOutputDirectory": ".tmp/hmh-reboot-enemy-roster",
     "alphaThreshold": 8,
     "cameraOrthoScale": 2.35,
-    "exposure": 0.55,
-    "workbenchLight": "STUDIO",
-    "workbenchColorType": "MATERIAL",
-    "workbenchCavity": "WORLD",
-    "workbenchCavityEnabled": false,
+    "exposure": -0.45,
     "cameraTargetZ": 0.86,
     "cameraPitchDegrees": 55
   },
@@ -59,6 +78,11 @@
   "atlas": {
     "padding": 2,
     "maxSize": 2048
+  },
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 8,
+    "maxChannelDelta": 2,
+    "maxTotalChannelDelta": 32
   },
   "scene": {
     "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.blend",

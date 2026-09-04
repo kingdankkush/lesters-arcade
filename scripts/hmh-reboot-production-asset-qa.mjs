@@ -129,12 +129,19 @@ assert.equal(rosterMetrics.actorCount, 7, 'enemy roster metrics actor count');
 assert.equal(rosterMetrics.totalFrames, 1_368, 'enemy roster metrics frame count');
 assert.equal(rosterMetrics.duplicateFrames, 0, 'enemy roster duplicate frames');
 assert.equal(rosterMetrics.reproducibleVerified, true, 'enemy roster reproducibility');
-// The roster comparison accepts documented single-LSB rasterizer jitter and
-// nothing more; the gate fails on any wider delta and on any metadata drift.
-assert.equal(rosterMetrics.reproducibilityPolicy?.kind, 'exact-or-single-lsb', 'roster reproducibility policy');
-assert.equal(rosterMetrics.reproducibilityPolicy?.maxChannelDelta, 1, 'roster LSB bound');
-assert.ok(rosterMetrics.reproducibilityPolicy?.maxDifferingSubpixelsPerFrame <= 8, 'roster subpixel bound');
+// Cycle 073: the two cold passes are compared premultiplied and unquantised in
+// the hero budget form (8 changed visible pixels / 2 per channel / 32 total per
+// frame). Anything wider, and any metadata drift beyond the derived pixel SHA,
+// fails the gate. The old nearest-8 quantiser is gone.
+assert.equal(rosterMetrics.reproducibilityPolicy?.kind, 'bounded-premultiplied-rgba-v1', 'roster reproducibility policy');
+assert.deepEqual(rosterMetrics.reproducibilityPolicy?.budget, { maxChangedVisiblePixels: 8, maxChannelDelta: 2, maxTotalChannelDelta: 32 }, 'roster budget');
+assert.equal(rosterMetrics.reproducibilityPolicy?.coldSceneRebuild, true, 'roster gate rebuilds the scene cold');
+assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxChangedVisiblePixels <= 8, 'roster changed-pixel bound');
+assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxChannelDelta <= 2, 'roster channel bound');
+assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxTotalChannelDelta <= 32, 'roster total bound');
+assert.equal('rgbCanonicalization' in (rosterMetrics.reproducibilityPolicy ?? {}), false, 'roster quantiser must be gone');
 assert.equal(rosterMetrics.reproducibilityPolicy?.metadataExactExceptDerivedPixelSha, true, 'roster metadata exactness');
+assert.equal(rosterMetrics.engine, 'BLENDER_EEVEE', 'roster engine');
 assert.equal(rosterMetrics.totalAtlasBytes, rosterAtlasTotalBytes, 'enemy roster byte ledger drifted');
 
 const propImagePath = portalPath(AUTHORED_PROP_ATLAS_IMAGE_URL);

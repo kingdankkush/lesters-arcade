@@ -77,16 +77,22 @@ export function decodePng(buffer) {
   return { width, height, channels, pixels };
 }
 
-// Box-downsample to the signature grid and convert to Rec. 601 luma.
-export function signatureFromPng(buffer, { width = 32, height = 18 } = {}) {
-  const image = decodePng(buffer);
+// Box-downsample a decoded image (or a region of it) to the signature grid and
+// convert to Rec. 601 luma. `region` is clamped to the image.
+export function signatureFromImage(image, { width = 32, height = 18, region = null } = {}) {
+  const rx0 = Math.max(0, Math.min(image.width - 1, Math.floor(region?.x ?? 0)));
+  const ry0 = Math.max(0, Math.min(image.height - 1, Math.floor(region?.y ?? 0)));
+  const rx1 = Math.max(rx0 + 1, Math.min(image.width, Math.ceil((region?.x ?? 0) + (region?.w ?? image.width))));
+  const ry1 = Math.max(ry0 + 1, Math.min(image.height, Math.ceil((region?.y ?? 0) + (region?.h ?? image.height))));
+  const regionWidth = rx1 - rx0;
+  const regionHeight = ry1 - ry0;
   const cells = [];
   for (let cellY = 0; cellY < height; cellY += 1) {
     for (let cellX = 0; cellX < width; cellX += 1) {
-      const x0 = Math.floor((cellX * image.width) / width);
-      const x1 = Math.max(x0 + 1, Math.floor(((cellX + 1) * image.width) / width));
-      const y0 = Math.floor((cellY * image.height) / height);
-      const y1 = Math.max(y0 + 1, Math.floor(((cellY + 1) * image.height) / height));
+      const x0 = rx0 + Math.floor((cellX * regionWidth) / width);
+      const x1 = Math.max(x0 + 1, rx0 + Math.floor(((cellX + 1) * regionWidth) / width));
+      const y0 = ry0 + Math.floor((cellY * regionHeight) / height);
+      const y1 = Math.max(y0 + 1, ry0 + Math.floor(((cellY + 1) * regionHeight) / height));
       let total = 0;
       let count = 0;
       for (let y = y0; y < y1; y += 1) {
@@ -100,6 +106,58 @@ export function signatureFromPng(buffer, { width = 32, height = 18 } = {}) {
     }
   }
   return cells;
+}
+
+export function signatureFromPng(buffer, { width = 32, height = 18 } = {}) {
+  return signatureFromImage(decodePng(buffer), { width, height });
+}
+
+// Cycle 073: per-enemy crop signatures. With the EEVEE roster atlases live the
+// twelve-scene frame signature stayed inside tolerance: a 1440x900 cell is
+// 45x50 px and an idle roster sprite is about 120 px, so re-lighting every
+// enemy moved under ten cells by a few luma levels. The runtime publishes the
+// screen rectangle of each body it drew (`dataset.enemyScreenRects`, telemetry
+// only); each is cropped with a small margin and compared on its own, where a
+// re-light is a double-digit mean shift and camera jitter is not.
+export const ENEMY_CROP_SIGNATURE_SIZE = 8;
+export const ENEMY_CROP_MARGIN = 6;
+export const ENEMY_CROP_MEAN_LUMA_TOLERANCE = 4;
+export const ENEMY_CROP_MAX_CELL_DELTA = 16;
+
+export function cropSignature(image, rect) {
+  const region = {
+    x: rect.x - ENEMY_CROP_MARGIN,
+    y: rect.y - ENEMY_CROP_MARGIN,
+    w: rect.w + 2 * ENEMY_CROP_MARGIN,
+    h: rect.h + 2 * ENEMY_CROP_MARGIN,
+  };
+  const signature = signatureFromImage(image, { width: ENEMY_CROP_SIGNATURE_SIZE, height: ENEMY_CROP_SIGNATURE_SIZE, region });
+  const meanLuma = signature.reduce((sum, cell) => sum + cell, 0) / signature.length;
+  return Object.freeze({
+    archetypeId: rect.archetypeId,
+    rect: Object.freeze({ x: rect.x, y: rect.y, w: rect.w, h: rect.h }),
+    meanLuma: Number(meanLuma.toFixed(2)),
+    signature,
+  });
+}
+
+export function classifyEnemyCrops({ baseline, current }) {
+  if (!Array.isArray(current)) throw new TypeError('current enemy crops must be an array');
+  if (!Array.isArray(baseline)) return Object.freeze({ status: 'new', crops: current.map((crop) => ({ archetypeId: crop.archetypeId, status: 'new' })) });
+  if (baseline.length !== current.length || baseline.some((crop, index) => crop.archetypeId !== current[index].archetypeId)) {
+    return Object.freeze({ status: 'incomparable', crops: [] });
+  }
+  const crops = baseline.map((before, index) => {
+    const after = current[index];
+    let maxCellDelta = 0;
+    for (let cell = 0; cell < before.signature.length; cell += 1) {
+      maxCellDelta = Math.max(maxCellDelta, Math.abs(before.signature[cell] - after.signature[cell]));
+    }
+    const meanLumaDelta = Number(Math.abs(before.meanLuma - after.meanLuma).toFixed(2));
+    const unchanged = meanLumaDelta <= ENEMY_CROP_MEAN_LUMA_TOLERANCE && maxCellDelta <= ENEMY_CROP_MAX_CELL_DELTA;
+    return Object.freeze({ archetypeId: before.archetypeId, meanLumaDelta, maxCellDelta, status: unchanged ? 'unchanged' : 'changed' });
+  });
+  return Object.freeze({ status: crops.every((crop) => crop.status === 'unchanged') ? 'unchanged' : 'changed', crops });
 }
 
 export const VISUAL_SIGNATURE_SCHEMA = 'hmh-reboot-visual-signature-v1';
@@ -122,11 +180,15 @@ export const SIGNATURE_MAX_CHANGED_CELLS = 24;
 // Deterministic capture scenes. evidenceSafe pins the run (invulnerable
 // player, stable spawns) so a baseline stays reproducible across machines.
 export const VISUAL_SCENES = Object.freeze([
+  // The two opening enemies (bagholder-rusher, forkrunner) stand still until
+  // tick 120, so the frontier scenes hold idle roster sprites on camera and
+  // carry the per-enemy crop check (Cycle 073).
   Object.freeze({
     id: 'frontier-relay-desktop',
     query: 'evidenceSafe=1&telemetry=1',
     viewport: Object.freeze({ width: 1440, height: 900 }),
     tick: 90,
+    enemyCrops: true,
   }),
   Object.freeze({
     id: 'frontier-relay-mobile',
@@ -136,6 +198,7 @@ export const VISUAL_SCENES = Object.freeze([
     // A9 replaces two inner mobile props with one canonical set-piece and a
     // 400-unit dressing-free ring. Desktop scenes retain animated-signal gates.
     requires: Object.freeze({ landmarks: 1, animatedLandmarks: 0 }),
+    enemyCrops: true,
   }),
   Object.freeze({
     id: 'combat-engaged-desktop',
@@ -144,6 +207,7 @@ export const VISUAL_SCENES = Object.freeze([
     query: 'evidenceSafe=1&telemetry=1&director=1&boss=1',
     viewport: Object.freeze({ width: 1440, height: 900 }),
     tick: 420,
+    enemyCrops: true,
   }),
   Object.freeze({
     id: 'ravine-overlook-desktop',
@@ -347,9 +411,40 @@ if (isMain) {
       // panel) cannot mask a change in the rendered world.
       const screenshot = await page.locator('#hmhRebootStage canvas').screenshot();
       await writeFile(path.join(currentDir, `${scene.id}.png`), screenshot);
-      const signature = signatureFromPng(screenshot, { width: SIGNATURE_WIDTH, height: SIGNATURE_HEIGHT });
+      const decoded = decodePng(screenshot);
+      const signature = signatureFromImage(decoded, { width: SIGNATURE_WIDTH, height: SIGNATURE_HEIGHT });
       if (signature.every((cell) => cell === signature[0])) {
         throw new Error(`scene ${scene.id} captured a uniform frame (${signature[0]}) — the renderer output was not readable`);
+      }
+
+      // Per-enemy crops. The rects describe the frame that was just frozen and
+      // captured; a scene that declares the check must have a body on camera or
+      // it would gate nothing while looking covered.
+      let enemyCrops = null;
+      if (scene.enemyCrops) {
+        const rects = await page.evaluate(() => JSON.parse(document.querySelector('#hmhRebootStage')?.dataset.enemyScreenRects ?? '[]'));
+        // The canvas screenshot above carries the fixed DOM chrome (cockpit
+        // rail, pause card) at a document-relative offset, so a body standing
+        // under it would be cropped as HUD. Hide every node outside the canvas'
+        // ancestor chain and capture the same frozen frame again for the crops;
+        // the renderer is paused and keeps its last frame.
+        await page.evaluate(() => {
+          const canvas = document.querySelector('#hmhRebootStage canvas');
+          const keep = new Set();
+          for (let node = canvas; node; node = node.parentElement) keep.add(node);
+          for (const node of document.body.querySelectorAll('*')) {
+            if (!keep.has(node) && node.parentElement && keep.has(node.parentElement)) node.style.visibility = 'hidden';
+          }
+        });
+        const cropSource = decodePng(await page.locator('#hmhRebootStage canvas').screenshot());
+        const onCamera = rects.filter((rect) => rect.w > 0 && rect.h > 0
+          && rect.x + rect.w > 0 && rect.y + rect.h > 0 && rect.x < cropSource.width && rect.y < cropSource.height);
+        if (onCamera.length === 0) {
+          throw new Error(`scene ${scene.id} declares the enemy-crop check but reported no enemy body on camera`);
+        }
+        enemyCrops = onCamera.map((rect) => cropSignature(cropSource, rect));
+        await writeFile(path.join(currentDir, `${scene.id}.enemy-crops.json`), `${JSON.stringify(enemyCrops, null, 2)}\n`, 'utf8');
+        await writeFile(path.join(currentDir, `${scene.id}.enemy-crops.png`), await page.locator('#hmhRebootStage canvas').screenshot());
       }
 
       const baselinePath = path.join(baselineDir, `${scene.id}.json`);
@@ -357,6 +452,7 @@ if (isMain) {
         ? JSON.parse(await readFile(baselinePath, 'utf8'))
         : null;
       const verdict = classifyScene({ baseline: baseline?.signature ?? null, current: signature });
+      const cropVerdict = enemyCrops ? classifyEnemyCrops({ baseline: baseline?.enemyCrops ?? null, current: enemyCrops }) : null;
 
       if (accept || !baseline) {
         await writeFile(baselinePath, `${JSON.stringify({
@@ -367,6 +463,7 @@ if (isMain) {
           width: SIGNATURE_WIDTH,
           height: SIGNATURE_HEIGHT,
           signature,
+          ...(enemyCrops ? { enemyCrops } : {}),
         }, null, 2)}\n`, 'utf8');
       }
 
@@ -377,6 +474,13 @@ if (isMain) {
         meanDelta: Number(verdict.meanDelta.toFixed(3)),
         maxDelta: verdict.maxDelta,
         changedCells: verdict.changedCells,
+        ...(cropVerdict ? {
+          enemyCrops: {
+            status: accept && baseline?.enemyCrops ? 'accepted' : cropVerdict.status,
+            count: enemyCrops.length,
+            crops: cropVerdict.crops,
+          },
+        } : {}),
         errors,
       });
       await page.close();
@@ -404,7 +508,8 @@ if (isMain) {
     server.close();
   }
 
-  const failures = results.filter((result) => result.errors.length > 0 || result.status === 'changed' || result.status === 'incomparable');
+  const gateFailed = (status) => status === 'changed' || status === 'incomparable';
+  const failures = results.filter((result) => result.errors.length > 0 || gateFailed(result.status) || gateFailed(result.enemyCrops?.status));
   console.log(JSON.stringify({
     schema: VISUAL_SIGNATURE_SCHEMA,
     tolerance: SIGNATURE_TOLERANCE,

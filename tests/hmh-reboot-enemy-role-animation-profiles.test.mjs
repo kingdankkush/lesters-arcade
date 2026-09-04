@@ -49,14 +49,26 @@ test('the Blender exporter owns a distinct pose branch for every ordinary role p
   }
 });
 
-test('the cold roster gate publishes its bounded RGB canonicalization policy', async () => {
+test('the cold roster gate publishes the hero premultiplied budget policy and no quantiser', async () => {
+  // Cycle 073: the nearest-8 RGB canonicalisation is gone. It hid three
+  // quarters of one-LSB EEVEE flips and turned the rest into eight-step
+  // failures; the two cold passes are now compared premultiplied, unquantised,
+  // against the same budget Lester observes at 0/0/0.
   const metrics = await loadJson(metricsUrl);
-  assert.deepEqual(metrics.reproducibilityPolicy.rgbCanonicalization, {
-    kind: 'nearest-step',
-    step: 8,
-    maxChannelDelta: 4,
-    preserveAlpha: true,
+  assert.equal(metrics.reproducibilityPolicy.kind, 'bounded-premultiplied-rgba-v1');
+  assert.deepEqual(metrics.reproducibilityPolicy.budget, {
+    maxChangedVisiblePixels: 8,
+    maxChannelDelta: 2,
+    maxTotalChannelDelta: 32,
   });
+  assert.equal(metrics.reproducibilityPolicy.coldSceneRebuild, true);
+  assert.equal(metrics.reproducibilityPolicy.comparedSpace, 'premultiplied-rgba-8bit-unquantised');
+  assert.equal('rgbCanonicalization' in metrics.reproducibilityPolicy, false);
+  assert.equal(metrics.engine, 'BLENDER_EEVEE');
+  const observed = metrics.reproducibilityPolicy.observed;
+  assert.ok(observed.maxChangedVisiblePixels <= 8);
+  assert.ok(observed.maxChannelDelta <= 2);
+  assert.ok(observed.maxTotalChannelDelta <= 32);
 });
 
 test('generated atlas metadata preserves each role-native animation profile', async () => {

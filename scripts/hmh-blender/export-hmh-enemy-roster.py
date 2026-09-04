@@ -411,6 +411,15 @@ def main() -> None:
     raw_output.mkdir(parents=True, exist_ok=True)
 
     scene = bpy.context.scene
+    # The engine lives in the saved .blend, not in this script. A stale scene
+    # would silently render the previous engine's look into a 1,368-frame
+    # atlas, so fail closed instead of trusting the committed binary.
+    if scene.render.engine != manifest["render"]["engine"]:
+        raise RuntimeError(
+            f"scene render engine {scene.render.engine!r} does not match the manifest "
+            f"engine {manifest['render']['engine']!r}; rebuild the .blend with "
+            "create-hmh-enemy-roster.py before exporting"
+        )
     default_frame_size = manifest["render"]["frameSize"]
     render_scale = manifest["render"].get("renderScale", 1)
     scene.render.resolution_x = default_frame_size[0] * render_scale
@@ -501,6 +510,7 @@ def main() -> None:
     write_lf_json(Path(args.report_output).resolve(), {
         "status": "pass",
         "pipelineId": manifest["pipelineId"],
+        "engine": scene.render.engine,
         "frameCount": len(rendered),
         "framesPerActor": per_actor,
         "states": list(manifest["clips"].keys()),

@@ -138,10 +138,16 @@ def prism_mesh(name, profile, y_min, y_max, mat, asset_id, *, location=(0.0, 0.0
     wound counter-clockwise in (x, z), the top cap's face order yields a -Y
     normal even though the cap sits at y_max. EEVEE shades non-culled backfaces
     by flipping the normal toward the viewer, so this is invisible here and
-    every prop built on it renders correctly. Workbench does not do that, so
-    the same geometry renders inside-out in the BLENDER_WORKBENCH enemy-roster
-    pipeline. Fix the winding before reusing this there -- do not copy the
-    helper across as-is. Guarded by tests/hmh-reboot-prism-mesh-policy.test.mjs.
+    every prop built on it renders correctly. Workbench performs no such flip
+    and renders the same geometry inside-out.
+
+    Cycle 072 moved the enemy roster to EEVEE, so no pipeline in this
+    repository renders under Workbench today and the failure mode is currently
+    unreachable. That is a property of the current engine choice, not of this
+    geometry: the caps are still wound inward, so any Workbench fallback,
+    backface-culling material or normal-dependent shader brings it straight
+    back. Fix the winding before reusing this helper elsewhere -- do not copy
+    it across as-is. Guarded by tests/hmh-reboot-prism-mesh-policy.test.mjs.
     """
     count = len(profile)
     verts = [(x, y_min, z) for x, z in profile] + [(x, y_max, z) for x, z in profile]

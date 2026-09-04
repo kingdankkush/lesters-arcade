@@ -821,6 +821,24 @@ async function boot() {
 
   const createEnemyMarker = (enemy) => createRosterOrVectorDisplay(enemy.archetypeId, isEliteEnemyProjection(enemy.id));
 
+  // Telemetry only. Screen rectangles of the enemy and boss bodies actually
+  // drawn this frame, so the visual gate can crop and compare sprite lighting,
+  // which the whole-frame luminance signature cannot resolve. Read-only
+  // projection state: nothing here touches simulation entities.
+  const projectEnemyScreenRects = (enemies) => {
+    const rects = [];
+    const pushBounds = (display, id, archetypeId) => {
+      const bounds = display.getBounds();
+      rects.push({ id, archetypeId, x: Math.round(bounds.x), y: Math.round(bounds.y), w: Math.round(bounds.width), h: Math.round(bounds.height) });
+    };
+    for (const enemy of enemies) {
+      const enemyMarker = enemyMarkers.get(enemy.id);
+      if (enemyMarker?.visible) pushBounds(enemyMarker, enemy.id, enemy.archetypeId);
+    }
+    if (bossVisual.visible) pushBounds(bossVisual, 'the-liquidator', 'the-liquidator');
+    return rects;
+  };
+
   const resetEnemyMarkers = (enemies) => {
     for (const child of enemyVisuals.removeChildren()) child.destroy();
     enemyMarkers.clear();
@@ -2177,6 +2195,7 @@ async function boot() {
         dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
         dataset.enemyCount = String(activeEnemyCount);
         dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
+        dataset.enemyScreenRects = JSON.stringify(projectEnemyScreenRects(grayboxEnemies));
         dataset.enemyTells = String(enemyTellCount);
         dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
         dataset.enemyDecisionBudget = String(lastEnemyStep?.decisionBudget ?? 0);
