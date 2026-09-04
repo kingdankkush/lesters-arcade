@@ -192,6 +192,18 @@ import {
 } from './authored-prop-atlas.mjs';
 import { CONTACT_SHADOW_BASE_ALPHA, createContactShadowPool, createContactShadowTextures } from './contact-shadows.mjs';
 import {
+  MAX_WEAPON_VFX_SPRITES,
+  WEAPON_VFX,
+  WEAPON_VFX_COLORS,
+  classifyImpactSurface,
+  createWeaponVfxPool,
+  createWeaponVfxTextures,
+  resolveImpactBurst,
+  resolveMuzzleFlash,
+  resolveShellEject,
+  resolveTracer,
+} from './weapon-vfx.mjs';
+import {
   LEVEL_ONE_WORLD,
   buildLevelOneMinimapGeometry,
   createLevelOneGroundQuery,
@@ -282,18 +294,13 @@ const WEAPON_KNOCKBACK = Object.freeze({
   'bear-market-burner': 2,
   'forked-standard': 18,
 });
-const WEAPON_COLORS = Object.freeze({
-  'coin-blaster': 0xffd166,
-  'scatter-shotgun': 0xff8c5a,
-  'auto-miner': 0x83f28f,
-  'launcher-rig': 0xc497ff,
-  'hash-rail': 0x8ff3ff,
-  'lightning-ledger': 0x7df9ff,
-  'bear-market-burner': 0xff7a2f,
-  'forked-standard': 0xd7fbff,
-});
+// V-1: the weapon colour table lives with the rest of the weapon VFX identity.
+const WEAPON_COLORS = WEAPON_VFX_COLORS;
 const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
 const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
+// V-2: authored blocker id -> visualKind, so a shot stopping on cover can be
+// classed as rock, metal or splintering wood from frozen world data alone.
+const BLOCKER_VISUAL_KIND = new Map(LEVEL_ONE_WORLD.blockers.map((blocker) => [blocker.collisionBlockerId, blocker.visualKind]));
 const queryGround = createLevelOneGroundQuery();
 const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
 // Deterministic navgrid bakes after the first interactive frame; the flow field
@@ -470,6 +477,21 @@ async function boot() {
     console.warn('[HMH] contact shadows disabled', error);
   }
   const groundShadowLayer = contactShadowPool?.container ?? new Container();
+  // V-1/V-2: per-weapon muzzle, tracer, casing and surface-typed impact art.
+  // Soft cores, dust puffs and casings are baked once and drawn from a capped
+  // sprite pool; the same failure rule as the shadows applies.
+  let weaponVfxPool = null;
+  try {
+    weaponVfxPool = createWeaponVfxPool({
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      textures: createWeaponVfxTextures({ renderer: app.renderer, GraphicsClass: Graphics }),
+    });
+  } catch (error) {
+    weaponVfxPool = null;
+    console.warn('[HMH] weapon VFX sprites disabled', error);
+  }
+  const weaponVfxLayer = weaponVfxPool?.container ?? new Container();
   const authoredPropLayer = new Container();
   authoredPropLayer.label = 'authored-prop-layer';
   authoredPropLayer.sortableChildren = true;
@@ -484,6 +506,21 @@ async function boot() {
   const projectileImpacts = new Graphics();
   const grenadeVisuals = new Graphics();
   const combatVisuals = new Graphics();
+  // Soft glows and dust go through the pooled sprites; with the pool
+  // unavailable the same call degrades to a flat vector disc so art can never
+  // break a run. Past the pool cap a placement is counted, not drawn.
+  const placeWeaponGlow = (x, y, radius, color, alpha) => {
+    if (!(radius > 0) || !(alpha > 0)) return;
+    if (weaponVfxPool) weaponVfxPool.place({ texture: 'core', x, y, width: radius * 2, height: radius * 2, tint: color, alpha, additive: true });
+    else combatVisuals.circle(x, y, radius * 0.7).fill({ color, alpha: alpha * 0.8 });
+  };
+  // Ground puffs are foreshortened ellipses (aspect 0.68 at the 55-degree
+  // camera); airborne smoke stays round.
+  const placeWeaponPuff = (x, y, radius, color, alpha, aspect = 0.68) => {
+    if (!(radius > 0) || !(alpha > 0)) return;
+    if (weaponVfxPool) weaponVfxPool.place({ texture: 'puff', x, y, width: radius * 2.2, height: radius * 2.2 * aspect, tint: color, alpha });
+    else combatVisuals.ellipse(x, y, radius, radius * aspect).fill({ color, alpha: alpha * 0.8 });
+  };
   const minimap = new Graphics();
   // Screen-space layer for health pips, the boss bar, damage flash, and the
   // low-health vignette. Kept out of `world` so it never scrolls or scales.
@@ -556,7 +593,7 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, weaponVfxLayer, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, bossLabel, minimap);
 
 
@@ -1129,12 +1166,20 @@ async function boot() {
     lastAccessibleCombatStatus = message;
   };
   let combatVisualEvents = [];
+  // V-2 telemetry: the last classified impact surface and the ground bursts
+  // dropped under ring pressure. Projection-only counters.
+  let lastImpactSurface = '';
+  let suppressedGroundImpacts = 0;
   let revealState = createLevelOneRevealState();
   revealLevelOneAt(revealState, runtimePlayerSpawn);
   let revealSnapshot = getLevelOneRevealSnapshot(revealState);
   const pushCombatVisualEvent = (event) => {
     if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
     combatVisualEvents.push(Object.freeze({ ...event }));
+  };
+  const pushImpactVisual = (event) => {
+    lastImpactSurface = event.surface ?? '';
+    pushCombatVisualEvent(event);
   };
   const updateRunCombo = (nextCombo, { bossDefeated = false, silent = false } = {}) => {
     const feedback = resolveComboFeedback({ previous: runCombo, current: nextCombo, bossDefeated });
@@ -1329,6 +1374,7 @@ async function boot() {
     clearWorldProductionLayers(worldProduction);
     worldDecalLayer.clear();
     contactShadowPool?.begin();
+    weaponVfxPool?.begin();
     grid.clear();
     collisionDebug.clear();
     projectileTrails.clear();
@@ -1554,31 +1600,25 @@ async function boot() {
         const from = worldToScreen(shot.state.previous, camera, view);
         const to = worldToScreen(shot.state.current, camera, view);
         if (!isScreenPointVisible(from, view, 48) && !isScreenPointVisible(to, view, 48)) continue;
-        const shotColor = WEAPON_COLORS[shot.weaponId] ?? 0x49ddff;
-        // Upgraded rounds must be legible as upgraded. A tracer draws a longer,
-        // hotter streak with a leading spark so the tier-three capstone is
-        // visible in play rather than only in the upgrade panel.
-        if (shot.projectileTag === 'tracer-round') {
-          const dx = to.x - from.x;
-          const dy = to.y - from.y;
-          const tail = { x: from.x - dx * 0.85, y: from.y - dy * 0.85 };
-          projectileTrails.moveTo(tail.x, tail.y).lineTo(to.x, to.y)
-            .stroke({ color: 0xffb347, width: 9, alpha: 0.2 });
-          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-            .stroke({ color: 0xffd166, width: 4, alpha: 0.95 });
-          projectileTrails.circle(to.x, to.y, 3.2).fill({ color: 0xfff6d5, alpha: 0.95 });
-        } else if (shot.policy?.type === 'pierce') {
-          // Piercing rounds read as a hard, bright lance.
-          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-            .stroke({ color: 0xc497ff, width: 8, alpha: 0.26 });
-          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-            .stroke({ color: 0xf6ecff, width: 2.5, alpha: 1 });
-        } else {
-          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-            .stroke({ color: shotColor, width: 7, alpha: 0.24 });
-          projectileTrails.moveTo(from.x, from.y).lineTo(to.x, to.y)
-            .stroke({ color: 0xf4fdff, width: 3, alpha: 0.98 });
+        // V-1: per-weapon tracer identity. Pellets, beads, streaks and lances
+        // are told apart by width, tail and head, not only by hue. Upgraded
+        // rounds still read as upgraded: the capstone tracer round and the
+        // pierce lance override the weapon's own style (the weapon-capstone
+        // tests pin the tag this reads).
+        const tracer = resolveTracer({ weaponId: shot.weaponId, policyType: shot.policy?.type, projectileTag: shot.projectileTag, reduceFlash: settings.reduceFlash });
+        if (tracer.style === 'none') continue;
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const coreTail = Math.min(1, tracer.tailScale);
+        if (tracer.afterImage) {
+          projectileTrails.moveTo(to.x - dx * (tracer.tailScale + 0.8), to.y - dy * (tracer.tailScale + 0.8)).lineTo(to.x, to.y)
+            .stroke({ color: tracer.color, width: tracer.glowWidth * 1.9, alpha: tracer.glowAlpha * 0.35 });
         }
+        projectileTrails.moveTo(to.x - dx * tracer.tailScale, to.y - dy * tracer.tailScale).lineTo(to.x, to.y)
+          .stroke({ color: tracer.color, width: tracer.glowWidth, alpha: tracer.glowAlpha });
+        projectileTrails.moveTo(to.x - dx * coreTail, to.y - dy * coreTail).lineTo(to.x, to.y)
+          .stroke({ color: tracer.hot, width: tracer.width, alpha: tracer.coreAlpha });
+        if (tracer.headRadius > 0) projectileTrails.circle(to.x, to.y, tracer.headRadius).fill({ color: tracer.hot, alpha: tracer.coreAlpha });
       }
       let activeGrenadeWarnings = 0;
       let activeGrenadeWarningRadius = 0;
@@ -1717,6 +1757,13 @@ async function boot() {
           }
         }
       }
+      // Aim direction of a muzzle or casing event in screen space, so a flash
+      // cone or an ejected shell follows the projected aim rather than world x.
+      const screenAimVector = (event, center) => {
+        const direction = event.direction ?? { x: 1, y: 0 };
+        const facing = worldToScreen({ x: event.point.x + direction.x, y: event.point.y + direction.y, z: event.point.z }, camera, view);
+        return { x: facing.x - center.x, y: facing.y - center.y };
+      };
       if (simulation) {
         compactExpiredEventsInPlace(combatVisualEvents, simulation.tick, HIT_FEEDBACK_TICKS);
         // grenade feedback (V-3): per-frame fragment budget across every live
@@ -1807,18 +1854,46 @@ async function boot() {
                 .stroke({ color: 0xf4fdff, width: 5, alpha: alpha * 0.9, cap: 'round' });
             }
           } else if (event.type === 'muzzle') {
-            // Shrink and brighten: a growing circle read as a smoke puff.
-            const flashRadius = Math.max(2, 14 - age * 1.6);
-            combatVisuals.circle(center.x, center.y, flashRadius).fill({ color: 0xffffff, alpha: alpha * 0.55 });
-            combatVisuals.circle(center.x, center.y, flashRadius * 1.7).fill({ color: event.color, alpha: alpha * 0.4 });
-            if (age < 3) {
-              for (let spoke = 0; spoke < 4; spoke += 1) {
-                const angle = (spoke / 4) * Math.PI * 2 + 0.4;
-                combatVisuals.moveTo(center.x, center.y)
-                  .lineTo(center.x + Math.cos(angle) * (18 - age * 4), center.y + Math.sin(angle) * (18 - age * 4))
-                  .stroke({ color: event.color, width: 2, alpha: alpha * 0.7 });
-              }
+            // V-1: the flash shape is the weapon's identity (star, cone, ring,
+            // puff), oriented along the aim; reduceFlash clamps it to the safe
+            // envelope with no white core and no spokes.
+            const flash = resolveMuzzleFlash({ weaponId: event.weaponId, age, zoom: camera.zoom, reduceFlash: settings.reduceFlash });
+            if (!flash.visible) continue;
+            const aim = screenAimVector(event, center);
+            const aimAngle = Math.atan2(aim.y, aim.x);
+            placeWeaponGlow(center.x, center.y, flash.haloRadius, flash.haloColor, flash.haloAlpha);
+            // The launcher's core is smoke, not light: a normal-blend puff
+            // rather than an additive glow, trailing a little behind the
+            // muzzle so the grenade body does not sit exactly on top of it.
+            if (flash.shape === 'puff') {
+              const back = 10 * camera.zoom / (Math.hypot(aim.x, aim.y) || 1);
+              placeWeaponPuff(center.x - aim.x * back, center.y - aim.y * back, flash.coreRadius, flash.coreColor, flash.coreAlpha, 1);
+            } else placeWeaponGlow(center.x, center.y, flash.coreRadius, flash.coreColor, flash.coreAlpha);
+            for (const spoke of flash.spokes) {
+              const angle = aimAngle + spoke.angle;
+              combatVisuals.moveTo(center.x, center.y)
+                .lineTo(center.x + Math.cos(angle) * spoke.length, center.y + Math.sin(angle) * spoke.length)
+                .stroke({ color: flash.haloColor, width: 2, alpha: spoke.alpha });
             }
+            if (flash.cone) {
+              const fan = (reach, edge) => [
+                center.x, center.y,
+                center.x + Math.cos(aimAngle - flash.cone.halfAngle) * reach * edge, center.y + Math.sin(aimAngle - flash.cone.halfAngle) * reach * edge,
+                center.x + Math.cos(aimAngle) * reach, center.y + Math.sin(aimAngle) * reach,
+                center.x + Math.cos(aimAngle + flash.cone.halfAngle) * reach * edge, center.y + Math.sin(aimAngle + flash.cone.halfAngle) * reach * edge,
+              ];
+              combatVisuals.poly(fan(flash.cone.length, 0.8), true).fill({ color: flash.haloColor, alpha: flash.haloAlpha * 0.9 });
+              combatVisuals.poly(fan(flash.cone.length * 0.6, 0.75), true).fill({ color: flash.coreColor, alpha: flash.coreAlpha * 0.7 });
+            }
+            if (flash.ring) {
+              combatVisuals.circle(center.x, center.y, flash.ring.radius)
+                .stroke({ color: flash.haloColor, width: flash.ring.width, alpha: flash.haloAlpha });
+            }
+          } else if (event.type === 'shell') {
+            const shell = resolveShellEject({ weaponId: event.weaponId, age, direction: screenAimVector(event, center), zoom: camera.zoom, seed: `${event.tick}:${event.point.x}` });
+            // Casings are sprite-only: with the pool unavailable they are simply
+            // absent, which loses nothing the player needs to read.
+            if (shell) weaponVfxPool?.place({ texture: 'shell', x: center.x + shell.dx, y: center.y + shell.dy - shell.lift, width: shell.width, height: shell.height, rotation: shell.rotation, tint: shell.tint, alpha: shell.alpha });
           } else if (event.type === 'pickup') {
             const ringRadius = 16 + age * 2.6;
             combatVisuals.circle(center.x, center.y, ringRadius)
@@ -1833,6 +1908,9 @@ async function boot() {
               .stroke({ color: 0xffffff, width: Math.max(1, 5 - age * 0.4), alpha: alpha * 0.9 });
             combatVisuals.circle(center.x, center.y, ringRadius * 0.6)
               .stroke({ color: event.color, width: 3, alpha: alpha * 0.8 });
+            // V-2 death emphasis: the body kicks up a ground puff as it drops;
+            // red only when the bridge-supplied gore setting is on.
+            placeWeaponPuff(center.x, center.y + 6 * camera.zoom, (10 + age * 2.4) * camera.zoom, settings.gore ? 0x7a1220 : 0xb08a6a, alpha * 0.38);
             const shards = particleScale > 0 ? 8 : 0;
             for (let shard = 0; shard < shards; shard += 1) {
               const angle = deterministicUnit(`${event.tick}:${event.point.x}:${shard}`) * Math.PI * 2;
@@ -1880,25 +1958,49 @@ async function boot() {
             }
             drawnGrenadeFxParticles += fragments.length;
           } else if (event.type === 'impact') {
-            combatVisuals.circle(center.x, center.y, 7 + age * 1.4)
-              .stroke({ color: event.color, width: event.critical ? 6 : 3, alpha });
-            // Impact sparks. Seeded from the event so the fan is identical on
-            // replay, and scaled by the active performance profile.
+            // V-2: the burst reads as the surface it struck (dirt puff, rock
+            // chips, metal sparks, water splash, flesh). Spark count is seeded
+            // from the event so the fan is identical on replay, and scaled by
+            // the active performance profile.
             const sparks = particleScale > 0 ? (event.critical ? 8 : 4) : 0;
+            const burst = resolveImpactBurst({
+              surface: event.surface,
+              weaponId: event.weaponId,
+              critical: event.critical,
+              shielded: event.shielded,
+              age,
+              sparkBase: sparks,
+              particleScale,
+              lifeTicks: HIT_FEEDBACK_TICKS,
+              reduceMotion: settings.reduceMotion,
+              reduceFlash: settings.reduceFlash,
+              gore: settings.gore,
+            });
+            const zoom = camera.zoom;
+            if (burst.splash) {
+              combatVisuals.ellipse(center.x, center.y, burst.ringRadius * 2.2 * zoom, burst.ringRadius * 0.75 * zoom)
+                .stroke({ color: burst.ringColor, width: burst.ringWidth, alpha: burst.ringAlpha });
+            } else {
+              combatVisuals.circle(center.x, center.y, burst.ringRadius * zoom)
+                .stroke({ color: burst.ringColor, width: burst.ringWidth, alpha: burst.ringAlpha });
+            }
+            if (burst.puff) placeWeaponPuff(center.x, center.y, burst.puff.radius * zoom, burst.puff.color, burst.puff.alpha);
             // Sprayed back along the impact rather than fanned at random
             // angles: a hit used to throw sparks into the shooter as often as
-            // away from the surface.
+            // away from the surface. Chips, clods and droplets fall back down;
+            // metal sparks fly straight.
             const sprayAngles = impactSprayAngles({
               seed: `${event.tick}:${event.point.y}`,
               direction: event.direction ?? { x: 0, y: 0 },
-              count: sparks,
+              count: burst.sparkCount,
             });
+            const drop = burst.sparkGravity * age * age * 0.35 * zoom;
             for (const angle of sprayAngles) {
-              const inner = 6 + age * 2;
-              const outer = inner + 7 + age * 1.5;
-              combatVisuals.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner)
-                .lineTo(center.x + Math.cos(angle) * outer, center.y + Math.sin(angle) * outer)
-                .stroke({ color: event.critical ? 0xfff06a : event.color, width: 2, alpha: alpha * 0.9 });
+              const inner = (6 + age * 2) * zoom;
+              const outer = inner + (burst.sparkLength + age * 1.5) * zoom;
+              combatVisuals.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner + drop * 0.5)
+                .lineTo(center.x + Math.cos(angle) * outer, center.y + Math.sin(angle) * outer + drop)
+                .stroke({ color: burst.sparkColor, width: burst.sparkWidth, alpha: burst.sparkAlpha });
             }
           } else if (event.type === 'enemy-attack') {
             combatVisuals.circle(center.x, center.y, 18 + age * 2.2)
@@ -2205,6 +2307,7 @@ async function boot() {
         dataset.projectileCount = String(activeProjectiles.length);
         dataset.projectileDrops = String(droppedProjectiles);
         dataset.projectileHit = lastProjectileHit?.targetId ?? '';
+        dataset.lastImpactSurface = lastImpactSurface;
         dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
         dataset.weaponClipSize = String(weaponStatus?.clipSize ?? 0);
         dataset.weaponStatus = weaponStatus?.mode ?? 'unavailable';
@@ -2335,6 +2438,9 @@ async function boot() {
         dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
         dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;
         dataset.effectPoolPressure = `${combatVisualEvents.length}/${MAX_COMBAT_VISUAL_EVENTS}`;
+        dataset.weaponVfxPoolPressure = `${weaponVfxPool?.placed ?? 0}/${MAX_WEAPON_VFX_SPRITES}`;
+        dataset.weaponVfxDropped = String(weaponVfxPool?.dropped ?? 0);
+        dataset.weaponVfxSuppressed = String(suppressedGroundImpacts);
         const tokenFamilies = Object.fromEntries(['melee', 'ranged', 'area', 'support'].map((family) => [
           family,
           lastEnemyAttack?.tokens.filter((token) => token.family === family).length ?? 0,
@@ -2385,6 +2491,7 @@ async function boot() {
     // Outside the camera branch: a frame with no camera claims nothing, so
     // every pooled shadow is hidden rather than left over from the last frame.
     contactShadowPool?.finish();
+    weaponVfxPool?.finish();
   };
 
   const stopCurrentSession = () => {
@@ -2432,6 +2539,8 @@ async function boot() {
     droppedProjectiles = 0;
     lastProjectileResolution = null;
     lastProjectileHit = null;
+    lastImpactSurface = '';
+    suppressedGroundImpacts = 0;
     lastCombatResolution = null;
     lastWeaponFire = null;
     lastLightningLedgerPulse = null;
@@ -3212,10 +3321,53 @@ async function boot() {
               point: hit.point,
             });
           }
+          // V-2: a shot stopping on cover used to vanish. The surface class is
+          // the blocker's authored visualKind: a lookup on frozen world data,
+          // so the burst can never reach the simulation.
+          if (resolution.coverHit) {
+            const speed = Math.hypot(shot.vx, shot.vy) || 1;
+            pushImpactVisual({
+              type: 'impact',
+              tick,
+              hitKind: 'cover',
+              weaponId: shot.weaponId,
+              point: resolution.coverHit.point,
+              direction: { x: shot.vx / speed, y: shot.vy / speed },
+              surface: classifyImpactSurface({ hitKind: 'cover', blockerVisualKind: BLOCKER_VISUAL_KIND.get(resolution.coverHit.blockerId) }),
+            });
+          }
         }
         const terminalIds = new Set(batch.resolutions
           .filter((resolution) => resolution.hits.length > 0 || resolution.coverHit)
           .map((resolution) => resolution.projectileId));
+        // Range-expired shots land on the ground they were flying over, classed
+        // by the same pure ground query the render pass uses. Bounded: under
+        // ring pressure the ground puff is the first thing dropped, and the
+        // drop is reported rather than silent.
+        for (const shot of steppedProjectiles) {
+          if (terminalIds.has(shot.id) || shot.remainingRange > 0) continue;
+          if (shot.x < WORLD_BOUNDS.minX || shot.x > WORLD_BOUNDS.maxX || shot.y < WORLD_BOUNDS.minY || shot.y > WORLD_BOUNDS.maxY) continue;
+          if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS - 12) {
+            suppressedGroundImpacts += 1;
+            continue;
+          }
+          const ground = queryGround(shot.x, shot.y);
+          const speed = Math.hypot(shot.vx, shot.vy) || 1;
+          pushImpactVisual({
+            type: 'impact',
+            tick,
+            hitKind: 'ground',
+            weaponId: shot.weaponId,
+            point: { x: shot.x, y: shot.y, z: ground.groundZ + 2 },
+            direction: { x: shot.vx / speed, y: shot.vy / speed },
+            surface: classifyImpactSurface({
+              hitKind: 'ground',
+              surfaceKind: ground.kind,
+              deepWater: ground.deepWater,
+              districtId: getLevelOneDistrictAt(shot.x, shot.y)?.id,
+            }),
+          });
+        }
         activeProjectiles = steppedProjectiles.filter((shot) => !terminalIds.has(shot.id)
           && shot.remainingRange > 0
           && shot.x >= WORLD_BOUNDS.minX && shot.x <= WORLD_BOUNDS.maxX
@@ -3376,7 +3528,7 @@ async function boot() {
             knockback: WEAPON_KNOCKBACK[event.weaponId],
             point: { ...hit.point, z: hit.point.z + 22 },
           });
-          pushCombatVisualEvent({ type: 'impact', tick, point: { ...hit.point, z: hit.point.z + 22 }, color: WEAPON_COLORS[event.weaponId] });
+          pushImpactVisual({ type: 'impact', tick, hitKind: 'target', surface: 'flesh', weaponId: event.weaponId, point: { ...hit.point, z: hit.point.z + 22 } });
         }
         combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) });
         pushCombatVisualEvent({
@@ -3435,6 +3587,8 @@ async function boot() {
         pushCombatVisualEvent({
           type: 'muzzle',
           tick,
+          weaponId: event.weaponId,
+          direction: { x: aimIntent.direction.x, y: aimIntent.direction.y },
           point: {
             x: actor.x + aimIntent.direction.x * 28,
             y: actor.y + aimIntent.direction.y * 28,
@@ -3442,6 +3596,18 @@ async function boot() {
           },
           color: WEAPON_COLORS[event.weaponId] ?? 0x49ddff,
         });
+        // V-1: brass, shotshell or launcher casing, ejected to the shooter's
+        // right; the rail gun and the channel weapons eject nothing.
+        const shellKind = WEAPON_VFX[event.weaponId]?.shell.kind;
+        if (shellKind && shellKind !== 'none') {
+          pushCombatVisualEvent({
+            type: 'shell',
+            tick,
+            weaponId: event.weaponId,
+            direction: { x: aimIntent.direction.x, y: aimIntent.direction.y },
+            point: { x: actor.x + aimIntent.direction.x * 16, y: actor.y + aimIntent.direction.y * 16, z: actor.groundZ },
+          });
+        }
         if (event.weaponId === 'launcher-rig') {
           const launch = throwGrenade(grenadeSystem, {
             tick,
@@ -3801,17 +3967,20 @@ async function boot() {
           combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : 'enemy-hit', {
             volume: damageEvent.critical ? 0.14 : 0.09,
           });
-          pushCombatVisualEvent({
+          pushImpactVisual({
             type: 'impact',
             tick,
+            hitKind: 'target',
+            surface: 'flesh',
+            weaponId: damageEvent.weaponId,
             point: damageEvent.point,
             critical: damageEvent.critical,
+            shielded: damageEvent.shielded,
             // Knockback already points along the impact's travel, so it is the
             // surface normal the spark fan sprays back from. It is zero for a
             // shielded or zero-damage hit, which the spray helper treats as
             // "no direction" and falls back to a full circle.
             direction: damageEvent.knockback,
-            color: damageEvent.shielded ? 0x8bb8ff : damageEvent.critical ? 0xfff06a : 0xff8c5a,
           });
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');

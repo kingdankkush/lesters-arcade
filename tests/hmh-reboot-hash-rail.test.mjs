@@ -70,7 +70,11 @@ test('W8 Hash Rail pickup, audio, tracking, HUD, and VFX are wired as one slice'
   const atlas = await readFile(new URL('../apps/hmh-reboot/src/authored-prop-atlas.mjs', import.meta.url), 'utf8');
   const authoredManifest = JSON.parse(await readFile(new URL('../apps/hmh-reboot/assets/source/blender/hmh-authored-props.json', import.meta.url), 'utf8'));
   assert.match(main, /WEAPON_ORDER[^\n]*'hash-rail'/);
-  assert.match(main, /'hash-rail': 0x8ff3ff/);
+  // Cycle 073 (V-1): the weapon colour table moved into weapon-vfx.mjs with
+  // the rest of the per-weapon VFX identity; main aliases it as WEAPON_COLORS.
+  const weaponVfx = await readFile(new URL('../apps/hmh-reboot/src/weapon-vfx.mjs', import.meta.url), 'utf8');
+  assert.match(weaponVfx, /'hash-rail': 0x8ff3ff/);
+  assert.match(main, /const WEAPON_COLORS = WEAPON_VFX_COLORS/);
   assert.match(main, /'hash-rail': 38/);
   assert.match(main, /weapon:charge-start[\s\S]*hmh-hash-rail-charge/);
   assert.match(main, /recordRunWeaponFire\([^)]*weaponId/s);

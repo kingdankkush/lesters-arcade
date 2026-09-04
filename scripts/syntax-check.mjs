@@ -396,6 +396,9 @@ const NODE_CHECK_FILES = [
   "tests/hmh-source-model-lfs-policy.test.mjs",
   "apps/hmh-reboot/src/upgrade-card-presentation.mjs",
   "tests/hmh-reboot-upgrade-cards-and-settings.test.mjs",
+  "apps/hmh-reboot/src/weapon-vfx.mjs",
+  "tests/hmh-reboot-weapon-vfx.test.mjs",
+  "scripts/hmh-reboot-weapon-vfx-browser-smoke.mjs",
   "scripts/syntax-check.mjs"
 ];
 

@@ -143,6 +143,7 @@
     "smoke:hmh:forked-standard": "node scripts/hmh-reboot-forked-standard-browser-matrix.mjs",
     "bench:hmh:forked-standard": "node scripts/hmh-reboot-forked-standard-benchmark.mjs",
     "smoke:hmh:weapon-sfx": "node scripts/hmh-weapon-sfx-browser-smoke.mjs",
+    "smoke:hmh:weapon-vfx": "node scripts/hmh-reboot-weapon-vfx-browser-smoke.mjs",
     "smoke:hmh:enemy-boss-presentation": "node scripts/hmh-reboot-enemy-boss-presentation-browser-smoke.mjs"
   },
   "keywords": [
