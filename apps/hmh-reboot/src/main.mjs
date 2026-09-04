@@ -163,6 +163,7 @@ import {
   productionHeroAsset,
 } from './production-hero-atlas.mjs';
 import {
+  AUTHORED_DRESSING_SEED,
   AUTHORED_PROP_ATLAS_IMAGE_URL,
   AUTHORED_PROP_ATLAS_METADATA_URL,
   buildAuthoredDistrictLandmarkPlacements,
@@ -552,7 +553,7 @@ async function boot() {
   // never block boot on art.
   let worldDecals = [];
   const authoredPropPlacements = Object.freeze([
-    ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: 0x484d4807, countPerDistrict: 8 }),
+    ...buildAuthoredWorldPropPlacements({ worldId: LEVEL_ONE_WORLD.id, seed: AUTHORED_DRESSING_SEED, countPerDistrict: 8 }),
     ...buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id }),
     // W3: encampments ring the encounter arenas so enemies come from
     // somewhere. Projection-only, like every other authored placement.
@@ -923,6 +924,10 @@ async function boot() {
     // kit and the water dressing on camera.
     'camp-hashwood': Object.freeze({ x: 7_150, y: 2_500 }),
     'crossing-water': Object.freeze({ x: 4_900, y: 1_050 }),
+    // W-8: the two spawn camps no existing window sees (relay-north and
+    // yard-south are offscreen for all twelve pinned scenes).
+    'camp-relay-north': Object.freeze({ x: 1_550, y: 620 }),
+    'camp-yard-south': Object.freeze({ x: 11_500, y: 3_700 }),
     ...Object.fromEntries(authoredPointOfInterestPlacements.map((placement) => [
       `collectible-${placement.pointOfInterestId}`,
       Object.freeze({ x: placement.x, y: placement.y }),

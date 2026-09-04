@@ -61,9 +61,25 @@ Rules:
 
 ## Density targets (per district, gameplay zoom)
 
-- 1 landmark set-piece + breathing ring (dressing-free radius ~300).
-- 3-5 anchor props (buildings/machines/large rocks) beyond the blockers.
-- 8-16 satellite props in clusters around anchors, never on route clearance.
+Amended Cycle 073 (W-7/W-8). The earlier 3-5 anchors and 8-16 satellites were
+met by Cycle 050 and read thin on a 1440x900 window; the pass that raised them
+also taught the generator what ground is off limits, so density and clearance
+move together.
+
+- 1 landmark set-piece + breathing ring (dressing-free radius 300, enforced).
+- 10-14 cluster anchors per district, at least 220 apart so clusters stay
+  distinct groups, sampled along the playable edge of each shoulder band (the
+  camera on the route sees y ~1,000-1,650 and ~3,150-3,800; ground beyond the
+  perimeter cliffs, tree lines and machinery is scenery nobody reaches).
+- 18-28 satellites in Nuclear Throne debris patches (1-3 per anchor, reach
+  40-320), never within 24 units of a collision blocker or a route edge, never
+  in deep water, never on an arena floor, never on a pickup. District totals
+  32 / 32 / 30 / 40 / 34 / 32 = 200.
+- One encampment per spawn point (12) in addition to the five arena camps:
+  a ring of 5-6 camp-kit props (fire, bedrolls, one tall element, the
+  district's junk) around the point the enemies emerge from, radius 170-200,
+  centre within 260 of the spawn point, jittered so no two camps share a
+  silhouette. Dressing keeps 60 units off every camp disc.
 - Forest override: hashwood stays the densest (tree count leads the map).
 
 ## Minimap direction (slice 4)

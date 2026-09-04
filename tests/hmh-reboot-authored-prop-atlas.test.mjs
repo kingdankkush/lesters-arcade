@@ -15,8 +15,14 @@ import {
   resolveAuthoredLandmarkSignal,
   AUTHORED_PROP_ASSET_COUNT,
   AUTHORED_PROP_ASSET_IDS,
+  AUTHORED_DRESSING_DENSITY,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
+
+// One source for the dressing count lock: the exported density table. The
+// dressing-density suite pins the table's literal total; this suite pins that
+// the generator honours it.
+const DRESSING_TOTAL = Object.values(AUTHORED_DRESSING_DENSITY).reduce((sum, count) => sum + count, 0);
 
 const metadataUrl = new URL('../apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json', import.meta.url);
 const loadMetadata = async () => JSON.parse(await readFile(metadataUrl, 'utf8'));
@@ -85,8 +91,9 @@ test('authored world dressing and gameplay POIs are deterministic and bounded', 
   // Every district carries an authored density per the gameworld art
   // direction (hashwood leads so the forest reads as a forest). W1 raised
   // these once the A1-A4 waves had a library worth placing:
-  // 20 + 20 + 20 + 24 + 22 + 22 = 128.
-  assert.equal(first.length, 128);
+  // 20 + 20 + 20 + 24 + 22 + 22 = 128; W-7 (Cycle 073) raised it to 200.
+  assert.equal(first.length, DRESSING_TOTAL);
+  assert.equal(DRESSING_TOTAL, 200);
   assert.equal(new Set(first.map((placement) => placement.districtId)).size, 6);
   assert.ok(first.every((placement) => placement.x >= 0 && placement.x <= 12_000 && placement.y >= 0 && placement.y <= 4_800));
   const pointsOfInterest = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -163,9 +170,8 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
   const before = JSON.stringify(placements);
   const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
   // Authored overrides drive every district now, so countPerDistrict 1 still
-  // yields the full 128 dressing entries, plus 6 landmarks x 7 parts and
-  // 10 POIs.
-  assert.equal(display.entries.length, 128 + 6 * 7 + 10);
+  // yields the full dressing table, plus 6 landmarks x 7 parts and 10 POIs.
+  assert.equal(display.entries.length, DRESSING_TOTAL + 6 * 7 + 10);
   const report = display.render({
     camera: { zoom: 1 },
     view: { width: 12_000, height: 4_800 },
@@ -173,7 +179,7 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
     queryGround: () => ({ groundZ: 0 }),
     tick: 42,
   });
-  assert.equal(report.placementCount, 128 + 6 * 7 + 10);
+  assert.equal(report.placementCount, DRESSING_TOTAL + 6 * 7 + 10);
   assert.ok(report.visibleCount > 0);
   assert.ok(report.signalVisibleCount >= 12);
   assert.equal(report.animatedSignalVisibleCount, report.signalVisibleCount);

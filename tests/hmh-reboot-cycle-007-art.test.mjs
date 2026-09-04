@@ -99,8 +99,11 @@ test('Cycle 007 authored prop runtime is deterministic and covers every district
   assert.deepEqual(first, second);
   // Cycle 044 gave every district an authored density override; W1 raised
   // them once the A1-A4 asset waves had a library worth placing
-  // (20 + 20 + 20 + 24 + 22 + 22 = 128).
-  assert.equal(first.length, 128);
+  // (20 + 20 + 20 + 24 + 22 + 22 = 128); W-7 (Cycle 073) raised them to 200.
+  // The literal lives in the dressing-density suite; this pin follows the
+  // exported table so the generator and the table cannot drift apart.
+  assert.equal(first.length, Object.values(module.AUTHORED_DRESSING_DENSITY).reduce((sum, count) => sum + count, 0));
+  assert.equal(first.length, 200);
   assert.deepEqual([...new Set(first.map((entry) => entry.districtId))].sort(), [
     'frontier-relay', 'hashwood', 'liquidation-yard', 'liquidity-crossing', 'mining-camp', 'rugpull-ravine',
   ]);

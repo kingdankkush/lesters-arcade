@@ -383,6 +383,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-enemy-roster-atlas.test.mjs",
   "tests/hmh-reboot-enemy-roster-reproducibility.test.mjs",
   "tests/hmh-reboot-authored-prop-atlas.test.mjs",
+  "tests/hmh-reboot-dressing-density.test.mjs",
+  "tests/hmh-reboot-camp-props.test.mjs",
   "tests/hmh-reboot-contact-shadows.test.mjs",
   "tests/hmh-reboot-cycle-007-art.test.mjs",
   "tests/hmh-reboot-external-model-pipeline.test.mjs",
