@@ -390,6 +390,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-terrain-strip-render.test.mjs",
   "scripts/hmh-source-model-lfs-check.mjs",
   "tests/hmh-source-model-lfs-policy.test.mjs",
+  "apps/hmh-reboot/src/upgrade-card-presentation.mjs",
+  "tests/hmh-reboot-upgrade-cards-and-settings.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 

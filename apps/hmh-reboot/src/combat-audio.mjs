@@ -39,7 +39,9 @@ const SAMPLE_PATHS = Object.freeze({
   'game-over': '../assets/audio/sfx/game-over.ogg',
   'menu-click': '../assets/audio/sfx/menu-click.ogg',
 });
-const PAUSED_CUE_ALLOWLIST = new Set(['pause', 'upgrade-offer']);
+// 'pickup' is allowed while paused so the pause-menu SFX slider can preview the
+// new bus level (Cycle 073, U-5); nothing can be picked up while paused.
+const PAUSED_CUE_ALLOWLIST = new Set(['pause', 'upgrade-offer', 'pickup']);
 const MUSIC_PATH = '../assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3';
 // Longest authored combat sample is well under a second; anything still held
 // after this is a voice that will never report completion.

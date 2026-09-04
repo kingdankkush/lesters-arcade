@@ -2,6 +2,7 @@ import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
 import { RUN_UPGRADE_CATALOG } from './run-progression.mjs';
 import { resolveComboPresentation } from './combo-feedback.mjs';
 import { actionHelpRows } from './action-map.mjs';
+import { resolveUpgradeCardPresentation } from './upgrade-card-presentation.mjs';
 
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
@@ -34,6 +35,7 @@ export function createCockpitUi({
   onMenuToggle = () => {},
   onMusicToggle = () => {},
   onSettingToggle = () => {},
+  onSettingLevel = () => {},
   onBindingChange = () => {},
   onResume = () => {},
   onRestart = () => {},
@@ -65,6 +67,8 @@ export function createCockpitUi({
     restart: required(documentRef, 'hmhRestartButton'),
     exit: required(documentRef, 'hmhExitButton'),
     settings: Object.fromEntries(Object.entries(PAUSE_SETTING_KEYS).map(([key, id]) => [key, required(documentRef, id)])),
+    sfxVolume: required(documentRef, 'hmhSettingSfxVolume'),
+    sfxVolumeValue: required(documentRef, 'hmhSettingSfxVolumeValue'),
     buildEmpty: required(documentRef, 'hmhBuildEmpty'),
     buildSummary: required(documentRef, 'hmhBuildSummary'),
     controlsCard: required(documentRef, 'hmhControlsCard'),
@@ -111,6 +115,125 @@ export function createCockpitUi({
       }
     });
   }
+
+  // U-5: the child owns its SFX bus, so the slider is child-owned. The readout
+  // follows every drag frame; the host (and through it the bridge) is told on
+  // `change` only, so a drag never floods game:settings.
+  const clampLevel = (value) => Math.min(1, Math.max(0, Number(value) || 0));
+  const levelText = (value) => `${Math.round(clampLevel(value) * 100)}%`;
+  const showLevel = (value) => {
+    const level = clampLevel(value);
+    elements.sfxVolume.value = String(level);
+    elements.sfxVolume.setAttribute('aria-valuetext', levelText(level));
+    elements.sfxVolumeValue.textContent = levelText(level);
+  };
+  listen(elements.sfxVolume, 'input', () => {
+    elements.sfxVolume.setAttribute('aria-valuetext', levelText(elements.sfxVolume.value));
+    elements.sfxVolumeValue.textContent = levelText(elements.sfxVolume.value);
+  });
+  listen(elements.sfxVolume, 'change', () => {
+    const level = clampLevel(elements.sfxVolume.value);
+    showLevel(level);
+    onSettingLevel('sfxVolume', level);
+  });
+
+  // U-4: keyboard and gamepad card selection. The main ticker (and with it the
+  // gameplay gamepad poll) is stopped while the simulation sits in 'upgrade',
+  // so the cockpit runs its own rAF poll for exactly as long as the panel is
+  // open. Selection is on the RELEASE edge of A and the D-pad so the button is
+  // already up when the ticker restarts; a press edge would buffer a dash or a
+  // weapon swap into the first resumed tick.
+  const view = documentRef.defaultView;
+  const UPGRADE_HOTKEYS = Object.freeze({ Digit1: 0, Digit2: 1 });
+  const UPGRADE_MOVE_KEYS = Object.freeze({ ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 });
+  const GAMEPAD_AXIS_THRESHOLD = 0.6;
+  const GAMEPAD_AXIS_REPEAT_MS = 180;
+  let upgradeCards = [];
+  let armedIndex = -1;
+  let selectionLatched = false;
+  let gamepadFrame = 0;
+  let pollGeneration = 0;
+  const upgradeOpen = () => !elements.upgradePanel.hidden && upgradeCards.length > 0;
+  const armUpgrade = (index) => {
+    if (!upgradeCards.length) return;
+    const next = Math.max(0, Math.min(upgradeCards.length - 1, index));
+    armedIndex = next;
+    upgradeCards.forEach((card, position) => card.option.classList.toggle('hmh-upgrade-option--armed', position === next));
+    upgradeCards[next].button.focus({ preventScroll: true });
+  };
+  const selectUpgradeAt = (index) => {
+    if (!upgradeOpen() || selectionLatched) return false;
+    const card = upgradeCards[index];
+    if (!card) return false;
+    selectionLatched = true;
+    onSelectUpgrade(card.choice.id);
+    return true;
+  };
+  const handleUpgradeKey = (event) => {
+    if (!upgradeOpen() || event.repeat) return;
+    const code = event.code;
+    if (Object.hasOwn(UPGRADE_HOTKEYS, code)) {
+      if (!upgradeCards[UPGRADE_HOTKEYS[code]]) return;
+      // Digit1/Digit2 are also weapon-slot gameplay keys captured on the window;
+      // stopping here keeps the pick out of the gameplay key state.
+      event.preventDefault();
+      event.stopPropagation();
+      selectUpgradeAt(UPGRADE_HOTKEYS[code]);
+    } else if (Object.hasOwn(UPGRADE_MOVE_KEYS, code)) {
+      event.preventDefault();
+      event.stopPropagation();
+      armUpgrade(armedIndex + UPGRADE_MOVE_KEYS[code]);
+    } else if (code === 'Enter' || code === 'NumpadEnter') {
+      // Handled here so the focused button does not also synthesise a click.
+      event.preventDefault();
+      event.stopPropagation();
+      selectUpgradeAt(armedIndex);
+    }
+    // Space is the fire key and is deliberately not a card shortcut.
+  };
+  listen(documentRef, 'keydown', handleUpgradeKey);
+  const stopGamepadPoll = () => {
+    pollGeneration += 1;
+    if (gamepadFrame) view?.cancelAnimationFrame?.(gamepadFrame);
+    gamepadFrame = 0;
+  };
+  const startGamepadPoll = () => {
+    stopGamepadPoll();
+    if (typeof view?.requestAnimationFrame !== 'function' || typeof view?.navigator?.getGamepads !== 'function') return;
+    const generation = pollGeneration;
+    const held = { select: false, previous: false, next: false, axisAt: -Infinity };
+    const pressed = (buttons, index) => buttons?.[index]?.pressed === true || Number(buttons?.[index]?.value ?? 0) > 0.5;
+    const poll = (now) => {
+      if (generation !== pollGeneration) return;
+      gamepadFrame = 0;
+      if (!upgradeOpen()) return;
+      const pad = [...(view.navigator.getGamepads() ?? [])].find(Boolean);
+      if (pad) {
+        const select = pressed(pad.buttons, 0);
+        const previous = pressed(pad.buttons, 14) || pressed(pad.buttons, 12);
+        const next = pressed(pad.buttons, 15) || pressed(pad.buttons, 13);
+        const axis = Number(pad.axes?.[0] ?? 0);
+        if (held.previous && !previous) armUpgrade(armedIndex - 1);
+        if (held.next && !next) armUpgrade(armedIndex + 1);
+        if (Math.abs(axis) > GAMEPAD_AXIS_THRESHOLD) {
+          if (now - held.axisAt >= GAMEPAD_AXIS_REPEAT_MS) {
+            held.axisAt = now;
+            armUpgrade(armedIndex + Math.sign(axis));
+          }
+        } else {
+          held.axisAt = -Infinity;
+        }
+        const release = held.select && !select;
+        held.select = select;
+        held.previous = previous;
+        held.next = next;
+        if (release) selectUpgradeAt(armedIndex);
+      }
+      if (generation === pollGeneration && upgradeOpen()) gamepadFrame = view.requestAnimationFrame(poll);
+    };
+    gamepadFrame = view.requestAnimationFrame(poll);
+  };
+  const prettyBranch = (branch) => String(branch ?? '').replace(/-capstone$/, '').replaceAll('-', ' ');
 
   const keyboardLabel = (code) => String(code ?? '')
     .replace(/^Key/, '')
@@ -214,6 +337,8 @@ export function createCockpitUi({
     setSettings(nextSettings = {}) {
       currentSettings = nextSettings;
       for (const [key, input] of Object.entries(elements.settings)) input.checked = Boolean(nextSettings[key]);
+      // combat-audio's sfx bus defaults to 1 when the host never sent a level.
+      showLevel(nextSettings.sfxVolume ?? 1);
       musicEnabled = Boolean(nextSettings.musicEnabled);
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));
@@ -235,25 +360,42 @@ export function createCockpitUi({
       elements.upgradePanel.hidden = false;
       elements.upgradeQueue.textContent = `${snapshot.pendingLevels} pending`;
       elements.upgradeChoices.replaceChildren();
+      upgradeCards = [];
+      armedIndex = -1;
+      selectionLatched = false;
       const compactUpgradeLayout = documentRef.defaultView?.matchMedia?.('(max-width: 600px)').matches ?? false;
+      let index = 0;
       for (const choice of snapshot.pendingChoices) {
+        const card = resolveUpgradeCardPresentation(choice, index);
+        index += 1;
         const option = createSafeTextElement(documentRef, 'div', { className: 'hmh-upgrade-option' });
         option.setAttribute('role', 'listitem');
+        option.dataset.tier = card.tier;
         const button = createSafeTextElement(documentRef, 'button');
         button.type = 'button';
         button.className = 'hmh-upgrade-choice';
         button.dataset.upgradeId = choice.id;
         const icon = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__icon' });
         icon.setAttribute('aria-hidden', 'true');
-        icon.style.backgroundImage = `url("${authoredPropItemUrl(choice.id)}")`;
+        if (card.iconAssetId) icon.style.backgroundImage = `url("${authoredPropItemUrl(card.iconAssetId)}")`;
+        const meta = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__meta' });
+        const tier = createSafeTextElement(documentRef, 'small', { className: 'hmh-upgrade-choice__tier', text: card.tierLabel });
         const branch = createSafeTextElement(documentRef, 'span', {
           className: 'hmh-upgrade-choice__branch',
-          text: `${choice.branch} · rank ${choice.nextRank}/${choice.maxRank}`,
+          text: `${prettyBranch(choice.branch)} · rank ${choice.nextRank}/${choice.maxRank}`,
         });
+        meta.append(tier, branch);
         const title = createSafeTextElement(documentRef, 'strong', { text: choice.title });
         const mechanical = createSafeTextElement(documentRef, 'b', { text: choice.mechanicalLabel });
-        button.append(icon, branch, title, mechanical);
+        button.append(icon, meta, title, mechanical);
+        if (card.hotkey) {
+          button.setAttribute('aria-keyshortcuts', card.hotkey);
+          const hotkey = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__hotkey', text: card.hotkey });
+          hotkey.setAttribute('aria-hidden', 'true');
+          button.append(hotkey);
+        }
         listen(button, 'click', () => onSelectUpgrade(choice.id));
+        upgradeCards.push({ option, button, choice });
 
         const detail = createSafeTextElement(documentRef, 'details', { className: 'hmh-upgrade-details' });
         detail.open = !compactUpgradeLayout;
@@ -270,9 +412,16 @@ export function createCockpitUi({
         option.append(button, detail);
         elements.upgradeChoices.append(option);
       }
-      elements.upgradeChoices.querySelector('button')?.focus({ preventScroll: true });
+      // The first card is armed and focused, so a click on the first button
+      // and a bare Enter both pick it, exactly as before.
+      armUpgrade(0);
+      startGamepadPoll();
     },
     hideUpgrade() {
+      stopGamepadPoll();
+      upgradeCards = [];
+      armedIndex = -1;
+      selectionLatched = false;
       elements.upgradePanel.hidden = true;
       elements.upgradeChoices.replaceChildren();
     },
@@ -285,6 +434,8 @@ export function createCockpitUi({
     },
     destroy() {
       awaitingActionId = null;
+      stopGamepadPoll();
+      upgradeCards = [];
       for (const remove of listeners.splice(0)) remove();
       elements.upgradeChoices.replaceChildren();
     },

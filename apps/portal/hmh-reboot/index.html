@@ -147,6 +147,15 @@
                   <input id="hmhSettingReduceFlash" type="checkbox">
                   <span><strong>Reduced flash</strong><small>Steady combat warnings</small></span>
                 </label>
+                <!-- Cycle 073 (U-5): the child owns its SFX bus, so this slider is
+                     child-owned. It rides the existing game:settings channel
+                     (sfxVolume is already an allowed numeric) and the portal
+                     persists it in 'hmh-settings'; no save-schema change. -->
+                <label class="hmh-setting-range">
+                  <span><strong>SFX volume</strong><small>Combat and pickup cue loudness</small></span>
+                  <output id="hmhSettingSfxVolumeValue" for="hmhSettingSfxVolume" aria-hidden="true">100%</output>
+                  <input id="hmhSettingSfxVolume" type="range" min="0" max="1" step="0.05" value="1" aria-label="SFX volume">
+                </label>
               </div>
             </section>
             <section aria-labelledby="hmhBuildTitle">
@@ -180,7 +189,12 @@
       <section id="hmhUpgradePanel" class="hmh-modal-layer hmh-upgrade-layer" role="dialog" aria-modal="true" aria-labelledby="hmhUpgradeTitle" hidden>
         <div class="hmh-glass-panel hmh-upgrade-panel">
           <header>
-            <div><span class="hmh-panel-kicker">Block confirmed</span><h1 id="hmhUpgradeTitle">Choose one upgrade</h1></div>
+            <div>
+              <span class="hmh-panel-kicker">Block confirmed</span>
+              <h1 id="hmhUpgradeTitle">Choose one upgrade</h1>
+              <!-- Keyboard/gamepad path (U-4). Hidden on coarse-pointer devices. -->
+              <p class="hmh-upgrade-hint"><kbd>1</kbd><kbd>2</kbd> or <kbd>A</kbd> pick · <kbd>←</kbd><kbd>→</kbd> or <kbd>D-pad</kbd> move · <kbd>Enter</kbd> confirm</p>
+            </div>
             <span id="hmhUpgradeQueue" class="hmh-upgrade-queue">1 pending</span>
           </header>
           <div id="hmhUpgradeChoices" class="hmh-upgrade-choices" role="list"></div>

@@ -1003,6 +1003,17 @@ async function boot() {
     if (!PAUSE_SETTING_KEYS.has(key)) throw new TypeError(`unsupported pause setting ${String(key)}`);
     syncRuntimeSettings({ ...settings, [key]: Boolean(enabled) }, { notify: true });
   };
+  // Cycle 073 (U-5): numeric pause settings take a separate path so the pinned
+  // boolean path above stays byte-identical. sfxVolume is already an allowed
+  // numeric on game:settings and is persisted by the portal in 'hmh-settings';
+  // standalone (no parent) it lives for the session only. The short pickup cue
+  // previews the new level on the SFX bus.
+  const applyPauseLevel = (key, value) => {
+    if (key !== 'sfxVolume') throw new TypeError(`unsupported pause level ${String(key)}`);
+    const level = Math.min(1, Math.max(0, Number(value) || 0));
+    syncRuntimeSettings({ ...settings, sfxVolume: level }, { notify: true });
+    combatAudio.play('pickup', { volume: 0.12 });
+  };
   let maxPlayerHealth = 100;
   let upgradePending = false;
   let actor = null;
@@ -3922,6 +3933,10 @@ async function boot() {
     if (simulation?.state !== 'upgrade' || !runProgression) return;
     const before = getRunProgressionSnapshot(runProgression);
     const selection = selectRunUpgrade(runProgression, upgradeId);
+    // Cycle 073 (U-4): Digit1/Digit2 and gamepad A are also gameplay keys. A key
+    // still held from the pick must not sit in the input state when the ticker
+    // restarts, or the first resumed tick would swap weapons or dash.
+    if (input) input.reset('upgrade-select', performance.now());
     combatAudio.play('upgrade-pick', { volume: 0.13 });
     recordRunUpgradeSelection(runSummaryAccumulator, upgradeId);
     const healthGain = selection.effects.maxHealthBonus - before.effects.maxHealthBonus;
@@ -3956,6 +3971,7 @@ async function boot() {
     },
     onMusicToggle: (enabled) => applyPauseSetting('musicEnabled', enabled),
     onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
+    onSettingLevel: applyPauseLevel,
     onBindingChange: (actionId, code) => {
       const keyboardBindings = rebindKeyboardAction(settings.keyboardBindings, actionId, code, {
         rankedActive: sessionPayload?.mode === 'ranked',

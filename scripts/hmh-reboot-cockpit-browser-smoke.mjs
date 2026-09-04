@@ -48,8 +48,30 @@ async function inspect(name, viewport) {
   const upgradePanelBox = await page.locator('.hmh-upgrade-panel').boundingBox();
   assert.ok(upgradePanelBox && upgradePanelBox.x >= 0 && upgradePanelBox.y >= 0 && upgradePanelBox.x + upgradePanelBox.width <= viewport.width && upgradePanelBox.y + upgradePanelBox.height <= viewport.height, `${name} upgrade panel escaped the viewport`);
   await page.screenshot({ path: pathFor(`${name}-upgrade`), fullPage: true });
-  await page.locator('.hmh-upgrade-choice').first().click();
+  // Cycle 073 (U-4): every card carries a tier band and an icon that resolves,
+  // arrows move the armed ring, and Digit1 picks the (re-armed) first card so
+  // every downstream HUD/build assertion is unchanged from the click path.
+  const tiers = await page.locator('.hmh-upgrade-option').evaluateAll((nodes) => nodes.map((node) => node.dataset.tier));
+  assert.ok(tiers.length === 2 && tiers.every((tier) => ['mastery', 'core', 'weapon', 'capstone'].includes(tier)), `unknown tier band: ${tiers.join(', ')}`);
+  const iconStatuses = await page.locator('.hmh-upgrade-choice__icon').evaluateAll((nodes) => Promise.all(nodes.map(async (node) => {
+    const url = /url\("([^"]+)"\)/.exec(node.style.backgroundImage)?.[1];
+    if (!url) return 0;
+    const response = await fetch(url);
+    return response.status;
+  })));
+  assert.deepEqual(iconStatuses, [200, 200], `upgrade icon request failed: ${iconStatuses.join(', ')}`);
+  const armedBefore = await page.locator('.hmh-upgrade-option').evaluateAll((nodes) => nodes.map((node) => node.classList.contains('hmh-upgrade-option--armed')));
+  assert.deepEqual(armedBefore, [true, false], `${name} first card is not armed on open`);
+  await page.keyboard.press('ArrowRight');
+  const armedAfterRight = await page.locator('.hmh-upgrade-option').evaluateAll((nodes) => nodes.map((node) => node.classList.contains('hmh-upgrade-option--armed')));
+  assert.deepEqual(armedAfterRight, [false, true], `${name} ArrowRight did not arm the second card`);
+  assert.equal(await page.evaluate(() => document.activeElement?.dataset.upgradeId), choices[1].id);
+  await page.keyboard.press('ArrowLeft');
+  assert.equal(await page.evaluate(() => document.activeElement?.dataset.upgradeId), choices[0].id);
+  const hotkeyVisible = await page.locator('.hmh-upgrade-choice__hotkey').first().isVisible();
+  await page.keyboard.press('Digit1');
   await page.waitForFunction(() => document.querySelector('#hmhUpgradePanel')?.hidden === true);
+  const keyboardPick = { tiers, iconStatuses, hotkeyVisible, pickedId: choices[0].id };
   const run = await page.evaluate(() => ({
     score: document.querySelector('#hmhRunScore')?.textContent,
     level: document.querySelector('#hmhRunLevel')?.textContent,
@@ -102,6 +124,23 @@ async function inspect(name, viewport) {
     return stage?.dataset.settingReduceMotion === 'true' && stage.dataset.settingReduceFlash === 'true';
   });
   assert.equal(await page.locator('#hmhPausePanel').getAttribute('hidden'), null);
+  // Cycle 073 (U-5): child-owned SFX slider. It is not a .hmh-setting-toggle,
+  // the readout follows `input`, and the level survives Restart like the toggles.
+  const sfxSlider = page.locator('#hmhSettingSfxVolume');
+  assert.equal(await sfxSlider.getAttribute('type'), 'range');
+  const sfxRowBox = await page.locator('.hmh-setting-range').boundingBox();
+  const sfxTrackBox = await sfxSlider.boundingBox();
+  if (viewport.width <= 900) {
+    assert.ok(sfxRowBox && sfxRowBox.height >= 44, `${name} SFX slider row is only ${sfxRowBox?.height ?? 0}px tall`);
+    assert.ok(sfxTrackBox && sfxTrackBox.height >= 44, `${name} SFX slider track target is only ${sfxTrackBox?.height ?? 0}px tall`);
+  }
+  await sfxSlider.evaluate((node) => {
+    node.value = '0.3';
+    node.dispatchEvent(new Event('input', { bubbles: true }));
+    node.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  assert.equal((await page.locator('#hmhSettingSfxVolumeValue').textContent()).trim(), '30%');
+  assert.equal(await sfxSlider.inputValue(), '0.3');
   const settingsBeforeRestart = await page.locator('.hmh-setting-toggle input').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.id, node.checked])));
   await page.screenshot({ path: pathFor(`${name}-pause-settings`), fullPage: true });
   await page.click('#hmhRestartButton');
@@ -114,6 +153,8 @@ async function inspect(name, viewport) {
   assert.equal(await page.locator('#hmhSettingReduceMotion').isChecked(), true);
   assert.equal(await page.locator('#hmhSettingReduceFlash').isChecked(), true);
   assert.equal(await page.locator('#hmhSettingMusic').isChecked(), false);
+  assert.equal(await page.locator('#hmhSettingSfxVolume').inputValue(), '0.3', `${name} SFX level did not survive Restart`);
+  assert.equal((await page.locator('#hmhSettingSfxVolumeValue').textContent()).trim(), '30%');
   const settingsAfterRestart = await page.locator('.hmh-setting-toggle input').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.id, node.checked])));
   await page.click('#hmhResumeButton');
   await page.waitForFunction(() => document.querySelector('#hmhPausePanel')?.hidden === true);
@@ -123,7 +164,7 @@ async function inspect(name, viewport) {
   });
   assert.deepEqual(errors, []);
   await page.close();
-  return { choices, disclosure, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, buildText, settings: { beforeRestart: settingsBeforeRestart, afterRestart: settingsAfterRestart }, errors };
+  return { choices, disclosure, keyboardPick, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, buildText, settings: { beforeRestart: settingsBeforeRestart, afterRestart: settingsAfterRestart, sfxVolume: { row: sfxRowBox?.height, track: sfxTrackBox?.height } }, errors };
 }
 
 const result = {
