@@ -350,6 +350,25 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   const surfaceCues = new GraphicsClass();
   surfaceCues.label = 'world-surface-cues';
   root.addChildAt(surfaceCues, root.getChildIndex(surfaceSprites) + 1);
+  // W-11: the camera-facing wall of a ledge or the flank of a ramp. Strips sit
+  // above the flat base fill (which doubles as the no-texture face) and below
+  // the opaque top tile, so a wall never paints over the deck it belongs to.
+  const surfaceFaceSprites = new ContainerClass();
+  surfaceFaceSprites.label = 'world-surface-faces';
+  root.addChildAt(surfaceFaceSprites, root.getChildIndex(layers.surfaces) + 1);
+  // Ramps tile through a polygon mask (their projected outline is a
+  // parallelogram, not a rectangle). They get their own sprite pool and a
+  // pool of mask graphics, so the shared surface pool never carries a mask.
+  const rampSprites = new ContainerClass();
+  rampSprites.label = 'world-ramp-tiles';
+  root.addChildAt(rampSprites, root.getChildIndex(surfaceSprites) + 1);
+  const rampMasks = new ContainerClass();
+  rampMasks.label = 'world-ramp-masks';
+  root.addChildAt(rampMasks, root.getChildIndex(rampSprites) + 1);
+  // W-5: a cliff's rock face paints over the body drawn into `blockers`.
+  const blockerFaceSprites = new ContainerClass();
+  blockerFaceSprites.label = 'world-blocker-faces';
+  root.addChildAt(blockerFaceSprites, root.getChildIndex(layers.blockers) + 1);
   // Roads are stroked polylines, so they tile through a mask rather than a
   // rectangle: one viewport-sized sprite clipped to the road surface.
   const roadSprites = new ContainerClass();
@@ -358,7 +377,23 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   roadMask.label = 'world-road-mask';
   roadSprites.addChild(roadMask);
   root.addChildAt(roadSprites, root.getChildIndex(layers.routes) + 1);
-  return Object.freeze({ root, layers: Object.freeze(layers), terrainSprites, fringeSprites, stripSprites, surfaceSprites, surfaceCues, roadSprites, roadMask, TilingSpriteClass });
+  return Object.freeze({
+    root,
+    layers: Object.freeze(layers),
+    terrainSprites,
+    fringeSprites,
+    stripSprites,
+    surfaceSprites,
+    surfaceFaceSprites,
+    rampSprites,
+    rampMasks,
+    blockerFaceSprites,
+    surfaceCues,
+    roadSprites,
+    roadMask,
+    TilingSpriteClass,
+    GraphicsClass,
+  });
 }
 
 export function clearWorldProductionLayers(worldProduction) {
@@ -446,7 +481,11 @@ function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = fals
 function drawBlocker(graphic, feature, kit, camera, worldToScreen) {
   const shape = feature.shape;
   const z = feature.maxZ ? Math.min(feature.maxZ * 0.08, 18) : 0;
-  if (shape.type === 'capsule') {
+  if (shape.type === 'capsule' && feature.visualKind === 'cliff') {
+    // W-5 (partial): rock, not a capsule with a stripe. Every other capsule
+    // (fences, rails, canopies, machinery, containers) keeps the path below.
+    drawCliffMass(graphic, feature, kit, camera, worldToScreen);
+  } else if (shape.type === 'capsule') {
     const a = worldToScreen({ ...shape.a, z }, camera);
     const b = worldToScreen({ ...shape.b, z }, camera);
     const width = Math.max(6, shape.radius * 2 * camera.zoom);
@@ -560,6 +599,314 @@ function drawInteraction(graphic, center, kit, zoom, pulse, hazard = false) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// W-11 (projection-only): height must read as height.
+//
+// worldToScreen maps z straight to screen rows, so the camera-facing front of
+// anything standing above the ground around it is exactly (topZ - baseZ) *
+// zoom px tall, from the projected lip down to the projected foot. Nothing
+// drew in that band before Cycle 073. These helpers draw it; the elevation
+// itself stays with the world contract and is only read here.
+// ---------------------------------------------------------------------------
+
+const RAISED_FACE = Object.freeze({
+  // No-texture fallback: the district ground pulled toward black, banded
+  // darker toward the foot.
+  shade: 0.3,
+  bands: Object.freeze([0.1, 0.18, 0.26]),
+  // Ground contact: thin bands on the ground just below the foot line.
+  footBands: Object.freeze([0.34, 0.2, 0.1]),
+  footBandWorld: 4,
+  // The authored strip is baked neutral and pulled toward the surface it
+  // belongs to.
+  tintAmount: 0.45,
+});
+
+// W-5 (partial): cliff blockers keep their collision capsule and gain a
+// visual height. The plate rides this far above the ground body; it is a
+// readability constant, not the collision maxZ.
+export const CLIFF_FACE = Object.freeze({ heightRatio: 0.45, minWorld: 24, maxWorld: 64 });
+
+function cliffFaceHeight(maxZ, zoom) {
+  return Math.max(CLIFF_FACE.minWorld, Math.min(CLIFF_FACE.maxWorld, (maxZ ?? 0) * CLIFF_FACE.heightRatio)) * zoom;
+}
+
+const faceTint = (color) => mixColor(0xffffff, color, RAISED_FACE.tintAmount);
+
+const lerpPoint = (from, to, t) => ({ x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t });
+
+// Each pooled sprite that ever needs clipping owns one mask graphic for its
+// whole life. Pixi switches a mask's `includeInBuild` back on when a sprite
+// drops it, so a mask shared between sprites could be turned into a visible
+// white fill mid-frame; an owned mask is only ever assigned to its owner.
+const OWNED_MASKS = new WeakMap();
+
+function clipToPolygon(sprite, polygon, worldProduction) {
+  const masks = worldProduction.rampMasks;
+  const GraphicsClass = worldProduction.GraphicsClass;
+  if (!sprite || !masks || typeof GraphicsClass !== 'function') return null;
+  let mask = OWNED_MASKS.get(sprite);
+  if (!mask) {
+    mask = new GraphicsClass();
+    mask.label = 'world-ramp-mask';
+    mask.visible = false;
+    masks.addChild(mask);
+    OWNED_MASKS.set(sprite, mask);
+  }
+  mask.clear();
+  tracePolygon(mask, polygon).fill({ color: 0xffffff });
+  if (sprite.mask !== mask) sprite.mask = mask;
+  // Pixi excludes an assigned mask from the colour buffer, so this is safe
+  // only after the assignment above; an unassigned mask is a white fill.
+  mask.visible = true;
+  return mask;
+}
+
+function unclip(sprite) {
+  if (sprite && (sprite.mask ?? null) !== null) sprite.mask = null;
+}
+
+/**
+ * The camera-facing face of a rectangular surface. Its lip is the projected
+ * south edge (points[3] -> points[2]); its foot is that edge projected at
+ * whatever the ground query reports just south of it (a waterline where the
+ * footing is water). Null when the surface is flush with its footing.
+ */
+function resolveRaisedFace({ surface, points, queryGround, project }) {
+  if (surface.area?.type !== 'rect' || points.length < 4) return null;
+  const { minX, maxX, maxY } = surface.area;
+  const footingZ = (x) => {
+    const footing = queryGround(x, maxY + 1);
+    return footing.waterLevel ?? footing.groundZ ?? 0;
+  };
+  const footWest = project({ x: minX, y: maxY, z: footingZ(minX + 0.5) });
+  const footEast = project({ x: maxX, y: maxY, z: footingZ(maxX - 0.5) });
+  const lipWest = points[3];
+  const lipEast = points[2];
+  const dropWest = footWest.y - lipWest.y;
+  const dropEast = footEast.y - lipEast.y;
+  if (!(Math.max(dropWest, dropEast) > 0.5)) return null;
+  return {
+    polygon: [lipWest, lipEast, footEast, footWest],
+    lipWest,
+    lipEast,
+    footWest,
+    footEast,
+    top: Math.min(lipWest.y, lipEast.y),
+    bottom: Math.max(footWest.y, footEast.y),
+    left: Math.min(lipWest.x, footWest.x),
+    right: Math.max(lipEast.x, footEast.x),
+    // A ledge face is a rectangle; a ramp flank is a trapezoid or triangle and
+    // has to be clipped.
+    rectangular: Math.abs(dropWest - dropEast) < 0.5 && Math.abs(lipWest.y - lipEast.y) < 0.5,
+  };
+}
+
+/**
+ * Draw one face: the flat shaded fallback and the ground-contact bands into
+ * `layers.surfaces`, the authored strip stretched to exactly the face height
+ * into the face container, and the lit cap along the lip into the cue layer.
+ */
+function drawRaisedFace({ layers, cueLayer, face, baseColor, capColor, camera, facePlacer, texture, tint, stripDefaults, worldProduction, contact = true }) {
+  const zoom = camera.zoom;
+  tracePolygon(layers.surfaces, face.polygon).fill({ color: mixColor(baseColor, 0x000000, RAISED_FACE.shade), alpha: 1 });
+  if (face.rectangular) {
+    const width = face.right - face.left;
+    const bandHeight = (face.bottom - face.top) / RAISED_FACE.bands.length;
+    RAISED_FACE.bands.forEach((alpha, index) => {
+      layers.surfaces.rect(face.left, face.top + bandHeight * index, width, bandHeight).fill({ color: 0x03070b, alpha });
+    });
+    if (contact) {
+      const band = RAISED_FACE.footBandWorld * zoom;
+      RAISED_FACE.footBands.forEach((alpha, index) => {
+        layers.surfaces.rect(face.left, face.bottom + band * index, width, band).fill({ color: 0x03070b, alpha });
+      });
+    }
+  }
+  let strip = null;
+  if (texture && facePlacer) {
+    strip = facePlacer.placeStrip(texture, { x: face.left, y: face.top }, { x: face.right, y: face.top }, {
+      ...stripDefaults,
+      depthWorld: (face.bottom - face.top) / zoom,
+      side: 1,
+      overlapWorld: 0,
+      alpha: 1,
+      tint,
+    });
+    if (strip) {
+      if (face.rectangular) unclip(strip);
+      else clipToPolygon(strip, face.polygon, worldProduction);
+    }
+  }
+  // The lip catches the light: a thin bright cap where the top meets the wall.
+  cueLayer.moveTo(face.lipWest.x, face.lipWest.y).lineTo(face.lipEast.x, face.lipEast.y)
+    .stroke({ color: capColor, width: Math.max(1, 2 * zoom), alpha: 0.75 });
+  return strip;
+}
+
+/**
+ * A ramp reads as a slope, not a flat plate: five bands from its low end to
+ * its high end, darkest low, plus a dark crease where it leaves the ground and
+ * a faint lit crease where it meets the deck.
+ */
+function drawRampGrade(cueLayer, surface, points, zoom) {
+  const alongX = surface.axis === 'x';
+  const lowAtStart = surface.fromZ <= surface.toZ;
+  const BANDS = 5;
+  const edgeA = alongX ? [points[0], points[1]] : [points[0], points[3]];
+  const edgeB = alongX ? [points[3], points[2]] : [points[1], points[2]];
+  for (let index = 0; index < BANDS; index += 1) {
+    const slot = lowAtStart ? index : BANDS - 1 - index;
+    const t0 = slot / BANDS;
+    const t1 = (slot + 1) / BANDS;
+    const quad = [lerpPoint(edgeA[0], edgeA[1], t0), lerpPoint(edgeA[0], edgeA[1], t1), lerpPoint(edgeB[0], edgeB[1], t1), lerpPoint(edgeB[0], edgeB[1], t0)];
+    tracePolygon(cueLayer, quad).fill({ color: 0x03070b, alpha: 0.26 - (0.22 * index) / (BANDS - 1) });
+  }
+  const startEdge = alongX ? [points[0], points[3]] : [points[0], points[1]];
+  const endEdge = alongX ? [points[1], points[2]] : [points[3], points[2]];
+  const [lowEdge, highEdge] = lowAtStart ? [startEdge, endEdge] : [endEdge, startEdge];
+  cueLayer.moveTo(lowEdge[0].x, lowEdge[0].y).lineTo(lowEdge[1].x, lowEdge[1].y)
+    .stroke({ color: 0x03070b, width: Math.max(1, 2 * zoom), alpha: 0.35 });
+  cueLayer.moveTo(highEdge[0].x, highEdge[0].y).lineTo(highEdge[1].x, highEdge[1].y)
+    .stroke({ color: 0xffffff, width: Math.max(1, 1.5 * zoom), alpha: 0.16 });
+}
+
+/**
+ * Where a cliff capsule shows its face. A wall (axis within 30 degrees of the
+ * screen x axis) faces the camera along the rim of its straight run, between
+ * the plate rim (lifted by the face height) and the ground rim; a pillar shows
+ * only its south end cap. Screen space throughout.
+ */
+function cliffFaceGeometry(a, b, radius, faceH) {
+  let from = a;
+  let to = b;
+  if (to.x < from.x) {
+    from = b;
+    to = a;
+  }
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.hypot(dx, dy);
+  const unitX = length > 0 ? dx / length : 1;
+  const unitY = length > 0 ? dy / length : 0;
+  if (length > 1 && Math.abs(unitY) < 0.5) {
+    const normalX = -unitY;
+    const normalY = unitX;
+    return {
+      wall: true,
+      rimFrom: { x: from.x + normalX * radius, y: from.y + normalY * radius - faceH },
+      rimTo: { x: to.x + normalX * radius, y: to.y + normalY * radius - faceH },
+      // Perpendicular distance between the two parallel rims.
+      depth: faceH * unitX,
+    };
+  }
+  return { wall: false, cap: a.y >= b.y ? a : b };
+}
+
+// Pixi restarts the path at the previous path's last point after a stroke, so
+// an arc drawn straight after one gets a connecting line from wherever the
+// last stroke ended. Start every arc at its own first point.
+function arcFrom(graphic, x, y, radius, startAngle, endAngle) {
+  return graphic.moveTo(x + Math.cos(startAngle) * radius, y + Math.sin(startAngle) * radius)
+    .arc(x, y, radius, startAngle, endAngle);
+}
+
+/**
+ * W-5 (partial). A cliff is a rock mass: a dark wall standing on the ground, a
+ * lighter plate lifted by the face height, strata across the wall, a dark
+ * silhouette rim and a thin lit edge along the plate's camera-facing lip. The
+ * old treatment, a lifted capsule with a 12%-width accent stripe and posts,
+ * is what read as a brown capsule with an orange stripe.
+ */
+function drawCliffMass(graphic, feature, kit, camera, worldToScreen) {
+  const shape = feature.shape;
+  const zoom = camera.zoom;
+  const faceH = cliffFaceHeight(feature.maxZ, zoom);
+  const a = worldToScreen({ ...shape.a, z: 0 }, camera);
+  const b = worldToScreen({ ...shape.b, z: 0 }, camera);
+  const width = Math.max(6, shape.radius * 2 * zoom);
+  const radius = width / 2;
+  const faceColor = mixColor(kit.baseColor, 0x000000, 0.42);
+  const plateColor = mixColor(kit.baseColor, 0xffffff, 0.08);
+  const rimColor = mixColor(kit.baseColor, 0x000000, 0.45);
+  const hairline = Math.max(1, 1.5 * zoom);
+  // Ground contact shadow under the mass.
+  graphic.moveTo(a.x + 4, a.y + 7).lineTo(b.x + 4, b.y + 7).stroke({ color: 0x05070a, width, alpha: 0.46, cap: 'round' });
+  // Body: the wall, standing on the ground.
+  graphic.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: faceColor, width, alpha: 1, cap: 'round' });
+  const geometry = cliffFaceGeometry(a, b, radius, faceH);
+  // Strata across the wall. The authored strip covers the straight run when
+  // it is loaded; the end caps and the no-texture fallback keep these.
+  for (const t of [0.36, 0.68]) {
+    if (geometry.wall) {
+      graphic.moveTo(geometry.rimFrom.x, geometry.rimFrom.y + faceH * t).lineTo(geometry.rimTo.x, geometry.rimTo.y + faceH * t)
+        .stroke({ color: 0x05070a, width: hairline, alpha: 0.3 });
+    } else {
+      arcFrom(graphic, geometry.cap.x, geometry.cap.y - faceH * (1 - t), radius, Math.PI * 0.08, Math.PI * 0.92)
+        .stroke({ color: 0x05070a, width: hairline, alpha: 0.3 });
+    }
+  }
+  // Plate: the same capsule lifted by the face height, over a dark rim so the
+  // top separates from the ground it stands on.
+  graphic.moveTo(a.x, a.y - faceH).lineTo(b.x, b.y - faceH).stroke({ color: rimColor, width: width + Math.max(2, 3 * zoom), alpha: 0.7, cap: 'round' });
+  graphic.moveTo(a.x, a.y - faceH).lineTo(b.x, b.y - faceH).stroke({ color: plateColor, width, alpha: 1, cap: 'round' });
+  // The plate is a rounded rock crown, not a flat pill: a broad ridge light
+  // offset toward the light (upper left), a shade toward the camera side, and
+  // deterministic fracture lines seeded from the feature id.
+  const ridgeX = radius * 0.22;
+  const ridgeY = radius * 0.3;
+  graphic.moveTo(a.x - ridgeX, a.y - faceH - ridgeY).lineTo(b.x - ridgeX, b.y - faceH - ridgeY)
+    .stroke({ color: mixColor(kit.baseColor, 0xffffff, 0.18), width: width * 0.5, alpha: 0.5, cap: 'round' });
+  graphic.moveTo(a.x + ridgeX, a.y - faceH + ridgeY).lineTo(b.x + ridgeX, b.y - faceH + ridgeY)
+    .stroke({ color: mixColor(kit.baseColor, 0x000000, 0.28), width: width * 0.36, alpha: 0.4, cap: 'round' });
+  const length = Math.hypot(b.x - a.x, b.y - a.y);
+  const unitX = length > 0 ? (b.x - a.x) / length : 1;
+  const unitY = length > 0 ? (b.y - a.y) / length : 0;
+  const cracks = Math.max(3, Math.min(14, Math.round(length / 60)));
+  for (let index = 0; index < cracks; index += 1) {
+    const seed = fnv1a(`${feature.id}:crack:${index}`);
+    const t = 0.06 + ((seed & 0xff) / 255) * 0.88;
+    const lateral = (((seed >>> 8) & 0xff) / 255 - 0.5) * radius * 1.1;
+    const halfRun = radius * (0.18 + (((seed >>> 16) & 0xff) / 255) * 0.17);
+    const angle = Math.atan2(unitX, -unitY) + (((seed >>> 24) & 0x7f) / 127 - 0.5) * 0.9;
+    const centerX = a.x + (b.x - a.x) * t - unitY * lateral;
+    const centerY = a.y - faceH + (b.y - a.y) * t + unitX * lateral;
+    const kinkX = (((seed >>> 4) & 0xf) / 15 - 0.5) * halfRun * 0.6;
+    const kinkY = (((seed >>> 12) & 0xf) / 15 - 0.5) * halfRun * 0.6;
+    graphic.moveTo(centerX - Math.cos(angle) * halfRun, centerY - Math.sin(angle) * halfRun)
+      .lineTo(centerX + kinkX, centerY + kinkY)
+      .lineTo(centerX + Math.cos(angle) * halfRun, centerY + Math.sin(angle) * halfRun)
+      .stroke({ color: mixColor(kit.baseColor, 0x000000, 0.5), width: hairline, alpha: 0.42 });
+  }
+  // Lit lip along the plate's camera-facing edge.
+  if (geometry.wall) {
+    graphic.moveTo(geometry.rimFrom.x, geometry.rimFrom.y - hairline * 0.5).lineTo(geometry.rimTo.x, geometry.rimTo.y - hairline * 0.5)
+      .stroke({ color: kit.accentColor, width: hairline, alpha: 0.55 });
+  } else {
+    arcFrom(graphic, geometry.cap.x, geometry.cap.y - faceH, radius - hairline * 0.5, Math.PI * 0.1, Math.PI * 0.9)
+      .stroke({ color: kit.accentColor, width: hairline, alpha: 0.55 });
+  }
+}
+
+/** The authored rock face along a cliff wall's straight run. */
+function placeCliffFace({ feature, kit, camera, project, placer, texture, stripDefaults }) {
+  const shape = feature.shape;
+  const zoom = camera.zoom;
+  const a = project({ ...shape.a, z: 0 });
+  const b = project({ ...shape.b, z: 0 });
+  const radius = Math.max(6, shape.radius * 2 * zoom) / 2;
+  const geometry = cliffFaceGeometry(a, b, radius, cliffFaceHeight(feature.maxZ, zoom));
+  if (!geometry.wall) return null;
+  return placer.placeStrip(texture, geometry.rimFrom, geometry.rimTo, {
+    ...stripDefaults,
+    depthWorld: geometry.depth / zoom,
+    side: 1,
+    overlapWorld: 0,
+    alpha: 1,
+    tint: faceTint(kit.baseColor),
+  });
+}
+
 // One authored tile spans this many world units regardless of the bake
 // resolution (256 x 0.26 from the original tuning). A higher-resolution bake
 // therefore buys texel density at gameplay zoom, not larger features.
@@ -633,7 +980,7 @@ function createStripPlacer({ container, TilingSpriteClass, camera, view, cullMar
   if (!container || typeof TilingSpriteClass !== 'function') return null;
   let cursor = 0;
   return {
-    placeStrip(texture, from, to, { depthWorld, sideOffsetWorld = 0, side = 1, repeatWorld = TERRAIN_TILE_REPEAT_WORLD, tileSize = 512, stripHeight = 128, alpha = 1 }) {
+    placeStrip(texture, from, to, { depthWorld, sideOffsetWorld = 0, side = 1, repeatWorld = TERRAIN_TILE_REPEAT_WORLD, tileSize = 512, stripHeight = 128, alpha = 1, overlapWorld = depthWorld, tint = 0xffffff }) {
       if (!texture) return null;
       const dx = to.x - from.x;
       const dy = to.y - from.y;
@@ -648,7 +995,10 @@ function createStripPlacer({ container, TilingSpriteClass, camera, view, cullMar
       const normalX = -unitY;
       const normalY = unitX;
       const offset = sideOffsetWorld * camera.zoom;
-      const overlap = depth;
+      // A fading skirt runs past both ends by its own depth so its ragged edge
+      // never stops flush with a corner; an opaque wall must stop exactly at
+      // the corners, so faces pass overlapWorld 0.
+      const overlap = overlapWorld === depthWorld ? depth : Math.max(0, overlapWorld * camera.zoom);
       const forward = side >= 0;
       const originX = forward ? from.x + normalX * offset - unitX * overlap : to.x - normalX * offset + unitX * overlap;
       const originY = forward ? from.y + normalY * offset - unitY * overlap : to.y - normalY * offset + unitY * overlap;
@@ -669,6 +1019,9 @@ function createStripPlacer({ container, TilingSpriteClass, camera, view, cullMar
       sprite.visible = true;
       sprite.texture = texture;
       sprite.alpha = alpha;
+      // Pooled: a sprite that was a tinted wall last frame may be a plain
+      // shoulder this frame.
+      sprite.tint = tint;
       sprite.rotation = Math.atan2(unitY, unitX) + (forward ? 0 : Math.PI);
       sprite.position.set(originX, originY);
       sprite.width = length + overlap * 2;
@@ -713,7 +1066,33 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   const shoulderTexture = overlayTexture('road-shoulder');
   const shoreTexture = overlayTexture('shore-band');
   const screeTexture = overlayTexture('scree-skirt');
+  const faceTexture = overlayTexture('rock-face');
   const stripDefaults = { tileSize: terrainTiles?.tileSize ?? 512, stripHeight: terrainTiles?.overlayHeight ?? 128 };
+  // W-11 / W-5: ramps tile through their own masked pool; ledge fronts, ramp
+  // flanks and cliff walls are strips in containers above the layer each one
+  // dresses. Every one of these is null when its container or texture is
+  // absent, and the Graphics fallback then carries the height on its own.
+  const rampPlacer = createTerrainSpritePlacer({ container: worldProduction.rampSprites ?? null, terrainTiles, camera, view });
+  const facePlacer = createStripPlacer({
+    container: worldProduction.surfaceFaceSprites ?? null,
+    TilingSpriteClass: worldProduction.TilingSpriteClass,
+    camera,
+    view,
+    cullMargin: performanceProfile.worldCullMargin,
+  });
+  const blockerFacePlacer = createStripPlacer({
+    container: worldProduction.blockerFaceSprites ?? null,
+    TilingSpriteClass: worldProduction.TilingSpriteClass,
+    camera,
+    view,
+    cullMargin: performanceProfile.worldCullMargin,
+  });
+  // Ramp masks are re-traced by whichever sprite owns them; hidden until then,
+  // because an unassigned mask is a white fill on screen.
+  for (const mask of worldProduction.rampMasks?.children ?? []) {
+    mask.clear();
+    mask.visible = false;
+  }
   // World bounds, so a waterline that runs off the map does not get a beach
   // along the edge of the world.
   const worldMinY = Math.min(...world.districts.map((district) => district.area.minY));
@@ -826,18 +1205,44 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     // step up. Ledges and bridges now get a cast shadow, an opaque deck, a
     // lit top edge, and a darker leading lip so the height change is legible.
     const { isWater, isRaised } = surfaceBase;
+    const isRamp = surface.kind === 'ramp';
+    // W-11: the camera-facing wall of a ledge or the flank of a ramp. A bridge
+    // deck over water gets none: the water tile above `surfaces` would cover
+    // it, so it keeps the lip cue alone.
+    const face = surface.kind === 'ledge' || isRamp ? resolveRaisedFace({ surface, points, queryGround, project }) : null;
     if (isRaised) {
       const lift = Math.max(4, 9 * camera.zoom);
-      const shadow = points.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
+      // The whole mass casts, from the deck's north edge down past the foot.
+      const footprint = face ? [points[0], points[1], face.footEast, face.footWest] : points;
+      const shadow = footprint.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
       tracePolygon(layers.surfaces, shadow).fill({ color: 0x03070b, alpha: 0.42 });
     }
     // W-4: once a waterline carries an authored wet-sand band the bright hairline
     // outline is what made it read as a map overlay, so it drops to a hint.
-    // Raised surfaces keep theirs: that stroke is the elevation cue.
+    // Raised surfaces and ramps keep a thin one: with the wall drawn under the
+    // lip, the old 4 px outline only made the top read as an outlined panel.
     const bandedShore = isWater && Boolean(shoreTexture) && surface.kind === 'water';
+    const outlined = isRaised || isRamp;
     tracePolygon(layers.surfaces,points)
       .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
-      .stroke({color:surfaceBase.strokeColor,width:isRaised?4:bandedShore?2:3,alpha:isWater?(bandedShore?0.3:0.8):0.9});
+      .stroke({color:surfaceBase.strokeColor,width:outlined?2:bandedShore?2:3,alpha:isWater?(bandedShore?0.3:0.8):outlined?0.55:0.9});
+    if (face) {
+      drawRaisedFace({
+        layers,
+        cueLayer,
+        face,
+        baseColor: kit.groundColor,
+        capColor: mixColor(surfaceBase.color, 0xffffff, 0.5),
+        camera,
+        facePlacer,
+        texture: faceTexture,
+        tint: faceTint(kit.groundColor),
+        stripDefaults,
+        worldProduction,
+        // A flank tapers to nothing at the low end, so it gets no foot band.
+        contact: !isRamp,
+      });
+    }
     // Authored material over the flat base for rectangular surfaces; the base
     // colour remains visible for non-rect shapes and when tiles are absent.
     const surfaceMaterial = SURFACE_TERRAIN_MATERIAL[surface.kind];
@@ -846,8 +1251,17 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       const maxX = Math.max(...points.map((point) => point.x));
       const minY = Math.min(...points.map((point) => point.y));
       const maxY = Math.max(...points.map((point) => point.y));
-      surfacePlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha);
+      if (isRamp) {
+        // A ramp's projected outline is a parallelogram (its high corners sit
+        // higher on screen), so the tile is clipped to that polygon instead of
+        // overpainting two triangles of ground outside it.
+        const rampTile = rampPlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha) ?? null;
+        if (rampTile) clipToPolygon(rampTile, points, worldProduction);
+      } else {
+        surfacePlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha);
+      }
     }
+    if (isRamp && points.length >= 4) drawRampGrade(cueLayer, surface, points, camera.zoom);
     if (surface.kind === 'water' && shoreTexture && stripPlacer && surface.area.type === 'rect' && points.length >= 4) {
       // W-4: authored wet sand and a broken foam line on the land side of every
       // waterline, so a river stops ending at a drawn rectangle. Row 0 of the
@@ -871,8 +1285,10 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
     if (isRaised && surface.kind === 'ledge' && screeTexture && stripPlacer && points.length >= 4) {
       // W-4: the debris a ledge front sheds onto the ground below it, deeper
-      // under a taller deck.
-      stripPlacer.placeStrip(screeTexture, points[2], points[3], {
+      // under a taller deck. W-11 moved it from the lip to the foot of the
+      // wall: anchored at the lip it hung down the unrendered face and never
+      // reached the ground it is supposed to lie on.
+      stripPlacer.placeStrip(screeTexture, face?.footEast ?? points[2], face?.footWest ?? points[3], {
         ...stripDefaults,
         depthWorld: SCREE_WORLD_DEPTH + Math.min(28, (surface.groundZ ?? 0) * 0.32),
         side: -1,
@@ -891,8 +1307,12 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       // Lit top edge and shaded front lip.
       cueLayer.moveTo(points[0].x, points[0].y).lineTo(points[1].x, points[1].y)
         .stroke({ color: mixColor(kit.detailColor, 0xffffff, 0.4), width: Math.max(2, 3 * camera.zoom), alpha: 0.7 });
-      cueLayer.moveTo(points[2].x, points[2].y).lineTo(points[3].x, points[3].y)
-        .stroke({ color: 0x05090d, width: Math.max(3, 5 * camera.zoom), alpha: 0.6 });
+      if (!face) {
+        // No wall drawn under this lip (a deck over water, or a surface flush
+        // with its footing): the dark lip stays the only cue.
+        cueLayer.moveTo(points[2].x, points[2].y).lineTo(points[3].x, points[3].y)
+          .stroke({ color: 0x05090d, width: Math.max(3, 5 * camera.zoom), alpha: 0.6 });
+      }
     }
     if (surface.kind.includes('water') && surface.area.type==='rect') {
       const a=points[0], b=points[2];
@@ -963,6 +1383,11 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
     const layer = feature.id.startsWith('town-') ? layers.townBlockers : layers.blockers;
     drawBlocker(layer, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
+    if (feature.visualKind === 'cliff' && shape.type === 'capsule' && faceTexture && blockerFacePlacer) {
+      // W-5 (partial): the authored rock face along the wall's straight run,
+      // in the container above the body drawn into `blockers`.
+      placeCliffFace({ feature, kit: BLOCKER_PRODUCTION_KITS.cliff, camera, project, placer: blockerFacePlacer, texture: faceTexture, stripDefaults });
+    }
   }
 
   for (const destructible of world.interactions.destructibles) {
@@ -1015,7 +1440,10 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   }
   tilePlacer?.finish();
   surfacePlacer?.finish();
+  rampPlacer?.finish();
   stripPlacer?.finish();
+  facePlacer?.finish();
+  blockerFacePlacer?.finish();
   if (roadPlacer && roadMaskGraphic) {
     const roadSprite = roadPlacer.place('road', 0, 0, view.width, view.height, 0.96);
     if (roadSprite) {

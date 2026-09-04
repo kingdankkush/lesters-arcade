@@ -49,7 +49,7 @@ test('W-1 records a verifiable digest for every baked file', async () => {
 
 test('W-3/W-4 bake authored edge strips as overlays, not base materials', async () => {
   const manifest = await readManifest();
-  assert.deepEqual(TERRAIN_OVERLAY_IDS, ['road-shoulder', 'shore-band', 'scree-skirt']);
+  assert.deepEqual(TERRAIN_OVERLAY_IDS, ['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face']);
   for (const id of TERRAIN_OVERLAY_IDS) {
     const strip = manifest.overlays.find((entry) => entry.id === id);
     assert.ok(strip, `${id} must be baked`);
@@ -79,10 +79,44 @@ test('W-1 registry exposes overlays with strip addressing and stays inert until 
 test('W-1 manifest validation carries the overlay contract to the runtime', async () => {
   const manifest = await readManifest();
   const validated = validateTerrainManifest(manifest);
-  assert.deepEqual(validated.overlayIds, ['road-shoulder', 'scree-skirt', 'shore-band']);
+  assert.deepEqual(validated.overlayIds, ['road-shoulder', 'rock-face', 'scree-skirt', 'shore-band']);
   assert.equal(validated.overlayHeight, manifest.overlayHeight);
   assert.ok(validated.overlayHeight >= 64);
   assert.throws(() => validateTerrainManifest({ ...manifest, overlays: [] }), /missing road-shoulder/);
+});
+
+test('W-11 bakes an opaque rock-face strip for ledge and cliff faces', async () => {
+  // A ledge front or cliff face is a vertical wall: the strip is stretched
+  // across exactly the elevation delta by the placer, so it must be opaque on
+  // every row (a fading skirt would show ground through the wall), lit along
+  // its cap, and darkest where it meets the ground.
+  const bakery = await readFile(bakeryUrl, 'utf8');
+  assert.match(bakery, /"rock-face"/, 'the face strip is an authored overlay, not a runtime material');
+  assert.match(bakery, /kind == "face"/, 'faces need their own profile beside shoulder/shore/scree');
+  const manifest = await readManifest();
+  const face = manifest.overlays.find((entry) => entry.id === 'rock-face');
+  assert.ok(face, 'rock-face must be baked into the shipped manifest');
+  assert.equal(face.addressV, 'clamp-to-edge');
+  assert.equal(face.height, manifest.overlayHeight);
+  assert.equal(face.width, manifest.tileSize);
+  assert.equal(manifest.materials.length, 11, 'adding a face may not add a runtime material');
+  const { decodePng } = await import('../scripts/hmh-reboot-visual-regression.mjs');
+  const png = decodePng(await readFile(new URL(face.file.slice(2), tileDir)));
+  assert.equal(png.channels, 4);
+  let minAlpha = 255;
+  let topLuma = 0;
+  let bottomLuma = 0;
+  for (let row = 0; row < png.height; row += 1) {
+    for (let column = 0; column < png.width; column += 1) {
+      const offset = (row * png.width + column) * 4;
+      minAlpha = Math.min(minAlpha, png.pixels[offset + 3]);
+      const luma = 0.299 * png.pixels[offset] + 0.587 * png.pixels[offset + 1] + 0.114 * png.pixels[offset + 2];
+      if (row < 8) topLuma += luma;
+      if (row >= png.height - 8) bottomLuma += luma;
+    }
+  }
+  assert.equal(minAlpha, 255, 'a wall strip must be opaque everywhere');
+  assert.ok(topLuma > bottomLuma * 1.25, 'the cap must read lit and the foot shaded');
 });
 
 test('W-1 raises the tile repeat out of the aliasing band and mipmaps the samplers', async () => {

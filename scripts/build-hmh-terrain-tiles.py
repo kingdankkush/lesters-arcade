@@ -686,6 +686,22 @@ OVERLAYS = {
             {"kind": "pebble", "cells": 42, "radius": 4.2, "amount": 0.3, "density": 0.6, "tint": 0.5},
         ],
     },
+    # W-11: the vertical wall of a ledge front or a cliff face. The renderer
+    # stretches this strip across exactly the projected height of the wall, so
+    # every row is opaque; row 0 is the lit cap on the lip, the foot rows carry
+    # the contact darkening where the wall meets the ground. Baked in a neutral
+    # warm rock so the runtime can tint it toward each district's ground.
+    "rock-face": {
+        "seed": 229, "base": "#7a6656", "shadow": "#33241f", "highlight": "#b09a86", "profile": "face",
+        "accent": "#c4a88e", "accentAmount": 0.14, "octaves": [(6, 1.0), (12, 0.55), (24, 0.32), (48, 0.18)],
+        "detailOctaves": [(48, 1.0), (96, 0.5)], "relief": 62, "grain": 0.2, "specular": 0.05,
+        "macroAmount": 0.2,
+        # No pebbles: scatter on a vertical face reads as ground stood on end.
+        "scatter": [],
+        # Horizontal beds cut by the wall; the seam between beds is the dark
+        # line, the beds alternate tone, and the whole set undulates along U.
+        "strata": 4, "strataWobble": 0.32, "capRows": 8,
+    },
 }
 
 
@@ -717,9 +733,10 @@ def bake_overlay(name: str, overlay: dict) -> Image.Image:
     shaped by its own profile, with a ragged alpha falloff outward.
 
     U repeats along the edge; V clamps, so the strip always presents its opaque
-    inner edge to the surface it borders and dissolves into the ground. Three
+    inner edge to the surface it borders and dissolves into the ground. Four
     profiles: `shoulder` (packed rut beside a road), `shore` (foam and wet sand
-    at a waterline), `scree` (chips thinning away from a cliff or ledge front).
+    at a waterline), `scree` (chips thinning away from a cliff or ledge front),
+    `face` (an opaque wall: lit cap, horizontal strata, shaded foot).
     """
     tile = np.asarray(bake_surface(overlay), dtype=np.float64)[:OVERLAY_HEIGHT].copy()
     rows = np.arange(OVERLAY_HEIGHT, dtype=np.float64)[:, None]
@@ -727,6 +744,49 @@ def bake_overlay(name: str, overlay: dict) -> Image.Image:
     profile = wrapped_value_noise(TILE_SIZE, 24, overlay["seed"] ^ 0x51D0_2C77)[0]
     kind = overlay.get("profile", "shoulder")
     depth = rows / OVERLAY_HEIGHT
+
+    if kind == "face":
+        # W-11. A wall, not a skirt: opaque on every row because the placer
+        # stretches the strip across exactly the projected height of the drop,
+        # and any transparency would show ground through rock.
+        tile[:, :, 3] = 255.0
+        shadow_rgb = np.array(hex_rgb(overlay["shadow"]), dtype=np.float64)
+        highlight_rgb = np.array(hex_rgb(overlay["highlight"]), dtype=np.float64)
+        strata = int(overlay.get("strata", 4))
+        wobble = float(overlay.get("strataWobble", 0.32))
+        # Bedding planes undulate along U (wrapped, so the strip still tiles)
+        # and the phase says which bed a texel sits in and how far into it.
+        undulation = wrapped_value_noise(TILE_SIZE, 12, overlay["seed"] ^ 0x7E11_A3C5)[0][None, :]
+        phase = depth * strata + (undulation - 0.5) * wobble
+        bed = np.floor(phase)
+        within = phase - bed
+        # Alternate bed tone, a dark seam where one bed sits on the next, and a
+        # sliver of light just under each seam where the bed above overhangs.
+        tone = np.where(bed % 2 == 0, 0.0, 1.0) * 0.2
+        seam = np.clip(1.0 - within / 0.11, 0.0, 1.0) ** 1.2
+        underlit = np.clip(1.0 - np.abs(within - 0.2) / 0.07, 0.0, 1.0) * 0.18
+        tile[:, :, :3] = mix(tile[:, :, :3], shadow_rgb, np.clip(tone + seam * 0.62, 0.0, 1.0)[:, :, None])
+        tile[:, :, :3] = mix(tile[:, :, :3], highlight_rgb, underlit[:, :, None])
+        # Horizontal grain: the same wrapped noise sampled three rows per row,
+        # so its features are a third as tall as they are wide.
+        grain_field = wrapped_value_noise(TILE_SIZE, 20, overlay["seed"] ^ 0x66A1_0C3D)
+        grain = grain_field[(np.arange(OVERLAY_HEIGHT) * 3) % TILE_SIZE]
+        tile[:, :, :3] *= (0.86 + grain * 0.28)[:, :, None]
+        # Vertical fracture lines: sparse, short, darker, wrapped along U.
+        fracture = wrapped_value_noise(TILE_SIZE, 64, overlay["seed"] ^ 0x19C3_55A1)[0][None, :]
+        fracture_row = wrapped_value_noise(TILE_SIZE, 6, overlay["seed"] ^ 0x4D2B_7F09)[0][None, :]
+        crack = np.clip((fracture - 0.9) / 0.1, 0.0, 1.0) * np.clip(1.0 - np.abs(depth - fracture_row) / 0.22, 0.0, 1.0)
+        tile[:, :, :3] = mix(tile[:, :, :3], shadow_rgb, (crack * 0.5)[:, :, None])
+        # Walls take less sky light than tops, and the foot is occluded where
+        # the wall meets the ground.
+        wall_shade = 1.0 - depth * 0.3
+        foot = np.clip((depth - 0.8) / 0.2, 0.0, 1.0) ** 1.4
+        tile[:, :, :3] *= (wall_shade * (1.0 - foot * 0.46))[:, :, None]
+        # Lit cap: the lip catches the light.
+        cap_rows = float(overlay.get("capRows", 8))
+        cap = np.clip(1.0 - rows / cap_rows, 0.0, 1.0) ** 0.8
+        tile[:, :, :3] = mix(tile[:, :, :3], highlight_rgb, (cap * 0.6)[:, :, None])
+        return Image.fromarray(np.clip(np.round(tile), 0, 255).astype(np.uint8), "RGBA")
 
     if kind == "shoulder":
         # Compacted rut: traffic packs and darkens the first band of the shoulder.

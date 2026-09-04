@@ -51,7 +51,10 @@ export function terrainTileAsset(materialId) {
 // Authored edge strips. These are not runtime materials: they carry no district
 // or surface semantics, they repeat along U only, and they live in their own
 // manifest array so the per-material size and count contracts stay exact.
-export const TERRAIN_OVERLAY_IDS = Object.freeze(['road-shoulder', 'shore-band', 'scree-skirt']);
+// `rock-face` is the opaque wall strip the renderer stretches across a ledge
+// front or cliff face; V clamps so its lit cap and shaded foot land on the
+// lip and the ground whatever the wall's height.
+export const TERRAIN_OVERLAY_IDS = Object.freeze(['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face']);
 
 export function terrainOverlayAsset(overlayId) {
   if (!TERRAIN_OVERLAY_IDS.includes(overlayId)) throw new TypeError(`unknown terrain overlay: ${String(overlayId)}`);

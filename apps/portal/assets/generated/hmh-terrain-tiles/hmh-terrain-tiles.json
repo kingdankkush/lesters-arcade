@@ -385,6 +385,15 @@
     },
     {
       "addressV": "clamp-to-edge",
+      "bytes": 74402,
+      "file": "./rock-face.png",
+      "height": 128,
+      "id": "rock-face",
+      "sha256": "587c237d4cec472d7ffb70d9a3cfadc548f07727dee5faf445a0b9fca65452b0",
+      "width": 512
+    },
+    {
+      "addressV": "clamp-to-edge",
       "bytes": 124808,
       "file": "./scree-skirt.png",
       "height": 128,
@@ -492,6 +501,10 @@
     "road-shoulder": {
       "interiorX": 4.086,
       "wrapX": 3.148
+    },
+    "rock-face": {
+      "interiorX": 1.805,
+      "wrapX": 1.214
     },
     "scree-skirt": {
       "interiorX": 4.003,
