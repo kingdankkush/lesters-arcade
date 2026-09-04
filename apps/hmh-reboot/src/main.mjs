@@ -29,9 +29,11 @@ import { computeEnemyFlowField, createEnemyNavGridChunked, navLineBlocked, sampl
 import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
+  TERRAIN_OVERLAY_IDS,
   createTerrainTileRegistry,
   terrainManifestUrl,
   terrainFringeAsset,
+  terrainOverlayAsset,
   terrainTileAsset,
 } from './terrain-tile-atlas.mjs';
 import {
@@ -685,7 +687,12 @@ async function boot() {
             .load(terrainFringeAsset(materialId).imageUrl)
             .then((texture) => terrainTiles.registerFringe(materialId, texture))
             .catch(() => {}),
-        ]));
+        ]).concat(TERRAIN_OVERLAY_IDS.map((overlayId) => Assets
+          // Edge strips are dressing too: a miss leaves the surface without a
+          // shoulder rather than failing the ground material.
+          .load(terrainOverlayAsset(overlayId).imageUrl)
+          .then((texture) => terrainTiles.registerOverlay(overlayId, texture))
+          .catch(() => {}))));
       })
       .catch((error) => {
         terrainTileLoadError = String(error?.message ?? error);

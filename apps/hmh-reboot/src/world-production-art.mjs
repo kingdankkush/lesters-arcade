@@ -333,6 +333,13 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   const fringeSprites = new ContainerClass();
   fringeSprites.label = 'world-terrain-fringe';
   root.addChildAt(fringeSprites, root.getChildIndex(terrainSprites) + 1);
+  // Authored edge strips: road shoulders, shore bands and scree skirts. They
+  // sit above the ground and its district fringe but BELOW `surfaces`, so a
+  // shore band is covered by the water it borders and only shows on the land
+  // side, and a scree skirt lies under the ledge that shed it.
+  const stripSprites = new ContainerClass();
+  stripSprites.label = 'world-edge-strips';
+  root.addChildAt(stripSprites, root.getChildIndex(fringeSprites) + 1);
   // Water, bridge decks and ledges paint an opaque base into `surfaces`, so
   // their material must sit above that layer or the fill hides it.
   const surfaceSprites = new ContainerClass();
@@ -351,7 +358,7 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   roadMask.label = 'world-road-mask';
   roadSprites.addChild(roadMask);
   root.addChildAt(roadSprites, root.getChildIndex(layers.routes) + 1);
-  return Object.freeze({ root, layers: Object.freeze(layers), terrainSprites, fringeSprites, surfaceSprites, surfaceCues, roadSprites, roadMask, TilingSpriteClass });
+  return Object.freeze({ root, layers: Object.freeze(layers), terrainSprites, fringeSprites, stripSprites, surfaceSprites, surfaceCues, roadSprites, roadMask, TilingSpriteClass });
 }
 
 export function clearWorldProductionLayers(worldProduction) {
@@ -386,25 +393,22 @@ function screenBoundsVisible(points, view, margin) {
     && Math.max(...ys) >= -margin && Math.min(...ys) <= view.height + margin;
 }
 
-function drawRoute(layers, points, route, kit, roadMask = null) {
+function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = false) {
   const zoom = points.zoom;
   const road=layers.routes,cues=layers.details;
   const trace = (layer=road) => {
     layer.moveTo(points[0].x, points[0].y);
     for (const point of points.slice(1)) layer.lineTo(point.x, point.y);
   };
-  // Roads used to be a flat slab between two hard black borders. They are now
-  // built up in passes: a soft shoulder that fades into the ground, a worn
-  // verge, the surface, a lighter centre wear band, and dashed lane marks —
-  // so a route reads as a travelled surface rather than a coloured shape.
-  trace();
-  road.stroke({ color: 0x130f13, width: (route.width + 40) * zoom, alpha: 0.32, cap: 'round', join: 'round' });
-  trace();
-  road.stroke({ color: 0x130f13, width: (route.width + 22) * zoom, alpha: 0.72, cap: 'round', join: 'round' });
-  trace();
-  road.stroke({ color: mixColor(kit.routeColor, 0x000000, 0.34), width: (route.width + 8) * zoom, alpha: 0.9, cap: 'round', join: 'round' });
-  trace();
-  road.stroke({ color: kit.routeColor, width: route.width * zoom, alpha: route.kind === 'main' ? 0.96 : 0.82, cap: 'round', join: 'round' });
+  // Roads used to be a flat slab between two hard black outline strokes and a
+  // dark verge, which read as a map overlay with a border rather than ground.
+  // The outline is gone: the travelled surface is the authored road tile, its
+  // edges are authored shoulder strips that dissolve into the terrain, and the
+  // flat slab survives only where no tile loaded.
+  if (!roadTiled) {
+    trace();
+    road.stroke({ color: kit.routeColor, width: route.width * zoom, alpha: route.kind === 'main' ? 0.96 : 0.82, cap: 'round', join: 'round' });
+  }
   if (roadMask) {
     // Same geometry into the mask, so the tiled surface clips exactly to the
     // travelled width.
@@ -559,7 +563,7 @@ function drawInteraction(graphic, center, kit, zoom, pulse, hazard = false) {
 // One authored tile spans this many world units regardless of the bake
 // resolution (256 x 0.26 from the original tuning). A higher-resolution bake
 // therefore buys texel density at gameplay zoom, not larger features.
-export const TERRAIN_TILE_REPEAT_WORLD = 66.56;
+export const TERRAIN_TILE_REPEAT_WORLD = 399.36;
 
 /**
  * Reuses tiling sprites across frames so terrain costs no per-frame allocation.
@@ -608,6 +612,78 @@ function createTerrainSpritePlacer({ container, terrainTiles, camera, view }) {
   };
 }
 
+// Authored shoulders reach this far outward from each road edge, in world
+// units. Wide enough to read as a verge at gameplay zoom, narrow enough that
+// two routes crossing at a junction do not carpet the ground between them.
+const SHOULDER_WORLD_DEPTH = 34;
+// W-4. A waterline sheds a wide band of wet sand inland; a rock face sheds a
+// narrower skirt of chips, deepened under a tall ledge.
+const SHORE_WORLD_DEPTH = 46;
+const SCREE_WORLD_DEPTH = 30;
+
+/**
+ * Pooled tiling strips laid along an arbitrary screen-space segment.
+ *
+ * Roads, shorelines and cliff skirts all need the same thing: a texture that
+ * runs along an edge and fades outward across its depth. Pixi masks are
+ * stencils and would give back the hard border this replaces, so the falloff
+ * lives in the strip's own alpha and the strip is a rotated TilingSprite.
+ */
+function createStripPlacer({ container, TilingSpriteClass, camera, view, cullMargin = 0 }) {
+  if (!container || typeof TilingSpriteClass !== 'function') return null;
+  let cursor = 0;
+  return {
+    placeStrip(texture, from, to, { depthWorld, sideOffsetWorld = 0, side = 1, repeatWorld = TERRAIN_TILE_REPEAT_WORLD, tileSize = 512, stripHeight = 128, alpha = 1 }) {
+      if (!texture) return null;
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const length = Math.hypot(dx, dy);
+      if (!(length > 1) || !(depthWorld > 0)) return null;
+      const depth = Math.max(1, depthWorld * camera.zoom);
+      const unitX = dx / length;
+      const unitY = dy / length;
+      // Screen-space left normal. The strip's local +y maps to this, so the
+      // texture's opaque row 0 always hugs the edge and its alpha falloff
+      // points outward.
+      const normalX = -unitY;
+      const normalY = unitX;
+      const offset = sideOffsetWorld * camera.zoom;
+      const overlap = depth;
+      const forward = side >= 0;
+      const originX = forward ? from.x + normalX * offset - unitX * overlap : to.x - normalX * offset + unitX * overlap;
+      const originY = forward ? from.y + normalY * offset - unitY * overlap : to.y - normalY * offset + unitY * overlap;
+      const reach = offset + depth;
+      const corners = [
+        { x: from.x + normalX * reach, y: from.y + normalY * reach },
+        { x: to.x + normalX * reach, y: to.y + normalY * reach },
+        { x: from.x - normalX * reach, y: from.y - normalY * reach },
+        { x: to.x - normalX * reach, y: to.y - normalY * reach },
+      ];
+      if (!screenBoundsVisible(corners, view, cullMargin)) return null;
+      let sprite = container.children[cursor] ?? null;
+      if (!sprite) {
+        sprite = new TilingSpriteClass({ texture, width: 1, height: 1 });
+        container.addChild(sprite);
+      }
+      cursor += 1;
+      sprite.visible = true;
+      sprite.texture = texture;
+      sprite.alpha = alpha;
+      sprite.rotation = Math.atan2(unitY, unitX) + (forward ? 0 : Math.PI);
+      sprite.position.set(originX, originY);
+      sprite.width = length + overlap * 2;
+      sprite.height = depth;
+      sprite.tileScale?.set?.((repeatWorld / (tileSize || 512)) * camera.zoom, depth / (stripHeight || 128));
+      return sprite;
+    },
+    finish() {
+      for (let index = cursor; index < container.children.length; index += 1) {
+        container.children[index].visible = false;
+      }
+    },
+  };
+}
+
 export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick, performanceProfile, terrainTiles = null }) {
   if (!worldProduction?.layers || !world || !camera || !view) throw new TypeError('world renderer inputs are required');
   if (typeof queryGround !== 'function' || typeof worldToScreen !== 'function') throw new TypeError('world projection functions are required');
@@ -625,6 +701,27 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   // is just a white stroke on screen.
   if (roadMaskGraphic) roadMaskGraphic.visible = false;
   const roadPlacer = createTerrainSpritePlacer({ container: worldProduction.roadSprites, terrainTiles, camera, view });
+  const roadTiled = Boolean(terrainTiles?.ready && terrainTiles.textureFor?.('road'));
+  const stripPlacer = createStripPlacer({
+    container: worldProduction.stripSprites,
+    TilingSpriteClass: worldProduction.TilingSpriteClass,
+    camera,
+    view,
+    cullMargin: performanceProfile.worldCullMargin,
+  });
+  const overlayTexture = (id) => (terrainTiles?.ready ? terrainTiles.overlayTextureFor?.(id) ?? null : null);
+  const shoulderTexture = overlayTexture('road-shoulder');
+  const shoreTexture = overlayTexture('shore-band');
+  const screeTexture = overlayTexture('scree-skirt');
+  const stripDefaults = { tileSize: terrainTiles?.tileSize ?? 512, stripHeight: terrainTiles?.overlayHeight ?? 128 };
+  // World bounds, so a waterline that runs off the map does not get a beach
+  // along the edge of the world.
+  const worldMinY = Math.min(...world.districts.map((district) => district.area.minY));
+  const worldMaxY = Math.max(...world.districts.map((district) => district.area.maxY));
+  // Bridge decks and their ramps are their own surface material; a gravel
+  // shoulder over a plank deck would read as dirt floating on the bridge.
+  const deckedSurfaces = world.surfaces.filter((surface) => (surface.kind === 'bridge' || surface.kind === 'ramp') && surface.area?.type === 'rect');
+  const overDeck = (x, y) => deckedSurfaces.some((surface) => x >= surface.area.minX && x <= surface.area.maxX && y >= surface.area.minY && y <= surface.area.maxY);
   const districtAt = (x) => world.districts.find((district) => x >= district.area.minX && x <= district.area.maxX) ?? world.districts[0];
   const shaderByDistrict = new Map(world.districts.map((district) => [district.id, resolveWorldShaderState({ tick, districtId: district.id })]));
 
@@ -689,15 +786,33 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   }
 
   for (const route of world.routes) {
-    const routePoints = route.nodeIds.map((id) => {
-      const node = world.routeGraph.nodes.find((candidate) => candidate.id === id);
+    const routeNodes = route.nodeIds.map((id) => world.routeGraph.nodes.find((candidate) => candidate.id === id));
+    const routePoints = routeNodes.map((node) => {
       const ground = queryGround(node.x,node.y);
       return project({x:node.x,y:node.y,z:ground.groundZ});
     });
     routePoints.zoom = camera.zoom;
     if (!screenBoundsVisible(routePoints, view, performanceProfile.worldCullMargin)) continue;
-    const firstNode = world.routeGraph.nodes.find((node) => node.id === route.nodeIds[0]);
-    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], roadMaskGraphic);
+    const firstNode = routeNodes[0];
+    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], roadMaskGraphic, roadTiled);
+    if (!stripPlacer || !shoulderTexture) continue;
+    // Both verges of every segment. The strip's inner edge sits just inside the
+    // travelled width so the surface tile covers the join.
+    for (let index = 1; index < routePoints.length; index += 1) {
+      const midX = (routeNodes[index - 1].x + routeNodes[index].x) / 2;
+      const midY = (routeNodes[index - 1].y + routeNodes[index].y) / 2;
+      if (overDeck(midX, midY)) continue;
+      for (const side of [1, -1]) {
+        stripPlacer.placeStrip(shoulderTexture, routePoints[index - 1], routePoints[index], {
+          depthWorld: SHOULDER_WORLD_DEPTH,
+          sideOffsetWorld: route.width / 2 - 6,
+          side,
+          tileSize: terrainTiles.tileSize,
+          stripHeight: terrainTiles.overlayHeight,
+          alpha: route.kind === 'main' ? 0.95 : 0.82,
+        });
+      }
+    }
   }
 
   for (const surface of world.surfaces) {
@@ -716,9 +831,13 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       const shadow = points.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
       tracePolygon(layers.surfaces, shadow).fill({ color: 0x03070b, alpha: 0.42 });
     }
+    // W-4: once a waterline carries an authored wet-sand band the bright hairline
+    // outline is what made it read as a map overlay, so it drops to a hint.
+    // Raised surfaces keep theirs: that stroke is the elevation cue.
+    const bandedShore = isWater && Boolean(shoreTexture) && surface.kind === 'water';
     tracePolygon(layers.surfaces,points)
       .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
-      .stroke({color:surfaceBase.strokeColor,width:isRaised?4:3,alpha:isWater?0.8:0.9});
+      .stroke({color:surfaceBase.strokeColor,width:isRaised?4:bandedShore?2:3,alpha:isWater?(bandedShore?0.3:0.8):0.9});
     // Authored material over the flat base for rectangular surfaces; the base
     // colour remains visible for non-rect shapes and when tiles are absent.
     const surfaceMaterial = SURFACE_TERRAIN_MATERIAL[surface.kind];
@@ -728,6 +847,37 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       const minY = Math.min(...points.map((point) => point.y));
       const maxY = Math.max(...points.map((point) => point.y));
       surfacePlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha);
+    }
+    if (surface.kind === 'water' && shoreTexture && stripPlacer && surface.area.type === 'rect' && points.length >= 4) {
+      // W-4: authored wet sand and a broken foam line on the land side of every
+      // waterline, so a river stops ending at a drawn rectangle. Row 0 of the
+      // strip is the waterline itself and the band fades inland; the opaque
+      // water fill above covers whatever laps back over the surface.
+      const edges = [
+        { from: 0, to: 1, worldY: surface.area.minY },
+        { from: 1, to: 2, worldY: null },
+        { from: 2, to: 3, worldY: surface.area.maxY },
+        { from: 3, to: 0, worldY: null },
+      ];
+      for (const edge of edges) {
+        if (edge.worldY !== null && (edge.worldY <= worldMinY || edge.worldY >= worldMaxY)) continue;
+        stripPlacer.placeStrip(shoreTexture, points[edge.from], points[edge.to], {
+          ...stripDefaults,
+          depthWorld: SHORE_WORLD_DEPTH,
+          side: -1,
+          alpha: 0.94,
+        });
+      }
+    }
+    if (isRaised && surface.kind === 'ledge' && screeTexture && stripPlacer && points.length >= 4) {
+      // W-4: the debris a ledge front sheds onto the ground below it, deeper
+      // under a taller deck.
+      stripPlacer.placeStrip(screeTexture, points[2], points[3], {
+        ...stripDefaults,
+        depthWorld: SCREE_WORLD_DEPTH + Math.min(28, (surface.groundZ ?? 0) * 0.32),
+        side: -1,
+        alpha: 0.9,
+      });
     }
     if (isWater) {
       // Shoreline foam: the single clearest "this is water, do not stand here"
@@ -798,6 +948,19 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const anchors = shape.type === 'circle' ? [{ x: shape.x, y: shape.y }] : shape.type === 'capsule' ? [shape.a, shape.b] : shape.vertices;
     const points = anchors.map((point) => project({ ...point, z: 0 }));
     if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
+    if (feature.visualKind === 'cliff' && shape.type === 'capsule' && screeTexture && stripPlacer) {
+      // W-4: rock faces shed chips down both flanks, so a cliff meets the
+      // ground instead of being a capsule laid on top of it.
+      for (const side of [1, -1]) {
+        stripPlacer.placeStrip(screeTexture, points[0], points[1], {
+          ...stripDefaults,
+          depthWorld: SCREE_WORLD_DEPTH,
+          sideOffsetWorld: shape.radius,
+          side,
+          alpha: 0.88,
+        });
+      }
+    }
     const layer = feature.id.startsWith('town-') ? layers.townBlockers : layers.blockers;
     drawBlocker(layer, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
   }
@@ -852,6 +1015,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   }
   tilePlacer?.finish();
   surfacePlacer?.finish();
+  stripPlacer?.finish();
   if (roadPlacer && roadMaskGraphic) {
     const roadSprite = roadPlacer.place('road', 0, 0, view.width, view.height, 0.96);
     if (roadSprite) {

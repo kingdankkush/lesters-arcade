@@ -30,8 +30,15 @@ test('T4 road variants are deterministic source recipes with distinct palettes',
 
 test('T4 renderer keeps pooled shoulders, travelled surface, and centre-line decals', async () => {
   const source = await readFile(rendererUrl, 'utf8');
-  assert.match(source, /route\.width \+ 40/, 'road needs a broad gravel shoulder');
-  assert.match(source, /route\.width \+ 22/, 'road needs an inner edge/verge');
+  // Cycle 072 W-3: the shoulder and verge used to be two 0x130f13 strokes at
+  // route.width + 40 / + 22, which read as a hard black border around a flat
+  // ribbon. They are now authored strip textures placed along both sides of
+  // every segment, so a road meets the ground instead of being outlined.
+  assert.doesNotMatch(source, /0x130f13/, 'roads must not be outlined in black');
+  assert.doesNotMatch(source, /route\.width \+ 40/);
+  assert.doesNotMatch(source, /route\.width \+ 22/);
+  assert.match(source, /'road-shoulder'/, 'road needs an authored gravel shoulder strip');
+  assert.match(source, /SHOULDER_WORLD_DEPTH/, 'the shoulder must have an authored world depth');
   assert.match(source, /roadPlacer\.place\('road'/, 'variants must remain in the one pooled road tile');
   assert.match(source, /const DASH = 46/);
   assert.match(source, /const GAP = 40/);

@@ -11,7 +11,7 @@
  * `level-one-world.mjs`; this module only decides what a surface looks like.
  */
 
-export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v2';
+export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v3';
 export const TERRAIN_TILE_SIZE = 512;
 
 const TILE_ROOT = '../assets/generated/hmh-terrain-tiles';
@@ -48,6 +48,19 @@ export function terrainTileAsset(materialId) {
   });
 }
 
+// Authored edge strips. These are not runtime materials: they carry no district
+// or surface semantics, they repeat along U only, and they live in their own
+// manifest array so the per-material size and count contracts stay exact.
+export const TERRAIN_OVERLAY_IDS = Object.freeze(['road-shoulder', 'shore-band', 'scree-skirt']);
+
+export function terrainOverlayAsset(overlayId) {
+  if (!TERRAIN_OVERLAY_IDS.includes(overlayId)) throw new TypeError(`unknown terrain overlay: ${String(overlayId)}`);
+  return Object.freeze({
+    overlayId,
+    imageUrl: `${TILE_ROOT}/${overlayId}.png`,
+  });
+}
+
 export function terrainFringeAsset(materialId) {
   if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);
   return Object.freeze({
@@ -72,10 +85,16 @@ export function validateTerrainManifest(manifest) {
   for (const required of TERRAIN_MATERIAL_IDS) {
     if (!ids.has(required)) throw new TypeError(`terrain manifest is missing ${required}`);
   }
+  const overlayIds = new Set((manifest.overlays ?? []).map((entry) => entry.id));
+  for (const required of TERRAIN_OVERLAY_IDS) {
+    if (!overlayIds.has(required)) throw new TypeError(`terrain manifest is missing ${required}`);
+  }
   return Object.freeze({
     tileSize: manifest.tileSize ?? TERRAIN_TILE_SIZE,
     fringeHeight: manifest.fringeHeight ?? 128,
+    overlayHeight: manifest.overlayHeight ?? 128,
     materialIds: Object.freeze([...ids].sort()),
+    overlayIds: Object.freeze([...overlayIds].sort()),
     seamlessVerified: Boolean(manifest.seamlessVerified),
   });
 }
@@ -90,6 +109,7 @@ export function validateTerrainManifest(manifest) {
 export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
   const textures = new Map();
   const fringeTextures = new Map();
+  const overlayTextures = new Map();
   const failed = new Set();
   let manifest = null;
 
@@ -113,6 +133,9 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
     get fringeHeight() {
       return manifest?.fringeHeight ?? 128;
     },
+    get overlayHeight() {
+      return manifest?.overlayHeight ?? 128;
+    },
     register(materialId, texture) {
       if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);
       if (!texture?.source) throw new TypeError('terrain tile texture source is required');
@@ -128,6 +151,11 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
         source.style.update?.();
       }
       source.addressMode = 'repeat';
+      // Mipmaps: one 512 tile is drawn far smaller than 512 screen px, so the
+      // GPU point-samples one texel out of every few and the baked detail
+      // collapses into salt-and-pepper aliasing that reads as a repeating
+      // grid. Prefiltered levels turn that back into a smooth surface.
+      source.autoGenerateMipmaps = true;
       source.update?.();
       textures.set(materialId, texture);
       failed.delete(materialId);
@@ -145,12 +173,33 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
         source.style.addressModeV = 'clamp-to-edge';
         source.style.update?.();
       }
+      source.autoGenerateMipmaps = true;
       source.update?.();
       fringeTextures.set(materialId, texture);
       return texture;
     },
     fringeTextureFor(materialId) {
       return fringeTextures.get(materialId) ?? null;
+    },
+    registerOverlay(overlayId, texture) {
+      if (!TERRAIN_OVERLAY_IDS.includes(overlayId)) throw new TypeError(`unknown terrain overlay: ${String(overlayId)}`);
+      if (!texture?.source) throw new TypeError('terrain overlay texture source is required');
+      // A strip repeats along its edge (U) and clamps across its depth (V), so
+      // the opaque inner edge always faces the surface it borders.
+      const source = texture.source;
+      if (source.style) {
+        source.style.addressMode = 'repeat';
+        source.style.addressModeU = 'repeat';
+        source.style.addressModeV = 'clamp-to-edge';
+        source.style.update?.();
+      }
+      source.autoGenerateMipmaps = true;
+      source.update?.();
+      overlayTextures.set(overlayId, texture);
+      return texture;
+    },
+    overlayTextureFor(overlayId) {
+      return overlayTextures.get(overlayId) ?? null;
     },
     markFailed(materialId) {
       failed.add(materialId);
