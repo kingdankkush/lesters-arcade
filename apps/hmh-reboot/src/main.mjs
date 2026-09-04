@@ -170,6 +170,7 @@ import {
   createAuthoredPropAtlasIndex,
   createAuthoredPropDisplay,
 } from './authored-prop-atlas.mjs';
+import { CONTACT_SHADOW_BASE_ALPHA, createContactShadowPool, createContactShadowTextures } from './contact-shadows.mjs';
 import {
   LEVEL_ONE_WORLD,
   buildLevelOneMinimapGeometry,
@@ -427,6 +428,23 @@ async function boot() {
   // needs to read.
   const worldDecalLayer = new Graphics();
   worldDecalLayer.label = 'world-decals';
+  // W-14: one shared ground-contact layer directly above the decals. Every
+  // body without a baked shadow of its own gets a pooled blob here, so props
+  // and enemies stop reading as stickers on the floor. Baking the blob texture
+  // needs the renderer, and art must never be able to break a run, so a
+  // failure degrades to no shadows rather than an exception.
+  let contactShadowPool = null;
+  try {
+    contactShadowPool = createContactShadowPool({
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      textures: createContactShadowTextures({ renderer: app.renderer, GraphicsClass: Graphics }),
+    });
+  } catch (error) {
+    contactShadowPool = null;
+    console.warn('[HMH] contact shadows disabled', error);
+  }
+  const groundShadowLayer = contactShadowPool?.container ?? new Container();
   const authoredPropLayer = new Container();
   authoredPropLayer.label = 'authored-prop-layer';
   authoredPropLayer.sortableChildren = true;
@@ -513,7 +531,7 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, bossLabel, minimap);
 
 
@@ -732,6 +750,10 @@ async function boot() {
           scale: 1,
         });
         bossVisual.rosterScale = BOSS_ROSTER_RUNTIME_SCALE;
+        // Projection-only footprint tag for the shared ground shadow. The
+        // authored boss sprite carries no baked shadow the way the vector
+        // fallback and the hero atlas do.
+        bossVisual.contactShadowFootprint = 56;
         bossVisual.visible = wasVisible;
         world.addChildAt(bossVisual, slot);
       }
@@ -759,6 +781,11 @@ async function boot() {
       // The render pass multiplies by camera zoom, so carry the authored
       // runtime scale rather than baking it into the container.
       display.rosterScale = ENEMY_ROSTER_RUNTIME_SCALE;
+      // Projection-only footprint tag. Roster sprites are a single body layer
+      // with no baked shadow, so they take one from the shared ground pool.
+      // The vector fallback below already draws its own and must stay untagged
+      // or it would sit on two.
+      display.contactShadowFootprint = ENEMY_ARCHETYPES[archetypeId]?.radius ?? 20;
       return display;
     }
     requestEnemyRosterAtlas(archetypeId);
@@ -769,6 +796,14 @@ async function boot() {
       GraphicsClass: Graphics,
     });
   };
+
+  // The authored roster pivot sits at the body's mass centre, not at the feet:
+  // an idle liquidator-agent frame is 79 px tall with anchor.y 0.443, so 44 px
+  // of sprite hangs below the projected ground point. A shadow drawn at that
+  // point lands on the chest. Push it down to the sprite's foot line so the
+  // contact reads where the body actually meets the ground.
+  const contactShadowFootY = (display, pose, screenY, zoom) =>
+    screenY + (pose?.frame?.h ?? 0) * (1 - (pose?.anchor?.y ?? 1)) * (display.rosterScale ?? 1) * zoom;
 
   const createEnemyMarker = (enemy) => createRosterOrVectorDisplay(enemy.archetypeId, isEliteEnemyProjection(enemy.id));
 
@@ -1217,6 +1252,7 @@ async function boot() {
     backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 });
     clearWorldProductionLayers(worldProduction);
     worldDecalLayer.clear();
+    contactShadowPool?.begin();
     grid.clear();
     collisionDebug.clear();
     projectileTrails.clear();
@@ -1252,6 +1288,7 @@ async function boot() {
         cullMargin: performanceProfile.worldCullMargin ?? 220,
         hiddenPlacementIds: hiddenAuthoredPropIds,
         reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+        contactShadows: contactShadowPool,
       });
       if (releaseTelemetryEnabled || debugGridEnabled) {
         dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
@@ -1301,7 +1338,7 @@ async function boot() {
           const facingState = enemyVisualFacing.get(enemy.id) ?? { direction: 0 };
           enemyVisualFacing.set(enemy.id, facingState);
           const enemyDirection = resolveEnemyVisualDirection(facingState, enemy.velocity);
-          enemyMarker.applyPose({
+          const enemyPose = enemyMarker.applyPose({
             state: resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
             tick: simulation?.tick ?? 0,
             direction: enemyDirection,
@@ -1316,6 +1353,15 @@ async function boot() {
           enemyMarker.alpha = 1;
           // Depth: an enemy standing further south must draw in front.
           enemyMarker.zIndex = enemyScreen.y;
+          // Ground contact. Placed inside the animated-marker branch so the
+          // shadow count can never exceed the bodies actually drawn.
+          if (enemyMarker.contactShadowFootprint) {
+            contactShadowPool?.place({
+              x: enemyScreen.x,
+              y: contactShadowFootY(enemyMarker, enemyPose, enemyScreen.y, camera.zoom),
+              footprintPx: enemyMarker.contactShadowFootprint * camera.zoom,
+            });
+          }
           const healthRatio = Math.max(0, Math.min(1, enemy.health / enemy.maxHealth));
           enemyHealthPips.push({ screen: enemyScreen, ratio: healthRatio, radius: enemy.radius, color: archetype.visual.color });
         }
@@ -1374,19 +1420,28 @@ async function boot() {
         const deathScreen = worldToScreen({ x: death.x, y: death.y, z: death.groundZ }, camera, view);
         death.graphic.visible = isScreenPointVisible(deathScreen, view, performanceProfile.enemyCullMargin);
         if (!death.graphic.visible) continue;
-        death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: death.direction, elite: death.elite });
+        const deathPose = death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: death.direction, elite: death.elite });
         death.graphic.position.set(deathScreen.x, deathScreen.y);
         death.graphic.scale.set((death.graphic.rosterScale ?? 1) * camera.zoom);
         // Fade the corpse out instead of hard-deleting it mid-frame.
         const deathProgress = Math.max(0, Math.min(1, ((simulation?.tick ?? death.startTick) - death.startTick) / Math.max(1, death.endTick - death.startTick)));
         death.graphic.alpha = 1 - deathProgress * deathProgress;
+        // The corpse and its shadow fade together.
+        if (death.graphic.contactShadowFootprint) {
+          contactShadowPool?.place({
+            x: deathScreen.x,
+            y: contactShadowFootY(death.graphic, deathPose, deathScreen.y, camera.zoom),
+            footprintPx: death.graphic.contactShadowFootprint * camera.zoom,
+            alpha: CONTACT_SHADOW_BASE_ALPHA * death.graphic.alpha,
+          });
+        }
       }
       const bossVisualTick = simulation?.tick ?? 0;
       if (bossVisualTick >= liquidatorBoss?.startTick - 600) requestEnemyRosterAtlas('the-liquidator');
     if (bossVisualTick >= liquidatorBoss?.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
         const bossPhaseTick = lastBossStep?.elapsedTick ?? 45;
-        bossVisual.applyPose({
+        const bossPose = bossVisual.applyPose({
           state: !liquidatorBoss.active ? 'death' : bossVisualTick <= bossHitVisualUntilTick ? 'hit' : liquidatorBoss.pendingAttacks.length > 0 ? 'tell' : 'idle',
           tick: bossVisualTick,
           direction: 0,
@@ -1398,6 +1453,14 @@ async function boot() {
         bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + (bossPhaseTick < 2_445 && Math.max(0, 45 - (bossPhaseTick % 1_200)) / 250)));
         // Boss health reads from the dedicated bar, never from transparency.
         bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
+        if (bossVisual.contactShadowFootprint) {
+          contactShadowPool?.place({
+            x: bossScreen.x,
+            y: contactShadowFootY(bossVisual, bossPose, bossScreen.y, camera.zoom),
+            footprintPx: bossVisual.contactShadowFootprint * camera.zoom,
+            alpha: CONTACT_SHADOW_BASE_ALPHA * bossVisual.alpha,
+          });
+        }
         const projectBossTelegraph = (point) => worldToScreen(point, camera, view);
         for (const pending of liquidatorBoss.pendingAttacks) {
           const telegraphReport = renderLiquidatorTelegraph({
@@ -1466,7 +1529,20 @@ async function boot() {
         const grenadeGround = worldToScreen({ x: grenade.position.x, y: grenade.position.y, z: ground.groundZ }, camera, view);
         const grenadeScreen = worldToScreen(grenade.position, camera, view);
         const fuseRatio = Math.max(0, Math.min(1, (grenade.detonateTick - (simulation?.tick ?? 0)) / 39));
-        grenadeVisuals.ellipse(grenadeGround.x, grenadeGround.y, 9, 4).fill({ color: 0x000000, alpha: 0.35 });
+        // A thrown grenade is the one thing in the run that is genuinely
+        // airborne, so its shadow stays pinned to the ground point and softens
+        // with height instead of tracking the projectile.
+        if (contactShadowPool) {
+          contactShadowPool.place({
+            x: grenadeGround.x,
+            y: grenadeGround.y,
+            footprintPx: 9 * camera.zoom,
+            lift: Math.max(0, grenade.position.z - ground.groundZ),
+            alpha: 0.35,
+          });
+        } else {
+          grenadeVisuals.ellipse(grenadeGround.x, grenadeGround.y, 9, 4).fill({ color: 0x000000, alpha: 0.35 });
+        }
         grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, grenade.mode === 'launcher' ? 7 : 6)
           .fill({ color: grenade.mode === 'launcher' ? WEAPON_COLORS['launcher-rig'] : 0xffd166, alpha: 0.98 })
           .stroke({ color: 0xffffff, width: 2, alpha: 0.9 });
@@ -1949,6 +2025,8 @@ async function boot() {
         dataset.performanceProfile = performanceProfile.id;
         dataset.renderResolution = String(performanceProfile.resolution);
         dataset.animatedEnemies = String(animatedEnemyCount);
+        dataset.contactShadows = String(contactShadowPool?.count ?? 0);
+        dataset.contactShadowsDropped = String(contactShadowPool?.dropped ?? 0);
         const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
         const audioSnapshot = combatAudio.status();
         dataset.runScore = String(runSnapshot?.score ?? 0);
@@ -2086,6 +2164,9 @@ async function boot() {
       actorVisual.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
     }
+    // Outside the camera branch: a frame with no camera claims nothing, so
+    // every pooled shadow is hidden rather than left over from the last frame.
+    contactShadowPool?.finish();
   };
 
   const stopCurrentSession = () => {

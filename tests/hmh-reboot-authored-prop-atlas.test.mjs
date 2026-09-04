@@ -195,6 +195,61 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
   assert.equal(reduced.animatedSignalOnscreenCount, 0);
 });
 
+test('authored props hand every visible placement a ground contact shadow', async () => {
+  const index = createAuthoredPropAtlasIndex(await loadMetadata());
+  const placements = Object.freeze([
+    ...buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: 7, countPerDistrict: 1 }),
+    ...buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' }),
+    ...buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
+  ]);
+  const before = JSON.stringify(placements);
+  const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
+  const calls = [];
+  const report = display.render({
+    camera: { zoom: 1 },
+    view: { width: 12_000, height: 4_800 },
+    worldToScreen: (point) => ({ x: point.x, y: point.y - point.z }),
+    queryGround: () => ({ groundZ: 0 }),
+    tick: 42,
+    contactShadows: { place(args) { calls.push(args); } },
+  });
+  assert.equal(calls.length, report.visibleCount, 'every drawn prop needs a shadow, and nothing culled gets one');
+  assert.ok(calls.every((call) => Number.isFinite(call.x) && Number.isFinite(call.y) && Number.isFinite(call.footprintPx)));
+  assert.ok(calls.every((call) => call.footprintPx > 0));
+  const byId = new Map(display.entries.map((entry) => [entry.placement.id, entry]));
+  for (const call of calls) {
+    const entry = byId.get(call.placementId);
+    assert.ok(entry, `shadow placement ${call.placementId} must map back to a real entry`);
+    const spriteWidth = entry.frame.frame.w * entry.frame.runtimeScale * (entry.placement.scale ?? 1);
+    // A tall silhouette stands on a narrow base, so the footprint is the
+    // sprite width tapered by its aspect.
+    const taper = Math.min(1, Math.max(0.42, entry.frame.frame.w / entry.frame.frame.h));
+    assert.ok(Math.abs(call.footprintPx - spriteWidth * 0.5 * taper) < 1e-9, 'footprint must taper with sprite aspect');
+    assert.ok(call.footprintPx <= spriteWidth * 0.5 + 1e-9, 'a shadow never spreads wider than the sprite that casts it');
+    assert.equal(call.ao, call.footprintPx * 2 >= 96, 'only wide bases earn an ambient occlusion pool');
+    if (entry.placement.category === 'pickup') {
+      assert.ok(call.lift > 0, 'a bobbing pickup lifts off its own shadow');
+      // The shadow stays pinned to the ground point while the sprite bobs.
+      assert.equal(call.y, entry.placement.y);
+    } else {
+      assert.equal(call.lift, 0);
+    }
+  }
+  assert.ok(calls.some((call) => call.ao === true), 'the landmark set contains wide bases');
+  assert.ok(calls.some((call) => call.ao === false), 'small crates must not get an AO ring');
+  assert.equal(JSON.stringify(placements), before, 'shadow projection cannot mutate deterministic placements');
+
+  const withoutShadows = display.render({
+    camera: { zoom: 1 },
+    view: { width: 12_000, height: 4_800 },
+    worldToScreen: (point) => ({ x: point.x, y: point.y - point.z }),
+    queryGround: () => ({ groundZ: 0 }),
+    tick: 42,
+  });
+  assert.deepEqual(Object.keys(withoutShadows), Object.keys(report), 'the report shape must not change');
+  assert.equal(withoutShadows.visibleCount, report.visibleCount);
+});
+
 test('runtime wires reduced motion and animated landmark telemetry into the renderer', async () => {
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /GraphicsClass: Graphics/);

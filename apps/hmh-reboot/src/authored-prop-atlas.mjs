@@ -453,7 +453,7 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
     return true;
   };
 
-  const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160, hiddenPlacementIds = null, reduceMotion = false } = {}) => {
+  const render = ({ camera, view, worldToScreen, queryGround, tick = 0, cullMargin = 160, hiddenPlacementIds = null, reduceMotion = false, contactShadows = null } = {}) => {
     effects.clear();
     let visibleCount = 0;
     const visibleByCategory = {};
@@ -492,6 +492,28 @@ export function createAuthoredPropDisplay({ index, atlasTexture, placements, Con
       entry.sprite.scale.set(spriteScale);
       entry.sprite.alpha = 1;
       entry.sprite.zIndex = screen.y;
+      if (contactShadows) {
+        // The shadow belongs to the ground point, not the sprite: a bobbing
+        // pickup rises off a shadow that stays where it will land.
+        const groundScreen = pickupBob
+          ? worldToScreen({ x: entry.placement.x, y: entry.placement.y, z: ground.groundZ }, camera, view)
+          : screen;
+        const spriteWidth = entry.frame.frame.w * spriteScale;
+        // A tall prop stands on a base much narrower than its sprite: a relay
+        // mast is 100 px wide at the top and a few px wide where it meets the
+        // ground. Sprite aspect is the footprint signal the atlas actually
+        // carries, so lean silhouettes get a lean shadow.
+        const footprintPx = spriteWidth * 0.5 * Math.min(1, Math.max(0.42, entry.frame.frame.w / entry.frame.frame.h));
+        contactShadows.place({
+          placementId: entry.placement.id,
+          x: groundScreen.x,
+          y: groundScreen.y,
+          footprintPx,
+          lift: pickupBob,
+          // A wide base sits in a pool of occlusion; a crate does not.
+          ao: footprintPx * 2 >= 96,
+        });
+      }
       const signal = resolveAuthoredLandmarkSignal({ placement: entry.placement, tick, reduceMotion });
       if (signal) {
         const signalX = screen.x;
