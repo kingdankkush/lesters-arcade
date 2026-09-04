@@ -409,24 +409,80 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   .hmh-reboot-status-card { top: 8px; left: 8px; max-width: min(282px, calc(100% - 98px)); padding: 9px 10px; border-radius: 12px; }
   .hmh-command-button { min-height: 27px; padding: 4px 7px; font-size: 0.58rem; }
   .hmh-adapter-status { display: none; }
-  .hmh-run-rail { top: 136px; width: calc(100% - 16px); padding: 4px; border-radius: 12px; }
-  .hmh-run-stat { padding: 4px 5px; }
-  .hmh-run-stat span { font-size: 0.5rem; }
-  .hmh-run-stat--wide span { white-space: nowrap; }
-  .hmh-reboot-dash-status { min-width: 0; padding-inline: 4px; font-size: 0.52rem; }
-  /* Phone portrait: vitals and the weapon card each take their own full-width
-     band so the health bar and the ammo readout stay legible at 100 percent. */
-  .hmh-hud-pilot { flex: 1 1 100%; gap: 8px; padding: 1px 0 4px; border-right: 0; border-bottom: 1px solid rgba(143,243,255,0.14); }
-  .hmh-hud-crest { width: 30px; height: 30px; border-radius: 9px; font-size: 0.62rem; }
-  .hmh-hud-health { flex: 1 1 auto; min-width: 0; }
-  .hmh-hud-weapon { flex: 1 1 100%; min-width: 0; padding: 1px 0 4px; border-right: 0; border-bottom: 1px solid rgba(143,243,255,0.14); }
-  .hmh-hud-ring { width: 36px; height: 36px; }
-  .hmh-hud-ring-core { width: 27px; height: 27px; }
-  .hmh-hud-arsenal { flex: 1 1 100%; padding: 2px 0; border-right: 0; }
-  .hmh-hud-slots b { min-width: 26px; height: 19px; padding: 0 3px; font-size: 0.44rem; }
-  .hmh-hud-utility { flex: 1 1 100%; gap: 8px; justify-content: space-between; padding-left: 0; }
-  .hmh-hud-powerups { flex: 1 1 100%; margin-left: 0; }
-  .hmh-profile-panel { top: 172px; left: 8px; width: min(280px, calc(100% - 16px)); }
+  /* Phone-portrait cockpit. The bar used to stack six full-width bands and ate
+     256px — roughly a third of a 390x844 viewport — which buried the player
+     and the play area behind it. It is now four compact lines docked directly
+     under the command chip:
+       1  crest · health readout · health bar
+       2  score · level · combo · kills · XP
+       3  weapon ring · name · ammo pips · ammo counts
+       4  arsenal strip · frag pips · dash readout
+     Every pinned id stays in the DOM and on screen. Only two decorative
+     captions are dropped: "Vitality", which the coloured bar already says, and
+     "Q cycles", a keyboard affordance a phone does not have (SWAP is the touch
+     equivalent). `top` clears the command chip, whose bottom edge is 60px, so
+     certification's status/rail overlap assertion still measures zero. */
+  .hmh-run-rail { top: 66px; width: calc(100% - 16px); gap: 3px; padding: 4px 5px; border-radius: 12px; }
+  .hmh-hud-row { gap: 3px; }
+  .hmh-run-stat { min-width: 0; padding: 0 5px; }
+  .hmh-run-stat span { font-size: 0.48rem; letter-spacing: 0.06em; }
+  .hmh-run-stat strong { font-size: 0.76rem; }
+  .hmh-run-combo { min-width: 0; }
+  #hmhRunComboLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hmh-run-combo[data-tier="surge"] strong,
+  .hmh-run-combo[data-tier="overload"] strong,
+  .hmh-run-combo[data-tier="legend"] strong { font-size: 0.86rem; }
+  /* XP keeps both numbers but the meter becomes a hairline beside them. */
+  .hmh-run-stat--wide { display: flex; flex: 1 1 92px; gap: 5px; align-items: center; min-width: 84px; padding-right: 0; }
+  .hmh-run-stat--wide span { flex: 0 0 auto; white-space: nowrap; }
+  .hmh-xp-track { flex: 1 1 auto; height: 3px; }
+  .hmh-reboot-dash-status { min-width: 0; padding: 3px 5px; font-size: 0.46rem; letter-spacing: 0.04em; }
+  /* Line 1 — vitals read across instead of stacking. */
+  .hmh-hud-pilot { flex: 1 1 100%; gap: 6px; padding: 0; border-right: 0; }
+  .hmh-hud-crest { width: 22px; height: 22px; border-radius: 7px; font-size: 0.5rem; }
+  .hmh-hud-health { display: flex; flex: 1 1 auto; gap: 6px; align-items: center; min-width: 0; }
+  .hmh-hud-health-head { flex: 0 0 auto; gap: 0; }
+  .hmh-hud-health-head span { display: none; }
+  .hmh-hud-health-head strong { font-size: 0.72rem; }
+  .hmh-hud-health-track { flex: 1 1 auto; height: 8px; }
+  /* Line 3 — the weapon card reads across instead of down. */
+  .hmh-hud-weapon { flex: 1 1 100%; gap: 6px; min-width: 0; padding: 0; border-right: 0; }
+  .hmh-hud-ring { width: 26px; height: 26px; }
+  .hmh-hud-ring-core { width: 20px; height: 20px; }
+  .hmh-hud-ring-core::after { font-size: 0.36rem; }
+  .hmh-hud-weapon-body { display: flex; gap: 6px; align-items: center; min-width: 0; }
+  /* min-width:0 lets the longest weapon name ellipsize instead of pushing the
+     ammo counts out of the card and over the reload/cooling state label. */
+  #hmhHudWeaponName { flex: 0 1 auto; min-width: 0; font-size: 0.62rem; }
+  .hmh-hud-pips--ammo { flex: 0 1 auto; flex-wrap: nowrap; gap: 2px; }
+  .hmh-hud-pips--ammo b { width: 4px; height: 10px; }
+  .hmh-hud-weapon[data-mode="cells"] .hmh-hud-pips--ammo b { width: 9px; }
+  .hmh-hud-ammo-bar { flex: 1 1 30px; min-width: 30px; height: 8px; }
+  .hmh-hud-ammo-line { flex: 0 0 auto; margin-left: auto; }
+  #hmhHudAmmoText { font-size: 0.72rem; }
+  #hmhHudAmmoCap,
+  #hmhHudReserve { font-size: 0.5rem; }
+  #hmhHudReserve { margin-left: 4px; }
+  .hmh-hud-weapon-state { font-size: 0.44rem; }
+  /* Line 4 — the arsenal strip and the utility cluster share one row. */
+  .hmh-hud-arsenal { flex: 1 1 auto; gap: 0; justify-items: start; padding: 0; border-right: 0; }
+  .hmh-hud-slots { gap: 3px; }
+  .hmh-hud-slots b { min-width: 22px; height: 15px; padding: 0 2px; border-radius: 4px; font-size: 0.4rem; }
+  .hmh-hud-slots b[data-key]::after { top: -4px; right: -2px; min-width: 10px; font-size: 0.34rem; line-height: 10px; }
+  .hmh-hud-slots-cycle { display: none; }
+  .hmh-hud-utility { flex: 0 0 auto; gap: 6px; padding-left: 0; }
+  .hmh-hud-frag { gap: 2px; }
+  .hmh-hud-utility-label { font-size: 0.44rem; }
+  .hmh-hud-utility-label b { font-size: 0.6rem; }
+  .hmh-hud-pips--frag { gap: 2px; }
+  .hmh-hud-pips--frag b { width: 6px; height: 9px; }
+  .hmh-hud-powerups { flex: 0 0 auto; gap: 3px; margin-left: 0; }
+  .hmh-hud-powerups b { padding: 2px 6px; font-size: 0.46rem; }
+  .hmh-boss-bar { gap: 3px; margin-top: 0; padding: 4px 9px; }
+  .hmh-boss-head strong { font-size: 0.6rem; }
+  .hmh-boss-phase { font-size: 0.5rem; }
+  .hmh-boss-track { height: 8px; }
+  .hmh-profile-panel { top: 196px; left: 8px; width: min(280px, calc(100% - 16px)); }
   .hmh-modal-layer { padding: 10px; }
   .hmh-menu-panel {
     display: flex;
@@ -488,40 +544,76 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   /* Landscape phones: the command chip owns the top-left and the minimap the
      top-right, so the cockpit lives in the band between them. The right edge
      stays clear of the minimap exclusion zone (viewport - 140 - 22). */
+  /* Landscape phones get the same compaction as portrait, tuned to a 456px
+     band: vitals and every run stat on one line, then the weapon card beside
+     the arsenal strip with the utility cluster wrapping under them. Two lines
+     of ~24px and ~48px instead of the four-band stack that reached 144px on a
+     390px-tall viewport. */
   .hmh-run-rail {
     top: 8px;
     left: 210px;
     width: min(456px, calc(100% - 388px));
-    gap: 3px;
+    gap: 2px;
     padding: 3px;
     border-radius: 11px;
     transform: none;
   }
-  .hmh-run-stat { min-width: 0; padding: 3px 5px; }
-  .hmh-run-stat span { font-size: 0.48rem; }
+  .hmh-hud-row { gap: 2px; }
+  .hmh-run-stat { min-width: 0; padding: 0 5px; }
+  .hmh-run-stat span { font-size: 0.48rem; letter-spacing: 0.06em; }
   .hmh-run-stat strong { font-size: 0.76rem; }
-  .hmh-reboot-dash-status { min-width: 0; padding: 3px 4px; font-size: 0.48rem; }
-  .hmh-hud-pilot { gap: 6px; padding: 1px 7px 1px 1px; }
-  .hmh-hud-crest { width: 26px; height: 26px; border-radius: 8px; font-size: 0.55rem; }
-  .hmh-hud-health { min-width: 96px; gap: 2px; }
+  .hmh-run-combo { min-width: 0; }
+  #hmhRunComboLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hmh-run-combo[data-tier="surge"] strong,
+  .hmh-run-combo[data-tier="overload"] strong,
+  .hmh-run-combo[data-tier="legend"] strong { font-size: 0.86rem; }
+  .hmh-run-stat--wide { display: flex; flex: 1 1 88px; gap: 5px; align-items: center; min-width: 82px; padding-right: 0; }
+  .hmh-run-stat--wide span { flex: 0 0 auto; white-space: nowrap; }
+  .hmh-xp-track { flex: 1 1 auto; height: 3px; }
+  .hmh-reboot-dash-status { min-width: 0; padding: 3px 5px; font-size: 0.46rem; letter-spacing: 0.04em; }
+  .hmh-hud-pilot { flex: 1 1 auto; gap: 6px; padding: 0 7px 0 0; }
+  .hmh-hud-crest { width: 22px; height: 22px; border-radius: 7px; font-size: 0.5rem; }
+  .hmh-hud-health { display: flex; flex: 1 1 auto; gap: 5px; align-items: center; min-width: 96px; }
+  .hmh-hud-health-head { flex: 0 0 auto; gap: 0; }
+  .hmh-hud-health-head span { display: none; }
   .hmh-hud-health-head strong { font-size: 0.72rem; }
-  .hmh-hud-health-track { height: 9px; }
-  .hmh-hud-weapon { flex: 1 1 100%; min-width: 0; gap: 6px; padding: 1px 6px 1px 1px; border-right: 0; }
-  .hmh-hud-ring { width: 30px; height: 30px; }
-  .hmh-hud-ring-core { width: 23px; height: 23px; }
-  .hmh-hud-ring-core::after { font-size: 0.38rem; }
-  #hmhHudWeaponName { font-size: 0.66rem; }
-  #hmhHudAmmoText { font-size: 0.74rem; }
-  .hmh-hud-pips--ammo b { width: 5px; height: 10px; }
-  .hmh-hud-arsenal { padding: 1px 6px; }
-  .hmh-hud-slots b { min-width: 22px; height: 16px; padding: 0 2px; font-size: 0.4rem; }
-  .hmh-hud-slots b[data-key]::after { top: -4px; font-size: 0.36rem; line-height: 10px; }
+  .hmh-hud-health-track { flex: 1 1 auto; height: 7px; }
+  /* The weapon card keeps the full band: at 448px it still holds the longest
+     name, a 1,200-unit fuel bar and a cooling state label without collision,
+     and the arsenal strip plus the utility cluster fit the row underneath. */
+  .hmh-hud-weapon { flex: 1 1 100%; min-width: 0; gap: 6px; padding: 0 6px 0 0; border-right: 0; }
+  .hmh-hud-ring { width: 26px; height: 26px; }
+  .hmh-hud-ring-core { width: 20px; height: 20px; }
+  .hmh-hud-ring-core::after { font-size: 0.36rem; }
+  .hmh-hud-weapon-body { display: flex; gap: 6px; align-items: center; min-width: 0; }
+  #hmhHudWeaponName { flex: 0 1 auto; min-width: 0; font-size: 0.62rem; }
+  #hmhHudAmmoText { font-size: 0.72rem; }
+  #hmhHudAmmoCap,
+  #hmhHudReserve { font-size: 0.5rem; }
+  #hmhHudReserve { margin-left: 4px; }
+  .hmh-hud-weapon-state { font-size: 0.44rem; }
+  .hmh-hud-pips--ammo { flex: 0 1 auto; flex-wrap: nowrap; gap: 2px; }
+  .hmh-hud-pips--ammo b { width: 4px; height: 10px; }
+  .hmh-hud-weapon[data-mode="cells"] .hmh-hud-pips--ammo b { width: 9px; }
+  .hmh-hud-ammo-bar { flex: 1 1 30px; min-width: 30px; height: 8px; }
+  .hmh-hud-ammo-line { flex: 0 0 auto; margin-left: auto; }
+  .hmh-hud-arsenal { flex: 0 1 auto; gap: 0; justify-items: start; padding: 0 6px; }
+  .hmh-hud-slots { gap: 3px; }
+  .hmh-hud-slots b { min-width: 22px; height: 15px; padding: 0 2px; border-radius: 4px; font-size: 0.4rem; }
+  .hmh-hud-slots b[data-key]::after { top: -4px; right: -2px; min-width: 10px; font-size: 0.34rem; line-height: 10px; }
   .hmh-hud-slots-cycle { display: none; }
-  .hmh-hud-utility { gap: 7px; padding-left: 0; }
-  .hmh-hud-pips--frag b { width: 7px; height: 10px; }
-  .hmh-hud-powerups b { padding: 3px 6px; font-size: 0.48rem; }
-  .hmh-boss-bar { padding: 5px 9px; }
-  .hmh-boss-track { height: 9px; }
+  .hmh-hud-utility { flex: 0 0 auto; gap: 6px; padding-left: 0; }
+  .hmh-hud-frag { gap: 2px; }
+  .hmh-hud-utility-label { font-size: 0.44rem; }
+  .hmh-hud-utility-label b { font-size: 0.6rem; }
+  .hmh-hud-pips--frag { gap: 2px; }
+  .hmh-hud-pips--frag b { width: 6px; height: 9px; }
+  .hmh-hud-powerups { flex: 0 0 auto; gap: 3px; margin-left: 0; }
+  .hmh-hud-powerups b { padding: 2px 6px; font-size: 0.46rem; }
+  .hmh-boss-bar { gap: 3px; margin-top: 0; padding: 4px 9px; }
+  .hmh-boss-head strong { font-size: 0.6rem; }
+  .hmh-boss-phase { font-size: 0.5rem; }
+  .hmh-boss-track { height: 8px; }
 }
 
 @media (max-width: 700px) and (max-height: 520px) and (orientation: landscape) {
