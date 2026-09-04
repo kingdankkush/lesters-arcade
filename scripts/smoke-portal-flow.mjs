@@ -87,7 +87,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-aaa-cycle-072-visual-facelift`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-aaa-cycle-073-feel-and-world`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
@@ -106,7 +106,7 @@ try {
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
-    'hmh-aaa-cycle-072-visual-facelift',
+    'hmh-aaa-cycle-073-feel-and-world',
   ]) {
     assertIncludes('portal html', html, marker);
   }
