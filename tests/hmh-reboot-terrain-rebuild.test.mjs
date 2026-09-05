@@ -49,7 +49,9 @@ test('W-1 records a verifiable digest for every baked file', async () => {
 
 test('W-3/W-4 bake authored edge strips as overlays, not base materials', async () => {
   const manifest = await readManifest();
-  assert.deepEqual(TERRAIN_OVERLAY_IDS, ['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face']);
+  // W-4 (Cycle 074): the ford's submerged slope joins the shoulder, shore,
+  // scree and face strips.
+  assert.deepEqual(TERRAIN_OVERLAY_IDS, ['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face', 'shallows-band']);
   for (const id of TERRAIN_OVERLAY_IDS) {
     const strip = manifest.overlays.find((entry) => entry.id === id);
     assert.ok(strip, `${id} must be baked`);
@@ -79,7 +81,7 @@ test('W-1 registry exposes overlays with strip addressing and stays inert until 
 test('W-1 manifest validation carries the overlay contract to the runtime', async () => {
   const manifest = await readManifest();
   const validated = validateTerrainManifest(manifest);
-  assert.deepEqual(validated.overlayIds, ['road-shoulder', 'rock-face', 'scree-skirt', 'shore-band']);
+  assert.deepEqual(validated.overlayIds, ['road-shoulder', 'rock-face', 'scree-skirt', 'shallows-band', 'shore-band']);
   assert.equal(validated.overlayHeight, manifest.overlayHeight);
   assert.ok(validated.overlayHeight >= 64);
   assert.throws(() => validateTerrainManifest({ ...manifest, overlays: [] }), /missing road-shoulder/);

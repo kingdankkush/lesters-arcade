@@ -403,6 +403,15 @@
     },
     {
       "addressV": "clamp-to-edge",
+      "bytes": 86913,
+      "file": "./shallows-band.png",
+      "height": 128,
+      "id": "shallows-band",
+      "sha256": "c1934d41d43d806d5d4c9b7d089b5acbb6d1d8f04ed1986fb752e82695a197f1",
+      "width": 512
+    },
+    {
+      "addressV": "clamp-to-edge",
       "bytes": 110914,
       "file": "./shore-band.png",
       "height": 128,
@@ -515,6 +524,10 @@
       "interiorY": 1.374,
       "wrapX": 1.135,
       "wrapY": 1.104
+    },
+    "shallows-band": {
+      "interiorX": 1.089,
+      "wrapX": 0.714
     },
     "shore-band": {
       "interiorX": 3.414,

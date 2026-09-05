@@ -53,23 +53,64 @@ const DISTRICTS = Object.freeze([
   Object.freeze({ id: 'liquidation-yard', minX: 10_000, maxX: 12_000, propIds: ['cargo-container', 'liquidation-terminal', 'wrecked-sedan', 'fuel-drum', 'ruined-wall', 'warning-beacon', 'cargo-container', 'chain-fence', 'thorn-bramble', 'scrub-bush', 'scree-pile'], countOverride: 12 }),
 ]);
 
+// W-6 (Cycle 074): composed set-pieces. Each district landmark is an anchor
+// plus 4-7 satellites laid INSIDE the 300-unit breathing ring (the ring is
+// dressing-free, not landmark-free). On the Cycle 073 layout five anchors
+// stood on a route or inside a blocker (the relay tower 20 units from the
+// player spawn) and the six fixed +-350 offsets put every satellite outside
+// the ring. Anchors follow LEVEL_ONE_WORLD.landmarks where that ground is
+// open: ravine, mining and yard match the contract; the relay tower stands
+// as a backdrop north of the spawn (the contract anchor empties the opening
+// frame), the crossing truss marks the east bridgehead (the contract anchor
+// is the bridge deck), and the hashwood beacon keeps its north-shoulder spot
+// (the contract anchor is the clearing arena). propIds is the satellite
+// order; the composer walks even angular slots in this order.
 const DISTRICT_LANDMARKS = Object.freeze([
-  Object.freeze({ id: 'frontier-relay', x: 780, y: 2_400, setpieceId:'relay-tower-setpiece', propIds: ['relay-console', 'salvage-crate', 'fuel-drum'] }),
-  Object.freeze({ id: 'rugpull-ravine', x: 3_050, y: 1_500, setpieceId:'forked-spire-setpiece', propIds: ['rugpull-barricade', 'salvage-crate', 'warning-beacon'] }),
-  Object.freeze({ id: 'liquidity-crossing', x: 4_700, y: 2_400, setpieceId:'proof-bridge-setpiece', propIds: ['proof-pylon', 'bridge-bollard'] }),
-  Object.freeze({ id: 'hashwood', x: 7_000, y: 900, setpieceId:'hashwood-beacon-setpiece', propIds: ['hashwood-stump', 'crystal-cluster'] }),
-  Object.freeze({ id: 'mining-camp', x: 9_200, y: 1_600, setpieceId:'mining-headframe-setpiece', propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster'] }),
-  Object.freeze({ id: 'liquidation-yard', x: 11_000, y: 800, setpieceId:'liquidation-tower-setpiece', propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon'] }),
+  // 150 north of the spawn: the tower looms directly behind the hero in the
+  // opening frame (its base 300 px into a 900 px view). Any closer and the
+  // anchor would sit inside the route's 48-unit margin.
+  Object.freeze({ id: 'frontier-relay', x: 800, y: 2_250, setpieceId: 'relay-tower-setpiece', propIds: ['relay-console', 'fuel-drum', 'watch-platform', 'salvage-crate', 'sandbag-nest', 'relay-console'] }),
+  Object.freeze({ id: 'rugpull-ravine', x: 3_100, y: 1_250, setpieceId: 'forked-spire-setpiece', propIds: ['rugpull-barricade', 'warning-beacon', 'rock-spire', 'scree-pile', 'warning-beacon'] }),
+  Object.freeze({ id: 'liquidity-crossing', x: 5_150, y: 2_150, setpieceId: 'proof-bridge-setpiece', propIds: ['proof-pylon', 'bridge-bollard', 'dock-post', 'handrail-post', 'bridge-warning-sign', 'stacked-crates', 'proof-pylon'] }),
+  Object.freeze({ id: 'hashwood', x: 7_000, y: 900, setpieceId: 'hashwood-beacon-setpiece', propIds: ['hashwood-stump', 'crystal-cluster', 'moss-boulder', 'fern-cluster', 'crystal-cluster'] }),
+  Object.freeze({ id: 'mining-camp', x: 9_250, y: 1_250, setpieceId: 'mining-headframe-setpiece', propIds: ['ore-cart', 'loader-barrel', 'crystal-cluster', 'ore-vein-rock', 'scrap-barricade', 'crystal-cluster'] }),
+  Object.freeze({ id: 'liquidation-yard', x: 11_100, y: 1_250, setpieceId: 'liquidation-tower-setpiece', propIds: ['liquidation-terminal', 'fuel-drum', 'warning-beacon', 'cargo-container', 'chain-fence', 'fuel-drum'] }),
 ]);
-const LANDMARK_OFFSETS = Object.freeze([
-  Object.freeze({ x: -350, y: -350, scale: 1.6 }),
-  Object.freeze({ x: 350, y: 350, scale: 1.4 }),
-  Object.freeze({ x: -350, y: 350, scale: 1.8 }),
-  Object.freeze({ x: 350, y: -350, scale: 1.5 }),
-  Object.freeze({ x: -420, y: -260, scale: 1.9 }),
-  Object.freeze({ x: 420, y: 260, scale: 1.4 }),
+// The anchors alone, for the build-time decal bake (one ground ring each).
+export const AUTHORED_SETPIECE_ANCHORS = freezeDeep(DISTRICT_LANDMARKS.map(({ id, x, y }) => ({ id, x, y })));
+// Count lock shared by the display tests: 6 anchors + 35 satellites.
+export const AUTHORED_LANDMARK_TOTAL = DISTRICT_LANDMARKS.reduce((sum, district) => sum + 1 + district.propIds.length, 0);
+// Satellite band inside the ring, angular jitter per slot, and the keyed
+// re-sample budget before the deterministic sweep. Satellites are scaled up
+// (hero props) so their bases are wider than dressing: they keep a full
+// player radius off a road edge instead of the dressing clearance.
+const SETPIECE_REACH_MIN = 110;
+const SETPIECE_REACH_SPAN = 150;
+const SETPIECE_ANGLE_JITTER = 0.35;
+const SETPIECE_ATTEMPTS = 24;
+const SETPIECE_ROUTE_MARGIN = 48;
+const SETPIECE_SCALES = Object.freeze([1.6, 1.4, 1.8, 1.5, 1.9, 1.4, 1.7]);
 
+// W-10 (Cycle 074): roofless enclosures. A fence or wall yard with one
+// authored entrance, wrapped around a blocker the world contract already
+// has so one side of the illusion is backed by real collision. Dressing
+// only: the pieces carry no collision and the player can walk the fence
+// line. The display cannot rotate a sprite, so the north-south runs are
+// posts at a tight pitch rather than rotated fence panels. The entrance is
+// centred between two removed run pieces and flanked by two tall gateposts
+// so the 55-degree camera reads the opening.
+export const AUTHORED_ENCLOSURES = freezeDeep([
+  { id: 'yard:relay-depot', districtId: 'frontier-relay', wraps: 'relay-depot-shed', minX: 1_380, minY: 3_585, maxX: 1_720, maxY: 3_815, pieceId: 'chain-fence', postId: 'handrail-post', gateId: 'watch-platform', entrance: { side: 'west', at: 3_700, width: 110 } },
+  { id: 'yard:crossing-fuel', districtId: 'liquidity-crossing', wraps: 'crossing-fuel-tanks', minX: 5_225, minY: 3_255, maxX: 5_655, maxY: 3_525, pieceId: 'chain-fence', postId: 'dock-post', gateId: 'streetlamp', entrance: { side: 'north', at: 5_440, width: 120 } },
+  { id: 'yard:mining-shack', districtId: 'mining-camp', wraps: 'mining-shack-row', minX: 8_640, minY: 3_625, maxX: 9_160, maxY: 3_805, pieceId: 'ruined-wall', postId: 'handrail-post', gateId: 'watch-platform', entrance: { side: 'north', at: 9_004, width: 110 } },
 ]);
+// Wall pitch is the on-screen sprite width at zoom 1 (frame w x runtimeScale),
+// so a run reads continuous; posts sit closer than their height.
+const ENCLOSURE_PITCH = Object.freeze({ 'chain-fence': 92, 'ruined-wall': 112 });
+const ENCLOSURE_POST_PITCH = 72;
+// Dressing keeps this far off the whole yard rect.
+const ENCLOSURE_MARGIN = 40;
+const enclosureBlocked = (x, y) => AUTHORED_ENCLOSURES.some((yard) => x >= yard.minX - ENCLOSURE_MARGIN && x <= yard.maxX + ENCLOSURE_MARGIN && y >= yard.minY - ENCLOSURE_MARGIN && y <= yard.maxY + ENCLOSURE_MARGIN);
 const LANDMARK_SIGNAL_KITS = Object.freeze({
   'relay-console': Object.freeze({ id: 'relay-scan', color: 0x5cffe2, periodTicks: 96, radiusScale: 0.3 }),
   'proof-pylon': Object.freeze({ id: 'proof-pulse', color: 0x8feaff, periodTicks: 72, radiusScale: 0.26 }),
@@ -284,16 +325,17 @@ export const AUTHORED_TOWN_EXCLUSIONS = freezeDeep([
 ]);
 const TOWN_RING = 80;
 
-function placementBlocked(x, y, { landmarkRing = LANDMARK_RING, camps = AUTHORED_CAMP_KIT } = {}) {
+function placementBlocked(x, y, { landmarkRing = LANDMARK_RING, camps = AUTHORED_CAMP_KIT, routeMargin = PLACEMENT_CLEARANCE } = {}) {
   for (const [townX, townY] of AUTHORED_TOWN_EXCLUSIONS) {
     if (Math.hypot(x - townX, y - townY) < TOWN_RING) return true;
   }
   if (x < 40 || x > LEVEL_ONE_WORLD.bounds.maxX - 40 || y < 40 || y > LEVEL_ONE_WORLD.bounds.maxY - 40) return true;
+  if (enclosureBlocked(x, y)) return true;
   for (const blocker of LEVEL_ONE_WORLD.collisionBlockers) {
     if (shapeClearance(blocker.shape, x, y) < PLACEMENT_CLEARANCE) return true;
   }
   for (const segment of ROUTE_SEGMENTS) {
-    if (segmentDistance(x, y, segment.ax, segment.ay, segment.bx, segment.by) - segment.halfWidth < PLACEMENT_CLEARANCE) return true;
+    if (segmentDistance(x, y, segment.ax, segment.ay, segment.bx, segment.by) - segment.halfWidth < routeMargin) return true;
   }
   if (DEEP_WATER.some((area) => inArea(area, x, y)) && !SHALLOWS.some((area) => inArea(area, x, y))) return true;
   for (const arena of LEVEL_ONE_WORLD.encounterArenas) {
@@ -499,21 +541,86 @@ export function buildAuthoredDistrictLandmarkPlacements({ worldId } = {}) {
   if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored landmark world ${String(worldId)}`);
   const placements = [];
   for (const district of DISTRICT_LANDMARKS) {
-    placements.push(freezeDeep({ id:`landmark:${district.id}:setpiece`, assetId:district.setpieceId, category:'district-landmark', districtId:district.id, x:district.x, y:district.y, scale:1, mobileOnly:false, anchorDistance:0, runtimeAuthority:'projection-only' }));
-    for (let index = 0; index < LANDMARK_OFFSETS.length; index += 1) {
-      const offset = LANDMARK_OFFSETS[index];
-      placements.push(freezeDeep({
+    placements.push(freezeDeep({ id: `landmark:${district.id}:setpiece`, assetId: district.setpieceId, category: 'district-landmark', districtId: district.id, x: district.x, y: district.y, scale: 1, mobileOnly: false, anchorDistance: 0, runtimeAuthority: 'projection-only' }));
+    const placed = [];
+    district.propIds.forEach((assetId, index) => {
+      // Even angular slots with keyed jitter from the world constant, then
+      // the same deterministic sweep the dressing generator uses, so the
+      // count lock never depends on luck. The anchor's own ring is not an
+      // exclusion here (it is the composition), everything else is.
+      const slot = (index / district.propIds.length) * Math.PI * 2;
+      const open = (x, y) => !placementBlocked(x, y, { landmarkRing: 0, routeMargin: SETPIECE_ROUTE_MARGIN }) && !tooClose(placed, x, y, BASE_SEPARATION);
+      let x = district.x;
+      let y = district.y;
+      let ok = false;
+      for (let attempt = 0; attempt < SETPIECE_ATTEMPTS && !ok; attempt += 1) {
+        const key = `landmark:${district.id}:${index}:${attempt}`;
+        const angle = slot + (seededUnit(AUTHORED_DRESSING_SEED, `${key}:angle`) * 2 - 1) * SETPIECE_ANGLE_JITTER;
+        const reach = SETPIECE_REACH_MIN + seededUnit(AUTHORED_DRESSING_SEED, `${key}:radius`) * SETPIECE_REACH_SPAN;
+        x = Number((district.x + Math.cos(angle) * reach).toFixed(3));
+        y = Number((district.y + Math.sin(angle) * reach).toFixed(3));
+        ok = open(x, y);
+      }
+      for (let step = 0; step < 360 && !ok; step += 1) {
+        const angle = slot + (step % 36) * (Math.PI / 18);
+        const reach = SETPIECE_REACH_MIN + Math.floor(step / 36) * 15;
+        x = Number((district.x + Math.cos(angle) * reach).toFixed(3));
+        y = Number((district.y + Math.sin(angle) * reach).toFixed(3));
+        ok = open(x, y);
+      }
+      if (!ok) throw new RangeError(`no open ground for landmark:${district.id}:${index}`);
+      const placement = freezeDeep({
         id: `landmark:${district.id}:${String(index).padStart(2, '0')}`,
-        assetId: district.propIds[index % district.propIds.length],
+        assetId,
         category: 'district-landmark',
         districtId: district.id,
-        x: district.x + offset.x,
-        y: district.y + offset.y,
-        scale: offset.scale,
-        mobileOnly: offset.mobileOnly === true,
-        anchorDistance: Number(Math.hypot(offset.x, offset.y).toFixed(3)),
+        x,
+        y,
+        scale: SETPIECE_SCALES[index % SETPIECE_SCALES.length],
+        mobileOnly: false,
+        anchorDistance: Number(Math.hypot(x - district.x, y - district.y).toFixed(3)),
         runtimeAuthority: 'projection-only',
-      }));
+      });
+      placements.push(placement);
+      placed.push(placement);
+    });
+  }
+  return Object.freeze(placements);
+}
+
+export function buildAuthoredEnclosurePlacements({ worldId } = {}) {
+  if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored enclosure world ${String(worldId)}`);
+  const placements = [];
+  for (const yard of AUTHORED_ENCLOSURES) {
+    const { entrance } = yard;
+    let index = 0;
+    const push = (assetId, role, x, y) => {
+      placements.push(freezeDeep({ id: `${yard.id}:${String(index).padStart(2, '0')}`, assetId, enclosureId: yard.id, role, category: 'enclosure', districtId: yard.districtId, x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), runtimeAuthority: 'projection-only' }));
+      index += 1;
+    };
+    // [side, assetId, role, pitch, fixed coordinate, from, to, horizontal]
+    const runs = [
+      ['north', yard.pieceId, 'wall', ENCLOSURE_PITCH[yard.pieceId], yard.minY, yard.minX, yard.maxX, true],
+      ['south', yard.pieceId, 'wall', ENCLOSURE_PITCH[yard.pieceId], yard.maxY, yard.minX, yard.maxX, true],
+      ['west', yard.postId, 'post', ENCLOSURE_POST_PITCH, yard.minX, yard.minY, yard.maxY, false],
+      ['east', yard.postId, 'post', ENCLOSURE_POST_PITCH, yard.maxX, yard.minY, yard.maxY, false],
+    ];
+    for (const [side, assetId, role, pitch, fixed, from, to, horizontal] of runs) {
+      const count = Math.ceil((to - from) / pitch);
+      for (let step = 0; step <= count; step += 1) {
+        // Corners belong to the wall runs; the post runs skip them.
+        if (!horizontal && (step === 0 || step === count)) continue;
+        const along = from + ((to - from) * step) / count;
+        // The entrance clears its own width plus room for the gateposts.
+        if (side === entrance.side && Math.abs(along - entrance.at) < entrance.width / 2 + 30) continue;
+        push(assetId, role, horizontal ? along : fixed, horizontal ? fixed : along);
+      }
+    }
+    const horizontal = entrance.side === 'north' || entrance.side === 'south';
+    const edge = { north: yard.minY, south: yard.maxY, west: yard.minX, east: yard.maxX }[entrance.side];
+    for (const sign of [-1, 1]) {
+      const along = entrance.at + sign * (entrance.width / 2 + 8);
+      push(yard.gateId, 'gatepost', horizontal ? along : edge, horizontal ? edge : along);
     }
   }
   return Object.freeze(placements);

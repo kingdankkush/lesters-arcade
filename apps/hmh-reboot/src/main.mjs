@@ -185,6 +185,7 @@ import {
   AUTHORED_PROP_ATLAS_METADATA_URL,
   buildAuthoredDistrictLandmarkPlacements,
   buildAuthoredEncampmentPlacements,
+  buildAuthoredEnclosurePlacements,
   buildAuthoredPointOfInterestPlacements,
   buildAuthoredTownPlacements,
   buildAuthoredWorldPropPlacements,
@@ -603,6 +604,8 @@ async function boot() {
     // W3: encampments ring the encounter arenas so enemies come from
     // somewhere. Projection-only, like every other authored placement.
     ...buildAuthoredEncampmentPlacements({ worldId: LEVEL_ONE_WORLD.id }),
+    // W-10: roofless fence yards with an authored entrance. Dressing only.
+    ...buildAuthoredEnclosurePlacements({ worldId: LEVEL_ONE_WORLD.id }),
     ...authoredPointOfInterestPlacements,
   ]);
   let authoredPropDisplay = null;
@@ -979,11 +982,15 @@ async function boot() {
   const weaponPilotEnabled = evidenceSafeEnabled && (runtimeParams.get('weaponPilot') === '1' || lightningLedgerPilotEnabled || bearMarketBurnerPilotEnabled || forkedStandardPilotEnabled);
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
-    ravine: Object.freeze({ x: 3_050, y: 1_500 }),
+    // W-6 (Cycle 074): the ravine and mining set-pieces now stand on the
+    // contract landmarks north of the route, so these two cameras step north
+    // to keep the spire and the headframe in frame below the HUD while the
+    // ledge fronts stay in the bottom of the view.
+    ravine: Object.freeze({ x: 3_050, y: 1_350 }),
     bridge: Object.freeze({ x: 4_700, y: 2_400 }),
     hazard: Object.freeze({ x: 3_500, y: 3_100 }),
     hashwood: Object.freeze({ x: 7_000, y: 900 }),
-    mining: Object.freeze({ x: 9_200, y: 1_600 }),
+    mining: Object.freeze({ x: 9_200, y: 1_420 }),
     yard: Object.freeze({ x: 11_000, y: 800 }),
     // P5: the A1-A7 waves added 29 props that no pinned scene could see, so
     // the regression gate was not watching them. These two tours put the camp
@@ -994,6 +1001,10 @@ async function boot() {
     // yard-south are offscreen for all twelve pinned scenes).
     'camp-relay-north': Object.freeze({ x: 1_550, y: 620 }),
     'camp-yard-south': Object.freeze({ x: 11_500, y: 3_700 }),
+    // W-10: the two fence yards no pinned window sees (the fuel yard is on
+    // the collectible-crossing-fuel-depot tour).
+    'yard-relay-depot': Object.freeze({ x: 1_550, y: 3_700 }),
+    'yard-mining-shack': Object.freeze({ x: 8_900, y: 3_715 }),
     ...Object.fromEntries(authoredPointOfInterestPlacements.map((placement) => [
       `collectible-${placement.pointOfInterestId}`,
       Object.freeze({ x: placement.x, y: placement.y }),

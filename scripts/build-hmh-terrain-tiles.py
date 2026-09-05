@@ -702,6 +702,20 @@ OVERLAYS = {
         # line, the beds alternate tone, and the whole set undulates along U.
         "strata": 4, "strataWobble": 0.32, "capRows": 8,
     },
+    # W-4 (Cycle 074): the deep-to-shallow slope inside a ford. Row 0 is the
+    # deep-water boundary and the band dissolves into the shallow bed by about
+    # 70 percent of its depth. No foam crest and no wet sand: this edge is
+    # mid-river, not a shoreline. Baked in the shallow-water palette so the
+    # bed shows through where the band thins.
+    "shallows-band": {
+        "seed": 239, "base": "#1c5d74", "shadow": "#0d3546", "highlight": "#3f8fa4", "profile": "ford",
+        "accent": "#4fa2b5", "accentAmount": 0.1, "octaves": [(12, 1.0), (24, 0.5), (48, 0.28)],
+        "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 22, "grain": 0.08, "specular": 0.1,
+        "macroAmount": 0.3,
+        # No pebbles under water: scatter reads as a gravel bar.
+        "scatter": [],
+        "deepColour": "#0b3d52", "rippleColour": "#5fb3c6",
+    },
 }
 
 
@@ -733,10 +747,11 @@ def bake_overlay(name: str, overlay: dict) -> Image.Image:
     shaped by its own profile, with a ragged alpha falloff outward.
 
     U repeats along the edge; V clamps, so the strip always presents its opaque
-    inner edge to the surface it borders and dissolves into the ground. Four
+    inner edge to the surface it borders and dissolves into the ground. Five
     profiles: `shoulder` (packed rut beside a road), `shore` (foam and wet sand
     at a waterline), `scree` (chips thinning away from a cliff or ledge front),
-    `face` (an opaque wall: lit cap, horizontal strata, shaded foot).
+    `face` (an opaque wall: lit cap, horizontal strata, shaded foot), `ford`
+    (the submerged deep-to-shallow slope inside a crossing, no crest).
     """
     tile = np.asarray(bake_surface(overlay), dtype=np.float64)[:OVERLAY_HEIGHT].copy()
     rows = np.arange(OVERLAY_HEIGHT, dtype=np.float64)[:, None]
@@ -788,7 +803,23 @@ def bake_overlay(name: str, overlay: dict) -> Image.Image:
         tile[:, :, :3] = mix(tile[:, :, :3], highlight_rgb, (cap * 0.6)[:, :, None])
         return Image.fromarray(np.clip(np.round(tile), 0, 255).astype(np.uint8), "RGBA")
 
-    if kind == "shoulder":
+    if kind == "ford":
+        # W-4 (Cycle 074). A submerged slope, not a beach: the boundary rows
+        # sink to the deep-water tone, the band dissolves into the shallow bed
+        # by ~70% of its depth, and three faint wrapped ripple lines cross it.
+        # No foam crest: this edge is mid-river.
+        deep = np.array(hex_rgb(overlay["deepColour"]), dtype=np.float64)
+        ripple_rgb = np.array(hex_rgb(overlay["rippleColour"]), dtype=np.float64)
+        sink = np.clip(1.0 - depth / 0.6, 0.0, 1.0) ** 1.1
+        tile[:, :, :3] = mix(tile[:, :, :3], deep, (sink * 0.8)[:, :, None])
+        ripple_phase = wrapped_value_noise(TILE_SIZE, 16, overlay["seed"] ^ 0x3C9A_11F7)[0][None, :]
+        for line in (0.16, 0.34, 0.5):
+            centre = line + (ripple_phase - 0.5) * 0.08
+            band = np.clip(1.0 - np.abs(depth - centre) / 0.018, 0.0, 1.0)
+            tile[:, :, :3] = mix(tile[:, :, :3], ripple_rgb, (band * 0.22)[:, :, None])
+        edge = (0.08 + profile * 0.14) * OVERLAY_HEIGHT
+        falloff = 0.7
+    elif kind == "shoulder":
         # Compacted rut: traffic packs and darkens the first band of the shoulder.
         rut = float(overlay.get("rutDepth", 0.16)) * OVERLAY_HEIGHT
         packed = np.clip(1.0 - rows / max(1.0, rut), 0.0, 1.0) ** 1.4

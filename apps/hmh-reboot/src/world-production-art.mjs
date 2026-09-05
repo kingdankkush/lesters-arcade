@@ -365,6 +365,13 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   const rampMasks = new ContainerClass();
   rampMasks.label = 'world-ramp-masks';
   root.addChildAt(rampMasks, root.getChildIndex(rampSprites) + 1);
+  // W-4 (Cycle 074): strips that must show OVER water (the ford's submerged
+  // slope). `stripSprites` sits below `surfaces` by design, so a band there is
+  // covered by the water it dresses; this pool sits above the opaque water
+  // tiles and below the cues.
+  const waterStripSprites = new ContainerClass();
+  waterStripSprites.label = 'world-water-strips';
+  root.addChildAt(waterStripSprites, root.getChildIndex(rampMasks) + 1);
   // W-5: a cliff's rock face paints over the body drawn into `blockers`.
   const blockerFaceSprites = new ContainerClass();
   blockerFaceSprites.label = 'world-blocker-faces';
@@ -387,6 +394,7 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
     surfaceFaceSprites,
     rampSprites,
     rampMasks,
+    waterStripSprites,
     blockerFaceSprites,
     surfaceCues,
     roadSprites,
@@ -967,6 +975,9 @@ const SHOULDER_WORLD_DEPTH = 34;
 // narrower skirt of chips, deepened under a tall ledge.
 const SHORE_WORLD_DEPTH = 46;
 const SCREE_WORLD_DEPTH = 30;
+// W-4 (Cycle 074): the ford's deep-to-shallow slope reaches this far into the
+// shallows from each mid-river boundary.
+const SHALLOWS_WORLD_DEPTH = 56;
 
 /**
  * Pooled tiling strips laid along an arbitrary screen-space segment.
@@ -1067,6 +1078,14 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   const shoreTexture = overlayTexture('shore-band');
   const screeTexture = overlayTexture('scree-skirt');
   const faceTexture = overlayTexture('rock-face');
+  const shallowsTexture = overlayTexture('shallows-band');
+  const waterStripPlacer = createStripPlacer({
+    container: worldProduction.waterStripSprites ?? null,
+    TilingSpriteClass: worldProduction.TilingSpriteClass,
+    camera,
+    view,
+    cullMargin: performanceProfile.worldCullMargin,
+  });
   const stripDefaults = { tileSize: terrainTiles?.tileSize ?? 512, stripHeight: terrainTiles?.overlayHeight ?? 128 };
   // W-11 / W-5: ramps tile through their own masked pool; ledge fronts, ramp
   // flanks and cliff walls are strips in containers above the layer each one
@@ -1222,10 +1241,16 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     // Raised surfaces and ramps keep a thin one: with the wall drawn under the
     // lip, the old 4 px outline only made the top read as an outlined panel.
     const bandedShore = isWater && Boolean(shoreTexture) && surface.kind === 'water';
+    // W-4 (Cycle 074): a ford's long edges are deep-to-shallow transitions in
+    // the middle of the river, not shorelines. No foam crest, no lit
+    // shoreline, no mid-channel depth band; the authored slope carries the
+    // edge and the base outline drops to a hint under it.
+    const ford = surface.kind === 'shallow-water';
+    const fordBanded = ford && Boolean(shallowsTexture);
     const outlined = isRaised || isRamp;
     tracePolygon(layers.surfaces,points)
       .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
-      .stroke({color:surfaceBase.strokeColor,width:outlined?2:bandedShore?2:3,alpha:isWater?(bandedShore?0.3:0.8):outlined?0.55:0.9});
+      .stroke({color:surfaceBase.strokeColor,width:outlined||bandedShore||fordBanded?2:3,alpha:fordBanded?0.2:isWater?(bandedShore?0.3:0.8):outlined?0.55:0.9});
     if (face) {
       drawRaisedFace({
         layers,
@@ -1283,6 +1308,22 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
         });
       }
     }
+    if (fordBanded && waterStripPlacer && surface.area.type === 'rect' && points.length >= 4) {
+      // The band lies INSIDE the shallows on its two long edges: opaque deep
+      // tone on the boundary (side 1 points into the rect) dissolving into the
+      // shallow bed, stopping exactly at the bank corners where the river's
+      // own shore strips take over. Nothing is drawn in the deep channel.
+      for (const [from, to, worldY] of [[0, 1, surface.area.minY], [2, 3, surface.area.maxY]]) {
+        if (worldY <= worldMinY || worldY >= worldMaxY) continue;
+        waterStripPlacer.placeStrip(shallowsTexture, points[from], points[to], {
+          ...stripDefaults,
+          depthWorld: SHALLOWS_WORLD_DEPTH,
+          side: 1,
+          overlapWorld: 0,
+          alpha: 0.9,
+        });
+      }
+    }
     if (isRaised && surface.kind === 'ledge' && screeTexture && stripPlacer && points.length >= 4) {
       // W-4: the debris a ledge front sheds onto the ground below it, deeper
       // under a taller deck. W-11 moved it from the lip to the foot of the
@@ -1295,7 +1336,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
         alpha: 0.9,
       });
     }
-    if (isWater) {
+    if (isWater && !ford) {
       // Shoreline foam: the single clearest "this is water, do not stand here"
       // cue, drawn as a bright inner band hugging the surface edge.
       tracePolygon(cueLayer, points)
@@ -1327,11 +1368,15 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       const right = Math.max(a.x, b.x);
       const visibleTop = Math.max(top, -BAND);
       const visibleBottom = Math.min(bottom, view.height + BAND);
-      // Depth gradient: deeper toward the middle of the channel.
+      // Depth gradient: deeper toward the middle of the channel. A ford is
+      // the opposite (shallowest mid-way, deep at its boundaries), so it
+      // takes none.
       const midY = (top + bottom) / 2;
       const depthBand = Math.max(1, (bottom - top) * 0.5);
-      cueLayer.rect(left, midY - depthBand * 0.5, right - left, depthBand)
-        .fill({ color: 0x062b3d, alpha: 0.34 });
+      if (!ford) {
+        cueLayer.rect(left, midY - depthBand * 0.5, right - left, depthBand)
+          .fill({ color: 0x062b3d, alpha: 0.34 });
+      }
       const step = BAND * camera.zoom;
       for (let y = Math.ceil(visibleTop / step) * step; y < visibleBottom; y += step) {
         const phase = shader.waterShimmer * Math.PI * 2 + y * 0.02;
@@ -1352,10 +1397,12 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
           .lineTo(fleckX - drift * 0.6 + fleckLength, y + step * 0.5)
           .stroke({ color: 0xe6ffff, width: Math.max(1, 1.4 * camera.zoom), alpha: 0.08 + shader.waterShimmer * 0.1 });
       }
-      // Lit shorelines top and bottom.
-      for (const edgeY of [top, bottom]) {
-        cueLayer.moveTo(left, edgeY).lineTo(right, edgeY)
-          .stroke({ color: 0x9fe8ff, width: Math.max(1, 2.4 * camera.zoom), alpha: 0.32 });
+      // Lit shorelines top and bottom; a ford's top and bottom are mid-river.
+      if (!ford) {
+        for (const edgeY of [top, bottom]) {
+          cueLayer.moveTo(left, edgeY).lineTo(right, edgeY)
+            .stroke({ color: 0x9fe8ff, width: Math.max(1, 2.4 * camera.zoom), alpha: 0.32 });
+        }
       }
     }
   }
@@ -1442,6 +1489,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   surfacePlacer?.finish();
   rampPlacer?.finish();
   stripPlacer?.finish();
+  waterStripPlacer?.finish();
   facePlacer?.finish();
   blockerFacePlacer?.finish();
   if (roadPlacer && roadMaskGraphic) {

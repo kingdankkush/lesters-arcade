@@ -26,6 +26,8 @@ export const DECAL_KINDS = Object.freeze({
   'arena-stain': Object.freeze({ color: '#3a1f22', alpha: 0.24, shape: 'ellipse', stretch: 1.4 }),
   // Cracked mud where water meets land.
   'shore-crack': Object.freeze({ color: '#5a4d38', alpha: 0.20, shape: 'crack', stretch: 1.0 }),
+  // W-6: the worn apron a composed set-piece stands on.
+  'landmark-ring': Object.freeze({ color: '#2b2622', alpha: 0.18, shape: 'ring', stretch: 1.0 }),
 });
 
 // Hard cap so the layer cannot grow without limit as the world contract does.
@@ -49,13 +51,18 @@ function freezeDecal(decal) {
   return Object.freeze({ ...decal, runtimeAuthority: 'projection-only' });
 }
 
-export function buildWorldDecals({ world, seed = 0x484d4432 } = {}) {
+export function buildWorldDecals({ world, seed = 0x484d4432, landmarks = [] } = {}) {
   if (!world?.routeGraph?.nodes) throw new TypeError('a level-one world contract is required');
   const decals = [];
   const push = (decal) => {
     if (decals.length >= MAX_WORLD_DECALS) return;
     decals.push(freezeDecal(decal));
   };
+  // W-4: wear and ruts are mud. The decal layer draws above the water, so a
+  // mark centred in the river column (the route crosses the ford and the
+  // bridge) floated on the surface as a tan ribbon.
+  const water = world.surfaces.filter((surface) => surface.kind === 'water' || surface.kind === 'shallow-water').map((surface) => surface.area);
+  const onWater = (x, y) => water.some((area) => x >= area.minX && x <= area.maxX && y >= area.minY && y <= area.maxY);
 
   // --- footpath wear along the route -------------------------------------
   // Placed on the EDGES rather than the nodes, so wear reads as a path
@@ -76,6 +83,7 @@ export function buildWorldDecals({ world, seed = 0x484d4432 } = {}) {
       const jitter = (seededUnit(seed, `${key}:j`) - 0.5) * 46;
       const x = from.x + (to.x - from.x) * t + jitter;
       const y = from.y + (to.y - from.y) * t + jitter * 0.6;
+      if (onWater(x, y)) continue;
       push({
         id: `decal:route-wear:${edgeIndex}:${index}`,
         kind: 'route-wear',
@@ -106,6 +114,7 @@ export function buildWorldDecals({ world, seed = 0x484d4432 } = {}) {
       const offset = side * 26;
       const x = from.x + (to.x - from.x) * t - Math.sin(rotation) * offset;
       const y = from.y + (to.y - from.y) * t + Math.cos(rotation) * offset;
+      if (onWater(x, y)) continue;
       push({
         id: `decal:tire-rut:${edgeIndex}:${side > 0 ? 'r' : 'l'}`,
         kind: 'tire-rut',
@@ -188,6 +197,23 @@ export function buildWorldDecals({ world, seed = 0x484d4432 } = {}) {
     }
   }
 
+  // W-6: one worn ring per composed set-piece anchor. The anchors come from
+  // the prop composition (authored-prop-atlas.mjs), handed in by the bake so
+  // this module never imports the atlas into the child.
+  for (const landmark of landmarks) {
+    push({
+      id: `decal:landmark-ring:${landmark.id}`,
+      kind: 'landmark-ring',
+      anchorId: landmark.id,
+      // Set-piece anchors are named by district.
+      districtId: landmark.id,
+      x: landmark.x,
+      y: landmark.y,
+      radius: 180,
+      rotation: 0,
+    });
+  }
+
   return Object.freeze(decals);
 }
 
@@ -210,6 +236,12 @@ export function drawWorldDecals({ target, decals, camera, view, project, cullPad
       const long = radius * spec.stretch;
       const short = Math.max(1.5, radius * 0.16);
       target.ellipse(centre.x, centre.y, long, short).fill({ color, alpha: spec.alpha });
+    } else if (spec.shape === 'ring') {
+      // A worn apron seen at 55 degrees: a squashed ring at the set-piece's
+      // foot and a fainter inner pool. ellipse(), never arc(): arc() joins
+      // from the path's current point and draws a stray line from the origin.
+      target.ellipse(centre.x, centre.y, radius, radius * 0.52).stroke({ color, width: Math.max(2, radius * 0.14), alpha: spec.alpha });
+      target.ellipse(centre.x, centre.y, radius * 0.62, radius * 0.32).fill({ color, alpha: spec.alpha * 0.5 });
     } else if (spec.shape === 'crack') {
       // A few short strokes read as cracked mud; a filled blob does not.
       for (let arm = 0; arm < 3; arm += 1) {

@@ -67,6 +67,27 @@ also taught the generator what ground is off limits, so density and clearance
 move together.
 
 - 1 landmark set-piece + breathing ring (dressing-free radius 300, enforced).
+  Amended Cycle 074 (W-6): the ring is dressing-free, not landmark-free. A
+  set-piece is composed — the anchor plus 4-7 satellites at reach 100-270
+  INSIDE the ring (hero scale 1.4-1.9, at least two animated signal-kit
+  props), on a worn ground ring (decal radius 180). Every anchor and
+  satellite clears blockers by 24, route edges by 48, and every arena, camp
+  disc, pickup and town stack; anchors stand on the contract landmark where
+  that ground is open (ravine, mining, yard) and otherwise on the nearest
+  open ground that keeps the district scene floors (relay as a backdrop
+  north of the spawn, crossing at the east bridgehead, hashwood on the north
+  shoulder).
+- Roofless enclosures (W-10, Cycle 074): two or three fence/wall yards per
+  level, each wrapping a collision blocker the contract already has so one
+  side of the illusion is backed by real collision. Walls run east-west at
+  sprite pitch (chain-fence 92, ruined-wall 112); north-south runs are posts
+  at <= 72 because the display cannot rotate a sprite; one entrance per yard
+  (96-140 wide) flanked by two tall gateposts. Dressing keeps 40 off the rect.
+- Ford edges (W-4, Cycle 074): a shallows crossing's long edges are mid-river
+  deep-to-shallow transitions, not shorelines. They carry the submerged
+  `shallows-band` slope inside the shallows (56 deep, deep tone at the
+  boundary dissolving into the bed) and never a foam crest, lit shoreline or
+  mid-channel depth band; wear and rut decals never centre on water.
 - 10-14 cluster anchors per district, at least 220 apart so clusters stay
   distinct groups, sampled along the playable edge of each shoulder band (the
   camera on the route sees y ~1,000-1,650 and ~3,150-3,800; ground beyond the

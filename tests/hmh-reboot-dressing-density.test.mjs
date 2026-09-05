@@ -7,8 +7,10 @@ const {
   buildAuthoredWorldPropPlacements,
   buildAuthoredDistrictLandmarkPlacements,
   buildAuthoredEncampmentPlacements,
+  buildAuthoredEnclosurePlacements,
   AUTHORED_DRESSING_DENSITY,
   AUTHORED_CAMP_KIT,
+  AUTHORED_ENCLOSURES,
 } = atlas;
 
 // W1. Waves A1-A4 took the authored prop library from 26 world props to 49,
@@ -295,10 +297,24 @@ test('cluster anchors in one district keep their distance', () => {
   assert.deepEqual(offenders, [], `${offenders.length} anchor pairs merge their clusters`);
 });
 
-// No two prop bases overlap: dressing and camp props alike.
+// W-10 (Cycle 074): a fence yard is its own composition; dressing keeps a
+// margin off the whole rect so nothing stands under a fence line or inside
+// the yard.
+test('dressing stays out of every enclosure yard and its margin', () => {
+  assert.equal(AUTHORED_ENCLOSURES.length, 3);
+  const offenders = [];
+  for (const placement of build()) {
+    for (const yard of AUTHORED_ENCLOSURES) {
+      if (placement.x >= yard.minX - 40 && placement.x <= yard.maxX + 40 && placement.y >= yard.minY - 40 && placement.y <= yard.maxY + 40) offenders.push(`${placement.id} stands in ${yard.id}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `${offenders.length} dressing placements stand in a yard`);
+});
+
+// No two prop bases overlap: dressing, camp props and enclosure pieces alike.
 const BASE_SEPARATION = 48;
 test('no two world props share a base', () => {
-  const props = [...build(), ...buildAuthoredEncampmentPlacements({ worldId: 'forked-frontier' })];
+  const props = [...build(), ...buildAuthoredEncampmentPlacements({ worldId: 'forked-frontier' }), ...buildAuthoredEnclosurePlacements({ worldId: 'forked-frontier' })];
   const offenders = [];
   for (let i = 0; i < props.length; i += 1) {
     for (let j = i + 1; j < props.length; j += 1) {
@@ -318,10 +334,12 @@ test('no two world props share a base', () => {
 // tight one (landmark ring, route, spawn-camp disc and the machinery line all
 // sit in its north band) and lands at 9 + 2.
 test('every shoulder-band scene window sees the density pass', () => {
+  // Cycle 074 re-aimed the ravine and mining tours north to frame their
+  // set-pieces (main.mjs worldTourSpawns).
   const windows = {
-    ravine: [3_050, 1_500],
+    ravine: [3_050, 1_350],
     hashwood: [7_000, 900],
-    mining: [9_200, 1_600],
+    mining: [9_200, 1_420],
     yard: [11_000, 800],
     'crossing-water': [4_900, 1_050],
   };

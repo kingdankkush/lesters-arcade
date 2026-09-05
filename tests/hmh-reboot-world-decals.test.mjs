@@ -8,6 +8,7 @@ import {
   buildWorldDecals,
   MAX_WORLD_DECALS,
 } from '../apps/hmh-reboot/src/world-decals.mjs';
+import { AUTHORED_SETPIECE_ANCHORS } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 
 const mainSource = readFileSync(
   fileURLToPath(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url)),
@@ -23,10 +24,12 @@ const mainSource = readFileSync(
 // become collision, and they are anchored to the world contract rather than
 // scattered, so they cannot drift away from what they are marking.
 
-const build = () => buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: 0x484d4432 });
+// W-6 (Cycle 074): the bake receives the composed set-piece anchors so each
+// landmark stands on a worn ring rather than on untouched ground.
+const build = () => buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: 0x484d4432, landmarks: AUTHORED_SETPIECE_ANCHORS });
 
 test('every decal kind is authored', () => {
-  for (const kind of ['route-wear', 'tire-rut', 'scorch', 'arena-stain', 'shore-crack']) {
+  for (const kind of ['route-wear', 'tire-rut', 'scorch', 'arena-stain', 'shore-crack', 'landmark-ring']) {
     assert.ok(DECAL_KINDS[kind], `${kind} missing from DECAL_KINDS`);
     const spec = DECAL_KINDS[kind];
     assert.match(spec.color, /^#?[0-9a-f]{6}$/i, `${kind} color`);
@@ -110,6 +113,44 @@ test('shore cracks sit near a water edge', () => {
     });
     assert.ok(nearEdge, `${decal.id} is not on a shoreline`);
   }
+});
+
+// W-6: one ground ring per composed set-piece anchor, centred exactly on it,
+// inside the decal radius cap, and only when anchors are handed in (the
+// builder with no landmarks stays byte-identical for the other kinds).
+test('W-6 every set-piece anchor stands on one landmark ring', () => {
+  const rings = build().filter((entry) => entry.kind === 'landmark-ring');
+  assert.equal(AUTHORED_SETPIECE_ANCHORS.length, 6);
+  assert.equal(rings.length, 6);
+  for (const anchor of AUTHORED_SETPIECE_ANCHORS) {
+    const ring = rings.find((entry) => entry.anchorId === anchor.id);
+    assert.ok(ring, `${anchor.id} has no ring`);
+    assert.equal(ring.x, anchor.x);
+    assert.equal(ring.y, anchor.y);
+    assert.ok(ring.radius >= 150 && ring.radius <= 220, `${ring.id} radius ${ring.radius}`);
+    assert.equal(ring.districtId, anchor.id);
+  }
+  assert.equal(DECAL_KINDS['landmark-ring'].shape, 'ring');
+  const withoutAnchors = buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: 0x484d4432 });
+  assert.equal(withoutAnchors.filter((entry) => entry.kind === 'landmark-ring').length, 0);
+  assert.deepEqual(withoutAnchors, build().filter((entry) => entry.kind !== 'landmark-ring'), 'rings append; every other decal is unchanged by the anchors');
+});
+
+// W-4: the Cycle 073 bake carried 12 wear and rut decals whose centres sat in
+// the river column (8 over the ford, 4 over deep water at the bridge), drawn
+// ABOVE the water in the layer order so mud wear floated on the surface.
+test('W-4 no route wear or tire rut is centred on water', () => {
+  const water = LEVEL_ONE_WORLD.surfaces.filter((surface) => surface.kind === 'water' || surface.kind === 'shallow-water');
+  const offenders = build()
+    .filter((entry) => entry.kind === 'route-wear' || entry.kind === 'tire-rut')
+    .filter((entry) => water.some(({ area }) => entry.x >= area.minX && entry.x <= area.maxX && entry.y >= area.minY && entry.y <= area.maxY))
+    .map((entry) => entry.id);
+  assert.deepEqual(offenders, []);
+  // Only the water exclusion and the rings changed: the other kinds keep the
+  // Cycle 073 counts (109 wear less the 6 that floated, 12 ruts less 6).
+  const counts = {};
+  for (const entry of build()) counts[entry.kind] = (counts[entry.kind] ?? 0) + 1;
+  assert.deepEqual(counts, { 'route-wear': 103, 'tire-rut': 6, 'arena-stain': 24, scorch: 12, 'shore-crack': 20, 'landmark-ring': 6 });
 });
 
 test('every district gets some ground history', () => {

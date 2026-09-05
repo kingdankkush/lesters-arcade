@@ -16,6 +16,7 @@ import {
   AUTHORED_PROP_ASSET_COUNT,
   AUTHORED_PROP_ASSET_IDS,
   AUTHORED_DRESSING_DENSITY,
+  AUTHORED_LANDMARK_TOTAL,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
@@ -110,7 +111,9 @@ test('district landmark clusters stay near visual anchors and clear the playable
   const first = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
   const second = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
   assert.deepEqual(first, second);
-  assert.equal(first.length, 42);
+  // W-6 (Cycle 074): 6 anchors + 35 composed satellites.
+  assert.equal(first.length, 41);
+  assert.equal(first.length, AUTHORED_LANDMARK_TOTAL);
   const byDistrict = new Map();
   for (const placement of first) {
     const placements = byDistrict.get(placement.districtId) ?? [];
@@ -119,12 +122,12 @@ test('district landmark clusters stay near visual anchors and clear the playable
   }
   assert.equal(byDistrict.size, 6);
   for (const placements of byDistrict.values()) {
-    assert.equal(placements.length, 7);
+    assert.ok(placements.length >= 5 && placements.length <= 8, `a composition is an anchor plus 4-7 satellites, saw ${placements.length}`);
     assert.ok(placements.every((placement) => placement.category === 'district-landmark'));
     assert.ok(placements.every((placement) => placement.runtimeAuthority === 'projection-only'));
     assert.ok(placements.every((placement) => placement.scale >= 1 && placement.scale <= 1.9));
     assert.equal(placements.filter((placement) => placement.anchorDistance === 0).length, 1);
-    assert.ok(placements.filter((placement) => placement.anchorDistance > 0).every((placement) => placement.anchorDistance >= 400 && placement.anchorDistance <= 530));
+    assert.ok(placements.filter((placement) => placement.anchorDistance > 0).every((placement) => placement.anchorDistance >= 100 && placement.anchorDistance <= 270), 'satellites compose inside the 300 ring');
     assert.equal(placements.filter((placement) => placement.mobileOnly).length, 0);
   }
   assert.ok(first.every((placement) => placement.x >= 0 && placement.x <= 12_000));
@@ -170,8 +173,8 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
   const before = JSON.stringify(placements);
   const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
   // Authored overrides drive every district now, so countPerDistrict 1 still
-  // yields the full dressing table, plus 6 landmarks x 7 parts and 10 POIs.
-  assert.equal(display.entries.length, DRESSING_TOTAL + 6 * 7 + 10);
+  // yields the full dressing table, plus the composed landmarks and 10 POIs.
+  assert.equal(display.entries.length, DRESSING_TOTAL + AUTHORED_LANDMARK_TOTAL + 10);
   const report = display.render({
     camera: { zoom: 1 },
     view: { width: 12_000, height: 4_800 },
@@ -179,7 +182,7 @@ test('authored prop display creates real sprites, culls, grounds, and never chan
     queryGround: () => ({ groundZ: 0 }),
     tick: 42,
   });
-  assert.equal(report.placementCount, DRESSING_TOTAL + 6 * 7 + 10);
+  assert.equal(report.placementCount, DRESSING_TOTAL + AUTHORED_LANDMARK_TOTAL + 10);
   assert.ok(report.visibleCount > 0);
   assert.ok(report.signalVisibleCount >= 12);
   assert.equal(report.animatedSignalVisibleCount, report.signalVisibleCount);

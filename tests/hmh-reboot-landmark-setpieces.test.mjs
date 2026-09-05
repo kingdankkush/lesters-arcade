@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
+  AUTHORED_LANDMARK_TOTAL,
   buildAuthoredDistrictLandmarkPlacements,
   createAuthoredPropAtlasIndex,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
@@ -42,19 +43,25 @@ test('A9 authors one deterministic multi-part Blender set-piece per district', a
   }
 });
 
-test('A9 centers set-pieces and preserves an outer dressing-free breathing ring', () => {
+// W-6 (Cycle 074): a set-piece is composed, not a centre with six props 500
+// units away. Satellites live INSIDE the 300-unit breathing ring (100-270 from
+// the anchor); the ring is dressing-free, not landmark-free.
+const SATELLITES = Object.freeze({ 'frontier-relay': 6, 'rugpull-ravine': 5, 'liquidity-crossing': 7, hashwood: 5, 'mining-camp': 6, 'liquidation-yard': 6 });
+
+test('A9/W-6 centers set-pieces and composes their satellites inside the breathing ring', () => {
   const placements = buildAuthoredDistrictLandmarkPlacements({ worldId: 'forked-frontier' });
-  assert.equal(placements.length, 42);
+  assert.equal(placements.length, 41);
+  assert.equal(AUTHORED_LANDMARK_TOTAL, 41);
   for (const [districtId, assetId] of SETPIECES) {
     const district = placements.filter((placement) => placement.districtId === districtId);
-    assert.equal(district.length, 7);
+    assert.equal(district.length, 1 + SATELLITES[districtId], `${districtId} composition size`);
     const center = district.find((placement) => placement.assetId === assetId);
     assert.equal(center?.anchorDistance, 0);
     assert.equal(center?.scale, 1);
     assert.equal(center?.runtimeAuthority, 'projection-only');
     const satellites = district.filter((placement) => placement !== center);
-    assert.equal(satellites.length, 6);
-    assert.ok(satellites.every((placement) => placement.anchorDistance >= 400));
+    assert.equal(satellites.length, SATELLITES[districtId]);
+    assert.ok(satellites.every((placement) => placement.anchorDistance >= 100 && placement.anchorDistance <= 270), `${districtId} satellites must sit inside the 300 ring`);
   }
 });
 

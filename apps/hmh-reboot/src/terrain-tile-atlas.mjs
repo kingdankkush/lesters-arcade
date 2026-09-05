@@ -53,8 +53,10 @@ export function terrainTileAsset(materialId) {
 // manifest array so the per-material size and count contracts stay exact.
 // `rock-face` is the opaque wall strip the renderer stretches across a ledge
 // front or cliff face; V clamps so its lit cap and shaded foot land on the
-// lip and the ground whatever the wall's height.
-export const TERRAIN_OVERLAY_IDS = Object.freeze(['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face']);
+// lip and the ground whatever the wall's height. `shallows-band` (W-4, Cycle
+// 074) is the deep-to-shallow slope inside a ford: opaque deep tone at the
+// boundary dissolving into the shallow bed, no foam crest.
+export const TERRAIN_OVERLAY_IDS = Object.freeze(['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face', 'shallows-band']);
 
 export function terrainOverlayAsset(overlayId) {
   if (!TERRAIN_OVERLAY_IDS.includes(overlayId)) throw new TypeError(`unknown terrain overlay: ${String(overlayId)}`);

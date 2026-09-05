@@ -34,14 +34,21 @@
       "alpha": 0.2,
       "shape": "crack",
       "stretch": 1
+    },
+    "landmark-ring": {
+      "color": "#2b2622",
+      "alpha": 0.18,
+      "shape": "ring",
+      "stretch": 1
     }
   },
   "counts": {
-    "route-wear": 109,
-    "tire-rut": 12,
+    "route-wear": 103,
+    "tire-rut": 6,
     "arena-stain": 24,
     "scorch": 12,
-    "shore-crack": 20
+    "shore-crack": 20,
+    "landmark-ring": 6
   },
   "note": "Derived from the level-one world contract at build time. Baked rather than computed in the child because the placement logic did not fit the bundle budget; art fetched at runtime costs no bundle bytes.",
   "decals": [
@@ -219,28 +226,6 @@
       "y": 2426.08,
       "radius": 36.31051889527589,
       "rotation": -0.19739555984988078,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:route-wear:9:0",
-      "kind": "route-wear",
-      "anchorId": "bridge-west->bridge-east",
-      "districtId": null,
-      "x": 4555.99,
-      "y": 2388.6,
-      "radius": 41.65744301630184,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:route-wear:9:1",
-      "kind": "route-wear",
-      "anchorId": "bridge-west->bridge-east",
-      "districtId": null,
-      "x": 4916.86,
-      "y": 2395.12,
-      "radius": 45.03634729422629,
-      "rotation": 0,
       "runtimeAuthority": "projection-only"
     },
     {
@@ -772,50 +757,6 @@
       "runtimeAuthority": "projection-only"
     },
     {
-      "id": "decal:route-wear:31:0",
-      "kind": "route-wear",
-      "anchorId": "crossing-shallows-west->crossing-shallows-east",
-      "districtId": null,
-      "x": 4533.06,
-      "y": 939.84,
-      "radius": 46.73964798916131,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:route-wear:31:1",
-      "kind": "route-wear",
-      "anchorId": "crossing-shallows-west->crossing-shallows-east",
-      "districtId": null,
-      "x": 4952.81,
-      "y": 951.69,
-      "radius": 47.913846453186125,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:route-wear:32:0",
-      "kind": "route-wear",
-      "anchorId": "crossing-shallows-east->crossing-shallows-west",
-      "districtId": null,
-      "x": 4943.98,
-      "y": 946.39,
-      "radius": 44.232283586636186,
-      "rotation": 3.141592653589793,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:route-wear:32:1",
-      "kind": "route-wear",
-      "anchorId": "crossing-shallows-east->crossing-shallows-west",
-      "districtId": null,
-      "x": 4558.14,
-      "y": 954.88,
-      "radius": 59.5147391515784,
-      "rotation": 3.141592653589793,
-      "runtimeAuthority": "projection-only"
-    },
-    {
       "id": "decal:route-wear:33:0",
       "kind": "route-wear",
       "anchorId": "crossing-shallows-west->bridge-west",
@@ -1267,28 +1208,6 @@
       "runtimeAuthority": "projection-only"
     },
     {
-      "id": "decal:tire-rut:9:l",
-      "kind": "tire-rut",
-      "anchorId": "bridge-west->bridge-east",
-      "districtId": null,
-      "x": 4702.85,
-      "y": 2374,
-      "radius": 43.59055042127147,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:tire-rut:9:r",
-      "kind": "tire-rut",
-      "anchorId": "bridge-west->bridge-east",
-      "districtId": null,
-      "x": 4645.53,
-      "y": 2426,
-      "radius": 41.46742987399921,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
       "id": "decal:tire-rut:10:l",
       "kind": "tire-rut",
       "anchorId": "bridge-east->crossing-exit",
@@ -1330,50 +1249,6 @@
       "y": 1626,
       "radius": 38.442980511114,
       "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:tire-rut:31:l",
-      "kind": "tire-rut",
-      "anchorId": "crossing-shallows-west->crossing-shallows-east",
-      "districtId": null,
-      "x": 4772.99,
-      "y": 924,
-      "radius": 31.87229944532737,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:tire-rut:31:r",
-      "kind": "tire-rut",
-      "anchorId": "crossing-shallows-west->crossing-shallows-east",
-      "districtId": null,
-      "x": 4853.85,
-      "y": 976,
-      "radius": 31.188075775280595,
-      "rotation": 0,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:tire-rut:32:l",
-      "kind": "tire-rut",
-      "anchorId": "crossing-shallows-east->crossing-shallows-west",
-      "districtId": null,
-      "x": 4790.94,
-      "y": 976,
-      "radius": 43.518263017293066,
-      "rotation": 3.141592653589793,
-      "runtimeAuthority": "projection-only"
-    },
-    {
-      "id": "decal:tire-rut:32:r",
-      "kind": "tire-rut",
-      "anchorId": "crossing-shallows-east->crossing-shallows-west",
-      "districtId": null,
-      "x": 4743.86,
-      "y": 924,
-      "radius": 35.685779267922044,
-      "rotation": 3.141592653589793,
       "runtimeAuthority": "projection-only"
     },
     {
@@ -1990,6 +1865,72 @@
       "y": 1164.12,
       "radius": 27.75167221808806,
       "rotation": 1.8598729154694267,
+      "runtimeAuthority": "projection-only"
+    },
+    {
+      "id": "decal:landmark-ring:frontier-relay",
+      "kind": "landmark-ring",
+      "anchorId": "frontier-relay",
+      "districtId": "frontier-relay",
+      "x": 800,
+      "y": 2250,
+      "radius": 180,
+      "rotation": 0,
+      "runtimeAuthority": "projection-only"
+    },
+    {
+      "id": "decal:landmark-ring:rugpull-ravine",
+      "kind": "landmark-ring",
+      "anchorId": "rugpull-ravine",
+      "districtId": "rugpull-ravine",
+      "x": 3100,
+      "y": 1250,
+      "radius": 180,
+      "rotation": 0,
+      "runtimeAuthority": "projection-only"
+    },
+    {
+      "id": "decal:landmark-ring:liquidity-crossing",
+      "kind": "landmark-ring",
+      "anchorId": "liquidity-crossing",
+      "districtId": "liquidity-crossing",
+      "x": 5150,
+      "y": 2150,
+      "radius": 180,
+      "rotation": 0,
+      "runtimeAuthority": "projection-only"
+    },
+    {
+      "id": "decal:landmark-ring:hashwood",
+      "kind": "landmark-ring",
+      "anchorId": "hashwood",
+      "districtId": "hashwood",
+      "x": 7000,
+      "y": 900,
+      "radius": 180,
+      "rotation": 0,
+      "runtimeAuthority": "projection-only"
+    },
+    {
+      "id": "decal:landmark-ring:mining-camp",
+      "kind": "landmark-ring",
+      "anchorId": "mining-camp",
+      "districtId": "mining-camp",
+      "x": 9250,
+      "y": 1250,
+      "radius": 180,
+      "rotation": 0,
+      "runtimeAuthority": "projection-only"
+    },
+    {
+      "id": "decal:landmark-ring:liquidation-yard",
+      "kind": "landmark-ring",
+      "anchorId": "liquidation-yard",
+      "districtId": "liquidation-yard",
+      "x": 11100,
+      "y": 1250,
+      "radius": 180,
+      "rotation": 0,
       "runtimeAuthority": "projection-only"
     }
   ]

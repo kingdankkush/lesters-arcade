@@ -19,13 +19,17 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { AUTHORED_SETPIECE_ANCHORS } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { buildWorldDecals, DECAL_KINDS, MAX_WORLD_DECALS } from '../apps/hmh-reboot/src/world-decals.mjs';
 
 const SEED = 0x484d4432;
 
-const decals = buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: SEED });
+// W-6 (Cycle 074): the composed set-piece anchors each get a ground ring. The
+// anchors are read here at build time so the child never imports the prop
+// composition into the decal module.
+const decals = buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: SEED, landmarks: AUTHORED_SETPIECE_ANCHORS });
 // Same-input drift check, matching the other deterministic pipelines.
-const again = buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: SEED });
+const again = buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: SEED, landmarks: AUTHORED_SETPIECE_ANCHORS });
 if (JSON.stringify(decals) !== JSON.stringify(again)) {
   throw new Error('world decals drifted across identical same-seed runs');
 }
