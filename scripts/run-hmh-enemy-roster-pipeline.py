@@ -162,7 +162,7 @@ def compare_frames_premultiplied(first_dir: Path, second_dir: Path, frame_names:
         changed = 0
         max_delta = 0
         total_delta = 0
-        for pixel_a, pixel_b in zip(first.get_flattened_data(), second.get_flattened_data()):
+        for pixel_a, pixel_b in zip(first.getdata(), second.getdata()):
             if pixel_a == pixel_b:
                 continue
             deltas = [abs(a - b) for a, b in zip(premultiplied_rgba(pixel_a), premultiplied_rgba(pixel_b))]
@@ -293,7 +293,7 @@ def write_drift_report(
         first = canonical_rgba(Image.open(first_dir / name))
         second = canonical_rgba(Image.open(second_dir / name))
         drifted = False
-        for pixel_a, pixel_b in zip(first.get_flattened_data(), second.get_flattened_data()):
+        for pixel_a, pixel_b in zip(first.getdata(), second.getdata()):
             if pixel_a == pixel_b:
                 continue
             for a, b in zip(premultiplied_rgba(pixel_a), premultiplied_rgba(pixel_b)):
