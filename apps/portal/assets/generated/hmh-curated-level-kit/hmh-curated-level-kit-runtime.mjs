@@ -67,6 +67,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-ground-plan.mjs",
     "apps/portal/src/hmh-ground-plane-rendering.mjs",
     "apps/portal/src/hmh-ground-selection.mjs",
+    "apps/portal/src/hmh-hero-select-ui.mjs",
     "apps/portal/src/hmh-hurtbox-runtime.mjs",
     "apps/portal/src/hmh-hurtbox-truth.mjs",
     "apps/portal/src/hmh-level-editor-app.mjs",

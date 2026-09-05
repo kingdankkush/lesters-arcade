@@ -251,10 +251,12 @@ This ledger continues the certified reboot after `reboot-20` without changing th
 
 ## Current continuation candidate
 
-- Status: Cycle 074 source green; full local certification passed; production promotion pending
+- Status: Cycle 074 is live and verified
 - Cycle 074 scope: honest initial-JS accounting and trimmed Pixi vendor, atmosphere layer, game-feel beats and encounter framing, enemy tells and elite treatment, crisp select turntables, landmark set-pieces and ford band and enclosures, atlas-format memo, weapon cues routed through the registry
 - Cycle 074 evidence: `2,539 / 2,488 / 51 / 0`; entry `463,414` + vendor `463,115` + shared `66,453` = true initial `992,982 / 1,050,000`, headroom `57,018`; visual 12/12 re-accepted with intent; five-profile certification zero-delta anchors on the first run; desktop/mobile p95 `8.5 / 8.8 ms`; mobile controls 4/4
-- Previous status: Cycle 073 is live and verified
+- Certified production runtime boundary: `6c4ff20a`
+- Production `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR`; rollback `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw`; cache `lesters-arcade-v27-hmh-atmosphere-and-feel`
+- Previous release: Cycle 073 `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw`
 - Cycle 073 scope: EEVEE enemy roster with the quantiser removed and the hero budget gate, per-weapon combat VFX and surface impacts, grenade feedback set, level-up card tiers and SFX slider, ledge fronts and rock cliffs, density pass with spawn camps, LFS policy, anchor warm-up, navgrid readiness, arc-origin fix
 - Cycle 073 evidence: `2,429 / 2,378 / 51 / 0`; entry `444,168` + vendor `575,891` = `1,020,059 / 1,050,000`, headroom `29,941`; visual 12/12 re-accepted with intent plus enemy-crop checks; five-profile certification zero-delta anchors; desktop/mobile p95 `8.4 / 8.1 ms`; mobile controls 4/4
 - Certified production runtime boundary: `f764ac75`

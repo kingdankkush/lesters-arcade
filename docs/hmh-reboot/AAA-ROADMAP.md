@@ -51,6 +51,25 @@ standing authority.
 - Hosted desktop, ultrawide, tablet, portrait, landscape, touch-control, portal, and
   network/console checks passed on `https://lestersarcade.io`.
 
+### Current live override — Cycle 074
+
+- Runtime commit: `6c4ff20a`.
+- Production: `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR`; immediate rollback: `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw`.
+- Release ledger: `2,539` evaluated, `2,488` passing, `51` accepted legacy failures, `0` unexpected.
+- True initial child JS (entry + hoisted shared chunks + vendor): `992,982 / 1,050,000`;
+  headroom `57,018`. The budget helper now counts the shared chunks; Cycle 073's true total
+  had been `1,084,585`.
+- Cache: `lesters-arcade-v27-hmh-atmosphere-and-feel`.
+- Completed this cycle: `N-4`, `W-13`, `V-4`, `V-5`, `V-6`, `K-6` (projection half; input
+  buffering open), `E-3`, `E-4`, `C-2`, `U-6`, `W-6`, `W-4` (ford band), `W-10`, `S-2`;
+  `P-6` measured and written up as `ATLAS-FORMAT-DECISION-MEMO.md` for the owner's 8.3.2
+  decision (nothing shipped).
+- Correction: the earlier claim that eight weapons had distinct fire cues was true on disk
+  and false at runtime; twelve synthesised cues were unregistered and silent in production
+  from 2026-08-05 until this cycle.
+- Hosted desktop, ultrawide, tablet, portrait, landscape, network, portal smoke and portal
+  E2E checks passed on `https://lestersarcade.io`.
+
 ### Current live override — Cycle 073
 
 - Runtime commit: `f764ac75`.
