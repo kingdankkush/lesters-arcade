@@ -1026,11 +1026,15 @@ async function boot() {
     // contract landmarks north of the route, so these two cameras step north
     // to keep the spire and the headframe in frame below the HUD while the
     // ledge fronts stay in the bottom of the view.
-    ravine: Object.freeze({ x: 3_050, y: 1_350 }),
+    // ravine stays at y 1500: the collectibles smoke walks north-east from here into the
+    // overlook cache at (3200, 1400); the ravine set-piece at y 1250 is still inside the frame.
+    ravine: Object.freeze({ x: 3_050, y: 1_500 }),
     bridge: Object.freeze({ x: 4_700, y: 2_400 }),
     hazard: Object.freeze({ x: 3_500, y: 3_100 }),
     hashwood: Object.freeze({ x: 7_000, y: 900 }),
-    mining: Object.freeze({ x: 9_200, y: 1_420 }),
+    // mining stays at y 1600: the collectibles smoke walks east from here through the
+    // auto-miner cache, and the mining set-piece at y 1250 is still inside the frame.
+    mining: Object.freeze({ x: 9_200, y: 1_600 }),
     yard: Object.freeze({ x: 11_000, y: 800 }),
     // P5: the A1-A7 waves added 29 props that no pinned scene could see, so
     // the regression gate was not watching them. These two tours put the camp
