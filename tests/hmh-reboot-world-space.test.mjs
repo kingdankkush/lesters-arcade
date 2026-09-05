@@ -155,7 +155,7 @@ test('M7 boss framing adds a bounded focus pull without abandoning the player', 
 });
 
 test('camera clamps to finite authored bounds without boundary drift at every zoom', () => {
-  for (const zoom of [0.75, 1, 2]) {
+  for (const zoom of [0.75, 0.9, 0.94, 1, 2]) {
     const camera = createCameraState({ x: 50, y: 50, zoom, deadZone: { width: 0, height: 0 }, bounds: { minX: 0, minY: 0, maxX: 200, maxY: 100 } });
     const viewport = { width: 100, height: 50 };
     for (let index = 0; index < 20; index += 1) followCameraTarget(camera, { x: -1000, y: 1000 }, viewport, { smoothTime: 0 });
@@ -165,6 +165,30 @@ test('camera clamps to finite authored bounds without boundary drift at every zo
     assert.ok(camera.x >= camera.bounds.minX && camera.x <= camera.bounds.maxX);
     assert.ok(camera.y >= camera.bounds.minY && camera.y <= camera.bounds.maxY);
   }
+});
+
+test('a render zoom that eases between frames keeps the camera inside bounds on every frame (Cycle 074 V-6)', () => {
+  const bounds = { minX: 0, minY: 0, maxX: 200, maxY: 100 };
+  const viewport = { width: 100, height: 50 };
+  const camera = createCameraState({ x: 20, y: 20, zoom: 1, deadZone: { width: 0, height: 0 }, bounds });
+  // Ease 1 -> 0.9 -> 1 while the target sits in the corner, so the visible
+  // half-extent grows and shrinks against the clamp each frame.
+  const zooms = [];
+  for (let frame = 0; frame <= 24; frame += 1) zooms.push(1 - 0.1 * (frame / 24));
+  for (let frame = 1; frame <= 48; frame += 1) zooms.push(0.9 + 0.1 * (frame / 48));
+  for (const zoom of zooms) {
+    camera.zoom = zoom;
+    followCameraTarget(camera, { x: -1000, y: 1000 }, viewport, { smoothTime: 0 });
+    const halfX = viewport.width / (2 * zoom);
+    const halfY = viewport.height / (2 * zoom);
+    assert.ok(camera.x >= bounds.minX + halfX - 1e-9 && camera.x <= bounds.maxX - halfX + 1e-9, `x ${camera.x} escapes at zoom ${zoom}`);
+    assert.ok(camera.y >= bounds.minY + halfY - 1e-9 && camera.y <= bounds.maxY - halfY + 1e-9, `y ${camera.y} escapes at zoom ${zoom}`);
+    assert.equal(camera.velocityX, 0, 'a clamped axis carries no spring-back velocity');
+  }
+  // Back at zoom 1 the camera sits exactly where a zoom-1 camera would.
+  const reference = createCameraState({ x: 20, y: 20, zoom: 1, deadZone: { width: 0, height: 0 }, bounds });
+  followCameraTarget(reference, { x: -1000, y: 1000 }, viewport, { smoothTime: 0 });
+  assert.deepEqual({ x: camera.x, y: camera.y }, { x: reference.x, y: reference.y });
 });
 
 test('debug grid overlay exposes axis and sampled height labels without mutating world state', () => {

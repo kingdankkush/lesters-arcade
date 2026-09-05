@@ -104,6 +104,17 @@ import {
   resolveGrenadeArcShadow,
   resolveGrenadeFuseBlink,
 } from './grenade-feedback.mjs';
+import {
+  HIT_SMEAR,
+  DASH_FEEL,
+  createEncounterFramingState,
+  resolveDashAfterimages,
+  resolveDashLandingPuff,
+  resolveEncounterFramingZoom,
+  resolveHeroHitSmear,
+  resolveLevelUpBurst,
+  resolvePickupSparkle,
+} from './game-feel.mjs';
 import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
 import {
   applyRecoilImpulse,
@@ -532,6 +543,13 @@ async function boot() {
     if (!(radius > 0) || !(alpha > 0)) return;
     if (weaponVfxPool) weaponVfxPool.place({ texture: 'puff', x, y, width: radius * 2.2, height: radius * 2.2 * aspect, tint: color, alpha });
     else combatVisuals.ellipse(x, y, radius, radius * aspect).fill({ color, alpha: alpha * 0.8 });
+  };
+  // Ghost capsules for the dash afterimage: a stretched additive core the
+  // height of the hero silhouette, so the trail reads as a body and not a dot.
+  const placeWeaponGhost = (x, y, width, height, color, alpha) => {
+    if (!(width > 0) || !(height > 0) || !(alpha > 0)) return;
+    if (weaponVfxPool) weaponVfxPool.place({ texture: 'core', x, y, width, height, tint: color, alpha, additive: true });
+    else combatVisuals.ellipse(x, y, width / 2, height / 2).fill({ color, alpha: alpha * 0.8 });
   };
   const minimap = new Graphics();
   // Screen-space layer for health pips, the boss bar, damage flash, and the
@@ -1177,6 +1195,10 @@ async function boot() {
   let lastPlayerHit = null;
   let lowHealthWarned = false;
   let lastDashDirection = null;
+  // Cycle 074 game feel: encounter framing ease state and the level-up beat
+  // stamped on the resume path. Both are render-side only.
+  let framingState = createEncounterFramingState();
+  let lastLevelUpBeat = null;
   let shakeStartTick = -1;
   let shakeMagnitude = 0;
   // Combat sparks and debris inherit the active quality tier, so the
@@ -1984,6 +2006,27 @@ async function boot() {
               .stroke({ color: event.color, width: Math.max(2, 6 - age * 0.4), alpha: alpha * 0.9 });
             combatVisuals.rect(center.x - 7, center.y - 7, 14, 14)
               .stroke({ color: 0xffffff, width: 3, alpha: alpha * 0.8 });
+            // V-4 pickup sparkle: pooled glows rising off the ring.
+            for (const spark of resolvePickupSparkle({ age, zoom: camera.zoom, particleScale, reduceFlash: settings.reduceFlash, seed: `${event.tick}:${event.point.x}` })) {
+              placeWeaponGlow(center.x + spark.dx, center.y + spark.dy, spark.radius, event.color, spark.alpha);
+            }
+          } else if (event.type === 'dash-land') {
+            const puff = resolveDashLandingPuff({
+              age,
+              zoom: camera.zoom,
+              seed: `${event.tick}:${event.point.x}`,
+              stopReason: event.stopReason,
+              particleScale,
+              reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+            });
+            if (puff) {
+              placeWeaponPuff(center.x + puff.dx, center.y + puff.dy, puff.radius, puff.tint, puff.alpha);
+              // The stroked foreshortened ring is what makes dust read on a
+              // same-hue road; the soft puff alone sinks into the ground.
+              combatVisuals.ellipse(center.x + puff.dx, center.y + puff.dy, puff.radius * 1.15, puff.radius * 0.78)
+                .stroke({ color: puff.tint, width: 2, alpha: Math.min(1, puff.alpha * 1.3) });
+              for (const spark of puff.sparks) placeWeaponGlow(center.x + spark.dx, center.y + spark.dy, spark.radius, DASH_FEEL.sparkColor, spark.alpha);
+            }
           } else if (event.type === 'kill') {
             // Kill confirmation: an expanding ring plus a deterministic
             // debris fan so a defeat reads instantly in a crowded fight.
@@ -2201,6 +2244,34 @@ async function boot() {
         if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
         actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
         actorVisual.rotation = 0;
+        // V-5 hero hit readability: a smear trailing against the retained
+        // knockback and a three-tick body tint. Under reduceFlash the smear
+        // is white at half alpha and the tint never fires; under reduceMotion
+        // it loses its displacement but keeps the colour.
+        const chestY = groundScreen.y - 30 * camera.zoom;
+        const smear = resolveHeroHitSmear({
+          age: playerHitAge,
+          knockback: lastPlayerHit?.knockback,
+          zoom: camera.zoom,
+          reduceFlash: settings.reduceFlash,
+          reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+        });
+        if (smear) {
+          placeWeaponGlow(groundScreen.x + smear.offsetX, chestY + smear.offsetY, smear.radius, smear.tint, smear.alpha);
+          placeWeaponGlow(groundScreen.x + smear.offsetX * 2, chestY + smear.offsetY * 2, smear.radius * 0.7, smear.tint, smear.alpha * 0.6);
+        }
+        productionHeroDisplay.setTint(smear?.flash ? HIT_SMEAR.bodyTint : 0xffffff);
+        // K-6 afterimage trail: pooled glows behind the hero for the eight
+        // active dash ticks; no hero texture clone, so no new textures.
+        if (dashState?.startedTick >= 0 && lastDashDirection) {
+          const trail = worldToScreen({ x: renderState.x + lastDashDirection.x, y: renderState.y + lastDashDirection.y, z: renderState.z }, camera, view);
+          for (const sample of resolveDashAfterimages({
+            direction: { x: trail.x - groundScreen.x, y: trail.y - groundScreen.y },
+            age: visualTick - dashState.startedTick,
+            zoom: camera.zoom,
+            reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+          })) placeWeaponGhost(groundScreen.x + sample.dx, chestY + sample.dy, sample.radius * 1.7, sample.radius * 4.2, DASH_FEEL.trailColor, sample.alpha);
+        }
       } else if (mannequinDisplay && motion) {
         mannequinDisplay.applyPose({
           simulationTick: simulation?.tick ?? 0,
@@ -2212,6 +2283,29 @@ async function boot() {
         actorVisual.rotation = 0;
       } else {
         marker.rotation = motion ? motion.torsoDirection * (Math.PI / 4) : 0;
+      }
+      // V-4 level-up beat: a gold ring and ray fan on the resume point with an
+      // additive core, drawn with circle()/lineTo only (no arc()).
+      if (lastLevelUpBeat && simulation) {
+        const burst = resolveLevelUpBurst({
+          age: simulation.tick - lastLevelUpBeat.tick,
+          zoom: camera.zoom,
+          particleScale,
+          reduceFlash: settings.reduceFlash,
+          seed: `${lastLevelUpBeat.tick}:level-up`,
+        });
+        if (!burst) lastLevelUpBeat = null;
+        else {
+          const origin = worldToScreen(lastLevelUpBeat.point, camera, view);
+          combatVisuals.ellipse(origin.x, origin.y, burst.ringRadius, burst.ringRadius * 0.7)
+            .stroke({ color: burst.color, width: 3, alpha: burst.ringAlpha });
+          for (const ray of burst.rays) {
+            combatVisuals.moveTo(origin.x + Math.cos(ray.angle) * ray.inner, origin.y + Math.sin(ray.angle) * ray.inner * 0.7)
+              .lineTo(origin.x + Math.cos(ray.angle) * ray.outer, origin.y + Math.sin(ray.angle) * ray.outer * 0.7)
+              .stroke({ color: burst.color, width: 2, alpha: ray.alpha });
+          }
+          placeWeaponGlow(origin.x, origin.y, burst.coreRadius, burst.coreFlash ? 0xffffff : burst.color, burst.coreAlpha);
+        }
       }
       if (debugGridEnabled && playerBody) {
         collisionDebug.circle(groundScreen.x, groundScreen.y, playerBody.radius * camera.zoom).stroke({ color: 0xffd166, width: 2, alpha: 0.9 });
@@ -2641,6 +2735,8 @@ async function boot() {
     lastPlayerHit = null;
     lowHealthWarned = false;
     lastDashDirection = null;
+    framingState = createEncounterFramingState();
+    lastLevelUpBeat = null;
     shakeStartTick = -1;
     shakeMagnitude = 0;
     world.position.set(0, 0);
@@ -3067,6 +3163,14 @@ async function boot() {
         const dashStopped = dashFrame.completed || dashWorld.stopReason !== null;
         motion.vx = dashStopped ? 0 : (motion.x - movementStart.x) / dtSeconds;
         motion.vy = dashStopped ? 0 : (motion.y - movementStart.y) / dtSeconds;
+        // K-6 landing dust: a projection event off the existing stop; the stop
+        // reason only tints the puff.
+        if (dashStopped) pushCombatVisualEvent({
+          type: 'dash-land',
+          tick,
+          point: { x: motion.x, y: motion.y, z: lastGround.groundZ },
+          stopReason: dashWorld.stopReason,
+        });
         pushCombatVisualEvent({
           type: 'dash',
           tick,
@@ -4076,7 +4180,7 @@ async function boot() {
           });
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
-            lastPlayerHit = { tick, sourceId: damageEvent.sourceId };
+            lastPlayerHit = { tick, sourceId: damageEvent.sourceId, knockback: damageEvent.knockback };
             updateRunCombo(0);
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
@@ -4335,6 +4439,9 @@ async function boot() {
     }
     cockpit?.hideUpgrade();
     simulation.leaveUpgrade();
+    // V-4 level-up beat: stamped on resume because the tick is frozen while
+    // the panel is open, so a burst keyed on the offer would never animate.
+    lastLevelUpBeat = { tick: simulation.tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 28 } };
     combatAudio.resume();
     app.ticker.start();
     if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
@@ -4431,6 +4538,18 @@ async function boot() {
     }
     elapsedMs = simulation.timeMs;
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);
+    // V-6 encounter framing and boss-phase beat. Render zoom only: the
+    // director frames spawns on a fixed logical view (K-1) and pointer aim is
+    // a normalised direction, so this cannot touch simulation or input.
+    const framing = resolveEncounterFramingZoom({
+      state: framingState,
+      tick: simulation.tick,
+      enemies: grayboxEnemies,
+      player: renderActor,
+      bossPhaseTick: liquidatorBoss.active && simulation.tick >= liquidatorBoss.startTick ? lastBossStep?.elapsedTick ?? null : null,
+      reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+    });
+    camera.zoom = framing.zoom;
     followCameraTarget(camera, {
       ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
@@ -4461,6 +4580,7 @@ async function boot() {
     // outside: the visual gate captures a paused frame and may never land on
     // an active shake, so per-weapon recoil could regress to zero silently.
     dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
+    dataset.cameraZoom = framing.zoom.toFixed(3);
     renderWorld(renderActor);
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18

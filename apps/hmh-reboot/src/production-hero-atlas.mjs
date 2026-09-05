@@ -251,5 +251,14 @@ export function createProductionHeroDisplay({
     sprite.visible = Boolean(visible);
   };
 
-  return Object.freeze({ container, layerOrder: index.layerOrder, applyPose, setLayerVisible });
+  // Cycle 074 (V-5): an additive body tint over every non-shadow layer for
+  // the hero hit flash. Idempotent per frame; white restores the atlas colour.
+  let currentTint = 0xffffff;
+  const setTint = (color) => {
+    if (color === currentTint) return;
+    currentTint = color;
+    for (const [layer, sprite] of spriteByLayer) if (layer !== 'shadow') sprite.tint = color;
+  };
+
+  return Object.freeze({ container, layerOrder: index.layerOrder, applyPose, setLayerVisible, setTint });
 }

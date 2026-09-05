@@ -210,6 +210,35 @@ test('grenades, dash ring, kills and power-up chips read as game state', () => {
   assert.deepEqual(elements.get('hmhHudPowerups').children.map((chip) => chip.hidden), [true, true]);
 });
 
+test('the dash ring raises a one-shot ready flash only on a real cooldown completion (Cycle 074 K-6)', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const dash = elements.get('hmhHudDashRing');
+  // A fresh session starts ready: no flash on the first frame.
+  hud.update({ ...baseView, dashProgress: 1, dashReady: true, dashActive: false });
+  assert.equal(dash.dataset.readyFlash, undefined);
+  // A dash starts: ready reads true through dashActive (pinned) and must not flash.
+  hud.update({ ...baseView, dashProgress: 0, dashReady: false, dashActive: true });
+  assert.equal(dash.dataset.ready, 'true');
+  assert.notEqual(dash.dataset.readyFlash, 'true');
+  // Cooling down, then ready again: exactly one rise.
+  hud.update({ ...baseView, dashProgress: 0.4, dashReady: false, dashActive: false });
+  assert.equal(dash.dataset.ready, 'false');
+  assert.notEqual(dash.dataset.readyFlash, 'true');
+  hud.update({ ...baseView, dashProgress: 1, dashReady: true, dashActive: false });
+  assert.equal(dash.dataset.readyFlash, 'true');
+  assert.equal(dash.dataset.ready, 'true');
+  writes = 0;
+  hud.update({ ...baseView, dashProgress: 1, dashReady: true, dashActive: false });
+  assert.equal(writes, 0, 'holding ready must not rewrite the flash attribute');
+  // The next dash clears it so the following completion can animate again.
+  hud.update({ ...baseView, dashProgress: 0, dashReady: false, dashActive: true });
+  assert.equal(dash.dataset.readyFlash, 'false');
+  hud.update({ ...baseView, dashProgress: 0.5, dashReady: false, dashActive: false });
+  hud.update({ ...baseView, dashProgress: 1, dashReady: true, dashActive: false });
+  assert.equal(dash.dataset.readyFlash, 'true');
+});
+
 test('the weapon strip tracks ownership and the active slot for all eight weapons', () => {
   const { documentRef, elements } = fakeDocument();
   const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });

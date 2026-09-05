@@ -111,7 +111,7 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
     ringActive: null, ringProgress: null,
     ownedMask: null, activeSlot: null,
     grenades: null, grenadeMax: null,
-    dashReady: null, dashProgress: null,
+    dashReady: null, dashProgress: null, dashRawReady: null, dashActive: null, readyFlash: null,
     kills: null, powerupLabel: null,
     hero: null, visible: null,
     bossActive: null, bossRatio: null, bossPhase: null,
@@ -256,6 +256,21 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
         last.dashReady = dashReady;
         elements.dash.dataset.ready = dashReady;
       }
+      // Cycle 074 (K-6): a one-shot flash attribute that rises only when the
+      // cooldown itself completes (false -> true while no dash is active) and
+      // clears when the next dash starts, so a dash start never flashes and
+      // the CSS animation can replay on the next completion.
+      const dashRawReady = Boolean(view.dashReady);
+      const dashActive = Boolean(view.dashActive);
+      const setReadyFlash = (value) => {
+        if (last.readyFlash === value) return;
+        last.readyFlash = value;
+        elements.dash.dataset.readyFlash = value;
+      };
+      if (dashActive && last.dashActive !== true) setReadyFlash('false');
+      if (dashRawReady && last.dashRawReady === false && !dashActive) setReadyFlash('true');
+      last.dashRawReady = dashRawReady;
+      last.dashActive = dashActive;
       const dashProgress = clamp01(view.dashProgress).toFixed(3);
       if (last.dashProgress !== dashProgress) {
         last.dashProgress = dashProgress;

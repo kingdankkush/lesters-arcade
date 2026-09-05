@@ -267,6 +267,19 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-hud-dash[data-ready="false"] { background: conic-gradient(var(--warning) calc(var(--progress, 0) * 360deg), rgba(255, 232, 77, 0.12) 0deg); }
 .hmh-hud-dash .hmh-reboot-dash-status { background: rgba(4, 15, 26, 0.94); }
 .hmh-hud-dash .hmh-reboot-dash-status[data-ready="true"] { background: rgba(9, 54, 46, 0.9); box-shadow: 0 0 16px rgba(69, 255, 138, 0.22); }
+/* Cycle 074 (K-6): one-shot cooldown-ready flash. The runtime raises
+   data-ready-flash only when the cooldown completes and clears it when the
+   next dash starts, so a dash start never pulses. Reduce-motion is honoured
+   twice: the OS media block below zeroes every animation, and the pause-menu
+   setting (data-setting-reduce-motion on the stage, the rail's preceding
+   sibling) disables it explicitly. */
+@keyframes hmh-dash-ready {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(69, 255, 138, 0); }
+  40% { transform: scale(1.12); box-shadow: 0 0 18px 4px rgba(69, 255, 138, 0.55); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(69, 255, 138, 0); }
+}
+.hmh-hud-dash[data-ready-flash="true"] { animation: hmh-dash-ready 420ms ease-out 1; }
+.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-dash[data-ready-flash="true"] { animation: none; }
 .hmh-hud-powerups { display: flex; gap: 5px; align-items: center; margin-left: 4px; }
 .hmh-hud-powerups b {
   padding: 4px 9px;
@@ -363,6 +376,14 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-menu-actions button:disabled:hover { border-color: rgba(143, 243, 255, 0.3); background: rgba(10, 39, 56, 0.7); }
 
 .hmh-upgrade-layer { align-items: end; }
+/* Cycle 074 (V-4): level-up panel entrance. Pure CSS on the hidden flip; the
+   rAF poll and pick path are untouched. */
+@keyframes hmh-upgrade-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hmh-upgrade-layer:not([hidden]) .hmh-upgrade-panel { animation: hmh-upgrade-enter 260ms ease-out 1; }
+.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-upgrade-layer:not([hidden]) .hmh-upgrade-panel { animation: none; }
 .hmh-upgrade-panel { width: min(980px, 100%); padding: 20px; border-radius: 22px 22px 10px 10px; }
 .hmh-upgrade-panel > header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .hmh-upgrade-panel > header > div { min-width: 0; }

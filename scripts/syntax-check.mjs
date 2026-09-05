@@ -417,6 +417,8 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-hero-select-ui.mjs",
   "tests/hmh-hero-select-ui.test.mjs",
   "tests/hmh-reboot-hero-selector-render.test.mjs",
+  "apps/hmh-reboot/src/game-feel.mjs",
+  "tests/hmh-reboot-game-feel.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 
