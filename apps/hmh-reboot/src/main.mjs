@@ -1,4 +1,5 @@
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
+import { deterministicUnit } from './deterministic-hash.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
@@ -247,19 +248,6 @@ const LIQUIDATOR_THREAT_COST = 48;
 // Bullets fly at chest height above whatever ground is beneath them, so firing
 // from an authored ledge still connects with targets on the level below.
 const PROJECTILE_FLIGHT_HEIGHT = 34;
-
-// Projection-only helper: a stable 0..1 value from a string key. Combat spark
-// and debris fans use it so effects are identical on replay without touching
-// simulation RNG.
-function deterministicUnit(key) {
-  let hash = 2166136261;
-  const text = String(key);
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 16777619) >>> 0;
-  }
-  return hash / 0x1_0000_0000;
-}
 
 function firstInteractiveFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));

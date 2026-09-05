@@ -5,6 +5,7 @@ import {
   resolveBearMarketBurnerPolicy,
   stepBearMarketBurner,
 } from './bear-market-burner.mjs';
+import { seededUnit } from './deterministic-hash.mjs';
 import {
   FORKED_STANDARD_CONFIG,
   createForkedStandardState,
@@ -58,18 +59,6 @@ function rotate(direction, radians) {
     x: direction.x * cosine - direction.y * sine,
     y: direction.x * sine + direction.y * cosine,
   });
-}
-
-function seededUnit(seed, key) {
-  let hash = (validSeed(seed) ^ 0x811c9dc5) >>> 0;
-  for (const character of String(key)) {
-    hash ^= character.charCodeAt(0);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  hash ^= hash << 13;
-  hash ^= hash >>> 17;
-  hash ^= hash << 5;
-  return (hash >>> 0) / 0x1_0000_0000;
 }
 
 const STOP_POLICY = freezeDeep({ type: 'stop' });

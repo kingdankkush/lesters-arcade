@@ -16,6 +16,8 @@
 // an unreadable blur rather than weight.
 //
 // Ceiling is the grenade blast at 10; a weapon must never out-shake ordnance.
+import { feedbackUnit } from './deterministic-hash.mjs';
+
 export const WEAPON_RECOIL_SHAKE = Object.freeze({
   'coin-blaster': 1.6,
   'scatter-shotgun': 4.2,
@@ -36,19 +38,6 @@ export function weaponRecoilShake(weaponId) {
 // Wide enough to read as a burst, narrow enough that the direction is legible.
 export const IMPACT_SPRAY_CONE = Math.PI * 0.9;
 
-function deterministicUnit(key) {
-  let hash = 0x811c9dc5;
-  const text = String(key);
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  hash ^= hash << 13;
-  hash ^= hash >>> 17;
-  hash ^= hash << 5;
-  return (hash >>> 0) / 0x1_0000_0000;
-}
-
 /**
  * Spark angles for one impact, sprayed back along the surface normal.
  *
@@ -67,7 +56,7 @@ export function impactSprayAngles({ seed, direction, count }) {
     // Even spacing plus a seeded jitter inside each slot: an evenly stepped
     // fan alone reads as a mechanical star.
     const slot = (index + 0.5) / total;
-    const jitter = (deterministicUnit(`${seed}:${index}`) - 0.5) / total;
+    const jitter = (feedbackUnit(`${seed}:${index}`) - 0.5) / total;
     angles.push(centre + (slot + jitter - 0.5) * cone);
   }
   return angles;

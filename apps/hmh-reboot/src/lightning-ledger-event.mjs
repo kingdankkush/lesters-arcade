@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { mix } from './deterministic-hash.mjs';
 
 const MIN_EVENT_TICK = 3_600;
 const MAX_EVENT_TICK = 28_800;
@@ -16,15 +17,6 @@ const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 function unsignedSeed(value) {
   if (!Number.isInteger(value) || value < 0 || value > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
   return value >>> 0;
-}
-
-function mix(value) {
-  let hash = value >>> 0;
-  hash ^= hash >>> 16;
-  hash = Math.imul(hash, 0x7feb352d) >>> 0;
-  hash ^= hash >>> 15;
-  hash = Math.imul(hash, 0x846ca68b) >>> 0;
-  return (hash ^ (hash >>> 16)) >>> 0;
 }
 
 function validateCandidate(candidate) {

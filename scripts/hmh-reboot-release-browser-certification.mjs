@@ -31,13 +31,22 @@ const MAX_ANCHOR_WARMUP_SCREENSHOTS = 6;
 const ANCHOR_WARMUP_SETTLE_MS = 50;
 
 await mkdir(evidenceRoot, { recursive: true });
-const browser = await chromium.launch({
-  executablePath: browserExecutable,
-  headless: true,
-  args: ['--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl'],
-});
 
-async function openCandidatePage(profile) {
+// Cycle 074: one browser per profile. Cycle 072 (mobile-portrait, 28,886 px at
+// delta 19) and Cycle 073 (mobile-landscape, 9,946 px at delta 23 after the
+// dsf-3 portrait pass) both differed BETWEEN contexts of one long-lived
+// browser while every pass was internally stable, so the per-context warm-up
+// could not touch it. The profile loop launches, uses and closes its own
+// browser, and the handle is threaded through every capture path.
+async function launchBrowser() {
+  return chromium.launch({
+    executablePath: browserExecutable,
+    headless: true,
+    args: ['--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl'],
+  });
+}
+
+async function openCandidatePage(browser, profile) {
   const context = await browser.newContext({
     viewport: profile.viewport,
     deviceScaleFactor: profile.deviceScaleFactor,
@@ -68,7 +77,7 @@ function digest(bytes) {
   return createHash('sha256').update(bytes).digest('hex');
 }
 
-async function comparePngs(first, second) {
+async function comparePngs(browser, first, second) {
   const page = await browser.newPage();
   try {
     return await page.evaluate(async ({ firstUrl, secondUrl }) => {
@@ -246,8 +255,8 @@ async function warmCompositor(page, { maxScreenshots = MAX_ANCHOR_WARMUP_SCREENS
   return { screenshots, stable: false };
 }
 
-async function captureAnchor(profile, pass) {
-  const { context, page, candidate } = await openCandidatePage(profile);
+async function captureAnchor(browser, profile, pass) {
+  const { context, page, candidate } = await openCandidatePage(browser, profile);
   const errors = [];
   page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
   page.on('response', (response) => {
@@ -291,8 +300,8 @@ async function captureAnchor(profile, pass) {
   }
 }
 
-async function captureLiveInteraction(profile) {
-  const { context, page, candidate } = await openCandidatePage(profile);
+async function captureLiveInteraction(browser, profile) {
+  const { context, page, candidate } = await openCandidatePage(browser, profile);
   const errors = [];
   page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
   page.on('response', (response) => {
@@ -347,33 +356,36 @@ async function captureLiveInteraction(profile) {
   }
 }
 
-try {
-  const gameResponse = await fetch(`${origin}/dist/hmh-reboot/game.js`);
-  assert.equal(gameResponse.ok, true, 'dist/hmh-reboot/game.js unavailable');
-  const gameSource = await gameResponse.text();
-  assert.match(gameSource, /production-vector-world-v1/);
-  assert.match(gameSource, /performanceProfile/);
-  const swResponse = await fetch(`${origin}/sw.js`);
-  assert.equal(swResponse.ok, true, 'sw.js unavailable');
-  assert.match(await swResponse.text(), /hmh-reboot\/game\.js/);
+const gameResponse = await fetch(`${origin}/dist/hmh-reboot/game.js`);
+assert.equal(gameResponse.ok, true, 'dist/hmh-reboot/game.js unavailable');
+const gameSource = await gameResponse.text();
+assert.match(gameSource, /production-vector-world-v1/);
+assert.match(gameSource, /performanceProfile/);
+const swResponse = await fetch(`${origin}/sw.js`);
+assert.equal(swResponse.ok, true, 'sw.js unavailable');
+assert.match(await swResponse.text(), /hmh-reboot\/game\.js/);
 
-  const results = [];
-  for (const profile of profiles) {
-    const first = await captureAnchor(profile, 1);
-    const second = await captureAnchor(profile, 2);
+const results = [];
+for (const profile of profiles) {
+  // A fresh browser per profile: both anchor passes and the live capture start
+  // from the same GPU state, and a failed profile cannot leak Chrome processes.
+  const browser = await launchBrowser();
+  try {
+    const first = await captureAnchor(browser, profile, 1);
+    const second = await captureAnchor(browser, profile, 2);
     const anchorDiff = first.hash === second.hash
       ? { sizeMismatch: false, changedPixels: 0, maxChannelDelta: 0, meanChannelDelta: 0 }
-      : await comparePngs(first.image, second.image);
+      : await comparePngs(browser, first.image, second.image);
     assert.equal(anchorDiff.sizeMismatch, false, `${profile.name} anchor size mismatch`);
     assert.ok(anchorDiff.changedPixels <= 32, `${profile.name} anchor hashes differ across ${anchorDiff.changedPixels} pixels`);
     assert.ok(anchorDiff.maxChannelDelta <= 2, `${profile.name} anchor max channel delta ${anchorDiff.maxChannelDelta}`);
-    const live = await captureLiveInteraction(profile);
+    const live = await captureLiveInteraction(browser, profile);
     assert.notEqual(live.liveHash, first.hash, `${profile.name} live evidence matches deterministic anchor`);
-    results.push({ profile: profile.name, anchorHashes: [first.hash, second.hash], anchorDiff, warmup: [first.warmup, second.warmup], geometry: first.geometry, live });
+    results.push({ profile: profile.name, browserLaunches: 1, anchorHashes: [first.hash, second.hash], anchorDiff, warmup: [first.warmup, second.warmup], geometry: first.geometry, live });
+  } finally {
+    await browser.close();
   }
-  const report = { origin, browserExecutable, profiles: results };
-  await writeFile(path.join(evidenceRoot, reportName), `${JSON.stringify(report, null, 2)}\n`);
-  console.log(JSON.stringify(report, null, 2));
-} finally {
-  await browser.close();
 }
+const report = { origin, browserExecutable, browserLaunches: profiles.length, profiles: results };
+await writeFile(path.join(evidenceRoot, reportName), `${JSON.stringify(report, null, 2)}\n`);
+console.log(JSON.stringify(report, null, 2));

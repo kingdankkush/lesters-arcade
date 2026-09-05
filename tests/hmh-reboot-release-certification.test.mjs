@@ -72,3 +72,32 @@ test('Cycle 073 anchor warm-up is a bounded loop that stops on two hash-identica
   assert.match(live, /navGridBootMs/);
   assert.match(live, /before navigation authority/);
 });
+
+test('Cycle 074 certification relaunches the browser per profile so each anchor pair and live capture start from a fresh GPU state', () => {
+  const source = fs.readFileSync(scriptPath, 'utf8');
+  // Cycle 072 (mobile-portrait, 28,886 px at delta 19) and Cycle 073
+  // (mobile-landscape, 9,946 px at delta 23 after the dsf-3 portrait pass)
+  // both differed BETWEEN contexts of one long-lived browser while each pass
+  // was internally stable. A per-context warm-up cannot fix that; a fresh
+  // browser per profile can. Exactly one launch site, inside a function, and
+  // the profile loop owns the launch and the close.
+  assert.match(source, /async function launchBrowser\(\)/);
+  const launchStart = source.indexOf('async function launchBrowser(');
+  assert.ok(launchStart > 0);
+  const launchBody = source.slice(launchStart, source.indexOf('\n}\n', launchStart));
+  assert.match(launchBody, /chromium\.launch\(\{/);
+  assert.equal((source.match(/chromium\.launch\(/g) ?? []).length, 1, 'chromium.launch must appear exactly once, inside launchBrowser');
+  assert.doesNotMatch(source.slice(0, launchStart), /await chromium\.launch/, 'no module-level browser singleton');
+  // The handle is threaded through every capture path instead of closed over.
+  assert.match(source, /async function openCandidatePage\(browser, profile\)/);
+  assert.match(source, /async function comparePngs\(browser, first, second\)/);
+  assert.match(source, /async function captureAnchor\(browser, profile, pass\)/);
+  assert.match(source, /async function captureLiveInteraction\(browser, profile\)/);
+  const loop = source.slice(source.indexOf('for (const profile of profiles)'), source.indexOf('const report ='));
+  assert.match(loop, /const browser = await launchBrowser\(\)/);
+  assert.match(loop, /finally \{[\s\S]*await browser\.close\(\)/, 'every per-profile browser closes even when an assertion fails');
+  assert.match(loop, /browserLaunches/);
+  assert.match(source, /browserLaunches: profiles\.length/, 'the report records how many browsers the run launched');
+  // Warm-up evidence still reaches the report alongside the launch count.
+  assert.match(loop, /warmup: \[first\.warmup, second\.warmup\]/);
+});

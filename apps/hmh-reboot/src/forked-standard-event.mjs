@@ -1,17 +1,11 @@
 import { FORKED_STANDARD_CONFIG } from './forked-standard.mjs';
+import { mix } from './deterministic-hash.mjs';
 import { freezeDeep } from './value-guards.mjs';
 
 const DISTRICTS = new Set(['hashwood', 'mining-camp', 'liquidation-yard']);
 const OFFSETS = freezeDeep([{ x: 170, y: 0 }, { x: 0, y: 170 }, { x: -170, y: 0 }, { x: 0, y: -170 }]);
 const PROTECTED_RADIUS = 140;
 const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
-const mix = (value) => {
-  let hash = value >>> 0;
-  hash ^= hash >>> 16; hash = Math.imul(hash, 0x7feb352d) >>> 0;
-  hash ^= hash >>> 15; hash = Math.imul(hash, 0x846ca68b) >>> 0;
-  return (hash ^ (hash >>> 16)) >>> 0;
-};
-
 export function createForkedStandardEvent({ seed, candidates, protectedPoints = [], queryGround, isBlocked, isRouteReachable } = {}) {
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
   if (!Array.isArray(candidates) || candidates.length < 1 || candidates.length > 64) throw new TypeError('one to 64 Forked Standard event candidates are required');

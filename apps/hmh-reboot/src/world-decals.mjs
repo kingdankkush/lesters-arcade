@@ -13,6 +13,8 @@
 // decals every frame would allocate inside the render loop for no gain: none
 // of this moves.
 
+import { seededUnit } from './deterministic-hash.mjs';
+
 export const DECAL_KINDS = Object.freeze({
   // Footpath wear where the authored route runs.
   'route-wear': Object.freeze({ color: '#6b5a3f', alpha: 0.22, shape: 'ellipse', stretch: 2.4 }),
@@ -35,19 +37,6 @@ export const MAX_WORLD_DECALS = 220;
 // (scripts/build-hmh-world-decals.mjs) and is tree-shaken out of the child,
 // which only imports drawWorldDecals and this URL.
 export const WORLD_DECAL_URL = '/assets/generated/hmh-world-decals/hmh-world-decals.json';
-
-function seededUnit(seed, key) {
-  let hash = (Number(seed) >>> 0) ^ 0x811c9dc5;
-  const text = String(key);
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  hash ^= hash << 13;
-  hash ^= hash >>> 17;
-  hash ^= hash << 5;
-  return (hash >>> 0) / 0x1_0000_0000;
-}
 
 function districtAt(world, x) {
   for (const district of world.districts) {

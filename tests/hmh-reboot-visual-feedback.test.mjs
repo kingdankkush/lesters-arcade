@@ -56,7 +56,10 @@ test('camera shake cannot influence aim or hit resolution', async () => {
 test('shake and spark randomness is deterministic, never Math.random', async () => {
   const source = await readMain();
   assert.ok(!/Math\.random/.test(source), 'the runtime must contain no Math.random');
-  assert.match(source, /function deterministicUnit\(key\)/, 'effects use a seeded hash');
+  // Cycle 074: the FNV-1a helper lives in deterministic-hash.mjs (one copy
+  // instead of four); the runtime imports it rather than redefining it.
+  assert.match(source, /import \{[^}]*\bdeterministicUnit\b[^}]*\} from '\.\/deterministic-hash\.mjs'/, 'effects use the shared seeded hash');
+  assert.doesNotMatch(source, /function deterministicUnit\(/, 'the runtime must not keep a private hash copy');
   assert.match(source, /deterministicUnit\(`shake-x:/, 'shake offsets are seeded from the tick');
 });
 

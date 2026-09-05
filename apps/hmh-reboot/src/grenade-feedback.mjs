@@ -1,4 +1,5 @@
 import { clamp, finite } from './value-guards.mjs';
+import { feedbackUnit } from './deterministic-hash.mjs';
 
 // V-3. Grenade feedback set, projection-only.
 //
@@ -71,21 +72,6 @@ function positive(value, name) {
   finite(value, name);
   if (value <= 0) throw new TypeError(`${name} must be positive`);
   return value;
-}
-
-// Same seeded FNV-1a + xorshift as combat-feedback.mjs: a stable 0..1 from a
-// string key so a replay draws the identical fan without touching sim RNG.
-function deterministicUnit(key) {
-  let hash = 0x811c9dc5;
-  const text = String(key);
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  hash ^= hash << 13;
-  hash ^= hash >>> 17;
-  hash ^= hash << 5;
-  return (hash >>> 0) / 0x1_0000_0000;
 }
 
 const easeOutCubic = (t) => 1 - (1 - t) ** 3;
@@ -176,15 +162,15 @@ export function buildBouncePuff({ seed, kind = 'ground', age, zoom = 1 } = {}) {
   const t = clamp(age / BOUNCE_PUFF_LIFETIME_TICKS, 0, 1);
   const expired = age >= BOUNCE_PUFF_LIFETIME_TICKS;
   const wall = kind === 'blocker';
-  const jitter = 0.9 + deterministicUnit(`${seed}:puff`) * 0.2;
+  const jitter = 0.9 + feedbackUnit(`${seed}:puff`) * 0.2;
   // Opens from ~10 px to ~34 px: evidence at 1440x900 showed an 11 px ellipse
   // reading as a smudge rather than kicked-up dust.
   const spread = (10 + easeOutCubic(t) * 24) * jitter * zoom;
   const fade = expired ? 0 : (1 - t) ** 1.3;
   const lobes = [];
   for (let index = 0; index < 3; index += 1) {
-    const angle = (index / 3 + deterministicUnit(`${seed}:lobe:${index}`) * 0.25) * Math.PI * 2;
-    const drift = 0.35 + deterministicUnit(`${seed}:drift:${index}`) * 0.3;
+    const angle = (index / 3 + feedbackUnit(`${seed}:lobe:${index}`) * 0.25) * Math.PI * 2;
+    const drift = 0.35 + feedbackUnit(`${seed}:drift:${index}`) * 0.3;
     lobes.push(Object.freeze({
       dx: Math.cos(angle) * spread * drift * (wall ? 0.5 : 1),
       dy: Math.sin(angle) * spread * drift * (wall ? 0.7 : 0.32) - (wall ? spread * 0.3 : 0),
@@ -225,8 +211,8 @@ export function buildFragmentBurst({ seed, mode, radius, age, zoom = 1, particle
   const fragments = [];
   for (let index = 0; index < count; index += 1) {
     const slot = (index + 0.5) / count;
-    const jitter = (deterministicUnit(`${seed}:frag:${index}`) - 0.5) / count;
-    const speed = 0.72 + deterministicUnit(`${seed}:speed:${index}`) * 0.28;
+    const jitter = (feedbackUnit(`${seed}:frag:${index}`) - 0.5) / count;
+    const speed = 0.72 + feedbackUnit(`${seed}:speed:${index}`) * 0.28;
     const outer = Math.max(2 * zoom, reach * travel * speed);
     const length = (6 + (1 - t) * 14) * zoom;
     fragments.push(Object.freeze({

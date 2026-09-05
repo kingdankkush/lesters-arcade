@@ -403,6 +403,11 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-combat-audio-routing.test.mjs",
   "scripts/hmh-hero-atlas-format-harness.mjs",
   "tests/hmh-hero-atlas-format-harness.test.mjs",
+  "apps/hmh-reboot/src/deterministic-hash.mjs",
+  "tests/hmh-reboot-deterministic-hash.test.mjs",
+  "scripts/hmh-reboot-bundle-budget.mjs",
+  "scripts/hmh-reboot-pixi-vendor-stubs.mjs",
+  "scripts/hmh-reboot-release-browser-certification.mjs",
   "scripts/syntax-check.mjs"
 ];
 

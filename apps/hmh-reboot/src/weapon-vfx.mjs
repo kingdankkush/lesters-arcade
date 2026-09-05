@@ -1,4 +1,5 @@
 import { DISTRICT_TERRAIN_MATERIAL } from './terrain-tile-atlas.mjs';
+import { deterministicUnit } from './deterministic-hash.mjs';
 
 // V-1 / V-2. Per-weapon combat VFX identity and surface-typed impacts.
 //
@@ -46,18 +47,6 @@ export const WEAPON_VFX_COLORS = F({
   'bear-market-burner': 0xff7a2f,
   'forked-standard': 0xd7fbff,
 });
-
-// Same FNV-1a form as the runtime's deterministicUnit: a stable 0..1 from a
-// string key, so tumble and jitter are identical on replay.
-function deterministicUnit(key) {
-  let hash = 2166136261;
-  const text = String(key);
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 16777619) >>> 0;
-  }
-  return hash / 0x1_0000_0000;
-}
 
 // Expanders. `extra` carries the shape-specific knobs (cone, ring growth,
 // steady life under reduceFlash).

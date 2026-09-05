@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { seededUnit } from './deterministic-hash.mjs';
 // Read-only world constants: the dressing generator must know where the
 // blockers, routes, water, arenas, set-pieces and spawn points are so it can
 // keep out of them. Nothing here is written back into the world contract.
@@ -88,18 +89,6 @@ export function buildAuthoredTownPlacements({ worldId, index } = {}) {
     }));
   }
   return Object.freeze(placements);
-}
-
-function seededUnit(seed, key) {
-  let hash = (Number(seed) >>> 0) ^ 0x811c9dc5;
-  for (const character of String(key)) {
-    hash ^= character.charCodeAt(0);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  hash ^= hash << 13;
-  hash ^= hash >>> 17;
-  hash ^= hash << 5;
-  return (hash >>> 0) / 0x1_0000_0000;
 }
 
 export const AUTHORED_PROP_ASSET_IDS = Object.freeze([

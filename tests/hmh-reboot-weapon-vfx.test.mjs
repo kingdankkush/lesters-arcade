@@ -400,7 +400,9 @@ test('main.mjs wires the weapon VFX layer above combat visuals, emits surface-ty
   // The existing pins this slice must not break.
   assert.match(raw, /particleScale > 0 \? \(event\.critical \? 8 : 4\) : 0/u);
   assert.match(raw, /impactSprayAngles\(/u);
-  assert.match(raw, /function deterministicUnit\(key\)/u);
+  // Cycle 074: the shared FNV-1a helper replaces the runtime's private copy.
+  assert.match(raw, /import \{[^}]*\bdeterministicUnit\b[^}]*\} from '\.\/deterministic-hash\.mjs'/u);
+  assert.doesNotMatch(raw, /function deterministicUnit\(/u);
   assert.doesNotMatch(raw, /Math\.random/u);
 });
 

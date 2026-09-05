@@ -26,9 +26,10 @@
 
 import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 import { statSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
-import { assertHmhInitialJsBudget } from './scripts/hmh-reboot-bundle-budget.mjs';
+import { assertHmhInitialJsBudget, sumStaticChunkBytes } from './scripts/hmh-reboot-bundle-budget.mjs';
+import { createHmhPixiStubResolver, loadHmhPixiStub } from './scripts/hmh-reboot-pixi-vendor-stubs.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const portalDir = resolve(__dirname, 'apps/portal');
@@ -38,6 +39,7 @@ const chikunEntry = resolve(__dirname, 'apps/chikun/src/main.mjs');
 const hmhPixiVendor = resolve(__dirname, 'apps/hmh-reboot/src/pixi-vendor.mjs');
 const nodeModulesDir = resolve(__dirname, 'node_modules');
 const pixiModule = resolve(nodeModulesDir, 'pixi.js/lib/index.mjs');
+const pixiLibDir = resolve(nodeModulesDir, 'pixi.js/lib');
 const outdir = resolve(portalDir, 'dist');
 const HMH_INITIAL_JS_CAP = 1_050_000;
 
@@ -83,6 +85,14 @@ function createHmhPixiPlugin({ externalizeRuntimeImports }) {
         if (!importer.includes('/node_modules/')) return null;
         return { path: importedPackagePath(args.path) };
       });
+      // Cycle 074 (N-4): the child never reaches the WebGPU/canvas renderers,
+      // Pixi pointer events, filters or the accessibility overlay, but
+      // pixi.js/lib/index.mjs registers them by side effect and the
+      // splitting:false vendor inlines the lazily detected renderers. Resolve
+      // exactly those files to stubs (scripts/hmh-reboot-pixi-vendor-stubs.mjs).
+      const resolveHmhPixiStub = createHmhPixiStubResolver({ pixiLibDir });
+      buildApi.onResolve({ filter: /(?:WebGPURenderer|CanvasRenderer|init)\.mjs$/ }, (args) => resolveHmhPixiStub(args));
+      buildApi.onLoad({ filter: /.*/, namespace: 'hmh-pixi-stub' }, (args) => loadHmhPixiStub(args));
     },
   };
 }
@@ -111,6 +121,7 @@ async function run() {
       'hmh-reboot/game': hmhRebootEntry,
       'chikun/game': chikunEntry,
     },
+    absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
     plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],
     bundle: true,
     splitting: true,        // preserve dynamic import() code-split chunks
@@ -158,9 +169,16 @@ async function run() {
   const childMinSize = statSync(outChild).size;
   const chikunMinSize = statSync(outChikun).size;
   const childVendorSize = statSync(outChildVendor).size;
+  // Cycle 074: game.js statically imports hoisted shared chunks (modules the
+  // portal also imports). They load on the same initial path and count.
+  const hmhSharedChunks = sumStaticChunkBytes({
+    metafile: result.metafile,
+    entryOutput: relative(__dirname, outChild).replaceAll('\\', '/'),
+  });
   const hmhBudget = assertHmhInitialJsBudget({
     entryBytes: childMinSize,
     vendorBytes: childVendorSize,
+    sharedChunkBytes: hmhSharedChunks.bytes,
     cap: HMH_INITIAL_JS_CAP,
   });
   const entryDeltaPct = 100 * (minSize / rawSize - 1);
@@ -185,8 +203,10 @@ async function run() {
   console.log(`Chikun source:      ${human(chikunRawSize)}`);
   console.log(`Chikun entry:       ${human(chikunMinSize)}  (${chikunDeltaPct >= 0 ? '+' : ''}${chikunDeltaPct.toFixed(1)}% vs child source)`);
   console.log(`HMH Pixi vendor:    ${human(childVendorSize)}  (stable preloaded module)`);
-  console.log(`HMH initial JS:     ${human(hmhBudget.combinedInitialChildBytes)} / ${human(hmhBudget.cap)} raw aggregate`);
-  console.log(`HMH headroom:       ${human(hmhBudget.remaining)}`);
+  console.log(`HMH shared chunks:  ${human(hmhSharedChunks.bytes)} (${hmhSharedChunks.bytes.toLocaleString('en-US')} B) across ${hmhSharedChunks.chunks.length} hoisted chunk(s) game.js imports statically`);
+  console.log(`HMH initial JS:     ${human(hmhBudget.combinedInitialChildBytes)} (${hmhBudget.combinedInitialChildBytes.toLocaleString('en-US')} B) / ${human(hmhBudget.cap)} raw aggregate, entry + vendor`);
+  console.log(`HMH initial JS + shared: ${human(hmhBudget.initialChildBytesWithSharedChunks)} (${hmhBudget.initialChildBytesWithSharedChunks.toLocaleString('en-US')} B) / ${human(hmhBudget.cap)} raw aggregate, entry + shared chunks + vendor`);
+  console.log(`HMH headroom:       ${human(hmhBudget.remaining)} entry + vendor; ${human(hmhBudget.remainingWithSharedChunks)} including shared chunks`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
   console.log(`Output dir:         apps/portal/dist/`);
 }

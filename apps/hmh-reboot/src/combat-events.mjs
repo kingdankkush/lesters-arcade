@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { seededUnit } from './deterministic-hash.mjs';
 const UINT32_MAX = 0xffff_ffff;
 const EPSILON = 1e-12;
 
@@ -20,18 +21,6 @@ function positive(value, name) {
 function validSeed(value) {
   if (!Number.isInteger(value) || value < 0 || value > UINT32_MAX) throw new TypeError('seed must be an unsigned 32-bit integer');
   return value >>> 0;
-}
-
-function seededUnit(seed, key) {
-  let hash = (validSeed(seed) ^ 0x811c9dc5) >>> 0;
-  for (const character of String(key)) {
-    hash ^= character.charCodeAt(0);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  hash ^= hash << 13;
-  hash ^= hash >>> 17;
-  hash ^= hash << 5;
-  return (hash >>> 0) / 0x1_0000_0000;
 }
 
 function normalize(direction, fallbackId) {
