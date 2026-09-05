@@ -492,7 +492,9 @@ if (isMain) {
       const stage = document.querySelector('#hmhRebootStage');
       return stage?.dataset.authoredPropStatus === 'ready'
         && Number(stage.dataset.authoredLandmarkVisible) >= 3
-        && stage.dataset.authoredLandmarkAnimated === '0';
+        && stage.dataset.authoredLandmarkAnimated === '0'
+        // W-13: fog banks and motes are off under prefers-reduced-motion.
+        && stage.dataset.atmosphereSprites === '0';
     }, undefined, { timeout: 30_000 });
     reducedMotionEvidence = await reducedPage.evaluate(() => {
       const stage = document.querySelector('#hmhRebootStage');
@@ -500,6 +502,7 @@ if (isMain) {
         sceneId: 'frontier-relay-desktop',
         landmarkVisible: Number(stage?.dataset.authoredLandmarkVisible),
         animatedSignals: Number(stage?.dataset.authoredLandmarkAnimated),
+        atmosphereSprites: Number(stage?.dataset.atmosphereSprites),
       };
     });
     await reducedPage.close();

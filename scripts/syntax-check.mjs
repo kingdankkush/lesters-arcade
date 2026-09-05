@@ -403,6 +403,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-upgrade-cards-and-settings.test.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
+  "apps/hmh-reboot/src/world-atmosphere.mjs",
+  "tests/hmh-reboot-world-atmosphere.test.mjs",
   "scripts/hmh-reboot-weapon-vfx-browser-smoke.mjs",
   "tests/hmh-reboot-combat-audio-routing.test.mjs",
   "scripts/hmh-hero-atlas-format-harness.mjs",

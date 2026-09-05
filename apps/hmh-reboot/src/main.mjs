@@ -206,6 +206,7 @@ import {
   resolveShellEject,
   resolveTracer,
 } from './weapon-vfx.mjs';
+import { createAtmospherePool, createAtmosphereTextures, renderWorldAtmosphere, resolveAtmosphereBudget, resolveAtmosphereTint } from './world-atmosphere.mjs';
 import {
   LEVEL_ONE_WORLD,
   buildLevelOneMinimapGeometry,
@@ -482,6 +483,27 @@ async function boot() {
     console.warn('[HMH] weapon VFX sprites disabled', error);
   }
   const weaponVfxLayer = weaponVfxPool?.container ?? new Container();
+  // W-13: drifting fog banks, district motes and the colour grade. Pooled
+  // sprites keyed on the simulation tick and a world lattice, drawn above
+  // every body and below every HUD element; the same failure rule applies.
+  let atmospherePool = null;
+  try {
+    atmospherePool = createAtmospherePool({
+      ContainerClass: Container,
+      SpriteClass: Sprite,
+      textures: createAtmosphereTextures({ renderer: app.renderer, GraphicsClass: Graphics }),
+    });
+  } catch (error) {
+    atmospherePool = null;
+    console.warn('[HMH] world atmosphere disabled', error);
+  }
+  const atmosphereLayer = atmospherePool?.container ?? new Container();
+  const atmosphereBudget = resolveAtmosphereBudget(performanceProfile);
+  // The grade is one flat sprite on the stage: it does not shake with the
+  // world container and the on-canvas HUD draws over it.
+  const atmosphereTint = new Sprite({ texture: Texture.WHITE });
+  atmosphereTint.label = 'world-atmosphere-tint';
+  atmosphereTint.visible = false;
   const authoredPropLayer = new Container();
   authoredPropLayer.label = 'authored-prop-layer';
   authoredPropLayer.sortableChildren = true;
@@ -587,8 +609,8 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, weaponVfxLayer, projectileImpacts, collisionDebug, label);
-  app.stage.addChild(world, overlayVisuals, bossLabel, minimap);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, collisionDebug, label);
+  app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel, minimap);
 
 
   const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -1400,6 +1422,7 @@ async function boot() {
     worldDecalLayer.clear();
     contactShadowPool?.begin();
     weaponVfxPool?.begin();
+    atmospherePool?.begin();
     grid.clear();
     collisionDebug.clear();
     projectileTrails.clear();
@@ -1421,6 +1444,27 @@ async function boot() {
     }
     if (renderState && camera) {
       renderAuthoredTerrain(view);
+      // W-13: the layer position (above the bodies) fixes the draw order; the
+      // pass only needs the camera. Reduce motion (runtime toggle or the boot
+      // profile) empties it the same way it stills the props; the grade is a
+      // static tint and stays on.
+      const atmosphereReport = renderWorldAtmosphere({
+        pool: atmospherePool,
+        districts: LEVEL_ONE_WORLD.districts,
+        camera,
+        view,
+        tick: simulation?.tick ?? 0,
+        worldToScreen,
+        budget: atmosphereBudget,
+        cullMargin: performanceProfile.worldCullMargin,
+        enabled: !(settings.reduceMotion || performanceProfile.particlesPerHazard === 0),
+      });
+      const atmosphereGrade = resolveAtmosphereTint({ districts: LEVEL_ONE_WORLD.districts, x: camera.x });
+      atmosphereTint.tint = atmosphereGrade.color;
+      atmosphereTint.alpha = atmosphereGrade.alpha;
+      atmosphereTint.width = view.width;
+      atmosphereTint.height = view.height;
+      atmosphereTint.visible = atmosphereGrade.alpha > 0;
       const authoredPropTick = simulation?.tick ?? 0;
       const hiddenAuthoredPropIds = new Set(collectibleState?.collectedIds ?? []);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
@@ -2383,6 +2427,9 @@ async function boot() {
         dataset.animatedEnemies = String(animatedEnemyCount);
         dataset.contactShadows = String(contactShadowPool?.count ?? 0);
         dataset.contactShadowsDropped = String(contactShadowPool?.dropped ?? 0);
+        dataset.atmosphereSprites = String(atmosphereReport.fog + atmosphereReport.motes);
+        dataset.atmosphereDropped = String(atmosphereReport.dropped);
+        dataset.atmosphereTint = `${atmosphereGrade.color.toString(16).padStart(6, '0')}@${atmosphereGrade.alpha.toFixed(3)}`;
         const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
         const audioSnapshot = combatAudio.status();
         dataset.runScore = String(runSnapshot?.score ?? 0);
@@ -2529,11 +2576,13 @@ async function boot() {
       hud?.setBoss(false, 0, '');
       actorVisual.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
+      atmosphereTint.visible = false;
     }
     // Outside the camera branch: a frame with no camera claims nothing, so
     // every pooled shadow is hidden rather than left over from the last frame.
     contactShadowPool?.finish();
     weaponVfxPool?.finish();
+    atmospherePool?.finish();
   };
 
   const stopCurrentSession = () => {

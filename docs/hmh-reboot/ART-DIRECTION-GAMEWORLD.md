@@ -59,6 +59,28 @@ Rules:
 - Water is the only high-specular surface; everything else stays matte so
   the river reads instantly.
 
+### Atmosphere (W-13, projection-only)
+
+One weather note per district, drawn above the bodies and below the HUD,
+keyed only on the simulation tick and a world lattice (never wall clock or
+RNG), and capped inside the world particle tier (desktop 10 fog + 30 motes of
+50; mobile 6 + 18 of 30; reduced motion 0, with the static grade kept):
+
+| District | Fog bank | Motes | Grade (alpha) |
+| --- | --- | --- | --- |
+| Frontier Relay | thin teal-grey ground fog | none | relay-cyan toward ground (0.030) |
+| Rugpull Ravine | none | warm dust drifting east | warning-amber toward red-rock (0.035) |
+| Liquidity Crossing | silver mist on the river only, drifting with the flow | none | litecoin-silver toward wet bank (0.030) |
+| Hashwood | faint green haze | mint-yellow pollen, slow fall and sway | shrine-mint toward forest floor (0.030) |
+| Mining Camp | low grey dust banks | grey dust drifting east | ore-gold toward crushed ore (0.025) |
+| Liquidation Yard | maroon smoke, lifted | rising embers cooling orange to pink | liquidation-pink toward asphalt (0.035) |
+
+Ceilings: fog sprite alpha never exceeds 0.14 (mist) or 0.12 (everything else)
+and fog colour stays within the district ground band, so actors remain the
+brightest saturated thing under it; motes stay at or under 3 px at zoom 1 and
+0.6 additive alpha; the grade never exceeds 0.05 and blends linearly across a
+600-unit window centred on every district boundary so it never pops.
+
 ## Density targets (per district, gameplay zoom)
 
 Amended Cycle 073 (W-7/W-8). The earlier 3-5 anchors and 8-16 satellites were
