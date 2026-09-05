@@ -14,7 +14,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`
 
-**Production cache marker:** `lesters-arcade-v26-hmh-feel-and-world`
+**Production cache marker:** `lesters-arcade-v27-hmh-atmosphere-and-feel`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
@@ -201,7 +201,7 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 - Immutable production URL: https://lesters-arcade-2er8kpl2y-justin-agent-projects.vercel.app
 - Retained rollback deployment: `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`
 - Retained rollback URL: https://lesters-arcade-qkk7kcv56-justin-agent-projects.vercel.app
-- Active runtime cache marker: `lesters-arcade-v26-hmh-feel-and-world`
+- Active runtime cache marker: `lesters-arcade-v27-hmh-atmosphere-and-feel`
 - Exact service-worker, portal bundle, HMH child bundle, and Pixi vendor bytes matched between the verified Preview and production.
 
 A later documentation-only commit can create a newer Preview without changing production. Treat `f2328177` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
@@ -219,7 +219,7 @@ Runtime implementation `f764ac75` is certified and live. This documentation wave
 | HMH initial JS / cap | 971,228 / 1,050,000 bytes; 78,772 bytes headroom |
 | Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
 | Cabinet status docs | PASS across canonical manifests and governed docs |
-| Production marker | `lesters-arcade-v26-hmh-feel-and-world`; local README parity and live network gate PASS |
+| Production marker | `lesters-arcade-v27-hmh-atmosphere-and-feel`; local README parity and live network gate PASS |
 | Production runtime | LIVE at the verified `f2328177` implementation boundary |
 
 The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.
