@@ -71,7 +71,7 @@ function districtSeed(id) {
   }
   return seed;
 }
-function mix(value) {
+function finalizeMurmur(value) {
   let hash = value | 0;
   hash ^= hash >>> 16;
   hash = Math.imul(hash, 0x85ebca6b);
@@ -79,8 +79,8 @@ function mix(value) {
   hash = Math.imul(hash, 0xc2b2ae35);
   return (hash ^ (hash >>> 16)) >>> 0;
 }
-const cellSeed = (id, col, row, index) => mix(districtSeed(id) ^ mix(col * 0x9e3779b1 + row * 0x85ebca6b + index * 0xc2b2ae35 + 0x2545f491));
-const unit = (seed, lane) => mix(seed + lane * 0x9e3779b9) / 0x1_0000_0000;
+const cellSeed = (id, col, row, index) => finalizeMurmur(districtSeed(id) ^ finalizeMurmur(col * 0x9e3779b1 + row * 0x85ebca6b + index * 0xc2b2ae35 + 0x2545f491));
+const unit = (seed, lane) => finalizeMurmur(seed + lane * 0x9e3779b9) / 0x1_0000_0000;
 const frac = (value) => value - Math.floor(value);
 const channel = (color, shift) => (color >> shift) & 0xff;
 const lerpChannel = (from, to, t, shift) => Math.round(channel(from, shift) + (channel(to, shift) - channel(from, shift)) * t) << shift;
