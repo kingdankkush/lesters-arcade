@@ -400,6 +400,9 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
   "scripts/hmh-reboot-weapon-vfx-browser-smoke.mjs",
+  "tests/hmh-reboot-combat-audio-routing.test.mjs",
+  "scripts/hmh-hero-atlas-format-harness.mjs",
+  "tests/hmh-hero-atlas-format-harness.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 
@@ -456,7 +459,8 @@ const PY_COMPILE_FILES = [
   "scripts/run-hmh-authored-props-pipeline.py",
   "scripts/hmh-blender/import-hmh-external-model.py",
   "scripts/hmh-blender/create-hmh-skinned-test-actor.py",
-  "scripts/run-hmh-skinned-test-pipeline.py"
+  "scripts/run-hmh-skinned-test-pipeline.py",
+  "scripts/hmh-hero-atlas-format-convert.py"
 ];
 
 let failures = 0;

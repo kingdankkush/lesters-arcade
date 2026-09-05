@@ -2412,6 +2412,7 @@ async function boot() {
         dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
         dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
         dataset.audioVoices = String(combatAudio.status().activeVoices);
+        dataset.audioUnknownCues = String(combatAudio.status().unknownCues);
         dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
         dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
         dataset.lastMeleeHits = String(lastMeleeAttack?.hits ?? 0);

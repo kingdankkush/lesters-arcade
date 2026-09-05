@@ -3,7 +3,7 @@
   "validation": {
     "ok": true,
     "gaps": [],
-    "cueCount": 83
+    "cueCount": 102
   },
   "mix": {
     "version": "wo-41-audio-system-v2",
@@ -177,6 +177,33 @@
       ],
       "synth": "triangle",
       "gainMul": 0.95,
+      "samplePreferred": true
+    },
+    "time-dilation-activate": {
+      "family": "reward",
+      "priority": 4,
+      "cooldownMs": 601,
+      "tone": [
+        1047,
+        784,
+        523
+      ],
+      "synth": "sine",
+      "gainMul": 0.88,
+      "samplePreferred": true
+    },
+    "berserk-activate": {
+      "family": "reward",
+      "priority": 4,
+      "cooldownMs": 601,
+      "tone": [
+        165,
+        330,
+        660,
+        990
+      ],
+      "synth": "square",
+      "gainMul": 0.96,
       "samplePreferred": true
     },
     "xp-pickup": {
@@ -572,6 +599,20 @@
       "gainMul": 0.72,
       "samplePreferred": false
     },
+    "hmh-hash-rail-charge": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 353,
+      "tone": [
+        110,
+        220,
+        440,
+        880
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.72,
+      "samplePreferred": true
+    },
     "hash-rail-fire": {
       "family": "weapon",
       "priority": 4,
@@ -584,6 +625,168 @@
       "synth": "square",
       "gainMul": 1.05,
       "samplePreferred": false
+    },
+    "hmh-fire-hash-rail": {
+      "family": "weapon",
+      "priority": 4,
+      "cooldownMs": 367,
+      "tone": [
+        82,
+        330,
+        1320
+      ],
+      "synth": "square",
+      "gainMul": 1.05,
+      "samplePreferred": true
+    },
+    "hmh-fire-coin-blaster": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 42,
+      "tone": [
+        180,
+        900
+      ],
+      "synth": "square",
+      "gainMul": 0.68,
+      "samplePreferred": true
+    },
+    "hmh-fire-scatter-shotgun": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 79,
+      "tone": [
+        155,
+        233,
+        349
+      ],
+      "synth": "square",
+      "gainMul": 0.78,
+      "samplePreferred": true
+    },
+    "hmh-fire-auto-miner": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 47,
+      "tone": [
+        145,
+        690
+      ],
+      "synth": "square",
+      "gainMul": 0.5,
+      "samplePreferred": true
+    },
+    "hmh-fire-launcher-rig": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 180,
+      "tone": [
+        110,
+        220
+      ],
+      "synth": "square",
+      "gainMul": 1,
+      "samplePreferred": true
+    },
+    "hmh-fire-lightning-ledger": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 60,
+      "tone": [
+        330,
+        660,
+        1320
+      ],
+      "synth": "square",
+      "gainMul": 0.62,
+      "samplePreferred": true
+    },
+    "hmh-fire-bear-market-burner": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 50,
+      "tone": [
+        98,
+        147,
+        196
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.58,
+      "samplePreferred": true
+    },
+    "hmh-fire-forked-standard": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 55,
+      "tone": [
+        196,
+        392,
+        294
+      ],
+      "synth": "square",
+      "gainMul": 0.66,
+      "samplePreferred": true
+    },
+    "hmh-lightning-interrupt": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 200,
+      "tone": [
+        660,
+        330
+      ],
+      "synth": "square",
+      "gainMul": 0.6,
+      "samplePreferred": true
+    },
+    "hmh-lightning-overheat": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 300,
+      "tone": [
+        220,
+        165,
+        110
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.7,
+      "samplePreferred": true
+    },
+    "hmh-lightning-empty": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 229,
+      "tone": [
+        120,
+        108
+      ],
+      "synth": "square",
+      "gainMul": 0.54,
+      "samplePreferred": true
+    },
+    "hmh-weapon-reload": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 307,
+      "tone": [
+        260,
+        195
+      ],
+      "synth": "square",
+      "gainMul": 0.48,
+      "samplePreferred": true
+    },
+    "hmh-weapon-empty": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 229,
+      "tone": [
+        120,
+        108
+      ],
+      "synth": "square",
+      "gainMul": 0.54,
+      "samplePreferred": true
     },
     "spread-ltc-fire": {
       "family": "weapon",
@@ -960,6 +1163,47 @@
       "synth": "square",
       "gainMul": 0.75,
       "samplePreferred": false
+    },
+    "combo-reset": {
+      "family": "damage",
+      "priority": 2,
+      "cooldownMs": 181,
+      "tone": [
+        330,
+        165
+      ],
+      "synth": "square",
+      "gainMul": 0.58,
+      "samplePreferred": true
+    },
+    "combo-milestone": {
+      "family": "reward",
+      "priority": 4,
+      "cooldownMs": 109,
+      "tone": [
+        440,
+        660,
+        880,
+        1320
+      ],
+      "synth": "triangle",
+      "gainMul": 0.9,
+      "samplePreferred": true
+    },
+    "combo-boss-threshold": {
+      "family": "boss",
+      "priority": 5,
+      "cooldownMs": 503,
+      "tone": [
+        110,
+        220,
+        440,
+        880,
+        1320
+      ],
+      "synth": "square",
+      "gainMul": 1.12,
+      "samplePreferred": true
     },
     "rare-drop": {
       "family": "reward",

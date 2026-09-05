@@ -46,6 +46,13 @@ const MUSIC_PATH = '../assets/audio/playlist/hard-money-heroes-16-bit-arcade-mus
 // Longest authored combat sample is well under a second; anything still held
 // after this is a voice that will never report completion.
 export const MAX_VOICE_LIFETIME_MS = 4_000;
+// Cycle 074 (S-2): while a boss-family cue has just started, the lighter
+// families are ducked so the warning reads over gunfire. The window is
+// time-based on purpose: a boss voice that never reports `ended` must not hold
+// the duck for its whole reaped lifetime. Boss, damage and UI are never ducked.
+export const BOSS_DUCK_WINDOW_MS = 600;
+export const BOSS_DUCK_MUL = 0.7;
+const DUCK_EXEMPT_FAMILIES = new Set(['boss', 'damage', 'ui']);
 
 function clampMaxVoices(value) {
   const numeric = Number(value);
@@ -69,6 +76,8 @@ export function createCombatAudio({
   let sfxLevel = 1;
   let uiLevel = 1;
   let dynamicRange = 'standard';
+  let reduceMotion = false;
+  let unknownCues = 0;
   let music = null;
   const lastPlayed = new Map();
   let voices = [];
@@ -106,13 +115,17 @@ export function createCombatAudio({
   const play = (cue, { now = globalThis.performance?.now?.() ?? Date.now(), volume = 0.1 } = {}) => {
     if (paused && !PAUSED_CUE_ALLOWLIST.has(cue)) return Object.freeze({ played: false, reason: 'paused' });
     const samplePath = SAMPLE_PATHS[cue];
-    if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) return Object.freeze({ played: false, reason: 'unknown-cue' });
+    if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) {
+      unknownCues += 1;
+      return Object.freeze({ played: false, reason: 'unknown-cue' });
+    }
     cleanup(now);
     const plan = resolveHmhSfxCuePlan(cue, {
       requestedVolume: volume,
       now,
       lastPlayedAt: lastPlayed.get(cue) ?? -Infinity,
       sfxEnabled: true,
+      reduceMotion,
     });
     if (!plan.allowed) return Object.freeze({ played: false, reason: plan.reason });
     const voiceId = `hmh-reboot-audio-${String(sequence).padStart(8, '0')}`;
@@ -131,7 +144,11 @@ export function createCombatAudio({
     audio.preload = 'auto';
     const busLevel = plan.family === 'ui' ? uiLevel : sfxLevel;
     const rangeGain = dynamicRange === 'night' ? 0.75 : 1;
-    audio.volume = Math.min(1, plan.volume * busLevel * rangeGain);
+    const duckMul = !DUCK_EXEMPT_FAMILIES.has(plan.family)
+      && voices.some((voice) => voice.family === 'boss' && !voice.stopped && now - voice.startedAt < BOSS_DUCK_WINDOW_MS)
+      ? BOSS_DUCK_MUL
+      : 1;
+    audio.volume = Math.min(1, plan.volume * busLevel * rangeGain * duckMul);
     const voice = {
       id: voiceId,
       family: plan.family,
@@ -186,7 +203,7 @@ export function createCombatAudio({
       if (!allowMusic && music) music.pause();
       else void ensureMusic();
     },
-    setBusLevels({ musicVolume = musicLevel, sfxVolume = sfxLevel, uiVolume = uiLevel, dynamicRange: nextRange = dynamicRange } = {}) {
+    setBusLevels({ musicVolume = musicLevel, sfxVolume = sfxLevel, uiVolume = uiLevel, dynamicRange: nextRange = dynamicRange, reduceMotion: nextReduceMotion = reduceMotion } = {}) {
       const level = (value, name) => {
         const numeric = Number(value);
         if (!Number.isFinite(numeric) || numeric < 0 || numeric > 1) throw new TypeError(`${name} must be in [0, 1]`);
@@ -197,6 +214,7 @@ export function createCombatAudio({
       sfxLevel = level(sfxVolume, 'sfxVolume');
       uiLevel = level(uiVolume, 'uiVolume');
       dynamicRange = nextRange;
+      reduceMotion = Boolean(nextReduceMotion);
       if (music) music.volume = 0.4 * musicLevel;
     },
     status() {
@@ -204,6 +222,8 @@ export function createCombatAudio({
       return Object.freeze({
         activeVoices: voices.length,
         maxVoices: voiceCap,
+        unknownCues,
+        reduceMotion,
         paused,
         unlocked,
         musicEnabled: allowMusic,

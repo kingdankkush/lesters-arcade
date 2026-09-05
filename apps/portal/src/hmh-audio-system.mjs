@@ -47,6 +47,23 @@ export const HMH_SFX_CUE_REGISTRY = Object.freeze({
   'hmh-hash-rail-charge': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 353, tone: Object.freeze([110, 220, 440, 880]), synth: 'sawtooth', gainMul: 0.72, samplePreferred: true }),
   'hash-rail-fire': Object.freeze({ family: 'weapon', priority: 4, cooldownMs: 367, tone: Object.freeze([82, 330, 1320]), synth: 'square', gainMul: 1.05, samplePreferred: false }),
   'hmh-fire-hash-rail': Object.freeze({ family: 'weapon', priority: 4, cooldownMs: 367, tone: Object.freeze([82, 330, 1320]), synth: 'square', gainMul: 1.05, samplePreferred: true }),
+  // Cycle 074 (S-2): the child's remaining synthesised weapon cues
+  // (apps/hmh-reboot/src/weapon-audio.mjs). combat-audio.mjs refuses any cue
+  // that is not registered here, so from 9d669796 until this entry landed the
+  // twelve cues below were silent in production. Priorities, cooldowns and
+  // fallback tones mirror the sourced analogue each one replaces.
+  'hmh-fire-coin-blaster': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 42, tone: Object.freeze([180, 900]), synth: 'square', gainMul: 0.68, samplePreferred: true }),
+  'hmh-fire-scatter-shotgun': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 79, tone: Object.freeze([155, 233, 349]), synth: 'square', gainMul: 0.78, samplePreferred: true }),
+  'hmh-fire-auto-miner': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 47, tone: Object.freeze([145, 690]), synth: 'square', gainMul: 0.5, samplePreferred: true }),
+  'hmh-fire-launcher-rig': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 180, tone: Object.freeze([110, 220]), synth: 'square', gainMul: 1.0, samplePreferred: true }),
+  'hmh-fire-lightning-ledger': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 60, tone: Object.freeze([330, 660, 1320]), synth: 'square', gainMul: 0.62, samplePreferred: true }),
+  'hmh-fire-bear-market-burner': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 50, tone: Object.freeze([98, 147, 196]), synth: 'sawtooth', gainMul: 0.58, samplePreferred: true }),
+  'hmh-fire-forked-standard': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 55, tone: Object.freeze([196, 392, 294]), synth: 'square', gainMul: 0.66, samplePreferred: true }),
+  'hmh-lightning-interrupt': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 200, tone: Object.freeze([660, 330]), synth: 'square', gainMul: 0.6, samplePreferred: true }),
+  'hmh-lightning-overheat': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 300, tone: Object.freeze([220, 165, 110]), synth: 'sawtooth', gainMul: 0.7, samplePreferred: true }),
+  'hmh-lightning-empty': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 229, tone: Object.freeze([120, 108]), synth: 'square', gainMul: 0.54, samplePreferred: true }),
+  'hmh-weapon-reload': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 307, tone: Object.freeze([260, 195]), synth: 'square', gainMul: 0.48, samplePreferred: true }),
+  'hmh-weapon-empty': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 229, tone: Object.freeze([120, 108]), synth: 'square', gainMul: 0.54, samplePreferred: true }),
   'spread-ltc-fire': Object.freeze({ family: 'weapon', priority: 3, cooldownMs: 79, tone: Object.freeze([155, 233, 349]), synth: 'square', gainMul: 0.78, samplePreferred: false }),
   'litecoin-blade-swing': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 97, tone: Object.freeze([920, 610, 390]), synth: 'sawtooth', gainMul: 0.72, samplePreferred: false }),
   'litecoin-blade-hit': Object.freeze({ family: 'impact', priority: 3, cooldownMs: 103, tone: Object.freeze([260, 130, 520]), synth: 'square', gainMul: 0.86, samplePreferred: false }),
