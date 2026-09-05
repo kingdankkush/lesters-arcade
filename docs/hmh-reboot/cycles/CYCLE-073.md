@@ -1,7 +1,7 @@
 # HMH AAA Continuous Improvement Cycle 073
 
 Date: `2026-09-04`
-Status: `LOCAL GATES PASSED`
+Status: `LIVE · VERIFIED`
 Branch: `fable/hmh-cycle-073-feel-and-world`
 Baseline: `104b01dc` (Cycle 072 closeout, production `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`)
 
@@ -172,3 +172,37 @@ relaunch the browser per profile so each anchor pair starts from the same GPU st
 transaction or real-fund behaviour changed. No paid generation or external asset upload. The
 portal still owns music, profiles, leaderboards, sessions and settlement; the child still owns
 only input, simulation and projection.
+
+## Exact review and release identity
+
+- Runtime commits: `d71cfe51` (integration) and `f764ac75` (Vercel-image portability: Pillow 12
+  `get_flattened_data` replaced by `getdata`; LFS tests pass vacuously without a work tree)
+  on `fable/hmh-cycle-073-feel-and-world`
+- Integration staged patch SHA-256: `1e2fe8fcf1e7f4f7516527e2fcbc68b41ca423d6555cc782e5322587094862c7`
+- First preview `dpl_Gn7…` lineage failed its Vercel build on six new tests that pass locally
+  (CPython 3.12 + Pillow 11.3 vs the host's 3.11 + 12.3; stripped `.git`); reproduced in a
+  local uv venv and fixed in `f764ac75`
+- Preview: `dpl_CTf15k2GHret4CBXHBS2QVuDzxfL` — <https://lesters-arcade-anaccwidf-justin-agent-projects.vercel.app> (behind Vercel Authentication; verified on the alias)
+- Production: `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw` — <https://lesters-arcade-2er8kpl2y-justin-agent-projects.vercel.app>
+- Public alias: <https://lestersarcade.io>
+- Immediate rollback retained: `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w` — <https://lesters-arcade-qkk7kcv56-justin-agent-projects.vercel.app> (Cycle 072)
+
+### Hosted artifact proof (production, byte-identical to the local build)
+
+- `sw.js`: `b3ee76f51e0716c67038c4c4…` (3,709 bytes)
+- `dist/main.js`: `969516db92addb3fa4b870b4…` (1,134,738 bytes, unchanged from Cycle 072)
+- `dist/hmh-reboot/game.js`: `bd9ddfc4481e4b5a9d7199d3…` (444,168 bytes)
+- `dist/chunks/hmh-pixi.js`: `d8bc671038603d2f523ef2b7…` (575,891 bytes, unchanged)
+- `styles.css`: `941bece09b287a9cd9741df0…` (148,941 bytes, unchanged)
+
+Live HTML contains `hmh-aaa-cycle-073-feel-and-world` and no Cycle 072 token; the live
+service worker contains `lesters-arcade-v26-hmh-feel-and-world`; `npm run docs:production`
+matches.
+
+### Hosted verification
+
+- Five-profile browser certification against `https://lestersarcade.io`: PASS, every anchor
+  `changedPixels: 0` / `maxChannelDelta: 0`, every warm-up stable in 2 screenshots
+- Production network/console audit: PASS, 4 of 4 scenarios with zero failures
+- Live desktop capture inspected by eye after real keyboard input
+

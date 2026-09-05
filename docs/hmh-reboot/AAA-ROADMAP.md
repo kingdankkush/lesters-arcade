@@ -51,6 +51,23 @@ standing authority.
 - Hosted desktop, ultrawide, tablet, portrait, landscape, touch-control, portal, and
   network/console checks passed on `https://lestersarcade.io`.
 
+### Current live override — Cycle 073
+
+- Runtime commit: `f764ac75`.
+- Production: `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw`; immediate rollback: `dpl_FMqS2vbPBq1Na12m33ER9K7Ho27w`.
+- Release ledger: `2,429` evaluated, `2,378` passing, `51` accepted legacy failures, `0` unexpected.
+- Combined initial JS: `1,020,059 / 1,050,000`; headroom `29,941` (the binding constraint for
+  the next code slice; N-4 is now worth a cycle).
+- Cache: `lesters-arcade-v26-hmh-feel-and-world`.
+- Completed this cycle: `P-4` (and its duplicate `E-1`), `V-1`, `V-2`, `V-3`, `U-4`, `U-5`,
+  `W-7`, `W-8`, `P-5`, `K-7`; `W-11` projection half and `W-5` cliff half shipped (the
+  remaining W-11 simulation verticality and W-5 fence/machinery/building props stay open).
+- Defect found and fixed in production art: Pixi `arc()` without `moveTo()` drew stray lines
+  from the screen origin over hashwood canopies and landmark beacons; guarded by
+  `tests/hmh-reboot-graphics-arc-origin.test.mjs`.
+- Hosted desktop, ultrawide, tablet, portrait, landscape and network checks passed on
+  `https://lestersarcade.io`.
+
 ### Current live override — Cycle 072
 
 - Runtime commit: `414fc3049`.
