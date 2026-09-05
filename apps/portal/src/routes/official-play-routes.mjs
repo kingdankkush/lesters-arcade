@@ -1,3 +1,12 @@
+import {
+  HERO_SELECT_STAT_MAX,
+  activeCarouselIndex,
+  compareHeroStats,
+  formatStatDelta,
+  nextHeroIndex,
+  referenceHeroId,
+} from '../hmh-hero-select-ui.mjs';
+
 export function createOfficialPlayRoutes({
   appendText,
   applyGameModeSelectBackground,
@@ -28,20 +37,110 @@ export function createOfficialPlayRoutes({
   setView,
   weaponById,
 } = {}) {
+  function rosterCards(roster) {
+    return Array.from(roster?.children ?? []).filter((node) => node?.classList?.contains?.('hero-card'));
+  }
+
+  // Arrow-key roving focus over the hero cards (U-6). Wired once per roster;
+  // Enter/Space stay native button activation, so selection is unchanged.
+  function wireRosterKeyboard(roster) {
+    if (!roster || roster.dataset.keyboardWired === 'true') return;
+    roster.dataset.keyboardWired = 'true';
+    roster.addEventListener('keydown', (event) => {
+      const cards = rosterCards(roster);
+      const current = cards.findIndex((card) => card === event.target || card.contains?.(event.target));
+      const locked = cards.map((card, index) => (card.disabled ? index : -1)).filter((index) => index >= 0);
+      const next = nextHeroIndex(current, event.key, cards.length, { locked });
+      if (next === null) return;
+      event.preventDefault();
+      const target = cards[next];
+      target.focus?.({ preventScroll: true });
+      target.scrollIntoView?.({ inline: 'center', block: 'nearest' });
+    });
+  }
+
+  // Indicative dot strip for the <=700 px snap carousel. Hidden by CSS on
+  // desktop; aria-hidden because the cards themselves are the accessible list.
+  function ensureCarouselDots(roster, count) {
+    const parent = roster?.parentElement;
+    if (!parent || typeof parent.insertBefore !== 'function') return null;
+    let dots = parent.querySelector?.('.hero-carousel-dots') ?? null;
+    if (!dots) {
+      dots = el('div', { className: 'hero-carousel-dots' });
+      dots.setAttribute('aria-hidden', 'true');
+      parent.insertBefore(dots, roster);
+    }
+    dots.replaceChildren(...Array.from({ length: count }, (_, index) => {
+      const dot = el('span', { className: 'hero-carousel-dot' });
+      dot.dataset.index = String(index);
+      dot.dataset.active = index === 0 ? 'true' : 'false';
+      return dot;
+    }));
+    return dots;
+  }
+
+  function syncCarouselDots(roster) {
+    const dots = roster?.parentElement?.querySelector?.('.hero-carousel-dots');
+    if (!dots || typeof roster.getBoundingClientRect !== 'function') return;
+    const rosterLeft = roster.getBoundingClientRect().left;
+    const cards = rosterCards(roster).map((card) => {
+      const rect = card.getBoundingClientRect();
+      return { offsetLeft: rect.left - rosterLeft + roster.scrollLeft, width: rect.width };
+    });
+    const active = activeCarouselIndex({ scrollLeft: roster.scrollLeft, clientWidth: roster.clientWidth, cards });
+    Array.from(dots.children).forEach((dot, index) => { dot.dataset.active = index === active ? 'true' : 'false'; });
+  }
+
+  function wireCarouselDots(roster) {
+    if (!roster || roster.dataset.dotsWired === 'true') return;
+    roster.dataset.dotsWired = 'true';
+    let pending = false;
+    roster.addEventListener('scroll', () => {
+      if (pending) return;
+      pending = true;
+      const run = () => { pending = false; syncCarouselDots(roster); };
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(run); else run();
+    }, { passive: true });
+  }
+
+  function focusSelectedCardAfterLayout(card) {
+    if (!card || typeof requestAnimationFrame !== 'function' || typeof document === 'undefined') return;
+    // portal-route-controller's setView blurs the active element, then scrolls
+    // the panel on its own rAF; place keyboard focus one frame later and only
+    // when nothing else already holds it.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (dom.officialCharacterSelect?.hidden) return;
+      const active = document.activeElement;
+      if (active && active !== document.body && active !== document.documentElement) return;
+      card.focus?.({ preventScroll: true });
+    }));
+  }
+
   function renderOfficialCharacterSelect() {
     const { connectedWallet, state, combat } = getContext();
     applyHardMoneyHeroScreenBackground(dom.officialCharacterSelect, 'modeSelect');
     if (!dom.officialCharacterRoster) return;
-    dom.officialCharacterRoster.replaceChildren();
+    const roster = dom.officialCharacterRoster;
+    roster.replaceChildren();
+    roster.setAttribute('role', 'group');
     const profile = connectedWallet ? state.profiles[connectedWallet] ?? null : null;
     if (profile) {
       combat.characterId = resolveSelectedCharacterId(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
     }
     const heroEntries = buildCharacterSelectEntries(HERO_ROSTER_BASE, profile ?? {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
+    const referenceId = referenceHeroId(heroEntries);
+    const referenceName = heroEntries.find((hero) => hero.id === referenceId)?.name ?? '';
+    const comparison = new Map(compareHeroStats(heroEntries, referenceId).map((hero) => [hero.id, hero]));
+    let selectedCard = null;
     for (const hero of heroEntries) {
+      const compared = comparison.get(hero.id) ?? { isReference: false, stats: [] };
       const card = el('button', { className: `hero-card ${hero.locked ? 'locked' : 'active'}${hero.selected ? ' selected' : ''}` });
       card.type = 'button';
       card.disabled = hero.locked;
+      card.dataset.characterId = hero.id;
+      card.dataset.compareRole = compared.isReference ? 'reference' : 'challenger';
+      card.setAttribute('aria-pressed', hero.selected ? 'true' : 'false');
+      if (compared.isReference && !hero.locked) selectedCard = card;
       const stage = el('div', { className: 'hero-card-stage' });
       const sprite = heroRotationSprite(hero.legacyId ?? hero.id);
       if (sprite) {
@@ -61,7 +160,28 @@ export function createOfficialPlayRoutes({
       appendText(loadout, 'span', `${hero.passive.title}: ${hero.passive.description}`, 'hero-loadout-passive');
       info.append(loadout);
       const statBox = el('div', { className: 'hero-stats' });
-      renderHeroStatBars(statBox, hero.stats);
+      statBox.append(el('span', {
+        className: 'hero-compare-label',
+        textContent: compared.isReference ? 'BASELINE' : `VS ${String(referenceName).toUpperCase()}`,
+      }));
+      // Side-by-side comparison (U-6): one chip per stat row, driven by the pure
+      // model. The reference card shows its raw value; every other card shows
+      // its signed delta, and the roster best is marked on whichever card holds it.
+      const statByLabel = new Map(compared.stats.map((stat) => [stat.label, stat]));
+      renderHeroStatBars(statBox, hero.stats, (row, label, value) => {
+        const stat = statByLabel.get(label);
+        if (!stat) return;
+        row.classList.add('has-delta');
+        const chip = el('span', { className: 'hero-stat-delta' });
+        chip.textContent = compared.isReference ? `${value}/${HERO_SELECT_STAT_MAX}` : formatStatDelta(stat.delta);
+        chip.dataset.trend = stat.delta > 0 ? 'up' : stat.delta < 0 ? 'down' : 'even';
+        chip.dataset.best = stat.best ? 'true' : 'false';
+        const parts = [`${label} ${value} of ${HERO_SELECT_STAT_MAX}`];
+        if (!compared.isReference) parts.push(`${formatStatDelta(stat.delta)} versus ${referenceName}`);
+        if (stat.best) parts.push(stat.tie ? 'tied best in roster' : 'best in roster');
+        chip.setAttribute('aria-label', parts.join(', '));
+        row.append(chip);
+      });
       info.append(statBox);
       if (hero.locked && hero.unlockProgress) {
         const progress = hero.unlockProgress;
@@ -86,8 +206,13 @@ export function createOfficialPlayRoutes({
           setView('level-one-intro');
         });
       }
-      dom.officialCharacterRoster.append(card);
+      roster.append(card);
     }
+    ensureCarouselDots(roster, heroEntries.length);
+    wireCarouselDots(roster);
+    wireRosterKeyboard(roster);
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => syncCarouselDots(roster));
+    focusSelectedCardAfterLayout(selectedCard);
   }
 
   function renderOfficialCabinets() {

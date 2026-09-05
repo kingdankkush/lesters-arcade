@@ -1,0 +1,107 @@
+{
+  "schema": "hmh-reboot-hero-selector-render-v1",
+  "pipelineId": "hmh-reboot-hero-selector-atlas-v3",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "gameplayAuthority": "none",
+  "purpose": "Character-select turntables rendered from the committed hero scene at selector resolution. Portal-only art; the 160 px gameplay atlases are not inputs and are never rewritten by this pipeline.",
+  "scene": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.blend",
+    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+    "heroExporter": "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
+    "exporter": "scripts/hmh-blender/export-hmh-hero-selector.py",
+    "runner": "scripts/run-hmh-hero-selector-render.py",
+    "blenderVersion": "5.1.2",
+    "readOnly": true
+  },
+  "render": {
+    "engine": "BLENDER_EEVEE",
+    "frameSize": [
+      384,
+      384
+    ],
+    "transparentFilm": true,
+    "rawOutputDirectory": ".tmp/hmh-reboot-hero-selector",
+    "alphaThreshold": 8,
+    "cameraOrthoScale": 2.75,
+    "exposure": -0.45,
+    "cameraPitchDegrees": 55,
+    "compression": 20
+  },
+  "pose": {
+    "shadow": {
+      "state": "idle",
+      "frameIndex": 0
+    },
+    "lower-body": {
+      "state": "idle",
+      "frameIndex": 0
+    },
+    "torso-head": {
+      "state": "aim",
+      "frameIndex": 0
+    },
+    "weapon": {
+      "state": "aim",
+      "frameIndex": 0
+    }
+  },
+  "directions": [
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west",
+    "south",
+    "south-east"
+  ],
+  "restDirection": "south",
+  "heroes": [
+    {
+      "portalHeroId": "lit-commando",
+      "actorId": "lit-commando"
+    },
+    {
+      "portalHeroId": "lit-valkyrie",
+      "actorId": "lit-valkyrie"
+    },
+    {
+      "portalHeroId": "lester",
+      "actorId": "lester-original"
+    },
+    {
+      "portalHeroId": "lilly",
+      "actorId": "lilly"
+    }
+  ],
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 8,
+    "maxChannelDelta": 2,
+    "maxTotalChannelDelta": 32
+  },
+  "frameDurationMs": 260,
+  "atlas": {
+    "perHero": true,
+    "grid": [
+      4,
+      2
+    ],
+    "outputDirectory": "apps/portal/assets/generated/hmh-reboot-hero-selector",
+    "publicUrlBase": "/assets/generated/hmh-reboot-hero-selector",
+    "imageSuffix": "-selector-atlas.png",
+    "metadata": "hmh-reboot-hero-selector-atlas.json",
+    "module": "apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs",
+    "maxBytesPerAtlas": 524288,
+    "maxTotalBytes": 2097152
+  },
+  "groundContact": {
+    "contract": "rig-origin-projection",
+    "note": "The turntable pivot is the rig origin seen through the committed camera, recorded per frame by the exporter. The hero manifest's authored ground-contact pixel (80,146 at 160 px) is a gameplay anchor and is not reused here.",
+    "pivotTolerancePx": 0.5,
+    "footLineEnvelopePx": {
+      "minBelowPivot": 8,
+      "maxBelowPivot": 64
+    }
+  }
+}

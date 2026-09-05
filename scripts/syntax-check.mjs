@@ -412,6 +412,9 @@ const NODE_CHECK_FILES = [
   "scripts/hmh-reboot-bundle-budget.mjs",
   "scripts/hmh-reboot-pixi-vendor-stubs.mjs",
   "scripts/hmh-reboot-release-browser-certification.mjs",
+  "apps/portal/src/hmh-hero-select-ui.mjs",
+  "tests/hmh-hero-select-ui.test.mjs",
+  "tests/hmh-reboot-hero-selector-render.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 
@@ -460,6 +463,8 @@ const PY_COMPILE_FILES = [
   "scripts/hmh-blender/create-hmh-production-hero-pilot.py",
   "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
   "scripts/run-hmh-production-hero-pilot.py",
+  "scripts/hmh-blender/export-hmh-hero-selector.py",
+  "scripts/run-hmh-hero-selector-render.py",
   "scripts/hmh-blender/create-hmh-enemy-roster.py",
   "scripts/hmh-blender/export-hmh-enemy-roster.py",
   "scripts/hmh-blender/hmh_enemy_poses.py",

@@ -8,6 +8,7 @@ import { PRODUCTION_HERO_ASSETS, createProductionHeroAtlasIndex } from '../apps/
 import { ENEMY_ROSTER_ACTORS, createEnemyRosterAtlasIndex, enemyRosterAsset } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
 import { AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, createAuthoredPropAtlasIndex } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from '../apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs';
+import { parseAtlasFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 import { readRgbaPng } from './sprite-qa.mjs';
 import { AUTHORED_PROP_ASSET_IDS } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 
@@ -22,7 +23,12 @@ const maxHeroAtlasTotalBytes = 12 * 1024 * 1024;
 const maxRosterAtlasBytes = 2 * 1024 * 1024;
 const maxRosterAtlasTotalBytes = 10 * 1024 * 1024;
 const maxPropAtlasBytes = 512 * 1024;
+// Cycle 074: the selector ships one 384 px atlas per hero (8 frames each). The
+// Cycle 013 per-file cap is kept and applied per atlas; the whole select-screen
+// payload is bounded separately. Recorded in CYCLE-074 (498,000 -> ~1.6 MB).
 const maxSelectorAtlasBytes = 512 * 1024;
+const maxSelectorAtlasTotalBytes = 2 * 1024 * 1024;
+const selectorFrameSize = 384;
 
 function portalPath(url) {
   const normalized = url.replace(/^\//u, '').replace(/^(?:\.\.\/)+/u, '');
@@ -85,27 +91,42 @@ assert.ok(heroAtlasTotalBytes <= maxHeroAtlasTotalBytes, 'production hero atlas 
 
 const selectorMetadataPath = path.join(portalRoot, 'assets', 'generated', 'hmh-reboot-hero-selector', 'hmh-reboot-hero-selector-atlas.json');
 const selectorMetadata = JSON.parse(readFileSync(selectorMetadataPath, 'utf8'));
-const selectorImagePath = portalPath(HMH_REBOOT_HERO_SELECTOR_ATLAS.image);
-const selectorPngReport = validatePng(selectorImagePath, 'hmh-reboot-hero-selector');
-const selectorSha256 = createHash('sha256').update(readFileSync(selectorImagePath)).digest('hex');
-assert.equal(selectorMetadata.pipelineId, 'hmh-reboot-hero-selector-atlas-v2');
-assert.deepEqual(selectorMetadata.presentation, {
-  scale: 1.15,
-  bottomMargin: 10,
-  resampling: 'lanczos',
-  sourceFrameSize: 160,
-});
-assert.ok(selectorMetadata.frames.every((frame) => frame.presentationScale === 1.15));
-assert.ok(selectorMetadata.frames.every((frame) => frame.alphaBounds.y + frame.alphaBounds.h === 150));
+assert.equal(selectorMetadata.pipelineId, 'hmh-reboot-hero-selector-atlas-v3');
+assert.equal(HMH_REBOOT_HERO_SELECTOR_ATLAS.pipelineId, 'hmh-reboot-hero-selector-atlas-v3');
 assert.equal(selectorMetadata.runtimeAuthority, 'projection-only');
+assert.equal(HMH_REBOOT_HERO_SELECTOR_ATLAS.runtimeAuthority, 'projection-only');
 assert.equal(selectorMetadata.frameCount, 32);
-assert.equal(selectorMetadata.imageSha256, selectorSha256);
-assert.equal(selectorMetadata.imageBytes, selectorPngReport.imageBytes);
-assert.equal(selectorPngReport.png.width, HMH_REBOOT_HERO_SELECTOR_ATLAS.atlasSize.width);
-assert.equal(selectorPngReport.png.height, HMH_REBOOT_HERO_SELECTOR_ATLAS.atlasSize.height);
-assert.ok(selectorPngReport.imageBytes <= maxSelectorAtlasBytes, 'hero selector atlas exceeds maxSelectorAtlasBytes');
+assert.equal(selectorMetadata.frameSize, selectorFrameSize);
+assert.equal(selectorMetadata.metrics.status, 'pass');
+assert.equal(selectorMetadata.metrics.reproducibility, 'pass');
+assert.equal(selectorMetadata.metrics.reproducibilityMode, 'bounded-premultiplied-rgba-v1');
 assert.equal(Object.keys(HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes).length, 4);
-assert.ok(Object.values(HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes).every((hero) => hero.frames.length === 8));
+const selectorReports = [];
+let selectorAtlasBytes = 0;
+for (const [heroId, hero] of Object.entries(HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes)) {
+  assert.equal(hero.frames.length, 8, `${heroId} selector needs eight spin frames`);
+  const selectorImagePath = portalPath(hero.image);
+  const selectorPngReport = validatePng(selectorImagePath, `hmh-reboot-hero-selector/${heroId}`);
+  const selectorSha256 = createHash('sha256').update(readFileSync(selectorImagePath)).digest('hex');
+  assert.equal(hero.imageSha256, selectorSha256, `${heroId} selector atlas sha drift`);
+  assert.equal(selectorMetadata.heroes[heroId].imageSha256, selectorSha256, `${heroId} selector metadata sha drift`);
+  assert.equal(hero.imageBytes, selectorPngReport.imageBytes, `${heroId} selector imageBytes drift`);
+  assert.equal(selectorPngReport.png.width, hero.atlasSize.width);
+  assert.equal(selectorPngReport.png.height, hero.atlasSize.height);
+  assert.ok(selectorPngReport.imageBytes <= maxSelectorAtlasBytes, `${heroId} hero selector atlas exceeds maxSelectorAtlasBytes`);
+  for (const frame of hero.frames) {
+    const region = parseAtlasFrameRef(frame);
+    assert.ok(region, `${heroId} invalid selector frame ref`);
+    assert.equal(region.src, hero.image, `${heroId} selector frame must live in its own atlas`);
+    assert.equal(region.width, selectorFrameSize);
+    assert.equal(region.height, selectorFrameSize);
+    assert.ok(region.x + region.width <= selectorPngReport.png.width && region.y + region.height <= selectorPngReport.png.height, `${heroId} selector frame outside atlas`);
+  }
+  selectorAtlasBytes += selectorPngReport.imageBytes;
+  selectorReports.push({ heroId, actorId: hero.actorId, imageBytes: selectorPngReport.imageBytes, width: selectorPngReport.png.width, height: selectorPngReport.png.height, frames: hero.frames.length, sha256: selectorSha256 });
+}
+assert.equal(selectorAtlasBytes, selectorMetadata.metrics.totalImageBytes, 'selector metadata total drift');
+assert.ok(selectorAtlasBytes <= maxSelectorAtlasTotalBytes, 'hero selector payload exceeds maxSelectorAtlasTotalBytes');
 
 const rosterReports = [];
 let rosterAtlasTotalBytes = 0;
@@ -162,17 +183,17 @@ const summary = {
   status: 'pass',
   gate: 'hmh-reboot-production-assets-v2',
   heroAtlasCount: heroReports.length,
-  selectorAtlasCount: 1,
+  selectorAtlasCount: selectorReports.length,
   rosterAtlasCount: rosterReports.length,
   propAtlasCount: 1,
   propAssetCount: propIndex.frameById.size,
   heroAtlasTotalBytes,
-  selectorAtlasBytes: selectorPngReport.imageBytes,
+  selectorAtlasBytes,
   rosterAtlasTotalBytes,
   propAtlasBytes: propPngReport.imageBytes,
-  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes },
+  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes, maxSelectorAtlasTotalBytes },
   heroReports,
-  selectorReport: { imageBytes: selectorPngReport.imageBytes, width: selectorPngReport.png.width, height: selectorPngReport.png.height, frames: selectorMetadata.frameCount, sha256: selectorSha256 },
+  selectorReport: { imageBytes: selectorAtlasBytes, frameSize: selectorFrameSize, frames: selectorMetadata.frameCount, pipelineId: selectorMetadata.pipelineId, atlases: selectorReports },
   rosterReports,
   propReport: { imageBytes: propPngReport.imageBytes, width: propPngReport.png.width, height: propPngReport.png.height, assets: propMetadata.assetCount },
 };

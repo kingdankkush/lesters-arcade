@@ -1,17 +1,10 @@
 {
-  "schemaVersion": 1,
-  "pipelineId": "hmh-reboot-hero-selector-atlas-v2",
+  "schemaVersion": 3,
+  "pipelineId": "hmh-reboot-hero-selector-atlas-v3",
   "classification": "production-art",
   "runtimeAuthority": "projection-only",
   "gameplayAuthority": "none",
-  "image": "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png",
-  "imageBytes": 498000,
-  "imageSha256": "e13ccf50ef17dd2abbac5fc4d796de2a3fee269edb56603e8495baa0de3a6f16",
-  "atlasSize": {
-    "width": 1280,
-    "height": 640
-  },
-  "frameSize": 160,
+  "frameSize": 384,
   "frameCount": 32,
   "directions": [
     "east",
@@ -23,68 +16,140 @@
     "south",
     "south-east"
   ],
-  "presentation": {
-    "scale": 1.15,
-    "bottomMargin": 10,
-    "resampling": "lanczos",
-    "sourceFrameSize": 160
-  },
+  "restDirection": "south",
+  "restFrameIndex": 6,
   "heroes": {
     "lit-commando": {
       "actorId": "lit-commando",
+      "image": "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png",
+      "imageBytes": 392396,
+      "imageSha256": "bcaccd72898ffe4e37ff8cc00795153774aee39ab91ba0270f40b6553c883f05",
+      "atlasSize": {
+        "width": 1536,
+        "height": 768
+      },
       "frames": [
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=0,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=160,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=320,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=480,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=640,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=800,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=960,0,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=1120,0,160,160,1280,640"
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=0,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=384,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=768,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=1152,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=0,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=384,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=768,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png#frame=1152,384,384,384,1536,768"
       ],
       "frameDurationMs": 260
     },
     "lit-valkyrie": {
       "actorId": "lit-valkyrie",
+      "image": "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png",
+      "imageBytes": 394958,
+      "imageSha256": "08bc9415bc4ceb0eb04bc11f77127165f0ae52bf9745d5548d8ac2d2d1c4ebc2",
+      "atlasSize": {
+        "width": 1536,
+        "height": 768
+      },
       "frames": [
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=0,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=160,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=320,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=480,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=640,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=800,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=960,160,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=1120,160,160,160,1280,640"
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=0,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=384,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=768,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=1152,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=0,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=384,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=768,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png#frame=1152,384,384,384,1536,768"
       ],
       "frameDurationMs": 260
     },
     "lester": {
       "actorId": "lester-original",
+      "image": "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png",
+      "imageBytes": 415838,
+      "imageSha256": "e30d771661a48c1a77ca0b8402ee54d091689e362afcf42c8fa6cf6cfd07f0e3",
+      "atlasSize": {
+        "width": 1536,
+        "height": 768
+      },
       "frames": [
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=0,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=160,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=320,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=480,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=640,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=800,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=960,320,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=1120,320,160,160,1280,640"
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=0,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=384,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=768,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=1152,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=0,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=384,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=768,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png#frame=1152,384,384,384,1536,768"
       ],
       "frameDurationMs": 260
     },
     "lilly": {
       "actorId": "lilly",
+      "image": "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png",
+      "imageBytes": 398477,
+      "imageSha256": "db72b4dccdee29f76999a84726035289e0c4fa14d1e894ef9335af9d61c21839",
+      "atlasSize": {
+        "width": 1536,
+        "height": 768
+      },
       "frames": [
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=0,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=160,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=320,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=480,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=640,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=800,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=960,480,160,160,1280,640",
-        "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.png#frame=1120,480,160,160,1280,640"
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=0,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=384,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=768,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=1152,0,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=0,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=384,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=768,384,384,384,1536,768",
+        "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png#frame=1152,384,384,384,1536,768"
       ],
       "frameDurationMs": 260
+    }
+  },
+  "render": {
+    "engine": "BLENDER_EEVEE",
+    "frameSize": [
+      384,
+      384
+    ],
+    "cameraOrthoScale": 2.75,
+    "exposure": -0.45,
+    "cameraPitchDegrees": 55,
+    "alphaThreshold": 8,
+    "compression": 20,
+    "blenderVersion": "5.1.2",
+    "pivotPixels": [
+      192,
+      306
+    ],
+    "projectedPivot": [
+      192.0,
+      306.384
+    ]
+  },
+  "groundContact": {
+    "contract": "rig-origin-projection",
+    "note": "The turntable pivot is the rig origin seen through the committed camera, recorded per frame by the exporter. The hero manifest's authored ground-contact pixel (80,146 at 160 px) is a gameplay anchor and is not reused here.",
+    "pivotTolerancePx": 0.5,
+    "footLineEnvelopePx": {
+      "minBelowPivot": 8,
+      "maxBelowPivot": 64
+    }
+  },
+  "pose": {
+    "shadow": {
+      "state": "idle",
+      "frameIndex": 0
+    },
+    "lower-body": {
+      "state": "idle",
+      "frameIndex": 0
+    },
+    "torso-head": {
+      "state": "aim",
+      "frameIndex": 0
+    },
+    "weapon": {
+      "state": "aim",
+      "frameIndex": 0
     }
   },
   "frames": [
@@ -95,206 +160,158 @@
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 160,
-        "h": 160
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5687,
-      "presentationScale": 1.15,
+      "opaquePixels": 22364,
       "alphaBounds": {
-        "x": 42,
-        "y": 9,
-        "w": 75,
-        "h": 141
+        "x": 132,
+        "y": 59,
+        "w": 153,
+        "h": 292
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__east__000",
-        "lit-commando__lower-body__idle__east__000",
-        "lit-commando__torso-head__aim__east__000",
-        "lit-commando__weapon__aim__east__000"
-      ],
-      "pixelSha256": "7dbfa4906531759a0de9bb4e8f764efdd99e13aa5be166ec20c98d5c56c1c466"
+      "footLineY": 351,
+      "pixelSha256": "0de1b22ab91781c38ea5ff866784a972b68e10b9fe2a4b395bbfb800a525610d"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "north-east",
       "frame": {
-        "x": 160,
+        "x": 384,
         "y": 0,
-        "w": 160,
-        "h": 160
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6699,
-      "presentationScale": 1.15,
+      "opaquePixels": 26809,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 128,
+        "y": 62,
+        "w": 136,
+        "h": 281
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__north-east__000",
-        "lit-commando__lower-body__idle__north-east__000",
-        "lit-commando__torso-head__aim__north-east__000",
-        "lit-commando__weapon__aim__north-east__000"
-      ],
-      "pixelSha256": "a733fc127b3c773e191a3faa4dabf38c2107b8130a88b6a1558820239bacd641"
+      "footLineY": 343,
+      "pixelSha256": "de6ac149baeeb004ee52210f627d926038902a2fe9cbe476c7544675ea7a0188"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "north",
       "frame": {
-        "x": 320,
+        "x": 768,
         "y": 0,
-        "w": 160,
-        "h": 160
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6693,
-      "presentationScale": 1.15,
+      "opaquePixels": 26914,
       "alphaBounds": {
-        "x": 42,
-        "y": 19,
-        "w": 76,
-        "h": 131
+        "x": 113,
+        "y": 64,
+        "w": 158,
+        "h": 268
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__north__000",
-        "lit-commando__lower-body__idle__north__000",
-        "lit-commando__torso-head__aim__north__000",
-        "lit-commando__weapon__aim__north__000"
-      ],
-      "pixelSha256": "9d360625ff204665ef032a6cc795fe1a8fe56b29dc70454cbc3e5210dd000533"
+      "footLineY": 332,
+      "pixelSha256": "f9c4c23a453abf122cd60c2c835b5f0755be9fa5d0f19f8d47cb444a70514616"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "north-west",
       "frame": {
-        "x": 480,
+        "x": 1152,
         "y": 0,
-        "w": 160,
-        "h": 160
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6564,
-      "presentationScale": 1.15,
+      "opaquePixels": 26177,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 121,
+        "y": 62,
+        "w": 135,
+        "h": 281
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__north-west__000",
-        "lit-commando__lower-body__idle__north-west__000",
-        "lit-commando__torso-head__aim__north-west__000",
-        "lit-commando__weapon__aim__north-west__000"
-      ],
-      "pixelSha256": "16124634c22a9942b18e26a8d5c19cbaf33e477be93523746b3a20e7f3fe403d"
+      "footLineY": 343,
+      "pixelSha256": "fcfac101b32e0b31e1938b5bb540e78d7f8f64fe21f49d6d41d627312ce4940b"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "west",
       "frame": {
-        "x": 640,
-        "y": 0,
-        "w": 160,
-        "h": 160
+        "x": 0,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5724,
-      "presentationScale": 1.15,
+      "opaquePixels": 22494,
       "alphaBounds": {
-        "x": 42,
-        "y": 9,
-        "w": 75,
-        "h": 141
+        "x": 99,
+        "y": 59,
+        "w": 153,
+        "h": 292
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__west__000",
-        "lit-commando__lower-body__idle__west__000",
-        "lit-commando__torso-head__aim__west__000",
-        "lit-commando__weapon__aim__west__000"
-      ],
-      "pixelSha256": "39688eeda264fe6909e58a647db20764074f4b7b146aa8216e157bb0f0384f3f"
+      "footLineY": 351,
+      "pixelSha256": "817eb417428b899e7d9388e249c572a4ac9d8c81ed881830303b3ee39fe54a77"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "south-west",
       "frame": {
-        "x": 800,
-        "y": 0,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6594,
-      "presentationScale": 1.15,
+      "opaquePixels": 26460,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 120,
+        "y": 61,
+        "w": 136,
+        "h": 282
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__south-west__000",
-        "lit-commando__lower-body__idle__south-west__000",
-        "lit-commando__torso-head__aim__south-west__000",
-        "lit-commando__weapon__aim__south-west__000"
-      ],
-      "pixelSha256": "1a677b34a4243bfddb291456aa99fd6419e99351d77a7d3b00d694ac2b4c3e24"
+      "footLineY": 343,
+      "pixelSha256": "225aa88c4b0b04b40164b029cf2bad64df69d3267e57dc890157449c2f6de30e"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "south",
       "frame": {
-        "x": 960,
-        "y": 0,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6684,
-      "presentationScale": 1.15,
+      "opaquePixels": 27273,
       "alphaBounds": {
-        "x": 42,
-        "y": 19,
-        "w": 76,
-        "h": 131
+        "x": 113,
+        "y": 62,
+        "w": 158,
+        "h": 271
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__south__000",
-        "lit-commando__lower-body__idle__south__000",
-        "lit-commando__torso-head__aim__south__000",
-        "lit-commando__weapon__aim__south__000"
-      ],
-      "pixelSha256": "cbb0d4d4e6e45a48d76fc9ee8f619b4fc5d7104a19bdd58f0917722575f7bae9"
+      "footLineY": 333,
+      "pixelSha256": "efcc17ef35c6a0c71b0fa19954f4fef31e1bfc50175199668c3402671be200ab"
     },
     {
       "portalHeroId": "lit-commando",
       "actorId": "lit-commando",
       "direction": "south-east",
       "frame": {
-        "x": 1120,
-        "y": 0,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6465,
-      "presentationScale": 1.15,
+      "opaquePixels": 26032,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 127,
+        "y": 61,
+        "w": 137,
+        "h": 282
       },
-      "sourceFrames": [
-        "lit-commando__shadow__idle__south-east__000",
-        "lit-commando__lower-body__idle__south-east__000",
-        "lit-commando__torso-head__aim__south-east__000",
-        "lit-commando__weapon__aim__south-east__000"
-      ],
-      "pixelSha256": "c5dfd44e508bc3fdfba1303198c6ebc3e00726c117c4028d8fb0ccfe24b1ec5b"
+      "footLineY": 343,
+      "pixelSha256": "13dd08c343597263a702256425c7b63f3c20e7f76f6eac7c1019429d6c67c753"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -302,207 +319,159 @@
       "direction": "east",
       "frame": {
         "x": 0,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5772,
-      "presentationScale": 1.15,
+      "opaquePixels": 22993,
       "alphaBounds": {
-        "x": 45,
-        "y": 12,
-        "w": 70,
-        "h": 138
+        "x": 141,
+        "y": 65,
+        "w": 143,
+        "h": 286
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__east__000",
-        "lit-valkyrie__lower-body__idle__east__000",
-        "lit-valkyrie__torso-head__aim__east__000",
-        "lit-valkyrie__weapon__aim__east__000"
-      ],
-      "pixelSha256": "651b8833a8a1857aa7b567f93aaf5c92d1dae58c54c8bf5a25d82d2e71891716"
+      "footLineY": 351,
+      "pixelSha256": "69a14aec0568c1e1784a0c7eb4d81f20fac015eb9697f5d54af2d3f0285f2b3a"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "north-east",
       "frame": {
-        "x": 160,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6326,
-      "presentationScale": 1.15,
+      "opaquePixels": 25035,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 128,
+        "y": 63,
+        "w": 135,
+        "h": 280
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__north-east__000",
-        "lit-valkyrie__lower-body__idle__north-east__000",
-        "lit-valkyrie__torso-head__aim__north-east__000",
-        "lit-valkyrie__weapon__aim__north-east__000"
-      ],
-      "pixelSha256": "9afa080d5c9d7ed75b222400149c76fa52886369734770685f8b432f6129c91d"
+      "footLineY": 343,
+      "pixelSha256": "e5ec739da41463a619df1840bd9cf6cf4c62299724a8330e5673ea934890bdb9"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "north",
       "frame": {
-        "x": 320,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6282,
-      "presentationScale": 1.15,
+      "opaquePixels": 25235,
       "alphaBounds": {
-        "x": 42,
-        "y": 19,
-        "w": 76,
-        "h": 131
+        "x": 113,
+        "y": 64,
+        "w": 158,
+        "h": 268
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__north__000",
-        "lit-valkyrie__lower-body__idle__north__000",
-        "lit-valkyrie__torso-head__aim__north__000",
-        "lit-valkyrie__weapon__aim__north__000"
-      ],
-      "pixelSha256": "fbd1660ac56eabee096b645284f42ec3fd3e3d0f83da04850bb4f05aa57d034b"
+      "footLineY": 332,
+      "pixelSha256": "edbc4fa70a46006da222afc53275145c4e0884c1867b9a7d24d3b746ca4c203e"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "north-west",
       "frame": {
-        "x": 480,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6518,
-      "presentationScale": 1.15,
+      "opaquePixels": 25719,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 121,
+        "y": 62,
+        "w": 135,
+        "h": 281
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__north-west__000",
-        "lit-valkyrie__lower-body__idle__north-west__000",
-        "lit-valkyrie__torso-head__aim__north-west__000",
-        "lit-valkyrie__weapon__aim__north-west__000"
-      ],
-      "pixelSha256": "18cee6a5486311ff305b445f8986330712a4f5b68213156b2fd60859cb1fb9b7"
+      "footLineY": 343,
+      "pixelSha256": "06c1b579d14d15c5546aaa5bc7900cc1ed45128ad5273b3ad06e6725781d5982"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "west",
       "frame": {
-        "x": 640,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 0,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5825,
-      "presentationScale": 1.15,
+      "opaquePixels": 23266,
       "alphaBounds": {
-        "x": 45,
-        "y": 10,
-        "w": 70,
-        "h": 140
+        "x": 100,
+        "y": 62,
+        "w": 143,
+        "h": 289
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__west__000",
-        "lit-valkyrie__lower-body__idle__west__000",
-        "lit-valkyrie__torso-head__aim__west__000",
-        "lit-valkyrie__weapon__aim__west__000"
-      ],
-      "pixelSha256": "1794c92f427dee5624c5e4117c230d59fd8d21ffeebe01a8f011121704fb723a"
+      "footLineY": 351,
+      "pixelSha256": "b1630aefd0cf2576bfc02a670b3506852ff06fda87d1738a80e71f59c3e63497"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "south-west",
       "frame": {
-        "x": 800,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6247,
-      "presentationScale": 1.15,
+      "opaquePixels": 24959,
       "alphaBounds": {
-        "x": 46,
-        "y": 11,
-        "w": 67,
-        "h": 139
+        "x": 121,
+        "y": 54,
+        "w": 135,
+        "h": 289
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__south-west__000",
-        "lit-valkyrie__lower-body__idle__south-west__000",
-        "lit-valkyrie__torso-head__aim__south-west__000",
-        "lit-valkyrie__weapon__aim__south-west__000"
-      ],
-      "pixelSha256": "49c1b78c062afed8f391d195cf06276c19ce7769ee6fe958dc4172b7592296ea"
+      "footLineY": 343,
+      "pixelSha256": "0ec3fa3203bcd251bfad9baf14ee77e58fe7df03fa4e6e60bb9827f8853219c4"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "south",
       "frame": {
-        "x": 960,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6357,
-      "presentationScale": 1.15,
+      "opaquePixels": 25901,
       "alphaBounds": {
-        "x": 42,
-        "y": 18,
-        "w": 76,
-        "h": 132
+        "x": 113,
+        "y": 55,
+        "w": 158,
+        "h": 277
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__south__000",
-        "lit-valkyrie__lower-body__idle__south__000",
-        "lit-valkyrie__torso-head__aim__south__000",
-        "lit-valkyrie__weapon__aim__south__000"
-      ],
-      "pixelSha256": "277e9a8b15780e2905a19f18696ccec69fd0cf88cfd121ce1a91cc0a4ce2036a"
+      "footLineY": 332,
+      "pixelSha256": "7ea07d9e3532b5a805e44e1e4eee95a981289a35cfcb65080ea019f0530508e3"
     },
     {
       "portalHeroId": "lit-valkyrie",
       "actorId": "lit-valkyrie",
       "direction": "south-east",
       "frame": {
-        "x": 1120,
-        "y": 160,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6544,
-      "presentationScale": 1.15,
+      "opaquePixels": 26134,
       "alphaBounds": {
-        "x": 46,
-        "y": 15,
-        "w": 67,
-        "h": 135
+        "x": 127,
+        "y": 64,
+        "w": 136,
+        "h": 279
       },
-      "sourceFrames": [
-        "lit-valkyrie__shadow__idle__south-east__000",
-        "lit-valkyrie__lower-body__idle__south-east__000",
-        "lit-valkyrie__torso-head__aim__south-east__000",
-        "lit-valkyrie__weapon__aim__south-east__000"
-      ],
-      "pixelSha256": "63198af16ea05705ec5f02521fecdf1e67a654a4eee2d53fd610c8386e50f4ae"
+      "footLineY": 343,
+      "pixelSha256": "9bd42243e6f71fe0e839879c3263cb8d8a4c4649c6a03fc084e2c8c383322da2"
     },
     {
       "portalHeroId": "lester",
@@ -510,207 +479,159 @@
       "direction": "east",
       "frame": {
         "x": 0,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5853,
-      "presentationScale": 1.15,
+      "opaquePixels": 23189,
       "alphaBounds": {
-        "x": 44,
-        "y": 7,
-        "w": 72,
-        "h": 143
+        "x": 137,
+        "y": 57,
+        "w": 147,
+        "h": 294
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__east__000",
-        "lester-original__lower-body__idle__east__000",
-        "lester-original__torso-head__aim__east__000",
-        "lester-original__weapon__aim__east__000"
-      ],
-      "pixelSha256": "0f528e652e1442c1300c9e62b6922f1b29c3ace111b0b6a85d4f8148468a2088"
+      "footLineY": 351,
+      "pixelSha256": "4bdb695a6d36587fb54448c54597eb19916ccde1fab804853c6ee17e021d36cf"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "north-east",
       "frame": {
-        "x": 160,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6842,
-      "presentationScale": 1.15,
+      "opaquePixels": 27565,
       "alphaBounds": {
-        "x": 46,
-        "y": 12,
-        "w": 67,
-        "h": 138
+        "x": 125,
+        "y": 59,
+        "w": 138,
+        "h": 284
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__north-east__000",
-        "lester-original__lower-body__idle__north-east__000",
-        "lester-original__torso-head__aim__north-east__000",
-        "lester-original__weapon__aim__north-east__000"
-      ],
-      "pixelSha256": "5dd0a466db731d6bedba9e1e418298c74c8043938f192cd7b9851471b2c4ba4b"
+      "footLineY": 343,
+      "pixelSha256": "ced56db407b9f8746944fa58be2c8198df586dae658ff9e813a66356e0805021"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "north",
       "frame": {
-        "x": 320,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 7148,
-      "presentationScale": 1.15,
+      "opaquePixels": 28581,
       "alphaBounds": {
-        "x": 42,
-        "y": 15,
-        "w": 76,
-        "h": 135
+        "x": 113,
+        "y": 56,
+        "w": 158,
+        "h": 276
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__north__000",
-        "lester-original__lower-body__idle__north__000",
-        "lester-original__torso-head__aim__north__000",
-        "lester-original__weapon__aim__north__000"
-      ],
-      "pixelSha256": "5919551a01e66a436251bb6d125276c9dca4ab3d3aa449ebd7a713521bd8aa25"
+      "footLineY": 332,
+      "pixelSha256": "17fc64a1c5072470a11f7d980c2effc4469a5f570ba4105b742617afce395230"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "north-west",
       "frame": {
-        "x": 480,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6849,
-      "presentationScale": 1.15,
+      "opaquePixels": 27585,
       "alphaBounds": {
-        "x": 46,
-        "y": 11,
-        "w": 68,
-        "h": 139
+        "x": 121,
+        "y": 57,
+        "w": 141,
+        "h": 286
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__north-west__000",
-        "lester-original__lower-body__idle__north-west__000",
-        "lester-original__torso-head__aim__north-west__000",
-        "lester-original__weapon__aim__north-west__000"
-      ],
-      "pixelSha256": "6212d5308edd2c047249f09afb9523a32eb6487548a5e35b5528b8a6f24ccb61"
+      "footLineY": 343,
+      "pixelSha256": "2e7bcf134c84becfc88492492589f197b631219a8f5c9bf197661fc999418ffa"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "west",
       "frame": {
-        "x": 640,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 0,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5950,
-      "presentationScale": 1.15,
+      "opaquePixels": 23752,
       "alphaBounds": {
-        "x": 44,
-        "y": 7,
-        "w": 72,
-        "h": 143
+        "x": 100,
+        "y": 57,
+        "w": 147,
+        "h": 294
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__west__000",
-        "lester-original__lower-body__idle__west__000",
-        "lester-original__torso-head__aim__west__000",
-        "lester-original__weapon__aim__west__000"
-      ],
-      "pixelSha256": "fe732009639a5cc248c0d35a4f81907e1defbcf13f6eafd9a0a0b4c7273394f0"
+      "footLineY": 351,
+      "pixelSha256": "2bb98fc4824471af0af7fab7254c2e2e72abacb2a0603b929a6f48e43c227a16"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "south-west",
       "frame": {
-        "x": 800,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6782,
-      "presentationScale": 1.15,
+      "opaquePixels": 27546,
       "alphaBounds": {
-        "x": 46,
-        "y": 11,
-        "w": 67,
-        "h": 139
+        "x": 121,
+        "y": 55,
+        "w": 138,
+        "h": 288
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__south-west__000",
-        "lester-original__lower-body__idle__south-west__000",
-        "lester-original__torso-head__aim__south-west__000",
-        "lester-original__weapon__aim__south-west__000"
-      ],
-      "pixelSha256": "a5374e42e00f817cd3556d5bcdacb29dc6af6f16b4b38d0fb63317ce0697fec9"
+      "footLineY": 343,
+      "pixelSha256": "b2268bc002b7f68f5fd92cfa06bb3800c404ffec8253d893b6a182b303d1372f"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "south",
       "frame": {
-        "x": 960,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 7132,
-      "presentationScale": 1.15,
+      "opaquePixels": 28827,
       "alphaBounds": {
-        "x": 42,
-        "y": 15,
-        "w": 76,
-        "h": 135
+        "x": 113,
+        "y": 55,
+        "w": 158,
+        "h": 278
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__south__000",
-        "lester-original__lower-body__idle__south__000",
-        "lester-original__torso-head__aim__south__000",
-        "lester-original__weapon__aim__south__000"
-      ],
-      "pixelSha256": "0c9d9c1dddfb074d345c2c821e00372d6c9510f1b144651acea625dc2cd67ee8"
+      "footLineY": 333,
+      "pixelSha256": "d932ecd87a50aa4bae206f0710e4ad01e02c85e3092d8c0dda8f62dc41c7a14f"
     },
     {
       "portalHeroId": "lester",
       "actorId": "lester-original",
       "direction": "south-east",
       "frame": {
-        "x": 1120,
-        "y": 320,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6873,
-      "presentationScale": 1.15,
+      "opaquePixels": 27888,
       "alphaBounds": {
-        "x": 46,
-        "y": 11,
-        "w": 68,
-        "h": 139
+        "x": 122,
+        "y": 55,
+        "w": 141,
+        "h": 288
       },
-      "sourceFrames": [
-        "lester-original__shadow__idle__south-east__000",
-        "lester-original__lower-body__idle__south-east__000",
-        "lester-original__torso-head__aim__south-east__000",
-        "lester-original__weapon__aim__south-east__000"
-      ],
-      "pixelSha256": "4eeef49ddc86d1a9059bdc262fd4a4d6611e6f6751e0cc95ffa8d407849a010e"
+      "footLineY": 343,
+      "pixelSha256": "12ae57c3a417eb9e2a836db1b588afaf0db5dc3da4be4d6d37fabb015d517321"
     },
     {
       "portalHeroId": "lilly",
@@ -718,237 +639,204 @@
       "direction": "east",
       "frame": {
         "x": 0,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5532,
-      "presentationScale": 1.15,
+      "opaquePixels": 21923,
       "alphaBounds": {
-        "x": 45,
-        "y": 10,
-        "w": 69,
-        "h": 140
+        "x": 146,
+        "y": 61,
+        "w": 139,
+        "h": 290
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__east__000",
-        "lilly__lower-body__idle__east__000",
-        "lilly__torso-head__aim__east__000",
-        "lilly__weapon__aim__east__000"
-      ],
-      "pixelSha256": "072bc4478e11166b564747f42ec1f72e3c7260a1ea0d798bfdfbb1543db84637"
+      "footLineY": 351,
+      "pixelSha256": "c11ce7e096e1759a317ab35c3d068d21bea5f8c0c50efe1246f429d8e55cd68b"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "north-east",
       "frame": {
-        "x": 160,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6407,
-      "presentationScale": 1.15,
+      "opaquePixels": 25444,
       "alphaBounds": {
-        "x": 46,
-        "y": 14,
-        "w": 67,
-        "h": 136
+        "x": 128,
+        "y": 65,
+        "w": 135,
+        "h": 278
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__north-east__000",
-        "lilly__lower-body__idle__north-east__000",
-        "lilly__torso-head__aim__north-east__000",
-        "lilly__weapon__aim__north-east__000"
-      ],
-      "pixelSha256": "c3bee803e2667a7c87a6ebe688a31ef5105fabbba2116b3e906132c55c8c7fbe"
+      "footLineY": 343,
+      "pixelSha256": "555083fbe2935073b1d69fdecc57a25642181c2294adb296042ed550e407db98"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "north",
       "frame": {
-        "x": 320,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6440,
-      "presentationScale": 1.15,
+      "opaquePixels": 25953,
       "alphaBounds": {
-        "x": 42,
-        "y": 24,
-        "w": 76,
-        "h": 126
+        "x": 113,
+        "y": 72,
+        "w": 158,
+        "h": 260
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__north__000",
-        "lilly__lower-body__idle__north__000",
-        "lilly__torso-head__aim__north__000",
-        "lilly__weapon__aim__north__000"
-      ],
-      "pixelSha256": "c96a044b17dd46d4834032ec3db95e0c61acdee6b0d2b0e9d21f3978af2fec92"
+      "footLineY": 332,
+      "pixelSha256": "00151d080393a86ea55e720aef49dfc9ec6499414dd4778a5538fe85d20d37cf"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "north-west",
       "frame": {
-        "x": 480,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 0,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6402,
-      "presentationScale": 1.15,
+      "opaquePixels": 25331,
       "alphaBounds": {
-        "x": 46,
-        "y": 14,
-        "w": 67,
-        "h": 136
+        "x": 121,
+        "y": 65,
+        "w": 135,
+        "h": 278
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__north-west__000",
-        "lilly__lower-body__idle__north-west__000",
-        "lilly__torso-head__aim__north-west__000",
-        "lilly__weapon__aim__north-west__000"
-      ],
-      "pixelSha256": "6e92ca56fcb57b9d1302126ba35b2a1c946ae6f236c6e37fc0c65f7f6326f518"
+      "footLineY": 343,
+      "pixelSha256": "cf6767e547b9f8184cfe6e01bbbe27acf187d9fc3827f472f9333feea063df5f"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "west",
       "frame": {
-        "x": 640,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 0,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 5559,
-      "presentationScale": 1.15,
+      "opaquePixels": 22104,
       "alphaBounds": {
-        "x": 45,
-        "y": 10,
-        "w": 69,
-        "h": 140
+        "x": 99,
+        "y": 61,
+        "w": 139,
+        "h": 290
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__west__000",
-        "lilly__lower-body__idle__west__000",
-        "lilly__torso-head__aim__west__000",
-        "lilly__weapon__aim__west__000"
-      ],
-      "pixelSha256": "c26129512ab20c554722332c2501aa6a9f36db7c2d866160bee49b141553b13c"
+      "footLineY": 351,
+      "pixelSha256": "bd4f62d7647b68f0eb6525cd4dd801b519d8c8c85a79b48e92d366af2fc08bed"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "south-west",
       "frame": {
-        "x": 800,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 384,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6485,
-      "presentationScale": 1.15,
+      "opaquePixels": 26083,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 121,
+        "y": 60,
+        "w": 135,
+        "h": 283
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__south-west__000",
-        "lilly__lower-body__idle__south-west__000",
-        "lilly__torso-head__aim__south-west__000",
-        "lilly__weapon__aim__south-west__000"
-      ],
-      "pixelSha256": "51b203cbd49461dd1405d62336aedc3a7351c89dae1c650f9d5451070f84e14c"
+      "footLineY": 343,
+      "pixelSha256": "20232996887568bdab9562e1a9783d66f0fac1453e1d33c7111ec0b312668daa"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "south",
       "frame": {
-        "x": 960,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 768,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6629,
-      "presentationScale": 1.15,
+      "opaquePixels": 26843,
       "alphaBounds": {
-        "x": 42,
-        "y": 20,
-        "w": 76,
-        "h": 130
+        "x": 113,
+        "y": 64,
+        "w": 158,
+        "h": 269
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__south__000",
-        "lilly__lower-body__idle__south__000",
-        "lilly__torso-head__aim__south__000",
-        "lilly__weapon__aim__south__000"
-      ],
-      "pixelSha256": "1c00abea128c275e21be7279e11cce0c7d399d826cfcdbb993c83ea59ae8fb79"
+      "footLineY": 333,
+      "pixelSha256": "de59adf6dbcd6a842732ed78b72a2f54e43ded26ad9688f6f7eb3af5e4802832"
     },
     {
       "portalHeroId": "lilly",
       "actorId": "lilly",
       "direction": "south-east",
       "frame": {
-        "x": 1120,
-        "y": 480,
-        "w": 160,
-        "h": 160
+        "x": 1152,
+        "y": 384,
+        "w": 384,
+        "h": 384
       },
-      "opaquePixels": 6430,
-      "presentationScale": 1.15,
+      "opaquePixels": 25817,
       "alphaBounds": {
-        "x": 46,
-        "y": 13,
-        "w": 67,
-        "h": 137
+        "x": 127,
+        "y": 60,
+        "w": 136,
+        "h": 283
       },
-      "sourceFrames": [
-        "lilly__shadow__idle__south-east__000",
-        "lilly__lower-body__idle__south-east__000",
-        "lilly__torso-head__aim__south-east__000",
-        "lilly__weapon__aim__south-east__000"
-      ],
-      "pixelSha256": "81877a7dcf7b02153c9a77708bf47894dc0ee9ad3540034ace1380293f21a006"
+      "footLineY": 343,
+      "pixelSha256": "a54346add0ceb51df0583c56709591e236bb23354efa6594e57719e84a41d108"
     }
   ],
-  "sources": [
-    {
-      "actorId": "lit-commando",
-      "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
-      "metadataSha256": "5ab964a88efc136b5981d161aa9e107d1648b10b7c33e28f5b3740947ecee062",
-      "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png",
-      "imageSha256": "9c9ebeed45cc77d8aa79dc41a76c34a1d97801499a421eee352cf8361f166df8"
+  "sources": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.blend",
+    "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
+    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+    "sourceManifestSha256": "7a8f19d8c3c0484ebc8ad451e249bc1616e85efa4e7d688a29a90f5a37b26ba5",
+    "renderManifest": "apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json",
+    "renderManifestSha256": "8dbcc1d14ba82ff80307d7d280677d7ec27518c04fa9a959de40c2bd925554af",
+    "exporter": "scripts/hmh-blender/export-hmh-hero-selector.py",
+    "exporterSha256": "7740daa3bf2f6eeb6d85bc0dd3233836c91a5214d41ad84f1bfe5c18cad707fd",
+    "heroExporter": "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
+    "heroExporterSha256": "cdc381db23234160f0090b6665e75f60b980f44e47aeaa5408f0d981889962d7"
+  },
+  "metrics": {
+    "status": "pass",
+    "renderPasses": 2,
+    "reproducibility": "pass",
+    "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+    "reproducibilityBudget": {
+      "maxChangedVisiblePixels": 8,
+      "maxChannelDelta": 2,
+      "maxTotalChannelDelta": 32
     },
-    {
-      "actorId": "lit-valkyrie",
-      "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
-      "metadataSha256": "5f5a5372ce2eb9593af3674972965510905cdbe8fc41959910f0ae5aef704457",
-      "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png",
-      "imageSha256": "5dc50697b9b2ed1bd7cfaf7013c07f491d501c7e86387774ad0df4b98e20ef42"
+    "reproducibilityObserved": {
+      "maxChangedVisiblePixels": 0,
+      "maxChannelDelta": 0,
+      "maxTotalChannelDelta": 0,
+      "driftedFrameCount": 0,
+      "worstFrameId": null
     },
-    {
-      "actorId": "lester-original",
-      "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.json",
-      "metadataSha256": "4cb559d9bcdc3afbbc4388e2b7c8d3212275c46a5a0924e165db6632205351ee",
-      "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png",
-      "imageSha256": "065f9a2726e81a2adf7e535fd65b8970a5a42df46a0c1a427e17ec0164937c1c"
+    "perAtlasBytes": {
+      "lit-commando": 392396,
+      "lit-valkyrie": 394958,
+      "lester": 415838,
+      "lilly": 398477
     },
-    {
-      "actorId": "lilly",
-      "metadata": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.json",
-      "metadataSha256": "c0d956b11e0290c916dc045d6e8c4dabd7c6b0d95f5ac33c909ab00aa7c85301",
-      "image": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png",
-      "imageSha256": "80f0d0bf8e1ca6911426ee6015388f5f5c628ffbb70aa8963f25ae55a0c9de87"
+    "totalImageBytes": 1601669,
+    "maxBytesPerAtlas": 524288,
+    "maxTotalBytes": 2097152,
+    "footLineSpreadPx": {
+      "lit-commando": 19,
+      "lit-valkyrie": 19,
+      "lester": 19,
+      "lilly": 19
     }
-  ]
+  }
 }

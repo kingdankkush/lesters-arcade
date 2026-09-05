@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 
 const VERCEL_CONFIG = fileURLToPath(new URL('../vercel.json', import.meta.url));
 const PYTHON_REQUIREMENTS = fileURLToPath(new URL('../requirements-vercel.txt', import.meta.url));
-const SELECTOR_BUILDER = fileURLToPath(new URL('../scripts/build-hmh-reboot-hero-selector-atlas.py', import.meta.url));
+// The selector runner's `--check` branch runs inside `npm run test:release` on the
+// Vercel image (CPython 3.12 + Pillow 11.3, no Blender, no .git).
+const SELECTOR_BUILDER = fileURLToPath(new URL('../scripts/run-hmh-hero-selector-render.py', import.meta.url));
 const VERCELIGNORE = fileURLToPath(new URL('../.vercelignore', import.meta.url));
 
 const vercelConfig = JSON.parse(readFileSync(VERCEL_CONFIG, 'utf8'));
@@ -32,10 +34,11 @@ test('Vercel build command exposes the isolated Python target', () => {
 });
 
 
-test('selector builder uses a Pillow 11 compatible alpha byte API', () => {
+test('selector runner uses a Pillow 11 compatible alpha byte API and keeps --check Blender-free', () => {
   const builder = readFileSync(SELECTOR_BUILDER, 'utf8');
   assert.doesNotMatch(builder, /get_flattened_data/u);
   assert.match(builder, /for value in alpha\.tobytes\(\)/u);
+  assert.match(builder, /if args\.check:\n\s+check\(manifest_path\)\n\s+return/u, '--check must return before any Blender launch or lock');
 });
 
 test('Vercel uploads exclude local evidence, temporary build state, and Blender backups', () => {

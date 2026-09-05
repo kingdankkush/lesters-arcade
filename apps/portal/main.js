@@ -19,6 +19,7 @@ import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManua
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
 import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-reboot-hero-selector-atlas.mjs';
+import { restFrameIndex } from './src/hmh-hero-select-ui.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
 import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame, selectAnimatedEnemySet } from './src/combat-sprite-bridge.mjs';
 
@@ -2101,6 +2102,9 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
     }
     image.style.setProperty('--cabinet-frame-index', String(index));
     image.style.setProperty('--cabinet-frame-delay', `${frameDuration * index}ms`);
+    // The frame shown when the viewer prefers reduced motion (CSS stills the
+    // spin and reveals only this one).
+    if (frame.rest) image.dataset.restFrame = 'true';
     rotator.append(image);
   });
   return rotator;
@@ -2112,6 +2116,11 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 // (hmh('HMH_ANIMATED_ROSTER')), so the character select screen matches in-game appearance.
 // Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
 const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
+// Cycle 074: the selector frames are rendered at 384 px from the hero scene
+// (hero ~260-294 px tall). Scaling the 180 px card box by 1.4 keeps the on-card
+// hero height Cycle 073 shipped (~185 px) while every device pixel up to 2 DPR
+// is a downsample of the source instead of a 1.44x upscale of a 160 px frame.
+const HERO_SELECTOR_DISPLAY_SCALE = 1.4;
 const HERO_ROTATION_DISPLAY_SCALE = Object.freeze({
   // Per-axis card-only normalization. Lester/Lilly have wider original bounds
   // than Commando/Valkyrie, so uniform scaling made them too wide when height
@@ -2134,13 +2143,18 @@ function heroRotationSprite(characterId) {
   const production = HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[characterId]
     ?? HMH_REBOOT_HERO_SELECTOR_ATLAS.heroes[rosterKey];
   if (production) {
+    const restIndex = restFrameIndex(HMH_REBOOT_HERO_SELECTOR_ATLAS.directions, HMH_REBOOT_HERO_SELECTOR_ATLAS.restDirection);
     return {
       id: production.actorId,
       animation: 'production-rotation',
-      frames: production.frames.map((src, index) => ({ src, direction: HMH_REBOOT_HERO_SELECTOR_ATLAS.directions[index] })),
+      frames: production.frames.map((src, index) => ({
+        src,
+        direction: HMH_REBOOT_HERO_SELECTOR_ATLAS.directions[index],
+        rest: index === restIndex,
+      })),
       frameDurationMs: production.frameDurationMs,
       className: `hero-character-rotator hmh-reboot-selector-${production.actorId}`,
-      displayScale: 1.28,
+      displayScale: HERO_SELECTOR_DISPLAY_SCALE,
     };
   }
   const entry = hmh('HMH_ANIMATED_ROSTER')?.[rosterKey] ?? hmh('HMH_ANIMATED_ROSTER')?.[characterId];
@@ -2198,7 +2212,7 @@ const HERO_STAT_ICON_IDS = Object.freeze({
   Crit: 'control',
 });
 
-function renderHeroStatBars(container, stats) {
+function renderHeroStatBars(container, stats, decorateRow) {
   for (const [label, value] of stats) {
     const row = el('div', { className: 'hero-stat-row' });
     const labelWrap = el('div', { className: 'hero-stat-label' });
@@ -2214,6 +2228,7 @@ function renderHeroStatBars(container, stats) {
     track.append(fill);
     row.append(track);
     container.append(row);
+    decorateRow?.(row, label, value);
   }
 }
 

@@ -500,6 +500,31 @@
 .hero-stat-name { font-weight: 700; }
 .hero-stat-track { height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; box-shadow: inset 0 0 4px rgba(0,0,0,0.5); border: 1px solid rgba(25,247,255,0.08); }
 .hero-stat-fill { height: 100%; background: linear-gradient(90deg, #19f7ff, #45ff8a); border-radius: 5px; box-shadow: 0 0 10px rgba(25,247,255,0.55); transition: width 0.4s cubic-bezier(.3,1.4,.5,1); }
+/* Side-by-side stat comparison chips (Cycle 074, U-6). */
+.hero-compare-label { font-size: 0.62rem; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; color: #7fa6bf; }
+.hero-card[data-compare-role="reference"] .hero-compare-label { color: #ffe84d; }
+.hero-stat-row.has-delta { grid-template-columns: 96px 1fr 50px; }
+.hero-stat-delta {
+  justify-self: end;
+  min-width: 44px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: #9fb4c9;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.hero-stat-delta[data-trend="up"] { color: #45ff8a; border-color: rgba(69, 255, 138, 0.38); background: rgba(69, 255, 138, 0.09); }
+.hero-stat-delta[data-trend="down"] { color: #ff9f6e; border-color: rgba(255, 159, 110, 0.38); background: rgba(255, 159, 110, 0.09); }
+.hero-stat-delta[data-best="true"] { box-shadow: 0 0 0 1px rgba(255, 232, 77, 0.6), 0 0 10px rgba(255, 232, 77, 0.28); }
+.hero-stat-delta[data-best="true"]::after { content: '\2605'; margin-left: 3px; color: #ffe84d; }
+.hero-card:focus-visible { outline: 2px solid #ffe84d; outline-offset: 4px; }
+.hero-carousel-dots { display: none; }
 .hero-unlock-progress {
   display: grid;
   gap: 7px;
@@ -1927,4 +1952,33 @@
   #officialCharacterRoster .hero-cta {
     margin-top: 10px;
   }
+  /* Dot indicator for the snap carousel: one dot per hero, driven from the
+     roster's real scroll geometry (Cycle 074, U-6). Indicative only. */
+  .hero-carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+    /* The select view is a 22 px grid; the dots sit inside the hint's existing
+       margin band instead of adding a row, so the carousel document height stays
+       under the 1800 px mobile pin (measured 1806 with a plain row). */
+    margin: -26px 0 -4px;
+  }
+  .hero-carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(159, 233, 255, 0.28);
+    transition: transform 0.16s ease, background-color 0.16s ease;
+  }
+  .hero-carousel-dot[data-active="true"] {
+    background: #ffe84d;
+    transform: scale(1.3);
+    box-shadow: 0 0 8px rgba(255, 232, 77, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card, .hero-card.active:hover { transform: none; transition: none; }
+  .hero-stat-fill { transition: none; }
+  .hero-carousel-dot { transition: none; }
 }

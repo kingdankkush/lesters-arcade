@@ -190,6 +190,67 @@ node --test tests/hmh-reboot-mannequin-atlas.test.mjs
 node --test tests/hmh-reboot-shell.test.mjs
 ```
 
+## Hero selector turntables
+
+The character-select turntables are a separate, portal-only render of the four
+production heroes. They are not the gameplay atlases: the shipped 160 px hero
+atlases under `apps/portal/assets/generated/hmh-reboot-production-heroes/` are
+neither inputs nor outputs of this pipeline and must stay byte-identical when it
+runs.
+
+Manifest: `apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json`
+(`hmh-reboot-hero-selector-atlas-v3`). It inherits the committed hero scene
+read-only (`hmh-production-heroes.blend`, ortho 2.75, exposure -0.45, pitch 55,
+EEVEE) and renders one composite frame per spin direction per hero at 384 px:
+shadow and lower-body idle frame 0 under torso-head and weapon aim frame 0, the
+same pose the v2 recomposer used. Directions follow the selector spin order
+`east, north-east, north, north-west, west, south-west, south, south-east`; the
+rest frame shown under `prefers-reduced-motion` is `south`.
+
+```bash
+npm run assets:hmh:hero-selector
+npm run check:hmh:hero-selector
+```
+
+`assets:hmh:hero-selector` (`scripts/run-hmh-hero-selector-render.py`):
+
+1. Takes both `exclusive_pipeline_lock`s (`.tmp/hmh-reboot-hero-selector.lock`
+   and `.tmp/hmh-production-hero-pipeline.lock`) so a concurrent hero
+   regeneration cannot swap the `.blend` between passes.
+2. Verifies Blender 5.1.2 and that the committed `.blend` hash is unchanged
+   after both passes; the exporter
+   (`scripts/hmh-blender/export-hmh-hero-selector.py`) asserts it opened the
+   committed scene and never calls `save_mainfile`.
+3. Runs two cold Blender passes (32 renders each, about 9 s per pass) and
+   compares them premultiplied per frame against the hero
+   `reproducibilityBudget` {8 changed visible pixels, 2 per channel, 32 total},
+   mode `bounded-premultiplied-rgba-v1`. A drift report is written to
+   `.tmp/hmh-reboot-hero-selector-drift-report.json` on every run. Pass A is
+   blessed.
+4. Proves the anti-jitter contract: the exporter projects the rig origin
+   through the fixed camera per frame, and the runner refuses any movement
+   above 0.5 px across all 64 rendered frames (v2 recentred each frame to its
+   own alpha bbox, so a gun sticking out east shifted the whole hero).
+5. Packs one 1536x768 PNG per hero (4x2 grid of 384 px cells) with Pillow at
+   compress level 9 and enforces `maxBytesPerAtlas` 524,288 per file and
+   `maxTotalBytes` 2,097,152 for the whole select-screen payload.
+6. Writes `apps/portal/assets/generated/hmh-reboot-hero-selector/
+   <actor>-selector-atlas.png`, `hmh-reboot-hero-selector-atlas.json` (per-frame
+   pixel SHA-256, alpha bounds, foot line, provenance hashes of the scene,
+   manifests and exporters) and the frozen module
+   `apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs`, whose path is
+   listed by the curated level-kit runtime manifest and must not move.
+
+`check:hmh:hero-selector` is Blender-free and runs inside `npm run test:release`
+on the Vercel image (CPython 3.12 + Pillow 11.3, no `.git`): it decodes every
+tracked atlas, re-verifies each frame's pixel hash, bytes, SHA-256, dimensions,
+caps, the module derivation, and the recorded hash of the committed `.blend`.
+It accepts a pixel-identical PNG re-encode and rejects any pixel change.
+
+Consumers: `apps/portal/main.js` (`heroRotationSprite`, `displayScale` 1.4 into
+the 180 px card box) and `scripts/hmh-reboot-production-asset-qa.mjs`, which
+applies the same per-atlas and total caps. The HMH child never imports it.
+
 ## External model sources
 
 Cycle 072 added a second, additive source path beside the procedural builders: a

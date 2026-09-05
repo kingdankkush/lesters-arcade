@@ -456,7 +456,10 @@ svg.arcade-icon {
 .hero-character-rotator .cabinet-rotation-frame {
   transform: scale(var(--hero-rotation-scale-x), var(--hero-rotation-scale-y));
   transform-origin: 50% 58%;
-  image-rendering: pixelated;
+  /* 384 px source frames are downsampled into the card, so let the browser
+     resample smoothly; nearest-neighbour sampling only suited the old 160 px
+     upscale. */
+  image-rendering: auto;
 }
 
 .cabinet-rotation-frame {
@@ -483,6 +486,17 @@ svg.arcade-icon {
 @keyframes hmhCabinetFrame {
   0%, 15.8% { opacity: 1; }
   16%, 100% { opacity: 0; }
+}
+
+/* Reduced motion: still the float and the spin and show one frame. Turntables
+   mark their south-facing frame as the rest frame; sprites without one (the
+   splash cabinet) keep their first frame. */
+@media (prefers-reduced-motion: reduce) {
+  .hmh-cabinet-rotator { animation: none; }
+  .cabinet-rotation-frame,
+  .cabinet-rotation-frame:first-child { animation: none; opacity: 0; }
+  .hmh-cabinet-rotator:not(:has(.cabinet-rotation-frame[data-rest-frame="true"])) .cabinet-rotation-frame:first-child,
+  .cabinet-rotation-frame[data-rest-frame="true"] { opacity: 1; }
 }
 
 .neon-cabinet {

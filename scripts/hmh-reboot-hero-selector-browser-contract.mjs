@@ -27,12 +27,29 @@ export async function readHeroSelectorEvidence(page, { timeout = 15_000 } = {}) 
           gridAutoFlow: getComputedStyle(roster).gridAutoFlow,
         } : null;
       })(),
+      reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+      focusedCharacterId: document.activeElement?.dataset?.characterId ?? null,
+      dots: (() => {
+        const strip = document.querySelector('.hero-carousel-dots');
+        const dots = [...(strip?.children ?? [])];
+        return {
+          count: dots.length,
+          activeIndex: dots.findIndex((dot) => dot.dataset.active === 'true'),
+          visible: Boolean(strip) && getComputedStyle(strip).display !== 'none',
+        };
+      })(),
       cards: cards.map((card) => {
         const frames = [...card.querySelectorAll('canvas.cabinet-rotation-frame')];
         return {
           id: card.dataset.characterId ?? null,
           active: card.classList.contains('active'),
           locked: card.classList.contains('locked'),
+          ariaPressed: card.getAttribute('aria-pressed'),
+          compareRole: card.dataset.compareRole ?? null,
+          comparisonChips: card.querySelectorAll('.hero-stat-delta').length,
+          frameSize: frames.length ? [frames[0].width, frames[0].height] : null,
+          restFrameIndex: frames.findIndex((frame) => frame.dataset.restFrame === 'true'),
+          visibleFrameIndexes: frames.map((frame, index) => (parseFloat(getComputedStyle(frame).opacity) > 0.5 ? index : -1)).filter((index) => index >= 0),
           layoutTop: card.offsetTop,
           rect: card.getBoundingClientRect().toJSON(),
           alphaPixels: frames.map((frame) => {
