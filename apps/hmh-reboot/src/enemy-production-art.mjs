@@ -1,4 +1,6 @@
 import { freezeDeep } from './value-guards.mjs';
+import { ENEMY_STRIKE_TICKS } from './enemy-combat.mjs';
+import { ENEMY_ARCHETYPES } from './enemy-archetypes.mjs';
 const REQUIRED_STATES = Object.freeze(['idle', 'run', 'tell', 'attack', 'hit', 'death']);
 
 
@@ -104,6 +106,58 @@ export function resolveEnemyRuntimeVisualState(enemy, tick) {
   if (enemy.attackPhase === 'attack') return 'attack';
   if (Number.isInteger(enemy.hitUntilTick) && enemy.hitUntilTick >= tick) return 'hit';
   return Math.hypot(enemy.velocity?.x ?? 0, enemy.velocity?.y ?? 0) > 1 ? 'run' : 'idle';
+}
+
+// ---------------------------------------------------------------------------
+// Cycle 074 (E-3): phase-relative attack ticks. The roster's tell and attack
+// clips are authored in beat order (anticipation -> held, overshoot ->
+// follow-through -> exposed recovery), so the frame must be chosen from how
+// far the simulation is into ITS phase, not from the global clock. Read-only
+// over the enemy's own attack fields; nothing here writes back.
+// ---------------------------------------------------------------------------
+
+function strikeStartTick(enemy) {
+  // The strike is carved out of the front of recovery, so recovery's end tick
+  // minus the archetype's recovery length is the tick the strike opened on.
+  const recoveryTicks = ENEMY_ARCHETYPES[enemy.archetypeId]?.attack?.recoveryTicks;
+  if (Number.isInteger(enemy.attackRecoveryUntilTick) && Number.isInteger(recoveryTicks)) {
+    return enemy.attackRecoveryUntilTick - recoveryTicks;
+  }
+  if (Number.isInteger(enemy.attackPhaseUntilTick)) return enemy.attackPhaseUntilTick - ENEMY_STRIKE_TICKS;
+  return null;
+}
+
+export function resolveEnemyAttackPhaseTick(enemy, tick) {
+  if (!enemy || typeof enemy !== 'object') throw new TypeError('enemy is required');
+  nonNegativeTick(tick);
+  if (enemy.attackPhase === 'tell') {
+    return Number.isInteger(enemy.attackTellStartedTick) ? Math.max(0, tick - enemy.attackTellStartedTick) : 0;
+  }
+  if (enemy.attackPhase === 'attack') {
+    const start = Number.isInteger(enemy.attackPhaseUntilTick) ? enemy.attackPhaseUntilTick - ENEMY_STRIKE_TICKS : tick;
+    return Math.max(0, tick - start);
+  }
+  if (enemy.attackPhase === 'recovery') {
+    const start = strikeStartTick(enemy);
+    // Recovery continues the attack clip past the strike so the exposed final
+    // frame is held; never rewind into the overshoot.
+    return start === null ? ENEMY_STRIKE_TICKS : Math.max(ENEMY_STRIKE_TICKS, tick - start);
+  }
+  return null;
+}
+
+// Roster-only selection: the six-state resolver above is unchanged for the
+// vector fallback. Recovery is shown as the held final attack frame unless a
+// hit reaction or death outranks it, exactly as the six-state order does.
+export function resolveEnemyRosterPoseSelection(enemy, tick) {
+  const state = resolveEnemyRuntimeVisualState(enemy, tick);
+  if (state === 'tell' || state === 'attack') {
+    return Object.freeze({ state, phaseTick: resolveEnemyAttackPhaseTick(enemy, tick) });
+  }
+  if (enemy.attackPhase === 'recovery' && state !== 'death' && state !== 'hit') {
+    return Object.freeze({ state: 'attack', phaseTick: resolveEnemyAttackPhaseTick(enemy, tick) });
+  }
+  return Object.freeze({ state, phaseTick: null });
 }
 
 export function isEliteEnemyProjection(enemyId) {

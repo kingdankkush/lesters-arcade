@@ -141,17 +141,49 @@ export function resolveEnemyVisualDirection(state, velocity, epsilon = 0.5) {
   return state.direction;
 }
 
-export function resolveEnemyRosterPose(index, { state, tick, direction, phase = index?.phases?.[0] ?? null }) {
+// States whose clips are authored as an ordered beat (anticipation -> held;
+// overshoot -> follow-through -> exposed recovery) rather than a loop.
+const PHASE_RELATIVE_STATES = Object.freeze(['tell', 'attack']);
+
+export function resolveEnemyRosterPose(index, { state, tick, direction, phase = index?.phases?.[0] ?? null, phaseTick = null }) {
   if (!index || typeof index.frameFor !== 'function') throw new TypeError('roster index is required');
   const resolvedState = ENEMY_ROSTER_STATES.includes(state) ? state : 'idle';
   const directionName = directionNameForRosterIndex(Number.isInteger(direction) ? direction : 0);
   const simulationTick = Number.isFinite(tick) ? Math.max(0, Math.trunc(tick)) : 0;
   const count = index.frameCountFor(resolvedState, directionName, phase);
   const fps = index.fpsFor(resolvedState, directionName, phase);
-  const authoredFrame = Math.floor(simulationTick * fps / 60);
-  // Death holds its final frame instead of looping, so a corpse settles.
-  const frameIndex = resolvedState === 'death' ? Math.min(count - 1, authoredFrame) : authoredFrame % count;
+  let frameIndex;
+  if (PHASE_RELATIVE_STATES.includes(resolvedState) && Number.isFinite(phaseTick)) {
+    // Cycle 074: count from the start of the enemy's own phase so the beats
+    // play in authored order, and hold the last frame for the rest of the
+    // window (the fully wound tell, the exposed recovery).
+    frameIndex = Math.min(count - 1, Math.floor(Math.max(0, Math.trunc(phaseTick)) * fps / 60));
+  } else {
+    const authoredFrame = Math.floor(simulationTick * fps / 60);
+    // Death holds its final frame instead of looping, so a corpse settles.
+    frameIndex = resolvedState === 'death' ? Math.min(count - 1, authoredFrame) : authoredFrame % count;
+  }
   return index.frameFor(resolvedState, directionName, frameIndex, phase);
+}
+
+// Cycle 074 (E-4): the elite treatment lives on the roster body itself so a
+// 1-in-8 id-hash elite reads as one at a glance: an additive tinted rim
+// behind the body (a slightly enlarged copy of the current frame), a crown
+// glyph above the head line, and a ground ring the runtime draws in a world
+// layer under the bodies. The layer names mirror the pinned vector contract.
+export const ENEMY_ROSTER_ELITE_LAYERS = Object.freeze(['aura', 'crown', 'outline']);
+const ELITE_RIM_TINT = 0xffd166;
+const ELITE_RIM_SCALE = 1.07;
+const ELITE_RIM_ALPHA = 0.55;
+const ELITE_CROWN_FILL = 0xffe27a;
+const ELITE_CROWN_EDGE = 0x3a2a05;
+const ELITE_CROWN_LIFT = 3;
+
+function drawEliteCrown(graphic) {
+  graphic.clear()
+    .poly([-7, 0, -7, -9, -3.5, -4, 0, -12, 3.5, -4, 7, -9, 7, 0])
+    .fill({ color: ELITE_CROWN_FILL })
+    .stroke({ color: ELITE_CROWN_EDGE, width: 1.5, alpha: 0.9 });
 }
 
 export function createEnemyRosterDisplay({
@@ -161,7 +193,9 @@ export function createEnemyRosterDisplay({
   SpriteClass,
   TextureClass,
   RectangleClass,
+  GraphicsClass = null,
   scale = ENEMY_ROSTER_RUNTIME_SCALE,
+  elite = false,
 }) {
   if (!atlasTexture?.source) throw new TypeError('roster atlas texture source is required');
   for (const [value, name] of [[ContainerClass, 'ContainerClass'], [SpriteClass, 'SpriteClass'], [TextureClass, 'TextureClass'], [RectangleClass, 'RectangleClass']]) {
@@ -188,24 +222,63 @@ export function createEnemyRosterDisplay({
 
   const initialPhase = index.phases[0];
   const initial = index.frameFor('idle', 'south', 0, initialPhase);
+  // The boss carries its own authored crown rig and phase silhouettes, so the
+  // rank-and-file elite treatment never stacks on top of it.
+  const eliteCapable = !index.boss;
+  let rim = null;
+  let crown = null;
+  if (eliteCapable) {
+    rim = new SpriteClass({ texture: textureFor(initial) });
+    rim.label = `roster-elite-rim-${index.actorId}`;
+    rim.anchor.set(initial.anchor.x, initial.anchor.y);
+    rim.blendMode = 'add';
+    rim.tint = ELITE_RIM_TINT;
+    rim.alpha = ELITE_RIM_ALPHA;
+    rim.scale.set(ELITE_RIM_SCALE);
+    rim.visible = false;
+    container.addChild(rim);
+  }
   const sprite = new SpriteClass({ texture: textureFor(initial) });
   sprite.label = `roster-body-${index.actorId}`;
   sprite.anchor.set(initial.anchor.x, initial.anchor.y);
   container.addChild(sprite);
+  if (eliteCapable && typeof GraphicsClass === 'function') {
+    crown = new GraphicsClass();
+    crown.label = `roster-elite-crown-${index.actorId}`;
+    drawEliteCrown(crown);
+    crown.visible = false;
+    container.addChild(crown);
+  }
 
+  container.eliteLayers = ENEMY_ROSTER_ELITE_LAYERS;
+  container.eliteProjection = false;
   container.visualState = 'idle';
   container.visualPhase = initialPhase;
-  container.applyPose = ({ state = 'idle', tick = 0, direction = 0, elite = false, phase = initialPhase } = {}) => {
-    const frame = resolveEnemyRosterPose(index, { state, tick, direction, phase });
-    sprite.texture = textureFor(frame);
+  container.applyPose = ({ state = 'idle', tick = 0, direction = 0, elite: poseElite = false, phase = initialPhase, phaseTick = null } = {}) => {
+    const frame = resolveEnemyRosterPose(index, { state, tick, direction, phase, phaseTick });
+    const texture = textureFor(frame);
+    sprite.texture = texture;
     sprite.anchor.set(frame.anchor.x, frame.anchor.y);
-    // Elites read as a brighter tint rather than a different body, so the
-    // silhouette contract is unchanged.
-    sprite.tint = elite ? 0xfff0c0 : 0xffffff;
+    // Elites keep the brighter body tint the roster has always used, so the
+    // silhouette contract is unchanged; the rim and crown are additive.
+    sprite.tint = poseElite ? 0xfff0c0 : 0xffffff;
+    const showElite = eliteCapable && poseElite === true;
+    if (rim) {
+      rim.texture = texture;
+      rim.anchor.set(frame.anchor.x, frame.anchor.y);
+      rim.visible = showElite;
+    }
+    if (crown) {
+      // Head line of the current frame in body space: the anchor is the
+      // pivot, so the frame's top edge sits anchor.y * h above the origin.
+      crown.y = -(frame.anchor.y * frame.frame.h) - ELITE_CROWN_LIFT;
+      crown.visible = showElite;
+    }
+    container.eliteProjection = showElite;
     container.visualState = frame.state;
     container.visualPhase = frame.phase ?? null;
     return frame;
   };
-  container.applyPose({ state: 'idle', tick: 0, direction: 0 });
+  container.applyPose({ state: 'idle', tick: 0, direction: 0, elite });
   return container;
 }

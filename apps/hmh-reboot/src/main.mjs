@@ -24,6 +24,7 @@ import {
   createLiquidatorProductionDisplay,
   createProductionEnemyDisplay,
   isEliteEnemyProjection,
+  resolveEnemyRosterPoseSelection,
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
@@ -524,6 +525,10 @@ async function boot() {
   const enemyVisualFacing = new Map();
   const enemyDeathMarkers = new Map();
   const bossTelegraphs = new Graphics();
+  // Cycle 074 (E-4): elite ground rings. A world layer above the tell
+  // telegraphs and under the bodies so the ring reads as sitting on the ground
+  // beneath the body it belongs to. Redrawn every frame from projection state.
+  const eliteGroundLayer = new Graphics();
   let bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
   bossVisual.visible = false;
   const marker = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
@@ -581,7 +586,7 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, weaponVfxLayer, projectileImpacts, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, weaponVfxLayer, projectileImpacts, collisionDebug, label);
   app.stage.addChild(world, overlayVisuals, bossLabel, minimap);
 
 
@@ -831,11 +836,17 @@ async function boot() {
         SpriteClass: Sprite,
         TextureClass: Texture,
         RectangleClass: Rectangle,
+        GraphicsClass: Graphics,
         scale: 1,
+        elite: eliteProjection,
       });
       // The render pass multiplies by camera zoom, so carry the authored
       // runtime scale rather than baking it into the container.
       display.rosterScale = ENEMY_ROSTER_RUNTIME_SCALE;
+      // Cycle 074: roster clips are authored beats, so this body's tell and
+      // attack frames follow the simulation's own phase windows. The vector
+      // fallback below keeps the six-state resolver and ignores phaseTick.
+      display.phaseRelativePoses = true;
       // Projection-only footprint tag. Roster sprites are a single body layer
       // with no baked shadow, so they take one from the shared ground pool.
       // The vector fallback below already draws its own and must stay untagged
@@ -859,6 +870,21 @@ async function boot() {
   // contact reads where the body actually meets the ground.
   const contactShadowFootY = (display, pose, screenY, zoom) =>
     screenY + (pose?.frame?.h ?? 0) * (1 - (pose?.anchor?.y ?? 1)) * (display.rosterScale ?? 1) * zoom;
+
+  // Cycle 074 (E-4): the elite ground ring. Radius follows the archetype's
+  // authored footprint through the same zoom as the body; the pulse is a pure
+  // function of the simulation tick. Projection-only: `isEliteEnemyProjection`
+  // is an id hash with no simulation meaning, and this draws nothing the
+  // simulation can read.
+  const ELITE_RING_COLOR = 0xffd166;
+  const drawEliteGroundRing = (x, y, footprintPx, tick) => {
+    const pulse = 0.5 + 0.5 * Math.sin(((tick % 90) / 90) * Math.PI * 2);
+    const rx = footprintPx * 1.25;
+    eliteGroundLayer.ellipse(x, y, rx, rx * 0.46)
+      .fill({ color: ELITE_RING_COLOR, alpha: 0.05 + pulse * 0.05 })
+      .stroke({ color: 0x080d12, width: 5, alpha: 0.62 })
+      .stroke({ color: ELITE_RING_COLOR, width: 2.5, alpha: 0.5 + pulse * 0.4 });
+  };
 
   const createEnemyMarker = (enemy) => createRosterOrVectorDisplay(enemy.archetypeId, isEliteEnemyProjection(enemy.id));
 
@@ -1410,6 +1436,7 @@ async function boot() {
       const screen = worldToScreen(renderState, camera, view);
       enemyTelegraphs.clear();
       bossTelegraphs.clear();
+      eliteGroundLayer.clear();
       overlayVisuals.clear();
       bossVisual.visible = false;
       if (releaseTelemetryEnabled) dataset.gasCanisterProgress = '';
@@ -1448,11 +1475,15 @@ async function boot() {
           const facingState = enemyVisualFacing.get(enemy.id) ?? { direction: 0 };
           enemyVisualFacing.set(enemy.id, facingState);
           const enemyDirection = resolveEnemyVisualDirection(facingState, enemy.velocity);
+          const poseSelection = resolveEnemyRosterPoseSelection(enemy, simulation?.tick ?? 0);
           const enemyPose = enemyMarker.applyPose({
-            state: resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
+            // Roster bodies follow the simulation's tell / strike / recovery
+            // windows (Cycle 074); the vector fallback keeps the six-state map.
+            state: enemyMarker.phaseRelativePoses ? poseSelection.state : resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
             tick: simulation?.tick ?? 0,
             direction: enemyDirection,
             elite: isEliteEnemyProjection(enemy.id),
+            phaseTick: enemyMarker.phaseRelativePoses ? poseSelection.phaseTick : null,
           });
           enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
           enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);
@@ -1471,6 +1502,14 @@ async function boot() {
               y: contactShadowFootY(enemyMarker, enemyPose, enemyScreen.y, camera.zoom),
               footprintPx: enemyMarker.contactShadowFootprint * camera.zoom,
             });
+          }
+          if (enemyMarker.eliteProjection) {
+            drawEliteGroundRing(
+              enemyScreen.x,
+              contactShadowFootY(enemyMarker, enemyPose, enemyScreen.y, camera.zoom),
+              archetype.radius * camera.zoom,
+              simulation?.tick ?? 0,
+            );
           }
           const healthRatio = Math.max(0, Math.min(1, enemy.health / enemy.maxHealth));
           enemyHealthPips.push({ screen: enemyScreen, ratio: healthRatio, radius: enemy.radius, color: archetype.visual.color });
@@ -2516,6 +2555,7 @@ async function boot() {
     enemyVisualFacing.clear();
     enemyTelegraphs.clear();
     bossTelegraphs.clear();
+    eliteGroundLayer.clear();
     bossVisual.visible = false;
     playerBody = null;
     lastCollision = null;

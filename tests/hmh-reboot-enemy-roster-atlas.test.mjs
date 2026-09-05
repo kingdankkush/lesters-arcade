@@ -191,3 +191,121 @@ test('roster art carries no gameplay authority', async () => {
     }
   }
 });
+
+// ---------------------------------------------------------------------------
+// Cycle 074 (E-3 / E-4): phase-relative tell and attack frames, and the elite
+// treatment on the roster display itself.
+// ---------------------------------------------------------------------------
+
+test('a phase tick selects tell and attack frames in authored order and holds the last one', async () => {
+  const index = createEnemyRosterAtlasIndex(await loadMetadata('bagholder-rusher'), 'bagholder-rusher');
+  // Tell clip: 2 frames at 6 fps -> 10 ticks per frame. The anticipation
+  // frame must come first no matter where the global clock sits.
+  for (const tick of [0, 7, 13, 999_983]) {
+    for (let phaseTick = 0; phaseTick < 10; phaseTick += 1) {
+      assert.equal(resolveEnemyRosterPose(index, { state: 'tell', tick, direction: 2, phaseTick }).frameIndex, 0, `tell phaseTick ${phaseTick} at tick ${tick}`);
+    }
+    for (const phaseTick of [10, 11, 29, 44, 500]) {
+      assert.equal(resolveEnemyRosterPose(index, { state: 'tell', tick, direction: 2, phaseTick }).frameIndex, 1, `tell holds frame 1 at phaseTick ${phaseTick}`);
+    }
+  }
+  // Attack clip: 3 frames at 14 fps. Overshoot for the front of the 6-tick
+  // strike, follow-through, then the exposed recovery frame held for the rest
+  // of the recovery window instead of looping back to the overshoot.
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 17, direction: 0, phaseTick: 0 }).frameIndex, 0);
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 17, direction: 0, phaseTick: 4 }).frameIndex, 0);
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 17, direction: 0, phaseTick: 5 }).frameIndex, 1);
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 17, direction: 0, phaseTick: 8 }).frameIndex, 1);
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 17, direction: 0, phaseTick: 9 }).frameIndex, 2);
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 17, direction: 0, phaseTick: 60 }).frameIndex, 2, 'recovery holds the last attack frame');
+  // Looping states ignore the phase tick and keep the absolute clock.
+  const run = resolveEnemyRosterPose(index, { state: 'run', tick: 40, direction: 2 });
+  assert.equal(resolveEnemyRosterPose(index, { state: 'run', tick: 40, direction: 2, phaseTick: 3 }).id, run.id);
+  // Omitting the phase tick preserves the absolute-tick behaviour exactly.
+  for (const tick of [0, 5, 10, 33]) {
+    assert.equal(
+      resolveEnemyRosterPose(index, { state: 'tell', tick, direction: 2 }).frameIndex,
+      Math.floor(tick * 6 / 60) % 2,
+    );
+  }
+  assert.equal(resolveEnemyRosterPose(index, { state: 'attack', tick: 3, direction: 0, phaseTick: -4 }).frameIndex, 0, 'a negative phase tick clamps to the first frame');
+});
+
+function makeFakePixi() {
+  class FakePoint {
+    constructor() { this.x = 1; this.y = 1; }
+    set(x, y = x) { this.x = x; this.y = y; }
+  }
+  class FakeContainer {
+    constructor() { this.children = []; this.scale = new FakePoint(); this.position = new FakePoint(); this.visible = true; }
+    addChild(...children) { this.children.push(...children); return children[0]; }
+    addChildAt(child, index) { this.children.splice(index, 0, child); return child; }
+  }
+  class FakeSprite extends FakeContainer {
+    constructor({ texture } = {}) { super(); this.texture = texture; this.anchor = new FakePoint(); this.tint = 0xffffff; this.alpha = 1; this.blendMode = 'normal'; }
+  }
+  class FakeTexture {
+    constructor({ source, frame }) { this.source = source; this.frame = frame; }
+  }
+  class FakeRectangle {
+    constructor(x, y, width, height) { Object.assign(this, { x, y, width, height }); }
+  }
+  class FakeGraphics extends FakeContainer {
+    constructor() { super(); this.calls = []; }
+    clear() { this.calls.push(['clear']); return this; }
+    poly(points) { this.calls.push(['poly', points]); return this; }
+    circle(...args) { this.calls.push(['circle', args]); return this; }
+    moveTo(...args) { this.calls.push(['moveTo', args]); return this; }
+    lineTo(...args) { this.calls.push(['lineTo', args]); return this; }
+    fill(style) { this.calls.push(['fill', style]); return this; }
+    stroke(style) { this.calls.push(['stroke', style]); return this; }
+  }
+  return { FakeContainer, FakeSprite, FakeTexture, FakeRectangle, FakeGraphics };
+}
+
+test('the roster display carries the elite treatment itself and reports it truthfully', async () => {
+  const { createEnemyRosterDisplay } = await import('../apps/hmh-reboot/src/enemy-roster-atlas.mjs');
+  const { FakeContainer, FakeSprite, FakeTexture, FakeRectangle, FakeGraphics } = makeFakePixi();
+  const index = createEnemyRosterAtlasIndex(await loadMetadata('forkrunner'), 'forkrunner');
+  const make = (elite) => createEnemyRosterDisplay({
+    index,
+    atlasTexture: { source: { id: 'atlas' } },
+    ContainerClass: FakeContainer,
+    SpriteClass: FakeSprite,
+    TextureClass: FakeTexture,
+    RectangleClass: FakeRectangle,
+    GraphicsClass: FakeGraphics,
+    scale: 1,
+    elite,
+  });
+
+  const plain = make(false);
+  assert.equal(plain.eliteProjection, false, 'a rank-and-file body must not count as an elite');
+  assert.deepEqual([...plain.eliteLayers], ['aura', 'crown', 'outline'], 'the roster reports the pinned vector elite contract');
+
+  const elite = make(true);
+  assert.equal(elite.eliteProjection, true, 'the elite flag must be observable on the roster container for telemetry');
+  const body = elite.children.find((child) => child.label === 'roster-body-forkrunner');
+  const rim = elite.children.find((child) => child.label === 'roster-elite-rim-forkrunner');
+  const crown = elite.children.find((child) => child.label === 'roster-elite-crown-forkrunner');
+  assert.ok(body && rim && crown, 'elite bodies carry a rim sprite and a crown glyph');
+  assert.ok(elite.children.indexOf(rim) < elite.children.indexOf(body), 'the rim draws behind the body');
+  assert.ok(elite.children.indexOf(crown) > elite.children.indexOf(body), 'the crown draws over the body');
+  assert.equal(rim.visible, true);
+  assert.equal(crown.visible, true);
+  assert.equal(rim.blendMode, 'add', 'the rim is an additive tinted duplicate, not a second opaque body');
+  assert.ok(rim.scale.x > 1 && rim.scale.x < 1.2, 'the rim is a slightly enlarged copy of the current frame');
+  assert.notEqual(rim.tint, 0xffffff, 'the rim carries the elite tint');
+  assert.equal(rim.texture, body.texture, 'the rim shows the same frame as the body');
+
+  const frame = elite.applyPose({ state: 'attack', tick: 30, direction: 4, elite: true, phaseTick: 0 });
+  assert.equal(rim.texture, body.texture, 'the rim follows every pose change');
+  assert.ok(crown.y < -(frame.anchor.y * frame.frame.h) + 1, 'the crown sits above the head line of the current frame');
+  assert.equal(elite.eliteProjection, true);
+
+  elite.applyPose({ state: 'idle', tick: 0, direction: 0, elite: false });
+  assert.equal(rim.visible, false);
+  assert.equal(crown.visible, false);
+  assert.equal(elite.eliteProjection, false, 'dropping the elite flag hides the treatment and the telemetry follows');
+  assert.equal(body.tint, 0xffffff);
+});

@@ -6,7 +6,8 @@
   "gameplayBodyProfile": "authored-archetype-collision-v1",
   "notes": [
     "Every actor here must read as a human survivor or a zombie. Collision radius, damage, AI and spawn behaviour come from enemy-archetypes.mjs and are never derived from this file.",
-    "Actors share one rig and one body builder; identity comes from proportions, palette and a single silhouette prop so the roster stays coherent and reproducible."
+    "Actors share one rig and one body builder; identity comes from proportions, palette and a single silhouette prop so the roster stays coherent and reproducible.",
+    "Cycle 074: tell/attack poses are authored in the module named by poseAuthoring; each ordinary role carries one emissive silhouetteAccent at a role-specific height so roles separate in grayscale. Both are projection-only."
   ],
   "directions": [
     "south",
@@ -84,6 +85,10 @@
     "maxChannelDelta": 2,
     "maxTotalChannelDelta": 32
   },
+  "poseAuthoring": {
+    "module": "scripts/hmh-blender/hmh_enemy_poses.py",
+    "version": 2
+  },
   "scene": {
     "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.blend",
     "armature": "HMH_Enemy_Rig",
@@ -145,6 +150,10 @@
       "animationProfile": {
         "kind": "undead-straight-lunge-v1",
         "damageResponse": "snapback-stumble-v1"
+      },
+      "silhouetteAccent": {
+        "kind": "chest-band",
+        "tint": "#ff9fb1"
       }
     },
     {
@@ -176,6 +185,10 @@
       "animationProfile": {
         "kind": "forkrunner-quick-fork-slash-v1",
         "damageResponse": "crossed-fork-guard-break-v1"
+      },
+      "silhouetteAccent": {
+        "kind": "forearm-cuffs",
+        "tint": "#a9f1ff"
       }
     },
     {
@@ -207,6 +220,10 @@
       "animationProfile": {
         "kind": "suppression-rifle-burst-v1",
         "damageResponse": "rifle-shoulder-recoil-v1"
+      },
+      "silhouetteAccent": {
+        "kind": "visor-bar",
+        "tint": "#f2b4ff"
       }
     },
     {
@@ -238,6 +255,10 @@
       "animationProfile": {
         "kind": "undead-shoulder-charge-v1",
         "damageResponse": "armored-shoulder-absorb-v1"
+      },
+      "silhouetteAccent": {
+        "kind": "pauldron-rims",
+        "tint": "#ffe39a"
       }
     },
     {
@@ -269,6 +290,10 @@
       "animationProfile": {
         "kind": "gas-bomber-canister-lob-v1",
         "damageResponse": "canister-protective-stagger-v1"
+      },
+      "silhouetteAccent": {
+        "kind": "belt-canister-rings",
+        "tint": "#ffc19c"
       }
     },
     {
@@ -300,6 +325,10 @@
       "animationProfile": {
         "kind": "validator-staff-channel-v1",
         "damageResponse": "staff-braced-shock-v1"
+      },
+      "silhouetteAccent": {
+        "kind": "staff-halo",
+        "tint": "#dcc2ff"
       }
     },
     {

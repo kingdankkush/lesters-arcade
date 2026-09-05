@@ -641,6 +641,74 @@ def build_role_detail_kit(actor: dict, rig, collection, *, height: float, should
     return parts
 
 
+def build_silhouette_accent(actor: dict, rig, collection, *, height: float, shoulders: float, bulk: float) -> list:
+    """Cycle 074 (E-3): one bright emissive accent per role at a role-specific
+    height, so the six ordinary roles still separate when the frame is read in
+    grayscale (roadmap section 2). Rusher: chest band. Forkrunner: forearm
+    cuffs. Agent: visor bar. Whale: pauldron rims. Bomber: belt canister rings.
+    Cultist: staff halo. Projection-only geometry; nothing here feeds collision.
+    """
+    accent = actor.get("silhouetteAccent")
+    if not accent:
+        return []
+    actor_id = actor["actorId"]
+    kind = accent["kind"]
+    mat = material(f"{actor_id}_silhouette_accent", accent["tint"], emission=0.95, roughness=0.5)
+    parts = []
+    if kind == "chest-band":
+        # Above the chest wedge (its base radius reaches 1.39 h) and clear of
+        # the harness straps, which protrude to -0.144 in y.
+        parts.append(cube(
+            f"{actor_id}_Accent_ChestBand", (0.0, -0.150 * bulk, 1.40 * height),
+            (0.20 * shoulders, 0.010, 0.016), mat, collection, rig, "chest", actor_id, bevel=0.004,
+        ))
+    elif kind == "forearm-cuffs":
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Accent_ForearmCuff_{side}",
+                (sign * 0.455 * shoulders, -0.020, 0.945 * height),
+                (0.075 * bulk, 0.064 * bulk, 0.014), mat, collection, rig, f"forearm.{side}", actor_id, bevel=0.004,
+            ))
+    elif kind == "visor-bar":
+        # In front of both the visor lens (front face -0.136) and the brow.
+        parts.append(cube(
+            f"{actor_id}_Accent_VisorBar", (0.0, -0.138, 1.604 * height),
+            (0.108, 0.010, 0.008), mat, collection, rig, "head", actor_id, bevel=0.003,
+        ))
+    elif kind == "pauldron-rims":
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cube(
+                f"{actor_id}_Accent_PauldronRim_{side}",
+                (sign * 0.30 * shoulders, 0.0, 1.445 * height),
+                (0.104, 0.114, 0.010), mat, collection, rig, "chest", actor_id, bevel=0.003,
+            ))
+    elif kind == "belt-canister-rings":
+        for side, sign in (("L", 1.0), ("R", -1.0)):
+            parts.append(cylinder(
+                f"{actor_id}_Accent_CanisterRing_{side}",
+                (sign * 0.205 * bulk, -0.165 * bulk, 1.075 * height), 0.064, 0.022, mat,
+                collection, rig, "pelvis", actor_id,
+            ))
+    elif kind == "staff-halo":
+        parts.append(cylinder(
+            f"{actor_id}_Accent_StaffHalo", (0.42, -0.10, 1.60 * height), 0.088, 0.016, mat,
+            collection, rig, "forearm.L", actor_id, rotation=(math.radians(90), 0.0, 0.0),
+        ))
+    else:
+        raise RuntimeError(f"Unknown silhouette accent: {kind}")
+    for obj in parts:
+        obj["hmh_silhouette_accent"] = kind
+        # The accents are emissive glow bands, not solid kit: they must not
+        # cast shadows. The first Cycle 074 verify pass drifted on 26 gas-bomber
+        # frames and nowhere else, with the worst frame's nine flipped pixels
+        # all opaque dark greys in the hip shade beside a belt ring, which is
+        # the virtual-shadow-map tile for a tiny new caster landing differently
+        # across cold scene rebuilds. Removing the accents from the shadow pass
+        # removes that source; the budget itself is unchanged.
+        obj.visible_shadow = False
+    return parts
+
+
 def build_actor(actor: dict, rig, collection) -> dict:
     actor_id = actor["actorId"]
     build = actor["build"]
@@ -760,6 +828,11 @@ def build_actor(actor: dict, rig, collection) -> dict:
     )
     parts.extend(detail_parts)
 
+    accent_parts = build_silhouette_accent(
+        actor, rig, collection, height=height, shoulders=shoulders, bulk=bulk,
+    )
+    parts.extend(accent_parts)
+
     # Boss phases carry real authored silhouette changes rather than runtime
     # tint-only proxies. These objects are hidden selectively by the exporter.
     phase_visuals = actor.get("phaseVisuals", {})
@@ -823,6 +896,8 @@ def build_actor(actor: dict, rig, collection) -> dict:
         "prop": kind,
         "detailKit": actor.get("detailKit", {}).get("kind"),
         "detailPartCount": len(detail_parts),
+        "silhouetteAccent": actor.get("silhouetteAccent", {}).get("kind"),
+        "silhouetteAccentPartCount": len(accent_parts),
     }
 
 

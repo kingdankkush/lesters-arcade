@@ -590,6 +590,10 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
         "silhouette": actor["silhouette"],
         "detailKit": actor.get("detailKit"),
         "animationProfile": actor.get("animationProfile", {"kind": "shared-roster-v1"}),
+        # Cycle 074: which pose table rendered these frames and which grayscale
+        # accent the body carries, so a stale atlas is detectable from metadata.
+        "poseAuthoring": manifest.get("poseAuthoring"),
+        "silhouetteAccent": actor.get("silhouetteAccent"),
         "boss": bool(actor.get("boss", False)),
         "image": f"./{atlas_path.name}",
         "directions": manifest["directions"],

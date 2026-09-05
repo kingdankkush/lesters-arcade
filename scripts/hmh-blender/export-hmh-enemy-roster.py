@@ -16,6 +16,13 @@ import sys
 import bpy
 from bpy_extras import anim_utils
 
+# Blender does not put the running script's directory on sys.path, and the
+# authored pose table is a sibling module shared with the Node test suite.
+_SCRIPT_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+import hmh_enemy_poses  # noqa: E402  (Blender-free pose table, Cycle 074)
+
 
 def blender_args() -> argparse.Namespace:
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -41,310 +48,43 @@ def reset_pose(rig) -> None:
 
 
 def apply_pose(rig, actor: dict, state: str, frame_index: int, frame_count: int, stoop: float) -> None:
+    """Pose the shared rig for one authored frame.
+
+    Cycle 074 (E-3): the pose numbers live in ``hmh_enemy_poses`` (imports only
+    ``math``) so the anticipation / overshoot / recovery contract is testable on
+    the Vercel build image. This function keeps the fail-closed, per-profile
+    dispatch visible in the exporter and applies the returned bone rotations
+    (degrees) and locations to ``rig.pose.bones``.
+    """
     kind = actor.get("animationProfile", {}).get("kind", "shared-roster-v1")
     damage_kind = actor.get("animationProfile", {}).get("damageResponse", "shared-impact-v1")
-    if kind not in {
-        "shared-roster-v1",
-        "forkrunner-quick-fork-slash-v1",
-        "gas-bomber-canister-lob-v1",
-        "undead-straight-lunge-v1",
-        "undead-shoulder-charge-v1",
-        "suppression-rifle-burst-v1",
-        "validator-staff-channel-v1",
-    }:
+    if kind == "shared-roster-v1":
+        beats = hmh_enemy_poses.SHARED_BEATS
+    elif kind == "undead-straight-lunge-v1":
+        beats = hmh_enemy_poses.LUNGE_BEATS
+    elif kind == "undead-shoulder-charge-v1":
+        beats = hmh_enemy_poses.CHARGE_BEATS
+    elif kind == "suppression-rifle-burst-v1":
+        beats = hmh_enemy_poses.RIFLE_BEATS
+    elif kind == "forkrunner-quick-fork-slash-v1":
+        beats = hmh_enemy_poses.FORK_BEATS
+    elif kind == "gas-bomber-canister-lob-v1":
+        beats = hmh_enemy_poses.LOB_BEATS
+    elif kind == "validator-staff-channel-v1":
+        beats = hmh_enemy_poses.STAFF_BEATS
+    else:
         raise RuntimeError(f"Unknown enemy animation profile: {kind}")
-    if damage_kind not in {
-        "shared-impact-v1",
-        "snapback-stumble-v1",
-        "crossed-fork-guard-break-v1",
-        "rifle-shoulder-recoil-v1",
-        "armored-shoulder-absorb-v1",
-        "canister-protective-stagger-v1",
-        "staff-braced-shock-v1",
-    }:
+    if damage_kind not in hmh_enemy_poses.DAMAGE_RESPONSES:
         raise RuntimeError(f"Unknown enemy damage response: {damage_kind}")
     reset_pose(rig)
-    phase = (2.0 * math.pi * frame_index) / max(frame_count, 1)
-    chest = rig.pose.bones["chest"]
-    head = rig.pose.bones["head"]
-    pelvis = rig.pose.bones["pelvis"]
-
-    # Every actor carries its authored stoop so zombies read hunched and
-    # survivors read upright even in the neutral pose.
-    chest.rotation_euler[0] = math.radians(10 * stoop)
-    head.rotation_euler[0] = math.radians(6 * stoop)
-
-    if state == "idle":
-        breath = 0.012 if frame_index % 2 == 0 else -0.008
-        pelvis.location.z = breath
-        chest.rotation_euler[0] += math.radians(1.6 if frame_index % 2 == 0 else -1.2)
-        rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-8)
-        rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-8)
-    elif state == "run":
-        stride = math.sin(phase)
-        lift_left = max(0.0, math.sin(phase + math.pi / 2))
-        lift_right = max(0.0, math.sin(phase - math.pi / 2))
-        pelvis.location.z = 0.045 * abs(math.sin(phase))
-        chest.rotation_euler[0] += math.radians(8)
-        rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(38) * stride
-        rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-38) * stride
-        rig.pose.bones["shin.L"].rotation_euler[0] = math.radians(-46) * lift_left
-        rig.pose.bones["shin.R"].rotation_euler[0] = math.radians(-46) * lift_right
-        rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-30) * stride
-        rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(30) * stride
-    elif state == "tell":
-        # Wind-up: arms raised and chest opened so the tell reads before the
-        # strike lands. Frame 1 is a held, slightly larger silhouette.
-        wind = 1.0 if frame_index == 0 else 1.25
-        chest.rotation_euler[0] -= math.radians(12 * wind)
-        head.rotation_euler[0] -= math.radians(8 * wind)
-        rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-96 * wind)
-        rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-96 * wind)
-        rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-36)
-        rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-36)
-        pelvis.location.z = 0.02 * wind
-        if kind == "undead-straight-lunge-v1":
-            chest.rotation_euler[0] = math.radians(-20 * wind)
-            head.rotation_euler[0] = math.radians(-12 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-112 * wind)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-112 * wind)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-48)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-48)
-            pelvis.location.z = -0.025 * wind
-        elif kind == "undead-shoulder-charge-v1":
-            chest.rotation_euler[0] = math.radians(18 * wind)
-            chest.rotation_euler[1] = math.radians(-16 * wind)
-            head.rotation_euler[1] = math.radians(12 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-34 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-28 * wind)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-72 * wind)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-30)
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(10 * wind)
-            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-8 * wind)
-            pelvis.location.z = -0.055 * wind
-        elif kind == "suppression-rifle-burst-v1":
-            chest.rotation_euler[0] = math.radians(-6 * wind)
-            head.rotation_euler[0] = math.radians(-4 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-72 * wind)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-58 * wind)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-64)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-78)
-            rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(-8 * wind)
-            pelvis.location.z = -0.018 * wind
-        elif kind == "forkrunner-quick-fork-slash-v1":
-            # Pull the twin forearm forks across opposite shoulders. The low,
-            # twisted stance reads as a fast crossing slash rather than the
-            # shared two-arm overhead wind-up.
-            chest.rotation_euler[0] = math.radians(-14 * wind)
-            chest.rotation_euler[2] = math.radians(-20 * wind)
-            head.rotation_euler[2] = math.radians(12 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-126 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-38 * wind)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-52)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-74 * wind)
-            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(28 * wind)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-68)
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(12 * wind)
-            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-10 * wind)
-            pelvis.location.z = -0.045 * wind
-        elif kind == "gas-bomber-canister-lob-v1":
-            # Brace the canister side and cock one arm far behind the head so
-            # the coming lob reads from the silhouette before release.
-            chest.rotation_euler[0] = math.radians(-24 * wind)
-            chest.rotation_euler[2] = math.radians(15 * wind)
-            head.rotation_euler[0] = math.radians(-10 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-54 * wind)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-70)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-148 * wind)
-            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(22 * wind)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-46)
-            pelvis.location.z = -0.035 * wind
-        elif kind == "validator-staff-channel-v1":
-            chest.rotation_euler[0] = math.radians(-18 * wind)
-            head.rotation_euler[0] = math.radians(-11 * wind)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-138 * wind)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-26)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-82 * wind)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-48)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(18 * wind)
-            pelvis.location.z = 0.035 * wind
-    elif state == "attack":
-        # Strike: fast forward commitment, then recovery lean.
-        swing = (1.0, 0.35, -0.25)[frame_index]
-        chest.rotation_euler[0] += math.radians(26 * swing)
-        head.rotation_euler[0] += math.radians(12 * swing)
-        rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(52 * swing)
-        rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(52 * swing)
-        rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-24 * swing)
-        rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-24 * swing)
-        rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(-14 * swing)
-        pelvis.location.y = -0.05 * swing
-        if kind == "undead-straight-lunge-v1":
-            chest.rotation_euler[0] = math.radians(34 * swing)
-            head.rotation_euler[0] = math.radians(18 * swing)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(72 * swing)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(72 * swing)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-32 * swing)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-32 * swing)
-            pelvis.location.y = -0.10 * swing
-        elif kind == "undead-shoulder-charge-v1":
-            chest.rotation_euler[0] = math.radians(42 * swing)
-            chest.rotation_euler[1] = math.radians(-18 * swing)
-            head.rotation_euler[1] = math.radians(10 * swing)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(18 * swing)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-38 * swing)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(34 * swing)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58 * swing)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-24 * swing)
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(-22 * swing)
-            pelvis.location.y = -0.13 * swing
-        elif kind == "suppression-rifle-burst-v1":
-            recoil = (1.0, 0.60, 0.28)[frame_index]
-            chest.rotation_euler[0] = math.radians(-10 * recoil)
-            head.rotation_euler[0] = math.radians(-5 * recoil)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-68)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-54)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-62)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-76)
-            rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(-13 * recoil)
-            pelvis.location.y = 0.045 * recoil
-        elif kind == "forkrunner-quick-fork-slash-v1":
-            # Strike, cross-body follow-through, then a readable recovery. The
-            # opposing Z rotations carry both fork silhouettes through the arc.
-            slash = (1.0, -0.70, 0.18)[frame_index]
-            chest.rotation_euler[0] = math.radians(16 * abs(slash))
-            chest.rotation_euler[2] = math.radians(34 * slash)
-            head.rotation_euler[2] = math.radians(-18 * slash)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(62 * slash)
-            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-72 * slash)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-42 * slash)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(54 * slash)
-            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(58 * slash)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-48 * slash)
-            pelvis.location.y = -0.10 * abs(slash)
-        elif kind == "gas-bomber-canister-lob-v1":
-            # Release overhand, follow through, then settle back toward the
-            # canister. The torso twist keeps the lob distinct from a melee hit.
-            lob = (1.0, 0.46, -0.20)[frame_index]
-            chest.rotation_euler[0] = math.radians(32 * lob)
-            chest.rotation_euler[2] = math.radians(-24 * lob)
-            head.rotation_euler[0] = math.radians(12 * lob)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-34 * lob)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-56 * lob)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(92 * lob)
-            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(-28 * lob)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-64 * lob)
-            pelvis.location.y = -0.11 * lob
-        elif kind == "validator-staff-channel-v1":
-            cast = (1.0, 0.52, -0.18)[frame_index]
-            chest.rotation_euler[0] = math.radians(22 * cast)
-            head.rotation_euler[0] = math.radians(10 * cast)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-84 + 34 * cast)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-38 + 22 * cast)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-48 + 72 * cast)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-32 * cast)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(28 * cast)
-            pelvis.location.y = -0.055 * cast
-    elif state == "hit":
-        sign = -1 if frame_index == 0 else 1
-        if damage_kind == "snapback-stumble-v1":
-            chest.rotation_euler[0] = math.radians(-24)
-            chest.rotation_euler[1] = math.radians(16 * sign)
-            chest.rotation_euler[2] = math.radians(-22 * sign)
-            head.rotation_euler[0] = math.radians(-30)
-            head.rotation_euler[2] = math.radians(28 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(34)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-42 * sign)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(28)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(38 * sign)
-            pelvis.location.y = 0.09
-            pelvis.location.z = -0.025 if frame_index == 1 else 0.015
-        elif damage_kind == "crossed-fork-guard-break-v1":
-            chest.rotation_euler[0] = math.radians(-12)
-            chest.rotation_euler[2] = math.radians(34 * sign)
-            head.rotation_euler[2] = math.radians(-24 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-82)
-            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-48 * sign)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-76)
-            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(44 * sign)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-62)
-            pelvis.location.y = 0.045
-            pelvis.location.z = -0.035
-        elif damage_kind == "rifle-shoulder-recoil-v1":
-            chest.rotation_euler[0] = math.radians(-10)
-            chest.rotation_euler[1] = math.radians(28 * sign)
-            chest.rotation_euler[2] = math.radians(-14 * sign)
-            head.rotation_euler[1] = math.radians(-18 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-64)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-52)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-58)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-72)
-            rig.pose.bones["prop_socket"].rotation_euler[0] = math.radians(18 * sign)
-            pelvis.location.y = 0.035
-        elif damage_kind == "armored-shoulder-absorb-v1":
-            chest.rotation_euler[0] = math.radians(18)
-            chest.rotation_euler[1] = math.radians(-12 * sign)
-            chest.rotation_euler[2] = math.radians(14 * sign)
-            head.rotation_euler[1] = math.radians(10 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-26)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-48 * sign)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-16)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(30 * sign)
-            rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(14)
-            rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-12)
-            pelvis.location.y = 0.025
-            pelvis.location.z = -0.065
-        elif damage_kind == "canister-protective-stagger-v1":
-            chest.rotation_euler[0] = math.radians(-18)
-            chest.rotation_euler[2] = math.radians(30 * sign)
-            head.rotation_euler[0] = math.radians(-12)
-            head.rotation_euler[2] = math.radians(-18 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-58)
-            rig.pose.bones["upper_arm.L"].rotation_euler[2] = math.radians(-32 * sign)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-76)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-92)
-            rig.pose.bones["upper_arm.R"].rotation_euler[2] = math.radians(38 * sign)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-52)
-            pelvis.location.y = 0.055
-            pelvis.location.z = -0.025
-        elif damage_kind == "staff-braced-shock-v1":
-            chest.rotation_euler[0] = math.radians(-14)
-            chest.rotation_euler[1] = math.radians(18 * sign)
-            chest.rotation_euler[2] = math.radians(-28 * sign)
-            head.rotation_euler[0] = math.radians(-16)
-            head.rotation_euler[2] = math.radians(22 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-122)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-20 * sign)
-            rig.pose.bones["forearm.L"].rotation_euler[0] = math.radians(-34)
-            rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-52)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(42 * sign)
-            rig.pose.bones["forearm.R"].rotation_euler[0] = math.radians(-44)
-            pelvis.location.y = 0.04
-        else:
-            chest.rotation_euler[1] = math.radians(18 * sign)
-            chest.rotation_euler[2] = math.radians(-20 * sign)
-            head.rotation_euler[2] = math.radians(24 * sign)
-            rig.pose.bones["upper_arm.L"].rotation_euler[1] = math.radians(-30 * sign)
-            rig.pose.bones["upper_arm.R"].rotation_euler[1] = math.radians(26 * sign)
-            pelvis.location.y = 0.04
-    elif state == "death":
-        # Collapse over four frames: buckle, fold, drop, settle.
-        progress = frame_index / max(frame_count - 1, 1)
-        chest.rotation_euler[0] += math.radians(78 * progress)
-        head.rotation_euler[0] += math.radians(40 * progress)
-        pelvis.location.z = -0.42 * progress
-        pelvis.rotation_euler[0] = math.radians(56 * progress)
-        rig.pose.bones["thigh.L"].rotation_euler[0] = math.radians(-52 * progress)
-        rig.pose.bones["thigh.R"].rotation_euler[0] = math.radians(-38 * progress)
-        rig.pose.bones["shin.L"].rotation_euler[0] = math.radians(64 * progress)
-        rig.pose.bones["shin.R"].rotation_euler[0] = math.radians(48 * progress)
-        rig.pose.bones["upper_arm.L"].rotation_euler[0] = math.radians(-64 * progress)
-        rig.pose.bones["upper_arm.R"].rotation_euler[0] = math.radians(-58 * progress)
-    else:
-        raise RuntimeError(f"Unknown enemy visual state: {state}")
-
+    pose = hmh_enemy_poses.role_pose(
+        kind, damage_kind, state, frame_index, frame_count, stoop,
+        boss=bool(actor.get("boss", False)), beats=beats,
+    )
+    for bone_name, (rx, ry, rz) in pose["rotations"].items():
+        rig.pose.bones[bone_name].rotation_euler = (math.radians(rx), math.radians(ry), math.radians(rz))
+    for bone_name, (lx, ly, lz) in pose["locations"].items():
+        rig.pose.bones[bone_name].location = (lx, ly, lz)
 
 
 def resolve_rig(manifest: dict, entry: dict):
