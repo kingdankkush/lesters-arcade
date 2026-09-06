@@ -419,7 +419,12 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-hero-selector-render.test.mjs",
   "apps/hmh-reboot/src/game-feel.mjs",
   "tests/hmh-reboot-game-feel.test.mjs",
-  "scripts/syntax-check.mjs"
+  "scripts/syntax-check.mjs",
+  "apps/portal/src/stacked-contracts.mjs",
+  "apps/portal/src/stacked-cabinet.mjs",
+  "scripts/write-stacked-contracts.mjs",
+  "scripts/stacked-contract-audit.mjs",
+  "tests/stacked-contracts.test.mjs"
 ];
 
 // Every Python script that must compile (python -m py_compile).
