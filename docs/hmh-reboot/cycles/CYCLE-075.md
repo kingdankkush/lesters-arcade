@@ -1,6 +1,6 @@
 # Cycle 075 — bounded feedback, UI and source-reference foundations
 
-Status: local release gates passed. Independent exact-candidate review and production promotion are pending.
+Status: LIVE VERIFIED. Runtime `d53ed420`; deployed source `d70ad060`; production `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`.
 
 ## Scope
 
@@ -28,7 +28,7 @@ The Commando and sci-fi grenade `.blend`/`.glb` source experiments, their genera
 - New permanent smoke: `scripts/hmh-reboot-defeat-feedback-browser-smoke.mjs`. It matches served bundle bytes, fires the real pistol at an actual roster target, observes the actual kill render branch, and freezes via the normal pause path. Desktop/mobile/reduced profiles produced respectively 8/5/0 shards for one observed kill. Zero console, page, HTTP or request errors; one canvas; no horizontal overflow.
 - Full-resolution VFX captures were inspected, with separate unmodified pause/settings captures before hiding the DOM overlay for the effect view.
 - Existing serial cockpit matrix, performance smoke and enemy/boss presentation smoke passed. Measured desktop and mobile-emulation p95 frame time was 8.5 ms in the existing five-second steady-state window. These are local browser measurements, not physical-phone or long-endurance certification.
-- Local child entry: 464,501 bytes; initial JS including Pixi and statically imported shared chunks: 994,069 bytes. Existing caps remain unchanged. Exact release-tree build and production identity will be recorded below when verified.
+- Local child entry: 464,501 bytes; initial JS including Pixi and statically imported shared chunks: 994,069 bytes. Existing caps remain unchanged. The exact release-tree and public production artifact hashes match.
 
 ## Release boundary
 
@@ -42,4 +42,4 @@ The Commando and sci-fi grenade `.blend`/`.glb` source experiments, their genera
 
 The exact staged-tree archive passed `vercel:build` with no discoverable Git metadata and Pillow 11.3.0: 2,563 tests evaluated, 2,512 passed, the same 51 expected legacy failures, zero unexpected/cancelled/skipped tests. Syntax: 400 JavaScript modules and 56 Python scripts. Production asset QA, strict archive health and current/public docs links passed. The archive-built child bundle is byte-identical to the browser-tested candidate (`40d7a61c0ed85d04c14b2f96c01c8ed41e707725a3f6b7e5e895a83c7ed49ec1`).
 
-Visual regression passed without accepting a new baseline; the engaged-combat signature had a mean delta of 0.003 and maximum 1, below the existing tolerance, with no changed cells. The network/console audit passed all four scenarios. Independent frozen-diff review, Git-triggered Preview verification, authorized exact Preview promotion and public read-back remain pending. Until those finish, the prior production identities in README remain Cycle 074.
+Twelve visual anchors, five responsive profiles and four real-touch profiles passed. Independent reviews returned PASS for the frozen runtime/source diff and Node TAP-reporter correction. Preview `dpl_8wc8CdQbyXF3BUwrcxLZ2X2XsD43` was READY, 34 artifacts matched and authenticated gameplay passed. Exact promotion created production `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`; the public domain resolved to that ID, all 34 hashes matched, actual desktop/mobile/reduced-motion gameplay passed, and all four public network scenarios passed. The initial failed Preview was never promoted. See the [release handoff](../../handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md) for evidence, rollback and remaining scope.
