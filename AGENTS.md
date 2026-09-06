@@ -4,6 +4,8 @@
 
 Before changing code, read:
 
+0. `docs/handoffs/2026-09-05-hmh-cycle-074-hermes-handoff.md` — **current handoff** (Cycle 074 live state, operational facts, and the hero-recreation objective from the owner's reference art)
+
 0. `docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md` — **current**; certified Cycle 070 runtime boundary, live deployment/rollback, Chikun production truth, open gates, and next safe work
 1. `docs/hmh-reboot/AAA-ROADMAP.md` — standing dependency order, AAA acceptance bars, completed-item reconciliation, and owner gates
 2. `docs/hmh-reboot/MAINNET-READINESS-ROADMAP-2026-09-01.md` — source-backed gameplay and separately approval-gated Mainnet readiness
