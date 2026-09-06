@@ -1,0 +1,173 @@
+{
+  "schema": "hmh-weapon-reference-intake-v1",
+  "authority": "owner-supplied-design-reference",
+  "runtimeAuthority": "none",
+  "provenance": "Eleven original owner attachments. Source-only design references. Model jobs and runtime bindings are separate records; this intake does not upload files.",
+  "assets": [
+    {
+      "assetId": "sci-fi-grenade",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/sci-fi-grenade/sheet.png",
+        "originalFilename": "Sci-Fi Grenade Turnaround Sheet.png",
+        "sha256": "87d6fd1ca4ac2858cf3e4f0b795ee65771a8f5f2afdc0217e959c8563ac704a3",
+        "bytes": 2443925,
+        "dimensions": [
+          1536,
+          1024
+        ]
+      }
+    },
+    {
+      "assetId": "spiked-steampunk-grenade",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/spiked-steampunk-grenade/sheet.png",
+        "originalFilename": "Spiked Steampunk Grenade Turntable Sheet.png",
+        "sha256": "c3caea9a684f00db9eeefe765d04dab803bf85437932447d6733793ae0c1bb83",
+        "bytes": 2390445,
+        "dimensions": [
+          1536,
+          1024
+        ]
+      }
+    },
+    {
+      "assetId": "weathered-military-grenade",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/weathered-military-grenade/sheet.png",
+        "originalFilename": "Weathered Military Grenade Turnaround Views.png",
+        "sha256": "0908ae68f606cf27b98f80e3e02a3b790524081402e8120096d78d1e2571438b",
+        "bytes": 2396443,
+        "dimensions": [
+          1536,
+          1024
+        ]
+      }
+    },
+    {
+      "assetId": "rugged-rifle",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/rugged-rifle/sheet.png",
+        "originalFilename": "Rugged Rifle Concept Showcase.png",
+        "sha256": "dc2bb65a8bda5a43df12dad80c9b7fb3e25fb26dee174ee5a2be4cab2e3f5df7",
+        "bytes": 2181857,
+        "dimensions": [
+          1536,
+          1024
+        ]
+      }
+    },
+    {
+      "assetId": "sci-fi-grenade-launcher",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/sci-fi-grenade-launcher/sheet.png",
+        "originalFilename": "Sci-Fi Grenade Launcher Model Sheet.png",
+        "sha256": "ac12023cffe7cb7cb2a366e0855f99a9709a3db44d8925d55f846e955a3a777a",
+        "bytes": 2139990,
+        "dimensions": [
+          1536,
+          1024
+        ]
+      }
+    },
+    {
+      "assetId": "rugged-survival-knife",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/rugged-survival-knife/sheet.png",
+        "originalFilename": "Rugged Survival Knife Reference Sheet.png",
+        "sha256": "85181bab863dd526931491ab7ed634f7374827af611ebafa02303c2685700f29",
+        "bytes": 2157079,
+        "dimensions": [
+          1672,
+          941
+        ]
+      }
+    },
+    {
+      "assetId": "steampunk-raygun",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/steampunk-raygun/sheet.png",
+        "originalFilename": "Steampunk Raygun Six-View Asset Sheet.png",
+        "sha256": "ca827cd8b071cfe758b3b9aa7f7c8f6fe9dcf572bbd1eeafcd62f9a504da6780",
+        "bytes": 2071735,
+        "dimensions": [
+          1672,
+          941
+        ]
+      }
+    },
+    {
+      "assetId": "rugged-shotgun",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/rugged-shotgun/sheet.png",
+        "originalFilename": "Rugged Post-Apocalyptic Shotgun Showcase.png",
+        "sha256": "1ea99d296d43628248982fe1590fa50a1f569a7d3d84d306a05487175912a249",
+        "bytes": 2173050,
+        "dimensions": [
+          1672,
+          941
+        ]
+      }
+    },
+    {
+      "assetId": "worn-heavy-machine-gun",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/worn-heavy-machine-gun/sheet.png",
+        "originalFilename": "Worn Heavy Machine Gun Reference Sheet.png",
+        "sha256": "e91f5392ccede1a4237498416bba1cc2033a3aba7b59f4f882e2e53316f673cb",
+        "bytes": 1559964,
+        "dimensions": [
+          1672,
+          941
+        ]
+      }
+    },
+    {
+      "assetId": "weathered-smg",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/weathered-smg/sheet.png",
+        "originalFilename": "Weathered Post-Apocalyptic SMG Concept Sheet.png",
+        "sha256": "4fc35f54f1ef2899e08b6da9f2f55819a356e1f561b030cde3f2dc6049e5532e",
+        "bytes": 1818799,
+        "dimensions": [
+          1672,
+          941
+        ]
+      }
+    },
+    {
+      "assetId": "rugged-handgun",
+      "runtimeId": null,
+      "modelStatus": "not-generated",
+      "image": {
+        "path": "apps/hmh-reboot/assets/source/reference/weapons/rugged-handgun/sheet.png",
+        "originalFilename": "Rugged Futuristic Handgun Turnaround Sheet.png",
+        "sha256": "b240c01c07d2ab048a5e31e111ef24e294f7661f3b5110fe29138a6c6ed9ff63",
+        "bytes": 2265794,
+        "dimensions": [
+          1672,
+          941
+        ]
+      }
+    }
+  ]
+}

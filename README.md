@@ -14,11 +14,11 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw`
 
-**Production cache marker:** `lesters-arcade-v27-hmh-atmosphere-and-feel`
+**Production cache marker:** `lesters-arcade-v28-hmh-feedback-and-ui`
 
 > **Current Lester's Arcade / HMH / Chikun handoff:** [`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`](docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md)
 
-> Runtime release facts above were verified on 2026-09-05 (Cycle 074) through exact-index review, Git/Preview artifact identity, Vercel promotion and custom-domain deployment-ID inspection, exact Preview/production hashes for stable bundles, and live five-profile HMH plus four-profile mobile-control browser certification. The deployed runtime boundary is `6c4ff20a`; later documentation-only commits do not replace it.
+> The deployment identities above are the prior verified Cycle 074 release; the cache marker is the Cycle 075 candidate until promotion. Runtime release facts were verified on 2026-09-05 (Cycle 074) through exact-index review, Git/Preview artifact identity, Vercel promotion and custom-domain deployment-ID inspection, exact Preview/production hashes for stable bundles, and live five-profile HMH plus four-profile mobile-control browser certification. The deployed runtime boundary is `6c4ff20a`; later documentation-only commits do not replace it.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
@@ -178,53 +178,20 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 
 ---
 
-## Current production runtime status
+## Current release status
 
-| Gate | Verified 2026-09-02 result |
-| --- | --- |
-| Runtime implementation | `6c4ff20a` |
-| Exact certified patch SHA-256 | `e08e6e91430a02afe177add51a3cf87db0834b6997590e7998cb9a549ded7094` |
-| Release ledger | 2,283 evaluated, 2,232 passing, exactly 51 accepted legacy failures, 0 unexpected |
-| Syntax | 361 JavaScript modules and 49 Python scripts |
-| Deterministic visual suite | 12/12 unchanged; every scene `0 / 0 / 0` delta |
-| HMH browser matrix | Desktop, ultrawide, tablet landscape, mobile portrait, and mobile landscape PASS locally and on production |
-| Mobile controls | iPhone 13, Pixel 7, iPhone SE portrait, and iPhone 13 landscape real-pointer PASS |
-| Network/console | Four clean/warm portal/HMH production scenarios; 0 HTTP/request/console/page errors |
-| Performance | Desktop/mobile p95 7.1 ms / 7.0 ms |
-| HMH initial JS | 395,337-byte entry + 575,891-byte Pixi vendor = 971,228 / 1,050,000 bytes; 78,772 bytes headroom |
-| Security/Web3 | Security 5/5, findings 0; Web3 source audit 9/9; `SETTLEMENT_LIVE=false` |
+Cycle 074 remains the last verified production deployment until the Cycle 075 candidate is promoted and read back. Earlier mixed Cycle 070/071 metrics are historical and are not certification of the current build.
 
-### Runtime release identities
+[Cycle 075](docs/hmh-reboot/cycles/CYCLE-075.md) contains a bounded feedback/UI optimization and source-reference intake slice. Its candidate cache marker is listed at the top for same-wave cache/test parity; it is not a claim that promotion has already happened.
 
-- Public domain: https://lestersarcade.io
-- Verified Preview deployment: `dpl_EuAEVt97AFjUqV8aiq44J7s2nSxu`
-- Verified production deployment: `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR`
-- Immutable production URL: https://lesters-arcade-276x61nsi-justin-agent-projects.vercel.app
-- Retained rollback deployment: `dpl_EQekrTvicPuJ95Qzfn33D7s8Z4dw`
-- Retained rollback URL: https://lesters-arcade-2er8kpl2y-justin-agent-projects.vercel.app
-- Active runtime cache marker: `lesters-arcade-v27-hmh-atmosphere-and-feel`
-- Exact service-worker, portal bundle, HMH child bundle, and Pixi vendor bytes matched between the verified Preview and production.
+- Release branch: `hermes/hmh-cycle-075-reference-heroes`, based on the verified Cycle 074 handoff `0199035a`.
+- Freshly inspected prior production: `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR` at https://lesters-arcade-276x61nsi-justin-agent-projects.vercel.app; retain it as rollback when Cycle 075 ships.
+- Local browser gates: actual death-feedback draw proof, four-profile cockpit/settings, desktop/mobile performance and enemy/boss presentation passed. Final release gates and exact-candidate promotion are pending.
+- Completed source-reference foundations are not active art replacements. New Commando/grenade source experiments remain unapproved local WIP; all other hero/weapon art gates remain open.
+- Tripo reference upload and use of the owner's existing subscription credits are authorized. No confirmed Tripo job or credit spend is recorded. Additional purchases, contracts, real funds and settlement remain separately gated.
+- Chikun remains `0.5.0`, public playable and Ranked-eligible; its existing rights/dev-wallet/revenue boundaries above are unchanged.
 
-A later documentation-only commit can create a newer Preview without changing production. Treat `f2328177` as the implementation boundary and re-inspect the alias before any future release; do not invent a self-referential “current docs commit” SHA.
-
-## Current continuation status
-
-Runtime implementation `6c4ff20a` is certified and live. This documentation wave records that immutable boundary without claiming its own future commit SHA.
-
-| Gate | Result |
-| --- | --- |
-| Release branch | `hermes/hmh-cycle-070-gameplay-ui-music` at runtime boundary `f2328177` |
-| Latest closed cycle | 071, roadmap reconciliation and encounter-role/projectile-budget truth |
-| Release ledger | 2,283 evaluated, 2,232 passing, exactly 51 accepted legacy failures, 0 unexpected |
-| Syntax | 361 JavaScript modules and 49 Python scripts |
-| HMH initial JS / cap | 971,228 / 1,050,000 bytes; 78,772 bytes headroom |
-| Chikun | `0.5.0`; daily course, same-seed ghost, animated replay, Ranked/Free desktop/mobile certification |
-| Cabinet status docs | PASS across canonical manifests and governed docs |
-| Production marker | `lesters-arcade-v27-hmh-atmosphere-and-feel`; local README parity and live network gate PASS |
-| Production runtime | LIVE at the verified `f2328177` implementation boundary |
-
-The next generated-art/Tripo/PixelLab phase remains locked until Justin explicitly says `go`. Code-first audit, certification, and documentation work may continue without that art authorization.
-
+Post-release deployment identities and live browser results will be recorded in the cycle ledger after verification.
 ---
 
 ## Architecture

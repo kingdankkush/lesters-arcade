@@ -339,7 +339,9 @@ def external_dependencies():
     paths = []
     for datablock in list(bpy.data.images) + list(bpy.data.movieclips) + list(bpy.data.sounds) + list(bpy.data.fonts):
         filepath = getattr(datablock, "filepath", "")
-        if filepath and filepath != "<builtin>":
+        # Blender exposes some packed images through packed_files only.
+        packed = getattr(datablock, "packed_file", None) or getattr(datablock, "packed_files", None)
+        if filepath and filepath != "<builtin>" and not packed:
             paths.append(filepath)
     for library in bpy.data.libraries:
         if library.filepath:

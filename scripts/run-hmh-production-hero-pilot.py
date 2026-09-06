@@ -222,6 +222,18 @@ def pilot_pivot(manifest: dict, pilot: dict) -> tuple[int, int]:
     return tuple(round(source[axis] * frame_size[axis] / default_size[axis]) for axis in (0, 1))
 
 
+def _save_atlas_image(atlas: Image.Image, atlas_path: Path) -> None:
+    """Keep legacy PNG bytes; opt into exact RGBA WebP by output suffix."""
+    suffix = atlas_path.suffix.lower()
+    if suffix == ".png":
+        atlas.save(atlas_path, format="PNG", optimize=False, compress_level=9)
+    elif suffix == ".webp":
+        # lossless alone discards RGB under alpha zero unless exact is enabled.
+        atlas.save(atlas_path, format="WEBP", lossless=True, exact=True)
+    else:
+        raise ValueError(f"Unsupported atlas suffix: {suffix!r}; expected .png or .webp")
+
+
 def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -> tuple[Path, Path, dict]:
     padding = manifest["atlas"]["padding"]
     atlas_size, placements = shelf_pack(analysis["records"], padding, manifest["atlas"]["maxSize"])
@@ -249,7 +261,7 @@ def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -
         })
     atlas_path = output_dir / Path(pilot["output"]["atlas"]).name
     metadata_path = output_dir / Path(pilot["output"]["metadata"]).name
-    atlas.save(atlas_path, optimize=False, compress_level=9)
+    _save_atlas_image(atlas, atlas_path)
     metadata = {
         "schemaVersion": 1, "pipelineId": manifest["pipelineId"], "actorId": pilot["actorId"], "variantId": pilot["variantId"], "animationProfile": pilot["animationProfile"],
         "classification": manifest["classification"], "runtimeAuthority": pilot["runtimeAuthority"], "gameplayBodyProfile": manifest["gameplayBodyProfile"],

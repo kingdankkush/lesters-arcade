@@ -247,6 +247,43 @@ const upgradeSnapshot = (ids) => ({
   pendingChoices: ids.map((id) => ({ ...RUN_UPGRADE_CATALOG[id], nextRank: 1 })),
 });
 
+test('upgrade pointer confirmation is single-shot just like keyboard and gamepad', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const selected = [];
+  const ui = createCockpitUi({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
+  ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
+  const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('button');
+  buttons[1].dispatch('click');
+  buttons[1].dispatch('click');
+  buttons[0].dispatch('click');
+  documentRef.dispatch('keydown', { code: 'Enter' });
+  assert.deepEqual(selected, ['diamond-hands']);
+  ui.destroy();
+});
+
+test('repeated upgrade menus release detached listeners on hide, replacement and destroy', () => {
+  const { documentRef, elements, pendingFrames } = fakeCockpitDocument();
+  const ui = createCockpitUi({ documentRef });
+  let previous = [];
+  const assertReleased = (nodes) => {
+    for (const node of nodes) for (const callbacks of node.listeners.values()) assert.equal(callbacks.size, 0, `${node.tagName} retains a detached handler`);
+  };
+  for (let cycle = 0; cycle < 40; cycle++) {
+    ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
+    assertReleased(previous);
+    previous = [...elements.get('hmhUpgradeChoices').walk()];
+    assert.equal(pendingFrames(), 1, 'one controller poll for the current menu');
+    if (cycle % 2 === 0) {
+      ui.hideUpgrade();
+      assertReleased(previous);
+      assert.equal(pendingFrames(), 0);
+    }
+  }
+  ui.destroy();
+  assertReleased(previous);
+  assert.equal(pendingFrames(), 0);
+});
+
 test('cards carry a tier band, a real icon, a hotkey chip and aria-keyshortcuts; the first card is armed and focused', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const ui = createCockpitUi({ documentRef });

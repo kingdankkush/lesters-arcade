@@ -213,6 +213,7 @@ import {
   createWeaponVfxPool,
   createWeaponVfxTextures,
   resolveImpactBurst,
+  resolveKillBurst,
   resolveMuzzleFlash,
   resolveShellEject,
   resolveTracer,
@@ -1734,6 +1735,8 @@ async function boot() {
       // grenade feedback (V-3): fragments drawn this frame, reported under its
       // own key and never folded into worldRenderedParticles.
       let drawnGrenadeFxParticles = 0;
+      let drawnKillFx = 0;
+      let drawnKillFxShards = 0;
       for (const grenade of grenadeSystem?.active ?? []) {
         const ground = queryGround(grenade.position.x, grenade.position.y);
         const warning = buildGrenadeDangerProjection({
@@ -2032,24 +2035,23 @@ async function boot() {
               for (const spark of puff.sparks) placeWeaponGlow(center.x + spark.dx, center.y + spark.dy, spark.radius, DASH_FEEL.sparkColor, spark.alpha);
             }
           } else if (event.type === 'kill') {
-            // Kill confirmation: an expanding ring plus a deterministic
-            // debris fan so a defeat reads instantly in a crowded fight.
-            const ringRadius = 10 + age * 3.4;
-            combatVisuals.circle(center.x, center.y, ringRadius)
-              .stroke({ color: 0xffffff, width: Math.max(1, 5 - age * 0.4), alpha: alpha * 0.9 });
-            combatVisuals.circle(center.x, center.y, ringRadius * 0.6)
-              .stroke({ color: event.color, width: 3, alpha: alpha * 0.8 });
-            // V-2 death emphasis: the body kicks up a ground puff as it drops;
-            // red only when the bridge-supplied gore setting is on.
-            placeWeaponPuff(center.x, center.y + 6 * camera.zoom, (10 + age * 2.4) * camera.zoom, settings.gore ? 0x7a1220 : 0xb08a6a, alpha * 0.38);
-            const shards = particleScale > 0 ? 8 : 0;
-            for (let shard = 0; shard < shards; shard += 1) {
+            const burst = resolveKillBurst({ age, color: event.color, particleScale,
+              reduceMotion: settings.reduceMotion, reduceFlash: settings.reduceFlash, gore: settings.gore });
+            if (!burst.visible) continue;
+            combatVisuals.circle(center.x, center.y, burst.ringRadius)
+              .stroke({ color: burst.ringColor, width: burst.ringWidth, alpha: burst.ringAlpha });
+            combatVisuals.circle(center.x, center.y, burst.ringRadius * 0.6)
+              .stroke({ color: event.color, width: 3, alpha: burst.innerAlpha });
+            if (burst.puff) placeWeaponPuff(center.x, center.y + 6 * camera.zoom, burst.puff.radius * camera.zoom, burst.puff.color, burst.puff.alpha);
+            for (let shard = 0; shard < burst.shardCount; shard += 1) {
               const angle = deterministicUnit(`${event.tick}:${event.point.x}:${shard}`) * Math.PI * 2;
               const reach = 12 + age * 4.5;
               combatVisuals.moveTo(center.x + Math.cos(angle) * reach * 0.5, center.y + Math.sin(angle) * reach * 0.5)
                 .lineTo(center.x + Math.cos(angle) * reach, center.y + Math.sin(angle) * reach)
-                .stroke({ color: event.color, width: 2, alpha: alpha * 0.85 });
+                .stroke({ color: event.color, width: 2, alpha: burst.shardAlpha });
             }
+            drawnKillFx += 1;
+            drawnKillFxShards += burst.shardCount;
           } else if (event.type === 'melee') {
             const facing = worldToScreen({ x: event.point.x + event.direction.x, y: event.point.y + event.direction.y, z: event.point.z }, camera, view);
             const angle = Math.atan2(facing.y - center.y, facing.x - center.x);
@@ -2578,6 +2580,8 @@ async function boot() {
         // grenade feedback (V-3): new keys only; the grenade keys above and
         // worldRenderedParticles stay byte-identical for the browser smokes.
         dataset.grenadeFxParticles = String(drawnGrenadeFxParticles);
+        dataset.killFxDrawn = String(drawnKillFx);
+        dataset.killFxShards = String(drawnKillFxShards);
         dataset.grenadeFxEvents = String(grenadeFxEvents.length);
         dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
         dataset.dashActive = String(dashStatus?.active === true);

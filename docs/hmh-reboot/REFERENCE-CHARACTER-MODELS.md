@@ -1,176 +1,93 @@
 # Hard Money Heroes reference-derived character model brief
 
-Status: active continuation art direction
-Reference basis: user-supplied Lester and Lilly illustrated sheets plus pixel/action sprites
-Runtime authority: projection-only unless a later cycle explicitly changes deterministic gameplay data
+Status: active source-art direction; replacement models are **not yet certified**.
+Reference basis: the owner's eight supplied full-body and turnaround PNGs.
+Runtime authority: projection-only; preserve established gameplay and parent-platform contracts.
 
-## Reference reconciliation rule
+## Source authority
 
-The source sets intentionally show two levels of design:
+Read [REFERENCE-IMAGE-IDENTITY-CONTRACT.md](REFERENCE-IMAGE-IDENTITY-CONTRACT.md) for direct image observations and corrected anatomical-side conventions. The original images, not inherited audit prose, are the final visual reference:
 
-1. Illustrated sheets own facial identity, head treatment, hair, age, body type, surface finish and premium material language.
-2. Pixel/action sheets own combat clothing, gear placement, silhouette, weapon handling and what must survive at gameplay scale.
+| Actor | Single illustration | Turnaround |
+| --- | --- | --- |
+| Lit Commando | `apps/hmh-reboot/assets/source/reference/heroes/lit-commando/front.png` | same directory, `turnaround.png` |
+| Lit Valkyrie | `apps/hmh-reboot/assets/source/reference/heroes/lit-valkyrie/front.png` | same directory, `turnaround.png` |
+| Lester | `apps/hmh-reboot/assets/source/reference/heroes/lester-original/front.png` | same directory, `turnaround.png` |
+| Lilly | `apps/hmh-reboot/assets/source/reference/heroes/lilly/front.png` | same directory, `turnaround.png` |
 
-When they conflict, the playable combat model uses the illustrated identity inside the pixel sheet's practical combat outfit. Civilian suits, hoodies, linen shirts, formal coats and heels are identity/style references, not the default run-and-gun loadout.
+`apps/hmh-reboot/assets/source/reference/heroes/references.json` owns the original filenames, image dimensions, byte sizes and SHA-256 provenance. Preserve those bytes with Git LFS. Keep references and editable source outside the portal runtime package. Local intake does not mean the files have been committed or pushed.
 
-The user-supplied binary references remain outside Git. Their distilled contract is repository-owned in:
+The older illustrated/pixel-sheet compromise, short Lilly coat, Commando forehead headband, royal-blue Lester shirt sleeves and mandatory Valkyrie braid/ponytail are superseded for these new sources. The existing `hmh-reference-character-models.json` is still an input to the **shipped procedural pipeline**. Do not rewrite that live manifest to pretend it already implements the new design.
 
-- `apps/hmh-reboot/assets/source/blender/hmh-reference-character-models.json`
-- this document
+## Hero identity targets
 
-## Lester
+### Lit Commando
 
-### Immutable identity
+Muscular human survivor, square jaw, stubble, dark mullet and red **neckerchief**. Olive open field shirt with rolled sleeves over a dark tank. Detailed harness, shoulder armor, unit patch, red arm cloth, red-and-brass shell bandolier, belt/pouches, camouflage trousers and riveted knee pads. Black fingerless gloves and combat boots. Native front crops establish the asymmetric costume sides; see the observation contract rather than the older handoff transcription.
 
-- A large spherical cobalt-blue mascot head, not a human helmet and not a generic blue sphere.
-- A white italic Litecoin/Lester `L` construction across the face: long stem plus readable horizontal crossbar.
-- Two large, round expressive eyes with dark pupils and brows.
-- A friendly asymmetric cartoon smile.
-- Blue scarf/bandana around the neck with two visible rear tails.
-- Stocky athletic adult body with broad shoulders and muscular exposed forearms.
+### Lit Valkyrie
 
-### Combat outfit
+Athletic human woman with long, voluminous, wavy blonde hair, red **forehead headband**, dog tag and olive cropped tank. Prominent pauldron and red cloth armband on anatomical **left** in the supplied front images. Brass bandolier runs anatomical right shoulder toward left hip. Preserve camouflage cargo trousers, thigh equipment, knee protection, gloves and rugged boots. No invented cape or quiver.
 
-- Royal-blue short sleeves under an olive tactical vest.
-- Olive shoulder webbing and side panels.
-- Dark cross-body bandolier strap with individually readable brass rounds.
-- Utility belt, bright metal buckle and four pouches.
-- Tan cargo trousers with olive thigh pockets.
-- Dark knee protection, blue wrist wraps, fingerless gloves and heavy black combat boots.
+### Lester
 
-### Blender construction
+Glossy cobalt-blue **spherical mascot head**, large expressive eyes, dark brows, white face-spanning slashed Litecoin mark and friendly broad mouth. Athletic human body, dark short-sleeved shirt, olive tactical vest, blue scarf and wrist wraps, brass bandolier, pouches, tan/camouflage cargo trousers, knee protection and black boots. Preserve editable expression source corresponding to the sheet's six head crops; do not lock the default face to a wink.
 
-- Target height: approximately `2.08` Blender units; mascot head diameter approximately `0.57`.
-- Keep the mascot shell, logo, eyes, brows and mouth as separate meshes for future expression animation.
-- Bind the body and equipment to the existing `HMH_ProductionHeroRig` and `weapon_socket`.
-- Current scarf tails may remain chest-bound to preserve clip determinism; a later projection-only animation cycle may add secondary scarf motion.
-- Use rounded bevels and medium-high contrast PBR rather than unlit blocks or photoreal skin.
+### Lilly
 
-### Animation/weapon requirements
+Human woman with long wavy teal hair, visible facial likeness and round tinted glasses. **Long open teal coat** with gold angular/circuit trim and split tails, fitted dark corset-like top, angular gold-rimmed `L` buckle, sleeve emblem, teal trousers, thigh equipment, riveted knee pads, gauntlets and black/gold boots. Preserve the coat length instead of imposing the retired cropped-jacket design. Bake coat-tail motion; use the five expression crops as facial references, not extra body subjects.
 
-- Canonical dominant hand: right for grenade, knife and one-handed weapons.
-- Preserve two-hand IK compatibility for machine gun, shotgun and long guns even where source sprites simplify to one-hand holds.
-- Keep weapon geometry independent in the `weapon` atlas layer.
-- Preserve the existing nine clips and fixed frame/tick contracts: idle, run, aim, pistol fire, hurt, dash, melee, grenade and death.
+## Modeling and animation contract
 
-## Lilly
+Use the existing [external model pipeline](EXTERNAL-MODEL-PIPELINE.md), shared look-dev, exporter and selector infrastructure. No engine migration or alternate runtime art authority.
 
-### Immutable identity
+- Author genuine skin-deforming surface meshes. Source rigs or action names alone do not prove acceptable deformation.
+- Target the current handoff's 30,000–60,000 source triangles and textures no larger than 2048, with topology suitable for shoulders, elbows, hips and knees. Measure actual exports.
+- Keep hair, neckwear, armor, bandolier, pouches, coat tails and weapon components editable. Pack source images/material textures; preserve linked-library dependencies as blockers.
+- Preserve required runtime bones: `root`, `pelvis`, `spine`, `chest`, `head`, `upper_arm.L`, `upper_arm.R`, `forearm.L`, `forearm.R`, `thigh.L`, `thigh.R`, `shin.L`, `shin.R`, `weapon_socket`. The socket remains a child of `forearm.R`.
+- Preserve the nine semantic clips: `idle`, `run`, `aim`, `pistol-fire`, `hurt`, `dash`, `melee`, `grenade`, `death`, using manifest frame counts/FPS. Do not force XYZ rotation on quaternion-keyed actions.
+- Preserve lower-body, torso-head, weapon and shadow composition; inspect waist seams under maximum independent torso rotation.
+- Keep the dominant right hand/socket and two-handed long-gun compatibility. Animation must visibly communicate weight shift, contact, anticipation, impact and recovery.
+- Regenerate selector images from the same accepted source as gameplay, not an unrelated beauty model.
 
-- Young adult human woman with a slim athletic build.
-- Oval/heart-shaped face, teal-green eyes, arched dark brows, small straight nose and softly full lips.
-- Round gold/teal glasses with lightly tinted teal lenses.
-- Long layered, wavy teal hair from crown to mid-back/waist. Five rectangular blocks are not sufficient.
-- Teal, charcoal and gold palette with an `L` identification mark.
+## Source generation permission and limits
 
-### Combat interpretation
+The owner authorized Tripo with existing Pro subscription credits for these project models. See `DECISIONS.md`. No additional-credit purchase or subscription change is authorized.
 
-Use the illustrated face, hair and premium teal/gold material finish with the pixel sheet's practical outfit:
+Record the actual generation task ID, inputs, settings, credit charge, plan/rights evidence, returned asset checksums and Blender cleanup provenance. An AI-generated mesh is a draft. Prove the Commando pilot before scaling the remaining heroes. Account verification/access must be resolved through the service's normal login flow; no fabricated generations or task IDs.
 
-- cropped black/teal tactical jacket or armored top with gold piping;
-- teal cargo trousers and thigh pouches;
-- gold/black utility belt with `L` buckle;
-- knee pads, fingerless gloves and black/gold lace-up combat boots;
-- shoulder `L` patch;
-- no high heels during combat;
-- no full-length formal coat during combat, though short split coat tails are acceptable projection-only accents if they do not obscure legs or weapons.
+## Atlas and performance policy
 
-### Blender construction
+- New gameplay target: **256×256 source frames**, not a 256-frame animation count. Count actual frames from layers × clip samples × directions.
+- Candidate encoding: lossless WebP with `exact=True`, retaining PNG intermediates and existing selected-hero lazy loading, per `DECISIONS.md`.
+- The shipped PNG pipeline and current budgets remain active. No runtime URL or cap changes are implied by encoder support.
+- Measure actual full-clip packing, compressed bytes, desktop/mobile decode, GPU allocation and active gameplay before choosing page layout or caps. WebP does not reduce decoded RGBA texture memory for the same dimensions.
+- Preserve the existing reproducibility limits and run cold reproducibility verification independently twice.
+- Preserve current projection-scale authority in the active manifests/runtime; measure body-only hero/enemy parity and foot pivots. Do not silently change collision or hurtboxes to fit art.
 
-- Target height: approximately `2.02` Blender units.
-- Build a recognizable face rather than the current blank oval.
-- Hair requires at least nine layered crown, side and back lock groups. Use curved/tapered meshes or beveled curves with deliberate gaps so the silhouette reads at 160×160.
-- Divide hair into crown, side-lock and back-lock groups with clearance for shoulders and weapon stocks.
-- Retain the existing rig and atlas composition; add secondary hair motion only in a later projection-only animation cycle.
+## Visual and release acceptance
 
-## Lit Commando
+Each hero requires:
 
-Lit Commando must be distinct from Lester rather than a different-colored armored mannequin.
+1. Native-resolution front/side/back/three-quarter comparison against the source images, with observable likeness findings rather than a checklist rubber stamp.
+2. Structural inspection, packed dependencies, tested skinning and all semantic clips.
+3. Gameplay-resolution contact sheet and independent layer/waist composition review.
+4. Same-source selector, reproducibility, atlas/aggregate payload gates and measured desktop/mobile performance.
+5. Feature-specific active-runtime evidence, approved visual regression changes and serial browser certification.
+6. Exact-candidate review, verified deployment and recorded rollback before being called live.
 
-### Derived identity
+Source art candidates, local `.blend`/GLB files, passing unit tests and attractive single renders are not automatic production replacements.
 
-- Human male, muscular athletic body, square jaw and visible face.
-- Dark hair with a red combat headband and two short rear tails.
-- Rambo/army commando silhouette: olive sleeveless combat shirt, bare muscular arms, cross-body webbing/ammunition, utility belt and dark cargo trousers.
-- Fingerless gloves, knife sheath, heavy combat boots and practical pouches.
-- No mascot sphere, glasses, teal hair, sealed helmet, robot head or mech armor.
-- He should read as the conventional heavy military survivor at the same playable scale as Lester.
+## Preserved gameplay and enemy boundaries
 
-### Blender target
+Human survivor and zombie anatomy remains the active actor canon, with Lester's established mascot head. Ordinary enemies must read at comparable human scale; bosses may be larger only where consistent with their existing gameplay body.
 
-- Target height: approximately `2.10` Blender units.
-- Broader shoulders than Lester's body but a normal human head ratio.
-- Use layered fabric/webbing/skin materials rather than chrome pauldrons.
-- Preserve the current weapon socket and deterministic clip set.
+Enemy detail work should improve faces, clothing, hands, boots, gear, role silhouettes and readable tells. Renderer/art code remains downstream of deterministic simulation. Do not alter damage, spawning, AI, RNG, progression, saves, bridge/schema, wallet or settlement authority inside an art change.
 
-## Lit Valkyrie
+Any hurtbox generosity, movement or collision change needs its own measured deterministic slice, same-seed schedule-equivalence tests and replay proof. Historical proposed hurtbox values are not current implementation instructions.
 
-Lit Valkyrie must be a female commando, not a short-haired armored mannequin and not a recolored Lilly.
+## Sequence and historical context
 
-### Derived identity
+Commando pilot → remaining heroes → animation/secondary motion and aggregate acceptance → broader enemy, world, combat and portal improvements in the active roadmap order. Keep incomplete candidates isolated and production rollback available.
 
-- Human woman with an athletic feminine silhouette and visible face.
-- Long platinum-blonde braid plus high ponytail reaching the lower shoulder blades; small mint/cyan identification accents.
-- Olive fitted sleeveless tactical top, cross harness, fingerless gloves, thigh holster, charcoal cargo trousers, knee pads and combat boots.
-- Stronger melee/field-survivor silhouette than Lilly.
-- No glasses; no loose teal hair; no sealed helmet, robot head or mech body.
-
-### Blender target
-
-- Target height: approximately `2.04` Blender units.
-- Use at least seven separated hair/braid groups with weapon-stock and back-webbing clearance.
-- Keep the ponytail/braid attached deterministically for the initial model cycle; add secondary motion later.
-
-## Shared scale and model-quality standard
-
-- Hero runtime atlas scale remains `0.58` unless a separately reviewed projection-scale cycle changes it.
-- Enemy runtime atlas scale is currently `0.50` after Cycle 027.
-- Source models should use comparable human world heights around `2.0–2.1` Blender units. Enemies may vary by role, but ordinary human/zombie enemies must not look like miniature characters next to heroes.
-- Bosses may be larger when the size truthfully matches their canonical gameplay body.
-- Human survivors and zombies remain the only active actor anatomy. Do not introduce animal, vehicle, robot, mech or abstract proxies.
-- At 160×160, prioritize silhouette-separated gear, face/head identity, hair mass, hands/boots, weapon shape and value contrast over invisible micro-surface noise.
-
-## Enemy model standard
-
-Future enemy model cycles should match playable-character construction quality:
-
-- recognizable human/zombie head and face treatment;
-- layered clothing rather than one torso block;
-- hands, boots, belts, straps, pouches and role-specific weapon/equipment geometry;
-- comparable ordinary-human height to heroes;
-- readable front, side and three-quarter silhouettes;
-- damage/phase details only when they truthfully reflect deterministic state.
-
-Cycle 027's role kits are a start, not the final target.
-
-## Hitbox plan
-
-Current regular-enemy projectile hurt capsules use:
-
-- radius: `max(8, enemy.radius × 0.72)`;
-- axis endpoints: `y = -8` to `y = +8`.
-
-The requested easier-to-hit target should be tested in a separate deterministic gameplay cycle:
-
-- proposed radius: `max(10, enemy.radius × 0.90)`;
-- proposed axis endpoints: `y = -10` to `y = +10`;
-- physical collision body unchanged;
-- movement, crowd spacing, AI and route clearance unchanged;
-- projectile hit acceptance becomes more forgiving around the rendered torso/limbs;
-- prove same-seed 60/30/20 schedule equivalence and replay stability;
-- measure hit-rate change through seeded combat simulations and live desktop/mobile playtests before acceptance.
-
-Do not hide hitbox changes inside a model or projection commit.
-
-## Bounded implementation sequence
-
-1. Cycle 028: reference manifest plus Lester combat-model rebuild.
-2. Cycle 029: Lilly face, long wavy hair and teal/gold combat-outfit rebuild.
-3. Cycle 030: Lit Commando Rambo/army rebuild.
-4. Cycle 031: Lit Valkyrie female commando, visible-face and long platinum-braid rebuild.
-5. Next projection cycle: measured ordinary hero/enemy visual-scale parity with gameplay bodies unchanged.
-6. Separate gameplay cycle: enemy hurt-capsule generosity with seeded measurements.
-7. Subsequent enemy cycles: rebuild two enemy families at a time to hero-quality human/zombie standards.
-8. Separate animation cycles: recoil/recovery, cloth/scarf/hair secondary motion, hit reactions and boss phase poses.
-
-Each cycle must run the relevant pinned Blender reproducibility pipeline, desktop/mobile browser evidence, full release/security/performance/repository battery and exact-index review before continuation-branch push.
+Cycles 028–031 describe the older shipped procedural detail kits. They remain historical implementation evidence, not acceptance of these newly supplied references. Consult the current Cycle 074 handoff and `DECISIONS.md` for continuation scope and permissions.

@@ -81,9 +81,11 @@ export function createCockpitUi({
   let currentSettings = {};
   let awaitingActionId = null;
   const listeners = [];
-  const listen = (element, type, handler) => {
+  const upgradeListeners = [];
+  const clearUpgradeListeners = () => { for (const remove of upgradeListeners.splice(0)) remove(); };
+  const listen = (element, type, handler, lifetime = listeners) => {
     element.addEventListener(type, handler);
-    listeners.push(() => element.removeEventListener(type, handler));
+    lifetime.push(() => element.removeEventListener(type, handler));
   };
 
   listen(elements.music, 'click', () => {
@@ -355,6 +357,7 @@ export function createCockpitUi({
       }
     },
     showUpgrade(snapshot) {
+      clearUpgradeListeners();
       elements.pausePanel.hidden = true;
       elements.menu.setAttribute('aria-expanded', 'false');
       elements.upgradePanel.hidden = false;
@@ -394,7 +397,8 @@ export function createCockpitUi({
           hotkey.setAttribute('aria-hidden', 'true');
           button.append(hotkey);
         }
-        listen(button, 'click', () => onSelectUpgrade(choice.id));
+        const choiceIndex = upgradeCards.length;
+        listen(button, 'click', () => selectUpgradeAt(choiceIndex), upgradeListeners);
         upgradeCards.push({ option, button, choice });
 
         const detail = createSafeTextElement(documentRef, 'details', { className: 'hmh-upgrade-details' });
@@ -407,7 +411,7 @@ export function createCockpitUi({
         listen(detail, 'toggle', () => {
           summary.setAttribute('aria-expanded', String(detail.open));
           summary.textContent = detail.open ? 'Hide details' : 'Upgrade details';
-        });
+        }, upgradeListeners);
         detail.append(summary, description);
         option.append(button, detail);
         elements.upgradeChoices.append(option);
@@ -419,6 +423,7 @@ export function createCockpitUi({
     },
     hideUpgrade() {
       stopGamepadPoll();
+      clearUpgradeListeners();
       upgradeCards = [];
       armedIndex = -1;
       selectionLatched = false;
@@ -435,6 +440,7 @@ export function createCockpitUi({
     destroy() {
       awaitingActionId = null;
       stopGamepadPoll();
+      clearUpgradeListeners();
       upgradeCards = [];
       for (const remove of listeners.splice(0)) remove();
       elements.upgradeChoices.replaceChildren();

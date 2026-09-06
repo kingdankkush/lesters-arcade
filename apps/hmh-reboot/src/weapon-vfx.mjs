@@ -218,7 +218,7 @@ export function resolveImpactBurst({
   lifeTicks = 12, reduceMotion = false, reduceFlash = false, gore = false,
 } = {}) {
   const known = SURFACE_BURSTS[surfaceId] ? surfaceId : 'dirt';
-  const profile = known === 'flesh' && gore ? SURFACE_BURSTS.gore : SURFACE_BURSTS[known];
+  const profile = known === 'flesh' && gore && !shielded ? SURFACE_BURSTS.gore : SURFACE_BURSTS[known];
   const weapon = (WEAPON_VFX[weaponId] ?? WEAPON_VFX['coin-blaster']).impactBurst;
   const fade = Math.max(0.08, 1 - age / Math.max(1, lifeTicks));
   const baseCount = Math.round(Math.max(0, sparkBase) * profile.sparkScale * weapon.sparkScale) + (critical ? 2 : 0);
@@ -237,6 +237,24 @@ export function resolveImpactBurst({
     sparkAlpha: fade * 0.9,
     puff: profile.puff ? F({ color: profile.puff.color, radius: profile.puff.radius * (1 + age * 0.18), alpha: profile.puff.alpha * fade }) : null,
     splash: profile.splash,
+  });
+}
+
+// Defeat feedback remains visible without motion or a hot white flash. Read
+// the live settings, not just the profile selected when the run booted.
+export function resolveKillBurst({ age = 0, color = FALLBACK_COLOR, particleScale = 10, reduceMotion = false, reduceFlash = false, gore = false } = {}) {
+  if (!(age >= 0) || age > 12) return F({ visible: false });
+  const fade = Math.max(0.08, 1 - age / 12);
+  return F({
+    visible: true,
+    ringRadius: reduceMotion ? 16 : 10 + age * 3.4,
+    ringWidth: Math.max(1, 5 - age * 0.4),
+    ringColor: reduceFlash ? color : HOT_WHITE,
+    ringAlpha: fade * (reduceFlash ? FLASH_SAFE.maxCoreAlpha : 0.9),
+    innerAlpha: fade * (reduceFlash ? FLASH_SAFE.maxHaloAlpha : 0.8),
+    shardCount: reduceMotion ? 0 : Math.round(8 * Math.min(10, Math.max(0, particleScale)) / 10),
+    shardAlpha: fade * (reduceFlash ? FLASH_SAFE.maxCoreAlpha : 0.85),
+    puff: reduceMotion ? null : F({ color: gore ? 0x7a1220 : 0xb08a6a, radius: 10 + age * 2.4, alpha: fade * (reduceFlash ? FLASH_SAFE.maxHaloAlpha : 0.38) }),
   });
 }
 
@@ -353,8 +371,16 @@ export function createWeaponVfxPool({ ContainerClass, SpriteClass, textures, max
     const target = banks[additive ? 1 : 0];
     let sprite = target.sprites[target.cursor];
     if (!sprite) {
-      sprite = new SpriteClass({ texture: source });
-      sprite.anchor.set(0.5, 0.5);
+      // Transfer only an unclaimed tail from the other blend bank. Two
+      // separate high-water marks otherwise retain up to twice the cap.
+      const other = banks[additive ? 0 : 1];
+      if (other.sprites.length > other.cursor) {
+        sprite = other.sprites.pop();
+        other.layer.removeChild(sprite);
+      } else {
+        sprite = new SpriteClass({ texture: source });
+        sprite.anchor.set(0.5, 0.5);
+      }
       target.sprites.push(sprite);
       target.layer.addChild(sprite);
     }

@@ -1,0 +1,108 @@
+{
+  "schema": "hmh-hero-reference-intake-v1",
+  "authority": "owner-supplied-design-reference",
+  "runtimeAuthority": "none",
+  "provenance": "Eight original PNG attachments supplied by Justin Pinter for the September 2026 visual upgrade. Source-only design references, not runtime art. No external service upload.",
+  "heroes": [
+    {
+      "actorId": "lit-commando",
+      "images": {
+        "front": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lit-commando/front.png",
+          "originalFilename": "LitCommando-HMH-CharacterReference-01.png",
+          "sha256": "f3eb30f1eeb160232aa25e64a5ee4eca2d5fd40f6f0e278cdc3bb85dad024572",
+          "bytes": 2179073,
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        "turnaround": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lit-commando/turnaround.png",
+          "originalFilename": "LitCommando-HMH-CharacterReference-02.png",
+          "sha256": "3b0681d38349e3a6303708af7da401d97cec3386d52e639bd07d4d62365a895b",
+          "bytes": 1982087,
+          "dimensions": [
+            1672,
+            941
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "lit-valkyrie",
+      "images": {
+        "front": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lit-valkyrie/front.png",
+          "originalFilename": "LitValkyrie-HMH-CharacterReference-01.png",
+          "sha256": "c2d7d21a067ace17c7de5244ee2061e099c666ba98f4fe4565c67c6d34dd45bf",
+          "bytes": 2202552,
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        "turnaround": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lit-valkyrie/turnaround.png",
+          "originalFilename": "LitValkyrie-HMH-CharacterReference-02.png",
+          "sha256": "af667fd5f3135a959bafdd683e173f21d485f2b1142df76642a7e97e1cf99227",
+          "bytes": 1984292,
+          "dimensions": [
+            1672,
+            941
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "lester-original",
+      "images": {
+        "front": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lester-original/front.png",
+          "originalFilename": "Lester-HMH-CharacterReference.png",
+          "sha256": "a41d98d6782edc2941621eabd0a68f0d0c3dcb9a756b7aaa86a37d77b35b8f8f",
+          "bytes": 2288338,
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        "turnaround": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lester-original/turnaround.png",
+          "originalFilename": "Lester-HMH-CharacterReference-02.png",
+          "sha256": "4d2809f00e35e6c319ec2aeacc63937fe4e5c1768d02d9d44e7ae2a7c674f8cb",
+          "bytes": 2080475,
+          "dimensions": [
+            1672,
+            941
+          ]
+        }
+      }
+    },
+    {
+      "actorId": "lilly",
+      "images": {
+        "front": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lilly/front.png",
+          "originalFilename": "Lilly-HMH-CharacterReference.png",
+          "sha256": "9c7ff28beafaf23595ddf8dc24b47398ee60c851af4176308455c165d2e70429",
+          "bytes": 2191937,
+          "dimensions": [
+            1024,
+            1536
+          ]
+        },
+        "turnaround": {
+          "path": "apps/hmh-reboot/assets/source/reference/heroes/lilly/turnaround.png",
+          "originalFilename": "Lilly-HMH-CharacterReference-02.png",
+          "sha256": "37554a05c59472308089f88f3306217084211ba5d8a6065329dac1471361c4e9",
+          "bytes": 2215362,
+          "dimensions": [
+            1672,
+            941
+          ]
+        }
+      }
+    }
+  ]
+}
