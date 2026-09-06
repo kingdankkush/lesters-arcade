@@ -15,7 +15,7 @@ test('actual complete hero and weapon intake suites accept no-smudge checkout; f
   // An isolated node:test invocation must not inherit the parent runner marker.
   const env = {...process.env};
   delete env.NODE_TEST_CONTEXT;
-  const run = () => spawnSync(process.execPath, ['--test', ...testPaths], {cwd: fixture, env, encoding: 'utf8'});
+  const run = () => spawnSync(process.execPath, ['--test', '--test-reporter=tap', ...testPaths], {cwd: fixture, env, encoding: 'utf8'});
   try {
     for (const path of [...testPaths, 'tests/shared/validate-lfs-pointer.mjs', '.gitattributes']) put(path, readFileSync(new URL(path, root)));
     const records = [];
