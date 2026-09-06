@@ -424,7 +424,12 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/stacked-cabinet.mjs",
   "scripts/write-stacked-contracts.mjs",
   "scripts/stacked-contract-audit.mjs",
-  "tests/stacked-contracts.test.mjs"
+  "tests/stacked-contracts.test.mjs",
+  "apps/portal/src/stacked-sim.mjs",
+  "scripts/stacked-sim-purity-check.mjs",
+  "tests/stacked-sim.test.mjs",
+  "tests/stacked-sim-determinism.test.mjs",
+  "tests/stacked-sim-purity.test.mjs"
 ];
 
 // Every Python script that must compile (python -m py_compile).
