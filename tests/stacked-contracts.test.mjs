@@ -200,8 +200,9 @@ test('actual source-tree guard catches planted duplicates and cleans up', async 
   assert.deepEqual(await scanContractDeclarations(root, names, contractPath), []);
 });
 
-test('all nineteen owner gates are present and remain open', async () => {
+test('all nineteen owner gates retain explicit decisions and deployment remains open', async () => {
   const decisions = await readFile(join(root, 'docs/stacked/DECISIONS.md'), 'utf8');
-  const records = [...decisions.matchAll(/^\| G-(\d+) \| OPEN \|/gm)].map(match => Number(match[1]));
-  assert.deepEqual(records, Array.from({ length: 19 }, (_, index) => index + 1));
+  const records = [...decisions.matchAll(/^\| G-(\d+) \| (OPEN|ADOPTED|CONDITIONAL|DEFERRED) \|/gm)];
+  assert.deepEqual(records.map(match => Number(match[1])), Array.from({ length: 19 }, (_, index) => index + 1));
+  assert.equal(records.find(match => match[1] === '15')[2], 'OPEN');
 });

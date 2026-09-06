@@ -42,7 +42,9 @@ reconciliations must be recorded in the relevant cycle ledger.
 
 ## Current implementation status
 
-S-01 is being verified. The contract module and supporting tests are not a playable
-cabinet. Refer to `cycles/CYCLE-001.md` for actual execution evidence and limitations.
-All nineteen owner gates remain open in `DECISIONS.md`; importing the plan does not
-approve any gate, a live Ranked write, or a deployment.
+S-01 is implemented and verified at
+`64ba50c18c2b93bc2d277c25610f7cb9888d8f67`. The contract module and supporting tests
+are not a playable cabinet. Refer to `cycles/CYCLE-001.md` and its machine-readable
+evidence for actual execution results. `DECISIONS.md` now records the owner's
+subsequent delegation of routine decisions and the retained irreversible boundaries.
+S-02 gameplay implementation follows on this isolated branch.
