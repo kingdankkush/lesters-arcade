@@ -117,7 +117,8 @@ def main() -> None:
     if abs(exposure - manifest["render"]["exposure"]) > 1e-6:
         raise RuntimeError(f"Scene exposure {exposure} != manifest {manifest['render']['exposure']}")
 
-    pilots = {pilot["actorId"]: pilot for pilot in hero_manifest["pilots"]}
+    static_sources = manifest["scene"].get("sourceMode") == "static-textured-models"
+    pilots = {pilot["actorId"]: pilot for pilot in hero_manifest.get("pilots", [])}
     production_objects = [obj for obj in bpy.data.objects if obj.get("hmh_actor_id")]
     for obj in production_objects:
         obj.hide_render = True
@@ -126,29 +127,39 @@ def main() -> None:
     pivots = {}
     hero_reports = {}
     for hero in manifest["heroes"]:
-        pilot = pilots.get(hero["actorId"])
-        if pilot is None:
-            raise RuntimeError(f"Unknown production actor for selector: {hero['actorId']}")
-        rig = hero_exporter.resolve_rig(hero_manifest, pilot)
         actor_objects = [obj for obj in production_objects if obj.get("hmh_actor_id") == hero["actorId"]]
         if not actor_objects:
             raise RuntimeError(f"No renderable objects for {hero['actorId']}")
-        layer_counts = {layer: sum(1 for obj in actor_objects if obj.get("hmh_layer") == layer) for layer in manifest["pose"]}
-        if any(count == 0 for count in layer_counts.values()):
-            raise RuntimeError(f"{hero['actorId']}: missing layer objects {layer_counts}")
+        if static_sources:
+            roots = [obj for obj in actor_objects if obj.get("hmh_selector_root") == hero["actorId"]]
+            if len(roots) != 1 or roots[0].type != "EMPTY":
+                raise RuntimeError(f"{hero['actorId']}: missing unique static selector root")
+            source = next(item for item in hero_manifest["heroes"] if item["actorId"] == hero["actorId"])
+            bodies = [obj for obj in actor_objects if obj.type == "MESH" and not obj.get("hmh_selector_shadow")]
+            if not bodies or any(not obj.data.uv_layers or obj.get("hmh_source_sha256") != source["sourceSha256"] for obj in bodies):
+                raise RuntimeError(f"{hero['actorId']}: untextured or mismatched source geometry")
+            pivot_root = roots[0]
+            layer_counts = {"textured-source": len(bodies), "shadow": sum(bool(obj.get("hmh_selector_shadow")) for obj in actor_objects)}
+            posed_bones = {}
+        else:
+            pilot = pilots.get(hero["actorId"])
+            if pilot is None:
+                raise RuntimeError(f"Unknown production actor for selector: {hero['actorId']}")
+            pivot_root = hero_exporter.resolve_rig(hero_manifest, pilot)
+            layer_counts = {layer: sum(1 for obj in actor_objects if obj.get("hmh_layer") == layer) for layer in manifest["pose"]}
+            if any(count == 0 for count in layer_counts.values()):
+                raise RuntimeError(f"{hero['actorId']}: missing layer objects {layer_counts}")
+            posed_bones = apply_selector_pose(hero_exporter, pivot_root, pilot, manifest["pose"], pilot["clips"])
         for obj in production_objects:
             obj.hide_render = obj.get("hmh_actor_id") != hero["actorId"]
-        if max(abs(component) for component in rig.location) > 1e-6:
-            raise RuntimeError(f"{hero['actorId']}: rig must sit on the world origin for a fixed ground-contact pivot, got {tuple(rig.location)}")
-        posed_bones = apply_selector_pose(hero_exporter, rig, pilot, manifest["pose"], pilot["clips"])
+        if max(abs(component) for component in pivot_root.location) > 1e-6:
+            raise RuntimeError(f"{hero['actorId']}: selector root must sit on the world origin")
         for direction in manifest["directions"]:
-            rig.rotation_euler[2] = math.radians(hero_manifest["directionAngles"][direction])
+            pivot_root.rotation_euler[2] = math.radians(hero_manifest["directionAngles"][direction])
             bpy.context.view_layer.update()
             filename = f"{hero['actorId']}__selector__{direction}.png"
-            # The ground-contact pivot is the rig origin seen through the fixed
-            # camera; recording it per frame lets the runner prove the turntable
-            # cannot jitter (v2 recentred every frame to its own alpha bbox).
-            view = world_to_camera_view(scene, scene.camera, rig.matrix_world.translation)
+            # Project the fixed root rather than recentering each frame's alpha bounds.
+            view = world_to_camera_view(scene, scene.camera, pivot_root.matrix_world.translation)
             pivots[filename] = [round(view.x * frame_size[0], 4), round((1.0 - view.y) * frame_size[1], 4)]
             scene.render.filepath = str(raw_output / filename)
             bpy.ops.render.render(write_still=True)
@@ -157,9 +168,11 @@ def main() -> None:
             "actorId": hero["actorId"],
             "layerObjectCounts": layer_counts,
             "posedBones": sorted(posed_bones),
+            "sourceMode": "static-textured-models" if static_sources else "gameplay-pose",
         }
-        hero_exporter.reset_pose(rig)
-        rig.rotation_euler[2] = 0.0
+        if not static_sources:
+            hero_exporter.reset_pose(pivot_root)
+        pivot_root.rotation_euler[2] = 0.0
 
     for obj in production_objects:
         obj.hide_render = True

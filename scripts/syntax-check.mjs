@@ -417,6 +417,8 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-hero-select-ui.mjs",
   "tests/hmh-hero-select-ui.test.mjs",
   "tests/hmh-reboot-hero-selector-render.test.mjs",
+  "tests/hmh-reboot-tripo-selector-source.test.mjs",
+  "tests/hmh-reboot-tripo-selector-copy.test.mjs",
   "apps/hmh-reboot/src/game-feel.mjs",
   "tests/hmh-reboot-game-feel.test.mjs",
   "scripts/syntax-check.mjs"
@@ -468,6 +470,7 @@ const PY_COMPILE_FILES = [
   "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
   "scripts/run-hmh-production-hero-pilot.py",
   "scripts/hmh-blender/export-hmh-hero-selector.py",
+  "scripts/hmh-blender/create-hmh-tripo-selector-scene.py",
   "scripts/run-hmh-hero-selector-render.py",
   "scripts/hmh-blender/create-hmh-enemy-roster.py",
   "scripts/hmh-blender/export-hmh-enemy-roster.py",

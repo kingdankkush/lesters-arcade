@@ -14,7 +14,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR`
 
-**Production cache marker:** `lesters-arcade-v28-hmh-feedback-and-ui`
+**Production cache marker:** `lesters-arcade-v29-hmh-textured-heroes`
+
+> **Cycle 077 release candidate:** the marker above is this branch's deployment target. [Textured hero selector scope](docs/hmh-reboot/cycles/CYCLE-077.md) is locally integrated; final release gates and promotion remain pending. The verified production IDs above still describe Cycle 075, whose live marker is `lesters-arcade-v28-hmh-feedback-and-ui`, until the release handoff records the new deployment.
 
 > **Current release handoff:** [Cycle 075 release and continuation](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 

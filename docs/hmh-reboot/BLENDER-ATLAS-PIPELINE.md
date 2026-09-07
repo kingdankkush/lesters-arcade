@@ -199,11 +199,16 @@ neither inputs nor outputs of this pipeline and must stay byte-identical when it
 runs.
 
 Manifest: `apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json`
-(`hmh-reboot-hero-selector-atlas-v3`). It inherits the committed hero scene
-read-only (`hmh-production-heroes.blend`, ortho 2.75, exposure -0.45, pitch 55,
-EEVEE) and renders one composite frame per spin direction per hero at 384 px:
-shadow and lower-body idle frame 0 under torso-head and weapon aim frame 0, the
-same pose the v2 recomposer used. Directions follow the selector spin order
+(`hmh-reboot-hero-selector-atlas-v3`). It reads the packed static Tripo source
+scene read-only (`hmh-tripo-selector.blend`, ortho 2.75, exposure -0.45, pitch 55,
+EEVEE), preserving the existing shared camera and lights. Four textured GLBs are
+hash-bound by `hmh-tripo-selector-sources.json`; the scene builder is
+`scripts/hmh-blender/create-hmh-tripo-selector-scene.py`. These sources have no
+armatures or combat animations. Each 384 px frame is a static source rest pose
+plus a grounded shadow, not a replacement gameplay animation. Source-only LFS
+pointers must match the declared OID and size for Blender-free checks; actual
+texture packing and geometry were separately checked in Blender.
+Directions follow the selector spin order
 `east, north-east, north, north-west, west, south-west, south, south-east`; the
 rest frame shown under `prefers-reduced-motion` is `south`.
 

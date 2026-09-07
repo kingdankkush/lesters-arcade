@@ -23,6 +23,7 @@ import argparse
 import hashlib
 import io
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -192,10 +193,31 @@ def grid_cell(manifest: dict, index: int) -> tuple[int, int]:
     return (index % columns) * size, (index // columns) * size
 
 
+def verified_source_sha(path: Path, expected: dict | None = None) -> str:
+    """Verify real bytes or a canonical LFS pointer bound to the source ledger."""
+    if expected is None:
+        return sha256_file(path)
+    digest, size = expected.get("sha256"), expected.get("bytes")
+    if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None or type(size) is not int or size <= 0:
+        raise ValueError(f"Invalid source descriptor for {path}")
+    if path.stat().st_size <= 200:
+        pointer = re.fullmatch(
+            rb"version https://git-lfs.github.com/spec/v1\noid sha256:([0-9a-f]{64})\nsize ([1-9][0-9]*)\n",
+            path.read_bytes().replace(b"\r\n", b"\n"),
+        )
+        if pointer is not None:
+            if pointer[1].decode("ascii") == digest and int(pointer[2]) == size:
+                return digest
+            raise RuntimeError(f"Source LFS pointer mismatch: {path}")
+    if path.stat().st_size != size or sha256_file(path) != digest:
+        raise RuntimeError(f"Source bytes mismatch: {path}")
+    return digest
+
+
 def provenance(manifest: dict, manifest_path: Path) -> dict:
-    return {
+    result = {
         "sourceBlend": manifest["scene"]["sourceBlend"],
-        "sourceBlendSha256": sha256_file(ROOT / manifest["scene"]["sourceBlend"]),
+        "sourceBlendSha256": verified_source_sha(ROOT / manifest["scene"]["sourceBlend"], manifest["scene"].get("sourceBlendFingerprint")),
         "sourceManifest": manifest["scene"]["sourceManifest"],
         "sourceManifestSha256": sha256_file(ROOT / manifest["scene"]["sourceManifest"]),
         "renderManifest": manifest_path.relative_to(ROOT).as_posix(),
@@ -205,12 +227,22 @@ def provenance(manifest: dict, manifest_path: Path) -> dict:
         "heroExporter": manifest["scene"]["heroExporter"],
         "heroExporterSha256": sha256_file(ROOT / manifest["scene"]["heroExporter"]),
     }
+    if manifest["scene"].get("sourceMode") == "static-textured-models":
+        inputs = read_json(ROOT / manifest["scene"]["sourceManifest"])
+        result["sourceMode"] = "static-textured-models"
+        result["sourceBuilder"] = manifest["scene"]["sourceBuilder"]
+        result["sourceBuilderSha256"] = sha256_file(ROOT / result["sourceBuilder"])
+        result["sourceAssets"] = [{
+            "actorId": hero["actorId"], "path": hero["sourcePath"], "bytes": hero["sourceBytes"],
+            "sha256": verified_source_sha(ROOT / hero["sourcePath"], {"sha256": hero["sourceSha256"], "bytes": hero["sourceBytes"]}),
+        } for hero in inputs["heroes"]]
+    return result
 
 
 def render_pass(manifest: dict, manifest_path: Path, source_blend: Path, raw_output: Path, report_output: Path, label: str) -> dict:
     started = time.perf_counter()
     run_checked([
-        str(BLENDER), "--background", str(source_blend), "--python", str(ROOT / manifest["scene"]["exporter"]), "--",
+        str(BLENDER), "--background", "--factory-startup", str(source_blend), "--python-exit-code", "1", "--python", str(ROOT / manifest["scene"]["exporter"]), "--",
         "--manifest", str(manifest_path), "--repo-root", str(ROOT),
         "--raw-output", str(raw_output), "--report-output", str(report_output),
     ], label)

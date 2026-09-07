@@ -1,0 +1,59 @@
+{
+  "schema": "hmh-tripo-selector-sources-v1",
+  "heroes": [
+    {
+      "actorId": "lit-commando",
+      "displayName": "Lit Commando",
+      "sourcePath": "apps/hmh-reboot/assets/source/models/tripo-selector/lit-commando.glb",
+      "sourceSha256": "5369fa9e2bf7e00fd000b9a9297ac1447cb7d1ca3643bfad3fb5af3c35569bf7",
+      "sourceBytes": 17428260,
+      "sourceDownload": "military action figure 3d model.glb",
+      "imageCount": 3,
+      "rigged": false,
+      "gameplayIntegrated": false
+    },
+    {
+      "actorId": "lit-valkyrie",
+      "displayName": "Lit Valkyrie",
+      "sourcePath": "apps/hmh-reboot/assets/source/models/tripo-selector/lit-valkyrie.glb",
+      "sourceSha256": "530f34ab9e5e2293fa37262c45b8799e6badc33c077e3e412c742bf7816db4c6",
+      "sourceBytes": 17156988,
+      "sourceDownload": "female warrior 3d model.glb",
+      "imageCount": 3,
+      "rigged": false,
+      "gameplayIntegrated": false
+    },
+    {
+      "actorId": "lester-original",
+      "displayName": "Lester",
+      "sourcePath": "apps/hmh-reboot/assets/source/models/tripo-selector/lester-original.glb",
+      "sourceSha256": "6f5bf734b3141de93bf70a6342ca236d0a9874c11532a2a036dd51b72d757a91",
+      "sourceBytes": 16138564,
+      "sourceDownload": "military mascot 3d model.glb",
+      "imageCount": 3,
+      "rigged": false,
+      "gameplayIntegrated": false
+    },
+    {
+      "actorId": "lilly",
+      "displayName": "Lilly",
+      "sourcePath": "apps/hmh-reboot/assets/source/models/tripo-selector/lilly.glb",
+      "sourceSha256": "8adc310a72d69fe8275ca52d2d592ba369c5e35361f81b08cc43f97a00682882",
+      "sourceBytes": 16243508,
+      "sourceDownload": "fantasy character 3d model.glb",
+      "imageCount": 3,
+      "rigged": false,
+      "gameplayIntegrated": false
+    }
+  ],
+  "directionAngles": {
+    "south": 45,
+    "south-east": 90,
+    "east": 135,
+    "north-east": 180,
+    "north": 225,
+    "north-west": 270,
+    "west": 315,
+    "south-west": 0
+  }
+}

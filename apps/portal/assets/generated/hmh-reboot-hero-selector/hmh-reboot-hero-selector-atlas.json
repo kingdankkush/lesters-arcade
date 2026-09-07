@@ -22,8 +22,8 @@
     "lit-commando": {
       "actorId": "lit-commando",
       "image": "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png",
-      "imageBytes": 392396,
-      "imageSha256": "bcaccd72898ffe4e37ff8cc00795153774aee39ab91ba0270f40b6553c883f05",
+      "imageBytes": 408217,
+      "imageSha256": "fa1433d175e08ce88140d002bbb31133489087d7707fb812e9d16a1998b205df",
       "atlasSize": {
         "width": 1536,
         "height": 768
@@ -43,8 +43,8 @@
     "lit-valkyrie": {
       "actorId": "lit-valkyrie",
       "image": "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png",
-      "imageBytes": 394958,
-      "imageSha256": "08bc9415bc4ceb0eb04bc11f77127165f0ae52bf9745d5548d8ac2d2d1c4ebc2",
+      "imageBytes": 386447,
+      "imageSha256": "dd820f2b6807270e277bfd9596d2bd39f877c7b81dbcf28498982fe04f15a4a3",
       "atlasSize": {
         "width": 1536,
         "height": 768
@@ -64,8 +64,8 @@
     "lester": {
       "actorId": "lester-original",
       "image": "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png",
-      "imageBytes": 415838,
-      "imageSha256": "e30d771661a48c1a77ca0b8402ee54d091689e362afcf42c8fa6cf6cfd07f0e3",
+      "imageBytes": 433072,
+      "imageSha256": "4f7c0a2d64d27ef175a345d42f26a830dbbb05ecfb1be46e862d5aff74196547",
       "atlasSize": {
         "width": 1536,
         "height": 768
@@ -85,8 +85,8 @@
     "lilly": {
       "actorId": "lilly",
       "image": "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png",
-      "imageBytes": 398477,
-      "imageSha256": "db72b4dccdee29f76999a84726035289e0c4fa14d1e894ef9335af9d61c21839",
+      "imageBytes": 410890,
+      "imageSha256": "57b6402aeea3c2d2fbb78410ed31a542049368d062c3b1b2e865c19e50e239fb",
       "atlasSize": {
         "width": 1536,
         "height": 768
@@ -126,8 +126,8 @@
     ]
   },
   "groundContact": {
-    "contract": "rig-origin-projection",
-    "note": "The turntable pivot is the rig origin seen through the committed camera, recorded per frame by the exporter. The hero manifest's authored ground-contact pixel (80,146 at 160 px) is a gameplay anchor and is not reused here.",
+    "contract": "source-root-projection",
+    "note": "The static model root is projected through the committed camera and recorded per frame. These sources have no gameplay rig; gameplay anchors are unchanged.",
     "pivotTolerancePx": 0.5,
     "footLineEnvelopePx": {
       "minBelowPivot": 8,
@@ -135,22 +135,8 @@
     }
   },
   "pose": {
-    "shadow": {
-      "state": "idle",
-      "frameIndex": 0
-    },
-    "lower-body": {
-      "state": "idle",
-      "frameIndex": 0
-    },
-    "torso-head": {
-      "state": "aim",
-      "frameIndex": 0
-    },
-    "weapon": {
-      "state": "aim",
-      "frameIndex": 0
-    }
+    "mode": "source-rest-pose",
+    "rigged": false
   },
   "frames": [
     {
@@ -163,15 +149,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 22364,
+      "opaquePixels": 18798,
       "alphaBounds": {
-        "x": 132,
-        "y": 59,
-        "w": 153,
-        "h": 292
+        "x": 148,
+        "y": 63,
+        "w": 88,
+        "h": 290
       },
-      "footLineY": 351,
-      "pixelSha256": "0de1b22ab91781c38ea5ff866784a972b68e10b9fe2a4b395bbfb800a525610d"
+      "footLineY": 353,
+      "pixelSha256": "824b8a4874560fece14395493c672e4b679f27f54183af20ac70ac105d9ca982"
     },
     {
       "portalHeroId": "lit-commando",
@@ -183,15 +169,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26809,
+      "opaquePixels": 20814,
       "alphaBounds": {
         "x": 128,
         "y": 62,
-        "w": 136,
+        "w": 128,
         "h": 281
       },
       "footLineY": 343,
-      "pixelSha256": "de6ac149baeeb004ee52210f627d926038902a2fe9cbe476c7544675ea7a0188"
+      "pixelSha256": "a79be1869fcb56cbdd5f8b619f26165a10510b623578a4a91f405cee6835d0da"
     },
     {
       "portalHeroId": "lit-commando",
@@ -203,15 +189,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26914,
+      "opaquePixels": 24931,
       "alphaBounds": {
         "x": 113,
-        "y": 64,
+        "y": 58,
         "w": 158,
-        "h": 268
+        "h": 273
       },
-      "footLineY": 332,
-      "pixelSha256": "f9c4c23a453abf122cd60c2c835b5f0755be9fa5d0f19f8d47cb444a70514616"
+      "footLineY": 331,
+      "pixelSha256": "4e9a534cf29bff462406d8a462b50697e803d03f7ebf0a14474e4e582ddd54b9"
     },
     {
       "portalHeroId": "lit-commando",
@@ -223,15 +209,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26177,
+      "opaquePixels": 24324,
       "alphaBounds": {
-        "x": 121,
-        "y": 62,
-        "w": 135,
-        "h": 281
+        "x": 119,
+        "y": 60,
+        "w": 137,
+        "h": 283
       },
       "footLineY": 343,
-      "pixelSha256": "fcfac101b32e0b31e1938b5bb540e78d7f8f64fe21f49d6d41d627312ce4940b"
+      "pixelSha256": "fcb99d509715cfd0772eeee25ed6777f894e8b9f6444c86ea6297bb846b2b74e"
     },
     {
       "portalHeroId": "lit-commando",
@@ -243,15 +229,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 22494,
+      "opaquePixels": 18881,
       "alphaBounds": {
-        "x": 99,
-        "y": 59,
-        "w": 153,
-        "h": 292
+        "x": 148,
+        "y": 60,
+        "w": 88,
+        "h": 293
       },
-      "footLineY": 351,
-      "pixelSha256": "817eb417428b899e7d9388e249c572a4ac9d8c81ed881830303b3ee39fe54a77"
+      "footLineY": 353,
+      "pixelSha256": "58f7ba5775b7cdf1e751212843cc985bf1475dfe6b425da3df0c9116b02538a4"
     },
     {
       "portalHeroId": "lit-commando",
@@ -263,15 +249,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26460,
+      "opaquePixels": 21568,
       "alphaBounds": {
-        "x": 120,
-        "y": 61,
-        "w": 136,
-        "h": 282
+        "x": 128,
+        "y": 62,
+        "w": 128,
+        "h": 283
       },
-      "footLineY": 343,
-      "pixelSha256": "225aa88c4b0b04b40164b029cf2bad64df69d3267e57dc890157449c2f6de30e"
+      "footLineY": 345,
+      "pixelSha256": "998cb82065e5941dc395faad3b9607fe5e1a648fc8d7565f62e6e54a1223e1f6"
     },
     {
       "portalHeroId": "lit-commando",
@@ -283,15 +269,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 27273,
+      "opaquePixels": 25831,
       "alphaBounds": {
         "x": 113,
         "y": 62,
         "w": 158,
-        "h": 271
+        "h": 269
       },
-      "footLineY": 333,
-      "pixelSha256": "efcc17ef35c6a0c71b0fa19954f4fef31e1bfc50175199668c3402671be200ab"
+      "footLineY": 331,
+      "pixelSha256": "cad16efc869fadbbc2de9fe37fdd31f9d4254be423a969078d82f07f55b6e329"
     },
     {
       "portalHeroId": "lit-commando",
@@ -303,55 +289,55 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26032,
-      "alphaBounds": {
-        "x": 127,
-        "y": 61,
-        "w": 137,
-        "h": 282
-      },
-      "footLineY": 343,
-      "pixelSha256": "13dd08c343597263a702256425c7b63f3c20e7f76f6eac7c1019429d6c67c753"
-    },
-    {
-      "portalHeroId": "lit-valkyrie",
-      "actorId": "lit-valkyrie",
-      "direction": "east",
-      "frame": {
-        "x": 0,
-        "y": 0,
-        "w": 384,
-        "h": 384
-      },
-      "opaquePixels": 22993,
-      "alphaBounds": {
-        "x": 141,
-        "y": 65,
-        "w": 143,
-        "h": 286
-      },
-      "footLineY": 351,
-      "pixelSha256": "69a14aec0568c1e1784a0c7eb4d81f20fac015eb9697f5d54af2d3f0285f2b3a"
-    },
-    {
-      "portalHeroId": "lit-valkyrie",
-      "actorId": "lit-valkyrie",
-      "direction": "north-east",
-      "frame": {
-        "x": 384,
-        "y": 0,
-        "w": 384,
-        "h": 384
-      },
-      "opaquePixels": 25035,
+      "opaquePixels": 24785,
       "alphaBounds": {
         "x": 128,
         "y": 63,
-        "w": 135,
+        "w": 137,
         "h": 280
       },
       "footLineY": 343,
-      "pixelSha256": "e5ec739da41463a619df1840bd9cf6cf4c62299724a8330e5673ea934890bdb9"
+      "pixelSha256": "c393d090eb2c3a24cdc17a1e11adeae0ec1763007e7be54bdb44ec14ea8d4fbe"
+    },
+    {
+      "portalHeroId": "lit-valkyrie",
+      "actorId": "lit-valkyrie",
+      "direction": "east",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 384
+      },
+      "opaquePixels": 16882,
+      "alphaBounds": {
+        "x": 150,
+        "y": 64,
+        "w": 84,
+        "h": 289
+      },
+      "footLineY": 353,
+      "pixelSha256": "22891a1602a47e86f5f131e1e3a10f759fc6c3042dc7af739839065da4b33345"
+    },
+    {
+      "portalHeroId": "lit-valkyrie",
+      "actorId": "lit-valkyrie",
+      "direction": "north-east",
+      "frame": {
+        "x": 384,
+        "y": 0,
+        "w": 384,
+        "h": 384
+      },
+      "opaquePixels": 21739,
+      "alphaBounds": {
+        "x": 128,
+        "y": 60,
+        "w": 128,
+        "h": 283
+      },
+      "footLineY": 343,
+      "pixelSha256": "91306809171d62130275cb02ee044aa96007b6aa68eb7b4b0dd412d7d4827a0b"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -363,15 +349,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25235,
+      "opaquePixels": 23516,
       "alphaBounds": {
         "x": 113,
-        "y": 64,
+        "y": 56,
         "w": 158,
-        "h": 268
+        "h": 275
       },
-      "footLineY": 332,
-      "pixelSha256": "edbc4fa70a46006da222afc53275145c4e0884c1867b9a7d24d3b746ca4c203e"
+      "footLineY": 331,
+      "pixelSha256": "c83de07980cf0fc2a0464f1de6e89b917945506b94cce01103be612af976a8d9"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -383,15 +369,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25719,
+      "opaquePixels": 20888,
       "alphaBounds": {
-        "x": 121,
-        "y": 62,
-        "w": 135,
-        "h": 281
+        "x": 128,
+        "y": 58,
+        "w": 128,
+        "h": 285
       },
       "footLineY": 343,
-      "pixelSha256": "06c1b579d14d15c5546aaa5bc7900cc1ed45128ad5273b3ad06e6725781d5982"
+      "pixelSha256": "f228206398ce44c02773d14270ca67549713792e1cc04315e1bd8b2e2a21aa20"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -403,15 +389,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 23266,
+      "opaquePixels": 17574,
       "alphaBounds": {
-        "x": 100,
-        "y": 62,
-        "w": 143,
-        "h": 289
+        "x": 150,
+        "y": 60,
+        "w": 84,
+        "h": 293
       },
-      "footLineY": 351,
-      "pixelSha256": "b1630aefd0cf2576bfc02a670b3506852ff06fda87d1738a80e71f59c3e63497"
+      "footLineY": 353,
+      "pixelSha256": "da6a12e25dc377a809e23d737648f44d17218a4aebe84bfa3997751a5da7ab3d"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -423,15 +409,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 24959,
+      "opaquePixels": 22434,
       "alphaBounds": {
-        "x": 121,
-        "y": 54,
-        "w": 135,
-        "h": 289
+        "x": 128,
+        "y": 61,
+        "w": 128,
+        "h": 282
       },
       "footLineY": 343,
-      "pixelSha256": "0ec3fa3203bcd251bfad9baf14ee77e58fe7df03fa4e6e60bb9827f8853219c4"
+      "pixelSha256": "ef8452eabd2bedf2664b19c33e898d7c943de2cc319679a3c779f50fec16c366"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -443,15 +429,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25901,
+      "opaquePixels": 23452,
       "alphaBounds": {
         "x": 113,
-        "y": 55,
+        "y": 62,
         "w": 158,
-        "h": 277
+        "h": 269
       },
-      "footLineY": 332,
-      "pixelSha256": "7ea07d9e3532b5a805e44e1e4eee95a981289a35cfcb65080ea019f0530508e3"
+      "footLineY": 331,
+      "pixelSha256": "8beac9f89f36403c5c77c0d198f7beda9f137b1fe03088a44b1189a9a7827b75"
     },
     {
       "portalHeroId": "lit-valkyrie",
@@ -463,15 +449,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26134,
+      "opaquePixels": 21626,
       "alphaBounds": {
-        "x": 127,
-        "y": 64,
-        "w": 136,
-        "h": 279
+        "x": 128,
+        "y": 63,
+        "w": 128,
+        "h": 280
       },
       "footLineY": 343,
-      "pixelSha256": "9bd42243e6f71fe0e839879c3263cb8d8a4c4649c6a03fc084e2c8c383322da2"
+      "pixelSha256": "138e51036558c12c686b6203339d1b709c4d2d1e83a95611afe18386be0457ac"
     },
     {
       "portalHeroId": "lester",
@@ -483,15 +469,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 23189,
+      "opaquePixels": 19667,
       "alphaBounds": {
-        "x": 137,
-        "y": 57,
-        "w": 147,
-        "h": 294
+        "x": 147,
+        "y": 60,
+        "w": 90,
+        "h": 293
       },
-      "footLineY": 351,
-      "pixelSha256": "4bdb695a6d36587fb54448c54597eb19916ccde1fab804853c6ee17e021d36cf"
+      "footLineY": 353,
+      "pixelSha256": "d6c9f41a8e6b939fdb4e9cd86fe4f8653661ff24d2d2aee9e766f340310ddfde"
     },
     {
       "portalHeroId": "lester",
@@ -503,15 +489,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 27565,
+      "opaquePixels": 25670,
       "alphaBounds": {
-        "x": 125,
+        "x": 128,
         "y": 59,
         "w": 138,
         "h": 284
       },
       "footLineY": 343,
-      "pixelSha256": "ced56db407b9f8746944fa58be2c8198df586dae658ff9e813a66356e0805021"
+      "pixelSha256": "22207c6336f1268973346bc1646e276ed7aea1e345e6beb99dcf9aec5d5cc03f"
     },
     {
       "portalHeroId": "lester",
@@ -523,15 +509,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 28581,
+      "opaquePixels": 27290,
       "alphaBounds": {
         "x": 113,
-        "y": 56,
+        "y": 58,
         "w": 158,
-        "h": 276
+        "h": 273
       },
-      "footLineY": 332,
-      "pixelSha256": "17fc64a1c5072470a11f7d980c2effc4469a5f570ba4105b742617afce395230"
+      "footLineY": 331,
+      "pixelSha256": "17372d1268882849b7308ef4079fe677302c1f52642e242375dd75380af5bb34"
     },
     {
       "portalHeroId": "lester",
@@ -543,15 +529,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 27585,
+      "opaquePixels": 23969,
       "alphaBounds": {
-        "x": 121,
-        "y": 57,
-        "w": 141,
-        "h": 286
+        "x": 128,
+        "y": 58,
+        "w": 136,
+        "h": 285
       },
       "footLineY": 343,
-      "pixelSha256": "2e7bcf134c84becfc88492492589f197b631219a8f5c9bf197661fc999418ffa"
+      "pixelSha256": "bca7fae0e43e1bbe5b2ea8c1557d065da425dd829de90bd437a472347ba435ec"
     },
     {
       "portalHeroId": "lester",
@@ -563,15 +549,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 23752,
+      "opaquePixels": 19665,
       "alphaBounds": {
-        "x": 100,
-        "y": 57,
-        "w": 147,
+        "x": 147,
+        "y": 59,
+        "w": 90,
         "h": 294
       },
-      "footLineY": 351,
-      "pixelSha256": "2bb98fc4824471af0af7fab7254c2e2e72abacb2a0603b929a6f48e43c227a16"
+      "footLineY": 353,
+      "pixelSha256": "372ee98fbf9f9afdb005399c8ebc5bedd3a664077c6e2448ad13d7c1db0359e1"
     },
     {
       "portalHeroId": "lester",
@@ -583,15 +569,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 27546,
+      "opaquePixels": 26698,
       "alphaBounds": {
-        "x": 121,
-        "y": 55,
+        "x": 118,
+        "y": 60,
         "w": 138,
-        "h": 288
+        "h": 283
       },
       "footLineY": 343,
-      "pixelSha256": "b2268bc002b7f68f5fd92cfa06bb3800c404ffec8253d893b6a182b303d1372f"
+      "pixelSha256": "e2b3e13f85e17d4d7cd5a08be1dee83a32ce4942ba5eb6e70c852beba03812df"
     },
     {
       "portalHeroId": "lester",
@@ -603,15 +589,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 28827,
+      "opaquePixels": 28224,
       "alphaBounds": {
         "x": 113,
-        "y": 55,
+        "y": 61,
         "w": 158,
-        "h": 278
+        "h": 270
       },
-      "footLineY": 333,
-      "pixelSha256": "d932ecd87a50aa4bae206f0710e4ad01e02c85e3092d8c0dda8f62dc41c7a14f"
+      "footLineY": 331,
+      "pixelSha256": "b358ffae80d71cc7e5cbe961f4b62ac582988e79fe43ad1aca8e88f927103165"
     },
     {
       "portalHeroId": "lester",
@@ -623,15 +609,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 27888,
+      "opaquePixels": 24835,
       "alphaBounds": {
-        "x": 122,
-        "y": 55,
-        "w": 141,
-        "h": 288
+        "x": 120,
+        "y": 61,
+        "w": 136,
+        "h": 285
       },
-      "footLineY": 343,
-      "pixelSha256": "12ae57c3a417eb9e2a836db1b588afaf0db5dc3da4be4d6d37fabb015d517321"
+      "footLineY": 346,
+      "pixelSha256": "8c5a82f7dd818b0adbad52f96cf82e4edf0380f7cf26089f077b163c28838183"
     },
     {
       "portalHeroId": "lilly",
@@ -643,15 +629,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 21923,
+      "opaquePixels": 19780,
       "alphaBounds": {
-        "x": 146,
-        "y": 61,
-        "w": 139,
-        "h": 290
+        "x": 140,
+        "y": 64,
+        "w": 104,
+        "h": 289
       },
-      "footLineY": 351,
-      "pixelSha256": "c11ce7e096e1759a317ab35c3d068d21bea5f8c0c50efe1246f429d8e55cd68b"
+      "footLineY": 353,
+      "pixelSha256": "0a48d91447716fc17a839c0445d4fb7c989f62bffe387972769c0dacf783cacb"
     },
     {
       "portalHeroId": "lilly",
@@ -663,15 +649,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25444,
+      "opaquePixels": 23572,
       "alphaBounds": {
         "x": 128,
-        "y": 65,
-        "w": 135,
-        "h": 278
+        "y": 61,
+        "w": 128,
+        "h": 282
       },
       "footLineY": 343,
-      "pixelSha256": "555083fbe2935073b1d69fdecc57a25642181c2294adb296042ed550e407db98"
+      "pixelSha256": "c649447f5ad77e79f471c28f9cb9b1257e50ba32a39b871007364255d9a3f4ce"
     },
     {
       "portalHeroId": "lilly",
@@ -683,15 +669,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25953,
+      "opaquePixels": 29554,
       "alphaBounds": {
         "x": 113,
-        "y": 72,
+        "y": 56,
         "w": 158,
-        "h": 260
+        "h": 275
       },
-      "footLineY": 332,
-      "pixelSha256": "00151d080393a86ea55e720aef49dfc9ec6499414dd4778a5538fe85d20d37cf"
+      "footLineY": 331,
+      "pixelSha256": "be6d283bc6f1610543d14fbb12ac1ca6eda2dd4e3ef02eff46191a42c839ca80"
     },
     {
       "portalHeroId": "lilly",
@@ -703,15 +689,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25331,
+      "opaquePixels": 27689,
       "alphaBounds": {
-        "x": 121,
-        "y": 65,
-        "w": 135,
-        "h": 278
+        "x": 119,
+        "y": 57,
+        "w": 142,
+        "h": 286
       },
       "footLineY": 343,
-      "pixelSha256": "cf6767e547b9f8184cfe6e01bbbe27acf187d9fc3827f472f9333feea063df5f"
+      "pixelSha256": "31c8daf6cfca8642738c630fad314c3a01ba697d1eb57f286f52ff65b3e378bf"
     },
     {
       "portalHeroId": "lilly",
@@ -723,15 +709,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 22104,
+      "opaquePixels": 20029,
       "alphaBounds": {
-        "x": 99,
+        "x": 140,
         "y": 61,
-        "w": 139,
-        "h": 290
+        "w": 104,
+        "h": 292
       },
-      "footLineY": 351,
-      "pixelSha256": "bd4f62d7647b68f0eb6525cd4dd801b519d8c8c85a79b48e92d366af2fc08bed"
+      "footLineY": 353,
+      "pixelSha256": "cb4928c797d1c2a2f49f7187f1610bcb88796ec7e56b975d57e5a29dab58faad"
     },
     {
       "portalHeroId": "lilly",
@@ -743,15 +729,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26083,
+      "opaquePixels": 22651,
       "alphaBounds": {
-        "x": 121,
-        "y": 60,
-        "w": 135,
-        "h": 283
+        "x": 128,
+        "y": 63,
+        "w": 128,
+        "h": 282
       },
-      "footLineY": 343,
-      "pixelSha256": "20232996887568bdab9562e1a9783d66f0fac1453e1d33c7111ec0b312668daa"
+      "footLineY": 345,
+      "pixelSha256": "c9a1091b382c3abaaf583328bdd599172869ca40c5cfef51c1e1efb0269c84f4"
     },
     {
       "portalHeroId": "lilly",
@@ -763,15 +749,15 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 26843,
+      "opaquePixels": 27169,
       "alphaBounds": {
         "x": 113,
-        "y": 64,
+        "y": 66,
         "w": 158,
-        "h": 269
+        "h": 267
       },
       "footLineY": 333,
-      "pixelSha256": "de59adf6dbcd6a842732ed78b72a2f54e43ded26ad9688f6f7eb3af5e4802832"
+      "pixelSha256": "746b2f9403b325fd4d58ed057ee56c4636f93bb1b0ec4d87c795e8222ec17677"
     },
     {
       "portalHeroId": "lilly",
@@ -783,28 +769,57 @@
         "w": 384,
         "h": 384
       },
-      "opaquePixels": 25817,
+      "opaquePixels": 25047,
       "alphaBounds": {
-        "x": 127,
-        "y": 60,
-        "w": 136,
-        "h": 283
+        "x": 123,
+        "y": 65,
+        "w": 142,
+        "h": 278
       },
       "footLineY": 343,
-      "pixelSha256": "a54346add0ceb51df0583c56709591e236bb23354efa6594e57719e84a41d108"
+      "pixelSha256": "abb2fcfb671a46181ee1680a588352d77a6a3d0ca6cee171b5fcb415f1da1188"
     }
   ],
   "sources": {
-    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.blend",
-    "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
-    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
-    "sourceManifestSha256": "7a8f19d8c3c0484ebc8ad451e249bc1616e85efa4e7d688a29a90f5a37b26ba5",
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend",
+    "sourceBlendSha256": "319f912505cad6ba254634a3e8490d3108b753db9a1d80c920e68d2b53599b61",
+    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector-sources.json",
+    "sourceManifestSha256": "4b2e76fe690c7ae8a668eb45a3f5431ec955459d7883010beff0404803e61a53",
     "renderManifest": "apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json",
-    "renderManifestSha256": "8dbcc1d14ba82ff80307d7d280677d7ec27518c04fa9a959de40c2bd925554af",
+    "renderManifestSha256": "6b8474eab20b6f27df7ad2c8b573a11540b822c6b0843128f9ca8e2856374881",
     "exporter": "scripts/hmh-blender/export-hmh-hero-selector.py",
-    "exporterSha256": "7740daa3bf2f6eeb6d85bc0dd3233836c91a5214d41ad84f1bfe5c18cad707fd",
+    "exporterSha256": "01d78d6d5e92f600676effb4aae23baa0f9c6feacd37192f870e53b982a283a4",
     "heroExporter": "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
-    "heroExporterSha256": "cdc381db23234160f0090b6665e75f60b980f44e47aeaa5408f0d981889962d7"
+    "heroExporterSha256": "cdc381db23234160f0090b6665e75f60b980f44e47aeaa5408f0d981889962d7",
+    "sourceMode": "static-textured-models",
+    "sourceBuilder": "scripts/hmh-blender/create-hmh-tripo-selector-scene.py",
+    "sourceBuilderSha256": "815c7ada0f71c15d8ac931e5c0b098ba9c63932996ce4ff0a4d873c9bfbfff26",
+    "sourceAssets": [
+      {
+        "actorId": "lit-commando",
+        "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lit-commando.glb",
+        "bytes": 17428260,
+        "sha256": "5369fa9e2bf7e00fd000b9a9297ac1447cb7d1ca3643bfad3fb5af3c35569bf7"
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lit-valkyrie.glb",
+        "bytes": 17156988,
+        "sha256": "530f34ab9e5e2293fa37262c45b8799e6badc33c077e3e412c742bf7816db4c6"
+      },
+      {
+        "actorId": "lester-original",
+        "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lester-original.glb",
+        "bytes": 16138564,
+        "sha256": "6f5bf734b3141de93bf70a6342ca236d0a9874c11532a2a036dd51b72d757a91"
+      },
+      {
+        "actorId": "lilly",
+        "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lilly.glb",
+        "bytes": 16243508,
+        "sha256": "8adc310a72d69fe8275ca52d2d592ba369c5e35361f81b08cc43f97a00682882"
+      }
+    ]
   },
   "metrics": {
     "status": "pass",
@@ -824,19 +839,19 @@
       "worstFrameId": null
     },
     "perAtlasBytes": {
-      "lit-commando": 392396,
-      "lit-valkyrie": 394958,
-      "lester": 415838,
-      "lilly": 398477
+      "lit-commando": 408217,
+      "lit-valkyrie": 386447,
+      "lester": 433072,
+      "lilly": 410890
     },
-    "totalImageBytes": 1601669,
+    "totalImageBytes": 1638626,
     "maxBytesPerAtlas": 524288,
     "maxTotalBytes": 2097152,
     "footLineSpreadPx": {
-      "lit-commando": 19,
-      "lit-valkyrie": 19,
-      "lester": 19,
-      "lilly": 19
+      "lit-commando": 22,
+      "lit-valkyrie": 22,
+      "lester": 22,
+      "lilly": 22
     }
   }
 }

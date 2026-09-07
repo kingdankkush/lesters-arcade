@@ -4,15 +4,21 @@
   "classification": "production-art",
   "runtimeAuthority": "projection-only",
   "gameplayAuthority": "none",
-  "purpose": "Character-select turntables rendered from the committed hero scene at selector resolution. Portal-only art; the 160 px gameplay atlases are not inputs and are never rewritten by this pipeline.",
+  "purpose": "Character-select turntables from the owner-generated textured Tripo heroes. Static source poses only; gameplay rigs and atlases remain unchanged.",
   "scene": {
-    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.blend",
-    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend",
+    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector-sources.json",
     "heroExporter": "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
     "exporter": "scripts/hmh-blender/export-hmh-hero-selector.py",
     "runner": "scripts/run-hmh-hero-selector-render.py",
     "blenderVersion": "5.1.2",
-    "readOnly": true
+    "readOnly": true,
+    "sourceMode": "static-textured-models",
+    "sourceBlendFingerprint": {
+      "sha256": "319f912505cad6ba254634a3e8490d3108b753db9a1d80c920e68d2b53599b61",
+      "bytes": 83367740
+    },
+    "sourceBuilder": "scripts/hmh-blender/create-hmh-tripo-selector-scene.py"
   },
   "render": {
     "engine": "BLENDER_EEVEE",
@@ -29,22 +35,8 @@
     "compression": 20
   },
   "pose": {
-    "shadow": {
-      "state": "idle",
-      "frameIndex": 0
-    },
-    "lower-body": {
-      "state": "idle",
-      "frameIndex": 0
-    },
-    "torso-head": {
-      "state": "aim",
-      "frameIndex": 0
-    },
-    "weapon": {
-      "state": "aim",
-      "frameIndex": 0
-    }
+    "mode": "source-rest-pose",
+    "rigged": false
   },
   "directions": [
     "east",
@@ -96,8 +88,8 @@
     "maxTotalBytes": 2097152
   },
   "groundContact": {
-    "contract": "rig-origin-projection",
-    "note": "The turntable pivot is the rig origin seen through the committed camera, recorded per frame by the exporter. The hero manifest's authored ground-contact pixel (80,146 at 160 px) is a gameplay anchor and is not reused here.",
+    "contract": "source-root-projection",
+    "note": "The static model root is projected through the committed camera and recorded per frame. These sources have no gameplay rig; gameplay anchors are unchanged.",
     "pivotTolerancePx": 0.5,
     "footLineEnvelopePx": {
       "minBelowPivot": 8,

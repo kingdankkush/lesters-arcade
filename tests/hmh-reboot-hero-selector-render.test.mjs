@@ -37,7 +37,7 @@ function portalPath(url) {
   return join(PORTAL_ROOT, url.replace(/^\//u, ''));
 }
 
-test('selector render manifest inherits the hero scene read-only at 384 px with the hero reproducibility budget', () => {
+test('selector render manifest uses static textured sources read-only at 384 px with the hero reproducibility budget', () => {
   assert.ok(existsSync(RENDER_MANIFEST), 'missing hmh-hero-selector-render.json');
   const manifest = readJson(RENDER_MANIFEST);
   const heroManifest = readJson(HERO_MANIFEST);
@@ -46,8 +46,9 @@ test('selector render manifest inherits the hero scene read-only at 384 px with 
   assert.equal(manifest.classification, 'production-art');
   assert.equal(manifest.runtimeAuthority, 'projection-only');
   assert.equal(manifest.gameplayAuthority, 'none');
-  assert.equal(manifest.scene.sourceBlend, heroManifest.scene.sourceBlend);
-  assert.equal(manifest.scene.sourceManifest, 'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json');
+  assert.equal(manifest.scene.sourceMode, 'static-textured-models');
+  assert.equal(manifest.scene.sourceBlend, 'apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend');
+  assert.equal(manifest.scene.sourceManifest, 'apps/hmh-reboot/assets/source/blender/hmh-tripo-selector-sources.json');
   assert.equal(manifest.scene.heroExporter, heroManifest.scene.exporter);
   assert.equal(manifest.scene.exporter, 'scripts/hmh-blender/export-hmh-hero-selector.py');
   assert.equal(manifest.scene.blenderVersion, '5.1.2');
@@ -68,13 +69,8 @@ test('selector render manifest inherits the hero scene read-only at 384 px with 
     assert.equal(hero.actorId, HERO_ACTORS[hero.portalHeroId]);
     assert.ok(heroManifest.pilots.some((pilot) => pilot.actorId === hero.actorId), `${hero.actorId} is not a production pilot`);
   }
-  // The v2 LAYERS contract: idle legs and shadow under an aiming torso and weapon, frame 0 of each.
-  assert.deepEqual(manifest.pose, {
-    shadow: { state: 'idle', frameIndex: 0 },
-    'lower-body': { state: 'idle', frameIndex: 0 },
-    'torso-head': { state: 'aim', frameIndex: 0 },
-    weapon: { state: 'aim', frameIndex: 0 },
-  });
+  // Static source poses do not claim gameplay rigs or combat animations.
+  assert.deepEqual(manifest.pose, { mode: 'source-rest-pose', rigged: false });
   assert.equal(manifest.frameDurationMs, 260);
   assert.equal(manifest.atlas.perHero, true);
   assert.deepEqual(manifest.atlas.grid, [4, 2]);
@@ -86,7 +82,7 @@ test('selector render manifest inherits the hero scene read-only at 384 px with 
   assert.equal(manifest.atlas.maxTotalBytes, MAX_TOTAL_BYTES);
   // Anti-jitter contract: the turntable pivot is the rig origin projected through
   // the committed camera, not a per-frame alpha-bbox recentre (the v2 defect).
-  assert.equal(manifest.groundContact.contract, 'rig-origin-projection');
+  assert.equal(manifest.groundContact.contract, 'source-root-projection');
   assert.equal(manifest.groundContact.pivotTolerancePx, 0.5);
   assert.deepEqual(manifest.groundContact.footLineEnvelopePx, { minBelowPivot: 8, maxBelowPivot: 64 });
 });
@@ -224,8 +220,10 @@ test('selector metadata records a passing two-run render with a constant foot li
   }
 
   assert.equal(metadata.sources.sourceBlend, renderManifest.scene.sourceBlend);
-  assert.equal(metadata.sources.sourceBlendSha256, sha256(readFileSync(join(ROOT, renderManifest.scene.sourceBlend))));
-  assert.equal(metadata.sources.sourceManifestSha256, sha256(readFileSync(HERO_MANIFEST)));
+  assert.equal(metadata.sources.sourceBlendSha256, renderManifest.scene.sourceBlendFingerprint.sha256);
+  assert.equal(metadata.sources.sourceManifestSha256, sha256(readFileSync(join(ROOT, renderManifest.scene.sourceManifest))));
+  const sources = readJson(join(ROOT, renderManifest.scene.sourceManifest)).heroes;
+  assert.deepEqual(metadata.sources.sourceAssets, sources.map(hero => ({ actorId: hero.actorId, path: hero.sourcePath, bytes: hero.sourceBytes, sha256: hero.sourceSha256 })));
   assert.equal(metadata.sources.renderManifestSha256, sha256(readFileSync(RENDER_MANIFEST)));
   assert.match(metadata.sources.exporterSha256, /^[0-9a-f]{64}$/u);
   assert.match(metadata.sources.heroExporterSha256, /^[0-9a-f]{64}$/u);
@@ -283,6 +281,9 @@ test('selector checker accepts a pixel-identical per-hero PNG re-encode with tru
       'scripts/hmh_pipeline_lock.py',
       'apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json',
       'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json',
+      renderManifest.scene.sourceManifest,
+      renderManifest.scene.sourceBuilder,
+      ...metadata.sources.sourceAssets.map(source => source.path),
       renderManifest.scene.sourceBlend,
       renderManifest.scene.exporter,
       renderManifest.scene.heroExporter,
@@ -343,6 +344,9 @@ test('selector checker rejects a pixel change even when provenance is patched to
       'scripts/hmh_pipeline_lock.py',
       'apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json',
       'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json',
+      renderManifest.scene.sourceManifest,
+      renderManifest.scene.sourceBuilder,
+      ...metadata.sources.sourceAssets.map(source => source.path),
       renderManifest.scene.sourceBlend,
       renderManifest.scene.exporter,
       renderManifest.scene.heroExporter,
