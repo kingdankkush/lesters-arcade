@@ -34,34 +34,52 @@ export function createStackedReplayStore(storage) {
     if (!Array.isArray(ids) || ids.length > 2 || !ids.every(validId) || new Set(ids).size !== ids.length) throw new Error('invalid replay index');
     return { raw, ids };
   };
-  const readRecord = id => {
+  const readRecordEntry = id => {
     const raw = storage.getItem(keyFor(id));
     if (typeof raw !== 'string' || raw.length > STACKED_MAX_STORED_REPLAY_CHARS + 600) throw new Error('invalid stored replay');
     const record = JSON.parse(raw);
     if (!validRecord(record) || record.sessionId !== id) throw new Error('invalid stored replay');
-    return record;
+    return { raw, record };
+  };
+  const restore = (key, raw) => {
+    try {
+      const current = storage.getItem(key);
+      if (raw === null) {
+        if (current !== null) {
+          storage.removeItem(key);
+          if (storage.getItem(key) !== null) throw new Error('rollback removal failed');
+        }
+      } else if (current !== raw) {
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw new Error('rollback write failed');
+      }
+    } catch { /* The transaction still fails closed. */ }
   };
   return Object.freeze({
     read(sessionId) {
       try {
         if (!validId(sessionId) || !readIndex().ids.includes(sessionId)) return null;
-        return Object.freeze(readRecord(sessionId));
+        return Object.freeze(readRecordEntry(sessionId).record);
       } catch { return null; }
     },
     write(value) {
       if (value && typeof value.encoded === 'string' && value.encoded.length > STACKED_MAX_STORED_REPLAY_CHARS) return { stored: false, reason: 'replay-too-large' };
       if (!validRecord(value)) return { stored: false, reason: 'invalid-replay' };
       let index;
-      let previous;
+      let previousEntries;
       let oldValue;
       let encoded;
       let ids;
+      let evictions;
+      let newKey;
       try {
         index = readIndex();
-        previous = index.ids.map(readRecord);
+        previousEntries = index.ids.map(readRecordEntry);
+        const previous = previousEntries.map(entry => entry.record);
         const record = Object.fromEntries(recordKeys.map(key => [key, value[key]]));
         encoded = JSON.stringify(record);
-        oldValue = storage.getItem(keyFor(record.sessionId));
+        newKey = keyFor(record.sessionId);
+        oldValue = storage.getItem(newKey);
         const existing = previous.find(item => item.sessionId === record.sessionId);
         if (existing && JSON.stringify(existing) !== encoded) return { stored: false, reason: 'session-conflict' };
         let best = previous[0] ?? record;
@@ -70,25 +88,41 @@ export function createStackedReplayStore(storage) {
         ids = [record.sessionId];
         const second = best.sessionId !== record.sessionId ? best.sessionId : index.ids.find(id => id !== record.sessionId);
         if (second !== undefined) ids.push(second);
+        evictions = previousEntries.filter(entry => !ids.includes(entry.record.sessionId));
+
+        // Probe rollback capability only at the confirmed-absent candidate key.
+        // This catches globally unavailable removal before writing or evicting anything.
+        if (oldValue === null) {
+          storage.removeItem(newKey);
+          if (storage.getItem(newKey) !== null) throw new Error('replay rollback unavailable');
+        }
       } catch { return { stored: false, reason: 'storage-unavailable' }; }
-      const newKey = keyFor(value.sessionId);
+
+      let evictionAttempted = false;
+      let indexWriteAttempted = false;
       try {
         storage.setItem(newKey, encoded);
         if (storage.getItem(newKey) !== encoded) throw new Error('replay write readback failed');
+
+        evictionAttempted = evictions.length > 0;
+        for (const entry of evictions) {
+          storage.removeItem(keyFor(entry.record.sessionId));
+          if (storage.getItem(keyFor(entry.record.sessionId)) !== null) throw new Error('replay eviction failed');
+        }
+
         const newIndex = JSON.stringify(ids);
+        indexWriteAttempted = true;
         storage.setItem(STACKED_REPLAY_INDEX_KEY, newIndex);
         if (storage.getItem(STACKED_REPLAY_INDEX_KEY) !== newIndex) throw new Error('index write readback failed');
+        return { stored: true };
       } catch {
-        // No old indexed key has been removed. Restore only this attempted write.
-        try { if (index.raw === null) storage.removeItem(STACKED_REPLAY_INDEX_KEY); else storage.setItem(STACKED_REPLAY_INDEX_KEY, index.raw); } catch { /* Original blobs remain intact. */ }
-        try { if (oldValue === null) storage.removeItem(newKey); else storage.setItem(newKey, oldValue); } catch { /* Cleanup cannot affect a score write. */ }
+        if (indexWriteAttempted) restore(STACKED_REPLAY_INDEX_KEY, index.raw);
+        if (evictionAttempted) {
+          for (const entry of evictions) restore(keyFor(entry.record.sessionId), entry.raw);
+        }
+        restore(newKey, oldValue);
         return { stored: false, reason: 'storage-unavailable' };
       }
-      let cleanupFailed = false;
-      for (const id of index.ids) if (!ids.includes(id)) {
-        try { storage.removeItem(keyFor(id)); } catch { cleanupFailed = true; }
-      }
-      return cleanupFailed ? { stored: true, warning: 'cleanup-failed' } : { stored: true };
     },
   });
 }

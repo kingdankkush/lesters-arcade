@@ -22,6 +22,7 @@ export const STACKED_Q16_SCALE = 65536;
 export const GRAVITY_LEVEL_CAP = 15;
 export const LOCK_LEVEL_CAP = 20;
 export const STACKED_ZONE_COUNT = 6;
+// Gravity uses direct level indexing: [min(level, GRAVITY_LEVEL_CAP)]; index 0 duplicates level 1.
 export const STACKED_GRAVITY_Q16 = freeze([1092, 1092, 1365, 1771, 2341, 3121, 4096, 5461, 7282, 9362, 13107, 16384, 21845, 32768, 65536, 131072]);
 export const STACKED_LOCK_RULES = freeze([
   { minLevel: 1, maxLevel: 10, lockDelayTicks: 30, lockResetCap: 15 },
@@ -31,6 +32,7 @@ export const STACKED_LOCK_RULES = freeze([
   { minLevel: 19, maxLevel: 19, lockDelayTicks: 15, lockResetCap: 8 },
   { minLevel: 20, maxLevel: 30, lockDelayTicks: 12, lockResetCap: 6 }
 ]);
+// Lock tables store 1-based levels at [min(level, LOCK_LEVEL_CAP) - 1].
 export const LOCK_DELAY_TICKS = freeze([30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 26, 26, 26, 22, 22, 22, 18, 18, 15, 12]);
 export const LOCK_RESET_CAP = freeze([15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 12, 12, 12, 10, 10, 8, 6]);
 export const STACKED_MAX_TICKS = 432000;

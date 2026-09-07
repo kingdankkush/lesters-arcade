@@ -57,6 +57,16 @@ export const normalizeSeed = (seed) => {
 };
 export const cellsFor = (kind, rotation, x, y) => PIECE_CELLS[kind][rotation].map(([bx, by]) => [x + bx, y + by]);
 export const collides = (board, cells) => cells.some(([x, y]) => x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_ROWS || board[y * BOARD_WIDTH + x] !== 0);
+function collidesPiece(board, kind, rotation, x, y) {
+  const points = PIECE_CELLS[kind][rotation];
+  for (let i = 0; i < points.length; i += 1) {
+    const cx = x + points[i][0];
+    const cy = y + points[i][1];
+    if (cx < 0 || cx >= BOARD_WIDTH || cy < 0 || cy >= BOARD_ROWS || board[cy * BOARD_WIDTH + cx] !== 0) return true;
+  }
+  return false;
+}
+
 
 function shuffledBag(rng) {
   const bag = ['I','J','L','O','S','T','Z'];
@@ -81,7 +91,7 @@ export function attemptRotation(board, active, targetRotation) {
   const kicks = table[`${active.rotation}>${targetRotation}`];
   for (let index=0; index<kicks.length; index+=1) {
     const [dx,dy]=kicks[index];
-    if (!collides(board, cellsFor(active.kind,targetRotation,active.x+dx,active.y+dy))) return freeze({ ...active, x:active.x+dx, y:active.y+dy, rotation:targetRotation, lastKickIndex:index });
+    if (!collidesPiece(board, active.kind, targetRotation, active.x+dx, active.y+dy)) return freeze({ ...active, x:active.x+dx, y:active.y+dy, rotation:targetRotation, lastKickIndex:index });
   }
   return null;
 }
@@ -94,7 +104,7 @@ export function detectSpin(board, active) {
     const front = active.rotation===0?[2,3]:active.rotation===1?[1,3]:active.rotation===2?[0,1]:[0,2];
     return front.filter((i)=>occupied[i]).length>=2 || active.lastKickIndex===4 ? 'full' : 'mini';
   }
-  for (const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]) if (!collides(board,cellsFor(active.kind,active.rotation,active.x+dx,active.y+dy))) return 'none';
+  for (const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]) if (!collidesPiece(board, active.kind, active.rotation, active.x+dx, active.y+dy)) return 'none';
   return 'mini';
 }
 
@@ -150,23 +160,24 @@ export function compactCompletedRows(board) {
   for (let y = 0; y < BOARD_ROWS; y += 1) {
     let full = true;
     let hasGarbage = false;
+    const start = y * BOARD_WIDTH;
     for (let x = 0; x < BOARD_WIDTH; x += 1) {
-      const value = board[y * BOARD_WIDTH + x];
-      if (value === 0) full = false;
+      const value = board[start + x];
+      if (value === 0) { full = false; break; }
       if (value === 8) hasGarbage = true;
     }
-    if (full) {
-      fullRows.push(y);
-      if (hasGarbage) garbageRowsCleared += 1;
-    }
+    if (full) { fullRows.push(y); if (hasGarbage) garbageRowsCleared += 1; }
   }
-  const fullSet = new Set(fullRows);
-  const compacted = new Uint8Array(board.length);
-  let targetY = 0;
-  for (let sourceY = 0; sourceY < BOARD_ROWS; sourceY += 1) {
-    if (fullSet.has(sourceY)) continue;
-    compacted.set(board.subarray(sourceY * BOARD_WIDTH, (sourceY + 1) * BOARD_WIDTH), targetY * BOARD_WIDTH);
-    targetY += 1;
+  const compacted = board.slice();
+  if (fullRows.length > 0) {
+    let targetY = 0;
+    let clearIndex = 0;
+    for (let sourceY = 0; sourceY < BOARD_ROWS; sourceY += 1) {
+      if (fullRows[clearIndex] === sourceY) { clearIndex += 1; continue; }
+      if (sourceY !== targetY) compacted.copyWithin(targetY * BOARD_WIDTH, sourceY * BOARD_WIDTH, (sourceY + 1) * BOARD_WIDTH);
+      targetY += 1;
+    }
+    compacted.fill(0, targetY * BOARD_WIDTH);
   }
   return Object.freeze({ board: compacted, lines: fullRows.length, fullRows: Object.freeze(fullRows), garbageRowsCleared });
 }
@@ -346,6 +357,7 @@ export function buildStackedResultTuple(state) {
 
   const maxTicks = requireTupleInteger(state, 'maxTicks', 1, STACKED_MAX_TICKS);
   if (ticks > maxTicks) throw new RangeError('maxTicks out of range');
+  if (transitionCount > ticks) throw new RangeError('transitionCount exceeds ticks');
   if (state.terminalReason === 'tick-ceiling' && ticks !== maxTicks) throw new RangeError('tick-ceiling tick mismatch');
   if (singles + 2 * doubles + 3 * triples + 4 * quadClears !== lines) throw new RangeError('clear counters do not equal lines');
   if (lines > Math.floor(pieces * 4 / 10) + garbageRowsReceived) throw new RangeError('lines exceed placed material');
@@ -464,11 +476,11 @@ function createStackedRuntimeInternal(
       lockTimer: currentLockDelay(), lockResetsUsed: 0, lowestYReached: origin.y,
     };
     activeSpawnTick = tick;
-    if (collides(board, cellsFor(kind, 0, active.x, active.y))) {
+    if (collidesPiece(board, kind, 0, active.x, active.y)) {
       terminalReason = 'block-out';
       return;
     }
-    if (!collides(board, cellsFor(kind, 0, active.x, active.y - 1))) active.y -= 1;
+    if (!collidesPiece(board, kind, 0, active.x, active.y - 1)) active.y -= 1;
     active.lowestYReached = active.y;
   };
   const spawnFromQueue = () => {
@@ -478,7 +490,7 @@ function createStackedRuntimeInternal(
     activate(kind);
   };
   spawnFromQueue();
-  const canMove = (dx, dy) => !collides(board, cellsFor(active.kind, active.rotation, active.x + dx, active.y + dy));
+  const canMove = (dx, dy) => !collidesPiece(board, active.kind, active.rotation, active.x + dx, active.y + dy);
   const establishNewLowestY = () => {
     if (active.y >= active.lowestYReached) return false;
     active.lowestYReached = active.y;

@@ -47,7 +47,7 @@ This authorizes the additional narrow S-03 correction/reverification round and p
 
 ## Approved S-04 workflow continuation — 2026-09-07
 
-The owner directed: **“Please continue with all tasks with my approval.”** This answers the explicit S-04 workflow question: command-free source proposals, parent-owned edits and real tests, with the stopped worker sandbox and global permissions unchanged. Parent owns the clean Release worktree from `aaf113c5214ee6bed3b8b3efba55ff4b9501af95`, preserving the deployed Cycle077/S-03 lineage. No denied worker operation is retried. Acceptance and public-launch/financial boundaries remain in force.
+The owner directed: **“Please continue with all tasks with my approval.”** This answers the explicit S-04 workflow question: command-free source proposals, parent-owned edits and real tests, with the stopped worker sandbox and global permissions unchanged. Parent owns the Release worktree based on `aaf113c5214ee6bed3b8b3efba55ff4b9501af95`, preserving the deployed Cycle077/S-03 lineage. No denied worker operation is retried. Acceptance and public-launch/financial boundaries remain in force.
 
 ## Standing completion direction
 
@@ -72,3 +72,19 @@ those same ticks. A lifecycle timeout is not itself a forged sixth sim terminal.
 The retention refinement replaces the plan's unbacked deletion with verified archival.
 Quota or archival failure must leave original buckets untouched and visible as a
 maintenance warning, never be interpreted as permission to discard player history.
+
+## External review reconciliation and delegated choices — 2026-09-07
+
+The owner supplied an independent review and directed continued implementation through completion followed by live publication. The review is not itself acceptance. See [the source-backed reconciliation](reviews/CLAUDE-20260907-reconciliation.md).
+
+- Preserve before repair: four separate WIP refs retain exact changed-file bytes; their remote readback is verified. They are not release candidates. All four directories are existing linked worktrees; no replacement repositories, branch resets or directory deletion are needed.
+- Canonical contracts: use Release's frozen gameplay values plus the centralized Q16 scale and existing 65,536-byte bridge limit. The latter centralize existing technical rules, not tuning. Keep JS budgets unmeasured until the integrated renderer is measured; archived candidate budgets are not authority.
+- I-piece 180 decision (master-plan question 5): keep the accepted true-pivot geometry and shared `STACKED_KICKS_180` behavior, including the I-piece. Do not add a special in-place correction. No mechanics/version change is made by this decision.
+- Match scope: retain `createStackedMatch` and its tested, injected-table seam because master-plan §4.6 expressly schedules it in S-03. Phase 1 exposes no multiplayer UI, online service or nonzero versus summary data. The attack-table module still has zero runtime importers.
+- Ownership: parent alone edits the active Release integration candidate. Historical/renderer/portal worktrees remain preserved inputs until explicit selected integration; command-free proposal/review workers never own source writes.
+- Merge strategy: retain `feature/stacked-release-live` and current production ancestry. Integrate bounded verified slices, not stale whole-copy merges; never rewrite history or land on main. Fetch/reconcile remote and exact live deployment state before final publication, retaining a verified rollback. Main-branch consolidation is not part of this release.
+- Input validation: mandatory neutral-on-stop is retained. Do not impose an invented maximum simultaneous-bit count: the frozen alphabet and its precedence rules define valid chords. Replay, not a bit-count heuristic, determines canonical results.
+
+## Input cadence discrepancy discovered during review reconciliation
+
+The current horizontal edge detector and external pulse expander cannot deliver the ARR=1 / nine-tick touch-drag timing promised by contracts §2.3. This is recorded in [input-mask clarification v1](amendments/INPUT-MASK-CLARIFICATION-v1.md), without changing simulation semantics, action order, constants, or golden bytes. G-19/S-15 input acceptance must resolve the conflict explicitly; nominal metadata is not evidence of attained cadence. Other S-04 integrity work may continue, but this note is not a passing input gate.

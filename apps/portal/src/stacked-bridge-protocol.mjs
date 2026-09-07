@@ -62,7 +62,8 @@ function resultTuple(t) {
     terminalReason: v => STACKED_TERMINAL_REASONS.includes(v),
   })) return false;
   return t.bagRefills === 2 + Math.floor(t.pieces / 7) && t.bagDraws >= t.bagRefills * 6 && t.garbageDraws >= t.garbageGroups
-    && t.transitionCount <= t.ticks + 1 && t.garbageRowsCleared <= t.garbageRowsReceived;
+    && t.holdsUsed <= t.pieces && t.perfectClears <= t.lines && t.transitionCount <= t.ticks
+    && t.garbageRowsCleared <= t.garbageRowsReceived;
 }
 function result(payload) {
   if (!fields(payload, {
