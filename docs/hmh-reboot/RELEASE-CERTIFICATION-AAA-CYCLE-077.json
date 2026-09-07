@@ -1,0 +1,445 @@
+{
+  "schemaVersion": 1,
+  "cycle": 77,
+  "status": "PRODUCTION_VERIFIED",
+  "generatedAt": "2026-09-07T01:27:44.341274+00:00",
+  "sourceCommit": "126dd58d862ae0d8c15e44c579069d1199c74fad",
+  "branch": "hermes/hmh-cycle-077-tripo-selector",
+  "staged_git_diff_sha256": "33c3b759d5f7eaa37b83abb2c0b16fcbb6c9a08a500e354fb2824e51cdad925a",
+  "focusedPatchSha256": "a0cb03ab9e5acb5d9b09a7aa0525da74883fc15bb30c7484b4b6554a4cc9ec09",
+  "scope": "Static textured pre-game four-hero turntables only; gameplay rigs, art, IDs, stats and authority unchanged.",
+  "production": {
+    "id": "dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb",
+    "url": "https://lesters-arcade-6xcz9rzfb-justin-agent-projects.vercel.app",
+    "customDomain": "https://lestersarcade.io",
+    "aliasMatches": true,
+    "readyState": "READY"
+  },
+  "preview": {
+    "passed": true,
+    "previewId": "dpl_4K5jBmEq54gmo7BbFiggcqTw5tnq",
+    "sha": "126dd58d862ae0d8c15e44c579069d1199c74fad",
+    "verifiedCount": 37,
+    "exactRawHashes": 35,
+    "hostOnlyHtmlDeltas": [
+      {
+        "path": "hmh-reboot/index.html",
+        "onlyDelta": "single host-injected Vercel Preview feedback script",
+        "injectedBytes": 163,
+        "expectedDeployment": "dpl_4K5jBmEq54gmo7BbFiggcqTw5tnq",
+        "normalizedSha256": "25be14ccdacd20559db8eaf0d9b41b5a423d45c89cf9677b4620a99dd02325d3",
+        "normalizedMatches": true
+      },
+      {
+        "path": "index.html",
+        "onlyDelta": "single host-injected Vercel Preview feedback script",
+        "injectedBytes": 163,
+        "expectedDeployment": "dpl_4K5jBmEq54gmo7BbFiggcqTw5tnq",
+        "normalizedSha256": "0db239394a66db3b903fd02863291b21b4ae862188848b24ae8bcd9dff050585",
+        "normalizedMatches": true
+      }
+    ],
+    "previewAcceptance": "35 exact stable artifact hashes plus 2 HTML bodies identical after removal of one exact host-owned163-byte script; canonical local desktop/mobile/reduced-motion flows independently passed. Public browser check still required."
+  },
+  "rollback": {
+    "id": "dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg",
+    "url": "https://lesters-arcade-rczxkd7mu-justin-agent-projects.vercel.app"
+  },
+  "review": {
+    "passed": true,
+    "fullPatchSha256": "33c3b759d5f7eaa37b83abb2c0b16fcbb6c9a08a500e354fb2824e51cdad925a",
+    "focusedPatchSha256": "a0cb03ab9e5acb5d9b09a7aa0525da74883fc15bb30c7484b4b6554a4cc9ec09",
+    "security_concerns": [],
+    "logic_errors": [],
+    "visual_blockers": [],
+    "limitations": [
+      "The expanded source worktree is 405 MB and exceeds the 350 MB repository-health budget because it contains raw LFS objects; the canonical pointer-only deployment fixture remains within the existing release boundary and passes the unchanged health, CDN, and documentation gates.",
+      "The four selector sources are unrigged static rest-pose models. They do not complete or validate gameplay skinning, required animation clips, gameplay atlases, grip/release behavior, or runtime character integration.",
+      "Rendered pixels and declared source fingerprints are reproducible, but byte-exact reconstruction of the packed Blender container is not claimed.",
+      "The visual baseline report is intentionally unaccepted because the twelve gameplay anchors are unchanged; this review does not constitute baseline acceptance.",
+      "On mobile, the narrow character silhouette displays limited texture detail and the equal-height card leaves substantial space below the action button. These are visible presentation limitations, but neither obscures controls, clips content, breaks carousel navigation, nor blocks this incremental selector-art release.",
+      "Locked desktop cards have very subdued secondary text. This is consistent with the explicitly approved locked/dimmed treatment, though a future accessibility pass should confirm contrast for unlock guidance."
+    ],
+    "summary": "Pass. The focused changes preserve hero identities, stats, gameplay rigs, deterministic authority boundaries, direction convention, grounding, lazy loading, reduced-motion behavior, asset budgets, and portal-only delivery. The source verification rejects mismatched bytes, forged LFS pointers, and malformed descriptors; no concrete security or logic defect is evident. The attached desktop and mobile screenshots show contained layouts, readable active controls, the intended single-card mobile carousel, and intentionally locked Lester/Lilly states. Remaining issues are scoped limitations rather than release blockers."
+  },
+  "reviewCompletion": "Codex emitted a complete structured final response and turn.completed. Its lingering PTY supervisor was cleaned up afterward; natural CLI exit0 is not claimed.",
+  "tests": {
+    "focusedPassed": 49,
+    "release": {
+      "tests": 2566,
+      "failed": 51,
+      "passed": 2515,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 2499,
+      "suites": 8
+    },
+    "acceptedLegacyFailures": 51,
+    "unexpectedFailures": 0
+  },
+  "cleanHost": {
+    "noGit": true,
+    "canonicalLfsPointers": true,
+    "npmCi": true,
+    "node": "24.20.0",
+    "pillow": "11.3.0",
+    "exactVercelBuildPassed": true,
+    "stableArtifactParityCount": 37,
+    "healthCdnDocsPassed": true,
+    "expandedSourceWorktreeBudget": "405MB exceeds350MB raw-worktree gate; no budget raised. Pointer-only deployment fixture passes unchanged gates."
+  },
+  "localVisualAnchorsPassed": 12,
+  "selectorMetrics": {
+    "status": "pass",
+    "renderPasses": 2,
+    "reproducibility": "pass",
+    "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+    "reproducibilityBudget": {
+      "maxChangedVisiblePixels": 8,
+      "maxChannelDelta": 2,
+      "maxTotalChannelDelta": 32
+    },
+    "reproducibilityObserved": {
+      "maxChangedVisiblePixels": 0,
+      "maxChannelDelta": 0,
+      "maxTotalChannelDelta": 0,
+      "driftedFrameCount": 0,
+      "worstFrameId": null
+    },
+    "perAtlasBytes": {
+      "lit-commando": 408217,
+      "lit-valkyrie": 386447,
+      "lester": 433072,
+      "lilly": 410890
+    },
+    "totalImageBytes": 1638626,
+    "maxBytesPerAtlas": 524288,
+    "maxTotalBytes": 2097152,
+    "footLineSpreadPx": {
+      "lit-commando": 22,
+      "lit-valkyrie": 22,
+      "lester": 22,
+      "lilly": 22
+    }
+  },
+  "publicArtifacts": {
+    "origin": "https://lestersarcade.io",
+    "sha": "126dd58d862ae0d8c15e44c579069d1199c74fad",
+    "mode": "production",
+    "count": 37,
+    "expectedCount": 37,
+    "ok": true,
+    "artifacts": [
+      {
+        "path": "assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json",
+        "bytes": 23850,
+        "sha256": "841b2c3632a7b3a4dea6f300f52e1d48e9984dac6a0235c60ebaca17da9ec72b",
+        "match": true
+      },
+      {
+        "path": "assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png",
+        "bytes": 433072,
+        "sha256": "4f7c0a2d64d27ef175a345d42f26a830dbbb05ecfb1be46e862d5aff74196547",
+        "match": true
+      },
+      {
+        "path": "assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png",
+        "bytes": 410890,
+        "sha256": "57b6402aeea3c2d2fbb78410ed31a542049368d062c3b1b2e865c19e50e239fb",
+        "match": true
+      },
+      {
+        "path": "assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png",
+        "bytes": 408217,
+        "sha256": "fa1433d175e08ce88140d002bbb31133489087d7707fb812e9d16a1998b205df",
+        "match": true
+      },
+      {
+        "path": "assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png",
+        "bytes": 386447,
+        "sha256": "dd820f2b6807270e277bfd9596d2bd39f877c7b81dbcf28498982fe04f15a4a3",
+        "match": true
+      },
+      {
+        "path": "dist/chikun/game.js",
+        "bytes": 22358,
+        "sha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-2WGYLO4P.js",
+        "bytes": 655,
+        "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-6IF7K5TT.js",
+        "bytes": 65798,
+        "sha256": "6ad920bab02335dfc035c984b721b1bba9e5cbb3243136e29bcdb69a5aea835b",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-CT2SWMC3.js",
+        "bytes": 18484,
+        "sha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-NXVOJLMP.js",
+        "bytes": 821315,
+        "sha256": "ca97a81057344d2439dfbc63a4b58010f812eb55bfb131fbc366d1fb117156b9",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-VSG3JNSZ.js",
+        "bytes": 392452,
+        "sha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-ZZIAFSA2.js",
+        "bytes": 10713,
+        "sha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/ethers.min-STJTETNS.js",
+        "bytes": 4388,
+        "sha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+        "bytes": 1929726,
+        "sha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-complete-animations-CJX6INFR.js",
+        "bytes": 49984,
+        "sha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+        "bytes": 743684,
+        "sha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+        "bytes": 3012,
+        "sha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+        "bytes": 48573,
+        "sha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+        "bytes": 50980,
+        "sha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+        "bytes": 40469,
+        "sha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+        "bytes": 2815,
+        "sha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+        "bytes": 35033,
+        "sha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-level-environment-FD3WFZKW.js",
+        "bytes": 35802,
+        "sha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+        "bytes": 4148,
+        "sha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-pixi.js",
+        "bytes": 463115,
+        "sha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+        "bytes": 111173,
+        "sha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+        "bytes": 15049,
+        "sha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+        "bytes": 4031,
+        "sha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+        "bytes": 4305,
+        "sha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/litvm-chain-client-FUJTD46P.js",
+        "bytes": 483,
+        "sha256": "a17e95e1e69a74b6f9c57512375590d7728542c6bcedffc8dace3aa183316685",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/loader-L6P76OXQ.js",
+        "bytes": 125,
+        "sha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/runtime-manifest-7IN2B6KL.js",
+        "bytes": 4238,
+        "sha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+        "match": true
+      },
+      {
+        "path": "dist/hmh-reboot/game.js",
+        "bytes": 464501,
+        "sha256": "40d7a61c0ed85d04c14b2f96c01c8ed41e707725a3f6b7e5e895a83c7ed49ec1",
+        "match": true
+      },
+      {
+        "path": "dist/main.js",
+        "bytes": 1140305,
+        "sha256": "1c992b8136c2625b7e73de4c084997dba634116d9b0f7d30623b4017f1734cb9",
+        "match": true
+      },
+      {
+        "path": "hmh-reboot/index.html",
+        "bytes": 13472,
+        "sha256": "25be14ccdacd20559db8eaf0d9b41b5a423d45c89cf9677b4620a99dd02325d3",
+        "match": true
+      },
+      {
+        "path": "index.html",
+        "bytes": 23812,
+        "sha256": "0db239394a66db3b903fd02863291b21b4ae862188848b24ae8bcd9dff050585",
+        "match": true
+      },
+      {
+        "path": "sw.js",
+        "bytes": 3710,
+        "sha256": "f9397e8075f519bb451e7aba3193e915dc10c7430235db4c81af4da3fe2ffc3e",
+        "match": true
+      }
+    ]
+  },
+  "publicSelectorProfiles": [
+    {
+      "id": "desktop",
+      "childStatus": "Portal session connected",
+      "errors": []
+    },
+    {
+      "id": "mobile-portrait",
+      "childStatus": "Portal session connected",
+      "errors": []
+    },
+    {
+      "id": "phone-landscape",
+      "childStatus": "Portal session connected",
+      "errors": []
+    },
+    {
+      "id": "reduced-motion-desktop",
+      "childStatus": "Portal session connected",
+      "errors": []
+    }
+  ],
+  "publicNetwork": {
+    "ok": true,
+    "scenarios": [
+      {
+        "scenario": "portal-clean",
+        "ok": true,
+        "summary": {
+          "responses": 49,
+          "httpErrors": 0,
+          "requestFailures": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "serviceWorkers": 1
+        },
+        "failures": []
+      },
+      {
+        "scenario": "portal-warm",
+        "ok": true,
+        "summary": {
+          "responses": 46,
+          "httpErrors": 0,
+          "requestFailures": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "serviceWorkers": 1
+        },
+        "failures": []
+      },
+      {
+        "scenario": "hmh-warm",
+        "ok": true,
+        "summary": {
+          "responses": 47,
+          "httpErrors": 0,
+          "requestFailures": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "serviceWorkers": 1
+        },
+        "failures": []
+      },
+      {
+        "scenario": "hmh-clean",
+        "ok": true,
+        "summary": {
+          "responses": 47,
+          "httpErrors": 0,
+          "requestFailures": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "serviceWorkers": 0
+        },
+        "failures": []
+      }
+    ]
+  },
+  "remaining": [
+    "all-four gameplay skinning/rigs/nine clips/256px atlases",
+    "enemy and weapon cleanup, animations and held/pickup/use integration",
+    "Cycle076 world/AI/physics visual recertification",
+    "Cycle078 local audio lifetime fix full release certification",
+    "further VFX, particles, level/world and sound-design work"
+  ],
+  "authority": "No wallet, contract, settlement or real-funds changes. SETTLEMENT_LIVE=false preserved."
+}

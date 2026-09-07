@@ -6,21 +6,21 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Certified production runtime implementation:** `d53ed420` (`hermes/hmh-cycle-075-reference-heroes`); deployed source `d70ad060`.
+**Certified production source:** `126dd58d862ae0d8c15e44c579069d1199c74fad` (`hermes/hmh-cycle-077-tripo-selector`). Cycle 077 replaces pre-game hero turntables; gameplay retains the certified Cycle 075 systems/art.
 
-**Verified runtime release deployment:** `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`
+**Verified runtime release deployment:** `dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb`
 
-**Immutable runtime release:** https://lesters-arcade-rczxkd7mu-justin-agent-projects.vercel.app
+**Immutable runtime release:** https://lesters-arcade-6xcz9rzfb-justin-agent-projects.vercel.app
 
-**Retained rollback:** `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR`
+**Retained rollback:** `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`
 
 **Production cache marker:** `lesters-arcade-v29-hmh-textured-heroes`
 
-> **Cycle 077 release candidate:** the marker above is this branch's deployment target. [Textured hero selector scope](docs/hmh-reboot/cycles/CYCLE-077.md) is locally integrated; final release gates and promotion remain pending. The verified production IDs above still describe Cycle 075, whose live marker is `lesters-arcade-v28-hmh-feedback-and-ui`, until the release handoff records the new deployment.
+> **Cycle 077 is live:** all four latest textured Tripo hero turntables, with unchanged gameplay IDs/stats and unlock rules. New gameplay rigs/animations remain unfinished. [Release scope](docs/hmh-reboot/cycles/CYCLE-077.md).
 
-> **Current release handoff:** [Cycle 075 release and continuation](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
+> **Current release handoff:** [Cycle 077 release and continuation](docs/handoffs/2026-09-06-hmh-cycle-077-hermes-handoff.md). The [Cycle 075 handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md) is historical and remains the rollback reference.
 
-> Cycle 075 production was verified by exact Preview/public artifact hashes, custom-domain deployment-ID read-back, live desktop/mobile gameplay and clean/warm portal network checks. This later documentation-only publication does not change the deployed runtime boundary.
+> Production was verified by 37 exact public artifact hashes, custom-domain deployment-ID read-back, four live desktop/mobile/reduced-motion selector-to-gameplay flows, and four clean/warm portal/game network checks. This later documentation-only publication does not change the deployed runtime boundary.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 
