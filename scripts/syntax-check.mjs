@@ -20,6 +20,8 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  "apps/hmh-reboot/src/corpse-presentation.mjs",
+  "tests/hmh-reboot-corpse-presentation.test.mjs",
   "apps/portal/src/arcade-core.mjs",
   "apps/portal/src/leaderboard-engine.mjs",
   "apps/portal/src/seeded-rng.mjs",

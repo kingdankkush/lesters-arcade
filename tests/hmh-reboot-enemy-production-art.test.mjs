@@ -97,7 +97,9 @@ test('runtime projects production enemy and boss art without mutating combat aut
   assert.match(source, /enemyMarker\.applyPose\(\{/);
   assert.match(source, /bossVisual\.applyPose\(\{/);
   assert.match(source, /queueEnemyDeathVisual\(defeatedEnemy, tick\)/);
-  assert.match(source, /endTick: tick \+ 30/);
+  assert.ok(source.includes('...createCorpseClock(tick, performance.now())'), 'bounded presentation clock is created before authority retires');
+  assert.ok(source.includes('corpsePresentation(death, simulation?.tick ?? 0, corpseNowMs)'), 'tick and real-time expiry both reach the render consumer');
+  assert.ok(source.includes('const corpseNowMs = performance.now()'));
   assert.ok(source.indexOf('queueEnemyDeathVisual(defeatedEnemy, tick)') < source.indexOf('retireEnemyFromPopulation(enemyPopulation, scoreEvent.enemyId'));
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDeathVisuals/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyEliteVisuals/);

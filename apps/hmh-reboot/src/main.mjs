@@ -1,5 +1,6 @@
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
+import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
 import { createCombatAudio } from './combat-audio.mjs';
@@ -974,14 +975,17 @@ async function boot() {
       point: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 24 },
       color: ENEMY_ARCHETYPES[enemy.archetypeId]?.visual.color ?? 0xffffff,
     });
+    pruneCorpseCapacity(enemyDeathMarkers, (oldest) => {
+      enemyDeathVisuals.removeChild(oldest.graphic);
+      oldest.graphic.destroy();
+    });
     const graphic = createRosterOrVectorDisplay(enemy.archetypeId, eliteProjection);
     enemyDeathMarkers.set(enemy.id, {
       graphic,
       x: enemy.x,
       y: enemy.y,
       groundZ: enemy.groundZ ?? 0,
-      startTick: tick,
-      endTick: tick + 30,
+      ...createCorpseClock(tick, performance.now()),
       elite: eliteProjection,
       direction: enemyVisualFacing.get(enemy.id)?.direction ?? 0,
     });
@@ -1641,8 +1645,10 @@ async function boot() {
             .stroke({ color: archetype.visual.color, width: 3, alpha, cap: 'round' });
         }
       }
+      const corpseNowMs = performance.now();
       for (const [enemyId, death] of enemyDeathMarkers) {
-        if ((simulation?.tick ?? 0) >= death.endTick) {
+        const corpse = corpsePresentation(death, simulation?.tick ?? 0, corpseNowMs);
+        if (corpse.expired) {
           enemyDeathVisuals.removeChild(death.graphic);
           death.graphic.destroy();
           enemyDeathMarkers.delete(enemyId);
@@ -1655,8 +1661,7 @@ async function boot() {
         death.graphic.position.set(deathScreen.x, deathScreen.y);
         death.graphic.scale.set((death.graphic.rosterScale ?? 1) * camera.zoom);
         // Fade the corpse out instead of hard-deleting it mid-frame.
-        const deathProgress = Math.max(0, Math.min(1, ((simulation?.tick ?? death.startTick) - death.startTick) / Math.max(1, death.endTick - death.startTick)));
-        death.graphic.alpha = 1 - deathProgress * deathProgress;
+        death.graphic.alpha = corpse.alpha;
         // The corpse and its shadow fade together.
         if (death.graphic.contactShadowFootprint) {
           contactShadowPool?.place({
@@ -1666,6 +1671,10 @@ async function boot() {
             alpha: CONTACT_SHADOW_BASE_ALPHA * death.graphic.alpha,
           });
         }
+      }
+      if (releaseTelemetryEnabled) {
+        dataset.enemyCorpseIds = [...enemyDeathMarkers.keys()].join(',');
+        dataset.enemyCorpseCount = String(enemyDeathMarkers.size);
       }
       const bossVisualTick = simulation?.tick ?? 0;
       if (bossVisualTick >= liquidatorBoss?.startTick - 600) requestEnemyRosterAtlas('the-liquidator');

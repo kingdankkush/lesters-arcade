@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createCombatAudio } from '../apps/hmh-reboot/src/combat-audio.mjs';
+import { createCombatAudio, MAX_VOICE_LIFETIME_MS } from '../apps/hmh-reboot/src/combat-audio.mjs';
 
 class FakeAudio {
   static instances = [];
@@ -130,6 +130,31 @@ test('voices whose playback is rejected by the browser do not leak the voice poo
   assert.equal(audio.status().activeVoices, 0, 'rejected playback must release its voice slot');
   const recovered = audio.play('weapon-fire', { now: 20_000, volume: 0.1 });
   assert.equal(recovered.played, true, 'combat SFX must not be permanently locked out by rejected voices');
+});
+
+test('age-reaped voices stop actual playback before their pool slots are reused', () => {
+  const audio = fresh({ maxVoices: 2 });
+  audio.play('weapon-fire', { now: 100 });
+  const expired = FakeAudio.instances[0];
+  expired.currentTime = 0.4;
+  audio.play('melee', { now: 101 + MAX_VOICE_LIFETIME_MS });
+  assert.equal(audio.status().activeVoices, 1);
+  assert.equal(expired.paused, true, 'dropping a registry entry must also stop its HTMLAudioElement');
+  assert.equal(expired.currentTime, 0);
+  assert.equal(expired.pauseCalls, 1);
+  audio.play('weapon-fire', { now: 102 + MAX_VOICE_LIFETIME_MS });
+  assert.equal(expired.pauseCalls, 1, 'retired voices must not be stopped repeatedly');
+  assert.equal(FakeAudio.instances.filter((voice) => !voice.paused && !voice.ended).length, 2);
+});
+
+test('voice lifetime boundary keeps nonexpired playback active', () => {
+  const audio = fresh({ maxVoices: 2 });
+  audio.play('weapon-fire', { now: 100 });
+  const active = FakeAudio.instances[0];
+  audio.play('melee', { now: 100 + MAX_VOICE_LIFETIME_MS });
+  assert.equal(active.paused, false);
+  assert.equal(active.pauseCalls, 0);
+  assert.equal(audio.status().activeVoices, 2);
 });
 
 test('stale voices are reaped so a never-ending sample cannot hold a slot forever', () => {

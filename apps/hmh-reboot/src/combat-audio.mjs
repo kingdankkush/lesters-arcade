@@ -90,7 +90,11 @@ export function createCombatAudio({
   const cleanup = (now = null) => {
     voices = voices.filter((voice) => {
       if (voice.audio.ended || voice.stopped) return false;
-      if (now !== null && Number.isFinite(voice.startedAt) && now - voice.startedAt > MAX_VOICE_LIFETIME_MS) return false;
+      if (now !== null && Number.isFinite(voice.startedAt) && now - voice.startedAt > MAX_VOICE_LIFETIME_MS) {
+        // Releasing a slot must also cancel delayed or never-ending playback.
+        stopVoice(voice);
+        return false;
+      }
       return true;
     });
   };

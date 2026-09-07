@@ -14,7 +14,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`
 
-**Production cache marker:** `lesters-arcade-v29-hmh-textured-heroes`
+> **Cycle 080 candidate, not yet promoted:** bounded corpse/audio lifetime cleanup is being certified on top of the live STACKED/security release. The marker below is the candidate marker; public production remains on the previous marker until exact-preview promotion and readback. Cycle 079 pacing and Tripo gameplay art are not included. [Candidate scope](docs/hmh-reboot/cycles/CYCLE-080.md).
+
+**Production cache marker:** `lesters-arcade-v31-hmh-corpse-audio`
 
 > **Cycle 077 is live:** all four latest textured Tripo hero turntables, with unchanged gameplay IDs/stats and unlock rules. New gameplay rigs/animations remain unfinished. [Release scope](docs/hmh-reboot/cycles/CYCLE-077.md).
 

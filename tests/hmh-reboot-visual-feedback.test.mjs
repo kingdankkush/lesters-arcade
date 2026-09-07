@@ -29,7 +29,7 @@ test('kills, impacts, and player damage each have a distinct visual response', a
   assert.match(source, /event\.type === 'kill'/, 'the kill event must be rendered');
   assert.match(source, /PLAYER_DAMAGE_FLASH_TICKS/, 'player damage needs a bounded screen flash');
   assert.match(source, /LOW_HEALTH_VIGNETTE_THRESHOLD/, 'low health needs a persistent vignette');
-  assert.match(source, /1 - deathProgress \* deathProgress/, 'corpses must fade rather than pop out');
+  assert.ok(source.includes('death.graphic.alpha = corpse.alpha'), 'bounded corpse fade reaches its actual display');
 });
 
 test('camera shake is wired, bounded, and honours accessibility settings', async () => {
