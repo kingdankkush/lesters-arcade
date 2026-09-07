@@ -4,10 +4,10 @@
 S-01, S-02 and **S-03** are accepted. S-03 final patch `45457a58432010e1ef622e06623ebe6612fdcdab9a2519100ed58f6aea56e640`: 141 focused tests, all eight Node gates baseline-aware, full 2693/2642/51 inherited failures and no new failure names. Independent command-free R4 + approval-test R4a closure passes. Cabinet version 0.2.0; golden result tuple unchanged. See [CYCLE-003](cycles/CYCLE-003.md), its verification receipt and historical recovery record.
 
 ## Current slice
-**S-04** is next: input recording/codec, framed evidence, reassembly, replay, isolated storage and verification worker. No S-04 acceptance yet. One implementation owner at a time in the main worktree.
+**S-04 is blocked before implementation.** The worker recorded two policy-denied metadata-read commands and reported a denied first test-file patch. Parent verified no changed source files, stopped the worker, and did not retry the denied implementation or alter permissions. Direction is needed for a policy-preserving source-only proposal approach before continuing this blocked implementation. No S-04 acceptance.
 
 ## Production integration
-Owner directed continued implementation and publication of completed work. Integrate onto actual Cycle077 production commit `69b576a5a84c9bd1214a622f20a565a928ec8ec1`, preserving Lester/Lilly and current launcher. Require reviewed exact source, Node gates, preview proof and exact live-deployment/asset readback. No publication is claimed yet.
+**Completed S-01–S-03 source and security patches are live** at `https://lestersarcade.io`. Runtime commit `65dd4522edcc6158f61e3dafbe6188d7be4e11bb` preserves Cycle077 and was promoted from verified preview to Ready production `dpl_3vyy1XDPsCAveFDhvm1uvYyFmMPs`. Live alias, exact source/atlas bytes, HTTP checks and seven desktop plus seven mobile browser flows are verified; zero console/page errors. Root and QA npm audits report zero vulnerabilities. See [release verification](releases/S01-S03-release-verification.json). **No public playable STACKED cabinet is claimed.**
 
 ## Prepared work, not acceptance
 - S-06 portal candidate is corrected in its isolated worktree; integration/full acceptance pending.
