@@ -12,7 +12,7 @@ import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from './src/arcade-music-transport.mjs';
-import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
+import { registerGame, getCabinetLaunchReadiness, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
@@ -5132,6 +5132,11 @@ function enterArcadeAsGuest() {
 
 async function startOfficialMode(mode) {
   playSfxCue('menu-click');
+  const launch = getCabinetLaunchReadiness(selectedGameId);
+  if (!launch.ready) {
+    if (dom.officialModeCopy) dom.officialModeCopy.textContent = launch.reason;
+    return;
+  }
   // Ranked is paid/official and wallet-bound. A guest must connect first.
   if (mode === 'ranked') {
     if (!connectedWallet) {
@@ -5877,6 +5882,7 @@ function beginTrackedSession({ mode }) {
     wallet: connectedWallet ?? MOCK_WALLET,
     gameId: selectedGameId,
     mode: normalizedMode,
+    allowDevCabinet: DEV_CABINETS_ENABLED,
   });
 }
 

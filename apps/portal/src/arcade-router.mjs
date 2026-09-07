@@ -24,6 +24,7 @@ export const ARCADE_GAME_SLUGS = Object.freeze({
   hmh: 'hard-money-heroes',
   'lester-blaster': 'hard-money-heroes',
   chikun: 'chikun',
+  stacked: 'stacked',
   'mweb-invaders': 'mweb-invaders',
   'litvm-legends': 'litvm-legends',
 });
@@ -31,6 +32,8 @@ export const ARCADE_GAME_SLUGS = Object.freeze({
 export const ARCADE_GAME_IDS_BY_SLUG = Object.freeze({
   'hard-money-heroes': 'lester-blaster',
   chikun: 'chikun',
+  stacked: 'stacked',
+  stack: 'stacked',
   'mweb-invaders': 'mweb-invaders',
   'litvm-legends': 'litvm-legends',
 });
@@ -47,6 +50,7 @@ export const PLATFORM_SHELL_NAV = Object.freeze([
 const GAME_TITLE_BY_SLUG = Object.freeze({
   'hard-money-heroes': 'Hard Money Heroes',
   chikun: 'Chikun',
+  stacked: 'STACKED',
   'mweb-invaders': 'MWEB Invaders',
   'litvm-legends': 'LitVM Legends',
 });

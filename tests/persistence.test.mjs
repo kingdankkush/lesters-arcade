@@ -205,3 +205,22 @@ test('v2 persistence snapshots migrate while preserving pre-summary history', ()
   assert.equal(state.runHistory[0].score, 7);
   assert.equal(state.runHistory[0].runSummary, undefined);
 });
+
+test('v3 snapshots without STACKED progress restore and gain it lazily', () => {
+  const state = createInitialArcadeState();
+  connectPlayerAccount(state, WALLET);
+  const legacyProfile = state.profiles[WALLET];
+  delete legacyProfile.progress.stacked;
+  const snapshot = snapshotArcadeState(state);
+
+  const fresh = createInitialArcadeState();
+  assert.equal(ARCADE_PERSIST_VERSION, 3);
+  assert.equal(restoreArcadeState(fresh, snapshot), true);
+  assert.equal(fresh.profiles[WALLET].progress.stacked, undefined);
+
+  connectPlayerAccount(fresh, WALLET);
+  const restoredProfile = fresh.profiles[WALLET];
+  assert.ok(restoredProfile.progress.stacked);
+  assert.equal(restoredProfile.progress.stacked.paidRuns, 0);
+  assert.equal(restoredProfile.progress.stacked.freeRuns, 0);
+});

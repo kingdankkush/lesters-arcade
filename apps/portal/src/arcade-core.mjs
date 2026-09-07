@@ -6,6 +6,7 @@ import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
 import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
+import { STACKED_CABINET_VERSION } from './stacked-cabinet.mjs';
 import {
   CURRENT_RANKED_SEASON_ID,
   createCanonicalSessionHandle,
@@ -554,6 +555,29 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       copy: 'Wallet-bound deterministic play with parent replay verification. Accepted scores are recorded to your profile and the Chikun’s Escape leaderboards; on-chain publishing remains safely gated.',
     }),
   }),
+  stacked: Object.freeze({
+    gameId: 'stacked',
+    title: 'STACKED',
+    eyebrow: 'Selected Cabinet',
+    copy: 'Choose Free Mode for an unlimited practice sandbox with a starting-level selector, or Play Ranked for one wallet-bound, replay-verified run recorded to your profile and the STACKED score boards.',
+    artStatus: 'placeholder',
+    backgroundAsset: './assets/stacked-mode-select/stacked-mode-bg.svg',
+    backgroundPosition: 'center center',
+    free: Object.freeze({
+      label: 'Free Mode', official: false, icon: 'infinity', options: 'starting-level',
+      startLevelRange: Object.freeze({ min: 1, max: 15 }),
+      bannerAsset: './assets/stacked-mode-select/stacked-free-banner.svg',
+      bannerPosition: 'center center', bannerAlt: 'STACKED practice sandbox key art',
+      copy: 'Practice sandbox: instant restart, starting-level selector, and optional practice aids. Local score only — no profile progress, leaderboard placement, or chain writes.',
+    }),
+    ranked: Object.freeze({
+      label: 'Play Ranked', official: true, icon: 'star', requiresZkLtc: false,
+      chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
+      bannerAsset: './assets/stacked-mode-select/stacked-ranked-banner.svg',
+      bannerPosition: 'center center', bannerAlt: 'STACKED ranked run key art',
+      copy: 'One clean run on a parent-issued seed. No restart or level skip; accepted scores require parent replay verification before any profile or board write.',
+    }),
+  }),
 });
 
 export function buildGameModeSelectModel(gameId = 'lester-blaster') {
@@ -611,6 +635,12 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
           Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2', durationMs: 600 }),
         ]),
       }),
+    }),
+    Object.freeze({
+      id: 'stacked', gameId: 'stacked', title: 'STACKED', status: 'coming-soon',
+      playable: false, devPlayable: true, leaderboardEligible: true,
+      description: 'Stack, spin, and seal falling ledger blocks. Free practice stays local; replay-verified Ranked runs write to your profile and the STACKED score boards.',
+      bannerArt: './assets/cabinet-stacked.svg',
     }),
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
     Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
@@ -2228,6 +2258,20 @@ export const ARCADE_GAMES = Object.freeze([
         Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-left.png?v=transparent-v2', durationMs: 600 }),
         Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2', durationMs: 600 }),
       ]),
+    }),
+  },
+  {
+    id: 'stacked', title: 'STACKED', cabinet: 'BLOCK CABINET 05',
+    genre: 'Falling-block ledger stacker puzzle', status: 'coming-soon',
+    publicPlayable: false, devPlayable: true, developer: "Lester's Arcade Core Team",
+    entryFeeMicroUsdc: 0, livesPaid: 1, livesFree: Infinity,
+    tagline: 'Seal the blocks. Clear the ledger. Do not let the chain reorg.',
+    systemRole: 'child-dapp-cartridge', rankedSeasonId: 'stacked-season-preview-1',
+    cabinetVersion: STACKED_CABINET_VERSION, parentSystem: "Lester's Arcade",
+    presentation: Object.freeze({
+      medium: 'upright-cabinet', colorway: 'silver-neon-cyan',
+      cabinetAsset: './assets/cabinet-stacked.svg', cartridgeAsset: './assets/cartridge-stacked.svg',
+      marquee: 'STACKED',
     }),
   },
 ]);
@@ -5048,6 +5092,7 @@ export function getCartridgeSelectModel() {
       ...(discoveryText.includes('run') ? ['run-and-gun'] : []),
       ...(discoveryText.includes('pinball') ? ['pinball'] : []),
       ...(discoveryText.includes('platform') ? ['platformer'] : []),
+      ...(discoveryText.includes('stacker') ? ['puzzle', 'stacker'] : []),
     ].filter(Boolean);
     return {
       id: game.id,

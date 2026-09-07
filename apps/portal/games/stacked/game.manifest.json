@@ -1,0 +1,16 @@
+{
+  "id": "stacked",
+  "name": "STACKED",
+  "version": "0.1.0",
+  "runtimeVersion": "pixi-runtime-v1",
+  "sdkVersion": "1.0.0",
+  "status": "coming-soon",
+  "aspectSupport": ["9:16", "16:9"],
+  "controlScheme": "dpad-buttons",
+  "capabilities": ["leaderboard", "achievements", "ranked", "audio", "haptics"],
+  "rankedEligible": true,
+  "entry": "./main.mjs",
+  "endpoints": [],
+  "devWallet": null,
+  "description": "A deterministic falling-block ledger stacker for Lester's Arcade."
+}
