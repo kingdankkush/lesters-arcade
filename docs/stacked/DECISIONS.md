@@ -45,6 +45,14 @@ The owner additionally approved a stronger, self-contained source-only review: *
 The owner directed: **“Please continue working on all tasks and fix any issues. Push all completed work live.”**
 This authorizes the additional narrow S-03 correction/reverification round and publication of completed, gate-passing website/source work. It supersedes the earlier no-push/no-promotion pause for that verified scope. Record each exact candidate, deployed production ID and retained rollback. Preserve current production-lineage HMH/Chikun work. This is not acceptance of unfinished STACKED features, a waiver of G-2/G-3 on-device/integrity requirements, or authorization for contracts, transactions, real funds, paid entry, settlement activation or authority changes.
 
+## Approved S-04 workflow continuation — 2026-09-07
+
+The owner directed: **“Please continue with all tasks with my approval.”** This answers the explicit S-04 workflow question: command-free source proposals, parent-owned edits and real tests, with the stopped worker sandbox and global permissions unchanged. Parent owns the clean Release worktree from `aaf113c5214ee6bed3b8b3efba55ff4b9501af95`, preserving the deployed Cycle077/S-03 lineage. No denied worker operation is retried. Acceptance and public-launch/financial boundaries remain in force.
+
+## Standing completion direction
+
+The owner further directed: **“Use your best judgement and recommendations for anything that comes up. You have my approval to move ahead with all tasks until completion, and then push everything live.”** Routine reversible implementation decisions are delegated; continue the approved parent-edit/command-free proposal workflow without repeated approval requests. Finish and verify the remaining candidate before publication. This is permission to work and deploy a completed candidate, not a claim that outstanding human-device, integrity or financial gates have passed.
+
 ## S-03 versioned integrity correction
 
 The approved source-only review and parent-run regressions demonstrated incomplete future-state hashing, invalid hold/ceiling tuples, and oversized injected attack tables that could fail after partial advancement. Apply the smallest versioned correction under the rule below: cabinet 0.2.0, contracts §4.3.1 SRT2/SMH2, bounded immutable table validation, and explicit tuple identities. Preserve seed normalization, rejection sampling, current tuning and all production/financial boundaries. New exact-source gates and independent review are mandatory; this decision is not acceptance.
