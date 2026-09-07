@@ -6,23 +6,23 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Production:** https://lestersarcade.io
 
-**Certified production source:** `126dd58d862ae0d8c15e44c579069d1199c74fad` (`hermes/hmh-cycle-077-tripo-selector`). Cycle 077 replaces pre-game hero turntables; gameplay retains the certified Cycle 075 systems/art.
+**Certified production source:** `5d28dfb69c721465a925df2a9142a8848e52d44f` (`hermes/hmh-cycle-080-corpse-audio`). Cycle 080 adds bounded enemy-corpse and combat-audio lifetime cleanup while preserving the live STACKED/security release and existing gameplay systems/art.
 
-**Verified runtime release deployment:** `dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb`
+**Verified runtime release deployment:** `dpl_HskTDVZr72FVDUD7zHnZTHRCtmCx`
 
-**Immutable runtime release:** https://lesters-arcade-6xcz9rzfb-justin-agent-projects.vercel.app
+**Immutable runtime release:** https://lesters-arcade-cjqehxa53-justin-agent-projects.vercel.app
 
-**Retained rollback:** `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`
+**Retained rollback:** `dpl_3vyy1XDPsCAveFDhvm1uvYyFmMPs` (STACKED/security source `65dd4522edcc6158f61e3dafbe6188d7be4e11bb`)
 
-> **Cycle 080 candidate, not yet promoted:** bounded corpse/audio lifetime cleanup is being certified on top of the live STACKED/security release. The marker below is the candidate marker; public production remains on the previous marker until exact-preview promotion and readback. Cycle 079 pacing and Tripo gameplay art are not included. [Candidate scope](docs/hmh-reboot/cycles/CYCLE-080.md).
+> **Cycle 080 is live:** enemy corpses expire after 2,000 ms or 120 fixed ticks, with a 24-graphic cap and bounded fade. Expired combat voices stop/reset before removal. Cycle 079 pacing and Tripo gameplay art are not included. [Release certificate](docs/hmh-reboot/RELEASE-CERTIFICATION-AAA-CYCLE-080.json).
 
 **Production cache marker:** `lesters-arcade-v31-hmh-corpse-audio`
 
 > **Cycle 077 is live:** all four latest textured Tripo hero turntables, with unchanged gameplay IDs/stats and unlock rules. New gameplay rigs/animations remain unfinished. [Release scope](docs/hmh-reboot/cycles/CYCLE-077.md).
 
-> **Current release handoff:** [Cycle 077 release and continuation](docs/handoffs/2026-09-06-hmh-cycle-077-hermes-handoff.md). The [Cycle 075 handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md) is historical and remains the rollback reference.
+> **Current release handoff:** [Cycle 080 release and withheld work](docs/handoffs/hmh-cycle-080-hermes-handoff.md). The [Cycle 077 handoff](docs/handoffs/2026-09-06-hmh-cycle-077-hermes-handoff.md) is historical selector-source context, not the current production or rollback boundary.
 
-> Production was verified by 37 exact public artifact hashes, custom-domain deployment-ID read-back, four live desktop/mobile/reduced-motion selector-to-gameplay flows, and four clean/warm portal/game network checks. This later documentation-only publication does not change the deployed runtime boundary.
+> Production was verified by 35 exact public artifact hashes, custom-domain deployment-ID read-back, real-input corpse expiry on the public site, four selector-to-gameplay profiles, and four clean/warm network scenarios. The clean-host ledger covers 2,702 tests: 2,651 passed and 51 existing accepted retirement failures, with no unexpected failures. Two 12-scene visual runs passed. This later documentation-only publication does not change the deployed runtime boundary.
 
 > `SETTLEMENT_LIVE=false` remains mandatory; LitVM contracts, wallets, signatures, transactions, and settlement changes require separate explicit HALT approval.
 

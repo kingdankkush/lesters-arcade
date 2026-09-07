@@ -1,6 +1,6 @@
 # Cycle 080 — Bounded corpse and audio lifetime cleanup
 
-Status: isolated release candidate, not yet production-certified.
+Status: PRODUCTION VERIFIED. Source `5d28dfb69c721465a925df2a9142a8848e52d44f`; production `dpl_HskTDVZr72FVDUD7zHnZTHRCtmCx` at https://lestersarcade.io. See [machine-readable certificate](../RELEASE-CERTIFICATION-AAA-CYCLE-080.json).
 
 ## Included
 - Enemy corpse presentation expires at 2,000 monotonic milliseconds or 120 simulation ticks, whichever comes first; final 200 ms fade and 24-graphic cap. Oldest graphics are disposed before admitting another. Authoritative enemy retirement, health, score and collision remain unchanged.

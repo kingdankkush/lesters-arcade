@@ -1,0 +1,412 @@
+{
+  "cycle": 80,
+  "status": "PRODUCTION_VERIFIED",
+  "verifiedAtUtc": "2026-09-07T15:43:22.052473+00:00",
+  "runtimeSource": "5d28dfb69c721465a925df2a9142a8848e52d44f",
+  "sourceBranch": "hermes/hmh-cycle-080-corpse-audio",
+  "base": "aaf113c5214ee6bed3b8b3efba55ff4b9501af95",
+  "reviewedDiffSha256": "eaf4f8d27dd3d0100e24832fad2b5ff51476a74ec5d8920f5ec35ae4cc7d7057",
+  "reviewedTree": "a54842a9f21b910645a3ef531ade99005f9d5a0d",
+  "independentReview": {
+    "passed": true,
+    "patchSha256": "eaf4f8d27dd3d0100e24832fad2b5ff51476a74ec5d8920f5ec35ae4cc7d7057",
+    "security_concerns": [],
+    "logic_errors": [],
+    "visual_blockers": [],
+    "limitations": [
+      "Static review only; the reported 37 focused tests were not independently executed.",
+      "Clean-host build, full browser/runtime, visual-regression metrics, service-worker upgrade behavior, and public artifact parity remain separate certification gates.",
+      "The supplied screenshots cover one desktop corpse state and one portrait state, not every expiry, capacity, reset, reduced-gore, or teardown path."
+    ],
+    "summary": "Passed the narrow pre-commit review. Corpse presentation uses the earlier of 120 fixed-simulation ticks and 2000 monotonic milliseconds, fades during the final 200 ms, disposes the oldest graphic before admitting beyond the 24-item cap, and retains projection-only authority. Audio age reaping pauses and resets expired elements before removal. The patch contains no actor-ID, gameplay pacing/balance, wallet/bridge/settlement, dependency, or STACKED changes, and the linked cache tokens and service-worker marker are coherently advanced."
+  },
+  "scope": [
+    "Enemy corpse projection:2000ms OR120ticks;24-cap;200ms fade",
+    "Expired combat voices stop/reset before removal",
+    "Cache invalidation; no pacing/stat/art or wallet changes"
+  ],
+  "excluded": [
+    "Uncertified Cycle079 pacing/pistol/burner changes",
+    "Unaccepted Tripo gameplay atlases",
+    "Live3D ragdoll physics",
+    "New settlement or chain authority"
+  ],
+  "preview": {
+    "id": "dpl_78mUCWZKrCpMHLXid7KPUCbZLAZi",
+    "url": "https://lesters-arcade-9hn5alf83-justin-agent-projects.vercel.app"
+  },
+  "production": {
+    "id": "dpl_HskTDVZr72FVDUD7zHnZTHRCtmCx",
+    "url": "https://lesters-arcade-cjqehxa53-justin-agent-projects.vercel.app",
+    "domain": "https://lestersarcade.io"
+  },
+  "rollback": {
+    "id": "dpl_3vyy1XDPsCAveFDhvm1uvYyFmMPs",
+    "source": "65dd4522edcc6158f61e3dafbe6188d7be4e11bb"
+  },
+  "cache": {
+    "html": "hmh-aaa-cycle-080-corpse-audio",
+    "serviceWorker": "lesters-arcade-v31-hmh-corpse-audio"
+  },
+  "host": {
+    "node": "24.20.0",
+    "noGit": true,
+    "lfsPointers": 23,
+    "command": "npm run vercel:build",
+    "ledger": {
+      "schemaVersion": 1,
+      "gate": "hmh-reboot-test-retirement",
+      "status": "PASS",
+      "counts": {
+        "tests": 2702,
+        "failed": 51,
+        "passed": 2651,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 2635,
+        "suites": 8
+      },
+      "expectedFailureCount": 51,
+      "errors": []
+    },
+    "health": "PASS",
+    "audit": "zero vulnerabilities"
+  },
+  "focusedTests": {
+    "total": 37,
+    "passed": 37,
+    "failed": 0
+  },
+  "visualRuns": [
+    {
+      "log": ".tmp/visual-a.log",
+      "scenes": 12,
+      "changedScenes": 0
+    },
+    {
+      "log": ".tmp/visual-b.log",
+      "scenes": 12,
+      "changedScenes": 0
+    }
+  ],
+  "productionBrowser": {
+    "origin": "https://lestersarcade.io",
+    "passed": true,
+    "profiles": [
+      {
+        "name": "desktop",
+        "startTick": 123,
+        "errors": [],
+        "corpses": {
+          "seen": {},
+          "gone": [
+            {
+              "id": "prototype-01-bagholder-rusher",
+              "observedMs": 1989.4000000357628
+            }
+          ],
+          "max": 1,
+          "done": true
+        }
+      },
+      {
+        "name": "portrait",
+        "startTick": 122,
+        "errors": []
+      },
+      {
+        "name": "landscape-reduced",
+        "startTick": 122,
+        "errors": []
+      }
+    ]
+  },
+  "selectorProfiles": 4,
+  "networkScenarios": 4,
+  "publicArtifactCount": 35,
+  "publicArtifacts": [
+    {
+      "path": "dist/chikun/game.js",
+      "bytes": 22358,
+      "sha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+      "matches": true,
+      "rawSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/chunk-2WGYLO4P.js",
+      "bytes": 655,
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+      "matches": true,
+      "rawSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/chunk-6IF7K5TT.js",
+      "bytes": 65798,
+      "sha256": "6ad920bab02335dfc035c984b721b1bba9e5cbb3243136e29bcdb69a5aea835b",
+      "matches": true,
+      "rawSha256": "6ad920bab02335dfc035c984b721b1bba9e5cbb3243136e29bcdb69a5aea835b",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/chunk-CT2SWMC3.js",
+      "bytes": 18484,
+      "sha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+      "matches": true,
+      "rawSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/chunk-EQL6WO4E.js",
+      "bytes": 821759,
+      "sha256": "e1eef1c3e808b21bdb4be99a3897dec416fa19ef9bb615ebbbf232c5a3c6c6ab",
+      "matches": true,
+      "rawSha256": "e1eef1c3e808b21bdb4be99a3897dec416fa19ef9bb615ebbbf232c5a3c6c6ab",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/chunk-VSG3JNSZ.js",
+      "bytes": 392452,
+      "sha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+      "matches": true,
+      "rawSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/chunk-ZZIAFSA2.js",
+      "bytes": 10713,
+      "sha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+      "matches": true,
+      "rawSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/ethers.min-STJTETNS.js",
+      "bytes": 4388,
+      "sha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+      "matches": true,
+      "rawSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+      "bytes": 1929726,
+      "sha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+      "matches": true,
+      "rawSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-complete-animations-CJX6INFR.js",
+      "bytes": 49984,
+      "sha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+      "matches": true,
+      "rawSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+      "bytes": 743684,
+      "sha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+      "matches": true,
+      "rawSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+      "bytes": 3012,
+      "sha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+      "matches": true,
+      "rawSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+      "bytes": 48573,
+      "sha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+      "matches": true,
+      "rawSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+      "bytes": 50980,
+      "sha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+      "matches": true,
+      "rawSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+      "bytes": 40469,
+      "sha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+      "matches": true,
+      "rawSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+      "bytes": 2815,
+      "sha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+      "matches": true,
+      "rawSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+      "bytes": 35033,
+      "sha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+      "matches": true,
+      "rawSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-level-environment-FD3WFZKW.js",
+      "bytes": 35802,
+      "sha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+      "matches": true,
+      "rawSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+      "bytes": 4148,
+      "sha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+      "matches": true,
+      "rawSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-pixi.js",
+      "bytes": 463115,
+      "sha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a",
+      "matches": true,
+      "rawSha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+      "bytes": 111173,
+      "sha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+      "matches": true,
+      "rawSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+      "bytes": 15049,
+      "sha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+      "matches": true,
+      "rawSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+      "bytes": 4031,
+      "sha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+      "matches": true,
+      "rawSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+      "bytes": 4305,
+      "sha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+      "matches": true,
+      "rawSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/litvm-chain-client-BGRPGVWA.js",
+      "bytes": 483,
+      "sha256": "c79ea5fcdd102e9daa588796d9c3241aaac192dfe603c749f2e3fbc8e6119f75",
+      "matches": true,
+      "rawSha256": "c79ea5fcdd102e9daa588796d9c3241aaac192dfe603c749f2e3fbc8e6119f75",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/loader-L6P76OXQ.js",
+      "bytes": 125,
+      "sha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+      "matches": true,
+      "rawSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/chunks/runtime-manifest-7IN2B6KL.js",
+      "bytes": 4238,
+      "sha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+      "matches": true,
+      "rawSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/hmh-reboot/game.js",
+      "bytes": 465219,
+      "sha256": "a3610f2a380ef0aea142cc4e9bee580368eb58052c448207ac797093f3f48199",
+      "matches": true,
+      "rawSha256": "a3610f2a380ef0aea142cc4e9bee580368eb58052c448207ac797093f3f48199",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "dist/main.js",
+      "bytes": 1140305,
+      "sha256": "68f808c56533742068aefcf764d93c360375fdb62188707ab9c170145bb6bd04",
+      "matches": true,
+      "rawSha256": "68f808c56533742068aefcf764d93c360375fdb62188707ab9c170145bb6bd04",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "hmh-reboot/index.html",
+      "bytes": 13472,
+      "sha256": "25be14ccdacd20559db8eaf0d9b41b5a423d45c89cf9677b4620a99dd02325d3",
+      "matches": true,
+      "rawSha256": "25be14ccdacd20559db8eaf0d9b41b5a423d45c89cf9677b4620a99dd02325d3",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "index.html",
+      "bytes": 23791,
+      "sha256": "4eb1b872f408ad10b63d67a7758deb056f2d9461808382e900560fb0114a58b1",
+      "matches": true,
+      "rawSha256": "4eb1b872f408ad10b63d67a7758deb056f2d9461808382e900560fb0114a58b1",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "src/design-tokens.css",
+      "bytes": 3012,
+      "sha256": "32e5e8c67aeed880896ec504faa52476e4bbd4ce17d9dbda9a09daa68c8fcb10",
+      "matches": true,
+      "rawSha256": "32e5e8c67aeed880896ec504faa52476e4bbd4ce17d9dbda9a09daa68c8fcb10",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "styles-arcade-polish.css",
+      "bytes": 63201,
+      "sha256": "b97f0158fd6bd235d50269b77c09abfad5cb5b44eddc06cfdd9f39318363518a",
+      "matches": true,
+      "rawSha256": "b97f0158fd6bd235d50269b77c09abfad5cb5b44eddc06cfdd9f39318363518a",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "styles.css",
+      "bytes": 149681,
+      "sha256": "39c99cd4affef90aa995f1322e38e951789d563e9c1e68990425fecf744ae2ad",
+      "matches": true,
+      "rawSha256": "39c99cd4affef90aa995f1322e38e951789d563e9c1e68990425fecf744ae2ad",
+      "vercelPreviewToolbarRemoved": false
+    },
+    {
+      "path": "sw.js",
+      "bytes": 3707,
+      "sha256": "6906e2f44dac6e67ed869fdb06ccba57cf651d072a854ee4ec09478d28566be1",
+      "matches": true,
+      "rawSha256": "6906e2f44dac6e67ed869fdb06ccba57cf651d072a854ee4ec09478d28566be1",
+      "vercelPreviewToolbarRemoved": false
+    }
+  ],
+  "limitsChanged": false,
+  "web3Actions": false
+}
