@@ -671,7 +671,7 @@ or route segment. Existing game ids are **seven**: `lester-blaster`, `lilly-pinb
 | Cadence-leaderboard key | `stacked` | `state.cadenceLeaderboards.stacked`, created automatically by `createInitialArcadeState` from `ARCADE_GAMES` irrespective of `status`. |
 | Profile progress key | `profile.progress.stacked` | Created automatically by `ensureAllGameProgress`. Durable custom stats live under `profile.progress.stacked.custom`. |
 | Season id | `stacked-season-preview-1` | **Dedicated, not inherited** (owner gate G-9 recommendation): an HMH season rollover must never reset STACKED boards. Follows the only other dedicated cabinet season in the tree, `chikun-season-preview-1` — not `hmh-season-1-2026`. **Rejected: `stacked-season-1-2026`** (portal §2.1): it bakes a year into a string that must survive a rollover, and it does not match the shipped precedent. It feeds `deriveSessionSeed`, so it is frozen here. |
-| Cabinet version | `STACKED_CABINET_VERSION = '0.1.0'` | Exported from `stacked-cabinet.mjs`. Feeds `buildHash` feeds the session seed. Bumping it rotates every seed. |
+| Cabinet version | `STACKED_CABINET_VERSION = '0.2.0'` | Exported from `stacked-cabinet.mjs`. Versioned S-03 canonical-state correction in §4.3.1 supersedes the initial 0.1.0 stub. Feeds `buildHash` feeds the session seed. Bumping it rotates every seed. |
 | Bridge protocol | `stacked-bridge/v1` | `STACKED_BRIDGE_PROTOCOL`. |
 | Result-tuple tag | `stacked-result-v1` | `v` field of the result tuple. |
 | Run-summary version | `STACKED_RUN_SUMMARY_VERSION = 1` | `schemaVersion` field. |
@@ -898,6 +898,62 @@ re-simulates **exactly once**, in `createStackedPortalLifecycle().handleResult()
 when one can be constructed and inline otherwise; verification correctness never depends on the worker
 existing. **The score written to the leaderboard is `canonical.score` from the parent's own
 re-simulation, never the number the child sent.**
+
+### 4.3.1 Versioned S-03 canonical-state correction
+
+Cabinet version **0.2.0** supersedes the incomplete canonical state-hash sequence in versus §2.7. This is a deliberate, review-gated correction under DECISIONS.md's interpretation rule, not a gameplay-tuning change. A public-input witness with seed 1/start level 15 accepts HOLD in two runtimes, then holds mask 128 in one and releases to mask 0 in the other until the first piece locks. At tick 31 the old hashes matched despite different previous masks; the same next HOLD input produced different hold counts. Immutable start level, terminal ceiling and injected attack configuration also need hashing before they change future steps.
+
+The existing golden replay produces an unchanged exact result tuple. Its observed canonical hash moves from `3232793281` (0.1.0) to `1015998860` (0.2.0). This explicitly replaces hash identity, never silently changes the fixture. The historical fixture migration remains recorded. Full Node gates and independent review of the new exact source are still required before acceptance.
+
+The result source validator additionally requires explicit valid `maxTicks`, exact tick-ceiling identity, and `holdsUsed <= piecesSpawned`. Returned result-tuple keys do not change.
+
+Injected attack tables remain test/internal Phase-2 preparation, never imported into Phase-1 runtime by default. Constructors validate dense arrays and safe integers before creating boards. Individual row parameters and the largest combined send (max base/full/mini entry + CHAIN bonus + maximum combo bonus + perfect-clear bonus) must be at most `STACKED_MAX_LINES`; charge delay at most `STACKED_MAX_TICKS`; per-lock rise cap `1..BOARD_ROWS`; queue-pressure threshold `0..STACKED_MAX_LINES`. Optional version is a string of at most 128 characters (nullish means empty), and qualifiers must be dense supported enum arrays. Bounds use existing central constants and do not retune the frozen attack table.
+
+Seed-zero normalization and rejection-sampling cursor advancement retain the explicit mechanics/integrity rules. The perfect-clear summary ceiling in §4.4 is unchanged pending any demonstrated legal-runtime contradiction.
+
+#### Solo runtime canonical state encoding — SRT2
+
+`stateHash()` is FNV-1a-32 over the following byte stream. All multi-byte integers are low-byte-first. Unsigned counters use uint32; score uses uint64. Passing a negative value to a uint32 slot means its explicit two's-complement 32-bit representation, so `-1` is `ff ff ff ff`. Booleans and enums are one byte. Piece ids are `0=null, 1=I, 2=J, 3=L, 4=O, 5=S, 6=T, 7=Z`. Terminal ids are `0=nonterminal`, followed by `STACKED_TERMINAL_REASONS` in its frozen order as ids 1–5.
+
+The pre-correction sequence remains an exact prefix:
+
+1. `tick:u32`.
+2. Raw 240-byte board.
+3. Six `u32` active slots: piece id, signed x, signed y, gravity accumulator, rotation, active spawn tick; all zero if no active piece.
+4. `piecesSpawned % 7:u32`, then bag RNG draw count `u32`.
+5. Hold piece id byte and `holdUsed` boolean byte.
+6. For each pending solo-garbage hole, the historical entry `rows:u32=1`, `chargeReadyTick:u32=0`, `hole:byte`; this historical section has no new delimiter.
+7. Garbage RNG draw count `u32`, historical previous-hole byte (`255` for `-1`), derived zone index `u32`, `comboCount:i32`, CHAIN boolean byte, lines `u32`, score `u64`.
+
+The correction appends these bytes without changing that prefix:
+
+1. Marker `53 52 54 02` (`SRT` plus encoding version 2).
+2. Immutable `seed:u32`, `startLevel:u32`, `maxTicks:u32`.
+3. Full `piecesSpawned:u32`, `piecesLocked:u32`, `bagRefills:u32`.
+4. Next-piece queue as `length:u32` followed by exactly that many piece-id bytes. Together with the historical bag cursor (`piecesSpawned % 7`) and bag RNG count, this fixes future bag state.
+5. Active/lock provenance: `lastKickIndex:byte`, `lastActionWasRotation:boolean-byte`, `lockTimer:u32`, `lockResetsUsed:u32`, `lowestYReached:i32`; all zero when no active piece. Active identity, position, rotation, gravity and spawn tick remain authoritative in the prefix.
+6. Input history: `prevMask:byte`, `lastHorizontal:i32`, `lastTransitionTick:u32`.
+7. Hold/result counters: `holdsUsed:u32`, `softDropCells:u32`, `hardDropCells:u32`.
+8. Scoring state: `maxCombo:u32`, `backToBackCount:u32`, `maxBackToBack:u32`, `hashpower:u32`. Current combo, CHAIN, lines and score remain in the prefix.
+9. Solo garbage state: `garbageTimerTicks:i32`; pending queue `length:u32` followed by hole bytes; `lastGarbageHole:i32`; then `garbageGroups:u32`, `garbageRowsReceived:u32`, `garbageRowsCleared:u32`, `reorgsRejected:u32`. The corrected queue length makes its boundary unambiguous; historical garbage RNG count remains in the prefix.
+10. Clear/technique counters, each `u32`: `quadClears`, `singles`, `doubles`, `triples`, `spinsMini`, `spinsFull`, `perfectClears`, `maxStackHeight`.
+11. Evidence counters: `transitionCount:u32`, `encodedEvidenceBytes:u32`.
+12. Terminal-reason enum byte.
+
+`buildHash` and `seasonId` are intentionally excluded because they are metadata and cannot affect simulation. Projection state is excluded. The following snapshot aliases are not repeated because they are exactly derivable: `piecesPlaced = piecesLocked`, `linesCleared = lines`, `bagDraws = bagRngCount`, and `terminal = terminalReason !== null`. `level` is exactly `levelForLines(startLevel, lines)`, and the zone index is exactly `zoneForTick(tick)`; both are derivable, while the historical zone index remains in the prefix. `terminalResult` is a memoized projection of the terminal snapshot and cannot affect future execution.
+
+#### Match canonical state encoding — SMH2
+
+A one-board match with `attackTable:null` and no pending attack continues to return the solo runtime hash exactly, with no wrapper bytes.
+
+Every other match hashes this unambiguous stream with FNV-1a-32:
+
+1. Marker `53 4d 48 02` (`SMH` plus encoding version 2), then match `tick:u32`.
+2. Attack-table presence byte. `0` ends this section. For `1`, encode in fixed order: UTF-8 version as `byteLength:u32 + bytes`; base, full-spin, and mini-spin arrays each as `length:u32 + u32 entries`; `backToBack:u32`; `backToBackMinLines:u32`; qualifier count `u32` plus enum bytes (`1=quad, 2=spin-full, 3=spin-mini`); combo as `length:u32 + u32 entries`; then `perfectClear`, `chargeTicks`, `maxRowsPerLock`, and `queuePressureThreshold` as `u32`.
+3. Board count `u32`. For each ascending player slot: solo canonical bytes as `byteLength:u32 + bytes`; pending-attack count `u32`; then each entry in queue order as `rows:u32`, `chargeReadyTick:u32`, and `holeColumns` as `length:u32 + bytes`.
+4. Match garbage RNG draw count `u32`, then `lastGarbageHole:i32` using explicit two's-complement encoding.
+
+The table is immutable canonical configuration because it changes future attacks even before any queue exists. Lengths separate every board, queue, table array, string and hole sequence. Match input-ring slots are empty at every public API boundary because `stepAll` consumes each slot synchronously before returning. `generatedSends` is reset before its next read and therefore cannot affect a later step; neither is encoded.
 
 ### 4.4 The run summary payload
 

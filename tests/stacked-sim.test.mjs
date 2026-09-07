@@ -192,7 +192,10 @@ test('hold is limited to once per lock and snapshots do not expose backing array
   r.step(MASK.hold); r.step(0);
   const once = r.snapshot(); r.step(MASK.hold);
   assert.deepEqual(r.snapshot().active, once.active);
-  const snap = r.snapshot(); snap.board[0] = 99; snap.queue[0] = 'X';
+  const snap = r.snapshot();
+  assert.ok(Object.isFrozen(snap)); assert.ok(Object.isFrozen(snap.board)); assert.ok(Object.isFrozen(snap.active)); assert.ok(Object.isFrozen(snap.queue));
+  assert.throws(() => { snap.board[0] = 99; }, TypeError);
+  assert.throws(() => { snap.queue[0] = 'X'; }, TypeError);
   assert.notEqual(r.snapshot().board[0], 99); assert.notEqual(r.snapshot().queue[0], 'X');
 });
 

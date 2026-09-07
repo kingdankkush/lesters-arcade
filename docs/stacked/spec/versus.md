@@ -533,6 +533,8 @@ tick 0. A mismatch is a match-setup error, not a desync to discover at checkpoin
 
 ### 2.7 Desync detection (Phase 2 network, Phase 1 hook)
 
+**Version 0.2.0 correction:** contracts §4.3.1 supersedes the incomplete byte list below. The solo runtime preserves it as a historical prefix and appends complete canonical future-affecting state (SRT2). Non-transparent matches use the length-delimited SMH2 encoding including immutable attack configuration; one-board null-table hashes remain exactly identical to the solo runtime. The original list below is historical context, not a complete current hashing implementation. No online/multiplayer feature is activated.
+
 Phase 1 exports `stateHash()` on both the runtime and the match: a uint32 FNV-1a over, in this fixed
 order, `tick`, the 240 board bytes, active piece fields, bag index + `rng.count`, hold, garbage queue
 entries (rows, `chargeReadyTick`, each hole column), `garbageRng.count`, `previousHoleColumn`,

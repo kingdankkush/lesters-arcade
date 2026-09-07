@@ -10,6 +10,14 @@ The choices below exercise that delegation for reversible development. They do n
 claim a human device pass, authorize funds or contract deployment, or authorize
 production promotion. Earlier unanswered questions are superseded by this direction.
 
+The owner subsequently reaffirmed continuation: **“Please continue with my approvals.”**
+This continues the approved reversible implementation, testing, integration and artwork work;
+it does not waive acceptance gates or authorize an unspecified production deployment or financial action.
+ChatGPT image generation is the required source for final Free/Ranked and other requested menu/loading artwork.
+Procedural/vector placeholders remain development-only where final bespoke artwork was requested.
+
+The owner additionally approved a stronger, self-contained source-only review: **“Yes, you have my approval. Please continue work.”** The reviewer must execute no commands and security policy remains unchanged. Parent-side source/hash verification and existing real gate evidence remain separate from the reviewer's static verdict. This approval does not waive any acceptance gate.
+
 | Gate | Status | Decision | Blocks / remaining condition |
 | --- | --- | --- | --- |
 | G-1 | ADOPTED | Display HALVING; preserve quad identifiers. | Copy and ship use this name. |
@@ -26,11 +34,20 @@ production promotion. Earlier unanswered questions are superseded by this direct
 | G-12 | ADOPTED | Registry-driven shared parent settings panel. | Child pause controls may request it; do not fork the persisted settings model. |
 | G-13 | ADOPTED | Browser gates belong to ship:gate, not vercel:build. | Keep the cloud build Node-only. |
 | G-14 | ADOPTED | Development-only autoplay for soak/testing; reject it in Ranked. | Pilot evidence is automation, never human playtest evidence. |
-| G-15 | OPEN | Production promotion requires explicit approval naming the exact deployment ID. | No production promotion, real funds, paid entry, settlement activation, authority change or contract deployment is authorized. |
+| G-15 | AUTHORIZED, GATED | Owner's 2026-09-07 direction authorizes publishing completed, gate-passing website/source work; record the exact deployed ID and rollback. | Unfinished STACKED public play stays blocked by G-2/S-22. Real funds, paid entry, settlement activation, authority changes and contract deployment remain separately prohibited. |
 | G-16 | DEFERRED | Online versus and its relay/backend are outside Phase 1. | No new recurring service or multiplayer infrastructure purchase. |
 | G-17 | ADOPTED | Fix comparator correctness now. Retention must be non-lossy: archive and verify old buckets before any removal, retain all-time, and do not prune if archival fails. | No unbacked irreversible cleanup of existing saves. Record this safer refinement in S-07. |
 | G-18 | ADOPTED | Six data-driven zones; consistent procedural/vector placeholder art, with accessible palettes and polish. | Do not change zone count or claim bespoke final art. |
 | G-19 | ADOPTED | One Ranked board, with input-device disclosure in row/detail metadata where persistence permits. | Do not split scores into separate boards or call determinism a fairness proof. |
+
+## Continued implementation and completed-work publication — 2026-09-07
+
+The owner directed: **“Please continue working on all tasks and fix any issues. Push all completed work live.”**
+This authorizes the additional narrow S-03 correction/reverification round and publication of completed, gate-passing website/source work. It supersedes the earlier no-push/no-promotion pause for that verified scope. Record each exact candidate, deployed production ID and retained rollback. Preserve current production-lineage HMH/Chikun work. This is not acceptance of unfinished STACKED features, a waiver of G-2/G-3 on-device/integrity requirements, or authorization for contracts, transactions, real funds, paid entry, settlement activation or authority changes.
+
+## S-03 versioned integrity correction
+
+The approved source-only review and parent-run regressions demonstrated incomplete future-state hashing, invalid hold/ceiling tuples, and oversized injected attack tables that could fail after partial advancement. Apply the smallest versioned correction under the rule below: cabinet 0.2.0, contracts §4.3.1 SRT2/SMH2, bounded immutable table validation, and explicit tuple identities. Preserve seed normalization, rejection sampling, current tuning and all production/financial boundaries. New exact-source gates and independent review are mandatory; this decision is not acceptance.
 
 ## Interpretation of the spec
 

@@ -177,8 +177,8 @@ test('contract modules have no dependencies and the cabinet version is isolated'
   for (const file of [contractPath, cabinetPath]) {
     assert.deepEqual(findModuleReferences(await readFile(file, 'utf8')), []);
   }
-  assert.equal((await readFile(cabinetPath, 'utf8')).trim(), "export const STACKED_CABINET_VERSION = '0.1.0';");
-  assert.deepEqual({ ...await import(pathToFileURL(cabinetPath).href) }, { STACKED_CABINET_VERSION: '0.1.0' });
+  assert.equal((await readFile(cabinetPath, 'utf8')).trim(), "export const STACKED_CABINET_VERSION = '0.2.0';");
+  assert.deepEqual({ ...await import(pathToFileURL(cabinetPath).href) }, { STACKED_CABINET_VERSION: '0.2.0' });
 });
 
 test('actual source-tree guard catches planted duplicates and cleans up', async () => {
@@ -200,9 +200,14 @@ test('actual source-tree guard catches planted duplicates and cleans up', async 
   assert.deepEqual(await scanContractDeclarations(root, names, contractPath), []);
 });
 
-test('all nineteen owner gates retain explicit decisions and deployment remains open', async () => {
+test('all nineteen owner gates retain decisions and publication approval stays bounded', async () => {
   const decisions = await readFile(join(root, 'docs/stacked/DECISIONS.md'), 'utf8');
-  const records = [...decisions.matchAll(/^\| G-(\d+) \| (OPEN|ADOPTED|CONDITIONAL|DEFERRED) \|/gm)];
+  const records = [...decisions.matchAll(/^\| G-(\d+) \| (OPEN|ADOPTED|CONDITIONAL|DEFERRED|AUTHORIZED, GATED) \|/gm)];
   assert.deepEqual(records.map(match => Number(match[1])), Array.from({ length: 19 }, (_, index) => index + 1));
-  assert.equal(records.find(match => match[1] === '15')[2], 'OPEN');
+  assert.equal(records.find(match => match[1] === '15')[2], 'AUTHORIZED, GATED');
+  assert.equal(records.find(match => match[1] === '2')[2], 'CONDITIONAL');
+  assert.equal(records.find(match => match[1] === '3')[2], 'CONDITIONAL');
+  assert.match(decisions, /Push all completed work live\./);
+  assert.match(decisions, /Unfinished STACKED public play stays blocked by G-2\/S-22/);
+  assert.match(decisions, /Real funds, paid entry, settlement activation, authority changes and contract deployment remain separately prohibited/);
 });

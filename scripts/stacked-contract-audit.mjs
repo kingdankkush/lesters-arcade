@@ -50,14 +50,39 @@ export function findDuplicateDeclarations(source, names) {
   return [...found].sort();
 }
 
+export function resolveStaticModuleSpecifier(node) {
+  if (!node || typeof node !== 'object') return null;
+  if (node.type === 'Literal') return typeof node.value === 'string' ? node.value : null;
+  if (node.type === 'BinaryExpression' && node.operator === '+') {
+    const left = resolveStaticModuleSpecifier(node.left);
+    const right = resolveStaticModuleSpecifier(node.right);
+    return typeof left === 'string' && typeof right === 'string' ? left + right : null;
+  }
+  if (node.type === 'TemplateLiteral' && node.quasis.length === node.expressions.length + 1) {
+    let value = '';
+    for (let index = 0; index < node.quasis.length; index += 1) {
+      const cooked = node.quasis[index].value.cooked;
+      if (typeof cooked !== 'string') return null;
+      value += cooked;
+      if (index < node.expressions.length) {
+        const expression = resolveStaticModuleSpecifier(node.expressions[index]);
+        if (typeof expression !== 'string') return null;
+        value += expression;
+      }
+    }
+    return value;
+  }
+  return null;
+}
+
 export function findModuleReferences(source) {
   const references = [];
   visit(syntaxTree(source), node => {
     if (node.type === 'ImportDeclaration' || node.type === 'ImportExpression' ||
         ((node.type === 'ExportNamedDeclaration' || node.type === 'ExportAllDeclaration') && node.source)) {
-      references.push({ kind: node.type, source: node.source.value ?? null });
+      references.push({ kind: node.type, source: resolveStaticModuleSpecifier(node.source) });
     } else if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === 'require') {
-      references.push({ kind: 'require', source: node.arguments[0]?.value ?? null });
+      references.push({ kind: 'require', source: resolveStaticModuleSpecifier(node.arguments[0]) });
     }
   });
   return references;
