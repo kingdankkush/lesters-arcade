@@ -1,4 +1,5 @@
 const DEFAULT_HMH_INITIAL_JS_CAP = 1_050_000;
+import { STACKED_ENTRY_JS_CAP, STACKED_INITIAL_JS_CAP } from '../apps/portal/src/stacked-contracts.mjs';
 
 function safeByteCount(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) {
@@ -55,6 +56,50 @@ export function assertHmhInitialJsBudget({
     remainingWithSharedChunks,
     sharedChunkBytes: shared,
     vendorBytes: vendor,
+  });
+}
+
+export function assertStackedJsBudget({
+  entryBytes,
+  sharedChunkBytes = 0,
+  vendorBytes,
+  entryCap = STACKED_ENTRY_JS_CAP,
+  initialCap = STACKED_INITIAL_JS_CAP,
+} = {}) {
+  if (entryCap === null) throw new Error('STACKED_ENTRY_JS_CAP has no measured baseline yet');
+  if (initialCap === null) throw new Error('STACKED_INITIAL_JS_CAP has no measured baseline yet');
+  const entry = safeByteCount(entryBytes, 'entryBytes');
+  const shared = safeByteCount(sharedChunkBytes, 'sharedChunkBytes');
+  const vendor = safeByteCount(vendorBytes, 'vendorBytes');
+  const entryLimit = safeByteCount(entryCap, 'entryCap');
+  const initialLimit = safeByteCount(initialCap, 'initialCap');
+  const initialBytes = entry + shared + vendor;
+  if (entry > entryLimit) throw new RangeError(`STACKED entry JS exceeds raw cap: ${entry} > ${entryLimit}`);
+  if (initialBytes > initialLimit) {
+    throw new RangeError(`STACKED initial JS including static graph exceeds raw cap: ${initialBytes} > ${initialLimit}`);
+  }
+  return Object.freeze({
+    entryBytes: entry,
+    entryCap: entryLimit,
+    initialBytes,
+    initialCap: initialLimit,
+    remainingEntry: entryLimit - entry,
+    remainingInitial: initialLimit - initialBytes,
+    sharedChunkBytes: shared,
+    vendorBytes: vendor,
+  });
+}
+
+export function deriveStackedJsBudgetCaps({ entryBytes, sharedChunkBytes = 0, vendorBytes } = {}) {
+  const entry = safeByteCount(entryBytes, 'entryBytes');
+  const shared = safeByteCount(sharedChunkBytes, 'sharedChunkBytes');
+  const vendor = safeByteCount(vendorBytes, 'vendorBytes');
+  const initialBytes = entry + shared + vendor;
+  const roundedCap = (bytes) => Math.ceil((bytes * 1.08) / 4096) * 4096;
+  return Object.freeze({
+    entryCap: roundedCap(entry),
+    initialBytes,
+    initialCap: roundedCap(initialBytes),
   });
 }
 

@@ -79,6 +79,22 @@ export class SeededRng {
     return this._next();
   }
 
+  /** Next raw uint32 while preserving the canonical stream and draw count. */
+  uint32() {
+    return Math.floor(this.float() * 4294967296) >>> 0;
+  }
+
+  /** Uniform integer in [0, n), using rejection sampling to avoid modulo bias. */
+  nextBelow(n) {
+    if (!Number.isInteger(n) || n < 1 || n > 0x100000000) {
+      throw new RangeError('nextBelow requires a positive uint32 bound');
+    }
+    const limit = 0x100000000 - (0x100000000 % n);
+    let value;
+    do value = this.uint32(); while (value >= limit);
+    return value % n;
+  }
+
   /** Float in [min, max). */
   range(min, max) {
     return min + (max - min) * this.float();

@@ -14,7 +14,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 **Retained rollback:** `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR`
 
-**Production cache marker:** `lesters-arcade-v28-hmh-feedback-and-ui`
+**Production cache marker:** `lesters-arcade-v29-stacked-shell-groundwork`
 
 > **Current release handoff:** [Cycle 075 release and continuation](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 

@@ -30,7 +30,7 @@ const EXPECTED = {
   GARBAGE_ROWS_PER_INJECTION: 1, GARBAGE_PENDING_MAX: 8,
   GARBAGE_HOLE_REPEAT_NUM: 3, GARBAGE_HOLE_REPEAT_DEN: 5, HASHPOWER_MAX: 8,
   REORG_COST_PERIOD_TICKS: 10800, REORG_COST_MAX: 12,
-  STACKED_ENTRY_JS_CAP: null, STACKED_INITIAL_JS_CAP: null,
+  STACKED_ENTRY_JS_CAP: 16384, STACKED_INITIAL_JS_CAP: 557056,
   CELL_PX: 32, STACKED_ZONE_TRANSITION_TICKS: 150,
   STACKED_GAME_ID: 'stacked', STACKED_URL_SLUG: 'stacked', STACKED_URL_SLUG_ALIAS: 'stack',
   STACKED_SEASON_ID: 'stacked-season-preview-1', STACKED_BRIDGE_PROTOCOL: 'stacked-bridge/v1',
@@ -165,10 +165,11 @@ test('artifact writer regenerates identical committed bytes twice', async () => 
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
-test('unmeasured bundle caps fail with the required error', async () => {
+test('first measured renderer bundle caps enforce entry and complete graph', async () => {
   const writer = await import('../scripts/write-stacked-contracts.mjs');
-  assert.throws(() => writer.assertStackedJsBudget({ entryBytes: 0, initialBytes: 0 }),
-    new Error('STACKED_ENTRY_JS_CAP has no measured baseline yet'));
+  assert.doesNotThrow(() => writer.assertStackedJsBudget({ entryBytes: 14322, initialBytes: 512938 }));
+  assert.throws(() => writer.assertStackedJsBudget({ entryBytes: 16385, initialBytes: 512938 }), /STACKED entry JS/u);
+  assert.throws(() => writer.assertStackedJsBudget({ entryBytes: 14322, initialBytes: 557057 }), /STACKED initial JS/u);
 });
 
 test('contract modules have no dependencies and the cabinet version is isolated', async () => {

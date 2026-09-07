@@ -28,7 +28,7 @@ import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
 import { dirname, relative, resolve } from 'node:path';
 import { statSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
-import { assertHmhInitialJsBudget, sumStaticChunkBytes } from './scripts/hmh-reboot-bundle-budget.mjs';
+import { assertHmhInitialJsBudget, assertStackedJsBudget, sumStaticChunkBytes } from './scripts/hmh-reboot-bundle-budget.mjs';
 import { createHmhPixiStubResolver, loadHmhPixiStub } from './scripts/hmh-reboot-pixi-vendor-stubs.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -36,7 +36,9 @@ const portalDir = resolve(__dirname, 'apps/portal');
 const portalEntry = resolve(portalDir, 'main.js');
 const hmhRebootEntry = resolve(__dirname, 'apps/hmh-reboot/src/main.mjs');
 const chikunEntry = resolve(__dirname, 'apps/chikun/src/main.mjs');
+const stackedEntry = resolve(__dirname, 'apps/stacked/src/main.mjs');
 const hmhPixiVendor = resolve(__dirname, 'apps/hmh-reboot/src/pixi-vendor.mjs');
+const stackedPixiVendor = resolve(__dirname, 'apps/stacked/src/pixi-vendor.mjs');
 const nodeModulesDir = resolve(__dirname, 'node_modules');
 const pixiModule = resolve(nodeModulesDir, 'pixi.js/lib/index.mjs');
 const pixiLibDir = resolve(nodeModulesDir, 'pixi.js/lib');
@@ -75,8 +77,11 @@ function createHmhPixiPlugin({ externalizeRuntimeImports }) {
     setup(buildApi) {
       buildApi.onResolve({ filter: /^pixi\.js$/ }, (args) => {
         const importer = args.importer.replaceAll('\\', '/');
-        if (externalizeRuntimeImports && importer.includes('/apps/hmh-reboot/src/')) {
-          return { path: '../chunks/hmh-pixi.js', external: true };
+        const SHARED_PIXI_IMPORTERS = /\/apps\/(?:hmh-reboot|stacked)\/src\//;
+        if (externalizeRuntimeImports && SHARED_PIXI_IMPORTERS.test(importer)) {
+          return importer.includes('/apps/stacked/src/')
+            ? { path: './stacked-pixi-v1.js', external: true }
+            : { path: '../chunks/hmh-pixi.js', external: true };
         }
         return { path: pixiModule };
       });
@@ -110,6 +115,7 @@ async function run() {
   const rawSize = statSync(portalEntry).size;
   const childRawSize = statSync(hmhRebootEntry).size;
   const chikunRawSize = statSync(chikunEntry).size;
+  const stackedRawSize = statSync(stackedEntry).size;
 
   // Clean only our own output dir, never source.
   if (existsSync(outdir)) rmSync(outdir, { recursive: true, force: true });
@@ -120,6 +126,7 @@ async function run() {
       main: portalEntry,
       'hmh-reboot/game': hmhRebootEntry,
       'chikun/game': chikunEntry,
+      'stacked/game': stackedEntry,
     },
     absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
     plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],
@@ -156,19 +163,39 @@ async function run() {
     metafile: true,
     logLevel: 'info',
   });
+  const stackedVendorResult = await build({
+    entryPoints: { 'stacked/stacked-pixi-v1': stackedPixiVendor },
+    plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: false })],
+    bundle: true,
+    splitting: false,
+    format: 'esm',
+    minify: true,
+    treeShaking: true,
+    target: ['es2020'],
+    outdir,
+    entryNames: '[dir]/[name]',
+    legalComments: 'none',
+    sourcemap: wantSourceMap,
+    metafile: true,
+    logLevel: 'info',
+  });
   const combinedMetafile = {
-    inputs: { ...result.metafile.inputs, ...vendorResult.metafile.inputs },
-    outputs: { ...result.metafile.outputs, ...vendorResult.metafile.outputs },
+    inputs: { ...result.metafile.inputs, ...vendorResult.metafile.inputs, ...stackedVendorResult.metafile.inputs },
+    outputs: { ...result.metafile.outputs, ...vendorResult.metafile.outputs, ...stackedVendorResult.metafile.outputs },
   };
 
   const outMain = resolve(outdir, 'main.js');
   const outChild = resolve(outdir, 'hmh-reboot/game.js');
   const outChikun = resolve(outdir, 'chikun/game.js');
   const outChildVendor = resolve(outdir, 'chunks/hmh-pixi.js');
+  const outStacked = resolve(outdir, 'stacked/game.js');
+  const outStackedVendor = resolve(outdir, 'stacked/stacked-pixi-v1.js');
   const minSize = statSync(outMain).size;
   const childMinSize = statSync(outChild).size;
   const chikunMinSize = statSync(outChikun).size;
   const childVendorSize = statSync(outChildVendor).size;
+  const stackedMinSize = statSync(outStacked).size;
+  const stackedVendorSize = statSync(outStackedVendor).size;
   // Cycle 074: game.js statically imports hoisted shared chunks (modules the
   // portal also imports). They load on the same initial path and count.
   const hmhSharedChunks = sumStaticChunkBytes({
@@ -181,9 +208,14 @@ async function run() {
     sharedChunkBytes: hmhSharedChunks.bytes,
     cap: HMH_INITIAL_JS_CAP,
   });
+  const stackedSharedChunks = sumStaticChunkBytes({
+    metafile: result.metafile,
+    entryOutput: relative(__dirname, outStacked).replaceAll('\\', '/'),
+  });
   const entryDeltaPct = 100 * (minSize / rawSize - 1);
   const childDeltaPct = 100 * (childMinSize / childRawSize - 1);
   const chikunDeltaPct = 100 * (chikunMinSize / chikunRawSize - 1);
+  const stackedDeltaPct = 100 * (stackedMinSize / stackedRawSize - 1);
 
   if (wantMeta) {
     const { writeFileSync } = await import('node:fs');
@@ -202,6 +234,9 @@ async function run() {
   console.log(`HMH reboot entry:   ${human(childMinSize)}  (${childDeltaPct >= 0 ? '+' : ''}${childDeltaPct.toFixed(1)}% vs child source)`);
   console.log(`Chikun source:      ${human(chikunRawSize)}`);
   console.log(`Chikun entry:       ${human(chikunMinSize)}  (${chikunDeltaPct >= 0 ? '+' : ''}${chikunDeltaPct.toFixed(1)}% vs child source)`);
+  console.log(`STACKED entry:      ${human(stackedMinSize)}  (${stackedDeltaPct >= 0 ? '+' : ''}${stackedDeltaPct.toFixed(1)}% vs shell source)`);
+  console.log(`STACKED Pixi vendor:${human(stackedVendorSize)}  (dedicated versioned module)`);
+  console.log(`STACKED static chunks: ${human(stackedSharedChunks.bytes)} across ${stackedSharedChunks.chunks.length} chunk(s)`);
   console.log(`HMH Pixi vendor:    ${human(childVendorSize)}  (stable preloaded module)`);
   console.log(`HMH shared chunks:  ${human(hmhSharedChunks.bytes)} (${hmhSharedChunks.bytes.toLocaleString('en-US')} B) across ${hmhSharedChunks.chunks.length} hoisted chunk(s) game.js imports statically`);
   console.log(`HMH initial JS:     ${human(hmhBudget.combinedInitialChildBytes)} (${hmhBudget.combinedInitialChildBytes.toLocaleString('en-US')} B) / ${human(hmhBudget.cap)} raw aggregate, entry + vendor`);
@@ -209,6 +244,13 @@ async function run() {
   console.log(`HMH headroom:       ${human(hmhBudget.remaining)} entry + vendor; ${human(hmhBudget.remainingWithSharedChunks)} including shared chunks`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
   console.log(`Output dir:         apps/portal/dist/`);
+  // Intentionally last: emit exact measurements, then fail closed until the
+  // first meaningful renderer bundle exists and its caps can be frozen.
+  assertStackedJsBudget({
+    entryBytes: stackedMinSize,
+    sharedChunkBytes: stackedSharedChunks.bytes,
+    vendorBytes: stackedVendorSize,
+  });
 }
 
 run().catch((err) => {

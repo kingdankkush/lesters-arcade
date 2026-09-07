@@ -432,13 +432,14 @@ backdrop shader → static gradient; L3 `×0.15`, board glow off, shake ×0.5, p
 
 | Constant | Frozen value | Note |
 | --- | --- | --- |
-| `STACKED_ENTRY_JS_CAP` | `null` | **Hard-fails until measured.** `assertStackedJsBudget` throws `Error('STACKED_ENTRY_JS_CAP has no measured baseline yet')` — a readable failure, not the `TypeError` `safeByteCount()` would raise. S-11's first clean build sets it to `measured × 1.08`, rounded up to the nearest 1,000, with the measurement quoted in the ledger. |
-| `STACKED_INITIAL_JS_CAP` | `null` | Same discipline. Set from `graphBytes` = `dist/stacked/game.js` plus every output in its transitive static import graph, the number a phone actually downloads. |
+| `STACKED_ENTRY_JS_CAP` | `16_384` | S-12 canonical-geometry renderer baseline: 14,322 raw bytes; programmatic `ceil(14,322 × 1.08 / 4,096) × 4,096 = 16,384`. |
+| `STACKED_INITIAL_JS_CAP` | `557_056` | S-12 complete static initial graph: 512,938 raw bytes = 14,322 entry + 2,001 across both transitive static chunks + 496,615 dedicated Pixi vendor; programmatic `ceil(512,938 × 1.08 / 4,096) × 4,096 = 557,056`. |
 | `HMH_INITIAL_JS_CAP` | `1_050_000` — **unchanged** | Do **not** retarget it at the sum of the split caps: `HMH_ENTRY_JS_CAP + ARCADE_PIXI_VENDOR_CAP` is 1,077,000, which is 27,000 bytes *looser* than what the build promises today. Per-artifact caps are additional gates, never a replacement. |
 
 Rejected: `200_000` and `260_000` (portal §6.2) and `220 KB` (gates §6.2) — all three are guesses, and
-a cap that starts permissive never gets tightened. This is the one row in this document that is
-deliberately not a number, per phasing §0.3.
+a cap that starts permissive never gets tightened. S-12's measured baseline is the documented
+first-baseline exception. Later unfinished-feature growth requires an explicit measured development
+baseline revision; neither cap may be raised silently.
 
 **Hard prerequisite for any of it to hold:** `createHmhPixiPlugin` in `build.mjs` externalises
 `pixi.js` only for importers matching `/apps/hmh-reboot/src/`. It must be widened to an array

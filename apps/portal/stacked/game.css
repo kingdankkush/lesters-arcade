@@ -1,0 +1,6 @@
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#05070f}
+*{box-sizing:border-box}
+html,body,#stackedStage{width:100%;height:100%;margin:0;overflow:hidden}
+#stackedStage{position:relative;background:radial-gradient(circle at 50% 30%,#102544,#05070f 68%);touch-action:none;user-select:none}
+#stackedStage canvas{display:block;width:100%;height:100%}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

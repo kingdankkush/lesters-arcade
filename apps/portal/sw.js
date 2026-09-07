@@ -10,7 +10,7 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v28-hmh-feedback-and-ui';
+const CACHE_VERSION = 'lesters-arcade-v29-stacked-shell-groundwork';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
@@ -22,6 +22,10 @@ const PRECACHE_URLS = [
   '/hmh-reboot/styles.css',
   '/dist/hmh-reboot/game.js',
   '/dist/chunks/hmh-pixi.js',
+  '/stacked/index.html',
+  '/stacked/game.css',
+  '/dist/stacked/game.js',
+  '/dist/stacked/stacked-pixi-v1.js',
   '/chikun/index.html',
   '/chikun/game.css',
   '/dist/chikun/game.js',

@@ -424,7 +424,20 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/stacked-cabinet.mjs",
   "scripts/write-stacked-contracts.mjs",
   "scripts/stacked-contract-audit.mjs",
-  "tests/stacked-contracts.test.mjs"
+  "tests/stacked-contracts.test.mjs",
+  "apps/stacked/src/main.mjs",
+  "apps/stacked/src/pixi-vendor.mjs",
+  "apps/stacked/src/render/layers.mjs",
+  "apps/stacked/src/render/board-view.mjs",
+  "apps/stacked/src/render/root-fit.mjs",
+  "apps/stacked/src/render/renderer.mjs",
+  "apps/portal/src/stacked-layout.mjs",
+  "tests/stacked-shell.test.mjs",
+  "tests/stacked-bundle-budget.test.mjs",
+  "tests/stacked-layout.test.mjs",
+  "tests/stacked-root-fit.test.mjs",
+  "tests/stacked-render-tree.test.mjs",
+  "scripts/stacked-browser-audit.mjs"
 ];
 
 // Every Python script that must compile (python -m py_compile).

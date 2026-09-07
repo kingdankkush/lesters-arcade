@@ -41,6 +41,7 @@
     "smoke:hmh:performance": "node scripts/hmh-reboot-performance-browser-smoke.mjs",
     "certify:hmh:browser": "node scripts/hmh-reboot-release-browser-certification.mjs",
     "audit:hmh:network": "node scripts/hmh-reboot-network-console-audit.mjs",
+    "audit:stacked:browser": "node scripts/stacked-browser-audit.mjs",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
     "smoke:portal:simulated-wallet": "node scripts/hmh-simulated-wallet-browser-smoke.mjs",
