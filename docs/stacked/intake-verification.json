@@ -1,0 +1,55 @@
+{
+  "count": 10,
+  "files": [
+    {
+      "path": "docs/stacked/spec/gates.md",
+      "sha256": "4929becf98ba24ff2f240b5e1b35896b014d56b81f51563a3d4efb3ca6eee36c",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/spec/integrity.md",
+      "sha256": "daeb36fd99a38c864fcfcc184b123d6bbe01b003ec227d1e6bf616f75cbdab9c",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/spec/mechanics.md",
+      "sha256": "348be04a6c68daad0b72c52b59c78a8702582601186b35f4086fe6ed782fe04e",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/spec/mobile.md",
+      "sha256": "3c8d151e886c56a56622fe64ca7a6956195a28f20453edee828f1bd074e1f809",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/spec/portal.md",
+      "sha256": "aca1b34d0be2dbf18132d66ba532cf47f038f2524b4e0be12909e01db493b215",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/spec/versus.md",
+      "sha256": "895a22abc8eb2cc461aa922914a5e6520196d1f8c8926722601cef2746417a66",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/spec/visuals.md",
+      "sha256": "d3020dd8ac2561ef5478a4ea92c428095ace24b242ca6b7cc043edbbe7d54a2d",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/STACKED-CONTRACTS.md",
+      "sha256": "c13e0ce61105541c9f32deef2ae029cf7e3d15712aeac799fa85c5ecf1a3b80d",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/STACKED-CYCLES.md",
+      "sha256": "366b4a0f850b923ac98c2117a90a4d3cc6748b12f22588d0347c656954e74021",
+      "verified": true
+    },
+    {
+      "path": "docs/stacked/STACKED-MASTER-PLAN.md",
+      "sha256": "0034bc8cbb9d0e3e2b459a25bde27640d11f013a636290b497b54d03dcf01174",
+      "verified": true
+    }
+  ]
+}

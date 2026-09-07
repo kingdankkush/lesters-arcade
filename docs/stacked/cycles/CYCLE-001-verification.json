@@ -1,0 +1,154 @@
+{
+  "cycle": "S-01",
+  "baseline": "3dea4e17fb5c0e43121fc6f67b26c741202bbca0",
+  "focusedTests": 44,
+  "counts": {
+    "baseline": {
+      "tests": 2563,
+      "pass": 2512,
+      "fail": 51,
+      "skipped": 0,
+      "todo": 0
+    },
+    "candidate": {
+      "tests": 2607,
+      "pass": 2556,
+      "fail": 51,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "newFailures": [],
+  "existingRetiredFailuresIdentical": true,
+  "commands": [
+    {
+      "command": "node --test tests/stacked-contracts.test.mjs",
+      "exitCode": 0,
+      "seconds": 2.76,
+      "logFile": "candidate-node-test-tests-stacked-contracts-test-mjs.log",
+      "logSha256": "211e3b96e963bffa015adc55ac8486c784939d556d8a0261681192655a1d3c3d"
+    },
+    {
+      "command": "npm run design:stacked-contracts",
+      "exitCode": 0,
+      "seconds": 0.92,
+      "logFile": "candidate-npm-run-design-stacked-contracts.log",
+      "logSha256": "b60e65d0ceb99f68d3d738f53caa85f99555a5fb9d13905a8656edf9ba367b09"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 1,
+      "seconds": 24.92,
+      "logFile": "candidate-npm-test.log",
+      "logSha256": "75313b5cd88b961782cfae1fd18b49c5d9cdd732ccedfcc0f2fa9f6ae23ca818"
+    },
+    {
+      "command": "npm run check",
+      "exitCode": 0,
+      "seconds": 27.33,
+      "logFile": "candidate-npm-run-check.log",
+      "logSha256": "6ea1749dd2a1df868ad19e3c27167e495c04fe6c536ef36e86312c57c532254f"
+    },
+    {
+      "command": "npm run contracts:check",
+      "exitCode": 0,
+      "seconds": 0.66,
+      "logFile": "candidate-npm-run-contracts-check.log",
+      "logSha256": "cd0ceaf8d8faa162aaa8a8c2a15b16e46cce28e3c988910382ea726ed9a235ce"
+    },
+    {
+      "command": "npm run test:release",
+      "exitCode": 0,
+      "seconds": 95.86,
+      "logFile": "candidate-npm-run-test-release.log",
+      "logSha256": "3d85f93da9f52c5291673b1c2c47207b20309caa84959b5210e4441de11fa1d5"
+    },
+    {
+      "command": "npm run docs:cabinets",
+      "exitCode": 0,
+      "seconds": 0.95,
+      "logFile": "candidate-npm-run-docs-cabinets.log",
+      "logSha256": "f385e5b0f0bb7e861200264c0267cb757b317373c37ff1271f0de1ec31afa0c3"
+    },
+    {
+      "command": "npm run docs:links",
+      "exitCode": 0,
+      "seconds": 1.03,
+      "logFile": "candidate-npm-run-docs-links.log",
+      "logSha256": "b4952dffe909730078ea67a769178cb5efdaf1a4568660aa6d72887816b6e184"
+    },
+    {
+      "command": "npm run assets:verify",
+      "exitCode": 0,
+      "seconds": 0.69,
+      "logFile": "candidate-npm-run-assets-verify.log",
+      "logSha256": "e782ee65fc0dc75f82f02625cb42c07d9d793c150e04af954bdd54df94f2599b"
+    },
+    {
+      "command": "npm run design:security-audit",
+      "exitCode": 0,
+      "seconds": 0.91,
+      "logFile": "candidate-npm-run-design-security-audit.log",
+      "logSha256": "b1d9f1f758050c3f35fe71346ced1426175308842f98ba732933ffdcaf8c2b55"
+    },
+    {
+      "command": "npm run design:third-party-security",
+      "exitCode": 0,
+      "seconds": 0.94,
+      "logFile": "candidate-npm-run-design-third-party-security.log",
+      "logSha256": "575fe32208dd9047299eb0bb54acaf473b68d67cb1aaefca808dcb2d5adad189"
+    },
+    {
+      "command": "npm run design:integrity-bounds",
+      "exitCode": 0,
+      "seconds": 0.94,
+      "logFile": "candidate-npm-run-design-integrity-bounds.log",
+      "logSha256": "d7e7909f3adc9a910e8910fd0df324f8261330e889303fdd4234b96947e6a432"
+    },
+    {
+      "command": "npm run design:tokens",
+      "exitCode": 0,
+      "seconds": 1.06,
+      "logFile": "candidate-npm-run-design-tokens.log",
+      "logSha256": "bb27117e438e33ca7a42d52fa182a0fcdeab763a8f99ed3ba669cbc13b398163"
+    },
+    {
+      "command": "npm run repo:health:strict",
+      "exitCode": 0,
+      "seconds": 1.66,
+      "logFile": "candidate-npm-run-repo-health-strict.log",
+      "logSha256": "e242c4a566b892a5ab3a6cd84bb0600d43a12a1ffe7295723b803fd2e25fc8c9"
+    },
+    {
+      "command": "npm run vercel:build",
+      "exitCode": 0,
+      "seconds": 186.05,
+      "logFile": "candidate-npm-run-vercel-build.log",
+      "logSha256": "1be0518ebbc702493ad43c669c202d85acf2cb78167d41c914806232c6c0a23f"
+    }
+  ],
+  "unchangedBundles": [
+    {
+      "path": "chunks/hmh-pixi.js",
+      "bytes": 463115,
+      "sha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a"
+    },
+    {
+      "path": "hmh-reboot/game.js",
+      "bytes": 464501,
+      "sha256": "40d7a61c0ed85d04c14b2f96c01c8ed41e707725a3f6b7e5e895a83c7ed49ec1"
+    },
+    {
+      "path": "chikun/game.js",
+      "bytes": 22358,
+      "sha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4"
+    }
+  ],
+  "independentReview": {
+    "passed": true,
+    "blockers": [],
+    "suggestions": []
+  },
+  "reviewSha256": "646c11041b32f0343ef7bd6a228d916725495edd3354e3f32e028659cafea38b",
+  "contractsJsonSha256": "a2bf7c43bbe7db7a8d03c203d2532a3af9e72880e68f9b60cae2a78f9be8cbd3"
+}

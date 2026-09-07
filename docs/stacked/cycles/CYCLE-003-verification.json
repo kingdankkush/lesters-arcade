@@ -1,0 +1,344 @@
+{
+  "cycle": "S-03",
+  "accepted": true,
+  "publicationAuthorizedButNotYetPublished": true,
+  "baselineHead": "15612012fdb1ef52dc013a19dd524ba899035627",
+  "candidatePatchSha256": "45457a58432010e1ef622e06623ebe6612fdcdab9a2519100ed58f6aea56e640",
+  "files": [
+    {
+      "path": "apps/portal/src/seeded-rng.mjs",
+      "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7"
+    },
+    {
+      "path": "apps/portal/src/stacked-cabinet.mjs",
+      "sha256": "d49f050e688a6944b8cf985703acde7f2da2051a33abbfb7dead01e36abef3fc"
+    },
+    {
+      "path": "apps/portal/src/stacked-contracts.mjs",
+      "sha256": "f09b297b9e746c15513d3e93b00da82b820d2a6a5485c34e9084c36fff6654cb"
+    },
+    {
+      "path": "apps/portal/src/stacked-match.mjs",
+      "sha256": "d52c4d2c6847b938d92e179eb0b1f54b2d9a8ccdd0252abc89250eafa83fffdd"
+    },
+    {
+      "path": "apps/portal/src/stacked-sim.mjs",
+      "sha256": "15ee85422508268327a01547ec79e735f139fb8c1d52bda53cc0f44c5068adb2"
+    },
+    {
+      "path": "apps/portal/src/stacked-versus-table.mjs",
+      "sha256": "793a3a1ccfa9d9eb14455597fedc7bb0584a22a478e53328b69b8961dc8c981d"
+    },
+    {
+      "path": "docs/stacked/DECISIONS.md",
+      "sha256": "dde366d6b0638929f1faa2ea0452d416832b9469387ccd1ae01ea4800594c889"
+    },
+    {
+      "path": "docs/stacked/STACKED-CONTRACTS.md",
+      "sha256": "57ed6502028e5adae9d55980cf8dac54a050b6ca301d8cf1e219594e1d68ae20"
+    },
+    {
+      "path": "docs/stacked/contracts.json",
+      "sha256": "a2bf7c43bbe7db7a8d03c203d2532a3af9e72880e68f9b60cae2a78f9be8cbd3"
+    },
+    {
+      "path": "docs/stacked/spec/versus.md",
+      "sha256": "e0a7f5fb53b4d25914fbbd627ec020e96077fb1d22201ce5077520e73f458fba"
+    },
+    {
+      "path": "scripts/stacked-contract-audit.mjs",
+      "sha256": "57395c0b0a01db8f06602c5af67201b149d32c202a52eb6272a5f7d10aa54cf6"
+    },
+    {
+      "path": "scripts/stacked-sim-purity-check.mjs",
+      "sha256": "e34c0cac1d5cba2b58a95e650b7b3a1a076475fb31ab36ede2359edd9088fab0"
+    },
+    {
+      "path": "scripts/syntax-check.mjs",
+      "sha256": "8342a539a9a6427e715bdc604a9dc059dd279b8830cb757d08bc09f7a01c86c0"
+    },
+    {
+      "path": "tests/fixtures/stacked-golden-run.json",
+      "sha256": "690a817c53ba6e89780260f3ec661d2d5e348144fa5f64fa9fc7bbc5a800a874"
+    },
+    {
+      "path": "tests/seeded-rng.test.mjs",
+      "sha256": "5a01e0c0679896385fa2b0f775f1f7a6274320f3f37170c627930a3cf6b0f4c8"
+    },
+    {
+      "path": "tests/stacked-contracts.test.mjs",
+      "sha256": "1cdff2f0423c2f93d71637c5f57195d77667d46955a3c606ac403c89d1836af4"
+    },
+    {
+      "path": "tests/stacked-match.test.mjs",
+      "sha256": "481c39556bebc90106ecf221b35ed838df71fcc9aa5830606c2e4899b8111ed2"
+    },
+    {
+      "path": "tests/stacked-s03-core.test.mjs",
+      "sha256": "9a9609fcfa2c41a80b8214e2e8cdc5001807c3b409e092dd7259e5bcb316f9c8"
+    },
+    {
+      "path": "tests/stacked-s03-review-regressions.test.mjs",
+      "sha256": "a7d2cf0b92d670b65ce5628f13204322174721e2d4233e8d3daa18e2d63bda6a"
+    },
+    {
+      "path": "tests/stacked-sim-determinism.test.mjs",
+      "sha256": "296ff63c049c6fb0d40f5e6ad97ff4598c4042fcecf3ec2fd7d70d772cc0e881"
+    },
+    {
+      "path": "tests/stacked-sim-purity.test.mjs",
+      "sha256": "6fec7a556e9414ccc909fbf514ea06bae74441c7b8ee07cafeaa865c93ec952e"
+    },
+    {
+      "path": "tests/stacked-sim.test.mjs",
+      "sha256": "6948109e5933a8c4c138237d9bcf083b669f2296903a2821a76c342a96328e11"
+    },
+    {
+      "path": "tests/stacked-versus-table.test.mjs",
+      "sha256": "7eac6d5ce95598da2fb46136ee31de0e26fa2485a00a44647fb2c20775dc3ea5"
+    }
+  ],
+  "gates": [
+    {
+      "command": "node --test tests/stacked-contracts.test.mjs tests/seeded-rng.test.mjs tests/stacked-sim.test.mjs tests/stacked-sim-determinism.test.mjs tests/stacked-sim-purity.test.mjs tests/stacked-s03-core.test.mjs tests/stacked-match.test.mjs tests/stacked-versus-table.test.mjs tests/stacked-s03-review-regressions.test.mjs",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 12.22,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/01.log",
+      "sha256": "e54c94c292fe08b9d8b5294b74aa5f4a6f963859e65c4683f4c04e28c4613606",
+      "totals": {
+        "tests": 141,
+        "pass": 141,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "failedTests": []
+    },
+    {
+      "command": "npm run design:stacked-purity",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.05,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/02.log",
+      "sha256": "7b2787e02335983495cb7db3e7c844e6ea4a9379801493a3657cfdb3f0bed933",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run check",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 30.06,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/03.log",
+      "sha256": "8d85fca1d1d52a3e513545afff2a5c7cf7c8eadfceb82852c85d7c8b014ee555",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm test",
+      "exitCode": 1,
+      "timedOut": false,
+      "seconds": 34.67,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/04.log",
+      "sha256": "51091d21f312c978805c3936c28eae991c486f8b04b988e9d47e466aeda4139e",
+      "totals": {
+        "tests": 2693,
+        "pass": 2642,
+        "fail": 51,
+        "skipped": 0,
+        "todo": 0
+      },
+      "failedTests": [
+        "Desert Approach v2.3 ships two compact runtime atlases with certified budgets",
+        "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata",
+        "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage",
+        "Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract",
+        "Level 1 PixelLab surface zones turn candidate terrain into authored route ground",
+        "Level 1 final ambient world assets ship original animated detail loops across biomes",
+        "Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops",
+        "Level 1 original polish assets ship forest, water, farm, road, town, and cliff props",
+        "Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas",
+        "Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs",
+        "Level 2 final city world pack ships authored district props and animated setpieces",
+        "Level 3 final getaway ground pack covers rooftop, glass, train, rail, storm, and speed texture roles",
+        "Level 3 final getaway world pack ships animated authored setpieces for the finale route",
+        "P0 pickup icon pack contains disk-real manifest-backed runtime ids",
+        "SBS Level 1 ground assets exist with 128px tile width and cleaned alpha-compatible PNGs",
+        "VFX/UI chrome pack covers all art-redo missing VFX and UI chrome runtime ids",
+        "WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps",
+        "WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with full 8-direction matrices",
+        "WO-110 boss redo includes super-move telegraphs and death spectacle",
+        "WO-110 boss redo ships true-scale human phase forms in the 192-256px range",
+        "WO-115 batch two completes five Level 1 runtime enemy matrices",
+        "WO-117 polish pack ships generated artwork for world, VFX, and UI polish",
+        "WO-119 Level 1 PixelLab world assets are present, alpha-clean, and route-integrated",
+        "WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime replacement",
+        "WO-81/82/79 animation polish certification passes runtime gates",
+        "WO-82 Lit Commando and Lit Valkyrie are certified with no missing direction cells",
+        "WO-90 certifies all placeholder redo packs and contact sheets",
+        "WO-97 files exist, have stable dimensions, and animated assets expose sprite-sheet metadata",
+        "WO-98 placed objects only reference approved WO-97 assets that exist on disk",
+        "Wasteland Debt Collector has approved 8-direction production sprite coverage",
+        "Wave 3 art matrix gates full hero state-direction coverage and enemy readability states",
+        "all playable rosters carry full 8-direction required animation coverage with real frame assets",
+        "animated-roster lester compatibility matrix is valid, complete, and runtime-addressable",
+        "animated-roster lilly compatibility matrix is valid, complete, and runtime-addressable",
+        "cohesive Level 1 replacement assets exist, follow the theme palette, and replace weak generic roles",
+        "complete PixelLab AAA wave enemies replace old partial runtime kits",
+        "curated HMH kit retains only the exact browser runtime set",
+        "curated runtime assets exist, use safe portal-relative paths, and have expected dimensions",
+        "every authored setpiece template id exists and references repo-owned coherent-world assets",
+        "every curated Level 1 asset reference resolves to a real generated/source file",
+        "every runtime terrain family resolves to its own shipped material PNG",
+        "existing sketch asset coverage references only repo-owned coherent-world assets",
+        "final animation completion pack ships enemy readability states for active bespoke roster keys",
+        "final animation completion pack ships hero polish states for every playable roster",
+        "final boss animation pack covers authored Level 1 and Level 2 bosses with readable combat states",
+        "final setpiece kit ships original POI level-design assets for every authored Level 1 arena",
+        "final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore",
+        "generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps",
+        "no playable hero frame keeps the tiny QA triangle/robot placeholder signature",
+        "playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts",
+        "runtime roster does not ship known QA-green triangle enemy kits after art repair"
+      ],
+      "newFailureNames": [],
+      "baselineAwarePass": true
+    },
+    {
+      "command": "npm run test:release",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 107.45,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/05.log",
+      "sha256": "f77b8ca9ec21aacba9232f15ab62e8e6c30abb30b1d0c7728e0915e42e2ca276",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run vercel:build",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 182.7,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/06.log",
+      "sha256": "0272ecc78a5a223d84c8b13a420c356294dec972e947a70edbdf6df46cca1605",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run assets:verify",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.2,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/07.log",
+      "sha256": "e782ee65fc0dc75f82f02625cb42c07d9d793c150e04af954bdd54df94f2599b",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run repo:health:strict",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.34,
+      "log": ".tmp/stacked-gates/S03/20260907T133944Z/08.log",
+      "sha256": "8e600ec063a882cabd2c0c701c097191f634543324c5786756a1b9190ccbee8b",
+      "totals": {},
+      "failedTests": []
+    }
+  ],
+  "knownFullSuiteFailures": {
+    "totals": {
+      "tests": 2563,
+      "pass": 2512,
+      "fail": 51,
+      "skipped": 0,
+      "todo": 0
+    },
+    "failedTests": [
+      "Desert Approach v2.3 ships two compact runtime atlases with certified budgets",
+      "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata",
+      "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage",
+      "Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract",
+      "Level 1 PixelLab surface zones turn candidate terrain into authored route ground",
+      "Level 1 final ambient world assets ship original animated detail loops across biomes",
+      "Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops",
+      "Level 1 original polish assets ship forest, water, farm, road, town, and cliff props",
+      "Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas",
+      "Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs",
+      "Level 2 final city world pack ships authored district props and animated setpieces",
+      "Level 3 final getaway ground pack covers rooftop, glass, train, rail, storm, and speed texture roles",
+      "Level 3 final getaway world pack ships animated authored setpieces for the finale route",
+      "P0 pickup icon pack contains disk-real manifest-backed runtime ids",
+      "SBS Level 1 ground assets exist with 128px tile width and cleaned alpha-compatible PNGs",
+      "VFX/UI chrome pack covers all art-redo missing VFX and UI chrome runtime ids",
+      "WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps",
+      "WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with full 8-direction matrices",
+      "WO-110 boss redo includes super-move telegraphs and death spectacle",
+      "WO-110 boss redo ships true-scale human phase forms in the 192-256px range",
+      "WO-115 batch two completes five Level 1 runtime enemy matrices",
+      "WO-117 polish pack ships generated artwork for world, VFX, and UI polish",
+      "WO-119 Level 1 PixelLab world assets are present, alpha-clean, and route-integrated",
+      "WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime replacement",
+      "WO-81/82/79 animation polish certification passes runtime gates",
+      "WO-82 Lit Commando and Lit Valkyrie are certified with no missing direction cells",
+      "WO-90 certifies all placeholder redo packs and contact sheets",
+      "WO-97 files exist, have stable dimensions, and animated assets expose sprite-sheet metadata",
+      "WO-98 placed objects only reference approved WO-97 assets that exist on disk",
+      "Wasteland Debt Collector has approved 8-direction production sprite coverage",
+      "Wave 3 art matrix gates full hero state-direction coverage and enemy readability states",
+      "all playable rosters carry full 8-direction required animation coverage with real frame assets",
+      "animated-roster lester compatibility matrix is valid, complete, and runtime-addressable",
+      "animated-roster lilly compatibility matrix is valid, complete, and runtime-addressable",
+      "cohesive Level 1 replacement assets exist, follow the theme palette, and replace weak generic roles",
+      "complete PixelLab AAA wave enemies replace old partial runtime kits",
+      "curated HMH kit retains only the exact browser runtime set",
+      "curated runtime assets exist, use safe portal-relative paths, and have expected dimensions",
+      "every authored setpiece template id exists and references repo-owned coherent-world assets",
+      "every curated Level 1 asset reference resolves to a real generated/source file",
+      "every runtime terrain family resolves to its own shipped material PNG",
+      "existing sketch asset coverage references only repo-owned coherent-world assets",
+      "final animation completion pack ships enemy readability states for active bespoke roster keys",
+      "final animation completion pack ships hero polish states for every playable roster",
+      "final boss animation pack covers authored Level 1 and Level 2 bosses with readable combat states",
+      "final setpiece kit ships original POI level-design assets for every authored Level 1 arena",
+      "final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore",
+      "generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps",
+      "no playable hero frame keeps the tiny QA triangle/robot placeholder signature",
+      "playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts",
+      "runtime roster does not ship known QA-green triangle enemy kits after art repair"
+    ]
+  },
+  "independentReviewComposition": [
+    {
+      "round": "r4",
+      "scope": "Passed. The R3 blocker is closed: the audit now examines every application .mjs/.js file without exempting canonical or nested same-named modules. The supplied two-file delta introduces no concrete runtime, security, or logic regression and does not waive any device, financial, integrity, or public-launch gate.",
+      "passed": true,
+      "reviewedPatchSha256": "05bac1832302d8b7b2a5111b8e280234c20257df79fee4801f821f942abd4181",
+      "commandEvents": 0,
+      "verdictSha256": "3ae35218836f8a84016b6d79dc4fd45928a51d2eace99619e0b6ad73af514022"
+    },
+    {
+      "round": "r4a",
+      "scope": "Passed for the approval-test follow-up to R4 only. The revised test recognizes G-15's bounded AUTHORIZED, GATED state, preserves complete ordered coverage of all nineteen gate records, and explicitly enforces the continuing G-2/S-22 public-play block, G-2/G-3 conditional integrity boundaries, and prohibitions on real funds, paid entry, settlement activation, authority changes, and contract deployment. It also anchors the authorization to the owner's supplied publication direction. This source-only verdict does not constitute human-device acceptance, shipping acceptance, deployment approval beyond the documented bounded scope, or independent test execution; any parent-reported execution remains parent evidence.",
+      "passed": true,
+      "reviewedPatchSha256": "45457a58432010e1ef622e06623ebe6612fdcdab9a2519100ed58f6aea56e640",
+      "commandEvents": 0,
+      "verdictSha256": "5f81a07107efbc460f858f241c95bca5db9389c06ad31a9617f3b3b6f6c8d244"
+    }
+  ],
+  "staticScan": {
+    "literalSecrets": [],
+    "shellInjection": [],
+    "eval": [],
+    "privatePaths": []
+  },
+  "browserGatesRun": false,
+  "cabinetVersion": "0.2.0",
+  "goldenStateHash": 1015998860,
+  "unchangedGoldenResultTuple": true,
+  "remaining": [
+    "S-04 onward",
+    "no playable public STACKED until S-22",
+    "no financial/contract actions authorized"
+  ]
+}

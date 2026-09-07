@@ -111,3 +111,24 @@ test('createSeededRng matches the class', () => {
   const b = new SeededRng(2026);
   for (let i = 0; i < 25; i += 1) assert.equal(a.float(), b.float());
 });
+
+test('uint32 is additive and preserves the pinned float stream/count', () => {
+  const raw = mulberry32(0x12345678);
+  const rng = new SeededRng(0x12345678);
+  const expected = Math.floor(raw() * 4294967296) >>> 0;
+  assert.equal(rng.uint32(), expected);
+  assert.equal(rng.count, 1);
+  assert.equal(rng.float(), raw());
+  assert.equal(rng.count, 2);
+});
+
+test('nextBelow validates its bound and uses unbiased rejection sampling', () => {
+  const rng = new SeededRng(123);
+  for (const invalid of [0, -1, 1.5, 0x100000001, NaN]) {
+    assert.throws(() => rng.nextBelow(invalid), /positive uint32 bound/);
+  }
+  const counts = [0, 0, 0, 0, 0, 0, 0];
+  for (let i = 0; i < 7000; i += 1) counts[rng.nextBelow(7)] += 1;
+  assert.equal(counts.reduce((a, b) => a + b, 0), 7000);
+  assert.ok(counts.every((count) => count > 850 && count < 1150), counts.join(','));
+});

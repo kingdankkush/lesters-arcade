@@ -1,0 +1,39 @@
+STACKED plan doc set - provenance
+=================================
+
+Source repository : Lester's Arcade (local source path redacted on repository import)
+Source branch     : fable/hmh-cycle-072-visual-facelift
+Baseline commit   : ff2934dbf26de3d7bc4c6aa1271455202d419c50
+Baseline (short)  : ff2934db
+Baseline authored : 2026-09-04T00:11:55-07:00 by Justin Pinter
+Baseline subject  : [verified] Add HMH Level 1 living-world packet
+Packaged (UTC)    : 2026-09-06T21:23:48Z
+
+Tracking state    : docs/stacked/ is UNTRACKED at this baseline.
+                    The 10 documents are NOT part of commit ff2934db;
+                    that SHA is the working-tree baseline they were written against
+                    and every repo fact in them was verified against.
+
+Contents          : 10 documents, byte-identical to the verified originals.
+                    No document in this archive was regenerated, edited, or summarized.
+                    This PROVENANCE.txt is the only added file.
+
+SHA-256 checksums (paths relative to archive root)
+--------------------------------------------------
+4929becf98ba24ff2f240b5e1b35896b014d56b81f51563a3d4efb3ca6eee36c *docs/stacked/spec/gates.md
+daeb36fd99a38c864fcfcc184b123d6bbe01b003ec227d1e6bf616f75cbdab9c *docs/stacked/spec/integrity.md
+348be04a6c68daad0b72c52b59c78a8702582601186b35f4086fe6ed782fe04e *docs/stacked/spec/mechanics.md
+3c8d151e886c56a56622fe64ca7a6956195a28f20453edee828f1bd074e1f809 *docs/stacked/spec/mobile.md
+aca1b34d0be2dbf18132d66ba532cf47f038f2524b4e0be12909e01db493b215 *docs/stacked/spec/portal.md
+895a22abc8eb2cc461aa922914a5e6520196d1f8c8926722601cef2746417a66 *docs/stacked/spec/versus.md
+d3020dd8ac2561ef5478a4ea92c428095ace24b242ca6b7cc043edbbe7d54a2d *docs/stacked/spec/visuals.md
+c13e0ce61105541c9f32deef2ae029cf7e3d15712aeac799fa85c5ecf1a3b80d *docs/stacked/STACKED-CONTRACTS.md
+366b4a0f850b923ac98c2117a90a4d3cc6748b12f22588d0347c656954e74021 *docs/stacked/STACKED-CYCLES.md
+0034bc8cbb9d0e3e2b459a25bde27640d11f013a636290b497b54d03dcf01174 *docs/stacked/STACKED-MASTER-PLAN.md
+
+Read order
+----------
+1. docs/stacked/STACKED-MASTER-PLAN.md  - the spine; read first
+2. docs/stacked/STACKED-CONTRACTS.md    - frozen names, constants, ids, interfaces
+3. docs/stacked/STACKED-CYCLES.md       - 22 cycles (S-01..S-22) with acceptance bars
+4. docs/stacked/spec/*.md               - seven area specs

@@ -421,7 +421,23 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-tripo-selector-copy.test.mjs",
   "apps/hmh-reboot/src/game-feel.mjs",
   "tests/hmh-reboot-game-feel.test.mjs",
-  "scripts/syntax-check.mjs"
+  "scripts/syntax-check.mjs",
+  "apps/portal/src/stacked-contracts.mjs",
+  "apps/portal/src/stacked-cabinet.mjs",
+  "scripts/write-stacked-contracts.mjs",
+  "scripts/stacked-contract-audit.mjs",
+  "tests/stacked-contracts.test.mjs",
+  "apps/portal/src/stacked-sim.mjs",
+  "apps/portal/src/stacked-versus-table.mjs",
+  "apps/portal/src/stacked-match.mjs",
+  "scripts/stacked-sim-purity-check.mjs",
+  "tests/stacked-sim.test.mjs",
+  "tests/stacked-sim-determinism.test.mjs",
+  "tests/stacked-sim-purity.test.mjs",
+  "tests/stacked-s03-core.test.mjs",
+  "tests/stacked-versus-table.test.mjs",
+  "tests/stacked-match.test.mjs",
+  "tests/stacked-s03-review-regressions.test.mjs"
 ];
 
 // Every Python script that must compile (python -m py_compile).

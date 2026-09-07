@@ -1,0 +1,307 @@
+{
+  "scope": "S01-S03 inert core publication plus patched xmldom",
+  "productionBase": "69b576a5a84c9bd1214a622f20a565a928ec8ec1",
+  "acceptedCoreCommit": "33b43e627f7d509e5f37d49368d89db1c2fd65a2",
+  "rollbackDeploymentId": "dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb",
+  "nodeGates": [
+    {
+      "command": "node --test tests/stacked-contracts.test.mjs tests/seeded-rng.test.mjs tests/stacked-sim.test.mjs tests/stacked-sim-determinism.test.mjs tests/stacked-sim-purity.test.mjs tests/stacked-s03-core.test.mjs tests/stacked-match.test.mjs tests/stacked-versus-table.test.mjs tests/stacked-s03-review-regressions.test.mjs",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 11.08,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/01.log",
+      "sha256": "3fbbeda10ca4047c39915e9a2499601dc5005a694114635080fd228dfcad41f7",
+      "totals": {
+        "tests": 141,
+        "pass": 141,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "failedTests": []
+    },
+    {
+      "command": "npm run design:stacked-purity",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.02,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/02.log",
+      "sha256": "7b2787e02335983495cb7db3e7c844e6ea4a9379801493a3657cfdb3f0bed933",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run check",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 42.27,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/03.log",
+      "sha256": "b4cfef29a9805438eddeac7a8d6d3675e71dc6fa38f009681563d68b3481db43",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm test",
+      "exitCode": 1,
+      "timedOut": false,
+      "seconds": 24.98,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/04.log",
+      "sha256": "14e77ffe20cb07585390eddb8f98ba48171884c457daabe4f1fc37d9d49f9179",
+      "totals": {
+        "tests": 2696,
+        "pass": 2645,
+        "fail": 51,
+        "skipped": 0,
+        "todo": 0
+      },
+      "failedTests": [
+        "Desert Approach v2.3 ships two compact runtime atlases with certified budgets",
+        "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata",
+        "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage",
+        "Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract",
+        "Level 1 PixelLab surface zones turn candidate terrain into authored route ground",
+        "Level 1 final ambient world assets ship original animated detail loops across biomes",
+        "Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops",
+        "Level 1 original polish assets ship forest, water, farm, road, town, and cliff props",
+        "Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas",
+        "Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs",
+        "Level 2 final city world pack ships authored district props and animated setpieces",
+        "Level 3 final getaway ground pack covers rooftop, glass, train, rail, storm, and speed texture roles",
+        "Level 3 final getaway world pack ships animated authored setpieces for the finale route",
+        "P0 pickup icon pack contains disk-real manifest-backed runtime ids",
+        "SBS Level 1 ground assets exist with 128px tile width and cleaned alpha-compatible PNGs",
+        "VFX/UI chrome pack covers all art-redo missing VFX and UI chrome runtime ids",
+        "WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps",
+        "WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with full 8-direction matrices",
+        "WO-110 boss redo includes super-move telegraphs and death spectacle",
+        "WO-110 boss redo ships true-scale human phase forms in the 192-256px range",
+        "WO-115 batch two completes five Level 1 runtime enemy matrices",
+        "WO-117 polish pack ships generated artwork for world, VFX, and UI polish",
+        "WO-119 Level 1 PixelLab world assets are present, alpha-clean, and route-integrated",
+        "WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime replacement",
+        "WO-81/82/79 animation polish certification passes runtime gates",
+        "WO-82 Lit Commando and Lit Valkyrie are certified with no missing direction cells",
+        "WO-90 certifies all placeholder redo packs and contact sheets",
+        "WO-97 files exist, have stable dimensions, and animated assets expose sprite-sheet metadata",
+        "WO-98 placed objects only reference approved WO-97 assets that exist on disk",
+        "Wasteland Debt Collector has approved 8-direction production sprite coverage",
+        "Wave 3 art matrix gates full hero state-direction coverage and enemy readability states",
+        "all playable rosters carry full 8-direction required animation coverage with real frame assets",
+        "animated-roster lester compatibility matrix is valid, complete, and runtime-addressable",
+        "animated-roster lilly compatibility matrix is valid, complete, and runtime-addressable",
+        "cohesive Level 1 replacement assets exist, follow the theme palette, and replace weak generic roles",
+        "complete PixelLab AAA wave enemies replace old partial runtime kits",
+        "curated HMH kit retains only the exact browser runtime set",
+        "curated runtime assets exist, use safe portal-relative paths, and have expected dimensions",
+        "every authored setpiece template id exists and references repo-owned coherent-world assets",
+        "every curated Level 1 asset reference resolves to a real generated/source file",
+        "every runtime terrain family resolves to its own shipped material PNG",
+        "existing sketch asset coverage references only repo-owned coherent-world assets",
+        "final animation completion pack ships enemy readability states for active bespoke roster keys",
+        "final animation completion pack ships hero polish states for every playable roster",
+        "final boss animation pack covers authored Level 1 and Level 2 bosses with readable combat states",
+        "final setpiece kit ships original POI level-design assets for every authored Level 1 arena",
+        "final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore",
+        "generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps",
+        "no playable hero frame keeps the tiny QA triangle/robot placeholder signature",
+        "playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts",
+        "runtime roster does not ship known QA-green triangle enemy kits after art repair"
+      ],
+      "newFailureNames": [],
+      "baselineAwarePass": true
+    },
+    {
+      "command": "npm run test:release",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 99.78,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/05.log",
+      "sha256": "9f74cd68aa5989a82a4932b7ecefd377df5d11aa9ba2e0e2c3838297f72acd83",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run vercel:build",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 141.25,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/06.log",
+      "sha256": "af3aa393804d4bddf2d2452701173f10da1714f3595b20736f21f7737f5a6294",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run assets:verify",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 0.86,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/07.log",
+      "sha256": "e782ee65fc0dc75f82f02625cb42c07d9d793c150e04af954bdd54df94f2599b",
+      "totals": {},
+      "failedTests": []
+    },
+    {
+      "command": "npm run repo:health:strict",
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 1.67,
+      "log": ".tmp/stacked-gates/STACKED-INTEGRATION/20260907T135322Z/08.log",
+      "sha256": "8ab490c15b2639944715511f9f4e68d24ad6bb7be48be882c881593754b63bbb",
+      "totals": {},
+      "failedTests": []
+    }
+  ],
+  "coreParity": [
+    {
+      "path": "apps/portal/src/stacked-cabinet.mjs",
+      "sha256": "d49f050e688a6944b8cf985703acde7f2da2051a33abbfb7dead01e36abef3fc"
+    },
+    {
+      "path": "apps/portal/src/stacked-contracts.mjs",
+      "sha256": "f09b297b9e746c15513d3e93b00da82b820d2a6a5485c34e9084c36fff6654cb"
+    },
+    {
+      "path": "apps/portal/src/stacked-match.mjs",
+      "sha256": "d52c4d2c6847b938d92e179eb0b1f54b2d9a8ccdd0252abc89250eafa83fffdd"
+    },
+    {
+      "path": "apps/portal/src/stacked-sim.mjs",
+      "sha256": "15ee85422508268327a01547ec79e735f139fb8c1d52bda53cc0f44c5068adb2"
+    },
+    {
+      "path": "apps/portal/src/stacked-versus-table.mjs",
+      "sha256": "793a3a1ccfa9d9eb14455597fedc7bb0584a22a478e53328b69b8961dc8c981d"
+    },
+    {
+      "path": "scripts/stacked-contract-audit.mjs",
+      "sha256": "57395c0b0a01db8f06602c5af67201b149d32c202a52eb6272a5f7d10aa54cf6"
+    },
+    {
+      "path": "scripts/stacked-sim-purity-check.mjs",
+      "sha256": "e34c0cac1d5cba2b58a95e650b7b3a1a076475fb31ab36ede2359edd9088fab0"
+    },
+    {
+      "path": "scripts/write-stacked-contracts.mjs",
+      "sha256": "4adb80d8b3b3931d07b84417c085ccbfb9bcfd49fd6430b5ecba599e1aab8a7f"
+    },
+    {
+      "path": "tests/stacked-contracts.test.mjs",
+      "sha256": "1cdff2f0423c2f93d71637c5f57195d77667d46955a3c606ac403c89d1836af4"
+    },
+    {
+      "path": "tests/stacked-match.test.mjs",
+      "sha256": "481c39556bebc90106ecf221b35ed838df71fcc9aa5830606c2e4899b8111ed2"
+    },
+    {
+      "path": "tests/stacked-s03-core.test.mjs",
+      "sha256": "9a9609fcfa2c41a80b8214e2e8cdc5001807c3b409e092dd7259e5bcb316f9c8"
+    },
+    {
+      "path": "tests/stacked-s03-review-regressions.test.mjs",
+      "sha256": "a7d2cf0b92d670b65ce5628f13204322174721e2d4233e8d3daa18e2d63bda6a"
+    },
+    {
+      "path": "tests/stacked-sim-determinism.test.mjs",
+      "sha256": "296ff63c049c6fb0d40f5e6ad97ff4598c4042fcecf3ec2fd7d70d772cc0e881"
+    },
+    {
+      "path": "tests/stacked-sim-purity.test.mjs",
+      "sha256": "6fec7a556e9414ccc909fbf514ea06bae74441c7b8ee07cafeaa865c93ec952e"
+    },
+    {
+      "path": "tests/stacked-sim.test.mjs",
+      "sha256": "6948109e5933a8c4c138237d9bcf083b669f2296903a2821a76c342a96328e11"
+    },
+    {
+      "path": "tests/stacked-versus-table.test.mjs",
+      "sha256": "7eac6d5ce95598da2fb46136ee31de0e26fa2485a00a44647fb2c20775dc3ea5"
+    }
+  ],
+  "independentMergeReview": {
+    "passed": true,
+    "commandsExecuted": false,
+    "reviewedPatchSha256": "37a907f466bec99e39046a761e5a4185b9ebb3de222fac889f63495791387c86",
+    "security_concerns": [],
+    "logic_errors": [],
+    "suggestions": [
+      "Add deterministic nextBelow tests that force rejection and cover bounds 1 and 4294967296; the current distribution test is probabilistic and does not directly prove the rejection branch."
+    ],
+    "summary": "PASS. The supplied merge/shared-integration delta is additive and preserves the existing RNG float stream and draw accounting. STACKED is added only to source/syntax and generated audit registries, with no shown public cabinet registration, playable route, save migration, financial/chain setting, CSP, or Vercel build-path change. The build-script additions are Node-only. Cycle 077 registry entries are not removed by the shown additive edits. Acorn is a bounded registry-sourced development dependency, and xmldom is a patch-only registry-sourced lockfile update. Generated security and retirement reports reconcile with the reported source additions and test totals and do not show masked source changes. This is a static source-only verdict based exclusively on the supplied artifact and parent-reported evidence; it is not execution, deployment verification, or human acceptance."
+  },
+  "browserProfiles": [
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "passedFlows": [
+        "guest-boot",
+        "guest-free-run",
+        "pause-resume",
+        "mid-run-restart",
+        "settings-persistence-reload",
+        "guest-exit-to-splash",
+        "game-over-run-summary"
+      ],
+      "deferredFlows": [
+        {
+          "id": "ranked-preview",
+          "reason": "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated."
+        },
+        {
+          "id": "wallet-connect-reconnect",
+          "reason": "Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove."
+        },
+        {
+          "id": "service-worker-offline-update",
+          "reason": "Service worker, offline shell, and stale-cache flows need dedicated SW lifecycle control; currently exercised by the release browser certification harness."
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "passedFlows": [
+        "guest-boot",
+        "guest-free-run",
+        "pause-resume",
+        "mid-run-restart",
+        "settings-persistence-reload",
+        "guest-exit-to-splash",
+        "game-over-run-summary"
+      ],
+      "deferredFlows": [
+        {
+          "id": "ranked-preview",
+          "reason": "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated."
+        },
+        {
+          "id": "wallet-connect-reconnect",
+          "reason": "Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove."
+        },
+        {
+          "id": "service-worker-offline-update",
+          "reason": "Service worker, offline shell, and stale-cache flows need dedicated SW lifecycle control; currently exercised by the release browser certification harness."
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "security": {
+    "rootNpmAuditVulnerabilities": 0,
+    "benchmarkNpmAuditVulnerabilities": 0,
+    "xmldomVersion": "0.8.15",
+    "advisory": "GHSA-6gmq-8vp8-gcm6",
+    "actualCreationGuardPassed": true,
+    "actualSerializationGuardPassed": true,
+    "serializerOptionsArgument": 4
+  },
+  "publicStackedPlay": false,
+  "s04": "blocked_before_first_test_write_by_read_only_policy",
+  "productionDeployment": "pending"
+}
