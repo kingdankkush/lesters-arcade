@@ -2,6 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { DEFAULT_KEYBOARD_BINDINGS, actionHelpRows } from '../apps/hmh-reboot/src/action-map.mjs';
+import {
+  CONTROLS_HINT_LIFETIME_MS,
+  resolveControlsHint,
+} from '../apps/hmh-reboot/src/cockpit-ui.mjs';
 
 /**
  * Upgrade program M1. Desktop weapon slots (Digit1-4) and several other
@@ -40,10 +44,29 @@ test('a first-run hint points players at the controls card', async () => {
   assert.match(cockpit, /dismissControlsHint|hideControlsHint/, 'the hint must be dismissible');
 });
 
+test('the first-run hint follows canonical touch mode and only names active touch controls', () => {
+  const touch = resolveControlsHint({ touchUiEnabled: true });
+  assert.equal(touch.mode, 'touch');
+  for (const active of ['MOVE', 'AIM', 'SWAP', 'POWER', 'double-tap MOVE', 'pause']) {
+    assert.match(touch.text, new RegExp(active, 'i'), `touch hint must name ${active}`);
+  }
+  assert.doesNotMatch(touch.text, /WASD|mouse|right.?click|\b1\s*[-\u2013]\s*4\b/i);
+  assert.equal(touch.lifetimeMs, CONTROLS_HINT_LIFETIME_MS.touch);
+  assert.ok(touch.lifetimeMs < CONTROLS_HINT_LIFETIME_MS.desktop);
+
+  const desktop = resolveControlsHint({ touchUiEnabled: false });
+  assert.equal(desktop.mode, 'desktop');
+  assert.match(desktop.text, /WASD/i);
+  assert.equal(desktop.lifetimeMs, CONTROLS_HINT_LIFETIME_MS.desktop);
+});
+
 test('the controls card is styled and readable on mobile', async () => {
   const css = await readFile(cssUrl, 'utf8');
   assert.match(css, /\.hmh-controls-card/, 'the controls card needs styling');
   assert.match(css, /\.hmh-controls-hint/, 'the first-run hint needs styling');
+  assert.match(css, /\.hmh-controls-hint\[data-mode="touch"\]/, 'touch docking must follow the resolved hint mode');
+  assert.match(css, /@media \(max-width: 600px\)[\s\S]*?\.hmh-controls-hint\[data-mode="touch"\][\s\S]*?top:/,
+    'phone hint must dock below the compact cockpit instead of over the playfield centre');
 });
 
 test('the documented bindings match the real input map', async () => {
@@ -55,4 +78,21 @@ test('the documented bindings match the real input map', async () => {
   }
   assert.ok(html.includes('hmhControlsCard'));
   assert.match(cockpit, /actionHelpRows\(currentSettings\.keyboardBindings\)/);
+});
+
+test('canonical help names touch gestures and never invents a melee button', () => {
+  const help = Object.fromEntries(actionHelpRows(DEFAULT_KEYBOARD_BINDINGS).map((row) => [row.id, row.touch]));
+  assert.equal(help.fire, 'AIM stick / auto-fire');
+  assert.equal(help.melee, '');
+  assert.equal(help.grenade, 'POWER');
+  assert.equal(help.dash, 'Double-tap MOVE');
+  assert.equal(help.pause, 'Pause button');
+  assert.equal(help.weaponNext, 'SWAP');
+});
+
+test('the one-shot stick cue uses compositor-only motion and disables movement for reduced motion', async () => {
+  const css = await readFile(cssUrl, 'utf8');
+  assert.match(css, /data-hmh-touch-onboarding="once"[\s\S]*animation:\s*hmh-touch-onboarding-pulse[^;]*\s1\sboth/);
+  assert.match(css, /@keyframes hmh-touch-onboarding-pulse[\s\S]*transform:[\s\S]*opacity:/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*data-hmh-touch-onboarding="once"[\s\S]*animation:\s*none\s*!important;[\s\S]*transform:\s*none;/);
 });

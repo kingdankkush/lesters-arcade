@@ -1,12 +1,39 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   TouchControlState,
   computeStickVector,
+  createTouchOnboardingGate,
   createTouchControlAdapter,
+  isTouchUiEnabled,
   isGameplayControlTarget,
 } from '../apps/hmh-reboot/src/touch-controls.mjs';
+
+test('touch mode and first-run onboarding share one bounded authority', () => {
+  assert.equal(isTouchUiEnabled({ coarsePointer: true, width: 1_440 }), true);
+  assert.equal(isTouchUiEnabled({ coarsePointer: false, width: 900 }), true);
+  assert.equal(isTouchUiEnabled({ coarsePointer: false, width: 901 }), false);
+
+  const claimTouchOnboarding = createTouchOnboardingGate(true);
+  assert.equal(claimTouchOnboarding(), true, 'first touch run gets the cue');
+  assert.equal(claimTouchOnboarding(), false, 'a restart must not replay the cue');
+  assert.equal(claimTouchOnboarding(), false);
+  assert.equal(createTouchOnboardingGate(false)(), false, 'desktop never claims a touch cue');
+});
+
+test('in-game reduced motion consumes the first-run cue without playing it', () => {
+  const claim = createTouchOnboardingGate(true);
+  assert.equal(claim({ reduceMotion: true }), false, 'game preference suppresses the first cue independently of OS preference');
+  assert.equal(claim({ reduceMotion: false }), false, 'turning motion back on must not replay a consumed cue');
+  assert.equal(createTouchOnboardingGate(true)({ reduceMotion: false }), true);
+});
+
+test('runtime touch cue consults the effective game reduced-motion setting', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /onboardingPulse:\s*claimTouchOnboarding\(\{\s*reduceMotion:\s*settings\.reduceMotion\s*\}\)/);
+});
 
 test('stick vectors apply configurable radius dead zone and sensitivity', () => {
   assert.deepEqual(computeStickVector({ x: 0, y: 0 }, { x: 10, y: 0 }, { radius: 100, deadZone: 0.2, sensitivity: 1 }), { x: 0, y: 0 });
@@ -100,7 +127,9 @@ test('browser touch adapter owns UI pointers relayouts and clears state on teard
     input, root, windowRef, documentRef, now: () => 25,
     getSafeInsets: () => ({ top: 20, right: 10, bottom: 30, left: 24 }),
     onPause: () => { pauseToggles += 1; },
+    onboardingPulse: true,
   });
+  assert.equal(root.children[0].dataset.hmhTouchOnboarding, 'once');
   windowRef.innerWidth = 844;
   windowRef.innerHeight = 390;
   windowRef.emit('resize');

@@ -16,7 +16,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games, wallet-
 
 > **Cycle 080 is live:** enemy corpses expire after 2,000 ms or 120 fixed ticks, with a 24-graphic cap and bounded fade. Expired combat voices stop/reset before removal. Cycle 079 pacing and Tripo gameplay art are not included. [Release certificate](docs/hmh-reboot/RELEASE-CERTIFICATION-AAA-CYCLE-080.json).
 
-**Production cache marker:** `lesters-arcade-v31-hmh-corpse-audio`
+**Production cache marker:** `lesters-arcade-v32-hmh-gameplan-defects`
+
+This is the candidate source marker. The verified production identities above remain Cycle 080 until the gameplan defect candidate completes review and promotion; no Tripo gameplay hero is included in this defect slice.
 
 > **Cycle 077 is live:** all four latest textured Tripo hero turntables, with unchanged gameplay IDs/stats and unlock rules. New gameplay rigs/animations remain unfinished. [Release scope](docs/hmh-reboot/cycles/CYCLE-077.md).
 

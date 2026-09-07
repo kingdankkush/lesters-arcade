@@ -138,6 +138,14 @@ for (const device of DEVICES) {
 
     // The overlay must be reachable at all: the media query decides that.
     assert.equal(await page.locator('.hmh-touch-controls').isVisible(), true, 'touch overlay hidden on a touch device');
+    const hint = page.locator('#hmhControlsHint');
+    assert.equal(await hint.isVisible(), true, 'touch controls hint retired before the first-run control check');
+    const hintText = (await page.locator('#hmhControlsHintText').innerText()).replace(/\s+/g, ' ').trim();
+    assert.doesNotMatch(hintText, /WASD|mouse|right.?click|\b1\s*[-–]\s*4\b/i, `touch hint exposes desktop-only input: ${hintText}`);
+    for (const active of ['MOVE', 'AIM', 'SWAP', 'POWER', 'double-tap MOVE', 'pause']) {
+      assert.match(hintText, new RegExp(active, 'i'), `touch hint omits active control ${active}: ${hintText}`);
+    }
+    assert.equal(await page.locator('.hmh-touch-controls').getAttribute('data-hmh-touch-onboarding'), 'once', 'first touch run must pulse the sticks once');
 
     const controls = await page.locator('[data-hmh-control]').evaluateAll(
       (nodes) => nodes.map((node) => node.dataset.hmhControl).sort(),
@@ -145,6 +153,14 @@ for (const device of DEVICES) {
     assert.deepEqual(controls, EXPECTED_CONTROLS, `unexpected control set: ${controls.join(',')}`);
 
     const viewport = page.viewportSize();
+    const hintBox = await hint.boundingBox();
+    const cockpitBox = await page.locator('#hmhHud').boundingBox();
+    assert.ok(hintBox && cockpitBox, 'touch hint and cockpit need layout boxes');
+    const firstStickTop = Math.min(await boxOf(page, 'move').then((box) => box.y), await boxOf(page, 'aim').then((box) => box.y));
+    assert.ok(hintBox.y >= cockpitBox.y + cockpitBox.height - 0.5, 'touch hint overlaps the cockpit instead of docking below it');
+    assert.ok(hintBox.y + hintBox.height <= firstStickTop - 4, 'touch hint overlaps the stick band');
+    const viewportCentre = viewport.height / 2;
+    assert.ok(hintBox.y + hintBox.height < viewportCentre, 'touch hint covers the viewport centre / hero band');
     for (const name of controls) {
       const box = await boxOf(page, name);
       assert.ok(box.y + box.height <= viewport.height + 0.5, `${name} extends below the visible viewport`);

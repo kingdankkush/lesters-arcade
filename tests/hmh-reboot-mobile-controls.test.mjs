@@ -129,3 +129,12 @@ test('double-tapping the AIM stick never dashes', () => {
   state.beginStick(2, 'aim', { x: 500, y: 300 });
   assert.equal(state.snapshot().dash, false, 'only the movement stick dashes');
 });
+
+test('the real-browser smoke rejects keyboard copy and verifies the touch hint exclusion band', async () => {
+  const source = await readFile(new URL('../scripts/hmh-reboot-mobile-controls-browser-smoke.mjs', import.meta.url), 'utf8');
+  assert.match(source, /hmhControlsHint/);
+  assert.match(source, /WASD\|mouse\|right\.\?click/i, 'smoke must reject desktop-only touch copy');
+  assert.match(source, /hmhHud/);
+  assert.match(source, /hint.*stick|stick.*hint/is, 'smoke must compare the hint with the touch-control band');
+  assert.match(source, /viewport.*(?:centre|center)|(?:centre|center).*viewport/is, 'smoke must keep the hint out of the hero-centre band');
+});

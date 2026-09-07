@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { TOUCH_CONTROL_SPEC } from '../apps/hmh-reboot/src/touch-controls.mjs';
 
 import {
   buildGrenadeAimPreview,
@@ -73,7 +74,7 @@ test('WO-101 live reboot input wires desktop and touch grenade controls with can
   assert.match(input, /grenade: event\.button === 2/);
   assert.match(input, /listen\(target, 'pointercancel'/);
   assert.match(input, /listen\(target, 'contextmenu'/);
-  assert.match(touch, /power: 'grenade'/);
+  assert.equal(TOUCH_CONTROL_SPEC.buttons.find(({ control }) => control === 'power')?.action, 'grenade');
   assert.match(touch, /surfaceListen\('pointercancel', endOwnedPointer\)/);
   assert.match(touch, /surfaceListen\('touchcancel', releaseWhenNoTouchesRemain\)/);
   assert.match(doc, /Tap grenade/);

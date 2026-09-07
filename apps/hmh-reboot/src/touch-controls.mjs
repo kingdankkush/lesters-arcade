@@ -2,6 +2,40 @@ import { computeTouchControlLayout } from './input.mjs';
 
 import { finite } from './value-guards.mjs';
 
+export const TOUCH_UI_MAX_WIDTH = 900;
+
+export const TOUCH_CONTROL_SPEC = Object.freeze({
+  sticks: Object.freeze([
+    Object.freeze({ control: 'move', label: 'MOVE' }),
+    Object.freeze({ control: 'aim', label: 'AIM' }),
+  ]),
+  buttons: Object.freeze([
+    Object.freeze({ control: 'power', label: 'POWER', action: 'grenade', help: 'grenade' }),
+    Object.freeze({ control: 'weapon', label: 'SWAP', action: 'weaponNext', help: 'weapon' }),
+    Object.freeze({ control: 'pause', label: 'II', action: 'pause', help: 'pause button' }),
+  ]),
+});
+
+export function isTouchUiEnabled({ coarsePointer = false, width = Number.POSITIVE_INFINITY } = {}) {
+  const viewportWidth = Number(width);
+  return Boolean(coarsePointer) || (Number.isFinite(viewportWidth) && viewportWidth <= TOUCH_UI_MAX_WIDTH);
+}
+
+export function touchControlsHintText() {
+  const [move, aim] = TOUCH_CONTROL_SPEC.sticks;
+  const byControl = Object.fromEntries(TOUCH_CONTROL_SPEC.buttons.map((entry) => [entry.control, entry]));
+  return `${move.label} + ${aim.label} sticks · ${byControl.weapon.label} weapon · ${byControl.power.label} ${byControl.power.help} · double-tap ${move.label} to dash · ${byControl.pause.help}`;
+}
+
+export function createTouchOnboardingGate(enabled) {
+  let available = Boolean(enabled);
+  return ({ reduceMotion = false } = {}) => {
+    const claimed = available;
+    available = false;
+    return claimed && !reduceMotion;
+  };
+}
+
 function point(value, name) {
   return { x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) };
 }
@@ -160,6 +194,7 @@ export function createTouchControlAdapter({
   leftHanded = false,
   getSafeInsets = null,
   onPause = null,
+  onboardingPulse = false,
 } = {}) {
   if (!input || typeof input.setTouch !== 'function') throw new TypeError('input must expose setTouch');
   if (!root?.appendChild || !documentRef?.createElement) throw new TypeError('root and documentRef must support DOM construction');
@@ -170,6 +205,7 @@ export function createTouchControlAdapter({
   const overlay = documentRef.createElement('div');
   overlay.className = 'hmh-touch-controls';
   overlay.dataset.hmhTouchControls = 'true';
+  if (onboardingPulse) overlay.dataset.hmhTouchOnboarding = 'once';
   const elements = {};
   const knobs = {};
   const listeners = [];
@@ -241,7 +277,7 @@ export function createTouchControlAdapter({
   surfaceListen('touchend', releaseWhenNoTouchesRemain);
   surfaceListen('touchcancel', releaseWhenNoTouchesRemain);
 
-  for (const role of ['move', 'aim']) {
+  for (const { control: role } of TOUCH_CONTROL_SPEC.sticks) {
     const element = makeControl(role, '', `hmh-touch-stick hmh-touch-stick--${role}`);
     const knob = documentRef.createElement('div');
     knob.className = 'hmh-touch-stick__knob';
@@ -258,14 +294,11 @@ export function createTouchControlAdapter({
 
   // Simplified mobile control set: power, weapon swap, and pause. Firing is
   // automatic when a target is in range.
-  const labels = { power: 'POWER', weapon: 'SWAP', pause: 'II' };
-  // The on-screen control maps onto the existing action vocabulary rather than
-  // extending it, so the snapshot contract consumed by the simulation is
+  // The on-screen controls map onto the existing action vocabulary rather
+  // than extending it, so the snapshot contract consumed by the simulation is
   // unchanged: POWER throws the grenade.
-  const ACTION_BY_CONTROL = { power: 'grenade', weapon: 'weaponNext', pause: 'pause' };
-  for (const control of Object.keys(labels)) {
-    const action = ACTION_BY_CONTROL[control];
-    const element = makeControl(control, labels[control], `hmh-touch-button hmh-touch-button--${control}`);
+  for (const { control, label, action } of TOUCH_CONTROL_SPEC.buttons) {
+    const element = makeControl(control, label, `hmh-touch-button hmh-touch-button--${control}`);
     listen(element, 'pointerdown', (event) => {
       own(event);
       try { element.setPointerCapture?.(event.pointerId); } catch { /* synthetic or detached pointer */ }
@@ -287,7 +320,7 @@ export function createTouchControlAdapter({
     const width = Math.max(1, Number(visual?.width) || Number(windowRef.innerWidth) || Number(root.clientWidth) || Number(documentRef.documentElement?.clientWidth) || 1);
     const height = Math.max(1, Number(visual?.height) || Number(windowRef.innerHeight) || Number(root.clientHeight) || Number(documentRef.documentElement?.clientHeight) || 1);
     const layout = computeTouchControlLayout({ width, height, safeInsets, controlScale, leftHanded });
-    for (const role of ['move', 'aim']) {
+    for (const { control: role } of TOUCH_CONTROL_SPEC.sticks) {
       const descriptor = layout[`${role}Stick`];
       Object.assign(elements[role].style, {
         left: `${descriptor.x - descriptor.radius}px`,

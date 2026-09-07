@@ -74,7 +74,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-aaa-cycle-080-corpse-audio`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-aaa-cycle-081-gameplan-defects`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const overlayProbe = buildTacticalBalanceDebugOverlayModel({
     debugEnabled: true,

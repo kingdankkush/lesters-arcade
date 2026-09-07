@@ -2,7 +2,33 @@ import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
 import { RUN_UPGRADE_CATALOG } from './run-progression.mjs';
 import { resolveComboPresentation } from './combo-feedback.mjs';
 import { actionHelpRows } from './action-map.mjs';
+import { touchControlsHintText } from './touch-controls.mjs';
 import { resolveUpgradeCardPresentation } from './upgrade-card-presentation.mjs';
+
+export const CONTROLS_HINT_LIFETIME_MS = Object.freeze({ desktop: 12_000, touch: 6_000 });
+
+const keyboardHintLabel = (code) => String(code ?? '')
+  .replace(/^Key/, '')
+  .replace(/^Digit/, '')
+  .replace('ShiftLeft', 'Shift')
+  .replace('ShiftRight', 'Shift');
+
+export function resolveControlsHint({ touchUiEnabled = false, keyboardBindings } = {}) {
+  if (touchUiEnabled) {
+    return Object.freeze({
+      mode: 'touch',
+      text: touchControlsHintText(),
+      lifetimeMs: CONTROLS_HINT_LIFETIME_MS.touch,
+    });
+  }
+  const help = Object.fromEntries(actionHelpRows(keyboardBindings).map((row) => [row.id, row]));
+  const move = ['moveUp', 'moveLeft', 'moveDown', 'moveRight'].map((id) => keyboardHintLabel(help[id].keyboard)).join('');
+  return Object.freeze({
+    mode: 'desktop',
+    text: `${move} move · Mouse aim · Right click grenade · 1-4 weapons · ${keyboardHintLabel(help.pause.keyboard)} for all controls`,
+    lifetimeMs: CONTROLS_HINT_LIFETIME_MS.desktop,
+  });
+}
 
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
@@ -32,6 +58,7 @@ function createSafeTextElement(documentRef, tagName, { className = '', text = ''
 
 export function createCockpitUi({
   documentRef = document,
+  touchUiEnabled = false,
   onMenuToggle = () => {},
   onMusicToggle = () => {},
   onSettingToggle = () => {},
@@ -62,6 +89,7 @@ export function createCockpitUi({
     adapter: required(documentRef, 'hmhAdapterStatus'),
     pausePanel: required(documentRef, 'hmhPausePanel'),
     controlsHint: documentRef.getElementById('hmhControlsHint'),
+    controlsHintText: documentRef.getElementById('hmhControlsHintText'),
     controlsHintDismiss: documentRef.getElementById('hmhControlsHintDismiss'),
     resume: required(documentRef, 'hmhResumeButton'),
     restart: required(documentRef, 'hmhRestartButton'),
@@ -278,16 +306,24 @@ export function createCockpitUi({
   listen(documentRef, 'keydown', handleBindingKey);
   renderControls();
 
-  // M1 first-run hint: dismissible, and it retires itself after a bounded
-  // on-screen time so it never covers sustained play.
-  const CONTROLS_HINT_MS = 12_000;
+  // M1/K-8 first-run hint: its device mode is the same authority that creates
+  // the touch overlay. Touch gets a shorter lifetime and only names controls
+  // the adapter actually creates.
+  let controlsHintTimer = null;
+  const hideControlsHint = () => {
+    if (elements.controlsHint) elements.controlsHint.hidden = true;
+  };
+  const renderControlsHint = () => {
+    if (!elements.controlsHint) return;
+    const hint = resolveControlsHint({ touchUiEnabled, keyboardBindings: currentSettings.keyboardBindings });
+    elements.controlsHint.dataset.mode = hint.mode;
+    if (elements.controlsHintText) elements.controlsHintText.textContent = hint.text;
+    return hint;
+  };
   if (elements.controlsHintDismiss && elements.controlsHint) {
-    elements.controlsHintDismiss.addEventListener('click', () => {
-      elements.controlsHint.hidden = true;
-    });
-    documentRef.defaultView?.setTimeout?.(() => {
-      elements.controlsHint.hidden = true;
-    }, CONTROLS_HINT_MS);
+    const hint = renderControlsHint();
+    listen(elements.controlsHintDismiss, 'click', hideControlsHint);
+    controlsHintTimer = documentRef.defaultView?.setTimeout?.(hideControlsHint, hint.lifetimeMs) ?? null;
   }
 
   return Object.freeze({
@@ -313,7 +349,7 @@ export function createCockpitUi({
       elements.buildSummary.hidden = ranked.length === 0;
     },
     updateCombo(combo) {
-      const presentation = resolveComboPresentation(combo);
+      const presentation = combo && typeof combo === 'object' ? combo : resolveComboPresentation(combo);
       elements.combo.textContent = presentation.text;
       elements.comboLabel.textContent = presentation.label;
       elements.comboStat.dataset.tier = presentation.tier;
@@ -329,6 +365,7 @@ export function createCockpitUi({
       elements.exit.disabled = !adapterStatus || adapterStatus.authority !== 'portal';
       elements.exit.textContent = elements.exit.disabled ? 'Arcade exit unavailable' : 'Exit to arcade';
       renderControls();
+      renderControlsHint();
     },
     setMusicEnabled(enabled) {
       musicEnabled = Boolean(enabled);
@@ -345,6 +382,7 @@ export function createCockpitUi({
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));
       renderControls();
+      renderControlsHint();
     },
     setPaused(paused) {
       elements.pausePanel.hidden = !paused;
@@ -352,7 +390,7 @@ export function createCockpitUi({
       if (paused) {
         // Opening the menu exposes the full controls card, so the hint has
         // served its purpose.
-        if (elements.controlsHint) elements.controlsHint.hidden = true;
+        hideControlsHint();
         elements.resume.focus({ preventScroll: true });
       }
     },
@@ -435,10 +473,12 @@ export function createCockpitUi({
       // M1: the first-run hint retires permanently once acknowledged, once
       // the player opens the pause menu (the card lives there), or on the
       // bounded timeout below. It must never sit over sustained gameplay.
-      if (elements.controlsHint) elements.controlsHint.hidden = true;
+      hideControlsHint();
     },
     destroy() {
       awaitingActionId = null;
+      if (controlsHintTimer !== null) documentRef.defaultView?.clearTimeout?.(controlsHintTimer);
+      controlsHintTimer = null;
       stopGamepadPoll();
       clearUpgradeListeners();
       upgradeCards = [];

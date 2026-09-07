@@ -175,7 +175,7 @@ import {
   selectAnimatedEnemyIds,
   selectRuntimePerformanceProfile,
 } from './runtime-performance.mjs';
-import { createTouchControlAdapter } from './touch-controls.mjs';
+import { createTouchControlAdapter, createTouchOnboardingGate, isTouchUiEnabled } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid } from './prototype-actor-art.mjs';
 import {
   MANNEQUIN_ATLAS_IMAGE_URL,
@@ -370,13 +370,15 @@ function setStatus(status, detail = '') {
 async function boot() {
   if (!stageElement) throw new Error('HMH reboot stage is missing');
   const dataset = stageElement.dataset;
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const performanceProfile = selectRuntimePerformanceProfile({
     width: window.innerWidth,
     devicePixelRatio: window.devicePixelRatio || 1,
-    coarsePointer: window.matchMedia('(pointer: coarse)').matches,
+    coarsePointer,
     reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   });
-  const touchUiEnabled = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 900;
+  const touchUiEnabled = isTouchUiEnabled({ coarsePointer, width: window.innerWidth });
+  const claimTouchOnboarding = createTouchOnboardingGate(touchUiEnabled);
   const app = new Application();
   let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
   let bridge = null;
@@ -1036,7 +1038,9 @@ async function boot() {
     ravine: Object.freeze({ x: 3_050, y: 1_500 }),
     bridge: Object.freeze({ x: 4_700, y: 2_400 }),
     hazard: Object.freeze({ x: 3_500, y: 3_100 }),
-    hashwood: Object.freeze({ x: 7_000, y: 900 }),
+    // Keep the tour hero east of the beacon, not at its exact foot pivot.
+    // Northward framing keeps the full beacon below the desktop cockpit.
+    hashwood: Object.freeze({ x: 7_350, y: 800 }),
     // mining stays at y 1600: the collectibles smoke walks east from here through the
     // auto-miner cache, and the mining set-piece at y 1250 is still inside the frame.
     mining: Object.freeze({ x: 9_200, y: 1_600 }),
@@ -1263,7 +1267,7 @@ async function boot() {
     const feedback = resolveComboFeedback({ previous: runCombo, current: nextCombo, bossDefeated });
     runCombo = feedback.current;
     maxRunCombo = Math.max(maxRunCombo, runCombo);
-    cockpit?.updateCombo(runCombo);
+    cockpit?.updateCombo(feedback.presentation);
     if (!silent && feedback.cue) combatAudio.play(feedback.cue, { volume: feedback.cue === 'combo-reset' ? 0.06 : 0.11 });
     return feedback;
   };
@@ -3108,6 +3112,7 @@ async function boot() {
       sensitivity: settings.touchSensitivity ?? 1,
       controlScale: settings.touchScale ?? 1,
       leftHanded: Boolean(settings.touchLeftHanded),
+      onboardingPulse: claimTouchOnboarding({ reduceMotion: settings.reduceMotion }),
       onPause: () => {
         if (simulation?.state === 'paused') resumeRuntime('user');
         else pauseRuntime('user');
@@ -4468,6 +4473,7 @@ async function boot() {
 
   cockpit = createCockpitUi({
     documentRef: document,
+    touchUiEnabled,
     onMenuToggle: () => {
       if (simulation?.state === 'paused') resumeRuntime('user');
       else pauseRuntime('user');

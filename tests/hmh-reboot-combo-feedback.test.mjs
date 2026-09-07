@@ -11,7 +11,7 @@ import { HMH_SFX_CUE_REGISTRY } from '../apps/portal/src/hmh-audio-system.mjs';
 
 test('combo presentation exposes authored intensity tiers and reset state', () => {
   assert.deepEqual(COMBO_MILESTONES, [5, 10, 20, 30]);
-  assert.deepEqual(resolveComboPresentation(0), { count: 0, text: '×0', tier: 'idle', label: 'Combo reset' });
+  assert.deepEqual(resolveComboPresentation(0), { count: 0, text: '×0', tier: 'idle', label: 'Combo' });
   assert.equal(resolveComboPresentation(4).tier, 'building');
   assert.equal(resolveComboPresentation(5).tier, 'hot');
   assert.equal(resolveComboPresentation(10).tier, 'surge');
@@ -22,7 +22,12 @@ test('combo presentation exposes authored intensity tiers and reset state', () =
 test('combo feedback distinguishes reset, milestone, and boss-threshold cues', () => {
   assert.equal(resolveComboFeedback({ previous: 4, current: 5 }).cue, 'combo-milestone');
   assert.equal(resolveComboFeedback({ previous: 9, current: 10 }).milestone, 10);
-  assert.equal(resolveComboFeedback({ previous: 12, current: 0 }).cue, 'combo-reset');
+  const reset = resolveComboFeedback({ previous: 12, current: 0 });
+  assert.equal(reset.cue, 'combo-reset');
+  assert.equal(reset.presentation.label, 'Combo reset');
+  const idle = resolveComboFeedback({ previous: 0, current: 0 });
+  assert.equal(idle.cue, null);
+  assert.equal(idle.presentation.label, 'Combo');
   assert.equal(resolveComboFeedback({ previous: 19, current: 20, bossDefeated: true }).cue, 'combo-boss-threshold');
   assert.equal(resolveComboFeedback({ previous: 6, current: 7 }).cue, null);
 });

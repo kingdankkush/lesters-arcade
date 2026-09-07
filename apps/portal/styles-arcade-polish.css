@@ -1066,23 +1066,20 @@
   box-shadow: 0 0 0 1px rgba(25,247,255,0.45), 0 14px 40px rgba(0,0,0,0.6), 0 0 40px rgba(25,247,255,0.25);
 }
 .ad-banner-horizontal {
-  position: fixed;
-  left: 50%;
-  bottom: clamp(8px, 1.6vw, 18px);
-  transform: translateX(-50%);
-  width: min(728px, calc(100vw - 24px));
+  position: relative;
+  flex-shrink: 0;
+  width: min(728px, 100%);
   /* Auto-height so wrapped text is never clipped; min keeps the art readable. */
   min-height: 64px;
   background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0)), url('./assets/ads/ad-horizontal-bg.jpg');
   z-index: 5;
-  margin: 0;
-  /* Let clicks pass through to splash-screen buttons behind the banner. */
-  pointer-events: none;
+  margin: 12px auto 0;
+  pointer-events: auto;
 }
 .ad-banner-horizontal .ad-banner-overlay {
   pointer-events: none;
 }
-.ad-banner-horizontal:hover { transform: translateX(-50%) translateY(-2px); }
+.ad-banner-horizontal:hover { transform: translateY(-2px); }
 .ad-banner-vertical {
   position: fixed;
   right: clamp(12px, 2vw, 28px);
@@ -1111,7 +1108,7 @@
 /* Remove the tall rail ad on narrow screens (portrait mobile). */
 @media (max-width: 720px) {
   .ad-banner-vertical { display: none !important; }
-  .ad-banner-horizontal { bottom: 8px; width: calc(100vw - 16px); }
+  .ad-banner-horizontal { width: 100%; }
 }
 /* Remove the vertical rail ad on landscape mobile too — short viewport heights
    (phones held sideways) where the tall ad blocks too much of the screen. */
