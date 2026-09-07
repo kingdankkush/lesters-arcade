@@ -302,6 +302,113 @@
     "serializerOptionsArgument": 4
   },
   "publicStackedPlay": false,
-  "s04": "blocked_before_first_test_write_by_read_only_policy",
-  "productionDeployment": "pending"
+  "s04": "Worker recorded two policy-denied metadata-read commands and reported a denied first test patch. Parent verified no source file changes, stopped the worker, and did not retry the denied implementation or alter permissions.",
+  "productionDeployment": {
+    "status": "verified_live",
+    "runtimeCommit": "65dd4522edcc6158f61e3dafbe6188d7be4e11bb",
+    "previewDeploymentId": "dpl_E1cRNRwvNZT8egrL4y5BW2VGMHH5",
+    "productionDeploymentId": "dpl_3vyy1XDPsCAveFDhvm1uvYyFmMPs",
+    "productionUrl": "https://lesters-arcade-mp4truyfo-justin-agent-projects.vercel.app",
+    "publicUrl": "https://lestersarcade.io",
+    "aliasMatches": true,
+    "sourceFiles": [
+      {
+        "path": "/src/stacked-sim.mjs",
+        "bytes": 39328,
+        "sha256": "15ee85422508268327a01547ec79e735f139fb8c1d52bda53cc0f44c5068adb2",
+        "matchesCommittedBlob": true,
+        "contentType": "application/javascript; charset=utf-8"
+      },
+      {
+        "path": "/src/stacked-match.mjs",
+        "bytes": 10970,
+        "sha256": "d52c4d2c6847b938d92e179eb0b1f54b2d9a8ccdd0252abc89250eafa83fffdd",
+        "matchesCommittedBlob": true,
+        "contentType": "application/javascript; charset=utf-8"
+      },
+      {
+        "path": "/src/stacked-contracts.mjs",
+        "bytes": 5779,
+        "sha256": "f09b297b9e746c15513d3e93b00da82b820d2a6a5485c34e9084c36fff6654cb",
+        "matchesCommittedBlob": true,
+        "contentType": "application/javascript; charset=utf-8"
+      },
+      {
+        "path": "/src/stacked-cabinet.mjs",
+        "bytes": 48,
+        "sha256": "d49f050e688a6944b8cf985703acde7f2da2051a33abbfb7dead01e36abef3fc",
+        "matchesCommittedBlob": true,
+        "contentType": "application/javascript; charset=utf-8"
+      },
+      {
+        "path": "/src/seeded-rng.mjs",
+        "bytes": 5300,
+        "sha256": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+        "matchesCommittedBlob": true,
+        "contentType": "application/javascript; charset=utf-8"
+      }
+    ],
+    "heroAssets": [
+      {
+        "path": "/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png",
+        "bytes": 3242471,
+        "sha256": "065f9a2726e81a2adf7e535fd65b8970a5a42df46a0c1a427e17ec0164937c1c",
+        "matchesCommittedBlob": true
+      },
+      {
+        "path": "/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png",
+        "bytes": 3082625,
+        "sha256": "80f0d0bf8e1ca6911426ee6015388f5f5c628ffbb70aa8963f25ae55a0c9de87",
+        "matchesCommittedBlob": true
+      }
+    ],
+    "cycle077Preserved": true,
+    "rollbackId": "dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb",
+    "rollbackStillReady": true,
+    "liveHttpSmokeExit": 0,
+    "liveInteractionSmokeExit": 0,
+    "liveBrowser": [
+      {
+        "profile": "desktop",
+        "origin": "https://lestersarcade.io",
+        "passedFlows": 7,
+        "consoleErrors": 0,
+        "deferredFlows": [
+          {
+            "id": "ranked-preview",
+            "reason": "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated."
+          },
+          {
+            "id": "wallet-connect-reconnect",
+            "reason": "Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove."
+          },
+          {
+            "id": "service-worker-offline-update",
+            "reason": "Service worker, offline shell, and stale-cache flows need dedicated SW lifecycle control; currently exercised by the release browser certification harness."
+          }
+        ]
+      },
+      {
+        "profile": "mobile",
+        "origin": "https://lestersarcade.io",
+        "passedFlows": 7,
+        "consoleErrors": 0,
+        "deferredFlows": [
+          {
+            "id": "ranked-preview",
+            "reason": "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated."
+          },
+          {
+            "id": "wallet-connect-reconnect",
+            "reason": "Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove."
+          },
+          {
+            "id": "service-worker-offline-update",
+            "reason": "Service worker, offline shell, and stale-cache flows need dedicated SW lifecycle control; currently exercised by the release browser certification harness."
+          }
+        ]
+      }
+    ],
+    "observedAtUtc": "2026-09-07T14:16:35.211406+00:00"
+  }
 }

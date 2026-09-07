@@ -11,9 +11,9 @@ This integrates accepted STACKED source commit `33b43e627f7d509e5f37d49368d89db1
 - Vercel deployment-input exclusions remain unchanged; secrets, dependencies and ignored evidence are excluded. No environment values enter source or evidence.
 
 ## Publication
-Preview and production identity/readback pending. Rollback: `dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb` (`lesters-arcade-6xcz9rzfb-justin-agent-projects.vercel.app`).
+**LIVE, verified.** Runtime commit `65dd4522edcc6158f61e3dafbe6188d7be4e11bb`; preview `dpl_E1cRNRwvNZT8egrL4y5BW2VGMHH5` was promoted to production `dpl_3vyy1XDPsCAveFDhvm1uvYyFmMPs`. `https://lestersarcade.io` resolves to that Ready deployment. Five live core/RNG source files and both Lester/Lilly atlas PNGs match the committed blobs byte-for-byte. Live HTTP source/interaction probes and fresh desktop/mobile browsers each pass all seven implemented flows with zero console/page errors. The same three declared E2E exclusions remain. Rollback: `dpl_2ij5eQq1c6FYKCeXQV9Qwz1MbKnb` (`lesters-arcade-6xcz9rzfb-justin-agent-projects.vercel.app`).
 
 ## Remaining
-S-04 hit a read-only-policy denial on its first test-file patch, made no changes and was stopped. No permission change or alternative execution path was attempted. Its safe continuation needs owner direction. Public STACKED launch still requires S-22, including human-device acceptance. Prepared portal/renderer and artwork candidates are not accepted integrated game features.
+S-04 recorded two policy-denied metadata-read commands and reported a denied first test-file patch. Parent confirmed no changed source files, stopped the worker, and did not retry the denied implementation or alter permissions. Its safe continuation needs owner direction. Public STACKED launch still requires S-22, including human-device acceptance. Prepared portal/renderer and artwork candidates are not accepted integrated game features.
 
 Detailed receipts: [S01-S03-release-verification.json](S01-S03-release-verification.json). No all-green/full-game claim is made.
