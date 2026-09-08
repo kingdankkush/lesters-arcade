@@ -1,0 +1,704 @@
+{
+  "schema": "stacked-s04-recovery-correctness/v1",
+  "observedUtc": "2026-09-08T00:12:52.550562+00:00",
+  "scope": "Preservation plus two-file predictor/purity compatibility correction; not complete S-04 acceptance",
+  "branch": "feature/stacked-s04-integrity",
+  "correctionBase": "74b72f495ad05a5bcbd323b68871b6465eedc67a",
+  "preservationRefs": [
+    {
+      "candidate": "Lesters-Arcade-Stacked",
+      "baseline": "33b43e627f7d509e5f37d49368d89db1c2fd65a2",
+      "ref": "refs/heads/preserve/stacked-s03-working-20260907",
+      "commit": "fac9b8c29dd6da0846e211c8fd9d5149463dac2d",
+      "remoteReadbackVerified": true
+    },
+    {
+      "candidate": "Lesters-Arcade-Stacked-Portal",
+      "baseline": "a9100b37a58ade116fca420e57565c59bad38922",
+      "ref": "refs/heads/preserve/stacked-s06-candidate-20260907",
+      "commit": "bfe190df441f97b5990d38aa8a57726ba8395a95",
+      "remoteReadbackVerified": true
+    },
+    {
+      "candidate": "Lesters-Arcade-Stacked-Renderer",
+      "baseline": "a9100b37a58ade116fca420e57565c59bad38922",
+      "ref": "refs/heads/preserve/stacked-s11-s12-candidate-20260907",
+      "commit": "2aaa6b05f2df0c5d59c276e5d918d3428e04d72a",
+      "remoteReadbackVerified": true
+    },
+    {
+      "candidate": "Lesters-Arcade-Stacked-Release",
+      "baseline": "aaf113c5214ee6bed3b8b3efba55ff4b9501af95",
+      "ref": "refs/heads/preserve/stacked-s04-s05-wip-20260907",
+      "commit": "326d95671f5b6920cc29f68fd515efe2ae4a40fd",
+      "remoteReadbackVerified": true
+    }
+  ],
+  "newPreservation": {
+    "baseline": "aaf113c5214ee6bed3b8b3efba55ff4b9501af95",
+    "parentPreservation": "326d95671f5b6920cc29f68fd515efe2ae4a40fd",
+    "ref": "refs/heads/preserve/stacked-reconciliation-wip-20260907",
+    "commit": "74b72f495ad05a5bcbd323b68871b6465eedc67a",
+    "preservationOnly": true,
+    "verifiedFiles": 46,
+    "files": [
+      {
+        "path": "apps/portal/src/stacked-autoshift.mjs",
+        "bytes": 2071,
+        "sha256": "5186dcde3d0fa0d67d05d79d93eafc241f264b16312e5bedee5e1cfe442e7bc8",
+        "blob": "236ecf2f5c7968e1be1ea42a5c1227a6fdc3b6c1"
+      },
+      {
+        "path": "apps/portal/src/stacked-bridge-protocol.mjs",
+        "bytes": 9268,
+        "sha256": "106c627c46be119022ce1532d1cf921c2f94bdb313d4c981ecfae7adb2bdfdc8",
+        "blob": "387e946571e52a5f412969c562e869afb75084a4"
+      },
+      {
+        "path": "apps/portal/src/stacked-contracts.mjs",
+        "bytes": 6040,
+        "sha256": "0be53f94ad81cfd4448e2565be4c69884d9f0f616c8b8fd537916542105dcbd3",
+        "blob": "3ce3e70fadb0e37d1d8e04c07227da92ce70eb2f"
+      },
+      {
+        "path": "apps/portal/src/stacked-evidence-transport.mjs",
+        "bytes": 6645,
+        "sha256": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+        "blob": "9dbaef032fbcc74ea8c94f5e1174cee543c8d527"
+      },
+      {
+        "path": "apps/portal/src/stacked-replay-store.mjs",
+        "bytes": 6165,
+        "sha256": "9e8f40554ab9361087bdf5381090c21ae47b2c40f7ef2a1423406f7532dc03e5",
+        "blob": "7796ac026be726d5b48a732b41548b36d55be108"
+      },
+      {
+        "path": "apps/portal/src/stacked-sim.mjs",
+        "bytes": 49127,
+        "sha256": "95fc14b2d5ab40743a462347940df27b6aa740b9ac1dba6d217106a0bcfe96bc",
+        "blob": "5ce88231862b34fc3a94404b663b3ade3ee11f0c"
+      },
+      {
+        "path": "apps/stacked/src/dev/soak-pilot.mjs",
+        "bytes": 15141,
+        "sha256": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+        "blob": "aac98365f9181657d734774b1c0ef0955940f547"
+      },
+      {
+        "path": "apps/stacked/src/verify-worker.mjs",
+        "bytes": 3542,
+        "sha256": "7b277fd34cb069eca000b2753f1f94b346633c8645045efdd49ed73a1c04da09",
+        "blob": "3b6d9fb77f3a279b5cee56d8048df694ec44cfda"
+      },
+      {
+        "path": "docs/stacked/DECISIONS.md",
+        "bytes": 11480,
+        "sha256": "a07a4e083f09c7aacbc43a82f8880def89b13428450300e049da53be8ec54155",
+        "blob": "ea6527c14bafab0f5743616012ada36e5c09d268"
+      },
+      {
+        "path": "docs/stacked/STATUS.md",
+        "bytes": 5012,
+        "sha256": "a770a5a9d147d9e007a77ae3ecd620e05294ea78731d5da5ca933554a506c6cd",
+        "blob": "02336069e1ec7fc0442aadba18580eef09465f3a"
+      },
+      {
+        "path": "docs/stacked/amendments/INPUT-MASK-CLARIFICATION-v1.md",
+        "bytes": 2538,
+        "sha256": "29d06ec1f0f4d16668f20b85a2a3948511823d14d81eae4b7861c546e32dba3c",
+        "blob": "7aeba8f4da8334b2728d7246854294860f921b0d"
+      },
+      {
+        "path": "docs/stacked/contracts.json",
+        "bytes": 6335,
+        "sha256": "ca42289532f3c77fd6acaafe091404e6580ebb461fa239787a2309d7b5090ea6",
+        "blob": "cc0bd5f9fbf4ddcf94a0e1b9468d5ee3cf2d75ea"
+      },
+      {
+        "path": "docs/stacked/difficulty-model.json",
+        "bytes": 1286947,
+        "sha256": "44e051af43c02eebda4a386fa66976fecbc323eba10c48554730cb385bbbb889",
+        "blob": "08a15375dd473c150a53e0687eae0216fd1a67cd"
+      },
+      {
+        "path": "docs/stacked/reviews/CLAUDE-20260907-reconciliation.json",
+        "bytes": 6907,
+        "sha256": "7029f8299961537e5757523461fe1d889aed62a00a0c425a4a51b7eb0ed6008b",
+        "blob": "a7ab78c63d3b41faac4bc8ee1aeb78b227271f21"
+      },
+      {
+        "path": "docs/stacked/reviews/CLAUDE-20260907-reconciliation.md",
+        "bytes": 6381,
+        "sha256": "b41ce7a16ddd0607536826fdb9346b821e07052cfded86594b14619d4646f1c6",
+        "blob": "1e55b86062883dfdf3e1326da372b022f06ce06f"
+      },
+      {
+        "path": "package.json",
+        "bytes": 12887,
+        "sha256": "94d6d57b8a683c3668ae4b677b6b4d78aa3ede4ac88edd4e2126a0f70b3e3c80",
+        "blob": "9f9b7b4cf9e976f083bdfaf36fc35b3dbef29f69"
+      },
+      {
+        "path": "scripts/stacked-sim-purity-check.mjs",
+        "bytes": 12098,
+        "sha256": "84be38c8916475c214a51d4931157d76740916b16732a08d22ff05dab269c900",
+        "blob": "5e8cd32e17b1db1109b6db4f8e472ef54a7b84fa"
+      },
+      {
+        "path": "scripts/syntax-check.mjs",
+        "bytes": 26534,
+        "sha256": "5aca7ff08e5b9f25bf57d5e581edb6d7c2c5226249a492ce77a91999bee901ce",
+        "blob": "e8ce25d7afb6b06ac029d35a4b1d7dc2e607cce9"
+      },
+      {
+        "path": "scripts/write-stacked-difficulty-model.mjs",
+        "bytes": 4185,
+        "sha256": "f42e33991d307688dc42590b9395cc20ad6e25733e7d86db04a17297ad383b3a",
+        "blob": "56ca0c3a7bf8e1108c236f9e0b1344be0b3ca38d"
+      },
+      {
+        "path": "sdk/stacked-run-summary-schema.mjs",
+        "bytes": 4414,
+        "sha256": "85eef4985006f638ff85976503a968560be8a1444f1fdc0823c598334e553de6",
+        "blob": "cae3eaf11ebb19739cf01e41807d4d5ac818dc44"
+      },
+      {
+        "path": "tests/fixtures/stacked-summary-fixture.mjs",
+        "bytes": 733,
+        "sha256": "7d466fa6f7307b83ff2bb255d295510ff4178384b12c9045549eabbc74804e2d",
+        "blob": "f398b01a1f7bf6241d124d9249b8fe7763ebc4b3"
+      },
+      {
+        "path": "tests/fixtures/stacked-worker-runner.mjs",
+        "bytes": 254,
+        "sha256": "7b9a48320583d12d2d012480f84ae7eb7dac1169ff598220912ea6cf8612774d",
+        "blob": "846de48290c0f2938d3a7d945dcdbd515f159953"
+      },
+      {
+        "path": "tests/stacked-adapter-review-regressions.test.mjs",
+        "bytes": 1461,
+        "sha256": "0e681663bd5185378e2adc28fd89e6dbab001294df6d73d1a617836c426b9e54",
+        "blob": "9d07102e7af14674c7c207f99d23da164a32edb3"
+      },
+      {
+        "path": "tests/stacked-autoshift.test.mjs",
+        "bytes": 2202,
+        "sha256": "29a6d27b1305ad6356fd411e3e2fae95c464af40c40af2fb2e925891cf311bce",
+        "blob": "4cc66d6ee4279c83a5a67c3dbd0e1219168167af"
+      },
+      {
+        "path": "tests/stacked-bridge-protocol.test.mjs",
+        "bytes": 7094,
+        "sha256": "a3d954da761ca129397745cdcfcb4bf28eef9d244e80fdf0e074db64afbde7ae",
+        "blob": "ac01cd8ba1fd9351d982598d751ba195d1273098"
+      },
+      {
+        "path": "tests/stacked-contracts.test.mjs",
+        "bytes": 12794,
+        "sha256": "12347a2e45585bbd09c95e3bd9531d74728e29db6f2c88c49c45a6cd70d1cad2",
+        "blob": "fdfd041fcde4864cc0e31999c1465bd6ee972d28"
+      },
+      {
+        "path": "tests/stacked-difficulty-model.test.mjs",
+        "bytes": 1970,
+        "sha256": "429090b4411266d5d6b8f62748a23a4bd7b162deafdcebc6cfea1e97b74e1451",
+        "blob": "53926696176b0a56109652b5a5cbdcc596af2169"
+      },
+      {
+        "path": "tests/stacked-evidence-codec.test.mjs",
+        "bytes": 4527,
+        "sha256": "b1a5aed8bb077b89957e82741c3bb858fa6f7c630c2532b908ee0d5623b2fc4f",
+        "blob": "0aefa0e9425541f5aa07ffe4242613490ccdbd06"
+      },
+      {
+        "path": "tests/stacked-evidence-prediction.test.mjs",
+        "bytes": 4295,
+        "sha256": "0df28215f7dbe7696286b8f6fafbcb7a52d843e4622abeee5da5949378cd27ba",
+        "blob": "20b4aa11fda01df61baa12b92efe15bfd51ab1a1"
+      },
+      {
+        "path": "tests/stacked-evidence-transport.test.mjs",
+        "bytes": 3536,
+        "sha256": "f0ca0fe5e8d1720b31062f23fd442878f5765a6067f854f16b7022d31583c1bf",
+        "blob": "099d3384673a5335050bd384335ce439ee92f59e"
+      },
+      {
+        "path": "tests/stacked-evidence-varint-boundaries.test.mjs",
+        "bytes": 1529,
+        "sha256": "671f51f496cd6db23aabcfc1ed3042a2dd92a1e82cc1a0f3e88739333e2861e7",
+        "blob": "f19087a1e39ee50137b64743fdd8252b4b86684d"
+      },
+      {
+        "path": "tests/stacked-headless-projection.test.mjs",
+        "bytes": 1554,
+        "sha256": "39f985361ca2f1285399a3e575a111dd90e957fdae4cbceaacc7978046902704",
+        "blob": "be5199eaf0740b67650e6da211ffb182275f9e07"
+      },
+      {
+        "path": "tests/stacked-hotpath-equivalence.test.mjs",
+        "bytes": 2674,
+        "sha256": "4a1761505cebc32dadf27d9ae5afc8cd6c2fcbb657ae9e8ba6882f1f27f7ee27",
+        "blob": "0afd824bc551232107d10f74ecb05a6e61e09cea"
+      },
+      {
+        "path": "tests/stacked-input-codec.test.mjs",
+        "bytes": 2911,
+        "sha256": "d8fdaa682017f0848890bdb4410f2ce970ef740c6e142306842e3ebcceb34a4a",
+        "blob": "8231757220ed1b4630277ac1405ec0a14a941427"
+      },
+      {
+        "path": "tests/stacked-neutral-chords.test.mjs",
+        "bytes": 1104,
+        "sha256": "b6df8efe201493bdf81f28a3fd2eb1367a5136f708edd307e350060ead156519",
+        "blob": "970ce0ca348f8b24f87f6e5d261d6c34810e35ad"
+      },
+      {
+        "path": "tests/stacked-purity-audit.test.mjs",
+        "bytes": 5282,
+        "sha256": "1e0836747b9d3f446c5aac67ece745b848e6126f25294e3bb37df9ba8e92a17e",
+        "blob": "8f15d668f6c214af6b4e5c57bfd3a1ddf04942fc"
+      },
+      {
+        "path": "tests/stacked-recorder-stop-regression.test.mjs",
+        "bytes": 936,
+        "sha256": "50e9c801996bdb77b478f3f94ded7e13db0e6b55e6bffb0b38168aba4e806203",
+        "blob": "e7b529d41bd50cd415c8bd36743f0b7338c17012"
+      },
+      {
+        "path": "tests/stacked-replay-cleanup-failure.test.mjs",
+        "bytes": 1737,
+        "sha256": "7eae47b238ef5e65730a6f15f487f8e8ee66ea9df881c4c0ea60307fab99c736",
+        "blob": "68cb731de52a2f0c44d08d6e4bc92622956600bc"
+      },
+      {
+        "path": "tests/stacked-replay-store.test.mjs",
+        "bytes": 3866,
+        "sha256": "018219bf4cd1db2053516dd0a46314e9cdd5323026f34d7d0e3b8f8313cba006",
+        "blob": "2bd2bceb1f32cf6f385fd508d628d469bcc5c39c"
+      },
+      {
+        "path": "tests/stacked-result-wire-roundtrip.test.mjs",
+        "bytes": 2663,
+        "sha256": "41c85ebfd7d3b2eae6c8b2751f61e2928ea0313f690f8cde08f6eca36de328bf",
+        "blob": "f1b74d6c1ec94dbfb4b12efa6dc212f044c10552"
+      },
+      {
+        "path": "tests/stacked-review-boundaries.test.mjs",
+        "bytes": 2815,
+        "sha256": "f548dc34db066797f9ff1e537f3527a9247575a3853f91a816f2caf0f8f1435d",
+        "blob": "c7c054e0403e2d4f8b0cae6c79f192d3ae8aac1b"
+      },
+      {
+        "path": "tests/stacked-s04-api-guards.test.mjs",
+        "bytes": 1166,
+        "sha256": "6c1c4629d4e3642030edc2bdcf7c5659e32727ff1ba1d1de17c45807297a8ecb",
+        "blob": "896626db626093adbb11a305eac2b32e540b1cd1"
+      },
+      {
+        "path": "tests/stacked-soak-pilot.test.mjs",
+        "bytes": 1963,
+        "sha256": "f34fdfe9af04196a621c5b7f4d3fc51d9e8ba124152ac0fd613a8454aa21cfce",
+        "blob": "a0cbed06b97b698d54b9181a4c8e3bd95eabcbcd"
+      },
+      {
+        "path": "tests/stacked-store-format.test.mjs",
+        "bytes": 749,
+        "sha256": "1d700325447e3a258b915cc372247aa61a79792d4f08fb7468a68954c1083182",
+        "blob": "058316798aace60305dce63eebc3a5f0aab300a2"
+      },
+      {
+        "path": "tests/stacked-verify-worker.test.mjs",
+        "bytes": 2037,
+        "sha256": "059c83e7d1c4800b2f712a3599c3cd84c220cec44e0849f8f926216c73f20407",
+        "blob": "f1758119255233780fb6268c234b37512cfca096"
+      },
+      {
+        "path": "tests/stacked-wire-summary.test.mjs",
+        "bytes": 2283,
+        "sha256": "f8b853b771bdff7ab64a76c4ac19785332ca40dd5287f35730886be465672edf",
+        "blob": "fd13414533950f303566c8899623c70f046c791c"
+      }
+    ],
+    "remoteReadbackVerified": true,
+    "allSourceBytesRechecked": true
+  },
+  "frozenReviewManifest": {
+    "baseline": "74b72f495ad05a5bcbd323b68871b6465eedc67a",
+    "diffSha256": "f7580086fc36e015ab1ce8f8bf8ab069cc2347196156df96aa35c39f61b64971",
+    "sources": {
+      "apps/portal/src/stacked-sim.mjs": "ee24d4884cbec52993c6c9db80c1d4e4bfb68988373de4d7110d30cd48f3278b",
+      "tests/stacked-evidence-prediction.test.mjs": "a174411e7102eaa7f40d9ac6786f6ff13de2d2b5cc78e5ffef7ee23a3b5505ec",
+      "tests/stacked-evidence-varint-boundaries.test.mjs": "671f51f496cd6db23aabcfc1ed3042a2dd92a1e82cc1a0f3e88739333e2861e7",
+      "scripts/stacked-sim-purity-check.mjs": "84be38c8916475c214a51d4931157d76740916b16732a08d22ff05dab269c900",
+      "tests/stacked-purity-audit.test.mjs": "1e0836747b9d3f446c5aac67ece745b848e6126f25294e3bb37df9ba8e92a17e"
+    }
+  },
+  "checks": {
+    "red": {
+      "name": "correctness-red",
+      "command": "node --test --test-reporter=tap tests/stacked-evidence-varint-boundaries.test.mjs tests/stacked-evidence-prediction.test.mjs tests/stacked-purity-audit.test.mjs",
+      "logPath": ".tmp/reprompt-gates/correctness-red.tap",
+      "logSha256": "9a94285f5252a44b3abfebe9005984da43a9a51ac1c9358ffbcb5385db311872",
+      "counts": {},
+      "failures": [
+        "size coupling rejects a deliberately broken predictor in an isolated source copy\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=1, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=1, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=17, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=17, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=128, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=128, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=129, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=129, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=3\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=1\r",
+        "sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=3\r",
+        "sim predictor does not charge repeated identical input\r",
+        "sim predictor rejects inputs outside the bounded byte/tick format\r",
+        "purity audit accepts current canonical graph and reports all three audited modules\r"
+      ]
+    },
+    "targeted": {
+      "name": "correctness-green",
+      "command": "node --test --test-reporter=tap tests/stacked-{evidence-varint-boundaries,evidence-prediction,purity-audit,recorder-stop-regression,neutral-chords,contracts}.test.mjs",
+      "logPath": ".tmp/reprompt-gates/correctness-green.log",
+      "logSha256": "285db343964bf87cfb3997d6b973fd510fe6ceed956524a4cd986b6cffa96a52",
+      "counts": {},
+      "failures": []
+    },
+    "focused": {
+      "name": "focused-final",
+      "exitCode": 0,
+      "elapsedSeconds": 41.391,
+      "counts": {
+        "tests": 268,
+        "suites": 0,
+        "pass": 268,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "failures": []
+    },
+    "fullBefore": {
+      "command": "node --test --test-reporter=tap --test-timeout=180000 tests/*.test.mjs tests/projectile-pool.test.mjs",
+      "exitCode": 1,
+      "elapsedSeconds": 57.563,
+      "counts": {
+        "tests": 2836,
+        "suites": 8,
+        "pass": 2765,
+        "fail": 71,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "failures": [
+        "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata",
+        "Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract",
+        "all playable rosters carry full 8-direction required animation coverage with real frame assets",
+        "playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts",
+        "no playable hero frame keeps the tiny QA triangle/robot placeholder signature",
+        "complete PixelLab AAA wave enemies replace old partial runtime kits",
+        "runtime roster does not ship known QA-green triangle enemy kits after art repair",
+        "every authored setpiece template id exists and references repo-owned coherent-world assets",
+        "final boss animation pack covers authored Level 1 and Level 2 bosses with readable combat states",
+        "Level 2 final city world pack ships authored district props and animated setpieces",
+        "curated runtime assets exist, use safe portal-relative paths, and have expected dimensions",
+        "curated HMH kit retains only the exact browser runtime set",
+        "final setpiece kit ships original POI level-design assets for every authored Level 1 arena",
+        "final animation completion pack ships hero polish states for every playable roster",
+        "final animation completion pack ships enemy readability states for active bespoke roster keys",
+        "animated-roster lester compatibility matrix is valid, complete, and runtime-addressable",
+        "animated-roster lilly compatibility matrix is valid, complete, and runtime-addressable",
+        "cohesive Level 1 replacement assets exist, follow the theme palette, and replace weak generic roles",
+        "every curated Level 1 asset reference resolves to a real generated/source file",
+        "final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore",
+        "Level 1 PixelLab surface zones turn candidate terrain into authored route ground",
+        "SBS Level 1 ground assets exist with 128px tile width and cleaned alpha-compatible PNGs",
+        "existing sketch asset coverage references only repo-owned coherent-world assets",
+        "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage",
+        "generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps",
+        "WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps",
+        "every runtime terrain family resolves to its own shipped material PNG",
+        "Level 3 final getaway world pack ships animated authored setpieces for the finale route",
+        "Level 3 final getaway ground pack covers rooftop, glass, train, rail, storm, and speed texture roles",
+        "P0 pickup icon pack contains disk-real manifest-backed runtime ids",
+        "Desert Approach v2.3 ships two compact runtime atlases with certified budgets",
+        "Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas",
+        "VFX/UI chrome pack covers all art-redo missing VFX and UI chrome runtime ids",
+        "WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with full 8-direction matrices",
+        "WO-110 boss redo ships true-scale human phase forms in the 192-256px range",
+        "WO-110 boss redo includes super-move telegraphs and death spectacle",
+        "WO-115 batch two completes five Level 1 runtime enemy matrices",
+        "WO-117 polish pack ships generated artwork for world, VFX, and UI polish",
+        "WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime replacement",
+        "WO-119 Level 1 PixelLab world assets are present, alpha-clean, and route-integrated",
+        "WO-81/82/79 animation polish certification passes runtime gates",
+        "WO-82 Lit Commando and Lit Valkyrie are certified with no missing direction cells",
+        "WO-90 certifies all placeholder redo packs and contact sheets",
+        "WO-97 files exist, have stable dimensions, and animated assets expose sprite-sheet metadata",
+        "WO-98 placed objects only reference approved WO-97 assets that exist on disk",
+        "Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs",
+        "Level 1 final ambient world assets ship original animated detail loops across biomes",
+        "Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops",
+        "Level 1 original polish assets ship forest, water, farm, road, town, and cliff props",
+        "sim predictor agrees with the actual SIC1 bytes at gap=1, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=1, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=17, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=17, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=128, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=128, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=129, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=129, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=3",
+        "sim predictor does not charge repeated identical input",
+        "sim predictor rejects inputs outside the bounded byte/tick format",
+        "purity audit accepts current canonical graph and reports all three audited modules",
+        "shipped STACKED sim passes its executable purity audit",
+        "Wasteland Debt Collector has approved 8-direction production sprite coverage",
+        "Wave 3 art matrix gates full hero state-direction coverage and enemy readability states"
+      ]
+    },
+    "fullAfter": {
+      "name": "full-final",
+      "exitCode": 1,
+      "elapsedSeconds": 56.781,
+      "counts": {
+        "tests": 2836,
+        "suites": 8,
+        "pass": 2785,
+        "fail": 51,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "failures": [
+        "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata",
+        "Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract",
+        "all playable rosters carry full 8-direction required animation coverage with real frame assets",
+        "playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts",
+        "no playable hero frame keeps the tiny QA triangle/robot placeholder signature",
+        "complete PixelLab AAA wave enemies replace old partial runtime kits",
+        "runtime roster does not ship known QA-green triangle enemy kits after art repair",
+        "every authored setpiece template id exists and references repo-owned coherent-world assets",
+        "final boss animation pack covers authored Level 1 and Level 2 bosses with readable combat states",
+        "Level 2 final city world pack ships authored district props and animated setpieces",
+        "curated runtime assets exist, use safe portal-relative paths, and have expected dimensions",
+        "curated HMH kit retains only the exact browser runtime set",
+        "final setpiece kit ships original POI level-design assets for every authored Level 1 arena",
+        "final animation completion pack ships hero polish states for every playable roster",
+        "final animation completion pack ships enemy readability states for active bespoke roster keys",
+        "animated-roster lester compatibility matrix is valid, complete, and runtime-addressable",
+        "animated-roster lilly compatibility matrix is valid, complete, and runtime-addressable",
+        "cohesive Level 1 replacement assets exist, follow the theme palette, and replace weak generic roles",
+        "every curated Level 1 asset reference resolves to a real generated/source file",
+        "final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore",
+        "Level 1 PixelLab surface zones turn candidate terrain into authored route ground",
+        "SBS Level 1 ground assets exist with 128px tile width and cleaned alpha-compatible PNGs",
+        "existing sketch asset coverage references only repo-owned coherent-world assets",
+        "Justin map tile pack is sliced into opaque runtime texture tiles with material role coverage",
+        "generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps",
+        "WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps",
+        "every runtime terrain family resolves to its own shipped material PNG",
+        "Level 3 final getaway world pack ships animated authored setpieces for the finale route",
+        "Level 3 final getaway ground pack covers rooftop, glass, train, rail, storm, and speed texture roles",
+        "P0 pickup icon pack contains disk-real manifest-backed runtime ids",
+        "Desert Approach v2.3 ships two compact runtime atlases with certified budgets",
+        "Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas",
+        "VFX/UI chrome pack covers all art-redo missing VFX and UI chrome runtime ids",
+        "WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with full 8-direction matrices",
+        "WO-110 boss redo ships true-scale human phase forms in the 192-256px range",
+        "WO-110 boss redo includes super-move telegraphs and death spectacle",
+        "WO-115 batch two completes five Level 1 runtime enemy matrices",
+        "WO-117 polish pack ships generated artwork for world, VFX, and UI polish",
+        "WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime replacement",
+        "WO-119 Level 1 PixelLab world assets are present, alpha-clean, and route-integrated",
+        "WO-81/82/79 animation polish certification passes runtime gates",
+        "WO-82 Lit Commando and Lit Valkyrie are certified with no missing direction cells",
+        "WO-90 certifies all placeholder redo packs and contact sheets",
+        "WO-97 files exist, have stable dimensions, and animated assets expose sprite-sheet metadata",
+        "WO-98 placed objects only reference approved WO-97 assets that exist on disk",
+        "Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs",
+        "Level 1 final ambient world assets ship original animated detail loops across biomes",
+        "Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops",
+        "Level 1 original polish assets ship forest, water, farm, road, town, and cliff props",
+        "Wasteland Debt Collector has approved 8-direction production sprite coverage",
+        "Wave 3 art matrix gates full hero state-direction coverage and enemy readability states"
+      ],
+      "newFailureNames": [],
+      "resolvedFailureNames": [
+        "purity audit accepts current canonical graph and reports all three audited modules",
+        "shipped STACKED sim passes its executable purity audit",
+        "sim predictor agrees with the actual SIC1 bytes at gap=1, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=1, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=128, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=128, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=129, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=129, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16384, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=16385, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=17, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=17, mask=3",
+        "sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=1",
+        "sim predictor agrees with the actual SIC1 bytes at gap=432000, mask=3",
+        "sim predictor does not charge repeated identical input",
+        "sim predictor rejects inputs outside the bounded byte/tick format"
+      ]
+    },
+    "release": {
+      "name": "release-final",
+      "exitCode": 0,
+      "elapsedSeconds": 137.734,
+      "counts": {},
+      "failures": []
+    },
+    "build": {
+      "name": "build-final",
+      "command": "npm run build / node build.mjs",
+      "exitCode": 0,
+      "elapsedSeconds": 0.359
+    },
+    "cabinetDocs": {
+      "name": "cabinet-docs",
+      "exitCode": 0,
+      "elapsedSeconds": 0.063,
+      "counts": {},
+      "failures": []
+    },
+    "syntaxOutput": "Syntax check passed: 451 JS modules + 57 Python scripts.",
+    "purityOutput": "STACKED sim purity passed: AST audit of 3 canonical modules; closed import graph.",
+    "contractsJsonUnchanged": true,
+    "postDocumentationFullSuite": {
+      "exitCode": 1,
+      "counts": {
+        "tests": 2836,
+        "suites": 8,
+        "pass": 2785,
+        "fail": 51,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "newFailureNames": [],
+      "logPath": ".tmp/reprompt-gates/post-docs-full.log",
+      "logSha256": "9465c37674370b14c08a471515d94a76014d88e604f8375d601adcdd9c353114",
+      "allEditedStackedDocLinksResolve": true
+    }
+  },
+  "executionLogHashes": {
+    "build-final.log": "60d95f8c43362976c2b7dcf676bc3e8a9ecba01cb8fdde91351d228795aeac7f",
+    "cabinet-docs.log": "c42ec50006c266f1be4925edf6c96653f765bcad14e17399febe62fbf298cd9a",
+    "contracts-regenerate.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "correctness-green.log": "285db343964bf87cfb3997d6b973fd510fe6ceed956524a4cd986b6cffa96a52",
+    "correctness-red.tap": "9a94285f5252a44b3abfebe9005984da43a9a51ac1c9358ffbcb5385db311872",
+    "focused-baseline.tap": "b3aa1eb4180fdb87e857188c80f03191e5d341ece2c5f4ab8920001cf245e145",
+    "focused-final.log": "17e99fa2c17b663b5fa6c351a856139987ed6abf35a76d9276c089ba6a677636",
+    "full-baseline.tap": "65443fa781a8b52f7236341b61f3c1f2bce1d57e79b3257666ed2a86ac26d175",
+    "full-final.log": "0eebbfcc56e6645a374ba563686ec06ccc8def42d5240ce93403495733cc7471",
+    "maximal-replay-current.log": "063659ac6041c821adb78f86c3bcc02f7aa1d8fa481cb83ca25881970a48643a",
+    "purity-green.log": "897c47102be46a7f8008f0b7b6ab136625084f4a41dc0679c56dacd113021269",
+    "release-final.log": "eee4269691373ccde8bc45d66140bea00fdc88b34405a4b08f4963675affd14d",
+    "syntax-green.log": "789044be5d57b953f5eb833a626095ebcdd75ab61da20c1a8c080e8f9d961ad7"
+  },
+  "maximalReplayCalibration": {
+    "targetTicks": 432000,
+    "evidenceBytes": 432028,
+    "evidenceSha256": "3e64933b39da1680fcae9568815109e4bc522be059bce4ab2fd14096d00707d5",
+    "sourceHashes": {
+      "apps/portal/src/stacked-sim.mjs": "ee24d4884cbec52993c6c9db80c1d4e4bfb68988373de4d7110d30cd48f3278b",
+      "apps/portal/src/stacked-contracts.mjs": "0be53f94ad81cfd4448e2565be4c69884d9f0f616c8b8fd537916542105dcbd3",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+    },
+    "fixtureGeneratorSourceHashes": {
+      "apps/portal/src/stacked-sim.mjs": "82d8bbc16e6245031674a836de17f101d2254d223a6b10c2accee027366c81ca",
+      "apps/portal/src/stacked-contracts.mjs": "0be53f94ad81cfd4448e2565be4c69884d9f0f616c8b8fd537916542105dcbd3",
+      "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+      "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156"
+    },
+    "measurements": [
+      {
+        "sample": 0,
+        "milliseconds": 391.06620000000004,
+        "identical": true
+      },
+      {
+        "sample": 1,
+        "milliseconds": 350.2257,
+        "identical": true
+      },
+      {
+        "sample": 2,
+        "milliseconds": 342.0912000000001,
+        "identical": true
+      }
+    ],
+    "budgetMilliseconds": 400,
+    "passed": true
+  },
+  "browser": {
+    "status": "blocked-before-navigation",
+    "error": "Blocked: URL targets a private or internal address",
+    "bypassAttempted": false,
+    "browserPassClaimed": false
+  },
+  "independentReview": {
+    "status": "passed",
+    "scope": "Frozen two-file correction only; not S-04 as a whole",
+    "failedDelegation": {
+      "provider": "OpenRouter",
+      "model": "minimax/minimax-m2.7:free",
+      "reviewOccurred": false,
+      "error": "HTTP 404: This model is unavailable for free"
+    },
+    "execution": {
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "high",
+      "exitCode": 0,
+      "durationSeconds": 23.141,
+      "packetSha256": "5df8ada93b285865adf62230456abc5ad10bc30c8cee45da10beaf75d1b10527",
+      "eventsSha256": "7bb1a3dabcdd7862bc61b3f5160f229f965894998f3b332cd4d5588e67c422cd",
+      "completedTurn": true,
+      "toolEventCount": 0,
+      "sourceHashesUnchanged": true,
+      "nonToolNotifications": [
+        {
+          "id": "item_0",
+          "type": "error",
+          "message": "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+        }
+      ],
+      "parentAuditCorrection": "Initial wrapper misclassified a CLI skill-description truncation warning as a tool event. Existing completed JSON events were re-audited; Codex was not rerun."
+    },
+    "verdict": {
+      "passed": true,
+      "commandsExecuted": false,
+      "security_concerns": [],
+      "logic_errors": [],
+      "suggestions": [],
+      "summary": "The frozen two-file correction satisfies the stated acceptance contract. The exported transition-size helper validates both masks and the gap, preserves identical-mask zero cost and SIC1 sizing rules, and is used by the real simulation transition path while encoder sizing remains independent. The isolated mutant test now alters the shared runtime predictor and is correctly expected to fail runtime/encoder agreement. The boolean-only corner count remains behaviorally equivalent without using the rejected Boolean builtin callback. No material logic or security issues were found in the diff."
+    }
+  },
+  "boundaries": {
+    "cycleS04Accepted": false,
+    "publicCabinetFlip": false,
+    "rankedWritesEnabled": false,
+    "productionPromotion": false,
+    "financialActions": false,
+    "hmhCycleWork": false
+  }
+}

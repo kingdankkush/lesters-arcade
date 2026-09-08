@@ -144,15 +144,16 @@ below is an integer. **There is no floating-point number anywhere in the simulat
 
 ### 2.3 Input model and evidence codec (conflicts C-1, C-2)
 
-**The resolution in one paragraph.** The sim's input is **one `uint8` held-state mask per tick**.
-The mask is recorded exactly as handed to `step()`. DAS, ARR, DCD and every touch/gesture/gamepad
-threshold live in the **input layer, outside the sim**, and expand a held direction into discrete
-per-tick move bits *before* the mask is built — so handling configuration can never change a replay,
-and a Ranked run recorded on any DAS/ARR re-simulates identically on a verifier running defaults.
-Edge detection for the remaining bits happens **inside** the sim by comparing the previous tick's
-mask, which removes the four-catch-up-step multiplication trap by construction and means the verifier
-needs no host adapter at all. The stream is transition-encoded (`SIC1`) and shipped to the parent in
-chunks.
+**The resolution in one paragraph.** The sim's input is **one committed `uint8` action-state mask
+per tick**, not a raw physical held-key snapshot. The mask is recorded exactly as handed to `step()`.
+DAS, ARR, DCD and every touch/gesture/gamepad threshold live in the **input layer, outside the sim**,
+which expands held directions into per-tick movement pulses before committing the mask. The accepted
+sim compares consecutive masks for horizontal movement (including opposing-direction takeover),
+rotation, hold and hard-drop edges; `softDrop` is level-triggered. The verifier consumes those same
+committed masks without a device adapter, and SIC1 transition-encodes them for chunked transport.
+The [input-mask clarification](amendments/INPUT-MASK-CLARIFICATION-v1.md) records the unresolved
+ARR=1/nine-tick touch timing promises: this wording does not change mechanics or claim those cadence
+gates pass.
 
 Why each loser lost:
 

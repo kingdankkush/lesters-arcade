@@ -1,37 +1,46 @@
 # STACKED delivery status
 
+## Current continuation
+
+**STACKED only.** The active continuation is the real linked worktree **Lesters-Arcade-Stacked-S04-Integrity**, branch `feature/stacked-s04-integrity`, based on raw preservation commit `74b72f495ad05a5bcbd323b68871b6465eedc67a`. The Release, Renderer, Portal and historical Stacked worktrees are preserved inputs, not parallel source writers. Do not reset, clean, delete or wholesale-merge them.
+
+The supplied `Stacked-Prompt.md` is a historical briefing, not current Git/test truth. Its named `STACKED-GAMEPLAN-2026-09-07.md` and `HERMES-REPROMPT-2026-09-07.md` were not present in the inspected Stacked doc sets. See [CYCLE-004](cycles/CYCLE-004.md) for this session's bounded correction and [the earlier reconciliation](reviews/CLAUDE-20260907-reconciliation.md) for prior work.
+
 ## Accepted baseline
-S-01, S-02 and S-03 are accepted at core commit `33b43e627f7d509e5f37d49368d89db1c2fd65a2`. Historical S-03 verification: 141 focused tests; eight baseline-aware Node gates; full suite 2693/2642/51 documented inherited failures, with no new failure names. Cabinet 0.2.0; golden result tuple unchanged. See [CYCLE-003](cycles/CYCLE-003.md).
 
-## Active, unaccepted work
-Parent-owned implementation is in the real linked Git worktree **Lesters-Arcade-Stacked-Release**, branch `feature/stacked-release-live`, based on `aaf113c5214ee6bed3b8b3efba55ff4b9501af95`. It is **not clean** and is not blocked before implementation.
+S-01, S-02 and S-03 remain accepted at core commit `33b43e627f7d509e5f37d49368d89db1c2fd65a2`, integrated into the production lineage at `65dd4522edcc6158f61e3dafbe6188d7be4e11bb` and Release HEAD `aaf113c5214ee6bed3b8b3efba55ff4b9501af95`. Cabinet 0.2.0; golden result fixture unchanged. Historical S-03 evidence is in [CYCLE-003](cycles/CYCLE-003.md).
 
-- S-04 codec, recorder, transport, replay store, verification worker, bridge and autoshift are substantially implemented, not accepted.
-- S-05 difficulty model and Free-only pilot are implemented, not accepted.
-- S-08 summary validation is partially implemented; full projection/integration remains pending.
-- Reconciliation baseline: **174 tests, 170 pass, 4 fail, no skips/cancellations**. The neutral-stop regression passes. Remaining failures: three result cross-field guards and pilot blocked movement at tick 8,957. This is a dated diagnostic, not a release receipt.
-- Subsequent repairs: bridge cross-field regressions pass 10/10; all 26 non-pilot STACKED test files pass 221/221; the Free-only pilot passes 2/2, including an uninterrupted 100,000-tick run and replay-identical tuple. AST purity passes 32/32 falsification/positive cases. These are focused checks, not final cycle acceptance.
-- The broad pilot search timed out at 180 seconds; bounded tick-aware trajectories passed the unchanged long-run test. Maximum-length replay calibration, fresh static review and full project gates remain pending.
-- The [ARR/touch timing conflict](amendments/INPUT-MASK-CLARIFICATION-v1.md) remains explicitly open for S-15/G-19; no silent simulation change or input-acceptance claim.
+## Current measured state, not full cycle acceptance
 
-See [external-review reconciliation and all 17 tasks](reviews/CLAUDE-20260907-reconciliation.md). Full focused/project gates must be repeated after repairs.
+- Fresh preserved-WIP baseline: **268 Stacked tests, 248 pass, 20 fail**. Eighteen unfinished predictor tests referenced a missing export; two purity checks rejected `filter(Boolean)`. The neutral-stop regression was already passing.
+- Bounded correction: implement the validated SIC1 transition-byte predictor used by the sim, keep independent encoder sizing and a falsification test, and use an equivalent local boolean predicate without weakening the AST purity gate.
+- After correction: **268/268 Stacked tests pass**, no skips/cancellations. Full suite: **2,836 tests, 2,785 pass, 51 inherited failures; zero new failure names**. The baseline-aware release gate passes. Syntax, cabinet docs, build and contracts regeneration pass; generated contract JSON is unchanged.
+- The saved uninterrupted **432,000-tick** evidence replays to its exact recorded terminal tuple. Fresh Node measurements: **391.0662 / 350.2257 / 342.0912 ms**, against the unchanged 400 ms limit. This is a calibration receipt with narrow cold-sample headroom, not a newly installed performance regression gate or complete S-04 acceptance.
+- Real Node worker/live-inline parity tests pass. Browser source-worker verification was **blocked before navigation** by the browser tool's private-address policy. No alternate access path was attempted; no browser or human-device pass is claimed.
+- Independent command-free Codex review of the exact bounded correction **passed**, with zero tool/command events and unchanged source hashes. The entire recovered S-04/S-05/S-08 candidate is not certified by that limited review.
 
-## Preserved candidates and ownership
-All four STACKED directories are registered Git worktrees sharing one repository; `.git` is a pointer file, not a directory. The uncommitted durability risk has been addressed with raw-byte-verified preservation commits and remote-ref readback. **Preservation is not acceptance.**
+## Preserved candidates
 
-| Worktree | Baseline | Preservation commit | State |
-| --- | --- | --- | --- |
-| Lesters-Arcade-Stacked | `33b43e627f7d509e5f37d49368d89db1c2fd65a2` | `fac9b8c29dd6da0846e211c8fd9d5149463dac2d` | Historical S-03 working state; not an active source writer. |
-| Lesters-Arcade-Stacked-Portal | `a9100b37a58ade116fca420e57565c59bad38922` | `bfe190df441f97b5990d38aa8a57726ba8395a95` | S-06 candidate; dev-only integration/full acceptance pending. |
-| Lesters-Arcade-Stacked-Renderer | `a9100b37a58ade116fca420e57565c59bad38922` | `2aaa6b05f2df0c5d59c276e5d918d3428e04d72a` | S-11/S-12 candidate against older sim. Its 65-test/lifecycle/browser evidence is historical, not current-core integration acceptance. |
-| Lesters-Arcade-Stacked-Release | `aaf113c5214ee6bed3b8b3efba55ff4b9501af95` | `326d95671f5b6920cc29f68fd515efe2ae4a40fd` | Active parent-owned S-04/S-05/partial S-08 WIP. |
+All four original directories were verified registered Git worktrees with `.git` pointer files. Their four existing preservation refs were read back from GitHub; historical, Portal and Renderer changed-file bytes still match those snapshots. Release had newer work, so it received an additional raw-byte snapshot before any repair. **Preservation is not acceptance.**
 
-Preservation refs retain their original bytes. Release contracts are canonical for future integration; renderer bundle budgets remain unaccepted until remeasured. Do not wholesale-merge an older sim/constants module. Do not initialize replacement repositories or delete these directories. Recovery logs and local credentials remain local and untouched.
+| Worktree | Baseline | Preservation commit |
+| --- | --- | --- |
+| Lesters-Arcade-Stacked | `33b43e627f7d509e5f37d49368d89db1c2fd65a2` | `fac9b8c29dd6da0846e211c8fd9d5149463dac2d` |
+| Lesters-Arcade-Stacked-Portal | `a9100b37a58ade116fca420e57565c59bad38922` | `bfe190df441f97b5990d38aa8a57726ba8395a95` |
+| Lesters-Arcade-Stacked-Renderer | `a9100b37a58ade116fca420e57565c59bad38922` | `2aaa6b05f2df0c5d59c276e5d918d3428e04d72a` |
+| Lesters-Arcade-Stacked-Release, earlier WIP | `aaf113c5214ee6bed3b8b3efba55ff4b9501af95` | `326d95671f5b6920cc29f68fd515efe2ae4a40fd` |
+| Lesters-Arcade-Stacked-Release, newer WIP | same working baseline; child of prior preservation | `74b72f495ad05a5bcbd323b68871b6465eedc67a` |
 
-## Last certified production release
-S-01–S-03 foundation and security patches were certified at `https://lestersarcade.io`, runtime `65dd4522edcc6158f61e3dafbe6188d7be4e11bb`, deployment `dpl_3vyy1XDPsCAveFDhvm1uvYyFmMPs`, preserving Cycle077. Historical verification includes exact source/atlas bytes and seven desktop plus seven mobile browser flows. See [release verification](releases/S01-S03-release-verification.json). **No public playable STACKED cabinet is claimed, and this reconciliation did not promote production.** Re-read live state before the next release.
+The new `preserve/stacked-reconciliation-wip-20260907` ref contains all **46 changed/untracked source, test and doc paths** in Release, verified against raw Git blob bytes and the remote ref. Original HEAD, index and working source were left untouched. Ignored recovery logs, local credentials, dependency/build output and other worktrees were not added or deleted.
 
-## Remaining work and boundaries
-Continue S-04–S-22 in dependency order. Real ChatGPT Free/Ranked originals and optimized candidates exist in the intake art folder; title/loading/results and remaining requested art are unfinished. Browser gates stay serial and outside the Node-only build. Preserve HMH/Chikun, saves, shared assets and production ancestry. The approved workflow remains command-free proposals plus parent edits/tests, with no sandbox permission changes.
+## Production observation and boundaries
 
-Public STACKED launch requires G-2/S-22 and actual human-device acceptance. Ranked remains a zero-fee, local replay-verified prototype until its integrity gates pass, not an authoritative paid verifier. No funds, paid entry, settlement activation, authority changes or contract deployment.
+Remote `feature/stacked-release-live` remains `aaf113c5214ee6bed3b8b3efba55ff4b9501af95`, 50 commits ahead of the observed `origin/main`. Live Stacked sim, contracts, cabinet definition and registry bytes match that accepted HEAD; the registry contains no Stacked entry. The live service-worker marker is newer (`lesters-arcade-v32-hmh-gameplan-defects`), so the old deployment ID is historical, not a current-production claim. **No production deployment was performed here.**
+
+This session's briefing controls over broader historical publication language: G-15 requires approval of each exact deployment ID. Public launch waits for G-2/S-22 and human-device acceptance; Ranked writes wait for G-3. No funds, paid entry, settlement activation, authority changes, contract deployment or online-versus backend. F-11's keep/park decision remains owner-gated; the accepted match seam was not changed. HMH cycle work and worktree reconciliation are out of scope.
+
+## Next bounded work
+
+S-04 remains substantially implemented but unaccepted; S-05 and partial S-08 are preserved and unaccepted. Renderer S-11/S-12 still targets an older sim; S-06 still needs selected dev-only integration with `status: coming-soon`. Complete current-core renderer verification, full S-04/S-08 acceptance and remaining cycles in dependency order, one cycle per real worktree. Do not import historical constants or accept unmeasured renderer budgets. Preserve current production ancestry; do not rewrite history or merge to main without a separate consolidation decision.
+
+The [input-mask amendment](amendments/INPUT-MASK-CLARIFICATION-v1.md) records the pulse/held-input distinction and open ARR/touch cadence conflict for S-15/G-19. A generic maximum-bit-count rejection was not invented: neutral release is mandatory, and the existing byte alphabet/precedence rules still govern legal chords.

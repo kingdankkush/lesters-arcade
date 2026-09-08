@@ -1,5 +1,11 @@
 # STACKED owner decisions
 
+## Current session boundaries — Stacked-only reprompt, 2026-09-07
+
+The owner's newly supplied Stacked-only briefing takes precedence over broader historical publication language below. G-15 requires explicit approval for each exact production deployment ID. G-2/S-22 still requires recorded human-device acceptance before public launch, and G-3 still gates Ranked writes. F-11's keep/park decision is owner-gated; this continuation does not change the accepted match seam or choose its future scope. No HMH cycle work, worktree reconciliation, paid entry, settlement activation, authority changes, contract deployment or new online-versus backend is authorized here.
+
+The four existing preservation refs were verified, newer Release WIP was preserved separately at `74b72f495ad05a5bcbd323b68871b6465eedc67a`, and the bounded S-04 correction continues in the real `Lesters-Arcade-Stacked-S04-Integrity` worktree on `feature/stacked-s04-integrity`. Historical Release/Renderer/Portal sources remain preserved inputs. Do not wholesale-merge stale cores or rewrite production ancestry. See [current status](STATUS.md) and [CYCLE-004](cycles/CYCLE-004.md); the older authority/ownership statements below are historical where they conflict with this section.
+
 ## Delegated development authority — 2026-09-06
 
 After requesting the complete game, polish, optimization, playtesting, bug fixes,

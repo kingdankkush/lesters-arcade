@@ -44,9 +44,9 @@ test('size coupling rejects a deliberately broken predictor in an isolated sourc
   try {
     for (const name of ['seeded-rng.mjs', 'stacked-contracts.mjs']) await copyFile(new URL(name, sourceDir), join(directory, name));
     const source = await readFile(new URL('stacked-sim.mjs', sourceDir), 'utf8');
-    const needle = 'encodedEvidenceBytes += 1;';
+    const needle = 'if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 1;';
     assert.equal(source.split(needle).length, 2);
-    await writeFile(join(directory, 'stacked-sim.mjs'), source.replace(needle, 'encodedEvidenceBytes += 2;'));
+    await writeFile(join(directory, 'stacked-sim.mjs'), source.replace(needle, 'if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 2;'));
     const mutant = await import(pathToFileURL(join(directory, 'stacked-sim.mjs')));
     assert.throws(() => assertSizeAgreement(mutant), assert.AssertionError);
   } finally { await rm(directory, { recursive: true, force: true }); }

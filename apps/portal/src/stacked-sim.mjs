@@ -100,7 +100,7 @@ export function detectSpin(board, active) {
   if (active.kind === 'T') {
     const corners=[[0,0],[2,0],[0,2],[2,2]].map(([dx,dy])=>[active.x+dx,active.y+dy]);
     const occupied=corners.map(([x,y])=>x<0||x>=BOARD_WIDTH||y<0||y>=BOARD_ROWS||board[y*BOARD_WIDTH+x]!==0);
-    if (occupied.filter(Boolean).length < 3) return 'none';
+    if (occupied.filter(value => value).length < 3) return 'none';
     const front = active.rotation===0?[2,3]:active.rotation===1?[1,3]:active.rotation===2?[0,1]:[0,2];
     return front.filter((i)=>occupied[i]).length>=2 || active.lastKickIndex===4 ? 'full' : 'mini';
   }
@@ -777,15 +777,7 @@ function createStackedRuntimeInternal(
     const rising = mask & ~oldMask;
     if (mask !== oldMask) {
       const gap = tick - lastTransitionTick;
-      const changed = mask ^ oldMask;
-      const oneBit = changed !== 0 && (changed & (changed - 1)) === 0;
-      if (oneBit && gap >= 1 && gap <= 16) encodedEvidenceBytes += 1;
-      else {
-        let value = gap - 1;
-        let varintBytes = 1;
-        while (value >= 128) { value = Math.floor(value / 128); varintBytes += 1; }
-        encodedEvidenceBytes += 2 + varintBytes;
-      }
+      encodedEvidenceBytes += sic1TransitionByteLength(oldMask, mask, gap);
       transitionCount += 1;
       lastTransitionTick = tick;
     }
@@ -854,6 +846,18 @@ function sicWriteVarint(bytes, offset, value) {
   return offset;
 }
 const sicSingleBit = changed => changed !== 0 && (changed & (changed - 1)) === 0;
+
+// Header and terminator are not transition bytes. Keep encoder sizing independent
+// so real-run and varint-boundary tests can falsify this simulation predictor.
+export function sic1TransitionByteLength(previousMask, mask, gap) {
+  if (!sicInteger(previousMask, 255) || !sicInteger(mask, 255) ||
+      !sicInteger(gap, STACKED_MAX_TICKS) || gap === 0) {
+    throw new RangeError('SIC1 transition masks/gap invalid');
+  }
+  if (previousMask === mask) return 0;
+  if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 1;
+  return 2 + sicVarintLength(gap - 1);
+}
 
 export function encodeSic1({ seed, totalTicks, transitions } = {}) {
   if (!sicInteger(seed, 0xffffffff) || !sicInteger(totalTicks, STACKED_MAX_TICKS)) throw new RangeError('SIC1 seed/ticks invalid');
