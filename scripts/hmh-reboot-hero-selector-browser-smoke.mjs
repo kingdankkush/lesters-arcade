@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import { readHeroSelectorEvidence } from './hmh-reboot-hero-selector-browser-contract.mjs';
 import { startPortalStaticServer } from './hmh-reboot-portal-e2e.mjs';
+import { HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES as heroIdentities } from '../apps/portal/src/hmh-character-config.mjs';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
@@ -48,6 +49,21 @@ try {
     await page.click('#officialFreeModeButton');
     await page.waitForSelector('#officialCharacterSelect:not([hidden])');
     const evidence = await readHeroSelectorEvidence(page);
+    // H-1 / GP26-B-6: assert real compiled-page copy for every card, including
+    // locked heroes. Unit tests independently pin these bios to source art.
+    const bios = await page.locator('#officialCharacterRoster .hero-card').evaluateAll((cards) => cards.map((card) => {
+      const bio = card.querySelector('.hero-bio');
+      return {
+        id: card.dataset.characterId,
+        text: bio?.textContent,
+        clipped: !bio || bio.scrollWidth > bio.clientWidth + 1 || bio.scrollHeight > bio.clientHeight + 1,
+      };
+    }));
+    assert.deepEqual(bios.map((bio) => bio.id).sort(), Object.keys(heroIdentities).sort());
+    for (const bio of bios) {
+      assert.equal(bio.text, heroIdentities[bio.id].bio, `${profile.id}: ${bio.id} renders stale selector copy`);
+      assert.equal(bio.clipped, false, `${profile.id}: ${bio.id} biography is clipped`);
+    }
     const swipeHintVisible = await page.locator('.hero-carousel-hint').isVisible();
     const jukeboxVisible = await page.locator('#arcadeMusicPlayer').isVisible();
 
@@ -209,7 +225,7 @@ try {
     }
     assert.equal(childStatus, 'Portal session connected', `${profile.id}: Begin Level did not connect the HMH child runtime`);
     assert.deepEqual(errors, []);
-    report.push({ id: profile.id, evidence, keyboard, startTransition, childStatus, errors });
+    report.push({ id: profile.id, evidence, bios, keyboard, startTransition, childStatus, errors });
     await page.close();
   }
   console.log(JSON.stringify({ status: 'PASS', profiles: report }, null, 2));
