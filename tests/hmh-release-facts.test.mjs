@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, mkdtempSync, writeFileSync, rmSync, linkSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, linkSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -191,8 +190,10 @@ test('CLI write and check exercise the actual generated pair and reject tamperin
 });
 
 test('writing generated artifacts does not overwrite another hard-linked file', () => {
+  mkdirSync(path.join(root, '.tmp'), { recursive: true });
   const out = mkdtempSync(path.join(root, '.tmp', 'facts-link-test-'));
-  const other = mkdtempSync(path.join(tmpdir(), 'hmh-facts-unrelated-'));
+  // Hard links must share a filesystem; keep the unrelated file outside out.
+  const other = mkdtempSync(path.join(root, '.tmp', 'hmh-facts-unrelated-'));
   const sentinel = path.join(other, 'unrelated.txt');
   try {
     writeFileSync(sentinel, 'preserve unrelated bytes');
