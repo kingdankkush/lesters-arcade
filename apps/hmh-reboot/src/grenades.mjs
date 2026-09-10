@@ -201,7 +201,9 @@ function targetHasBlastLineOfSight(grenade, target, blockers) {
     targets: [target],
     blockers,
   });
-  return { clear: result.coverHit === null, blockerId: result.coverHit?.blockerId ?? null };
+  // A blast can damage solid destructible cover itself without passing through
+  // that cover to a different target. The first obstructing surface still wins.
+  return { clear: result.coverHit === null || result.coverHit.blockerId === target.id, blockerId: result.coverHit?.blockerId ?? null };
 }
 
 function radialDamage(baseDamage, distance, radius) {

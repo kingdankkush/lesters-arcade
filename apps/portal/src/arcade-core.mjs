@@ -5,6 +5,8 @@ import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/envi
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
+import { buildAchievementProgress, normalizeAchievementUnlockDate } from './achievement-progress.mjs';
+import { resolveHmhChallenge } from './hmh-challenges.mjs';
 import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
 import {
   CURRENT_RANKED_SEASON_ID,
@@ -4516,9 +4518,12 @@ function leaderboardDetailFor(state, gameId, row) {
 }
 
 function leaderboardV2SourceHash(state, board) {
-  const rowHash = board.topEntries.map((row) => [row.sessionId, row.score, row.settlementTxHash ?? '', row.recordedAt].join('/')).join('|');
+  const rowHash = board.topEntries.map((row) => [
+    row.sessionId, row.wallet, row.score, row.settlementTxHash ?? '', row.recordedAt,
+    row.displayName, row.isCurrentPlayer, row.onChain, row.chainVerified, row.onChainSessionId32,
+  ]);
   const flaggedHash = (state?.flaggedSessions ?? []).map((flag) => `${flag.sessionId}:${flag.verdict}`).join('|');
-  return `${board.total}:${rowHash}:${flaggedHash}`;
+  return JSON.stringify([board.total, board.playerRank, rowHash, flaggedHash]);
 }
 
 function indexLeaderboardV2Rows(state, rows) {
@@ -4545,12 +4550,13 @@ export function buildLeaderboardExperienceV2Model(state, {
   cadence = 'all-time',
   wallet = null,
   displayNameFor = (w) => w,
+  source = null,
   limit = 50,
   now = Date.now(),
 } = {}) {
   const game = getGame(gameId);
-  const board = getLeaderboard(state, game.id, cadence, { wallet, displayNameFor, limit, now });
-  const cacheKey = `${game.id}:${board.cadence}:${board.periodKey}:limit-${limit}`;
+  const board = getLeaderboard(state, game.id, cadence, { wallet, displayNameFor, source, limit, now });
+  const cacheKey = `${game.id}:${board.cadence}:${board.periodKey}:source-${board.source ?? 'all'}:limit-${limit}`;
   const sourceHash = leaderboardV2SourceHash(state, board);
   state.leaderboardV2Cache ??= {};
   const cached = state.leaderboardV2Cache[cacheKey];
@@ -5109,17 +5115,20 @@ export function calculateRevenueSplit(amountMicroUnits, splitBps = DEFAULT_REVEN
   return split;
 }
 
-export function unlockAchievement(profile, achievementId) {
+export function unlockAchievement(profile, achievementId, { occurredAt } = {}) {
   if (!Object.values(ACHIEVEMENTS).some((achievement) => achievement.id === achievementId)) {
     throw new Error(`Unknown achievement: ${achievementId}`);
   }
-
-  if (!profile.achievements.includes(achievementId)) {
-    profile.achievements.push(achievementId);
-    return true;
-  }
-
-  return false;
+  const timestamp = normalizeAchievementUnlockDate(occurredAt === undefined ? nowIso() : occurredAt);
+  if (!timestamp) throw new Error('Achievement unlock timestamp must be a valid UTC ISO timestamp');
+  if (profile.achievements.includes(achievementId)) return false;
+  const dates = profile.achievementUnlockedAt;
+  profile.achievementUnlockedAt = {
+    ...(dates && typeof dates === 'object' && !Array.isArray(dates) ? dates : {}),
+    [achievementId]: timestamp,
+  };
+  profile.achievements.push(achievementId);
+  return true;
 }
 
 function updateRank(profile) {
@@ -5202,6 +5211,14 @@ export function deriveSessionSeed({ sessionId, gameId, seasonId, buildHash } = {
   return hash >>> 0;
 }
 
+export function getPlaySessionIdentity(gameId) {
+  const game = getGame(gameId);
+  return Object.freeze({
+    buildHash: `site-${SITE_VERSION}:game-${GAME_VERSION}${game.cabinetVersion ? `:cabinet-${game.cabinetVersion}` : ''}`,
+    seasonId: game.rankedSeasonId ?? CURRENT_RANKED_SEASON_ID,
+  });
+}
+
 export function startPlaySession({
   wallet,
   gameId,
@@ -5211,6 +5228,7 @@ export function startPlaySession({
   sequenceNumber = null,
   sessionNonce = null,
   allowDevCabinet = false,
+  hmhChallenge = null,
 }) {
   const normalizedWallet = normalizeWallet(wallet);
   const game = getGame(gameId);
@@ -5231,9 +5249,9 @@ export function startPlaySession({
   const canonicalSessionId = isPaid
     ? (urlSessionId ?? createCanonicalSessionHandle({ uuid: nonce }))
     : `${gameId}-free-${nonce}`;
-  const buildHash = `site-${SITE_VERSION}:game-${GAME_VERSION}${game.cabinetVersion ? `:cabinet-${game.cabinetVersion}` : ''}`;
-  const seasonId = game.rankedSeasonId ?? CURRENT_RANKED_SEASON_ID;
-  const seed = deriveSessionSeed({ sessionId: canonicalSessionId, gameId, seasonId, buildHash });
+  const { buildHash, seasonId } = getPlaySessionIdentity(gameId);
+  const challenge = resolveHmhChallenge(hmhChallenge, { mode, gameId, buildHash, seasonId });
+  const seed = challenge?.seed ?? deriveSessionSeed({ sessionId: canonicalSessionId, gameId, seasonId, buildHash });
   const evidence = createSessionEvidenceState({ sessionId: canonicalSessionId });
 
   return {
@@ -5244,6 +5262,7 @@ export function startPlaySession({
     sequenceNumber: sequenceNumber,
     sessionNonce: nonce,
     evidence,
+    hmhChallenge: challenge,
     buildHash,
     seasonId,
     seed,
@@ -5734,7 +5753,7 @@ function collectProfileOfficialSessions(state, profile) {
       sequenceNumber: run.sequenceNumber ?? null,
       wallet: run.wallet,
       gameId: run.gameId,
-      mode: run.mode ?? 'paid',
+      mode: run.mode ?? null,
       status: run.status ?? 'local-preview-saved',
       score: Math.max(0, Math.round(Number(run.score) || 0)),
       runStats: {
@@ -5752,7 +5771,13 @@ function collectProfileOfficialSessions(state, profile) {
   }
   for (const session of state.officialSessions ?? []) {
     if (!session?.sessionId || session.wallet !== profile.wallet) continue;
-    bySessionId.set(session.sessionId, session);
+    const cached = bySessionId.get(session.sessionId);
+    const preserveCachedMode = cached
+      && cached.gameId === session.gameId
+      && session.mode == null;
+    bySessionId.set(session.sessionId, preserveCachedMode
+      ? { ...session, mode: cached.mode }
+      : session);
   }
   return [...bySessionId.values()].map((session) => ({
     ...session,
@@ -5830,6 +5855,8 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
         ...achievement,
         unlocked,
         locked: !unlocked,
+        unlockedAt: unlocked ? normalizeAchievementUnlockDate(profile.achievementUnlockedAt?.[achievement.id]) : null,
+        progress: buildAchievementProgress(achievement, profile),
         iconSrc: unlocked ? achievement.badgeSrc : achievement.lockedBadgeSrc,
       };
     }),
@@ -5888,7 +5915,10 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
   const officialSessions = [...(snapshot.officialSessions ?? [])]
     .sort((a, b) => (b.sequenceNumber ?? 0) - (a.sequenceNumber ?? 0) || String(b.syncedAt ?? '').localeCompare(String(a.syncedAt ?? '')));
   const settlementsBySessionId = new Map((snapshot.settlements ?? []).map((settlement) => [settlement.sessionId, settlement]));
-  const sessionFeedRows = officialSessions.slice(0, sessionLimit).map((session) => {
+  const isSelectedGameSession = (gameId) => (
+    gameId === selectedGame.id || (gameId === 'hmh' && selectedGame.id === 'lester-blaster')
+  );
+  const mapSessionToFeedRow = (session) => {
     const game = getGame(session.gameId);
     const score = Math.max(0, Math.round(Number(session.score ?? session.runStats?.score ?? 0) || 0));
     const row = {
@@ -5896,13 +5926,19 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
       wallet: profile.wallet,
       sessionId: session.sessionId,
       urlSessionId: session.urlSessionId,
+      mode: session.mode ?? null,
       score,
       runStats: { ...(session.runStats ?? {}) },
       recordedAt: session.syncedAt ?? session.recordedAt ?? null,
-      settlementTxHash: session.settlement?.primaryTxHash ?? settlementsBySessionId.get(session.sessionId)?.primaryTxHash ?? null,
+      settlementTxHash: session.settlement?.primaryTxHash ?? settlementsBySessionId.get(session.sessionId)?.primaryTxHash ?? state.sessions?.[session.sessionId]?.settlement?.primaryTxHash ?? null,
       settlementSimulatedTxHash: session.settlement?.primarySimulatedTxHash ?? settlementsBySessionId.get(session.sessionId)?.primarySimulatedTxHash ?? null,
     };
-    const trust = leaderboardRowTrust(state, session.gameId, row);
+    const cachedTrust = leaderboardRowTrust(state, session.gameId, row);
+    // This model receives local/cache state, not an authenticated receipt reader.
+    // Retain conservative warnings without promoting cached hashes or verdicts.
+    const trust = ['suspicious', 'rejected'].includes(cachedTrust.verdict) ? cachedTrust : {
+      verdict: 'prototype', label: row.settlementTxHash ? 'Cached receipt' : 'Local cache', tone: 'muted', flags: [],
+    };
     const detail = leaderboardDetailFor(state, session.gameId, row);
     return {
       ...row,
@@ -5915,13 +5951,16 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
       urlSessionId: detail.urlSessionId,
       actions: { viewSession: detail.detailHref, inspectTrust: trust.flags.length > 0 },
     };
-  });
+  };
+  const sessionFeedRows = officialSessions.slice(0, sessionLimit).map(mapSessionToFeedRow);
+  const sessionFeedRankedRows = officialSessions
+    .filter((session) => isSelectedGameSession(session.gameId) && (session.mode === 'paid' || session.mode === 'ranked'))
+    .slice(0, sessionLimit)
+    .map(mapSessionToFeedRow);
 
   const unlockedAchievements = (snapshot.achievements ?? []).filter((achievement) => achievement.unlocked);
   const lockedAchievements = (snapshot.achievements ?? []).filter((achievement) => !achievement.unlocked);
-  const rareAchievement = unlockedAchievements
-    .map((achievement) => ({ ...achievement, rarityPct: achievementRarityPct(achievement) }))
-    .sort((a, b) => a.rarityPct - b.rarityPct || a.title.localeCompare(b.title))[0] ?? null;
+  const featuredAchievement = unlockedAchievements[0] ?? null;
   const achievementGroups = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'mythic'].map((tier) => {
     const entries = (snapshot.achievements ?? []).filter((achievement) => (achievement.tier ?? 'bronze') === tier);
     return {
@@ -5939,7 +5978,8 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
         unlockTypeIconSrc: achievement.unlockTypeIconSrc,
         tier: achievement.tier,
         unlocked: achievement.unlocked,
-        rarityPct: achievementRarityPct(achievement),
+        rarityPct: null,
+        rarityStatus: 'unavailable',
       })),
     };
   }).filter((group) => group.total > 0);
@@ -5977,7 +6017,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
     };
   });
 
-  const totalRankedRuns = officialSessions.length;
+  const totalRankedRuns = officialSessions.filter((session) => session.mode === 'paid' || session.mode === 'ranked').length;
   const settledRuns = sessionFeedRows.filter((row) => row.trust.verdict === 'settled' || row.settlementTxHash).length;
   const bestScore = Math.max(...Object.values(snapshot.progress ?? {}).map((progress) => Math.max(progress.bestPaidScore ?? 0, progress.bestFreeScore ?? 0)), 0);
   const selectedProgress = snapshot.progress?.[selectedGame.id] ?? createEmptyGameProgress(selectedGame.id);
@@ -6011,6 +6051,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
     trophyRoom: {
       summary: {
         totalRankedRuns,
+        rankedCountScope: 'cached-known-mode',
         totalFreeRuns: snapshot.profile.totalFreeRuns ?? 0,
         settledRuns,
         achievementsUnlocked: unlockedAchievements.length,
@@ -6019,13 +6060,14 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
       },
       cards: [
         { id: 'best-score', label: 'Best Score', value: formatScoreValue(bestScore), tone: bestScore > 0 ? 'gold' : 'muted' },
-        { id: 'ranked-runs', label: 'Ranked Runs', value: String(totalRankedRuns), tone: totalRankedRuns > 0 ? 'silver' : 'muted' },
-        { id: 'settled-receipts', label: 'Settled Receipts', value: String(settledRuns), tone: settledRuns > 0 ? 'verified' : 'muted' },
-        { id: 'rare-achievement', label: 'Rarest Badge', value: rareAchievement?.title ?? 'Locked', tier: rareAchievement?.tier ?? null, icon: rareAchievement?.icon ?? '🔒', iconSrc: rareAchievement?.iconSrc ?? null, rarityPct: rareAchievement?.rarityPct ?? null },
+        { id: 'ranked-runs', label: 'Cached Ranked Runs', value: String(totalRankedRuns), tone: totalRankedRuns > 0 ? 'silver' : 'muted', meta: 'Available local Ranked/paid records, not lifetime or verified online results.' },
+        { id: 'settled-receipts', label: 'Cached Receipt Entries', value: String(settledRuns), tone: 'muted', meta: 'Receipt metadata in the visible local feed, not proof of settlement.' },
+        { id: 'rare-achievement', label: 'Featured Badge', value: featuredAchievement?.title ?? 'Locked', tier: featuredAchievement?.tier ?? null, icon: featuredAchievement?.icon ?? '🔒', iconSrc: featuredAchievement?.iconSrc ?? null, rarityPct: null, rarityStatus: 'unavailable', meta: 'Global unlock rate unavailable; this badge is recorded locally.' },
       ],
     },
     sessionFeed: {
       rows: sessionFeedRows,
+      rankedRows: sessionFeedRankedRows,
       emptyCopy: 'Ranked game-over submissions appear here with score, trust state, and session detail links.',
     },
     achievements: {
@@ -6037,7 +6079,8 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
         tier: achievement.tier,
         icon: achievement.icon,
         iconSrc: achievement.iconSrc,
-        rarityPct: achievementRarityPct(achievement),
+        rarityPct: null,
+        rarityStatus: 'unavailable',
       })),
     },
     collection: {
@@ -6055,7 +6098,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
  * Game-specific stats breakdown for the Profile/Leaderboard module.
  * For Hard Money Heroes: leaderboard rank, per-enemy-type and boss kills (with
  * readable titles), power-ups grabbed, longest survival (m:ss), and the player's
- * "top achievement" chosen by rarity (rarest unlocked).
+ * A featured local achievement, without a measured global rarity claim.
  */
 export function buildHardMoneyHeroesStatsModule(state, wallet, gameId = 'lester-blaster') {
   const profile = ensureProfile(state, wallet);
@@ -6084,11 +6127,10 @@ export function buildHardMoneyHeroesStatsModule(state, wallet, gameId = 'lester-
   enemyBreakdown.sort((a, b) => b.kills - a.kills);
   bossBreakdown.sort((a, b) => b.kills - a.kills);
 
-  // Top achievement by rarity: rarest (lowest unlock %) the player has unlocked.
+  // Feature an unlocked badge in stable catalog order; no global unlock index exists.
   const unlockedAchievements = Object.values(ACHIEVEMENTS)
     .filter((a) => profile.achievements.includes(a.id))
-    .map((a) => ({ ...a, rarityPct: achievementRarityPct(a) }))
-    .sort((a, b) => a.rarityPct - b.rarityPct);
+    .map((a) => ({ ...a, rarityPct: null, rarityStatus: 'unavailable' }));
   const topAchievement = unlockedAchievements[0] ?? null;
 
   return {
@@ -6106,7 +6148,7 @@ export function buildHardMoneyHeroesStatsModule(state, wallet, gameId = 'lester-
     longestSurvivalLabel: formatSurvival(progress.longestRunSeconds ?? 0),
     topAchievement: topAchievement ? {
       id: topAchievement.id, title: topAchievement.title, description: topAchievement.description,
-      tier: topAchievement.tier, icon: topAchievement.icon, iconSrc: topAchievement.iconSrc, rarityPct: topAchievement.rarityPct,
+      tier: topAchievement.tier, icon: topAchievement.icon, iconSrc: topAchievement.iconSrc, rarityPct: null, rarityStatus: 'unavailable',
     } : null,
     achievementsUnlocked: unlockedAchievements.length,
     achievementsTotal: Object.values(ACHIEVEMENTS).length,

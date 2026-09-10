@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "scope": "Canonical native sprite-ID repair and current local verification; not a release certificate",
+  "branch": "hermes/hmh-textured-rollout",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "sourceChanged": [
+    "apps/hmh-reboot/src/authored-prop-atlas.mjs",
+    "tests/hmh-reboot-authored-prop-atlas.test.mjs"
+  ],
+  "sourceHashes": {
+    "apps/hmh-reboot/src/authored-prop-atlas.mjs": "ddf6a7202c52e89eefc3b974a1e1d3e150ec53a39c5650a5d0b3ab2469340526",
+    "tests/hmh-reboot-authored-prop-atlas.test.mjs": "6ec6326214dadc1433b84b41f28bcf6e9f9ec8cada6ef1b1c8a52ca01b1e9aa1",
+    "apps/hmh-reboot/src/tripo-prop-appearance.mjs": "7b21e324ee9eacc5810671e0c7dd4d7895dbcc96f24e7232a22009fe54c1a67e"
+  },
+  "red": {
+    "expectedExit": 1,
+    "actual": "tripo-33",
+    "expected": "bonus-life",
+    "log": ".tmp/team/playable-release/sprite-id-fix-01/red.log",
+    "logSha256": "670025b64438fe883018f588537e9f3416a97f8548024a645ad04fd132db96b1"
+  },
+  "verified": {
+    "focusedTests": {
+      "tests": 39,
+      "pass": 39,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "addedLineSecurityHits": [],
+    "scope": "two-file delta only",
+    "independentReview": {
+      "passed": true,
+      "blockers": [],
+      "suggestions": [],
+      "scopeReviewed": [
+        "apps/hmh-reboot/src/authored-prop-atlas.mjs:createAuthoredPropDisplay/createEntry",
+        "tests/hmh-reboot-authored-prop-atlas.test.mjs:real native mapper output retains canonical sprite identities",
+        "apps/hmh-reboot/src/tripo-prop-appearance.mjs:createTripoPropAppearance and TRIPO_PROP_BINDINGS"
+      ]
+    },
+    "reviewEventSha256": "7495a4bab75735691b82e4f6376df73ec706f6607a69c58d44e8229d7ea99ec9",
+    "reviewToolOrCommandEvents": 0,
+    "knownReviewMetadataWarning": "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest.",
+    "sourceGateReceipt": ".tmp\\team\\revamp-resume\\source-gates-sprite-id-01\\receipt.json",
+    "sourceGateReceiptSha256": "9b515b54b4d4b88a8c370ddb8e0ff22c390df67851bfe9815c755b674667508c",
+    "gateCount": 9,
+    "gatesPassed": true,
+    "browsers": {
+      "native": {
+        "receipt": ".tmp/team/playable-release/native-browser-sprite-id-01/receipt.json",
+        "receiptSha256": "5fb109d16c4536fcbb9f6aea9fd5a531817e9f3980733822df0e0dfb38850502",
+        "passed": 3,
+        "expected": 3,
+        "candidateHashesCurrent": true,
+        "profiles": [
+          "desktop",
+          "portrait",
+          "landscape"
+        ]
+      },
+      "free": {
+        "receipt": ".tmp/team/revamp-resume/normal-flow-sprite-id-01/receipt.json",
+        "receiptSha256": "40a5020dbdfaa30e7201dfe8ac2153707546a80f07d6820f1074806e5a3e3775",
+        "passed": 10,
+        "expected": 10,
+        "candidateHashesCurrent": true,
+        "profiles": [
+          "desktop",
+          "desktop",
+          "ultrawide",
+          "ultrawide",
+          "tablet",
+          "tablet",
+          "portrait",
+          "portrait",
+          "landscape",
+          "landscape"
+        ]
+      }
+    },
+    "releaseLedger": {
+      "tests": 2974,
+      "passed": 2923,
+      "expectedLegacyFailures": 51
+    }
+  },
+  "portraitPickup": {
+    "acceptance": "BLOCKED",
+    "diagnosticReceipt": ".tmp/team/playable-release/native-pickup-diagnostic-01/receipt.json",
+    "diagnosticReceiptSha256": "2c6443a90eee944d2f00fdd1bdacbbbb90072b43f48aee78f1c0e1adfb987950",
+    "rows": [
+      {
+        "id": "desktop",
+        "diagnosticCompleted": true,
+        "originalCheckpointVisibleIds": "[\"tripo-35\"]",
+        "firstVisibleBeforeCollection": {
+          "tick": 32,
+          "x": 3050,
+          "y": 1500,
+          "zoom": 2.252,
+          "visibleIds": [
+            "tripo-35"
+          ],
+          "collected": 0,
+          "active": "",
+          "distance": 180.27756377319946
+        },
+        "firstCollected": {
+          "tick": 91,
+          "x": 3123.324,
+          "y": 1428.775,
+          "zoom": 2.252,
+          "visibleIds": [],
+          "collected": 1,
+          "active": "time-dilation",
+          "distance": 81.89755552518032
+        },
+        "samples": 183,
+        "errors": []
+      },
+      {
+        "id": "portrait",
+        "diagnosticCompleted": true,
+        "originalCheckpointVisibleIds": "[]",
+        "firstVisibleBeforeCollection": null,
+        "firstCollected": {
+          "tick": 78,
+          "x": 3122.696,
+          "y": 1427.304,
+          "zoom": 2.112,
+          "visibleIds": [],
+          "collected": 1,
+          "active": "time-dilation",
+          "distance": 81.98424746254624
+        },
+        "samples": 123,
+        "errors": []
+      },
+      {
+        "id": "landscape",
+        "diagnosticCompleted": true,
+        "originalCheckpointVisibleIds": "[\"tripo-35\"]",
+        "firstVisibleBeforeCollection": {
+          "tick": 32,
+          "x": 3050,
+          "y": 1500,
+          "zoom": 1,
+          "visibleIds": [
+            "tripo-35"
+          ],
+          "collected": 0,
+          "active": "",
+          "distance": 180.27756377319946
+        },
+        "firstCollected": {
+          "tick": 77,
+          "x": 3122.459,
+          "y": 1427.541,
+          "zoom": 1,
+          "visibleIds": [],
+          "collected": 1,
+          "active": "time-dilation",
+          "distance": 82.28677513428279
+        },
+        "samples": 122,
+        "errors": []
+      }
+    ],
+    "cameraCounterexample": {
+      "viewportWidth": 390,
+      "cameraZoom": 2.112,
+      "configuredDeadZoneWorldWidth": 160,
+      "maxLookAheadWorld": 32,
+      "collectionRadius": 80,
+      "firstCollectionX": 3124.2555421745387,
+      "cameraXUpperBound": 3076.2555421745387,
+      "clockScreenXLowerBound": 456.3482949273742,
+      "clockCannotEnterViewportBeforeCollection": true,
+      "scope": "Optimistic horizontal camera upper bound from the real world-space projection API and source-configured direct northeast path; not a visual pass."
+    },
+    "note": "All three profiles collect the effect. Portrait never reports the clock strictly onscreen before collection on the tested approach. Interpolated actor coordinates are not the authoritative collection position. No camera/collection/hero/HUD repair was applied."
+  },
+  "preservation": {
+    "rawIndexSha256Before": "488711539ef57ee9671f87bb8c93c5c6f456c8d90823f3be51d5bd39a67df622",
+    "rawIndexSha256After": "e70cda0bc2e764b39fe8f8032d32832cce12c5a1ba7d2dfc52275beb1939dc03",
+    "rawIndexBytesUnchanged": false,
+    "originalStagedModeBlobPathEntriesPreserved": true,
+    "fileFlagsPreserved": true,
+    "entryCount": 2813,
+    "entriesSha256": "6ed1c062f130edc3e9f7b8177d5029c833f3f203a07dd90e9a4d680311508f5a",
+    "comparisonIndex": ".tmp\\team\\revamp-resume\\entry\\index.backup",
+    "comparisonIndexSha256": "14da6da2b9cddb2cef6ddd83c90501d87ad3aa4337d5b27693b4e46b76b97a17",
+    "note": "Raw index bytes changed during gate execution; exact staged mode/blob/path entries and file flags still match the original preserved index. No index restore or replacement."
+  },
+  "protectedSourceHashesUnchanged": {
+    "AGENTS.md": "f35333f4a0b9187f12ea6a93b5a5422e4e835f424fb6d32f72525e35820805ad",
+    "apps/hmh-reboot/src/level-one-world.mjs": "cf1a7f7eab10bd790a40088378ce9f134eb4a691250368d3c5040976d14561f5"
+  },
+  "cleanHostScope": "clean-host-05 is historical before this two-file fix; no new exact-candidate clean-host or hosted certification claimed",
+  "currentCandidateCertified": false,
+  "published": false,
+  "nextBoundedScope": "Viewport-aware camera following and matching camera/browser regressions; preserve hero size, HUD/hint visibility, world/collision authority and collection radius."
+}

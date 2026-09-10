@@ -157,11 +157,14 @@ test('readability cues draw ABOVE the opaque surface material, not under it', as
   );
   // No readability cue may target layers.surfaces, which the tile covers.
   const cueDraws = [
-    'Shoreline foam',
+    'exposedWaterEdges(world.surfaces)',
     'Lit top edge and shaded front lip',
   ];
   for (const marker of cueDraws) assert.ok(source.includes(marker), `${marker} cue missing`);
-  const afterFoam = source.slice(source.indexOf('Shoreline foam'), source.indexOf('Shoreline foam') + 400);
+  const shoreStart = source.indexOf('if (isWater && !ford)');
+  assert.ok(shoreStart >= 0, 'water cues must use the exposed union shoreline');
+  const afterFoam = source.slice(shoreStart, shoreStart + 700);
+  assert.match(afterFoam, /cueLayer\.moveTo/, 'exposed shoreline strokes target the above-material cue layer');
   assert.ok(!/layers\.surfaces/.test(afterFoam), 'foam must not draw into the covered layer');
   // Water depth, shimmer and shoreline strokes likewise.
   const waterBlock = source.slice(source.indexOf('depth gradient'), source.indexOf('depth gradient') + 1800);

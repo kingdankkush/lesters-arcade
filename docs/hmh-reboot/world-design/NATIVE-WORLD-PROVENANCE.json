@@ -1,0 +1,945 @@
+{
+  "schema": "hmh-world-design-provenance/v1",
+  "scope": "Independent source/native-frame readback and derived tier contracts; no new generation or release claim",
+  "nativeEvidenceSha256": "64146b26b2e9f57e3b0eb4d5e7661d5ebb9580e81356714a826cbb1df288437f",
+  "derivativePillowVersion": "11.3.0",
+  "cropPolicy": "Include measured native alpha bounds and ground anchor with four-pixel padding, clamped to native frame",
+  "mobilePolicy": "Native desktop crop, 2x Lanczos reduction with ceil dimensions; not an independent native mobile render",
+  "assets": [
+    {
+      "assetId": "hmh-cx3-01-stratified-escarpment",
+      "sourceFilename": "Stratified Escarpment.glb",
+      "sourceModelSha256": "b44554383db586843814404d5956dc03fe1679e1e936a3ff4ed989841075b1c7",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "98f8bd53e99ba866a7ca870e0aacea7a36d46e2cf73c8d6ea7f853375b60b9ed",
+      "nativeFrameSha256B": "2b257a97ca635a19ec8b625919d9746898f3567b9503067062cd8d82155f1257",
+      "nativeDecodedRgbaSha256": "761a61e070de2037840984255fe87c217fa70bf47f886b1776d48172a23b235b",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.6243565082550049,
+        0.6631155014038086
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6589760258512677
+          },
+          "runtimeScale": 0.0025040064938366413,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "64a58597a07fe4ed0934bc07bdbb6d479bc38b278d7892320af5618807007e1b",
+          "sourceCrop": [
+            51,
+            175,
+            461,
+            440
+          ],
+          "width": 410,
+          "height": 265
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6564986723706239
+          },
+          "runtimeScale": 0.005008012987673283,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "724c68d5df086445a923cb4da77a6f2e2fa353f37efab48badc7ee5237ea7ca4",
+          "sourceCrop": [
+            51,
+            175,
+            461,
+            440
+          ],
+          "width": 205,
+          "height": 133
+        }
+      }
+    },
+    {
+      "assetId": "hmh-cx3-02-workers-duplex",
+      "sourceFilename": "Workers Duplex.glb",
+      "sourceModelSha256": "63905d38625d2dc013c5ac75f89e398c4c48557b9c41e35234a5f8cbf957594b",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "847c94fa4ae586606778573d9baed5d8ca28f187623b6b6a24e71e41db292df6",
+      "nativeFrameSha256B": "1e8e6ac8358bf385095ea5d784eff623100278540515029d3b06e3c80a38ffe9",
+      "nativeDecodedRgbaSha256": "673e95dc43aae64575ea1bc880697f15cda8d098780fccf5df8050594f754ee2",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0000001192092896,
+        0.9349356889724731,
+        0.9551621079444885
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.711551633279674
+          },
+          "runtimeScale": 0.0033466070890426636,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "40737a8f056e35d5469ae76945e7f479646920521a024db1b137d2ce3ceeaa3a",
+          "sourceCrop": [
+            101,
+            110,
+            411,
+            457
+          ],
+          "width": 310,
+          "height": 347
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7095069446782957
+          },
+          "runtimeScale": 0.006693214178085327,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "660933b80367f6ea18fef15f4e82b31e2bb8e4d42015030e79e3ddc01a90e81e",
+          "sourceCrop": [
+            101,
+            110,
+            411,
+            457
+          ],
+          "width": 155,
+          "height": 174
+        }
+      }
+    },
+    {
+      "assetId": "hmh-cx3-03-lakeside-pumphouse",
+      "sourceFilename": "Lakeside Pumphouse.glb",
+      "sourceModelSha256": "8ba6c3fe656281ea8eabf339da1707b1b28e748c62701c339adb16212b157b20",
+      "yawDegrees": 270,
+      "nativeFrameSha256A": "b0177ea3bc6d1e3069e4fc0f1fa4633a0eac06e8d2351058ea91f2b926aeefab",
+      "nativeFrameSha256B": "09216d0cf581a8cb59dbe73b53824e23d82098e98527746514d42633c826127f",
+      "nativeDecodedRgbaSha256": "c14fb27c948bf62f9efdc744c042e6867a7676ab24401371e6c72521b60cc9e7",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0000001192092896,
+        0.8394864201545715,
+        0.8357479572296143
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6900504168342142
+          },
+          "runtimeScale": 0.002966170199215412,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "781c75d33c7cd91e776b3b064b86ff2581ee9ad6535b6921f47ec1bc1ece036b",
+          "sourceCrop": [
+            82,
+            121,
+            430,
+            461
+          ],
+          "width": 348,
+          "height": 340
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6900504168342142
+          },
+          "runtimeScale": 0.005932340398430824,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "f9c2f514d57025a230f0b19b76caab0386dfb2df60e10fdf411248717ad1395f",
+          "sourceCrop": [
+            82,
+            121,
+            430,
+            461
+          ],
+          "width": 174,
+          "height": 170
+        }
+      }
+    },
+    {
+      "assetId": "hmh-cx3-05-timber-footbridge",
+      "sourceFilename": "Timber Footbridge.glb",
+      "sourceModelSha256": "4f2d2033cfe6b4df38311f9a9f6c7ff0789147f3d28e25a237198158917fcb4b",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "9297596d9d43231659e4363caf2fd0ff23e3f0f82f8040d62df8952029c9cb1a",
+      "nativeFrameSha256B": "fb53e47cc4954fb4bf85fb3decae24946ad8fd88b5c0c304c150cc98508c5364",
+      "nativeDecodedRgbaSha256": "5a1687c047693ee6f6c33f3c5488671cf0e896b82ab10c1a9df1af2e3bc3a8cb",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 0.2857142857142857,
+      "sourceDimensions": [
+        2.0,
+        0.9257143139839172,
+        0.20571430027484894
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.5858126251125633
+          },
+          "runtimeScale": 0.008764022728428245,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "e6ff62da0a6968db6bb1f3b3a7802f932d4c12b2c04e7285bb58294efd0e2faa",
+          "sourceCrop": [
+            107,
+            97,
+            917,
+            418
+          ],
+          "width": 810,
+          "height": 321
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.583993331245754
+          },
+          "runtimeScale": 0.01752804545685649,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "8b9de2d2e9112e1daba2c51e12e8d1cda309088068d29e16ea9f4ded0ca1bf28",
+          "sourceCrop": [
+            107,
+            97,
+            917,
+            418
+          ],
+          "width": 405,
+          "height": 161
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-52-traffic-light-mast",
+      "sourceFilename": "B2-52 - Traffic Light Mast.glb",
+      "sourceModelSha256": "a300dc432758f746eec3a6e78a3aaef7b05d64a45f5a29b4be30af4382ed3c58",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "54cefac0388fcde0f10347a1d961e37861bf09d01bd046e75993c5fb35b3b9c6",
+      "nativeFrameSha256B": "f94379fc399ecba93f8f3716d89ea28aeb5b273cef63beb39cf766c31ee10370",
+      "nativeDecodedRgbaSha256": "dbe2c9816319cd2d5850ee589ccf7aea000aa993d3d6eb307f16e43a46f4992c",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        0.5316138863563538,
+        0.43165290355682373,
+        1.0
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.983486064159087
+          },
+          "runtimeScale": 0.002534884726628661,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "8de4220901532712079ca87587d1fcff8d30d460d6788995958c315170c1a186",
+          "sourceCrop": [
+            146,
+            126,
+            366,
+            400
+          ],
+          "width": 220,
+          "height": 274
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.983486064159087
+          },
+          "runtimeScale": 0.005069769453257322,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "ad68f3f77f3829ab4ea96c39f1c84e5069edd21ddac26cd845422945158eb8c1",
+          "sourceCrop": [
+            146,
+            126,
+            366,
+            400
+          ],
+          "width": 110,
+          "height": 137
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-53-bus-shelter",
+      "sourceFilename": "B2-53 - Bus Shelter.glb",
+      "sourceModelSha256": "2b2c3f7c57252f03c0811b61a84bed0a5e039edaf0fb958fc9cb30d915005321",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "6411c034ce57c6663859ae26ee13ac1b77d08a45fd3db0bcc81b67d475f7b6b5",
+      "nativeFrameSha256B": "091ed4419e8984fa56e27543f824e2133d50c5161ead0d8637f0c6cd0970d7f7",
+      "nativeDecodedRgbaSha256": "19831067a24859b9cf5396f272bb794372663bd17c733b130e6b27e853fa65b9",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0000001192092896,
+        0.6068534851074219,
+        0.7031129002571106
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7791243682036528
+          },
+          "runtimeScale": 0.002504006726667285,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "0783812ac3d34532b142a61bccf2f76f52bfc1c3f6cb489435af9727a3afa7a5",
+          "sourceCrop": [
+            51,
+            67,
+            461,
+            437
+          ],
+          "width": 410,
+          "height": 370
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7791243682036528
+          },
+          "runtimeScale": 0.00500801345333457,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "22c09014a674340c6ef8d64ce2514b5edb39b73cabe7f58e4a480c363b247fe5",
+          "sourceCrop": [
+            51,
+            67,
+            461,
+            437
+          ],
+          "width": 205,
+          "height": 185
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-54-rusted-pickup-truck",
+      "sourceFilename": "B2-54 - Rusted Pickup Truck.glb",
+      "sourceModelSha256": "14142b94631d680792b04480a4b7c331682b4a125e6d6021b472de4251bd6aa3",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "687661b58eaac00635afbfea7dc22d811eeee24f7a7001b40f52b333cf1b7718",
+      "nativeFrameSha256B": "f6d6840fe8aacb037710bbdebe286a898adf846dd80e20f527e795ec1e52d325",
+      "nativeDecodedRgbaSha256": "c0db9d1ed1a44406d0fc2d70358a0e8de7c1312d6bc637f4571a84f60a70dfdd",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.5037299990653992,
+        0.4476585388183594
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7258634567260742
+          },
+          "runtimeScale": 0.0025040064938366413,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "a682333c28c94868ebb15e0b91e287a30f533fd8d106038afa500f79cab41b0f",
+          "sourceCrop": [
+            51,
+            145,
+            461,
+            385
+          ],
+          "width": 410,
+          "height": 240
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7258634567260742
+          },
+          "runtimeScale": 0.005008012987673283,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "65d7e45181da0f2d267a90e8dc8c16074c5fa599475d3965dfe2de9272536f0c",
+          "sourceCrop": [
+            51,
+            145,
+            461,
+            385
+          ],
+          "width": 205,
+          "height": 120
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-55-overturned-school-bus",
+      "sourceFilename": "B2-55 - Overturned School Bus.glb",
+      "sourceModelSha256": "c96fa5dc59e992d5e3cba30f6185556e49e6ce44cde1daf228edf7cbb5a90d58",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "24e88d71f9c60f4afdf1cc1656feb0bd34b58fd82547a19aae44ed7c4750b8a8",
+      "nativeFrameSha256B": "ec156787f6add45b4f31ce3cff87c7b50f93697bddb4a408839c0134b7eb01d9",
+      "nativeDecodedRgbaSha256": "f1d48892de2b8b22da1f5368ac144eeab9fa2e9a6f0b3078de7a454377a9e6d3",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.3824720084667206,
+        0.2953232228755951
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7357441140286749
+          },
+          "runtimeScale": 0.0025040064938366413,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "9aa3b21bd8f9df6ea0d01c921973105d7b7e98c8e53a89d50e84631b46f54d9a",
+          "sourceCrop": [
+            51,
+            166,
+            461,
+            345
+          ],
+          "width": 410,
+          "height": 179
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7316566467285156
+          },
+          "runtimeScale": 0.005008012987673283,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "8a6e2e710a28327270f3ba9945b95265459f9f1ca343c08231176b971aa61b62",
+          "sourceCrop": [
+            51,
+            166,
+            461,
+            345
+          ],
+          "width": 205,
+          "height": 90
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-62-clapboard-farmhouse",
+      "sourceFilename": "B2-62 - Clapboard Farmhouse.glb",
+      "sourceModelSha256": "a63251de2278f8de195776a0d9eac2304c1ad70224063f1ec87b57f491356fb8",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "ab56736c4fa0a094e78338d76088e061a63f34246ceea6a14473deb16fcfef48",
+      "nativeFrameSha256B": "1730cb913e7591c8b7744f5124d634fd8e0770b2c789d5173c0b898e2702616a",
+      "nativeDecodedRgbaSha256": "62a13041fa7641be4c322089f756ae925b88df2ffeb297e7650cee932739c5d4",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        0.8562220335006714,
+        0.9739595055580139,
+        1.0
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.702773850326785
+          },
+          "runtimeScale": 0.003495092736557126,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "206372d7e62800d8ecec975d6b86fe8c8a883b7ac16646a3fddb40dac311df52",
+          "sourceCrop": [
+            128,
+            140,
+            384,
+            449
+          ],
+          "width": 256,
+          "height": 309
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.700506837906376
+          },
+          "runtimeScale": 0.006990185473114252,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "6f4403f34c0d28d65630f7d1ea070bbd4c19f5637aec70f3c2c757628e21b8de",
+          "sourceCrop": [
+            128,
+            140,
+            384,
+            449
+          ],
+          "width": 128,
+          "height": 155
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-63-brick-warehouse",
+      "sourceFilename": "B2-63 - Brick Warehouse.glb",
+      "sourceModelSha256": "36cebb1b8d4442590ad703250339056e531518e251efb94ca171596bb6ace62d",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "67845cd51030abea6a3472b2b416c0e0ce2b3fe092e098d58428e69b4d951542",
+      "nativeFrameSha256B": "39dcd377fa3c895a1a662ced79d1d0cbbc8f222c08048ea14b099705157306b5",
+      "nativeDecodedRgbaSha256": "3567c590219ef7a6be12922f476da4109dab3d030538611ff3a469bfbadd3bf2",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.4162070155143738,
+        0.34943893551826477
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6851210090982255
+          },
+          "runtimeScale": 0.0025040064938366413,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "eff94d818e3bf8ffb771ae4e39f5ea80683c38bdd5efc665116e36f1590a29d2",
+          "sourceCrop": [
+            51,
+            169,
+            461,
+            368
+          ],
+          "width": 410,
+          "height": 199
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6816954040527343
+          },
+          "runtimeScale": 0.005008012987673283,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "690bc76e848694e4ba24fa59a32de79805e01997a184d953e158e6ad65aa26f5",
+          "sourceCrop": [
+            51,
+            169,
+            461,
+            368
+          ],
+          "width": 205,
+          "height": 100
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-64-fuel-station-canopy",
+      "sourceFilename": "B2-64 - Fuel Station Canopy.glb",
+      "sourceModelSha256": "5de84d21418a1fa0dc709191a201975b916b62a4d797ce66f3eb40771e4c159d",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "895980dc05d202624392a5442b9f1f156e9b032ed687a7f0c9bd062ddc3e2382",
+      "nativeFrameSha256B": "1ba50560a5ecac95fa59d1617bc72cda7d4a83463db0c9d17173bdae97496f6a",
+      "nativeDecodedRgbaSha256": "4e299dd63fddb9a57fcae99f5c2d18a2a82ba69ab70fbd13ca9f2a5b1a2b4d08",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.8765609860420227,
+        0.5216820240020752
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.8683406076613506
+          },
+          "runtimeScale": 0.0025040064938366413,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "806ae4f8f67718848f02a6a8b6ebbab60a6bd9ecf851e4ee7d9ffdf20abda19c",
+          "sourceCrop": [
+            51,
+            57,
+            461,
+            371
+          ],
+          "width": 410,
+          "height": 314
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.8683406076613506
+          },
+          "runtimeScale": 0.005008012987673283,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "9a0d2fea4d641e60b486dcc9247a99c5484b5f25de448f3184e1b1f04fc07e77",
+          "sourceCrop": [
+            51,
+            57,
+            461,
+            371
+          ],
+          "width": 205,
+          "height": 157
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-65-steepled-chapel",
+      "sourceFilename": "B2-65 - Steepled Chapel.glb",
+      "sourceModelSha256": "e3d6b4f092a4892cded8eb7af060c1668a8330a17bf5dcb364870a1d852ec52f",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "03c30476ad5d1aa532e07e8c6db8c6a8cb75d9417c452960250b90e570c6feee",
+      "nativeFrameSha256B": "1018cee63926e29d4691d7b7c163c8d42e8b40ed48a19d784593bcdfa117eecf",
+      "nativeDecodedRgbaSha256": "044dbe93176d838b102098404992c0eee6b166a965628d1183d8f4013dc44d0b",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        0.8140095472335815,
+        0.4366830289363861,
+        1.0
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.8298734737631163
+          },
+          "runtimeScale": 0.002543790964409709,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "974204a550281360f3027aefcbf3b0d5ad16eef7a7333f479a1db27a98a5f330",
+          "sourceCrop": [
+            91,
+            112,
+            421,
+            453
+          ],
+          "width": 330,
+          "height": 341
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.827446943138078
+          },
+          "runtimeScale": 0.005087581928819418,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "7b0ee7f1b3f97371242fdda487c2735ac6f84d44f13cea1bbac95bdbb82544eb",
+          "sourceCrop": [
+            91,
+            112,
+            421,
+            453
+          ],
+          "width": 165,
+          "height": 171
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-72-tall-conifer-trio",
+      "sourceFilename": "B2-72 - Tall Conifer Trio.glb",
+      "sourceModelSha256": "21370e132f24542ff936c258611c5ae4f98f7c8d099d125c2a1cd65b1b908a34",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "baec0b9196bdd4fa17504ad41c37e4a5c524224421210a00c68058371a525752",
+      "nativeFrameSha256B": "717652f23e6f6af0cd022fe9bff93e324cde43ff46a92b0b52b6fbca53be2d4d",
+      "nativeDecodedRgbaSha256": "1a1e69ed959150cb9d86594082988420a6bea3434002a70e5d2aa35b0796caf4",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        0.6513471007347107,
+        0.29888537526130676,
+        1.0
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.9009590810433977
+          },
+          "runtimeScale": 0.0022998065687716007,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "da435f8c26c5e5305476ed01b6903ea85b70bd44cc0114bbed5eed573677c3d7",
+          "sourceCrop": [
+            109,
+            98,
+            403,
+            444
+          ],
+          "width": 294,
+          "height": 346
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.9009590810433977
+          },
+          "runtimeScale": 0.0045996131375432014,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "3ed0e2f29c135c7bece1192a587779b5af2a4d625db22fa44062577cde737861",
+          "sourceCrop": [
+            109,
+            98,
+            403,
+            444
+          ],
+          "width": 147,
+          "height": 173
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-73-hollow-stump-shelf-fungus",
+      "sourceFilename": "B2-73 - Hollow Stump Shelf Fungus.glb",
+      "sourceModelSha256": "8722003f6942031f69a60d40da9d43216036800a8b9f4a695f197e1a3ad98f14",
+      "yawDegrees": 0,
+      "nativeFrameSha256A": "dcdfd0bd0a77fd1534e1c7006880508ae0df74e095c62ce9b83e96abe9617467",
+      "nativeFrameSha256B": "9094e493462d4c964bba8734c50333b324100148841b4bee9126b30efeb9083a",
+      "nativeDecodedRgbaSha256": "13970f182b0819b4c2728b0f9dbfe8ca5d67950b56b0cc8b870ce99fc7eb6afd",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.9992457032203674,
+        0.5340914130210876
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6016494067747201
+          },
+          "runtimeScale": 0.002714926842600107,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "2cbdb4fa192c9ad85ba5a2ca669420ae7dd210665feb893dc283db94fd58637f",
+          "sourceCrop": [
+            67,
+            124,
+            445,
+            459
+          ],
+          "width": 378,
+          "height": 335
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.5998587835402716
+          },
+          "runtimeScale": 0.005429853685200214,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "d29a26bc583a52b4e564156e1897096cb6b161ee8acd16a8cd2f60133cf9e439",
+          "sourceCrop": [
+            67,
+            124,
+            445,
+            459
+          ],
+          "width": 189,
+          "height": 168
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-74-uprooted-root-ball",
+      "sourceFilename": "B2-74 - Uprooted Root Ball.glb",
+      "sourceModelSha256": "b1e19d5255e688b87d0d1fbd074573a5489baaed56570bd4b68ab576dda60d9a",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "9cf5e57bb1ae6eef5bdd571ea0640cd8416d2fddbd645945652a375963432e50",
+      "nativeFrameSha256B": "3908fb44d7f74f190dacc5c1b4a8b5059aa960cd323fee0a19e2f57a9440cb73",
+      "nativeDecodedRgbaSha256": "c8baf47f0181b386d6b45b53d76d31fd0eaf5cb97ef5dfdd571ad75dda9e41d7",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0000001192092896,
+        0.9134234189987183,
+        0.880836009979248
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.49846153846153846,
+            "y": 0.9821104420174798
+          },
+          "runtimeScale": 0.003176915692165494,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "a0f02bdabb3c00da350c867ce7aa13c0a7a2896ba804f1533c2d59ab6fd317b2",
+          "sourceCrop": [
+            94,
+            81,
+            419,
+            359
+          ],
+          "width": 325,
+          "height": 278
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.49693251533742333,
+            "y": 0.9821104420174798
+          },
+          "runtimeScale": 0.006353831384330988,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "30f50c94f9d34859824b22c6c0fca23977d433a98dfaa3ee1ebf54c7f04933bb",
+          "sourceCrop": [
+            94,
+            81,
+            419,
+            359
+          ],
+          "width": 163,
+          "height": 139
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-75-hedgerow-section",
+      "sourceFilename": "B2-75 - Hedgerow Section.glb",
+      "sourceModelSha256": "d93a0d60a044acc6e48b9dd0d8763022ac5da7fca949798c65ba91493e5ba19f",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "19ba1d62dec73f3fe741da36dc8527b9bbf6a923984cce6e72b29443796ac9de",
+      "nativeFrameSha256B": "04062378386dd1f2799f6f48412b9d9154af015a91d4e38bbd979bc50bd5f8d6",
+      "nativeDecodedRgbaSha256": "4da71004fe88eb490251a14335f2b5920ce7a3f8292fde37f0021f58f918efaf",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        1.0,
+        0.2549560070037842,
+        0.46250414848327637
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.8183515760633681
+          },
+          "runtimeScale": 0.0025040064938366413,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "003654d78b7251fdae57364756a12fbd154d2e3ac5eceb9071a8d387c52315fc",
+          "sourceCrop": [
+            51,
+            174,
+            461,
+            354
+          ],
+          "width": 410,
+          "height": 180
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.8183515760633681
+          },
+          "runtimeScale": 0.005008012987673283,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "b598cfa07645d1d62a68fa62f7f7cfa7f950c893302441444be08427ac95469a",
+          "sourceCrop": [
+            51,
+            174,
+            461,
+            354
+          ],
+          "width": 205,
+          "height": 90
+        }
+      }
+    },
+    {
+      "assetId": "hmh-ld2-80-stone-well-with-winch",
+      "sourceFilename": "B2-80 - Stone Well With Winch.glb",
+      "sourceModelSha256": "adc1b3bcc22b1d3c27b1abeabd77443c42ae189f8b2449a9055b35108fe7c744",
+      "yawDegrees": 90,
+      "nativeFrameSha256A": "de4399d09225ed4de654fd74589e6ce867b8363c2d9698e6fa7bcd1620ce16d8",
+      "nativeFrameSha256B": "0437ec5280d36242fb9dc77d105f6c054525ad0a0b57da1754ad77f7e271b90f",
+      "nativeDecodedRgbaSha256": "7de4d6da480a756acd6195927e3eafb3c78a92904bb143f46e8f446653c8c134",
+      "nativeHelperSha256": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "rendererSha256": "99be3c4514a4167b96c643bfc2ca84a398bbff1d9bcd752e9189251ae154db91",
+      "sourceNormalization": 1,
+      "sourceDimensions": [
+        0.9186815023422241,
+        0.7770891785621643,
+        1.0
+      ],
+      "tiers": {
+        "desktop": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7369838001466292
+          },
+          "runtimeScale": 0.0031465142965316772,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native",
+          "decodedRgbaSha256": "d1fc95a192b3b60c9134110246b70bd3050f5e2e585e24145db22db827064a13",
+          "sourceCrop": [
+            105,
+            120,
+            407,
+            457
+          ],
+          "width": 302,
+          "height": 337
+        },
+        "mobile": {
+          "anchor": {
+            "x": 0.5,
+            "y": 0.7348033747024084
+          },
+          "runtimeScale": 0.0062930285930633545,
+          "projectionY": 1.4142135623730951,
+          "sampling": "native-desktop-lanczos-2x-reduction",
+          "decodedRgbaSha256": "d0f76b0971c62d6f3e91973310fec5d233fd4103f2ca8fee0e3827b1cf71069a",
+          "sourceCrop": [
+            105,
+            120,
+            407,
+            457
+          ],
+          "width": 151,
+          "height": 169
+        }
+      }
+    }
+  ]
+}

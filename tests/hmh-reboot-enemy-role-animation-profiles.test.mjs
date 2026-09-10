@@ -19,7 +19,8 @@ async function loadJson(url) {
   return JSON.parse(await readFile(url, 'utf8'));
 }
 
-const metadataUrl = (actorId) => new URL(
+const metadataUrl = (actorId) => actorId === 'bagholder-rusher' && process.env.HMH_ENEMY_CANDIDATE_ROOT
+  ? `${process.env.HMH_ENEMY_CANDIDATE_ROOT}/${actorId}/${actorId}-roster-atlas.json` : new URL(
   `../apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`,
   import.meta.url,
 );
@@ -31,7 +32,7 @@ test('every ordinary enemy declares a role-native tell and attack profile', asyn
   for (const actor of ordinaryActors) {
     assert.equal(
       actor.animationProfile?.kind,
-      EXPECTED_ROLE_PROFILES[actor.actorId],
+      actor.actorId === 'bagholder-rusher' ? 'preserved-native-actions' : EXPECTED_ROLE_PROFILES[actor.actorId],
       `${actor.actorId} must not fall back to shared-roster-v1`,
     );
   }
@@ -54,14 +55,15 @@ test('the cold roster gate publishes the hero premultiplied budget policy and no
   // quarters of one-LSB EEVEE flips and turned the rest into eight-step
   // failures; the two cold passes are now compared premultiplied, unquantised,
   // against the same budget Lester observes at 0/0/0.
-  const metrics = await loadJson(metricsUrl);
+  const metrics = await loadJson(process.env.HMH_ENEMY_CANDIDATE_ROOT ? `${process.env.HMH_ENEMY_CANDIDATE_ROOT}/hmh-enemy-roster-metrics.json` : metricsUrl);
   assert.equal(metrics.reproducibilityPolicy.kind, 'bounded-premultiplied-rgba-v1');
   assert.deepEqual(metrics.reproducibilityPolicy.budget, {
     maxChangedVisiblePixels: 8,
     maxChannelDelta: 2,
     maxTotalChannelDelta: 32,
   });
-  assert.equal(metrics.reproducibilityPolicy.coldSceneRebuild, true);
+  const { validateEnemySourceModes } = await import('../scripts/hmh-enemy-source-qa.mjs');
+  validateEnemySourceModes(await loadJson(manifestUrl), metrics);
   assert.equal(metrics.reproducibilityPolicy.comparedSpace, 'premultiplied-rgba-8bit-unquantised');
   assert.equal('rgbCanonicalization' in metrics.reproducibilityPolicy, false);
   assert.equal(metrics.engine, 'BLENDER_EEVEE');
@@ -74,7 +76,7 @@ test('the cold roster gate publishes the hero premultiplied budget policy and no
 test('generated atlas metadata preserves each role-native animation profile', async () => {
   for (const [actorId, profile] of Object.entries(EXPECTED_ROLE_PROFILES)) {
     const metadata = await loadJson(metadataUrl(actorId));
-    assert.equal(metadata.animationProfile?.kind, profile, `${actorId} generated metadata is stale`);
+    assert.equal(metadata.animationProfile?.kind, actorId === 'bagholder-rusher' ? 'preserved-native-actions' : profile, `${actorId} generated metadata is stale`);
     assert.notEqual(metadata.animationProfile?.kind, 'shared-roster-v1');
   }
 });
@@ -91,7 +93,10 @@ const EXPECTED_POSE_AUTHORING = Object.freeze({ module: 'scripts/hmh-blender/hmh
 test('the manifest names the pose module and a distinct silhouette accent per ordinary role', async () => {
   const manifest = await loadJson(manifestUrl);
   assert.deepEqual(manifest.poseAuthoring, EXPECTED_POSE_AUTHORING);
-  const ordinaryActors = manifest.actors.filter((actor) => actor.boss !== true);
+  const ordinaryActors = manifest.actors.filter((actor) => actor.boss !== true && actor.actorId !== 'bagholder-rusher');
+  const native = manifest.actors.find((actor) => actor.actorId === 'bagholder-rusher');
+  assert.equal(native.poseAuthoring.mode, 'preserved-native-actions');
+  assert.equal(native.silhouetteAccent, null, 'native materials must not claim a procedural emissive accent');
   const accentKinds = ordinaryActors.map((actor) => actor.silhouetteAccent?.kind);
   assert.equal(accentKinds.every((kind) => typeof kind === 'string' && kind.length > 0), true, 'every ordinary role needs an accent');
   assert.equal(new Set(accentKinds).size, accentKinds.length, 'accents must be distinct so the six roles separate in grayscale');
@@ -104,7 +109,7 @@ test('the manifest names the pose module and a distinct silhouette accent per or
 
 test('the Blender builder fails closed on the silhouette accents and the exporter delegates poses to the pure module', async () => {
   const [manifest, builder, exporter] = await Promise.all([loadJson(manifestUrl), readFile(builderUrl, 'utf8'), readFile(exporterUrl, 'utf8')]);
-  for (const actor of manifest.actors.filter((entry) => entry.boss !== true)) {
+  for (const actor of manifest.actors.filter((entry) => entry.boss !== true && entry.actorId !== 'bagholder-rusher')) {
     assert.match(builder, new RegExp(`kind == "${actor.silhouetteAccent.kind}"`), `${actor.actorId} accent has no builder branch`);
   }
   assert.match(builder, /Unknown silhouette accent/);
@@ -117,7 +122,7 @@ test('generated atlas metadata records the pose authoring version and the accent
   const manifest = await loadJson(manifestUrl);
   for (const actor of manifest.actors) {
     const metadata = await loadJson(metadataUrl(actor.actorId));
-    assert.deepEqual(metadata.poseAuthoring, EXPECTED_POSE_AUTHORING, `${actor.actorId} atlas predates the Cycle 074 poses`);
+    assert.deepEqual(metadata.poseAuthoring, actor.poseAuthoring ?? EXPECTED_POSE_AUTHORING, `${actor.actorId} pose source is stale`);
     if (actor.boss !== true) assert.deepEqual(metadata.silhouetteAccent, actor.silhouetteAccent, `${actor.actorId} atlas predates its accent`);
   }
 });

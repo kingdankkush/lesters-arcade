@@ -28,8 +28,9 @@ const expected = new Map([
 test('all six ordinary enemy profiles own distinct damage responses', () => {
   const actual = new Map(manifest.actors
     .filter((actor) => actor.actorId !== 'the-liquidator')
-    .map((actor) => [actor.actorId, actor.animationProfile?.damageResponse]));
-  assert.deepEqual(actual, expected);
+    .map((actor) => [actor.actorId, actor.actorId === 'bagholder-rusher' ? actor.clipActions?.hit : actor.animationProfile?.damageResponse]));
+  const sourceExpected = new Map(expected); sourceExpected.set('bagholder-rusher', 'HMH_Enemy_Hit');
+  assert.deepEqual(actual, sourceExpected);
   assert.equal(new Set(actual.values()).size, 6);
 });
 
@@ -58,8 +59,12 @@ test('enemy exporter consumes every authored damage response in the hit state', 
 
 test('generated atlases preserve damage provenance and two distinct hit frames', () => {
   for (const [actorId, damageResponse] of expected) {
-    const metadata = JSON.parse(readFileSync(path.join(generatedRoot, actorId, `${actorId}-roster-atlas.json`), 'utf8'));
-    assert.equal(metadata.animationProfile?.damageResponse, damageResponse, `${actorId} generated damage profile is stale`);
+    const artifactRoot = actorId === 'bagholder-rusher' && process.env.HMH_ENEMY_CANDIDATE_ROOT ? process.env.HMH_ENEMY_CANDIDATE_ROOT : generatedRoot;
+    const metadata = JSON.parse(readFileSync(path.join(artifactRoot, actorId, `${actorId}-roster-atlas.json`), 'utf8'));
+    if (actorId === 'bagholder-rusher') {
+      assert.equal(metadata.animationProfile?.kind, 'preserved-native-actions');
+      assert.deepEqual(metadata.sourceModel, manifest.actors.find((a) => a.actorId === actorId).sourceModel);
+    } else assert.equal(metadata.animationProfile?.damageResponse, damageResponse, `${actorId} generated damage profile is stale`);
     const hitFrames = metadata.frames.filter((frame) => frame.state === 'hit');
     assert.equal(hitFrames.length, 16, `${actorId} must keep two hit frames across eight directions`);
     for (const direction of manifest.directions) {

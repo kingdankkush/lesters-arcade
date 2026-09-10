@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-09T16:33:27.783092+00:00",
+  "scope": "Local source-verified standings ordering and cache, no release certification",
+  "sourceHashes": {
+    "apps/portal/src/leaderboard-engine.mjs": "198b34872dce8a69f0298c5097e70f1107e28864f37d80c4577bace94f18f652",
+    "apps/portal/src/arcade-core.mjs": "f960f427d6d22a3ab6ba6b9a199a380613e583bdb2a9bb55644031a066764527",
+    "apps/portal/src/routes/official-leaderboard-route.mjs": "63f898c171264bbed6e86396cc5a0cfc6f8fdafd5fc85198e699ba11b5123c56",
+    "tests/hmh-leaderboard-provenance.test.mjs": "70088a44c2c49095a5d905eea3f1a833df40449d65ecfc2291aa8676770ee699",
+    "apps/portal/src/leaderboard-seed.mjs": "ab5e50750528341db9c2df48ae4b6499ec447c746c7b69fe40a5581127fa1955",
+    "tests/leaderboard-engine.test.mjs": "87e8bbbee40d00456c3c6f4b615d5a1ef4908e24b473cedf0694cba906f27c1c",
+    "tests/official-leaderboard-route.test.mjs": "5e1f8a1e42df6463ff9dc6796207fc3493e3f9263f72d776dd210920570cbcfb"
+  },
+  "focused": {
+    "exitCode": 0,
+    "files": [
+      "tests/hmh-chain-hydration-provenance.test.mjs",
+      "tests/hmh-leaderboard-provenance.test.mjs",
+      "tests/hmh-run-history.test.mjs",
+      "tests/leaderboard-engine.test.mjs",
+      "tests/official-leaderboard-route.test.mjs",
+      "tests/portal-trust-copy.test.mjs",
+      "tests/settlement.test.mjs"
+    ],
+    "fileCount": 7,
+    "counts": {
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "newTests": 6,
+  "review": {
+    "verdict": "PASS",
+    "blockers": [],
+    "suggestions": [
+      "Consider removing the redundant route-side source filtering by exposing normalized source metadata on the V2 model; the current behavior is correct but duplicates work."
+    ]
+  },
+  "reviewHashes": {
+    "review-packet.json": "5fcdb3608092f7515786637e76cd6af2374f1f6fd1518838e20b03e4993bd155",
+    "review-result.json": "6747d680e5eb61412832a839b6c7419c958b5f185cff63b6ff6e60f17be09043",
+    "review-events.jsonl": "98945419b83c6e5fdcaf2b50432e39b78056de1a7c6f62b2d7a96a35496fde5c",
+    "review-stderr.log": "69542ce079cdb21d9770d67a2f0130ea01a386ca372fd20d8db5d5e4a606dc4e"
+  },
+  "sourceGates": {
+    "receipt": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/receipt.json",
+    "sha256": "6c6e06c7c492aa0a27b3c860fad97ba890c7213302e07b5abd0d440b7642ce24",
+    "steps": [
+      {
+        "name": "inventory",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "scripts/build-hmh-curated-level-kit-runtime.mjs"
+        ],
+        "exitCode": 0,
+        "seconds": 0.07800000000861473,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/inventory.log",
+        "logSha256": "54f7f784282de93c197e5ab951dcb056d85ccc40f67332663d4f46f74ba2eed5"
+      },
+      {
+        "name": "asset-qa",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "scripts/hmh-reboot-production-asset-qa.mjs"
+        ],
+        "exitCode": 0,
+        "seconds": 4.953000000008615,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/asset-qa.log",
+        "logSha256": "c418aa9412f226e20a55177d708d68cf01bf62e986372a8ec2d02d5c01c43046"
+      },
+      {
+        "name": "check",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "check"
+        ],
+        "exitCode": 0,
+        "seconds": 18.796999999991385,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/check.log",
+        "logSha256": "ff2338ea7ba4328e83e609c9e6e43655fe20f929161015c742aa9a7d8b333a19"
+      },
+      {
+        "name": "release",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "test:release"
+        ],
+        "exitCode": 0,
+        "seconds": 159.73399999999674,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/release.log",
+        "logSha256": "2b54cc99aa0168efb8e9288d039bcb692dcbb4a0017a7133f1ecf0102e7153ae"
+      },
+      {
+        "name": "security",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "design:security-audit"
+        ],
+        "exitCode": 0,
+        "seconds": 0.6719999999913853,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/security.log",
+        "logSha256": "a58fe66fac44c193198b6df90effb6f8eff52e4171bee2a0643468c64c29f740"
+      },
+      {
+        "name": "contracts",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "contracts:check"
+        ],
+        "exitCode": 0,
+        "seconds": 0.4370000000053551,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/contracts.log",
+        "logSha256": "cd0ceaf8d8faa162aaa8a8c2a15b16e46cce28e3c988910382ea726ed9a235ce"
+      },
+      {
+        "name": "health",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "repo:health:strict"
+        ],
+        "exitCode": 0,
+        "seconds": 3.5780000000086147,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/health.log",
+        "logSha256": "c1f1290b8a267d1987bbd545ec7f32e9ea44afa53d0a604c3fe3fcd3870987ed"
+      },
+      {
+        "name": "docs-links",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "docs:links"
+        ],
+        "exitCode": 0,
+        "seconds": 0.23499999998603016,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/docs-links.log",
+        "logSha256": "b4952dffe909730078ea67a769178cb5efdaf1a4568660aa6d72887816b6e184"
+      },
+      {
+        "name": "build",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "build"
+        ],
+        "exitCode": 0,
+        "seconds": 0.7190000000118744,
+        "log": ".tmp/team/revamp-resume/source-gates-leaderboard-source-order-01/build.log",
+        "logSha256": "7213f5ca1b56639dbb66b65e1fbae2e9e4257786c51c5fccf497eaa84967cb80"
+      }
+    ],
+    "ledger": {
+      "tests": 3015,
+      "passed": 2964,
+      "expectedLegacy": 51
+    }
+  },
+  "staticClosure": {
+    "schemaVersion": 1,
+    "scope": "Current local emitted HMH static module closure; dynamic imports excluded",
+    "entryBytes": 479762,
+    "entryCap": 480000,
+    "initialBytes": 1009560,
+    "initialCap": 1048576,
+    "entryHeadroom": 238,
+    "initialHeadroom": 39016,
+    "files": [
+      {
+        "path": "chunks/chunk-2WGYLO4P.js",
+        "bytes": 655,
+        "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+        "imports": []
+      },
+      {
+        "path": "chunks/chunk-DQHK5RVL.js",
+        "bytes": 66028,
+        "sha256": "a15afb8601dc8ed82a23005457c734b5fa733d0a69e974e2faa7fb3237519c8c",
+        "imports": []
+      },
+      {
+        "path": "chunks/hmh-pixi.js",
+        "bytes": 463115,
+        "sha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a",
+        "imports": []
+      },
+      {
+        "path": "hmh-reboot/game.js",
+        "bytes": 479762,
+        "sha256": "6f867f1c938e27f01755137ad40868000e359f1f4718a6a4c0bdc185cfd4efbc",
+        "imports": [
+          "../chunks/chunk-DQHK5RVL.js",
+          "../chunks/chunk-2WGYLO4P.js",
+          "../chunks/hmh-pixi.js"
+        ]
+      }
+    ],
+    "passed": true
+  },
+  "coordinationPacket": "submissions/hermes/leaderboard-source-order-20260909T163327Z",
+  "packetManifestSha256": "665b379eb96230a505a26c63909b5a6817dc2ae6b2525f0e451a86dfcd494705",
+  "packetFileCount": 21,
+  "published": false,
+  "combinedBrowserCertified": false
+}

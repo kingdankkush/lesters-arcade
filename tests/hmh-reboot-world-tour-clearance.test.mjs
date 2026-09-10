@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { buildAuthoredDistrictLandmarkPlacements, buildAuthoredPointOfInterestPlacements } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 
 // Execute the actual runtime's static view table, including its real POI expansion.
 // Keeping this source-bound avoids a test-only duplicate of the tour coordinates.
@@ -12,6 +13,7 @@ function runtimeTourViews() {
   const initializer = source.match(/const worldTourSpawns = (Object\.freeze\(\{[\s\S]*?\n  \}\));/);
   assert.ok(initializer, 'runtime tour table must remain inspectable');
   return vm.runInNewContext(initializer[1], {
+    WORLD_DESIGN_SITES,
     authoredPointOfInterestPlacements: buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
   });
 }

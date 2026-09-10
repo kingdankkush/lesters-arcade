@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import * as prototypePolicy from '../apps/hmh-reboot/src/prototype-actor-art.mjs';
+import { readFileSync } from 'node:fs';
 
 import {
   createPrototypeHumanoidDescriptor,
@@ -14,6 +16,25 @@ const REQUIRED_HUMAN_PARTS = Object.freeze([
   'left-leg',
   'right-leg',
 ]);
+
+test('fallback readability uses body geometry at every facing, never the held weapon', () => {
+  assert.equal(typeof prototypePolicy.measureMinimumPrototypeBodyHeight, 'function');
+  const unarmed = createPrototypeHumanoidDescriptor({ radius: 24, bodyColor: 0x49ddff });
+  const armed = createPrototypeHumanoidDescriptor({ radius: 24, bodyColor: 0x49ddff, weapon: true });
+  const height = prototypePolicy.measureMinimumPrototypeBodyHeight(unarmed);
+  assert.ok(height > 25 && height < 60, `body height ${height} must be derived from the six anatomical parts`);
+  assert.equal(prototypePolicy.measureMinimumPrototypeBodyHeight(armed), height);
+  const enlarged = structuredClone(unarmed);
+  enlarged.parts.find((part) => part.id === 'head').geometry.radius *= 5;
+  assert.ok(prototypePolicy.measureMinimumPrototypeBodyHeight(enlarged) > height);
+  assert.throws(() => prototypePolicy.measureMinimumPrototypeBodyHeight(null), /descriptor|body|prototype/i);
+});
+
+test('fallback render loop composes a measured camera zoom instead of leaving the marker unscaled', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /bodyHeight: productionHeroDisplay\?\.minimumBodyHeight \?\? prototypeMinimumBodyHeight/);
+  assert.match(source, /marker\.scale\.set\(prototypePoseScale\.x \* camera\.zoom, prototypePoseScale\.y \* camera\.zoom\)/);
+});
 
 function recordingGraphics() {
   const calls = [];

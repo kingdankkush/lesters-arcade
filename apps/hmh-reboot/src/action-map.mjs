@@ -5,27 +5,20 @@ const entries = [
   ['moveDown', 'Move down', 'KeyS', 'Left stick down', 'Move stick down', 'Move south.'],
   ['moveLeft', 'Move left', 'KeyA', 'Left stick left', 'Move stick left', 'Move west.'],
   ['moveRight', 'Move right', 'KeyD', 'Left stick right', 'Move stick right', 'Move east.'],
-  ['fire', 'Fire', 'Space', 'Right trigger', 'AIM stick / auto-fire', 'Use the equipped weapon.'],
-  ['melee', 'Melee', 'KeyE', 'X / Square', '', 'Use the close attack.'],
-  ['grenade', 'Grenade', 'KeyF', 'Left bumper', 'POWER', 'Throw a hand grenade.'],
-  ['dash', 'Dash', 'ShiftLeft', 'A / Cross', 'Double-tap MOVE', 'Burst through danger.'],
+  ['grenade', 'Grenade', 'KeyF', 'Left bumper', 'GRENADE', 'Throw a hand grenade.'],
   ['pause', 'Pause', 'Escape', 'Menu', 'Pause button', 'Open or close the run menu.'],
-  ['weaponNext', 'Next weapon', 'KeyQ', 'D-pad right', 'SWAP', 'Cycle to the next owned weapon.'],
-  ['weaponSlot1', 'Weapon 1', 'Digit1', '', '', 'Equip weapon slot one.'],
-  ['weaponSlot2', 'Weapon 2', 'Digit2', '', '', 'Equip weapon slot two.'],
-  ['weaponSlot3', 'Weapon 3', 'Digit3', '', '', 'Equip weapon slot three.'],
-  ['weaponSlot4', 'Weapon 4', 'Digit4', '', '', 'Equip weapon slot four.'],
 ];
 
 export const HMH_ACTION_MAP = freezeDeep(Object.fromEntries(entries.map(([id, label, keyboard, gamepad, touch, help]) => [
   id,
-  { id, label, keyboard, gamepad, touch, help },
+  { id, label, keyboard, gamepad, touch, help,
+    pointer: id === 'fire' ? 'Mouse aim / left click' : id === 'grenade' ? 'Right click' : '' },
 ])));
 export const DEFAULT_KEYBOARD_BINDINGS = freezeDeep(Object.fromEntries(entries.map(([id, , keyboard]) => [id, keyboard])));
 export const HMH_ACTION_IDS = Object.freeze(Object.keys(HMH_ACTION_MAP));
 const DEFAULT_ALTERNATES = freezeDeep({
   moveUp: ['ArrowUp'], moveDown: ['ArrowDown'], moveLeft: ['ArrowLeft'], moveRight: ['ArrowRight'],
-  grenade: ['KeyG'], dash: ['ShiftRight'],
+  grenade: ['KeyG'],
 });
 
 const ALLOWED_KEY_CODES = new Set([
@@ -63,18 +56,19 @@ export function rebindKeyboardAction(bindings, actionId, code, { rankedActive = 
   return normalizeKeyboardBindings(next);
 }
 
+function keyboardAlternates(bindings, actionId) {
+  if (bindings[actionId] !== DEFAULT_KEYBOARD_BINDINGS[actionId]) return [];
+  return (DEFAULT_ALTERNATES[actionId] ?? []).filter((code) => !Object.values(bindings).includes(code));
+}
+
 export function keyboardActionPressed(keys, bindings, actionId) {
-  if (keys.has(bindings[actionId])) return true;
-  if (bindings[actionId] !== DEFAULT_KEYBOARD_BINDINGS[actionId]) return false;
-  return (DEFAULT_ALTERNATES[actionId] ?? []).some((code) => keys.has(code));
+  return keys.has(bindings[actionId]) || keyboardAlternates(bindings, actionId).some((code) => keys.has(code));
 }
 
 export function keyboardCodesForBindings(bindings) {
   const normalized = normalizeKeyboardBindings(bindings);
   const codes = Object.values(normalized);
-  for (const [actionId, alternates] of Object.entries(DEFAULT_ALTERNATES)) {
-    if (normalized[actionId] === DEFAULT_KEYBOARD_BINDINGS[actionId]) codes.push(...alternates);
-  }
+  for (const actionId of Object.keys(DEFAULT_ALTERNATES)) codes.push(...keyboardAlternates(normalized, actionId));
   return Object.freeze(codes);
 }
 
@@ -85,19 +79,15 @@ export function keyboardMovement(keys, bindings) {
 }
 
 export function keyboardActionRecord(keys, bindings) {
-  const weaponSlot = ['weaponSlot1', 'weaponSlot2', 'weaponSlot3', 'weaponSlot4'].findIndex((id) => keyboardActionPressed(keys, bindings, id)) + 1;
+  // Preserve the simulation snapshot shape while retiring manual combat extras.
   return {
-    fire: keyboardActionPressed(keys, bindings, 'fire'),
-    melee: keyboardActionPressed(keys, bindings, 'melee'),
+    fire: false, melee: false, dash: false, weaponSlot: 0, weaponNext: false,
     grenade: keyboardActionPressed(keys, bindings, 'grenade'),
-    dash: keyboardActionPressed(keys, bindings, 'dash'),
     pause: keyboardActionPressed(keys, bindings, 'pause'),
-    weaponSlot,
-    weaponNext: keyboardActionPressed(keys, bindings, 'weaponNext'),
   };
 }
 
 export function actionHelpRows(bindings = DEFAULT_KEYBOARD_BINDINGS) {
   const normalized = normalizeKeyboardBindings(bindings);
-  return HMH_ACTION_IDS.map((id) => freezeDeep({ ...HMH_ACTION_MAP[id], keyboard: normalized[id] }));
+  return HMH_ACTION_IDS.map((id) => freezeDeep({ ...HMH_ACTION_MAP[id], keyboard: normalized[id], keyboardAlternates: keyboardAlternates(normalized, id) }));
 }

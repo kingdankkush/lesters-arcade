@@ -77,3 +77,6 @@ apps/portal/dist/
 cache/
 contracts/out/
 .vercel
+
+.vercel
+.env*

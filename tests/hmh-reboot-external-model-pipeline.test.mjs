@@ -5,7 +5,7 @@ import test from 'node:test';
 /**
  * Cycle 072 P-1/P-2/P-3.
  *
- * The four shipped heroes and the whole enemy roster are built by Python that
+ * The original four heroes and enemy roster were built by Python that
  * extrudes primitives and poses a 14-bone rig with trigonometry. The owner's
  * art plan (ChatGPT concept sheet -> Tripo mesh -> Mixamo rig/animation) needs
  * a second, additive path: a committed GLB/FBX imported into the SAME scene,
@@ -17,7 +17,7 @@ import test from 'node:test';
  *    BESIDE the pinned `clips` / `animationProfile` objects, never inside;
  *  - the importer exists and does the six things the render depends on;
  *  - both exporters gained a `clipActions` branch that does not disturb the
- *    trigonometric branch the shipped actors still use;
+ *    trigonometric branch retained for legacy/procedural sources;
  *  - the throwaway skinned fixture is reproducible and writes nothing into a
  *    shipped directory.
  *
@@ -43,8 +43,9 @@ const PIPELINE_DOC = 'docs/hmh-reboot/EXTERNAL-MODEL-PIPELINE.md';
 
 const ALLOWED_SOURCE_MODEL_ROOTS = ['apps/hmh-reboot/assets/source/models/', '.tmp/'];
 // 128 is the boss's existing size (it renders at renderScale 2); 160 is the
-// shipped hero size; the rest are the steps the external-model path targets.
-const ALLOWED_FRAME_SIZES = new Set([128, 160, 192, 256, 512]);
+// legacy hero size. 216/224 are native-density calibrations under the unchanged
+// 2048px/4MiB atlas caps; exact per-hero choices are pinned by the pilot tests.
+const ALLOWED_FRAME_SIZES = new Set([128, 160, 192, 216, 224, 256, 512]);
 
 /**
  * The optional keys are only useful if they are uniform across both manifests,
@@ -59,9 +60,14 @@ function assertOptionalExternalModelShape(entry, label) {
       ALLOWED_SOURCE_MODEL_ROOTS.some((prefix) => source.path.startsWith(prefix)),
       `${label} sourceModel.path must be repo-owned source or a .tmp fixture: ${source.path}`,
     );
-    assert.ok(['glb', 'gltf', 'fbx'].includes(source.format), `${label} sourceModel.format unsupported`);
+    assert.ok(['glb', 'gltf', 'fbx', 'blend'].includes(source.format), `${label} sourceModel.format unsupported`);
     assert.match(source.sourceSha256, /^[0-9a-f]{64}$/, `${label} sourceModel.sourceSha256 must be a SHA-256`);
-    assert.ok(source.targetHeight > 0, `${label} sourceModel.targetHeight must be positive`);
+    if (source.format === 'blend') {
+      assert.equal(source.kind, 'packed-textured-blend', `${label} packed Blend kind`);
+      assert.ok(Number.isInteger(source.sourceBytes) && source.sourceBytes > 0, `${label} packed Blend sourceBytes`);
+    } else {
+      assert.ok(source.targetHeight > 0, `${label} sourceModel.targetHeight must be positive`);
+    }
     // Without clipActions the exporter would fall through to the trig poser and
     // silently render a T-posed import eight times.
     assert.ok('clipActions' in entry, `${label} declares sourceModel but no clipActions`);
@@ -84,7 +90,7 @@ function assertOptionalExternalModelShape(entry, label) {
   }
 }
 
-test('the hero manifest advertises schema v2 and keeps the four shipped pilots procedural', async () => {
+test('the hero manifest binds four independent packed textured sources without changing clip contracts', async () => {
   const manifest = await readJson(HERO_MANIFEST);
   assert.equal(manifest.schema, 'hmh-reboot-production-heroes-v2');
   // The runtime index keys off pipelineId, not schema. Bumping the schema must
@@ -93,8 +99,10 @@ test('the hero manifest advertises schema v2 and keeps the four shipped pilots p
   assert.equal(manifest.pilots.length, 4);
   for (const pilot of manifest.pilots) {
     assertOptionalExternalModelShape(pilot, `hero ${pilot.actorId}`);
-    assert.ok(!('sourceModel' in pilot), `${pilot.actorId} must stay procedural until the owner ships a mesh`);
-    assert.ok(!('clipActions' in pilot), `${pilot.actorId} must stay on the trig poser`);
+    assert.equal(pilot.sourceModel?.format, 'blend', pilot.actorId);
+    assert.equal(pilot.sourceModel.kind, 'packed-textured-blend');
+    assert.ok(pilot.sourceModel.path.startsWith('apps/hmh-reboot/assets/source/models/tripo-gameplay/'));
+    assert.deepEqual(Object.keys(pilot.clipActions), ['idle', 'run', 'aim', 'pistol-fire', 'hurt', 'dash', 'melee', 'grenade', 'death']);
     // The new keys are siblings. Anything added inside `clips` or
     // `animationProfile` breaks the deepEqual pins in the sibling suites.
     for (const layerClips of Object.values(pilot.clips)) {
@@ -119,8 +127,16 @@ test('the enemy manifest advertises schema 2 and, since Cycle 073, renders under
   // keys beside `clips` are unchanged by that flip.
   assert.equal(manifest.render.engine, 'BLENDER_EEVEE');
   for (const actor of manifest.actors) {
-    assertOptionalExternalModelShape(actor, `enemy ${actor.actorId}`);
-    assert.ok(!('sourceModel' in actor), `${actor.actorId} must stay procedural`);
+    if (actor.actorId === 'bagholder-rusher') {
+      assert.equal(actor.sourceModel.kind, 'packed-native-enemy-blend');
+      assert.equal(actor.sourceModel.format, 'blend');
+      assert.ok(actor.sourceModel.path.startsWith('apps/hmh-reboot/assets/source/models/native-enemies/'));
+      assert.equal(actor.poseAuthoring.mode, 'preserved-native-actions');
+      assert.deepEqual(Object.keys(actor.clipActions).sort(), ['attack', 'death', 'hit', 'idle', 'run', 'tell']);
+    } else {
+      assertOptionalExternalModelShape(actor, `enemy ${actor.actorId}`);
+      assert.ok(!('sourceModel' in actor), `${actor.actorId} must stay procedural`);
+    }
   }
 });
 

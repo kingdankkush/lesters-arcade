@@ -1,5 +1,11 @@
-import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
+import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
+import { automaticDodgeIntent } from './automatic-actions.mjs';
+import { createWorldDesignPacing, stepWorldDesignPacing } from './world-design-pacing.mjs';
+import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
+import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
+import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } from './world-design-interactions.mjs';
+import { createWorldDesignLife, prepareWorldDesignEnemyPose, worldDesignFootstep } from './world-design-life.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
@@ -13,8 +19,12 @@ import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './
 import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
+import { loadTripoPropAppearance } from './tripo-prop-appearance.mjs';
+import { loadWorldDesignAppearance } from './world-design-native-assets.mjs';
+import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from './world-design-layout.mjs';
+import { createWorldDepthLayer, worldDepthKey } from './world-depth.mjs';
 import { createHud } from './hud.mjs';
-import { buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout, computeHudMinimapLayout } from './hud-layout.mjs';
+import { buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -30,7 +40,7 @@ import {
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
 import { computeEnemyFlowField, createEnemyNavGridChunked, createNavGridAuthority, navLineBlocked, sampleChokepointDirection, sampleCoverDirection, sampleFlankLaneDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
-import { computeMinimapModel, createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
+import { createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
   TERRAIN_OVERLAY_IDS,
@@ -115,6 +125,7 @@ import {
   resolveHeroHitSmear,
   resolveLevelUpBurst,
   resolvePickupSparkle,
+  resolveReadableGameplayZoom,
 } from './game-feel.mjs';
 import { createMeleeState, createMeleeTarget, stepMeleeState } from './melee.mjs';
 import {
@@ -176,14 +187,7 @@ import {
   selectRuntimePerformanceProfile,
 } from './runtime-performance.mjs';
 import { createTouchControlAdapter, createTouchOnboardingGate, isTouchUiEnabled } from './touch-controls.mjs';
-import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid } from './prototype-actor-art.mjs';
-import {
-  MANNEQUIN_ATLAS_IMAGE_URL,
-  MANNEQUIN_ATLAS_METADATA_URL,
-  MANNEQUIN_RUNTIME_SCALE,
-  createMannequinAtlasIndex,
-  createMannequinDisplay,
-} from './mannequin-atlas.mjs';
+import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid, measureMinimumPrototypeBodyHeight } from './prototype-actor-art.mjs';
 import {
   PRODUCTION_HERO_ASSETS,
   PRODUCTION_HERO_RUNTIME_SCALE,
@@ -195,6 +199,7 @@ import {
   AUTHORED_DRESSING_SEED,
   AUTHORED_PROP_ATLAS_IMAGE_URL,
   AUTHORED_PROP_ATLAS_METADATA_URL,
+  authoredPropItemUrl,
   buildAuthoredDistrictLandmarkPlacements,
   buildAuthoredEncampmentPlacements,
   buildAuthoredEnclosurePlacements,
@@ -222,7 +227,6 @@ import {
 import { createAtmospherePool, createAtmosphereTextures, renderWorldAtmosphere, resolveAtmosphereBudget, resolveAtmosphereTint } from './world-atmosphere.mjs';
 import {
   LEVEL_ONE_WORLD,
-  buildLevelOneMinimapGeometry,
   createLevelOneGroundQuery,
   createLevelOneRevealState,
   getLevelOneDistrictAt,
@@ -301,12 +305,11 @@ const WEAPON_KNOCKBACK = Object.freeze({
 // V-1: the weapon colour table lives with the rest of the weapon VFX identity.
 const WEAPON_COLORS = WEAPON_VFX_COLORS;
 const WORLD_BOUNDS = LEVEL_ONE_WORLD.bounds;
-const WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
+let WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 // V-2: authored blocker id -> visualKind, so a shot stopping on cover can be
 // classed as rock, metal or splintering wood from frozen world data alone.
 const BLOCKER_VISUAL_KIND = new Map(LEVEL_ONE_WORLD.blockers.map((blocker) => [blocker.collisionBlockerId, blocker.visualKind]));
 const queryGround = createLevelOneGroundQuery();
-const MINIMAP_GEOMETRY = buildLevelOneMinimapGeometry();
 // Deterministic navgrid bakes after the first interactive frame; the flow field
 // refreshes on a fixed tick cadence inside the simulation step. The authority
 // (K-7) is the only path a session may take to the grid: `require()` throws
@@ -319,14 +322,9 @@ let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
 let enemyFlowReplanRequestedTick = -1;
 let activeBurnerHazards = [];
-// Minimap discovery is per-run projection bookkeeping (what the player has
-// seen); it resets with the session like the flow field does.
+// Keep POI discovery for run-summary bookkeeping even while the minimap display
+// is retired on every viewport. Reusable map projection lives in minimap-model.mjs.
 const minimapDiscovery = createMinimapDiscoveryState();
-// Per-frame allocation caches: the reveal Set only changes when the snapshot
-// object does, and markers do not need 60 Hz recomputation. Both exist so
-// the minimap stays inside the heap-growth performance budget.
-let minimapRevealCache = { snapshot: null, set: null };
-let minimapModelCache = { tick: -1, model: null };
 const enemyNavigation = Object.freeze({
   lineBlocked: (fromX, fromY, toX, toY) => navLineBlocked(ENEMY_NAV_GRID, fromX, fromY, toX, toY),
   coverDirectionAt: (fromX, fromY, toX, toY, options) => ENEMY_NAV_GRID
@@ -460,7 +458,9 @@ async function boot() {
 
   const world = new Container();
   const backdrop = new Graphics();
-  const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics, TilingSpriteClass: TilingSprite });
+  const worldDepthLayer = createWorldDepthLayer(RenderLayer);
+  const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics, TilingSpriteClass: TilingSprite, depthLayer: worldDepthLayer });
+  const worldLife = createWorldDesignLife({ ContainerClass: Container, GraphicsClass: Graphics, TextClass: Text });
   // T2: ground decals sit above the terrain material and BELOW every prop and
   // actor layer, so a mark on the floor can never occlude something the player
   // needs to read.
@@ -555,7 +555,6 @@ async function boot() {
     if (weaponVfxPool) weaponVfxPool.place({ texture: 'core', x, y, width, height, tint: color, alpha, additive: true });
     else combatVisuals.ellipse(x, y, width / 2, height / 2).fill({ color, alpha: alpha * 0.8 });
   };
-  const minimap = new Graphics();
   // Screen-space layer for health pips, the boss bar, damage flash, and the
   // low-health vignette. Kept out of `world` so it never scrolls or scales.
   const overlayVisuals = new Graphics();
@@ -576,15 +575,18 @@ async function boot() {
   const eliteGroundLayer = new Graphics();
   let bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
   bossVisual.visible = false;
-  const marker = drawPrototypeHumanoid(new Graphics(), createPrototypeHumanoidDescriptor({
+  const prototypeDescriptor = createPrototypeHumanoidDescriptor({
     radius: 24,
     bodyColor: 0x49ddff,
     outlineColor: 0xffffff,
     weapon: true,
-  }));
+  });
+  const marker = drawPrototypeHumanoid(new Graphics(), prototypeDescriptor);
+  const prototypeMinimumBodyHeight = measureMinimumPrototypeBodyHeight(prototypeDescriptor);
+  let prototypePoseScale = { x: 1, y: 1 };
   let productionHeroDisplay = null;
   let productionHeroLoadError = null;
-  // The hero atlas is a ~650 KB texture plus metadata. Awaiting it before the
+  // The selected hero atlas is a lazy, bounded texture plus metadata. Awaiting it before the
   // shell signals READY pushed embedded boot past the parent's 8s bridge
   // timeout, so the run is brought up on the prototype actor immediately and
   // the atlas is swapped in as soon as it decodes. A failure leaves the
@@ -606,7 +608,13 @@ async function boot() {
     });
   };
   let mannequinDisplay = null;
+  let mannequinRuntimeScale = 1;
   if (pipelinePilotEnabled && !productionPilotEnabled) {
+    const {
+      MANNEQUIN_ATLAS_IMAGE_URL, MANNEQUIN_ATLAS_METADATA_URL,
+      MANNEQUIN_RUNTIME_SCALE, createMannequinAtlasIndex, createMannequinDisplay,
+    } = await import('./mannequin-atlas.mjs');
+    mannequinRuntimeScale = MANNEQUIN_RUNTIME_SCALE;
     const [metadataResponse, atlasTexture] = await Promise.all([
       fetch(MANNEQUIN_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
       Assets.load(MANNEQUIN_ATLAS_IMAGE_URL),
@@ -631,8 +639,8 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, collisionDebug, label);
-  app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel, minimap);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, worldLife.ground, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, worldDepthLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, worldLife.overlay, collisionDebug, label);
+  app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel);
 
 
   const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -652,7 +660,10 @@ async function boot() {
     ...buildAuthoredEnclosurePlacements({ worldId: LEVEL_ONE_WORLD.id }),
     ...authoredPointOfInterestPlacements,
   ]);
+  worldDepthLayer.attach(actorVisual, heldWeaponLayer, bossVisual);
   let authoredPropDisplay = null;
+  let tripoPropAppearance = new Map();
+  let worldDesignBlockerIds = new Set();
   let authoredHeldWeaponDisplay = null;
   let lightningLedgerEventPlacement = null;
   let bearMarketBurnerEventPlacement = null;
@@ -672,39 +683,89 @@ async function boot() {
   ]).then(async ([metadataResponse, atlasTexture]) => {
     if (!metadataResponse.ok) throw new Error(`Authored prop metadata failed with ${metadataResponse.status}`);
     const propIndex = createAuthoredPropAtlasIndex(await metadataResponse.json());
-    const placements = Object.freeze([...authoredPropPlacements, ...buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex })]);
-    const display = createAuthoredPropDisplay({
-      index: propIndex,
-      atlasTexture,
-      placements,
-      ContainerClass: Container,
-      SpriteClass: Sprite,
-      TextureClass: Texture,
-      RectangleClass: Rectangle,
-      GraphicsClass: Graphics,
-    });
-    const heldWeaponDisplay = createAuthoredHeldWeaponDisplay({
-      index: propIndex,
-      atlasTexture,
-      ContainerClass: Container,
-      SpriteClass: Sprite,
-      TextureClass: Texture,
-      RectangleClass: Rectangle,
-    });
+    const candidateAppearance = new Map();
+    try {
+      const appearance = await loadTripoPropAppearance(propIndex, (url) => Assets.load(url));
+      if (app.stage.destroyed || !world.parent) return;
+      for (const [id, asset] of appearance) candidateAppearance.set(id, asset);
+      dataset.nativePropStatus = 'ready';
+      dataset.nativePropBindings = String(appearance.size);
+    } catch (error) {
+      dataset.nativePropStatus = 'fallback';
+      dataset.nativePropError = String(error?.message ?? error);
+      console.warn('[HMH] Native prop art unavailable; keeping existing authored art', error);
+    }
     if (app.stage.destroyed || !world.parent) return;
-    authoredPropLayer.addChild(display.container);
-    heldWeaponLayer.addChild(heldWeaponDisplay.container);
-    authoredPropDisplay = display;
-    authoredHeldWeaponDisplay = heldWeaponDisplay;
-    if (lightningLedgerEventPlacement) display.addPlacement(lightningLedgerEventPlacement);
-    if (bearMarketBurnerEventPlacement) display.addPlacement(bearMarketBurnerEventPlacement);
-    if (forkedStandardEventPlacement) display.addPlacement(forkedStandardEventPlacement);
-    worldProduction.layers.townBlockers.visible = false;
-    worldProduction.layers.landmarks.visible = false;
-    dataset.authoredPropStatus = 'ready';
-    dataset.authoredPropCount = String(display.entries.length);
+    let worldDesignAssets = new Map();
+    try {
+      worldDesignAssets = await loadWorldDesignAppearance(url => Assets.load(url), { mobile: performanceProfile.id !== 'desktop' });
+      dataset.worldDesignStatus = 'ready';
+      dataset.worldDesignBindings = String(worldDesignAssets.size);
+    } catch(error) {
+      dataset.worldDesignStatus = 'fallback';
+      dataset.worldDesignError = String(error?.message??error);
+      console.warn('[HMH] World design texture fallback',error);
+    }
+    if (app.stage.destroyed || !world.parent) return;
+    const worldDesign = buildWorldDesignPlacements(LEVEL_ONE_WORLD,worldDesignAssets);
+    const candidateBlockerIds = worldDesign.blockerIds;
+    const siteProps = [...WORLD_DESIGN_SITE_PROPS, ...WORLD_DESIGN_ORCHARD, ...WORLD_DESIGN_SECRET_PROPS];
+    for (const p of siteProps) if(p.collisionBlockerId) candidateBlockerIds.add(p.collisionBlockerId);
+    for (const [id, asset] of worldDesignAssets) candidateAppearance.set(id, asset);
+    extendWorldDesignLandmarks(candidateAppearance);
+    const townPlacements = buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex }).filter(p=>!candidateBlockerIds.has(p.collisionBlockerId));
+    const placements = Object.freeze([...authoredPropPlacements, ...townPlacements, ...worldDesign.placements, ...siteProps]);
+    let display = null;
+    let heldWeaponDisplay = null;
+    let committed = false;
+    try {
+      display = createAuthoredPropDisplay({
+        staticWorld: true,
+        index: propIndex,
+        atlasTexture,
+        renderAssets: candidateAppearance,
+        depthLayer: worldDepthLayer,
+        placements,
+        ContainerClass: Container,
+        SpriteClass: Sprite,
+        TextureClass: Texture,
+        RectangleClass: Rectangle,
+        GraphicsClass: Graphics,
+      });
+      heldWeaponDisplay = createAuthoredHeldWeaponDisplay({
+        index: propIndex,
+        atlasTexture,
+        ContainerClass: Container,
+        SpriteClass: Sprite,
+        TextureClass: Texture,
+        RectangleClass: Rectangle,
+      });
+      if (lightningLedgerEventPlacement) display.addPlacement(lightningLedgerEventPlacement);
+      if (bearMarketBurnerEventPlacement) display.addPlacement(bearMarketBurnerEventPlacement);
+      if (forkedStandardEventPlacement) display.addPlacement(forkedStandardEventPlacement);
+      if (app.stage.destroyed || !world.parent) return;
+      authoredPropLayer.addChild(display.container);
+      heldWeaponLayer.addChild(heldWeaponDisplay.container);
+      authoredPropDisplay = display;
+      authoredHeldWeaponDisplay = heldWeaponDisplay;
+      tripoPropAppearance = candidateAppearance;
+      worldDesignBlockerIds = candidateBlockerIds;
+      worldProduction.layers.townBlockers.visible = false;
+      worldProduction.layers.landmarks.visible = false;
+      dataset.authoredPropStatus = 'ready';
+      dataset.authoredPropCount = String(display.entries.length);
+      committed = true;
+    } finally {
+      if (!committed) {
+        display?.container?.parent?.removeChild(display.container);
+        heldWeaponDisplay?.container?.parent?.removeChild(heldWeaponDisplay.container);
+        display?.destroy?.();
+        heldWeaponDisplay?.destroy?.();
+      }
+    }
   }).catch((error) => {
     authoredPropLoadError = error;
+    worldDesignBlockerIds = new Set();
     dataset.authoredPropStatus = 'fallback';
     dataset.authoredPropError = String(error?.message ?? error);
     // Existing vector POIs and world materials remain live if generated art is
@@ -732,6 +793,7 @@ async function boot() {
       if (!display || token !== productionHeroLoadToken) return;
       if (app.stage.destroyed || !world.parent) return;
       const slot = world.getChildIndex(actorVisual);
+      worldDepthLayer.detach(actorVisual);
       world.removeChild(actorVisual);
       productionHeroDisplay = display;
       actorVisual = display.container;
@@ -739,6 +801,7 @@ async function boot() {
       shadow.visible = false;
       loadedProductionHeroId = selection.actorId;
       world.addChildAt(actorVisual, slot);
+      worldDepthLayer.attach(actorVisual);
     }).catch((error) => {
       if (token !== productionHeroLoadToken) return;
       productionHeroLoadError = String(error?.message ?? error);
@@ -747,12 +810,14 @@ async function boot() {
       // prototype, which is identity-neutral.
       if (productionHeroDisplay) {
         const slot = world.getChildIndex(actorVisual);
-        world.removeChild(actorVisual);
+        worldDepthLayer.detach(actorVisual);
+      world.removeChild(actorVisual);
         productionHeroDisplay = null;
         actorVisual = marker;
         atlasActorEnabled = false;
         shadow.visible = true;
         world.addChildAt(actorVisual, slot);
+      worldDepthLayer.attach(actorVisual);
       }
       loadedProductionHeroId = null;
       requestedProductionHeroActorId = null;
@@ -889,7 +954,7 @@ async function boot() {
       });
       // The render pass multiplies by camera zoom, so carry the authored
       // runtime scale rather than baking it into the container.
-      display.rosterScale = ENEMY_ROSTER_RUNTIME_SCALE;
+      display.rosterScale = enemyRosterAsset(archetypeId).runtimeScale;
       // Cycle 074: roster clips are authored beats, so this body's tell and
       // attack frames follow the simulation's own phase windows. The vector
       // fallback below keeps the six-state resolver and ignores phaseTick.
@@ -954,17 +1019,21 @@ async function boot() {
   };
 
   const resetEnemyMarkers = (enemies) => {
-    for (const child of enemyVisuals.removeChildren()) child.destroy();
+    for (const child of enemyVisuals.removeChildren()) { worldDepthLayer.detach(child); child.destroy(); }
     enemyMarkers.clear();
     for (const enemy of enemies) {
       const graphic = createEnemyMarker(enemy);
       enemyMarkers.set(enemy.id, graphic);
       enemyVisuals.addChild(graphic);
+      worldDepthLayer.attach(graphic);
     }
   };
 
   const clearEnemyDeathMarkers = () => {
-    for (const child of enemyDeathVisuals.removeChildren()) child.destroy();
+    for (const child of enemyDeathVisuals.removeChildren()) {
+      worldDepthLayer.detach(child);
+      child.destroy();
+    }
     enemyDeathMarkers.clear();
   };
 
@@ -978,10 +1047,12 @@ async function boot() {
       color: ENEMY_ARCHETYPES[enemy.archetypeId]?.visual.color ?? 0xffffff,
     });
     pruneCorpseCapacity(enemyDeathMarkers, (oldest) => {
+      worldDepthLayer.detach(oldest.graphic);
       enemyDeathVisuals.removeChild(oldest.graphic);
       oldest.graphic.destroy();
     });
     const graphic = createRosterOrVectorDisplay(enemy.archetypeId, eliteProjection);
+    graphic.zIndex = worldDepthKey(enemy.y);
     enemyDeathMarkers.set(enemy.id, {
       graphic,
       x: enemy.x,
@@ -992,6 +1063,7 @@ async function boot() {
       direction: enemyVisualFacing.get(enemy.id)?.direction ?? 0,
     });
     enemyDeathVisuals.addChild(graphic);
+    worldDepthLayer.attach(graphic);
   };
 
   const debugGridEnabled = runtimeParams.get('debugGrid') === '1';
@@ -1029,6 +1101,14 @@ async function boot() {
   const weaponPilotEnabled = evidenceSafeEnabled && (runtimeParams.get('weaponPilot') === '1' || lightningLedgerPilotEnabled || bearMarketBurnerPilotEnabled || forkedStandardPilotEnabled);
   const worldTourId = runtimeParams.get('worldTour');
   const worldTourSpawns = Object.freeze({
+    ...Object.fromEntries(WORLD_DESIGN_SITES.map(s=>[`site-${s.id}`,{x:s.x,y:s.y+100}])),
+    farmhouse: Object.freeze({x:650,y:1880}),
+    reservoir: Object.freeze({x:5770,y:4150}),
+    chapel: Object.freeze({x:11480,y:750}),
+    duplex: Object.freeze({x:11320,y:4450}),
+    warehouse: Object.freeze({x:10700,y:3990}),
+    escarpment: Object.freeze({x:3680,y:4460}),
+    footbridge: Object.freeze({x:4750,y:975}),
     // W-6 (Cycle 074): the ravine and mining set-pieces now stand on the
     // contract landmarks north of the route, so these two cameras step north
     // to keep the spire and the headframe in frame below the HUD while the
@@ -1234,6 +1314,10 @@ async function boot() {
   let playerDefeatController = null;
   let playerHealth = 100;
   let collectibleState = null;
+  let worldDesignState = createWorldDesignState();
+  let worldSecretState=createWorldDesignSecretState();
+  let worldDesignFrame = { events: [] };
+  let worldPacingState=createWorldDesignPacing();
   let collectibleSnapshot = null;
   let lastCollectibleEvent = null;
   let runKills = 0;
@@ -1303,6 +1387,7 @@ async function boot() {
       tick: simulation?.tick ?? 0,
       performanceProfile,
       terrainTiles,
+      nativeBlockerIds: new Set([...worldDesignBlockerIds, ...worldDesignState.openGates]),
     });
     // Decals draw immediately after the terrain material, into their own layer
     // beneath every prop and actor. Culled to the viewport, so an off-screen
@@ -1325,130 +1410,7 @@ async function boot() {
       .stroke({ color: 0x49ddff, width: 3, alpha: 0.5 });
   };
 
-  const renderMinimap = (view, renderState) => {
-    minimap.clear();
-    const minimapLayout = computeHudMinimapLayout({
-      width: view.width,
-      height: view.height,
-      worldWidth: WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX,
-      worldHeight: WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY,
-    });
-    const { width, height, x: originX, y: originY } = minimapLayout;
-    if (debugGridEnabled || releaseTelemetryEnabled) {
-      dataset.minimapWidth = width.toFixed(3);
-      dataset.minimapHeight = height.toFixed(3);
-      dataset.minimapX = originX.toFixed(3);
-      dataset.minimapY = originY.toFixed(3);
-      dataset.minimapCompactLandscape = String(minimapLayout.compactLandscape);
-    }
-    const mapPoint = (normalized) => ({ x: originX + normalized.x * width, y: originY + normalized.y * height });
-    // Neon-noir instrument panel: near-black glass, geometry as dim emissive
-    // plates, water as the one saturated fill, routes as lit filaments.
-    minimap.roundRect(originX - 6, originY - 6, width + 12, height + 12, 8)
-      .fill({ color: 0x04090f, alpha: 0.94 }).stroke({ color: 0x35d0ff, width: 1.5, alpha: 0.55 });
-    for (const district of MINIMAP_GEOMETRY.districts) {
-      const minimum = mapPoint(district.area.min);
-      const maximum = mapPoint(district.area.max);
-      minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y).fill({ color: district.color, alpha: 0.3 });
-    }
-    for (const surface of MINIMAP_GEOMETRY.surfaces.filter((candidate) => ['water', 'shallow-water', 'bridge'].includes(candidate.kind))) {
-      if (surface.area.type !== 'rect') continue;
-      const minimum = mapPoint(surface.area.min);
-      const maximum = mapPoint(surface.area.max);
-      minimap.rect(minimum.x, minimum.y, maximum.x - minimum.x, maximum.y - minimum.y)
-        .fill({ color: surface.kind === 'bridge' ? 0xc49a63 : 0x1f9fd4, alpha: 0.92 });
-    }
-    for (const route of MINIMAP_GEOMETRY.routes) {
-      const points = route.points.map(mapPoint);
-      minimap.moveTo(points[0].x, points[0].y);
-      for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
-      minimap.stroke({ color: route.kind === 'main' ? 0xffd166 : 0x8f7f52, width: route.kind === 'main' ? 2 : 1, alpha: 0.85, cap: 'round' });
-    }
-    for (const boundary of MINIMAP_GEOMETRY.hardBoundaries) {
-      if (boundary.shape.type === 'capsule') {
-        const a = mapPoint(boundary.shape.a);
-        const b = mapPoint(boundary.shape.b);
-        minimap.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0x9fd8e4, width: 1, alpha: 0.6, cap: 'round' });
-      } else if (boundary.shape.type === 'polygon') {
-        const points = boundary.shape.points.map(mapPoint);
-        minimap.moveTo(points[0].x, points[0].y);
-        for (const point of points.slice(1)) minimap.lineTo(point.x, point.y);
-        minimap.closePath().stroke({ color: 0x9fd8e4, width: 1, alpha: 0.6 });
-      }
-    }
-    for (const landmark of MINIMAP_GEOMETRY.landmarks) {
-      const center = mapPoint(landmark.point);
-      minimap.circle(center.x, center.y, 2.2).fill({ color: 0xfff06a, alpha: 0.95 });
-    }
-    // Fog inversion (handoff §H8-11): geometry only exists where explored.
-    // Unrevealed cells paint back to glass; runs merge per row so the void
-    // costs one rect per contiguous gap instead of one per cell.
-    if (minimapRevealCache.snapshot !== revealSnapshot) {
-      minimapRevealCache = { snapshot: revealSnapshot, set: new Set(revealSnapshot.revealedCellIds) };
-    }
-    const revealedSet = minimapRevealCache.set;
-    const cellWidth = width / revealSnapshot.columns;
-    const cellHeight = height / revealSnapshot.rows;
-    for (let row = 0; row < revealSnapshot.rows; row += 1) {
-      let runStart = -1;
-      for (let column = 0; column <= revealSnapshot.columns; column += 1) {
-        const covered = column < revealSnapshot.columns && !revealedSet.has(`${column}:${row}`);
-        if (covered && runStart < 0) runStart = column;
-        if (!covered && runStart >= 0) {
-          minimap.rect(originX + runStart * cellWidth, originY + row * cellHeight, (column - runStart) * cellWidth + 0.5, cellHeight + 0.5)
-            .fill({ color: 0x04090f, alpha: 0.9 });
-          runStart = -1;
-        }
-      }
-    }
-    // Live markers: enemies exist only inside current visibility, POIs are
-    // discovered knowledge, the player is always the brightest thing.
-    const modelTick = simulation?.tick ?? 0;
-    if (minimapModelCache.model === null || modelTick - minimapModelCache.tick >= 6 || modelTick < minimapModelCache.tick) {
-      minimapModelCache = {
-        tick: modelTick,
-        model: computeMinimapModel({
-          bounds: WORLD_BOUNDS,
-          player: renderState,
-          enemies: grayboxEnemies,
-          boss: liquidatorBoss,
-          pointsOfInterest: LEVEL_ONE_WORLD.pointsOfInterest,
-          discovery: minimapDiscovery,
-        }),
-      };
-    }
-    const minimapModel = minimapModelCache.model;
-    // The player marker must stay per-frame accurate (handoff §H9); only
-    // enemy/POI/boss markers ride the 6-tick cache.
-    const playerMarker = {
-      x: (renderState.x - WORLD_BOUNDS.minX) / (WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX),
-      y: (renderState.y - WORLD_BOUNDS.minY) / (WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY),
-    };
-    for (const poi of minimapModel.pointsOfInterest) {
-      const center = mapPoint(poi);
-      minimap.poly([center.x, center.y - 3, center.x + 3, center.y, center.x, center.y + 3, center.x - 3, center.y])
-        .fill({ color: 0x7ef0c1, alpha: 0.95 });
-    }
-    for (const enemy of minimapModel.enemies) {
-      const center = mapPoint(enemy);
-      minimap.circle(center.x, center.y, 1.8).fill({ color: 0xff5257, alpha: 0.95 });
-    }
-    if (minimapModel.boss) {
-      const center = mapPoint(minimapModel.boss);
-      minimap.circle(center.x, center.y, 3.4).fill({ color: 0xff527e, alpha: 1 })
-        .stroke({ color: 0xffffff, width: 1, alpha: 0.9 });
-    }
-    const player = mapPoint(playerMarker);
-    const headingX = Number.isFinite(motion?.vx) && (Math.abs(motion.vx) + Math.abs(motion.vy) > 1) ? motion.vx : 1;
-    const headingY = Number.isFinite(motion?.vy) && (Math.abs(motion.vx) + Math.abs(motion.vy) > 1) ? motion.vy : 0;
-    const heading = Math.atan2(headingY, headingX);
-    const size = minimapLayout.compactPortrait ? 5 : 6;
-    minimap.poly([
-      player.x + Math.cos(heading) * size, player.y + Math.sin(heading) * size,
-      player.x + Math.cos(heading + 2.5) * size * 0.8, player.y + Math.sin(heading + 2.5) * size * 0.8,
-      player.x + Math.cos(heading - 2.5) * size * 0.8, player.y + Math.sin(heading - 2.5) * size * 0.8,
-    ]).fill({ color: 0x49ddff, alpha: 1 }).stroke({ color: 0xffffff, width: 1.2, alpha: 1 });
-  };
+
 
   const renderWorld = (renderState = renderActor ?? actor) => {
     const view = viewport();
@@ -1501,7 +1463,7 @@ async function boot() {
       atmosphereTint.height = view.height;
       atmosphereTint.visible = atmosphereGrade.alpha > 0;
       const authoredPropTick = simulation?.tick ?? 0;
-      const hiddenAuthoredPropIds = new Set(collectibleState?.collectedIds ?? []);
+      const hiddenAuthoredPropIds = new Set([...(collectibleState?.collectedIds ?? []), ...worldDesignHiddenSecretProps(worldSecretState)]);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
       if (forkedStandardEventPlacement && authoredPropTick < forkedStandardEventPlacement.availableTick) hiddenAuthoredPropIds.add(forkedStandardEventPlacement.id);
@@ -1515,9 +1477,26 @@ async function boot() {
         hiddenPlacementIds: hiddenAuthoredPropIds,
         reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
         contactShadows: contactShadowPool,
+        focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
+          .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
+      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements});
+      if(releaseTelemetryEnabled) {
+        dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
+        dataset.worldInteractionTarget=worldDesignState.targetId??'';
+        dataset.worldInteractionProgress=String(worldDesignState.progress);
+        dataset.worldInteractionVisible=String(worldLifeReport.visibleSites);
+        dataset.worldLifeParticles=String(worldLifeReport.particles);
+        dataset.worldCampfireLights=String(worldLifeReport.campfireLights);
+        dataset.worldCampfireEmbers=String(worldLifeReport.campfireEmbers);
+        dataset.worldOpenGates=JSON.stringify([...worldDesignState.openGates]);
+        dataset.worldSecrets=JSON.stringify([...worldSecretState.collected]);
+        dataset.worldSecretSealHealth=String(worldSecretState.sealHealth);
+      }
       if (releaseTelemetryEnabled || debugGridEnabled) {
         dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
+        dataset.nativePropOnscreenCount = String(authoredPropReport?.nativeOnscreenCount ?? 0);
+        dataset.nativePropOnscreenAssetIds = JSON.stringify(authoredPropReport?.nativeOnscreenAssetIds ?? []);
         dataset.authoredLandmarkVisible = String(authoredPropReport?.onscreenByCategory?.['district-landmark'] ?? 0);
         dataset.authoredLandmarkAnimated = String(authoredPropReport?.animatedSignalOnscreenCount ?? 0);
       }
@@ -1529,7 +1508,10 @@ async function boot() {
       eliteGroundLayer.clear();
       overlayVisuals.clear();
       bossVisual.visible = false;
-      if (releaseTelemetryEnabled) dataset.gasCanisterProgress = '';
+      if (releaseTelemetryEnabled) {
+        dataset.gasCanisterProgress = '';
+        dataset.targetArtVisible = 'false';
+      }
       const encounterAnimationCap = runtimeEncounterSnapshot(simulation?.tick ?? 0).animationCap;
       const animationBudget = Math.min(performanceProfile.maxAnimatedEnemies, encounterAnimationCap);
       const animationCandidates = grayboxEnemies.map((enemy) => {
@@ -1558,15 +1540,16 @@ async function boot() {
         }
         const archetype = ENEMY_ARCHETYPES[enemy.archetypeId];
         const enemyScreen = worldToScreen({ ...enemy, z: enemy.groundZ ?? 0 }, camera, view);
-        const markerVisible = animatedEnemyIds.has(enemy.id);
+        const markerVisible = isScreenPointVisible(enemyScreen, view, performanceProfile.enemyCullMargin);
         enemyMarker.visible = markerVisible;
         if (markerVisible) {
-          animatedEnemyCount += 1;
+          const animate = animatedEnemyIds.has(enemy.id);
+          if(animate) animatedEnemyCount += 1;
           const facingState = enemyVisualFacing.get(enemy.id) ?? { direction: 0 };
           enemyVisualFacing.set(enemy.id, facingState);
           const enemyDirection = resolveEnemyVisualDirection(facingState, enemy.velocity);
           const poseSelection = resolveEnemyRosterPoseSelection(enemy, simulation?.tick ?? 0);
-          const enemyPose = enemyMarker.applyPose({
+          const enemyPose = prepareWorldDesignEnemyPose(enemyMarker, animate, {
             // Roster bodies follow the simulation's tell / strike / recovery
             // windows (Cycle 074); the vector fallback keeps the six-state map.
             state: enemyMarker.phaseRelativePoses ? poseSelection.state : resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
@@ -1578,12 +1561,20 @@ async function boot() {
           enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
           enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);
           enemyMarker.rotation = 0;
+          if (releaseTelemetryEnabled && enemy === grayboxEnemies[0]) {
+            dataset.targetArtVisible = 'true';
+            dataset.targetArtFrameId = enemyMarker.frameId ?? '';
+            dataset.targetArtState = enemyMarker.visualState ?? '';
+            dataset.targetArtScreenX = String(enemyMarker.x);
+            dataset.targetArtScreenY = String(enemyMarker.y);
+            dataset.targetArtScale = String(enemyMarker.scale.y);
+          }
           // Health is shown on a pip below the body. It used to drive alpha,
           // which made the highest-priority target the hardest one to see and
           // turned dense fights into overlapping ghosts.
           enemyMarker.alpha = 1;
           // Depth: an enemy standing further south must draw in front.
-          enemyMarker.zIndex = enemyScreen.y;
+          enemyMarker.zIndex = worldDepthKey(enemy.y);
           // Ground contact. Placed inside the animated-marker branch so the
           // shadow count can never exceed the bodies actually drawn.
           if (enemyMarker.contactShadowFootprint) {
@@ -1653,6 +1644,7 @@ async function boot() {
       for (const [enemyId, death] of enemyDeathMarkers) {
         const corpse = corpsePresentation(death, simulation?.tick ?? 0, corpseNowMs);
         if (corpse.expired) {
+          worldDepthLayer.detach(death.graphic);
           enemyDeathVisuals.removeChild(death.graphic);
           death.graphic.destroy();
           enemyDeathMarkers.delete(enemyId);
@@ -1694,6 +1686,7 @@ async function boot() {
         });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
+        bossVisual.zIndex = worldDepthKey(liquidatorBoss.y);
         bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + (bossPhaseTick < 2_445 && Math.max(0, 45 - (bossPhaseTick % 1_200)) / 250)));
         // Boss health reads from the dedicated bar, never from transparency.
         bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
@@ -2202,6 +2195,8 @@ async function boot() {
       }
       shadow.position.set(groundScreen.x, groundScreen.y);
       actorVisual.position.set(atlasActorEnabled ? groundScreen.x : screen.x, atlasActorEnabled ? groundScreen.y : screen.y);
+      actorVisual.zIndex = worldDepthKey(renderState.y);
+      heldWeaponLayer.zIndex = worldDepthKey(renderState.y,0.1);
       if (authoredHeldWeaponDisplay && weaponLoadout) {
         const heldWeapon = getActiveWeaponState(weaponLoadout);
         const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
@@ -2224,6 +2219,12 @@ async function boot() {
         const meleeAge = lastMeleeAttack ? visualTick - lastMeleeAttack.tick : Number.POSITIVE_INFINITY;
         const grenadeAge = lastGrenadeThrow ? visualTick - lastGrenadeThrow.tick : Number.POSITIVE_INFINITY;
         const dashing = actor.locomotion === 'dash';
+        const interactionSite = !aimIntent?.fire && aimIntent?.source !== 'manual'
+          ? WORLD_DESIGN_SITES.find(site => {
+            const started=worldDesignState?.activating.get(site.id);
+            return started!==undefined && visualTick-started<18 && Math.hypot(actor.x-site.x,actor.y-site.y)<90;
+          }) : null;
+        const interactionAge=interactionSite ? visualTick-worldDesignState.activating.get(interactionSite.id) : 0;
         // Full-body actions are authored and selected by actual simulation
         // events. Death is terminal; melee and grenade windups outrank fire,
         // and dash uses its own compact silhouette instead of fake run legs.
@@ -2237,7 +2238,7 @@ async function boot() {
                 ? 'dash'
                 : pistolFireAge >= 0 && pistolFireAge < 12
                   ? 'pistol-fire'
-                  : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : 'aim';
+                  : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : interactionSite ? 'interact' : 'aim';
         const productionActionTick = productionAction === 'death'
           ? Math.max(0, visualTick - (lastPlayerHit?.tick ?? visualTick))
           : productionAction === 'melee'
@@ -2248,18 +2249,28 @@ async function boot() {
                 ? Math.max(0, dashState?.activeUntilTick ? 18 - Math.max(0, dashState.activeUntilTick - visualTick) : 0)
                 : productionAction === 'pistol-fire'
                   ? pistolFireAge
-                  : productionAction === 'hurt' ? playerHitAge : visualTick;
+                  : productionAction === 'hurt' ? playerHitAge : productionAction === 'interact' ? interactionAge : visualTick;
         productionHeroDisplay.applyPose({
           simulationTick: visualTick,
           actionTick: productionActionTick,
           locomotion: dashing ? 'moving' : motion.locomotion,
           legDirection: dashing && lastDashDirection ? quantizeDirection(lastDashDirection, 8) : motion.legDirection,
-          torsoDirection: motion.torsoDirection,
+          torsoDirection: productionAction === 'interact' ? quantizeDirection({x:interactionSite.x-actor.x,y:interactionSite.y-actor.y},8) : motion.torsoDirection,
           action: productionAction,
         });
+        // The textured Commando owns its baked pistol and its authored knife /
+        // grenade action layers. Other heroes keep the accepted external prop
+        // overlay path, and all heroes retain the existing full-body action
+        // ownership. Exactly one weapon layer is visible at a time.
+        const activeWeaponId = weaponLoadout ? getActiveWeaponState(weaponLoadout).id : null;
+        const actionOwnsWeaponLayer = ['melee', 'grenade', 'death', 'interact'].includes(productionAction)
+          || productionHeroDisplay.hasNativeAction(productionAction);
+        const nativeWeaponOwnsLayer = productionHeroDisplay.hasNativeWeapon(activeWeaponId);
         const externalWeaponAuthoritative = Boolean(authoredHeldWeaponDisplay)
-          && !['melee', 'grenade', 'death'].includes(productionAction);
-        productionHeroDisplay.setLayerVisible('weapon', !externalWeaponAuthoritative);
+          && !actionOwnsWeaponLayer
+          && !nativeWeaponOwnsLayer;
+        productionHeroDisplay.setLayerVisible('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative);
+        if(releaseTelemetryEnabled) dataset.heroAutomaticAction=productionAction==='interact'?'interact':productionAction==='dash'?'dodge':productionAction==='melee'?'melee':'';
         if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
         actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
         actorVisual.rotation = 0;
@@ -2298,10 +2309,11 @@ async function boot() {
           legDirection: motion.legDirection,
           torsoDirection: motion.torsoDirection,
         });
-        actorVisual.scale.set(MANNEQUIN_RUNTIME_SCALE * camera.zoom);
+        actorVisual.scale.set(mannequinRuntimeScale * camera.zoom);
         actorVisual.rotation = 0;
       } else {
         marker.rotation = motion ? motion.torsoDirection * (Math.PI / 4) : 0;
+        marker.scale.set(prototypePoseScale.x * camera.zoom, prototypePoseScale.y * camera.zoom);
       }
       // V-4 level-up beat: a gold ring and ray fan on the resume point with an
       // additive core, drawn with circle()/lineTo only (no arc()).
@@ -2350,8 +2362,8 @@ async function boot() {
         : null;
       const weaponHud = weaponStatus?.hudLabel ?? 'NO WEAPON 0/0';
       const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
-      const dashHud = dashStatus?.active ? 'DASHING' : dashStatus?.ready ? 'DASH READY' : `DASH ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
-      const dashAccessible = dashStatus?.active ? 'Dash active' : dashStatus?.ready ? 'Dash ready' : `Dash ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
+      const dashHud = dashStatus?.active ? 'DODGING' : dashStatus?.ready ? 'AUTO DODGE' : `DODGE ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
+      const dashAccessible = dashStatus?.active ? 'Automatic dodge active' : dashStatus?.ready ? 'Automatic dodge ready' : `Automatic dodge ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
       const powerupPresentation = buildTimedEffectPresentation(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
@@ -2369,7 +2381,8 @@ async function boot() {
       const landscapeCombatHud = `HP ${playerHealth} // ${weaponHud} // FRAG ${grenadeSystem?.handCharges ?? 0} // E ${activeEnemyCount} // K ${runKills}${activePowerupLabels.length > 0 ? `\nPOWER ${activePowerupLabels.join('+')}` : ''}`;
       const accessibleCombatStatus = `${weaponStatus?.accessibleLabel ?? 'No weapon'}, ${dashAccessible}, ${grenadeSystem?.handCharges ?? 0} grenades, health ${playerHealth}, ${activeEnemyCount} enemies, ${enemyTellCount} attack tells, ${runKills} defeats, ${powerupPresentation.accessibleLabel}`;
       if (dashStatusElement) {
-        dashStatusElement.textContent = dashAccessible;
+        dashStatusElement.textContent = dashHud;
+        dashStatusElement.setAttribute('aria-label', dashAccessible);
         dashStatusElement.dataset.ready = String(dashStatus?.ready === true);
       }
       if (combatStatusElement && accessibleCombatStatus !== lastAccessibleCombatStatus) {
@@ -2488,7 +2501,6 @@ async function boot() {
         overlayVisuals.rect(0, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
         overlayVisuals.rect(view.width - band, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
       }
-      renderMinimap(view, renderState);
       if (debugGridEnabled || releaseTelemetryEnabled) {
         dataset.actorX = renderState.x.toFixed(3);
         dataset.actorY = renderState.y.toFixed(3);
@@ -2513,11 +2525,15 @@ async function boot() {
         dataset.actorArt = actorVisual.label ?? '';
         // Report what actually rendered, not what was requested: a failed
         // atlas load falls back to the prototype and must say so.
-        dataset.actorArtSource = productionHeroDisplay ? 'production-blender-atlas-v1' : mannequinDisplay ? 'blender-atlas-v1' : 'pixi-graybox';
+        dataset.actorArtSource = productionHeroDisplay ? productionHeroDisplay.artSource : mannequinDisplay ? 'blender-atlas-v1' : 'pixi-graybox';
         dataset.actorArtActor = productionHeroDisplay && loadedProductionHeroId ? loadedProductionHeroId : mannequinDisplay ? 'neutral-mannequin' : 'prototype-human';
         dataset.actorArtFallbackReason = productionHeroLoadError ?? '';
         dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
         dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
+        // Projection-only evidence uses the actual rendered anchor, including shake.
+        dataset.actorScreenX = String(actorVisual.x + world.position.x);
+        dataset.actorScreenY = String(actorVisual.y + world.position.y);
+        dataset.actorScreenScale = String(actorVisual.scale.x);
         // Report the art actually in use: the authored roster only applies to
         // archetypes whose atlas has resolved.
         dataset.enemyArt = enemyRosterIndexes.size > 0 ? 'production-roster-atlas-v1' : 'production-vector-enemies-v1';
@@ -2687,7 +2703,6 @@ async function boot() {
         dataset.revealTotalCells = String(revealSnapshot.totalCells);
       }
     } else {
-      minimap.clear();
       hud?.setBoss(false, 0, '');
       actorVisual.position.set(view.width * 0.5, view.height * 0.5);
       label.position.set(view.width * 0.5, view.height * 0.5 + 58);
@@ -2799,6 +2814,12 @@ async function boot() {
     // standalone payload can reach here; this is the invariant, not a wait.
     const navGrid = navGridAuthority.require();
     stopCurrentSession();
+    for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
+    WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
+    worldDesignState=createWorldDesignState();
+    worldSecretState=createWorldDesignSecretState();
+    worldPacingState=createWorldDesignPacing();
+    worldDesignFrame={events:[]};
     // The flow field is per-run simulation state: a restart resets the tick
     // counter, so carrying the previous run's field would steer blocked
     // pursuit with stale data and break same-seed determinism.
@@ -2807,8 +2828,6 @@ async function boot() {
     enemyFlowReplanRequestedTick = -1;
     activeBurnerHazards = [];
     minimapDiscovery.discoveredPoiIds.clear();
-    minimapRevealCache = { snapshot: null, set: null };
-    minimapModelCache = { tick: -1, model: null };
     // Art selection must never be able to abort a session: this runs inside
     // the bridge onInit handler, and throwing here would skip `game:ready`
     // and strand the parent until its bridge timeout. Request the session's
@@ -3097,7 +3116,11 @@ async function boot() {
     camera = createCameraState({
       x: actor.x,
       y: actor.y,
+      groundZ: actor.groundZ,
       zoom: 1,
+      smoothTime: 0.1,
+      lookAheadSeconds: 0.35,
+      maxLookAhead: 64,
       deadZone: { width: 160, height: 90 },
       bounds: WORLD_BOUNDS,
     });
@@ -3131,7 +3154,7 @@ async function boot() {
         actor: motion,
         input: tickInput,
         targets: grayboxEnemies,
-        device: tickInput.aimAssist ? 'gamepad' : 'pointer',
+        device: tickInput.aimDevice ?? (tickInput.aimAssist ? 'gamepad' : 'pointer'),
         // Enemies already respect cover before they may fire; auto-target and
         // auto-fire must honour the same rule instead of locking onto — and
         // emptying a clip into — a target behind a wall.
@@ -3146,11 +3169,11 @@ async function boot() {
       // and this was previously declared further down the same tick.
       const runEffects = getRunProgressionSnapshot(runProgression).effects;
       const progressionByWeapon = buildProgressionByWeapon(runProgression.ranks);
-      const dashPressed = tickInput.dash && !previousDash;
-      const dashStart = dashPressed
-        ? beginDash(dashState, { tick, direction: tickInput.move, fallbackDirection: aimIntent.direction })
-        : null;
-      previousDash = tickInput.dash;
+      const autoDodge = !rosterPreviewEnabled ? automaticDodgeIntent({
+        tick,actor,move:tickInput.move,state:dashState,body:playerBody,bounds:WORLD_BOUNDS,
+        blockers:WORLD_BLOCKERS,queryGround,enemies:grayboxEnemies,
+      }) : null;
+      const dashStart = autoDodge ? beginDash(dashState,{tick,direction:autoDodge}) : null;
       if (dashStart?.started) {
         motion.vx = 0;
         motion.vy = 0;
@@ -3296,17 +3319,44 @@ async function boot() {
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
       if (actor.locomotion === 'moving' && tick % 12 === 0) {
-        const footstepCue = /road|bridge|slab/i.test(lastGround.surfaceId ?? '') ? 'footstep-road' : 'footstep-dirt';
-        combatAudio.play(footstepCue, { volume: 0.035 });
+        const footstep=worldDesignFootstep(LEVEL_ONE_WORLD,lastGround,actor);
+        combatAudio.play(footstep.cue, { volume:footstep.volume, playbackRate:footstep.rate });
+      }
+      worldDesignFrame=stepWorldDesign(worldDesignState,{tick,player:actor,queryGround,lineBlocked:(a,b)=>{
+        const sweep=resolveSweptCircleMotion({body:playerBody,start:{x:a.x,y:a.y,z:a.groundZ},delta:{x:b.x-a.x,y:b.y-a.y},blockers:WORLD_BLOCKERS,bounds:WORLD_BOUNDS});
+        return sweep.contacts.length>0 || sweep.depenetrations.length>0;
+      }});
+      for(const event of worldDesignFrame.events) {
+        if(event.gateId) {
+          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
+          refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
+          enemyFlowFieldTick=-1; enemyFlowField=null;
+        }
+        if(event.reward==='heal') {
+          const before=playerHealth; playerHealth=Math.min(maxPlayerHealth,playerHealth+30);
+          recordRunHealing(runSummaryAccumulator,playerHealth-before);
+        }
+        if(event.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
+        combatAudio.play(event.reward==='heal'?'health-pickup':'pickup',{volume:.11});
+        if(settings.captionCriticalAudio) setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated.`);
+      }
+      for(const secret of stepWorldDesignSecrets(worldSecretState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
+        if(secret.reward==='heal') {const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
+        if(secret.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
+        combatAudio.play('pickup',{volume:.11});
+        setAccessibleCombatStatus(`${secret.name}. ${secret.lore}`);
       }
       if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
 
+      const worldPacing=stepWorldDesignPacing(worldPacingState,{tick,player:actor,enemies:grayboxEnemies,arenas:LEVEL_ONE_WORLD.encounterArenas});
+      if(releaseTelemetryEnabled) dataset.worldEncounterPhase=worldPacing.phase;
       lastDirectorStep = endurancePressurePilotEnabled
         ? Object.freeze({ inserted: false, reason: 'endurance-pressure-pilot', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
         : rosterPreviewEnabled
           ? Object.freeze({ inserted: false, reason: 'roster-preview', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
           : stepEncounterDirector({
           state: encounterDirector,
+          worldRecovery: worldPacing.recovery,
           population: enemyPopulation,
           tick,
           districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
@@ -3362,9 +3412,11 @@ async function boot() {
 
       const hurtTargets = [];
       const meleeTargets = [];
-      for (const enemy of grayboxEnemies) {
+      for (const enemy of [...grayboxEnemies,...worldDesignSecretTargets(worldSecretState)]) {
         if (!enemy.active || enemy.health <= 0) continue;
-        const profile = createOrdinaryEnemyHurtboxProfile(enemy.radius);
+        const profile = enemy.id===WORLD_DESIGN_SECRET_SEAL.id
+          ? {bodyShape:{type:'circle',radius:20},projectileShape:{type:'circle',radius:20},meleeRadius:20,minZ:0,maxZ:40}
+          : createOrdinaryEnemyHurtboxProfile(enemy.radius);
         hurtTargets.push(createHurtTarget({
           id: enemy.id,
           bodyShape: profile.bodyShape,
@@ -3403,6 +3455,7 @@ async function boot() {
         maxZ: 92,
       }));
       const combatHitIntents = [];
+      combatHitIntents.push(...buildWorldDesignHazardHits(worldDesignState,{tick,targets:[{...actor,id:'player'},...grayboxEnemies],queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}));
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
@@ -3520,6 +3573,8 @@ async function boot() {
         const shotById = new Map(steppedProjectiles.map((shot) => [shot.id, shot]));
         for (const resolution of batch.resolutions) {
           const shot = shotById.get(resolution.projectileId);
+          const secretImpact=worldDesignSecretCoverHit({resolution,shot,tick});
+          if(secretImpact)combatHitIntents.push(secretImpact);
           recordRunProjectileResolution(runSummaryAccumulator, shot, resolution.hits);
           for (const hit of resolution.hits) {
             combatHitIntents.push({
@@ -3594,56 +3649,25 @@ async function boot() {
         activeProjectiles = [];
       }
 
+      const currentAutomaticTargetIds = grayboxEnemies.filter(enemy => enemy.active && enemy.health > 0
+        && (enemy.disposition !== 'ambient' || enemy.provoked === true || enemy.eventHostile === true)).map(enemy => enemy.id).sort();
+      if (liquidatorBoss.active && liquidatorBoss.health > 0 && tick >= liquidatorBoss.startTick) currentAutomaticTargetIds.push(liquidatorBoss.id);
       const lightningTargets = [
         ...grayboxEnemies.filter((enemy) => enemy.active),
         ...(liquidatorBoss.active && liquidatorBoss.health > 0 ? [liquidatorBoss] : []),
       ];
 
-      // Switching only cycles weapons the player actually owns: the pistol is
-      // always owned, everything else is a pickup (Cycle 036 Priority D).
-      const ownsWeapon = (id) => weaponLoadout.weapons[id]?.owned === true;
-      // Cycle 048 review fix: an exhausted pickup is unselectable — the
-      // auto-fallback would bounce it back to the pistol next tick, which on
-      // mobile (SWAP only) made every weapon AFTER the exhausted one
-      // permanently unreachable. Cycling and direct slots skip dead weapons.
-      const weaponSelectable = (id) => {
-        if (!ownsWeapon(id)) return false;
-        const candidate = weaponLoadout.weapons[id];
-        return id === 'coin-blaster' || candidate.ammoInClip > 0 || candidate.reserveAmmo === null || candidate.reserveAmmo > 0;
-      };
-      const rawDirectWeaponId = tickInput.weaponSlot > 0 ? WEAPON_ORDER[tickInput.weaponSlot - 1] : null;
-      const directWeaponId = rawDirectWeaponId && weaponSelectable(rawDirectWeaponId) ? rawDirectWeaponId : null;
-      const nextWeaponPressed = tickInput.weaponNext && !previousWeaponNext;
-      let nextWeaponId = null;
-      if (nextWeaponPressed) {
-        const start = WEAPON_ORDER.indexOf(weaponLoadout.activeWeaponId);
-        for (let offset = 1; offset <= WEAPON_ORDER.length; offset += 1) {
-          const candidate = WEAPON_ORDER[(start + offset) % WEAPON_ORDER.length];
-          if (weaponSelectable(candidate)) { nextWeaponId = candidate; break; }
-        }
-      }
-      const requestedWeaponId = directWeaponId ?? nextWeaponId;
-      let switchedWeapon = false;
-      if (requestedWeaponId && requestedWeaponId !== weaponLoadout.activeWeaponId) {
-        const selection = selectWeapon(weaponLoadout, requestedWeaponId, { tick });
-        if (selection.interrupted) {
-          recordRunLightningLedgerEvent(runSummaryAccumulator, selection.interrupted);
-          combatAudio.play('hmh-lightning-interrupt', { volume: HMH_WEAPON_SFX['hmh-lightning-interrupt'].gain });
-        }
-        recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
-        switchedWeapon = true;
-      }
-      previousWeaponNext = tickInput.weaponNext;
-      const weaponFrame = switchedWeapon
-        ? { events: [], activeWeaponId: weaponLoadout.activeWeaponId }
-        : stepWeaponLoadout(weaponLoadout, {
+      // Pickups equip themselves; exhausted weapons use the existing fallback.
+      const weaponFrame = stepWeaponLoadout(weaponLoadout, {
           tick,
           fire: aimIntent.fire,
-          releaseCharged: aimIntent.source === 'autofire',
+          releaseCharged: aimState.autoFireEnabled,
           direction: aimIntent.direction,
           progressionByWeapon,
           channelOrigin: { x: actor.x, y: actor.y, z: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT },
           channelTargets: lightningTargets,
+          channelProvokesAmbient: !aimIntent.automatic,
+          currentEligibleTargetIds: currentAutomaticTargetIds,
           channelLineOfSight: (from, to) => traceHeightAwareLineOfSight({
             from: { x: from.x, y: from.y, z: Number.isFinite(from.z) ? from.z : (from.groundZ ?? queryGround(from.x, from.y).groundZ) + PROJECTILE_FLIGHT_HEIGHT },
             to: { x: to.x, y: to.y, z: Number.isFinite(to.z) ? to.z : (to.groundZ ?? queryGround(to.x, to.y).groundZ) + PROJECTILE_FLIGHT_HEIGHT },
@@ -3740,6 +3764,7 @@ async function boot() {
           const length = Math.hypot(dx, dy) || 1;
           combatHitIntents.push({
             id: hit.id, tick, time: 0, targetId: hit.targetId, sourceId: 'player', weaponId: event.weaponId,
+            provokesAmbient: hit.provokesAmbient,
             damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
             criticalChance: 0, criticalMultiplier: 1, armorPiercing: false,
             direction: { x: dx / length, y: dy / length },
@@ -3758,9 +3783,10 @@ async function boot() {
       }
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'burner:burn-tick')) {
         const target = lightningTargets.find((candidate) => String(candidate.id) === event.targetId);
-        if (!target) continue;
+        if (!target || (event.provokesAmbient === false && !currentAutomaticTargetIds.includes(event.targetId))) continue;
         combatHitIntents.push({
           id: `burner-dot:${event.targetId}:${tick}`, tick, time: 0, targetId: event.targetId, sourceId: 'player', weaponId: 'bear-market-burner',
+          provokesAmbient: event.provokesAmbient,
           damage: event.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
           criticalChance: 0, criticalMultiplier: 1, armorPiercing: false,
           direction: { x: 0, y: 0 }, knockback: 0,
@@ -3884,7 +3910,7 @@ async function boot() {
 
       const meleeFrame = stepMeleeState(meleeState, {
         tick,
-        trigger: tickInput.melee,
+        automatic: !rosterPreviewEnabled && !dashFrame.active && weaponLoadout.activeWeaponId !== 'forked-standard',
         origin: { x: actor.x, y: actor.y },
         direction: aimIntent.direction,
         sourceGroundZ: actor.groundZ,
@@ -4110,6 +4136,7 @@ async function boot() {
           shieldCharges: enemy.shieldCharges,
           knockbackResistance: enemy.knockbackResistance,
         }));
+        combatTargets.push(...worldDesignSecretTargets(worldSecretState));
         if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) combatTargets.push({
           id: liquidatorBoss.id,
           health: liquidatorBoss.health,
@@ -4156,6 +4183,16 @@ async function boot() {
           hits: roleCheckedCombatHitIntents,
           targets: combatTargets,
         });
+        const sealDamage=lastCombatResolution.targets[WORLD_DESIGN_SECRET_SEAL.id];
+        if(sealDamage && worldSecretState.sealHealth>0) {
+          worldSecretState.sealHealth=sealDamage.health;
+          if(sealDamage.health<=0) {
+            worldDesignState.openGates.add(WORLD_DESIGN_SECRET_SEAL.id);
+            WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
+            refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,WORLD_DESIGN_SECRET_SEAL.id,WORLD_BLOCKERS);
+            enemyFlowFieldTick=-1; enemyFlowField=null;
+          }
+        }
         for (const enemy of grayboxEnemies) {
           const state = lastCombatResolution.targets[enemy.id];
           if (!state) continue;
@@ -4175,7 +4212,7 @@ async function boot() {
           lowHealthWarned = false;
         }
         for (const damageEvent of lastCombatResolution.damageEvents) {
-          if (damageEvent.damageApplied <= 0) continue;
+          if (damageEvent.damageApplied <= 0 || damageEvent.targetId === WORLD_DESIGN_SECRET_SEAL.id) continue;
           recordRunDamage(runSummaryAccumulator, damageEvent.targetId === 'player'
             ? { ...damageEvent, equippedWeaponId: weaponLoadout.activeWeaponId }
             : damageEvent);
@@ -4257,6 +4294,16 @@ async function boot() {
         }
         let retiredEnemies = false;
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
+          // Environmental deaths retire bodies without inventing a player
+          // weapon attribution, XP award, official kill or new summary ID.
+          if(scoreEvent.weaponId==='world-steam') {
+            const enemy=grayboxEnemies.find(e=>e.id===scoreEvent.enemyId);
+            if(enemy) {
+              queueEnemyDeathVisual(enemy,tick);
+              retiredEnemies=retireEnemyFromPopulation(enemyPopulation,enemy.id,{tick,reason:'defeated'}).retired || retiredEnemies;
+            }
+            continue;
+          }
           if (scoreEvent.enemyId === liquidatorBoss.id) {
             recordRunKill(runSummaryAccumulator, {
               enemyRoleId: 'liquidator',
@@ -4279,6 +4326,7 @@ async function boot() {
             spreadBearMarketBurnerOnDefeat(weaponLoadout.weapons['bear-market-burner'].burnerState, {
               tick,
               source: defeatedEnemy,
+              currentEligibleTargetIds: currentAutomaticTargetIds,
               nearbyTargets: grayboxEnemies.filter((enemy) => enemy.active),
               lineOfSight: (from, to) => traceHeightAwareLineOfSight({
                 from: { x: from.x, y: from.y, z: queryGround(from.x, from.y).groundZ + 22 },
@@ -4413,6 +4461,15 @@ async function boot() {
     combatAudio.pause();
     combatAudio.play('pause', { volume: 0.06 });
     cockpit?.setPaused(true);
+    const fieldMapMount = document.getElementById('hmhFieldMap');
+    if (fieldMapMount) fieldMapMount.textContent = 'Loading field map…';
+    // The map is used only in the pause menu; gameplay never waits for it.
+    void import('./world-design-field-map.mjs').then(({ buildWorldDesignFieldMap, renderWorldDesignFieldMap }) => {
+      if (simulation?.state !== 'paused') return;
+      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, completed: worldDesignState.completed, secrets: [...worldSecretState.collected] }));
+    }).catch(() => {
+      if (simulation?.state === 'paused' && fieldMapMount) fieldMapMount.textContent = 'Field map unavailable. You can still resume your run.';
+    });
     setStatus(bridge?.initialized ? 'Portal session paused' : 'Standalone session paused', `Paused by ${source}.`);
     if (bridge?.initialized) {
       bridge.send('game:pause', { paused: true, source });
@@ -4473,6 +4530,7 @@ async function boot() {
 
   cockpit = createCockpitUi({
     documentRef: document,
+    propIconUrl: (id) => tripoPropAppearance.get(id)?.itemUrl ?? authoredPropItemUrl(id),
     touchUiEnabled,
     onMenuToggle: () => {
       if (simulation?.state === 'paused') resumeRuntime('user');
@@ -4541,7 +4599,7 @@ async function boot() {
     }
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
     if (debugGridEnabled) dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
-    const frame = simulation.update(ticker.deltaMS, snapshot.actions);
+    const frame = simulation.update(ticker.deltaMS, snapshot.actions, snapshot.heldActions);
     if (frame.steps >= simulation.maxCatchUpSteps) catchUpSaturationFrames += 1;
     const simulationLoss = simulation.getLossMetrics();
     dataset.simulationFrameSteps = String(frame.steps);
@@ -4572,7 +4630,11 @@ async function boot() {
       bossPhaseTick: liquidatorBoss.active && simulation.tick >= liquidatorBoss.startTick ? lastBossStep?.elapsedTick ?? null : null,
       reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
     });
-    camera.zoom = framing.zoom;
+    camera.zoom = resolveReadableGameplayZoom({
+      viewportHeight: viewport().height,
+      bodyHeight: productionHeroDisplay?.minimumBodyHeight ?? prototypeMinimumBodyHeight,
+      framingZoom: framing.zoom,
+    });
     followCameraTarget(camera, {
       ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
@@ -4582,7 +4644,7 @@ async function boot() {
         focusY: liquidatorBoss.y,
         focusWeight: 0.18,
       } : {}),
-    }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)) });
+    }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)), maxDeadZoneFraction: 0.12 });
     // Shake offsets the render container only. It deliberately does NOT touch
     // camera.shakeX/Y: those are read back by screenToGround, so shaking the
     // camera would feed a jittered pointer position into aim resolution and
@@ -4603,14 +4665,14 @@ async function boot() {
     // outside: the visual gate captures a paused frame and may never land on
     // an active shake, so per-weapon recoil could regress to zero silently.
     dataset.cameraShake = String(Number(Math.hypot(world.position.x, world.position.y).toFixed(3)));
-    dataset.cameraZoom = framing.zoom.toFixed(3);
+    dataset.cameraZoom = camera.zoom.toFixed(3);
     renderWorld(renderActor);
     const locomotionPulse = actor.locomotion === 'dash'
       ? 0.18
       : motion?.locomotion === 'run' ? Math.sin(elapsedMs * 0.012) * 0.07 : 0;
     const combatStretch = actor.combat === 'melee' ? 0.18 : actor.combat === 'firing' ? 0.1 : 0;
-    if (!settings.reduceMotion) marker.scale.set(1 + locomotionPulse + combatStretch, 1 - combatStretch * 0.45);
-    else marker.scale.set(1);
+    if (!settings.reduceMotion) prototypePoseScale = { x: 1 + locomotionPulse + combatStretch, y: 1 - combatStretch * 0.45 };
+    else prototypePoseScale = { x: 1, y: 1 };
     marker.tint = actor.locomotion === 'dash'
       ? 0x8ff3ff
       : actor.combat === 'melee' ? 0xd7fbff : actor.combat === 'firing' ? 0xffd166 : 0xffffff;

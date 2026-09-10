@@ -17,7 +17,7 @@
 // flag so the UI can fall back to local state instead of throwing.
 
 import { LITVM_LITEFORGE_NETWORK } from './arcade-core.mjs';
-import { LITVM_CONTRACT_ADDRESSES } from './settlement.mjs';
+import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from './settlement.mjs';
 import { classifyWalletError } from './wallet-auth.mjs';
 
 // Lazy-load the vendored ethers ESM bundle so the heavy lib only loads when a
@@ -32,7 +32,13 @@ export function loadEthers() {
 
 // Minimal ABIs — only the methods the runtime calls. Must match the deployed
 // contracts in contracts/src/ScoreSubmissionRegistry.sol + PlayerProfileRegistry.sol.
+export const GAME_REGISTRY_ABI = [
+  'function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeMicroUsdc,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))',
+];
+
 export const SCORE_REGISTRY_ABI = [
+  'function gameRegistry() view returns(address)',
+  'function trustedVerifier() view returns(address)',
   'function submitSession(bytes32 sessionId, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32[] achievements) external',
   'function submitVerifiedSession((bytes32 sessionId, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 envelopeHash, uint64 deadline) run, bytes32[] achievements, uint8 v, bytes32 r, bytes32 s) external',
   'function getSession(bytes32 sessionId) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists))',
@@ -65,7 +71,7 @@ export function isBytes32Hex(value) {
 
 function pickReadProvider(ethers, walletProvider) {
   if (walletProvider?.request) {
-    try { return new ethers.BrowserProvider(walletProvider); } catch { /* fall through */ }
+    try { return new ethers.BrowserProvider(walletProvider, LITVM_LITEFORGE_NETWORK.chainId); } catch { /* fall through */ }
   }
   // Public RPC read path (no wallet needed for the leaderboard/profile pages).
   return new ethers.JsonRpcProvider(LITVM_LITEFORGE_NETWORK.rpcUrls.http, LITVM_LITEFORGE_NETWORK.chainId);
@@ -76,6 +82,55 @@ function scoreContractAddress() {
 }
 function profileContractAddress() {
   return LITVM_CONTRACT_ADDRESSES.playerProfileRegistry;
+}
+
+// Read-only prerequisites, pinned to one block. This is not payment, verifier
+// service, real-wallet or launch acceptance; the separate live flag remains off.
+async function readRankedContractGate(ethers, provider, gameId) {
+  let blockNumber = null;
+  const deny = (reason, error) => ({ ok: false, reason, error, blockNumber });
+  if (typeof gameId !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(gameId)) {
+    return deny('invalid-game-id', 'A canonical selected game ID is required for Ranked preflight.');
+  }
+  try {
+    const registryAddress = LITVM_CONTRACT_ADDRESSES.gameRegistry;
+    const scoreAddress = scoreContractAddress();
+    blockNumber = await provider.getBlockNumber();
+    for (const address of [registryAddress, scoreAddress]) {
+      if (await provider.getCode(address, blockNumber) === '0x') {
+        return deny('missing-contract-code', 'Ranked contracts are not deployed at the configured addresses.');
+      }
+    }
+    const overrides = { blockTag: blockNumber };
+    const gameRegistry = new ethers.Contract(registryAddress, GAME_REGISTRY_ABI, provider);
+    const gameId32 = ethers.id(gameId);
+    const game = await gameRegistry.getGame(gameId32, overrides);
+    if (!game.exists) return deny('game-not-registered', 'This game is not registered for on-chain Ranked play.');
+    if (game.gameId !== gameId32) return deny('game-identity-mismatch', 'The GameRegistry response does not match the selected game.');
+    if (game.devWallet === ethers.ZeroAddress) return deny('invalid-developer', 'The game has no configured developer wallet.');
+    if (!game.devWalletConfirmed) return deny('developer-unconfirmed', 'The game developer wallet is not confirmed.');
+    if (!game.playable) return deny('game-not-playable', 'The GameRegistry has not approved this game for play.');
+    const scores = new ethers.Contract(scoreAddress, SCORE_REGISTRY_ABI, provider);
+    const wiredRegistry = await scores.gameRegistry(overrides);
+    if (wiredRegistry.toLowerCase() !== registryAddress.toLowerCase()) {
+      return deny('score-registry-mismatch', 'The score contract is bound to a different GameRegistry.');
+    }
+    const verifier = await scores.trustedVerifier(overrides);
+    if (verifier === ethers.ZeroAddress) return deny('missing-verifier', 'The score contract has no configured verifier.');
+    // A fixed-size tuple probe detects the legacy ten-field ABI even when there
+    // are no score rows. Never decode a legacy row as verified or fall back to it.
+    try {
+      await scores.getSession(ethers.ZeroHash, overrides);
+    } catch (error) {
+      if (['BAD_DATA', 'BUFFER_OVERRUN'].includes(error?.code)) {
+        return deny('incompatible-score-abi', 'The deployed score contract does not match the verified Ranked ABI.');
+      }
+      throw error;
+    }
+    return { ok: true, reason: null, error: null, blockNumber, gameId32 };
+  } catch {
+    return deny('contract-read-failed', 'Ranked contract approval and compatibility could not be verified. Try again later.');
+  }
 }
 
 // --- WRITE: submit a completed ranked run (player-signed, 1 tx) -------------
@@ -92,6 +147,7 @@ export async function submitRankedSession(walletProvider, {
   bossId = null,
   achievements = [],
 } = {}) {
+  if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No transaction was requested.');
   if (!walletProvider?.request) throw new Error('A connected wallet is required to submit on-chain.');
   if (!sessionId) throw new Error('sessionId is required.');
   if (!gameId) throw new Error('gameId is required.');
@@ -107,6 +163,8 @@ export async function submitRankedSession(walletProvider, {
     throw new Error(`Wrong network: wallet is on chain ${net.chainId}, expected ${LITVM_LITEFORGE_NETWORK.chainId} (${LITVM_LITEFORGE_NETWORK.name}).`);
   }
 
+  const gate = await readRankedContractGate(ethers, browserProvider, gameId);
+  if (!gate.ok) throw new Error(gate.error);
   const signer = await browserProvider.getSigner();
   const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, signer);
 
@@ -201,7 +259,7 @@ export async function fetchPlayerSessions(wallet, { walletProvider = null, limit
     if (count === 0) return { ok: true, records: [], total: 0 };
     const offset = Math.max(0, count - limit);
     const raw = await contract.getPlayerSessions(wallet, BigInt(offset), BigInt(limit));
-    const records = raw.map(normalizeRecord).filter(Boolean);
+    const records = raw.map(normalizeRecord).filter((record) => record?.verified === true);
     records.sort((a, b) => b.submittedAt - a.submittedAt);
     return { ok: true, records, total: count };
   } catch (err) {
@@ -235,21 +293,20 @@ export function explorerTxUrl(txHash) {
   return `${LITVM_LITEFORGE_NETWORK.explorerUrl}/tx/${txHash}`;
 }
 
-// --- PRE-FLIGHT: chain + zkLTC balance check for Ranked entry ----------------
-// Before a Ranked run starts we confirm the wallet is (a) on LitVM LiteForge and
-// (b) holds enough zkLTC to pay the score-submission gas at game over. This
-// front-loads the gas problem so a player never finishes a run and then finds
-// they can't publish it. Returns a plain status object the UI renders.
-//
-//   { ok, onChain, chainId, hasFunds, balanceWei, balanceEth, needWei, error }
-//
-// `ok` is true only when on the right chain AND funded. Reads are cheap; this
-// adds no transaction and no signature.
-export async function checkRankedReadiness(walletProvider, { minGasWei = null } = {}) {
+// --- PRE-FLIGHT: chain, contract approval/ABI, connected account and gas ------
+// Gas-free reads only: never prompts for account access or creates a signer.
+// `ok` proves these prerequisites, not .1 zkLTC entry collection, verifier-service
+// acceptance, real-wallet compatibility, or settlement activation.
+export async function checkRankedReadiness(walletProvider, { gameId, minGasWei = null } = {}) {
   const result = {
     ok: false, onChain: false, chainId: null,
-    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, error: null, errorKind: null,
+    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, error: null, errorKind: null, contractGate: null,
   };
+  if (minGasWei !== null && (typeof minGasWei !== 'bigint' || minGasWei <= 0n)) {
+    result.error = 'The Ranked gas estimate must be a positive integer in wei.';
+    result.errorKind = 'invalid-gas-estimate';
+    return result;
+  }
   if (!walletProvider?.request) {
     const classified = classifyWalletError(new Error('No wallet connected.'));
     result.error = classified.message;
@@ -262,23 +319,36 @@ export async function checkRankedReadiness(walletProvider, { minGasWei = null } 
     const net = await browserProvider.getNetwork();
     result.chainId = Number(net.chainId);
     result.onChain = result.chainId === LITVM_LITEFORGE_NETWORK.chainId;
+    if (!result.onChain) return result;
+    result.contractGate = await readRankedContractGate(ethers, browserProvider, gameId);
+    if (!result.contractGate.ok) {
+      result.error = result.contractGate.error;
+      result.errorKind = 'contract-gate';
+      return result;
+    }
+    const accounts = await walletProvider.request({ method: 'eth_accounts' });
+    if (!Array.isArray(accounts) || !ethers.isAddress(accounts[0])) {
+      result.error = 'Connect a wallet before checking Ranked readiness.';
+      result.errorKind = 'no-account';
+      return result;
+    }
 
     // Estimated worst-case gas for a single submitSession write. The actual
     // observed gas was ~300k; we pad to 400k * gasPrice for headroom.
     const gasUnits = 400_000n;
     let gasPriceWei = 1_000_000_000n; // 1 gwei fallback
-    try {
-      const fee = await browserProvider.getFeeData();
-      if (fee?.gasPrice && fee.gasPrice > 0n) gasPriceWei = fee.gasPrice;
-    } catch { /* use fallback */ }
+    if (minGasWei === null) {
+      try {
+        const fee = await browserProvider.getFeeData();
+        if (fee?.gasPrice && fee.gasPrice > 0n) gasPriceWei = fee.gasPrice;
+      } catch { /* use conservative fallback gas estimate, not a payment quote */ }
+    }
     result.needWei = minGasWei ?? (gasUnits * gasPriceWei);
 
-    const signer = await browserProvider.getSigner();
-    const addr = await signer.getAddress();
-    result.balanceWei = await browserProvider.getBalance(addr);
+    result.balanceWei = await browserProvider.getBalance(accounts[0]);
     result.balanceEth = ethers.formatEther(result.balanceWei);
     result.hasFunds = result.balanceWei >= result.needWei;
-    result.ok = result.onChain && result.hasFunds;
+    result.ok = result.onChain && result.contractGate.ok && result.hasFunds;
     return result;
   } catch (err) {
     const classified = classifyWalletError(err);

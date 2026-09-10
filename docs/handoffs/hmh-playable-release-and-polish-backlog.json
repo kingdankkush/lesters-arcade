@@ -1,0 +1,814 @@
+{
+  "schema": "hmh-playable-release-and-polish-backlog-v1",
+  "savedAt": "2026-09-10T19:58:25.863609+00:00",
+  "scope": "Playable website update now; preserve all unfinished polish/AAA/Web3 work for later. This file is not evidence of completed acceptance.",
+  "ownerPublicationDecision": "Yes, publish the verified update with those items open.",
+  "controlContract": "Movement, aim, grenade only. Releasing touch aim restores automatic targeting; gates/switches/pickups/power-ups/close combat/dodge are automatic with feedback. No extra combat buttons, double-tap gestures or stand-still requirement. Supersedes historical contrary control wording.",
+  "financialActivation": false,
+  "canonicalInputs": [
+    {
+      "path": "docs/qa/hmh-upgrade-execution-queue.json",
+      "sha256": "5780aeed39e1d24acf2c13670beaff11cdef8a538f8ac07ea4bdfa3a076fd8fc"
+    },
+    {
+      "path": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
+      "sha256": "cd289055ccfda066966e5b133ae9db070f2e6ac2f4d3f8549306039c7bbbc40b"
+    },
+    {
+      "path": "docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md",
+      "sha256": "e32d1a0ce373b5aa2e4b6dcb39c396e596de62d0095fc7794a521bc14beb1251"
+    }
+  ],
+  "counts": {
+    "groups": 55,
+    "originalIdsInGroups": 67,
+    "preservedOriginalRegisterIds": 99,
+    "separateWeb3PreparationEntries": 5,
+    "additionalRetainedItems": 12,
+    "pausedStackedExclusions": 22
+  },
+  "releaseChecklist": [
+    {
+      "id": "reconcile",
+      "requirement": "Authenticate Codex incremental commit/patch, before/after hashes and dependencies; preserve parent profile/challenge/M-2 and approved assets.",
+      "status": "pending-verification"
+    },
+    {
+      "id": "validation",
+      "requirement": "Run the exact host build and current release ledger; resolve unexpected failures without relaxing caps or hiding tests.",
+      "status": "pending-verification"
+    },
+    {
+      "id": "source-review",
+      "requirement": "Complete independent source/integration review and freeze the exact intended Git candidate.",
+      "status": "pending-verification"
+    },
+    {
+      "id": "playable-browser",
+      "requirement": "Verify ordinary Free entry, selectors, actual controls, combat, death/replay, parent profiles/challenges and Chikun in serial clean browser profiles.",
+      "status": "pending-verification"
+    },
+    {
+      "id": "clean-host-preview",
+      "requirement": "Prove generated/LFS dependencies on a clean host; create and verify an immutable Preview and retain rollback.",
+      "status": "pending-verification"
+    },
+    {
+      "id": "publish",
+      "requirement": "Commit/push only the coherent verified website candidate, promote, then verify exact production identity, served assets and live playable flows.",
+      "status": "pending-verification"
+    }
+  ],
+  "retainedGroups": [
+    {
+      "id": "hmh-01",
+      "content": "partial: Finish reference-to-model-to-biography consistency checks for all four approved heroes; preserve the existing identity work. (`REGISTER:H-1`, `REGISTER:B-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:H-1",
+        "REGISTER:B-6"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-02",
+      "content": "partial: Close remaining rig, skin weights, waist-seam, source-manifest and LFS custody acceptance for the approved hero models. (`REGISTER:H-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:H-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-03",
+      "content": "partial: Validate all nine hero actions at gameplay zoom, including foot planting, recoil, recovery, death and baked coat/hair/neckerchief motion. (`REGISTER:H-3`, `REGISTER:C-5`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:H-3",
+        "REGISTER:C-5"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-04",
+      "content": "partial: Complete current all-hero gameplay/profile acceptance, ordinary earned unlocks, reproducibility, mobile texture decode and GPU-memory measurements. (`REGISTER:H-4`, `REGISTER:C-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:H-4",
+        "REGISTER:C-6"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-05",
+      "content": "partial: Verify selectors use the same approved models as gameplay, with readable framing, lighting and identity details. (`REGISTER:H-5`, `REGISTER:B-5`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:H-5",
+        "REGISTER:B-5"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-06",
+      "content": "partial: Finish held-weapon model/socket/pose acceptance across directions and heroes, prioritizing pistol, shotgun, auto-miner and launcher, then the remaining reference-backed weapons. (`REGISTER:H-7`, `REGISTER:R-4`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:H-7",
+        "REGISTER:R-4"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-07",
+      "content": "partial: Finish integration and gameplay acceptance of native town, camp, industrial and bridge kits: grounding, collision proxies, depth, occlusion and authored composition. (`REGISTER:R-3`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:R-3"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-08",
+      "content": "partial: Reconcile any remaining trees, rocks, wrecks, stumps and debris against the already-delivered native source library and provenance. (`REGISTER:R-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:R-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-09",
+      "content": "partial: Verify every native pickup object, canonical effect, placement and actual collection path in the final world. (`REGISTER:R-5`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:R-5"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-10",
+      "content": "open: Finish or verify real campfire lighting and ember emitters, with feature-specific evidence and particle budgets. (`REGISTER:W-8f`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:W-8f"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-11",
+      "content": "partial: Review Hashwood canopy clustering, depth and occlusion so foliage does not read as a flat green strip. (`REGISTER:W-17`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:W-17"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-12",
+      "content": "partial: Review yard slab variation, cracks, stains and decals at gameplay zoom; regenerate from the final topology where needed. (`REGISTER:W-18`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:W-18"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-13",
+      "content": "partial: Complete current bridge/ramp/platform/pit/terrace traversal and collision acceptance, preserving existing elevation authority. (`REGISTER:W-11`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:W-11"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-14",
+      "content": "open: Finish deterministic, genuinely reachable secrets: destructible-hidden caches, ledge rewards and lore props. (`REGISTER:W-12`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:W-12"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-15",
+      "content": "partial: Confirm the updated spawn/camp/landmark composition does not obscure or overlap the hero's spawn area. (`REGISTER:B-4`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-4"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-16",
+      "content": "owner-gated: Obtain a current owner visual decision on mining-camp haze and contrast; the old density-reduction recommendation is not an accepted change. (`REGISTER:B-11`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-11"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-17",
+      "content": "open: Plan Level 2 only after Level 1 meets its world and gameplay acceptance bar. (`REGISTER:W-16`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:W-16"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-18",
+      "content": "owner-gated: Confirm remaining reference/identity approvals for six enemy roles and three Liquidator phases, checking delivered material before requesting more art. (`REGISTER:E-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:E-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-19",
+      "content": "partial: Carry the already-adopted native Bagholder through final combined gameplay and release acceptance. (`REGISTER:E-7`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:E-7"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-20",
+      "content": "open: Measure boss-atlas headroom and roster reproducibility/drift trends; make only demonstrated phase-atlas/pipeline repairs without relaxing limits. (`REGISTER:E-8`, `REGISTER:P-8`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:E-8",
+        "REGISTER:P-8"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-21",
+      "content": "open: Capture each enemy role's tell-to-hit timing and readability at actual gameplay zoom. (`REGISTER:E-3f`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:E-3f"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-22",
+      "content": "open: Prove market-open, margin-call and total-liquidation boss phases are visually distinct. (`REGISTER:E-5`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:E-5"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-23",
+      "content": "open: Finish benchmark-backed boss counters, add-wave pressure and arena-use depth after the current swarm baseline. (`REGISTER:E-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:E-6"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-24",
+      "content": "open: Fix ambient defeat-spread burning neutral actors before filtering, and automatic refresh overwriting a manually initiated burn's causal origin; prove replay/partition correctness. (`REGISTER:G-7`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:G-7"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-25",
+      "content": "partial: Produce current canonical swarm/weapon/boss pressure measurements, including clear time, overkill and projectile load, before balance claims or tuning. (`REGISTER:G-1`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:G-1"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-26",
+      "content": "partial: Re-run affected weapon, swarm and progression benchmarks after the merged simulation and automatic-action changes. (`REGISTER:G-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:G-6"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-27",
+      "content": "partial: Finish and prove the new automatic close-combat role, including eligibility, cooldown, damage attribution and readable feedback. (`REGISTER:G-3`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:G-3"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-28",
+      "content": "partial: Finish truthful action-map/help/onboarding for movement, aim and grenade only, including touch auto-targeting when aim is released and first-run cues. (`REGISTER:K-3`, `REGISTER:B-1`, `REGISTER:K-8`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:K-3",
+        "REGISTER:B-1",
+        "REGISTER:K-8"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-29",
+      "content": "partial: Verify rebinding, applicable aim-assist/sensitivity settings and left-handed touch layout have real consumers and persist parent-side without restoring obsolete controls. (`REGISTER:K-4`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:K-4"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-30",
+      "content": "open: Measure input latency, acceleration/deceleration, diagonal normalization and turn response before further movement tuning. (`REGISTER:K-5`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:K-5"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-31",
+      "content": "partial: Verify automatic dodge, buffering, edge forgiveness, cancellation and reset under the new controls; do not restore double-tap gestures. (`REGISTER:K-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:K-6"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-32",
+      "content": "partial: Recheck first-use mobile hint placement with the complete HUD visible and zero hero obstruction. (`REGISTER:B-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-33",
+      "content": "partial: Finish narrow-screen arsenal/status readability and unowned-slot collapse; preserve the corrected non-error combo label. (`REGISTER:B-7`, `REGISTER:U-9`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-7",
+        "REGISTER:U-9"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-34",
+      "content": "open: Review and accept the actual death, run-summary, replay and restart flow on desktop and phone. (`REGISTER:U-8`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:U-8"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-35",
+      "content": "partial: Recertify ad-strip containment and the ordinary three-click homepage-to-game flow across required profiles, with truthful competitive proof. (`REGISTER:B-3`, `REGISTER:L-3`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-3",
+        "REGISTER:L-3"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-36",
+      "content": "partial: Confirm the public leaderboard default and House/demo-score labeling; keep source/provenance filtering ahead of personal-best/top-N selection. (`REGISTER:L-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:L-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-37",
+      "content": "owner-gated: Resolve visibility of any still-banner-only cabinets, including the MWEB Invaders/LitVM Legends policy, without claiming unplayable content is playable. (`REGISTER:L-4`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:L-4"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-38",
+      "content": "partial: Finish independent review, build and desktop/portrait validation of the source-tested detailed profile UI; close the remaining real build-history/data requirements. Durable Ranked history is still separate. (`REGISTER:L-5`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:L-5"
+      ],
+      "acceptanceClosed": false,
+      "newEvidence": "Previous frozen history source independently reviewed PASS; final parent-focused regression 73/73. Inventory/build/browser and durable history remain open."
+    },
+    {
+      "id": "hmh-39",
+      "content": "open: Define and finish achievement unlock dates, progress meters and accessible tooltips from real canonical data. (`REGISTER:L-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:L-6"
+      ],
+      "acceptanceClosed": false,
+      "newEvidence": "Parent-local date/progress/disclosure delta source-reviewed PASS, 73/73 focused. Unsupported canonical progress and built/browser/device acceptance remain open."
+    },
+    {
+      "id": "hmh-40",
+      "content": "open: Produce matching portal/key art from the accepted approved hero models rather than a separate redesign. (`REGISTER:L-8`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:L-8"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-41",
+      "content": "partial: Obtain exact-copy owner acceptance of the implemented privacy, terms, support, accessibility and Testnet trust surface. (`REGISTER:L-9`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:L-9"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-42",
+      "content": "open: Verify or complete the privacy-conscious parent-owned funnel from homepage through first upgrade, death and replay. (`REGISTER:D-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:D-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-43",
+      "content": "open: Publish internal balance dashboards/reports from actual canonical swarm and run-stat outputs. (`REGISTER:D-3`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:D-3"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-44",
+      "content": "open: Finish category loudness/LUFS mixing, clipping and voice-budget checks, cue coverage and actual device listening acceptance. (`REGISTER:S-4`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:S-4"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-45",
+      "content": "open: Investigate the current first-fill atmosphere/performance spike and record isolated p99 measurements before choosing a pool/prewarm fix. (`REGISTER:B-10`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-10"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-46",
+      "content": "partial: Recheck final repository/deployable size, LFS and clean-host behavior under the existing limits; the old 405 MB failure is not a reason to raise caps. (`REGISTER:B-9`, `REGISTER:N-9`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-9",
+        "REGISTER:N-9"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-47",
+      "content": "partial: Finish current per-profile browser isolation, hero/enemy crop coverage, full-HUD visual checks and valid final visual baselines. (`REGISTER:N-8`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:N-8"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-48",
+      "content": "partial: Reconcile both agents' bundle factoring, then decide whether the remaining lazy debug/evidence split is needed without increasing byte caps. (`REGISTER:N-4`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:N-4"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-49",
+      "content": "open: Verify immutable hashed atlas URLs, CDN/cache headers, service-worker updates and stale-client behavior on the exact hosted candidate. (`REGISTER:N-6`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:N-6"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-50",
+      "content": "owner-gated: Obtain an approved keep/retire inventory for superseded assets before any broad cleanup or deletion. (`REGISTER:N-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:N-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-51",
+      "content": "partial: Keep roadmap, handoffs and cabinet status aligned with actual local/preview/public state; do not retry the unnecessary protected AGENTS.md replacement. (`REGISTER:B-8`, `REGISTER:N-3`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:B-8",
+        "REGISTER:N-3"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-52",
+      "content": "open: Produce final-candidate hero turntables, full-HUD combat clips, map flyovers and mobile gameplay capture assets. (`REGISTER:M-1`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:M-1"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-53",
+      "content": "open: Create the truthful launch fact sheet/feature matrix separating public, local, simulated, unfinished and gated functionality. (`REGISTER:M-2`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:M-2"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-54",
+      "content": "open: Verify or finish deterministic parent-owned daily/weekly challenge seeds and seed sharing. (`REGISTER:M-3`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:M-3"
+      ],
+      "acceptanceClosed": false
+    },
+    {
+      "id": "hmh-55",
+      "content": "owner-gated: Complete five recorded first-time desktop playtests, five recorded first-time mobile playtests, physical-device coverage and owner exact-candidate acceptance. (`REGISTER:owner-playtests`)",
+      "status": "pending",
+      "originalIds": [
+        "REGISTER:owner-playtests"
+      ],
+      "acceptanceClosed": false
+    }
+  ],
+  "web3Preparation": [
+    {
+      "id": "WEB3:B-1",
+      "originalId": "B-1",
+      "area": "4.10 Web3",
+      "requirement": "Named preparation item in the separate Web3 roadmap, not the same-numbered live defect.",
+      "doneWhen": "Source/test/runbook preparation verified under its exact named scope; no broadcast or settlement action.",
+      "status": "separately_gated",
+      "owner": "parent plus explicit action approval",
+      "nextAction": "Retrieve exact chain requirement only if selected; do not infer deployment permission from this guide."
+    },
+    {
+      "id": "WEB3:B-2",
+      "originalId": "B-2",
+      "area": "4.10 Web3",
+      "requirement": "Named preparation item in the separate Web3 roadmap, not the same-numbered live defect.",
+      "doneWhen": "Source/test/runbook preparation verified under its exact named scope; no broadcast or settlement action.",
+      "status": "separately_gated",
+      "owner": "parent plus explicit action approval",
+      "nextAction": "Retrieve exact chain requirement only if selected; do not infer deployment permission from this guide."
+    },
+    {
+      "id": "WEB3:B-3",
+      "originalId": "B-3",
+      "area": "4.10 Web3",
+      "requirement": "Named preparation item in the separate Web3 roadmap, not the same-numbered live defect.",
+      "doneWhen": "Source/test/runbook preparation verified under its exact named scope; no broadcast or settlement action.",
+      "status": "separately_gated",
+      "owner": "parent plus explicit action approval",
+      "nextAction": "Retrieve exact chain requirement only if selected; do not infer deployment permission from this guide."
+    },
+    {
+      "id": "WEB3:B-4",
+      "originalId": "B-4",
+      "area": "4.10 Web3",
+      "requirement": "Named preparation item in the separate Web3 roadmap, not the same-numbered live defect.",
+      "doneWhen": "Source/test/runbook preparation verified under its exact named scope; no broadcast or settlement action.",
+      "status": "separately_gated",
+      "owner": "parent plus explicit action approval",
+      "nextAction": "Retrieve exact chain requirement only if selected; do not infer deployment permission from this guide."
+    },
+    {
+      "id": "WEB3:B-5",
+      "originalId": "B-5",
+      "area": "4.10 Web3",
+      "requirement": "Named preparation item in the separate Web3 roadmap, not the same-numbered live defect.",
+      "doneWhen": "Source/test/runbook preparation verified under its exact named scope; no broadcast or settlement action.",
+      "status": "separately_gated",
+      "owner": "parent plus explicit action approval",
+      "nextAction": "Retrieve exact chain requirement only if selected; do not infer deployment permission from this guide."
+    }
+  ],
+  "additionalRetainedItems": [
+    {
+      "id": "W-10",
+      "requirement": "Reopened fuel-yard / reservoir-route clearance: verify the incoming fix without reducing the 24-unit art guard or losing any of the three enclosures.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "humans",
+      "requirement": "Five first-time desktop and five mobile recorded playtests, physical-device coverage and full AAA owner visual acceptance. Explicitly deferred for this verified website update, not completed.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "wallet",
+      "requirement": "Real MetaMask/Rabby/compatible-provider identity, reject/reconnect, account/network-change acceptance on LitVM. No new wallet operations are part of this website release.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "entry",
+      "requirement": "Ranked minimum .1 zkLTC native entry, payment/session binding and rejection. Financial activation remains separately gated.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "settle",
+      "requirement": "Trusted, idempotent Ranked settlement, canonical result readback and verifier authority. Keep SETTLEMENT_LIVE=false until separate approval.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "durable",
+      "requirement": "Durable paginated history for every Ranked session by wallet, chain, epoch and game. The local 50-summary cache is not this service.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "global",
+      "requirement": "Verified global competitive statistics with an explicit, owner-approved tie-break rule.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "nft",
+      "requirement": "Wallet-locked, non-transferable achievement NFTs: source/tests/readback and authority decisions; no activation in this update.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "epoch",
+      "requirement": "Universal Mainnet launch-epoch separation for scores, achievements and unlocks, preserving Testnet archival history.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "fee",
+      "requirement": "Additional Mainnet Ranked platform fee: amount, recipient/split, configuration and disclosure are owner-gated.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "trailer",
+      "requirement": "Capture the verified candidate, then obtain the owner/editor final trailer cut; do not market unverified gameplay.",
+      "status": "open-or-partial-recheck-current-evidence"
+    },
+    {
+      "id": "community",
+      "requirement": "Community seed/challenge/screenshots and verified-score materials without incentive promises.",
+      "status": "open-or-partial-recheck-current-evidence"
+    }
+  ],
+  "preservedOriginalRegisterIds": [
+    "REGISTER:B-1",
+    "REGISTER:B-10",
+    "REGISTER:B-11",
+    "REGISTER:B-2",
+    "REGISTER:B-3",
+    "REGISTER:B-4",
+    "REGISTER:B-5",
+    "REGISTER:B-6",
+    "REGISTER:B-7",
+    "REGISTER:B-8",
+    "REGISTER:B-9",
+    "REGISTER:C-5",
+    "REGISTER:C-6",
+    "REGISTER:D-2",
+    "REGISTER:D-3",
+    "REGISTER:E-2",
+    "REGISTER:E-3f",
+    "REGISTER:E-5",
+    "REGISTER:E-6",
+    "REGISTER:E-7",
+    "REGISTER:E-8",
+    "REGISTER:G-1",
+    "REGISTER:G-3",
+    "REGISTER:G-6",
+    "REGISTER:G-7",
+    "REGISTER:H-0",
+    "REGISTER:H-1",
+    "REGISTER:H-2",
+    "REGISTER:H-3",
+    "REGISTER:H-4",
+    "REGISTER:H-5",
+    "REGISTER:H-6",
+    "REGISTER:H-7",
+    "REGISTER:K-3",
+    "REGISTER:K-4",
+    "REGISTER:K-5",
+    "REGISTER:K-6",
+    "REGISTER:K-8",
+    "REGISTER:L-2",
+    "REGISTER:L-3",
+    "REGISTER:L-4",
+    "REGISTER:L-5",
+    "REGISTER:L-6",
+    "REGISTER:L-8",
+    "REGISTER:L-9",
+    "REGISTER:M-1",
+    "REGISTER:M-2",
+    "REGISTER:M-3",
+    "REGISTER:N-2",
+    "REGISTER:N-3",
+    "REGISTER:N-4",
+    "REGISTER:N-6",
+    "REGISTER:N-7",
+    "REGISTER:N-8",
+    "REGISTER:N-9",
+    "REGISTER:P-8",
+    "REGISTER:R-2",
+    "REGISTER:R-3",
+    "REGISTER:R-4",
+    "REGISTER:R-5",
+    "REGISTER:S-1",
+    "REGISTER:S-4",
+    "REGISTER:U-8",
+    "REGISTER:U-9",
+    "REGISTER:W-11",
+    "REGISTER:W-12",
+    "REGISTER:W-16",
+    "REGISTER:W-17",
+    "REGISTER:W-18",
+    "REGISTER:W-8f",
+    "REGISTER:W-9",
+    "REGISTER:owner-playtests",
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22",
+    "WEB3:B-1",
+    "WEB3:B-2",
+    "WEB3:B-3",
+    "WEB3:B-4",
+    "WEB3:B-5"
+  ],
+  "pausedStackedExcludedIds": [
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22"
+  ],
+  "canonicalRegisterPath": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
+  "historicalAcceptanceWarning": "Original register statuses/doneWhen are historical. Current control, scope, owner and evidence decisions take precedence. Publication does not close full-group AAA requirements; check the final release receipt for what actually shipped."
+}

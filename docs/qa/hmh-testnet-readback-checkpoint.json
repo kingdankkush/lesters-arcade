@@ -1,0 +1,110 @@
+{
+  "verifiedAt": "2026-09-09T07:29:39.230514+00:00",
+  "chainIdHex": "0x1159",
+  "pinnedBlock": "0x2eaf4ac",
+  "scope": "Read-only current legacy deployment addresses and three browser ABI probes; no predicted hardened manifest/dry-run or real-wallet certification.",
+  "transport": "Official public WebSocket after HTTP502; application RPC configuration unchanged",
+  "bytecodeCoverage": {
+    "verified": 8,
+    "expected": 8,
+    "contracts": [
+      {
+        "name": "playerProfileRegistry",
+        "address": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+        "bytecodeBytes": 3303,
+        "bytecodeSha256": "8be4718beea2d2b25d81232e0dcc6c79f089840f6b1bd6603ecd17967b03409c",
+        "deployed": true
+      },
+      {
+        "name": "gameRegistry",
+        "address": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",
+        "bytecodeBytes": 4059,
+        "bytecodeSha256": "a5848a2464f974880e80703ff25265bccd0772477ddabd39564023bc69961a68",
+        "deployed": true
+      },
+      {
+        "name": "arcadePaymentRouter",
+        "address": "0x7c999E9570D44090b9279dbAbE33B361e94bf78B",
+        "bytecodeBytes": 2004,
+        "bytecodeSha256": "651dc39c70439803f02f3224cae8e97f76cec7a8e73c1c4ab12b2e99862699e3",
+        "deployed": true
+      },
+      {
+        "name": "scoreSubmissionRegistry",
+        "address": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+        "error": "error",
+        "bytecodeBytes": 3736,
+        "bytecodeSha256": "011eae756a9ad972f7b9a344d5317261e58c5044cc6370ac561a34488f299bd6",
+        "deployed": true,
+        "qualifiedBy": "missing-bytecode-retry.json",
+        "primaryReadErrorPreserved": "error"
+      },
+      {
+        "name": "sessionLedger",
+        "address": "0x699c2313884A68B7dfCffC01337eB429b6609798",
+        "bytecodeBytes": 3172,
+        "bytecodeSha256": "a5016ad8f4865912e1173f47a863155922451c0849a19ae166a439f900916fa0",
+        "deployed": true
+      },
+      {
+        "name": "achievementRegistry",
+        "address": "0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53",
+        "bytecodeBytes": 2758,
+        "bytecodeSha256": "9810856076f40b93f09f426f5e581ec9fa8c8d53598cbd3648a48e80b9015254",
+        "deployed": true
+      },
+      {
+        "name": "tournamentPool",
+        "address": "0xbc88DFBaaA82D0F0Cce356924e619f9DCBD17c66",
+        "bytecodeBytes": 2071,
+        "bytecodeSha256": "6e1b507ded22ebeda2f68bbdafdd42f66ef62d81a0d6973a3f73094bd5f8cb56",
+        "deployed": true
+      },
+      {
+        "name": "lestersArcadeCore",
+        "address": "0x609CBED352699003dec2381a79EFe5090B56F1D2",
+        "bytecodeBytes": 416,
+        "bytecodeSha256": "bef4c00d792aad9b3b749814188264b50eb855bc0868cc94ec350b2ed67440bf",
+        "deployed": true
+      }
+    ]
+  },
+  "currentAbiProbes": [
+    {
+      "name": "score-total",
+      "address": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+      "method": "totalSessions",
+      "decoded": true,
+      "responseSha256": "fb55ec403ee95f242feeb82248a60ac0ad29cbfaa1c7b237c2f4ca189a79a965",
+      "responseBytes": 32,
+      "totalSessions": "13"
+    },
+    {
+      "name": "score-recent-current-abi",
+      "address": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+      "method": "getRecentSessions",
+      "decoded": false,
+      "responseSha256": "80c5ad7b62ec8c272dc51e85db6807e28b39bea8a6493d910416ed925ee2f85a",
+      "responseBytes": 384,
+      "errorCode": "BAD_DATA",
+      "error": "could not decode result data"
+    },
+    {
+      "name": "profile-empty-wallet-current-abi",
+      "address": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+      "method": "getProfile",
+      "decoded": true,
+      "responseSha256": "e30e63c4f240a887bf7647249ed25f4af38dd8fad5ff4c4f6467953cc3164107",
+      "responseBytes": 288
+    }
+  ],
+  "readiness": "BLOCKED: current getRecentSessions ABI cannot decode the deployed nonempty registry response",
+  "primaryReceipt": ".tmp/team/playable-release/web3-read-only-ws-01/receipt.json",
+  "primaryReceiptSha256": "73ada0569941486e1a3b67c999344992e8abbc9474c06a14223123b0ad2b0c2a",
+  "retryReceipt": ".tmp/team/playable-release/web3-read-only-ws-01/missing-bytecode-retry.json",
+  "retrySha256": "e9419ed5931d802edc0774f457d9f598474ca981ff7fba4dd10a02621001a04f",
+  "settlementLive": false,
+  "transactionsBroadcast": 0,
+  "sourceConfigChanged": false,
+  "historicalErrorsPreserved": true
+}

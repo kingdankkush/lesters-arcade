@@ -1,0 +1,100 @@
+{
+  "actors": {
+    "lit-valkyrie": {
+      "objectsByLayer": {
+        "shadow": [
+          "Lit Valkyrie | Ground Shadow"
+        ],
+        "lower-body": [
+          "Lit Valkyrie | lower-body"
+        ],
+        "torso-head": [
+          "Lit Valkyrie | torso-head"
+        ],
+        "weapon": [
+          "Lit Valkyrie | coin-blaster",
+          "Lit Valkyrie | litecoin-knife",
+          "Lit Valkyrie | satoshi-frag-held",
+          "Lit Valkyrie | satoshi-frag-released"
+        ]
+      },
+      "armature": "HMH_TripoRig_lit-valkyrie",
+      "actions": [
+        "HMH_Idle",
+        "HMH_Run",
+        "HMH_Aim",
+        "HMH_PistolFire",
+        "HMH_Hurt",
+        "HMH_Dash",
+        "HMH_Melee",
+        "HMH_Grenade",
+        "HMH_Death"
+      ]
+    }
+  },
+  "bones": [
+    "chest",
+    "foot.L",
+    "foot.R",
+    "forearm.L",
+    "forearm.R",
+    "grenade_prop",
+    "grenade_release",
+    "hand.L",
+    "hand.R",
+    "head",
+    "knife_prop",
+    "pelvis",
+    "pistol_prop",
+    "root",
+    "shin.L",
+    "shin.R",
+    "spine",
+    "thigh.L",
+    "thigh.R",
+    "upper_arm.L",
+    "upper_arm.R",
+    "weapon_socket"
+  ],
+  "weaponSocket": true,
+  "externalDependencyCount": 0,
+  "externalDependencies": [],
+  "packedImageHashes": {
+    "desert+eagle+handgun+3d+model_basecolor.jpg": [
+      "e9cbf2763e9b0e30b572989a53bd36ced3710a53f3bbfcc545df8b60438177d7"
+    ],
+    "desert+eagle+handgun+3d+model_normal.jpg": [
+      "78e557c159f5bd11bc3f591aab76ba8ddd6c92bd1da213ddc22bf100e835cf12"
+    ],
+    "desert+eagle+handgun+3d+model_rm.jpg": [
+      "9ea9db9fea77deabdfd8a3de701cf61affcfd816ffaac8beae7448dfa2a226af"
+    ],
+    "female+warrior+3d+model_basecolor.jpg": [
+      "839dc1f0b02bc1eb212b855350a876aebab48bda383030bc6f0bc883ff3624c3"
+    ],
+    "female+warrior+3d+model_normal.jpg": [
+      "0e9e1e41337857580d5d5513113983c9a5f541d93d88a0043f98930f4ac1439d"
+    ],
+    "female+warrior+3d+model_rm.jpg": [
+      "b6590e83ace434f0236b11873f756c3a1ffb98c577a8b5b0694d92b1a9c2f3cc"
+    ],
+    "hand+grenade+3d+model_basecolor.jpg": [
+      "ccb4cf5a3e36c5c27883e0f44e2993350a0e5395ac066c9d0ac70d8fdb970a87"
+    ],
+    "hand+grenade+3d+model_normal.jpg": [
+      "4fd84fdc73a633376f8b8ae3093f2ef065f72a1ec6fbe1cc50744d1941c127e4"
+    ],
+    "hand+grenade+3d+model_rm.jpg": [
+      "ea02ab50b440af3dc1b6f5da763606c83d4a77e6e816313d1d02e735dc42c7da"
+    ],
+    "rugged+hunting+knife+3d+model_basecolor.jpg": [
+      "1f1b82bc62258c8e92fe9d68c41f142501282b7515e3876e51c981bb592d4634"
+    ],
+    "rugged+hunting+knife+3d+model_normal.jpg": [
+      "bbc75ca4340ab14aa9fc0ec2af1617672d4fdae4c445db288c2760ce013b9072"
+    ],
+    "rugged+hunting+knife+3d+model_rm.jpg": [
+      "6c6e2db030a4b0284c91962b85d2b137b355d8ebb01374d2965734decac1541c"
+    ]
+  }
+}

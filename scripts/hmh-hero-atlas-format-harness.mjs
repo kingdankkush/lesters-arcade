@@ -688,7 +688,9 @@ async function main() {
 
   const heroBytes = {};
   for (const id of SHIPPED_HEROES) {
-    const file = path.join(root, 'apps', 'portal', 'assets', 'generated', 'hmh-reboot-production-heroes', id, `${id}-production-pilot-atlas.png`);
+    const heroDir = path.join(root, 'apps', 'portal', 'assets', 'generated', 'hmh-reboot-production-heroes', id);
+    const metadata = JSON.parse(readFileSync(path.join(heroDir, `${id}-production-pilot-atlas.json`), 'utf8'));
+    const file = path.join(heroDir, path.basename(metadata.image));
     if (existsSync(file)) heroBytes[id] = readFileSync(file).byteLength;
   }
 

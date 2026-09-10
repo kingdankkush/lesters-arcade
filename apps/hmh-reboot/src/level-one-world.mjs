@@ -1,3 +1,6 @@
+import { WORLD_DESIGN_SECRET_SEAL } from './world-design-secrets.mjs';
+import { WORLD_DESIGN_NEW_LOTS } from './world-design-layout.mjs';
+import { WORLD_DESIGN_COURT_BLOCKERS, WORLD_DESIGN_PROP_BLOCKERS, buildWorldDesignPerimeter } from './world-design-encounters.mjs';
 import { freezeDeep } from './value-guards.mjs';
 import { auditCollisionWorld, createStaticBlocker } from './collision.mjs';
 import { createAuthoredGroundQuery, createElevationSurface } from './elevation.mjs';
@@ -76,19 +79,38 @@ const ROUTE_NODES = [
   ['mining-loop-south', 9_450, 3_200],
   ['yard-loop-north', 10_650, 1_250],
   ['yard-loop-south', 11_350, 3_400],
+  ['reservoir-bank-entry', 5_150, 2_670],
+  ['reservoir-wreck-bypass', 5_110, 3_070],
+  ['reservoir-tank-bypass', 5_105, 3_450],
+  ['reservoir-north-shore', 5_530, 3_625],
+  ['reservoir-east-shore', 5_740, 3_700],
+  ['reservoir-pump-approach', 5_780, 4_170],
+  ['reservoir-pump-court', 5_800, 4_280],
+  ['reservoir-gap-north', 5_900, 2_900],
+  ['reservoir-compound-gap', 5_910, 3_100],
+  ['reservoir-gap-south', 5_800, 3_300],
 ].map(([id, x, y]) => Object.freeze({ id, x, y }));
 const NODE_BY_ID = new Map(ROUTE_NODES.map((node) => [node.id, node]));
 
 const ROUTES = [
   { id: 'main-route', kind: 'main', width: 192, nodeIds: ['relay-spawn', 'relay-bend', 'relay-gate', 'ravine-entry', 'ravine-ramp-entry', 'ravine-high-road', 'ravine-descent', 'ravine-exit', 'crossing-bend', 'bridge-west', 'bridge-east', 'crossing-exit', 'hashwood-gate', 'hashwood-bend', 'hashwood-clearing', 'hashwood-south-turn', 'hashwood-exit', 'mining-gate', 'mining-ramp-entry', 'mining-yard', 'mining-descent', 'mining-exit', 'yard-gate', 'yard-chicane', 'liquidator-arena-node'] },
   { id: 'relay-orientation-loop', kind: 'loop', width: 160, nodeIds: ['relay-gate', 'relay-loop-north', 'relay-loop-south', 'relay-gate'] },
-  { id: 'ravine-salvage-loop', kind: 'loop', width: 160, nodeIds: ['ravine-entry', 'ravine-loop-north', 'ravine-loop-south', 'ravine-entry'] },
-  // Out-and-back via the shallows: the old triangle's return leg crossed the
-  // deep river and the north bridge rail.
+  // The optional northern approach joins the legal ramp and south-facing
+  // descent. A direct north-to-south diagonal exits the ramp's side wall.
+  { id: 'ravine-salvage-loop', kind: 'loop', width: 160, nodeIds: ['ravine-entry', 'ravine-loop-north', 'ravine-ramp-entry', 'ravine-high-road', 'ravine-descent', 'ravine-loop-south', 'ravine-entry'] },
+  // Stable legacy node IDs now cross a raised timber footbridge. Water outside
+  // both physical bridge decks blocks traversal; there is no walkable ford.
   { id: 'crossing-bank-loop', kind: 'loop', width: 144, nodeIds: ['bridge-west', 'crossing-shallows-west', 'crossing-shallows-east', 'crossing-shallows-west', 'bridge-west'] },
   { id: 'hashwood-clearing-loop', kind: 'loop', width: 160, nodeIds: ['hashwood-clearing', 'hashwood-loop-north', 'hashwood-loop-south', 'hashwood-clearing'] },
-  { id: 'mining-service-loop', kind: 'loop', width: 160, nodeIds: ['mining-gate', 'mining-loop-north', 'mining-loop-south', 'mining-gate'] },
+  { id: 'mining-service-loop', kind: 'loop', width: 160, nodeIds: ['mining-gate', 'mining-loop-north', 'mining-ramp-entry', 'mining-yard', 'mining-descent', 'mining-loop-south', 'mining-gate'] },
   { id: 'liquidation-escape-loop', kind: 'loop', width: 176, nodeIds: ['yard-gate', 'yard-loop-north', 'yard-loop-south', 'yard-gate'] },
+  // Reach the reservoir through the eastern compound passage. The western
+  // bank spur stops before the narrow fence/lake pinch, preserving the yard.
+  { id: 'reservoir-bank-spur', kind: 'loop', width: 144, nodeIds: ['bridge-east', 'reservoir-bank-entry', 'reservoir-wreck-bypass', 'reservoir-tank-bypass', 'reservoir-wreck-bypass', 'reservoir-bank-entry', 'bridge-east'] },
+  { id: 'crossing-reservoir-loop', kind: 'loop', width: 144, nodeIds: ['bridge-east', 'crossing-exit', 'reservoir-gap-north', 'reservoir-compound-gap', 'reservoir-gap-south', 'reservoir-east-shore', 'reservoir-pump-approach', 'reservoir-pump-court', 'reservoir-pump-approach', 'reservoir-east-shore', 'reservoir-gap-south', 'reservoir-compound-gap', 'reservoir-gap-north', 'crossing-exit', 'bridge-east'] },
+  // The bank vegetation and native undergrowth move together to leave room
+  // for the conservative enemy grid as well as the full player body.
+  { id: 'crossing-reservoir-cut-through', kind: 'loop', width: 144, nodeIds: ['crossing-exit', 'reservoir-gap-north', 'reservoir-compound-gap', 'reservoir-gap-south', 'reservoir-east-shore', 'reservoir-north-shore', 'reservoir-east-shore', 'reservoir-gap-south', 'reservoir-compound-gap', 'reservoir-gap-north', 'crossing-exit', 'bridge-east', 'crossing-exit'] },
 ].map((route) => freezeDeep(route));
 
 const ROUTE_EDGES = [];
@@ -106,7 +128,12 @@ for (const route of ROUTES) {
 
 const SURFACE_SPECS = [
   { id: 'liquidity-river', kind: 'water', area: rect(4_500, 0, 5_000, 4_800), groundZ: -24, waterLevel: 4, deepWater: true, visibleTerrainId: 'water-liquidity-river', priority: 1 },
-  { id: 'crossing-shallows', kind: 'shallow-water', area: rect(4_500, 800, 5_000, 1_150), groundZ: 0, waterLevel: 4, deepWater: false, visibleTerrainId: 'water-crossing-shallows', priority: 2 },
+  // Keep the crossing ID for existing consumers; presentation must replace the
+  // old ford with the paired timber deck, approaches and physical rail art.
+  { id: 'crossing-shallows', kind: 'bridge', area: rect(4_500, 845, 5_000, 1_105), groundZ: 16, visibleTerrainId: 'crossing-footbridge-deck', visibleStepId: 'crossing-footbridge-seam', priority: 4 },
+  { id: 'crossing-footbridge-west-ramp', kind: 'ramp', area: rect(4_400, 845, 4_500, 1_105), fromZ: 0, toZ: 16, axis: 'x', visibleTerrainId: 'crossing-footbridge-west-ramp', priority: 5 },
+  { id: 'crossing-footbridge-east-ramp', kind: 'ramp', area: rect(5_000, 845, 5_100, 1_105), fromZ: 16, toZ: 0, axis: 'x', visibleTerrainId: 'crossing-footbridge-east-ramp', priority: 5 },
+  { id: 'crossing-south-reservoir', kind: 'water', area: { type: 'polygon', vertices: [point(4_500, 3_600), point(4_880, 3_560), point(5_120, 3_650), point(5_390, 3_740), point(5_570, 3_970), point(5_530, 4_280), point(5_320, 4_480), point(4_950, 4_630), point(4_490, 4_520), point(4_310, 4_280), point(4_300, 3_930), point(4_410, 3_730)] }, groundZ: -24, waterLevel: 4, deepWater: true, visibleTerrainId: 'water-crossing-south-reservoir', priority: 2 },
   { id: 'bridge-west-ramp', kind: 'ramp', area: rect(4_400, 2_290, 4_500, 2_510), fromZ: 0, toZ: 16, axis: 'x', visibleTerrainId: 'bridge-west-ramp', priority: 5 },
   { id: 'proof-of-work-bridge', kind: 'bridge', area: rect(4_500, 2_290, 5_000, 2_510), groundZ: 16, visibleTerrainId: 'proof-of-work-bridge-deck', visibleStepId: 'proof-of-work-bridge-seam', priority: 4 },
   { id: 'bridge-east-ramp', kind: 'ramp', area: rect(5_000, 2_290, 5_100, 2_510), fromZ: 16, toZ: 0, axis: 'x', visibleTerrainId: 'bridge-east-ramp', priority: 5 },
@@ -128,10 +155,20 @@ const block = (id, districtId, x, y, width, depth, maxZ, visualKind = 'building'
   maxZ, combatCover: true,
 });
 const BLOCKER_FEATURES = [
+  ...buildWorldDesignPerimeter(BOUNDS),
+  ...WORLD_DESIGN_COURT_BLOCKERS,
+  WORLD_DESIGN_SECRET_SEAL,
+  ...WORLD_DESIGN_PROP_BLOCKERS,
+  ...WORLD_DESIGN_NEW_LOTS.map(lot => block(lot.id, lot.districtId, lot.x, lot.y, lot.width, lot.depth, lot.maxZ, lot.asset === 'hedge' ? 'dense-trees' : 'building')),
   // Frontier Relay: a fenced compound with a depot shed, an interior fence
   // run, and a true gate at the ravine seam.
   { id: 'relay-orientation-fence', districtId: 'frontier-relay', anchor: point(1_450, 900), visualKind: 'fence', shape: { type: 'capsule', a: point(800, 900), b: point(1_650, 900), radius: 18 }, maxZ: 72 },
   block('relay-depot-shed', 'frontier-relay', 1_550, 3_425, 300, 250, 200),
+  // Abandoned west-side homes and a roadside wreck frame the opening without
+  // occupying the protected clearing or the southwest training floor.
+  // Native presentation requests: Batch 2 farmhouse (62) and pickup (54).
+  block('relay-abandoned-farmhouse', 'frontier-relay', 330, 1_700, 223, 254, 260),
+  block('relay-abandoned-pickup', 'frontier-relay', 450, 3_100, 230, 116, 103, 'containers'),
   { id: 'relay-north-fence-run', districtId: 'frontier-relay', anchor: point(850, 1_400), visualKind: 'fence', shape: { type: 'capsule', a: point(450, 1_450), b: point(1_250, 1_350), radius: 18 }, maxZ: 72 },
   { id: 'relay-gate-north', districtId: 'frontier-relay', anchor: point(1_700, 1_940), visualKind: 'fence', shape: { type: 'capsule', a: point(1_700, 1_750), b: point(1_700, 2_130), radius: 18 }, maxZ: 72 },
   { id: 'relay-gate-south', districtId: 'frontier-relay', anchor: point(1_700, 2_950), visualKind: 'fence', shape: { type: 'capsule', a: point(1_700, 2_760), b: point(1_700, 3_140), radius: 18 }, maxZ: 72 },
@@ -142,17 +179,21 @@ const BLOCKER_FEATURES = [
   { id: 'ravine-spur-west', districtId: 'rugpull-ravine', anchor: point(2_150, 3_050), visualKind: 'cliff', shape: { type: 'capsule', a: point(2_150, 3_450), b: point(2_150, 2_650), radius: 48 }, maxZ: 140 },
   { id: 'ravine-spur-east', districtId: 'rugpull-ravine', anchor: point(3_620, 1_440), visualKind: 'cliff', shape: { type: 'capsule', a: point(3_620, 1_050), b: point(3_620, 1_830), radius: 48 }, maxZ: 140 },
   { id: 'ravine-boulder-choke', districtId: 'rugpull-ravine', anchor: point(2_460, 2_360), visualKind: 'cliff', shape: { type: 'capsule', a: point(2_340, 2_330), b: point(2_580, 2_390), radius: 44 }, maxZ: 120, combatCover: true },
+  block('ravine-south-escarpment-outcrop', 'rugpull-ravine', 3_350, 4_340, 480, 300, 319, 'cliff'),
   { id: 'ravine-exit-palisade', districtId: 'rugpull-ravine', anchor: point(3_825, 2_975), visualKind: 'fence', shape: { type: 'capsule', a: point(3_700, 2_900), b: point(3_950, 3_050), radius: 20 }, maxZ: 80 },
   // Liquidity Crossing: wetland banks — a west groyne funnels toward the
   // bridge, wreck rows and fuel tanks dress the east bank, and a bank fence
   // plus thicket gate the hashwood seam.
   { id: 'bridge-north-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 2_260), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_510, 2_260), b: point(4_990, 2_260), radius: 14 }, minZ: 0, maxZ: 72 },
   { id: 'bridge-south-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 2_540), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_510, 2_540), b: point(4_990, 2_540), radius: 14 }, minZ: 0, maxZ: 72 },
+  { id: 'crossing-footbridge-north-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 825), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_510, 825), b: point(4_990, 825), radius: 14 }, minZ: 0, maxZ: 72 },
+  { id: 'crossing-footbridge-south-rail', districtId: 'liquidity-crossing', anchor: point(4_750, 1_125), visualKind: 'bridge-rail', shape: { type: 'capsule', a: point(4_510, 1_125), b: point(4_990, 1_125), radius: 14 }, minZ: 0, maxZ: 72 },
+  block('crossing-lakeside-pumphouse', 'liquidity-crossing', 5_800, 4_490, 220, 185, 184),
   { id: 'crossing-west-groyne', districtId: 'liquidity-crossing', anchor: point(4_105, 1_990), visualKind: 'fence', shape: { type: 'capsule', a: point(3_980, 1_900), b: point(4_230, 2_080), radius: 18 }, maxZ: 72 },
   { id: 'crossing-east-wreckrow', districtId: 'liquidity-crossing', anchor: point(5_550, 2_975), visualKind: 'containers', shape: { type: 'capsule', a: point(5_350, 2_900), b: point(5_750, 3_050), radius: 60 }, maxZ: 150, combatCover: true },
   { id: 'crossing-fuel-tanks', districtId: 'liquidity-crossing', anchor: point(5_440, 3_375), visualKind: 'machinery', shape: { type: 'capsule', a: point(5_300, 3_350), b: point(5_580, 3_400), radius: 48 }, maxZ: 150, combatCover: true },
   { id: 'crossing-east-bank-fence', districtId: 'liquidity-crossing', anchor: point(5_975, 2_175), visualKind: 'fence', shape: { type: 'capsule', a: point(5_850, 2_100), b: point(6_100, 2_250), radius: 18 }, maxZ: 72 },
-  { id: 'hashwood-gate-thicket', districtId: 'hashwood', anchor: point(6_100, 3_225), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(5_950, 3_150), b: point(6_250, 3_300), radius: 64 }, maxZ: 180 },
+  { id: 'hashwood-gate-thicket', districtId: 'hashwood', anchor: point(6_170, 3_225), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_090, 3_150), b: point(6_250, 3_300), radius: 64 }, maxZ: 180 },
   // Hashwood: interior thickets shape a winding forest path into a walled
   // clearing, and fences gate the mining seam.
   { id: 'hashwood-north-tree-line', districtId: 'hashwood', anchor: point(7_000, 620), visualKind: 'dense-trees', shape: { type: 'capsule', a: point(6_050, 620), b: point(7_950, 620), radius: 64 }, maxZ: 180 },
@@ -184,6 +225,9 @@ const BLOCKER_FEATURES = [
   block('town-market-gate', 'liquidation-yard', 10_150, 3_400, 300, -18, 90, 'fence'),
   block('town-east-lean-to', 'liquidation-yard', 11_650, 3_050, 300, 300, 180),
   block('town-east-tenement', 'liquidation-yard', 11_350, 3_740, 360, 360, 260),
+  // South-facing lot leaves the existing east alley and y=4450 service street
+  // fully open, with a dry setback inside the southern world boundary.
+  block('yard-residential-duplex-south', 'liquidation-yard', 11_600, 4_645, 204, 190, 195),
 ];
 
 const COLLISION_BLOCKERS = BLOCKER_FEATURES.map((feature) => createStaticBlocker({
@@ -228,7 +272,9 @@ const POINTS_OF_INTEREST = [
 ].map(([id, districtId, x, y, hook]) => freezeDeep({ id, districtId, anchor: point(x, y), hook }));
 
 const ENCOUNTER_ARENAS = [
-  ['relay-training-yard', 'frontier-relay', 1_400, 3_000, 360],
+  // Keep the entire existing-size arena outside the protected spawn disc.
+  // Integrate with camp:relay-picket's duplicated art anchor (Hermes-owned).
+  ['relay-training-yard', 'frontier-relay', 900, 3_450, 360],
   ['ravine-ambush-bowl', 'rugpull-ravine', 2_700, 2_700, 420],
   ['crossing-lockdown', 'liquidity-crossing', 5_450, 2_500, 420],
   ['hashwood-clearing-arena', 'hashwood', 7_150, 2_500, 460],
@@ -303,12 +349,14 @@ const LEGAL_ASCENTS = freezeDeep([
   { id: 'ravine-switchback-ramp', entry: point(2_500, 1_500), exit: point(2_900, 1_500), surfaceId: 'ravine-switchback-ramp' },
   { id: 'bridge-west-ramp', entry: point(4_400, 2_400), exit: point(4_550, 2_400), surfaceId: 'bridge-west-ramp' },
   { id: 'bridge-east-ramp', entry: point(5_100, 2_400), exit: point(4_950, 2_400), surfaceId: 'bridge-east-ramp' },
+  { id: 'crossing-footbridge-west-ramp', entry: point(4_400, 975), exit: point(4_550, 975), surfaceId: 'crossing-footbridge-west-ramp' },
+  { id: 'crossing-footbridge-east-ramp', entry: point(5_100, 975), exit: point(4_950, 975), surfaceId: 'crossing-footbridge-east-ramp' },
   { id: 'mining-service-ramp', entry: point(8_700, 1_600), exit: point(9_050, 1_600), surfaceId: 'mining-service-ramp' },
 ]);
 
 const CROSSINGS = freezeDeep([
   { id: 'proof-of-work-bridge', entry: point(4_350, 2_400), exit: point(5_150, 2_400), axis: 'x', clearWidth: 220, surfaceIds: ['bridge-west-ramp', 'proof-of-work-bridge', 'bridge-east-ramp'] },
-  { id: 'crossing-shallows', entry: point(4_350, 975), exit: point(5_150, 975), axis: 'x', clearWidth: 260, surfaceIds: ['crossing-shallows'] },
+  { id: 'crossing-shallows', entry: point(4_350, 975), exit: point(5_150, 975), axis: 'x', clearWidth: 260, surfaceIds: ['crossing-footbridge-west-ramp', 'crossing-shallows', 'crossing-footbridge-east-ramp'] },
 ]);
 
 export const LEVEL_ONE_WORLD = freezeDeep({

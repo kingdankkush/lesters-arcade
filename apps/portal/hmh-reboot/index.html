@@ -75,16 +75,16 @@
           </div>
           <div class="hmh-hud-arsenal" aria-hidden="true">
             <div id="hmhHudWeaponSlots" class="hmh-hud-slots">
-              <b data-slot="0" data-key="1" data-owned="true" data-active="true">PST</b>
-              <b data-slot="1" data-key="2" data-owned="false" data-active="false">SHG</b>
-              <b data-slot="2" data-key="3" data-owned="false" data-active="false">MG</b>
-              <b data-slot="3" data-key="4" data-owned="false" data-active="false">GL</b>
+              <b data-slot="0" data-owned="true" data-active="true">PST</b>
+              <b data-slot="1" data-owned="false" data-active="false">SHG</b>
+              <b data-slot="2" data-owned="false" data-active="false">MG</b>
+              <b data-slot="3" data-owned="false" data-active="false">GL</b>
               <b data-slot="4" data-owned="false" data-active="false">RAIL</b>
               <b data-slot="5" data-owned="false" data-active="false">LDGR</b>
               <b data-slot="6" data-owned="false" data-active="false">BURN</b>
               <b data-slot="7" data-owned="false" data-active="false">STD</b>
             </div>
-            <span class="hmh-hud-slots-cycle">Q cycles</span>
+            <span class="hmh-hud-slots-cycle">Auto equip</span>
           </div>
           <div class="hmh-hud-utility">
             <span class="hmh-hud-frag" aria-hidden="true">
@@ -92,7 +92,7 @@
               <span id="hmhHudGrenades" class="hmh-hud-pips hmh-hud-pips--frag"><b data-filled="true"></b><b data-filled="true"></b><b data-filled="true"></b><b data-filled="false"></b><b data-filled="false"></b></span>
             </span>
             <span id="hmhHudDashRing" class="hmh-hud-dash" data-ready="true">
-              <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Dash ready</output>
+              <output id="hmhRebootDashStatus" class="hmh-reboot-dash-status" role="status" aria-live="polite" aria-atomic="true" data-ready="true">Auto dodge ready</output>
             </span>
           </div>
           <div id="hmhHudPowerups" class="hmh-hud-powerups" aria-hidden="true"><b hidden></b><b hidden></b></div>
@@ -168,14 +168,15 @@
               <dl id="hmhControlsCard" class="hmh-controls-card">
                 <div><dt>Move</dt><dd>WASD / Arrows</dd></div>
                 <div><dt>Aim</dt><dd>Mouse</dd></div>
-                <div><dt>Fire</dt><dd>Left click / Space</dd></div>
                 <div><dt>Grenade</dt><dd>Right click / F / G</dd></div>
-                <div><dt>Melee</dt><dd>E</dd></div>
-                <div><dt>Dash</dt><dd>Shift</dd></div>
-                <div><dt>Weapon slots</dt><dd>1 – 4</dd></div>
+                <div><dt>Actions</dt><dd>Dodging, close combat and interactions happen automatically</dd></div>
                 <div><dt>Pause</dt><dd>Esc</dd></div>
-                <div><dt>Touch</dt><dd>MOVE / AIM sticks, SWAP, POWER, double-tap MOVE to dash</dd></div>
+                <div><dt>Touch</dt><dd>MOVE / AIM sticks, GRENADE · release AIM for auto-aim</dd></div>
               </dl>
+            </section>
+            <section class="hmh-field-map-section" aria-labelledby="hmhFieldMapTitle">
+              <h2 id="hmhFieldMapTitle">Explored frontier</h2>
+              <div id="hmhFieldMap"></div>
             </section>
           </div>
           <div class="hmh-menu-actions">

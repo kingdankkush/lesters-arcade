@@ -1,0 +1,6003 @@
+{
+  "derivative": {
+    "actions": {
+      "HMH_Enemy_Attack": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "3d04907cd6da3c7d2e28723303192f664bedb13caefdd62408b63f4f7ccd7785",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.3, \"impact\": 1.0, \"recovery\": 0.48}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "attack"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Death": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "07a4393aefa6678bfb5ac46fc198c77bcb9ed5df8f66988eabff8f68e0b6e0af",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.16, \"impact\": 1.0, \"recovery\": 0.08}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "death"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Hit": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "78ffda88ef25e5bb4d1ab17fcb1d0a0b9a1dce8a2ed478fba03db1f81c551447",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.12, \"impact\": 0.85, \"recovery\": 0.45}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "hit"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Idle": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "3c662222acb95f814a6e7ce53eefd9fccc994ce5b61dc89a37e14953fab81754",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.08, \"impact\": 0.0, \"recovery\": 0.08}",
+          "hmh_loop": true,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "idle"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Run": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "d3f4b9c720e59450913530fe477c5c713e3515c8819bef7bfdd40e47ad22a91e",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.2, \"impact\": 0.55, \"recovery\": 0.25}",
+          "hmh_loop": true,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "run"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Tell": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "86ecddea0d63f3673e8c85aebe65a773cea8247a07d2c95e0f2e5988104560a9",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.7, \"impact\": 0.18, \"recovery\": 0.12}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "tell"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      }
+    },
+    "images": {
+      "bagholder-rusher Accent Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "f54af8a0a6f69f6797d036eeeb6e28399cc876bddced4a3db76241a3bc771960"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Dark Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "7933dd5eea439b123e6046059d8ef08d2ec598a223509811126b5f13bfaa1a4e"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Metal Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "45f198eef681dde9c5762f4d123e3d62a4e5f66631a79e34c171d3c0e03c63d1"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Primary Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "14713e6c29053ade707ff832e9ab1c828ff588ed088e8783d710ea18ef1667e5"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Secondary Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "5964923e632794bb96d168274b03fb4f3e680feb6e338e8e7b7f0a562026e2af"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Skin Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "b2a71df39bf0ec1d83faad13b370caa94f788ac738399b953a9ebee3ed86be64"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Wound Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "110252e24adab15149d6b41b9b048703527c15220b1fa346608ea3398c045d23"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "battered+zombie+warrior+3d+model_basecolor.jpg": {
+        "alphaMode": "CHANNEL_PACKED",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 1511520,
+            "sha256": "c275e53deaaef3999700f2e82e7bdd50fbe06201d3b5a7f9db0ba72ba49e8122"
+          }
+        ],
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE"
+      },
+      "battered+zombie+warrior+3d+model_normal.jpg": {
+        "alphaMode": "CHANNEL_PACKED",
+        "colorSpace": "Non-Color",
+        "packed": [
+          {
+            "bytes": 943601,
+            "sha256": "960206c117ae3079cfac7b48093cea74c5c6c65f510bb6a247c66db21ece8c76"
+          }
+        ],
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE"
+      },
+      "battered+zombie+warrior+3d+model_rm.jpg": {
+        "alphaMode": "CHANNEL_PACKED",
+        "colorSpace": "Non-Color",
+        "packed": [
+          {
+            "bytes": 847072,
+            "sha256": "6f5ea567e5f62d22716c2b347a15480137f948ee03ca7897bd5e48e6d60c4c27"
+          }
+        ],
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE"
+      }
+    },
+    "materials": {
+      "bagholder-rusher Accent Authored": {
+        "diffuse": [
+          1.0,
+          0.3607843220233917,
+          0.47843137383461,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.2199999988079071
+              ],
+              [
+                "Roughness",
+                0.46000000834465027
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  0.3607843220233917,
+                  0.47843137383461,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.1599999964237213
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Accent Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "bagholder-rusher Metal Authored": {
+        "diffuse": [
+          0.47058823704719543,
+          0.3803921639919281,
+          0.4156862795352936,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.7200000286102295
+              ],
+              [
+                "Roughness",
+                0.3400000035762787
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Metal Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "bagholder-rusher Primary Authored": {
+        "diffuse": [
+          0.3607843220233917,
+          0.20000000298023224,
+          0.250980406999588,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.0
+              ],
+              [
+                "Roughness",
+                0.7599999904632568
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Primary Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "bagholder-rusher Secondary Authored": {
+        "diffuse": [
+          0.5607843399047852,
+          0.25882354378700256,
+          0.34117648005485535,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.0
+              ],
+              [
+                "Roughness",
+                0.699999988079071
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Secondary Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "tripo_material_3d44d0a3-a994-4878-ab1e-775fb9d64d7a": {
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Image Texture.001",
+            "Color",
+            "Separate Color",
+            "Color"
+          ],
+          [
+            "Image Texture.002",
+            "Color",
+            "Normal Map",
+            "Color"
+          ],
+          [
+            "Normal Map",
+            "Normal",
+            "Principled BSDF",
+            "Normal"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ],
+          [
+            "Separate Color",
+            "Blue",
+            "Principled BSDF",
+            "Metallic"
+          ],
+          [
+            "Separate Color",
+            "Green",
+            "Principled BSDF",
+            "Roughness"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.0
+              ],
+              [
+                "Roughness",
+                0.5
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_basecolor.jpg",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ]
+            ],
+            "name": "Separate Color",
+            "settings": {},
+            "type": "ShaderNodeSeparateColor"
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_rm.jpg",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture.001",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Strength",
+                1.0
+              ],
+              [
+                "Color",
+                [
+                  0.5,
+                  0.5,
+                  1.0,
+                  1.0
+                ]
+              ]
+            ],
+            "name": "Normal Map",
+            "settings": {
+              "space": "TANGENT",
+              "uv_map": "UVMap"
+            },
+            "type": "ShaderNodeNormalMap"
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_normal.jpg",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture.002",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      }
+    },
+    "objects": {
+      "Bagholder debt satchel": {
+        "basis": [
+          1.0,
+          0.0,
+          0.0,
+          0.25,
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -0.464400053024292,
+          0.0,
+          -1.0,
+          7.549790126404332e-08,
+          0.1899999976158142,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "constraints": [],
+        "mesh": {
+          "coordinates": "36e84131ac8ee1ba46304fe6292ece4abd551ac046f2c82a2e09517300b1053b",
+          "edges": 264,
+          "edgesSha256": "4471ffe1ca129553bec11a0a47c1ca6a75ac0b8e9af511a1f33463549161bdf3",
+          "groups": [],
+          "loopVertices": "2059cc2aa32930be6f3380aaeabac47daef446d08032b11951c4159b84721eb5",
+          "loops": 528,
+          "materialIndices": "2421e8f7f65d96cfe80955cbda4897887db6ef4a51725c63abcdb87ae72a2187",
+          "materials": [
+            "bagholder-rusher Primary Authored",
+            "bagholder-rusher Accent Authored",
+            "bagholder-rusher Metal Authored"
+          ],
+          "polygonSizes": "91ac039a7736fdffa11f001536f1a968914f87e685cb27abe78f92fc64cd5bb5",
+          "polygonStarts": "4fe35f032bec7b997170bad8f577282c3e79346908deea75b576e9f7146c718e",
+          "polygons": 126,
+          "smooth": "56413075d3eb1deccce83bc7b97161232528121dc9f6affd3e463e118a07d046",
+          "uvs": {
+            "UVMap": "1908e877a34feb0e18be54d076ae2d4e2d54da3098f6b041305430a1a7b98ef3"
+          },
+          "vertices": 144,
+          "weightsSha256": "c4b37863c7b402e33923a25d89716ec888f86f17c8d3068f4f0096fd510cdb03"
+        },
+        "modifiers": [],
+        "parent": "bagholder-rusher Rig",
+        "parentBone": "chest",
+        "parentInverse": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "parentType": "BONE",
+        "rotationMode": "XYZ",
+        "type": "MESH"
+      },
+      "bagholder-rusher Rig": {
+        "basis": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "constraints": [],
+        "modifiers": [],
+        "nla": [
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Idle",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Idle",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Run",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Run",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Tell",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Tell",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Attack",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Attack",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Hit",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Hit",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Death",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Death",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          }
+        ],
+        "parent": "HMH_Enemy_Projection_Root",
+        "parentBone": "",
+        "parentInverse": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "parentType": "OBJECT",
+        "poseModes": {
+          "chest": "XYZ",
+          "foot.L": "XYZ",
+          "foot.R": "XYZ",
+          "forearm.L": "XYZ",
+          "forearm.R": "XYZ",
+          "hand.L": "XYZ",
+          "hand.R": "XYZ",
+          "head": "XYZ",
+          "neck": "XYZ",
+          "pelvis": "XYZ",
+          "root": "XYZ",
+          "shin.L": "XYZ",
+          "shin.R": "XYZ",
+          "spine": "XYZ",
+          "thigh.L": "XYZ",
+          "thigh.R": "XYZ",
+          "upper_arm.L": "XYZ",
+          "upper_arm.R": "XYZ",
+          "weapon_socket": "XYZ"
+        },
+        "restBones": {
+          "chest": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              1.169600009918213
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.169600009918213,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "spine",
+            "tail": [
+              0.0,
+              0.0,
+              1.4104000329971313
+            ]
+          },
+          "foot.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0000046491622925,
+              0.0,
+              5.681067705154419e-07,
+              0.1289999932050705,
+              -7.897615432739258e-07,
+              -0.9557790756225586,
+              0.29408594965934753,
+              -8.509873361539633e-10,
+              1.4518736861646175e-06,
+              -0.294085830450058,
+              -0.955778956413269,
+              0.12039998173713684,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "shin.L",
+            "tail": [
+              0.1289999932050705,
+              -0.22360000014305115,
+              0.051600001752376556
+            ]
+          },
+          "foot.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0000046491622925,
+              0.0,
+              -5.681067705154419e-07,
+              -0.1289999932050705,
+              7.897615432739258e-07,
+              -0.9557790756225586,
+              0.29408594965934753,
+              -8.509873361539633e-10,
+              -1.4518736861646175e-06,
+              -0.294085830450058,
+              -0.955778956413269,
+              0.12039998173713684,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "shin.R",
+            "tail": [
+              -0.1289999932050705,
+              -0.22360000014305115,
+              0.051600001752376556
+            ]
+          },
+          "forearm.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.8693344593048096,
+              0.36147671937942505,
+              0.33703410625457764,
+              0.5239119529724121,
+              -0.36147674918174744,
+              5.960464477539063e-08,
+              0.9323809146881104,
+              0.0,
+              0.33703410625457764,
+              -0.9323807954788208,
+              0.13066568970680237,
+              1.135200023651123,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "upper_arm.L",
+            "tail": [
+              0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ]
+          },
+          "forearm.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.8693344593048096,
+              -0.36147671937942505,
+              -0.33703410625457764,
+              -0.5239119529724121,
+              0.36147674918174744,
+              5.960464477539063e-08,
+              0.9323809146881104,
+              0.0,
+              -0.33703410625457764,
+              -0.9323807954788208,
+              0.13066568970680237,
+              1.135200023651123,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "upper_arm.R",
+            "tail": [
+              -0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ]
+          },
+          "hand.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9674616456031799,
+              -0.1716001033782959,
+              -0.18593332171440125,
+              0.610599935054779,
+              0.17160004377365112,
+              -0.09501683712005615,
+              0.9805737733840942,
+              1.4294159633720938e-08,
+              -0.18593308329582214,
+              -0.9805736541748047,
+              -0.062478430569171906,
+              0.9115999937057495,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "forearm.L",
+            "tail": [
+              0.5925400257110596,
+              -0.009999999776482582,
+              0.8083999752998352
+            ]
+          },
+          "hand.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9674616456031799,
+              0.1716001033782959,
+              0.18593332171440125,
+              -0.610599935054779,
+              -0.17160004377365112,
+              -0.09501683712005615,
+              0.9805737733840942,
+              1.4294159633720938e-08,
+              0.18593308329582214,
+              -0.9805736541748047,
+              -0.062478430569171906,
+              0.9115999937057495,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "forearm.R",
+            "tail": [
+              -0.5925400257110596,
+              -0.009999999776482582,
+              0.8083999752998352
+            ]
+          },
+          "head": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              1.479200005531311
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.479200005531311,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "neck",
+            "tail": [
+              0.0,
+              0.0,
+              1.7028000354766846
+            ]
+          },
+          "neck": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              1.3932000398635864
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.3932000398635864,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "chest",
+            "tail": [
+              0.0,
+              0.0,
+              1.496399998664856
+            ]
+          },
+          "pelvis": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              0.8256000280380249
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.8256000280380249,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "root",
+            "tail": [
+              0.0,
+              0.0,
+              0.9976000189781189
+            ]
+          },
+          "root": {
+            "connected": false,
+            "deform": false,
+            "head": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": null,
+            "tail": [
+              0.0,
+              0.0,
+              0.1720000058412552
+            ]
+          },
+          "shin.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9952369928359985,
+              -0.06904855370521545,
+              -0.06888438016176224,
+              0.15399999916553497,
+              0.06904822587966919,
+              -1.862645149230957e-09,
+              0.9976134300231934,
+              -1.7659039508455265e-10,
+              -0.0688825324177742,
+              -0.9976133704185486,
+              0.004767531994730234,
+              0.48159995675086975,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "thigh.L",
+            "tail": [
+              0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ]
+          },
+          "shin.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9952369928359985,
+              0.06904855370521545,
+              0.06888438016176224,
+              -0.15399999916553497,
+              -0.06904822587966919,
+              -1.862645149230957e-09,
+              0.9976134300231934,
+              -1.7659039508455265e-10,
+              0.0688825324177742,
+              -0.9976133704185486,
+              0.004767531994730234,
+              0.48159995675086975,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "thigh.R",
+            "tail": [
+              -0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ]
+          },
+          "spine": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              0.9631999731063843
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.9631999731063843,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "pelvis",
+            "tail": [
+              0.0,
+              0.0,
+              1.2039999961853027
+            ]
+          },
+          "thigh.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.1289999932050705,
+              0.0,
+              0.8600000143051147
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9956587553024292,
+              0.06592394411563873,
+              0.06578051298856735,
+              0.1289999932050705,
+              -0.06592423468828201,
+              -4.656612873077393e-10,
+              0.9978246688842773,
+              0.0,
+              0.06578116118907928,
+              -0.9978246688842773,
+              0.004345965106040239,
+              0.8600000143051147,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "pelvis",
+            "tail": [
+              0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ]
+          },
+          "thigh.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.1289999932050705,
+              0.0,
+              0.8600000143051147
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9956587553024292,
+              -0.06592394411563873,
+              -0.06578051298856735,
+              -0.1289999932050705,
+              0.06592423468828201,
+              -4.656612873077393e-10,
+              0.9978246688842773,
+              0.0,
+              -0.06578116118907928,
+              -0.9978246688842773,
+              0.004345965106040239,
+              0.8600000143051147,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "pelvis",
+            "tail": [
+              -0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ]
+          },
+          "upper_arm.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.24940000474452972,
+              0.0,
+              1.3588000535964966
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.3988470137119293,
+              0.7753404974937439,
+              0.4896610677242279,
+              0.24940000474452972,
+              -0.7753403782844543,
+              0.0,
+              0.6315433979034424,
+              0.0,
+              0.4896611273288727,
+              -0.6315430998802185,
+              0.6011530160903931,
+              1.3588000535964966,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "chest",
+            "tail": [
+              0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ]
+          },
+          "upper_arm.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.24940000474452972,
+              0.0,
+              1.3588000535964966
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.3988470137119293,
+              -0.7753404974937439,
+              -0.4896610677242279,
+              -0.24940000474452972,
+              0.7753403782844543,
+              0.0,
+              0.6315433979034424,
+              0.0,
+              -0.4896611273288727,
+              -0.6315430998802185,
+              0.6011530160903931,
+              1.3588000535964966,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "chest",
+            "tail": [
+              -0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ]
+          },
+          "weapon_socket": {
+            "connected": false,
+            "deform": false,
+            "head": [
+              -0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              -0.9999998807907104,
+              2.9802322387695312e-08,
+              -2.3096799850463867e-07,
+              -0.610599935054779,
+              5.960464477539063e-08,
+              -0.9999998807907104,
+              9.685754776000977e-08,
+              1.4294159633720938e-08,
+              2.60770320892334e-08,
+              -4.470348358154297e-08,
+              0.9999997019767761,
+              0.9115999937057495,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "forearm.R",
+            "tail": [
+              -0.6105999946594238,
+              -0.257999986410141,
+              0.9115999937057495
+            ]
+          }
+        },
+        "rotationMode": "XYZ",
+        "type": "ARMATURE"
+      },
+      "bagholder-rusher Skinned Primary Body": {
+        "basis": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "constraints": [],
+        "mesh": {
+          "coordinates": "e2c652376d64d56bf60403f9173940c04662f85ea01cbc38d3466f64be24cf31",
+          "edges": 176183,
+          "edgesSha256": "e8643748cac1ce10ff023203548a2c8abce97d726354d374ee4523f87887fff1",
+          "groups": [
+            "pelvis",
+            "spine",
+            "chest",
+            "neck",
+            "head",
+            "upper_arm.L",
+            "forearm.L",
+            "hand.L",
+            "upper_arm.R",
+            "forearm.R",
+            "hand.R",
+            "thigh.L",
+            "shin.L",
+            "foot.L",
+            "thigh.R",
+            "shin.R",
+            "foot.R"
+          ],
+          "loopVertices": "228fe365b2f09fd2f8cb69bb1ebc94f0c38677809bd576657989265f6317a792",
+          "loops": 342222,
+          "materialIndices": "a285ae8bdfb11a2a11458ae061c0d4680fe859b3652853d27b42de83d585be2a",
+          "materials": [
+            "tripo_material_3d44d0a3-a994-4878-ab1e-775fb9d64d7a",
+            "bagholder-rusher Accent Authored",
+            "bagholder-rusher Secondary Authored"
+          ],
+          "polygonSizes": "f2bddd711cd73da7a61e2d8d2df6847ad0dc54727bfb282390d9c7eb0e3d0aff",
+          "polygonStarts": "0048d376d5ca846a941235a22402c247942330d10cfde80b199919975a436c97",
+          "polygons": 114038,
+          "smooth": "61b09320b2d4022bbffdf6890fae62c4658a126bfe446ab26da6426dcc8a66e6",
+          "uvs": {
+            "UVMap": "ff4cd058027741eed0ed20d6f4e5c42454d66e90fbe60ffddebcfd240390f062"
+          },
+          "vertices": 62277,
+          "weightsSha256": "d90aecdea43ff3c0f99b7840dbcf4bc46f70990c33cde75887e623333061082b"
+        },
+        "modifiers": [
+          {
+            "envelopes": false,
+            "name": "HMH Enemy Skinned Body Armature",
+            "preserveVolume": false,
+            "showRender": true,
+            "showViewport": true,
+            "target": "bagholder-rusher Rig",
+            "type": "ARMATURE",
+            "vertexGroup": "",
+            "vertexGroups": true
+          }
+        ],
+        "parent": "bagholder-rusher Rig",
+        "parentBone": "",
+        "parentInverse": [
+          1.0,
+          -0.0,
+          0.0,
+          -0.0,
+          -0.0,
+          1.0,
+          -0.0,
+          0.0,
+          0.0,
+          -0.0,
+          1.0,
+          -0.0,
+          -0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "parentType": "OBJECT",
+        "rotationMode": "QUATERNION",
+        "type": "MESH"
+      }
+    }
+  },
+  "derivativeSemanticsSha256": "a6239d7a9802ff72c0fcbb517309df2415bd04f219df344e34d397ef8f70901c",
+  "differences": [],
+  "expectedAdditions": {
+    "allActorTags": {
+      "hmh_preparation_status": "private-native-derivative-pending-parent-render",
+      "hmh_runtime_authority": "projection-only"
+    },
+    "cameraFilmShift": [
+      0.10096153616905212,
+      -0.2498081922531128
+    ],
+    "canonicalSceneObjects": [
+      "HMH_Enemy_Key",
+      "HMH_Enemy_Fill",
+      "HMH_Enemy_Rim",
+      "HMH_Enemy_Camera"
+    ],
+    "meshTags": {
+      "hmh_layer": "body"
+    },
+    "packedDatablockFakeUsers": true,
+    "privateManifestGroundPivot": {
+      "actorFrameSize": [
+        208,
+        208
+      ],
+      "actorPivot": {
+        "x": 83,
+        "y": 151
+      },
+      "actorPixelsPerMeter": 68.08510638297872,
+      "cameraShift": [
+        0.10096153616905212,
+        -0.2498081922531128
+      ],
+      "canonicalPivot": {
+        "x": 64,
+        "y": 116
+      },
+      "canonicalPixelsPerMeter": 68.08510638297872,
+      "groundZ": 0,
+      "nativeActionsUnmodified": true,
+      "overscanReason": "measured attack/death extents; only canvas expands, projected actor scale is unchanged",
+      "policy": "canonical camera transform/pitch, pixel density and base pivot; actor overscan, film shift and non-destructive per-frame projection-root Z offset",
+      "projectedWorldOriginPixels": [
+        83.00000047683716,
+        150.99999332427979
+      ],
+      "projectionRoot": "HMH_Enemy_Projection_Root",
+      "requiresPrivateExportWrapper": true,
+      "unshiftedWorldOriginPixels": [
+        104.0,
+        202.9601031243801
+      ]
+    },
+    "projectionRoot": {
+      "addedParentOf": "bagholder-rusher Rig",
+      "name": "HMH_Enemy_Projection_Root",
+      "perFrameTranslation": "world Z only; computed from evaluated skinned body minimum",
+      "savedLocation": [
+        0,
+        0,
+        0
+      ]
+    },
+    "sceneProperties": "original properties retained plus private preparation marker"
+  },
+  "inputHashesUnchanged": true,
+  "inputsAfter": {
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-cycle078-rig-pilot/apps/hmh-reboot/assets/source/models/tripo-enemy-roster-completion/bagholder-rusher/bagholder-rusher.blend": "bb52feb78e00c2da7ad76267aceb2d30b171ae5945312d261bd716aa0793801a",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-cycle078-rig-pilot/apps/hmh-reboot/assets/source/models/tripo-enemy-roster-completion/bagholder-rusher/bagholder-rusher.glb": "9a89c54048995e2bd3be22d0cc12f9dce4be10b2f7a17525f930637a465e3d29",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-cycle078-rig-pilot/scripts/hmh-blender/enemy-roster-completion/enemy-roster-source-spec.json": "8711d665f0ec5bcc44a653c13d4711eb3ee7362a46c9304ef82661f92350adf6",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout/apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.blend": "35fdb162dd0e81474d8462475a4409718d7fbc90ccb94f9eed1dda048a7e7407",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout/apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json": "82817eda8137248e69ad7918b3598aedcbb43d7e6684ce0da7ada6ed7615e360",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout/scripts/hmh-blender/export-hmh-enemy-roster.py": "bbba470457fd5833a055b94416fe73d9b14a700a3e78d89644f12c157685bb55"
+  },
+  "inputsBefore": {
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-cycle078-rig-pilot/apps/hmh-reboot/assets/source/models/tripo-enemy-roster-completion/bagholder-rusher/bagholder-rusher.blend": "bb52feb78e00c2da7ad76267aceb2d30b171ae5945312d261bd716aa0793801a",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-cycle078-rig-pilot/apps/hmh-reboot/assets/source/models/tripo-enemy-roster-completion/bagholder-rusher/bagholder-rusher.glb": "9a89c54048995e2bd3be22d0cc12f9dce4be10b2f7a17525f930637a465e3d29",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-cycle078-rig-pilot/scripts/hmh-blender/enemy-roster-completion/enemy-roster-source-spec.json": "8711d665f0ec5bcc44a653c13d4711eb3ee7362a46c9304ef82661f92350adf6",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout/apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.blend": "35fdb162dd0e81474d8462475a4409718d7fbc90ccb94f9eed1dda048a7e7407",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout/apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json": "82817eda8137248e69ad7918b3598aedcbb43d7e6684ce0da7ada6ed7615e360",
+    "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout/scripts/hmh-blender/export-hmh-enemy-roster.py": "bbba470457fd5833a055b94416fe73d9b14a700a3e78d89644f12c157685bb55"
+  },
+  "match": true,
+  "rawDerivativeSemanticsSha256": "18018cfcef79d617d0d2208d0950dc6834d2b77e8f72e14a33eec51ea51b6707",
+  "rawDifferences": [
+    "objects/bagholder-rusher Rig"
+  ],
+  "savedReopened": true,
+  "source": {
+    "actions": {
+      "HMH_Enemy_Attack": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "3d04907cd6da3c7d2e28723303192f664bedb13caefdd62408b63f4f7ccd7785",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.3, \"impact\": 1.0, \"recovery\": 0.48}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "attack"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Death": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "07a4393aefa6678bfb5ac46fc198c77bcb9ed5df8f66988eabff8f68e0b6e0af",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.16, \"impact\": 1.0, \"recovery\": 0.08}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "death"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Hit": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "78ffda88ef25e5bb4d1ab17fcb1d0a0b9a1dce8a2ed478fba03db1f81c551447",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.12, \"impact\": 0.85, \"recovery\": 0.45}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "hit"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Idle": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "3c662222acb95f814a6e7ce53eefd9fccc994ce5b61dc89a37e14953fab81754",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.08, \"impact\": 0.0, \"recovery\": 0.08}",
+          "hmh_loop": true,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "idle"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Run": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "d3f4b9c720e59450913530fe477c5c713e3515c8819bef7bfdd40e47ad22a91e",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.2, \"impact\": 0.55, \"recovery\": 0.25}",
+          "hmh_loop": true,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "run"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      },
+      "HMH_Enemy_Tell": {
+        "channels": [
+          "pose.bones[\"chest\"].location",
+          "pose.bones[\"chest\"].rotation_euler",
+          "pose.bones[\"chest\"].scale",
+          "pose.bones[\"foot.L\"].location",
+          "pose.bones[\"foot.L\"].rotation_euler",
+          "pose.bones[\"foot.L\"].scale",
+          "pose.bones[\"foot.R\"].location",
+          "pose.bones[\"foot.R\"].rotation_euler",
+          "pose.bones[\"foot.R\"].scale",
+          "pose.bones[\"forearm.L\"].location",
+          "pose.bones[\"forearm.L\"].rotation_euler",
+          "pose.bones[\"forearm.L\"].scale",
+          "pose.bones[\"forearm.R\"].location",
+          "pose.bones[\"forearm.R\"].rotation_euler",
+          "pose.bones[\"forearm.R\"].scale",
+          "pose.bones[\"hand.L\"].location",
+          "pose.bones[\"hand.L\"].rotation_euler",
+          "pose.bones[\"hand.L\"].scale",
+          "pose.bones[\"hand.R\"].location",
+          "pose.bones[\"hand.R\"].rotation_euler",
+          "pose.bones[\"hand.R\"].scale",
+          "pose.bones[\"head\"].location",
+          "pose.bones[\"head\"].rotation_euler",
+          "pose.bones[\"head\"].scale",
+          "pose.bones[\"neck\"].location",
+          "pose.bones[\"neck\"].rotation_euler",
+          "pose.bones[\"neck\"].scale",
+          "pose.bones[\"pelvis\"].location",
+          "pose.bones[\"pelvis\"].rotation_euler",
+          "pose.bones[\"pelvis\"].scale",
+          "pose.bones[\"root\"].location",
+          "pose.bones[\"root\"].rotation_euler",
+          "pose.bones[\"root\"].scale",
+          "pose.bones[\"shin.L\"].location",
+          "pose.bones[\"shin.L\"].rotation_euler",
+          "pose.bones[\"shin.L\"].scale",
+          "pose.bones[\"shin.R\"].location",
+          "pose.bones[\"shin.R\"].rotation_euler",
+          "pose.bones[\"shin.R\"].scale",
+          "pose.bones[\"spine\"].location",
+          "pose.bones[\"spine\"].rotation_euler",
+          "pose.bones[\"spine\"].scale",
+          "pose.bones[\"thigh.L\"].location",
+          "pose.bones[\"thigh.L\"].rotation_euler",
+          "pose.bones[\"thigh.L\"].scale",
+          "pose.bones[\"thigh.R\"].location",
+          "pose.bones[\"thigh.R\"].rotation_euler",
+          "pose.bones[\"thigh.R\"].scale",
+          "pose.bones[\"upper_arm.L\"].location",
+          "pose.bones[\"upper_arm.L\"].rotation_euler",
+          "pose.bones[\"upper_arm.L\"].scale",
+          "pose.bones[\"upper_arm.R\"].location",
+          "pose.bones[\"upper_arm.R\"].rotation_euler",
+          "pose.bones[\"upper_arm.R\"].scale",
+          "pose.bones[\"weapon_socket\"].location",
+          "pose.bones[\"weapon_socket\"].rotation_euler",
+          "pose.bones[\"weapon_socket\"].scale"
+        ],
+        "curveCount": 171,
+        "curvesSha256": "86ecddea0d63f3673e8c85aebe65a773cea8247a07d2c95e0f2e5988104560a9",
+        "properties": {
+          "hmh_beats": "{\"anticipation\": 0.7, \"impact\": 0.18, \"recovery\": 0.12}",
+          "hmh_loop": false,
+          "hmh_motion_profile": "undead-straight-lunge-v1",
+          "hmh_state": "tell"
+        },
+        "range": [
+          1.0,
+          25.0
+        ],
+        "slots": [
+          "OBbagholder-rusher Rig"
+        ]
+      }
+    },
+    "images": {
+      "bagholder-rusher Accent Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "f54af8a0a6f69f6797d036eeeb6e28399cc876bddced4a3db76241a3bc771960"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Dark Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "7933dd5eea439b123e6046059d8ef08d2ec598a223509811126b5f13bfaa1a4e"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Metal Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "45f198eef681dde9c5762f4d123e3d62a4e5f66631a79e34c171d3c0e03c63d1"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Primary Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "14713e6c29053ade707ff832e9ab1c828ff588ed088e8783d710ea18ef1667e5"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Secondary Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "5964923e632794bb96d168274b03fb4f3e680feb6e338e8e7b7f0a562026e2af"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Skin Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "b2a71df39bf0ec1d83faad13b370caa94f788ac738399b953a9ebee3ed86be64"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "bagholder-rusher Wound Authored | Authored PBR Bake": {
+        "alphaMode": "STRAIGHT",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 274,
+            "sha256": "110252e24adab15149d6b41b9b048703527c15220b1fa346608ea3398c045d23"
+          }
+        ],
+        "size": [
+          16,
+          16
+        ],
+        "source": "FILE"
+      },
+      "battered+zombie+warrior+3d+model_basecolor.jpg": {
+        "alphaMode": "CHANNEL_PACKED",
+        "colorSpace": "sRGB",
+        "packed": [
+          {
+            "bytes": 1511520,
+            "sha256": "c275e53deaaef3999700f2e82e7bdd50fbe06201d3b5a7f9db0ba72ba49e8122"
+          }
+        ],
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE"
+      },
+      "battered+zombie+warrior+3d+model_normal.jpg": {
+        "alphaMode": "CHANNEL_PACKED",
+        "colorSpace": "Non-Color",
+        "packed": [
+          {
+            "bytes": 943601,
+            "sha256": "960206c117ae3079cfac7b48093cea74c5c6c65f510bb6a247c66db21ece8c76"
+          }
+        ],
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE"
+      },
+      "battered+zombie+warrior+3d+model_rm.jpg": {
+        "alphaMode": "CHANNEL_PACKED",
+        "colorSpace": "Non-Color",
+        "packed": [
+          {
+            "bytes": 847072,
+            "sha256": "6f5ea567e5f62d22716c2b347a15480137f948ee03ca7897bd5e48e6d60c4c27"
+          }
+        ],
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE"
+      }
+    },
+    "materials": {
+      "bagholder-rusher Accent Authored": {
+        "diffuse": [
+          1.0,
+          0.3607843220233917,
+          0.47843137383461,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.2199999988079071
+              ],
+              [
+                "Roughness",
+                0.46000000834465027
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  0.3607843220233917,
+                  0.47843137383461,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.1599999964237213
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Accent Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "bagholder-rusher Metal Authored": {
+        "diffuse": [
+          0.47058823704719543,
+          0.3803921639919281,
+          0.4156862795352936,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.7200000286102295
+              ],
+              [
+                "Roughness",
+                0.3400000035762787
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Metal Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "bagholder-rusher Primary Authored": {
+        "diffuse": [
+          0.3607843220233917,
+          0.20000000298023224,
+          0.250980406999588,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.0
+              ],
+              [
+                "Roughness",
+                0.7599999904632568
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Primary Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "bagholder-rusher Secondary Authored": {
+        "diffuse": [
+          0.5607843399047852,
+          0.25882354378700256,
+          0.34117648005485535,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Alpha",
+            "Principled BSDF",
+            "Alpha"
+          ],
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.0
+              ],
+              [
+                "Roughness",
+                0.699999988079071
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": "bagholder-rusher Secondary Authored | Authored PBR Bake",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      },
+      "tripo_material_3d44d0a3-a994-4878-ab1e-775fb9d64d7a": {
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "links": [
+          [
+            "Image Texture",
+            "Color",
+            "Principled BSDF",
+            "Base Color"
+          ],
+          [
+            "Image Texture.001",
+            "Color",
+            "Separate Color",
+            "Color"
+          ],
+          [
+            "Image Texture.002",
+            "Color",
+            "Normal Map",
+            "Color"
+          ],
+          [
+            "Normal Map",
+            "Normal",
+            "Principled BSDF",
+            "Normal"
+          ],
+          [
+            "Principled BSDF",
+            "BSDF",
+            "Material Output",
+            "Surface"
+          ],
+          [
+            "Separate Color",
+            "Blue",
+            "Principled BSDF",
+            "Metallic"
+          ],
+          [
+            "Separate Color",
+            "Green",
+            "Principled BSDF",
+            "Roughness"
+          ]
+        ],
+        "nodes": [
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Base Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                0.0
+              ],
+              [
+                "Roughness",
+                0.5
+              ],
+              [
+                "IOR",
+                1.5
+              ],
+              [
+                "Alpha",
+                1.0
+              ],
+              [
+                "Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                0.0
+              ],
+              [
+                "Tangent",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                1.3300000429153442
+              ]
+            ],
+            "name": "Principled BSDF",
+            "settings": {},
+            "type": "ShaderNodeBsdfPrincipled"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Displacement",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                0.0
+              ]
+            ],
+            "name": "Material Output",
+            "settings": {},
+            "type": "ShaderNodeOutputMaterial"
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_basecolor.jpg",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Color",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ]
+            ],
+            "name": "Separate Color",
+            "settings": {},
+            "type": "ShaderNodeSeparateColor"
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_rm.jpg",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture.001",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          },
+          {
+            "image": null,
+            "inputs": [
+              [
+                "Strength",
+                1.0
+              ],
+              [
+                "Color",
+                [
+                  0.5,
+                  0.5,
+                  1.0,
+                  1.0
+                ]
+              ]
+            ],
+            "name": "Normal Map",
+            "settings": {
+              "space": "TANGENT",
+              "uv_map": "UVMap"
+            },
+            "type": "ShaderNodeNormalMap"
+          },
+          {
+            "image": "battered+zombie+warrior+3d+model_normal.jpg",
+            "inputs": [
+              [
+                "Vector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "name": "Image Texture.002",
+            "settings": {
+              "extension": "REPEAT",
+              "interpolation": "Linear",
+              "projection": "FLAT"
+            },
+            "type": "ShaderNodeTexImage"
+          }
+        ],
+        "useNodes": true
+      }
+    },
+    "objects": {
+      "Bagholder debt satchel": {
+        "basis": [
+          1.0,
+          0.0,
+          0.0,
+          0.25,
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -0.464400053024292,
+          0.0,
+          -1.0,
+          7.549790126404332e-08,
+          0.1899999976158142,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "constraints": [],
+        "mesh": {
+          "coordinates": "36e84131ac8ee1ba46304fe6292ece4abd551ac046f2c82a2e09517300b1053b",
+          "edges": 264,
+          "edgesSha256": "4471ffe1ca129553bec11a0a47c1ca6a75ac0b8e9af511a1f33463549161bdf3",
+          "groups": [],
+          "loopVertices": "2059cc2aa32930be6f3380aaeabac47daef446d08032b11951c4159b84721eb5",
+          "loops": 528,
+          "materialIndices": "2421e8f7f65d96cfe80955cbda4897887db6ef4a51725c63abcdb87ae72a2187",
+          "materials": [
+            "bagholder-rusher Primary Authored",
+            "bagholder-rusher Accent Authored",
+            "bagholder-rusher Metal Authored"
+          ],
+          "polygonSizes": "91ac039a7736fdffa11f001536f1a968914f87e685cb27abe78f92fc64cd5bb5",
+          "polygonStarts": "4fe35f032bec7b997170bad8f577282c3e79346908deea75b576e9f7146c718e",
+          "polygons": 126,
+          "smooth": "56413075d3eb1deccce83bc7b97161232528121dc9f6affd3e463e118a07d046",
+          "uvs": {
+            "UVMap": "1908e877a34feb0e18be54d076ae2d4e2d54da3098f6b041305430a1a7b98ef3"
+          },
+          "vertices": 144,
+          "weightsSha256": "c4b37863c7b402e33923a25d89716ec888f86f17c8d3068f4f0096fd510cdb03"
+        },
+        "modifiers": [],
+        "parent": "bagholder-rusher Rig",
+        "parentBone": "chest",
+        "parentInverse": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "parentType": "BONE",
+        "rotationMode": "XYZ",
+        "type": "MESH"
+      },
+      "bagholder-rusher Rig": {
+        "basis": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "constraints": [],
+        "modifiers": [],
+        "nla": [
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Idle",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Idle",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Run",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Run",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Tell",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Tell",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Attack",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Attack",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Hit",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Hit",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          },
+          {
+            "mute": true,
+            "name": "HMH_Enemy_Death",
+            "strips": [
+              {
+                "action": "HMH_Enemy_Death",
+                "actionRange": [
+                  1.0,
+                  25.0
+                ],
+                "blend": "REPLACE",
+                "influence": 0.0,
+                "range": [
+                  1.0,
+                  25.0
+                ],
+                "repeat": 1.0,
+                "scale": 1.0,
+                "slot": "OBbagholder-rusher Rig"
+              }
+            ]
+          }
+        ],
+        "parent": null,
+        "parentBone": "",
+        "parentInverse": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "parentType": "OBJECT",
+        "poseModes": {
+          "chest": "XYZ",
+          "foot.L": "XYZ",
+          "foot.R": "XYZ",
+          "forearm.L": "XYZ",
+          "forearm.R": "XYZ",
+          "hand.L": "XYZ",
+          "hand.R": "XYZ",
+          "head": "XYZ",
+          "neck": "XYZ",
+          "pelvis": "XYZ",
+          "root": "XYZ",
+          "shin.L": "XYZ",
+          "shin.R": "XYZ",
+          "spine": "XYZ",
+          "thigh.L": "XYZ",
+          "thigh.R": "XYZ",
+          "upper_arm.L": "XYZ",
+          "upper_arm.R": "XYZ",
+          "weapon_socket": "XYZ"
+        },
+        "restBones": {
+          "chest": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              1.169600009918213
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.169600009918213,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "spine",
+            "tail": [
+              0.0,
+              0.0,
+              1.4104000329971313
+            ]
+          },
+          "foot.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0000046491622925,
+              0.0,
+              5.681067705154419e-07,
+              0.1289999932050705,
+              -7.897615432739258e-07,
+              -0.9557790756225586,
+              0.29408594965934753,
+              -8.509873361539633e-10,
+              1.4518736861646175e-06,
+              -0.294085830450058,
+              -0.955778956413269,
+              0.12039998173713684,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "shin.L",
+            "tail": [
+              0.1289999932050705,
+              -0.22360000014305115,
+              0.051600001752376556
+            ]
+          },
+          "foot.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0000046491622925,
+              0.0,
+              -5.681067705154419e-07,
+              -0.1289999932050705,
+              7.897615432739258e-07,
+              -0.9557790756225586,
+              0.29408594965934753,
+              -8.509873361539633e-10,
+              -1.4518736861646175e-06,
+              -0.294085830450058,
+              -0.955778956413269,
+              0.12039998173713684,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "shin.R",
+            "tail": [
+              -0.1289999932050705,
+              -0.22360000014305115,
+              0.051600001752376556
+            ]
+          },
+          "forearm.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.8693344593048096,
+              0.36147671937942505,
+              0.33703410625457764,
+              0.5239119529724121,
+              -0.36147674918174744,
+              5.960464477539063e-08,
+              0.9323809146881104,
+              0.0,
+              0.33703410625457764,
+              -0.9323807954788208,
+              0.13066568970680237,
+              1.135200023651123,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "upper_arm.L",
+            "tail": [
+              0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ]
+          },
+          "forearm.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.8693344593048096,
+              -0.36147671937942505,
+              -0.33703410625457764,
+              -0.5239119529724121,
+              0.36147674918174744,
+              5.960464477539063e-08,
+              0.9323809146881104,
+              0.0,
+              -0.33703410625457764,
+              -0.9323807954788208,
+              0.13066568970680237,
+              1.135200023651123,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "upper_arm.R",
+            "tail": [
+              -0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ]
+          },
+          "hand.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9674616456031799,
+              -0.1716001033782959,
+              -0.18593332171440125,
+              0.610599935054779,
+              0.17160004377365112,
+              -0.09501683712005615,
+              0.9805737733840942,
+              1.4294159633720938e-08,
+              -0.18593308329582214,
+              -0.9805736541748047,
+              -0.062478430569171906,
+              0.9115999937057495,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "forearm.L",
+            "tail": [
+              0.5925400257110596,
+              -0.009999999776482582,
+              0.8083999752998352
+            ]
+          },
+          "hand.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9674616456031799,
+              0.1716001033782959,
+              0.18593332171440125,
+              -0.610599935054779,
+              -0.17160004377365112,
+              -0.09501683712005615,
+              0.9805737733840942,
+              1.4294159633720938e-08,
+              0.18593308329582214,
+              -0.9805736541748047,
+              -0.062478430569171906,
+              0.9115999937057495,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "forearm.R",
+            "tail": [
+              -0.5925400257110596,
+              -0.009999999776482582,
+              0.8083999752998352
+            ]
+          },
+          "head": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              1.479200005531311
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.479200005531311,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "neck",
+            "tail": [
+              0.0,
+              0.0,
+              1.7028000354766846
+            ]
+          },
+          "neck": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              1.3932000398635864
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.3932000398635864,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "chest",
+            "tail": [
+              0.0,
+              0.0,
+              1.496399998664856
+            ]
+          },
+          "pelvis": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              0.8256000280380249
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.8256000280380249,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "root",
+            "tail": [
+              0.0,
+              0.0,
+              0.9976000189781189
+            ]
+          },
+          "root": {
+            "connected": false,
+            "deform": false,
+            "head": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": null,
+            "tail": [
+              0.0,
+              0.0,
+              0.1720000058412552
+            ]
+          },
+          "shin.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9952369928359985,
+              -0.06904855370521545,
+              -0.06888438016176224,
+              0.15399999916553497,
+              0.06904822587966919,
+              -1.862645149230957e-09,
+              0.9976134300231934,
+              -1.7659039508455265e-10,
+              -0.0688825324177742,
+              -0.9976133704185486,
+              0.004767531994730234,
+              0.48159995675086975,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "thigh.L",
+            "tail": [
+              0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ]
+          },
+          "shin.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9952369928359985,
+              0.06904855370521545,
+              0.06888438016176224,
+              -0.15399999916553497,
+              -0.06904822587966919,
+              -1.862645149230957e-09,
+              0.9976134300231934,
+              -1.7659039508455265e-10,
+              0.0688825324177742,
+              -0.9976133704185486,
+              0.004767531994730234,
+              0.48159995675086975,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "thigh.R",
+            "tail": [
+              -0.1289999932050705,
+              0.0,
+              0.12039999663829803
+            ]
+          },
+          "spine": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.0,
+              0.0,
+              0.9631999731063843
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -1.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.9631999731063843,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "pelvis",
+            "tail": [
+              0.0,
+              0.0,
+              1.2039999961853027
+            ]
+          },
+          "thigh.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.1289999932050705,
+              0.0,
+              0.8600000143051147
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9956587553024292,
+              0.06592394411563873,
+              0.06578051298856735,
+              0.1289999932050705,
+              -0.06592423468828201,
+              -4.656612873077393e-10,
+              0.9978246688842773,
+              0.0,
+              0.06578116118907928,
+              -0.9978246688842773,
+              0.004345965106040239,
+              0.8600000143051147,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "pelvis",
+            "tail": [
+              0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ]
+          },
+          "thigh.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.1289999932050705,
+              0.0,
+              0.8600000143051147
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.9956587553024292,
+              -0.06592394411563873,
+              -0.06578051298856735,
+              -0.1289999932050705,
+              0.06592423468828201,
+              -4.656612873077393e-10,
+              0.9978246688842773,
+              0.0,
+              -0.06578116118907928,
+              -0.9978246688842773,
+              0.004345965106040239,
+              0.8600000143051147,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "pelvis",
+            "tail": [
+              -0.15399999916553497,
+              0.0,
+              0.48159998655319214
+            ]
+          },
+          "upper_arm.L": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              0.24940000474452972,
+              0.0,
+              1.3588000535964966
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.3988470137119293,
+              0.7753404974937439,
+              0.4896610677242279,
+              0.24940000474452972,
+              -0.7753403782844543,
+              0.0,
+              0.6315433979034424,
+              0.0,
+              0.4896611273288727,
+              -0.6315430998802185,
+              0.6011530160903931,
+              1.3588000535964966,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "chest",
+            "tail": [
+              0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ]
+          },
+          "upper_arm.R": {
+            "connected": false,
+            "deform": true,
+            "head": [
+              -0.24940000474452972,
+              0.0,
+              1.3588000535964966
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              0.3988470137119293,
+              -0.7753404974937439,
+              -0.4896610677242279,
+              -0.24940000474452972,
+              0.7753403782844543,
+              0.0,
+              0.6315433979034424,
+              0.0,
+              -0.4896611273288727,
+              -0.6315430998802185,
+              0.6011530160903931,
+              1.3588000535964966,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "chest",
+            "tail": [
+              -0.5239120125770569,
+              0.0,
+              1.135200023651123
+            ]
+          },
+          "weapon_socket": {
+            "connected": false,
+            "deform": false,
+            "head": [
+              -0.6105999946594238,
+              0.0,
+              0.9115999937057495
+            ],
+            "inheritScale": "FULL",
+            "matrix": [
+              -0.9999998807907104,
+              2.9802322387695312e-08,
+              -2.3096799850463867e-07,
+              -0.610599935054779,
+              5.960464477539063e-08,
+              -0.9999998807907104,
+              9.685754776000977e-08,
+              1.4294159633720938e-08,
+              2.60770320892334e-08,
+              -4.470348358154297e-08,
+              0.9999997019767761,
+              0.9115999937057495,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "parent": "forearm.R",
+            "tail": [
+              -0.6105999946594238,
+              -0.257999986410141,
+              0.9115999937057495
+            ]
+          }
+        },
+        "rotationMode": "XYZ",
+        "type": "ARMATURE"
+      },
+      "bagholder-rusher Skinned Primary Body": {
+        "basis": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "constraints": [],
+        "mesh": {
+          "coordinates": "e2c652376d64d56bf60403f9173940c04662f85ea01cbc38d3466f64be24cf31",
+          "edges": 176183,
+          "edgesSha256": "e8643748cac1ce10ff023203548a2c8abce97d726354d374ee4523f87887fff1",
+          "groups": [
+            "pelvis",
+            "spine",
+            "chest",
+            "neck",
+            "head",
+            "upper_arm.L",
+            "forearm.L",
+            "hand.L",
+            "upper_arm.R",
+            "forearm.R",
+            "hand.R",
+            "thigh.L",
+            "shin.L",
+            "foot.L",
+            "thigh.R",
+            "shin.R",
+            "foot.R"
+          ],
+          "loopVertices": "228fe365b2f09fd2f8cb69bb1ebc94f0c38677809bd576657989265f6317a792",
+          "loops": 342222,
+          "materialIndices": "a285ae8bdfb11a2a11458ae061c0d4680fe859b3652853d27b42de83d585be2a",
+          "materials": [
+            "tripo_material_3d44d0a3-a994-4878-ab1e-775fb9d64d7a",
+            "bagholder-rusher Accent Authored",
+            "bagholder-rusher Secondary Authored"
+          ],
+          "polygonSizes": "f2bddd711cd73da7a61e2d8d2df6847ad0dc54727bfb282390d9c7eb0e3d0aff",
+          "polygonStarts": "0048d376d5ca846a941235a22402c247942330d10cfde80b199919975a436c97",
+          "polygons": 114038,
+          "smooth": "61b09320b2d4022bbffdf6890fae62c4658a126bfe446ab26da6426dcc8a66e6",
+          "uvs": {
+            "UVMap": "ff4cd058027741eed0ed20d6f4e5c42454d66e90fbe60ffddebcfd240390f062"
+          },
+          "vertices": 62277,
+          "weightsSha256": "d90aecdea43ff3c0f99b7840dbcf4bc46f70990c33cde75887e623333061082b"
+        },
+        "modifiers": [
+          {
+            "envelopes": false,
+            "name": "HMH Enemy Skinned Body Armature",
+            "preserveVolume": false,
+            "showRender": true,
+            "showViewport": true,
+            "target": "bagholder-rusher Rig",
+            "type": "ARMATURE",
+            "vertexGroup": "",
+            "vertexGroups": true
+          }
+        ],
+        "parent": "bagholder-rusher Rig",
+        "parentBone": "",
+        "parentInverse": [
+          1.0,
+          -0.0,
+          0.0,
+          -0.0,
+          -0.0,
+          1.0,
+          -0.0,
+          0.0,
+          0.0,
+          -0.0,
+          1.0,
+          -0.0,
+          -0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "parentType": "OBJECT",
+        "rotationMode": "QUATERNION",
+        "type": "MESH"
+      }
+    }
+  },
+  "sourceSemanticsSha256": "a6239d7a9802ff72c0fcbb517309df2415bd04f219df344e34d397ef8f70901c"
+}

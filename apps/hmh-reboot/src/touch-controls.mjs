@@ -10,8 +10,7 @@ export const TOUCH_CONTROL_SPEC = Object.freeze({
     Object.freeze({ control: 'aim', label: 'AIM' }),
   ]),
   buttons: Object.freeze([
-    Object.freeze({ control: 'power', label: 'POWER', action: 'grenade', help: 'grenade' }),
-    Object.freeze({ control: 'weapon', label: 'SWAP', action: 'weaponNext', help: 'weapon' }),
+    Object.freeze({ control: 'power', label: 'GRENADE', action: 'grenade', help: 'grenade' }),
     Object.freeze({ control: 'pause', label: 'II', action: 'pause', help: 'pause button' }),
   ]),
 });
@@ -22,9 +21,7 @@ export function isTouchUiEnabled({ coarsePointer = false, width = Number.POSITIV
 }
 
 export function touchControlsHintText() {
-  const [move, aim] = TOUCH_CONTROL_SPEC.sticks;
-  const byControl = Object.fromEntries(TOUCH_CONTROL_SPEC.buttons.map((entry) => [entry.control, entry]));
-  return `${move.label} + ${aim.label} sticks · ${byControl.weapon.label} weapon · ${byControl.power.label} ${byControl.power.help} · double-tap ${move.label} to dash · ${byControl.pause.help}`;
+  return 'MOVE · AIM to override auto-aim · GRENADE · Pause button';
 }
 
 export function createTouchOnboardingGate(enabled) {
@@ -59,107 +56,51 @@ export function computeStickVector(origin, current, {
   return { x: dx / distance * magnitude, y: dy / distance * magnitude };
 }
 
-const ACTIONS = new Set(['fire', 'melee', 'grenade', 'dash', 'pause', 'weaponNext']);
-
-// Double-tapping the movement stick dashes, the standard mobile idiom. The
-// simplified control set has no room for a dash button, but dash is a core
-// movement mechanic with i-frames, so losing it on touch would be a downgrade.
-// This costs no screen space and adds no control.
-export const DOUBLE_TAP_DASH_WINDOW_MS = 280;
-// How long the resulting dash stays true in the snapshot. The simulation reads
-// a rising edge, so this only has to span a frame or two.
-export const DOUBLE_TAP_DASH_HOLD_MS = 90;
+const ACTIONS = new Set(['grenade', 'pause']);
 
 export class TouchControlState {
-  constructor({ stickRadius = 72, deadZone = 0.12, sensitivity = 1, now = () => 0 } = {}) {
+  constructor({ stickRadius = 72, deadZone = 0.12, sensitivity = 1 } = {}) {
     if (!(stickRadius > 0)) throw new TypeError('stickRadius must be positive');
-    if (typeof now !== 'function') throw new TypeError('now must be a function');
     this.config = Object.freeze({ stickRadius, deadZone, sensitivity });
     this.pointers = new Map();
-    this.now = now;
-    this.lastMoveTapAt = null;
-    this.dashUntil = null;
   }
-
   #assertAvailable(pointerId) {
     if (this.pointers.has(pointerId)) throw new TypeError('pointer is already assigned');
   }
-
   beginStick(pointerId, role, origin) {
     this.#assertAvailable(pointerId);
     if (role !== 'move' && role !== 'aim') throw new TypeError('stick role must be move or aim');
-    const start = point(origin, 'origin');
-    if (role === 'move') {
-      const at = this.now();
-      if (this.lastMoveTapAt !== null && at - this.lastMoveTapAt <= DOUBLE_TAP_DASH_WINDOW_MS) {
-        this.dashUntil = at + DOUBLE_TAP_DASH_HOLD_MS;
-        // Consume the pair so a third tap does not chain another dash.
-        this.lastMoveTapAt = null;
-      } else {
-        this.lastMoveTapAt = at;
-      }
-    }
-    this.pointers.set(pointerId, { type: 'stick', role, origin: start, current: { ...start } });
+    const start=point(origin,'origin');
+    this.pointers.set(pointerId,{type:'stick',role,origin:start,current:{...start}});
   }
-
   beginAction(pointerId, action) {
     this.#assertAvailable(pointerId);
     if (!ACTIONS.has(action)) throw new TypeError('unknown touch action');
-    this.pointers.set(pointerId, { type: 'action', action });
+    this.pointers.set(pointerId,{type:'action',action});
   }
-
   movePointer(pointerId, position) {
-    const pointer = this.pointers.get(pointerId);
-    if (!pointer || pointer.type !== 'stick') return false;
-    pointer.current = point(position, 'position');
-    return true;
+    const pointer=this.pointers.get(pointerId);
+    if (!pointer || pointer.type!=='stick') return false;
+    pointer.current=point(position,'position');return true;
   }
-
-  endPointer(pointerId) {
-    return this.pointers.delete(pointerId);
-  }
-
-  // Ground-truth release: when the platform reports no remaining touches, no
-  // control may stay engaged, regardless of which pointer events got lost on
-  // the way. Unlike cancelAll this keeps tap bookkeeping so a dash pair
-  // completed just before the release still lands.
+  endPointer(pointerId) { return this.pointers.delete(pointerId); }
   endAllPointers() {
-    if (this.pointers.size === 0) return false;
-    this.pointers.clear();
-    return true;
+    const active=this.pointers.size>0;this.pointers.clear();return active;
   }
-
-  cancelAll() {
-    this.pointers.clear();
-    this.lastMoveTapAt = null;
-    this.dashUntil = null;
-  }
-
+  cancelAll() { this.pointers.clear(); }
   snapshot() {
-    let move = { x: 0, y: 0 };
-    let aim = { x: 0, y: 0 };
-    const actions = { fire: false, melee: false, grenade: false, dash: false, pause: false, weaponNext: false };
-    if (this.dashUntil !== null) {
-      if (this.now() <= this.dashUntil) actions.dash = true;
-      else this.dashUntil = null;
-    }
+    let move={x:0,y:0},aim={x:0,y:0};
+    const actions={fire:false,melee:false,grenade:false,dash:false,pause:false,weaponNext:false};
     for (const pointer of this.pointers.values()) {
-      if (pointer.type === 'action') actions[pointer.action] = true;
+      if (pointer.type==='action') actions[pointer.action]=true;
       else {
-        const vector = computeStickVector(pointer.origin, pointer.current, {
-          radius: this.config.stickRadius,
-          deadZone: this.config.deadZone,
-          sensitivity: this.config.sensitivity,
+        const vector=computeStickVector(pointer.origin,pointer.current,{
+          radius:this.config.stickRadius,deadZone:this.config.deadZone,sensitivity:this.config.sensitivity,
         });
-        if (pointer.role === 'move') move = vector;
-        else aim = vector;
+        if(pointer.role==='move') move=vector;else aim=vector;
       }
     }
-    return {
-      moveX: move.x, moveY: move.y,
-      aimX: aim.x, aimY: aim.y,
-      ...actions,
-    };
+    return {moveX:move.x,moveY:move.y,aimX:aim.x,aimY:aim.y,...actions};
   }
 }
 
@@ -217,22 +158,11 @@ export function createTouchControlAdapter({
     event.preventDefault?.();
     event.stopPropagation?.();
   };
-  // A double-tap dash is time-boxed rather than pointer-held, so without a
-  // trailing sync the dash flag would stay latched true in the last published
-  // snapshot until some unrelated pointer event happened to refresh it.
-  let dashReleaseTimer = null;
   const sync = () => {
     const snapshot = state.snapshot();
     if (knobs.move) knobs.move.style.transform = `translate(${snapshot.moveX * 55}%, ${snapshot.moveY * 55}%)`;
     if (knobs.aim) knobs.aim.style.transform = `translate(${snapshot.aimX * 55}%, ${snapshot.aimY * 55}%)`;
     input.setTouch(snapshot, now());
-    if (snapshot.dash && state.dashUntil !== null && dashReleaseTimer === null) {
-      const delay = Math.max(0, state.dashUntil - now()) + 1;
-      dashReleaseTimer = windowRef.setTimeout?.(() => {
-        dashReleaseTimer = null;
-        sync();
-      }, delay) ?? null;
-    }
   };
   // Stick tracking must span the screen, not the control, so dragging off the
   // stick keeps working where pointer capture is unavailable.
@@ -251,8 +181,10 @@ export function createTouchControlAdapter({
   // control, so they are registered ONCE here rather than per control.
   // Registering them inside the loops below produced five duplicate window
   // listeners and fired setTouch twice for a single pointermove.
-  const endOwnedPointer = (event) => {
-    if (!state.endPointer(event.pointerId)) return;
+  const endOwnedPointer = (event, cancelled = false) => {
+    const hasPoint = Number.isFinite(event.clientX) && Number.isFinite(event.clientY);
+    if (!cancelled && hasPoint) state.movePointer(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (!state.endPointer(event.pointerId, { cancelled: cancelled || !hasPoint })) return;
     own(event);
     sync();
   };
@@ -263,7 +195,8 @@ export function createTouchControlAdapter({
     sync();
   });
   surfaceListen('pointerup', endOwnedPointer);
-  surfaceListen('pointercancel', endOwnedPointer);
+  const cancelOwnedPointer = (event) => endOwnedPointer(event, true);
+  surfaceListen('pointercancel', cancelOwnedPointer);
   // Owner playtest follow-through (2026-08-02): the mobile smoke proved a
   // dropped synthesized pointerup can latch a stick ("hero kept moving after
   // the touch ended"). Raw touch events are the ground truth the pointer
@@ -289,14 +222,10 @@ export function createTouchControlAdapter({
       state.beginStick(event.pointerId, role, { x: event.clientX, y: event.clientY });
       sync();
     });
-    listen(element, 'lostpointercapture', endOwnedPointer);
+    listen(element, 'lostpointercapture', cancelOwnedPointer);
   }
 
-  // Simplified mobile control set: power, weapon swap, and pause. Firing is
-  // automatic when a target is in range.
-  // The on-screen controls map onto the existing action vocabulary rather
-  // than extending it, so the snapshot contract consumed by the simulation is
-  // unchanged: POWER throws the grenade.
+  // Grenade is the only combat button; the menu remains accessible.
   for (const { control, label, action } of TOUCH_CONTROL_SPEC.buttons) {
     const element = makeControl(control, label, `hmh-touch-button hmh-touch-button--${control}`);
     listen(element, 'pointerdown', (event) => {
@@ -306,7 +235,7 @@ export function createTouchControlAdapter({
       sync();
       if (action === 'pause') onPause?.();
     });
-    listen(element, 'lostpointercapture', endOwnedPointer);
+    listen(element, 'lostpointercapture', cancelOwnedPointer);
   }
 
   const applyLayout = () => {
@@ -362,10 +291,6 @@ export function createTouchControlAdapter({
     relayout: applyLayout,
     destroy() {
       for (const remove of listeners.splice(0)) remove();
-      if (dashReleaseTimer !== null) {
-        windowRef.clearTimeout?.(dashReleaseTimer);
-        dashReleaseTimer = null;
-      }
       state.cancelAll();
       sync();
       overlay.remove();

@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { createAuthoredGroundQuery } from '../apps/hmh-reboot/src/elevation.mjs';
 import { TERRAIN_OVERLAY_IDS } from '../apps/hmh-reboot/src/terrain-tile-atlas.mjs';
 import { worldToScreen } from '../apps/hmh-reboot/src/world-space.mjs';
 import {
@@ -67,8 +68,14 @@ const fakeTerrainTiles = (overrides = {}) => ({
 const VIEW = { width: 1440, height: 900 };
 const PROFILE = { particlesPerHazard: 10, worldCullMargin: 220 };
 const layersFor = () => createWorldProductionLayers({ ContainerClass: FakeContainer, GraphicsClass: FakeGraphics, TilingSpriteClass: FakeTilingSprite });
-const render = (camera, worldProduction, terrainTiles = fakeTerrainTiles()) => renderWorldProductionArt({
-  worldProduction, world: LEVEL_ONE_WORLD, camera, view: VIEW, queryGround: createLevelOneGroundQuery(), worldToScreen, tick: 180, performanceProfile: PROFILE, terrainTiles,
+// Keep the reusable shallow-water renderer contract on the exact former ford
+// fixture. The canonical crossing is now a raised bridge, checked separately.
+const SHALLOWS_FIXTURE = { ...LEVEL_ONE_WORLD, surfaces: LEVEL_ONE_WORLD.surfaces.map(surface => surface.id === 'crossing-shallows' ? {
+  id: 'crossing-shallows', kind: 'shallow-water', area: {type:'rect',minX:4500,minY:800,maxX:5000,maxY:1150},
+  groundZ: 0, waterLevel: 4, deepWater: false, visibleTerrainId: 'water-crossing-shallows', priority: 2,
+} : surface) };
+const render = (camera, worldProduction, terrainTiles = fakeTerrainTiles(), world = SHALLOWS_FIXTURE) => renderWorldProductionArt({
+  worldProduction, world, camera, view: VIEW, queryGround: createAuthoredGroundQuery({ baseSurface: world.baseSurface, surfaces: world.surfaces }), worldToScreen, tick: 180, performanceProfile: PROFILE, terrainTiles,
 });
 const camera = (x, y) => ({ x, y, zoom: 1, shakeX: 0, shakeY: 0 });
 const FORD = camera(4_900, 1_050);
@@ -89,7 +96,7 @@ test('W-4 two band strips lie inside the shallows on its long edges, deep side o
   assert.equal(container.label, 'world-water-strips');
   const bands = stripsOf(container, 'shallows-band');
   assert.equal(bands.length, 2, `the ford has two long edges, saw ${bands.length} band strips`);
-  const shallows = LEVEL_ONE_WORLD.surfaces.find((surface) => surface.id === 'crossing-shallows');
+  const shallows = SHALLOWS_FIXTURE.surfaces.find((surface) => surface.id === 'crossing-shallows');
   const z = shallows.waterLevel;
   const north = worldToScreen({ x: 4_500, y: 800, z }, FORD, VIEW);
   const south = worldToScreen({ x: 5_000, y: 1_150, z }, FORD, VIEW);
@@ -140,14 +147,24 @@ test('W-4 the ford loses its mid-river foam outline and lit shorelines while the
   // At the bridge only the river is in view; at the ford the river AND the
   // shallows are. The foam outline (two strokes) and the two lit shoreline
   // lines must therefore count the same at both cameras: the ford adds none.
-  for (const color of [0xcdf6ff, 0x7fdcf0, 0x9fe8ff]) {
+  for (const color of [0xcdf6ff, 0x7fdcf0]) {
     assert.ok(strokesOf(bridge.surfaceCues, color) >= 1, `the river must still draw ${color.toString(16)}`);
     assert.equal(strokesOf(ford.surfaceCues, color), strokesOf(bridge.surfaceCues, color), `the shallows must draw no ${color.toString(16)} foam or shoreline mid-river`);
   }
+  // Whole-surface foam outlines were replaced by exposed union edges, so no
+  // closed foam ring may reappear over the river/lake intersection.
+  for (const scene of [ford, bridge]) assert.equal(strokesOf(scene.surfaceCues, 0x9fe8ff), 0);
   // The shallows' hairline base outline drops to a hint under the band.
-  const hint = ford.layers.surfaces.strokes.filter((style) => style?.color === 0x84e8ff && style.alpha <= 0.2);
+  const hint = ford.layers.surfaces.strokes.filter((style) => style?.color === 0x84e8ff && style.alpha > 0 && style.alpha <= 0.2);
   assert.equal(hint.length, 1, 'the shallows base stroke must fade to a hint once the band carries the edge');
-  assert.equal(bridge.layers.surfaces.strokes.filter((style) => style?.color === 0x84e8ff && style.alpha <= 0.2).length, 0);
+  assert.equal(bridge.layers.surfaces.strokes.filter((style) => style?.color === 0x84e8ff && style.alpha > 0 && style.alpha <= 0.2).length, 0);
+});
+
+test('the canonical northern crossing is a raised bridge with no shallow-water band', () => {
+  assert.equal(LEVEL_ONE_WORLD.surfaces.find(surface => surface.id === 'crossing-shallows').kind, 'bridge');
+  const production = layersFor();
+  render(FORD, production, fakeTerrainTiles(), LEVEL_ONE_WORLD);
+  assert.equal(stripsOf(production.waterStripSprites, 'shallows-band').length, 0);
 });
 
 test('W-4 the baked shallows-band strip is a foam-free submerged slope', async () => {

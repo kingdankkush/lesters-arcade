@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "actorId": "bagholder-rusher",
+  "sourceKind": "immutable-packed-native-derivative",
+  "sourceRebuilt": false,
+  "originals": {
+    "lesters-arcade-cycle078-rig-pilot/apps/hmh-reboot/assets/source/models/tripo-enemy-roster-completion/bagholder-rusher/bagholder-rusher.blend": "bb52feb78e00c2da7ad76267aceb2d30b171ae5945312d261bd716aa0793801a",
+    "lesters-arcade-cycle078-rig-pilot/apps/hmh-reboot/assets/source/models/tripo-enemy-roster-completion/bagholder-rusher/bagholder-rusher.glb": "9a89c54048995e2bd3be22d0cc12f9dce4be10b2f7a17525f930637a465e3d29",
+    "lesters-arcade-textured-rollout/apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.blend": "35fdb162dd0e81474d8462475a4409718d7fbc90ccb94f9eed1dda048a7e7407",
+    "lesters-arcade-textured-rollout/apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json": "82817eda8137248e69ad7918b3598aedcbb43d7e6684ce0da7ada6ed7615e360"
+  },
+  "privatePacketOutputs": {
+    "source.blend": {
+      "path": ".tmp/team/enemy-production/source.blend",
+      "bytes": 8599093,
+      "sha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856"
+    },
+    "manifest.json": {
+      "path": ".tmp/team/enemy-production/manifest.json",
+      "bytes": 7183,
+      "sha256": "f797aa0520f2b7659f5b5ac628fd3db9d498d4eacdd76ef8737bfaa47c69483a"
+    },
+    "native-inspection.json": {
+      "path": ".tmp/team/enemy-production/native-inspection.json",
+      "bytes": 87009,
+      "sha256": "cba495d6b365aa56d6af355d9c5026c5be470ffdc3960758138be59cc98c034e"
+    },
+    "preparation.json": {
+      "path": ".tmp/team/enemy-production/preparation.json",
+      "bytes": 1537,
+      "sha256": "622b678a4184e4db822ef700ff73c22d255d737b509ef1a0216ebf6a392e0f05"
+    },
+    "source-preservation.json": {
+      "path": ".tmp/team/enemy-production/source-preservation.json",
+      "bytes": 170971,
+      "sha256": "88974e3d11e8d063235c80af5290ab79be4d368188c603c12420a086bab8d2eb"
+    },
+    "native-validation.json": {
+      "path": ".tmp/team/enemy-production/native-validation.json",
+      "bytes": 523364,
+      "sha256": "7d1e69d866a42febf556422ee0f906287f6a12b625e7b5c0c907978f0a1a352d"
+    },
+    "native_projection.py": {
+      "path": ".tmp/team/enemy-production/native_projection.py",
+      "bytes": 2773,
+      "sha256": "03d2fdd6a8468cdb4781f8b12c16ab66cb7d5157b81d14c50fbf9d0c9a566cd1"
+    },
+    "prepare_enemy_role.py": {
+      "path": ".tmp/team/enemy-production/prepare_enemy_role.py",
+      "bytes": 12400,
+      "sha256": "93cc194133b4bbad94e4323891d61d81ebfa97dc01c54f897aefff48c76f8b3a"
+    },
+    "export_enemy_role.py": {
+      "path": ".tmp/team/enemy-production/export_enemy_role.py",
+      "bytes": 2334,
+      "sha256": "11de8db9190978992b0dda8a3bd56d916b2f796570679b0e1bda23492084289f"
+    },
+    "next-render-commands.json": {
+      "path": ".tmp/team/enemy-production/next-render-commands.json",
+      "bytes": 6966,
+      "sha256": "a3bca0b76de159187fe79f721637afe4b7411e7fa9b3f8442ca89e07923dcdc1"
+    },
+    "tests-green.json": {
+      "path": ".tmp/team/enemy-production/tests-green.json",
+      "bytes": 140,
+      "sha256": "8b28bb364b051384fafccf0381ee3c86b93364e12562fe2224f487987e335c17"
+    },
+    "packet-validation.json": {
+      "path": ".tmp/team/enemy-production/packet-validation.json",
+      "bytes": 2037,
+      "sha256": "f718759c5c736024c87b347180681e2c978788915730f6b14a75ce9d6389f756"
+    },
+    "NATIVE-HANDOFF.txt": {
+      "path": ".tmp/team/enemy-production/NATIVE-HANDOFF.txt",
+      "bytes": 4003,
+      "sha256": "3beb1f304dc2773bb9c76145efeebf8b97f65662e41f861a69debc27e80f2756"
+    }
+  },
+  "sourcePreservation": {
+    "path": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/source-preservation.json",
+    "sha256": "8c1888f0da7c73943bffe527790daafe9a343048b543383520b8a8134ef40de3"
+  },
+  "nativeVerification": {
+    "behaviorTests": {
+      "phase": "GREEN",
+      "testsRun": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": true,
+      "failureDetails": []
+    },
+    "nativeTests": {
+      "run": 20,
+      "passed": 20,
+      "failed": 0
+    },
+    "textureTests": {
+      "run": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "packetTests": {
+      "run": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    "finalFocusedChecksTotal": 51,
+    "originalMeshTopologyUvMaterialImagesSkinRestBonesActionsPreserved": true,
+    "rawSemanticDifferences": [
+      "objects/bagholder-rusher Rig"
+    ],
+    "declaredOriginalObjectChange": "Add identity projection-only EMPTY parent above the rig. All original local mesh/object transforms, rest bone hierarchy/bind, skin weights, materials and six actions unchanged.",
+    "originalPackedTexturePixelsDecoded": true,
+    "bodyVertices": 62277,
+    "equipmentVertices": 144,
+    "bones": 19,
+    "actions": [
+      "HMH_Enemy_Attack",
+      "HMH_Enemy_Death",
+      "HMH_Enemy_Hit",
+      "HMH_Enemy_Idle",
+      "HMH_Enemy_Run",
+      "HMH_Enemy_Tell"
+    ],
+    "actualPoseChannels": "Euler native source; quaternion binding separately tested in real Blender",
+    "framesComparedSourceDerivative": 152,
+    "groundedFrames": 152,
+    "groundContactMaximumAbsoluteResidualMeters": 2.9802322387695312e-08,
+    "uniformProjectionTranslationMaximumResidualMeters": 1.7136335384027035e-07,
+    "clippedGeometryFrames": 0,
+    "weightHealth": {
+      "unweighted": 0,
+      "unnormalized": 0,
+      "crossSideLeak": 0,
+      "influences": {
+        "1": 12033,
+        "2": 23008,
+        "3": 21872,
+        "4": 5364
+      }
+    },
+    "mutationChallenges": 8
+  },
+  "projectionAdditions": {
+    "actorFrameSize": [
+      208,
+      208
+    ],
+    "actorPivot": {
+      "x": 83,
+      "y": 151
+    },
+    "actorPixelsPerMeter": 68.08510638297872,
+    "cameraShift": [
+      0.10096153616905212,
+      -0.2498081922531128
+    ],
+    "canonicalPivot": {
+      "x": 64,
+      "y": 116
+    },
+    "canonicalPixelsPerMeter": 68.08510638297872,
+    "groundZ": 0,
+    "nativeActionsUnmodified": true,
+    "overscanReason": "measured attack/death extents; only canvas expands, projected actor scale is unchanged",
+    "policy": "canonical camera transform/pitch, pixel density and base pivot; actor overscan, film shift and non-destructive per-frame projection-root Z offset",
+    "projectedWorldOriginPixels": [
+      83.00000047683716,
+      150.99999332427979
+    ],
+    "projectionRoot": "HMH_Enemy_Projection_Root",
+    "requiresPrivateExportWrapper": true,
+    "unshiftedWorldOriginPixels": [
+      104.0,
+      202.9601031243801
+    ]
+  },
+  "rights": "Existing owner-provided completed native role; no new generation, external service, or license grant inferred.",
+  "status": "source-preserved-parent-runtime-adoption-pending",
+  "historicalPathBasis": {
+    "originals": "workspace-relative repository identities at original preparation",
+    "privatePacketOutputs": "repository-relative historical packet; not new test or render evidence"
+  }
+}

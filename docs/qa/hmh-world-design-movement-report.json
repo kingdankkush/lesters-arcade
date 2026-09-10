@@ -1,0 +1,210 @@
+{
+  "scope": "Canonical fixed-tick movement measurements. Browser input-to-present latency is a separate receipt; no physical-device latency or FPS claim.",
+  "tickHz": 60,
+  "parameters": {
+    "maxSpeed": 240,
+    "accelerationTime": 0.08,
+    "decelerationTime": 0.06,
+    "turnAccelerationTime": 0.045
+  },
+  "measurements": {
+    "firstMotionTick": 1,
+    "fullSpeedTicks": 5,
+    "fullSpeedMs": 83.33333333333333,
+    "stopTicks": 4,
+    "reverseSignTicks": 3,
+    "fullReverseTicks": 8,
+    "diagonalSpeedGain": 2.842170943040401e-14
+  },
+  "start": [
+    {
+      "tick": 1,
+      "cardinal": 50,
+      "diagonal": 50.00000000000001,
+      "x": 0.8333333333333334
+    },
+    {
+      "tick": 2,
+      "cardinal": 100,
+      "diagonal": 100.00000000000001,
+      "x": 2.5
+    },
+    {
+      "tick": 3,
+      "cardinal": 150,
+      "diagonal": 150.00000000000003,
+      "x": 5
+    },
+    {
+      "tick": 4,
+      "cardinal": 200,
+      "diagonal": 200.00000000000003,
+      "x": 8.333333333333334
+    },
+    {
+      "tick": 5,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 12.333333333333334
+    },
+    {
+      "tick": 6,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 16.333333333333336
+    },
+    {
+      "tick": 7,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 20.333333333333336
+    },
+    {
+      "tick": 8,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 24.333333333333336
+    },
+    {
+      "tick": 9,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 28.333333333333336
+    },
+    {
+      "tick": 10,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 32.333333333333336
+    },
+    {
+      "tick": 11,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 36.333333333333336
+    },
+    {
+      "tick": 12,
+      "cardinal": 240,
+      "diagonal": 239.99999999999997,
+      "x": 40.333333333333336
+    }
+  ],
+  "response": [
+    {
+      "tick": 1,
+      "releaseSpeed": 173.33333333333331,
+      "reverseVx": 151.1111111111111,
+      "cornerVx": 194.74516600406096,
+      "cornerVy": 45.25483399593904
+    },
+    {
+      "tick": 2,
+      "releaseSpeed": 106.66666666666664,
+      "reverseVx": 62.222222222222186,
+      "cornerVx": 152.1875335715742,
+      "cornerVy": 87.81246642842581
+    },
+    {
+      "tick": 3,
+      "releaseSpeed": 39.99999999999997,
+      "reverseVx": -26.666666666666714,
+      "cornerVx": 112.48810271354728,
+      "cornerVy": 127.51189728645272
+    },
+    {
+      "tick": 4,
+      "releaseSpeed": 0,
+      "reverseVx": -76.66666666666671,
+      "cornerVx": 75.08657559655956,
+      "cornerVy": 164.91342440344044
+    },
+    {
+      "tick": 5,
+      "releaseSpeed": 0,
+      "reverseVx": -126.66666666666671,
+      "cornerVx": 39.02204038404963,
+      "cornerVy": 200.97795961595037
+    },
+    {
+      "tick": 6,
+      "releaseSpeed": 0,
+      "reverseVx": -176.6666666666667,
+      "cornerVx": 3.5243474385985323,
+      "cornerVy": 236.47565256140146
+    },
+    {
+      "tick": 7,
+      "releaseSpeed": 0,
+      "reverseVx": -226.6666666666667,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 8,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 9,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 10,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 11,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 12,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 13,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 14,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    },
+    {
+      "tick": 15,
+      "releaseSpeed": 0,
+      "reverseVx": -240,
+      "cornerVx": 0,
+      "cornerVy": 240
+    }
+  ],
+  "partitionsEqual": [
+    60,
+    30,
+    20
+  ],
+  "sourceHashes": {
+    "apps/hmh-reboot/src/movement.mjs": "204d16478f702f2ad33b133f4fcebaeb7b0405484e70228bc87f26458d157141",
+    "apps/hmh-reboot/src/input.mjs": "447597ed9e631e3bfa029e378774ff8f9e4890ac61c347f28225cd48809ab1cd",
+    "apps/hmh-reboot/src/level-one-world.mjs": "beeb10898b17b81239ac64159ba18f958b16354bcfdc55f997006c49b55dee2e"
+  }
+}

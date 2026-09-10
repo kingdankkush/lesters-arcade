@@ -319,9 +319,21 @@ test('W-5 a cliff draws a grounded rock mass with a raised plate and a textured 
   // the ground. Both are full-width strokes.
   const bodyStrokes = worldProduction.layers.blockers.strokes.filter((style) => style?.width === 96);
   assert.ok(bodyStrokes.length >= 2, 'ground body and raised plate are both full-width capsule strokes');
-  // Dense-trees keep their canopy path: no face strips at the hashwood tree line.
-  render(TREE_LINE, worldProduction);
-  assert.equal(stripsOf(worldProduction.blockerFaceSprites, 'rock-face').length, 0);
+  // Dense-trees keep their canopy path: isolate the tree line so a real cliff in the same camera cannot satisfy or fail this assertion.
+  const treeOnly = layersFor();
+  renderWorldProductionArt({
+    worldProduction: treeOnly,
+    world: { ...LEVEL_ONE_WORLD, blockers: LEVEL_ONE_WORLD.blockers.filter((feature) => feature.id === 'hashwood-north-tree-line') },
+    camera: TREE_LINE,
+    view: VIEW,
+    queryGround: createLevelOneGroundQuery(),
+    worldToScreen,
+    tick: 180,
+    performanceProfile: PROFILE,
+    terrainTiles: fakeTerrainTiles(),
+  });
+  assert.equal(stripsOf(treeOnly.blockerFaceSprites, 'rock-face').length, 0);
+  assert.ok(treeOnly.layers.blockers.fills.length > 0, 'the isolated tree line still draws canopy mass');
 });
 
 test('W-11 face and ramp containers live inside the world art root between the layers they dress', () => {

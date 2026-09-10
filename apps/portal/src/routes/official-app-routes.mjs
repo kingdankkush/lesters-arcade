@@ -58,7 +58,7 @@ export function createOfficialAppRoutes({
         : `Select a cabinet and play Free as a guest. ${humanList(cabinetNames)} ${cabinetNames.length === 1 ? 'is' : 'are'} playable now. Connect a wallet anytime to save progress and unlock Ranked.`,
       profile: connectedWallet
         ? shellModel.profileRules.walletLockCopy
-        : 'Guest Practice Profile saves local settings, scores, and run history on this device. Connect a wallet when you want cross-session identity and Ranked testnet publishing.',
+        : 'Guest stats are local to this browser. Permanent or cross-device history and verified Ranked publishing are not available yet.',
       leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
       settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
     };

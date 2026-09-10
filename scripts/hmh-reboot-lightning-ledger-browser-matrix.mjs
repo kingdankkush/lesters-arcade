@@ -44,8 +44,7 @@ try {
       hits: Number(element.dataset.lightningLedgerLastHits),
       ramp: Number(element.dataset.lightningLedgerLastRamp),
       cells: Number(element.dataset.lightningLedgerCells),
-      minimapWidth: Number(element.dataset.minimapWidth),
-      minimapHeight: Number(element.dataset.minimapHeight),
+      minimapTelemetryPresent: Object.keys(element.dataset).some((key) => key.startsWith('minimap')),
     }));
     await page.keyboard.up('Space');
     assert.equal(data.weaponId, 'lightning-ledger');

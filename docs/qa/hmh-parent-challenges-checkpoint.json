@@ -1,0 +1,141 @@
+{
+  "schema": "hmh-parent-challenges-source-v1",
+  "recordedAt": "2026-09-10T15:01:27.459584+00:00",
+  "scope": [
+    "REGISTER:M-3"
+  ],
+  "status": "source-reviewed; combined build/browser/release pending",
+  "diffSha256": "960a6eb07f9c250668c2240e2741e545643f5531c41443bc6267692ddf4b0923",
+  "files": [
+    {
+      "path": "apps/portal/src/hmh-challenges.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "43422c323ffa44b6e6d0e4e19996daefbc5ea44217bde5984c95f0d00ac273a9",
+      "bytes": 4201
+    },
+    {
+      "path": "apps/portal/src/hmh-challenge-ui.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "3633ac9368005d1969e2f30d794334857e8fe40fb0eb5c7afb51fe001f3838f2",
+      "bytes": 2834
+    },
+    {
+      "path": "tests/hmh-challenge-session.test.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "8b2f83522c70cdce3b6c35b0b7f37100a763ba272033a65f7258d46e780602f4",
+      "bytes": 3577
+    },
+    {
+      "path": "tests/hmh-challenges.test.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "4f21f59275a442223c67754f8fb833d8d02bb5faec150591e6cc6268dc0eee54",
+      "bytes": 3905
+    },
+    {
+      "path": "tests/hmh-challenge-ui.test.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "e79be14c8e865b3132fd3129b9a80f92c69cfc83d0651355c3b13b2c0c0140aa",
+      "bytes": 9171
+    },
+    {
+      "path": "apps/portal/src/arcade-core.mjs",
+      "beforeSha256": "f16c75eebb9d531d3c42361ac555f641c58ff5fb278fc78d9ed92b06e7a72b86",
+      "afterSha256": "23b92936901525f7644a1cf9911dd8675e66c44773c69b674601d98a04e8450d",
+      "bytes": 350995
+    },
+    {
+      "path": "apps/portal/main.js",
+      "beforeSha256": "fb117023d9ac349e8497d15106c00a97cfc03f1391a86f670670e4ab91c8fe6b",
+      "afterSha256": "814f88f3ec9c684bbf3605f0976babfd05cd8473edd64fd862ad73dfadd8514d",
+      "bytes": 662770
+    },
+    {
+      "path": "apps/portal/index.html",
+      "beforeSha256": "4a115e7d8e7ea379bc5610d88658ac8d8f84dbc6e78a83da74ef2d9330c534a6",
+      "afterSha256": "24e12860e3951544a52fe94abea656afa030173750372b51328401c43bcdd8a2",
+      "bytes": 25520
+    },
+    {
+      "path": "apps/portal/styles-arcade-polish.css",
+      "beforeSha256": "544e2a39f1db37455ea86b0aa6b1fc4c95fd9077298edba7b11264911bf08eae",
+      "afterSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+      "bytes": 66646
+    },
+    {
+      "path": "scripts/syntax-check.mjs",
+      "beforeSha256": "c6913efc3b43392f61c27b35872eb99a19b99d0cd15c86dc9167f745d7d4b13c",
+      "afterSha256": "20c7d89cb5856c5bae7b92bc565c5fd7a5efb5704e18d61ad3b92bb7207b4bea",
+      "bytes": 28340
+    }
+  ],
+  "focused": {
+    "tests": 32,
+    "pass": 32,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "expanded": {
+    "exitCode": 1,
+    "counts": {
+      "tests": 167,
+      "pass": 166,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "observedFailures": [
+      "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata"
+    ],
+    "documentedExpectedFailures": [
+      "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata"
+    ]
+  },
+  "nodeVersion": "v24.20.0",
+  "syntaxCheckedPaths": [
+    "apps/portal/src/hmh-challenges.mjs",
+    "apps/portal/src/hmh-challenge-ui.mjs",
+    "tests/hmh-challenge-session.test.mjs",
+    "tests/hmh-challenges.test.mjs",
+    "tests/hmh-challenge-ui.test.mjs",
+    "apps/portal/src/arcade-core.mjs",
+    "apps/portal/main.js",
+    "scripts/syntax-check.mjs"
+  ],
+  "syntaxAllPass": true,
+  "securityScan": {
+    "secret-assignment": [],
+    "unsafe-execution": [],
+    "html-injection": []
+  },
+  "independentReview": {
+    "verdict": "PASS",
+    "diffSha256": "960a6eb07f9c250668c2240e2741e545643f5531c41443bc6267692ddf4b0923",
+    "findings": [],
+    "limitations": [
+      "Source-only review using only the supplied DATA. No files, commands, browser, build, or tests were run.",
+      "The previous finding is not sustained with the supplied complete mode renderer and stated call order: renderModeSelect resets the Free button for the selected cabinet before hmhChallengeUi.render(selectedGameId), so the HMH invalid-link disabled state does not carry into Chikun, while unconfigured cabinet gating remains disabled."
+    ],
+    "toolEvents": 0,
+    "completedTurns": 1,
+    "resultSha256": "e6652048b44eb43998e75fcb4f04e6b304f1433327b9acb7e7b103b1ffe2faab",
+    "eventsSha256": "768aa4db05457b26301323eb2933e3c50d253af9c86fef8c399e7ec34e8ce297",
+    "metadataWarnings": [
+      "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+    ]
+  },
+  "sourceStable": true,
+  "originalIndexEntriesAndFlagsPreserved": true,
+  "closedRegisterEntries": [],
+  "generatedInventoryBuildBrowserAcceptance": false,
+  "productionChanged": false,
+  "chainChanged": false,
+  "sourcePacket": {
+    "coordinationRelativePath": "submissions/hermes/parent-challenges-source-20260910T1500Z.zip",
+    "sha256": "3d33cd9d918d39a1eadb5f8aa63563f2895e57044225ebe94d0486dd460c74fe",
+    "memberCount": 31,
+    "membersVerified": true
+  }
+}

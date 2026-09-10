@@ -19,7 +19,7 @@ const ACTION_DEFAULTS = Object.freeze({
 
 export const POINTER_AIM_IDLE_MS = 1000;
 export const ACTION_BUFFER_MS = 100;
-const BUFFERED_ACTIONS = Object.freeze(['fire', 'melee', 'grenade', 'dash']);
+const BUFFERED_ACTIONS = Object.freeze(['grenade']);
 
 import { finite } from './value-guards.mjs';
 
@@ -64,13 +64,13 @@ export function mapGamepadSnapshot(gamepad, { deadzone = 0.2, sensitivity = 1, r
     move: normalizeAxisPair(Number(axes[0] ?? 0), Number(axes[1] ?? 0), deadzone, { sensitivity, responseCurve }),
     aim: normalizeAxisPair(Number(axes[2] ?? 0), Number(axes[3] ?? 0), deadzone, { sensitivity, responseCurve }),
     actions: {
-      fire: buttonPressed(buttons, 7),
-      melee: buttonPressed(buttons, 2),
+      fire: false,
+      melee: false,
       grenade: buttonPressed(buttons, 4),
-      dash: buttonPressed(buttons, 0),
+      dash: false,
       pause: buttonPressed(buttons, 9),
       weaponSlot: 0,
-      weaponNext: buttonPressed(buttons, 15),
+      weaponNext: false,
     },
   });
 }
@@ -81,17 +81,8 @@ function hasDirection(direction) {
 }
 
 function actionRecord(value = {}) {
-  const rawWeaponSlot = Number(value.weaponSlot ?? 0);
-  const weaponSlot = Number.isInteger(rawWeaponSlot) && rawWeaponSlot >= 1 && rawWeaponSlot <= 4 ? rawWeaponSlot : 0;
-  return {
-    fire: bool(value.fire),
-    melee: bool(value.melee),
-    grenade: bool(value.grenade),
-    dash: bool(value.dash),
-    pause: bool(value.pause),
-    weaponSlot,
-    weaponNext: bool(value.weaponNext),
-  };
+  return {fire:false,melee:false,dash:false,weaponSlot:0,weaponNext:false,
+    grenade:bool(value.grenade),pause:bool(value.pause)};
 }
 
 export class InputState {
@@ -236,7 +227,7 @@ export class InputState {
     const move = movementCandidates[0]?.value ?? { x: 0, y: 0 };
 
     const aimCandidates = [];
-    if (this.pointer && now - this.pointerAt <= POINTER_AIM_IDLE_MS) {
+    if (this.pointer && this.pointerAt >= Math.max(this.touchAt,this.gamepadAt) && now - this.pointerAt <= POINTER_AIM_IDLE_MS) {
       const target = screenToGround(
         { x: this.pointer.screenX, y: this.pointer.screenY },
         camera,
@@ -256,23 +247,31 @@ export class InputState {
 
     const keyboardActionState = keyboardActionRecord(this.keys, this.keyboardBindings);
     const sources = [keyboardActionState, this.pointer ? { ...ACTION_DEFAULTS, fire: this.pointer.fire, grenade: this.pointer.grenade ?? false } : ACTION_DEFAULTS, this.touch?.actions ?? ACTION_DEFAULTS, this.gamepad?.actions ?? ACTION_DEFAULTS];
+    const heldActions = {
+      fire: false,
+      melee: false,
+      grenade: sources.some((source) => source.grenade),
+      dash: false,
+    };
     const actions = {
       move: { ...move },
       aim,
       aimAssist: selectedAim?.mode === 'direction',
-      fire: buffered.has('fire') || sources.some((source) => source.fire),
-      melee: buffered.has('melee') || sources.some((source) => source.melee),
-      grenade: buffered.has('grenade') || sources.some((source) => source.grenade),
-      dash: buffered.has('dash') || sources.some((source) => source.dash),
+      aimDevice: selectedAim?.mode === 'pointer' ? 'pointer' : this.lastActiveDevice,
+      fire: false,
+      melee: false,
+      grenade: buffered.has('grenade') || heldActions.grenade,
+      dash: false,
       pause: sources.some((source) => source.pause),
-      weaponSlot: sources.find((source) => source.weaponSlot > 0)?.weaponSlot ?? 0,
-      weaponNext: sources.some((source) => source.weaponNext),
+      weaponSlot: 0,
+      weaponNext: false,
     };
     this.sequence += 1;
     this.lastBufferedSnapshot = { sequence: this.sequence, entries: bufferedEntries };
     return freezeDeep({
       sequence: this.sequence,
       actions,
+      heldActions: { ...actions, ...heldActions },
       metadata: {
         lastActiveDevice: this.lastActiveDevice,
         aimSource: selectedAim?.mode ?? 'none',
@@ -298,10 +297,7 @@ export function computeTouchControlLayout({ width, height, safeInsets = {}, left
   const shortEdge = Math.min(viewportWidth, viewportHeight);
   const scale = finite(controlScale, 'touch control scale');
   if (scale < 0.75 || scale > 1.5) throw new TypeError('touch control scale must be in [0.75, 1.5]');
-  // Device playtest: eight controls crowded a phone screen and the movement
-  // stick could not be worked reliably. Keep the compact movement, aim, power,
-  // weapon-swap, and pause set. Firing remains automatic when a target is in
-  // range (see `createAimState` autofire), so a fire button is redundant.
+  // Two sticks, one grenade button, and the run menu.
   const baseRadius = Math.max(38, Math.min(72, shortEdge * 0.15));
   const radius = Math.min(baseRadius * scale, (viewportWidth - safe.left - safe.right) / 4.68);
   const margin = Math.max(14, radius * 0.34);
@@ -352,12 +348,11 @@ export function computeTouchControlLayout({ width, height, safeInsets = {}, left
   );
   const buttons = {
     power: { x: powerX, y: powerY, radius: buttonRadius },
-    weapon: { x: weaponX, y: powerY, radius: buttonRadius },
     pause: { x: pauseX, y: moveStick.y, radius: buttonRadius },
   };
   const layoutSticks = leftHanded ? { moveStick: aimStick, aimStick: moveStick } : { moveStick, aimStick };
   const layoutButtons = leftHanded
-    ? { power: { ...buttons.power, x: buttons.weapon.x }, weapon: { ...buttons.weapon, x: buttons.power.x }, pause: buttons.pause }
+    ? { power: { ...buttons.power, x: weaponX }, pause: buttons.pause }
     : buttons;
   return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, ...layoutSticks, buttons: layoutButtons });
 }
@@ -382,8 +377,9 @@ export function createBrowserInputController({ input, target, windowRef = global
   // capturing gameplay keys on the window is safe.
   listen(windowRef, 'keydown', key(true));
   listen(windowRef, 'keyup', key(false));
-  listen(target, 'pointermove', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: (event.buttons & 1) === 1, grenade: (event.buttons & 2) === 2 }, now()));
+  listen(target, 'pointermove', (event) => event.pointerType !== 'touch' && input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: (event.buttons & 1) === 1, grenade: (event.buttons & 2) === 2 }, now()));
   listen(target, 'pointerdown', (event) => {
+    if (event.pointerType === 'touch') return;
     event.preventDefault?.();
     target.focus?.({ preventScroll: true });
     input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: event.button === 0, grenade: event.button === 2 }, now());

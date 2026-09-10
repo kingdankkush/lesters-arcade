@@ -247,6 +247,36 @@ const upgradeSnapshot = (ids) => ({
   pendingChoices: ids.map((id) => ({ ...RUN_UPGRADE_CATALOG[id], nextRank: 1 })),
 });
 
+test('K-3 live pause help retains mouse and alternate bindings after controls render and rebind', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const ui = createCockpitUi({ documentRef });
+  const help = (id) => elements.get('hmhControlsCard').children
+    .find((row) => row.querySelector('button')?.dataset.actionId === id).querySelector('small').textContent;
+  assert.match(help('grenade'), /right click/i);
+  assert.match(help('grenade'), /(?:^| · )G(?: · |$)/);
+  assert.match(help('moveUp'), /ArrowUp/);
+  ui.setSettings({ keyboardBindings: { ...HMH_PLAYER_SETTINGS_DEFAULTS.controls.keyboardBindings, pause: 'KeyG' } });
+  assert.doesNotMatch(help('grenade'), /(?:^| · )G(?: · |$)/);
+  assert.match(help('grenade'), /right click/i);
+  ui.setSettings({ keyboardBindings: HMH_PLAYER_SETTINGS_DEFAULTS.controls.keyboardBindings });
+  assert.match(help('grenade'), /(?:^| · )G(?: · |$)/);
+  assert.equal(elements.get('hmhControlsCard').querySelectorAll('button').length, 6);
+  ui.destroy();
+});
+
+test('upgrade cards use the injected native item art without changing choices or controls', () => {
+  const { documentRef, elements } = fakeCockpitDocument(); const calls = [];
+  const propIconUrl = (id) => { calls.push(id); return `/assets/generated/hmh-reboot-tripo-props/items/tripo-${id === 'proof-of-work' ? '31' : '24'}.webp`; };
+  const ui = createCockpitUi({ documentRef, propIconUrl });
+  ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
+  assert.deepEqual(calls, ['proof-of-work', 'diamond-hands']);
+  const icons = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-choice__icon');
+  assert.equal(icons[0].style.backgroundImage, 'url("/assets/generated/hmh-reboot-tripo-props/items/tripo-31.webp")');
+  assert.equal(icons[1].style.backgroundImage, 'url("/assets/generated/hmh-reboot-tripo-props/items/tripo-24.webp")');
+  assert.equal(elements.get('hmhUpgradeChoices').querySelectorAll('button').length, 2);
+  ui.destroy();
+});
+
 test('upgrade pointer confirmation is single-shot just like keyboard and gamepad', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const selected = [];

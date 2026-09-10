@@ -75,10 +75,7 @@ const state = (page) => page.locator('#hmhRebootStage').evaluate((stage) => ({
   groundZ: Number(stage.dataset.groundZ),
   revealedCells: Number(stage.dataset.revealedCells),
   revealTotalCells: Number(stage.dataset.revealTotalCells),
-  minimapWidth: Number(stage.dataset.minimapWidth),
-  minimapHeight: Number(stage.dataset.minimapHeight),
-  minimapX: Number(stage.dataset.minimapX),
-  minimapY: Number(stage.dataset.minimapY),
+  minimapTelemetryPresent: Object.keys(stage.dataset).some((key) => key.startsWith('minimap')),
 }));
 
 async function holdKey(page, key, ms = 120) {
@@ -224,7 +221,7 @@ async function desktopSmoke() {
   assert.deepEqual([pistol.worldWidth, pistol.worldHeight], [12000, 4800]);
   assert.equal(pistol.districtId, 'frontier-relay');
   assert.ok(pistol.revealedCells > 0 && pistol.revealedCells < pistol.revealTotalCells);
-  assert.ok(pistol.minimapWidth > 0 && pistol.minimapHeight > 0 && pistol.minimapX >= 0 && pistol.minimapY >= 0);
+  assert.equal(pistol.minimapTelemetryPresent, false, 'retired minimap must stay absent');
   assert.equal(shotgun.lastWeaponFire, 'scatter-shotgun');
   assert.equal(machineGun.lastWeaponFire, 'auto-miner');
   assert.equal(launcher.lastWeaponFire, 'launcher-rig');
@@ -339,7 +336,7 @@ async function mobileSmoke() {
   assert.deepEqual([mobileState.worldWidth, mobileState.worldHeight], [12000, 4800]);
   assert.equal(mobileState.districtId, 'frontier-relay');
   assert.ok(mobileState.revealedCells > 0 && mobileState.revealedCells < mobileState.revealTotalCells);
-  assert.ok(mobileState.minimapWidth > 0 && mobileState.minimapHeight > 0 && mobileState.minimapX >= 0 && mobileState.minimapY >= 0);
+  assert.equal(mobileState.minimapTelemetryPresent, false, 'retired minimap must stay absent');
   assert.ok(Number(mobileState.lastMeleeTick) > 0);
   assert.equal(mobileGrenadeWarning.activeGrenadeWarnings, mobileGrenadeWarning.grenadeCount);
   assert.equal(mobileGrenadeWarning.activeGrenadeWarningRadius, 150);

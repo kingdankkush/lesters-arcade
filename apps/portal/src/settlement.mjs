@@ -26,9 +26,10 @@ import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, calcula
 // attestation service is production-approved. Never publish unverified rows.
 export const SETTLEMENT_LIVE = false;
 
-// Placeholder addresses; filled in at deploy time. Kept here so the plan shape
-// is complete and testable before deployment.
+// Recorded legacy testnet addresses, not proof of hardened compatibility.
+// The GameRegistry address is used for read-only approval checks.
 export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
+  gameRegistry: '0x09C6f94e73f6aA16177549952Dc47dB5AEb83406',
   playerProfileRegistry: '0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96',
   scoreSubmissionRegistry: '0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0',
   achievementRegistry: '0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53',

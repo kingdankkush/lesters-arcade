@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import * as gameFeel from '../apps/hmh-reboot/src/game-feel.mjs';
 
 import {
   DASH_FEEL,
@@ -32,6 +33,38 @@ const nearEnemies = (count) => Array.from({ length: count }, (_, index) => enemy
 // ---------------------------------------------------------------------------
 // 1. Tables
 // ---------------------------------------------------------------------------
+
+test('gameplay camera keeps body pixels at twelve percent even at maximum crowd framing', () => {
+  assert.equal(typeof gameFeel.resolveReadableGameplayZoom, 'function');
+  for (const viewportHeight of [390, 768, 844, 900, 1080, 1440]) {
+    for (const bodyHeight of [55, 62.35, 72]) {
+      for (const framingZoom of [0.9, 0.94, 1]) {
+        const zoom = gameFeel.resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framingZoom });
+        assert.ok(bodyHeight * zoom / viewportHeight >= 0.12 - 1e-12, `${viewportHeight}/${bodyHeight}/${framingZoom}`);
+        assert.ok(zoom >= framingZoom, 'short viewports must not shrink the established scene');
+      }
+    }
+  }
+  const base = gameFeel.resolveReadableGameplayZoom({ viewportHeight: 900, bodyHeight: 62.35, framingZoom: 1 });
+  const crowded = gameFeel.resolveReadableGameplayZoom({ viewportHeight: 900, bodyHeight: 62.35, framingZoom: 0.9 });
+  assert.ok(Math.abs(crowded / base - 0.9) < 1e-12, 'retain relative encounter framing, do not cancel its motion');
+  for (const viewportHeight of [0, -1, NaN]) {
+    assert.equal(gameFeel.resolveReadableGameplayZoom({ viewportHeight, bodyHeight: 62.35, framingZoom: 0.9 }), 0.9);
+  }
+  for (const bodyHeight of [0, -1, NaN]) {
+    assert.equal(gameFeel.resolveReadableGameplayZoom({ viewportHeight: 900, bodyHeight, framingZoom: 0.9 }), 0.9);
+  }
+  for (const framingZoom of [0, -1, NaN, 2]) {
+    assert.throws(() => gameFeel.resolveReadableGameplayZoom({ viewportHeight: 900, bodyHeight: 62.35, framingZoom }), /framing/i);
+  }
+});
+
+test('the render loop consumes actual hero body height and reports final camera zoom', async () => {
+  const source = await readFile(mainUrl, 'utf8');
+  assert.match(source, /camera\.zoom = resolveReadableGameplayZoom\(\{/u);
+  assert.match(source, /bodyHeight: productionHeroDisplay\?\.minimumBodyHeight/u);
+  assert.match(source, /dataset\.cameraZoom = camera\.zoom\.toFixed\(3\)/u);
+});
 
 test('the game-feel tables are frozen and carry the derived framing values', () => {
   assert.equal(GAME_FEEL_ART_ID, 'projection-game-feel-v1');
@@ -303,9 +336,9 @@ test('pickup sparkles are seeded, tiered, and halve under reduce-flash', () => {
 test('the runtime writes the framing zoom immediately before the pinned camera follow, outside the director block', async () => {
   const source = await readFile(mainUrl, 'utf8');
   assert.match(source, /resolveEncounterFramingZoom\(\{/);
-  assert.match(source, /camera\.zoom = framing\.zoom;\n\s*followCameraTarget\(camera, \{\s*\.\.\.renderActor,/);
+  assert.match(source, /camera\.zoom = resolveReadableGameplayZoom\(\{\s*viewportHeight: viewport\(\)\.height,\s*bodyHeight: productionHeroDisplay\?\.minimumBodyHeight \?\? prototypeMinimumBodyHeight,\s*framingZoom: framing\.zoom,\s*\}\);\s*followCameraTarget\(camera, \{\s*\.\.\.renderActor,/);
   assert.match(source, /dataset\.cameraZoom\s*=/);
-  assert.match(source, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0,\n\s*\}\);\n\s*camera\.zoom = framing\.zoom;/);
+  assert.match(source, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0,\r?\n\s*\}\);\r?\n\s*camera\.zoom = resolveReadableGameplayZoom\(/);
   const directorBlock = source.slice(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled'), source.indexOf('lastBossStep = liquidatorBoss.active'));
   assert.ok(directorBlock.length > 0);
   assert.doesNotMatch(directorBlock, /framing|camera\.zoom/);
@@ -338,7 +371,7 @@ test('the runtime retains the knockback on the player hit and draws the smear pl
   assert.match(source, /if \(magnitude > 0\) applyRecoilImpulse\(motion, \{/);
   const hero = await readFile(heroUrl, 'utf8');
   assert.match(hero, /setTint/);
-  assert.match(hero, /Object\.freeze\(\{ container, layerOrder: index\.layerOrder, applyPose, setLayerVisible, setTint \}\)/);
+  assert.match(hero, /return Object\.freeze\(\{\s*container,\s*layerOrder: index\.layerOrder,[\s\S]*?applyPose,\s*setLayerVisible,\s*setTint,/);
 });
 
 test('the level-up beat fires on the applied-upgrade resume path, never while the panel freezes the tick', async () => {

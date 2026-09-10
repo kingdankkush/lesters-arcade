@@ -7,10 +7,13 @@ House style: `docs/hmh-reboot/AAA-ROADMAP.md`
 
 ---
 
-## STATUS: THIS IS A PLAN. NOTHING IS BUILT.
+## STATUS: S-01–S-03 accepted; not publicly playable
 
-**No STACKED code exists in this checkout.** Read that sentence again before acting on any sentence
-below.
+`docs/stacked/STATUS.md` is the current implementation authority. Accepted S-01 through S-03 source/security integration exists; S-04 is separately policy-blocked. S-06 and S-11/S-12 are isolated prepared candidates, not public gameplay. Hold STACKED at this accepted boundary while the textured HMH gameplay heroes ship. Do not restart accepted core work or retry policy-denied operations.
+
+### Historical planning baseline only
+
+The original table and measurements below describe `ff2934db`, before implementation. They are retained for design history, not current source or production truth.
 
 | Thing | State at `ff2934db` (2026-09-04) |
 | --- | --- |

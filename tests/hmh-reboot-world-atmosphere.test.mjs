@@ -415,8 +415,8 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
   assert.ok(layerAt < names.indexOf('collisionDebug'), 'debug overlays stay legible above the fog');
   assert.ok(layerAt < names.indexOf('label'));
   // The colour grade sits on the stage, above the shaking world container and
-  // under the on-canvas HUD (health pips, boss bar, damage flash, minimap).
-  assert.match(source, /app\.stage\.addChild\(world, atmosphereTint, overlayVisuals, bossLabel, minimap\)/u);
+  // under the retained on-canvas HUD (health pips, boss bar, damage flash).
+  assert.match(source, /app\.stage\.addChild\(world, atmosphereTint, overlayVisuals, bossLabel\)/u);
   assert.equal((source.match(/app\.stage\.addChild\(/gu) ?? []).length, 1);
   for (const pin of [
     /createAtmosphereTextures\(\{ renderer: app\.renderer, GraphicsClass: Graphics \}\)/u,

@@ -181,8 +181,8 @@ export const SIGNATURE_MAX_CHANGED_CELLS = 24;
 // player, stable spawns) so a baseline stays reproducible across machines.
 export const VISUAL_SCENES = Object.freeze([
   // The two opening enemies (bagholder-rusher, forkrunner) stand still until
-  // tick 120, so the frontier scenes hold idle roster sprites on camera and
-  // carry the per-enemy crop check (Cycle 073).
+  // tick 120. Desktop captures their idle poses; the narrower phone camera
+  // captures their real approach at tick 240, before automatic close combat.
   Object.freeze({
     id: 'frontier-relay-desktop',
     query: 'evidenceSafe=1&telemetry=1',
@@ -194,7 +194,7 @@ export const VISUAL_SCENES = Object.freeze([
     id: 'frontier-relay-mobile',
     query: 'evidenceSafe=1&telemetry=1',
     viewport: Object.freeze({ width: 390, height: 844 }),
-    tick: 90,
+    tick: 240,
     // A9 replaces two inner mobile props with one canonical set-piece and a
     // 400-unit dressing-free ring. Desktop scenes retain animated-signal gates.
     requires: Object.freeze({ landmarks: 1, animatedLandmarks: 0 }),
@@ -228,6 +228,9 @@ export const VISUAL_SCENES = Object.freeze([
     query: 'evidenceSafe=1&telemetry=1&worldTour=bridge',
     viewport: Object.freeze({ width: 1440, height: 900 }),
     tick: 180,
+    // The native guard tower is static; gate its actual art and the deck's
+    // elevation instead of requiring the retired blinking tower signal.
+    requires: Object.freeze({ landmarks: 3, props: 5, nativeAssetIds: Object.freeze(['tripo-15']), groundZ: 16 }),
   }),
   Object.freeze({
     id: 'hashwood-foliage-desktop',
@@ -339,13 +342,42 @@ if (isMain) {
   let reducedMotionEvidence = null;
   try {
     for (const scene of VISUAL_SCENES) {
-      const page = await browser.newPage({ viewport: { ...scene.viewport }, deviceScaleFactor: 1 });
+      const page = await browser.newPage({ viewport: { ...scene.viewport }, deviceScaleFactor: 1, hasTouch: scene.viewport.width <= 600 });
       const errors = [];
       page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
       page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
 
       await page.goto(`${origin}/hmh-reboot/index.html?${scene.query}`, { waitUntil: 'domcontentloaded' });
-      await page.waitForSelector('#hmhRebootStage canvas', { timeout: 30_000 });
+      try {
+        await page.waitForSelector('#hmhRebootStage canvas', { timeout: 30_000 });
+      } catch (error) {
+        const diagnostic = {
+          sceneId: scene.id, url: page.url(), errors,
+          body: await page.locator('body').innerText().catch(() => 'unavailable'),
+          failure: String(error?.message ?? error),
+        };
+        await writeFile(path.join(currentDir, `${scene.id}.boot-failure.json`), JSON.stringify(diagnostic, null, 2)).catch(() => {});
+        await page.screenshot({ path: path.join(currentDir, `${scene.id}.boot-failure.png`) }).catch(() => {});
+        console.error(JSON.stringify(diagnostic));
+        throw error;
+      }
+      // Keep the real opening actors alive for their crop check. Automatic
+      // fire now defeats them before an idle capture; aim away using ordinary
+      // mouse input, without injecting health, spawn or simulation state.
+      const aimAway = scene.enemyCrops && scene.viewport.width > 600 ? setInterval(() => {
+        // This point remains above the touch-stick band on portrait phones.
+        void page.mouse.move(24, scene.viewport.height * 0.62).catch(() => {});
+      }, 50) : null;
+      aimAway?.unref();
+      if (scene.enemyCrops && scene.viewport.width <= 600) {
+        const stick = page.locator('[data-hmh-control="aim"]');
+        await stick.waitFor({ state: 'visible' });
+        const box = await stick.boundingBox();
+        const touch = await page.context().newCDPSession(page);
+        const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2, id: 1 };
+        await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [centre] });
+        await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...centre, x: centre.x - 45, y: centre.y + 35 }] });
+      }
       // The hero atlas swaps in asynchronously. Without waiting for it the
       // capture is a race between the prototype and the production actor —
       // exactly the magnitude the per-cell bound is tuned to fail on.
@@ -354,10 +386,11 @@ if (isMain) {
         const actor = stage?.dataset.actorArtSource;
         const enemies = stage?.dataset.enemyArt;
         const props = stage?.dataset.authoredPropStatus;
-        return actor === 'production-blender-atlas-v1'
+        return actor === 'packed-textured-blend'
           && enemies === 'production-roster-atlas-v1'
           && props === 'ready';
       }, undefined, { timeout: 30_000 });
+      if (scene.enemyCrops) await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.aimSource === 'manual');
       // evidenceSafe + telemetry publishes the authoritative tick, so captures
       // are pinned to simulation state rather than wall-clock timing.
       await page.waitForFunction((targetTick) => {
@@ -370,6 +403,7 @@ if (isMain) {
       // arbitrary later tick and the tolerance had to absorb that drift.
       // Escape is the runtime's own pause path and stops the ticker.
       await page.keyboard.press('Escape');
+      if (aimAway) clearInterval(aimAway);
       await page.waitForTimeout(250);
       // Pausing raises the pause dialog, which would sit over the canvas and
       // mask exactly the world we are trying to gate. Hide modal chrome; the
@@ -380,6 +414,7 @@ if (isMain) {
       const observedTick = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick ?? -1));
       await page.waitForTimeout(200);
       const settledTick = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick ?? -1));
+      await writeFile(path.join(currentDir, `${scene.id}.runtime.json`), JSON.stringify(await page.locator('#hmhRebootStage').evaluate(stage => ({ ...stage.dataset })), null, 2));
       if (settledTick !== observedTick) {
         throw new Error(`scene ${scene.id} did not settle before capture (${observedTick} -> ${settledTick})`);
       }
@@ -406,6 +441,13 @@ if (isMain) {
         if (!Number.isFinite(propVisible) || propVisible < requires.props) {
           throw new Error(`scene ${scene.id} has ${String(propVisible)} visible authored props; expected at least ${requires.props}`);
         }
+      }
+      if (requires.nativeAssetIds || requires.groundZ !== undefined) {
+        const current = await page.locator('#hmhRebootStage').evaluate(stage => ({ ids: JSON.parse(stage.dataset.nativePropOnscreenAssetIds ?? '[]'), groundZ: Number(stage.dataset.groundZ) }));
+        for (const id of requires.nativeAssetIds ?? []) {
+          if (!current.ids.includes(id)) throw new Error(`scene ${scene.id} is missing native prop ${id}`);
+        }
+        if (requires.groundZ !== undefined && current.groundZ !== requires.groundZ) throw new Error(`scene ${scene.id} has incorrect deck elevation ${current.groundZ}`);
       }
       // Capture the renderer canvas only, so DOM chrome (cockpit rail, pause
       // panel) cannot mask a change in the rendered world.

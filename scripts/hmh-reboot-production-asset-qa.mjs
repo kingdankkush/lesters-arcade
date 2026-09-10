@@ -1,25 +1,31 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { PRODUCTION_HERO_ASSETS, createProductionHeroAtlasIndex } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
+import { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_MAX_TEXTURE_BYTES, PRODUCTION_HERO_MAX_TEXTURE_TOTAL_BYTES, createProductionHeroAtlasIndex, validateProductionHeroTextureBytes, validateProductionHeroTextureTotalBytes } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
 import { ENEMY_ROSTER_ACTORS, createEnemyRosterAtlasIndex, enemyRosterAsset } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
+import { validateNativeEnemySource, validateNativeEnemyArtifact, validateEnemySourceModes } from './hmh-enemy-source-qa.mjs';
 import { AUTHORED_PROP_ATLAS_IMAGE_URL, AUTHORED_PROP_ATLAS_METADATA_URL, createAuthoredPropAtlasIndex } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from '../apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs';
 import { parseAtlasFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 import { readRgbaPng } from './sprite-qa.mjs';
 import { AUTHORED_PROP_ASSET_IDS } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { evaluateDeclaredSourcePayload } from './hmh-source-model-lfs-check.mjs';
+import { auditTripoProductionAssets } from './hmh-tripo-production-asset-qa.mjs';
+import { auditWorldDesignAssets } from './hmh-world-design-production-asset-qa.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
 const evidencePath = path.join(repoRoot, '.hermes', 'evidence', 'hmh-reboot-18-release', 'active-asset-qa.json');
 const requiredLayers = ['shadow', 'lower-body', 'torso-head', 'weapon'];
-// Detailed reference heroes may use more local atlas entropy, but the unchanged
-// aggregate cap still bounds the four-hero download footprint.
-const maxHeroAtlasBytes = 3.25 * 1024 * 1024;
-const maxHeroAtlasTotalBytes = 12 * 1024 * 1024;
+// Explicitly approved policy: 4 MiB per hero and 16 MiB across all four
+// compressed gameplay textures. Lazy initial transfer is reported separately;
+// it does not substitute for the aggregate texture or decoded-memory gates.
+const maxHeroAtlasBytes = PRODUCTION_HERO_MAX_TEXTURE_BYTES;
+const maxHeroAtlasTotalBytes = PRODUCTION_HERO_MAX_TEXTURE_TOTAL_BYTES;
 const maxRosterAtlasBytes = 2 * 1024 * 1024;
 const maxRosterAtlasTotalBytes = 10 * 1024 * 1024;
 const maxPropAtlasBytes = 512 * 1024;
@@ -54,19 +60,39 @@ function validatePng(imagePath, label) {
   return { imageBytes, png, coverage };
 }
 
+function validateHeroImage(imagePath, metadataPath, label) {
+  const result = spawnSync(process.env.PYTHON ?? 'python', [
+    path.join(repoRoot, 'scripts', 'hmh-hero-atlas-image-report.py'),
+    '--image', imagePath,
+    '--metadata', metadataPath,
+  ], { cwd: repoRoot, encoding: 'utf8', timeout: 120_000 });
+  assert.equal(result.status, 0, `${label} atlas decode failed:\n${result.stderr}\n${result.stdout}`);
+  const report = JSON.parse(result.stdout);
+  assert.ok(report.transparentPixels > 0, `${label} atlas lacks transparency`);
+  assert.ok(report.opaquePixels > 0, `${label} atlas is blank`);
+  assert.equal(report.illegalDuplicateGroups, 0, `${label} duplicates animated frames`);
+  return report;
+}
+
+function sha256File(filePath) {
+  return createHash('sha256').update(readFileSync(filePath)).digest('hex');
+}
+
 const heroReports = [];
 let heroAtlasTotalBytes = 0;
 for (const asset of Object.values(PRODUCTION_HERO_ASSETS)) {
   const imagePath = portalPath(asset.imageUrl);
-  const metadata = JSON.parse(readFileSync(portalPath(asset.metadataUrl), 'utf8'));
-  const { imageBytes, png, coverage } = validatePng(imagePath, asset.actorId);
-  assert.equal(metadata.schemaVersion, 1, `${asset.actorId} schemaVersion`);
+  const metadataPath = portalPath(asset.metadataUrl);
+  const metadata = JSON.parse(readFileSync(metadataPath, 'utf8'));
+  const image = validateHeroImage(imagePath, metadataPath, asset.actorId);
+  const { imageBytes } = image;
+  assert.ok([1, 2].includes(metadata.schemaVersion), `${asset.actorId} schemaVersion`);
   assert.equal(metadata.actorId, asset.actorId, `${asset.actorId} metadata identity`);
   assert.equal(metadata.variantId, asset.variantId, `${asset.actorId} metadata variant`);
   assert.equal(metadata.runtimeAuthority, 'projection-only', `${asset.actorId} runtimeAuthority`);
   assert.deepEqual(metadata.layers, requiredLayers, `${asset.actorId} layer order`);
   assert.equal(metadata.frames.length, 648, `${asset.actorId} frames.length`);
-  assert.ok(imageBytes <= maxHeroAtlasBytes, `${asset.actorId} atlas exceeds maxHeroAtlasBytes`);
+  validateProductionHeroTextureBytes(imageBytes);
   createProductionHeroAtlasIndex(metadata, asset);
   const ids = new Set();
   for (const source of metadata.frames) {
@@ -74,7 +100,7 @@ for (const asset of Object.values(PRODUCTION_HERO_ASSETS)) {
     ids.add(source.id);
     const { x, y, w, h } = source.frame;
     assert.ok(Number.isFinite(x) && Number.isFinite(y) && w > 0 && h > 0, `${asset.actorId} invalid frame rectangle`);
-    assert.ok(x >= 0 && y >= 0 && x + w <= png.width && y + h <= png.height, `${asset.actorId} frame outside atlas`);
+    assert.ok(x >= 0 && y >= 0 && x + w <= image.width && y + h <= image.height, `${asset.actorId} frame outside atlas`);
     assert.ok(Number.isFinite(source.anchor.x) && Number.isFinite(source.anchor.y), `${asset.actorId} invalid anchor`);
     assert.ok(source.anchor.x >= 0 && source.anchor.x <= 1 && source.anchor.y >= 0 && source.anchor.y <= 1, `${asset.actorId} anchor outside frame`);
     assert.ok(Number.isFinite(source.pivot.x) && Number.isFinite(source.pivot.y), `${asset.actorId} invalid pivot`);
@@ -84,10 +110,67 @@ for (const asset of Object.values(PRODUCTION_HERO_ASSETS)) {
     assert.ok(Number.isFinite(source.fps) && source.fps > 0, `${asset.actorId} authored fps missing`);
   }
   heroAtlasTotalBytes += imageBytes;
-  heroReports.push({ actorId: asset.actorId, variantId: asset.variantId, imageBytes, width: png.width, height: png.height, frames: metadata.frames.length, transparentPixels: coverage.transparentPixels, opaquePixels: coverage.opaquePixels, runtimeAuthority: metadata.runtimeAuthority });
+  const metadataBytes = statSync(metadataPath).size;
+  const initialRequestBytes = imageBytes + metadataBytes;
+
+  heroReports.push({ actorId: asset.actorId, variantId: asset.variantId, imageBytes, metadataBytes, initialRequestBytes, width: image.width, height: image.height, decodedRgbaBytes: image.decodedRgbaBytes, decodedRgbaSha256: image.decodedRgbaSha256, encoding: image.encoding, frames: metadata.frames.length, transparentPixels: image.transparentPixels, opaquePixels: image.opaquePixels, runtimeAuthority: metadata.runtimeAuthority });
 }
 assert.equal(heroReports.length, 4, 'four production hero atlases are required');
-assert.ok(heroAtlasTotalBytes <= maxHeroAtlasTotalBytes, 'production hero atlas total exceeds budget');
+assert.equal(validateProductionHeroTextureTotalBytes(heroReports.map((hero) => hero.imageBytes)), heroAtlasTotalBytes);
+
+const productionManifestPath = path.join(repoRoot, 'apps', 'hmh-reboot', 'assets', 'source', 'blender', 'hmh-production-heroes.json');
+const productionManifest = JSON.parse(readFileSync(productionManifestPath, 'utf8'));
+assert.equal(productionManifest.atlas.maxTextureBytesPerHero, maxHeroAtlasBytes, 'manifest and runtime hero texture policy drifted');
+assert.equal(productionManifest.atlas.maxTextureBytesAllHeroes, maxHeroAtlasTotalBytes, 'manifest and runtime aggregate texture policy drifted');
+assert.deepEqual(productionManifest.pilots.map((pilot) => pilot.actorId).sort(), Object.keys(PRODUCTION_HERO_ASSETS).sort());
+for (const pilot of productionManifest.pilots) {
+  const { actorId, sourceModel } = pilot;
+  assert.equal(pilot.status, 'production-textured-gameplay', `${actorId} native source status`);
+  assert.equal(sourceModel.kind, 'packed-textured-blend');
+  assert.deepEqual(pilot.nativeWeaponIds, ['coin-blaster']);
+  assert.deepEqual(pilot.nativeActionIds, ['melee', 'grenade']);
+  const sourcePayload = evaluateDeclaredSourcePayload(readFileSync(path.join(repoRoot, sourceModel.path)), sourceModel);
+  assert.deepEqual(sourcePayload.problems, [], `${actorId} source must be the exact packed Blend or its exact Git LFS pointer`);
+  for (const evidence of [sourceModel.inspection, sourceModel.reproducibility]) {
+    assert.equal(sha256File(path.join(repoRoot, evidence.path)), evidence.sha256, `${evidence.path} provenance hash drifted`);
+  }
+  const inspection = JSON.parse(readFileSync(path.join(repoRoot, sourceModel.inspection.path), 'utf8'));
+  assert.equal(inspection.externalDependencyCount, 0);
+  assert.equal(inspection.weaponSocket, true);
+  assert.equal(inspection.bones.length, actorId === 'lilly' ? 24 : 22);
+  assert.deepEqual(inspection.bones.filter((name) => name.startsWith('coat_tail.')), actorId === 'lilly' ? ['coat_tail.L', 'coat_tail.R'] : []);
+  assert.deepEqual(Object.keys(inspection.actors), [actorId]);
+  assert.deepEqual(inspection.actors[actorId].actions, Object.values(pilot.clipActions));
+  assert.equal(Object.keys(inspection.packedImageHashes).length, sourceModel.packedTextureCount);
+  const weaponMeshes = inspection.actors[actorId].objectsByLayer.weapon.join('\n');
+  const requiredWeaponNames = actorId === 'lit-commando'
+    ? ['Coin Blaster - Textured Handgun', 'Litecoin Knife | Textured Melee Knife', 'Satoshi Frag | Textured Held Grenade']
+    : [' | coin-blaster', ' | litecoin-knife', ' | satoshi-frag-held', ' | satoshi-frag-released'];
+  for (const required of requiredWeaponNames) {
+    assert.ok(weaponMeshes.includes(required), `${actorId} source is missing native ${required}`);
+  }
+  const generated = path.join(repoRoot, productionManifest.atlas.outputDirectory);
+  const metrics = JSON.parse(readFileSync(path.join(generated, pilot.output.metrics), 'utf8'));
+  const report = heroReports.find((candidate) => candidate.actorId === actorId);
+  assert.equal(metrics.status, 'pass');
+  assert.equal(metrics.sourceBlendSha256, sourceModel.sourceSha256);
+  assert.equal(metrics.sourceBlendBytes, sourceModel.sourceBytes);
+  assert.equal(metrics.atlasBytes, report.imageBytes);
+  for (const [output, field] of [['atlas', 'atlasSha256'], ['metadata', 'metadataSha256'], ['contactSheet', 'contactSheetSha256']]) {
+    assert.equal(sha256File(path.join(generated, pilot.output[output])), metrics[field], `${actorId} ${output} artifact drift`);
+  }
+  // The earlier Commando receipt additionally pins its complete decoded image.
+  // New paired exports pin exact atlas bytes and every reconstructed frame.
+  if (actorId === 'lit-commando' || metrics.decodedRgbaSha256 !== undefined) {
+    assert.equal(metrics.decodedRgbaBytes, report.decodedRgbaBytes);
+    assert.equal(metrics.decodedRgbaSha256, report.decodedRgbaSha256);
+  }
+  assert.deepEqual(metrics.logicalFrameReconstruction, { frames: 648, pixelDifferences: 0 });
+  assert.deepEqual(metrics.reproducibilityBudget, productionManifest.reproducibilityBudget);
+  for (const [key, maximum] of Object.entries(productionManifest.reproducibilityBudget)) {
+    assert.ok(metrics.reproducibilityObserved[key] <= maximum, `${actorId} ${key} exceeds the canonical budget`);
+  }
+}
 
 const selectorMetadataPath = path.join(portalRoot, 'assets', 'generated', 'hmh-reboot-hero-selector', 'hmh-reboot-hero-selector-atlas.json');
 const selectorMetadata = JSON.parse(readFileSync(selectorMetadataPath, 'utf8'));
@@ -128,6 +211,7 @@ for (const [heroId, hero] of Object.entries(HMH_REBOOT_HERO_SELECTOR_ATLAS.heroe
 assert.equal(selectorAtlasBytes, selectorMetadata.metrics.totalImageBytes, 'selector metadata total drift');
 assert.ok(selectorAtlasBytes <= maxSelectorAtlasTotalBytes, 'hero selector payload exceeds maxSelectorAtlasTotalBytes');
 
+const enemySourceManifest = JSON.parse(readFileSync(path.join(repoRoot, 'apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json'), 'utf8'));
 const rosterReports = [];
 let rosterAtlasTotalBytes = 0;
 for (const actorId of ENEMY_ROSTER_ACTORS) {
@@ -136,6 +220,11 @@ for (const actorId of ENEMY_ROSTER_ACTORS) {
   const metadata = JSON.parse(readFileSync(portalPath(asset.metadataUrl), 'utf8'));
   const { imageBytes, png, coverage } = validatePng(imagePath, actorId);
   const index = createEnemyRosterAtlasIndex(metadata, actorId);
+  const sourceActor = enemySourceManifest.actors.find((actor) => actor.actorId === actorId);
+  if (actorId === 'bagholder-rusher') {
+    validateNativeEnemySource(sourceActor, repoRoot);
+    validateNativeEnemyArtifact(sourceActor, metadata);
+  }
   assert.equal(metadata.runtimeAuthority, 'projection-only', `${actorId} runtime authority`);
   assert.equal(index.frameCount, actorId === 'the-liquidator' ? 456 : 152, `${actorId} frame count`);
   assert.ok(imageBytes <= maxRosterAtlasBytes, `${actorId} atlas exceeds maxRosterAtlasBytes`);
@@ -156,7 +245,7 @@ assert.equal(rosterMetrics.reproducibleVerified, true, 'enemy roster reproducibi
 // fails the gate. The old nearest-8 quantiser is gone.
 assert.equal(rosterMetrics.reproducibilityPolicy?.kind, 'bounded-premultiplied-rgba-v1', 'roster reproducibility policy');
 assert.deepEqual(rosterMetrics.reproducibilityPolicy?.budget, { maxChangedVisiblePixels: 8, maxChannelDelta: 2, maxTotalChannelDelta: 32 }, 'roster budget');
-assert.equal(rosterMetrics.reproducibilityPolicy?.coldSceneRebuild, true, 'roster gate rebuilds the scene cold');
+validateEnemySourceModes(enemySourceManifest, rosterMetrics);
 assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxChangedVisiblePixels <= 8, 'roster changed-pixel bound');
 assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxChannelDelta <= 2, 'roster channel bound');
 assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxTotalChannelDelta <= 32, 'roster total bound');
@@ -186,6 +275,8 @@ const summary = {
   selectorAtlasCount: selectorReports.length,
   rosterAtlasCount: rosterReports.length,
   propAtlasCount: 1,
+  nativePropReport: auditTripoProductionAssets({ repoRoot }),
+  worldDesignReport: auditWorldDesignAssets({ repoRoot }),
   propAssetCount: propIndex.frameById.size,
   heroAtlasTotalBytes,
   selectorAtlasBytes,

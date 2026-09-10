@@ -12,20 +12,72 @@
     "runLiftScale": 1.25,
     "runStrideScale": 1.2
   },
-  "atlasSha256": "5dc50697b9b2ed1bd7cfaf7013c07f491d501c7e86387774ad0df4b98e20ef42",
+  "atlasBytes": 3981640,
+  "atlasSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
-  "boneCount": 14,
-  "contactSheetSha256": "8ec38f30240e815511f16eedd3b2761d0cd3a25874706fd24f19736235140817",
-  "duplicateDecodedFrameGroups": [],
+  "boneCount": 22,
+  "contactSheetSha256": "5bc98968255a81bfcf2ba73252659805576e0ed1b91d192198e24320fd9a234d",
+  "decodedRgbaBytes": 16777216,
+  "duplicateDecodedFrameGroups": [
+    {
+      "frameIds": [
+        "lit-valkyrie__shadow__idle__south-east__000",
+        "lit-valkyrie__shadow__idle__north-west__000"
+      ],
+      "sha256": "19465c573b6ce3048b36b1dfac2aca4f954483adccb27d40ed046f3214b5405d"
+    },
+    {
+      "frameIds": [
+        "lit-valkyrie__weapon__grenade__south__003",
+        "lit-valkyrie__weapon__grenade__south__004",
+        "lit-valkyrie__weapon__grenade__south-east__003",
+        "lit-valkyrie__weapon__grenade__south-east__004",
+        "lit-valkyrie__weapon__grenade__east__003",
+        "lit-valkyrie__weapon__grenade__east__004",
+        "lit-valkyrie__weapon__grenade__north-east__003",
+        "lit-valkyrie__weapon__grenade__north-east__004",
+        "lit-valkyrie__weapon__grenade__north__003",
+        "lit-valkyrie__weapon__grenade__north__004",
+        "lit-valkyrie__weapon__grenade__north-west__003",
+        "lit-valkyrie__weapon__grenade__north-west__004",
+        "lit-valkyrie__weapon__grenade__west__003",
+        "lit-valkyrie__weapon__grenade__west__004",
+        "lit-valkyrie__weapon__grenade__south-west__003",
+        "lit-valkyrie__weapon__grenade__south-west__004"
+      ],
+      "sha256": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+    },
+    {
+      "frameIds": [
+        "lit-valkyrie__shadow__idle__north-east__000",
+        "lit-valkyrie__shadow__idle__south-west__000"
+      ],
+      "sha256": "ec81337e8c75145902a34322bd491686e57bccce0ee2f17840498a66c151dfbf"
+    }
+  ],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
+  "frameSize": [
+    256,
+    256
+  ],
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "5f5a5372ce2eb9593af3674972965510905cdbe8fc41959910f0ae5aef704457",
+  "intentionalHiddenFrameCount": 16,
+  "logicalFrameReconstruction": {
+    "frames": 648,
+    "pixelDifferences": 0
+  },
+  "metadataSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+  "mode": "clip-actions",
+  "pivotPixels": [
+    128,
+    205
+  ],
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -34,17 +86,20 @@
   },
   "reproducibilityMode": "bounded-premultiplied-rgba-v1",
   "reproducibilityObserved": {
-    "maxChangedVisiblePixels": 0,
-    "maxChannelDelta": 0,
-    "maxTotalChannelDelta": 0,
-    "worstFrameId": "lit-valkyrie__shadow__idle__south__000"
+    "maxChangedVisiblePixels": 2,
+    "maxChannelDelta": 1,
+    "maxTotalChannelDelta": 2,
+    "worstFrameId": "lit-valkyrie__torso-head__melee__east__000"
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
+  "sourceBlendBytes": 61129265,
+  "sourceBlendSha256": "f090f2e2a387f8ee3c2666bed1af22344f6ec82b1695bc62f1d18f1cfb8268ec",
+  "sourceKind": "packed-textured-blend",
+  "sourceModelSha256": "f090f2e2a387f8ee3c2666bed1af22344f6ec82b1695bc62f1d18f1cfb8268ec",
   "status": "pass",
   "transparentCornerFailureCount": 0,
-  "uniqueAnimatedFrameCount": 640,
+  "uniqueAnimatedFrameCount": 624,
   "uniqueFrameIdCount": 648,
   "variantId": "plasma-striker",
   "weaponSocket": true

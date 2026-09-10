@@ -13,6 +13,7 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 
 from hmh_pipeline_lock import exclusive_pipeline_lock
+from hmh_hero_frame_visibility import RELEASED_PROP, is_released_prop_frame, validate_released_weapon_frames
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,7 +65,12 @@ def blender_version() -> str:
     return completed.stdout.splitlines()[0].replace("Blender ", "").strip()
 
 
+def expected_visible_animated_count(frames: list[dict]) -> int:
+    return sum(1 for frame in frames if frame['layer'] != 'shadow' and not is_released_prop_frame(frame))
+
+
 def expected_frames(manifest: dict, pilot: dict) -> list[dict]:
+    released_weapon_frames = validate_released_weapon_frames(pilot)
     frames = []
     for layer in pilot["layers"]:
         for state, clip in pilot["clips"][layer].items():
@@ -80,6 +86,7 @@ def expected_frames(manifest: dict, pilot: dict) -> list[dict]:
                         "frameIndex": frame_index,
                         "fps": clip["fps"],
                         "loop": clip.get("loop", True),
+                        **({"visibility": RELEASED_PROP} if released_weapon_frames and layer == "weapon" and state == "grenade" and frame_index in (3, 4) else {}),
                     })
     return frames
 
@@ -111,6 +118,7 @@ def analyze_frame_set(directory: Path, frames: list[dict], frame_size: tuple[int
 
     records = []
     empty = []
+    intentional_hidden = []
     corner_failures = []
     hashes = defaultdict(list)
     for frame in frames:
@@ -118,6 +126,12 @@ def analyze_frame_set(directory: Path, frames: list[dict], frame_size: tuple[int
         if image.size != frame_size:
             raise RuntimeError(f"Unexpected dimensions for {frame['filename']}: {image.size}")
         bbox = alpha_bbox(image, threshold)
+        released = is_released_prop_frame(frame)
+        if released:
+            if image.getchannel("A").getextrema() != (0, 0):
+                raise RuntimeError(f"Declared released prop remains visible: {frame['id']}")
+            intentional_hidden.append(frame["id"])
+            bbox = (pivot[0], pivot[1], pivot[0] + 1, pivot[1] + 1)
         if bbox is None:
             empty.append(frame["id"])
             continue
@@ -131,18 +145,20 @@ def analyze_frame_set(directory: Path, frames: list[dict], frame_size: tuple[int
         y1 = max(y1, pivot[1] + 1)
         decoded_hash = hashlib.sha256(image.tobytes()).hexdigest()
         hashes[decoded_hash].append(frame["id"])
-        opaque = sum(1 for alpha in image.getchannel("A").get_flattened_data() if alpha > threshold)
+        opaque = sum(1 for alpha in image.getchannel("A").tobytes() if alpha > threshold)
         records.append({**frame, "image": image, "bbox": (x0, y0, x1, y1), "decodedHash": decoded_hash, "opaquePixels": opaque})
     if empty or corner_failures:
         raise RuntimeError(f"Invalid frame evidence: empty={empty[:8]} cornerFailures={corner_failures[:8]}")
     duplicate_groups = [{"sha256": digest, "frameIds": ids} for digest, ids in sorted(hashes.items()) if len(ids) > 1]
-    illegal_duplicates = [group for group in duplicate_groups if any("__shadow__" not in frame_id for frame_id in group["frameIds"])]
+    hidden_ids = set(intentional_hidden)
+    illegal_duplicates = [group for group in duplicate_groups if not all("__shadow__" in frame_id for frame_id in group["frameIds"]) and not all(frame_id in hidden_ids for frame_id in group["frameIds"])]
     if illegal_duplicates:
         raise RuntimeError(f"Animated decoded-frame duplicates: {illegal_duplicates[:4]}")
-    animated_hashes = {record["decodedHash"] for record in records if record["layer"] != "shadow"}
+    animated_hashes = {record["decodedHash"] for record in records if record["layer"] != "shadow" and not is_released_prop_frame(record)}
     return {
         "records": records,
         "empty": empty,
+        "intentionalHiddenFrames": intentional_hidden,
         "cornerFailures": corner_failures,
         "duplicateGroups": duplicate_groups,
         "uniqueAnimatedFrameCount": len(animated_hashes),
@@ -158,7 +174,11 @@ def compare_premultiplied(directory_a: Path, directory_b: Path, frames: list[dic
         changed = 0
         max_delta = 0
         total_delta = 0
-        for pixel_a, pixel_b in zip(image_a.get_flattened_data(), image_b.get_flattened_data()):
+        # Pillow 11 is the deployment baseline; newer Pillow avoids the old
+        # accessor's deprecation while retaining identical RGBA iteration.
+        pixels_a = getattr(image_a, "get_flattened_data", image_a.getdata)()
+        pixels_b = getattr(image_b, "get_flattened_data", image_b.getdata)()
+        for pixel_a, pixel_b in zip(pixels_a, pixels_b):
             premul_a = tuple(round(channel * pixel_a[3] / 255) for channel in pixel_a[:3]) + (pixel_a[3],)
             premul_b = tuple(round(channel * pixel_b[3] / 255) for channel in pixel_b[:3]) + (pixel_b[3],)
             deltas = [abs(left - right) for left, right in zip(premul_a, premul_b)]
@@ -177,9 +197,26 @@ def compare_premultiplied(directory_a: Path, directory_b: Path, frames: list[dic
 
 
 def shelf_pack(records: list[dict], padding: int, max_size: int) -> tuple[int, dict[str, tuple[int, int, int, int]]]:
-    for size in (1024, 2048):
-        if size > max_size:
-            continue
+    sizes = tuple(size for size in (1024, 2048) if size <= max_size)
+    if not sizes:
+        raise RuntimeError(f"Frames exceed max atlas size {max_size}")
+    largest = sizes[-1]
+    dimensions = [(record['bbox'][2] - record['bbox'][0], record['bbox'][3] - record['bbox'][1]) for record in records]
+    if any(width + 2 * padding > largest or height + 2 * padding > largest for width, height in dimensions):
+        raise RuntimeError(f"Rectangle exceeds atlas bounds {largest} with padding {padding}")
+    crop_area = sum(width * height for width, height in dimensions)
+    # Match the established shelf contract: one padding-wide outer border and
+    # one gap between crops. Inflate right/bottom by padding in a size-padding
+    # bin. This is a necessary bound, never a claim that smaller area will fit.
+    padded_area = sum((width + padding) * (height + padding) for width, height in dimensions)
+    available_area = (largest - padding) ** 2
+    if padded_area > available_area:
+        raise RuntimeError(
+            f"Atlas area impossible: frames={len(records)} cropArea={crop_area} "
+            f"atlasArea={largest ** 2} paddedArea={padded_area} "
+            f"availablePaddedArea={available_area} padding={padding} maxSize={largest}"
+        )
+    for size in sizes:
         x = padding
         y = padding
         row_height = 0
@@ -190,6 +227,9 @@ def shelf_pack(records: list[dict], padding: int, max_size: int) -> tuple[int, d
             x0, y0, x1, y1 = record["bbox"]
             width = x1 - x0
             height = y1 - y0
+            if width + 2 * padding > size or height + 2 * padding > size:
+                ok = False
+                break
             if x + width + padding > size:
                 x = padding
                 y += row_height + padding
@@ -216,6 +256,8 @@ def pilot_pivot(manifest: dict, pilot: dict) -> tuple[int, int]:
     pivot scales with it, the same rule run-hmh-enemy-roster-pipeline.py uses
     for the boss.
     """
+    if "sourcePivot" in pilot:
+        return tuple(pilot["sourcePivot"])
     default_size = manifest["render"]["frameSize"]
     frame_size = pilot_frame_size(manifest, pilot)
     source = manifest["pivot"]["sourcePixels"]
@@ -235,6 +277,13 @@ def _save_atlas_image(atlas: Image.Image, atlas_path: Path) -> None:
 
 
 def build_atlas(manifest: dict, pilot: dict, analysis: dict, output_dir: Path) -> tuple[Path, Path, dict]:
+    if pilot.get("trimTransparentPadding", manifest["atlas"].get("trimTransparentPadding", False)):
+        from hmh_trimmed_hero_atlas import build_trimmed_atlas
+        return build_trimmed_atlas(
+            manifest, pilot, analysis, output_dir,
+            pilot_frame_size(manifest, pilot), pilot_pivot(manifest, pilot),
+            shelf_pack, _save_atlas_image,
+        )
     padding = manifest["atlas"]["padding"]
     atlas_size, placements = shelf_pack(analysis["records"], padding, manifest["atlas"]["maxSize"])
     atlas = Image.new("RGBA", (atlas_size, atlas_size), (0, 0, 0, 0))
@@ -351,7 +400,7 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
 
     for raw_output, report_output, label in ((run_a, report_a, "render run A"), (run_b, report_b, "render run B")):
         run_checked([
-            str(BLENDER), "--background", str(source_blend), "--python", str(EXPORTER_PATH), "--",
+            str(BLENDER), "--background", "--disable-autoexec", str(source_blend), "--python-exit-code", "1", "--python", str(EXPORTER_PATH), "--",
             "--manifest", str(manifest_path), "--actor-id", pilot["actorId"],
             "--raw-output", str(raw_output), "--report-output", str(report_output),
         ], f"{pilot['actorId']} {label}")
@@ -383,10 +432,7 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
         raise RuntimeError(f"Source/export inspection failed for {pilot['actorId']}: inspection={inspection} report={report}")
     if set(actor_inspection["objectsByLayer"]) != set(pilot["layers"]):
         raise RuntimeError(f"Actor inspection layers mismatch for {pilot['actorId']}: {actor_inspection}")
-    expected_animated_frames = len(frames) - sum(
-        clip["frames"] * len(manifest["directions"])
-        for clip in pilot["clips"]["shadow"].values()
-    )
+    expected_animated_frames = expected_visible_animated_count(frames)
     if analysis_a["uniqueAnimatedFrameCount"] != expected_animated_frames:
         raise RuntimeError(
             f"Expected {expected_animated_frames} unique animated frames for {pilot['actorId']}, "
@@ -394,24 +440,36 @@ def process_pilot(manifest: dict, pilot: dict, source_blend: Path, temp_root: Pa
         )
 
     atlas_path, metadata_path, atlas_size = build_atlas(manifest, pilot, analysis_a, output_root)
+    atlas_bytes = atlas_path.stat().st_size
+    max_texture_bytes = manifest["atlas"].get("maxTextureBytesPerHero")
+    if max_texture_bytes is not None and atlas_bytes > max_texture_bytes:
+        raise RuntimeError(
+            f"Atlas transfer budget exceeded for {pilot['actorId']}: "
+            f"{atlas_bytes} > {max_texture_bytes} bytes"
+        )
     contact_sheet_path = build_contact_sheet(manifest, pilot, run_a, output_root)
     metrics_path = output_root / Path(pilot["output"]["metrics"]).name
     metrics = {
         "schema": "hmh-reboot-production-hero-pilot-metrics-v1", "status": "pass", "actorId": pilot["actorId"], "variantId": pilot["variantId"], "animationProfile": pilot["animationProfile"],
         "blenderVersion": actual_version, "gameplayBodyProfile": manifest["gameplayBodyProfile"], "runtimeAuthority": pilot["runtimeAuthority"],
         "frameCount": len(frames), "uniqueFrameIdCount": len({frame["id"] for frame in frames}), "uniqueAnimatedFrameCount": analysis_a["uniqueAnimatedFrameCount"],
+        "intentionalHiddenFrameCount": len(analysis_a["intentionalHiddenFrames"]),
         "duplicateDecodedFrameGroups": analysis_a["duplicateGroups"], "emptyFrameCount": len(analysis_a["empty"]), "transparentCornerFailureCount": len(analysis_a["cornerFailures"]),
         "externalDependencyCount": inspection["externalDependencyCount"], "weaponSocket": inspection["weaponSocket"], "boneCount": len(inspection["bones"]),
         "reproducibility": "pass", "reproducibilityMode": "bounded-premultiplied-rgba-v1", "reproducibilityBudget": budget, "reproducibilityObserved": observed,
         "frameSize": list(frame_size), "pivotPixels": list(pivot), "mode": report.get("mode", "trig-pose"),
         "sourceModelSha256": pilot.get("sourceModel", {}).get("sourceSha256"),
-        "atlasSize": atlas_size, "sourceBlendSha256": sha256_file(source_blend), "atlasSha256": sha256_file(atlas_path), "metadataSha256": sha256_file(metadata_path),
+        "atlasSize": {"width": atlas_size["width"], "height": atlas_size["height"]}, "sourceBlendSha256": sha256_file(source_blend), "sourceBlendBytes": source_blend.stat().st_size,
+        "sourceKind": pilot.get("sourceModel", {}).get("kind", "generated-procedural-blend"),
+        "atlasBytes": atlas_bytes, "decodedRgbaBytes": atlas_size["width"] * atlas_size["height"] * 4,
+        "atlasSha256": sha256_file(atlas_path), "metadataSha256": sha256_file(metadata_path),
+        "logicalFrameReconstruction": {"frames": atlas_size.get("reconstructedFrames", 0), "pixelDifferences": atlas_size.get("reconstructionPixelDifferences", 0)},
         "contactSheetSha256": sha256_file(contact_sheet_path),
     }
     write_lf_json(metrics_path, metrics)
     return {
         "status": "pass", "actorId": pilot["actorId"], "frames": len(frames),
-        "atlas": str(atlas_path.relative_to(ROOT)), "atlasSize": atlas_size,
+        "atlas": str(atlas_path.relative_to(ROOT)), "atlasSize": {"width": atlas_size["width"], "height": atlas_size["height"]},
         "reproducibilityObserved": observed,
     }
 
@@ -440,13 +498,34 @@ def main(args: argparse.Namespace | None = None) -> None:
     if backup.exists():
         backup.unlink()
     inspection = read_json(inspection_path)
-    if set(inspection.get("actors", {})) != {pilot["actorId"] for pilot in manifest["pilots"]}:
+    generated_pilots = [pilot for pilot in manifest["pilots"] if pilot.get("sourceModel", {}).get("format") != "blend"]
+    packed_pilots = [pilot for pilot in manifest["pilots"] if pilot.get("sourceModel", {}).get("format") == "blend"]
+    if set(inspection.get("actors", {})) != {pilot["actorId"] for pilot in generated_pilots}:
         raise RuntimeError(f"Source actor inspection mismatch: {inspection}")
 
     summaries = [
         process_pilot(manifest, pilot, source_blend, temp_root, inspection, actual_version, manifest_path, generated_output_root)
-        for pilot in manifest["pilots"]
+        for pilot in generated_pilots
     ]
+    inspector = ROOT / "scripts/hmh-blender/inspect-hmh-packed-hero-source.py"
+    for pilot in packed_pilots:
+        packed_source = ROOT / pilot["sourceModel"]["path"]
+        if sha256_file(packed_source) != pilot["sourceModel"]["sourceSha256"] or packed_source.stat().st_size != pilot["sourceModel"]["sourceBytes"]:
+            raise RuntimeError(f"Packed source identity drifted for {pilot['actorId']}")
+        packed_manifest = {
+            **manifest,
+            "pilots": [pilot],
+            "scene": {**manifest["scene"], "sourceBlend": pilot["sourceModel"]["path"], "armature": pilot["armature"]},
+        }
+        packed_manifest_path = temp_root / f"{pilot['actorId']}-packed-manifest.json"
+        packed_inspection_path = temp_root / f"{pilot['actorId']}-source-inspection.json"
+        write_lf_json(packed_manifest_path, packed_manifest)
+        run_checked([
+            str(BLENDER), "--background", "--factory-startup", "--python-exit-code", "1", "--python", str(inspector), "--",
+            "--source-blend", str(packed_source), "--manifest", str(packed_manifest_path), "--output", str(packed_inspection_path),
+        ], f"{pilot['actorId']} packed source inspection")
+        packed_inspection = read_json(packed_inspection_path)
+        summaries.append(process_pilot(packed_manifest, pilot, packed_source, temp_root, packed_inspection, actual_version, packed_manifest_path, generated_output_root))
     print(json.dumps({"status": "pass", "actors": summaries}, sort_keys=True))
 
 

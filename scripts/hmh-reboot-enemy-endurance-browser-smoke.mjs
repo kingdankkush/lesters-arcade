@@ -173,7 +173,7 @@ async function runProfile(browser, origin, profile) {
     return stage?.dataset.endurancePressurePilot === 'true'
       && Number(stage.dataset.enemyCount) === target
       && Number(stage.dataset.simulationTick) >= 8
-      && stage.dataset.actorArtSource === 'production-blender-atlas-v1'
+      && stage.dataset.actorArtSource === 'packed-textured-blend'
       && stage.dataset.enemyArt === 'production-roster-atlas-v1'
       && stage.dataset.authoredPropStatus === 'ready';
   }, TARGET_ENEMIES, { timeout: 120_000 });
@@ -257,7 +257,7 @@ async function runProfile(browser, origin, profile) {
   if (Math.max(...samples.map((sample) => sample.safetySteps)) < MIN_RETAINED_ENEMIES) failures.push('enemy safety resolver was not exercised at 100+ bodies');
   if (samples.some((sample) => sample.health <= 0 || !sample.canvasVisible)) failures.push('evidence-safe player or canvas became unavailable');
   if (samples.some((sample) => sample.encounterBand !== 'endurance' || sample.endurancePilot !== 'true')) failures.push('endurance evidence band drifted');
-  if (samples.some((sample) => sample.actorArt !== 'production-blender-atlas-v1' || sample.enemyArt !== 'production-roster-atlas-v1' || sample.authoredProps !== 'ready')) failures.push('production art readiness drifted');
+  if (samples.some((sample) => sample.actorArt !== 'packed-textured-blend' || sample.enemyArt !== 'production-roster-atlas-v1' || sample.authoredProps !== 'ready')) failures.push('production art readiness drifted');
   // Canonical touch chrome is move, aim/fire, power, weapon, and pause. The
   // dedicated mobile-control matrix exercises real touch gestures; this gate
   // keeps all five controls present while the 128-body load is active.

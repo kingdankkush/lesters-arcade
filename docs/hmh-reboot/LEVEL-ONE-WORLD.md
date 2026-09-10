@@ -1,19 +1,19 @@
 # Hard Money Heroes Reboot: Level 1 World Contract
 
-Status: Phase 17 candidate, pending exact-index independent certification
+Status: authored bridge/reservoir candidate; paired native integration and current gameplay certification pending.
 
 ## Scope
 
 `apps/hmh-reboot/src/level-one-world.mjs` is the repo-owned source of truth for the seamless Level 1 graybox, **The Forked Frontier**. Runtime rendering, collision, elevation, traversal, encounter districts, spawn placement, POI rest windows, minimap geometry, and fog reveal derive from this module.
 
-The phase deliberately keeps prototype geometry and neutral human graybox actors. Every player, enemy, and boss marker now has an explicit head, torso, two arms, and two legs; archetype color remains a role cue without using animals, machines, robots, or abstract polygons as actor proxies. Production terrain materials, props, actor sheets, particles, lighting, and shaders remain gated to later art phases. No generated or paid asset was added.
+The original Phase17 work used prototype geometry and neutral human graybox actors. Its historical receipts below do not certify the later native-art rollout or this new world candidate. Read [Bridges, reservoir and combat routes](world-design/BRIDGES-RESERVOIR-AND-COMBAT.md) for the current authored delta, source assets and integration dependencies. Hermes retains native runtime adoption and release ownership.
 
 ## Authored dimensions and pacing
 
 - Bounds: `12,000 × 4,800` world units.
 - Player speed: `240` world units per second.
-- Main route: `12,083.609273` world units.
-- Unopposed main-route traversal: about `50.35` seconds.
+- Main route: `13,281.900436` world units.
+- Unopposed main-route traversal: about `55.34` seconds.
 - Protected spawn: `(800, 2400)`, radius `560`.
 - Six ordered districts:
   1. Frontier Relay
@@ -28,9 +28,9 @@ The phase deliberately keeps prototype geometry and neutral human graybox actors
 The world contract owns:
 
 - ordered district bounds and seam metadata;
-- main route plus six convergent optional loops;
+- main route plus eight convergent optional routes;
 - route nodes, widths, bridge crossing, and authored ramps;
-- deep water, shallows, bridge deck, ledges, one-way drops, and ground-height metadata;
+- blocked river/reservoir water, two physical bridge decks, ledges, one-way drops, and ground-height metadata;
 - visible collision blockers and matching visible barrier IDs;
 - visible perimeter causes for every hard world edge;
 - landmarks, reward POIs, encounter arenas, deterministic spawn points;
@@ -45,7 +45,7 @@ The world contract owns:
 |---|---|---|---|
 | Dimensions and traversal-time target | `level-one-world.mjs` bounds, player speed, main route | route length and 40–70 second target test | world telemetry in desktop/mobile/bridge smokes |
 | District progression and seams | ordered `districts`, `getLevelOneDistrictAt()` | complete coverage and deterministic seam tests | district telemetry; bridge tour enters Liquidity Crossing |
-| Main route, loops, shortcuts | `routeGraph`, seven authored routes | graph reachability, loop convergence, full canonical route sweep | route/minimap visible in screenshots |
+| Main route, loops, shortcuts | `routeGraph`, nine authored routes | graph reachability, loop convergence, full canonical route sweep | route/minimap visible in screenshots |
 | Spawn protection | player spawn, protected radius, feature anchors | solids, hazards, landmarks, arenas excluded from radius | unobstructed opening screenshot |
 | Clearance and bridge crossing | route widths, bridge width, canonical blockers | radius-aware collision sweep and complete traversal test | `bridge-world.png` |
 | Water, banks, bridge, ramps, ledges | elevation surfaces and visible seam metadata | deep-water rejection; bridge/ravine/mining legal traversal | bridge deck, rails, water, and ramps visibly align |
@@ -60,7 +60,7 @@ The world contract owns:
 
 `scripts/hmh-reboot-level-one-world-soak.mjs` walks the complete main route through the canonical collision and elevation APIs at fixed 60 Hz under 60, 30, and 20 FPS render partitions.
 
-Latest candidate result:
+Historical Phase17 result (not a receipt for the current candidate):
 
 - target ticks: `3,050`;
 - final position: `(11000, 2400, z=0)`;

@@ -10,6 +10,7 @@ import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycl
 import { createChikunHost } from './src/chikun-host.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
+import { mountHmhChallengeUi } from './src/hmh-challenge-ui.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from './src/arcade-music-transport.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
@@ -75,6 +76,7 @@ import { createOfficialShellRoutes } from './src/routes/official-shell-routes.mj
 import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
 import { createOfficialProfileRoute } from './src/routes/official-profile-route.mjs';
 import { createOfficialLeaderboardRoute } from './src/routes/official-leaderboard-route.mjs';
+import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
   generateDistrictGrid,
@@ -262,6 +264,7 @@ import {
   scheduleBossEncounter,
   simulateLesterBlasterRun,
   startPlaySession,
+  getPlaySessionIdentity,
   AVATAR_RULES,
   validateAvatarFile,
   computeAvatarResize,
@@ -1658,7 +1661,9 @@ const dom = {
   officialWalletSplash: document.querySelector('#officialWalletSplash'),
   splashFeaturedCabinet: document.querySelector('#splashFeaturedCabinet'),
   officialConnectButton: document.querySelector('#officialConnectButton'),
+  officialHmhFreeQuickplayButton: document.querySelector('#officialHmhFreeQuickplayButton'),
   officialGuestEnterButton: document.querySelector('#officialGuestEnterButton'),
+  officialGuestQuickplayStatus: document.querySelector('#officialGuestQuickplayStatus'),
   officialWalletCopy: document.querySelector('#officialWalletCopy'),
   officialArcadeFloor: document.querySelector('#officialArcadeFloor'),
   officialProfileEyebrow: document.querySelector('#officialProfileEyebrow'),
@@ -3890,7 +3895,7 @@ async function restartCombatRun() {
     currentSession = beginTrackedSession({ mode: 'paid' });
   } else {
     dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or ranked state is written.';
-    currentSession = startPlaySession({ wallet: connectedWallet ?? MOCK_WALLET, gameId: selectedGameId, mode: 'free' });
+    currentSession = beginTrackedSession({ mode: 'free' });
   }
   await startCombat();
   combat.paused = false;
@@ -4579,11 +4584,19 @@ async function ensureGameIdHashes() {
 }
 
 function mergeChainRecordIntoState(rec, gameId) {
+  // Only verified records from the pinned-network reader may enter official UI.
+  // Validate before mutating any parent store; an unknown game has no fallback.
+  if (rec?.verified !== true || rec.onChain !== true || typeof gameId !== 'string' || !gameId
+    || typeof rec.player !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(rec.player)
+    || ['sessionId32', 'gameId32'].some((key) => typeof rec[key] !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(rec[key]))
+    || ['score', 'kills', 'maxCombo', 'survivalSeconds', 'submittedAt'].some((key) => !Number.isSafeInteger(rec[key]) || rec[key] < 0)) return false;
+  const submittedDate = new Date(rec.submittedAt * 1000);
+  if (!Number.isFinite(submittedDate.getTime())) return false;
   // Skip if this session already exists locally (dedup).
   state.officialSessions ??= [];
   if (state.officialSessions.some((s) => s.onChainSessionId32 === rec.sessionId32)) return false;
-  const recordedAt = new Date(rec.submittedAt * 1000).toISOString();
-  const syntheticSessionId = `chain:${rec.sessionId32.slice(0, 18)}`;
+  const recordedAt = submittedDate.toISOString();
+  const syntheticSessionId = `chain:${rec.sessionId32}`;
   // File into the cadence boards (what the leaderboard UI reads).
   try {
     recordCadenceScore(state, gameId, {
@@ -4592,7 +4605,10 @@ function mergeChainRecordIntoState(rec, gameId) {
       sessionId: syntheticSessionId,
       recordedAt,
       runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-      settlementTxHash: rec.sessionId32,
+      settlementTxHash: null,
+      onChainSessionId32: rec.sessionId32,
+      onChain: true,
+      chainVerified: true,
     });
   } catch { /* numeric guard already in engine */ }
   // Flat board mirror.
@@ -4609,6 +4625,8 @@ function mergeChainRecordIntoState(rec, gameId) {
     runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
     recordedAt,
     onChain: true,
+    onChainSessionId32: rec.sessionId32,
+    chainVerified: true,
   });
   state.leaderboards[gameId].sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
   // Track that we ingested this on-chain session (dedup key).
@@ -4616,6 +4634,7 @@ function mergeChainRecordIntoState(rec, gameId) {
     sessionId: syntheticSessionId,
     onChainSessionId32: rec.sessionId32,
     wallet: rec.player,
+    chainVerified: true,
     gameId,
     score: rec.score,
     runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
@@ -4636,7 +4655,7 @@ async function hydrateLeaderboardFromChain() {
     if (!res.ok || !res.records.length) return;
     let merged = 0;
     for (const rec of res.records) {
-      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase()) ?? 'lester-blaster';
+      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase());
       if (mergeChainRecordIntoState(rec, gameId)) merged += 1;
     }
     if (merged > 0) {
@@ -4660,7 +4679,7 @@ async function hydrateProfileFromChain() {
     if (!res.ok || !res.records.length) return;
     let merged = 0;
     for (const rec of res.records) {
-      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase()) ?? 'lester-blaster';
+      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase());
       if (mergeChainRecordIntoState(rec, gameId)) merged += 1;
     }
     if (merged > 0) {
@@ -5030,6 +5049,22 @@ function mountChikunSession() {
   });
 }
 
+const hmhChallengeUi = mountHmhChallengeUi({
+  dom: {
+    panel: document.querySelector('#hmhChallengePanel'),
+    choice: document.querySelector('#hmhChallengeChoice'),
+    sharedOption: document.querySelector('#hmhChallengeSharedOption'),
+    status: document.querySelector('#hmhChallengeStatus'),
+    link: document.querySelector('#hmhChallengeLink'),
+    copy: document.querySelector('#hmhChallengeCopy'),
+    freeButton: dom.officialFreeModeButton,
+  },
+  search: bootRuntimeSearch,
+  identity: getPlaySessionIdentity('lester-blaster'),
+  location: window.location.href,
+  copyText: navigator.clipboard?.writeText ? (text) => navigator.clipboard.writeText(text) : null,
+});
+
 const officialPlayRoutes = createOfficialPlayRoutes({
   appendText,
   applyGameModeSelectBackground,
@@ -5073,8 +5108,14 @@ const officialPlayRoutes = createOfficialPlayRoutes({
 });
 const renderOfficialCabinets = officialPlayRoutes.renderCabinets;
 const renderOfficialCharacterSelect = officialPlayRoutes.renderCharacterSelect;
-const renderOfficialGameplay = officialPlayRoutes.renderGameplay;
-const renderOfficialModeSelect = officialPlayRoutes.renderModeSelect;
+const renderOfficialGameplay = () => {
+  officialPlayRoutes.renderGameplay();
+  if (currentSession?.hmhChallenge) dom.officialGameModeTitle.textContent += ` // ${currentSession.hmhChallenge.label}`;
+};
+const renderOfficialModeSelect = () => {
+  officialPlayRoutes.renderModeSelect();
+  hmhChallengeUi.render(selectedGameId);
+};
 
 const officialAppRoutes = createOfficialAppRoutes({
   dom,
@@ -5132,6 +5173,8 @@ function enterArcadeAsGuest() {
 
 async function startOfficialMode(mode) {
   playSfxCue('menu-click');
+  try { hmhChallengeUi.requestFor(selectedGameId, mode); }
+  catch { setOfficialView('mode-select'); return; }
   // Ranked is paid/official and wallet-bound. A guest must connect first.
   if (mode === 'ranked') {
     if (!connectedWallet) {
@@ -5177,16 +5220,16 @@ async function startOfficialMode(mode) {
   if (selectedGameId === 'chikun') mountChikunSession();
 }
 
-// Ranked PRE-FLIGHT modal. Returns Promise<boolean> — true when the wallet is on
-// LitVM LiteForge (4441) AND holds enough zkLTC to publish a run at game over.
-// No signature and no transaction happen here; the only on-chain write is the
-// auto-submit at game over. If the player is on the wrong chain we offer an
-// in-place switch; if they're short on zkLTC we surface the faucet and block
-// start until they're funded (re-checkable without closing the modal).
+// Parent-owned Ranked prerequisite modal. Read-only contract/chain/gas checks
+// are not entry payment or verifier-service acceptance. Local preview remains
+// network-free while SETTLEMENT_LIVE is false.
 function requestRankedEntry() {
   return new Promise((resolve) => {
     const modal = dom.rankedEntryModal;
-    if (!modal) { resolve(true); return; }
+    if (!modal) { resolve(!SETTLEMENT_LIVE); return; }
+    const requestedGameId = selectedGameId;
+    let closed = false;
+    let checkSequence = 0;
     const provider = detectEthereumProvider();
     const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
     dom.rankedEntryWallet.textContent = walletShort;
@@ -5201,15 +5244,18 @@ function requestRankedEntry() {
     modal.hidden = false;
 
     const cleanup = () => {
+      closed = true;
+      dom.rankedEntryApprove.disabled = true;
       modal.hidden = true;
       dom.rankedEntryApprove.removeEventListener('click', onApprove);
       dom.rankedEntryCancel.removeEventListener('click', onCancel);
     };
     const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
     const onApprove = () => {
+      if (closed || dom.rankedEntryApprove.disabled) return;
       playSfxCue('wallet-connect', 0.05);
       cleanup();
-      resolve(true);
+      resolve(requestedGameId === selectedGameId);
     };
     dom.rankedEntryApprove.addEventListener('click', onApprove);
     dom.rankedEntryCancel.addEventListener('click', onCancel);
@@ -5222,12 +5268,15 @@ function requestRankedEntry() {
       return;
     }
 
-    // Run the readiness check (chain + balance) and paint the result.
+    // Only the latest check for this still-open modal may change admission.
     const runCheck = async () => {
+      if (closed) return;
+      const sequence = ++checkSequence;
       dom.rankedEntryApprove.disabled = true;
       guard.hidden = true;
       guard.replaceChildren();
-      const r = await checkRankedReadiness(provider);
+      const r = await checkRankedReadiness(provider, { gameId: requestedGameId });
+      if (closed || sequence !== checkSequence) return;
       // Wrong chain → offer in-place switch.
       if (!r.onChain) {
         if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = '—';
@@ -5243,6 +5292,12 @@ function requestRankedEntry() {
           else switchBtn.textContent = 'Switch Network';
         });
         guard.append(switchBtn);
+        return;
+      }
+      if (r.error) {
+        if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = '—';
+        dom.rankedEntryStatus.dataset.state = 'error';
+        dom.rankedEntryStatus.textContent = r.error;
         return;
       }
       // Right chain → show balance.
@@ -5261,9 +5316,13 @@ function requestRankedEntry() {
         dom.rankedEntryApprove.disabled = true;
         return;
       }
-      // All good → enable start.
+      if (r.ok !== true) {
+        dom.rankedEntryStatus.dataset.state = 'error';
+        dom.rankedEntryStatus.textContent = 'Ranked prerequisites could not be verified.';
+        return;
+      }
       dom.rankedEntryStatus.dataset.state = 'ok';
-      dom.rankedEntryStatus.textContent = '✓ Ready. Your run will auto-publish to LitVM at game over (one wallet confirmation).';
+      dom.rankedEntryStatus.textContent = '✓ Contract and gas preflight passed. Publication still requires the trusted verifier and wallet confirmation.';
       dom.rankedEntryApprove.disabled = false;
     };
     runCheck();
@@ -5877,6 +5936,7 @@ function beginTrackedSession({ mode }) {
     wallet: connectedWallet ?? MOCK_WALLET,
     gameId: selectedGameId,
     mode: normalizedMode,
+    hmhChallenge: hmhChallengeUi.requestFor(selectedGameId, normalizedMode),
   });
 }
 
@@ -14375,6 +14435,19 @@ function render() {
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
 dom.officialGuestEnterButton?.addEventListener('click', enterArcadeAsGuest);
+wireHmhFreeQuickplay({
+  button: dom.officialHmhFreeQuickplayButton,
+  status: dom.officialGuestQuickplayStatus,
+  selectCabinet: (gameId) => {
+    selectedGameId = gameId;
+    currentSession = null;
+    lastCompletedSession = null;
+    lastRunResult = null;
+  },
+  startFreeMode: () => startOfficialMode('free'),
+  getStep: () => officialAppStep,
+  onError: (error) => console.error('[HMH quick-start]', error),
+});
 
 dom.officialFreeModeButton.addEventListener('click', () => startOfficialMode('free'));
 dom.officialRankedModeButton.addEventListener('click', () => startOfficialMode('ranked'));

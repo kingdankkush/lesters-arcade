@@ -1,0 +1,1789 @@
+{
+  "adoption": {
+    "adoptionProducerSha256": "c006fc8b1b78ed92660905c4dd826236c881ae43dac119f9b7795a98de8eec5b",
+    "nativeProducerSha256": {
+      "intakeAndPacker": "121672820e3f71c0c029cdfe529a12aec5a3d8228b89c535a23ab3800ad4b917",
+      "nativeRenderer": "8672eb4bcfb204f9d475ba91836e8b93a59bfa3bd5214b56ea2d76308cd3db88",
+      "orchestrator": "3f96805422bcdf38c7ff88a0e93461f31dc612f06cff3174f525beb391d01ec8"
+    },
+    "nativeReceiptSha256": "4c63deb526ce74c558daa7e9fde57eeff54ee9ae4c32c978a10026e4f8c68e73",
+    "releaseCertified": false,
+    "scope": "local-runtime-evaluation",
+    "sourceCatalogSha256": "a3b8ac5646d59591055e7e817b0f7aeee51c81add32dd917ca6ae3db8b50ddb2",
+    "visualReviewSha256": "280063828e6ec1adffcdd25e9fadf01562ca30741bbfb1a47c49df31cd288b7e"
+  },
+  "assetCount": 56,
+  "canonicalAdoption": true,
+  "certified": false,
+  "classification": "production-art",
+  "contactSheet": {
+    "height": 1568,
+    "image": "labelled-contact-sheet.png",
+    "sha256": "cf9fc715e72662d5eee0c165678959d3b2713557555a38fd889e45f92cda88cf",
+    "width": 1536
+  },
+  "frames": [
+    {
+      "alphaBounds": {
+        "h": 149,
+        "w": 168,
+        "x": 44,
+        "y": 54
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6588235294117647
+      },
+      "assetId": "tripo-01",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 168.0
+      },
+      "itemImage": "tripo-01.webp",
+      "itemSha256": "4c9374a9c05e1f293f0d7c90ac453a2370c6b20a2d18b9f7ddef754fd28129c6",
+      "name": "01 - Broadleaf Shrub Mass",
+      "page": 0,
+      "sourceId": "01",
+      "sourceModelSha256": "61cc66284f586d05ca11607ebcd4a4639365da4d000b08c394e79b6101ed93cf",
+      "sourcePixelSha256": "96463670a5e7741bfd3df1092886a2775cd28fee51c9f4de11e69ff14533979a"
+    },
+    {
+      "alphaBounds": {
+        "h": 152,
+        "w": 138,
+        "x": 59,
+        "y": 61
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6627450980392157
+      },
+      "assetId": "tripo-02",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 169.0
+      },
+      "itemImage": "tripo-02.webp",
+      "itemSha256": "09472cd2120a438dde41a90fd7abbb44e82d04bc4de868e8b4d884140fc102ff",
+      "name": "02 - Thorn Bramble Tangle",
+      "page": 0,
+      "sourceId": "02",
+      "sourceModelSha256": "bada6989204c3da144f2eea39df1ecaaa81602eab11a7dcb193ede74955f7ce4",
+      "sourcePixelSha256": "a0fe402b1152d2ccf81278f5d955826f66dcdb24ef80111a153fa86f9adb922c"
+    },
+    {
+      "alphaBounds": {
+        "h": 143,
+        "w": 64,
+        "x": 96,
+        "y": 51
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7137254901960784
+      },
+      "assetId": "tripo-03",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 182.0
+      },
+      "itemImage": "tripo-03.webp",
+      "itemSha256": "5c088a86b39deeb04d44a16199bd0c4c9239f92de403fe5b3da0ca74b57a87c5",
+      "name": "03 - Birch Cluster",
+      "page": 0,
+      "sourceId": "03",
+      "sourceModelSha256": "62927746c3f979c1c98f72a1b201c396c70312ab7885664ee49032f81322eae1",
+      "sourcePixelSha256": "53ac3600d345d9f9eca1c537be04354108b51dcad7a20da2d6c4a809d7bdbb40"
+    },
+    {
+      "alphaBounds": {
+        "h": 168,
+        "w": 178,
+        "x": 39,
+        "y": 46
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6352941176470588
+      },
+      "assetId": "tripo-04",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 162.0
+      },
+      "itemImage": "tripo-04.webp",
+      "itemSha256": "e7b4ba4c30fee57f051866893873860cf21a0ab2433ed24fa5ef0f5fbb60a58f",
+      "name": "04 - Fern Cluster",
+      "page": 0,
+      "sourceId": "04",
+      "sourceModelSha256": "4fc71c6927acd1b8f4e7b5efa02ae045edc307c5bf790e5d4e864f15449b8041",
+      "sourcePixelSha256": "2928287807d7282ffa0a350fab3acd1c18021833a461d8688632623109002b73"
+    },
+    {
+      "alphaBounds": {
+        "h": 156,
+        "w": 108,
+        "x": 74,
+        "y": 51
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6509803921568628
+      },
+      "assetId": "tripo-05",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 166.0
+      },
+      "itemImage": "tripo-05.webp",
+      "itemSha256": "f61a93f9a70a6a6c08c9ab7b0f2991829a61c85f14bb471aea7722d61ea271c2",
+      "name": "05 - Burnt Shrub Skeleton",
+      "page": 0,
+      "sourceId": "05",
+      "sourceModelSha256": "1294f738f4dac261d9a24e5c49c9bb4392b5a035d246b8302dc91662241ccb59",
+      "sourcePixelSha256": "fe1c307fe729abda5b44dce00b3aa7a5239774adabcfebd70a7e7f9edf4696be"
+    },
+    {
+      "alphaBounds": {
+        "h": 156,
+        "w": 130,
+        "x": 63,
+        "y": 57
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6784313725490196
+      },
+      "assetId": "tripo-06",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 173.0
+      },
+      "itemImage": "tripo-06.webp",
+      "itemSha256": "afd19fea20c6ed57c9df770ed2f9754a7dd4e22b9d77fd82234cefb5682308f7",
+      "name": "06 - Hashwood Bell Flower Clump",
+      "page": 0,
+      "sourceId": "06",
+      "sourceModelSha256": "cbe102f38ed8b242db5542d84700ab3a476fb209e4e59bd534833188c536b964",
+      "sourcePixelSha256": "add7cb848aceea09248aef426c583dba6536336414824bacb4329a4fb5d655a9"
+    },
+    {
+      "alphaBounds": {
+        "h": 160,
+        "w": 112,
+        "x": 72,
+        "y": 54
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7058823529411765
+      },
+      "assetId": "tripo-07",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 180.0
+      },
+      "itemImage": "tripo-07.webp",
+      "itemSha256": "92ebe8e7f79749ab34a8f1627ed75eb1890d86d859441ce62dc4e8808acc37ca",
+      "name": "07 - Rust Thistle Clump",
+      "page": 0,
+      "sourceId": "07",
+      "sourceModelSha256": "5a1994b018900ce1852d3d4070c887b4265fd72675edf00a3ce3a208b69520a6",
+      "sourcePixelSha256": "ae6ede3e70185db33a22b8a2b03c6252f2ff7c65d2ad0c8f3107e27df9b04879"
+    },
+    {
+      "alphaBounds": {
+        "h": 159,
+        "w": 122,
+        "x": 67,
+        "y": 63
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6980392156862745
+      },
+      "assetId": "tripo-08",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 178.0
+      },
+      "itemImage": "tripo-08.webp",
+      "itemSha256": "4682e7a09548ff71be4dcd581c31d9f91dbdcb31882af4b7faad6dab81f1b453",
+      "name": "08 - Ash Poppy Cluster",
+      "page": 0,
+      "sourceId": "08",
+      "sourceModelSha256": "3ab3aa0128d02d625a57cffbb26506f4ca0661cb84653d0094e0804e4d182180",
+      "sourcePixelSha256": "b48d9c244c7fc25f6fbed4f878c6c3db07204e2a51efd23b6edc7c122b6d428c"
+    },
+    {
+      "alphaBounds": {
+        "h": 146,
+        "w": 118,
+        "x": 69,
+        "y": 53
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7176470588235294
+      },
+      "assetId": "tripo-09",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 183.0
+      },
+      "itemImage": "tripo-09.webp",
+      "itemSha256": "3b2a4a21cacc75549fb80f8ae28babfc014b8dc4dc1adf26e0723e65b69823cc",
+      "name": "09 - Riverbank Iris Clump",
+      "page": 0,
+      "sourceId": "09",
+      "sourceModelSha256": "27650c0a5e56dddb807660a4761b86718abdfee275d9c40ff925cefb1b3f8715",
+      "sourcePixelSha256": "1ae9aaebee60d975be39ddfa67dd229411bb61b94b7e23221db8ace17f326544"
+    },
+    {
+      "alphaBounds": {
+        "h": 145,
+        "w": 184,
+        "x": 36,
+        "y": 57
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6235294117647059
+      },
+      "assetId": "tripo-10",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 159.0
+      },
+      "itemImage": "tripo-10.webp",
+      "itemSha256": "662503f5a8f5154d576021cfc4f720dcc9080c530ce59f4bf94f831bb6a14d8a",
+      "name": "10 - Rubble Daisy Patch",
+      "page": 0,
+      "sourceId": "10",
+      "sourceModelSha256": "86486a69b9f50109cf473d4cbb096ecffa08062523152a43322003a419f24e40",
+      "sourcePixelSha256": "95ae0a0033d9676e93a05293996e85f914ede206ee2f9409b8c442772d9195b8"
+    },
+    {
+      "alphaBounds": {
+        "h": 165,
+        "w": 82,
+        "x": 87,
+        "y": 64
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7411764705882353
+      },
+      "assetId": "tripo-11",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 189.0
+      },
+      "itemImage": "tripo-11.webp",
+      "itemSha256": "36da404ad0ad63793d42ec3461e26fee9306413aa003cddd0991ab0a0d4079cd",
+      "name": "11 - Mining Headframe",
+      "page": 0,
+      "sourceId": "11",
+      "sourceModelSha256": "c7d5b17a1951c1b25ef998f203f91d8525abc4c96505c53879134049a965c356",
+      "sourcePixelSha256": "3057ad8621b86fa3b4d43d800ef78535a1b09d7540dde38f0ff1ab3579cfcec6"
+    },
+    {
+      "alphaBounds": {
+        "h": 179,
+        "w": 138,
+        "x": 59,
+        "y": 46
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.7568627450980392
+      },
+      "assetId": "tripo-12",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 193.0
+      },
+      "itemImage": "tripo-12.webp",
+      "itemSha256": "6f4c482fc43e2a37533339f6f74e75c7c9c5662a7c567b3176f0d9af21f74a2d",
+      "name": "12 - Collapsed Apartment Block",
+      "page": 0,
+      "sourceId": "12",
+      "sourceModelSha256": "5f6fdf7f18858a9963c387d478d151bbaf4cfb4779528ff9187d389f9e8189a4",
+      "sourcePixelSha256": "6c60357b027c956ba7fd46404341ab14ea22f6449ec6370ae4c0e1429befe264"
+    },
+    {
+      "alphaBounds": {
+        "h": 96,
+        "w": 202,
+        "x": 27,
+        "y": 81
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.615686274509804
+      },
+      "assetId": "tripo-13",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 157.0
+      },
+      "itemImage": "tripo-13.webp",
+      "itemSha256": "96a83f845f14bc8a061613d541fc8f41aeb9176d41900cba8e1f391635a29fa3",
+      "name": "13 - Covered Market Stall Row",
+      "page": 0,
+      "sourceId": "13",
+      "sourceModelSha256": "9506546886fe4ba382257ff33ad07dcb775d6f69ce0b3b42e7f3279034fd69ce",
+      "sourcePixelSha256": "23ce00d9edd6b5c530caff75df3db17c3eb766f65443250abe4fc657efda6682"
+    },
+    {
+      "alphaBounds": {
+        "h": 178,
+        "w": 84,
+        "x": 86,
+        "y": 48
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.788235294117647
+      },
+      "assetId": "tripo-14",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 264
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 201.0
+      },
+      "itemImage": "tripo-14.webp",
+      "itemSha256": "8e192d5d3b4f790309c7405d22c51bafe30067c395dc5c191a58728701678046",
+      "name": "14 - Ore Silo",
+      "page": 0,
+      "sourceId": "14",
+      "sourceModelSha256": "7f36203ea62ae5414fa5401dfdab235ac1000db61da49f5cf1d7d6aef150f85f",
+      "sourcePixelSha256": "57ed0ab8d38b6ab2b0acf686e6b97e97ffb0c5d95facf7bfe6149e26364ac085"
+    },
+    {
+      "alphaBounds": {
+        "h": 183,
+        "w": 116,
+        "x": 70,
+        "y": 43
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7843137254901961
+      },
+      "assetId": "tripo-15",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 200.0
+      },
+      "itemImage": "tripo-15.webp",
+      "itemSha256": "89ab9cae1e9347cd502eae85fa3d88064de96d239f27c7a94bc980a2f4119e15",
+      "name": "15 - Stilted Guard Tower",
+      "page": 0,
+      "sourceId": "15",
+      "sourceModelSha256": "0eafbe985466601ca13a5be496f76eab3b571d57c66dae0bcf8a9ae5074fad8e",
+      "sourcePixelSha256": "25d7df7280b913048428fcfcf6d0a6a1b542f5834adef2f3a998a1b526dbdb2c"
+    },
+    {
+      "alphaBounds": {
+        "h": 180,
+        "w": 120,
+        "x": 68,
+        "y": 30
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6431372549019608
+      },
+      "assetId": "tripo-16",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 164.0
+      },
+      "itemImage": "tripo-16.webp",
+      "itemSha256": "688fb08e0be14a0c10ce319178b713dcc4700c7b41a92ccc375bce73ae943d3a",
+      "name": "16 - Ore Cart",
+      "page": 0,
+      "sourceId": "16",
+      "sourceModelSha256": "24530cf7d56dae2ffcbf14851d7300eeb23270caa212bc6133e0a48ccabfe45f",
+      "sourcePixelSha256": "0faa28d7181ce647cca697a1c4ce30ee63c7887653ebaccbaad628bacbb05201"
+    },
+    {
+      "alphaBounds": {
+        "h": 174,
+        "w": 158,
+        "x": 49,
+        "y": 47
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6
+      },
+      "assetId": "tripo-17",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 153.0
+      },
+      "itemImage": "tripo-17.webp",
+      "itemSha256": "cd829cd1d916bdca17e719fe1badc6262ea8c123cb8866e1bc5d20ba16124df8",
+      "name": "17 - Sandbag Emplacement",
+      "page": 0,
+      "sourceId": "17",
+      "sourceModelSha256": "61b52543d6a6426390fc994ba21f7f5d0ac0e3cedb782f6b1538668fa8514a33",
+      "sourcePixelSha256": "286c163beae10a5d5095a2ac5c662e36abe7f0d8558774733f7f650c76a88526"
+    },
+    {
+      "alphaBounds": {
+        "h": 91,
+        "w": 202,
+        "x": 27,
+        "y": 87
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.6235294117647059
+      },
+      "assetId": "tripo-18",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 159.0
+      },
+      "itemImage": "tripo-18.webp",
+      "itemSha256": "f70380e16ac52e1d1128f07a407072d14cf4c357a9609f02540c4666df43a1d3",
+      "name": "18 - Scrap Barricade",
+      "page": 0,
+      "sourceId": "18",
+      "sourceModelSha256": "64206aa6709b0a077b6b8b1bd920d3dfd53f16c6af3c805fa005fe9b542a90b8",
+      "sourcePixelSha256": "936064d6dbb125683669888e85aa7d2c6ebf4b79a86e204933f8d7ed36d33dec"
+    },
+    {
+      "alphaBounds": {
+        "h": 166,
+        "w": 80,
+        "x": 88,
+        "y": 55
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6823529411764706
+      },
+      "assetId": "tripo-19",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 174.0
+      },
+      "itemImage": "tripo-19.webp",
+      "itemSha256": "e4e55405786282a4dc2ddfcdf45285f035dc4f7bbfe607114af08fbf50921726",
+      "name": "19 - Power Transformer Unit",
+      "page": 0,
+      "sourceId": "19",
+      "sourceModelSha256": "921c80b825b3e57a0e377671c4d5c8af08e157eb4dd16551d03ca0da9c572d95",
+      "sourcePixelSha256": "bfb1e5ba2889fe78d28cfa478333e41c62edd026f255493ac7170ce168d0d426"
+    },
+    {
+      "alphaBounds": {
+        "h": 192,
+        "w": 98,
+        "x": 79,
+        "y": 34
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.792156862745098
+      },
+      "assetId": "tripo-20",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 202.0
+      },
+      "itemImage": "tripo-20.webp",
+      "itemSha256": "366d1bb6743a3f8ab67ab7914d973b0fcb51b89f13a6df22e694cf93f783af69",
+      "name": "20 - Busted Payment Kiosk",
+      "page": 0,
+      "sourceId": "20",
+      "sourceModelSha256": "d1031b955fd3f2f96db4fe378db2dea4c810f3a6d2e9628a4733dba345acbf91",
+      "sourcePixelSha256": "626cf75bde8979805d5c708c64c2d2a7a3c01d45f27efa3e03a42673a5a9aeac"
+    },
+    {
+      "alphaBounds": {
+        "h": 198,
+        "w": 150,
+        "x": 53,
+        "y": 29
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6862745098039216
+      },
+      "assetId": "tripo-21",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 524
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 175.0
+      },
+      "itemImage": "tripo-21.webp",
+      "itemSha256": "c1dde81de6b8631205fa38c8724524147bfec2446d7445ec7e836a4451029e1a",
+      "name": "21 - Block Reward",
+      "page": 0,
+      "sourceId": "21",
+      "sourceModelSha256": "6fca9596b9074a9c89e8466e6d18ee8bd38cbed7dca0a41b7aa78fe58a701989",
+      "sourcePixelSha256": "da3ffa3719552faf05d8bdac6e8698af0e27d8a706533a20a04bd0a5c03f96d0"
+    },
+    {
+      "alphaBounds": {
+        "h": 179,
+        "w": 106,
+        "x": 75,
+        "y": 47
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7411764705882353
+      },
+      "assetId": "tripo-22",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 189.0
+      },
+      "itemImage": "tripo-22.webp",
+      "itemSha256": "b7805dd3c0fb9a26e17b79d5ad85a16cd32f8424c5d8edd310a372355c169945",
+      "name": "22 - Cold Storage",
+      "page": 0,
+      "sourceId": "22",
+      "sourceModelSha256": "ec5ddf97b111798177a166c32428db65072771cbbf2665f3208da58b9eccf92c",
+      "sourcePixelSha256": "3b54f9c8396c9f16ca242648f87ee546e7fe41fd483599ba400b13c6efda8e1e"
+    },
+    {
+      "alphaBounds": {
+        "h": 173,
+        "w": 116,
+        "x": 70,
+        "y": 55
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7333333333333333
+      },
+      "assetId": "tripo-23",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 187.0
+      },
+      "itemImage": "tripo-23.webp",
+      "itemSha256": "86363900fb36eb4da16a0f7196c78a5decf19722d403df462bd120b1094f2c80",
+      "name": "23 - Compound Interest",
+      "page": 0,
+      "sourceId": "23",
+      "sourceModelSha256": "53d158d92cd283abf9269dc1042be6edb64a68062010728e7925713d83231eba",
+      "sourcePixelSha256": "5927e7012d16539847e9b3d3129eba8949960230c8c8be43e0ecbecf4d8b12e4"
+    },
+    {
+      "alphaBounds": {
+        "h": 149,
+        "w": 102,
+        "x": 77,
+        "y": 57
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7333333333333333
+      },
+      "assetId": "tripo-24",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 187.0
+      },
+      "itemImage": "tripo-24.webp",
+      "itemSha256": "30654bd42b003820b1d975a65609d9291ff3ada0432bb6d7bc6eea7f3a23f334",
+      "name": "24 - Diamond Hands",
+      "page": 0,
+      "sourceId": "24",
+      "sourceModelSha256": "1ca315f826a657f2b1443a026675d02ddb2fe0bb757871a31b1753fb8e029862",
+      "sourcePixelSha256": "224959b0a083bf6470c1e16b7d530e0843b5989b1538224fab94f81e8388282f"
+    },
+    {
+      "alphaBounds": {
+        "h": 152,
+        "w": 90,
+        "x": 83,
+        "y": 63
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7058823529411765
+      },
+      "assetId": "tripo-25",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 180.0
+      },
+      "itemImage": "tripo-25.webp",
+      "itemSha256": "41b33d09b865942f393c5da3d66d0827442d748958e582eeb5b48dd42f26e348",
+      "name": "25 - Gas Optimization",
+      "page": 0,
+      "sourceId": "25",
+      "sourceModelSha256": "e77c73bb9055f52ed5e608b087c8fd19e02364327583d54c54ad7520e1df3cd3",
+      "sourcePixelSha256": "758ef08d7168889510e2fee0aa8c458fedf13536397aeabd69f22711da4cbab4"
+    },
+    {
+      "alphaBounds": {
+        "h": 185,
+        "w": 82,
+        "x": 87,
+        "y": 35
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6901960784313725
+      },
+      "assetId": "tripo-26",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 176.0
+      },
+      "itemImage": "tripo-26.webp",
+      "itemSha256": "d281af9d411c060f78df8b3d42886e13655e800e3609c57f7e7a7ddd0ccbc6fd",
+      "name": "26 - Hard Fork Rounds",
+      "page": 0,
+      "sourceId": "26",
+      "sourceModelSha256": "b3e7018b6d2d6b50318f5a136ef25e5be63d7606e63fd2a3bde1c053dcc93aa1",
+      "sourcePixelSha256": "1c024405bdd0d7102900ccb9bbb88dcacef3f6d7c71ad41f8ec246c600e41967"
+    },
+    {
+      "alphaBounds": {
+        "h": 121,
+        "w": 202,
+        "x": 27,
+        "y": 69
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.6745098039215687
+      },
+      "assetId": "tripo-27",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 172.0
+      },
+      "itemImage": "tripo-27.webp",
+      "itemSha256": "d4d4199c3fbc82f4e893a8b2316e0aed10009be82b563fdffe783348780696ff",
+      "name": "27 - Hardened Wallet",
+      "page": 0,
+      "sourceId": "27",
+      "sourceModelSha256": "a6a5da7f63cadfc24a872d2358a2bcefb2a69bea1b66b71eeefcd0bc24caa099",
+      "sourcePixelSha256": "a64f94cf8b340cd1f262dbb45242fc109859447aa930eede1aae1a4ff3a02ab9"
+    },
+    {
+      "alphaBounds": {
+        "h": 171,
+        "w": 196,
+        "x": 30,
+        "y": 44
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6
+      },
+      "assetId": "tripo-28",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 784
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 153.0
+      },
+      "itemImage": "tripo-28.webp",
+      "itemSha256": "aa0272425252c08e76254d42f99b3a57a5fdea2a04d252c10dd3d037d68224a4",
+      "name": "28 - Hot Wallet",
+      "page": 0,
+      "sourceId": "28",
+      "sourceModelSha256": "20377bee4e45acdb4efc24af40ee7a1894464537545ebba94e75a2faa7388fed",
+      "sourcePixelSha256": "5688c0fa64150db89ddbf06a9734660f1497456e7b76ea69533cc5598211f34a"
+    },
+    {
+      "alphaBounds": {
+        "h": 193,
+        "w": 190,
+        "x": 33,
+        "y": 36
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6313725490196078
+      },
+      "assetId": "tripo-29",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 161.0
+      },
+      "itemImage": "tripo-29.webp",
+      "itemSha256": "1fe14087ed8c23a8d2ca64267d2e95130af4daf72b8843dd5a22a3c54a5029e3",
+      "name": "29 - Layer Two",
+      "page": 0,
+      "sourceId": "29",
+      "sourceModelSha256": "abcc89388c29ffc6a1373eb9355580179fd40297ae724ca3e6003eaf09483444",
+      "sourcePixelSha256": "6a6b36066abdcad9c855a3de07b7af563dae768bc03682659bd97af80c7306aa"
+    },
+    {
+      "alphaBounds": {
+        "h": 110,
+        "w": 202,
+        "x": 27,
+        "y": 72
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.5647058823529412
+      },
+      "assetId": "tripo-30",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 144.0
+      },
+      "itemImage": "tripo-30.webp",
+      "itemSha256": "abf6af9f5e2c77e9a5ad7614fd25b4fc42d42a4e39c58881db59c4e95834e1f4",
+      "name": "30 - Precision Ledger",
+      "page": 0,
+      "sourceId": "30",
+      "sourceModelSha256": "ef7abdc446b70cb529bf88d352b0169b38a41e012eea80a5463581d948730f43",
+      "sourcePixelSha256": "781ecff5b3eb820b8120b948cca3e616cb27d55dbee0d5de452d82dd228fb88e"
+    },
+    {
+      "alphaBounds": {
+        "h": 137,
+        "w": 66,
+        "x": 95,
+        "y": 38
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7411764705882353
+      },
+      "assetId": "tripo-31",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 189.0
+      },
+      "itemImage": "tripo-31.webp",
+      "itemSha256": "c0a2ba04077811f627de4fca71c565a3ab228623bf0e06de9b274ffd6d9c5393",
+      "name": "31 - Proof Of Work",
+      "page": 0,
+      "sourceId": "31",
+      "sourceModelSha256": "777a795a88e36f8268b646f580d5e233a75f415c1ed084677a7ab8548881e5c2",
+      "sourcePixelSha256": "93a6b45300a1b75965ee33115fc8c18f491581a4968e3d44c799e9e84aef1e76"
+    },
+    {
+      "alphaBounds": {
+        "h": 167,
+        "w": 106,
+        "x": 75,
+        "y": 43
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7254901960784313
+      },
+      "assetId": "tripo-32",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 185.0
+      },
+      "itemImage": "tripo-32.webp",
+      "itemSha256": "2d9f39f96d629ce888ffbab097652c545e0612e3b9931a9909e2cfd5919d4025",
+      "name": "32 - Validator Training",
+      "page": 0,
+      "sourceId": "32",
+      "sourceModelSha256": "1c11c9b72671112fb9d6c7800565e09da1b290b493ce247a119731d25eb0808b",
+      "sourcePixelSha256": "1281dd2a8716a294acf7aa72b1f30eebaa05dd75057a583162bf13261756f9e5"
+    },
+    {
+      "alphaBounds": {
+        "h": 178,
+        "w": 192,
+        "x": 32,
+        "y": 34
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.792156862745098
+      },
+      "assetId": "tripo-33",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 202.0
+      },
+      "itemImage": "tripo-33.webp",
+      "itemSha256": "707f9ffd0fca7789addd0043d1f8f406d6ef7fb0b9d2ff65958a072183692532",
+      "name": "33 - Bonus Life",
+      "page": 0,
+      "sourceId": "33",
+      "sourceModelSha256": "faeca9303186af0cf7e397a6e4b8dfdad4c27bc5edce53a4c2736c87d12d9e63",
+      "sourcePixelSha256": "b570ebcf169bbed828406136ab20dd896f97ef7b56bb5778a567b9198a0af19b"
+    },
+    {
+      "alphaBounds": {
+        "h": 154,
+        "w": 120,
+        "x": 68,
+        "y": 69
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7254901960784313
+      },
+      "assetId": "tripo-34",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 185.0
+      },
+      "itemImage": "tripo-34.webp",
+      "itemSha256": "29df133c19f649fb1c29bc09a41db5dc5a92fa3f5594f71190deef9c2e50bcbc",
+      "name": "34 - Berserk Candle",
+      "page": 0,
+      "sourceId": "34",
+      "sourceModelSha256": "69d871dea4947a6fb064a6039ef3366cc33f4d082f93132492742ca6b46d80e5",
+      "sourcePixelSha256": "1be95bb2afdf00bdc61dc0e63b7e057249b24d6daba2523b813f98a7db2dfcc0"
+    },
+    {
+      "alphaBounds": {
+        "h": 185,
+        "w": 104,
+        "x": 76,
+        "y": 37
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7490196078431373
+      },
+      "assetId": "tripo-35",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 1044
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 191.0
+      },
+      "itemImage": "tripo-35.webp",
+      "itemSha256": "5b325e7378ff1a047856ab073336b014e6592690051bbe5bd5626019b2dbf2b2",
+      "name": "35 - Time Dilation",
+      "page": 0,
+      "sourceId": "35",
+      "sourceModelSha256": "bd31ce6dbf8489459ae27146a153baccd65795bbd2794d0b7661ea04910969a7",
+      "sourcePixelSha256": "f6a4329d6158510829a624af33836ec2c983869f5f367f70825672de5714212e"
+    },
+    {
+      "alphaBounds": {
+        "h": 161,
+        "w": 146,
+        "x": 55,
+        "y": 62
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6901960784313725
+      },
+      "assetId": "tripo-36",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 176.0
+      },
+      "itemImage": "tripo-36.webp",
+      "itemSha256": "edd1d0c3650ac1a686febb1bb0dd60859948920762663e434128a9e79db647ad",
+      "name": "36 - Nuke Liquidation",
+      "page": 0,
+      "sourceId": "36",
+      "sourceModelSha256": "ed0de6b0f00904b49580711cca01037a324e9281a2eaa7015cdcc7100a377999",
+      "sourcePixelSha256": "69e7507b3a28c0be730c0fbede68f6b6433135e8f077695ce254d92ca3054ded"
+    },
+    {
+      "alphaBounds": {
+        "h": 187,
+        "w": 74,
+        "x": 91,
+        "y": 33
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6
+      },
+      "assetId": "tripo-37",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 153.0
+      },
+      "itemImage": "tripo-37.webp",
+      "itemSha256": "21e9a0849d8f1947c72b8582cc37817acf425023c275e2c5d61c280419c205bb",
+      "name": "37 - Hash Rail Core",
+      "page": 0,
+      "sourceId": "37",
+      "sourceModelSha256": "e78febc6da7f5a2a03c5741a03b394983e7d93711f2c7d627a1ef83098577cad",
+      "sourcePixelSha256": "0db279138b96d81276c2bee5b86ddff3563c80f7bbed7a0ca69fe6053364edf1"
+    },
+    {
+      "alphaBounds": {
+        "h": 161,
+        "w": 90,
+        "x": 83,
+        "y": 61
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6666666666666666
+      },
+      "assetId": "tripo-38",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 170.0
+      },
+      "itemImage": "tripo-38.webp",
+      "itemSha256": "18b357a601e7ef26b049d07bfbe9d370647b4a66291edf164ddbdcfc78477c3f",
+      "name": "38 - Lightning Ledger Cache",
+      "page": 0,
+      "sourceId": "38",
+      "sourceModelSha256": "069de921caaee5d45e1ae30912d3838ba8cdd235812249c8946132047a8f07d2",
+      "sourcePixelSha256": "1c225d45443b96752b14d11d8ea68e9ae3ce8cbadcfdbcfa3584a8969cc7f718"
+    },
+    {
+      "alphaBounds": {
+        "h": 184,
+        "w": 128,
+        "x": 64,
+        "y": 43
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6705882352941176
+      },
+      "assetId": "tripo-39",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 171.0
+      },
+      "itemImage": "tripo-39.webp",
+      "itemSha256": "d0b695e4c576a99e988ea59b26a404aa3aec456fc34beda9ab1468787cadfa31",
+      "name": "39 - Bear Market Burner Cache",
+      "page": 0,
+      "sourceId": "39",
+      "sourceModelSha256": "53ae6d78967e4dbb8e5fdb04983f79bcc240a1310c4b46065e24154009b3c085",
+      "sourcePixelSha256": "deb26b7e2e08593289722ad40b7fb5b706b1bc5c10bed2e21e159052cc8dd769"
+    },
+    {
+      "alphaBounds": {
+        "h": 156,
+        "w": 78,
+        "x": 89,
+        "y": 71
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7411764705882353
+      },
+      "assetId": "tripo-40",
+      "category": "power-up",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 189.0
+      },
+      "itemImage": "tripo-40.webp",
+      "itemSha256": "934c6d8330236edae0c590e2e177f7b86ef0ec3ad867a428428ebca6b8042826",
+      "name": "40 - Forked Standard Cache",
+      "page": 0,
+      "sourceId": "40",
+      "sourceModelSha256": "2f7a137a104c06bbe4d77a412ddafda8cb0a9f5e228286063cd959c99a50eb32",
+      "sourcePixelSha256": "b0d2b26cb58f04aa3c036ee4eb57079dfbee3c115baa1d938b69cd1dff99bccd"
+    },
+    {
+      "alphaBounds": {
+        "h": 188,
+        "w": 116,
+        "x": 70,
+        "y": 35
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.7843137254901961
+      },
+      "assetId": "tripo-41",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 200.0
+      },
+      "itemImage": "tripo-41.webp",
+      "itemSha256": "5003f616ebad311dc2e3aa4cbb7df0ef42c06a18bf7301343b26bf2182348acc",
+      "name": "41 - Weathered Industrial Mining Server Rack",
+      "page": 0,
+      "sourceId": "41",
+      "sourceModelSha256": "1879286df8db47335995fc0690cb1b4e2f45d61dfd06315a6b30c2a36dcc717b",
+      "sourcePixelSha256": "3b4021636f617f39ccf9ce2dafa07808cb11237c8cf78220bf05c527a1ba1e60"
+    },
+    {
+      "alphaBounds": {
+        "h": 142,
+        "w": 124,
+        "x": 66,
+        "y": 85
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6745098039215687
+      },
+      "assetId": "tripo-42",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 1304
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 172.0
+      },
+      "itemImage": "tripo-42.webp",
+      "itemSha256": "38792fda5df14dc738c68e245f4da7de13383119fe369f2e390342c32d88be60",
+      "name": "42 - Stylized Layered Sandstone Rock Formation",
+      "page": 0,
+      "sourceId": "42",
+      "sourceModelSha256": "f49b6c0695aec3ee81d6280ffea56aa91c86edbb97c938fab74f057d40d0268c",
+      "sourcePixelSha256": "383520d51b8408373c5741038a36b48044feb0d973a410f6662ebdfc3b78451c"
+    },
+    {
+      "alphaBounds": {
+        "h": 200,
+        "w": 198,
+        "x": 29,
+        "y": 28
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7450980392156863
+      },
+      "assetId": "tripo-43",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 190.0
+      },
+      "itemImage": "tripo-43.webp",
+      "itemSha256": "58584e360157f9ff7b3c5aef1e947d7d22a597e42169dba12517c263defefb82",
+      "name": "43 - Weathered Stacked Shipping Containers",
+      "page": 0,
+      "sourceId": "43",
+      "sourceModelSha256": "53f22648b1d8d3652fa087e0f29a2c8ff56f1f1fe55e9c1e35c61caee1e614ae",
+      "sourcePixelSha256": "df86a784e19e8e98464d0fa31600c70c0c508691883889760715a3175e135c83"
+    },
+    {
+      "alphaBounds": {
+        "h": 189,
+        "w": 116,
+        "x": 70,
+        "y": 39
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.788235294117647
+      },
+      "assetId": "tripo-44",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 201.0
+      },
+      "itemImage": "tripo-44.webp",
+      "itemSha256": "53f939376282ca293366540678cdfe87c4a190279df889b13605c851cace192b",
+      "name": "44 - Weathered Vintage Gas Pump",
+      "page": 0,
+      "sourceId": "44",
+      "sourceModelSha256": "314cc5b81fcbd4b1bc56f498e848b854db715b7f8f7bd1fd439069e4ea6532ba",
+      "sourcePixelSha256": "52765b9550062757bd57278ed6ca8a570b2e233b0b7b04e987f399f66fb94e9d"
+    },
+    {
+      "alphaBounds": {
+        "h": 92,
+        "w": 202,
+        "x": 27,
+        "y": 85
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.5843137254901961
+      },
+      "assetId": "tripo-45",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 149.0
+      },
+      "itemImage": "tripo-45.webp",
+      "itemSha256": "8803d33eb71e73e7fe001eca0aebcc834a90314eaa05029e80ddaf125e0f4174",
+      "name": "45 - Heavily Rusted Abandoned Sedan",
+      "page": 0,
+      "sourceId": "45",
+      "sourceModelSha256": "12b35216f21a9f0209c326236440a09c20edb49b3deec66557f63b6673c43bcb",
+      "sourcePixelSha256": "891d6dc371a034b6a9c41a962ecd56dc6f1fcd140fc9ec634162023a153d53d3"
+    },
+    {
+      "alphaBounds": {
+        "h": 181,
+        "w": 112,
+        "x": 72,
+        "y": 48
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6666666666666666
+      },
+      "assetId": "tripo-46",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 170.0
+      },
+      "itemImage": "tripo-46.webp",
+      "itemSha256": "846766ac7a2de39a451ac82ecea4b0448b01b262070f4a88d96d8ef70094f229",
+      "name": "46 - Weathered Satellite Relay Bunker",
+      "page": 0,
+      "sourceId": "46",
+      "sourceModelSha256": "199d50b60700716e4d32a1d04ca38713506c6298bfd6331efff91937c9802f27",
+      "sourcePixelSha256": "16703d40ede3275dcff7b6b300affa46267b57199a451b5790f91552ad37b5fd"
+    },
+    {
+      "alphaBounds": {
+        "h": 180,
+        "w": 94,
+        "x": 81,
+        "y": 44
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7607843137254902
+      },
+      "assetId": "tripo-47",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 194.0
+      },
+      "itemImage": "tripo-47.webp",
+      "itemSha256": "b9becab7b605ded598a21b82861184cf601be7d3788ee8e2745f1bae8a207e21",
+      "name": "47 - Rusty Riveted Water Tower Render",
+      "page": 0,
+      "sourceId": "47",
+      "sourceModelSha256": "d31df84ffc33c8fd76b41190381df17f436e90a13f30bec03b05ad6354340f80",
+      "sourcePixelSha256": "f22d9e4fef126255a2b2bc1bea1e59754f9a56097fe0d84d28982ed467513e1c"
+    },
+    {
+      "alphaBounds": {
+        "h": 168,
+        "w": 108,
+        "x": 74,
+        "y": 54
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6941176470588235
+      },
+      "assetId": "tripo-48",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 177.0
+      },
+      "itemImage": "tripo-48.webp",
+      "itemSha256": "c99fef14079a41c8ecc7811cfeba574a9ad614e7c9b228845d2846f0927c4f0c",
+      "name": "48 - Rustic Weathered Shack Render",
+      "page": 0,
+      "sourceId": "48",
+      "sourceModelSha256": "2688139531cb5d62343c96e9861be23d0834d13e8d7ff6bbfc5d657df3aee824",
+      "sourcePixelSha256": "e5a8c0d940b656f99089d441377c10082e0c42e56086123796e3cd47dacf9f0f"
+    },
+    {
+      "alphaBounds": {
+        "h": 153,
+        "w": 126,
+        "x": 65,
+        "y": 75
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6941176470588235
+      },
+      "assetId": "tripo-49",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 1564
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 177.0
+      },
+      "itemImage": "tripo-49.webp",
+      "itemSha256": "9726441e18c5b1ecd22115e94ad47a20affdd38a414089d059356e2388fd3134",
+      "name": "49 - Jagged Tree Stump With Teal Sprout",
+      "page": 0,
+      "sourceId": "49",
+      "sourceModelSha256": "88eea15b59231d530ce0a2ad4ba04e29401b87122779676d1e742d6ff23f21fd",
+      "sourcePixelSha256": "9173afefd1daa0288a06f012d60ec14b6dd54f67645ed7073d06e1db7ad57b0b"
+    },
+    {
+      "alphaBounds": {
+        "h": 157,
+        "w": 72,
+        "x": 92,
+        "y": 58
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7686274509803922
+      },
+      "assetId": "tripo-50",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 4,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 196.0
+      },
+      "itemImage": "tripo-50.webp",
+      "itemSha256": "fe5e3e5249933f385f5a3ffc10aeb590fecdbdc709e8c4ae7f8d59ca363c1a50",
+      "name": "50 - Stylized Layered Evergreen Tree",
+      "page": 1,
+      "sourceId": "50",
+      "sourceModelSha256": "19be9b11483f56928d1a2b47f970ce5ac302ce654fa3db35655754a565d29ee5",
+      "sourcePixelSha256": "96116c8eae8cc674edb50d72e0547d23ddd319b4dc2dbacd90db3ad840600199"
+    },
+    {
+      "alphaBounds": {
+        "h": 185,
+        "w": 202,
+        "x": 27,
+        "y": 40
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6627450980392157
+      },
+      "assetId": "tripo-51",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 264,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 169.0
+      },
+      "itemImage": "tripo-51.webp",
+      "itemSha256": "00ebf3ff2fd9f009b32757bdfc8b5b68180aa98bf700a285bcfb983d00846a1c",
+      "name": "51 - Weathered Post Apocalyptic Corner Shop",
+      "page": 1,
+      "sourceId": "51",
+      "sourceModelSha256": "8b45918503486368a59d9779fe2e9a3c44198d706754e0a8331f5517c6bb5bc5",
+      "sourcePixelSha256": "d8840b561c8ebb2a69bb011c910a9d3d604a00b80b46ed73556b7cd0756e450d"
+    },
+    {
+      "alphaBounds": {
+        "h": 179,
+        "w": 168,
+        "x": 44,
+        "y": 45
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.7294117647058823
+      },
+      "assetId": "tripo-52",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 524,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 186.0
+      },
+      "itemImage": "tripo-52.webp",
+      "itemSha256": "5059a71b74fdb6cc1dd99fb183e6f0d1e634960413bbda64441c40895da9f9b2",
+      "name": "52 - Abandoned Brick Tenement With Fire Escape",
+      "page": 1,
+      "sourceId": "52",
+      "sourceModelSha256": "4e65be3e7e07e8e84d35fc14c0326fa464fcdc781dd655d67b9bc8e0c6f5716c",
+      "sourcePixelSha256": "96c431f7899d82859a964b0620259628fea717063d2cf03247e9655b4f981d4f"
+    },
+    {
+      "alphaBounds": {
+        "h": 148,
+        "w": 86,
+        "x": 85,
+        "y": 71
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7098039215686275
+      },
+      "assetId": "tripo-53",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 784,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 181.0
+      },
+      "itemImage": "tripo-53.webp",
+      "itemSha256": "af0204b920b6a20b0292713365bed7783386fe0d6e853b17c76581008515f1b7",
+      "name": "53 - Twisted Bleached Tree Relic",
+      "page": 1,
+      "sourceId": "53",
+      "sourceModelSha256": "6061c0704c2d48af390cfa6815b7b5cc785beecb7bff2e0b59b60f4930a49a75",
+      "sourcePixelSha256": "8986b764a8e849b95e1d6c9c008e6f4b555fa689ab3f2f8022aba0a134fb81e7"
+    },
+    {
+      "alphaBounds": {
+        "h": 168,
+        "w": 84,
+        "x": 86,
+        "y": 53
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.7019607843137254
+      },
+      "assetId": "tripo-54",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1044,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 179.0
+      },
+      "itemImage": "tripo-54.webp",
+      "itemSha256": "11fb2e0c8485081b668e1f44549b91729d5e16d37cf5d3a85f4f2d4f77c21e2e",
+      "name": "54 - Mystical Clockwork Tree With Cyan Veins",
+      "page": 1,
+      "sourceId": "54",
+      "sourceModelSha256": "2a461454a6a18a05a07241fa95c4a465db721f9f0753c4c9d634cbd57cc924ca",
+      "sourcePixelSha256": "1401cc94837f0722984c71e3b5c8d6f06bd9a3d60a3f1ab5445fcf903a816f5e"
+    },
+    {
+      "alphaBounds": {
+        "h": 136,
+        "w": 96,
+        "x": 80,
+        "y": 63
+      },
+      "anchor": {
+        "x": 0.5019607843137255,
+        "y": 0.6901960784313725
+      },
+      "assetId": "tripo-55",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1304,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 128.0,
+        "y": 176.0
+      },
+      "itemImage": "tripo-55.webp",
+      "itemSha256": "4a3ff47a87c54c758fe6d699baf4e076cb09a1e36d8c8b5f30bdee264ca78b9e",
+      "name": "55 - Stylized Fantasy Tree Asset",
+      "page": 1,
+      "sourceId": "55",
+      "sourceModelSha256": "63c8da08bfcd68b4d078ffd6be1b4ef3d15f91c0f6aabb3b38790c4bb5f0c17c",
+      "sourcePixelSha256": "a29b4b09270ab446350d5466164e338e5851f336157392b412c5b2c13eed7cb4"
+    },
+    {
+      "alphaBounds": {
+        "h": 191,
+        "w": 159,
+        "x": 48,
+        "y": 33
+      },
+      "anchor": {
+        "x": 0.4980392156862745,
+        "y": 0.7490196078431373
+      },
+      "assetId": "tripo-56",
+      "category": "environment",
+      "frame": {
+        "h": 256,
+        "w": 256,
+        "x": 1564,
+        "y": 4
+      },
+      "groundAnchorPixels": {
+        "x": 127.0,
+        "y": 191.0
+      },
+      "itemImage": "tripo-56.webp",
+      "itemSha256": "257ed7548f638538104e8df403257059b868213a20aba51c13a608f56fc3dbe1",
+      "name": "56 - Collapsed Apartment Block Alternate",
+      "page": 1,
+      "sourceId": "56",
+      "sourceModelSha256": "ba2123616fdb0b462fb992507ad37ff54e15841fcb755661a5063fe9f7ced62e",
+      "sourcePixelSha256": "e9752e706b4a6893e2abb49cd076642fbec9c33787f8a46b308d0f21dfbb8867"
+    }
+  ],
+  "maxPageSize": 2048,
+  "padding": 4,
+  "pages": [
+    {
+      "decodedRgbaSha256": "4e4613b1f9df2963c75a524c42992100aadf2bade8122f62ce8ba9553c1d1fd0",
+      "exact": true,
+      "height": 2048,
+      "image": "tripo-props-00.webp",
+      "lossless": true,
+      "sha256": "a635bb14edd51260a02f9a489506eaf065b240b33fc6725fd03b960c11e2190a",
+      "width": 2048
+    },
+    {
+      "decodedRgbaSha256": "da8b3c53d186d42577b5ced1f77a4be81dd3255a0d6587f64506f58284cf981b",
+      "exact": true,
+      "height": 2048,
+      "image": "tripo-props-01.webp",
+      "lossless": true,
+      "sha256": "e440dbe2a78b20b8c67ff240a1eaeea105e5cd728646eb5824036a5640952c0b",
+      "width": 2048
+    }
+  ],
+  "pipelineId": "hmh-tripo-static-props/v1",
+  "rosterScope": "full-56-candidate",
+  "runtimeAuthority": "projection-only",
+  "schemaVersion": 1
+}

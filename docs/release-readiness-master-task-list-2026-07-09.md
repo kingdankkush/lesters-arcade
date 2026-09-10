@@ -1,5 +1,7 @@
 # Lester's Arcade + Hard Money Heroes Release-Readiness Master Task List
 
+> **SUPERSEDED — retired Canvas 2D direction.** Historical archive only; do not use these checkboxes to select or rebuild work. Start at `docs/handoffs/hmh-textured-rollout-progress.md`, then the current-state-reconciled open-work register.
+
 Generated: 2026-07-09
 Owner: Justin Pinter / Lester's Arcade
 Primary target: `https://lestersarcade.io`

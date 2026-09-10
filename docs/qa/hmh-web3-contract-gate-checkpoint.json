@@ -1,0 +1,192 @@
+{
+  "schema": "hmh-parent-ranked-contract-gate-v1",
+  "recordedAt": "2026-09-10T07:13:28.656273+00:00",
+  "status": "source-reviewed; combined release BLOCKED",
+  "scope": "WEB3:B-2 parent contract prerequisite guard only",
+  "sourceManifest": {
+    "at": "2026-09-10T07:04:45.795384+00:00",
+    "scope": "source-only, not build/browser/device/financial/release acceptance",
+    "diffSha256": "bdb5b96211294a20eac1e33c9c12732a240278f69619c77d6fce71330a3b58f7",
+    "files": {
+      "apps/portal/src/litvm-chain-client.mjs": "df8d975c4cc18be201a58dba43a67528f9f4afb4799332463fb8729c6702e0d5",
+      "apps/portal/src/settlement.mjs": "da5f6ac40df6c0fc9ffa173f81b69bc0afc9b6a768cb8883cd67f09136b28fd4",
+      "apps/portal/main.js": "fb117023d9ac349e8497d15106c00a97cfc03f1391a86f670670e4ab91c8fe6b",
+      "scripts/syntax-check.mjs": "726d7bd80d11b3706fa267e42e10c0f9ca1be1602535bbb0b1c76bb4744b4305",
+      "tests/litvm-ranked-contract-gate.test.mjs": "563400637390b233b0e006697630ddb664c63594a2542bec3f5af6c1366ba33f",
+      "tests/ranked-entry-preflight.test.mjs": "a3035bf070c9b49d4e1623828692613ba8f457da19615a05c431904ab27026e1",
+      "docs/hmh-reboot/RANKED-CONTRACT-GATE-ACCEPTANCE.md": "74cad2998d43ad41b9b5d1e21ebd91457b7df0bf00c2aceae40ed75fdfebad71"
+    },
+    "syntax": [
+      {
+        "file": "apps/portal/src/litvm-chain-client.mjs",
+        "exitCode": 0,
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "apps/portal/src/settlement.mjs",
+        "exitCode": 0,
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "apps/portal/main.js",
+        "exitCode": 0,
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "scripts/syntax-check.mjs",
+        "exitCode": 0,
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "tests/litvm-ranked-contract-gate.test.mjs",
+        "exitCode": 0,
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "tests/ranked-entry-preflight.test.mjs",
+        "exitCode": 0,
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "securityScan": {
+      "secret-assignment": [],
+      "unsafe-execution": [],
+      "html-injection": [],
+      "machine-path-leak": []
+    },
+    "counts": {
+      "tests": 124,
+      "pass": 124,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "testReceiptSha256": "8ab756a65c36d8eca7ac3603f8883551ff870b32e5da8a3476c63fba0b0e0f66",
+    "livePreflightSha256": "9748ac01673e47f35735369a6d484cf40455650c34e4fed45499f0d30f7cfdbe"
+  },
+  "independentReview": {
+    "verdict": {
+      "verdict": "PASS",
+      "diffSha256": "bdb5b96211294a20eac1e33c9c12732a240278f69619c77d6fce71330a3b58f7",
+      "scope": "source-only",
+      "blockers": [],
+      "suggestions": []
+    },
+    "sourceFilesVerified": 7,
+    "toolOrCommandEvents": 0,
+    "completedTurns": 1,
+    "eventsSha256": "8fe7b5a89e2558e0dac932fdf3a37b0f8f39d4e490e28d1f61058f3c55d492a6",
+    "resultSha256": "3f2f855c90c3fee8e93b270c74abbd44dfbd829263bdbd9651c41f25806ce5d5",
+    "manifestSha256": "fe941ae51e00c888c9823553fadd5aa042cc06cd104daf99eaefa302a5e4ae5a",
+    "promptSha256": "897412ffb260b0db0deb3097c0600bc09ef9c19bb2de9546919668b38d6ba96e",
+    "stderrSha256": "cc1f6cb991c08b671382ea78e49c1479e713e6b435639c6697000b192406957d",
+    "startupNotices": [
+      "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`.",
+      "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+    ],
+    "stderrDisposition": "Preserved startup diagnostics for model-cache schema and optional MCP authentication; neither service was invoked by this command-free review. Successful inference, exact verdict and zero tool events separately verified."
+  },
+  "liveReadOnlyPreflight": {
+    "at": "2026-09-10T07:00:53.984Z",
+    "result": {
+      "ok": false,
+      "onChain": true,
+      "chainId": 4441,
+      "hasFunds": false,
+      "balanceWei": "0",
+      "balanceEth": "0",
+      "needWei": "0",
+      "error": "This game is not registered for on-chain Ranked play.",
+      "errorKind": "contract-gate",
+      "contractGate": {
+        "ok": false,
+        "reason": "game-not-registered",
+        "error": "This game is not registered for on-chain Ranked play.",
+        "blockNumber": 49294095
+      }
+    },
+    "blockHash": "0xb24861f5e9af82892012f8f2c538c79957f467bd1aeb6feb2227fcd6fc60e105",
+    "rpcMethods": [
+      "eth_blockNumber",
+      "eth_call",
+      "eth_chainId",
+      "eth_getBlockByNumber",
+      "eth_getCode"
+    ],
+    "rpcCalls": 10,
+    "accountRequests": 0,
+    "signatures": 0,
+    "broadcasts": 0,
+    "receipt": ".tmp/team/web3-contract-gate/live-preflight-02.json",
+    "receiptSha256": "9748ac01673e47f35735369a6d484cf40455650c34e4fed45499f0d30f7cfdbe"
+  },
+  "preservationBeforeBuild": {
+    "at": "2026-09-10T07:08:45.841002+00:00",
+    "changedPaths": [
+      "apps/portal/main.js",
+      "apps/portal/src/litvm-chain-client.mjs",
+      "apps/portal/src/settlement.mjs",
+      "docs/hmh-reboot/RANKED-CONTRACT-GATE-ACCEPTANCE.md",
+      "scripts/syntax-check.mjs",
+      "tests/litvm-ranked-contract-gate.test.mjs",
+      "tests/ranked-entry-preflight.test.mjs"
+    ],
+    "unexpectedChanges": [],
+    "headUnchanged": true,
+    "branchUnchanged": true,
+    "indexEntriesUnchanged": true,
+    "indexFlagsUnchanged": true,
+    "rawIndexUnchanged": true,
+    "emittedUnchanged": true,
+    "emittedFiles": 32,
+    "outsideParentModalUnchanged": true
+  },
+  "patchRehearsal": {
+    "originalAttempt": "failed exact bytes due to inherited core.autocrlf; all seven normalized contents matched; original evidence preserved",
+    "qualifyingAttempt": "patch-rehearsal-receipt-02.json; core.autocrlf=false on every apply invocation",
+    "expectedFiles": 7,
+    "filesMatch": {
+      "apps/portal/src/litvm-chain-client.mjs": true,
+      "apps/portal/src/settlement.mjs": true,
+      "apps/portal/main.js": true,
+      "scripts/syntax-check.mjs": true,
+      "tests/litvm-ranked-contract-gate.test.mjs": true,
+      "tests/ranked-entry-preflight.test.mjs": true,
+      "docs/hmh-reboot/RANKED-CONTRACT-GATE-ACCEPTANCE.md": true
+    },
+    "passed": true
+  },
+  "retainedAttempts": [
+    "preflight-red-01",
+    "preflight-red-02",
+    "preflight-red-03",
+    "gas-estimate-red-01",
+    "preflight-green-01",
+    "preflight-regression-02",
+    "review-preflight",
+    "patch-rehearsal-01",
+    "patch-rehearsal-02"
+  ],
+  "evidenceRoot": ".tmp/team/web3-contract-gate",
+  "coordination": {
+    "codexReleaseMessage": "codex-20260910-task-selection-window-release.md",
+    "releaseMessageSha256": "32e851ac135fc3f7e76e95f07f81e0cf1655360105c3106439a83d4ed9f50a43",
+    "parentValidation": "window claimed; build/browser not yet run",
+    "portalPacketReceipt": "Codex acknowledges receipt by path/hash; adoption pending",
+    "codexWorldReturn": "14 groups assigned separately; reservoir fix self-reported, not yet inspected here"
+  },
+  "pending": [
+    "parent inventory/build and desktop/portrait browser proof",
+    "frozen Codex world/control return and combined W-10 acceptance",
+    "approved compatible deployment, cabinet approval and verifier service",
+    "real wallets, .1 zkLTC entry, verified settlement, soulbound eligibility and launch-epoch reset",
+    "owner Mainnet fee/split/custody decisions",
+    "physical devices, five first-time desktop and five first-time mobile recordings, exact-candidate owner acceptance",
+    "final combined gates, clean-host/LFS, immutable Preview/rollback and approved publication"
+  ],
+  "settlementLive": false,
+  "committed": false,
+  "pushed": false,
+  "deployed": false
+}

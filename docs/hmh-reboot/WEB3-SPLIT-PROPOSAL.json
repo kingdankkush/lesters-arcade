@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "status": "PROPOSAL_ONLY_OWNER_DECISION_REQUIRED",
+  "recordedAt": "2026-09-09T15:43:01.843687+00:00",
+  "networkScope": "Observed local testnet configuration; no mainnet assumptions",
+  "chainId": 4441,
+  "gameId": "lester-blaster",
+  "configuredRegistryBps": {
+    "devBps": 7500,
+    "platformBps": 2500,
+    "liquidityBps": 0,
+    "treasuryBps": 0
+  },
+  "routerImplementedBps": {
+    "devBps": 6000,
+    "platformBps": 2000,
+    "liquidityBps": 1000,
+    "treasuryBps": 1000
+  },
+  "basisPointTotal": 10000,
+  "economicSourcesDisagree": true,
+  "currentConfiguredEntryFeeMicroUsdc": 0,
+  "recommendation": "Keep paid settlement disabled and the zero-entry-fee testnet proposal unchanged until the owner selects one economic model and source/contract/readback are certified consistently. Do not change either model silently.",
+  "approvedBps": null,
+  "approvedVaultRecipients": {
+    "developer": null,
+    "platform": null,
+    "liquidity": null,
+    "treasury": null
+  },
+  "approvedOperator": null,
+  "approvedVerifier": null,
+  "ownerApprovalRecorded": false,
+  "broadcastPerformed": false,
+  "settlementEnablementAuthorized": false,
+  "sourceHashes": {
+    "contracts/deploy-config.testnet.json": "a5964c218e9935d5c57ea4b6e2d9e443e1dfd8062128fd89201a5f60e8660c5d",
+    "contracts/src/GameRegistry.sol": "c0213f80897e81388acc6f74b8cf34270c71d440b972e90b9a978a8c0115caa3",
+    "contracts/src/PaymentRouter.sol": "24d2911284701fcfd892495b767d367dace5777682b5265899e3986ddacc3a27",
+    "contracts/src/ScoreSubmissionRegistry.sol": "65b1f055e682a4e79850a635ce676b771e5e8f60b80747b47f0e90d227f9572f"
+  },
+  "custodyFacts": {
+    "scoreVerifierImmutable": true,
+    "scoreVerifierERC1271Supported": false,
+    "attestationScheme": "Ethereum Signed Message prefixed digest, not EIP-712",
+    "registryAddressAndChainIdBound": true,
+    "playerAndAchievementsAndRunBound": true,
+    "sessionReplayGuard": true,
+    "deadlineChecked": true,
+    "gamePlayableGateChecked": true,
+    "gameOperatorTransferTwoStep": true,
+    "allPaymentVaultsMustBeNonzero": true,
+    "paymentLedgerWiringOneTime": true
+  }
+}

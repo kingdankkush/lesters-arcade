@@ -1,0 +1,131 @@
+{
+  "branch": "hermes/hmh-textured-rollout",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "privateCandidateTree": "18bc44bf9d18a4dd4293232926049abb250cd971",
+  "candidatePatchSha256": "eea05497628de0c7580baf4ff25092d90111948a4995393bc9e8313605593d81",
+  "originalStagedEntriesPreserved": true,
+  "historicalRawIndexBytesUnchanged": false,
+  "indexNote": "The raw index checksum differs from the initial handoff; every staged mode/blob/path entry matches its preserved index exactly. Current archive preparation preserved its input index bytes. No reset or index replacement performed.",
+  "sourceFilesMatchArchivedCandidate": {
+    "apps/hmh-reboot/src/main.mjs": "e2c7b22dcc2df3dc9a0bbcc059811a17437999f0b023eff2fb080a610df8cb84",
+    "apps/hmh-reboot/src/world-space.mjs": "47fac25397e4a572a84724f4e9bec941c8be5917a92351431e5aafe9b8b6485c",
+    "scripts/hmh-tripo-production-asset-qa.mjs": "3b5d1a498112529962e3de4553c2dd9b798c7896a7b3e31fdb40b082821853ae",
+    "scripts/hmh-tripo-published-image-qa.py": "da68dc36cff467f438d481938f564c48841e544df10744bc330c107225f8abbd",
+    "scripts/hmh-reboot-production-asset-qa.mjs": "9703e06a30d5327e7fb2c99a4308e58fa6f1bbf168cb4d91ef6660293efefdff",
+    "scripts/syntax-check.mjs": "f280edcece78dbf74e7285109aa9cad32ce49e78eefb3ccc0b241b1258760696",
+    "tests/hmh-tripo-production-asset-qa.test.mjs": "40f4526511458fa1786ae587e65f526d49a729b158208405d7263584c101c40a",
+    "tests/hmh-reboot-production-unlockable-pilot.test.mjs": "cc4d4fc79dc1cc58a53837b9fbb4dcc0708a2a8cedfbe6ca1e2c85289ac62bcc",
+    "tests/hmh-reboot-world-space.test.mjs": "30af4398d4638379db903d2ffc17006e7e68f9729f39c1a865b028dbe39beece"
+  },
+  "noGitHostPassed": true,
+  "hostPlatform": "Windows local deployment fixture; not remote Linux/Vercel verification",
+  "lfsPointerCount": 29,
+  "hostVersions": {
+    "node": "v24.20.0",
+    "nodeExe": "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+    "spawnedNode": "v24.20.0",
+    "python": {
+      "version": [
+        3,
+        12,
+        14
+      ],
+      "exe": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout\\.tmp\\team\\revamp-resume\\ci-python\\Scripts\\python.exe",
+      "pillow": "11.3.0"
+    }
+  },
+  "releaseLedger": {
+    "schemaVersion": 1,
+    "gate": "hmh-reboot-test-retirement",
+    "status": "PASS",
+    "counts": {
+      "tests": 2973,
+      "failed": 51,
+      "passed": 2922,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 2906,
+      "suites": 8
+    },
+    "expectedFailureCount": 51,
+    "errors": []
+  },
+  "hostStepExits": {
+    "npm-ci": 0,
+    "vercel-build": 0,
+    "asset-qa": 0,
+    "security": 0,
+    "health": 0,
+    "cdn": 0,
+    "docs-links": 0
+  },
+  "nativeAssetReport": {
+    "status": "pass",
+    "assetCount": 56,
+    "framesVerified": 56,
+    "itemImagesVerified": 56,
+    "pageCount": 2,
+    "filesVerified": 60,
+    "runtimeAtlasBytes": 1400906,
+    "totalPackageBytes": 3830602,
+    "decodedTextureBytes": 33554432,
+    "releaseCertified": false,
+    "boundCanonicalIds": 48,
+    "metadataSha256": "a09c14e07ef1f56a5ee5d1ede16c40e698b3b5434811c09850eabef0a4c04fef"
+  },
+  "focused": {
+    "elevated-camera-green.log": {
+      "tests": 63,
+      "pass": 63,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "unlockable-lfs-green.log": {
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "tripo-bake/unified-qa-green-v2.log": {
+      "tests": 29,
+      "pass": 29,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    }
+  },
+  "browser": {
+    "normal": {
+      "total": 10,
+      "passed": 10,
+      "failures": []
+    },
+    "native": {
+      "total": 3,
+      "passed": 3,
+      "failures": []
+    },
+    "pickup": {
+      "total": 3,
+      "passed": 2,
+      "failures": [
+        {
+          "id": "portrait",
+          "error": "AssertionError [ERR_ASSERTION]: native time-dilation pickup must actually be drawn before collection"
+        }
+      ]
+    }
+  },
+  "releaseCertified": false,
+  "published": false,
+  "schema": "hmh-native-runtime-integration-checkpoint-v1",
+  "evidencePaths": {
+    "host": ".tmp/team/revamp-resume/clean-host-05/host-run/receipt.json",
+    "canonicalBrowser": ".tmp/team/revamp-resume/normal-flow-08/receipt.json",
+    "nativeBrowser": ".tmp/team/playable-release/native-browser-04/receipt.json",
+    "nativePickup": ".tmp/team/playable-release/native-pickup-02/receipt.json"
+  }
+}

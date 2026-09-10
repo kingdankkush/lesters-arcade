@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runtime": "hmh-reboot",
   "status": "PASS",
-  "generatedAt": "2026-08-17T16:14:07.777Z",
+  "generatedAt": "2026-09-09T07:11:08.297Z",
   "targetEnemies": 128,
   "profiles": [
     {
@@ -11,29 +11,29 @@
         "width": 1440,
         "height": 900
       },
-      "seconds": 31.303,
+      "seconds": 300.908,
       "status": "PASS",
-      "sampleCount": 67,
+      "sampleCount": 734,
       "frameTimeMs": {
-        "median": 13.8,
-        "p95": 14,
-        "p99": 20.9,
-        "max": 48.6
+        "median": 6.9,
+        "p95": 7,
+        "p99": 7.1,
+        "max": 69.4
       },
-      "medianFps": 72.46,
+      "medianFps": 144.93,
       "longTasks": {
         "count": 0,
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1795,
+        "tickAdvance": 16170,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
       },
       "occupancy": {
         "maxBodies": 128,
-        "minBodies": 128,
+        "minBodies": 125,
         "maxAnimatedEnemies": 64,
         "maxThreat": 497,
         "tokenFamilies": {
@@ -44,16 +44,16 @@
         },
         "maxProjectiles": 1,
         "latchedProjectilePeak": 1,
-        "maxEffects": 14,
+        "maxEffects": 17,
         "maxSafetyStepsPerTick": 128,
-        "maxCollisionContactsPerTick": 2,
+        "maxCollisionContactsPerTick": 1,
         "maxTraversalBlocksPerTick": 0,
-        "maxAudioVoices": 4
+        "maxAudioVoices": 6
       },
       "retainedHeap": {
-        "beforeBytes": 62508655,
-        "afterBytes": 55523408,
-        "growthBytes": -6985247
+        "beforeBytes": 44563531,
+        "afterBytes": 24881629,
+        "growthBytes": -19681902
       },
       "consoleIssues": [],
       "networkIssues": [],
@@ -66,29 +66,29 @@
         "width": 390,
         "height": 844
       },
-      "seconds": 31.139,
+      "seconds": 300.912,
       "status": "PASS",
-      "sampleCount": 78,
+      "sampleCount": 880,
       "frameTimeMs": {
-        "median": 7,
-        "p95": 13.9,
-        "p99": 14.1,
-        "max": 48.7
+        "median": 6.9,
+        "p95": 7,
+        "p99": 7.1,
+        "max": 27.9
       },
-      "medianFps": 142.86,
+      "medianFps": 144.93,
       "longTasks": {
         "count": 0,
         "maxMs": 0
       },
       "simulation": {
-        "tickAdvance": 1795,
+        "tickAdvance": 15253,
         "saturationFrames": 0,
         "catchUpSaturationRatio": 0,
         "droppedMs": 0
       },
       "occupancy": {
         "maxBodies": 128,
-        "minBodies": 128,
+        "minBodies": 125,
         "maxAnimatedEnemies": 64,
         "maxThreat": 497,
         "tokenFamilies": {
@@ -99,16 +99,16 @@
         },
         "maxProjectiles": 1,
         "latchedProjectilePeak": 1,
-        "maxEffects": 13,
+        "maxEffects": 15,
         "maxSafetyStepsPerTick": 128,
-        "maxCollisionContactsPerTick": 2,
+        "maxCollisionContactsPerTick": 19,
         "maxTraversalBlocksPerTick": 0,
-        "maxAudioVoices": 4
+        "maxAudioVoices": 6
       },
       "retainedHeap": {
-        "beforeBytes": 78161462,
-        "afterBytes": 68733067,
-        "growthBytes": -9428395
+        "beforeBytes": 54404233,
+        "afterBytes": 22693052,
+        "growthBytes": -31711181
       },
       "consoleIssues": [],
       "networkIssues": [],

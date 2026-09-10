@@ -25,7 +25,7 @@ export function resolveControlsHint({ touchUiEnabled = false, keyboardBindings }
   const move = ['moveUp', 'moveLeft', 'moveDown', 'moveRight'].map((id) => keyboardHintLabel(help[id].keyboard)).join('');
   return Object.freeze({
     mode: 'desktop',
-    text: `${move} move · Mouse aim · Right click grenade · 1-4 weapons · ${keyboardHintLabel(help.pause.keyboard)} for all controls`,
+    text: `${move} move · Mouse aim · Right click grenade · Other actions automatic · ${keyboardHintLabel(help.pause.keyboard)} menu`,
     lifetimeMs: CONTROLS_HINT_LIFETIME_MS.desktop,
   });
 }
@@ -59,6 +59,7 @@ function createSafeTextElement(documentRef, tagName, { className = '', text = ''
 export function createCockpitUi({
   documentRef = document,
   touchUiEnabled = false,
+  propIconUrl = authoredPropItemUrl,
   onMenuToggle = () => {},
   onMusicToggle = () => {},
   onSettingToggle = () => {},
@@ -204,8 +205,7 @@ export function createCockpitUi({
     const code = event.code;
     if (Object.hasOwn(UPGRADE_HOTKEYS, code)) {
       if (!upgradeCards[UPGRADE_HOTKEYS[code]]) return;
-      // Digit1/Digit2 are also weapon-slot gameplay keys captured on the window;
-      // stopping here keeps the pick out of the gameplay key state.
+      // Menu selections do not enter the gameplay key state.
       event.preventDefault();
       event.stopPropagation();
       selectUpgradeAt(UPGRADE_HOTKEYS[code]);
@@ -288,11 +288,16 @@ export function createCockpitUi({
         awaitingActionId = row.id;
         binding.textContent = 'Press a key…';
       });
-      const deviceHelp = [row.gamepad, row.touch].filter(Boolean).join(' · ');
+      const deviceHelp = [...row.keyboardAlternates.map(keyboardLabel), row.pointer, row.gamepad, row.touch].filter(Boolean).join(' · ');
       const help = createSafeTextElement(documentRef, 'small', { text: deviceHelp || row.help });
       value.append(binding, help);
       wrapper.append(label, value);
       elements.controlsCard.append(wrapper);
+    }
+    for (const [label, text] of [['Aim', 'Mouse or AIM stick. Release AIM for automatic targeting and firing.'], ['Automatic actions', 'Approach machinery to activate it. Collect supplies and power-ups by walking over them. Close combat and safe dodges happen as you move.']]) {
+      const row = createSafeTextElement(documentRef, 'div');
+      row.append(createSafeTextElement(documentRef, 'dt', { text: label }), createSafeTextElement(documentRef, 'dd', { text }));
+      elements.controlsCard.append(row);
     }
   };
   const handleBindingKey = (event) => {
@@ -418,7 +423,7 @@ export function createCockpitUi({
         button.dataset.upgradeId = choice.id;
         const icon = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__icon' });
         icon.setAttribute('aria-hidden', 'true');
-        if (card.iconAssetId) icon.style.backgroundImage = `url("${authoredPropItemUrl(card.iconAssetId)}")`;
+        if (card.iconAssetId) icon.style.backgroundImage = `url("${propIconUrl(card.iconAssetId)}")`;
         const meta = createSafeTextElement(documentRef, 'span', { className: 'hmh-upgrade-choice__meta' });
         const tier = createSafeTextElement(documentRef, 'small', { className: 'hmh-upgrade-choice__tier', text: card.tierLabel });
         const branch = createSafeTextElement(documentRef, 'span', {

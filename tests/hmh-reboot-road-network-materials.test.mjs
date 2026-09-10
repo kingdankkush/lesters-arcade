@@ -42,7 +42,8 @@ test('T4 renderer keeps pooled shoulders, travelled surface, and centre-line dec
   assert.match(source, /roadPlacer\.place\('road'/, 'variants must remain in the one pooled road tile');
   assert.match(source, /const DASH = 46/);
   assert.match(source, /const GAP = 40/);
-  assert.match(source, /route\.kind === 'main' \? 0\.32 : 0\.18/, 'main and dirt-track route marks must remain distinct');
+  assert.match(source, /if \(route\.kind !== 'main' && route\.kind !== 'street'\) return;/, 'dirt tracks must not gain painted lane marks');
+  assert.match(source, /color: 0xc7bb8b, width: Math\.max\(1, 2\.4 \* zoom\), alpha: 0\.14/, 'authored lane marks retain their quieter contrast');
   const cues = source.slice(source.indexOf('// Centre wear band:'), source.indexOf('function drawBlocker'));
   assert.doesNotMatch(cues, /layers\.routes\.(?:moveTo|stroke)/, 'road tile paints over route-layer cues');
   assert.match(source, /cues=layers\.details/, 'road cues need the above-road details layer');

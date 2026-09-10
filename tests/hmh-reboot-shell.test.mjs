@@ -4,6 +4,37 @@ import test from 'node:test';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
 
+test('desktop and mobile runtime have no minimap display or rendering work', async () => {
+  const source = await read('../apps/hmh-reboot/src/main.mjs');
+  for (const forbidden of [/\bminimap\s*=\s*new Graphics/, /\bminimap\./, /\brenderMinimap\b/, /\bcomputeMinimapModel\b/, /\bbuildLevelOneMinimapGeometry\b/, /\bminimapRevealCache\b/, /\bminimapModelCache\b/, /dataset\.minimap/]) {
+    assert.equal(forbidden.test(source), false, `disabled minimap must not retain ${forbidden}`);
+  }
+  // Discovery feeds the run summary independently of the retired display.
+  assert.match(source, /discoverMinimapPointsOfInterest\(\{/);
+  assert.match(source, /discoveredPoiIds: minimapDiscovery\.discoveredPoiIds/);
+  assert.match(source, /createCockpitUi\(/);
+});
+
+test('cockpit widths no longer reserve the retired minimap right-hand column', async () => {
+  const css = await read('../apps/portal/hmh-reboot/styles.css');
+  for (const width of ['500px', '388px', '368px', '186px']) {
+    assert.equal(css.includes(`calc(100% - ${width})`), false, `obsolete minimap reservation ${width}`);
+  }
+  assert.match(css, /width: min\(940px, calc\(100% - 266px\)\)/);
+  assert.match(css, /width: min\(456px, calc\(100% - 226px\)\)/);
+  assert.match(css, /left: 190px; width: calc\(100% - 206px\)/);
+  assert.match(css, /left: 8px; width: calc\(100% - 16px\)/);
+});
+
+test('browser certification checks minimap absence instead of inventing a hidden map rectangle', async () => {
+  for (const file of ['hmh-reboot-combat-browser-smoke.mjs', 'hmh-reboot-release-browser-certification.mjs']) {
+    const source = await read(`../scripts/${file}`);
+    assert.match(source, /minimapTelemetryPresent/);
+    assert.match(source, /assert\.equal\([^;]*minimapTelemetryPresent, false/);
+    assert.doesNotMatch(source, /fallbackWidth|fallbackHeight|Number\(stage\.dataset\.minimap/);
+  }
+});
+
 test('standalone child HTML exposes the reboot cockpit and bundled module without wallet APIs', async () => {
   const html = await read('../apps/portal/hmh-reboot/index.html');
   assert.match(html, /id="hmhRebootStage"/);
@@ -100,7 +131,7 @@ test('child runtime uses Pixi and the validated bridge without wallet or settlem
   assert.doesNotMatch(source, /SETTLER_CALIBRATION/);
   assert.match(source, /if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{[\s\S]*(?:stageElement\.dataset|dataset)\.collisionBlocker/);
   assert.match(source, /label\.style\.fontSize/);
-  assert.match(source, /computeHudMinimapLayout/);
+  assert.equal(/computeHudMinimapLayout/.test(source), false, 'runtime must not lay out a minimap');
   assert.match(source, /computeCombatStatusLayout/);
   assert.match(source, /const combatStatusX = combatStatusLayout\.compact && activePowerupLabels\.length > 0[\s\S]*?view\.width \* 0\.25[\s\S]*?combatStatusLayout\.x/);
   assert.match(source, /const combatStatusY = combatStatusLayout\.y \+ \(narrowDebug \? 32 : 0\)/);
@@ -126,7 +157,8 @@ test('opt-in Blender pilot composes render state without replacing the default g
   const atlasSource = await read('../apps/hmh-reboot/src/mannequin-atlas.mjs');
   assert.match(source, /MANNEQUIN_ATLAS_IMAGE_URL/);
   assert.match(source, /MANNEQUIN_ATLAS_METADATA_URL/);
-  assert.match(source, /MANNEQUIN_RUNTIME_SCALE \* camera\.zoom/);
+  assert.match(source, /mannequinRuntimeScale = MANNEQUIN_RUNTIME_SCALE/);
+  assert.match(source, /actorVisual\.scale\.set\(mannequinRuntimeScale \* camera\.zoom\)/);
   assert.match(source, /createMannequinAtlasIndex/);
   assert.match(source, /createMannequinDisplay/);
   assert.match(source, /runtimeParams\.get\('pipelinePilot'\) === '1'/);
@@ -136,7 +168,9 @@ test('opt-in Blender pilot composes render state without replacing the default g
   assert.match(source, /actorVisual\.position\.set\(atlasActorEnabled \? groundScreen\.x : screen\.x, atlasActorEnabled \? groundScreen\.y : screen\.y\)/);
   assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArtSource/);
   assert.match(atlasSource, /pipeline-pilot-human-atlas/);
-  assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
+  assert.match(source, /const prototypeDescriptor = createPrototypeHumanoidDescriptor\(/);
+  assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), prototypeDescriptor\)/);
+  assert.match(source, /measureMinimumPrototypeBodyHeight\(prototypeDescriptor\)/);
   assert.doesNotMatch(source, /pipelinePilotEnabled[\s\S]{0,120}(?:collision|damage|score|wallet|settlement)\s*=/i);
 });
 
@@ -169,10 +203,13 @@ test('the production hero atlas is the projection-only shipped identity with a g
   assert.match(source, /world\.addChildAt\(actorVisual, slot\)/);
   // Art telemetry must reflect what rendered, so a fallback cannot be
   // reported as production art.
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArtSource = productionHeroDisplay \? 'production-blender-atlas-v1'/);
+  assert.match(source, /(?:stageElement\.dataset|dataset)\.actorArtSource = productionHeroDisplay \? productionHeroDisplay\.artSource : mannequinDisplay \? 'blender-atlas-v1' : 'pixi-graybox'/);
+  assert.match(atlasSource, /PRODUCTION_HERO_ASSETS\[actorId\]\?\.artSource \?\? 'production-blender-atlas-v1'/);
   assert.match(source, /dataset\.actorArtFallbackReason/);
   assert.match(atlasSource, /runtimeAuthority !== 'projection-only'/);
-  assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), createPrototypeHumanoidDescriptor/);
+  assert.match(source, /const prototypeDescriptor = createPrototypeHumanoidDescriptor\(/);
+  assert.match(source, /drawPrototypeHumanoid\(new Graphics\(\), prototypeDescriptor\)/);
+  assert.match(source, /measureMinimumPrototypeBodyHeight\(prototypeDescriptor\)/);
   assert.doesNotMatch(source, /productionPilotEnabled[\s\S]{0,160}(?:collision|damage|score|wallet|settlement)\s*=/i);
 });
 
@@ -245,7 +282,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions both playable cabinet shells for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v32-hmh-gameplan-defects'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v33-hmh-playable-update'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of [
     '/hmh-reboot/index.html',

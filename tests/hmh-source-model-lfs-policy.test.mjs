@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -11,8 +13,10 @@ import {
   LFS_POINTER_FIRST_LINE,
   MAX_TEXTURE_DIMENSION,
   SOURCE_MODEL_MAX_BYTES,
+  SOURCE_PACKED_BLEND_MAX_BYTES,
   SOURCE_MODEL_ROOT,
   evaluateSourceModelFile,
+  evaluateDeclaredSourcePayload,
   isLfsPointer,
   missingLfsRules,
   readPngDimensions,
@@ -29,6 +33,7 @@ const EXPECTED_RULES = [
   'apps/hmh-reboot/assets/source/models/**/*.png filter=lfs diff=lfs merge=lfs -text',
   'apps/hmh-reboot/assets/source/models/**/*.jpg filter=lfs diff=lfs merge=lfs -text',
   'apps/hmh-reboot/assets/source/models/**/*.jpeg filter=lfs diff=lfs merge=lfs -text',
+  'apps/hmh-reboot/assets/source/models/**/*.blend filter=lfs diff=lfs merge=lfs -text',
 ];
 
 function gitAvailable() {
@@ -47,9 +52,9 @@ function insideGitWorkTree() {
   return probe.status === 0 && probe.stdout.trim() === 'true';
 }
 
-test('P-5 the six source-model LFS rules are written into .gitattributes verbatim', () => {
+test('P-5 source-model and packed Blend LFS rules are written into .gitattributes verbatim', () => {
   assert.deepEqual([...LFS_MODEL_RULES], EXPECTED_RULES);
-  assert.deepEqual([...LFS_MODEL_EXTENSIONS], ['glb', 'fbx', 'bin', 'png', 'jpg', 'jpeg']);
+  assert.deepEqual([...LFS_MODEL_EXTENSIONS], ['glb', 'fbx', 'bin', 'png', 'jpg', 'jpeg', 'blend']);
   assert.equal(SOURCE_MODEL_ROOT, 'apps/hmh-reboot/assets/source/models');
   const gitattributes = readRepo('.gitattributes');
   const lines = gitattributes.split(/\r?\n/);
@@ -86,6 +91,34 @@ test('P-5 git check-attr resolves filter=lfs for a probe path under every model 
   assert.match(outside.stdout, /: filter: unspecified/, 'the LFS rule leaked outside the models root');
 });
 
+test('hash-bound native evidence survives Git cleaning byte-exactly without exempting ordinary JSON', () => {
+  const scratch = mkdtempSync(path.join(tmpdir(), 'hmh-evidence-git-bytes-'));
+  const env = { ...process.env };
+  for (const key of ['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR']) delete env[key];
+  const git = (args, input) => {
+    const result = spawnSync('git', ['-c', 'core.autocrlf=false', ...args], { cwd: scratch, env, input, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr || result.error?.message);
+    return result.stdout.trim();
+  };
+  try {
+    git(['init', '--quiet']);
+    writeFileSync(path.join(scratch, '.gitattributes'), readRepo('.gitattributes'));
+    const directory = 'apps/hmh-reboot/assets/source/blender';
+    mkdirSync(path.join(scratch, directory), { recursive: true });
+    // Deliberate CRLF witness: these are byte-hashed producer receipts, not
+    // canonicalized JSON. Git must not alter their bytes in a clean checkout.
+    const raw = Buffer.from('{\r\n  "nativeReceipt": true\r\n}\r\n');
+    const expected = git(['hash-object', '--no-filters', '--stdin'], raw);
+    for (const suffix of ['packed-source-inspection', 'gameplay-reproducibility']) {
+      const file = `${directory}/lit-commando-${suffix}.json`;
+      assert.equal(git(['hash-object', `--path=${file}`, '--stdin'], raw), expected, `${suffix}: Git rewrites hash-bound evidence`);
+    }
+    assert.notEqual(git(['hash-object', '--path=ordinary-config.json', '--stdin'], raw), expected, 'ordinary JSON must retain the existing LF text policy');
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
+});
+
 test('P-5 pointer detection, the per-file cap and the texture cap are pure and exact', () => {
   assert.equal(LFS_POINTER_FIRST_LINE, 'version https://git-lfs.github.com/spec/v1');
   assert.equal(isLfsPointer(Buffer.from('version https://git-lfs.github.com/spec/v1\noid sha256:0123\nsize 42\n')), true);
@@ -94,6 +127,7 @@ test('P-5 pointer detection, the per-file cap and the texture cap are pure and e
 
   assert.equal(SOURCE_MODEL_MAX_BYTES, 40 * 1024 * 1024);
   assert.equal(SOURCE_MODEL_MAX_BYTES, 41_943_040);
+  assert.equal(SOURCE_PACKED_BLEND_MAX_BYTES, 96 * 1024 * 1024);
   assert.equal(MAX_TEXTURE_DIMENSION, 2048);
 
   const atCap = evaluateSourceModelFile({ path: `${SOURCE_MODEL_ROOT}/lester.glb`, sizeBytes: SOURCE_MODEL_MAX_BYTES });
@@ -102,6 +136,11 @@ test('P-5 pointer detection, the per-file cap and the texture cap are pure and e
   assert.equal(overCap.problems.length, 1);
   assert.match(overCap.problems[0], /40 MB/);
   assert.match(overCap.problems[0], /41,943,041/);
+  const packedBlend = evaluateSourceModelFile({ path: `${SOURCE_MODEL_ROOT}/commando.blend`, sizeBytes: 90_056_914 });
+  assert.deepEqual(packedBlend.problems, []);
+  const oversizedBlend = evaluateSourceModelFile({ path: `${SOURCE_MODEL_ROOT}/commando.blend`, sizeBytes: SOURCE_PACKED_BLEND_MAX_BYTES + 1 });
+  assert.equal(oversizedBlend.problems.length, 1);
+  assert.match(oversizedBlend.problems[0], /96 MB/);
 
   // PNG IHDR: 8-byte signature, 4-byte length, 'IHDR', then width and height
   // as big-endian uint32 at byte offsets 16 and 20.
@@ -122,6 +161,30 @@ test('P-5 pointer detection, the per-file cap and the texture cap are pure and e
   assert.equal(tooLarge.problems.length, 1);
   assert.match(tooLarge.problems[0], /2049x16/);
   assert.match(tooLarge.problems[0], /2048/);
+});
+
+test('packed source identity works without .git for both smudged bytes and an exact LFS pointer', () => {
+  const payload = Buffer.from('packed textured source');
+  const sourceSha256 = createHash('sha256').update(payload).digest('hex');
+  const sourceBytes = payload.length;
+  assert.deepEqual(evaluateDeclaredSourcePayload(payload, { sourceSha256, sourceBytes }), { kind: 'source-original', problems: [] });
+  const pointer = Buffer.from(`version https://git-lfs.github.com/spec/v1\noid sha256:${sourceSha256}\nsize ${sourceBytes}\n`);
+  assert.deepEqual(evaluateDeclaredSourcePayload(pointer, { sourceSha256, sourceBytes }), { kind: 'lfs-pointer', problems: [] });
+  assert.ok(evaluateDeclaredSourcePayload(Buffer.from(`${pointer}x`), { sourceSha256: '0'.repeat(64), sourceBytes }).problems.length > 0);
+});
+
+test('declared LFS identity rejects duplicate, prefixed, and malformed pointer fields', () => {
+  const sourceSha256 = 'a'.repeat(64);
+  const sourceBytes = 123;
+  const version = 'version https://git-lfs.github.com/spec/v1';
+  const malformed = [
+    `${version}\noid sha256:${'b'.repeat(64)}\nsize 123\nextra oid sha256:${sourceSha256}\n`,
+    `${version}\noid sha256:${sourceSha256}\nsize 1230\n`,
+    `${version}\noid sha256:${sourceSha256}\nsize 123\nsize 456\n`,
+    `${version}\noid sha256:${sourceSha256}\nsize 456\nextra size 123\n`,
+    `${version}\noid sha256:${sourceSha256}\nsize 123\ntrailing-content\n`,
+  ];
+  for (const payload of malformed) assert.ok(evaluateDeclaredSourcePayload(Buffer.from(payload), { sourceSha256, sourceBytes }).problems.length > 0, payload);
 });
 
 test('P-5 the offline checker passes honestly on a repository with zero tracked models', async (t) => {

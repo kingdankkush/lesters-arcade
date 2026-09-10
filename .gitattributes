@@ -18,9 +18,15 @@ apps/hmh-reboot/assets/source/models/**/*.bin filter=lfs diff=lfs merge=lfs -tex
 apps/hmh-reboot/assets/source/models/**/*.png filter=lfs diff=lfs merge=lfs -text
 apps/hmh-reboot/assets/source/models/**/*.jpg filter=lfs diff=lfs merge=lfs -text
 apps/hmh-reboot/assets/source/models/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+apps/hmh-reboot/assets/source/models/**/*.blend filter=lfs diff=lfs merge=lfs -text
 
 # Owner-supplied design references, source-only; never copied to the portal.
 apps/hmh-reboot/assets/source/reference/**/*.png filter=lfs diff=lfs merge=lfs -text
 
 # Packed static Tripo selector source; never part of portal delivery.
 apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend filter=lfs diff=lfs merge=lfs -text
+
+# Native producer receipts are bound by raw-byte SHA-256, not canonical JSON.
+# Preserve genuine producer bytes through Git clean/checkout on every host.
+apps/hmh-reboot/assets/source/blender/*-packed-source-inspection.json -text
+apps/hmh-reboot/assets/source/blender/*-gameplay-reproducibility.json -text

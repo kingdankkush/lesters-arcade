@@ -45,6 +45,12 @@ export function enemyRosterAsset(actorId) {
     actorId,
     imageUrl: `${ROSTER_ROOT}/${actorId}/${actorId}-roster-atlas.png`,
     metadataUrl: `${ROSTER_ROOT}/${actorId}/${actorId}-roster-atlas.json`,
+    // Native overscan retains raster detail; world size is projection-only.
+    runtimeScale: actorId === 'bagholder-rusher' ? 0.50
+      : actorId === 'the-liquidator' ? BOSS_ROSTER_RUNTIME_SCALE : ENEMY_ROSTER_RUNTIME_SCALE,
+    ...(actorId === 'bagholder-rusher' ? {
+      nativeSourceSha256: 'd71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856',
+    } : {}),
   });
 }
 
@@ -66,6 +72,12 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
   }
   if (!Array.isArray(metadata.frames) || metadata.frames.length === 0) {
     throw new TypeError('roster metadata contains no frames');
+  }
+  if (metadata.actorId === 'bagholder-rusher'
+    && (metadata.sourceModel?.kind !== 'packed-native-enemy-blend'
+      || metadata.sourceModel.sourceSha256 !== enemyRosterAsset(metadata.actorId).nativeSourceSha256
+      || metadata.poseAuthoring?.mode !== 'preserved-native-actions')) {
+    throw new TypeError('bagholder roster native source mismatch');
   }
 
   const byKey = new Map();
@@ -275,6 +287,7 @@ export function createEnemyRosterDisplay({
       crown.visible = showElite;
     }
     container.eliteProjection = showElite;
+    container.frameId = frame.id;
     container.visualState = frame.state;
     container.visualPhase = frame.phase ?? null;
     return frame;

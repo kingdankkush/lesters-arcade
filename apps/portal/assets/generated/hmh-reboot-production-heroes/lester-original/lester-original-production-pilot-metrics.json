@@ -12,20 +12,72 @@
     "runLiftScale": 1.08,
     "runStrideScale": 0.94
   },
-  "atlasSha256": "065f9a2726e81a2adf7e535fd65b8970a5a42df46a0c1a427e17ec0164937c1c",
+  "atlasBytes": 3979950,
+  "atlasSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
-  "boneCount": 14,
-  "contactSheetSha256": "b09caa1b2e7a3e1c61f0f92ee54b4f2510a2f9cb511df083eb55ea564834f9c5",
-  "duplicateDecodedFrameGroups": [],
+  "boneCount": 22,
+  "contactSheetSha256": "c95e8658c5101ca405c8367f051580ba53e77acf87d6037891fa238d087c5fb9",
+  "decodedRgbaBytes": 16777216,
+  "duplicateDecodedFrameGroups": [
+    {
+      "frameIds": [
+        "lester-original__shadow__idle__south-east__000",
+        "lester-original__shadow__idle__north-west__000"
+      ],
+      "sha256": "196bfffc4696f69981995e2e4b03ac5b93cb70f9362cae597f62c17c2367c112"
+    },
+    {
+      "frameIds": [
+        "lester-original__weapon__grenade__south__003",
+        "lester-original__weapon__grenade__south__004",
+        "lester-original__weapon__grenade__south-east__003",
+        "lester-original__weapon__grenade__south-east__004",
+        "lester-original__weapon__grenade__east__003",
+        "lester-original__weapon__grenade__east__004",
+        "lester-original__weapon__grenade__north-east__003",
+        "lester-original__weapon__grenade__north-east__004",
+        "lester-original__weapon__grenade__north__003",
+        "lester-original__weapon__grenade__north__004",
+        "lester-original__weapon__grenade__north-west__003",
+        "lester-original__weapon__grenade__north-west__004",
+        "lester-original__weapon__grenade__west__003",
+        "lester-original__weapon__grenade__west__004",
+        "lester-original__weapon__grenade__south-west__003",
+        "lester-original__weapon__grenade__south-west__004"
+      ],
+      "sha256": "ba0ee4b797b99449ebc7396d09562a0f64ec8795eabf62376fe36e289fb0f3c8"
+    },
+    {
+      "frameIds": [
+        "lester-original__shadow__idle__east__000",
+        "lester-original__shadow__idle__west__000"
+      ],
+      "sha256": "db3611576361b8c2ca78493c50c4246ce0a97b981a5b2eda991aa0fd23b1dae5"
+    }
+  ],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
+  "frameSize": [
+    224,
+    224
+  ],
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "4cb559d9bcdc3afbbc4388e2b7c8d3212275c46a5a0924e165db6632205351ee",
+  "intentionalHiddenFrameCount": 16,
+  "logicalFrameReconstruction": {
+    "frames": 648,
+    "pixelDifferences": 0
+  },
+  "metadataSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+  "mode": "clip-actions",
+  "pivotPixels": [
+    128,
+    205
+  ],
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -34,17 +86,20 @@
   },
   "reproducibilityMode": "bounded-premultiplied-rgba-v1",
   "reproducibilityObserved": {
-    "maxChangedVisiblePixels": 0,
-    "maxChannelDelta": 0,
-    "maxTotalChannelDelta": 0,
-    "worstFrameId": "lester-original__shadow__idle__south__000"
+    "maxChangedVisiblePixels": 2,
+    "maxChannelDelta": 1,
+    "maxTotalChannelDelta": 3,
+    "worstFrameId": "lester-original__torso-head__melee__south-east__001"
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
+  "sourceBlendBytes": 60247717,
+  "sourceBlendSha256": "ed1278ea131927f9849fb62f265512a8547186fb9b9c06b08da78fb438eacc96",
+  "sourceKind": "packed-textured-blend",
+  "sourceModelSha256": "ed1278ea131927f9849fb62f265512a8547186fb9b9c06b08da78fb438eacc96",
   "status": "pass",
   "transparentCornerFailureCount": 0,
-  "uniqueAnimatedFrameCount": 640,
+  "uniqueAnimatedFrameCount": 624,
   "uniqueFrameIdCount": 648,
   "variantId": "blue-mask-original",
   "weaponSocket": true

@@ -4,7 +4,9 @@ Renders the four production heroes from the committed hero scene at selector
 resolution (Blender 5.1.2, the version pinned by hmh-hero-selector-render.json),
 proves two cold renders agree within the hero reproducibility budget, packs one
 PNG atlas per hero, and emits the tracked JSON + frozen ESM module the portal
-select screen consumes.
+select screen consumes. In packed-gameplay-sources mode each pilot's immutable
+packed Blend is opened in its own cold process; provenance lists those exact
+sources and native poses rather than a fictional combined scene.
 
 Isolation contract:
 - the hero scene (.blend) is opened read-only and never regenerated or saved;
@@ -33,6 +35,10 @@ import time
 from PIL import Image
 
 from hmh_pipeline_lock import exclusive_pipeline_lock
+from hmh_selector_native_sources import (
+    PACKED_MODE, packed_gameplay_sources, source_path, source_input_path,
+    validate_selector_paths, validate_authorities, ground_contact_contract, validate_camera_pitch,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,6 +72,21 @@ def parse_args() -> argparse.Namespace:
 
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def selector_manifest_path(path: Path) -> Path:
+    # The CLI/default may supply an absolute path; manifest-controlled values
+    # never may. Do not resolve away traversal or aliases before validating.
+    value = path.relative_to(ROOT).as_posix() if path.is_absolute() else path.as_posix()
+    return source_input_path(ROOT, value)
+
+
+def load_manifest(path: Path) -> dict:
+    path = selector_manifest_path(path)
+    manifest = read_json(path)
+    validate_selector_paths(manifest, ROOT, path)
+    validate_authorities(manifest)
+    return manifest
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -175,13 +196,20 @@ def frame_filename(actor_id: str, direction: str) -> str:
 
 
 def output_paths(manifest: dict) -> dict:
-    output_dir = ROOT / manifest["atlas"]["outputDirectory"]
+    validate_selector_paths(manifest, ROOT)
+    output_dir = source_path(ROOT, manifest["atlas"]["outputDirectory"])
+    canonical_dir = "apps/portal/assets/generated/hmh-reboot-hero-selector"
+    url_base = (manifest["atlas"]["publicUrlBase"]
+                if manifest["atlas"]["outputDirectory"] == canonical_dir
+                else "/" + manifest["atlas"]["outputDirectory"])
     return {
         "dir": output_dir,
         "metadata": output_dir / manifest["atlas"]["metadata"],
-        "module": ROOT / manifest["atlas"]["module"],
+        "module": source_path(ROOT, manifest["atlas"]["module"]),
         "image": lambda actor_id: output_dir / f"{actor_id}{manifest['atlas']['imageSuffix']}",
-        "url": lambda actor_id: f"{manifest['atlas']['publicUrlBase']}/{actor_id}{manifest['atlas']['imageSuffix']}",
+        # Private evidence modules must resolve to their coupled capsule images,
+        # never to the canonical portal assets named by the production contract.
+        "url": lambda actor_id: f"{url_base}/{actor_id}{manifest['atlas']['imageSuffix']}",
     }
 
 
@@ -215,18 +243,28 @@ def verified_source_sha(path: Path, expected: dict | None = None) -> str:
 
 
 def provenance(manifest: dict, manifest_path: Path) -> dict:
+    manifest_path = selector_manifest_path(manifest_path)
+    validate_selector_paths(manifest, ROOT, manifest_path)
     result = {
-        "sourceBlend": manifest["scene"]["sourceBlend"],
-        "sourceBlendSha256": verified_source_sha(ROOT / manifest["scene"]["sourceBlend"], manifest["scene"].get("sourceBlendFingerprint")),
         "sourceManifest": manifest["scene"]["sourceManifest"],
         "sourceManifestSha256": sha256_file(ROOT / manifest["scene"]["sourceManifest"]),
         "renderManifest": manifest_path.relative_to(ROOT).as_posix(),
         "renderManifestSha256": sha256_file(manifest_path),
+        "runner": "scripts/run-hmh-hero-selector-render.py",
+        "runnerSha256": sha256_file(source_path(ROOT, "scripts/run-hmh-hero-selector-render.py")),
         "exporter": manifest["scene"]["exporter"],
         "exporterSha256": sha256_file(ROOT / manifest["scene"]["exporter"]),
         "heroExporter": manifest["scene"]["heroExporter"],
         "heroExporterSha256": sha256_file(ROOT / manifest["scene"]["heroExporter"]),
     }
+    if manifest["scene"].get("sourceMode") == PACKED_MODE:
+        result["sourceMode"] = PACKED_MODE
+        result["sourceAssets"] = packed_gameplay_sources(manifest, ROOT)
+        result["sourceHelper"] = "scripts/hmh_selector_native_sources.py"
+        result["sourceHelperSha256"] = sha256_file(ROOT / result["sourceHelper"])
+        return result
+    result["sourceBlend"] = manifest["scene"]["sourceBlend"]
+    result["sourceBlendSha256"] = verified_source_sha(ROOT / result["sourceBlend"], manifest["scene"].get("sourceBlendFingerprint"))
     if manifest["scene"].get("sourceMode") == "static-textured-models":
         inputs = read_json(ROOT / manifest["scene"]["sourceManifest"])
         result["sourceMode"] = "static-textured-models"
@@ -234,24 +272,66 @@ def provenance(manifest: dict, manifest_path: Path) -> dict:
         result["sourceBuilderSha256"] = sha256_file(ROOT / result["sourceBuilder"])
         result["sourceAssets"] = [{
             "actorId": hero["actorId"], "path": hero["sourcePath"], "bytes": hero["sourceBytes"],
-            "sha256": verified_source_sha(ROOT / hero["sourcePath"], {"sha256": hero["sourceSha256"], "bytes": hero["sourceBytes"]}),
+            "sha256": verified_source_sha(source_input_path(ROOT, hero["sourcePath"], model=True), {"sha256": hero["sourceSha256"], "bytes": hero["sourceBytes"]}),
         } for hero in inputs["heroes"]]
     return result
 
 
+def source_provenance_drift(actual: dict, expected: dict) -> list[str]:
+    # Reject legacy combined-scene claims as well as missing/reordered native sources.
+    return sorted(key for key in actual.keys() | expected.keys()
+                  if key not in actual or key not in expected or actual[key] != expected[key])
+
+
+def selector_render_jobs(manifest: dict, manifest_path: Path, raw_output: Path, report_output: Path) -> list[dict]:
+    manifest_path = selector_manifest_path(manifest_path)
+    validate_selector_paths(manifest, ROOT, manifest_path)
+    packed = manifest["scene"].get("sourceMode") == PACKED_MODE
+    sources = packed_gameplay_sources(manifest, ROOT, require_materialized=True) if packed else [None]
+    jobs = []
+    for index, source in enumerate(sources):
+        hero = manifest["heroes"][index] if packed else None
+        blend = ROOT / (source["path"] if packed else manifest["scene"]["sourceBlend"])
+        report = report_output.with_name(f"{report_output.stem}-{source['actorId']}.json") if packed else report_output
+        command = [
+            str(BLENDER), "--background", "--factory-startup", "--disable-autoexec", str(blend),
+            "--python-exit-code", "1", "--python", str(ROOT / manifest["scene"]["exporter"]), "--",
+            "--manifest", str(manifest_path), "--repo-root", str(ROOT),
+            "--raw-output", str(raw_output), "--report-output", str(report),
+        ]
+        if packed:
+            command.extend(["--actor-id", source["actorId"]])
+        jobs.append({"command": command, "report": report, "hero": hero, "source": source, "blend": blend})
+    return jobs
+
+
 def render_pass(manifest: dict, manifest_path: Path, source_blend: Path, raw_output: Path, report_output: Path, label: str) -> dict:
     started = time.perf_counter()
-    run_checked([
-        str(BLENDER), "--background", "--factory-startup", str(source_blend), "--python-exit-code", "1", "--python", str(ROOT / manifest["scene"]["exporter"]), "--",
-        "--manifest", str(manifest_path), "--repo-root", str(ROOT),
-        "--raw-output", str(raw_output), "--report-output", str(report_output),
-    ], label)
-    report = read_json(report_output)
-    expected = len(manifest["heroes"]) * len(manifest["directions"])
-    if report.get("status") != "pass" or report.get("frameCount") != expected or report.get("saved") is not False:
-        raise RuntimeError(f"{label}: exporter report invalid: {report}")
-    if list(report["frameSize"]) != list(manifest["render"]["frameSize"]):
-        raise RuntimeError(f"{label}: rendered at {report['frameSize']}, manifest says {manifest['render']['frameSize']}")
+    reports = []
+    for job in selector_render_jobs(manifest, manifest_path, raw_output, report_output):
+        run_checked(job["command"], label)
+        report = read_json(job["report"])
+        validate_camera_pitch(report.get("cameraPitchDegrees"), manifest["render"]["cameraPitchDegrees"])
+        heroes = [job["hero"]] if job["hero"] else manifest["heroes"]
+        frames = [frame_filename(hero["actorId"], direction) for hero in heroes for direction in manifest["directions"]]
+        if (report.get("status") != "pass" or report.get("frameCount") != len(frames) or report.get("saved") is not False
+                or report.get("frameSize") != list(manifest["render"]["frameSize"])
+                or report.get("frames") != frames or set(report.get("pivotPixels", {})) != set(frames)
+                or report.get("engine") != manifest["render"]["engine"]):
+            raise RuntimeError(f"{label}: exporter report invalid: {report}")
+        if job["source"] and (report.get("sourceAssets") != [job["source"]]
+                or Path(report.get("sourceBlend", "")).resolve() != job["blend"].resolve()
+                or set(report.get("heroes", {})) != {job["hero"]["portalHeroId"]}):
+            raise RuntimeError(f"{label}: native source report mismatch: {report}")
+        reports.append(report)
+    report = dict(reports[0])
+    if manifest["scene"].get("sourceMode") == PACKED_MODE:
+        report.pop("sourceBlend", None)
+        report["sourceAssets"] = [source for item in reports for source in item["sourceAssets"]]
+        report["frames"] = [frame for item in reports for frame in item["frames"]]
+        report["frameCount"] = len(report["frames"])
+        report["pivotPixels"] = {key: value for item in reports for key, value in item["pivotPixels"].items()}
+        report["heroes"] = {key: value for item in reports for key, value in item["heroes"].items()}
     report["wallSeconds"] = round(time.perf_counter() - started, 3)
     return report
 
@@ -273,7 +353,15 @@ def load_pass(manifest: dict, raw_output: Path) -> dict[str, Image.Image]:
     return frames
 
 
+def drift_report_path(manifest: dict) -> Path:
+    validate_selector_paths(manifest, ROOT)
+    raw = source_path(ROOT, manifest["render"]["rawOutputDirectory"])
+    directory = raw.parent
+    return source_path(ROOT, (directory / DRIFT_REPORT_PATH.name).relative_to(ROOT).as_posix())
+
+
 def verify_two_passes(manifest: dict, pass_a: dict[str, Image.Image], pass_b: dict[str, Image.Image], reports: list[dict], blender: str) -> dict:
+    report_path = drift_report_path(manifest)
     budget = manifest["reproducibilityBudget"]
     per_frame = {}
     observed = {"maxChangedVisiblePixels": 0, "maxChannelDelta": 0, "maxTotalChannelDelta": 0}
@@ -308,12 +396,12 @@ def verify_two_passes(manifest: dict, pass_a: dict[str, Image.Image], pass_b: di
         "premultipliedDeltaHistogram": dict(sorted(histogram.items(), key=lambda item: int(item[0]))),
         "passes": [{"label": "run-a", "wallSeconds": reports[0]["wallSeconds"]}, {"label": "run-b", "wallSeconds": reports[1]["wallSeconds"]}],
     }
-    DRIFT_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    DRIFT_REPORT_PATH.write_text(json.dumps(drift_report, indent=2) + "\n", encoding="utf-8", newline="\n")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(drift_report, indent=2) + "\n", encoding="utf-8", newline="\n")
     if exceeded:
         raise RuntimeError(
             f"Selector render is not reproducible within budget ({exceeded}): observed={observed} budget={budget}; "
-            f"drift report at {DRIFT_REPORT_PATH.relative_to(ROOT).as_posix()}"
+            f"drift report at {report_path.relative_to(ROOT).as_posix()}"
         )
     return observed
 
@@ -408,7 +496,7 @@ def build_outputs(manifest: dict, manifest_path: Path, frames: dict[str, Image.I
             "frameSize": list(manifest["render"]["frameSize"]),
             "cameraOrthoScale": manifest["render"]["cameraOrthoScale"],
             "exposure": manifest["render"]["exposure"],
-            "cameraPitchDegrees": manifest["render"]["cameraPitchDegrees"],
+            "cameraPitchDegrees": reports[0]["cameraPitchDegrees"],
             "alphaThreshold": threshold,
             "compression": manifest["render"]["compression"],
             "blenderVersion": blender,
@@ -437,20 +525,25 @@ def build_outputs(manifest: dict, manifest_path: Path, frames: dict[str, Image.I
 
 
 def render(manifest_path: Path) -> None:
+    manifest_path = selector_manifest_path(manifest_path)
+    manifest = load_manifest(manifest_path)
+    sources_before = provenance(manifest, manifest_path)
     if not BLENDER.exists():
         raise RuntimeError(f"Blender not found: {BLENDER}")
-    manifest = read_json(manifest_path)
     if manifest["scene"].get("readOnly") is not True:
         raise RuntimeError("Selector manifest must declare the hero scene read-only")
     required = manifest["scene"]["blenderVersion"]
     actual = blender_version()
     if actual != required:
         raise RuntimeError(f"Blender version mismatch: expected {required}, got {actual}")
-    source_blend = ROOT / manifest["scene"]["sourceBlend"]
-    if not source_blend.exists():
-        raise RuntimeError(f"Committed hero scene missing: {source_blend}")
-    blend_sha_before = sha256_file(source_blend)
-    temp_root = ROOT / manifest["render"]["rawOutputDirectory"]
+    packed = manifest["scene"].get("sourceMode") == PACKED_MODE
+    source_blend = None if packed else ROOT / manifest["scene"]["sourceBlend"]
+    source_paths = ([ROOT / source["path"] for source in packed_gameplay_sources(manifest, ROOT, require_materialized=True)]
+                    if packed else [source_blend])
+    source_hashes = {path: sha256_file(path) for path in source_paths}
+    temp_root = source_path(ROOT, manifest["render"]["rawOutputDirectory"])
+    if any(path.resolve().is_relative_to(temp_root.resolve()) for path in source_paths):
+        raise RuntimeError("Raw output directory must not contain immutable selector sources")
     shutil.rmtree(temp_root, ignore_errors=True)
     run_a = temp_root / "run-a"
     run_b = temp_root / "run-b"
@@ -458,8 +551,10 @@ def render(manifest_path: Path) -> None:
         render_pass(manifest, manifest_path, source_blend, run_a, temp_root / "run-a-report.json", "selector render run A"),
         render_pass(manifest, manifest_path, source_blend, run_b, temp_root / "run-b-report.json", "selector render run B"),
     ]
-    if sha256_file(source_blend) != blend_sha_before:
-        raise RuntimeError("The committed hero scene changed during the selector render; the exporter must never save it")
+    if any(sha256_file(path) != digest for path, digest in source_hashes.items()):
+        raise RuntimeError("A committed hero source changed during the selector render; the exporter must never save it")
+    if provenance(manifest, manifest_path) != sources_before:
+        raise RuntimeError("Selector source/config provenance changed during rendering")
     pass_a = load_pass(manifest, run_a)
     pass_b = load_pass(manifest, run_b)
     observed = verify_two_passes(manifest, pass_a, pass_b, reports, actual)
@@ -481,12 +576,13 @@ def render(manifest_path: Path) -> None:
         "totalImageBytes": metadata["metrics"]["totalImageBytes"],
         "reproducibilityObserved": observed,
         "passWallSeconds": [report["wallSeconds"] for report in reports],
-        "driftReport": DRIFT_REPORT_PATH.relative_to(ROOT).as_posix(),
+        "driftReport": drift_report_path(manifest).relative_to(ROOT).as_posix(),
     }, indent=2))
 
 
 def check(manifest_path: Path) -> None:
-    manifest = read_json(manifest_path)
+    manifest_path = selector_manifest_path(manifest_path)
+    manifest = load_manifest(manifest_path)
     paths = output_paths(manifest)
     drift: list[str] = []
 
@@ -496,6 +592,11 @@ def check(manifest_path: Path) -> None:
     if not paths["metadata"].exists():
         raise SystemExit(f"selector atlas drift: missing {rel(paths['metadata'])}")
     metadata = read_json(paths["metadata"])
+    # Independent production contract, not merely a matching mutable module.
+    validate_authorities(metadata)
+    for key in ("classification", "runtimeAuthority", "gameplayAuthority"):
+        if metadata[key] != manifest[key]:
+            drift.append(f"{rel(paths['metadata'])}: {key}")
     if metadata.get("pipelineId") != manifest["pipelineId"] or metadata.get("schemaVersion") != 3:
         drift.append(f"{rel(paths['metadata'])}: pipeline identity")
     if metadata.get("directions") != manifest["directions"] or metadata.get("restDirection") != manifest["restDirection"]:
@@ -505,9 +606,26 @@ def check(manifest_path: Path) -> None:
     size = manifest["render"]["frameSize"][0]
     if metadata.get("frameSize") != size or metadata.get("pose") != manifest["pose"]:
         drift.append(f"{rel(paths['metadata'])}: frame contract")
-    pivot = metadata.get("render", {}).get("pivotPixels")
+    render_record = metadata.get("render", {})
+    expected_render = {
+        "engine": manifest["render"]["engine"],
+        "frameSize": manifest["render"]["frameSize"],
+        "cameraOrthoScale": manifest["render"]["cameraOrthoScale"],
+        "exposure": manifest["render"]["exposure"],
+        "alphaThreshold": manifest["render"]["alphaThreshold"],
+        "compression": manifest["render"]["compression"],
+        "blenderVersion": manifest["scene"]["blenderVersion"],
+    }
+    for key, expected in expected_render.items():
+        if json.dumps(render_record.get(key)) != json.dumps(expected):
+            drift.append(f"{rel(paths['metadata'])}: render.{key}")
+    try:
+        validate_camera_pitch(render_record.get("cameraPitchDegrees"), manifest["render"]["cameraPitchDegrees"])
+    except (TypeError, RuntimeError):
+        drift.append(f"{rel(paths['metadata'])}: render.cameraPitchDegrees")
+    pivot = render_record.get("pivotPixels")
     if (
-        metadata.get("groundContact") != manifest["groundContact"]
+        ground_contact_contract(metadata.get("groundContact")) != ground_contact_contract(manifest["groundContact"])
         or not (isinstance(pivot, list) and len(pivot) == 2 and all(isinstance(value, int) for value in pivot))
         or abs(pivot[0] - size / 2) > manifest["groundContact"]["pivotTolerancePx"]
         or not 0 < pivot[1] < size
@@ -522,9 +640,8 @@ def check(manifest_path: Path) -> None:
         drift.append(f"{rel(paths['metadata'])}: frameCount")
 
     expected_sources = provenance(manifest, manifest_path)
-    for key, value in expected_sources.items():
-        if metadata.get("sources", {}).get(key) != value:
-            drift.append(f"{rel(paths['metadata'])}: sources.{key}")
+    for key in source_provenance_drift(metadata.get("sources", {}), expected_sources):
+        drift.append(f"{rel(paths['metadata'])}: sources.{key}")
 
     metrics = metadata.get("metrics", {})
     if metrics.get("status") != "pass" or metrics.get("reproducibility") != "pass" or metrics.get("reproducibilityMode") != REPRODUCIBILITY_MODE:
@@ -538,7 +655,10 @@ def check(manifest_path: Path) -> None:
     total_bytes = 0
     frames_by_hero: dict[str, list[dict]] = {}
     for record in metadata.get("frames", []):
-        frames_by_hero.setdefault(record["portalHeroId"], []).append(record)
+        if not isinstance(record, dict):
+            drift.append(f"{rel(paths['metadata'])}: frame record")
+            continue
+        frames_by_hero.setdefault(record.get("portalHeroId"), []).append(record)
     for hero in manifest["heroes"]:
         hero_id = hero["portalHeroId"]
         entry = metadata["heroes"].get(hero_id, {})
@@ -559,7 +679,14 @@ def check(manifest_path: Path) -> None:
         if len(data) > manifest["atlas"]["maxBytesPerAtlas"]:
             drift.append(f"{rel(image_path)}: exceeds maxBytesPerAtlas")
         try:
-            atlas = canonical_rgba(Image.open(io.BytesIO(data)))
+            encoded = Image.open(io.BytesIO(data))
+            if encoded.format != 'PNG':
+                drift.append(f"{rel(image_path)}: selector format must be PNG")
+            columns, rows = manifest['atlas']['grid']
+            if encoded.size != (columns * size, rows * size):
+                drift.append(f"{rel(image_path)}: selector atlas dimensions must match the approved grid")
+                continue
+            atlas = canonical_rgba(encoded)
         except Exception:
             drift.append(f"{rel(image_path)}: undecodable")
             continue
@@ -572,7 +699,10 @@ def check(manifest_path: Path) -> None:
         for index, (direction, record, ref) in enumerate(zip(manifest["directions"], hero_frames, entry["frames"])):
             x, y = grid_cell(manifest, index)
             expected_ref = f"{entry['image']}#frame={x},{y},{size},{size},{atlas.width},{atlas.height}"
-            if ref != expected_ref or record["direction"] != direction or record["frame"] != {"x": x, "y": y, "w": size, "h": size}:
+            if record.get("portalHeroId") != hero_id or record.get("actorId") != hero["actorId"]:
+                drift.append(f"{rel(paths['metadata'])}: heroes.{hero_id} frame {direction} ownership")
+                continue
+            if ref != expected_ref or record.get("direction") != direction or record.get("frame") != {"x": x, "y": y, "w": size, "h": size}:
                 drift.append(f"{rel(paths['metadata'])}: heroes.{hero_id} frame {direction} placement")
                 continue
             crop = atlas.crop((x, y, x + size, y + size))
@@ -606,7 +736,9 @@ def check(manifest_path: Path) -> None:
 
 def main() -> None:
     args = parse_args()
-    manifest_path = Path(args.manifest).resolve()
+    manifest_path = selector_manifest_path(Path(args.manifest))
+    # Reject unsafe manifests before either pipeline lock can mutate the FS.
+    load_manifest(manifest_path)
     if args.check:
         check(manifest_path)
         return

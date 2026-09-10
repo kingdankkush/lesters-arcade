@@ -14,6 +14,7 @@
 // of this moves.
 
 import { seededUnit } from './deterministic-hash.mjs';
+import { exposedWaterEdges, waterAreaContains } from './world-design-water.mjs';
 
 export const DECAL_KINDS = Object.freeze({
   // Footpath wear where the authored route runs.
@@ -55,14 +56,21 @@ export function buildWorldDecals({ world, seed = 0x484d4432, landmarks = [] } = 
   if (!world?.routeGraph?.nodes) throw new TypeError('a level-one world contract is required');
   const decals = [];
   const push = (decal) => {
-    if (decals.length >= MAX_WORLD_DECALS) return;
+    if (![decal.x, decal.y, decal.radius, decal.rotation].every(Number.isFinite) || decal.radius <= 0) throw new TypeError(`invalid world decal ${decal.id}`);
+    if (onWater(decal.x, decal.y)) return;
+    if (decals.length >= MAX_WORLD_DECALS) {
+      if (decal.kind !== 'landmark-ring') return;
+      const expendableIndex = decals.findLastIndex((entry) => entry.kind === 'shore-crack');
+      if (expendableIndex < 0) return;
+      decals.splice(expendableIndex, 1);
+    }
     decals.push(freezeDecal(decal));
   };
   // W-4: wear and ruts are mud. The decal layer draws above the water, so a
   // mark centred in the river column (the route crosses the ford and the
   // bridge) floated on the surface as a tan ribbon.
-  const water = world.surfaces.filter((surface) => surface.kind === 'water' || surface.kind === 'shallow-water').map((surface) => surface.area);
-  const onWater = (x, y) => water.some((area) => x >= area.minX && x <= area.maxX && y >= area.minY && y <= area.maxY);
+  const waterSurfaces = world.surfaces.filter((surface) => surface.kind === 'water' || surface.kind === 'shallow-water').map(surface => ({ ...surface, kind: 'water' }));
+  const onWater = (x, y) => waterSurfaces.some(surface => waterAreaContains(surface.area, x, y));
 
   // --- footpath wear along the route -------------------------------------
   // Placed on the EDGES rather than the nodes, so wear reads as a path
@@ -83,7 +91,7 @@ export function buildWorldDecals({ world, seed = 0x484d4432, landmarks = [] } = 
       const jitter = (seededUnit(seed, `${key}:j`) - 0.5) * 46;
       const x = from.x + (to.x - from.x) * t + jitter;
       const y = from.y + (to.y - from.y) * t + jitter * 0.6;
-      if (onWater(x, y)) continue;
+      if (onWater(Number(x.toFixed(2)), Number(y.toFixed(2)))) continue;
       push({
         id: `decal:route-wear:${edgeIndex}:${index}`,
         kind: 'route-wear',
@@ -114,7 +122,7 @@ export function buildWorldDecals({ world, seed = 0x484d4432, landmarks = [] } = 
       const offset = side * 26;
       const x = from.x + (to.x - from.x) * t - Math.sin(rotation) * offset;
       const y = from.y + (to.y - from.y) * t + Math.cos(rotation) * offset;
-      if (onWater(x, y)) continue;
+      if (onWater(Number(x.toFixed(2)), Number(y.toFixed(2)))) continue;
       push({
         id: `decal:tire-rut:${edgeIndex}:${side > 0 ? 'r' : 'l'}`,
         kind: 'tire-rut',
@@ -172,28 +180,26 @@ export function buildWorldDecals({ world, seed = 0x484d4432, landmarks = [] } = 
     });
   }
 
-  // Shoreline cracking sits on the BANKS, just outside each water rect.
-  for (const surface of world.surfaces) {
-    if (surface.kind !== 'water' && surface.kind !== 'shallow-water') continue;
-    const { minX, maxX, minY, maxY } = surface.area;
-    for (const [side, edgeX] of [['w', minX], ['e', maxX]]) {
-      const outward = side === 'w' ? -1 : 1;
-      for (let index = 0; index < 5; index += 1) {
-        const key = `crack:${surface.id}:${side}:${index}`;
-        const y = minY + ((index + 0.5) / 5) * (maxY - minY) + (seededUnit(seed, `${key}:y`) - 0.5) * 120;
-        const x = edgeX + outward * (18 + seededUnit(seed, `${key}:x`) * 70);
-        if (x < 0 || x > world.bounds.maxX || y < 0 || y > world.bounds.maxY) continue;
-        push({
-          id: `decal:shore-crack:${surface.id}:${side}:${index}`,
-          kind: 'shore-crack',
-          anchorId: surface.id,
-          districtId: districtAt(world, x),
-          x: Number(x.toFixed(2)),
-          y: Number(y.toFixed(2)),
-          radius: 20 + seededUnit(seed, `${key}:r`) * 22,
-          rotation: seededUnit(seed, `${key}:rot`) * Math.PI,
-        });
-      }
+  // Keep the existing ten-candidate-per-water-body budget, but follow the
+  // exposed union perimeter rather than assuming two rectangular banks.
+  const shoreline = exposedWaterEdges(waterSurfaces);
+  for (const surface of waterSurfaces) {
+    const edges = shoreline.filter(edge => edge.surfaceId === surface.id).map(edge => ({ ...edge, length: Math.hypot(edge.b.x-edge.a.x, edge.b.y-edge.a.y) })).filter(edge => edge.length > 1e-8);
+    const total = edges.reduce((sum, edge) => sum + edge.length, 0);
+    if (total === 0) continue;
+    for (let index=0; index<10; index++) {
+      const key = `crack:${surface.id}:${index}`;
+      let distance = total * (index+0.5)/10;
+      const edge = edges.find(candidate => { if (distance <= candidate.length) return true; distance -= candidate.length; return false; }) ?? edges.at(-1);
+      const t = Math.max(0, Math.min(1, distance/edge.length));
+      const x0 = edge.a.x + (edge.b.x-edge.a.x)*t, y0 = edge.a.y + (edge.b.y-edge.a.y)*t;
+      const nx = -(edge.b.y-edge.a.y)/edge.length, ny = (edge.b.x-edge.a.x)/edge.length;
+      const side = onWater(x0+nx, y0+ny) ? -1 : 1;
+      if (onWater(x0+nx*side, y0+ny*side)) continue;
+      const offset = 18 + seededUnit(seed, `${key}:offset`)*70;
+      const x = Number((x0+nx*side*offset).toFixed(2)), y = Number((y0+ny*side*offset).toFixed(2));
+      if (x < world.bounds.minX || x > world.bounds.maxX || y < world.bounds.minY || y > world.bounds.maxY || onWater(x,y)) continue;
+      push({ id:`decal:shore-crack:${surface.id}:${index}`, kind:'shore-crack', anchorId:surface.id, districtId:districtAt(world,x), x, y, radius:20+seededUnit(seed,`${key}:r`)*22, rotation:seededUnit(seed,`${key}:rot`)*Math.PI });
     }
   }
 

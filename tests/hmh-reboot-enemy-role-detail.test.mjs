@@ -47,13 +47,14 @@ test('Cycle 034 gives both close-range undead families explicit role-readable de
 
   assert.equal(bagholder.identityForm, 'zombie');
   assert.deepEqual(bagholder.detailKit, {
-    kind: 'bagholder-undead-scrapper-v1',
-    frontReadable: true,
-    minimumAuthoredParts: 18,
+    kind: 'preserved-native-textured-body-and-debt-satchel',
+    bodyVertices: 62277,
+    equipmentVertices: 144,
+    bones: 19,
   });
   assert.deepEqual(bagholder.animationProfile, {
-    kind: 'undead-straight-lunge-v1',
-    damageResponse: 'snapback-stumble-v1',
+    kind: 'preserved-native-actions',
+    sourceStates: ['idle', 'run', 'tell', 'attack', 'hit', 'death'],
   });
 
   assert.equal(whale.identityForm, 'zombie');
@@ -79,16 +80,23 @@ test('Cycle 034 detail and motion profiles are fail-closed in the Blender source
 
 test('Cycle 034 generated atlases retain the audited detail and animation provenance', async () => {
   for (const [actorId, detailKind, animationKind] of [
-    ['bagholder-rusher', 'bagholder-undead-scrapper-v1', 'undead-straight-lunge-v1'],
+    ['bagholder-rusher', 'preserved-native-textured-body-and-debt-satchel', 'preserved-native-actions'],
     ['whale-enforcer', 'whale-enforcer-undead-bruiser-v1', 'undead-shoulder-charge-v1'],
   ]) {
     const metadata = JSON.parse(await readFile(
-      new URL(`apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`, repoUrl),
+      actorId === 'bagholder-rusher' && process.env.HMH_ENEMY_CANDIDATE_ROOT
+        ? `${process.env.HMH_ENEMY_CANDIDATE_ROOT}/${actorId}/${actorId}-roster-atlas.json`
+        : new URL(`apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`, repoUrl),
       'utf8',
     ));
     assert.equal(metadata.detailKit.kind, detailKind);
-    assert.equal(metadata.detailKit.frontReadable, true);
-    assert.ok(metadata.detailKit.minimumAuthoredParts >= 18);
+    if (actorId === 'bagholder-rusher') {
+      assert.deepEqual(metadata.detailKit, actor(actorId).detailKit);
+      assert.deepEqual(metadata.sourceModel, actor(actorId).sourceModel);
+    } else {
+      assert.equal(metadata.detailKit.frontReadable, true);
+      assert.ok(metadata.detailKit.minimumAuthoredParts >= 18);
+    }
     assert.equal(metadata.animationProfile.kind, animationKind);
     assert.equal(metadata.runtimeAuthority, 'projection-only');
     assert.equal(metadata.gameplayBodyProfile, 'authored-archetype-collision-v1');

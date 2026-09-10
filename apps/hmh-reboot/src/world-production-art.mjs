@@ -1,3 +1,5 @@
+import { WORLD_DESIGN_GROUND_PATHS } from './world-design-layout.mjs';
+import { exposedWaterEdges, clipHorizontalWaterLine } from './world-design-water.mjs';
 import { freezeDeep } from './value-guards.mjs';
 import { isScreenPointVisible } from './runtime-performance.mjs';
 import {
@@ -309,7 +311,7 @@ export function drawDistrictMaterial({ layers, district, kit, camera, view, proj
   }
 }
 
-export function createWorldProductionLayers({ ContainerClass, GraphicsClass, TilingSpriteClass = null }) {
+export function createWorldProductionLayers({ ContainerClass, GraphicsClass, TilingSpriteClass = null, depthLayer = null }) {
   if (typeof ContainerClass !== 'function' || typeof GraphicsClass !== 'function') throw new TypeError('Pixi classes are required');
   const root = new ContainerClass();
   root.label = WORLD_PRODUCTION_ART.id;
@@ -384,6 +386,10 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   roadMask.label = 'world-road-mask';
   roadSprites.addChild(roadMask);
   root.addChildAt(roadSprites, root.getChildIndex(layers.routes) + 1);
+  const depthFeatureRoot = new ContainerClass();
+  depthFeatureRoot.label = 'world-depth-fallback-features';
+  root.addChild(depthFeatureRoot);
+  const depthFeatureState = { world: null, nodes: new Map() };
   return Object.freeze({
     root,
     layers: Object.freeze(layers),
@@ -399,6 +405,10 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
     surfaceCues,
     roadSprites,
     roadMask,
+    depthLayer,
+    depthFeatureRoot,
+    depthFeatureState,
+    ContainerClass,
     TilingSpriteClass,
     GraphicsClass,
   });
@@ -461,8 +471,9 @@ function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = fals
   }
   // Centre wear band: lighter where traffic polishes the surface.
   trace(cues);
-  cues.stroke({ color: mixColor(kit.routeColor, 0xffffff, 0.16), width: Math.max(2, route.width * 0.42 * zoom), alpha: 0.3, cap: 'round', join: 'round' });
+  cues.stroke({ color: mixColor(kit.routeColor, 0xffffff, 0.16), width: Math.max(2, route.width * 0.42 * zoom), alpha: 0.07, cap: 'round', join: 'round' });
 
+  if (route.kind !== 'main' && route.kind !== 'street') return;
   // Dashed lane marks along each segment, spaced in world units so they stay
   // locked to the road as the camera moves.
   const DASH = 46;
@@ -481,7 +492,7 @@ function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = fals
     for (let travelled = stride * 0.5; travelled + dashLength < length; travelled += stride) {
       cues.moveTo(from.x + stepX * travelled, from.y + stepY * travelled)
         .lineTo(from.x + stepX * (travelled + dashLength), from.y + stepY * (travelled + dashLength))
-        .stroke({ color: kit.detailColor, width: Math.max(1, 2.4 * zoom), alpha: route.kind === 'main' ? 0.32 : 0.18 });
+        .stroke({ color: 0xc7bb8b, width: Math.max(1, 2.4 * zoom), alpha: 0.14 });
     }
   }
 }
@@ -1048,13 +1059,45 @@ function createStripPlacer({ container, TilingSpriteClass, camera, view, cullMar
   };
 }
 
-export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick, performanceProfile, terrainTiles = null }) {
+export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick, performanceProfile, terrainTiles = null, nativeBlockerIds = new Set() }) {
   if (!worldProduction?.layers || !world || !camera || !view) throw new TypeError('world renderer inputs are required');
   if (typeof queryGround !== 'function' || typeof worldToScreen !== 'function') throw new TypeError('world projection functions are required');
   if (!performanceProfile || !Number.isInteger(performanceProfile.particlesPerHazard)) throw new TypeError('performance profile is required');
   nonNegativeInteger(tick, 'tick');
   clearWorldProductionLayers(worldProduction);
   const layers = worldProduction.layers;
+  const depthState = worldProduction.depthFeatureState;
+  if (depthState && depthState.world !== world) {
+    for (const node of depthState.nodes.values()) {
+      worldProduction.depthLayer?.detach(node);
+      node.parent?.removeChild(node);
+      node.destroy?.({ children: true });
+    }
+    depthState.nodes.clear();
+    depthState.world = world;
+  }
+  for (const node of depthState?.nodes.values() ?? []) {
+    node.visible = false;
+    node.body.clear();
+    for (const child of node.faces.children) child.visible = false;
+  }
+  const depthFeatureNode = (feature) => {
+    if (!worldProduction.depthLayer || !depthState) return null;
+    let node = depthState.nodes.get(feature.id);
+    if (!node) {
+      node = new worldProduction.ContainerClass();
+      node.label = `world-depth-fallback-${feature.id}`;
+      node.body = new worldProduction.GraphicsClass();
+      node.body.label = `world-depth-fallback-body-${feature.id}`;
+      node.faces = new worldProduction.ContainerClass();
+      node.faces.label = `world-depth-fallback-faces-${feature.id}`;
+      node.addChild(node.body, node.faces);
+      worldProduction.depthFeatureRoot.addChild(node);
+      worldProduction.depthLayer.attach(node);
+      depthState.nodes.set(feature.id, node);
+    }
+    return node;
+  };
   const project = (point, activeCamera = camera) => worldToScreen(point, activeCamera, view);
   const tilePlacer = createTerrainSpritePlacer({ container: worldProduction.terrainSprites, terrainTiles, camera, view });
   const surfacePlacer = createTerrainSpritePlacer({ container: worldProduction.surfaceSprites, terrainTiles, camera, view });
@@ -1130,7 +1173,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     if (!screenBoundsVisible([a, b], view, performanceProfile.worldCullMargin)) continue;
     const groundMaterial = DISTRICT_TERRAIN_MATERIAL[district.id];
     layers.terrain.rect(a.x, a.y, b.x-a.x, b.y-a.y).fill({ color: kit.groundColor, alpha: 1 });
-    const groundTiled = tilePlacer?.place(groundMaterial, a.x, a.y, b.x-a.x, b.y-a.y) ?? null;
+    const groundTiled = tilePlacer?.place(groundMaterial, a.x, a.y, b.x-a.x, b.y-a.y, 0.58) ?? null;
     if (!groundTiled) {
       // Only draw the procedural motif when the authored tile is absent; the
       // tile already carries material detail and the two would fight.
@@ -1167,6 +1210,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       fringeCursor += 1;
       sprite.visible = true;
       sprite.texture = texture;
+      sprite.alpha = 0.58;
       // Rotated -90deg: the strip's U axis runs down the screen along the
       // boundary and its V falloff bleeds eastward into the next district.
       sprite.rotation = -Math.PI / 2;
@@ -1183,8 +1227,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
-  for (const route of world.routes) {
-    const routeNodes = route.nodeIds.map((id) => world.routeGraph.nodes.find((candidate) => candidate.id === id));
+  for (const route of [...world.routes,...WORLD_DESIGN_GROUND_PATHS]) {
+    const routeNodes = route.points ?? route.nodeIds.map((id) => world.routeGraph.nodes.find((candidate) => candidate.id === id));
     const routePoints = routeNodes.map((node) => {
       const ground = queryGround(node.x,node.y);
       return project({x:node.x,y:node.y,z:ground.groundZ});
@@ -1250,7 +1294,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const outlined = isRaised || isRamp;
     tracePolygon(layers.surfaces,points)
       .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
-      .stroke({color:surfaceBase.strokeColor,width:outlined||bandedShore||fordBanded?2:3,alpha:fordBanded?0.2:isWater?(bandedShore?0.3:0.8):outlined?0.55:0.9});
+      .stroke({color:surfaceBase.strokeColor,width:outlined||bandedShore||fordBanded?2:3,alpha:fordBanded?0.2:isWater?0:outlined?0.55:0.9});
     if (face) {
       drawRaisedFace({
         layers,
@@ -1271,12 +1315,12 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     // Authored material over the flat base for rectangular surfaces; the base
     // colour remains visible for non-rect shapes and when tiles are absent.
     const surfaceMaterial = SURFACE_TERRAIN_MATERIAL[surface.kind];
-    if (surfaceMaterial && surface.area.type === 'rect' && points.length >= 4) {
+    if (surfaceMaterial && points.length >= 3) {
       const minX = Math.min(...points.map((point) => point.x));
       const maxX = Math.max(...points.map((point) => point.x));
       const minY = Math.min(...points.map((point) => point.y));
       const maxY = Math.max(...points.map((point) => point.y));
-      if (isRamp) {
+      if (isRamp || surface.area.type !== 'rect') {
         // A ramp's projected outline is a parallelogram (its high corners sit
         // higher on screen), so the tile is clipped to that polygon instead of
         // overpainting two triangles of ground outside it.
@@ -1287,24 +1331,11 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       }
     }
     if (isRamp && points.length >= 4) drawRampGrade(cueLayer, surface, points, camera.zoom);
-    if (surface.kind === 'water' && shoreTexture && stripPlacer && surface.area.type === 'rect' && points.length >= 4) {
-      // W-4: authored wet sand and a broken foam line on the land side of every
-      // waterline, so a river stops ending at a drawn rectangle. Row 0 of the
-      // strip is the waterline itself and the band fades inland; the opaque
-      // water fill above covers whatever laps back over the surface.
-      const edges = [
-        { from: 0, to: 1, worldY: surface.area.minY },
-        { from: 1, to: 2, worldY: null },
-        { from: 2, to: 3, worldY: surface.area.maxY },
-        { from: 3, to: 0, worldY: null },
-      ];
-      for (const edge of edges) {
-        if (edge.worldY !== null && (edge.worldY <= worldMinY || edge.worldY >= worldMaxY)) continue;
-        stripPlacer.placeStrip(shoreTexture, points[edge.from], points[edge.to], {
-          ...stripDefaults,
-          depthWorld: SHORE_WORLD_DEPTH,
-          side: -1,
-          alpha: 0.94,
+    if (surface.kind === 'water' && shoreTexture && stripPlacer) {
+      for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
+        if (edge.a.y === edge.b.y && (edge.a.y<=worldMinY || edge.a.y>=worldMaxY)) continue;
+        stripPlacer.placeStrip(shoreTexture,project({...edge.a,z:edge.z}),project({...edge.b,z:edge.z}),{
+          ...stripDefaults,depthWorld:SHORE_WORLD_DEPTH,side:-1,alpha:0.94,
         });
       }
     }
@@ -1337,12 +1368,22 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       });
     }
     if (isWater && !ford) {
-      // Shoreline foam: the single clearest "this is water, do not stand here"
-      // cue, drawn as a bright inner band hugging the surface edge.
-      tracePolygon(cueLayer, points)
-        .stroke({ color: 0xcdf6ff, width: Math.max(2, 5 * camera.zoom), alpha: 0.5 });
-      tracePolygon(cueLayer, points)
-        .stroke({ color: 0x7fdcf0, width: Math.max(1, 2 * camera.zoom), alpha: 0.72 });
+      for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
+        if (edge.a.y === edge.b.y && (edge.a.y<=worldMinY || edge.a.y>=worldMaxY)) continue;
+        const a=project({...edge.a,z:edge.z}),b=project({...edge.b,z:edge.z});
+        cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0xcdf6ff,width:Math.max(2,5*camera.zoom),alpha:0.42});
+        cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0x7fdcf0,width:Math.max(1,2*camera.zoom),alpha:0.68});
+      }
+      if (surface.area.type !== 'rect') {
+        const step=70*camera.zoom, minY=Math.max(-step,Math.min(...points.map(p=>p.y))), maxY=Math.min(view.height+step,Math.max(...points.map(p=>p.y)));
+        for (let y=Math.ceil(minY/step)*step;y<maxY;y+=step) {
+          for (const [left,right] of clipHorizontalWaterLine(points,y)) {
+            if(right-left<24*camera.zoom) continue;
+            const inset=12*camera.zoom;
+            cueLayer.moveTo(left+inset,y).lineTo(right-inset,y).stroke({color:0xbaf5ff,width:Math.max(1,1.8*camera.zoom),alpha:0.1+shader.waterShimmer*0.1});
+          }
+        }
+      }
     }
     if (isRaised && points.length >= 4) {
       // Lit top edge and shaded front lip.
@@ -1397,17 +1438,15 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
           .lineTo(fleckX - drift * 0.6 + fleckLength, y + step * 0.5)
           .stroke({ color: 0xe6ffff, width: Math.max(1, 1.4 * camera.zoom), alpha: 0.08 + shader.waterShimmer * 0.1 });
       }
-      // Lit shorelines top and bottom; a ford's top and bottom are mid-river.
-      if (!ford) {
-        for (const edgeY of [top, bottom]) {
-          cueLayer.moveTo(left, edgeY).lineTo(right, edgeY)
-            .stroke({ color: 0x9fe8ff, width: Math.max(1, 2.4 * camera.zoom), alpha: 0.32 });
-        }
-      }
+      // The union's exposed edges above own every shoreline.
+
     }
   }
 
   for (const feature of world.blockers) {
+    if (nativeBlockerIds.has(feature.id)) continue;
+    const townFeature = feature.id.startsWith('town-');
+    if (townFeature && !layers.townBlockers.visible) continue;
     const shape = feature.shape;
     // Circle shapes carry x/y directly (collision.mjs canonical form); the
     // old `shape.center` read produced NaN projections that silently culled
@@ -1428,12 +1467,30 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
         });
       }
     }
-    const layer = feature.id.startsWith('town-') ? layers.townBlockers : layers.blockers;
+    const depthSorted = ['building', 'cliff', 'dense-trees', 'fence', 'machinery', 'containers', 'bridge-rail'].includes(feature.visualKind);
+    const depthNode = depthSorted ? depthFeatureNode(feature) : null;
+    const layer = depthNode?.body ?? (townFeature ? layers.townBlockers : layers.blockers);
+    if (depthNode) {
+      const groundY = feature.anchor?.y ?? (shape.type === 'circle' ? shape.y : Math.max(...anchors.map((point) => point.y)));
+      depthNode.zIndex = groundY;
+      depthNode.visible = true;
+      depthNode.body.clear();
+    }
     drawBlocker(layer, feature, BLOCKER_PRODUCTION_KITS[feature.visualKind], camera, (point, activeCamera) => project(point,activeCamera));
-    if (feature.visualKind === 'cliff' && shape.type === 'capsule' && faceTexture && blockerFacePlacer) {
-      // W-5 (partial): the authored rock face along the wall's straight run,
-      // in the container above the body drawn into `blockers`.
-      placeCliffFace({ feature, kit: BLOCKER_PRODUCTION_KITS.cliff, camera, project, placer: blockerFacePlacer, texture: faceTexture, stripDefaults });
+    if (feature.visualKind === 'cliff' && shape.type === 'capsule' && faceTexture) {
+      // The authored face shares the feature's depth node when depth sorting
+      // is active, so it cannot separate from the blocker body around actors.
+      const featureFacePlacer = depthNode ? createStripPlacer({
+        container: depthNode.faces,
+        TilingSpriteClass: worldProduction.TilingSpriteClass,
+        camera,
+        view,
+        cullMargin: performanceProfile.worldCullMargin,
+      }) : blockerFacePlacer;
+      if (featureFacePlacer) {
+        placeCliffFace({ feature, kit: BLOCKER_PRODUCTION_KITS.cliff, camera, project, placer: featureFacePlacer, texture: faceTexture, stripDefaults });
+        if (depthNode) featureFacePlacer.finish();
+      }
     }
   }
 

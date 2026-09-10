@@ -34,6 +34,9 @@ function solFunctionNames(source) {
   const re = /function\s+([A-Za-z_]\w*)\s*\(/g;
   let m;
   while ((m = re.exec(source)) !== null) names.add(m[1]);
+  // Solidity generates externally callable getters for public state variables.
+  const getters = /\b(?:address(?:\s+payable)?|u?int\d*|bool|string|bytes\d*)\s+public\s+(?:(?:immutable|constant)\s+)?([A-Za-z_]\w*)\s*(?:=|;)/g;
+  while ((m = getters.exec(source)) !== null) names.add(m[1]);
   return names;
 }
 
@@ -125,4 +128,14 @@ test('the live submitSession ABI arg count matches the Solidity signature', () =
   assert.ok(abiFrag, 'submitSession missing from SCORE_REGISTRY_ABI');
   const abiParams = abiFrag.match(/\(([^)]*)\)/)[1].split(',').map((s) => s.trim()).filter(Boolean);
   assert.equal(abiParams.length, 8, `SCORE_REGISTRY_ABI submitSession should take 8 params, has ${abiParams.length}`);
+});
+
+test('ABI alignment recognizes generated public getters, not private state', () => {
+  const names = solFunctionNames(`
+    address public immutable gameRegistry;
+    uint256 public constant MAX_SCORE = 42;
+    address private owner;
+    function submitSession() external {}
+  `);
+  assert.deepEqual([...names].sort(), ['MAX_SCORE', 'gameRegistry', 'submitSession']);
 });

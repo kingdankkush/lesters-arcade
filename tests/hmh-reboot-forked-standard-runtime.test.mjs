@@ -69,17 +69,17 @@ test('W9B cache ownership, selection, progression, and HUD remain in the shared 
   assert.equal(state.activeWeaponId, 'coin-blaster');
 });
 
-test('W9B primary and secondary actions preserve keyboard-touch-controller authority roles', async () => {
+test('W9B automatic primary and close attacks retain weapon authority without combat buttons', async () => {
   const gamepad = mapGamepadSnapshot({
     axes: [0, 0, 1, 0],
     buttons: Array.from({ length: 16 }, (_, index) => ({ pressed: [2, 7].includes(index), value: [2, 7].includes(index) ? 1 : 0 })),
   });
-  assert.equal(gamepad.actions.fire, true, 'right trigger remains primary weapon fire');
-  assert.equal(gamepad.actions.melee, true, 'face button remains the tested secondary blade action');
+  assert.equal(gamepad.actions.fire, false, 'primary firing follows aim automatically');
+  assert.equal(gamepad.actions.melee, false, 'close combat needs no face button');
 
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /fire:\s*aimIntent\.fire/);
-  assert.match(source, /trigger:\s*tickInput\.melee/);
+  assert.match(source, /automatic:\s*!rosterPreviewEnabled\s*&&\s*!dashFrame\.active/);
   assert.match(source, /meleeTargets/);
   assert.match(source, /weapon:melee-strike/);
   assert.match(source, /type:\s*'forked-standard'/);

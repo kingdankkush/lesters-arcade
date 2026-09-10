@@ -201,12 +201,22 @@ const ARENA_CAMP_SNAPSHOT = [
   ['camp:yard-holdouts:02', 'sandbag-nest', 10640.507, 2040.507], ['camp:yard-holdouts:03', 'campfire-ring', 11359.493, 2040.507],
 ];
 
-test('the five arena camps are byte-identical to Cycle 072 production', () => {
+test('arena camps preserve their composition and follow the approved relay arena relocation', () => {
   assert.equal(ARENA_CAMPS.length, 5);
   const placements = buildAuthoredEncampmentPlacements({ worldId: 'forked-frontier' })
     .filter((p) => p.arenaId)
     .map((p) => [p.id, p.assetId, p.x, p.y]);
-  assert.deepEqual(placements, ARENA_CAMP_SNAPSHOT);
+  // The native world packet moves only relay-picket from (1400,3000) to
+  // (900,3450); preserve every identity, relative pose and other camp.
+  const expected = ARENA_CAMP_SNAPSHOT.map(([id, assetId, x, y]) => id.startsWith('camp:relay-picket:')
+    ? [id, assetId, Number((x - 500).toFixed(3)), Number((y + 450).toFixed(3))]
+    : [id, assetId, x, y]);
+  assert.deepEqual(placements, expected);
+  for (const camp of ARENA_CAMPS) {
+    const arena = LEVEL_ONE_WORLD.encounterArenas.find(({ id }) => id === camp.arenaId);
+    assert.ok(arena, camp.id);
+    assert.deepEqual([camp.x, camp.y, camp.radius], [arena.anchor.x, arena.anchor.y, arena.radius]);
+  }
 });
 
 test('every spawn point has exactly one camp, close enough to read as where the enemies come from', () => {

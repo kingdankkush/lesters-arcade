@@ -63,8 +63,7 @@ try {
       activeBurns: Number(element.dataset.bearMarketBurnerActiveBurns),
       scorchZones: Number(element.dataset.bearMarketBurnerScorchZones),
       flameVisuals: Number(element.dataset.bearMarketBurnerFlameVisuals),
-      minimapWidth: Number(element.dataset.minimapWidth),
-      minimapHeight: Number(element.dataset.minimapHeight),
+      minimapTelemetryPresent: Object.keys(element.dataset).some((key) => key.startsWith('minimap')),
       lastWeaponFire: element.dataset.lastWeaponFire,
     }));
     await page.keyboard.up('Space');

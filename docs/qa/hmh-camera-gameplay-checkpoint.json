@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-09-09T06:39:05.784270+00:00",
+  "repository": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout",
+  "branch": "hermes/hmh-textured-rollout",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "verdict": "LOCAL_CAMERA_AND_GAMEPLAY_SMOKES_PASS_NOT_RELEASE_CERTIFIED",
+  "authorization": "Owner approved recommended gameplay choices and continuing Hermes-owned remaining tasks alongside Codex. Protected AGENTS edits, STACKED pause, mainnet/funds and irreversible-authority boundaries remain.",
+  "sourceHashes": {
+    "apps/hmh-reboot/src/main.mjs": "1da9349d5001f395dc500d3ac8cb55271bdf393437e448319a9386a35d1ee9e0",
+    "apps/hmh-reboot/src/world-space.mjs": "e46ae7e13ff041e89e38e1c4f4af8be6a0259d48e96254d056c6afda6fcdb5e7",
+    "tests/hmh-reboot-world-space.test.mjs": "72678445d51a5690763b8891949cd523e8537c372ea07de9ed7053e00d1c8e19",
+    "apps/hmh-reboot/src/level-one-world.mjs": "cf1a7f7eab10bd790a40088378ce9f134eb4a691250368d3c5040976d14561f5",
+    "apps/hmh-reboot/src/weapon-system.mjs": "50c12699654ab2891bb998b86fb60f6878df6e65bc426270b88e9551a0bd30b7",
+    "apps/hmh-reboot/src/input.mjs": "7cca0490de30dd459d6249c569d85d2480f5d81ca45f8f3269c0066aa9e52eb4",
+    "apps/hmh-reboot/src/touch-controls.mjs": "24898b927871d58c0140f50eef8de65bd25cadf6f72c8cdd70487318df25c130",
+    "apps/portal/hmh-reboot/styles.css": "d6e5f7dae896b6951ad4e8d9d088f8736678f5176468704ce82f69c3e171b4c2"
+  },
+  "implementation": {
+    "changed": [
+      "apps/hmh-reboot/src/world-space.mjs",
+      "apps/hmh-reboot/src/main.mjs",
+      "tests/hmh-reboot-world-space.test.mjs"
+    ],
+    "camera": {
+      "maxDeadZoneFraction": 0.12,
+      "smoothTimeSeconds": 0.1,
+      "lookAheadSeconds": 0.35,
+      "maxLookAheadWorldUnits": 64
+    },
+    "preserved": "Approved hero scale, full HUD/hint, world/movement/collision/elevation authority, collection radius and native models."
+  },
+  "focused": {
+    "passed": 69,
+    "failed": 0,
+    "log": ".tmp/team/playable-release/camera-follow-01/silhouette-green.log",
+    "sha256": "8a938333ad637efcd592f7add4eee9d0713d69024fc62775e7963e9bc94e9d92",
+    "reds": [
+      "red.log",
+      "damping-red.log",
+      "silhouette-red.log"
+    ],
+    "cases": "Viewport/zoom cap, real same-camera resize, endpoints/invalid fractions, native painted bounds, 240-to-15 FPS render partitions, inverse ground projection."
+  },
+  "review": {
+    "verdict": "PASS",
+    "receipt": ".tmp/team/playable-release/camera-follow-01/camera-final-review-result.json",
+    "sha256": "91037369340e6bc3c9e59402cc4bc6ec4fd4caf0a6b00ba6d6d7c3db5774e8f6",
+    "scope": "Frozen three-file bounded delta, not exact-index release review",
+    "transport": "One stream reconnection then completed verdict; no executed tools. Nonblocking suggestions retained."
+  },
+  "sourceGates": {
+    "receipt": ".tmp/team/revamp-resume/source-gates-camera-readable-01/receipt.json",
+    "sha256": "0b1bdfc44d0add5240372b54edc62624e3a9d5834b06a6aa8beb826631383ac9",
+    "passedCommands": 9,
+    "releaseLedger": {
+      "evaluated": 2980,
+      "passed": 2929,
+      "acceptedLegacyFailures": 51
+    }
+  },
+  "gameplayWave": {
+    "receipt": ".tmp/team/playable-release/gameplay-wave-camera-01/receipt.json",
+    "sha256": "540b799dd660e1009f9d201c92ad504e5b385fec7a13a8ef8dbc273e449c7536",
+    "passedCommands": 13,
+    "sourceHashesStillMatch": true,
+    "browserProofs": [
+      {
+        "name": "nativeRuntime",
+        "receipt": ".tmp/team/playable-release/native-browser-camera-readable-01/receipt.json",
+        "sha256": "370dc8a7e4831c59e9766a1d7d84b882d37ec3f1ff814a6f547a72174e20e136",
+        "passedScenarios": 3,
+        "detail": []
+      },
+      {
+        "name": "normalFree",
+        "receipt": ".tmp/team/revamp-resume/normal-flow-camera-readable-01/receipt.json",
+        "sha256": "1a7bc6ec73646128f53ca3df8aba63557e020645e5f5de8c246793f0eac4ba8a",
+        "passedScenarios": 10,
+        "detail": []
+      },
+      {
+        "name": "readablePickup1",
+        "receipt": ".tmp/team/playable-release/native-pickup-readable-01/receipt.json",
+        "sha256": "56d06ab709a903f94615907e18d782896aa2dbdee80148cda7a2ff5ac1c55300",
+        "passedScenarios": 5,
+        "detail": [
+          {
+            "profile": "desktop",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": true,
+            "witnessTick": 72,
+            "collectedTick": 91
+          },
+          {
+            "profile": "portrait",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": false,
+            "witnessTick": 74,
+            "collectedTick": 79
+          },
+          {
+            "profile": "landscape",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": false,
+            "witnessTick": 72,
+            "collectedTick": 78
+          },
+          {
+            "profile": "tablet",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": true,
+            "witnessTick": 66,
+            "collectedTick": 84
+          },
+          {
+            "profile": "ultrawide",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": false,
+            "witnessTick": 124,
+            "collectedTick": 142
+          }
+        ]
+      },
+      {
+        "name": "readablePickup2",
+        "receipt": ".tmp/team/playable-release/native-pickup-readable-02/receipt.json",
+        "sha256": "4a17b639302d7199777374f8290bac6126802ddeaa64cc711736ee88ea09cbe3",
+        "passedScenarios": 5,
+        "detail": [
+          {
+            "profile": "desktop",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": false,
+            "witnessTick": 80,
+            "collectedTick": 98
+          },
+          {
+            "profile": "portrait",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": false,
+            "witnessTick": 76,
+            "collectedTick": 82
+          },
+          {
+            "profile": "landscape",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": true,
+            "witnessTick": 72,
+            "collectedTick": 79
+          },
+          {
+            "profile": "tablet",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": true,
+            "witnessTick": 65,
+            "collectedTick": 84
+          },
+          {
+            "profile": "ultrawide",
+            "readableBeforeCollection": true,
+            "screenshotBracketedBeforeCollection": false,
+            "witnessTick": 129,
+            "collectedTick": 147
+          }
+        ]
+      }
+    ],
+    "initialFullHudHeroProfiles": 20,
+    "heroImageIndex": ".tmp/team/playable-release/camera-follow-01/verified-hero-images.json",
+    "heroImageIndexSha256": "f7aea8735660864ce0f8242c218f5c2568670da302e0f15fd6c89b3c4d8e22ff",
+    "heroVisualReview": "Full-HUD body bounds and 12px overlay clearance verified for all 20 captures. Contact-sheet visual review pending. Pilots do not certify earned unlocks, every action or real touch/gamepad/human devices.",
+    "pickupVisualReview": "Five precollection full-HUD captures and portrait postcollection inspected. Continuous witnessed painted bounds clear viewport/HUD/hint before collection. Some screenshot calls span collection; both bracketing counts are retained, not silently called before-only frames."
+  },
+  "benchmarks": {
+    "passedCommands": [
+      "weapon-benchmark",
+      "enemy-benchmark",
+      "burner-benchmark",
+      "standard-benchmark",
+      "weapon-benchmark-repeat"
+    ],
+    "weaponRepeatByteIdentical": true,
+    "bossSwarmBurnFocusedPassed": 28,
+    "scope": "Canonical live-authority baseline; does not implement missing ambient-pacing runtime authority."
+  },
+  "preservation": {
+    "staged-entries": true,
+    "index-flags": true,
+    "AGENTS.md": true,
+    "apps/hmh-reboot/src/level-one-world.mjs": true,
+    "apps/hmh-reboot/src/collectible-system.mjs": true,
+    "apps/hmh-reboot/src/movement.mjs": true,
+    "indexedEntries": 2813,
+    "indexFlags": 2813,
+    "format": "Exact NUL-delimited stage entries/flags; no index restoration."
+  },
+  "backlog": {
+    "sourceRegisterIdsRetained": 99,
+    "localClosures": [
+      "integration-native-browser",
+      "REGISTER:G-1",
+      "REGISTER:G-6"
+    ],
+    "sourceRegister": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
+    "note": "Triage is not acceptance; integration/release tracker entries are additional to the 99 source IDs."
+  },
+  "codex": {
+    "acknowledgementReceived": true,
+    "selfReportedRoot": "C:\\Users\\just_\\Documents\\GitHub\\lesters-arcade",
+    "selfReportedBranch": "work",
+    "selfReportedBase": "c71f50d0a642639dfbca683501fbf53b221a1313b",
+    "gitReadback": "Blocked by CodexSandboxOffline ownership; no safe.directory override.",
+    "ownership": "Level One, World3D layout, level test, scratch artifacts; production browser changes require parent integration.",
+    "integrationDependency": "Arena change requires matching ARENA_CAMPS geometry; Batch2 placements remain pending a verified source/render packet."
+  },
+  "blockedTouchWorker": {
+    "task": "REGISTER:G-3",
+    "outcome": "Node executable Access denied; stopped before behavioral RED or edits.",
+    "sourceFilesVerifiedUnchanged": 75,
+    "directory": "C:/Users/just_/Desktop/Projects/LestersArcade-Coordination/hmh-textured-rollout/workers/hermes-touch-melee-01",
+    "permissionsUnchanged": true
+  },
+  "web3": {
+    "readback": "Official HTTP RPC returned 502 before a successful read; bytecode/ABI state unknown, not absent.",
+    "successfulCalls": 0,
+    "transactionsBroadcast": 0,
+    "settlementLive": false
+  },
+  "performance": {
+    "state": "RUNNING",
+    "receipt": ".tmp/team/playable-release/performance-wave-camera-02/receipt.json",
+    "initialAttempt": "Controller-only schema KeyError before browser launch; preserved in camera-follow-01/performance-wave-controller.log. Corrected against actual sourceHashes receipt schema.",
+    "scope": "Serial short desktop-emulation smoke, not physical-device or canonical 30-minute endurance."
+  },
+  "release": {
+    "committed": false,
+    "pushed": false,
+    "published": false,
+    "remaining": [
+      "Codex integration",
+      "current clean-host/scoped release review",
+      "complete action/visual/performance/endurance certification",
+      "human/device and earned-unlock checks",
+      "remaining gameplay/art/portal/Web3 register items",
+      "immutable Preview/production/rollback checks"
+    ]
+  }
+}

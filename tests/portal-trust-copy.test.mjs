@@ -23,7 +23,7 @@ test('synthetic leaderboard seeds are explicitly labeled as unofficial House Sco
 test('real settled leaderboard entries remain official', () => {
   assert.deepEqual(leaderboardEntryProvenance({
     wallet: '0x1234567890123456789012345678901234567890',
-    settlementTxHash: '0xabc',
+    settlementTxHash: `0x${'ab'.repeat(32)}`,
   }), {
     source: 'ranked-settlement',
     label: 'ON-CHAIN',
@@ -35,7 +35,7 @@ test('leaderboard provenance summary says its counts cover only the visible rows
   const [houseEntry] = buildSeedLeaderboardEntries({ count: 1, now: 1_700_000_000_000 });
   const officialEntry = {
     wallet: '0x1234567890123456789012345678901234567890',
-    settlementTxHash: '0xabc',
+    settlementTxHash: `0x${'ab'.repeat(32)}`,
   };
   const localEntry = { wallet: '0x9876543210987654321098765432109876543210' };
 

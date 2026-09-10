@@ -136,7 +136,7 @@ export class DeterministicSimulation {
     this.resetAccumulator();
   }
 
-  update(rawDeltaMs, inputSnapshot = null) {
+  update(rawDeltaMs, inputSnapshot = null, continuationSnapshot = inputSnapshot) {
     if (!Number.isFinite(rawDeltaMs) || rawDeltaMs < 0) throw new TypeError('frame delta must be a non-negative finite number');
     if (this.state !== 'active') {
       this.resetAccumulator();
@@ -144,6 +144,9 @@ export class DeterministicSimulation {
     }
 
     const input = freezeClone(inputSnapshot);
+    // A released buffered pulse belongs to one admitted tick. Held input
+    // continues through catch-up; neither input carries wall-clock metadata.
+    const continuation = continuationSnapshot === inputSnapshot ? input : freezeClone(continuationSnapshot);
     const admittedDeltaMs = Math.min(rawDeltaMs, this.maxFrameDeltaMs);
     const rawWallClockLossMs = Math.max(0, rawDeltaMs - admittedDeltaMs);
     this.accumulatorMs += admittedDeltaMs;
@@ -163,7 +166,7 @@ export class DeterministicSimulation {
         tick: this.tick,
         dtMs: this.fixedStepMs,
         dtSeconds: this.fixedStepMs / 1000,
-        input,
+        input: steps === 1 ? input : continuation,
       });
       for (const callback of [...this.stepCallbacks]) callback(step);
 

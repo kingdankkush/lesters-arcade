@@ -91,6 +91,46 @@ export function createPrototypeHumanoidDescriptor({
   });
 }
 
+export function measureMinimumPrototypeBodyHeight(descriptor) {
+  if (descriptor?.kind !== 'prototype-human-graybox' || !Array.isArray(descriptor.parts)) throw new TypeError('prototype human body descriptor is required');
+  const requiredIds = ['head', 'torso', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
+  if (descriptor.parts.length !== requiredIds.length || requiredIds.some((id) => !descriptor.parts.some((part) => part?.id === id))) {
+    throw new TypeError('prototype descriptor must contain the six anatomical body parts');
+  }
+
+  // These are the smallest independent projection scales already used by the
+  // run pulse and melee squash. Applying both is conservative even though the
+  // extrema do not normally occur on the same rendered tick.
+  const minimumScaleX = 0.93;
+  const minimumScaleY = 1 - 0.18 * 0.45;
+  let minimumHeight = Infinity;
+  for (let facing = 0; facing < 8; facing += 1) {
+    const angle = facing * Math.PI / 4;
+    const sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+    let top = Infinity;
+    let bottom = -Infinity;
+    const include = (centerX, centerY, radiusX = 0, radiusY = 0) => {
+      const center = centerX * minimumScaleX * sin + centerY * minimumScaleY * cos;
+      const support = Math.hypot(radiusX * minimumScaleX * sin, radiusY * minimumScaleY * cos);
+      top = Math.min(top, center - support);
+      bottom = Math.max(bottom, center + support);
+    };
+    for (const part of descriptor.parts) {
+      const geometry = part.geometry;
+      if (geometry.type === 'circle') include(geometry.x, geometry.y, geometry.radius, geometry.radius);
+      else if (geometry.type === 'ellipse') include(geometry.x, geometry.y, geometry.radiusX, geometry.radiusY);
+      else if (geometry.type === 'line') {
+        include(geometry.fromX, geometry.fromY);
+        include(geometry.toX, geometry.toY);
+      } else throw new TypeError(`unknown prototype body geometry ${geometry.type}`);
+    }
+    minimumHeight = Math.min(minimumHeight, bottom - top);
+  }
+  if (!Number.isFinite(minimumHeight) || minimumHeight <= 0) throw new TypeError('prototype body height could not be measured');
+  return minimumHeight;
+}
+
 function drawLine(graphics, geometry, style) {
   graphics
     .moveTo(geometry.fromX, geometry.fromY)

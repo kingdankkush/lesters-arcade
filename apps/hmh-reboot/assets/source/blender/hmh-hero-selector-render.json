@@ -4,21 +4,15 @@
   "classification": "production-art",
   "runtimeAuthority": "projection-only",
   "gameplayAuthority": "none",
-  "purpose": "Character-select turntables from the owner-generated textured Tripo heroes. Static source poses only; gameplay rigs and atlases remain unchanged.",
+  "purpose": "Character selectors rendered from the exact packed native gameplay sources and their HMH_Aim actions; projection-only.",
   "scene": {
-    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend",
-    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector-sources.json",
+    "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
     "heroExporter": "scripts/hmh-blender/export-hmh-production-hero-pilot.py",
     "exporter": "scripts/hmh-blender/export-hmh-hero-selector.py",
     "runner": "scripts/run-hmh-hero-selector-render.py",
     "blenderVersion": "5.1.2",
     "readOnly": true,
-    "sourceMode": "static-textured-models",
-    "sourceBlendFingerprint": {
-      "sha256": "319f912505cad6ba254634a3e8490d3108b753db9a1d80c920e68d2b53599b61",
-      "bytes": 83367740
-    },
-    "sourceBuilder": "scripts/hmh-blender/create-hmh-tripo-selector-scene.py"
+    "sourceMode": "packed-gameplay-sources"
   },
   "render": {
     "engine": "BLENDER_EEVEE",
@@ -35,8 +29,11 @@
     "compression": 20
   },
   "pose": {
-    "mode": "source-rest-pose",
-    "rigged": false
+    "mode": "native-action",
+    "action": "HMH_Aim",
+    "frameIndex": 0,
+    "frameCount": 1,
+    "loop": false
   },
   "directions": [
     "east",
@@ -89,7 +86,7 @@
   },
   "groundContact": {
     "contract": "source-root-projection",
-    "note": "The static model root is projected through the committed camera and recorded per frame. These sources have no gameplay rig; gameplay anchors are unchanged.",
+    "note": "The native gameplay rig root is projected through the committed camera and recorded per frame in its HMH_Aim pose. Selector projection does not change gameplay anchors.",
     "pivotTolerancePx": 0.5,
     "footLineEnvelopePx": {
       "minBelowPivot": 8,

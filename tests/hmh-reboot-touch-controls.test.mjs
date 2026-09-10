@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { InputState } from '../apps/hmh-reboot/src/input.mjs';
+import { createCameraState } from '../apps/hmh-reboot/src/world-space.mjs';
+import { HMH_ACTION_MAP } from '../apps/hmh-reboot/src/action-map.mjs';
 
 import {
   TouchControlState,
@@ -9,6 +12,8 @@ import {
   createTouchControlAdapter,
   isTouchUiEnabled,
   isGameplayControlTarget,
+  TOUCH_CONTROL_SPEC,
+  touchControlsHintText,
 } from '../apps/hmh-reboot/src/touch-controls.mjs';
 
 test('touch mode and first-run onboarding share one bounded authority', () => {
@@ -50,14 +55,14 @@ test('independent pointer ids preserve simultaneous movement aim and actions', (
   touch.movePointer(11, { x: 140, y: 300 });
   touch.movePointer(22, { x: 500, y: 240 });
   touch.beginAction(33, 'grenade');
-  touch.beginAction(44, 'dash');
-  touch.beginAction(55, 'weaponNext');
+  assert.throws(()=>touch.beginAction(44,'dash'),/unknown/);
+  assert.throws(()=>touch.beginAction(55,'weaponNext'),/unknown/);
   const snapshot = touch.snapshot();
   assert.ok(snapshot.moveX > 0);
   assert.ok(snapshot.aimY < 0);
   assert.equal(snapshot.grenade, true);
-  assert.equal(snapshot.dash, true);
-  assert.equal(snapshot.weaponNext, true);
+  assert.equal(snapshot.dash, false);
+  assert.equal(snapshot.weaponNext, false);
   touch.endPointer(33);
   assert.equal(touch.snapshot().grenade, false);
   assert.ok(touch.snapshot().moveX > 0, 'ending an action pointer must not cancel movement');
@@ -67,9 +72,9 @@ test('lost pointers and cancel-all clear only owned controls without sticky stat
   const touch = new TouchControlState();
   touch.beginStick(1, 'move', { x: 0, y: 0 });
   touch.movePointer(1, { x: 50, y: 0 });
-  touch.beginAction(2, 'fire');
+  touch.beginAction(2, 'grenade');
   touch.endPointer(999);
-  assert.equal(touch.snapshot().fire, true);
+  assert.equal(touch.snapshot().grenade, true);
   touch.cancelAll();
   assert.deepEqual(touch.snapshot(), {
     moveX: 0, moveY: 0, aimX: 0, aimY: 0,
@@ -147,11 +152,8 @@ test('browser touch adapter owns UI pointers relayouts and clears state on teard
   windowRef.emit('pointermove', event(2, 600, 240));
   adapter.elements.power.emit('pointerdown', event(3, 0, 0));
   adapter.elements.pause.emit('pointerdown', event(4, 0, 0));
-  assert.equal(adapter.elements.weapon.textContent, 'SWAP');
-  adapter.elements.weapon.emit('pointerdown', event(5, 0, 0));
-  assert.equal(snapshots.at(-1).weaponNext, true, 'the visible mobile control must expose weapon switching');
-  windowRef.emit('pointerup', event(5, 0, 0));
-  assert.equal(snapshots.at(-1).weaponNext, false);
+  assert.equal(adapter.elements.weapon,undefined);
+  assert.equal(adapter.elements.power.textContent,'GRENADE');
   assert.equal(pauseToggles, 1);
   adapter.elements.pause.emit('pointerup', event(4, 0, 0));
   assert.ok(snapshots.at(-1).moveX > 0);
@@ -169,4 +171,54 @@ test('browser touch adapter owns UI pointers relayouts and clears state on teard
   assert.equal(root.children[0].removed, true);
   assert.equal(snapshots.at(-1).moveX, 0);
   assert.equal(snapshots.at(-1).grenade, false);
+});
+
+function timedTouchAdapterFixture() {
+  const documentRef = new FakeElement(null);
+  documentRef.createElement = () => new FakeElement(documentRef);
+  const root = new FakeElement(documentRef); const windowRef = new FakeElement(documentRef);
+  windowRef.innerWidth = 390; windowRef.innerHeight = 844;
+  let clock = 0; let id = 0; const timers = new Map(); const snapshots = [];
+  windowRef.setTimeout = (callback, delay) => { timers.set(++id, { callback, at: clock + delay }); return id; };
+  windowRef.clearTimeout = (key) => timers.delete(key);
+  const adapter = createTouchControlAdapter({ input: { setTouch: value => snapshots.push(value) }, root, windowRef, documentRef, now: () => clock, getSafeInsets: () => ({}) });
+  const event = (pointerId) => ({ pointerId, clientX: 300, clientY: 700, preventDefault() {}, stopPropagation() {} });
+  const at = (value) => {
+    clock = value;
+    for (let steps = 0; steps < 8; steps += 1) {
+      const due = [...timers].find(([, timer]) => timer.at <= clock);
+      if (!due) return;
+      timers.delete(due[0]); due[1].callback();
+    }
+    throw new Error('gesture release timer must settle');
+  };
+  return { adapter, windowRef, snapshots, timers, event, at, tap(pointerId, start) { at(start); adapter.elements.aim.emit('pointerdown', event(pointerId)); at(start + 20); windowRef.emit('pointerup', event(pointerId)); } };
+}
+
+test('rapid stick taps and drags never create hidden combat actions or delayed timers',()=>{
+  const f=timedTouchAdapterFixture();
+  for(let i=0;i<8;i++) f.tap(i+1,100+i*40);
+  assert.equal(f.snapshots.at(-1).melee,false);assert.equal(f.snapshots.at(-1).dash,false);
+  assert.equal(f.timers.size,0);f.adapter.destroy();
+});
+test('grenade and sticks release on pointer loss, raw touch cancellation and blur',()=>{
+  for(const cancellation of ['pointercancel','lostpointercapture','touchcancel','blur']) {
+    const f=timedTouchAdapterFixture();
+    f.adapter.elements.power.emit('pointerdown',f.event(1));
+    assert.equal(f.snapshots.at(-1).grenade,true);
+    if(cancellation==='lostpointercapture') f.adapter.elements.power.emit(cancellation,f.event(1));
+    else f.windowRef.emit(cancellation,{...f.event(1),touches:[]});
+    assert.equal(f.snapshots.at(-1).grenade,false);
+    assert.equal(f.snapshots.at(-1).melee,false);assert.equal(f.timers.size,0);
+    f.adapter.destroy();
+  }
+});
+test('missing or distant pointer release clears aim without a gesture or stuck control',()=>{
+  for(const missing of [false,true]) {
+    const f=timedTouchAdapterFixture();f.adapter.elements.aim.emit('pointerdown',f.event(1));
+    f.windowRef.emit('pointermove',{...f.event(1),clientX:360});assert.ok(f.snapshots.at(-1).aimX>0);
+    const release={...f.event(1),clientX:500};if(missing){delete release.clientX;delete release.clientY;}
+    f.windowRef.emit('pointerup',release);assert.equal(f.snapshots.at(-1).aimX,0);
+    assert.equal(f.snapshots.at(-1).melee,false);f.adapter.destroy();
+  }
 });

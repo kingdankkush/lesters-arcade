@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 
 import {
   runEnemyEnduranceSoak,
@@ -17,6 +18,63 @@ const INPUT = Object.freeze({
   activeEnemies: 128,
   cycles: 2,
   ticksPerCycle: 180,
+});
+
+// Exact public dataset subset from the live 128-body diagnosis. The production
+// callback below is exercised directly, not replaced with a parallel predicate.
+const NATIVE_ENDURANCE_READY = Object.freeze({
+  endurancePressurePilot: 'true',
+  enemyCount: '128',
+  simulationTick: '21',
+  actorArtSource: 'packed-textured-blend',
+  enemyArt: 'production-roster-atlas-v1',
+  authoredPropStatus: 'ready',
+});
+const browserSource = () => readFileSync(new URL('../scripts/hmh-reboot-enemy-endurance-browser-smoke.mjs', import.meta.url), 'utf8');
+function browserReady(dataset) {
+  const source = browserSource();
+  const marker = 'await page.waitForFunction(';
+  const start = source.indexOf(marker);
+  const end = source.indexOf('}, TARGET_ENEMIES, { timeout:', start);
+  assert.ok(start >= 0 && end > start, 'locate the actual serialized browser readiness callback');
+  const callback = source.slice(start + marker.length, end + 1);
+  return runInNewContext(`(${callback})(128)`, {
+    document: { querySelector: (selector) => {
+      assert.equal(selector, '#hmhRebootStage');
+      return dataset === null ? null : { dataset };
+    } },
+  });
+}
+
+test('browser endurance startup accepts the observed current native 128-body state', () => {
+  assert.equal(browserReady(NATIVE_ENDURANCE_READY), true);
+});
+
+test('browser endurance startup rejects retired and fallback actor sources', () => {
+  for (const actorArtSource of ['production-blender-atlas-v1', 'vector', '', undefined]) {
+    assert.equal(browserReady({ ...NATIVE_ENDURANCE_READY, actorArtSource }), false, String(actorArtSource));
+  }
+});
+
+test('browser endurance readiness still requires pressure, exact density, advancing ticks and complete production art', () => {
+  assert.equal(browserReady(NATIVE_ENDURANCE_READY), true);
+  for (const change of [
+    { endurancePressurePilot: 'false' }, { enemyCount: '0' }, { enemyCount: '127' },
+    { enemyCount: '129' }, { simulationTick: '7' }, { simulationTick: 'NaN' },
+    { enemyArt: 'fallback' }, { authoredPropStatus: 'loading' },
+  ]) assert.equal(browserReady({ ...NATIVE_ENDURANCE_READY, ...change }), false, JSON.stringify(change));
+  assert.equal(Boolean(browserReady(null)), false);
+});
+
+test('browser endurance post-load art guard pins the same native source and rejects drift', () => {
+  const line = browserSource().split('\n').find((value) => value.includes("failures.push('production art readiness drifted')"));
+  assert.ok(line, 'locate the real per-sample art drift guard');
+  const base = { actorArt: NATIVE_ENDURANCE_READY.actorArtSource, enemyArt: NATIVE_ENDURANCE_READY.enemyArt, authoredProps: NATIVE_ENDURANCE_READY.authoredPropStatus };
+  const failures = (samples) => Array.from(runInNewContext(`(() => { const failures = []; ${line} return failures; })()`, { samples }));
+  assert.deepEqual(failures([base]), []);
+  for (const change of [{ actorArt: 'production-blender-atlas-v1' }, { actorArt: 'vector' }, { enemyArt: 'fallback' }, { authoredProps: 'loading' }]) {
+    assert.deepEqual(failures([base, { ...base, ...change }]), ['production art readiness drifted']);
+  }
 });
 
 test('100+ body endurance soak reports truthful independent pressure maxima and two recurring cycles', () => {

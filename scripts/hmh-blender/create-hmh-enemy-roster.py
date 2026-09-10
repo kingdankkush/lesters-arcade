@@ -979,8 +979,14 @@ def main() -> None:
     rig = build_rig(manifest["scene"]["armature"])
     move_to_collection(rig, collection)
 
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import hmh_native_enemy as native_enemy
     built = []
     for actor in manifest["actors"]:
+        if not native_enemy.is_procedural_actor(actor):
+            native_enemy.actor_manifest(manifest, actor)
+            continue  # Packed actor renders from its own immutable native source.
         actor_with_policy = dict(actor)
         actor_with_policy["materialPolicy"] = manifest.get("materialPolicy", {})
         built.append(build_actor(actor_with_policy, rig, collection))

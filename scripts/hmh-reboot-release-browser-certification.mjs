@@ -203,37 +203,18 @@ async function assertTouchComposition(page, profile, controls) {
         ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom }
         : null;
     };
-    const width = innerWidth;
-    const height = innerHeight;
-    const worldWidth = Number(stage.dataset.worldWidth);
-    const worldHeight = Number(stage.dataset.worldHeight);
-    const telemetryWidth = Number(stage.dataset.minimapWidth);
-    const telemetryHeight = Number(stage.dataset.minimapHeight);
-    const telemetryX = Number(stage.dataset.minimapX);
-    const telemetryY = Number(stage.dataset.minimapY);
-    const compact = width < 600;
-    const fallbackWidth = Math.min(compact ? 120 : 220, width * 0.34);
-    const fallbackHeight = fallbackWidth * worldHeight / worldWidth;
-    const minimap = [telemetryWidth, telemetryHeight, telemetryX, telemetryY].every(Number.isFinite)
-      && telemetryWidth > 0 && telemetryHeight > 0
-      ? { left: telemetryX - 6, top: telemetryY - 6, right: telemetryX + telemetryWidth + 6, bottom: telemetryY + telemetryHeight + 6 }
-      : {
-          left: width - fallbackWidth - 22,
-          top: (compact && height >= 700 ? height - fallbackHeight - 306 : 10),
-          right: width - 10,
-          bottom: (compact && height >= 700 ? height - 294 : 22 + fallbackHeight),
-        };
+    const minimapTelemetryPresent = Object.keys(stage.dataset).some((key) => key.startsWith('minimap'));
     return {
       status: rectFor('.hmh-reboot-status-card'),
       runRail: rectFor('.hmh-run-rail'),
-      minimap,
+      minimapTelemetryPresent,
     };
   });
+  assert.equal(composition.minimapTelemetryPresent, false, `${profile.name} retired minimap must stay absent`);
   if (composition.status) assertNoVisibleOverlap(composition.status, composition.runRail, `${profile.name} status/run rail`);
   for (const control of controls) {
     assertNoVisibleOverlap(control, composition.runRail, `${profile.name} ${control.name}/run rail`);
-    // Every remaining control must clear the minimap, not just the utility row.
-    assertNoVisibleOverlap(control, composition.minimap, `${profile.name} ${control.name}/minimap`);
+
   }
   return composition;
 }

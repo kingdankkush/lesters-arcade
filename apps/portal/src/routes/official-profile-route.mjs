@@ -1,7 +1,94 @@
-import { buildHmhRunHistoryModel } from '../hmh-run-history.mjs';
+import { buildHmhRunHistoryModel, buildHmhRunDetailsModel } from '../hmh-run-history.mjs';
+import { RUN_HISTORY_LIMIT } from '../persistence.mjs';
+import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
 
 const formatPermille = (value) => `${(Math.max(0, Number(value) || 0) / 10).toFixed(1)}%`;
 const titleCase = (value) => String(value ?? '').split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
+
+// DOM is created only when a player opens a run, not for every retained payload.
+// Native details/summary supplies keyboard activation and expanded-state semantics.
+export function renderHmhRunDetails(run, { el, appendText }) {
+  const disclosure = el('details', { className: 'hmh-history-details' });
+  disclosure.append(el('summary', { textContent: 'All captured stats', className: 'hmh-history-details-toggle' }));
+  let rendered = false;
+  disclosure.addEventListener('toggle', () => {
+    if (!disclosure.open || rendered) return;
+    rendered = true;
+    const model = buildHmhRunDetailsModel(run.runSummary);
+    if (!model) {
+      appendText(disclosure, 'p', 'This summary is unavailable or does not match a supported schema.', 'tiny-note');
+      return;
+    }
+    appendText(disclosure, 'p', `Session ${run.sessionId}`, 'hmh-history-session-id');
+    appendText(disclosure, 'p', 'These are device-local gameplay facts, not verified on-chain stats. Ticks use 60 Hz; elapsed ms are milliseconds; distance milli is 1/1000 world unit; permille is parts per thousand. Litecoin is an in-game collectible count, not a wallet balance. Upgrade counts describe the final build, not a chronological selection history. Missing older-version fields are not reconstructed.', 'tiny-note');
+    for (const section of model.sections) {
+      const group = el('details', { className: 'hmh-history-stat-section' });
+      group.append(el('summary', { textContent: section.label }));
+      const fields = el('dl', { className: 'hmh-history-stat-fields' });
+      for (const field of section.fields) {
+        const pair = el('div', { className: 'hmh-history-stat-pair' });
+        pair.setAttribute('data-stat-path', field.path);
+        appendText(pair, 'dt', field.label);
+        appendText(pair, 'dd', String(field.value));
+        fields.append(pair);
+      }
+      group.append(fields);
+      disclosure.append(group);
+    }
+  });
+  return disclosure;
+}
+
+export function renderProfileAchievements(snapshot, { ACHIEVEMENTS, el, appendText, renderAchievementIcon }) {
+  const byId = new Map((snapshot?.achievements ?? []).map((achievement) => [achievement.id, achievement]));
+  const achievements = Object.values(ACHIEVEMENTS).map((definition) => {
+    const record = byId.get(definition.id);
+    return { ...definition, unlocked: record?.unlocked === true, unlockedAt: record?.unlockedAt,
+      progress: record?.progress, iconSrc: record?.iconSrc };
+  });
+  const card = el('article', { className: 'official-info-card achievements-card achievements-module' });
+  const head = el('div', { className: 'achievements-head' });
+  appendText(head, 'span', 'ACHIEVEMENTS', 'cabinet-status-label');
+  appendText(head, 'strong', `${achievements.filter((a) => a.unlocked).length} / ${achievements.length} unlocked`, 'achievements-count');
+  card.append(head);
+  appendText(card, 'p', 'These are device-local Testnet achievement records, not verified on-chain achievements or NFTs. Dates record local parent unlocks. Progress uses recorded Ranked aggregates; missing or compound conditions are not estimated. Open a badge for its requirement.', 'tiny-note');
+  const grid = el('div', { className: 'achievements-grid profile-achievement-grid' });
+  for (const a of achievements) {
+    const badge = el('article', {
+      className: `${a.uiChrome?.badgeClassName ?? `achievement-badge tier-${a.tier ?? 'bronze'}`} profile-achievement-card ${a.unlocked ? 'unlocked' : 'locked'}`,
+      dataset: { uiChrome: a.uiChrome?.toastFrameId ?? 'achievement-toast-frame', badgeFrame: a.uiChrome?.badgeFrameId ?? `achievement-tier-${a.tier ?? 'bronze'}` },
+    });
+    const disclosure = el('details', { className: 'achievement-disclosure' });
+    const summary = el('summary');
+    const status = a.unlocked ? 'Unlocked locally' : 'Locked';
+    summary.setAttribute('aria-label', `${a.title}. ${status}. Show requirement`);
+    summary.append(renderAchievementIcon({ iconSrc: a.iconSrc ?? (a.unlocked ? a.badgeSrc : a.lockedBadgeSrc), icon: a.unlocked ? (a.icon ?? '🏅') : '🔒', label: a.title }));
+    appendText(summary, 'span', a.title, 'achievement-name');
+    appendText(summary, 'small', status, 'achievement-record-status');
+    disclosure.append(summary);
+    appendText(disclosure, 'p', a.description, 'achievement-requirement');
+    badge.append(disclosure);
+    const date = a.unlocked ? normalizeAchievementUnlockDate(a.unlockedAt) : null;
+    if (date) {
+      const time = el('time', { textContent: `Unlocked ${date.slice(0, 10)} UTC`, className: 'achievement-record-date' });
+      time.setAttribute('datetime', date);
+      badge.append(time);
+    }
+    else if (a.unlocked) appendText(badge, 'small', 'Unlock date not recorded', 'achievement-record-date');
+    if (a.progress?.status === 'measured') {
+      const { value, target, unit } = a.progress;
+      const meter = el('progress');
+      meter.setAttribute('value', String(Math.min(value, target)));
+      meter.setAttribute('max', String(target));
+      meter.setAttribute('aria-label', `${a.title}: recorded local progress`);
+      badge.append(meter);
+      appendText(badge, 'small', `${value} / ${target} ${unit}`, 'achievement-progress-label');
+    } else appendText(badge, 'small', 'Progress not recorded for this condition', 'achievement-progress-label');
+    grid.append(badge);
+  }
+  card.append(grid);
+  return card;
+}
 
 export function createOfficialProfileRoute({
   ACHIEVEMENTS,
@@ -47,7 +134,6 @@ export function createOfficialProfileRoute({
     const hmhRunHistory = connectedWallet ? buildHmhRunHistoryModel(state.runHistory, {
       wallet: connectedWallet,
       filters: routeState.historyFilters,
-      settlements: snapshot?.settlements,
     }) : null;
     const profile = snapshot?.profile;
 
@@ -76,9 +162,9 @@ export function createOfficialProfileRoute({
         ['Rank', profile.rank],
         ['XP', profile.xp.toLocaleString()],
         ['Best Score', bestScore.toLocaleString()],
-        ['Ranked Runs', String(profileV2?.trophyRoom.summary.totalRankedRuns ?? profile.totalPaidRuns)],
+        ['Cached Ranked Runs', String(profileV2?.trophyRoom.summary.totalRankedRuns ?? 'Unavailable')],
         ['Achievements', `${profileV2?.achievements.summary.unlocked ?? snapshot.achievementSummary.unlocked}/${profileV2?.achievements.summary.total ?? snapshot.achievementSummary.total}`],
-        ['Settlements', String(profileV2?.trophyRoom.summary.settledRuns ?? snapshot.settlements.length)],
+        ['Cached Receipt Entries', String(profileV2?.trophyRoom.summary.settledRuns ?? 'Unavailable')],
         ['Privacy', profileV2?.privacy.options.find((option) => option.id === profileV2.privacy.current)?.label ?? 'Public'],
       ]) {
         const stat = el('div', { className: 'profile-hero-stat' });
@@ -101,13 +187,13 @@ export function createOfficialProfileRoute({
     if (connectedWallet && profileV2) {
       const trophyCard = el('article', { className: 'official-info-card profile-trophy-room-card' });
       appendText(trophyCard, 'span', 'TROPHY ROOM', 'cabinet-status-label');
-      appendText(trophyCard, 'strong', `${profileV2.trophyRoom.summary.achievementsUnlocked}/${profileV2.trophyRoom.summary.achievementsTotal} badges · ${profileV2.trophyRoom.summary.totalRankedRuns} ranked runs`);
+      appendText(trophyCard, 'strong', `${profileV2.trophyRoom.summary.achievementsUnlocked}/${profileV2.trophyRoom.summary.achievementsTotal} badges · ${profileV2.trophyRoom.summary.totalRankedRuns} cached Ranked runs`);
       const trophyGrid = el('div', { className: 'profile-hero-stats profile-trophy-grid' });
       for (const card of profileV2.trophyRoom.cards) {
         const cell = el('div', { className: `profile-hero-stat trophy-card-${card.id} trophy-tone-${card.tone ?? card.tier ?? 'muted'}` });
         appendText(cell, 'span', card.label);
         appendText(cell, 'strong', `${card.icon ? `${card.icon} ` : ''}${card.value}`);
-        if (card.rarityPct) appendText(cell, 'small', `approx ${card.rarityPct}% unlock rate`);
+        if (card.meta) appendText(cell, 'small', card.meta);
         trophyGrid.append(cell);
       }
       trophyCard.append(trophyGrid);
@@ -119,7 +205,7 @@ export function createOfficialProfileRoute({
       const guestCard = el('article', { className: 'official-info-card profile-guest-card' });
       appendText(guestCard, 'span', 'Guest Session // Local Stats', 'cabinet-status-label');
       appendText(guestCard, 'strong', 'Playing as Guest');
-      appendText(guestCard, 'small', 'Your free-mode runs are tracked locally on this device. Connect a wallet to save progress permanently, unlock Ranked mode, and appear on global leaderboards.');
+      appendText(guestCard, 'small', 'Guest stats are local to this browser. Connecting a wallet identifies a local profile; permanent or cross-device history and verified Ranked publishing are not available yet.');
       // Pull local stats from the game state if available.
       const localBest = combat?.longestSurvivalThisRun ?? 0;
       const localKills = combat?.kills ?? 0;
@@ -396,7 +482,7 @@ export function createOfficialProfileRoute({
     if (!gp || (gp.paidRuns + gp.freeRuns) === 0) {
       const empty = el('div', { className: 'profile-empty-state' });
       appendText(empty, 'strong', `No runs recorded for ${getGame(routeState.gameId).title} yet.`);
-      appendText(empty, 'small', 'Start Free Mode to practice, then publish a Ranked game-over score to fill this card with score, kills, survival, achievements, and LitVM receipts.');
+      appendText(empty, 'small', 'Start Free Mode to practice. Local run metadata can fill this card with recorded score, kills, survival, achievements, and cached receipt entries.');
       statsCard.append(empty);
     } else {
       const bestScore = hmhStats?.bestScore ?? Math.max(gp.bestPaidScore ?? 0, gp.bestFreeScore ?? 0);
@@ -432,9 +518,9 @@ export function createOfficialProfileRoute({
 
       if (hmhStats?.topAchievement) {
         const topAchievement = el('div', { className: `profile-top-achievement tier-${hmhStats.topAchievement.tier}` });
-        appendText(topAchievement, 'span', 'Rarest unlocked badge', 'cabinet-status-label');
+        appendText(topAchievement, 'span', 'Featured unlocked badge', 'cabinet-status-label');
         appendText(topAchievement, 'strong', `${hmhStats.topAchievement.icon ?? '🏅'} ${hmhStats.topAchievement.title}`);
-        appendText(topAchievement, 'small', `${hmhStats.topAchievement.description} · approx ${hmhStats.topAchievement.rarityPct}% unlock rate`);
+        appendText(topAchievement, 'small', `${hmhStats.topAchievement.description} · Global unlock rate unavailable.`);
         statsCard.append(topAchievement);
       }
 
@@ -459,11 +545,12 @@ export function createOfficialProfileRoute({
       statsCard.append(breakdown);
 
       // Recent run history for THIS game (most recent first).
-      const sessions = (profileV2?.sessionFeed.rows ?? [])
-        .filter((s) => s.gameId === routeState.gameId || s.gameId === 'hmh' && routeState.gameId === 'lester-blaster')
+      const sessions = (profileV2?.sessionFeed.rankedRows
+        ?? (profileV2?.sessionFeed.rows ?? []).filter((s) => (s.gameId === routeState.gameId || s.gameId === 'hmh' && routeState.gameId === 'lester-blaster')
+          && (s.mode === 'paid' || s.mode === 'ranked')))
         .slice(0, 5);
       if (sessions.length) {
-        appendText(statsCard, 'span', 'RECENT RANKED RUNS', 'cabinet-status-label game-stats-subhead');
+        appendText(statsCard, 'span', 'RECENT CACHED RANKED RUNS', 'cabinet-status-label game-stats-subhead');
         const histList = el('div', { className: 'game-history-list' });
         for (const s of sessions) {
           const row = el('div', { className: 'game-history-row' });
@@ -472,7 +559,7 @@ export function createOfficialProfileRoute({
           appendText(row, 'span', routeState.gameId === 'chikun'
             ? `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.coinsCollected ?? 0} coins · ${rs.forksPassed ?? 0} forks · ${rs.nearMisses ?? 0} near misses · ${s.survivalLabel ?? formatSurvive(rs.elapsedSeconds ?? 0)}`
             : `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${s.survivalLabel ?? formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
-          appendText(row, 'span', s.trust?.label ?? (s.settlement?.primaryTxHash ? 'Settled' : 'Prototype'), `game-history-chain trust-${s.trust?.tone ?? 'muted'}`);
+          appendText(row, 'span', s.trust?.label ?? 'Cached metadata', `game-history-chain trust-${s.trust?.tone ?? 'muted'}`);
           if (s.detailHref) {
             const link = el('a', { className: 'game-history-link', href: s.detailHref, textContent: 'Open run' });
             row.append(link);
@@ -487,8 +574,9 @@ export function createOfficialProfileRoute({
     if (hmhRunHistory && routeState.gameId === 'lester-blaster') {
       const historyCard = el('article', { className: 'official-info-card canonical-run-history-card' });
       appendText(historyCard, 'span', 'CANONICAL RUN HISTORY', 'cabinet-status-label');
-      appendText(historyCard, 'strong', `${hmhRunHistory.totalCanonicalRuns} verified-format run${hmhRunHistory.totalCanonicalRuns === 1 ? '' : 's'} on this device`);
-      appendText(historyCard, 'small', 'Gameplay facts come from the fixed-step child summary. Ranked settlement status comes from the parent wallet rail; free and unpublished runs stay explicitly local.');
+      appendText(historyCard, 'strong', `${hmhRunHistory.totalCanonicalRuns} schema-validated run${hmhRunHistory.totalCanonicalRuns === 1 ? '' : 's'} on this device`);
+      appendText(historyCard, 'small', `This device retains the latest ${RUN_HISTORY_LIMIT} run summaries across games, wallets and modes, not a permanent ranked archive. Gameplay format validation does not verify a blockchain result. Parent session receipts are separate.`);
+      appendText(historyCard, 'small', 'Testnet progress is provisional. Scores, achievements and unlocks will reset for the mainnet launch; testnet records will not become mainnet records.', 'hmh-history-testnet-notice');
 
       const filterGrid = el('div', { className: 'hmh-history-filter-grid' });
       const filterSpecs = [
@@ -552,6 +640,7 @@ export function createOfficialProfileRoute({
         const heading = el('div', { className: 'hmh-history-run-heading', role: 'cell' });
         appendText(heading, 'strong', `${run.score.toLocaleString()} pts · ${run.heroLabel}`);
         appendText(heading, 'span', run.provenance.label, `hmh-history-provenance provenance-${run.provenance.id}`);
+        appendText(heading, 'small', Number.isFinite(run.timestamp) ? new Date(run.timestamp).toLocaleString() : 'Recorded time unavailable');
         row.append(heading);
         const performance = el('div', { className: 'hmh-history-performance', role: 'cell' });
         appendText(performance, 'small', `${titleCase(run.mode)} · ${titleCase(run.result)} · ${formatSeconds(run.survivalTicks / 60)} · ${run.kills} kills · Level ${run.level} · ×${run.maxCombo} combo`);
@@ -563,7 +652,8 @@ export function createOfficialProfileRoute({
         const buildCell = el('div', { className: 'hmh-history-build', role: 'cell' });
         appendText(buildCell, 'small', `Build: ${buildText}`);
         const detailHref = detailsBySessionId.get(run.sessionId);
-        if (detailHref) buildCell.append(el('a', { className: 'game-history-link', href: detailHref, textContent: 'Open ranked receipt' }));
+        if (detailHref) buildCell.append(el('a', { className: 'game-history-link', href: detailHref, textContent: 'Open parent session / receipt' }));
+        buildCell.append(renderHmhRunDetails(run, { el, appendText }));
         row.append(buildCell);
         runList.append(row);
       }
@@ -594,6 +684,7 @@ export function createOfficialProfileRoute({
         }
         historyCard.append(heroGrid);
       }
+      if (hmhRunHistory.invalidRuns > 0) appendText(historyCard, 'small', `${hmhRunHistory.invalidRuns} invalid or unsupported summary record(s) are excluded from these metrics.`, 'tiny-note');
       if (hmhRunHistory.legacyRuns > 0) appendText(historyCard, 'small', `${hmhRunHistory.legacyRuns} legacy run${hmhRunHistory.legacyRuns === 1 ? '' : 's'} predate canonical summaries and are excluded from these metrics.`, 'tiny-note');
       dom.officialCabinetGrid.append(historyCard);
     }
@@ -623,59 +714,32 @@ export function createOfficialProfileRoute({
       dom.officialCabinetGrid.append(collectionCard);
     }
 
-    // --- Achievements module (full-width, below profile cards) ---
-    const unlockedByTitle = new Map((snapshot?.achievements ?? []).map((a) => [a.title, a]));
-    const achievements = Object.values(ACHIEVEMENTS).map((achievement) => {
-      const unlocked = unlockedByTitle.get(achievement.title)?.unlocked ?? false;
-      return { ...achievement, unlocked };
-    });
-    const summary = { total: achievements.length, unlocked: achievements.filter((a) => a.unlocked).length };
-    const achCard = el('article', { className: 'official-info-card achievements-card achievements-module' });
-    const achHead = el('div', { className: 'achievements-head' });
-    appendText(achHead, 'span', 'ACHIEVEMENTS', 'cabinet-status-label');
-    appendText(achHead, 'strong', `${summary.unlocked} / ${summary.total} unlocked`, 'achievements-count');
-    achCard.append(achHead);
-    const grid = el('div', { className: 'achievements-grid' });
-    for (const a of achievements) {
-      const badge = el('div', {
-        className: `${a.uiChrome?.badgeClassName ?? `achievement-badge tier-${a.tier ?? 'bronze'}`} ${a.unlocked ? 'unlocked' : 'locked'}`,
-        title: `${a.title} — ${a.description}`,
-        dataset: { uiChrome: a.uiChrome?.toastFrameId ?? 'achievement-toast-frame', badgeFrame: a.uiChrome?.badgeFrameId ?? `achievement-tier-${a.tier ?? 'bronze'}` },
-      });
-      badge.tabIndex = 0;
-      badge.setAttribute('aria-label', `${a.title}. ${a.description}`);
-      const tooltip = el('span', { className: 'achievement-tooltip', textContent: a.description });
-      badge.append(renderAchievementIcon({ iconSrc: a.iconSrc, icon: a.unlocked ? (a.icon ?? '🏅') : '🔒', label: a.title }));
-      appendText(badge, 'span', a.title, 'achievement-name');
-      badge.append(tooltip);
-      grid.append(badge);
-    }
-    achCard.append(grid);
-    dom.officialCabinetGrid.append(achCard);
+    // --- Parent-local achievement dates, progress and accessible requirements ---
+    dom.officialCabinetGrid.append(renderProfileAchievements(snapshot, { ACHIEVEMENTS, el, appendText, renderAchievementIcon }));
 
     // --- Settlement history (score settles to LitVM via zkLTC) ---
     const settlements = snapshot?.settlements ?? [];
     const settleCard = el('article', { className: 'official-info-card settlement-history-card settlement-ledger-v9' });
     appendText(settleCard, 'span', 'LITVM SETTLEMENT', 'cabinet-status-label');
-    appendText(settleCard, 'strong', settlements.length ? `${settlements.length} settled run(s)` : 'No settled runs yet');
-    appendText(settleCard, 'small', settlements.length
-      ? 'Each receipt stamps the matching leaderboard row and parent session with a tx hash. Simulation remains clearly labeled until contracts deploy.'
-      : 'Ranked game-over submission settles score, achievements, and username to LitVM; the zkLTC fee covers gas.');
+    appendText(settleCard, 'strong', settlements.length
+      ? `${settlements.length} cached receipt entr${settlements.length === 1 ? 'y' : 'ies'}`
+      : 'No cached receipt entries');
+    appendText(settleCard, 'small', 'This panel shows unverified metadata retained in the local profile cache. A cached hash, mode, or settled flag is not proof of settlement and does not verify or stamp a leaderboard result.');
     const settleList = el('div', { className: 'settlement-ledger-list' });
     if (settlements.length === 0) {
       const emptyReceipt = el('div', { className: 'settlement-receipt empty' });
-      appendText(emptyReceipt, 'span', 'Awaiting first Ranked receipt', 'settlement-receipt-title');
-      appendText(emptyReceipt, 'small', 'Play Ranked → finish run → Submit Official Score to generate a simulated LitVM receipt.');
+      appendText(emptyReceipt, 'span', 'No cached receipt metadata', 'settlement-receipt-title');
+      appendText(emptyReceipt, 'small', 'No local receipt metadata is cached for this wallet.');
       settleList.append(emptyReceipt);
     } else {
       for (const s of settlements.slice(-4).reverse()) {
         const receipt = el('div', { className: `settlement-receipt mode-${s.mode}` });
-        const tx = s.primaryTxHash ? `${s.primaryTxHash.slice(0, 10)}…${s.primaryTxHash.slice(-6)}` : 'pending';
-        appendText(receipt, 'span', `${s.score.toLocaleString()} pts · ${s.mode}`, 'settlement-receipt-title');
+        const tx = s.primaryTxHash ? `${s.primaryTxHash.slice(0, 10)}…${s.primaryTxHash.slice(-6)}` : 'hash unavailable';
+        appendText(receipt, 'span', `${s.score.toLocaleString()} pts · cached ${s.mode ?? 'unknown'} metadata`, 'settlement-receipt-title');
         appendText(receipt, 'small', `Session ${s.sessionId.slice(0, 18)}… · tx ${tx}`);
         const receiptMeta = el('div', { className: 'settlement-receipt-meta' });
-        appendText(receiptMeta, 'span', s.settledAt ? new Date(s.settledAt).toLocaleString() : 'pending');
-        if (s.primaryTxHash) appendText(receiptMeta, 'span', 'leaderboard stamped');
+        appendText(receiptMeta, 'span', s.settledAt ? `Cached timestamp: ${new Date(s.settledAt).toLocaleString()}` : 'Cached timestamp not recorded');
+        if (s.primaryTxHash) appendText(receiptMeta, 'span', 'Unverified cached hash');
         receipt.append(receiptMeta);
         settleList.append(receipt);
       }

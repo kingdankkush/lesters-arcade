@@ -43,15 +43,15 @@
       .official-app { position: relative; }
       .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
     </style>
-    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-aaa-cycle-081-gameplan-defects" />
+    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-playable-20260910" />
     <link rel="preload" href="./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" as="image" fetchpriority="high" />
-    <link rel="modulepreload" href="./dist/main.js?v=hmh-aaa-cycle-081-gameplan-defects" />
+    <link rel="modulepreload" href="./dist/main.js?v=hmh-playable-20260910" />
     <!-- Deferred stylesheets -->
-    <link rel="preload" href="./styles.css?v=hmh-aaa-cycle-081-gameplan-defects" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-aaa-cycle-081-gameplan-defects" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles.css?v=hmh-playable-20260910" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-playable-20260910" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
-      <link rel="stylesheet" href="./styles.css?v=hmh-aaa-cycle-081-gameplan-defects" />
-      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-aaa-cycle-081-gameplan-defects" />
+      <link rel="stylesheet" href="./styles.css?v=hmh-playable-20260910" />
+      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-playable-20260910" />
     </noscript>
   </head>
   <body>
@@ -134,6 +134,12 @@
         <section id="officialWalletSplash" class="official-view wallet-splash-view">
           <div class="splash-copy">
             <p class="eyebrow">Official Testnet App // lestersarcade.io</p>
+            <div class="splash-cta-row">
+              <button id="officialHmhFreeQuickplayButton" class="primary-button big-action" type="button">Play Hard Money Heroes Free</button>
+              <button id="officialGuestEnterButton" class="secondary-button big-action" type="button">Browse Arcade</button>
+              <button id="officialConnectButton" class="secondary-button big-action" type="button">Connect Wallet</button>
+            </div>
+            <p id="officialGuestQuickplayStatus" class="tiny-note" role="status" aria-live="polite" aria-atomic="true" hidden></p>
             <div class="splash-marquee">
               <video id="splashLoopVideo" class="splash-marquee-art splash-loop-video"
                      src="./assets/video/arcade-splash-loop.mp4"
@@ -142,10 +148,6 @@
                      aria-label="Lester's Arcade animated marquee"></video>
             </div>
             <p class="tagline">Step into the arcade and play Hard Money Heroes Free right now — no wallet needed. Connect your wallet to save progress, claim a profile, and play Ranked testnet runs.</p>
-            <div class="splash-cta-row">
-              <button id="officialGuestEnterButton" class="primary-button big-action" type="button">Enter Arcade — Play Free</button>
-              <button id="officialConnectButton" class="secondary-button big-action" type="button">Connect Wallet</button>
-            </div>
             <p id="officialWalletCopy" class="tiny-note">Guests can browse cabinets and play Free practice. Your wallet is your profile: scores, achievements, usernames, avatars, and ranked runs attach to the connected wallet.</p>
             <div class="splash-featured-cabinet-mini" aria-label="Featured arcade cabinet">
               <div id="splashFeaturedCabinet" class="splash-featured-cabinet-art" aria-hidden="true"></div>
@@ -216,6 +218,22 @@
               <span id="officialRankedModeCopy">Tracks a canonical local Ranked Testnet run. Verified on-chain publishing is temporarily disabled.</span>
             </button>
           </div>
+          <fieldset id="hmhChallengePanel" class="hmh-challenge-panel" hidden>
+            <legend>Free practice course</legend>
+            <label for="hmhChallengeChoice">Choose a seed schedule</label>
+            <select id="hmhChallengeChoice" aria-describedby="hmhChallengeStatus">
+              <option value="random">Fresh seed each run</option>
+              <option value="daily">Daily UTC challenge</option>
+              <option value="weekly">Weekly UTC challenge (Monday start)</option>
+              <option id="hmhChallengeSharedOption" value="shared" hidden>Shared course</option>
+            </select>
+            <p id="hmhChallengeStatus" class="tiny-note" role="status" aria-live="polite"></p>
+            <div class="hmh-challenge-share">
+              <label for="hmhChallengeLink">Shareable course link</label>
+              <input id="hmhChallengeLink" type="url" readonly spellcheck="false" aria-describedby="hmhChallengeStatus" />
+              <button id="hmhChallengeCopy" type="button" disabled>Copy challenge link</button>
+            </div>
+          </fieldset>
           <div id="officialRankedTooltip" class="ranked-tooltip"></div>
         </section>
 
@@ -287,11 +305,18 @@
         <footer class="official-footer" aria-label="Lester's Arcade footer">
           <span>Copyright 2026</span>
           <span>Designed by: <strong>KingDankKush</strong></span>
+          <nav class="official-footer-links" aria-label="Support and policies">
+            <a href="./trust.html#support">Support</a>
+            <a href="./trust.html#privacy">Privacy</a>
+            <a href="./trust.html#terms">Terms</a>
+            <a href="./trust.html#accessibility">Accessibility</a>
+            <a href="./trust.html#testnet">Testnet notice</a>
+          </nav>
         </footer>
       </section>
     </main>
 
-    <script type="module" src="./dist/main.js?v=hmh-aaa-cycle-081-gameplan-defects"></script>
+    <script type="module" src="./dist/main.js?v=hmh-playable-20260910"></script>
     <script>
       // Register the service worker for offline + repeat-visit caching. Fails
       // silently on unsupported browsers / file:// and never blocks the app.

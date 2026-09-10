@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import * as burner from '../apps/hmh-reboot/src/bear-market-burner.mjs';
 import { BEAR_MARKET_BURNER_EVENT_BOUNDS, createBearMarketBurnerEvent } from '../apps/hmh-reboot/src/bear-market-burner-event.mjs';
+import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
 import * as progression from '../apps/hmh-reboot/src/run-progression.mjs';
 import { createWeaponLoadout, refillWeaponLoadout } from '../apps/hmh-reboot/src/weapon-system.mjs';
 
@@ -120,6 +121,130 @@ test('W9A sustained contact creates capped scorch and defeat spread stays bounde
     ],
   });
   assert.deepEqual(spread.targetIds, ['spread-a', 'spread-b']);
+});
+
+test('G-7 automatic defeat spread filters neutral actors before creating burn state', () => {
+  const state = burner.createBearMarketBurnerState();
+  const policy = burner.resolveBearMarketBurnerPolicy({ branches: { volatility: 3 } });
+  const source = { id: 'event-hostile', x: 120, y: 0, active: true, boss: false };
+  step(state, 6, {
+    targets: [source],
+    policy,
+    provokesAmbient: false,
+    currentEligibleTargetIds: [source.id],
+  });
+
+  const spread = burner.spreadBearMarketBurnerOnDefeat(state, {
+    tick: 7,
+    source,
+    policy,
+    nearbyTargets: [
+      { id: 'neutral-bystander', x: 160, y: 0, active: true, boss: false },
+      { id: 'current-hostile', x: 150, y: 0, active: true, boss: false },
+    ],
+    currentEligibleTargetIds: ['current-hostile'],
+  });
+
+  assert.deepEqual(spread.targetIds, ['current-hostile']);
+  assert.equal(spread.provokesAmbient, false);
+  const burns = burner.getBearMarketBurnerSnapshot(state).burns;
+  assert.equal(burns.some((burn) => burn.targetId === 'neutral-bystander'), false);
+  assert.equal(burns.find((burn) => burn.targetId === 'current-hostile').provokesAmbient, false);
+});
+
+test('G-7 automatic refresh cannot downgrade a manual-origin burn', () => {
+  const state = burner.createBearMarketBurnerState();
+  const target = { id: 'provoked-survivor', x: 120, y: 0, active: true, boss: false };
+
+  step(state, 6, { targets: [target], provokesAmbient: true });
+  assert.equal(burner.getBearMarketBurnerSnapshot(state).burns[0].provokesAmbient, true);
+
+  step(state, 12, {
+    targets: [target],
+    provokesAmbient: false,
+    currentEligibleTargetIds: [target.id],
+  });
+  assert.equal(burner.getBearMarketBurnerSnapshot(state).burns[0].provokesAmbient, true);
+
+  const lingering = step(state, 36, {
+    fire: false,
+    targets: [],
+    provokesAmbient: false,
+    currentEligibleTargetIds: [],
+  });
+  const damageTick = lingering.events.find((event) => event.type === 'burner:burn-tick');
+  assert.equal(damageTick.provokesAmbient, true);
+});
+
+test('G-7 combat damage preserves explicit automatic provenance and legacy manual default', () => {
+  const target = { id: 'target', health: 20, maxHealth: 20 };
+  const hit = {
+    id: 'burn-hit', targetId: target.id, sourceId: 'player', weaponId: 'bear-market-burner',
+    tick: 6, damage: 2, criticalChance: 0, direction: { x: 1, y: 0 },
+  };
+  const automatic = resolveCombatHits({ sessionSeed: 7, targets: [target], hits: [{ ...hit, provokesAmbient: false }] });
+  const manual = resolveCombatHits({ sessionSeed: 7, targets: [target], hits: [hit] });
+
+  assert.equal(automatic.damageEvents[0].provokesAmbient, false);
+  assert.equal(manual.damageEvents[0].provokesAmbient, true);
+  assert.throws(
+    () => resolveCombatHits({ sessionSeed: 7, targets: [target], hits: [{ ...hit, provokesAmbient: 'yes' }] }),
+    /provokesAmbient/,
+  );
+});
+
+test('G-7 provenance and filtered spread are equal across 60, 30, and 20 render partitions', () => {
+  const run = (renderStep) => {
+    const state = burner.createBearMarketBurnerState();
+    const policy = burner.resolveBearMarketBurnerPolicy({ branches: { volatility: 3 } });
+    const source = { id: 'event-hostile', x: 120, y: 0, active: true, boss: false };
+    const events = [];
+    for (let renderTick = renderStep; renderTick <= 90; renderTick += renderStep) {
+      for (let tick = renderTick - renderStep + 1; tick <= renderTick; tick += 1) {
+        events.push(...burner.stepBearMarketBurner(state, {
+          tick,
+          fire: tick === 6 || tick === 12,
+          origin: { x: 0, y: 0 },
+          direction: { x: 1, y: 0 },
+          targets: tick === 6 || tick === 12 ? [source] : [],
+          policy,
+          provokesAmbient: tick === 12,
+          currentEligibleTargetIds: tick < 45 ? [source.id, 'current-hostile'] : [],
+        }).events);
+        if (tick === 7) events.push(burner.spreadBearMarketBurnerOnDefeat(state, {
+          tick,
+          source,
+          policy,
+          nearbyTargets: [
+            { id: 'neutral-bystander', x: 160, y: 0, active: true, boss: false },
+            { id: 'current-hostile', x: 150, y: 0, active: true, boss: false },
+          ],
+          currentEligibleTargetIds: ['current-hostile'],
+        }));
+      }
+    }
+    const burnTicks = events.filter((event) => event.type === 'burner:burn-tick');
+    const targetIds = [...new Set(burnTicks.map((event) => event.targetId))];
+    const combat = resolveCombatHits({
+      sessionSeed: 1337,
+      targets: targetIds.map((id) => ({ id, health: 50, maxHealth: 50 })),
+      hits: burnTicks.map((event) => ({
+        id: `dot:${event.targetId}:${event.tick}`,
+        targetId: event.targetId,
+        sourceId: 'player',
+        weaponId: 'bear-market-burner',
+        tick: event.tick,
+        damage: event.damage,
+        criticalChance: 0,
+        direction: { x: 0, y: 0 },
+        provokesAmbient: event.provokesAmbient,
+      })),
+    });
+    return { events, combat, snapshot: burner.getBearMarketBurnerSnapshot(state) };
+  };
+
+  assert.deepEqual(run(1), run(2));
+  assert.deepEqual(run(1), run(3));
 });
 
 test('Burner refill resets stale per-run channel and hazard state without changing the authored fuel grant', () => {

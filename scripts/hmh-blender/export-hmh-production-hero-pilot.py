@@ -230,8 +230,14 @@ def sample_clip_frame(action, frame_index: int, frame_count: int, loop: bool) ->
     return frame
 
 
+def is_actor_atlas_mesh(obj, actor_id: str):
+    # The source master includes a flight demonstration. The game's fixed-tick
+    # grenade system owns that projectile; only its held prop belongs here.
+    return obj.type == "MESH" and obj.get("hmh_actor_id") == actor_id and obj.get("hmh_prop_role") != "satoshi-frag-released"
+
+
 def active_actor_objects(actor_id: str):
-    return [obj for obj in bpy.data.objects if obj.get("hmh_actor_id") == actor_id]
+    return [obj for obj in bpy.data.objects if is_actor_atlas_mesh(obj, actor_id)]
 
 
 def main() -> None:
@@ -316,6 +322,7 @@ def main() -> None:
         "frameCount": len(rendered),
         "frames": rendered,
         "layerObjectCounts": layer_counts,
+        "sourceOnlyExcludedObjects": [obj.name for obj in bpy.data.objects if obj.get("hmh_actor_id") == pilot["actorId"] and obj.get("hmh_prop_role") == "satoshi-frag-released"],
         "weaponSocket": manifest["scene"]["weaponSocket"] in rig.pose.bones,
     }
     write_lf_json(report_output, report)

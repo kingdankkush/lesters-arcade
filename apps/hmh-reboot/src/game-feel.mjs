@@ -31,6 +31,15 @@ export const ENCOUNTER_FRAMING = F({
   bossLastBeatTick: 2_445,
 });
 
+export function resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framingZoom = 1 }) {
+  if (!Number.isFinite(framingZoom) || framingZoom < ENCOUNTER_FRAMING.zoomOut || framingZoom > 1) throw new RangeError('invalid encounter framing zoom');
+  if (!Number.isFinite(viewportHeight) || viewportHeight <= 0 || !Number.isFinite(bodyHeight) || bodyHeight <= 0) return framingZoom;
+  // Reserve the existing crowd pullback while keeping actual body pixels at
+  // least twelve percent of the viewport. This scales the entire scene, not
+  // the hero alone, preserving art/ground/weapon/enemy projection parity.
+  return Math.max(1, viewportHeight * 0.12 / (bodyHeight * ENCOUNTER_FRAMING.zoomOut)) * framingZoom;
+}
+
 export const DASH_FEEL = F({
   landingLifeTicks: 10,
   landingRadiusPx: 18,

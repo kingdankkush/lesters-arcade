@@ -4,6 +4,7 @@ export {
   Container,
   Graphics,
   Rectangle,
+  RenderLayer,
   Sprite,
   Text,
   Texture,

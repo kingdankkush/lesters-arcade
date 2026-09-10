@@ -261,6 +261,7 @@ export function stepEncounterDirector({
   camera,
   spawnPoints,
   nearRewardPoi = false,
+  worldRecovery = false,
   queryGround,
   isBlocked,
   isRouteReachable,
@@ -273,6 +274,7 @@ export function stepEncounterDirector({
   const band = getEncounterBand(tick);
   const snapshot = getEncounterSnapshot(tick);
   if (tick < state.schedule.nextSpawnTick) return freezeDeep({ inserted: false, reason: 'not-due', tick, bandId: band.id });
+  if (worldRecovery === true) return reject(state, tick, band, 'world-recovery-window');
   if (nearRewardPoi && isEncounterRestWindow(tick)) return reject(state, tick, band, 'reward-rest-window');
   if (population.active.length >= snapshot.ordinaryBodyCap) return reject(state, tick, band, 'reserved-body-cap');
 

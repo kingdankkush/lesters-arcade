@@ -66,6 +66,24 @@ async function fetchPngSize(url, attempts = 10) {
   throw lastError;
 }
 
+async function fetchWebpSize(url, attempts = 10) {
+  let lastError = null;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${url}: ${response.status} ${response.statusText}`);
+      const webp = Buffer.from(await response.arrayBuffer());
+      if (webp.subarray(0, 4).toString('ascii') !== 'RIFF' || webp.subarray(8, 12).toString('ascii') !== 'WEBP' || webp.subarray(12, 16).toString('ascii') !== 'VP8L') throw new Error(`${url} is not a lossless WebP`);
+      const bits = webp.readUInt32LE(21);
+      return [(bits & 0x3fff) + 1, ((bits >>> 14) & 0x3fff) + 1];
+    } catch (error) {
+      lastError = error;
+      await sleep(250);
+    }
+  }
+  throw lastError;
+}
+
 function assertIncludes(label, source, needle) {
   if (!source.includes(needle)) {
     throw new Error(`${label} missing required smoke marker: ${needle}`);
@@ -87,7 +105,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-aaa-cycle-081-gameplan-defects`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-playable-20260910`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
@@ -106,7 +124,7 @@ try {
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
-    'hmh-aaa-cycle-081-gameplan-defects',
+    'hmh-playable-20260910',
   ]) {
     assertIncludes('portal html', html, marker);
   }
@@ -199,13 +217,14 @@ try {
   const productionSpriteProbePaths = [
     'assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png',
     'assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png',
-    'assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png',
     'assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png',
   ];
   for (const spritePath of productionSpriteProbePaths) {
     const [width, height] = await fetchPngSize(`${portalUrl}${spritePath}`);
     if (width <= 0 || height <= 0) throw new Error(`HMH production sprite probe ${spritePath} has invalid dimensions ${width}x${height}`);
   }
+  const [commandoWidth, commandoHeight] = await fetchWebpSize(`${portalUrl}assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp`);
+  if (commandoWidth !== 2048 || commandoHeight !== 2048) throw new Error(`HMH Commando WebP has invalid dimensions ${commandoWidth}x${commandoHeight}`);
 
   const playlist = JSON.parse(playlistManifest);
   if (playlist.tracks.length < 20) throw new Error(`playlist manifest expected 20 tracks, got ${playlist.tracks.length}`);

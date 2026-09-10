@@ -27,6 +27,32 @@ const mainSource = readFileSync(
 // W-6 (Cycle 074): the bake receives the composed set-piece anchors so each
 // landmark stands on a worn ring rather than on untouched ground.
 const build = () => buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: 0x484d4432, landmarks: AUTHORED_SETPIECE_ANCHORS });
+const vertices = area => area.type === 'rect'
+  ? [{x:area.minX,y:area.minY},{x:area.maxX,y:area.minY},{x:area.maxX,y:area.maxY},{x:area.minX,y:area.maxY}]
+  : area.vertices;
+const distanceToEdge = (point, a, b) => {
+  const dx=b.x-a.x,dy=b.y-a.y,d=dx*dx+dy*dy;
+  const t=d===0?0:Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/d));
+  return Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);
+};
+const inArea = (point, area) => {
+  const points=vertices(area);let result=false;
+  for(let i=0,j=points.length-1;i<points.length;j=i++) {
+    const a=points[j],b=points[i];
+    if(distanceToEdge(point,a,b)<1e-8)return true;
+    if((a.y>point.y)!==(b.y>point.y)&&point.x<(b.x-a.x)*(point.y-a.y)/(b.y-a.y)+a.x)result=!result;
+  }
+  return result;
+};
+
+test('polygon water excludes route wear and ruts without deleting dry-side wear', () => {
+  const area={type:'polygon',vertices:[{x:300,y:200},{x:1300,y:200},{x:1300,y:800},{x:300,y:800}]};
+  const world={...LEVEL_ONE_WORLD,surfaces:[{id:'test-lake',kind:'water',area}],routeGraph:{nodes:[{id:'west',x:100,y:500},{id:'east',x:1500,y:500}],edges:[{from:'west',to:'east'}]}};
+  const generated=buildWorldDecals({world,seed:0x484d4432});
+  const wear=generated.filter(row=>row.kind==='route-wear'||row.kind==='tire-rut');
+  assert.ok(wear.some(row=>!inArea(row,area)),'dry-side wear remains');
+  assert.deepEqual(wear.filter(row=>inArea(row,area)).map(row=>row.id),[]);
+});
 
 test('every decal kind is authored', () => {
   for (const kind of ['route-wear', 'tire-rut', 'scorch', 'arena-stain', 'shore-crack', 'landmark-ring']) {
@@ -105,13 +131,11 @@ test('shore cracks sit near a water edge', () => {
   assert.ok(cracks.length > 0, 'no shore cracks');
   for (const decal of cracks) {
     const nearEdge = water.some((surface) => {
-      const { minX, maxX, minY, maxY } = surface.area;
-      const withinBand = decal.x >= minX - 180 && decal.x <= maxX + 180 && decal.y >= minY - 180 && decal.y <= maxY + 180;
-      const insideCore = decal.x > minX + 40 && decal.x < maxX - 40;
-      // Near the water but not floating in the middle of it.
-      return withinBand && !insideCore;
+      const points=vertices(surface.area);
+      return points.some((point,index)=>distanceToEdge(decal,point,points[(index+1)%points.length])<=180);
     });
     assert.ok(nearEdge, `${decal.id} is not on a shoreline`);
+    assert.equal(water.some(surface=>inArea(decal,surface.area)),false,`${decal.id} floats on water`);
   }
 });
 
@@ -133,7 +157,18 @@ test('W-6 every set-piece anchor stands on one landmark ring', () => {
   assert.equal(DECAL_KINDS['landmark-ring'].shape, 'ring');
   const withoutAnchors = buildWorldDecals({ world: LEVEL_ONE_WORLD, seed: 0x484d4432 });
   assert.equal(withoutAnchors.filter((entry) => entry.kind === 'landmark-ring').length, 0);
-  assert.deepEqual(withoutAnchors, build().filter((entry) => entry.kind !== 'landmark-ring'), 'rings append; every other decal is unchanged by the anchors');
+  const withAnchors = build();
+  const withoutCounts = {};
+  for (const entry of withoutAnchors) withoutCounts[entry.kind] = (withoutCounts[entry.kind] ?? 0) + 1;
+  const withCounts = {};
+  for (const entry of withAnchors) withCounts[entry.kind] = (withCounts[entry.kind] ?? 0) + 1;
+  const displaced = Math.max(0, withoutAnchors.length + rings.length - MAX_WORLD_DECALS);
+  assert.equal(withAnchors.length, Math.min(MAX_WORLD_DECALS, withoutAnchors.length + rings.length), 'rings stay inside the decal budget');
+  assert.equal(withCounts['shore-crack'], withoutCounts['shore-crack'] - displaced, 'rings displace only expendable shoreline cracks when the budget is saturated');
+  for (const kind of ['route-wear', 'tire-rut', 'arena-stain', 'scorch']) {
+    assert.equal(withCounts[kind], withoutCounts[kind], `${kind} count changed while adding rings`);
+    assert.deepEqual(withAnchors.filter(entry => entry.kind === kind), withoutAnchors.filter(entry => entry.kind === kind), `${kind} placements changed while adding rings`);
+  }
 });
 
 // W-4: the Cycle 073 bake carried 12 wear and rut decals whose centres sat in
@@ -143,14 +178,16 @@ test('W-4 no route wear or tire rut is centred on water', () => {
   const water = LEVEL_ONE_WORLD.surfaces.filter((surface) => surface.kind === 'water' || surface.kind === 'shallow-water');
   const offenders = build()
     .filter((entry) => entry.kind === 'route-wear' || entry.kind === 'tire-rut')
-    .filter((entry) => water.some(({ area }) => entry.x >= area.minX && entry.x <= area.maxX && entry.y >= area.minY && entry.y <= area.maxY))
+    .filter((entry) => water.some(({ area }) => inArea(entry, area)))
     .map((entry) => entry.id);
   assert.deepEqual(offenders, []);
-  // Only the water exclusion and the rings changed: the other kinds keep the
-  // Cycle 073 counts (109 wear less the 6 that floated, 12 ruts less 6).
+  // The integrated route graph includes the repaired optional loops and the
+  // reservoir path; polygon shores replace the old rectangle-only bake.
+  // Keep an exact current-world composition check in addition to the geometry
+  // assertions above and the independent polygon/dry-side regression fixture.
   const counts = {};
   for (const entry of build()) counts[entry.kind] = (counts[entry.kind] ?? 0) + 1;
-  assert.deepEqual(counts, { 'route-wear': 103, 'tire-rut': 6, 'arena-stain': 24, scorch: 12, 'shore-crack': 20, 'landmark-ring': 6 });
+  assert.deepEqual(counts, { 'route-wear': 148, 'tire-rut': 18, 'arena-stain': 24, scorch: 12, 'shore-crack': 12, 'landmark-ring': 6 });
 });
 
 test('every district gets some ground history', () => {
@@ -160,6 +197,32 @@ test('every district gets some ground history', () => {
 
 // The handoff's explicit acceptance: decals must not occlude actors, which
 // means drawing below every actor and prop layer.
+for (const area of [
+  { type: 'rect', minX: 500, minY: 500, maxX: 2500, maxY: 2500 },
+  { type: 'polygon', vertices: [{x:500,y:500},{x:2500,y:500},{x:2500,y:2500},{x:500,y:2500}] },
+]) test(`all ground-decal families reject ${area.type} water, not only road wear`, () => {
+  const world = {
+    ...LEVEL_ONE_WORLD, bounds:{minX:0,minY:0,maxX:3000,maxY:3000},
+    districts:[{id:'fixture',minX:0,maxX:3000}],
+    routeGraph:{nodes:[{id:'a',x:1000,y:1400},{id:'b',x:2000,y:1400}],edges:[{from:'a',to:'b'}]},
+    encounterArenas:[{id:'arena',districtId:'fixture',anchor:{x:1500,y:1500},radius:100}],
+    pointsOfInterest:[{id:'hazard',hook:'hazard',anchor:{x:1500,y:1500}},{id:'reward',hook:'reward',anchor:{x:1600,y:1500}}],
+    surfaces:[],
+  };
+  const landmarks=[{id:'landmark',x:1500,y:1600}];
+  const dry=buildWorldDecals({world,landmarks});
+  assert.deepEqual([...new Set(dry.map(d=>d.kind))].sort(),['arena-stain','landmark-ring','route-wear','scorch','tire-rut'],'every affected family has a dry witness');
+  const wet=buildWorldDecals({world:{...world,surfaces:[{id:'fixture-water',kind:'water',area}]},landmarks});
+  assert.ok(wet.length>0,'dry shoreline cracking remains present');
+  assert.equal(wet.filter(d=>d.kind!=='shore-crack').length,0,'stains, scorch and landmark rings may not float on water either');
+  assert.ok(wet.every(d=>!inArea(d,area)),'all emitted centres must be outside water');
+});
+
+test('water exclusion does not mask malformed landmark coordinates', () => {
+  const world={...LEVEL_ONE_WORLD,routeGraph:{nodes:[],edges:[]},encounterArenas:[],pointsOfInterest:[],surfaces:[{id:'origin-water',kind:'water',area:{type:'rect',minX:0,minY:0,maxX:100,maxY:100}}]};
+  assert.throws(()=>buildWorldDecals({world,landmarks:[{id:'invalid',x:null,y:10}]}),/invalid world decal/);
+});
+
 test('the decal layer draws beneath props and actors', () => {
   const order = /world\.addChild\(([^)]*)\)/.exec(mainSource);
   assert.ok(order, 'could not read the world layer order');

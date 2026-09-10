@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "sourceManifest": "SOURCE-ASSET-MANIFEST.json",
+  "rows": [
+    {
+      "blockerId": "ravine-south-escarpment-outcrop",
+      "assetKey": "hmh-cx3-01-stratified-escarpment",
+      "anchor": {
+        "x": 3350,
+        "y": 4340
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 3110,
+            "y": 4190
+          },
+          {
+            "x": 3590,
+            "y": 4190
+          },
+          {
+            "x": 3590,
+            "y": 4490
+          },
+          {
+            "x": 3110,
+            "y": 4490
+          }
+        ]
+      },
+      "groundZ": 0,
+      "maxZ": 319,
+      "nativeSourceSha256": "b44554383db586843814404d5956dc03fe1679e1e936a3ff4ed989841075b1c7",
+      "yawDegrees": 0,
+      "uniformWorldUnitsPerSourceUnit": 480,
+      "nativeDimensionsAfterYaw": [
+        1.0,
+        0.6243565082550049,
+        0.6631155014038086
+      ],
+      "nativeWorldDimensions": [
+        480.0,
+        299.69112396240234,
+        318.2954406738281
+      ],
+      "physicalEnvelope": [
+        480,
+        300,
+        319
+      ],
+      "groundAnchorPixels": {
+        "x": 256.0,
+        "y": 349.62864685058594
+      },
+      "desktopSprite": "Sprites/desktop/hmh-cx3-01-stratified-escarpment-yaw-0.png",
+      "spriteWorldPixelsPerImagePixel": 1.2019231170415878,
+      "calibrationScope": "Measured source bounds and uniform scale; final visible-contact/roof-overhang acceptance pending",
+      "runtimeAdopted": false
+    },
+    {
+      "blockerId": "yard-residential-duplex-south",
+      "assetKey": "hmh-cx3-02-workers-duplex",
+      "anchor": {
+        "x": 11600,
+        "y": 4645
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 11498,
+            "y": 4550
+          },
+          {
+            "x": 11702,
+            "y": 4550
+          },
+          {
+            "x": 11702,
+            "y": 4740
+          },
+          {
+            "x": 11498,
+            "y": 4740
+          }
+        ]
+      },
+      "groundZ": 0,
+      "maxZ": 195,
+      "nativeSourceSha256": "63905d38625d2dc013c5ac75f89e398c4c48557b9c41e35234a5f8cbf957594b",
+      "yawDegrees": 90,
+      "uniformWorldUnitsPerSourceUnit": 203,
+      "nativeDimensionsAfterYaw": [
+        1.0000001192092896,
+        0.9349356889724731,
+        0.9551621079444885
+      ],
+      "nativeWorldDimensions": [
+        203.00002419948578,
+        189.79194486141205,
+        193.89790791273117
+      ],
+      "physicalEnvelope": [
+        204,
+        190,
+        195
+      ],
+      "groundAnchorPixels": {
+        "x": 256.0,
+        "y": 356.9084167480469
+      },
+      "desktopSprite": "Sprites/desktop/hmh-cx3-02-workers-duplex-yaw-90.png",
+      "spriteWorldPixelsPerImagePixel": 0.6793612390756607,
+      "calibrationScope": "Measured source bounds and uniform scale; final visible-contact/roof-overhang acceptance pending",
+      "runtimeAdopted": false
+    },
+    {
+      "blockerId": "crossing-lakeside-pumphouse",
+      "assetKey": "hmh-cx3-03-lakeside-pumphouse",
+      "anchor": {
+        "x": 5800,
+        "y": 4490
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 5690,
+            "y": 4397.5
+          },
+          {
+            "x": 5910,
+            "y": 4397.5
+          },
+          {
+            "x": 5910,
+            "y": 4582.5
+          },
+          {
+            "x": 5690,
+            "y": 4582.5
+          }
+        ]
+      },
+      "groundZ": 0,
+      "maxZ": 184,
+      "nativeSourceSha256": "8ba6c3fe656281ea8eabf339da1707b1b28e748c62701c339adb16212b157b20",
+      "yawDegrees": 270,
+      "uniformWorldUnitsPerSourceUnit": 220,
+      "nativeDimensionsAfterYaw": [
+        1.0000001192092896,
+        0.8394864201545715,
+        0.8357479572296143
+      ],
+      "nativeWorldDimensions": [
+        220.0000262260437,
+        184.68701243400574,
+        183.86455059051514
+      ],
+      "physicalEnvelope": [
+        220,
+        185.0,
+        184
+      ],
+      "groundAnchorPixels": {
+        "x": 256.0,
+        "y": 355.6171417236328
+      },
+      "desktopSprite": "Sprites/desktop/hmh-cx3-03-lakeside-pumphouse-yaw-270.png",
+      "spriteWorldPixelsPerImagePixel": 0.6525574438273907,
+      "calibrationScope": "Measured source bounds and uniform scale; final visible-contact/roof-overhang acceptance pending",
+      "runtimeAdopted": false
+    }
+  ]
+}

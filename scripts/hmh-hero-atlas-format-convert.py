@@ -127,10 +127,9 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     hero_dir = HERO_ROOT / args.hero
-    atlas_png = hero_dir / f"{args.hero}-production-pilot-atlas.png"
     atlas_json = hero_dir / f"{args.hero}-production-pilot-atlas.json"
-    if not atlas_png.is_file() or not atlas_json.is_file():
-        print(f"hero atlas not found: {atlas_png}", file=sys.stderr)
+    if not atlas_json.is_file():
+        print(f"hero atlas metadata not found: {atlas_json}", file=sys.stderr)
         return 2
     out = Path(args.out).resolve()
     if REPO_ROOT in out.parents and ".tmp" not in out.relative_to(REPO_ROOT).parts:
@@ -139,10 +138,14 @@ def main(argv: list[str]) -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     metadata = json.loads(atlas_json.read_text(encoding="utf-8"))
+    atlas_image = hero_dir / Path(metadata["image"]).name
+    if not atlas_image.is_file():
+        print(f"hero atlas not found: {atlas_image}", file=sys.stderr)
+        return 2
     frames = metadata.get("frames", [])
     frame_size = int(frames[0]["sourceSize"]["w"]) if frames else None
 
-    source = Image.open(atlas_png)
+    source = Image.open(atlas_image)
     source.load()
     if source.mode != "RGBA":
         source = source.convert("RGBA")
@@ -151,12 +154,17 @@ def main(argv: list[str]) -> int:
     variants: dict[str, dict] = {}
 
     png_copy = out / f"{args.hero}.png"
-    shutil.copyfile(atlas_png, png_copy)
+    if atlas_image.suffix.lower() == ".png":
+        shutil.copyfile(atlas_image, png_copy)
+        png_ms, png_encoder = 0.0, "byte copy of the shipped PNG atlas"
+    else:
+        png_ms = encode(source, png_copy, format="PNG", compress_level=6)
+        png_encoder = "Pillow PNG control re-encoded from the shipped atlas"
     variants["png"] = {
         "file": png_copy.name,
         "bytes": png_copy.stat().st_size,
-        "encodeMs": 0.0,
-        "encoder": "byte copy of the shipped atlas",
+        "encodeMs": png_ms,
+        "encoder": png_encoder,
         "sha256": sha256_of(png_copy),
         "fidelity": fidelity(source, Image.open(png_copy)),
     }
@@ -195,9 +203,9 @@ def main(argv: list[str]) -> int:
         "schema": "hmh-hero-atlas-format-conversion-v1",
         "hero": args.hero,
         "source": {
-            "path": str(atlas_png.relative_to(REPO_ROOT)).replace("\\", "/"),
-            "bytes": atlas_png.stat().st_size,
-            "sha256": variants["png"]["sha256"],
+            "path": str(atlas_image.relative_to(REPO_ROOT)).replace("\\", "/"),
+            "bytes": atlas_image.stat().st_size,
+            "sha256": sha256_of(atlas_image),
             "width": width,
             "height": height,
             "mode": source.mode,

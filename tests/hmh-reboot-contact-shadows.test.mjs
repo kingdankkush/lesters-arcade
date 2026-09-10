@@ -233,7 +233,7 @@ test('actor shadows land on the sprite foot line, not on the authored pivot', as
   assert.doesNotMatch(source, /y: enemyScreen\.y,\n\s*footprintPx/u, 'an enemy shadow must not sit on the raw pivot');
   // The pose is read back from the display's own applyPose return, never
   // written onto the enemy the simulation owns.
-  assert.match(source, /const enemyPose = enemyMarker\.applyPose\(\{/u);
+  assert.match(source, /const enemyPose = prepareWorldDesignEnemyPose\(enemyMarker, animate, \{/u);
   assert.match(source, /const bossPose = bossVisual\.applyPose\(\{/u);
 });
 

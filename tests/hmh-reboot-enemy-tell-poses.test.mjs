@@ -4,17 +4,19 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { createEnemyRosterAtlasIndex } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
 
 /**
  * Cycle 074 (E-3): enemy attack tells.
  *
- * The roster poses live in `scripts/hmh-blender/hmh_enemy_poses.py`, a module
+ * The historical procedural roster poses live in
+ * `scripts/hmh-blender/hmh_enemy_poses.py`, a module
  * that imports nothing but `math`, so the anticipation / overshoot / recovery
  * contract can be exercised on the Vercel build image (CPython 3.12, no
  * Blender) exactly the way the reproducibility helpers are. The exporter only
  * applies the returned rotations and locations to `rig.pose.bones`.
  *
- * What the tests pin, per ordinary role profile:
+ * What the procedural tests pin, per historical ordinary role profile:
  *  - the tell WIDENS the silhouette (the Cycle 073 wind-up folded the arms
  *    across the chest and made tell the narrowest state in every atlas); the
  *    rifle role, whose hands stay on the weapon, grows taller and lifts its
@@ -27,16 +29,60 @@ import { fileURLToPath } from 'node:url';
  *  - all nineteen authored frames per role are pairwise distinct (the pipeline
  *    rejects byte-identical renders);
  *  - the boss variant damps limb excursion so its 2 MiB atlas does not grow.
+ *
+ * Migrated native actors have a separate contract below. Their preserved
+ * Blender actions are validated through the native source QA, generated atlas
+ * metadata, and runtime index; they are never represented as procedural Euler
+ * poses merely to keep these historical checks green.
  */
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repoRootPosix = repoRoot.replaceAll('\\', '/');
 const modulePath = path.join(repoRoot, 'scripts', 'hmh-blender', 'hmh_enemy_poses.py');
 const manifest = JSON.parse(readFileSync(path.join(repoRoot, 'apps', 'hmh-reboot', 'assets', 'source', 'blender', 'hmh-enemy-roster.json'), 'utf8'));
+const generatedRoot = path.join(repoRoot, 'apps', 'portal', 'assets', 'generated', 'hmh-reboot-enemy-roster');
+const nativeQaUrl = new URL('../scripts/hmh-enemy-source-qa.mjs', import.meta.url);
+const CURRENT_ORDINARY_ACTORS = manifest.actors.filter((actor) => actor.boss !== true);
+const EXPECTED_STATES = Object.freeze(Object.keys(manifest.clips));
 
-const ORDINARY_PROFILES = manifest.actors
-  .filter((actor) => actor.boss !== true)
-  .map((actor) => [actor.actorId, actor.animationProfile.kind, actor.animationProfile.damageResponse, actor.build.stoop]);
+// Recovered from Git HEAD's last all-procedural canonical manifest. Keep all
+// six contracts, including Bagholder's lunge/snapback parameters, even after a
+// role migrates to native actions.
+const ORDINARY_PROFILES = Object.freeze([
+  Object.freeze(['bagholder-rusher', 'undead-straight-lunge-v1', 'snapback-stumble-v1', 0.22]),
+  Object.freeze(['forkrunner', 'forkrunner-quick-fork-slash-v1', 'crossed-fork-guard-break-v1', 0.05]),
+  Object.freeze(['liquidator-agent', 'suppression-rifle-burst-v1', 'rifle-shoulder-recoil-v1', 0]),
+  Object.freeze(['whale-enforcer', 'undead-shoulder-charge-v1', 'armored-shoulder-absorb-v1', 0.14]),
+  Object.freeze(['gas-bomber', 'gas-bomber-canister-lob-v1', 'canister-protective-stagger-v1', 0.3]),
+  Object.freeze(['validator-cultist', 'validator-staff-channel-v1', 'staff-braced-shock-v1', 0.08]),
+]);
+const HISTORICAL_PROFILE_BY_ACTOR = new Map(ORDINARY_PROFILES.map((profile) => [profile[0], profile]));
+
+function loadGeneratedMetadata(actorId) {
+  return JSON.parse(readFileSync(path.join(generatedRoot, actorId, `${actorId}-roster-atlas.json`), 'utf8'));
+}
+
+function assertCurrentAuthoringRoute(actor) {
+  const historical = HISTORICAL_PROFILE_BY_ACTOR.get(actor.actorId);
+  assert.ok(historical, `unknown ordinary role: ${actor.actorId}`);
+  if (actor.sourceModel?.kind === 'packed-native-enemy-blend') {
+    assert.equal(actor.actorId, 'bagholder-rusher', 'only the adopted native role may enter the native route');
+    assert.equal(actor.animationProfile?.kind, 'preserved-native-actions');
+    assert.deepEqual(actor.animationProfile?.sourceStates, EXPECTED_STATES);
+    assert.equal(actor.animationProfile?.damageResponse, undefined, 'native actions must not claim procedural damage poses');
+    assert.equal(actor.poseAuthoring?.mode, 'preserved-native-actions');
+    assert.equal('module' in actor.poseAuthoring, false, 'native actions must not claim procedural module provenance');
+    assert.deepEqual(Object.keys(actor.clipActions ?? {}).sort(), [...EXPECTED_STATES].sort());
+    assert.equal(new Set(Object.values(actor.clipActions ?? {})).size, EXPECTED_STATES.length, 'every native state needs its own action');
+    return 'native-actions';
+  }
+  assert.equal(actor.sourceModel, undefined, `${actor.actorId} has an unknown source route`);
+  assert.equal(actor.poseAuthoring, undefined, `${actor.actorId} must use the manifest procedural pose module`);
+  assert.equal(actor.animationProfile?.kind, historical[1], `${actor.actorId} procedural animation profile drift`);
+  assert.equal(actor.animationProfile?.damageResponse, historical[2], `${actor.actorId} procedural damage response drift`);
+  assert.equal(actor.build?.stoop, historical[3], `${actor.actorId} procedural stoop drift`);
+  return 'procedural-euler';
+}
 
 function runPoseModule(body) {
   const preamble = [
@@ -79,6 +125,83 @@ test('the pose module is bpy-free so the pose contract runs on the Vercel build 
   assert.doesNotMatch(source, /\bbpy\b/);
   assert.match(source, /def role_pose\(/);
   assert.match(source, /def pose_screen_extent\(/, 'the module must expose the silhouette projection used by these tests');
+});
+
+test('every current ordinary role is covered by exactly one truthful authoring route', () => {
+  const routes = Object.fromEntries(CURRENT_ORDINARY_ACTORS.map((actor) => [actor.actorId, assertCurrentAuthoringRoute(actor)]));
+  assert.deepEqual(routes, {
+    'bagholder-rusher': 'native-actions',
+    forkrunner: 'procedural-euler',
+    'liquidator-agent': 'procedural-euler',
+    'whale-enforcer': 'procedural-euler',
+    'gas-bomber': 'procedural-euler',
+    'validator-cultist': 'procedural-euler',
+  });
+
+  const native = CURRENT_ORDINARY_ACTORS.find((actor) => actor.actorId === 'bagholder-rusher');
+  const mislabeledNative = structuredClone(native);
+  delete mislabeledNative.sourceModel;
+  assert.throws(() => assertCurrentAuthoringRoute(mislabeledNative), /procedural pose module|procedural animation profile drift/);
+  const foreignNative = structuredClone(CURRENT_ORDINARY_ACTORS.find((actor) => actor.actorId === 'forkrunner'));
+  foreignNative.sourceModel = native.sourceModel;
+  assert.throws(() => assertCurrentAuthoringRoute(foreignNative), /only the adopted native role/);
+  assert.throws(() => assertCurrentAuthoringRoute({ actorId: 'unknown-role' }), /unknown ordinary role/);
+});
+
+test('live native roles retain action bindings, measured samples, indexed frames, and raster distinctness', async () => {
+  const nativeActors = CURRENT_ORDINARY_ACTORS.filter((actor) => assertCurrentAuthoringRoute(actor) === 'native-actions');
+  assert.ok(nativeActors.length > 0, 'native coverage must not be vacuous');
+  const { validateNativeEnemyArtifact, validateNativeEnemySource } = await import(nativeQaUrl.href);
+
+  for (const actor of nativeActors) {
+    const sourceResult = validateNativeEnemySource(actor, repoRoot);
+    assert.ok(['source-original', 'lfs-pointer'].includes(sourceResult.kind), `${actor.actorId} source intake`);
+    const metadata = loadGeneratedMetadata(actor.actorId);
+    const qaIndex = validateNativeEnemyArtifact(actor, metadata);
+    const runtimeIndex = createEnemyRosterAtlasIndex(metadata, actor.actorId);
+    const expectedFrameCount = EXPECTED_STATES.reduce((total, state) => total + manifest.clips[state].frames, 0)
+      * manifest.directions.length;
+    assert.equal(qaIndex.frameCount, expectedFrameCount);
+    assert.equal(runtimeIndex.frameCount, expectedFrameCount);
+    assert.deepEqual(metadata.animationProfile, actor.animationProfile);
+    assert.deepEqual(metadata.poseAuthoring, actor.poseAuthoring);
+    assert.deepEqual(metadata.sourceModel, actor.sourceModel);
+    assert.deepEqual(metadata.poseAuthoring.sourceFrameSamples, { hit: [12, 25] });
+
+    const proof = JSON.parse(readFileSync(path.join(repoRoot, actor.sourceModel.preservation.path), 'utf8'));
+    const proofBindings = Object.fromEntries(Object.entries(proof.source.actions).map(([actionName, record]) => [
+      record.properties.hmh_state,
+      actionName,
+    ]));
+    assert.deepEqual(actor.clipActions, proofBindings, `${actor.actorId} state-to-native-action binding`);
+    assert.equal(new Set(Object.values(proofBindings)).size, EXPECTED_STATES.length, `${actor.actorId} native action distinctness`);
+
+    const pixelHashes = new Set();
+    for (const state of EXPECTED_STATES) {
+      for (const direction of manifest.directions) {
+        const stateDirectionHashes = new Set();
+        for (let frameIndex = 0; frameIndex < manifest.clips[state].frames; frameIndex += 1) {
+          const frame = runtimeIndex.frameFor(state, direction, frameIndex);
+          assert.equal(frame.id, `${actor.actorId}__body__${state}__${direction}__${String(frameIndex).padStart(3, '0')}`);
+          assert.match(frame.sourcePixelSha256, /^[0-9a-f]{64}$/);
+          stateDirectionHashes.add(frame.sourcePixelSha256);
+          pixelHashes.add(frame.sourcePixelSha256);
+        }
+        assert.equal(stateDirectionHashes.size, manifest.clips[state].frames, `${actor.actorId} ${state}/${direction} frames must be distinct`);
+      }
+    }
+    assert.equal(pixelHashes.size, expectedFrameCount, `${actor.actorId} all native raster frames must be pairwise distinct`);
+
+    const swappedActions = structuredClone(actor);
+    [swappedActions.clipActions.hit, swappedActions.clipActions.tell] = [swappedActions.clipActions.tell, swappedActions.clipActions.hit];
+    assert.throws(() => validateNativeEnemySource(swappedActions, repoRoot), /state-to-action binding/);
+    const mislabeledMetadata = structuredClone(metadata);
+    mislabeledMetadata.animationProfile.kind = 'unknown-native-actions';
+    assert.throws(() => validateNativeEnemyArtifact(actor, mislabeledMetadata));
+    const proceduralMetadata = structuredClone(metadata);
+    proceduralMetadata.poseAuthoring = manifest.poseAuthoring;
+    assert.throws(() => createEnemyRosterAtlasIndex(proceduralMetadata, actor.actorId), /native source mismatch/);
+  }
 });
 
 test('every ordinary role widens on the tell and builds to a held maximum', () => {

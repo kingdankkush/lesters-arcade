@@ -176,8 +176,9 @@ test('Cycle 007 gives one weapon renderer authority at a time', async () => {
   assert.match(heroRuntime, /setLayerVisible/);
   assert.match(runtime, /if \(!productionHeroDisplay && authoredHeldWeaponDisplay\) authoredHeldWeaponDisplay\.container\.visible = false/);
   assert.match(runtime, /const externalWeaponAuthoritative = Boolean\(authoredHeldWeaponDisplay\)/);
-  assert.match(runtime, /!\['melee', 'grenade', 'death'\]\.includes\(productionAction\)/);
-  assert.match(runtime, /setLayerVisible\('weapon', !externalWeaponAuthoritative\)/);
+  assert.match(runtime, /const actionOwnsWeaponLayer = \['melee', 'grenade', 'death', 'interact'\]\.includes\(productionAction\)/);
+  assert.match(runtime, /&& !actionOwnsWeaponLayer\s*&& !nativeWeaponOwnsLayer/);
+  assert.match(runtime, /setLayerVisible\('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative\)/);
   assert.match(runtime, /authoredHeldWeaponDisplay\.container\.visible = externalWeaponAuthoritative/);
 });
 
@@ -185,5 +186,14 @@ test('repository visual policy points to a dated current HMH cycle handoff and t
   const agents = await readFile(new URL('../AGENTS.md', import.meta.url), 'utf8');
   assert.match(agents, /npm run visual:reboot/);
   assert.match(agents, /npm run visual:reboot:accept/);
-  assert.match(agents, /docs\/handoffs\/\d{4}-\d{2}-\d{2}-hmh-cycle-\d+-[a-z-]+-handoff\.md/);
+  // A rollout checkpoint now owns the dated source/evidence map. Verify the
+  // actual first-entry chain, not a historical cycle filename anywhere in AGENTS.
+  const checkpointPath = agents.match(/^1\. `(docs\/handoffs\/[a-z0-9-]+\.md)`/m)?.[1];
+  assert.ok(checkpointPath, 'read order must identify the current checkpoint');
+  const checkpointUrl = new URL(`../${checkpointPath}`, import.meta.url);
+  const checkpoint = await readFile(checkpointUrl, 'utf8');
+  const datedName = checkpoint.match(/^\*\*Full new-session handoff:\*\* \[[^\]]+\]\((\d{4}-\d{2}-\d{2}-hmh-[a-z0-9-]+\.md)\)/m)?.[1];
+  assert.ok(datedName, 'current checkpoint must link a dated HMH handoff');
+  const handoff = await readFile(new URL(datedName, checkpointUrl), 'utf8');
+  assert.match(handoff, /^# Hard Money Heroes/m, 'dated handoff must exist and describe HMH');
 });

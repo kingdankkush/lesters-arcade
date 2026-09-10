@@ -1,0 +1,224 @@
+{
+  "schema": "hmh-parent-portal-continuation-v1",
+  "recordedAt": "2026-09-10T06:24:42.558961+00:00",
+  "status": "source-reviewed; combined release BLOCKED",
+  "scope": [
+    "REGISTER:L-5 prior immutable source review",
+    "REGISTER:L-6 parent-local dates/progress/disclosures"
+  ],
+  "sourceManifest": {
+    "at": "2026-09-10T06:17:00.000246+00:00",
+    "scope": "source-only, not inventory/build/browser/human/release",
+    "diffSha256": "351fed1154af52e57f4d588e716d3210d054a8b7dbb36d3272e949e4b5d91cb8",
+    "files": {
+      "apps/portal/src/arcade-core.mjs": "f70ef32152763bcda4504d0393e75006ea68d6b30163c4c794072d12fc2f8dc0",
+      "apps/portal/src/achievement-progress.mjs": "447b2911ad21a4b3952626328a89e183b38c943735de09c41721170a9f8424b3",
+      "apps/portal/src/routes/official-profile-route.mjs": "3bf2fbf187bef8b95d539829325229fbf5b3336ab6333e7371b8421fae6b95b9",
+      "apps/portal/styles-arcade-polish.css": "544e2a39f1db37455ea86b0aa6b1fc4c95fd9077298edba7b11264911bf08eae",
+      "scripts/syntax-check.mjs": "6f87ebd996c29bda682d08bf4070a6a40efbd134c7d29a30f654c66cfefff1f7",
+      "tests/achievement-progress.test.mjs": "d7aadfd6a7d50a1bf55e80fee8e479704e96db5f0803f5edc5531930e78e9474",
+      "tests/official-profile-route.test.mjs": "3be5f1ede95726c05357053c55bcc4c83d174363075da295efbac1faf7fb394d"
+    },
+    "syntax": [
+      {
+        "path": "apps/portal/src/arcade-core.mjs",
+        "exitCode": 0
+      },
+      {
+        "path": "apps/portal/src/achievement-progress.mjs",
+        "exitCode": 0
+      },
+      {
+        "path": "apps/portal/src/routes/official-profile-route.mjs",
+        "exitCode": 0
+      },
+      {
+        "path": "scripts/syntax-check.mjs",
+        "exitCode": 0
+      },
+      {
+        "path": "tests/achievement-progress.test.mjs",
+        "exitCode": 0
+      },
+      {
+        "path": "tests/official-profile-route.test.mjs",
+        "exitCode": 0
+      }
+    ],
+    "securityScan": {
+      "secret-assignment": [],
+      "unsafe-execution": [],
+      "html-injection": []
+    },
+    "focusedCounts": {
+      "tests": 73,
+      "pass": 73,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "focusedReceiptSha256": "20bdc3d6a0e4f39f607615e8754b35eae8552f6f252139a3c884e75eb6bf3467"
+  },
+  "independentReview": {
+    "verdict": "PASS",
+    "diffSha256": "351fed1154af52e57f4d588e716d3210d054a8b7dbb36d3272e949e4b5d91cb8",
+    "blockers": [],
+    "suggestions": [
+      "Keep inventory, build, browser, human-review, and release acceptance pending; this verdict does not close the register item."
+    ],
+    "scope": "source-only",
+    "eventLogSha256": "8238875da8c6c2ddf9410bad25deb2cbe2fe738f8a0ccbd74a516d8a76183d0b",
+    "resultSha256": "03031e9f06b1a83eaf94f0d0dfa491e1368de67bd07720d623c14c17e2bf3ccb",
+    "completedTurns": 1,
+    "toolEvents": 0,
+    "metadataWarnings": [
+      "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`.",
+      "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+    ]
+  },
+  "priorProfileHistoryIndependentReview": {
+    "verdict": "PASS",
+    "diffSha256": "3467b96a63eb62bd4009f619bf952343fa90585b98023606d2eec6bd74cbbbf9",
+    "blockers": [],
+    "suggestions": [
+      {
+        "file": "apps/portal/src/hmh-run-history.mjs",
+        "symbol": "buildHmhRunHistoryModel invalidRuns/legacyRuns classification",
+        "scenario": "A malformed retained record explicitly contains a falsy runSummary value such as null or false.",
+        "issue": "The record is safely excluded but classified as legacy rather than invalid; document the null sentinel semantics or add coverage for this boundary."
+      },
+      {
+        "file": "tests/official-profile-route.test.mjs",
+        "symbol": "profile history rendering coverage",
+        "scenario": "The complete connected-wallet profile route renders valid and invalid HMH records together.",
+        "issue": "Current coverage tests the disclosure helper directly and checks route wiring through source-text regexes; add a rendered-route test confirming retention copy, invalid-summary notice, receipt navigation, and one disclosure per run."
+      }
+    ],
+    "inspectedFiles": [
+      "apps/portal/src/hmh-run-history.mjs",
+      "apps/portal/src/routes/official-profile-route.mjs",
+      "apps/portal/styles-arcade-polish.css",
+      "tests/hmh-run-history.test.mjs",
+      "tests/official-profile-route.test.mjs",
+      "sdk/hmh-run-summary-schema.mjs",
+      "sdk/hmh-run-summary.mjs",
+      "apps/portal/src/persistence.mjs"
+    ],
+    "scope": "source-only",
+    "eventLogSha256": "9ebad92764b0206db685ed647c1b7b82abad199e95144671deb6dfc0b674b8b5",
+    "resultSha256": "1483b1a69873b6d9b4b1df0d3e245ac4ed8e79e9edf0ed5e6eca14ac4dfee93d",
+    "completedTurns": 1,
+    "toolEvents": 0,
+    "metadataWarnings": [
+      "Code Mode is unavailable because code-mode host is disabled. Code mode will fail closed; enable `features.code_mode_host` and install `codex-code-mode-host`.",
+      "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+    ]
+  },
+  "focused": {
+    "at": "2026-09-10T06:16:58.296991+00:00",
+    "argv": [
+      "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+      "--test",
+      "--test-concurrency=1",
+      "--test-reporter=tap",
+      "tests/achievement-progress.test.mjs",
+      "tests/hmh-run-history.test.mjs",
+      "tests/official-profile-route.test.mjs",
+      "tests/hmh-reboot-run-summary.test.mjs",
+      "tests/persistence.test.mjs",
+      "tests/hmh-chain-hydration-provenance.test.mjs",
+      "tests/hmh-leaderboard-provenance.test.mjs",
+      "tests/hmh-profile-parity.test.mjs"
+    ],
+    "exitCode": 0,
+    "counts": {
+      "tests": 73,
+      "pass": 73,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "logSha256": "0cb061d1d64289583acae2a7de17d3d22e92939e0ff02dd2aea2fa8dbd0beee0",
+    "sourceHashes": {
+      "apps/portal/src/arcade-core.mjs": "f70ef32152763bcda4504d0393e75006ea68d6b30163c4c794072d12fc2f8dc0",
+      "apps/portal/src/achievement-progress.mjs": "447b2911ad21a4b3952626328a89e183b38c943735de09c41721170a9f8424b3",
+      "apps/portal/src/routes/official-profile-route.mjs": "3bf2fbf187bef8b95d539829325229fbf5b3336ab6333e7371b8421fae6b95b9",
+      "apps/portal/styles-arcade-polish.css": "544e2a39f1db37455ea86b0aa6b1fc4c95fd9077298edba7b11264911bf08eae",
+      "scripts/syntax-check.mjs": "6f87ebd996c29bda682d08bf4070a6a40efbd134c7d29a30f654c66cfefff1f7",
+      "tests/achievement-progress.test.mjs": "d7aadfd6a7d50a1bf55e80fee8e479704e96db5f0803f5edc5531930e78e9474",
+      "tests/official-profile-route.test.mjs": "3be5f1ede95726c05357053c55bcc4c83d174363075da295efbac1faf7fb394d"
+    },
+    "sourceStable": true,
+    "scope": "source-only, not build/browser/release"
+  },
+  "broaderRegression": {
+    "at": "2026-09-10T06:17:36.084810+00:00",
+    "argv": [
+      "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+      "--test",
+      "--test-concurrency=1",
+      "--test-reporter=tap",
+      "tests/achievement-progress.test.mjs",
+      "tests/hmh-run-history.test.mjs",
+      "tests/official-profile-route.test.mjs",
+      "tests/hmh-reboot-run-summary.test.mjs",
+      "tests/persistence.test.mjs",
+      "tests/hmh-chain-hydration-provenance.test.mjs",
+      "tests/hmh-leaderboard-provenance.test.mjs",
+      "tests/hmh-profile-parity.test.mjs",
+      "tests/arcade-core.test.mjs",
+      "tests/hmh-run-summary.test.mjs"
+    ],
+    "exitCode": 1,
+    "counts": {
+      "tests": 208,
+      "pass": 207,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "logSha256": "f66986124404f8d3716831667840b91ae13dbca746bf61eb778dd98bd7317de1",
+    "sourceHashes": {
+      "apps/portal/src/arcade-core.mjs": "f70ef32152763bcda4504d0393e75006ea68d6b30163c4c794072d12fc2f8dc0",
+      "apps/portal/src/achievement-progress.mjs": "447b2911ad21a4b3952626328a89e183b38c943735de09c41721170a9f8424b3",
+      "apps/portal/src/routes/official-profile-route.mjs": "3bf2fbf187bef8b95d539829325229fbf5b3336ab6333e7371b8421fae6b95b9",
+      "apps/portal/styles-arcade-polish.css": "544e2a39f1db37455ea86b0aa6b1fc4c95fd9077298edba7b11264911bf08eae",
+      "scripts/syntax-check.mjs": "6f87ebd996c29bda682d08bf4070a6a40efbd134c7d29a30f654c66cfefff1f7",
+      "tests/achievement-progress.test.mjs": "d7aadfd6a7d50a1bf55e80fee8e479704e96db5f0803f5edc5531930e78e9474",
+      "tests/official-profile-route.test.mjs": "3be5f1ede95726c05357053c55bcc4c83d174363075da295efbac1faf7fb394d"
+    },
+    "sourceStable": true,
+    "scope": "source-only, not build/browser/release"
+  },
+  "documentedRetiredAssertion": [
+    "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata"
+  ],
+  "inventoryBuildBrowserHumanAcceptance": "pending; current emitted bundle is unchanged and is not a build of this delta",
+  "codexResourceWindow": "claimed: serialized local source/build/browser validation; no Blender generation",
+  "closedRegisterEntries": [],
+  "preservedInventory": {
+    "workGroups": 55,
+    "unclosedHmhPortalEntries": 67,
+    "STACKED": "paused"
+  },
+  "remaining": [
+    "Codex frozen incremental return and explicit validation-window release",
+    "Regenerate curated portal module inventory including achievement-progress.mjs",
+    "Combined inventory/build/bytes and desktop/portrait connected profile acceptance",
+    "Full connected-route statistics/receipt navigation and native disclosure/meter/date accessibility checks",
+    "Canonical data for currently unavailable compound/per-run progress",
+    "Durable cross-device every-Ranked-session history and chronological build history",
+    "Wallet, payment, trusted settlement, NFT and launch-epoch acceptance",
+    "W-10 clearance; G-7 coordinated runtime closure; gameplay/balance/art/audio/performance gates",
+    "Recorded first-time/physical-device/owner acceptance, exact Preview/rollback and release certification"
+  ],
+  "sourceEvidenceRoot": ".tmp/team/portal-continuation-20260910T053635Z",
+  "sharedPacket": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Coordination\\hmh-textured-rollout\\submissions\\hermes\\portal-achievements-source-20260910T062442Z",
+  "staged": false,
+  "committed": false,
+  "published": false,
+  "settlementLive": false
+}

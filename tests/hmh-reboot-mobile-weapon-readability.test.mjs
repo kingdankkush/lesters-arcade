@@ -31,7 +31,17 @@ test('touch styles preserve a distinct readable weapon switch control', () => {
   assert.match(css, /\.hmh-touch-button--power/);
 });
 
-test('all-device mobile certification requires the compact five-control set', () => {
+test('all-device mobile certification requires move, aim, grenade and the pause utility', () => {
   const mobileSmoke = repoText('scripts/hmh-reboot-mobile-controls-browser-smoke.mjs');
-  assert.match(mobileSmoke, /EXPECTED_CONTROLS = \['aim', 'move', 'pause', 'power', 'weapon'\]/);
+  assert.match(mobileSmoke, /EXPECTED_CONTROLS = \['aim', 'move', 'pause', 'power'\]/);
+  // `power` is the existing internal grenade identifier; pause is not a gameplay action.
+  const input = repoText('apps/hmh-reboot/src/input.mjs');
+  assert.match(input, /const buttons = \{\s*power: [^\n]+\s*pause: [^\n]+\s*\};/);
+});
+
+
+test('production hero mobile proof checks the exact current control identities', () => {
+  const source = repoText('scripts/hmh-reboot-production-hero-browser-smoke.mjs');
+  assert.match(source, /assert\.deepEqual\(controlIds, \['aim', 'move', 'pause', 'power'\]\)/);
+  assert.doesNotMatch(source, /assert\.equal\(controls, 5\)/);
 });

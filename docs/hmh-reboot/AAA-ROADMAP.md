@@ -732,56 +732,27 @@ Consolidated in §8 with instructions. Summary:
 
 ## 7. Sequencing
 
-Phases are dependency-ordered. Work inside a phase can interleave. Balance
-instrumentation (G-1, X-1) runs alongside any phase from Phase 1 on.
+Current override: use `docs/handoffs/hmh-textured-rollout-progress.md` and the imported open-work register. The former unchecked entries were not evidence of missing implementation. The current textured rollout's release certification remains open.
 
-**Phase 0 — plumbing and truth, plus one deliberate render-parity cycle**
-- [x] T-0a/T-0b role and projectile-budget truth with direct live-module tests.
-- [ ] P-4 enemies → EEVEE. This is an intentional visual change and remains its own cycle.
-- [ ] K-1 director decoupled from zoom.
-- [x] U-1 shared child tokens.
-- [ ] U-2 developer-only telemetry gating.
-- [x] K-2 controls card and first-run hint.
-- [x] L-1a explicit simulated-wallet disclosure.
-- [x] N-1 medianized forced-GC heap gate.
-- [ ] P-1/P-2/P-3 importer + skinned exporter + schema on a throwaway mesh.
-- [ ] P-5 source-model LFS policy and clean-clone proof; Git LFS itself is installed.
-- [ ] N-3 roadmap import and `AGENTS.md` read order are updated; replacing the older Cycle 036 checkpoint block in the protected instruction file still requires owner approval.
-- Owner in parallel: §8.1.1 Lester sheet/export. Add a Vercel bypass secret only if 403 protection returns.
+### Shipped foundation — do not rebuild
 
-**Phase 1 — hero pilot**
-- [ ] C-1 Lester 256 px · P-6 format harness → §8.3.2 decision · C-6 budget
-      implementation · C-2 selector · C-3 remaining heroes · C-4 animation pass.
+- [x] P-4 enemy EEVEE relight; K-1 director/zoom separation; U-2 debug telemetry gating.
+- [x] P-1, P-2, P-3 external-model/import/skinned-export/schema foundations and P-5 source-model LFS policy.
+- [x] W-1 terrain, W-3 roads, W-4 shores; existing contact shadows, landmarks, camps, authored placements and decals. These do not close R-3 modular replacement kits or future simulation verticality.
+- [x] U-3 cockpit HUD, U-4 level-up cards, U-5 shipped settings subset; V-1, V-2, V-3, V-4, V-5 projection feedback. These do not close K-4 expanded controls or the remaining audio library.
+- [x] Existing T-0a/T-0b role/projectile contracts, U-1 shared tokens, K-2 controls help, L-1a simulation disclosure and N-1 heap gate.
+- [x] Existing U-7/S-3 parent music transport; G-2 pickups, X-3 crit, X-4 pistol tree, X-2 XP, X-7 combo, X-5 bands; D-1 run summary and L-7 portal modularization. Keep deterministic authority intact.
 
-**Phase 2 — the world facelift**
-- [ ] W-1 terrain · W-3 roads · W-2 decals · W-4 shores · R-1 static importer · R-2
-      Tripo organics wave 1 · R-3 camp + bridge kits · W-8 encampments · W-7 density ·
-      W-14 contact shadows · W-6 landmarks · W-5 blockers to props · W-15 scenes.
-- [ ] §8.3.1 decision → R-3 town kit → W-9 town district.
+### Remaining delivery order
 
-**Phase 3 — enemies and boss**
-- [ ] E-2 three cycles · E-3 tells · E-4 elites · E-5 boss presentation · E-6 boss depth
-      (with G-1 evidence).
+1. Preserve later defect fixes B-1/B-2/B-3/B-4/B-7, K-8 and N-7; their deployed functionality is documented separately from the unresolved public paired-anchor visual certificate.
+2. H-0 is decided: exact lossless WebP, 4 MiB per hero / 16 MiB aggregate, 2048 atlas maximum. Four source-backed 648-frame heroes and matching selectors are integrated locally. Finish the approved six-item hardening pass, fresh selector generation, current-browser/full release gates, then verified game-layer promotion. Do not restart modeling.
+3. Complete parent acceptance of the existing native bagholder candidate (E-7), then remaining canonical enemy roles/boss. Preserve source masters, native hit readability, actual mobile framing and per-role tells. E-8/P-8 are separate measured boss/roster work, not permission to widen budgets.
+4. R-3 modular town/camp/industrial/bridge kits, W-17 canopy depth, W-18 slab treatment, R-4 held weapons and R-5 object pickups. Preserve the owner's ruined-yard town direction (W-9). Do not rebuild shipped terrain/road/shadow systems.
+5. G-7 withheld pacing defects and G-1/G-6 benchmarks; measured G-3/K-3/K-4/K-5/K-6 control/combat gaps. UI/audio/portal work follows the register; existing functionality is not proof every expanded requirement is complete.
+6. Launch captures, truthful feature/trust documentation and human-device playtests remain distinct gates. W-16 Level 2 remains downstream of Level 1 acceptance.
 
-**Phase 4 — feel, HUD, audio**
-- [ ] U-3 HUD completion · U-4 level-up cards · U-5 settings · V-1..V-5 VFX · S-1/S-2/S-4 audio ·
-      V-3 grenades · K-6 dash · K-7 chunked navgrid · L-8 key art.
-- [x] U-7/S-3 parent-owned music transport and continuity.
-
-**Phase 5 — depth and balance**
-- [x] G-2 two pickups · X-3 crit · X-4 pistol tree · X-2 XP sources · X-7 combo · X-5 enemy bands.
-- [ ] G-3 melee · W-10..W-13 interiors, verticality, secrets, weather · K-4 rebinding · V-6 camera.
-
-**Phase 6 — data, portal, trust**
-- [x] D-1 canonical bounded run summary · L-7 portal modularization/legacy backstage retirement.
-- [ ] D-2 funnel · L-5 profile · L-2/L-4 decisions applied · L-6 achievements · L-3 splash ·
-      U-6 select · L-9 trust pages · N-2 asset triage · N-6 CDN.
-
-**Phase 7 — launch readiness**
-- [ ] M-1..M-3 · §8.6 playtests · 036 handoff §7 launch gates all green · W-16 Level 2
-      planning begins.
-
-**Web3 (parallel, HALT-gated):** B-1..B-5 at any time; nothing deploys without §8.5.
+STACKED stays at accepted S-01–S-03, not publicly playable; no expansion before the gameplay-hero release priority is met. Chain transactions, real funds, settlement and irreversible authority changes require separate exact-action approval. Keep `SETTLEMENT_LIVE=false`.
 
 ---
 

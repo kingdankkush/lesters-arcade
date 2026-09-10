@@ -147,6 +147,9 @@ def sample_clip_frame(action, frame_index: int, frame_count: int, loop: bool) ->
 def main() -> None:
     args = blender_args()
     manifest = json.loads(Path(args.manifest).resolve().read_text(encoding="utf-8"))
+    selected = next((a for a in manifest["actors"] if a["actorId"] == args.actor_id), None)
+    if args.actor_id == 'bagholder-rusher' and not globals().get('NATIVE_SOURCE_VERIFIED', False):
+        raise RuntimeError('bagholder-rusher must use the verified repo-owned native source adapter')
     raw_output = Path(args.raw_output).resolve()
     raw_output.mkdir(parents=True, exist_ok=True)
 

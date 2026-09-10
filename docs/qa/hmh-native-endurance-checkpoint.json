@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-09-09T07:27:13.866184+00:00",
+  "localSliceVerified": true,
+  "scope": "Native endurance startup/drift art-contract repair only. No runtime gameplay, density, frame/heap budget, world, model or physics changes. Desktop Chrome emulation, not physical-device/human/canonical30-minute/release certification.",
+  "changedFiles": [
+    "scripts/hmh-reboot-enemy-endurance-browser-smoke.mjs",
+    "tests/hmh-reboot-enemy-endurance-soak.test.mjs"
+  ],
+  "sourceHashes": {
+    "apps/hmh-reboot/src/main.mjs": "1da9349d5001f395dc500d3ac8cb55271bdf393437e448319a9386a35d1ee9e0",
+    "apps/hmh-reboot/src/world-space.mjs": "e46ae7e13ff041e89e38e1c4f4af8be6a0259d48e96254d056c6afda6fcdb5e7",
+    "tests/hmh-reboot-world-space.test.mjs": "72678445d51a5690763b8891949cd523e8537c372ea07de9ed7053e00d1c8e19",
+    "apps/hmh-reboot/src/level-one-world.mjs": "cf1a7f7eab10bd790a40088378ce9f134eb4a691250368d3c5040976d14561f5",
+    "apps/hmh-reboot/src/weapon-system.mjs": "50c12699654ab2891bb998b86fb60f6878df6e65bc426270b88e9551a0bd30b7",
+    "apps/hmh-reboot/src/input.mjs": "7cca0490de30dd459d6249c569d85d2480f5d81ca45f8f3269c0066aa9e52eb4",
+    "apps/hmh-reboot/src/touch-controls.mjs": "24898b927871d58c0140f50eef8de65bd25cadf6f72c8cdd70487318df25c130",
+    "apps/portal/hmh-reboot/styles.css": "d6e5f7dae896b6951ad4e8d9d088f8736678f5176468704ce82f69c3e171b4c2",
+    "scripts/hmh-reboot-enemy-endurance-browser-smoke.mjs": "8779c04eb8cdca8da08f8cefca13d29f7d443131f6df966ae2e1e1fce5c9addc",
+    "tests/hmh-reboot-enemy-endurance-soak.test.mjs": "a4f610b0551a1f0d4c72642e2f1c7c54f68d09c56d803be1e200bb09da95119c",
+    "apps/portal/hmh-reboot/index.html": "71f5b303c5533cb7c04c252a44fc704c0d546fc90cafc889bc3e1fcc1d1d09d5",
+    "apps/portal/dist/hmh-reboot/game.js": "3990842c2ba3e6b5b4a49f0f74916957758f06a5cc0df78e685f15a7f24c3113"
+  },
+  "focusedTests": {
+    "tests": 9,
+    "pass": 9,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "independentReview": {
+    "verdict": "PASS",
+    "blockers": [],
+    "suggestions": []
+  },
+  "sourceGates": {
+    "count": 9,
+    "passed": true,
+    "receipt": ".tmp/team/revamp-resume/source-gates-endurance-art-01/receipt.json",
+    "sha256": "534cad25dc2efaec706939cf0bca9291727509d36e612016b844ae4d91df46a4",
+    "releaseLedger": {
+      "passing": 2933,
+      "expectedLegacyFailures": 51,
+      "evaluated": 2984
+    }
+  },
+  "profiles": [
+    {
+      "requestedSeconds": 30,
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "seconds": 30.832,
+      "status": "PASS",
+      "sampleCount": 69,
+      "frameTimeMs": {
+        "median": 7,
+        "p95": 13.9,
+        "p99": 14.1,
+        "max": 27.8
+      },
+      "medianFps": 142.86,
+      "longTasks": {
+        "count": 0,
+        "maxMs": 0
+      },
+      "simulation": {
+        "tickAdvance": 1784,
+        "saturationFrames": 0,
+        "catchUpSaturationRatio": 0,
+        "droppedMs": 0
+      },
+      "occupancy": {
+        "maxBodies": 128,
+        "minBodies": 128,
+        "maxAnimatedEnemies": 64,
+        "maxThreat": 497,
+        "tokenFamilies": {
+          "melee": 6,
+          "ranged": 5,
+          "area": 4,
+          "support": 2
+        },
+        "maxProjectiles": 1,
+        "latchedProjectilePeak": 1,
+        "maxEffects": 13,
+        "maxSafetyStepsPerTick": 128,
+        "maxCollisionContactsPerTick": 1,
+        "maxTraversalBlocksPerTick": 0,
+        "maxAudioVoices": 6
+      },
+      "retainedHeap": {
+        "beforeBytes": 45017757,
+        "afterBytes": 49085122,
+        "growthBytes": 4067365
+      },
+      "consoleIssues": [],
+      "networkIssues": [],
+      "failures": [],
+      "screenshot": "docs/testing/VISUAL_BASELINES/current/enemy-endurance/hmh-reboot-enemy-endurance-desktop.png"
+    },
+    {
+      "requestedSeconds": 30,
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "seconds": 30.853,
+      "status": "PASS",
+      "sampleCount": 88,
+      "frameTimeMs": {
+        "median": 6.9,
+        "p95": 7,
+        "p99": 7.1,
+        "max": 14
+      },
+      "medianFps": 144.93,
+      "longTasks": {
+        "count": 0,
+        "maxMs": 0
+      },
+      "simulation": {
+        "tickAdvance": 1791,
+        "saturationFrames": 0,
+        "catchUpSaturationRatio": 0,
+        "droppedMs": 0
+      },
+      "occupancy": {
+        "maxBodies": 128,
+        "minBodies": 128,
+        "maxAnimatedEnemies": 64,
+        "maxThreat": 497,
+        "tokenFamilies": {
+          "melee": 6,
+          "ranged": 5,
+          "area": 4,
+          "support": 2
+        },
+        "maxProjectiles": 1,
+        "latchedProjectilePeak": 1,
+        "maxEffects": 17,
+        "maxSafetyStepsPerTick": 128,
+        "maxCollisionContactsPerTick": 1,
+        "maxTraversalBlocksPerTick": 0,
+        "maxAudioVoices": 6
+      },
+      "retainedHeap": {
+        "beforeBytes": 29134570,
+        "afterBytes": 37252137,
+        "growthBytes": 8117567
+      },
+      "consoleIssues": [],
+      "networkIssues": [],
+      "failures": [],
+      "screenshot": "docs/testing/VISUAL_BASELINES/current/enemy-endurance/hmh-reboot-enemy-endurance-mobile.png"
+    },
+    {
+      "requestedSeconds": 300,
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "seconds": 300.908,
+      "status": "PASS",
+      "sampleCount": 734,
+      "frameTimeMs": {
+        "median": 6.9,
+        "p95": 7,
+        "p99": 7.1,
+        "max": 69.4
+      },
+      "medianFps": 144.93,
+      "longTasks": {
+        "count": 0,
+        "maxMs": 0
+      },
+      "simulation": {
+        "tickAdvance": 16170,
+        "saturationFrames": 0,
+        "catchUpSaturationRatio": 0,
+        "droppedMs": 0
+      },
+      "occupancy": {
+        "maxBodies": 128,
+        "minBodies": 125,
+        "maxAnimatedEnemies": 64,
+        "maxThreat": 497,
+        "tokenFamilies": {
+          "melee": 6,
+          "ranged": 5,
+          "area": 4,
+          "support": 2
+        },
+        "maxProjectiles": 1,
+        "latchedProjectilePeak": 1,
+        "maxEffects": 17,
+        "maxSafetyStepsPerTick": 128,
+        "maxCollisionContactsPerTick": 1,
+        "maxTraversalBlocksPerTick": 0,
+        "maxAudioVoices": 6
+      },
+      "retainedHeap": {
+        "beforeBytes": 44563531,
+        "afterBytes": 24881629,
+        "growthBytes": -19681902
+      },
+      "consoleIssues": [],
+      "networkIssues": [],
+      "failures": [],
+      "screenshot": "docs/testing/VISUAL_BASELINES/current/enemy-endurance/hmh-reboot-enemy-endurance-desktop.png"
+    },
+    {
+      "requestedSeconds": 300,
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "seconds": 300.912,
+      "status": "PASS",
+      "sampleCount": 880,
+      "frameTimeMs": {
+        "median": 6.9,
+        "p95": 7,
+        "p99": 7.1,
+        "max": 27.9
+      },
+      "medianFps": 144.93,
+      "longTasks": {
+        "count": 0,
+        "maxMs": 0
+      },
+      "simulation": {
+        "tickAdvance": 15253,
+        "saturationFrames": 0,
+        "catchUpSaturationRatio": 0,
+        "droppedMs": 0
+      },
+      "occupancy": {
+        "maxBodies": 128,
+        "minBodies": 125,
+        "maxAnimatedEnemies": 64,
+        "maxThreat": 497,
+        "tokenFamilies": {
+          "melee": 6,
+          "ranged": 5,
+          "area": 4,
+          "support": 2
+        },
+        "maxProjectiles": 1,
+        "latchedProjectilePeak": 1,
+        "maxEffects": 15,
+        "maxSafetyStepsPerTick": 128,
+        "maxCollisionContactsPerTick": 19,
+        "maxTraversalBlocksPerTick": 0,
+        "maxAudioVoices": 6
+      },
+      "retainedHeap": {
+        "beforeBytes": 54404233,
+        "afterBytes": 22693052,
+        "growthBytes": -31711181
+      },
+      "consoleIssues": [],
+      "networkIssues": [],
+      "failures": [],
+      "screenshot": "docs/testing/VISUAL_BASELINES/current/enemy-endurance/hmh-reboot-enemy-endurance-mobile.png"
+    }
+  ],
+  "measurementContext": "Shared GPU reservation; Codex announced bounded CPU source preparation before this run and was asked to pause further CPU renders. Not an uncontended or physical-device release soak.",
+  "orchestrationFailuresPreserved": [
+    {
+      "receipt": ".tmp/team/playable-release/endurance-art-01/wall-clock-01/receipt.json",
+      "error": "Condensed stdout omitted actual profile duration; full machine report verified and archived without rerun."
+    },
+    {
+      "receipt": ".tmp/team/playable-release/endurance-art-01/wall-clock-02/receipt.json",
+      "controllerLog": ".tmp/team/playable-release/endurance-art-01/wall-clock-02-controller.log",
+      "error": "KeyError passed after all9 source gates exited0. Producer uses exitCode/logSha256. Every gate log independently authenticated; original failed controller receipt remains unchanged."
+    }
+  ],
+  "preservation": {
+    "stagedEntries": true,
+    "indexFlags": true,
+    "codexWorldChanged": false,
+    "protectedInstructionsChanged": false
+  },
+  "published": false,
+  "currentCandidateCertified": false
+}

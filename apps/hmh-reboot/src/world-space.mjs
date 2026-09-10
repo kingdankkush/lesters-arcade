@@ -135,6 +135,7 @@ export function createFlatGroundQuery({ groundZ = 0, surfaceId = 'ground', walka
 export function createCameraState({
   x = 0,
   y = 0,
+  groundZ = 0,
   zoom = 1,
   shakeX = 0,
   shakeY = 0,
@@ -151,6 +152,7 @@ export function createCameraState({
   return {
     x: finite(x, 'camera.x'),
     y: finite(y, 'camera.y'),
+    groundZ: finite(groundZ, 'camera.groundZ'),
     zoom: positive(zoom, 'camera.zoom'),
     shakeX: finite(shakeX, 'camera.shakeX'),
     shakeY: finite(shakeY, 'camera.shakeY'),
@@ -191,10 +193,17 @@ function smoothDamp(current, target, velocity, smoothTime, deltaTime) {
   return { value, velocity: nextVelocity };
 }
 
-export function followCameraTarget(camera, target, viewport, { dtSeconds = 1 / 60, smoothTime = camera.smoothTime } = {}) {
+export function followCameraTarget(camera, target, viewport, { dtSeconds = 1 / 60, smoothTime = camera.smoothTime, maxDeadZoneFraction = null } = {}) {
   const view = finiteViewport(viewport);
+  if (maxDeadZoneFraction !== null) {
+    finite(maxDeadZoneFraction, 'camera dead-zone fraction');
+    if (maxDeadZoneFraction < 0 || maxDeadZoneFraction > 1) throw new TypeError('camera dead-zone fraction must be in [0, 1]');
+  }
   const targetX = finite(target?.x, 'camera target.x');
   const targetY = finite(target?.y, 'camera target.y');
+  // XY bounds stay in ground coordinates. Render the terrain relative to the
+  // interpolated support height, not absolute zero; do not follow visual bob.
+  camera.groundZ = finite(target?.groundZ ?? camera.groundZ ?? 0, 'camera target.groundZ');
   positive(dtSeconds, 'camera dtSeconds');
   finite(smoothTime, 'camera smoothTime');
   if (smoothTime < 0) throw new TypeError('camera smoothTime must be non-negative');
@@ -225,8 +234,10 @@ export function followCameraTarget(camera, target, viewport, { dtSeconds = 1 / 6
   }
   const lookedTargetX = targetX + camera.lookAheadX + focusPullX;
   const lookedTargetY = targetY + camera.lookAheadY + focusPullY;
-  const deadHalfX = camera.deadZone.width / 2;
-  const deadHalfY = camera.deadZone.height / 2;
+  // Cap only the projection dead zone, recalculated for live zoom/resize.
+  // Keep the configured world-space maximum intact for uncapped callers.
+  const deadHalfX = Math.min(camera.deadZone.width, maxDeadZoneFraction === null ? Infinity : view.width * maxDeadZoneFraction / camera.zoom) / 2;
+  const deadHalfY = Math.min(camera.deadZone.height, maxDeadZoneFraction === null ? Infinity : view.height * maxDeadZoneFraction / camera.zoom) / 2;
   const deltaX = lookedTargetX - camera.x;
   const deltaY = lookedTargetY - camera.y;
   let desiredX = camera.x;
@@ -261,7 +272,7 @@ export function worldToScreen(point, camera, viewport) {
   const visualLiftZ = finite(point?.visualLiftZ ?? 0, 'world.visualLiftZ');
   return {
     x: (x - camera.x) * camera.zoom + view.width / 2 + camera.shakeX,
-    y: (y - camera.y - (z + visualLiftZ) * WORLD_COORDINATES.heightToScreenY) * camera.zoom + view.height / 2 + camera.shakeY,
+    y: (y - camera.y - (z + visualLiftZ - (camera.groundZ ?? 0)) * WORLD_COORDINATES.heightToScreenY) * camera.zoom + view.height / 2 + camera.shakeY,
   };
 }
 
@@ -273,7 +284,7 @@ export function screenToGround(point, camera, viewport, { z = 0, visualLiftZ = 0
   finite(visualLiftZ, 'ground visualLiftZ');
   return {
     x: (point.x - view.width / 2 - camera.shakeX) / camera.zoom + camera.x,
-    y: (point.y - view.height / 2 - camera.shakeY) / camera.zoom + camera.y + (z + visualLiftZ) * WORLD_COORDINATES.heightToScreenY,
+    y: (point.y - view.height / 2 - camera.shakeY) / camera.zoom + camera.y + (z + visualLiftZ - (camera.groundZ ?? 0)) * WORLD_COORDINATES.heightToScreenY,
   };
 }
 

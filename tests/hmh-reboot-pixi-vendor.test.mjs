@@ -5,28 +5,41 @@ import test from 'node:test';
 const bundleBudgetModule = await import('../scripts/hmh-reboot-bundle-budget.mjs').catch(() => ({}));
 const vendorStubModule = await import('../scripts/hmh-reboot-pixi-vendor-stubs.mjs').catch(() => ({}));
 
+test('HMH child entry has its own 480000-byte cap independent of aggregate headroom', () => {
+  assert.equal(typeof bundleBudgetModule.assertHmhEntryJsBudget, 'function', 'entry budget helper must exist');
+  assert.deepEqual(bundleBudgetModule.assertHmhEntryJsBudget(480_000), { cap: 480_000, entryBytes: 480_000, remaining: 0 });
+  assert.equal(bundleBudgetModule.assertHmhEntryJsBudget(479_999).remaining, 1);
+  assert.throws(() => bundleBudgetModule.assertHmhEntryJsBudget(480_001), /HMH child entry exceeds/);
+  for (const invalid of [-1, 1.5, NaN, Infinity, '1']) assert.throws(() => bundleBudgetModule.assertHmhEntryJsBudget(invalid), TypeError);
+});
+
+test('production build invokes the separate child-entry guard on emitted bytes', async () => {
+  const build = await readFile(new URL('../build.mjs', import.meta.url), 'utf8');
+  assert.match(build, /assertHmhEntryJsBudget\(childMinSize\)/);
+});
+
 test('HMH production build enforces the raw entry plus preloaded Pixi aggregate cap', async () => {
   const build = await readFile(new URL('../build.mjs', import.meta.url), 'utf8');
   assert.equal(typeof bundleBudgetModule.assertHmhInitialJsBudget, 'function', 'aggregate budget helper must exist');
-  assert.match(build, /HMH_INITIAL_JS_CAP\s*=\s*1_050_000/);
+  assert.match(build, /HMH_INITIAL_JS_CAP\s*=\s*1_048_576/);
   assert.match(build, /assertHmhInitialJsBudget\(/);
 
   // Cycle 074: the helper now also reports the honest total that includes the
   // hoisted shared chunks game.js imports statically. With none declared the
-  // two totals coincide, so the Cycle 05x fixture keeps its values.
+  // two totals coincide; the rollout uses the stricter binary-MiB ceiling.
   assert.deepEqual(bundleBudgetModule.assertHmhInitialJsBudget({ entryBytes: 320_000, vendorBytes: 700_000 }), {
-    cap: 1_050_000,
+    cap: 1_048_576,
     combinedInitialChildBytes: 1_020_000,
     entryBytes: 320_000,
     initialChildBytesWithSharedChunks: 1_020_000,
-    remaining: 30_000,
-    remainingWithSharedChunks: 30_000,
+    remaining: 1_048_576 - 1_020_000,
+    remainingWithSharedChunks: 1_048_576 - 1_020_000,
     sharedChunkBytes: 0,
     vendorBytes: 700_000,
   });
   assert.throws(
     () => bundleBudgetModule.assertHmhInitialJsBudget({ entryBytes: 321_272, vendorBytes: 730_790 }),
-    /HMH initial JS exceeds raw aggregate cap: 1,052,062 > 1,050,000/,
+    /HMH initial JS exceeds raw aggregate cap: 1,052,062 > 1,048,576/,
   );
 });
 
@@ -38,18 +51,18 @@ test('Cycle 074 honest accounting: hoisted shared chunks the child imports stati
   // helper never saw it. Both totals are reported and both are capped, so code
   // can no longer leave the count by moving into a portal-shared module.
   assert.deepEqual(bundleBudgetModule.assertHmhInitialJsBudget({ entryBytes: 444_168, vendorBytes: 500_000, sharedChunkBytes: 64_526 }), {
-    cap: 1_050_000,
+    cap: 1_048_576,
     combinedInitialChildBytes: 944_168,
     entryBytes: 444_168,
     initialChildBytesWithSharedChunks: 1_008_694,
-    remaining: 105_832,
-    remainingWithSharedChunks: 41_306,
+    remaining: 1_048_576 - 944_168,
+    remainingWithSharedChunks: 1_048_576 - 1_008_694,
     sharedChunkBytes: 64_526,
     vendorBytes: 500_000,
   });
   assert.throws(
     () => bundleBudgetModule.assertHmhInitialJsBudget({ entryBytes: 444_168, vendorBytes: 575_891, sharedChunkBytes: 64_526 }),
-    /HMH initial JS including shared chunks exceeds raw aggregate cap: 1,084,585 > 1,050,000/,
+    /HMH initial JS including shared chunks exceeds raw aggregate cap: 1,084,585 > 1,048,576/,
   );
   assert.throws(
     () => bundleBudgetModule.assertHmhInitialJsBudget({ entryBytes: 1, vendorBytes: 1, sharedChunkBytes: -1 }),

@@ -14,7 +14,7 @@ test('M5 persisted settings schema owns controls, gameplay, audio, and accessibi
   const settings = normalizeHmhPlayerSettings();
   assert.equal(settings.version, HMH_PLAYER_SETTINGS_VERSION);
   assert.deepEqual(Object.keys(settings), ['version', 'controls', 'gameplay', 'audio', 'accessibility']);
-  assert.equal(settings.controls.keyboardBindings.fire, 'Space');
+  assert.equal(settings.controls.keyboardBindings.grenade, 'KeyF');
   assert.equal(settings.audio.dynamicRange, 'standard');
   assert.equal(settings.accessibility.hudScale, 1);
   assert.ok(Object.isFrozen(settings));
@@ -40,9 +40,9 @@ test('M5 flat legacy preferences migrate with bounded values and no unknown fiel
 });
 
 test('M4 ranked runs lock rebinding while free/menu settings remain editable', () => {
-  const rebound = rebindHmhPlayerKeyboard(HMH_PLAYER_SETTINGS_DEFAULTS, 'fire', 'KeyR');
-  assert.equal(rebound.controls.keyboardBindings.fire, 'KeyR');
-  assert.throws(() => rebindHmhPlayerKeyboard(rebound, 'fire', 'KeyT', { rankedActive: true }), /locked during an active ranked run/i);
+  const rebound = rebindHmhPlayerKeyboard(HMH_PLAYER_SETTINGS_DEFAULTS, 'grenade', 'KeyR');
+  assert.equal(rebound.controls.keyboardBindings.grenade, 'KeyR');
+  assert.throws(() => rebindHmhPlayerKeyboard(rebound, 'grenade', 'KeyT', { rankedActive: true }), /locked during an active ranked run/i);
 });
 
 test('M5 runtime projection sends only bounded child-relevant settings', () => {
@@ -63,11 +63,11 @@ test('M5 runtime projection sends only bounded child-relevant settings', () => {
   assert.equal(runtime.touchScale, 1.2);
   assert.equal(runtime.hudScale, 1.15);
   assert.equal(runtime.captionCriticalAudio, false);
-  assert.equal(Object.keys(runtime.keyboardBindings).length, 14);
+  assert.equal(Object.keys(runtime.keyboardBindings).length, 6);
 });
 
 test('M5 parent accepts bounded runtime settings but preserves ranked keyboard authority', () => {
-  const current = rebindHmhPlayerKeyboard(HMH_PLAYER_SETTINGS_DEFAULTS, 'fire', 'KeyR');
+  const current = rebindHmhPlayerKeyboard(HMH_PLAYER_SETTINGS_DEFAULTS, 'grenade', 'KeyR');
   const incoming = {
     ...projectHmhRuntimeSettings(current),
     keyboardBindings: HMH_PLAYER_SETTINGS_DEFAULTS.controls.keyboardBindings,
@@ -75,9 +75,9 @@ test('M5 parent accepts bounded runtime settings but preserves ranked keyboard a
     musicVolume: 0.25,
   };
   const ranked = mergeHmhRuntimeSettings(current, incoming, { rankedActive: true });
-  assert.equal(ranked.controls.keyboardBindings.fire, 'KeyR');
+  assert.equal(ranked.controls.keyboardBindings.grenade, 'KeyR');
   assert.equal(ranked.controls.gamepadDeadzone, 0.3);
   assert.equal(ranked.audio.musicVolume, 0.25);
   const free = mergeHmhRuntimeSettings(current, incoming);
-  assert.equal(free.controls.keyboardBindings.fire, 'Space');
+  assert.equal(free.controls.keyboardBindings.grenade, 'KeyF');
 });

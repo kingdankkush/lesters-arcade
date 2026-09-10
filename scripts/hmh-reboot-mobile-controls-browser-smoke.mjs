@@ -33,7 +33,7 @@ const evidenceDir = new URL('../.hermes/evidence/hmh-reboot-mobile-controls/', i
 await mkdir(evidenceDir, { recursive: true });
 
 const CHROME = process.env.HMH_CHROME_PATH ?? String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`;
-const EXPECTED_CONTROLS = ['aim', 'move', 'pause', 'power', 'weapon'];
+const EXPECTED_CONTROLS = ['aim', 'move', 'pause', 'power'];
 
 // Real handsets, including the short landscape case where browser chrome eats
 // the most vertical space.
@@ -142,7 +142,7 @@ for (const device of DEVICES) {
     assert.equal(await hint.isVisible(), true, 'touch controls hint retired before the first-run control check');
     const hintText = (await page.locator('#hmhControlsHintText').innerText()).replace(/\s+/g, ' ').trim();
     assert.doesNotMatch(hintText, /WASD|mouse|right.?click|\b1\s*[-–]\s*4\b/i, `touch hint exposes desktop-only input: ${hintText}`);
-    for (const active of ['MOVE', 'AIM', 'SWAP', 'POWER', 'double-tap MOVE', 'pause']) {
+    for (const active of ['MOVE', 'AIM', 'GRENADE', 'pause']) {
       assert.match(hintText, new RegExp(active, 'i'), `touch hint omits active control ${active}: ${hintText}`);
     }
     assert.equal(await page.locator('.hmh-touch-controls').getAttribute('data-hmh-touch-onboarding'), 'once', 'first touch run must pulse the sticks once');

@@ -4,19 +4,11 @@
 
 Before changing code, read:
 
-0. `docs/handoffs/2026-09-05-hmh-cycle-074-hermes-handoff.md` — **current handoff** (Cycle 074 live state, operational facts, and the hero-recreation objective from the owner's reference art)
+1. `docs/handoffs/hmh-textured-rollout-progress.md` — **current rollout continuation**: owner authority, local candidate truth, native source proofs, remaining gates and active jobs. Its linked complete revamp handoff is the source/evidence map; older checkpoints are historical baselines, not certification of this rollout.
+2. `docs/hmh-reboot/AAA-ROADMAP.md` — standing dependency order, AAA acceptance bars, completed-item reconciliation, and owner gates.
+3. `docs/handoffs/2026-09-07-hmh-open-work-register-and-reprompt.md` — historical requirement register, reconciled by `docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json` and the current checkpoint. Read only the selected slice and its cited source, tests, identity/compatibility contract and evidence before editing.
 
-0. `docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md` — **current**; certified Cycle 070 runtime boundary, live deployment/rollback, Chikun production truth, open gates, and next safe work
-1. `docs/hmh-reboot/AAA-ROADMAP.md` — standing dependency order, AAA acceptance bars, completed-item reconciliation, and owner gates
-2. `docs/hmh-reboot/MAINNET-READINESS-ROADMAP-2026-09-01.md` — source-backed gameplay and separately approval-gated Mainnet readiness
-3. `docs/handoffs/2026-08-13-hmh-production-closeout-next-session.md` — detailed Wave 10/11 history through Cycle 067; historical checkpoint values are superseded by the current handoff
-4. `docs/handoffs/2026-08-02-hmh-cycle-049-fable-handoff.md` — standing operational lessons: never parallel browser smokes, heap-gate variance, and Vercel workflow
-5. `docs/handoffs/2026-07-30-hmh-cycle-036-hermes-handoff.md` — standing architecture boundaries, bridge contract, and Web3 truth
-6. `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md` — active cycle ledger
-7. Latest `docs/hmh-reboot/cycles/CYCLE-*.md`
-8. `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md`
-9. `docs/hmh-reboot/COMPATIBILITY.json`
-10. Older cycle handoffs only when their specific implementation history is needed
+For the selected slice, consult its owning cycle and `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md` or `docs/hmh-reboot/COMPATIBILITY.json` as applicable. Read `docs/hmh-reboot/MAINNET-READINESS-ROADMAP-2026-09-01.md` only for the separately authorized Web3 scope. The Cycle 036, 049, 067, 070 and 074 handoffs and older cycle ledgers are historical implementation context; consult them only when that history is needed, not as a mandatory restart queue.
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 

@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { createAuthoredPropAtlasIndex, buildAuthoredPointOfInterestPlacements } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { createTripoPropAppearance } from '../apps/hmh-reboot/src/tripo-prop-appearance.mjs';
+import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import {
   WORLD_COORDINATES,
   DEPTH_BANDS,
@@ -71,6 +74,39 @@ test('runtime camera follows the interpolated render actor rather than stepping 
   assert.match(source, /followCameraTarget\(camera,\s*\{\s*\.\.\.renderActor,/);
 });
 
+test('elevated camera projection retains the same actor framing and exact pointer inverse', () => {
+  for (const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}]) {
+    for (const groundZ of [-40, 0, 160, 320, 480]) {
+      const camera = createCameraState({x:3000,y:1500,groundZ,zoom:1.2});
+      const actor = Object.freeze(createActorSpatialState({x:3000,y:1500,z:groundZ,groundZ}));
+      const foot = worldToScreen(getGroundContact(actor),camera,viewport);
+      assert.ok(Math.abs(foot.y-viewport.height/2)<1e-9, 'terrain elevation must not lift the hero into the HUD');
+      assert.deepEqual(screenToGround(foot,camera,viewport,{z:groundZ}),{x:actor.x,y:actor.y});
+      const bob = worldToScreen({...getGroundContact(actor),visualLiftZ:12},camera,viewport);
+      assert.ok(Math.abs(foot.y-bob.y-14.4)<1e-9,'visual lift stays relative to the supporting ground');
+    }
+  }
+});
+
+test('camera follows interpolated ground height even inside the XY dead zone without following visual bob', () => {
+  const viewport={width:390,height:844};
+  const camera=createCameraState({x:3000,y:1500,groundZ:0});
+  const actor=Object.freeze({x:3000,y:1500,z:240,groundZ:160,visualLiftZ:12});
+  followCameraTarget(camera,actor,viewport,{smoothTime:0});
+  assert.equal(camera.groundZ,160);
+  assert.equal(camera.x,3000);assert.equal(camera.y,1500);
+  assert.equal(worldToScreen(getGroundContact(actor),camera,viewport).y,422);
+  assert.throws(()=>createCameraState({groundZ:Number.NaN}),/finite/i);
+  assert.throws(()=>followCameraTarget(camera,{...actor,groundZ:Infinity},viewport),/finite/i);
+});
+
+test('runtime camera is initialized at the authoritative spawn ground height', () => {
+  const source=readFileSync(new URL('../apps/hmh-reboot/src/main.mjs',import.meta.url),'utf8');
+  const initialization=source.match(/camera = createCameraState\(\{([\s\S]*?)\n    \}\)/)?.[1];
+  assert.ok(initialization,'real camera initialization is present');
+  assert.match(initialization,/groundZ:\s*actor\.groundZ/);
+});
+
 test('world-to-screen and inverse ground-plane transforms share one camera source', () => {
   const camera = createCameraState({ x: 100, y: 200, zoom: 2 });
   const viewport = { width: 800, height: 600 };
@@ -126,6 +162,102 @@ test('camera follows only outside its world-space dead zone and keeps shake inde
   assert.deepEqual({ x: camera.x, y: camera.y }, { x: 70, y: 65 });
   setCameraShake(camera, { x: 4, y: -3 });
   assert.deepEqual({ x: camera.x, y: camera.y, shakeX: camera.shakeX, shakeY: camera.shakeY }, { x: 70, y: 65, shakeX: 4, shakeY: -3 });
+});
+
+test('opt-in camera dead zone is bounded by the current viewport and zoom without rewriting its authored maximum', () => {
+  const bounds = { minX: -10000, minY: -10000, maxX: 10000, maxY: 10000 };
+  for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1024, height: 768 }, { width: 1440, height: 900 }, { width: 3440, height: 1440 }]) {
+    for (const zoom of [1, 2.112, 2.8]) {
+      for (const direction of [-1, 1]) {
+        const camera = createCameraState({ x: 0, y: 0, zoom, bounds, lookAheadSeconds: 0, maxLookAhead: 0 });
+        const target = Object.freeze({ x: direction * 200, y: direction * 200, groundZ: 160 });
+        followCameraTarget(camera, target, viewport, { smoothTime: 0, maxDeadZoneFraction: 0.12 });
+        const screen = worldToScreen({ ...target, z: target.groundZ }, camera, viewport);
+        assert.ok(Math.abs(screen.x - viewport.width / 2) <= viewport.width * 0.06 + 1e-8, 'horizontal dead zone must fit the zoomed viewport');
+        assert.ok(Math.abs(screen.y - viewport.height / 2) <= viewport.height * 0.06 + 1e-8, 'vertical dead zone must fit the zoomed viewport');
+        assert.deepEqual(camera.deadZone, { width: 160, height: 90 });
+        const inverse = screenToGround(screen, camera, viewport, { z: 160 });
+        assert.ok(Math.abs(inverse.x - target.x) < 1e-9 && Math.abs(inverse.y - target.y) < 1e-9);
+      }
+    }
+  }
+});
+
+test('portrait camera shows a nearby pickup before its unchanged collection radius on the ravine approach', () => {
+  const viewport = { width: 390, height: 844 };
+  const pickup = Object.freeze({ x: 3200, y: 1400, z: 160 });
+  for (const dtSeconds of [1 / 60, 1 / 30, 1 / 20]) {
+    const camera = createCameraState({ x: 3050, y: 1500, groundZ: 160, zoom: 2.112, smoothTime: 0.1 });
+    const speed = 240 / Math.sqrt(2);
+    let sawBeforeCollection = false;
+    for (let step = 1; step < 120; step += 1) {
+      const target = Object.freeze({ x: 3050 + speed * dtSeconds * step, y: 1500 - speed * dtSeconds * step, vx: speed, vy: -speed, groundZ: 160 });
+      if (Math.hypot(target.x - pickup.x, target.y - pickup.y) <= 80) break;
+      followCameraTarget(camera, target, viewport, { dtSeconds, maxDeadZoneFraction: 0.12 });
+      const screen = worldToScreen(pickup, camera, viewport);
+      sawBeforeCollection ||= screen.x >= 8 && screen.x <= viewport.width - 8 && screen.y >= 8 && screen.y <= viewport.height - 8;
+    }
+    assert.equal(sawBeforeCollection, true, `clock must enter the portrait view before collection at dt=${dtSeconds}`);
+    assert.equal(camera.zoom, 2.112, 'approved hero scale is unchanged');
+  }
+});
+
+test('shipped portrait camera reveals the complete native clock silhouette before pickup range', () => {
+  const metadata = JSON.parse(readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props/hmh-tripo-props.json', import.meta.url), 'utf8'));
+  const legacy = createAuthoredPropAtlasIndex(JSON.parse(readFileSync(new URL('../apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json', import.meta.url), 'utf8')));
+  const native = createTripoPropAppearance(metadata, metadata.pages.map(page => ({ source: { width: page.width, height: page.height } })), legacy);
+  const frame = native.get('time-dilation').frame;
+  const pickup = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest).find(p => p.assetId === 'time-dilation');
+  assert.ok(pickup);
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const initialization = source.match(/camera = createCameraState\(\{([\s\S]*?)\n    \}\)/)?.[1];
+  const setting = (name, fallback) => Number(initialization.match(new RegExp(`${name}:\\s*([0-9.]+)`))?.[1] ?? fallback);
+  const viewport = { width: 390, height: 844 };
+  for (const dtSeconds of [1 / 240, 1 / 60, 1 / 30, 1 / 20, 1 / 15]) {
+    const camera = createCameraState({ x: 3050, y: 1500, groundZ: 160, zoom: 2.112, smoothTime: setting('smoothTime', 0.18), lookAheadSeconds: setting('lookAheadSeconds', 0.12), maxLookAhead: setting('maxLookAhead', 32) });
+    const speed = 240 / Math.sqrt(2);
+    let completeSilhouette = false;
+    for (let step = 1; step < 240; step += 1) {
+      const target = Object.freeze({ x: 3050 + speed * dtSeconds * step, y: 1500 - speed * dtSeconds * step, vx: speed, vy: -speed, groundZ: 160 });
+      if (Math.hypot(target.x - pickup.x, target.y - pickup.y) < 90) break;
+      followCameraTarget(camera, target, viewport, { dtSeconds, maxDeadZoneFraction: 0.12 });
+      const screen = worldToScreen({ ...pickup, z: 160 + 13 }, camera, viewport);
+      const scale = frame.runtimeScale * (pickup.scale ?? 1) * camera.zoom;
+      const left = screen.x + (frame.alphaBounds.x - frame.anchor.x * frame.frame.w) * scale;
+      const top = screen.y + (frame.alphaBounds.y - frame.anchor.y * frame.frame.h) * scale;
+      completeSilhouette ||= left >= 12 && left + frame.alphaBounds.w * scale <= viewport.width - 12 && top >= 234 && top + frame.alphaBounds.h * scale < 620;
+    }
+    assert.ok(completeSilhouette, `native painted bounds must clear viewport, HUD and hint before collection at dt=${dtSeconds}`);
+  }
+});
+
+test('camera retains bounds and inverse aiming while the same camera is resized and rezoomed', () => {
+  const camera = createCameraState({ x: 400, y: 500, bounds: { minX: 0, minY: 0, maxX: 4000, maxY: 4000 } });
+  for (const [width, height, zoom, maxDeadZoneFraction] of [[1440, 900, 1, 0.12], [390, 844, 2.112, 0.12], [844, 390, 1, 0], [3440, 1440, 3.603, 1]]) {
+    camera.zoom = zoom;
+    const viewport = { width, height };
+    const target = Object.freeze({ x: 2500, y: 1800, groundZ: 160 });
+    followCameraTarget(camera, target, viewport, { smoothTime: 0, maxDeadZoneFraction });
+    const screen = worldToScreen({ ...target, z: 160 }, camera, viewport);
+    const inverse = screenToGround(screen, camera, viewport, { z: 160 });
+    assert.ok(Math.abs(inverse.x - target.x) < 1e-9 && Math.abs(inverse.y - target.y) < 1e-9);
+    assert.deepEqual(camera.deadZone, { width: 160, height: 90 });
+    assert.ok(camera.x >= camera.bounds.minX && camera.x <= camera.bounds.maxX);
+    assert.ok(camera.y >= camera.bounds.minY && camera.y <= camera.bounds.maxY);
+  }
+});
+
+test('viewport camera dead-zone fraction rejects non-finite and out-of-range inputs', () => {
+  for (const maxDeadZoneFraction of [-0.1, 1.1, Number.NaN, Infinity]) {
+    assert.throws(() => followCameraTarget(createCameraState(), { x: 500, y: 500 }, { width: 390, height: 844 }, { maxDeadZoneFraction }), /fraction/i);
+  }
+});
+
+test('runtime enables the viewport-bounded camera follow instead of changing hero or collection authority', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /followCameraTarget\(camera,[\s\S]*?maxDeadZoneFraction:\s*0\.12/);
+  const initialization = source.match(/camera = createCameraState\(\{([\s\S]*?)\n    \}\)/)?.[1];
+  assert.match(initialization, /smoothTime:\s*0\.1\b/, 'responsive damping must be active in the shipped camera');
 });
 
 test('camera uses critically damped render-time smoothing and bounded velocity/aim look-ahead', () => {

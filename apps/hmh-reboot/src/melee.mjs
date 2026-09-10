@@ -211,7 +211,9 @@ export function resolveMeleeAttack({
       continue;
     }
     const cover = coverBetween({ attackId: `${attackId}:${target.id}`, origin: start, contact: contactGround, blockers });
-    if (cover) {
+    // A destructible target owns its solid cover under the same stable ID.
+    // The same collider still shields every different target behind it.
+    if (cover && cover.blockerId !== target.id) {
       rejections.push(freezeDeep({ targetId: target.id, reason: 'cover', blockerId: cover.blockerId }));
       continue;
     }
@@ -244,6 +246,7 @@ export function createMeleeState() {
 export function stepMeleeState(state, {
   tick,
   trigger = false,
+  automatic = false,
   origin,
   sourceGroundZ = origin?.z,
   direction,
@@ -254,10 +257,8 @@ export function stepMeleeState(state, {
   if (!Number.isInteger(tick) || tick < 0) throw new TypeError('tick must be a non-negative integer');
   if (tick <= state.lastTick) throw new TypeError('tick must be monotonic');
   state.lastTick = tick;
-  if (!trigger || tick < state.nextAttackTick) return freezeDeep({ tick, attacked: false, attack: null, hits: [], rejections: [] });
+  if ((!trigger && !automatic) || tick < state.nextAttackTick) return freezeDeep({ tick, attacked: false, attack: null, hits: [], rejections: [] });
   const attackId = `${HMH_MELEE_DEFINITION.id}:${String(state.sequence).padStart(8, '0')}`;
-  state.sequence += 1;
-  state.nextAttackTick = tick + HMH_MELEE_DEFINITION.cooldownTicks;
   const attack = resolveMeleeAttack({
     attackId,
     tick,
@@ -267,5 +268,8 @@ export function stepMeleeState(state, {
     blockers,
     downwardDropDirection,
   });
+  if (automatic && !trigger && attack.hits.length === 0) return freezeDeep({ tick, attacked: false, attack: null, hits: [], rejections: attack.rejections });
+  state.sequence += 1;
+  state.nextAttackTick = tick + HMH_MELEE_DEFINITION.cooldownTicks;
   return freezeDeep({ tick, attacked: true, attack, hits: attack.hits, rejections: attack.rejections });
 }

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-09T15:11:39.988020+00:00",
+  "scope": "K-3/K-4 controls source and live DOM adapter; reporting helpers; Web3 B-1 source analysis. Not full release or live-site certification.",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "sourceHashes": {
+    "apps/hmh-reboot/src/action-map.mjs": "486589da39731877bde0cca01ea26871e9bcbc5e15d312390699794701cee55b",
+    "apps/hmh-reboot/src/cockpit-ui.mjs": "80d9235660bac6164fa073882c3e8a91589f7d9335109c6f9dfff8b879587103",
+    "tests/hmh-reboot-action-map.test.mjs": "4b8b7bf4111a3bcf683cae96c47aabe632792455b7b30749ddd8f1724175e487",
+    "tests/hmh-reboot-upgrade-cards-and-settings.test.mjs": "d34443c2d2f6342a537fb4580194518507fc1e50820e95c64977f60a7930592d",
+    "apps/hmh-reboot/src/input.mjs": "7cca0490de30dd459d6249c569d85d2480f5d81ca45f8f3269c0066aa9e52eb4",
+    "apps/portal/src/hmh-player-settings.mjs": "0f1c26c0098bafe48e418a5f15010655553d74330df4939858cad429d9c67c18",
+    "tests/hmh-reboot-controls-help.test.mjs": "a2f5b6b5ea18f750bfb5d3707b70ce85c45aa6895371f59581b6580bce432151",
+    "tests/hmh-reboot-runtime-settings.test.mjs": "1cbd997b0de84dbe3e30daf443c2f3629c802f4c983dc4aeaa684d2f0a792003"
+  },
+  "focused": {
+    "tests": 120,
+    "pass": 120,
+    "fail": 0,
+    "skipped": 0
+  },
+  "review": {
+    "verdict": "PASS",
+    "blockers": [],
+    "suggestions": []
+  },
+  "sourceGates": {
+    "path": ".tmp/team/revamp-resume/source-gates-controls-binding-01/receipt.json",
+    "sha256": "dd1cfff1b534e92501a11128a058cbd05dd59886bafa6eb6d591aae65f66dbab",
+    "steps": 9,
+    "retirement": {
+      "tests": 3000,
+      "passed": 2949,
+      "expectedFailures": 51
+    }
+  },
+  "builtBundles": {
+    "apps/portal/dist/hmh-reboot/game.js": {
+      "bytes": 479762,
+      "sha256": "6f867f1c938e27f01755137ad40868000e359f1f4718a6a4c0bdc185cfd4efbc"
+    },
+    "apps/portal/dist/chunks/hmh-pixi.js": {
+      "bytes": 463115,
+      "sha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a"
+    }
+  },
+  "helper": {
+    "tests": 14,
+    "review": {
+      "verdict": "PASS",
+      "blockers": [],
+      "suggestions": []
+    },
+    "sourceHashes": {
+      ".tmp/team/playable-release/run-native-endurance-wave.py": "7fffc09b8c67d0f84fd8dab514d7e947fa34636d0992a896bb8e907427d17e1e",
+      ".tmp/team/playable-release/run-camera-performance-wave.py": "28ddd9fff30aa4039505099ac1344be2c579bad7b3116009b5f3ea1d98fb23ab",
+      ".tmp/team/playable-release/test-wave-controller-regressions.py": "95b070360034256c999c2787c052ac8cd53d15a5355e27778fa166b0ceeab0be"
+    },
+    "scope": "AST-bound controller regressions only, no new browser/endurance runs",
+    "historicalFailuresPreserved": [
+      "KeyError(seconds)",
+      "KeyError(passed)"
+    ]
+  },
+  "contracts": {
+    "javascript": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0
+    },
+    "solidity": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    "staticAnalysis": {
+      "tool": "slither",
+      "configuredDetectors": 80,
+      "analyzedContracts": 11,
+      "results": 0,
+      "configuration": "slither.config.json",
+      "limitation": "Configured filters; not an external audit or deployed-state attestation"
+    }
+  },
+  "evidenceFiles": {
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-green.log": "eced4b538a1346df8161fdf56347cabdf0a34a6cd350c197d52d9784ea8e635d",
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-red.log": "ed69efecc505849bbaebe56a28ba00efd61718f4515ab4e5f5df0a7ba97c8c06",
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-real-input-red.log": "c47e77b977aee8711da762fda7cdd6b0c8ca6c58969c359dbb4406a2bb340275",
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-build-01.log": "100e7de04779e9aaa01b6d6ed21e00cd482ac03921ab6f565b5f8d42acb9aa78",
+    ".tmp/team/playable-release/completion-20260909T143049Z/helper-red.log": "1321862ca64af334292420813ca0cc967e7477e04ae238a421b29ac2d86f4fd0",
+    ".tmp/team/playable-release/completion-20260909T143049Z/helper-green.log": "114e71f01e388db64b09bcb346428d886f58f571cdf6b55c6a7bb1a62952e556",
+    ".tmp/team/playable-release/completion-20260909T143049Z/helper-review-result.json": "ec8591e5fa8228f5f63b2d527e18e3afb8ed8614f35e27aef9dd44f51126d34d",
+    ".tmp/team/playable-release/completion-20260909T143049Z/helper-review-events.jsonl": "219ebb03d9af2e83ef352e0d2cd85bae23cccec7b0a969292c17fa1c08b4d1ac",
+    ".tmp/team/playable-release/completion-20260909T143049Z/helper-review-stderr.log": "483beb1bd197e5cfb093bd7ec4eee0aae055759c0f1823ca0e2108bc4e941bf1",
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-review-result.json": "ec8591e5fa8228f5f63b2d527e18e3afb8ed8614f35e27aef9dd44f51126d34d",
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-review-events.jsonl": "e84443f74a757e5526e9d9d6465f4d9ffdfe321ec29275df44e80a5cf476c93d",
+    ".tmp/team/playable-release/completion-20260909T143049Z/controls-review-stderr.log": "254cb856f970d5fdae9d2da1b1b24dfe576ab430102a6ab680e2c8bdefd6d298",
+    ".tmp/team/playable-release/completion-20260909T143049Z/contracts-focused.log": "8fb2b9e042bb544e89c5d30aea89447fc341436fc1335fed1ae9e1c57a33f524",
+    ".tmp/team/playable-release/completion-20260909T143049Z/forge-test.log": "7f926908e69724229fed25e30c25bac6f4d51ac10de103b474156ced6fbf36ba",
+    ".tmp/team/playable-release/completion-20260909T143049Z/slither.log": "3f5fdc15058a778beb495a59f2dbaad89620b6599c4201f6cd6e96947daffba8",
+    ".tmp/team/playable-release/completion-20260909T143049Z/web3-diagnostic.log": "72cdc51c8cc576dd6825448cbe39c71aea99d0c103f9bca4116daa9c682ca13d"
+  },
+  "remaining": [
+    "Controls full browser/device evidence pending merged Codex candidate",
+    "World/native packet and release-wide exact candidate integration pending",
+    "Live read-only RPC unavailable: WS connection failure and HTTP 502; prior ABI BAD_DATA remains unresolved",
+    "Human/owner playtests and separately gated approvals remain explicit"
+  ],
+  "published": false,
+  "committed": false
+}

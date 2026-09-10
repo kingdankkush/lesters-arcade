@@ -19,6 +19,7 @@ import {
   AUTHORED_LANDMARK_TOTAL,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { createTripoPropAppearance, TRIPO_PROP_BINDINGS } from '../apps/hmh-reboot/src/tripo-prop-appearance.mjs';
 
 // One source for the dressing count lock: the exported density table. The
 // dressing-density suite pins the table's literal total; this suite pins that
@@ -270,6 +271,75 @@ test('runtime wires reduced motion and animated landmark telemetry into the rend
   const visual = await readFile(new URL('../scripts/hmh-reboot-visual-regression.mjs', import.meta.url), 'utf8');
   assert.match(visual, /emulateMedia\(\{ reducedMotion: 'reduce' \}\)/);
   assert.match(visual, /reducedMotionEvidence/);
+});
+
+test('native prop textures replace appearance without changing pickup identity or ground authority', async () => {
+  const index = createAuthoredPropAtlasIndex(await loadMetadata());
+  const nativeTexture = { source: { id: 'native-tripo-page' } };
+  const nativeFrame = Object.freeze({ ...index.frameFor('bonus-life'), frame: { x: 12, y: 22, w: 40, h: 72 }, anchor: { x: 0.4, y: 0.9 }, alphaBounds: { x: 5, y: 5, w: 20, h: 60 }, runtimeScale: 1.5 });
+  const placements = Object.freeze([
+    Object.freeze({ id: 'test:life', assetId: 'bonus-life', category: 'pickup', x: 90, y: 110, scale: 1 }),
+    Object.freeze({ id: 'test:cart', assetId: 'ore-cart', category: 'world-prop', x: 220, y: 130, scale: 1 }),
+  ]);
+  const renderAssets = new Map([['bonus-life', { frame: nativeFrame, texture: nativeTexture, sourceAssetId: 'tripo-33' }]]);
+  const before = JSON.stringify([placements, nativeFrame]);
+  const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, renderAssets, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
+  const [life, cart] = display.entries;
+  assert.equal(life.sprite.texture.source, nativeTexture.source, 'native appearance must use the actual native page');
+  assert.deepEqual(life.sprite.texture.frame, new FakeRectangle(12, 22, 40, 72));
+  assert.equal(life.sprite.anchor.x, 0.4);
+  assert.equal(life.sprite.productionAssetId, 'bonus-life', 'art must preserve the existing gameplay pickup ID');
+  assert.equal(life.sprite.sourceModelAssetId, 'tripo-33');
+  assert.equal(cart.sprite.texture.source, fakeAtlasTexture.source, 'unbound legacy props remain intact');
+  const shadows = [];
+  const report = display.render({ camera: { zoom: 1 }, view: { width: 400, height: 300 }, worldToScreen: ({x,y,z}) => ({x,y:y-z}), queryGround: () => ({groundZ:0}), tick: 42, contactShadows: { place: value => shadows.push(value) } });
+  assert.equal(report.nativeOnscreenCount, 1);
+  assert.deepEqual(report.nativeOnscreenAssetIds, ['tripo-33']);
+  assert.ok(Math.abs(shadows.find(value => value.placementId === 'test:life').footprintPx - 20 * 1.5 * 0.5 * 0.42) < 1e-9, 'native shadows must use painted bounds, not transparent padding');
+  assert.equal(life.sprite.position.x, 90);
+  assert.ok(life.sprite.position.y < 110, 'existing pickup bob still operates');
+  assert.equal(shadows.find(value => value.placementId === 'test:life').y, 110, 'ground shadow must not bob');
+  assert.equal(JSON.stringify([placements, nativeFrame]), before);
+});
+
+test('real native mapper output retains canonical sprite identities', async () => {
+  const index = createAuthoredPropAtlasIndex(await loadMetadata());
+  const metadata = JSON.parse(await readFile(new URL('../apps/portal/assets/generated/hmh-reboot-tripo-props/hmh-tripo-props.json', import.meta.url), 'utf8'));
+  const textures = metadata.pages.map((page) => ({ source: { id: page.image, pixelWidth: page.width, pixelHeight: page.height } }));
+  const renderAssets = createTripoPropAppearance(metadata, textures, index);
+  assert.equal(renderAssets.size, 48, 'exercise the complete adopted alias set, not an empty fixture');
+  const placements = Object.freeze([...renderAssets.keys(), 'coin-blaster'].map((assetId) => Object.freeze({
+    id: `identity:${assetId}`, assetId, category: index.frameFor(assetId).category, x: 90, y: 110, scale: 1,
+  })));
+  const before = JSON.stringify({ metadata, placements });
+  const display = createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, renderAssets, placements, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics });
+  const entries = new Map(display.entries.map((entry) => [entry.placement.assetId, entry]));
+  assert.equal(entries.get('bonus-life').frame.assetId, 'tripo-33', 'retain the real native mapper namespace in the fixture');
+  assert.equal(entries.get('bonus-life').sprite.productionAssetId, 'bonus-life');
+  for (const [assetId, sourceId] of Object.entries(TRIPO_PROP_BINDINGS)) {
+    const entry = entries.get(assetId);
+    assert.equal(entry.sprite.productionAssetId, assetId, `canonical sprite ID changed for ${assetId}`);
+    assert.equal(entry.sprite.sourceModelAssetId, `tripo-${sourceId}`);
+    assert.equal(entry.frame.assetId, `tripo-${sourceId}`, 'native frame provenance must remain separate');
+    assert.equal(entry.sprite.texture.source, renderAssets.get(assetId).texture.source);
+  }
+  assert.equal(entries.get('watchtower').sprite.texture, entries.get('watch-platform').sprite.texture, 'shared-source aliases retain texture reuse');
+  assert.notEqual(entries.get('watchtower').sprite.productionAssetId, entries.get('watch-platform').sprite.productionAssetId);
+  const legacy = entries.get('coin-blaster');
+  assert.equal(legacy.sprite.productionAssetId, 'coin-blaster');
+  assert.equal(legacy.sprite.sourceModelAssetId, null);
+  assert.equal(legacy.sprite.texture.source, fakeAtlasTexture.source);
+  const late = Object.freeze({ id: 'identity:late-life', assetId: 'bonus-life', category: 'pickup', x: 120, y: 130, scale: 1 });
+  assert.deepEqual(display.addPlacement(late), { placementId: late.id, assetId: late.assetId });
+  assert.equal(display.entries.at(-1).sprite.productionAssetId, 'bonus-life');
+  assert.equal(display.entries.at(-1).sprite.sourceModelAssetId, 'tripo-33');
+  assert.equal(JSON.stringify({ metadata, placements }), before, 'presentation must not mutate source or placement identities');
+});
+
+test('native prop override cannot silently fall back after its texture is missing', async () => {
+  const index = createAuthoredPropAtlasIndex(await loadMetadata());
+  const renderAssets = new Map([['bonus-life', { frame: index.frameFor('bonus-life'), texture: null, sourceAssetId: 'tripo-33' }]]);
+  assert.throws(() => createAuthoredPropDisplay({ index, atlasTexture: fakeAtlasTexture, renderAssets, placements: [{ id: 'test:life', assetId: 'bonus-life', category: 'pickup', x: 0, y: 0 }], ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle, GraphicsClass: FakeGraphics }), /native.*texture/i);
 });
 
 test('held weapon display can select all six authored weapons', async () => {

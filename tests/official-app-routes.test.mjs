@@ -66,6 +66,16 @@ test('app dispatcher owns shell rendering and the settings arcade-floor route', 
   ]);
 });
 
+test('guest profile header does not promise available permanent history or Ranked publishing', () => {
+  const h = harness({ step: 'profile' });
+  h.routes.renderApp();
+  const copy = h.dom.officialProfileCopy.textContent;
+  assert.match(copy, /browser|device/i);
+  assert.match(copy, /not.*available|not.*provide/i);
+  assert.doesNotMatch(copy, /connect.*if you want.*publishing/i);
+  assert.ok(h.calls.includes('profile'));
+});
+
 test('app dispatcher applies guest gating before route selection', () => {
   const h = harness({ step: 'ranked-only', connectedWallet: null, guestAllowed: false });
   h.routes.renderApp();

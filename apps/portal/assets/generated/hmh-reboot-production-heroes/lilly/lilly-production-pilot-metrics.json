@@ -12,20 +12,79 @@
     "runLiftScale": 0.92,
     "runStrideScale": 1.02
   },
-  "atlasSha256": "80f0d0bf8e1ca6911426ee6015388f5f5c628ffbb70aa8963f25ae55a0c9de87",
+  "atlasBytes": 3915898,
+  "atlasSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
   "atlasSize": {
     "height": 2048,
     "width": 2048
   },
   "blenderVersion": "5.1.2",
-  "boneCount": 14,
-  "contactSheetSha256": "4c8625da0e669bf3970605da61bc51815f8eef9029e60c5ec302d2b98b2f2751",
-  "duplicateDecodedFrameGroups": [],
+  "boneCount": 24,
+  "contactSheetSha256": "354ab98005ac331f0482c9caddc96af7c22bb241adb1a579aa05527014723b29",
+  "decodedRgbaBytes": 16777216,
+  "duplicateDecodedFrameGroups": [
+    {
+      "frameIds": [
+        "lilly__shadow__idle__east__000",
+        "lilly__shadow__idle__west__000"
+      ],
+      "sha256": "13a1fbabefeb3768420898f52e02e26070cae69e30aaa1f323827ee2c65d81be"
+    },
+    {
+      "frameIds": [
+        "lilly__weapon__grenade__south__003",
+        "lilly__weapon__grenade__south__004",
+        "lilly__weapon__grenade__south-east__003",
+        "lilly__weapon__grenade__south-east__004",
+        "lilly__weapon__grenade__east__003",
+        "lilly__weapon__grenade__east__004",
+        "lilly__weapon__grenade__north-east__003",
+        "lilly__weapon__grenade__north-east__004",
+        "lilly__weapon__grenade__north__003",
+        "lilly__weapon__grenade__north__004",
+        "lilly__weapon__grenade__north-west__003",
+        "lilly__weapon__grenade__north-west__004",
+        "lilly__weapon__grenade__west__003",
+        "lilly__weapon__grenade__west__004",
+        "lilly__weapon__grenade__south-west__003",
+        "lilly__weapon__grenade__south-west__004"
+      ],
+      "sha256": "99e4d7fc0f538f4f8f317e3c8a3677f03e25664023ee27b16116a545ab78a77b"
+    },
+    {
+      "frameIds": [
+        "lilly__shadow__idle__south-east__000",
+        "lilly__shadow__idle__north-west__000"
+      ],
+      "sha256": "a01df871f48782545a3cde78ca02cdf8ac29eecf26025e9ae6453ea9c331f45c"
+    },
+    {
+      "frameIds": [
+        "lilly__shadow__idle__north-east__000",
+        "lilly__shadow__idle__south-west__000"
+      ],
+      "sha256": "d2a613ee076aa3cf5f9fd45beb59b205736bac28231275cdef72ecab784d4a44"
+    }
+  ],
   "emptyFrameCount": 0,
   "externalDependencyCount": 0,
   "frameCount": 648,
+  "frameSize": [
+    216,
+    216
+  ],
   "gameplayBodyProfile": "human-medium-collision-v1",
-  "metadataSha256": "c0d956b11e0290c916dc045d6e8c4dabd7c6b0d95f5ac33c909ab00aa7c85301",
+  "intentionalHiddenFrameCount": 16,
+  "logicalFrameReconstruction": {
+    "frames": 648,
+    "pixelDifferences": 0
+  },
+  "metadataSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+  "mode": "clip-actions",
+  "pivotPixels": [
+    128,
+    205
+  ],
   "reproducibility": "pass",
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -34,17 +93,20 @@
   },
   "reproducibilityMode": "bounded-premultiplied-rgba-v1",
   "reproducibilityObserved": {
-    "maxChangedVisiblePixels": 0,
-    "maxChannelDelta": 0,
-    "maxTotalChannelDelta": 0,
-    "worstFrameId": "lilly__shadow__idle__south__000"
+    "maxChangedVisiblePixels": 2,
+    "maxChannelDelta": 1,
+    "maxTotalChannelDelta": 3,
+    "worstFrameId": "lilly__torso-head__melee__north-east__002"
   },
   "runtimeAuthority": "projection-only",
   "schema": "hmh-reboot-production-hero-pilot-metrics-v1",
-  "sourceBlendSha256": "b4512d522ac9452e7ccd150083f2532679dd725cf96c4056ae3c3ec439121087",
+  "sourceBlendBytes": 59988395,
+  "sourceBlendSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
+  "sourceKind": "packed-textured-blend",
+  "sourceModelSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
   "status": "pass",
   "transparentCornerFailureCount": 0,
-  "uniqueAnimatedFrameCount": 640,
+  "uniqueAnimatedFrameCount": 624,
   "uniqueFrameIdCount": 648,
   "variantId": "gold-teal-veteran",
   "weaponSocket": true

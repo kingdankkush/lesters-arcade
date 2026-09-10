@@ -100,14 +100,14 @@ export function resolveAimIntent(state, {
 
   if (manualActive) {
     direction = manualDirection;
-    if ((device === 'touch' || device === 'gamepad') && target) {
+    if (device === 'gamepad' && target) {
       direction = applyAimAssist(direction, { x: target.x - actor.x, y: target.y - actor.y }, {
         magnetism: state.aimMagnetism,
         maxCorrectionRadians: state.maxCorrectionRadians,
       });
     }
     state.lastManualDirection = direction;
-    state.manualUntilTick = tick + state.manualHoldTicks;
+    state.manualUntilTick = tick + ((device === 'touch' || device === 'gamepad') ? 0 : state.manualHoldTicks);
     source = 'manual';
   } else if (tick <= state.manualUntilTick) {
     direction = state.lastManualDirection;
@@ -122,7 +122,8 @@ export function resolveAimIntent(state, {
   return Object.freeze({
     direction: Object.freeze({ ...direction }),
     source,
+    automatic: source !== 'manual' && source !== 'manual-hold',
     targetId,
-    fire: Boolean(input?.fire) || (state.autoFireEnabled && Boolean(target)),
+    fire: Boolean(input?.fire) || (state.autoFireEnabled && (manualActive || Boolean(target))),
   });
 }

@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
+function tmpdir() {
+  const path = join(ROOT, '.tmp/team/hero-owner-pass/scratch');
+  mkdirSync(path, { recursive: true });
+  return path;
+}
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -37,7 +41,28 @@ function portalPath(url) {
   return join(PORTAL_ROOT, url.replace(/^\//u, ''));
 }
 
-test('selector render manifest uses static textured sources read-only at 384 px with the hero reproducibility budget', () => {
+function copyCheckerFixture(tempRoot, relativePaths, metadata) {
+  for (const relativePath of relativePaths) {
+    const destinationPath = join(tempRoot, relativePath);
+    mkdirSync(dirname(destinationPath), { recursive: true });
+    const source = metadata.sources.sourceAssets.find(entry => entry.path === relativePath);
+    if (source) {
+      // Exact no-smudge representation, not fabricated native rig evidence.
+      writeFileSync(destinationPath, `version https://git-lfs.github.com/spec/v1\noid sha256:${source.sha256}\nsize ${source.bytes}\n`);
+    } else {
+      cpSync(join(ROOT, relativePath), destinationPath);
+    }
+  }
+  // Only this disposable checker fixture binds the current helper and manifest. Canonical
+  // provenance remains untouched and its two source-check gates stay strict.
+  metadata.sources.runner = 'scripts/run-hmh-hero-selector-render.py';
+  metadata.sources.runnerSha256 = sha256(readFileSync(join(tempRoot, metadata.sources.runner)));
+  metadata.sources.exporterSha256 = sha256(readFileSync(join(tempRoot, metadata.sources.exporter)));
+  metadata.sources.sourceHelperSha256 = sha256(readFileSync(join(tempRoot, metadata.sources.sourceHelper)));
+  metadata.sources.renderManifestSha256 = sha256(readFileSync(join(tempRoot, 'apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json')));
+}
+
+test('selector render manifest uses the exact native gameplay sources read-only at 384 px with the hero reproducibility budget', () => {
   assert.ok(existsSync(RENDER_MANIFEST), 'missing hmh-hero-selector-render.json');
   const manifest = readJson(RENDER_MANIFEST);
   const heroManifest = readJson(HERO_MANIFEST);
@@ -46,9 +71,9 @@ test('selector render manifest uses static textured sources read-only at 384 px 
   assert.equal(manifest.classification, 'production-art');
   assert.equal(manifest.runtimeAuthority, 'projection-only');
   assert.equal(manifest.gameplayAuthority, 'none');
-  assert.equal(manifest.scene.sourceMode, 'static-textured-models');
-  assert.equal(manifest.scene.sourceBlend, 'apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend');
-  assert.equal(manifest.scene.sourceManifest, 'apps/hmh-reboot/assets/source/blender/hmh-tripo-selector-sources.json');
+  assert.equal(manifest.scene.sourceMode, 'packed-gameplay-sources');
+  assert.equal(manifest.scene.sourceBlend, undefined, 'native heroes must not share the retired static scene');
+  assert.equal(manifest.scene.sourceManifest, 'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json');
   assert.equal(manifest.scene.heroExporter, heroManifest.scene.exporter);
   assert.equal(manifest.scene.exporter, 'scripts/hmh-blender/export-hmh-hero-selector.py');
   assert.equal(manifest.scene.blenderVersion, '5.1.2');
@@ -69,8 +94,8 @@ test('selector render manifest uses static textured sources read-only at 384 px 
     assert.equal(hero.actorId, HERO_ACTORS[hero.portalHeroId]);
     assert.ok(heroManifest.pilots.some((pilot) => pilot.actorId === hero.actorId), `${hero.actorId} is not a production pilot`);
   }
-  // Static source poses do not claim gameplay rigs or combat animations.
-  assert.deepEqual(manifest.pose, { mode: 'source-rest-pose', rigged: false });
+  // The selector uses the actual gameplay rig/action but does not certify motion.
+  assert.deepEqual(manifest.pose, { mode: 'native-action', action: 'HMH_Aim', frameIndex: 0, frameCount: 1, loop: false });
   assert.equal(manifest.frameDurationMs, 260);
   assert.equal(manifest.atlas.perHero, true);
   assert.deepEqual(manifest.atlas.grid, [4, 2]);
@@ -219,11 +244,19 @@ test('selector metadata records a passing two-run render with a constant foot li
     assert.equal(statSync(portalPath(metadata.heroes[heroId].image)).size, metadata.heroes[heroId].imageBytes);
   }
 
-  assert.equal(metadata.sources.sourceBlend, renderManifest.scene.sourceBlend);
-  assert.equal(metadata.sources.sourceBlendSha256, renderManifest.scene.sourceBlendFingerprint.sha256);
+  assert.equal(metadata.sources.sourceMode, 'packed-gameplay-sources');
+  assert.equal(metadata.sources.sourceBlend, undefined);
+  assert.equal(metadata.sources.sourceBlendSha256, undefined);
   assert.equal(metadata.sources.sourceManifestSha256, sha256(readFileSync(join(ROOT, renderManifest.scene.sourceManifest))));
-  const sources = readJson(join(ROOT, renderManifest.scene.sourceManifest)).heroes;
-  assert.deepEqual(metadata.sources.sourceAssets, sources.map(hero => ({ actorId: hero.actorId, path: hero.sourcePath, bytes: hero.sourceBytes, sha256: hero.sourceSha256 })));
+  const sources = readJson(join(ROOT, renderManifest.scene.sourceManifest)).pilots;
+  assert.deepEqual(metadata.sources.sourceAssets, renderManifest.heroes.map(({ actorId }) => {
+    const { sourceModel } = sources.find((pilot) => pilot.actorId === actorId);
+    return { actorId, path: sourceModel.path, bytes: sourceModel.sourceBytes, sha256: sourceModel.sourceSha256, nativePose: { action: 'HMH_Aim', frameIndex: 0, frameCount: 1, loop: false } };
+  }));
+  assert.equal(metadata.sources.runner, 'scripts/run-hmh-hero-selector-render.py');
+  assert.equal(metadata.sources.runnerSha256, sha256(readFileSync(RUNNER)));
+  assert.equal(metadata.sources.sourceHelper, 'scripts/hmh_selector_native_sources.py');
+  assert.equal(metadata.sources.sourceHelperSha256, sha256(readFileSync(join(ROOT, metadata.sources.sourceHelper))));
   assert.equal(metadata.sources.renderManifestSha256, sha256(readFileSync(RENDER_MANIFEST)));
   assert.match(metadata.sources.exporterSha256, /^[0-9a-f]{64}$/u);
   assert.match(metadata.sources.heroExporterSha256, /^[0-9a-f]{64}$/u);
@@ -235,7 +268,8 @@ test('selector metadata records a passing two-run render with a constant foot li
   assert.equal(pivot[0], 192, 'the camera aims at the rig column, so the pivot sits on the frame centre');
   assert.ok(pivot[1] > 192 && pivot[1] < 384, `pivot row ${pivot[1]} must be in the lower half of the frame`);
   assert.ok(Math.abs(metadata.render.projectedPivot[0] - pivot[0]) <= 0.5 && Math.abs(metadata.render.projectedPivot[1] - pivot[1]) <= 0.5);
-  assert.deepEqual(metadata.groundContact, renderManifest.groundContact);
+  const groundingControls = (record) => Object.fromEntries(Object.entries(record).filter(([key]) => key !== 'note'));
+  assert.deepEqual(groundingControls(metadata.groundContact), groundingControls(renderManifest.groundContact));
   const envelope = renderManifest.groundContact.footLineEnvelopePx;
 
   const footLines = new Map();
@@ -279,23 +313,18 @@ test('selector checker accepts a pixel-identical per-hero PNG re-encode with tru
     const relativePaths = [
       'scripts/run-hmh-hero-selector-render.py',
       'scripts/hmh_pipeline_lock.py',
+      'scripts/hmh_selector_native_sources.py',
       'apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json',
       'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json',
       renderManifest.scene.sourceManifest,
-      renderManifest.scene.sourceBuilder,
       ...metadata.sources.sourceAssets.map(source => source.path),
-      renderManifest.scene.sourceBlend,
       renderManifest.scene.exporter,
       renderManifest.scene.heroExporter,
       'apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json',
       'apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs',
       ...HERO_ORDER.map((heroId) => metadata.heroes[heroId].image.replace(/^\//u, 'apps/portal/')),
     ];
-    for (const relativePath of relativePaths) {
-      const destinationPath = join(tempRoot, relativePath);
-      mkdirSync(dirname(destinationPath), { recursive: true });
-      cpSync(join(ROOT, relativePath), destinationPath);
-    }
+    copyCheckerFixture(tempRoot, relativePaths, metadata);
 
     const heroId = 'lit-commando';
     const hero = metadata.heroes[heroId];
@@ -342,23 +371,18 @@ test('selector checker rejects a pixel change even when provenance is patched to
     const relativePaths = [
       'scripts/run-hmh-hero-selector-render.py',
       'scripts/hmh_pipeline_lock.py',
+      'scripts/hmh_selector_native_sources.py',
       'apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json',
       'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json',
       renderManifest.scene.sourceManifest,
-      renderManifest.scene.sourceBuilder,
       ...metadata.sources.sourceAssets.map(source => source.path),
-      renderManifest.scene.sourceBlend,
       renderManifest.scene.exporter,
       renderManifest.scene.heroExporter,
       'apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json',
       'apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs',
       ...HERO_ORDER.map((heroId) => metadata.heroes[heroId].image.replace(/^\//u, 'apps/portal/')),
     ];
-    for (const relativePath of relativePaths) {
-      const destinationPath = join(tempRoot, relativePath);
-      mkdirSync(dirname(destinationPath), { recursive: true });
-      cpSync(join(ROOT, relativePath), destinationPath);
-    }
+    copyCheckerFixture(tempRoot, relativePaths, metadata);
     const heroId = 'lilly';
     const hero = metadata.heroes[heroId];
     const imagePath = join(tempRoot, hero.image.replace(/^\//u, 'apps/portal/'));
@@ -381,7 +405,7 @@ test('selector checker rejects a pixel change even when provenance is patched to
 
     const check = spawnSync('python', ['scripts/run-hmh-hero-selector-render.py', '--check'], { cwd: tempRoot, encoding: 'utf8' });
     assert.notEqual(check.status, 0, 'a tampered pixel must fail --check');
-    assert.match(check.stderr + check.stdout, /pixelSha256|drift/u);
+    assert.match(check.stderr + check.stdout, /pixelSha256/u);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }

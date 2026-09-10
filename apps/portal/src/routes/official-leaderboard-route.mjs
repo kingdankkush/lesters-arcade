@@ -40,9 +40,9 @@ export function createOfficialLeaderboardRoute({
       cadence: routeState.cadence,
       wallet: connectedWallet,
       displayNameFor,
-      // Filter provenance before truncating. The public seed board currently
-      // occupies the first 50 aggregate rows; limiting first would hide every
-      // legitimate score ranked below the demo data.
+      source: routeState.source,
+      // Partition before best-per-wallet aggregation as well as truncation.
+      // A higher local score must not erase this wallet's verified score.
       limit: 5000,
     });
     const sourceBoard = filterLeaderboardEntriesBySource(unfiltered.topEntries, state.profiles, routeState.source);

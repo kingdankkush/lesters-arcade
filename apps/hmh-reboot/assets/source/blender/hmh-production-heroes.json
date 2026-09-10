@@ -3,6 +3,11 @@
   "pipelineId": "hmh-reboot-production-hero-pilot-v1",
   "classification": "production-art",
   "gameplayBodyProfile": "human-medium-collision-v1",
+  "unlockAuthority": {
+    "owner": "parent",
+    "module": "apps/portal/src/hmh-character-config.mjs",
+    "export": "HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG"
+  },
   "selection": {
     "male": {
       "actorId": "lit-commando",
@@ -67,7 +72,9 @@
   "atlas": {
     "outputDirectory": "apps/portal/assets/generated/hmh-reboot-production-heroes",
     "padding": 2,
-    "maxSize": 2048
+    "maxSize": 2048,
+    "maxTextureBytesPerHero": 4194304,
+    "maxTextureBytesAllHeroes": 16777216
   },
   "reproducibilityBudget": {
     "maxChangedVisiblePixels": 8,
@@ -79,7 +86,34 @@
       "actorId": "lit-commando",
       "variantId": "reserve-vanguard",
       "modelSpecId": "lit-commando-rambo-v1",
-      "status": "production-pilot",
+      "status": "production-textured-gameplay",
+      "sourceModel": {
+        "path": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lit Commando - Layered Gameplay Pilot v2.blend",
+        "format": "blend",
+        "kind": "packed-textured-blend",
+        "sourceSha256": "0c930374daccb2b9458a8600fdf3150dc51f6b5d8b4a47edcd05d92905fc6284",
+        "sourceBytes": 90056914,
+        "externalDependencyCount": 0,
+        "packedTextureCount": 12,
+        "inspection": {
+          "path": "apps/hmh-reboot/assets/source/blender/lit-commando-packed-source-inspection.json",
+          "sha256": "7adc65f9c0bee3da803566eb7b1805ccf5f708056914a65061a8bfa421e85a04"
+        },
+        "reproducibility": {
+          "path": "apps/hmh-reboot/assets/source/blender/lit-commando-gameplay-reproducibility.json",
+          "sha256": "a99730e268d48b6a4951f7a62dee3af8246e80600e7dd4f44a40bdd4ccd80b32"
+        }
+      },
+      "armature": "HMH_TripoCommandoRig",
+      "frameSize": [
+        256,
+        256
+      ],
+      "trimTransparentPadding": true,
+      "sourcePivot": [
+        128,
+        205
+      ],
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
       "animationProfile": {
@@ -209,7 +243,7 @@
         }
       },
       "output": {
-        "atlas": "lit-commando/lit-commando-production-pilot-atlas.png",
+        "atlas": "lit-commando/lit-commando-production-pilot-atlas.webp",
         "metadata": "lit-commando/lit-commando-production-pilot-atlas.json",
         "metrics": "lit-commando/lit-commando-production-pilot-metrics.json",
         "contactSheet": "lit-commando/lit-commando-production-pilot-contact-sheet.png"
@@ -224,13 +258,73 @@
         "melee",
         "grenade",
         "death"
-      ]
+      ],
+      "clipActions": {
+        "idle": "HMH_Idle",
+        "run": "HMH_Run",
+        "aim": "HMH_Aim",
+        "pistol-fire": "HMH_PistolFire",
+        "hurt": "HMH_Hurt",
+        "dash": "HMH_Dash",
+        "melee": "HMH_Melee",
+        "grenade": "HMH_Grenade",
+        "death": "HMH_Death"
+      },
+      "nativeWeaponIds": [
+        "coin-blaster"
+      ],
+      "nativeActionIds": [
+        "melee",
+        "grenade"
+      ],
+      "sourceGroundCalibration": {
+        "worldPoint": [
+          0,
+          0,
+          0
+        ],
+        "measuredFramePixels": [
+          128.0000457763672,
+          204.2557373046875
+        ],
+        "roundedFramePixels": [
+          128,
+          205
+        ]
+      }
     },
     {
       "actorId": "lit-valkyrie",
       "variantId": "plasma-striker",
       "modelSpecId": "lit-valkyrie-rambo-v1",
-      "status": "production-pilot",
+      "status": "production-textured-gameplay",
+      "sourceModel": {
+        "path": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lit Valkyrie - Weighted Gameplay compact-v2.blend",
+        "format": "blend",
+        "kind": "packed-textured-blend",
+        "sourceSha256": "f090f2e2a387f8ee3c2666bed1af22344f6ec82b1695bc62f1d18f1cfb8268ec",
+        "sourceBytes": 61129265,
+        "externalDependencyCount": 0,
+        "packedTextureCount": 12,
+        "inspection": {
+          "path": "apps/hmh-reboot/assets/source/blender/lit-valkyrie-packed-source-inspection.json",
+          "sha256": "394584d6e903b3b22c47d9b2bdb2beb7c16bc0873c3f2301cd004bd29dd9e88e"
+        },
+        "reproducibility": {
+          "path": "apps/hmh-reboot/assets/source/blender/lit-valkyrie-gameplay-reproducibility.json",
+          "sha256": "f5bf12e7052779cb92b08b68ea47e421f6a97f71ccf576101bcbcf83de191793"
+        }
+      },
+      "armature": "HMH_TripoRig_lit-valkyrie",
+      "frameSize": [
+        256,
+        256
+      ],
+      "trimTransparentPadding": true,
+      "sourcePivot": [
+        128,
+        205
+      ],
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
       "animationProfile": {
@@ -360,7 +454,7 @@
         }
       },
       "output": {
-        "atlas": "lit-valkyrie/lit-valkyrie-production-pilot-atlas.png",
+        "atlas": "lit-valkyrie/lit-valkyrie-production-pilot-atlas.webp",
         "metadata": "lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
         "metrics": "lit-valkyrie/lit-valkyrie-production-pilot-metrics.json",
         "contactSheet": "lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png"
@@ -375,13 +469,77 @@
         "melee",
         "grenade",
         "death"
+      ],
+      "clipActions": {
+        "idle": "HMH_Idle",
+        "run": "HMH_Run",
+        "aim": "HMH_Aim",
+        "pistol-fire": "HMH_PistolFire",
+        "hurt": "HMH_Hurt",
+        "dash": "HMH_Dash",
+        "melee": "HMH_Melee",
+        "grenade": "HMH_Grenade",
+        "death": "HMH_Death"
+      },
+      "nativeWeaponIds": [
+        "coin-blaster"
+      ],
+      "nativeActionIds": [
+        "melee",
+        "grenade"
+      ],
+      "sourceGroundCalibration": {
+        "worldPoint": [
+          0,
+          0,
+          0
+        ],
+        "measuredFramePixels": [
+          128.0000457763672,
+          204.2557373046875
+        ],
+        "roundedFramePixels": [
+          128,
+          205
+        ]
+      },
+      "releasedWeaponFrameIndices": [
+        3,
+        4
       ]
     },
     {
       "actorId": "lester-original",
       "variantId": "blue-mask-original",
       "modelSpecId": "lester-reference-combat-v1",
-      "status": "production-pilot",
+      "status": "production-textured-gameplay",
+      "sourceModel": {
+        "path": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lester Original - Weighted Gameplay compact-v2.blend",
+        "format": "blend",
+        "kind": "packed-textured-blend",
+        "sourceSha256": "ed1278ea131927f9849fb62f265512a8547186fb9b9c06b08da78fb438eacc96",
+        "sourceBytes": 60247717,
+        "externalDependencyCount": 0,
+        "packedTextureCount": 12,
+        "inspection": {
+          "path": "apps/hmh-reboot/assets/source/blender/lester-original-packed-source-inspection.json",
+          "sha256": "eab89c75df318c3a1bd38305c7fa77ad861e399f34cf4815b6a45117f91e69a9"
+        },
+        "reproducibility": {
+          "path": "apps/hmh-reboot/assets/source/blender/lester-original-gameplay-reproducibility.json",
+          "sha256": "33b5f4c26e34e2fb4c2ff1347fcfc923a2f543331dfd069e8169411fdd7e1707"
+        }
+      },
+      "armature": "HMH_TripoRig_lester-original",
+      "frameSize": [
+        224,
+        224
+      ],
+      "trimTransparentPadding": true,
+      "sourcePivot": [
+        128,
+        205
+      ],
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
       "animationProfile": {
@@ -396,36 +554,6 @@
         "grenadeScale": 0.88,
         "deathSide": -1
       },
-      "unlockGate": {
-        "type": "ranked-matches-played",
-        "count": 10,
-        "legacyMigrationAchievementId": "getaway-clear"
-      },
-      "artDirection": {
-        "mustReadAtRuntime": [
-          "blue-mask-white-face-stripe",
-          "large-readable-eyes",
-          "blue-neck-scarf",
-          "ammo-bandolier",
-          "tan-cargo-pants"
-        ]
-      },
-      "materials": {
-        "primary": "lester-blue",
-        "secondary": "cargo-tan",
-        "accent": "bandolier-brass"
-      },
-      "animationClips": [
-        "idle",
-        "run",
-        "aim",
-        "pistol-fire",
-        "hurt",
-        "dash",
-        "melee",
-        "grenade",
-        "death"
-      ],
       "layers": [
         "shadow",
         "lower-body",
@@ -541,17 +669,92 @@
         }
       },
       "output": {
-        "atlas": "lester-original/lester-original-production-pilot-atlas.png",
+        "atlas": "lester-original/lester-original-production-pilot-atlas.webp",
         "metadata": "lester-original/lester-original-production-pilot-atlas.json",
         "metrics": "lester-original/lester-original-production-pilot-metrics.json",
         "contactSheet": "lester-original/lester-original-production-pilot-contact-sheet.png"
-      }
+      },
+      "animationClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ],
+      "clipActions": {
+        "idle": "HMH_Idle",
+        "run": "HMH_Run",
+        "aim": "HMH_Aim",
+        "pistol-fire": "HMH_PistolFire",
+        "hurt": "HMH_Hurt",
+        "dash": "HMH_Dash",
+        "melee": "HMH_Melee",
+        "grenade": "HMH_Grenade",
+        "death": "HMH_Death"
+      },
+      "nativeWeaponIds": [
+        "coin-blaster"
+      ],
+      "nativeActionIds": [
+        "melee",
+        "grenade"
+      ],
+      "sourceGroundCalibration": {
+        "worldPoint": [
+          0,
+          0,
+          0
+        ],
+        "measuredFramePixels": [
+          128.0000457763672,
+          204.2557373046875
+        ],
+        "roundedFramePixels": [
+          128,
+          205
+        ]
+      },
+      "releasedWeaponFrameIndices": [
+        3,
+        4
+      ]
     },
     {
       "actorId": "lilly",
       "variantId": "gold-teal-veteran",
       "modelSpecId": "lilly-reference-combat-v1",
-      "status": "production-pilot",
+      "status": "production-textured-gameplay",
+      "sourceModel": {
+        "path": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lilly - Weighted Gameplay compact-v2.blend",
+        "format": "blend",
+        "kind": "packed-textured-blend",
+        "sourceSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
+        "sourceBytes": 59988395,
+        "externalDependencyCount": 0,
+        "packedTextureCount": 12,
+        "inspection": {
+          "path": "apps/hmh-reboot/assets/source/blender/lilly-packed-source-inspection.json",
+          "sha256": "6af0cc88530c95d475b58419730e46c077146f6c267aea59734efe0dde607e6b"
+        },
+        "reproducibility": {
+          "path": "apps/hmh-reboot/assets/source/blender/lilly-gameplay-reproducibility.json",
+          "sha256": "d2ff1725d1d4a20659490170b15f2c5d79c81a6c747c37023ea716a20bf165de"
+        }
+      },
+      "armature": "HMH_TripoRig_lilly",
+      "frameSize": [
+        216,
+        216
+      ],
+      "trimTransparentPadding": true,
+      "sourcePivot": [
+        128,
+        205
+      ],
       "gameplayBodyProfile": "human-medium-collision-v1",
       "runtimeAuthority": "projection-only",
       "animationProfile": {
@@ -566,34 +769,6 @@
         "grenadeScale": 1.25,
         "deathSide": 1
       },
-      "unlockGate": {
-        "type": "ranked-matches-played",
-        "count": 20
-      },
-      "artDirection": {
-        "mustReadAtRuntime": [
-          "long-teal-hair",
-          "round-glasses",
-          "gold-teal-tactical-armor",
-          "slim-agile-silhouette"
-        ]
-      },
-      "materials": {
-        "primary": "tactical-black",
-        "secondary": "veteran-gold",
-        "accent": "lilly-teal"
-      },
-      "animationClips": [
-        "idle",
-        "run",
-        "aim",
-        "pistol-fire",
-        "hurt",
-        "dash",
-        "melee",
-        "grenade",
-        "death"
-      ],
       "layers": [
         "shadow",
         "lower-body",
@@ -709,11 +884,59 @@
         }
       },
       "output": {
-        "atlas": "lilly/lilly-production-pilot-atlas.png",
+        "atlas": "lilly/lilly-production-pilot-atlas.webp",
         "metadata": "lilly/lilly-production-pilot-atlas.json",
         "metrics": "lilly/lilly-production-pilot-metrics.json",
         "contactSheet": "lilly/lilly-production-pilot-contact-sheet.png"
-      }
+      },
+      "animationClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ],
+      "clipActions": {
+        "idle": "HMH_Idle",
+        "run": "HMH_Run",
+        "aim": "HMH_Aim",
+        "pistol-fire": "HMH_PistolFire",
+        "hurt": "HMH_Hurt",
+        "dash": "HMH_Dash",
+        "melee": "HMH_Melee",
+        "grenade": "HMH_Grenade",
+        "death": "HMH_Death"
+      },
+      "nativeWeaponIds": [
+        "coin-blaster"
+      ],
+      "nativeActionIds": [
+        "melee",
+        "grenade"
+      ],
+      "sourceGroundCalibration": {
+        "worldPoint": [
+          0,
+          0,
+          0
+        ],
+        "measuredFramePixels": [
+          128.0000457763672,
+          204.2557373046875
+        ],
+        "roundedFramePixels": [
+          128,
+          205
+        ]
+      },
+      "releasedWeaponFrameIndices": [
+        3,
+        4
+      ]
     }
   ]
 }

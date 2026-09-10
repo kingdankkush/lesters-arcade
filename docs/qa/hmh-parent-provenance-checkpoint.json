@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-09T15:33:12.930098+00:00",
+  "scope": "Local source-verified parent provenance slice; not final release certification",
+  "sourceHashes": {
+    "apps/portal/main.js": "0ed380be752f700845037c1a1a1643ae048f97d03a62d189267bc18ddb910caa",
+    "apps/portal/src/leaderboard-engine.mjs": "7d4628c0d8fc2542a908bd70d02b0baadbe8c2639258ff482babeba3dc49c8d5",
+    "apps/portal/src/leaderboard-seed.mjs": "ab5e50750528341db9c2df48ae4b6499ec447c746c7b69fe40a5581127fa1955",
+    "apps/portal/src/litvm-chain-client.mjs": "87a850b035adee0a0dbc21faea9d7bcedc6a9dd275c34efd70f484a524f549ca",
+    "scripts/syntax-check.mjs": "3c3f84d0c86b10f6a9e55720e7603637309008b440b07ad171f3a82576567272",
+    "tests/hmh-leaderboard-provenance.test.mjs": "cbb455b31d63512c460f293b39bf81d59ab3538e6dc8dfb55182367004d8e040",
+    "tests/portal-trust-copy.test.mjs": "516914655261b22978a01f1fc87f44c9d0208d47aef31689f9ca704fbd50653b",
+    "tests/hmh-chain-hydration-provenance.test.mjs": "c83650a00a0d16501079f2738efa6f8532ee11f0ac8164e535b4be9ec9b2c46c",
+    "apps/portal/src/settlement.mjs": "4acb1e7b11554391932e06a53f0b83920a79049205d2b160bb986e1757e79e95",
+    "apps/portal/src/persistence.mjs": "c45ec611eefe8246e733944c046fde91dff3b1f827fb735f76baed99887b6ec7",
+    "apps/portal/src/routes/official-leaderboard-route.mjs": "0c22be0f2a211029957ee9afff9a82cd2ee950fa6baee605d3828e986f5fa45a"
+  },
+  "newBehaviorTests": 9,
+  "focused": {
+    "tests": 45,
+    "pass": 45,
+    "fail": 0,
+    "skipped": 0
+  },
+  "independentReview": {
+    "verdict": "PASS",
+    "blockers": [],
+    "suggestions": [
+      "Add fetchGlobalLeaderboard coverage mirroring fetchPlayerSessions for wrong-chain providers and unverified tuples.",
+      "Normalize rec.sessionId32 casing in mergeChainRecordIntoState so mixed-case equivalent identifiers cannot bypass deduplication."
+    ]
+  },
+  "reviewHashes": {
+    "portal-review-prompt.txt": "9ae86cfa8976025244a1456ec787b5e46c4594fad6209a1b92d03d00ec39bd7a",
+    "portal-review-result.json": "7f45ae70d9f28a4d5ae264bae21303bcb7c848f20daccfda8d0eb5729e17305f",
+    "portal-review-events.jsonl": "08ff825ab96d9156585d023f78df2e09c4bc3d5d2cae39fe2aecde9c9792bec0",
+    "portal-review-stderr.log": "0b37ee6b0f8a0f8aae858f9eca881312736fde758a08af6b8d8a50e5b27ab143"
+  },
+  "sourceGates": {
+    "receipt": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/receipt.json",
+    "sha256": "60912a02c45a0f7177bbcac8dad0f7253336b40fead8c0f9c1f668e7bc52130e",
+    "steps": [
+      {
+        "name": "inventory",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "scripts/build-hmh-curated-level-kit-runtime.mjs"
+        ],
+        "exitCode": 0,
+        "seconds": 0.09400000001187436,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/inventory.log",
+        "logSha256": "54f7f784282de93c197e5ab951dcb056d85ccc40f67332663d4f46f74ba2eed5"
+      },
+      {
+        "name": "asset-qa",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "scripts/hmh-reboot-production-asset-qa.mjs"
+        ],
+        "exitCode": 0,
+        "seconds": 4.342999999993481,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/asset-qa.log",
+        "logSha256": "c418aa9412f226e20a55177d708d68cf01bf62e986372a8ec2d02d5c01c43046"
+      },
+      {
+        "name": "check",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "check"
+        ],
+        "exitCode": 0,
+        "seconds": 17.85999999998603,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/check.log",
+        "logSha256": "ff2338ea7ba4328e83e609c9e6e43655fe20f929161015c742aa9a7d8b333a19"
+      },
+      {
+        "name": "release",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "test:release"
+        ],
+        "exitCode": 0,
+        "seconds": 163.7970000000205,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/release.log",
+        "logSha256": "27d966c5e7389374e98d0f2cc0cbaf06e5d0ef61471b5d27e7088506eee4b319"
+      },
+      {
+        "name": "security",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "design:security-audit"
+        ],
+        "exitCode": 0,
+        "seconds": 0.40599999998812564,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/security.log",
+        "logSha256": "a58fe66fac44c193198b6df90effb6f8eff52e4171bee2a0643468c64c29f740"
+      },
+      {
+        "name": "contracts",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "contracts:check"
+        ],
+        "exitCode": 0,
+        "seconds": 0.25,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/contracts.log",
+        "logSha256": "cd0ceaf8d8faa162aaa8a8c2a15b16e46cce28e3c988910382ea726ed9a235ce"
+      },
+      {
+        "name": "health",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "repo:health:strict"
+        ],
+        "exitCode": 0,
+        "seconds": 3.6719999999913853,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/health.log",
+        "logSha256": "37f8358edfe05cb4390ceeb1ad8241733ec3a66f72911b98e41fce914097e10f"
+      },
+      {
+        "name": "docs-links",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "docs:links"
+        ],
+        "exitCode": 0,
+        "seconds": 0.25,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/docs-links.log",
+        "logSha256": "b4952dffe909730078ea67a769178cb5efdaf1a4568660aa6d72887816b6e184"
+      },
+      {
+        "name": "build",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "build"
+        ],
+        "exitCode": 0,
+        "seconds": 0.5780000000086147,
+        "log": ".tmp/team/revamp-resume/source-gates-portal-provenance-01/build.log",
+        "logSha256": "6ea6f1ead22a5803b6c4afa9ff3365e707032e6bb0aa9ef2492b7734c7300109"
+      }
+    ],
+    "ledger": {
+      "tests": 3009,
+      "passed": 2958,
+      "expectedLegacy": 51
+    }
+  },
+  "staticClosure": {
+    "schemaVersion": 1,
+    "scope": "Current local emitted HMH static module closure; dynamic imports excluded",
+    "entryBytes": 479762,
+    "entryCap": 480000,
+    "initialBytes": 1009560,
+    "initialCap": 1048576,
+    "entryHeadroom": 238,
+    "initialHeadroom": 39016,
+    "files": [
+      {
+        "path": "chunks/chunk-2WGYLO4P.js",
+        "bytes": 655,
+        "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+        "imports": []
+      },
+      {
+        "path": "chunks/chunk-DQHK5RVL.js",
+        "bytes": 66028,
+        "sha256": "a15afb8601dc8ed82a23005457c734b5fa733d0a69e974e2faa7fb3237519c8c",
+        "imports": []
+      },
+      {
+        "path": "chunks/hmh-pixi.js",
+        "bytes": 463115,
+        "sha256": "8fbbbbb0c8fbf3a1e528dfaa6b6e6e4324c66517457c421dd6147171e462496a",
+        "imports": []
+      },
+      {
+        "path": "hmh-reboot/game.js",
+        "bytes": 479762,
+        "sha256": "6f867f1c938e27f01755137ad40868000e359f1f4718a6a4c0bdc185cfd4efbc",
+        "imports": [
+          "../chunks/chunk-DQHK5RVL.js",
+          "../chunks/chunk-2WGYLO4P.js",
+          "../chunks/hmh-pixi.js"
+        ]
+      }
+    ],
+    "passed": true
+  },
+  "packet": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Coordination\\hmh-textured-rollout\\submissions\\hermes\\portal-provenance-20260909T153312Z",
+  "packetFileCount": 30,
+  "packetManifestSha256": "f61375a44b00e1c9da3e90bb5c906ae08d91a5408868d7624f0594319e99353d",
+  "published": false,
+  "mergedBrowserCertified": false,
+  "liveChainReady": false,
+  "remaining": [
+    "Codex paired native/world adoption and combined browser/candidate gates",
+    "Owner/human-device acceptance",
+    "Current RPC transport and legacy ABI/hardened deployment readiness",
+    "Nonblocking source review test/case-normalization suggestions"
+  ]
+}

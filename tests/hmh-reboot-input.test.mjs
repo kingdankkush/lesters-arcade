@@ -32,11 +32,11 @@ test('keyboard WASD and arrow bindings normalize diagonals into canonical moveme
   assert.deepEqual(input.snapshot({ ...context, nowMs: 23 }).actions.move, { x: -1, y: 0 });
 });
 
-test('keyboard number keys select retained weapon slots deterministically', () => {
+test('retired number keys cannot change the automatically equipped weapon', () => {
   const input = new InputState();
   input.setKey('Digit3', true, 10);
   const snapshot = input.snapshot({ ...context, nowMs: 11 });
-  assert.equal(snapshot.actions.weaponSlot, 3);
+  assert.equal(snapshot.actions.weaponSlot, 0);
   assert.equal(snapshot.actions.weaponNext, false);
 });
 
@@ -47,7 +47,7 @@ test('pointer screen aim converts through the canonical camera into a normalized
   assert.deepEqual(snapshot.actions.aim, { x: 1, y: 0, active: true });
   assert.equal(snapshot.actions.aimAssist, false);
   assert.equal(snapshot.metadata.aimSource, 'pointer');
-  assert.equal(snapshot.actions.fire, true);
+  assert.equal(snapshot.actions.fire, false);
   assert.equal(snapshot.metadata.lastActiveDevice, 'keyboard-mouse');
   assert.equal(snapshot.metadata.sourceLatencyMs, 4);
 });
@@ -68,16 +68,16 @@ test('touch controls support simultaneous independent movement and aim plus ever
   input.setTouch({
     moveX: -1, moveY: 0,
     aimX: 0, aimY: 1,
-    fire: true, melee: true, grenade: true, dash: true, pause: true, weaponNext: true,
+    fire: false, melee: false, grenade: true, dash: false, pause: true, weaponNext: true,
   }, 50);
   const { actions, metadata } = input.snapshot({ ...context, nowMs: 55 });
   assert.deepEqual(actions.move, { x: -1, y: 0 });
   assert.deepEqual(actions.aim, { x: 0, y: 1, active: true });
   assert.equal(actions.aimAssist, true);
   assert.deepEqual({ fire: actions.fire, melee: actions.melee, grenade: actions.grenade, dash: actions.dash, pause: actions.pause }, {
-    fire: true, melee: true, grenade: true, dash: true, pause: true,
+    fire: false, melee: false, grenade: true, dash: false, pause: true,
   });
-  assert.equal(actions.weaponNext, true);
+  assert.equal(actions.weaponNext, false);
   assert.equal(metadata.lastActiveDevice, 'touch');
 });
 
@@ -88,7 +88,7 @@ test('gamepad mapping applies radial deadzones and standard action buttons', () 
   });
   assert.deepEqual(mapped.move, { x: 0, y: 0 });
   assert.ok(mapped.aim.x > 0.7);
-  assert.deepEqual(mapped.actions, { fire: true, melee: true, grenade: true, dash: true, pause: true, weaponSlot: 0, weaponNext: true });
+  assert.deepEqual(mapped.actions, { fire: false, melee: false, grenade: true, dash: false, pause: true, weaponSlot: 0, weaponNext: false });
 });
 
 test('M3 gamepad sensitivity and response curves stay bounded and preserve radial direction', () => {
@@ -114,7 +114,7 @@ test('keyboard pointer touch and gamepad produce parity-equivalent canonical act
   const pointerActions = canonical(keyboard);
   const touchActions = canonical(touch);
   const gamepadActions = canonical(gamepad);
-  const gameplay = ({ aimAssist, ...actions }) => actions;
+  const gameplay = ({ aimAssist, aimDevice, ...actions }) => actions;
   assert.deepEqual(gameplay(pointerActions), gameplay(touchActions));
   assert.deepEqual(gameplay(touchActions), gameplay(gamepadActions));
   assert.equal(pointerActions.aimAssist, false);
@@ -142,16 +142,13 @@ test('reset clears sticky movement aim and actions after blur visibility or poin
   assert.deepEqual(snapshot.actions.move, { x: 0, y: 0 });
   assert.deepEqual(snapshot.actions.aim, { x: 0, y: 0, active: false });
   assert.equal(snapshot.actions.fire, false);
-  assert.equal(snapshot.actions.dash, false);
+  assert.equal(snapshot.actions.grenade, false);
   assert.equal(snapshot.metadata.resetReason, 'visibility-hidden');
 });
 
 test('rapid one-shot combat taps survive a zero-step render frame and are consumed by exactly one fixed tick', () => {
   const bindings = [
-    ['Space', 'fire'],
-    ['KeyE', 'melee'],
     ['KeyF', 'grenade'],
-    ['ShiftLeft', 'dash'],
   ];
   for (const [code, action] of bindings) {
     const input = new InputState();
@@ -178,39 +175,91 @@ test('rapid one-shot combat taps survive a zero-step render frame and are consum
   }
 });
 
-test('unconsumed one-shot combat taps expire after the bounded 100 ms response window', () => {
-  const input = new InputState();
-  input.setKey('ShiftLeft', true, 0);
-  input.setKey('ShiftLeft', false, 1);
-  assert.equal(input.snapshot({ ...context, nowMs: 100 }).actions.dash, true);
-  assert.equal(input.snapshot({ ...context, nowMs: 101 }).actions.dash, false);
-});
-
-test('pointer touch and gamepad rising edges receive the same one-shot action buffering as keyboard', () => {
-  const pointer = new InputState();
-  pointer.setPointer({ screenX: 500, screenY: 300, fire: true }, 1);
-  pointer.setPointer({ screenX: 500, screenY: 300, fire: false }, 2);
-  assert.equal(pointer.snapshot({ ...context, nowMs: 3 }).actions.fire, true);
-
-  for (const device of ['touch', 'gamepad']) {
+test('released buffered combat taps enter only the first tick of a four-step catch-up frame', () => {
+  for (const [code, action] of [['KeyF', 'grenade']]) {
     const input = new InputState();
-    const pressed = { fire: true, melee: true, grenade: true, dash: true };
-    if (device === 'touch') {
-      input.setTouch(pressed, 1);
-      input.setTouch({}, 2);
-    } else {
-      input.setGamepad(pressed, 1);
-      input.setGamepad({}, 2);
-    }
-    const actions = input.snapshot({ ...context, nowMs: 3 }).actions;
-    assert.deepEqual(
-      { fire: actions.fire, melee: actions.melee, grenade: actions.grenade, dash: actions.dash },
-      pressed,
-      `${device} taps must retain every buffered combat action`,
-    );
+    const simulation = new DeterministicSimulation();
+    const observed = [];
+    simulation.onStep(({ input: actions }) => observed.push(actions[action]));
+    simulation.start();
+    input.setKey(code, true, 1);
+    input.setKey(code, false, 2);
+    const snapshot = input.snapshot({ ...context, nowMs: 3 });
+    const frame = simulation.update(FIXED_STEP_MS * 4, snapshot.actions, snapshot.heldActions);
+    assert.equal(frame.steps, 4);
+    input.consumeBufferedActions(snapshot.sequence);
+    assert.deepEqual(observed, [true, false, false, false], `${action} cannot be replayed by catch-up ticks`);
   }
 });
 
+test('physically held actions continue through catch-up without latency metadata entering authority', () => {
+  const input = new InputState();
+  const simulation = new DeterministicSimulation();
+  const observed = [];
+  simulation.onStep(({ input: actions }) => observed.push(actions));
+  simulation.start();
+  input.setKey('KeyF', true, 1);
+  const snapshot = input.snapshot({ ...context, nowMs: 3 });
+  assert.ok(snapshot.heldActions, 'input must separate held state from released buffered pulses');
+  simulation.update(FIXED_STEP_MS * 4, snapshot.actions, snapshot.heldActions);
+  assert.deepEqual(observed.map(actions => actions.grenade), [true, true, true, true]);
+  for (const actions of observed) {
+    assert.deepEqual(Object.keys(actions).sort(), Object.keys(snapshot.actions).sort());
+    assert.ok(Object.isFrozen(actions));
+    assert.equal(Object.hasOwn(actions, 'sourceLatencyMs'), false);
+  }
+});
+
+test('released grenade tick records are identical across 60/30/20Hz and four-step admission', () => {
+  const run = (partition) => {
+    const input = new InputState();
+    const simulation = new DeterministicSimulation({ seed: 1337 });
+    const observed = [];
+    simulation.onStep(({ tick, input: actions }) => observed.push({ tick, actions }));
+    simulation.start();
+    input.setKey('KeyF', true, 1);
+    input.setKey('KeyF', false, 2);
+    for (let tick = 0; tick < 12; tick += partition) {
+      const snapshot = input.snapshot({ ...context, nowMs: 3 + tick * FIXED_STEP_MS });
+      const frame = simulation.update(FIXED_STEP_MS * partition, snapshot.actions, snapshot.heldActions);
+      if (frame.steps > 0) input.consumeBufferedActions(snapshot.sequence);
+    }
+    assert.equal(observed.length, 12);
+    assert.equal(observed.filter(event => event.actions.grenade).length, 1);
+    return observed;
+  };
+  const baseline = run(1);
+  for (const partition of [2, 3, 4]) assert.deepEqual(run(partition), baseline);
+});
+
+test('simulation continuation input remains immutable plain data and runtime passes held actions', async () => {
+  const simulation = new DeterministicSimulation();
+  simulation.start();
+  assert.throws(() => simulation.update(FIXED_STEP_MS, {}, () => ({})), /plain deterministic data/);
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /simulation\.update\(ticker\.deltaMS, snapshot\.actions, snapshot\.heldActions\)/);
+});
+
+test('unconsumed one-shot combat taps expire after the bounded 100 ms response window', () => {
+  const input = new InputState();
+  input.setKey('KeyF', true, 0);
+  input.setKey('KeyF', false, 1);
+  assert.equal(input.snapshot({ ...context, nowMs: 100 }).actions.grenade, true);
+  assert.equal(input.snapshot({ ...context, nowMs: 101 }).actions.grenade, false);
+});
+
+test('pointer touch and gamepad grenade taps share the same one-shot buffer',()=>{
+  for(const device of ['pointer','touch','gamepad']) {
+    const input=new InputState();
+    if(device==='pointer') {
+      input.setPointer({screenX:500,screenY:300,grenade:true},1);
+      input.setPointer({screenX:500,screenY:300,grenade:false},2);
+    } else { const set=device==='touch'?'setTouch':'setGamepad';input[set]({grenade:true},1);input[set]({},2); }
+    const snapshot=input.snapshot({...context,nowMs:3});assert.equal(snapshot.actions.grenade,true);
+    input.consumeBufferedActions(snapshot.sequence);assert.equal(input.snapshot({...context,nowMs:4}).actions.grenade,false);
+  }
+});
 test('radial normalization removes deadzone drift and caps magnitude at one', () => {
   assert.deepEqual(normalizeAxisPair(0.1, -0.1, 0.2), { x: 0, y: 0 });
   const diagonal = normalizeAxisPair(1, 1, 0);
@@ -231,19 +280,14 @@ test('touch layout respects safe areas and adapts to portrait and landscape rota
     }
   }
   assert.notDeepEqual(portrait.moveStick, landscape.moveStick);
-  assert.ok(portrait.buttons.weapon, 'touch players need a visible weapon switch control');
-  assert.ok(portrait.buttons.weapon.x < portrait.moveStick.x, 'weapon switch belongs under the movement thumb');
+  assert.equal(portrait.buttons.weapon,undefined,'weapon acquisition is automatic');
   // The mobile utility buttons must not overlap each other.
   const actionDistance = Math.hypot(
     portrait.buttons.power.x - portrait.buttons.pause.x,
     portrait.buttons.power.y - portrait.buttons.pause.y,
   );
   assert.ok(actionDistance >= portrait.buttons.power.radius + portrait.buttons.pause.radius + 8);
-  const weaponDistance = Math.hypot(
-    portrait.buttons.weapon.x - portrait.buttons.pause.x,
-    portrait.buttons.weapon.y - portrait.buttons.pause.y,
-  );
-  assert.ok(weaponDistance >= portrait.buttons.weapon.radius + portrait.buttons.pause.radius + 8);
+
   assert.ok(portrait.buttons.power.x > portrait.viewport.width - 100, 'power stays under the aiming thumb');
   const scaled = computeTouchControlLayout({ width: 390, height: 844, controlScale: 1.2 });
   assert.ok(scaled.moveStick.radius > portrait.moveStick.radius);
@@ -254,8 +298,8 @@ test('M3 left-handed touch layout mirrors control roles without overlap or unsaf
   const left = computeTouchControlLayout({ width: 390, height: 844, leftHanded: true });
   assert.equal(left.moveStick.x, standard.aimStick.x);
   assert.equal(left.aimStick.x, standard.moveStick.x);
-  assert.equal(left.buttons.power.x, standard.buttons.weapon.x);
-  assert.equal(left.buttons.weapon.x, standard.buttons.power.x);
+  assert.ok(Math.abs(left.buttons.power.x-(390-standard.buttons.power.x))<1e-9);
+  assert.equal(left.buttons.weapon,undefined);
   for (const control of [left.moveStick, left.aimStick, ...Object.values(left.buttons)]) {
     assert.ok(control.x - control.radius >= 0 && control.x + control.radius <= 390);
     assert.ok(control.y - control.radius >= 0 && control.y + control.radius <= 844);

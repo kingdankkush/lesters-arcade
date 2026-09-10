@@ -199,13 +199,19 @@ test('the launcher declaration mirrors the authoritative grenade it fires', asyn
   assert.equal(launcher.policy.radius, HMH_GRENADE_DEFINITION.blastRadius);
 });
 
-test('weapon cycling in the runtime skips exhausted pickups (mobile SWAP trap)', async () => {
-  // Cycle 048 review fix: with SWAP as the only mobile switch, selecting an
-  // exhausted weapon bounced back to the pistol next tick and made every
-  // later slot unreachable. The runtime must treat dead pickups as
-  // unselectable in both cycling and direct slots.
+test('automatic pickup equip and exhausted fallback cannot trap later weapons behind a removed SWAP control', async () => {
   const source = await (await import('node:fs/promises')).readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /const weaponSelectable = \(id\) =>/);
-  assert.match(source, /weaponSelectable\(rawDirectWeaponId\)/);
-  assert.match(source, /if \(weaponSelectable\(candidate\)\)/);
+  assert.match(source, /grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: true, progressionByWeapon \}\)/);
+  assert.match(source, /stepWeaponLoadout\(weaponLoadout, \{\s*tick,\s*fire: aimIntent\.fire/);
+  assert.doesNotMatch(source, /rawDirectWeaponId/);
+  const loadout = newLoadout();
+  grantWeaponPickup(loadout, { tick: 1, weaponId: 'scatter-shotgun', select: true });
+  loadout.weapons['scatter-shotgun'].ammoInClip = 0;
+  loadout.weapons['scatter-shotgun'].reserveAmmo = 0;
+  stepWeaponLoadout(loadout, { tick: 2, fire: true, direction: { x: 1, y: 0 } });
+  assert.equal(loadout.activeWeaponId, 'coin-blaster');
+  grantWeaponPickup(loadout, { tick: 3, weaponId: 'auto-miner', select: true });
+  stepWeaponLoadout(loadout, { tick: 4, fire: true, direction: { x: 1, y: 0 } });
+  assert.equal(loadout.activeWeaponId, 'auto-miner');
+  assert.ok(loadout.weapons['auto-miner'].ammoInClip > 0);
 });

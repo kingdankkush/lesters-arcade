@@ -116,7 +116,7 @@ export function createCombatAudio({
     try { await music.play(); } catch {}
   };
 
-  const play = (cue, { now = globalThis.performance?.now?.() ?? Date.now(), volume = 0.1 } = {}) => {
+  const play = (cue, { now = globalThis.performance?.now?.() ?? Date.now(), volume = 0.1, playbackRate = 1 } = {}) => {
     if (paused && !PAUSED_CUE_ALLOWLIST.has(cue)) return Object.freeze({ played: false, reason: 'paused' });
     const samplePath = SAMPLE_PATHS[cue];
     if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) {
@@ -145,6 +145,7 @@ export function createCombatAudio({
       cleanup();
     }
     const audio = new AudioCtor(samplePath);
+    audio.playbackRate=Number.isFinite(playbackRate)?Math.max(.65,Math.min(1.4,playbackRate)):1;
     audio.preload = 'auto';
     const busLevel = plan.family === 'ui' ? uiLevel : sfxLevel;
     const rangeGain = dynamicRange === 'night' ? 0.75 : 1;

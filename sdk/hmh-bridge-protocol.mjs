@@ -68,7 +68,7 @@ function validateSettings(value) {
   }
   if (Object.hasOwn(value, 'dynamicRange') && !['standard', 'night', 'wide'].includes(value.dynamicRange)) return 'settings.dynamicRange is invalid';
   if (Object.hasOwn(value, 'keyboardBindings')) {
-    const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'fire', 'melee', 'grenade', 'dash', 'pause', 'weaponNext', 'weaponSlot1', 'weaponSlot2', 'weaponSlot3', 'weaponSlot4'];
+    const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'pause'];
     const bindingError = exactKeys(value.keyboardBindings, actionIds, 'settings.keyboardBindings');
     if (bindingError) return bindingError;
     const unique = new Set();

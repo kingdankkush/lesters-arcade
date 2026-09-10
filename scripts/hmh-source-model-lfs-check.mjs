@@ -39,7 +39,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const SOURCE_MODEL_ROOT = 'apps/hmh-reboot/assets/source/models';
-export const LFS_MODEL_EXTENSIONS = Object.freeze(['glb', 'fbx', 'bin', 'png', 'jpg', 'jpeg']);
+export const LFS_MODEL_EXTENSIONS = Object.freeze(['glb', 'fbx', 'bin', 'png', 'jpg', 'jpeg', 'blend']);
 export const LFS_MODEL_RULES = Object.freeze(
   LFS_MODEL_EXTENSIONS.map((extension) => `${SOURCE_MODEL_ROOT}/**/*.${extension} filter=lfs diff=lfs merge=lfs -text`),
 );
@@ -47,6 +47,10 @@ export const LFS_MODEL_RULES = Object.freeze(
 // Mixamo GLB with packed 2048 textures lands well under this; anything above
 // it is almost always an unpacked texture set or an un-decimated scan.
 export const SOURCE_MODEL_MAX_BYTES = 40 * 1024 * 1024;
+// Packed, source-original Blender scenes include the embedded 2K PBR texture
+// set and therefore have a separate ceiling. This does not alter the 40 MB
+// interchange-model budget above.
+export const SOURCE_PACKED_BLEND_MAX_BYTES = 96 * 1024 * 1024;
 // Largest texture edge the atlas exporter will consume (roadmap P-5: <= 2048).
 export const MAX_TEXTURE_DIMENSION = 2048;
 export const LFS_POINTER_FIRST_LINE = 'version https://git-lfs.github.com/spec/v1';
@@ -62,6 +66,28 @@ export function isLfsPointer(bytes) {
   if (!bytes || bytes.length < LFS_POINTER_FIRST_LINE.length) return false;
   const firstLine = bytes.subarray(0, LFS_POINTER_FIRST_LINE.length).toString('utf8');
   return firstLine === LFS_POINTER_FIRST_LINE;
+}
+
+export function evaluateDeclaredSourcePayload(bytes, { sourceSha256, sourceBytes } = {}) {
+  const problems = [];
+  if (!Buffer.isBuffer(bytes)) return { kind: 'invalid', problems: ['source payload is not a Buffer'] };
+  if (!/^[0-9a-f]{64}$/u.test(sourceSha256 ?? '') || !Number.isInteger(sourceBytes) || sourceBytes < 0) {
+    return { kind: 'invalid', problems: ['declared source identity is invalid'] };
+  }
+  if (isLfsPointer(bytes)) {
+    const text = bytes.toString('utf8');
+    const match = /^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize (0|[1-9][0-9]*)\r?\n$/u.exec(text);
+    if (!match) {
+      problems.push('LFS pointer must contain exactly the canonical version, oid, and size lines');
+      return { kind: 'lfs-pointer', problems };
+    }
+    if (match[1] !== sourceSha256) problems.push('LFS pointer oid does not match sourceSha256');
+    if (BigInt(match[2]) !== BigInt(sourceBytes)) problems.push('LFS pointer size does not match sourceBytes');
+    return { kind: 'lfs-pointer', problems };
+  }
+  if (bytes.length !== sourceBytes) problems.push(`source byte size ${bytes.length} does not match ${sourceBytes}`);
+  if (createHash('sha256').update(bytes).digest('hex') !== sourceSha256) problems.push('source SHA-256 does not match sourceSha256');
+  return { kind: 'source-original', problems };
 }
 
 export function readPngDimensions(bytes) {
@@ -83,12 +109,14 @@ export function modelExtension(relativePath) {
 
 export function evaluateSourceModelFile({ path: relativePath, sizeBytes, pngDimensions = null } = {}) {
   const problems = [];
+  const extension = modelExtension(relativePath ?? '');
+  const maxBytes = extension === 'blend' ? SOURCE_PACKED_BLEND_MAX_BYTES : SOURCE_MODEL_MAX_BYTES;
+  const capLabel = extension === 'blend' ? '96 MB packed-Blend' : '40 MB';
   if (!Number.isFinite(sizeBytes) || sizeBytes < 0) {
     problems.push(`${relativePath}: size is not measurable`);
-  } else if (sizeBytes > SOURCE_MODEL_MAX_BYTES) {
-    problems.push(`${relativePath}: ${sizeBytes.toLocaleString('en-US')} bytes exceeds the 40 MB per-file cap (${SOURCE_MODEL_MAX_BYTES.toLocaleString('en-US')} bytes)`);
+  } else if (sizeBytes > maxBytes) {
+    problems.push(`${relativePath}: ${sizeBytes.toLocaleString('en-US')} bytes exceeds the ${capLabel} per-file cap (${maxBytes.toLocaleString('en-US')} bytes)`);
   }
-  const extension = modelExtension(relativePath ?? '');
   if (extension === 'png') {
     if (!pngDimensions) {
       problems.push(`${relativePath}: PNG IHDR could not be read`);
@@ -201,6 +229,7 @@ export async function runOfflineCheck({ root = process.cwd() } = {}) {
     trackedModels: models.length,
     models,
     maxBytesPerFile: SOURCE_MODEL_MAX_BYTES,
+    maxPackedBlendBytesPerFile: SOURCE_PACKED_BLEND_MAX_BYTES,
     maxTextureDimension: MAX_TEXTURE_DIMENSION,
     notes,
     problems,

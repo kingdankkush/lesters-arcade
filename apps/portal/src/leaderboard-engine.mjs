@@ -4,6 +4,7 @@
 //   daily, weekly, monthly, yearly, all-time
 //
 import { isCurrentVersion } from './version-tracking.mjs';
+import { filterLeaderboardEntriesBySource } from './leaderboard-seed.mjs';
 
 // Each ranked run is filed into the period it belongs to (derived from the run
 // timestamp, UTC). Reads filter to the *current* period for daily/weekly/etc,
@@ -91,6 +92,11 @@ export function recordCadenceScore(state, gameId, entry, { limitPerPeriod = 100 
     recordedAt: when,
     runStats: { ...(entry.runStats ?? {}) },
     settlementTxHash: entry.settlementTxHash ?? null,
+    ...(entry.onChain === true ? {
+      onChain: true,
+      chainVerified: entry.chainVerified === true,
+      onChainSessionId32: entry.onChainSessionId32 ?? null,
+    } : {}),
   };
 
   for (const cadence of LEADERBOARD_CADENCES) {
@@ -117,6 +123,7 @@ export function getLeaderboard(state, gameId, cadence, {
   wallet = null,
   displayNameFor = (w) => w,
   filterToCurrentVersion = true,
+  source = null,
 } = {}) {
   if (!LEADERBOARD_CADENCES.includes(cadence)) {
     throw new Error(`Unknown leaderboard cadence: ${cadence}`);
@@ -133,8 +140,10 @@ export function getLeaderboard(state, gameId, cadence, {
     ? rows.filter((row) => !row.version || isCurrentVersion(row.version))
     : rows;
 
+  // Partition first: an unsettled PB must not erase a lower verified score.
+  const sourceBoard = source == null ? null : filterLeaderboardEntriesBySource(versionFiltered, state?.profiles, source);
   const bestByWallet = new Map();
-  for (const row of versionFiltered) {
+  for (const row of sourceBoard?.rows ?? versionFiltered) {
     const walletKey = String(row.wallet ?? '').trim().toLowerCase();
     if (!walletKey) continue;
     const current = bestByWallet.get(walletKey);
@@ -161,6 +170,7 @@ export function getLeaderboard(state, gameId, cadence, {
     gameId,
     cadence,
     periodKey: key,
+    source: sourceBoard?.source ?? null,
     total: ranked.length,
     topEntries: top,
     playerEntry,

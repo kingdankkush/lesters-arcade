@@ -7,23 +7,25 @@ import test from 'node:test';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const load = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), 'utf8'));
 
-test('selector explicitly uses the four real textured Tripo heroes without claiming gameplay rigs', () => {
+test('selector uses each verified textured gameplay source and its native aim action', () => {
   const render = load('apps/hmh-reboot/assets/source/blender/hmh-hero-selector-render.json');
-  assert.equal(render.scene.sourceMode, 'static-textured-models');
+  assert.equal(render.scene.sourceMode, 'packed-gameplay-sources');
   assert.equal(render.scene.readOnly, true);
-  assert.notEqual(render.scene.sourceBlend, load('apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json').scene.sourceBlend);
+  assert.equal(render.scene.sourceBlend, undefined, 'do not attribute a fictional combined selector scene');
+  assert.equal(render.scene.sourceManifest, 'apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json');
   const sources = load(render.scene.sourceManifest);
-  assert.equal(sources.schema, 'hmh-tripo-selector-sources-v1');
-  assert.deepEqual(sources.heroes.map((h) => h.actorId), ['lit-commando', 'lit-valkyrie', 'lester-original', 'lilly']);
-  assert.equal(sources.heroes.length, 4);
-  for (const hero of sources.heroes) {
-    assert.match(hero.sourceSha256, /^[a-f0-9]{64}$/u);
-    assert.ok(Number.isSafeInteger(hero.sourceBytes) && hero.sourceBytes > 0);
-    assert.equal(hero.imageCount, 3);
-    assert.equal(hero.rigged, false);
-    assert.equal(hero.gameplayIntegrated, false);
+  assert.deepEqual(sources.pilots.map((p) => p.actorId), ['lit-commando', 'lit-valkyrie', 'lester-original', 'lilly']);
+  assert.equal(sources.pilots.length, 4);
+  for (const pilot of sources.pilots) {
+    assert.equal(pilot.sourceModel.kind, 'packed-textured-blend');
+    assert.match(pilot.sourceModel.path, /^apps\/hmh-reboot\/assets\/source\/models\/tripo-gameplay\//u);
+    assert.match(pilot.sourceModel.sourceSha256, /^[a-f0-9]{64}$/u);
+    assert.ok(Number.isSafeInteger(pilot.sourceModel.sourceBytes) && pilot.sourceModel.sourceBytes > 0);
+    assert.equal(pilot.sourceModel.externalDependencyCount, 0);
+    assert.ok(pilot.sourceModel.packedTextureCount > 0);
+    assert.equal(pilot.clipActions.aim, 'HMH_Aim');
   }
-  assert.deepEqual(render.pose, { mode: 'source-rest-pose', rigged: false });
+  assert.deepEqual(render.pose, { mode: 'native-action', action: 'HMH_Aim', frameIndex: 0, frameCount: 1, loop: false });
 });
 
 test('selector provenance verifies real bytes and canonical manifest-bound LFS pointers, rejecting forgeries', () => {

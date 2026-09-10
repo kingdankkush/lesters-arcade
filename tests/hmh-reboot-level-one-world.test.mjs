@@ -214,7 +214,8 @@ test('runtime imports the world contract instead of retaining an inline parallel
   assert.match(source, /from '.\/level-one-world\.mjs'/);
   assert.match(source, /LEVEL_ONE_WORLD/);
   assert.match(source, /createLevelOneGroundQuery/);
-  assert.match(source, /buildLevelOneMinimapGeometry/);
+  // The owner removed the minimap projection, not authoritative exploration.
+  assert.doesNotMatch(source, /buildLevelOneMinimapGeometry|drawMinimap/);
   assert.match(source, /revealLevelOneAt/);
   assert.match(source, /runtimeParams\.get\('evidenceSafe'\) === '1'/);
   assert.match(source, /evidenceSafeEnabled \|\| isDashInvulnerable/);

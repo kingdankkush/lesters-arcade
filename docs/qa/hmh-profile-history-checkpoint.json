@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-09-10T04:01:20.404767+00:00",
+  "scope": "REGISTER:L-5 bounded local canonical profile history, with future ranked-data requirements recorded",
+  "status": "SOURCE_TESTED_REVIEW_BUILD_BROWSER_PENDING",
+  "root": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout",
+  "branch": "hermes/hmh-textured-rollout",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "changedPaths": [
+    "apps/portal/src/hmh-run-history.mjs",
+    "apps/portal/src/routes/official-profile-route.mjs",
+    "apps/portal/styles-arcade-polish.css",
+    "tests/hmh-run-history.test.mjs",
+    "tests/official-profile-route.test.mjs",
+    "DECISIONS.md",
+    "docs/handoffs/hmh-textured-rollout-progress.md",
+    "docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md",
+    "docs/qa/hmh-profile-history-checkpoint.json"
+  ],
+  "sourceTests": {
+    "counts": {
+      "tests": 50,
+      "pass": 50,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "receipt": ".tmp/team/profile-history-20260910T033006Z/source-verification-01/receipt.json",
+    "receiptSha256": "e4eaa9d690d2c049b2ac24d9efb686b8f329dfde89bf5bd761e376f46ee57a03",
+    "syntaxChecks": 4,
+    "addedLineSecurityScanPassed": true
+  },
+  "tdd": {
+    "modelRedFailures": 5,
+    "rendererRedFailures": 2,
+    "originalFocusedGreen": 28,
+    "evidenceDirectory": ".tmp/team/profile-history-20260910T033006Z"
+  },
+  "independentReview": {
+    "status": "BLOCKED_NO_VERDICT",
+    "reviewed": false,
+    "sourceDiffSha256": "3467b96a63eb62bd4009f619bf952343fa90585b98023606d2eec6bd74cbbbf9",
+    "attempts": [
+      {
+        "runtime": "Hermes delegate_task",
+        "delegationId": "deleg_56098a0e",
+        "model": "minimax/minimax-m2.7:free",
+        "result": "Provider HTTP 404; no source inspection or verdict",
+        "evidence": ".tmp/team/profile-history-20260910T033006Z/review-delegated-failure.log"
+      },
+      {
+        "runtime": "Codex CLI 0.147.0, configured gpt-6-astra",
+        "result": "Authenticated command-free preflight HTTP 400: model requires newer CLI; no source review",
+        "evidence": ".tmp/team/profile-history-20260910T033006Z/review-codex-01/preflight-events.jsonl",
+        "commandsExecutedByReviewer": 0
+      }
+    ],
+    "settingsChanged": false
+  },
+  "buildBrowser": {
+    "status": "PENDING_COORDINATION_WINDOW",
+    "codexStatusUpdatedAt": "2026-09-10T03:24:30.1242396Z",
+    "codexResourceWindow": "claimed: serialized local source/build/browser validation; no Blender generation",
+    "request": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Coordination\\hmh-textured-rollout\\messages\\hermes-20260910-profile-validation-window-request.md",
+    "inventoryRegenerated": false,
+    "buildRun": false,
+    "browserRun": false,
+    "reason": "Do not conflict with active Codex serialized validation. Existing emitted bundle is not a build of this source patch."
+  },
+  "preservation": {
+    "indexEntriesSha256": "6ed1c062f130edc3e9f7b8177d5029c833f3f203a07dd90e9a4d680311508f5a",
+    "indexFlagsSha256": "4f751942c7c6c41b8ed86192fdde416ccbdf9e3f8f577b4bae928b99d24d2db8",
+    "indexEntriesAndFlagsUnchanged": true,
+    "currentRawIndexSha256": "d1ab0920df5ff71d1cc8e1b3a61fad0d02539365783f6214525e4d96c7a46cbc",
+    "rawIndexEntryBaselineCapturedThisSlice": false,
+    "candidateBeforeManifest": ".tmp/team/profile-history-20260910T033006Z/candidate-files-before.json",
+    "candidateBeforeManifestSha256": "64479c9c78886ee984335e38011ccafab2a4bc0cbb548d0403b69a880f649522",
+    "emittedChildFiles": [
+      {
+        "path": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+        "bytes": 655,
+        "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-6QJT5C2R.js",
+        "bytes": 300,
+        "sha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655"
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-QDZNXCI6.js",
+        "bytes": 65773,
+        "sha256": "bd8f0ecf0bc49f9000b3421f026189cd381f4adb83ee4c8d7ab4893c2384750d"
+      },
+      {
+        "path": "apps/portal/dist/chunks/chunk-XA4PS4DE.js",
+        "bytes": 48105,
+        "sha256": "20f70e6af16ebdb9c83e6177e8e2ae1bdaf541acc3bff17b2b54e98d33b6e92a"
+      },
+      {
+        "path": "apps/portal/dist/chunks/hmh-pixi.js",
+        "bytes": 465746,
+        "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c"
+      },
+      {
+        "path": "apps/portal/dist/hmh-reboot/game.js",
+        "bytes": 447021,
+        "sha256": "adf75a0f5f0eab7123d23a322eb07d3c340e8d3af3689e9ab630416de22cd332"
+      }
+    ],
+    "emittedInitialBytes": 1027600,
+    "emittedIdentityIsPreviousBuild": true
+  },
+  "limitations": [
+    "Detailed summaries are device-local, not cryptographically bound to accepted chain results.",
+    "Current retention is 50 summaries total across games, wallets and modes, not a permanent ranked archive.",
+    "Upgrade counts are aggregate final-build information, not chronological selections.",
+    "New broader telemetry/schema, durable storage, real-wallet Testnet entry/settlement, soulbound NFTs, epoch reset and Mainnet platform fee are not implemented by this patch.",
+    "Codex world/control return, fuel-yard clearance and G-7 remain separate integration work.",
+    "Human/device/visual/audio/balance/performance/clean-host/Preview/rollback acceptance remains open."
+  ],
+  "sourceSubmission": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Coordination\\hmh-textured-rollout\\submissions\\hermes\\profile-history-source-20260910T040120Z",
+  "lastCombinedReleaseReceipt": "docs/qa/hmh-owner-return-checkpoint.json",
+  "lastCombinedReleaseRerun": false,
+  "settlementLive": false,
+  "committed": false,
+  "published": false,
+  "releaseCertified": false
+}

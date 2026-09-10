@@ -1,0 +1,167 @@
+{
+  "scope": "REGISTER:L-5/L-6 parent-local profile data/copy correction; neither group is fully closed",
+  "status": "SOURCE_REVIEWED_CORRECTED_BUILD_BROWSER_PENDING",
+  "sourceFreezeAt": "2026-09-10T09:22:47.959907+00:00",
+  "headAtEntry": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "branch": "hermes/hmh-textured-rollout",
+  "sourceDiffSha256": "ad3cd36c7682f4d12f8f66a763a72c06f7668849ae40409d63610a2cb4e5f10f",
+  "files": {
+    "apps/portal/src/arcade-core.mjs": "f16c75eebb9d531d3c42361ac555f641c58ff5fb278fc78d9ed92b06e7a72b86",
+    "apps/portal/src/routes/official-profile-route.mjs": "e22650a614406e22644c6d344defbdd67a8170d3c213505e08281c9c4956e2a8",
+    "apps/portal/src/routes/official-app-routes.mjs": "5c7bd36d6f324f6a1b957f930264ae45ad40d2f99c32c8a1e1392971fc849ce7",
+    "tests/profile-data-truth.test.mjs": "450c0d35c2c70f58a1f3c4aa8855767f5a61ae630eda13618f15e9d86ce62dd2",
+    "tests/official-profile-route.test.mjs": "41d01042b40a979feb05c9eafb4b6107f5668ceeea65d1649614478017931736",
+    "tests/official-app-routes.test.mjs": "e61e5adf7d376e41531719d0d4280a92d45f43a43b116d772fc37ef593086848",
+    "tests/arcade-core.test.mjs": "b7a2e05c6fb66d14d7787a766f0fc627b3bdfbc4a3f65e67fbe16cf1c364af4c",
+    "scripts/syntax-check.mjs": "c6913efc3b43392f61c27b35872eb99a19b99d0cd15c86dc9167f745d7d4b13c"
+  },
+  "focused": {
+    "tests": 106,
+    "pass": 106,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "broader": {
+    "counts": {
+      "tests": 206,
+      "pass": 205,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "exitCode": 1,
+    "expectedLegacyFailure": [
+      "HD sprite atlas provides high-resolution artwork, dense animation coverage, and clean browser-frame metadata"
+    ],
+    "notAnAllGreenRun": true
+  },
+  "syntaxChecks": [
+    {
+      "file": "apps/portal/src/arcade-core.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/portal/src/routes/official-profile-route.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "apps/portal/src/routes/official-app-routes.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "tests/profile-data-truth.test.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "tests/official-profile-route.test.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "tests/official-app-routes.test.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "tests/arcade-core.test.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "scripts/syntax-check.mjs",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "securityScan": {
+    "secret-assignment": [],
+    "unsafe-execution": [],
+    "html-injection": [],
+    "machine-path-leak": []
+  },
+  "independentReview": {
+    "model": "gpt-5.5",
+    "exitCode": 0,
+    "verdict": "PASS",
+    "scope": "source-only",
+    "diffSha256": "ad3cd36c7682f4d12f8f66a763a72c06f7668849ae40409d63610a2cb4e5f10f",
+    "resultSha256": "05340f9bc9a7c7edf1cacbb969ff3efdf6fe2b7af967c73cbe109bd4b7b0d30e",
+    "eventsSha256": "7602b1f5ca1ddc0ea17d5cee5c96e13ba4fdfc878731ca2ab212d95bf8899c72",
+    "authenticatedCompletedTurn": true,
+    "toolEvents": 0,
+    "warningsRetained": true
+  },
+  "verification": {
+    "exactPatchFiles": 8,
+    "allAfterHashesMatch": true,
+    "changedCoreFunctions": [
+      {
+        "type": "FunctionDeclaration",
+        "name": "collectProfileOfficialSessions"
+      },
+      {
+        "type": "FunctionDeclaration",
+        "name": "buildProfileExperienceV2Model"
+      },
+      {
+        "type": "FunctionDeclaration",
+        "name": "buildHardMoneyHeroesStatsModule"
+      }
+    ],
+    "mixedIndexPreserved": true,
+    "unrelatedSourcePreserved": true,
+    "priorEmittedBuildPreservedAndNotRecertified": true
+  },
+  "changes": [
+    "Only explicit cached paid/ranked modes count; absent modes remain unknown and same-identity partial metadata preserves explicit modes.",
+    "Selected-game Ranked history is filtered before its limit, independently of mixed-history/detail-link rows.",
+    "Cached receipt hashes and settled flags do not authenticate profile rows, headings or receipt panels.",
+    "Global badge unlock rates are unavailable, not heuristic percentages; local featured badges remain.",
+    "Guest/empty-state copy does not promise currently available durable history, gas-only settlement or verified publishing."
+  ],
+  "priorBrowserPrerequisite": {
+    "path": ".tmp/team/parent-ui-validation/window-result.json",
+    "sha256": "3dd27e9ffacf42faab576da2e7251673c3653c5d01ec890b13cf5c5695423de7",
+    "profiles": [
+      "desktop-06",
+      "portrait-03"
+    ],
+    "featureChecks": 6,
+    "emittedFilesVerified": 33,
+    "mainSha256": "afbe2c9234919bd27e45bc338718548616a477947360281dc7fbf97d3b4c59fa",
+    "doesNotCertifyCurrentCorrectedSource": true
+  },
+  "originalFailuresPreserved": [
+    "initial RED cases and connected-renderer fixture calibration",
+    "initial independent BLOCKED review and resulting regressions",
+    "gpt-5.6-sol capacity failure",
+    "gpt-6-astra CLI-version incompatibility; no upgrade attempted",
+    "rejected non-exact Spark proposal; no fuzzy application",
+    "all prior browser and patch-rehearsal attempts"
+  ],
+  "remaining": [
+    "Corrected inventory/build and serial native desktop/portrait recapture after Codex releases its claimed window.",
+    "Frozen fourteen-group Codex return, guarded integration and fresh combined gates/gameplay acceptance.",
+    "Durable every-Ranked-session history, verified global metrics, real-wallet/payment/receipt and NFT acceptance.",
+    "Five first-time desktop and five first-time mobile recordings, physical devices and exact-candidate owner acceptance.",
+    "Exact candidate review, immutable Preview/rollback and authorized production readback."
+  ],
+  "queue": {
+    "groups": 55,
+    "originalIds": 67,
+    "sha256": "c0654d201202d8ff45cf964dd434c1ce5d687311a038e56e70b78f6d5a8e1c18",
+    "unchangedByThisSlice": true
+  },
+  "settlementLive": false,
+  "committed": false,
+  "pushed": false,
+  "deployed": false,
+  "evidenceRoot": ".tmp/team/profile-truth"
+}

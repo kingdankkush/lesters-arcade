@@ -875,6 +875,8 @@ export function stepWeaponLoadout(state, {
   channelTargets = [],
   channelLineOfSight = () => true,
   channelStopReason = '',
+  channelProvokesAmbient = true,
+  currentEligibleTargetIds = [],
   meleeOrigin = { x: 0, y: 0, z: 0 },
   meleeTargets = [],
   meleeBlockers = [],
@@ -933,14 +935,18 @@ export function stepWeaponLoadout(state, {
     return freezeDeep({ tick, standard: getForkedStandardSnapshot(weapon.standardState), events });
   }
   if (definition.kind === 'flame-channel') {
+    if (typeof channelProvokesAmbient !== 'boolean' || !Array.isArray(currentEligibleTargetIds) || currentEligibleTargetIds.length > 256) throw new TypeError('bounded channel provenance is required');
+    const eligible = new Set(currentEligibleTargetIds);
     const burnerFrame = stepBearMarketBurner(weapon.burnerState, {
       tick,
       fire,
       origin: channelOrigin,
       direction,
-      targets: channelTargets,
+      targets: channelProvokesAmbient ? channelTargets : channelTargets.filter(target => eligible.has(String(target.id))),
       lineOfSight: channelLineOfSight,
       policy: progression.burnerPolicy,
+      provokesAmbient: channelProvokesAmbient,
+      currentEligibleTargetIds,
     });
     weapon.ammoInClip = weapon.burnerState.fuel;
     weapon.reserveAmmo = weapon.burnerState.reserveFuel;
@@ -954,6 +960,7 @@ export function stepWeaponLoadout(state, {
           targetId: contact.targetId,
           point: { x: target?.x ?? channelOrigin.x, y: target?.y ?? channelOrigin.y, z: target?.z ?? target?.groundZ ?? 0 },
           damage: contact.directDamage,
+          provokesAmbient: pulse.provokesAmbient,
           damagePermille: contact.damagePermille,
           knockbackMultiplier: 1,
         });

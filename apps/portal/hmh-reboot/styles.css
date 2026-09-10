@@ -98,20 +98,20 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
    release certification dereferences its rect on three touch profiles.
    `pointer-events: none` is load-bearing: the mobile-controls smoke resolves
    `elementFromPoint` at each touch-control centre, and the bar has no
-   interactive children of its own. The desktop width stops short of the
-   minimap exclusion zone (viewport - map - 22px). */
+   interactive children of its own. Keep the command-chip clearance on the
+   left, but no longer reserve a minimap column on the right. */
 .hmh-run-rail {
   position: absolute;
   z-index: 7;
   top: max(14px, env(safe-area-inset-top));
-  left: 50%;
+  left: max(250px, calc((100% - 940px) / 2));
   display: grid;
   gap: 5px;
-  width: min(940px, calc(100% - 500px));
+  width: min(940px, calc(100% - 266px));
   padding: 6px;
   border-radius: 16px;
   pointer-events: none;
-  transform: translateX(-50%);
+  transform: none;
 }
 .hmh-hud-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: stretch; min-width: 0; }
 .hmh-run-stat { display: grid; align-content: center; min-width: 72px; padding: 5px 11px; border-right: 1px solid rgba(143,243,255,0.14); }
@@ -224,9 +224,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-hud-weapon[data-state="overheated"] .hmh-hud-weapon-state { color: var(--danger); }
 
 /* ---- U-3 arsenal strip --------------------------------------------------- */
-/* Slots 1-4 are the only keyboard hotkeys (Digit1-Digit4); weapons five to
-   eight are reached with the cycle binding, so the strip must not imply keys
-   that do not exist. */
+/* The arsenal shows ownership and the automatically equipped weapon. */
 .hmh-hud-arsenal { display: grid; flex: 1 1 auto; gap: 4px; align-content: center; justify-items: center; padding: 3px 11px; border-right: 1px solid rgba(143,243,255,0.14); }
 .hmh-hud-slots { display: flex; gap: 3px; }
 .hmh-hud-slots b {
@@ -477,7 +475,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   /* Before U-3 this declared four grid tracks for five children, so the dash
      readout wrapped to an implicit row on every touch profile. The cockpit is
      an explicit two-row flex bar now, so the tracks are gone entirely. */
-  .hmh-run-rail { top: 165px; width: calc(100% - 24px); }
+  .hmh-run-rail { top: 106px; left: 50%; width: calc(100% - 24px); transform: translateX(-50%); }
   .hmh-run-stat { min-width: 0; padding-inline: 7px; }
   .hmh-run-stat strong { font-size: 0.82rem; }
   .hmh-profile-panel { top: 190px; }
@@ -633,9 +631,8 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   .hmh-adapter-status { display: none; }
   .hmh-command-row { margin: 0; }
   .hmh-command-button { min-height: 38px; padding: 4px 7px; font-size: 0.56rem; }
-  /* Landscape phones: the command chip owns the top-left and the minimap the
-     top-right, so the cockpit lives in the band between them. The right edge
-     stays clear of the minimap exclusion zone (viewport - 140 - 22). */
+  /* Landscape phones keep command-chip clearance on the left and a normal
+     right gutter; the retired minimap no longer reserves a column. */
   /* Landscape phones get the same compaction as portrait, tuned to a 456px
      band: vitals and every run stat on one line, then the weapon card beside
      the arsenal strip with the utility cluster wrapping under them. Two lines
@@ -644,7 +641,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   .hmh-run-rail {
     top: 8px;
     left: 210px;
-    width: min(456px, calc(100% - 388px));
+    width: min(456px, calc(100% - 226px));
     gap: 2px;
     padding: 3px;
     border-radius: 11px;
@@ -709,12 +706,12 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 }
 
 @media (max-width: 700px) and (max-height: 520px) and (orientation: landscape) {
-  .hmh-run-rail { left: 190px; width: calc(100% - 368px); }
+  .hmh-run-rail { left: 190px; width: calc(100% - 206px); }
 }
 
 @media (max-width: 620px) and (max-height: 520px) and (orientation: landscape) {
   .hmh-reboot-status-card { display: none; }
-  .hmh-run-rail { left: 8px; width: calc(100% - 186px); }
+  .hmh-run-rail { left: 8px; width: calc(100% - 16px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -761,6 +758,21 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   padding: 7px 34px 7px 11px;
   font-size: 0.61rem;
 }
+/* Preserve full first-use help outside the native body's centre lane. */
+@media (min-width: 601px) and (min-height: 521px) {
+  .hmh-controls-hint[data-mode="touch"] {
+    top: 234px;
+    left: 12px;
+    max-width: min(390px, calc(50vw - 80px));
+    transform: none;
+  }
+}
+/* Wide touch screens have room for the complete cockpit beside the command
+   card. Stacking both full-width pushes taller native heads under the HUD. */
+@media (hover: none) and (pointer: coarse) and (min-width: 901px) and (min-height: 521px) {
+  .hmh-run-rail { top: 12px; left: 260px; width: calc(100% - 272px); transform: none; }
+  .hmh-controls-hint[data-mode="touch"] { top: 106px; max-width: 232px; }
+}
 .hmh-controls-hint button {
   flex: 0 0 auto;
   width: 22px;
@@ -777,7 +789,8 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
      the hint sits in the gap between the two. */
   .hmh-controls-hint[data-mode="touch"] {
     bottom: auto;
-    top: max(184px, env(safe-area-inset-top));
+    top: max(212px, env(safe-area-inset-top));
+    width: calc(100% - 24px);
     max-width: calc(100% - 24px);
     padding-block: 6px;
     font-size: 0.58rem;
@@ -788,8 +801,10 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 }
 @media (max-width: 900px) and (max-height: 520px) and (orientation: landscape) {
   .hmh-controls-hint[data-mode="touch"] {
-    top: max(94px, env(safe-area-inset-top));
-    max-width: min(410px, calc(100% - 370px));
+    top: max(104px, env(safe-area-inset-top));
+    left: 8px;
+    max-width: 190px;
+    transform: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -799,3 +814,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
     transform: none;
   }
 }
+
+.hmh-field-map-section { grid-column: 1 / -1; min-width: 0; }
+#hmhFieldMap svg { display: block; width: 100%; height: auto; max-height: 250px; }
+.hmh-field-map-key { font-size: 12px; line-height: 1.5; color: #d1e1d7; }

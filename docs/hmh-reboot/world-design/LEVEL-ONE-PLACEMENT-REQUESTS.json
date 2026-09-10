@@ -1,0 +1,3109 @@
+{
+  "schema": "hmh-world-design-placement-request-v1",
+  "worldId": "forked-frontier",
+  "baseCommit": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "status": "Native art integrated in the Codex local candidate; world-upgrade layout reconciled; Hermes release certification pending",
+  "placements": [
+    {
+      "id": "relay:west-farmhouse",
+      "districtId": "frontier-relay",
+      "anchor": {
+        "x": 330,
+        "y": 1700
+      },
+      "footprint": {
+        "width": 223,
+        "depth": 254
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 218.5,
+            "y": 1573
+          },
+          {
+            "x": 441.5,
+            "y": 1573
+          },
+          {
+            "x": 441.5,
+            "y": 1827
+          },
+          {
+            "x": 218.5,
+            "y": 1827
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 260,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "relay-abandoned-farmhouse",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-62-clapboard-farmhouse",
+        "existingGameAssetId": "hmh-ld2-62-clapboard-farmhouse",
+        "proposedGameAssetId": "hmh-ld2-62-clapboard-farmhouse",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-62 - Clapboard Farmhouse.glb",
+        "glbSha256": "a63251de2278f8de195776a0d9eac2304c1ad70224063f1ec87b57f491356fb8",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-62 - Clapboard Farmhouse - Textured Master.blend",
+        "blenderSha256": "5811ac1a0cc2e18c7d62c738f806130d51406265fadac99fe5c095e45772dc52",
+        "triangles": 79303,
+        "notes": "Weathered clapboard house, porch, chimney and damaged window trim retained. Additional perpendicular view checked protruding trim and facade; unseen rear layout is inferred.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\62.png"
+      },
+      "role": "Weathered home establishes the settlement before the east exit",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "world-data candidate plus native companion adoption",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 160,
+              "y": 1580
+            },
+            {
+              "x": 500,
+              "y": 1580
+            },
+            {
+              "x": 500,
+              "y": 1820
+            },
+            {
+              "x": 160,
+              "y": 1820
+            }
+          ]
+        },
+        "footprint": {
+          "width": 340,
+          "depth": 240,
+          "units": "world"
+        },
+        "height": 260
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "relay:abandoned-pickup",
+      "districtId": "frontier-relay",
+      "anchor": {
+        "x": 450,
+        "y": 3100
+      },
+      "footprint": {
+        "width": 230,
+        "depth": 116
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 335,
+            "y": 3042
+          },
+          {
+            "x": 565,
+            "y": 3042
+          },
+          {
+            "x": 565,
+            "y": 3158
+          },
+          {
+            "x": 335,
+            "y": 3158
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 103,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "relay-abandoned-pickup",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-54-rusted-pickup-truck",
+        "existingGameAssetId": "hmh-ld2-54-rusted-pickup-truck",
+        "proposedGameAssetId": "hmh-ld2-54-rusted-pickup-truck",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-54 - Rusted Pickup Truck.glb",
+        "glbSha256": "14142b94631d680792b04480a4b7c331682b4a125e6d6021b472de4251bd6aa3",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-54 - Rusted Pickup Truck - Textured Master.blend",
+        "blenderSha256": "142a96d5d1195ee7b4d5caadb4fa590766d3df048c96452adb5a6eadd8e3ea78",
+        "triangles": 88891,
+        "notes": "Rusted step-side pickup, cab, bed and wheels retained. Inferred rear hardware and minor corrosion patterns differ; static scenery, not a driveable rig.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\54.png"
+      },
+      "role": "Wreck on the southwest verge provides nearby cover beside the training-yard approach",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "world-data candidate plus native companion adoption",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 335,
+              "y": 3040
+            },
+            {
+              "x": 565,
+              "y": 3040
+            },
+            {
+              "x": 565,
+              "y": 3160
+            },
+            {
+              "x": 335,
+              "y": 3160
+            }
+          ]
+        },
+        "footprint": {
+          "width": 230,
+          "depth": 120,
+          "units": "world"
+        },
+        "height": 100
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "relay:old-well",
+      "districtId": "frontier-relay",
+      "anchor": {
+        "x": 330,
+        "y": 3720
+      },
+      "footprint": {
+        "width": 120,
+        "depth": 102
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 270,
+            "y": 3669
+          },
+          {
+            "x": 390,
+            "y": 3669
+          },
+          {
+            "x": 390,
+            "y": 3771
+          },
+          {
+            "x": 270,
+            "y": 3771
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 130,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "relay-stone-well",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-80-stone-well-with-winch",
+        "existingGameAssetId": "hmh-ld2-80-stone-well-with-winch",
+        "proposedGameAssetId": "hmh-ld2-80-stone-well-with-winch",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-80 - Stone Well With Winch.glb",
+        "glbSha256": "adc1b3bcc22b1d3c27b1abeabd77443c42ae189f8b2449a9055b35108fe7c744",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-80 - Stone Well With Winch - Textured Master.blend",
+        "blenderSha256": "11f56be7536f4de961960c0e6a0906689b9b94518b3fead1bc7caaefc6f77278",
+        "triangles": 95608,
+        "notes": "Roofed fieldstone well, posts, winch structure and basin retained. Fine rope, bucket and handle details simplified; winch is static and the well is not an authored interactable.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\80.png"
+      },
+      "role": "Static communal well west of training; no reward or healing interaction",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 270,
+              "y": 3660
+            },
+            {
+              "x": 390,
+              "y": 3660
+            },
+            {
+              "x": 390,
+              "y": 3780
+            },
+            {
+              "x": 270,
+              "y": 3780
+            }
+          ]
+        },
+        "footprint": {
+          "width": 120,
+          "depth": 120,
+          "units": "world"
+        },
+        "height": 150
+      },
+      "uniformSourceScale": 130,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "relay:north-hedge",
+      "districtId": "frontier-relay",
+      "anchor": {
+        "x": 330,
+        "y": 1200
+      },
+      "footprint": {
+        "width": 350,
+        "depth": 90
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 155,
+            "y": 1155
+          },
+          {
+            "x": 505,
+            "y": 1155
+          },
+          {
+            "x": 505,
+            "y": 1245
+          },
+          {
+            "x": 155,
+            "y": 1245
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 162,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "relay-hedgerow",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-75-hedgerow-section",
+        "existingGameAssetId": "hmh-ld2-75-hedgerow-section",
+        "proposedGameAssetId": "hmh-ld2-75-hedgerow-section",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-75 - Hedgerow Section.glb",
+        "glbSha256": "d93a0d60a044acc6e48b9dd0d8763022ac5da7fca949798c65ba91493e5ba19f",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-75 - Hedgerow Section - Textured Master.blend",
+        "blenderSha256": "162e2d1f672f65300685f34637f38b04d1e941eb702ee444bd3cec2317384917",
+        "triangles": 96280,
+        "notes": "Dense overgrown hedge strip retained from both sides. Fine leaves simplified and branch mass consolidated; modular seams, wind and collision remain separate.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\75.png"
+      },
+      "role": "Overgrown former garden edge, well away from the spawn clearing",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 155,
+              "y": 1150
+            },
+            {
+              "x": 505,
+              "y": 1150
+            },
+            {
+              "x": 505,
+              "y": 1250
+            },
+            {
+              "x": 155,
+              "y": 1250
+            }
+          ]
+        },
+        "footprint": {
+          "width": 350,
+          "depth": 100,
+          "units": "world"
+        },
+        "height": 95
+      },
+      "uniformSourceScale": 350,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "relay:bus-shelter",
+      "districtId": "frontier-relay",
+      "anchor": {
+        "x": 480,
+        "y": 4030
+      },
+      "footprint": {
+        "width": 240,
+        "depth": 146
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 360,
+            "y": 3957
+          },
+          {
+            "x": 600,
+            "y": 3957
+          },
+          {
+            "x": 600,
+            "y": 4103
+          },
+          {
+            "x": 360,
+            "y": 4103
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 169,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "relay-bus-shelter",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-53-bus-shelter",
+        "existingGameAssetId": "hmh-ld2-53-bus-shelter",
+        "proposedGameAssetId": "hmh-ld2-53-bus-shelter",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-53 - Bus Shelter.glb",
+        "glbSha256": "2b2c3f7c57252f03c0811b61a84bed0a5e039edaf0fb958fc9cb30d915005321",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-53 - Bus Shelter - Textured Master.blend",
+        "blenderSha256": "c300c84e78e677571106fb7df7819e2ad8830abe49188e1197f4b943abce23f0",
+        "triangles": 58783,
+        "notes": "Shelter frame, curved roof and bench retained. Glazing is represented by opaque/broken-looking textured panels, not physically transparent glass; material finishing is required if clear panes are needed.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\53.png"
+      },
+      "role": "Disused bus stop beyond the training lot; opaque panels retained",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 360,
+              "y": 3970
+            },
+            {
+              "x": 600,
+              "y": 3970
+            },
+            {
+              "x": 600,
+              "y": 4090
+            },
+            {
+              "x": 360,
+              "y": 4090
+            }
+          ]
+        },
+        "footprint": {
+          "width": 240,
+          "depth": 120,
+          "units": "world"
+        },
+        "height": 150
+      },
+      "uniformSourceScale": 240,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:town-north-shopfront",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10450,
+        "y": 650
+      },
+      "footprint": {
+        "width": 380,
+        "depth": 300
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 10260,
+            "y": 500
+          },
+          {
+            "x": 10640,
+            "y": 500
+          },
+          {
+            "x": 10640,
+            "y": 800
+          },
+          {
+            "x": 10260,
+            "y": 800
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 220,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "town-north-shopfront",
+      "source": null,
+      "role": "Retain the north shop row as the main commercial frontage",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "awning-shopfront",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 10260,
+              "y": 500
+            },
+            {
+              "x": 10640,
+              "y": 500
+            },
+            {
+              "x": 10640,
+              "y": 800
+            },
+            {
+              "x": 10260,
+              "y": 800
+            }
+          ]
+        },
+        "footprint": {
+          "width": 380,
+          "depth": 300,
+          "units": "world"
+        },
+        "height": 220
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:town-north-tenement",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 11150,
+        "y": 650
+      },
+      "footprint": {
+        "width": 400,
+        "depth": 420
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 10950,
+            "y": 440
+          },
+          {
+            "x": 11350,
+            "y": 440
+          },
+          {
+            "x": 11350,
+            "y": 860
+          },
+          {
+            "x": 10950,
+            "y": 860
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 260,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "town-north-tenement",
+      "source": null,
+      "role": "Retain the north tenement behind the commercial lane",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "ruined-tenement",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 10950,
+              "y": 440
+            },
+            {
+              "x": 11350,
+              "y": 440
+            },
+            {
+              "x": 11350,
+              "y": 860
+            },
+            {
+              "x": 10950,
+              "y": 860
+            }
+          ]
+        },
+        "footprint": {
+          "width": 400,
+          "depth": 420,
+          "units": "world"
+        },
+        "height": 260
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:town-water-tower",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 11550,
+        "y": 1100
+      },
+      "footprint": {
+        "width": 160,
+        "depth": 160,
+        "units": "world"
+      },
+      "shape": {
+        "type": "circle",
+        "x": 11550,
+        "y": 1100,
+        "radius": 80
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 260,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "town-water-tower",
+      "source": null,
+      "role": "Retain the water tower as the eastern orientation marker",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "water-tower",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "circle",
+          "x": 11550,
+          "y": 1100,
+          "radius": 80
+        },
+        "footprint": {
+          "width": 160,
+          "depth": 160,
+          "units": "world"
+        },
+        "height": 260
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:town-fuel-island",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10800,
+        "y": 3600
+      },
+      "footprint": {
+        "width": 320,
+        "depth": 280
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 10640,
+            "y": 3460
+          },
+          {
+            "x": 10960,
+            "y": 3460
+          },
+          {
+            "x": 10960,
+            "y": 3740
+          },
+          {
+            "x": 10640,
+            "y": 3740
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 200,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "town-fuel-island",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-64-fuel-station-canopy",
+        "existingGameAssetId": "hmh-ld2-64-fuel-station-canopy",
+        "proposedGameAssetId": "hmh-ld2-64-fuel-station-canopy",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-64 - Fuel Station Canopy.glb",
+        "glbSha256": "5de84d21418a1fa0dc709191a201975b916b62a4d797ce66f3eb40771e4c159d",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-64 - Fuel Station Canopy - Textured Master.blend",
+        "blenderSha256": "0e9e7fbc9299a48bca2a87254772ce5357f8ec5a224876f3ca75d09fc9cf07fb",
+        "triangles": 62547,
+        "notes": "Freestanding weathered canopy, two columns and fascia retained. Roof surfaces are inferred from a reference emphasizing the underside; calibrate support height and clearance for the scene.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\64.png"
+      },
+      "role": "Compose the new static canopy over the existing fuel-island envelope; columns/occlusion need explicit alignment",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "fuel-pump-island",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 10640,
+              "y": 3460
+            },
+            {
+              "x": 10960,
+              "y": 3460
+            },
+            {
+              "x": 10960,
+              "y": 3740
+            },
+            {
+              "x": 10640,
+              "y": 3740
+            }
+          ]
+        },
+        "footprint": {
+          "width": 320,
+          "depth": 280,
+          "units": "world"
+        },
+        "height": 200
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:town-east-lean-to",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 11650,
+        "y": 3050
+      },
+      "footprint": {
+        "width": 300,
+        "depth": 300
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 11500,
+            "y": 2900
+          },
+          {
+            "x": 11800,
+            "y": 2900
+          },
+          {
+            "x": 11800,
+            "y": 3200
+          },
+          {
+            "x": 11500,
+            "y": 3200
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "town-east-lean-to",
+      "source": null,
+      "role": "Retain the open south approach to the medbay cache",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "corrugated-lean-to",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 11500,
+              "y": 2900
+            },
+            {
+              "x": 11800,
+              "y": 2900
+            },
+            {
+              "x": 11800,
+              "y": 3200
+            },
+            {
+              "x": 11500,
+              "y": 3200
+            }
+          ]
+        },
+        "footprint": {
+          "width": 300,
+          "depth": 300,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:town-east-tenement",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 11350,
+        "y": 3740
+      },
+      "footprint": {
+        "width": 360,
+        "depth": 360
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 11170,
+            "y": 3560
+          },
+          {
+            "x": 11530,
+            "y": 3560
+          },
+          {
+            "x": 11530,
+            "y": 3920
+          },
+          {
+            "x": 11170,
+            "y": 3920
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 260,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "town-east-tenement",
+      "source": null,
+      "role": "Retain residential mass and the exterior medbay approach",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "ruined-tenement",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 11170,
+              "y": 3560
+            },
+            {
+              "x": 11530,
+              "y": 3560
+            },
+            {
+              "x": 11530,
+              "y": 3920
+            },
+            {
+              "x": 11170,
+              "y": 3920
+            }
+          ]
+        },
+        "footprint": {
+          "width": 360,
+          "depth": 360,
+          "units": "world"
+        },
+        "height": 260
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:yard-wreck-row-north",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10650,
+        "y": 1950
+      },
+      "footprint": {
+        "width": 180,
+        "depth": 90,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 10600,
+          "y": 1945
+        },
+        "b": {
+          "x": 10700,
+          "y": 1955
+        },
+        "radius": 40
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 150,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "yard-wreck-row-north",
+      "source": null,
+      "role": "Keep established arena-edge cover and collision envelope",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "wrecked-sedan",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 10600,
+            "y": 1945
+          },
+          "b": {
+            "x": 10700,
+            "y": 1955
+          },
+          "radius": 40
+        },
+        "footprint": {
+          "width": 180,
+          "depth": 90,
+          "units": "world"
+        },
+        "height": 150
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:yard-wreck-row-south",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10530,
+        "y": 3075
+      },
+      "footprint": {
+        "width": 412,
+        "depth": 162,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 10380,
+          "y": 3050
+        },
+        "b": {
+          "x": 10680,
+          "y": 3100
+        },
+        "radius": 56
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 150,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "yard-wreck-row-south",
+      "source": null,
+      "role": "Keep the market-side wreck row and bypass",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "existingArtId": "wrecked-sedan",
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 10380,
+            "y": 3050
+          },
+          "b": {
+            "x": 10680,
+            "y": 3100
+          },
+          "radius": 56
+        },
+        "footprint": {
+          "width": 412,
+          "depth": 162,
+          "units": "world"
+        },
+        "height": 150
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:south-warehouse",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10300,
+        "y": 4150
+      },
+      "footprint": {
+        "width": 400,
+        "depth": 167
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 10100,
+            "y": 4066.5
+          },
+          {
+            "x": 10500,
+            "y": 4066.5
+          },
+          {
+            "x": 10500,
+            "y": 4233.5
+          },
+          {
+            "x": 10100,
+            "y": 4233.5
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 140,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "yard-brick-warehouse",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-63-brick-warehouse",
+        "existingGameAssetId": "hmh-ld2-63-brick-warehouse",
+        "proposedGameAssetId": "hmh-ld2-63-brick-warehouse",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-63 - Brick Warehouse.glb",
+        "glbSha256": "36cebb1b8d4442590ad703250339056e531518e251efb94ca171596bb6ace62d",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-63 - Brick Warehouse - Textured Master.blend",
+        "blenderSha256": "7be2238e1fcaf8ee654fcfb422e65dab3cfdce2fd780220fad12e5d8eef1a87a",
+        "triangles": 81274,
+        "notes": "Brick warehouse, sawtooth roof and openings retained. Roof/back wall details are inferred; interior and functioning doorways are not authored.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\63.png"
+      },
+      "role": "Brick warehouse closes the southern industrial lot; facade faces the service street",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 10100,
+              "y": 4000
+            },
+            {
+              "x": 10500,
+              "y": 4000
+            },
+            {
+              "x": 10500,
+              "y": 4300
+            },
+            {
+              "x": 10100,
+              "y": 4300
+            }
+          ]
+        },
+        "footprint": {
+          "width": 400,
+          "depth": 300,
+          "units": "world"
+        },
+        "height": 280
+      },
+      "uniformSourceScale": 400,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:overturned-bus",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10900,
+        "y": 4260
+      },
+      "footprint": {
+        "width": 460,
+        "depth": 176
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 10670,
+            "y": 4172
+          },
+          {
+            "x": 11130,
+            "y": 4172
+          },
+          {
+            "x": 11130,
+            "y": 4348
+          },
+          {
+            "x": 10670,
+            "y": 4348
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 136,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "yard-overturned-bus",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-55-overturned-school-bus",
+        "existingGameAssetId": "hmh-ld2-55-overturned-school-bus",
+        "proposedGameAssetId": "hmh-ld2-55-overturned-school-bus",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-55 - Overturned School Bus.glb",
+        "glbSha256": "c96fa5dc59e992d5e3cba30f6185556e49e6ce44cde1daf228edf7cbb5a90d58",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-55 - Overturned School Bus - Textured Master.blend",
+        "blenderSha256": "a7bb7a22384fdb280a30fbeb4541c07dd91101e3adc2005eb22abc89dea6384c",
+        "triangles": 94480,
+        "notes": "Yellow bus remains on its side, with exposed undercarriage and side-facing wheels. Damaged windows and interior are simplified; no reset-to-upright pose occurred.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\55.png"
+      },
+      "role": "Overturned bus forms the abandoned transit lot north of the service street",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 10670,
+              "y": 4180
+            },
+            {
+              "x": 11130,
+              "y": 4180
+            },
+            {
+              "x": 11130,
+              "y": 4340
+            },
+            {
+              "x": 10670,
+              "y": 4340
+            }
+          ]
+        },
+        "footprint": {
+          "width": 460,
+          "depth": 160,
+          "units": "world"
+        },
+        "height": 110
+      },
+      "uniformSourceScale": 460,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:east-chapel",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 11750,
+        "y": 500
+      },
+      "footprint": {
+        "width": 285,
+        "depth": 153
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 11607.5,
+            "y": 423.5
+          },
+          {
+            "x": 11892.5,
+            "y": 423.5
+          },
+          {
+            "x": 11892.5,
+            "y": 576.5
+          },
+          {
+            "x": 11607.5,
+            "y": 576.5
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 350,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "yard-steepled-chapel",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-65-steepled-chapel",
+        "existingGameAssetId": "hmh-ld2-65-steepled-chapel",
+        "proposedGameAssetId": "hmh-ld2-65-steepled-chapel",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-65 - Steepled Chapel.glb",
+        "glbSha256": "e3d6b4f092a4892cded8eb7af060c1668a8330a17bf5dcb364870a1d852ec52f",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-65 - Steepled Chapel - Textured Master.blend",
+        "blenderSha256": "1e5da8ce11f9e18615808d144b80c5417ee3bf4c6a03746f11e907ad83ef71df",
+        "triangles": 79915,
+        "notes": "Chapel roof, belfry steeple, facade openings and steps retained. Steeple microdetail and unseen rear simplified; no interior.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\65.png"
+      },
+      "role": "Distant roofline closes the northeast neighborhood; the extraction tower remains the district landmark",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 11590,
+              "y": 350
+            },
+            {
+              "x": 11910,
+              "y": 350
+            },
+            {
+              "x": 11910,
+              "y": 650
+            },
+            {
+              "x": 11590,
+              "y": 650
+            }
+          ]
+        },
+        "footprint": {
+          "width": 320,
+          "depth": 300,
+          "units": "world"
+        },
+        "height": 350
+      },
+      "uniformSourceScale": 350,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "yard:dead-signal",
+      "districtId": "liquidation-yard",
+      "anchor": {
+        "x": 10200,
+        "y": 900
+      },
+      "footprint": {
+        "width": 40,
+        "depth": 40,
+        "units": "world"
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 10180,
+            "y": 880
+          },
+          {
+            "x": 10220,
+            "y": 880
+          },
+          {
+            "x": 10220,
+            "y": 920
+          },
+          {
+            "x": 10180,
+            "y": 920
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "visual-only-thin-fixture",
+      "blockerId": null,
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-52-traffic-light-mast",
+        "existingGameAssetId": "hmh-ld2-52-traffic-light-mast",
+        "proposedGameAssetId": "hmh-ld2-52-traffic-light-mast",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-52 - Traffic Light Mast.glb",
+        "glbSha256": "a300dc432758f746eec3a6e78a3aaef7b05d64a45f5a29b4be30af4382ed3c58",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-52 - Traffic Light Mast - Textured Master.blend",
+        "blenderSha256": "c95d6b2d6172fab511d84a64847bdca56c807d13239bbcfba43ae5c76d2b1693",
+        "triangles": 77302,
+        "notes": "Curved yellow mast, two signal heads and footplate retained. Static textured signal lenses, not animated or emissive traffic controls.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\52.png"
+      },
+      "role": "Static traffic mast marks the west end of the commercial street; no animated traffic semantics",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 10180,
+              "y": 880
+            },
+            {
+              "x": 10220,
+              "y": 880
+            },
+            {
+              "x": 10220,
+              "y": 920
+            },
+            {
+              "x": 10180,
+              "y": 920
+            }
+          ]
+        },
+        "footprint": {
+          "width": 40,
+          "depth": 40,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationDecision": "Thin signal fixture is scenery; it creates no hidden solid or navigation rule.",
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "hashwood:hashwood-north-tree-line",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 7000,
+        "y": 620
+      },
+      "footprint": {
+        "width": 2028,
+        "depth": 128,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 6050,
+          "y": 620
+        },
+        "b": {
+          "x": 7950,
+          "y": 620
+        },
+        "radius": 64
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-north-tree-line",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-72-tall-conifer-trio",
+        "existingGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "proposedGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-72 - Tall Conifer Trio.glb",
+        "glbSha256": "21370e132f24542ff936c258611c5ae4f98f7c8d099d125c2a1cd65b1b908a34",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-72 - Tall Conifer Trio - Textured Master.blend",
+        "blenderSha256": "816a7d739cfbbd7a27693afdbef6e366beb4deb87b451803f46e901dc326f110",
+        "triangles": 95547,
+        "notes": "Three distinct conifer crowns/trunks confirmed from perpendicular view. Shared root mass and simplified lower limbs/needles; not three independently rigged trees.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\72.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 6050,
+          "y": 620,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 6366.666666666667,
+          "y": 620,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 6683.333333333333,
+          "y": 620,
+          "radius": 105,
+          "height": 220
+        },
+        {
+          "x": 7000,
+          "y": 620,
+          "radius": 140,
+          "height": 285
+        },
+        {
+          "x": 7316.666666666667,
+          "y": 620,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 7633.333333333333,
+          "y": 620,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 7950,
+          "y": 620,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 6050,
+            "y": 620
+          },
+          "b": {
+            "x": 7950,
+            "y": 620
+          },
+          "radius": 64
+        },
+        "footprint": {
+          "width": 2028,
+          "depth": 128,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Continuous textured undergrowth follows the preserved collision capsule; repeated native conifer clusters provide height variation."
+    },
+    {
+      "id": "hashwood:hashwood-south-tree-line",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 7000,
+        "y": 4100
+      },
+      "footprint": {
+        "width": 2028,
+        "depth": 128,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 6050,
+          "y": 4100
+        },
+        "b": {
+          "x": 7950,
+          "y": 4100
+        },
+        "radius": 64
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-south-tree-line",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-72-tall-conifer-trio",
+        "existingGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "proposedGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-72 - Tall Conifer Trio.glb",
+        "glbSha256": "21370e132f24542ff936c258611c5ae4f98f7c8d099d125c2a1cd65b1b908a34",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-72 - Tall Conifer Trio - Textured Master.blend",
+        "blenderSha256": "816a7d739cfbbd7a27693afdbef6e366beb4deb87b451803f46e901dc326f110",
+        "triangles": 95547,
+        "notes": "Three distinct conifer crowns/trunks confirmed from perpendicular view. Shared root mass and simplified lower limbs/needles; not three independently rigged trees.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\72.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 6050,
+          "y": 4100,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 6366.666666666667,
+          "y": 4100,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 6683.333333333333,
+          "y": 4100,
+          "radius": 105,
+          "height": 220
+        },
+        {
+          "x": 7000,
+          "y": 4100,
+          "radius": 140,
+          "height": 285
+        },
+        {
+          "x": 7316.666666666667,
+          "y": 4100,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 7633.333333333333,
+          "y": 4100,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 7950,
+          "y": 4100,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 6050,
+            "y": 4100
+          },
+          "b": {
+            "x": 7950,
+            "y": 4100
+          },
+          "radius": 64
+        },
+        "footprint": {
+          "width": 2028,
+          "depth": 128,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Continuous textured undergrowth follows the preserved collision capsule; repeated native conifer clusters provide height variation."
+    },
+    {
+      "id": "hashwood:hashwood-thicket-nw",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 6375,
+        "y": 1440
+      },
+      "footprint": {
+        "width": 478,
+        "depth": 248,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 6200,
+          "y": 1500
+        },
+        "b": {
+          "x": 6550,
+          "y": 1380
+        },
+        "radius": 64
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-thicket-nw",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-75-hedgerow-section",
+        "existingGameAssetId": "hmh-ld2-75-hedgerow-section",
+        "proposedGameAssetId": "hmh-ld2-75-hedgerow-section",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-75 - Hedgerow Section.glb",
+        "glbSha256": "d93a0d60a044acc6e48b9dd0d8763022ac5da7fca949798c65ba91493e5ba19f",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-75 - Hedgerow Section - Textured Master.blend",
+        "blenderSha256": "162e2d1f672f65300685f34637f38b04d1e941eb702ee444bd3cec2317384917",
+        "triangles": 96280,
+        "notes": "Dense overgrown hedge strip retained from both sides. Fine leaves simplified and branch mass consolidated; modular seams, wind and collision remain separate.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\75.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 6200,
+          "y": 1500,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 6375,
+          "y": 1440,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 6550,
+          "y": 1380,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 6200,
+            "y": 1500
+          },
+          "b": {
+            "x": 6550,
+            "y": 1380
+          },
+          "radius": 64
+        },
+        "footprint": {
+          "width": 478,
+          "depth": 248,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Continuous textured undergrowth follows the preserved collision capsule; repeated native conifer clusters provide height variation."
+    },
+    {
+      "id": "hashwood:hashwood-thicket-south",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 6925,
+        "y": 3125
+      },
+      "footprint": {
+        "width": 578,
+        "depth": 278,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 6700,
+          "y": 3050
+        },
+        "b": {
+          "x": 7150,
+          "y": 3200
+        },
+        "radius": 64
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-thicket-south",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-72-tall-conifer-trio",
+        "existingGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "proposedGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-72 - Tall Conifer Trio.glb",
+        "glbSha256": "21370e132f24542ff936c258611c5ae4f98f7c8d099d125c2a1cd65b1b908a34",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-72 - Tall Conifer Trio - Textured Master.blend",
+        "blenderSha256": "816a7d739cfbbd7a27693afdbef6e366beb4deb87b451803f46e901dc326f110",
+        "triangles": 95547,
+        "notes": "Three distinct conifer crowns/trunks confirmed from perpendicular view. Shared root mass and simplified lower limbs/needles; not three independently rigged trees.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\72.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 6700,
+          "y": 3050,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 6925,
+          "y": 3125,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 7150,
+          "y": 3200,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 6700,
+            "y": 3050
+          },
+          "b": {
+            "x": 7150,
+            "y": 3200
+          },
+          "radius": 64
+        },
+        "footprint": {
+          "width": 578,
+          "depth": 278,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Continuous textured undergrowth follows the preserved collision capsule; repeated native conifer clusters provide height variation."
+    },
+    {
+      "id": "hashwood:hashwood-clearing-edge-west",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 6755,
+        "y": 2655
+      },
+      "footprint": {
+        "width": 262,
+        "depth": 362,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 6680,
+          "y": 2530
+        },
+        "b": {
+          "x": 6830,
+          "y": 2780
+        },
+        "radius": 56
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-clearing-edge-west",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-74-uprooted-root-ball",
+        "existingGameAssetId": "hmh-ld2-74-uprooted-root-ball",
+        "proposedGameAssetId": "hmh-ld2-74-uprooted-root-ball",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-74 - Uprooted Root Ball.glb",
+        "glbSha256": "b1e19d5255e688b87d0d1fbd074573a5489baaed56570bd4b68ab576dda60d9a",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-74 - Uprooted Root Ball - Textured Master.blend",
+        "blenderSha256": "b48abec87db9e2d2d3b8a5a595d5cf1419bb72e6fce673b15242a07c54150275",
+        "triangles": 96393,
+        "notes": "Upturned root plate, curved trunk remnant and tangled root silhouette retained. Back soil mass inferred and cleaner; fine root hairs simplified.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\74.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 6680,
+          "y": 2530,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 6755,
+          "y": 2655,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 6830,
+          "y": 2780,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 6680,
+            "y": 2530
+          },
+          "b": {
+            "x": 6830,
+            "y": 2780
+          },
+          "radius": 56
+        },
+        "footprint": {
+          "width": 262,
+          "depth": 362,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Continuous textured undergrowth follows the preserved collision capsule; repeated native conifer clusters provide height variation."
+    },
+    {
+      "id": "hashwood:hashwood-clearing-edge-east",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 7575,
+        "y": 2275
+      },
+      "footprint": {
+        "width": 262,
+        "depth": 362,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 7500,
+          "y": 2150
+        },
+        "b": {
+          "x": 7650,
+          "y": 2400
+        },
+        "radius": 56
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-clearing-edge-east",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-72-tall-conifer-trio",
+        "existingGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "proposedGameAssetId": "hmh-ld2-72-tall-conifer-trio",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-72 - Tall Conifer Trio.glb",
+        "glbSha256": "21370e132f24542ff936c258611c5ae4f98f7c8d099d125c2a1cd65b1b908a34",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-72 - Tall Conifer Trio - Textured Master.blend",
+        "blenderSha256": "816a7d739cfbbd7a27693afdbef6e366beb4deb87b451803f46e901dc326f110",
+        "triangles": 95547,
+        "notes": "Three distinct conifer crowns/trunks confirmed from perpendicular view. Shared root mass and simplified lower limbs/needles; not three independently rigged trees.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\72.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 7500,
+          "y": 2150,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 7575,
+          "y": 2275,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 7650,
+          "y": 2400,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 7500,
+            "y": 2150
+          },
+          "b": {
+            "x": 7650,
+            "y": 2400
+          },
+          "radius": 56
+        },
+        "footprint": {
+          "width": 262,
+          "depth": 362,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Continuous textured undergrowth follows the preserved collision capsule; repeated native conifer clusters provide height variation."
+    },
+    {
+      "id": "hashwood:hashwood-gate-thicket",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 6170,
+        "y": 3225
+      },
+      "footprint": {
+        "width": 288,
+        "depth": 278,
+        "units": "world"
+      },
+      "shape": {
+        "type": "capsule",
+        "a": {
+          "x": 6090,
+          "y": 3150
+        },
+        "b": {
+          "x": 6250,
+          "y": 3300
+        },
+        "radius": 64
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 180,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-gate-thicket",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-75-hedgerow-section",
+        "existingGameAssetId": "hmh-ld2-75-hedgerow-section",
+        "proposedGameAssetId": "hmh-ld2-75-hedgerow-section",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-75 - Hedgerow Section.glb",
+        "glbSha256": "d93a0d60a044acc6e48b9dd0d8763022ac5da7fca949798c65ba91493e5ba19f",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-75 - Hedgerow Section - Textured Master.blend",
+        "blenderSha256": "162e2d1f672f65300685f34637f38b04d1e941eb702ee444bd3cec2317384917",
+        "triangles": 96280,
+        "notes": "Dense overgrown hedge strip retained from both sides. Fine leaves simplified and branch mass consolidated; modular seams, wind and collision remain separate.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\75.png"
+      },
+      "role": "Broken canopy profile above a continuous visible root/underbrush bank; canopy gaps never imply walkable gaps",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance"
+      ],
+      "activation": "retain existing collision; replace or compose art only",
+      "canopyLobes": [
+        {
+          "x": 6090,
+          "y": 3150,
+          "radius": 120,
+          "height": 250
+        },
+        {
+          "x": 6170,
+          "y": 3225,
+          "radius": 155,
+          "height": 315
+        },
+        {
+          "x": 6250,
+          "y": 3300,
+          "radius": 105,
+          "height": 220
+        }
+      ],
+      "continuousRootBankRequired": true,
+      "visualHeightDoesNotChangeCollision": true,
+      "proposalSnapshot": {
+        "collisionPolicy": "canonical-blocker",
+        "shape": {
+          "type": "capsule",
+          "a": {
+            "x": 5950,
+            "y": 3150
+          },
+          "b": {
+            "x": 6250,
+            "y": 3300
+          },
+          "radius": 64
+        },
+        "footprint": {
+          "width": 428,
+          "depth": 278,
+          "units": "world"
+        },
+        "height": 180
+      },
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate",
+      "integrationDecision": "Vegetation and collision move together to provide a 144-unit player/enemy passage."
+    },
+    {
+      "id": "hashwood:hollow-stump",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 6200,
+        "y": 3670
+      },
+      "footprint": {
+        "width": 160,
+        "depth": 160
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 6120,
+            "y": 3590
+          },
+          {
+            "x": 6280,
+            "y": 3590
+          },
+          {
+            "x": 6280,
+            "y": 3750
+          },
+          {
+            "x": 6120,
+            "y": 3750
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 86,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-hollow-stump",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-73-hollow-stump-shelf-fungus",
+        "existingGameAssetId": "hmh-ld2-73-hollow-stump-shelf-fungus",
+        "proposedGameAssetId": "hmh-ld2-73-hollow-stump-shelf-fungus",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-73 - Hollow Stump Shelf Fungus.glb",
+        "glbSha256": "8722003f6942031f69a60d40da9d43216036800a8b9f4a695f197e1a3ad98f14",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-73 - Hollow Stump Shelf Fungus - Textured Master.blend",
+        "blenderSha256": "a410f554c92d756cb7ee6d30fa972f7ce9f1b228253b74a626377e0924253695",
+        "triangles": 77430,
+        "notes": "Hollow stump body, exposed inner wood and shelf fungi retained. Cavity and fine moss/fungus detail simplified; source opening is not a physical interaction contract.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\73.png"
+      },
+      "role": "Low mossy anchor on the south shoulder; hollow is static, no cache trigger",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 6120,
+              "y": 3600
+            },
+            {
+              "x": 6280,
+              "y": 3600
+            },
+            {
+              "x": 6280,
+              "y": 3740
+            },
+            {
+              "x": 6120,
+              "y": 3740
+            }
+          ]
+        },
+        "footprint": {
+          "width": 160,
+          "depth": 140,
+          "units": "world"
+        },
+        "height": 90
+      },
+      "uniformSourceScale": 160,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    },
+    {
+      "id": "hashwood:root-ball",
+      "districtId": "hashwood",
+      "anchor": {
+        "x": 7750,
+        "y": 1500
+      },
+      "footprint": {
+        "width": 171,
+        "depth": 156
+      },
+      "shape": {
+        "type": "polygon",
+        "vertices": [
+          {
+            "x": 7664.5,
+            "y": 1422
+          },
+          {
+            "x": 7835.5,
+            "y": 1422
+          },
+          {
+            "x": 7835.5,
+            "y": 1578
+          },
+          {
+            "x": 7664.5,
+            "y": 1578
+          }
+        ]
+      },
+      "ground": {
+        "surfaceId": "forked-frontier-ground",
+        "z": 0
+      },
+      "height": 150,
+      "collisionPolicy": "canonical-blocker",
+      "blockerId": "hashwood-uprooted-root",
+      "source": {
+        "batchId": "level-design-2",
+        "assetKey": "hmh-ld2-74-uprooted-root-ball",
+        "existingGameAssetId": "hmh-ld2-74-uprooted-root-ball",
+        "proposedGameAssetId": "hmh-ld2-74-uprooted-root-ball",
+        "glb": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\GLB\\B2-74 - Uprooted Root Ball.glb",
+        "glbSha256": "b1e19d5255e688b87d0d1fbd074573a5489baaed56570bd4b68ab576dda60d9a",
+        "blenderMaster": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Blender\\B2-74 - Uprooted Root Ball - Textured Master.blend",
+        "blenderSha256": "b48abec87db9e2d2d3b8a5a595d5cf1419bb72e6fce673b15242a07c54150275",
+        "triangles": 96393,
+        "notes": "Upturned root plate, curved trunk remnant and tangled root silhouette retained. Back soil mass inferred and cleaner; fine root hairs simplified.",
+        "preview": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Assets\\Tripo-Level-Design-Batch-2\\delivery\\HMH-Level-Design-Batch-2-Models\\Previews\\74.png"
+      },
+      "role": "Overturned root plate closes the northeast shoulder without filling the central clearing",
+      "routeClearance": {
+        "actorRadius": 24,
+        "minimumMarginBeyondRouteEdge": 24,
+        "verification": "canonical sweep plus footprint margin; see placement-clearance.json"
+      },
+      "authority": "projection-only art; no new effects, rewards, doors, unlocks, or spawn rules",
+      "runtimeAdopted": true,
+      "integrationDependencies": [
+        "Hermes native alias, fixed-camera bake, scale/facing calibration, ground contact and full-body occlusion review",
+        "Hermes current-candidate manifest/atlas registration and browser acceptance",
+        "Requires a later explicit world blocker with matching visible art; do not ship a traversable solid-looking prop"
+      ],
+      "activation": "request only; not activated by world-data patch",
+      "proposalSnapshot": {
+        "collisionPolicy": "proposed-solid",
+        "shape": {
+          "type": "polygon",
+          "vertices": [
+            {
+              "x": 7640,
+              "y": 1425
+            },
+            {
+              "x": 7860,
+              "y": 1425
+            },
+            {
+              "x": 7860,
+              "y": 1575
+            },
+            {
+              "x": 7640,
+              "y": 1575
+            }
+          ]
+        },
+        "footprint": {
+          "width": 220,
+          "depth": 150,
+          "units": "world"
+        },
+        "height": 140
+      },
+      "uniformSourceScale": 170,
+      "integrationOwner": "codex",
+      "browserVerification": "pending-final-candidate"
+    }
+  ],
+  "groundMaterialRequests": [
+    {
+      "id": "relay:main-road-wear",
+      "districtId": "frontier-relay",
+      "material": "worn teal-grey packed earth with sparse cracked asphalt remnants",
+      "width": 192,
+      "points": [
+        {
+          "x": 800,
+          "y": 2400
+        },
+        {
+          "x": 1250,
+          "y": 2750
+        },
+        {
+          "x": 1700,
+          "y": 2450
+        }
+      ],
+      "purpose": "Quiet primary exit; texture follows the existing main route",
+      "groundZ": 0,
+      "collisionPolicy": "visual-only-ground",
+      "runtimeAdopted": true,
+      "integrationOwner": "codex",
+      "constraints": [
+        "No new surface height, curb, navigation, route graph or gameplay effect",
+        "Keep local values quiet under actors; patch sizes vary, no regular checkerboard"
+      ]
+    },
+    {
+      "id": "relay:training-path",
+      "districtId": "frontier-relay",
+      "material": "compacted dirt; no curb geometry",
+      "width": 144,
+      "points": [
+        {
+          "x": 1250,
+          "y": 3200
+        },
+        {
+          "x": 900,
+          "y": 3450
+        }
+      ],
+      "purpose": "Connect cache-side loop to relocated training floor",
+      "groundZ": 0,
+      "collisionPolicy": "visual-only-ground",
+      "runtimeAdopted": true,
+      "integrationOwner": "codex",
+      "constraints": [
+        "No new surface height, curb, navigation, route graph or gameplay effect",
+        "Keep local values quiet under actors; patch sizes vary, no regular checkerboard"
+      ]
+    },
+    {
+      "id": "yard:commercial-street",
+      "districtId": "liquidation-yard",
+      "material": "cracked asphalt with worn shoulders; use B2-47 as surface reference, flatten slab height",
+      "width": 192,
+      "points": [
+        {
+          "x": 10200,
+          "y": 1070
+        },
+        {
+          "x": 11300,
+          "y": 1070
+        }
+      ],
+      "purpose": "Continuous frontage street south of north commercial lots",
+      "groundZ": 0,
+      "collisionPolicy": "visual-only-ground",
+      "runtimeAdopted": true,
+      "integrationOwner": "codex",
+      "constraints": [
+        "No new surface height, curb, navigation, route graph or gameplay effect",
+        "Keep local values quiet under actors; patch sizes vary, no regular checkerboard"
+      ]
+    },
+    {
+      "id": "yard:commercial-connection",
+      "districtId": "liquidation-yard",
+      "material": "cracked asphalt joining existing escape loop",
+      "width": 144,
+      "points": [
+        {
+          "x": 10650,
+          "y": 1250
+        },
+        {
+          "x": 10650,
+          "y": 1070
+        }
+      ],
+      "purpose": "Join northern lots to the canonical loop",
+      "groundZ": 0,
+      "collisionPolicy": "visual-only-ground",
+      "runtimeAdopted": true,
+      "integrationOwner": "codex",
+      "constraints": [
+        "No new surface height, curb, navigation, route graph or gameplay effect",
+        "Keep local values quiet under actors; patch sizes vary, no regular checkerboard"
+      ]
+    },
+    {
+      "id": "yard:south-service-lane",
+      "districtId": "liquidation-yard",
+      "material": "worn asphalt with irregular gravel shoulders",
+      "width": 144,
+      "points": [
+        {
+          "x": 11350,
+          "y": 3400
+        },
+        {
+          "x": 11700,
+          "y": 3430
+        },
+        {
+          "x": 11750,
+          "y": 4450
+        },
+        {
+          "x": 10200,
+          "y": 4450
+        }
+      ],
+      "purpose": "Residential alley opens into the southern loading street; road wear only",
+      "groundZ": 0,
+      "collisionPolicy": "visual-only-ground",
+      "runtimeAdopted": true,
+      "integrationOwner": "codex",
+      "constraints": [
+        "No new surface height, curb, navigation, route graph or gameplay effect",
+        "Keep local values quiet under actors; patch sizes vary, no regular checkerboard"
+      ]
+    }
+  ],
+  "companionChanges": [
+    {
+      "id": "camp:relay-picket",
+      "owner": "hermes",
+      "file": "apps/hmh-reboot/src/authored-prop-atlas.mjs",
+      "before": {
+        "x": 1400,
+        "y": 3000,
+        "radius": 360
+      },
+      "after": {
+        "x": 900,
+        "y": 3450,
+        "radius": 360
+      },
+      "requiredWith": "relay-training-yard world anchor change",
+      "reason": "ARENA_CAMPS duplicates canonical arena geometry; regenerate and verify dressing after moving both"
+    }
+  ],
+  "batch2Decisions": [
+    {
+      "assetKey": "hmh-ld2-41-stone-arch-bridge-span",
+      "id": "41",
+      "name": "B2-41 - Stone Arch Bridge Span",
+      "disposition": "reserve",
+      "reason": "Reserve crossing kit until deck/rail/facing calibration against existing bridge and water contracts; culvert rear is capped",
+      "glbSha256": "b7f22fdfc880389e011deee680905aa8cd85bbd4fb9656383d9b814e6a0676bc",
+      "blenderSha256": "b86a7cc3a14def4c28d5074d3cea9982af351470390173334f79cddec6d3cc17",
+      "notes": "Stone arch, parapets and stair approaches retained on both sides; backside stonework inferred. Calibrate deck height and authored crossing collision separately."
+    },
+    {
+      "assetKey": "hmh-ld2-42-timber-trestle-bridge-section",
+      "id": "42",
+      "name": "B2-42 - Timber Trestle Bridge Section",
+      "disposition": "reserve",
+      "reason": "Reserve crossing kit until deck/rail/facing calibration against existing bridge and water contracts; culvert rear is capped",
+      "glbSha256": "69c6e11bd4a2587587bb9dae786a403bee4a23741a99815e86e31135bc8075b6",
+      "blenderSha256": "36f27ac0c0a0132e2ad3c5d14c177315b16a8c96c8f10709de964a5389bc114f",
+      "notes": "Timber deck, railings and braced bents retained with open spaces beneath. Fine fasteners simplified; modular joins and placement scale remain uncalibrated."
+    },
+    {
+      "assetKey": "hmh-ld2-43-steel-truss-bridge-span",
+      "id": "43",
+      "name": "B2-43 - Steel Truss Bridge Span",
+      "disposition": "reserve",
+      "reason": "Reserve crossing kit until deck/rail/facing calibration against existing bridge and water contracts; culvert rear is capped",
+      "glbSha256": "a5adc27d3df41c30168db2fcca589858889d0673d212215370262b94cd8c5e6d",
+      "blenderSha256": "acaf1ac47f4d2105c47705cb51949924879d75e11e0a23bad08ceded297755ce",
+      "notes": "Rusted through-truss structure, deck and triangular openings retained; fine rivets and unseen hardware simplified. Not a walkability or collision certificate."
+    },
+    {
+      "assetKey": "hmh-ld2-44-rope-plank-suspension-span",
+      "id": "44",
+      "name": "B2-44 - Rope Plank Suspension Span",
+      "disposition": "reserve",
+      "reason": "Reserve crossing kit until deck/rail/facing calibration against existing bridge and water contracts; culvert rear is capped",
+      "glbSha256": "ec37017cc37a3d14f611d8255039d81145c19f7b61679d5e1ba49fb8692935e5",
+      "blenderSha256": "77dee4f51b22cd35d8ce6c808dc031baff7172ef803f301dba61f0b6a0ab008e",
+      "notes": "Sagging rope-and-plank bridge retained, including distinct hangers and end knots. Ropes are thickened/stylized; static mesh, no suspension simulation or anchors bound."
+    },
+    {
+      "assetKey": "hmh-ld2-45-concrete-box-culvert",
+      "id": "45",
+      "name": "B2-45 - Concrete Box Culvert",
+      "disposition": "reserve",
+      "reason": "Reserve crossing kit until deck/rail/facing calibration against existing bridge and water contracts; culvert rear is capped",
+      "glbSha256": "6a1034f71ab27ad50cee1826899c319c5f735c46b8f2a4f8d6adb5bdb8a2f623",
+      "blenderSha256": "ebc616eb9f6d1d880eeaae393c7d5024031029e7f8f34ba60ab7e7cc17488eac",
+      "notes": "Flared concrete wing walls and front rectangular recess retained. Provider inferred a capped rear box; use as a culvert facade or hollow the rear for a visible through-passage. No traversable tunnel claim."
+    },
+    {
+      "assetKey": "hmh-ld2-46-wooden-jetty-dock",
+      "id": "46",
+      "name": "B2-46 - Wooden Jetty Dock",
+      "disposition": "reserve",
+      "reason": "Reserve crossing kit until deck/rail/facing calibration against existing bridge and water contracts; culvert rear is capped",
+      "glbSha256": "1f05517e6148c41a1c7298924dab9cd5365b7840456e2ddb99d0b01eae7689ad",
+      "blenderSha256": "2eeecc769c8ad7ef54ec35836e1d7ceca33c9e257e39163e005fda14ec514365",
+      "notes": "Plank dock, piles, railing and rope loops retained from multiple views. Backside bracing inferred; waterline and landing connections remain layout work."
+    },
+    {
+      "assetKey": "hmh-ld2-47-cracked-asphalt-road-section",
+      "id": "47",
+      "name": "B2-47 - Cracked Asphalt Road Section",
+      "disposition": "reference-only",
+      "reason": "Ground-material reference for Yard streets only; do not import raised slab as collision",
+      "glbSha256": "d30da8f3d7420eacf12b22eea24126ba078dc122cdd50e2a478ea91174e0155e",
+      "blenderSha256": "1bdf3e8e97db2ea095c9ba3865d9aae041801da33e2a4c61d5513ba1054ff413",
+      "notes": "Broken asphalt and visible base-course side thickness retained, including pothole detail. Real three-dimensional slab; no certified tile seam, ground height or gameplay-scale thickness."
+    },
+    {
+      "assetKey": "hmh-ld2-48-road-guardrail-section",
+      "id": "48",
+      "name": "B2-48 - Road Guardrail Section",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "cc5409b908bf2160e6159cc4431f742149eec66d9d634011cfd9c1960f286e6d",
+      "blenderSha256": "783f88cea7d8d8f4295bf34a25f540ae25fa56fe93b31f581162b2db2ae5e363",
+      "notes": "W-beam profile, individual posts and bent ends retained. Thin rail is not fused into a broad panel; impact physics and continuous road joins are unbound."
+    },
+    {
+      "assetKey": "hmh-ld2-49-concrete-jersey-barrier",
+      "id": "49",
+      "name": "B2-49 - Concrete Jersey Barrier",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "dd0acac6852a9924b8d04bcc5dad895e865c22242400c8c85a7f331572c454f4",
+      "blenderSha256": "7d6f31ac5a0162dc35f342ee7aebc6bb36461dd7b6d11df1ec9f6b9d9d103642",
+      "notes": "Precast barrier shape, end faces and lifting recesses retained. Unseen side is cleaner than reference face; physical dimensions and collision uncalibrated."
+    },
+    {
+      "assetKey": "hmh-ld2-50-highway-overpass-pillar",
+      "id": "50",
+      "name": "B2-50 - Highway Overpass Pillar",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "45ddde46c6c5f43a637163e6dcf325526b0fed31db784f1a39ca7bfd8c6209aa",
+      "blenderSha256": "14ca7f5ecc9f7e6a723bd7a32dae2278eaff05b781ee6efb9b9b5623bc5948cb",
+      "notes": "Hammerhead cap, tapered pier and footing retained. Spalling remains visible; fine exposed rebar is simplified."
+    },
+    {
+      "assetKey": "hmh-ld2-51-road-sign-gantry",
+      "id": "51",
+      "name": "B2-51 - Road Sign Gantry",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "dcb77dea87297f1fb79db250539a083e43647f42bf781d94283c38a1245a53ab",
+      "blenderSha256": "1b5012a14bb326912d7c9e58381713e171401a71499de7bc4f0b1073f0e5693c",
+      "notes": "Gantry frame, two distinct blank panels and feet retained. Two-sided preparation prevents thin panels disappearing from behind; front and back were inspected. Serialized geometry, UVs, normals and texture bytes match the raw source; only double-sided material flags changed. Ground clearance and collision remain uncalibrated."
+    },
+    {
+      "assetKey": "hmh-ld2-52-traffic-light-mast",
+      "id": "52",
+      "name": "B2-52 - Traffic Light Mast",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "a300dc432758f746eec3a6e78a3aaef7b05d64a45f5a29b4be30af4382ed3c58",
+      "blenderSha256": "c95d6b2d6172fab511d84a64847bdca56c807d13239bbcfba43ae5c76d2b1693",
+      "notes": "Curved yellow mast, two signal heads and footplate retained. Static textured signal lenses, not animated or emissive traffic controls."
+    },
+    {
+      "assetKey": "hmh-ld2-53-bus-shelter",
+      "id": "53",
+      "name": "B2-53 - Bus Shelter",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "2b2c3f7c57252f03c0811b61a84bed0a5e039edaf0fb958fc9cb30d915005321",
+      "blenderSha256": "c300c84e78e677571106fb7df7819e2ad8830abe49188e1197f4b943abce23f0",
+      "notes": "Shelter frame, curved roof and bench retained. Glazing is represented by opaque/broken-looking textured panels, not physically transparent glass; material finishing is required if clear panes are needed."
+    },
+    {
+      "assetKey": "hmh-ld2-54-rusted-pickup-truck",
+      "id": "54",
+      "name": "B2-54 - Rusted Pickup Truck",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "14142b94631d680792b04480a4b7c331682b4a125e6d6021b472de4251bd6aa3",
+      "blenderSha256": "142a96d5d1195ee7b4d5caadb4fa590766d3df048c96452adb5a6eadd8e3ea78",
+      "notes": "Rusted step-side pickup, cab, bed and wheels retained. Inferred rear hardware and minor corrosion patterns differ; static scenery, not a driveable rig."
+    },
+    {
+      "assetKey": "hmh-ld2-55-overturned-school-bus",
+      "id": "55",
+      "name": "B2-55 - Overturned School Bus",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "c96fa5dc59e992d5e3cba30f6185556e49e6ce44cde1daf228edf7cbb5a90d58",
+      "blenderSha256": "a7bb7a22384fdb280a30fbeb4541c07dd91101e3adc2005eb22abc89dea6384c",
+      "notes": "Yellow bus remains on its side, with exposed undercarriage and side-facing wheels. Damaged windows and interior are simplified; no reset-to-upright pose occurred."
+    },
+    {
+      "assetKey": "hmh-ld2-56-armored-transport-van",
+      "id": "56",
+      "name": "B2-56 - Armored Transport Van",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "de4c194cc99e53391e49f11661a9c755fa6a4ee3061de0cf89bea03cdd6f17d5",
+      "blenderSha256": "9482820b1b5a6b82b8527cb0ca5bd103da095884cc0f48971e19e137712c2d70",
+      "notes": "Boxy armored van silhouette, doors, grille and wheels retained. Window and interior detail is surface-level; static scenery."
+    },
+    {
+      "assetKey": "hmh-ld2-57-flatbed-semi-trailer",
+      "id": "57",
+      "name": "B2-57 - Flatbed Semi Trailer",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "447305273e81abc7bdca1112015e9baec5307d54653e9a0a3e0ae71539365d06",
+      "blenderSha256": "2e74cd2a238d479b0df61957c4f295611080f20d6a0cdda372b594b784dd0ffe",
+      "notes": "Detached flatbed, landing gear, axles and plank bed retained. Underside hardware is inferred; no articulated hitch or wheel rig."
+    },
+    {
+      "assetKey": "hmh-ld2-58-burnt-out-hatchback",
+      "id": "58",
+      "name": "B2-58 - Burnt Out Hatchback",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "2fb88d58f797162919be3792918e15ec77b19286bf42b6ee2ec2056dfe27986b",
+      "blenderSha256": "18ef3ffe4393732e8c1afd9fd7f2a74356abde3406de6a1d735f588ac0fc6f98",
+      "notes": "Fire-damaged compact shell and missing/glazed-over window regions retained. Interior and small engine components are simplified and partly represented by texture."
+    },
+    {
+      "assetKey": "hmh-ld2-59-tracked-excavator",
+      "id": "59",
+      "name": "B2-59 - Tracked Excavator",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "eb013008c3ba7ec8d2016574d3287940f79c6223dfcce5ba9d4cabfebcbee584",
+      "blenderSha256": "265a265086aadb5c6bb4a1e97a953072adea7eb6726bd61c951cbbee61791c1e",
+      "notes": "Crawler tracks, cab, folded boom and bucket retained with recognizable excavator silhouette. Hydraulic hoses and hidden joints simplified; not articulated."
+    },
+    {
+      "assetKey": "hmh-ld2-60-mining-haul-truck",
+      "id": "60",
+      "name": "B2-60 - Mining Haul Truck",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "a28fa6995719429973d215e504319158e99da7edd500530d15fcbce6aaae45c6",
+      "blenderSha256": "afd006610f06c6d6ebc3a018a6c054b30e47db20b481720dfae52fda5f44074f",
+      "notes": "Canopy dump body, large tires, chassis and cab retained. Rear and hidden mechanical details are inferred; no dump or driving rig."
+    },
+    {
+      "assetKey": "hmh-ld2-61-abandoned-motorcycle",
+      "id": "61",
+      "name": "B2-61 - Abandoned Motorcycle",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "fe74fcfad48bb936fc05dd92414cd9814482f6b1208a752472c730db47b800ac",
+      "blenderSha256": "2a74f28b46cf010c33b998f7c0f588d676d35ea677244bdc71231fe11b5e92fb",
+      "notes": "Motorcycle wheels, tank, seat, exhaust and frame retained. Thin cables/spokes are thickened or simplified; no steering or wheel animation."
+    },
+    {
+      "assetKey": "hmh-ld2-62-clapboard-farmhouse",
+      "id": "62",
+      "name": "B2-62 - Clapboard Farmhouse",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "a63251de2278f8de195776a0d9eac2304c1ad70224063f1ec87b57f491356fb8",
+      "blenderSha256": "5811ac1a0cc2e18c7d62c738f806130d51406265fadac99fe5c095e45772dc52",
+      "notes": "Weathered clapboard house, porch, chimney and damaged window trim retained. Additional perpendicular view checked protruding trim and facade; unseen rear layout is inferred."
+    },
+    {
+      "assetKey": "hmh-ld2-63-brick-warehouse",
+      "id": "63",
+      "name": "B2-63 - Brick Warehouse",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "36cebb1b8d4442590ad703250339056e531518e251efb94ca171596bb6ace62d",
+      "blenderSha256": "7be2238e1fcaf8ee654fcfb422e65dab3cfdce2fd780220fad12e5d8eef1a87a",
+      "notes": "Brick warehouse, sawtooth roof and openings retained. Roof/back wall details are inferred; interior and functioning doorways are not authored."
+    },
+    {
+      "assetKey": "hmh-ld2-64-fuel-station-canopy",
+      "id": "64",
+      "name": "B2-64 - Fuel Station Canopy",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "5de84d21418a1fa0dc709191a201975b916b62a4d797ce66f3eb40771e4c159d",
+      "blenderSha256": "0e9e7fbc9299a48bca2a87254772ce5357f8ec5a224876f3ca75d09fc9cf07fb",
+      "notes": "Freestanding weathered canopy, two columns and fascia retained. Roof surfaces are inferred from a reference emphasizing the underside; calibrate support height and clearance for the scene."
+    },
+    {
+      "assetKey": "hmh-ld2-65-steepled-chapel",
+      "id": "65",
+      "name": "B2-65 - Steepled Chapel",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "e3d6b4f092a4892cded8eb7af060c1668a8330a17bf5dcb364870a1d852ec52f",
+      "blenderSha256": "1e5da8ce11f9e18615808d144b80c5417ee3bf4c6a03746f11e907ad83ef71df",
+      "notes": "Chapel roof, belfry steeple, facade openings and steps retained. Steeple microdetail and unseen rear simplified; no interior."
+    },
+    {
+      "assetKey": "hmh-ld2-66-concrete-bunker-entrance",
+      "id": "66",
+      "name": "B2-66 - Concrete Bunker Entrance",
+      "disposition": "reserve",
+      "reason": "Closed exterior/blocked entrance; no new interiors or progression in this slice",
+      "glbSha256": "b9e8bbe8069f068cef512f9ae67821967b7daf090196e8420ccc3326473ed312",
+      "blenderSha256": "d5c79b3ec7e5e4ded06b71b42c45da3514616f35cd0254bc63fbab53b5e0706d",
+      "notes": "Heavy bunker door portal, concrete structure and earth berm retained. Door is closed/static; no entering/interior, hinges or navigation authority."
+    },
+    {
+      "assetKey": "hmh-ld2-67-railway-signal-box",
+      "id": "67",
+      "name": "B2-67 - Railway Signal Box",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "4693c9c06da11b8702cacba96ce9aed1ffa9ea8954f51d481acd4f44b74ee8b5",
+      "blenderSha256": "e0e4bf76c518c55566ca726d5d19fa573529d6166242db0cd66b7fa106af6fdd",
+      "notes": "Raised timber signal cabin, brick base and exterior stair retained. Glazed windows are opaque textured surfaces; transparent glazing and interior are not finished."
+    },
+    {
+      "assetKey": "hmh-ld2-68-quonset-hut",
+      "id": "68",
+      "name": "B2-68 - Quonset Hut",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "9d631e8bc8d2a3d77122c4c85e18b6630a31d6b240ed9fb047eb23ec944f7369",
+      "blenderSha256": "2b8162df54bd334ee770fc8b471d35a7f480a1094b117db0146fe9acb4271d55",
+      "notes": "Corrugated semicylindrical hut, front door and end walls retained. Rear weathering and interior inferred/omitted; static exterior source."
+    },
+    {
+      "assetKey": "hmh-ld2-69-stone-watermill",
+      "id": "69",
+      "name": "B2-69 - Stone Watermill",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "98d90d2b95394b58563ef14964fb4a484a03ab95792e273688f9dc57f9cda6e5",
+      "blenderSha256": "999a73403e0cff900700bee23bf396caa630cb667869920c2ba9dfa31996e60b",
+      "notes": "Stone mill house, roof and large waterwheel retained. Wheel, supports and unseen side simplified; no wheel rotation or water simulation."
+    },
+    {
+      "assetKey": "hmh-ld2-70-dead-oak-broken-limbs",
+      "id": "70",
+      "name": "B2-70 - Dead Oak Broken Limbs",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "6e443963fb71bb1578fc630ab6e64dc72deae0c8490928364601450f5bc9628b",
+      "blenderSha256": "f04301727beaec60b210fe352b1e63ef239475f3dff9f94687490db46c45e157",
+      "notes": "Broken oak trunk, roots, snapped limbs and fine twigs retained. Perpendicular view confirms broad branching that was foreshortened in the default view."
+    },
+    {
+      "assetKey": "hmh-ld2-71-weeping-willow",
+      "id": "71",
+      "name": "B2-71 - Weeping Willow",
+      "disposition": "reserve",
+      "reason": "Reserve willow for later water-edge composition; 437867-triangle master must be baked, not loaded into runtime",
+      "glbSha256": "eff70d05f6e41fe2e2fdcd61937b27c0ee38dbc5068e808eba8679e98be376f7",
+      "blenderSha256": "a6285e94271484591a80709328ed9ddabaf8ba844f171f55955252c5d4b23550",
+      "notes": "Blender-restored dense hanging canopy supplements the original Tripo leaf surfaces; raw tree and original packed master preserved. Separate editable canopy mesh. Prepared source has 437867 triangles: bake to atlas or reduce for runtime, do not directly deploy this dense source."
+    },
+    {
+      "assetKey": "hmh-ld2-72-tall-conifer-trio",
+      "id": "72",
+      "name": "B2-72 - Tall Conifer Trio",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "21370e132f24542ff936c258611c5ae4f98f7c8d099d125c2a1cd65b1b908a34",
+      "blenderSha256": "816a7d739cfbbd7a27693afdbef6e366beb4deb87b451803f46e901dc326f110",
+      "notes": "Three distinct conifer crowns/trunks confirmed from perpendicular view. Shared root mass and simplified lower limbs/needles; not three independently rigged trees."
+    },
+    {
+      "assetKey": "hmh-ld2-73-hollow-stump-shelf-fungus",
+      "id": "73",
+      "name": "B2-73 - Hollow Stump Shelf Fungus",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "8722003f6942031f69a60d40da9d43216036800a8b9f4a695f197e1a3ad98f14",
+      "blenderSha256": "a410f554c92d756cb7ee6d30fa972f7ce9f1b228253b74a626377e0924253695",
+      "notes": "Hollow stump body, exposed inner wood and shelf fungi retained. Cavity and fine moss/fungus detail simplified; source opening is not a physical interaction contract."
+    },
+    {
+      "assetKey": "hmh-ld2-74-uprooted-root-ball",
+      "id": "74",
+      "name": "B2-74 - Uprooted Root Ball",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "b1e19d5255e688b87d0d1fbd074573a5489baaed56570bd4b68ab576dda60d9a",
+      "blenderSha256": "b48abec87db9e2d2d3b8a5a595d5cf1419bb72e6fce673b15242a07c54150275",
+      "notes": "Upturned root plate, curved trunk remnant and tangled root silhouette retained. Back soil mass inferred and cleaner; fine root hairs simplified."
+    },
+    {
+      "assetKey": "hmh-ld2-75-hedgerow-section",
+      "id": "75",
+      "name": "B2-75 - Hedgerow Section",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "d93a0d60a044acc6e48b9dd0d8763022ac5da7fca949798c65ba91493e5ba19f",
+      "blenderSha256": "162e2d1f672f65300685f34637f38b04d1e941eb702ee444bd3cec2317384917",
+      "notes": "Dense overgrown hedge strip retained from both sides. Fine leaves simplified and branch mass consolidated; modular seams, wind and collision remain separate."
+    },
+    {
+      "assetKey": "hmh-ld2-76-rock-arch-formation",
+      "id": "76",
+      "name": "B2-76 - Rock Arch Formation",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "d94669ea53293094ba3baa4c134e4c3f48e587fb23931665733d043c0124f656",
+      "blenderSha256": "c57d58a664fee1b6f6ff32adca80ddd184e702ca6584bad8478c4dc301a85a48",
+      "notes": "Layered sandstone pillars and a genuine open arch confirmed from a perpendicular camera. Default quarter view is strongly foreshortened; use the side preview/viewer angle for the opening."
+    },
+    {
+      "assetKey": "hmh-ld2-77-collapsed-mine-entrance",
+      "id": "77",
+      "name": "B2-77 - Collapsed Mine Entrance",
+      "disposition": "reserve",
+      "reason": "Closed exterior/blocked entrance; no new interiors or progression in this slice",
+      "glbSha256": "b617758230a382971c3bcb8fcf9dde803c9bf41c88ee23a9031dc668cee3f014",
+      "blenderSha256": "145cdeaeb58df1e38edb7da018c0d46b883273a3f2cbf36e85149776b2b3c6d1",
+      "notes": "Timber mine portal and obstructing rockfall retained, with broken bracing and rubble. Intentionally blocked entrance, not a traversable mine interior."
+    },
+    {
+      "assetKey": "hmh-ld2-78-railway-track-section",
+      "id": "78",
+      "name": "B2-78 - Railway Track Section",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "39de310b53ae65f727f5b65e831c8e812daa9d0f8c0f307fb7a898d9f7af120f",
+      "blenderSha256": "e6c65389690cd8a4d770e04444ded34528cf049ec8dfa8d2e133ceca6002bd6a",
+      "notes": "Two rails, sleepers and a substantial ballast slab retained. Real solid-depth source geometry rather than a flat image plane; track joins, gauge and ground scale uncalibrated."
+    },
+    {
+      "assetKey": "hmh-ld2-79-stacked-log-pile",
+      "id": "79",
+      "name": "B2-79 - Stacked Log Pile",
+      "disposition": "reserve",
+      "reason": "Verified library reserve; not needed to establish this slice without visual clutter",
+      "glbSha256": "9f344c3ff47cdf01d92245047a93c6ae9dd39e2be1b943f3604d3a3b5dbfc323",
+      "blenderSha256": "c63e083b8c0defbd847a07270330c872ba83026730c3414c69d212bf99e42b05",
+      "notes": "Stacked log bundle and stakes retained with distinct cut ends. Some rear log separation/bark microdetail simplified; no destructible individual-log physics."
+    },
+    {
+      "assetKey": "hmh-ld2-80-stone-well-with-winch",
+      "id": "80",
+      "name": "B2-80 - Stone Well With Winch",
+      "disposition": "placement-request",
+      "reason": "Selected in the placement table; requires Hermes native integration",
+      "glbSha256": "adc1b3bcc22b1d3c27b1abeabd77443c42ae189f8b2449a9055b35108fe7c744",
+      "blenderSha256": "11f56be7536f4de961960c0e6a0906689b9b94518b3fead1bc7caaefc6f77278",
+      "notes": "Roofed fieldstone well, posts, winch structure and basin retained. Fine rope, bucket and handle details simplified; winch is static and the well is not an authored interactable."
+    }
+  ],
+  "preserved": {
+    "spawn": {
+      "x": 800,
+      "y": 2400
+    },
+    "protectedSpawnRadius": 560,
+    "actorRadius": 24,
+    "mainRouteUnchanged": true,
+    "allExistingIdsRetained": true,
+    "surfacesUnchanged": true,
+    "enemySpawnPointsUnchanged": true,
+    "canonicalPoiAnchorsUnchanged": true,
+    "newGameplayRules": false,
+    "level2Activated": false
+  },
+  "remainingAcceptance": [
+    "Hermes alias/bake/adoption and placement overlays in current candidate",
+    "Visible physical boundary versus collision coverage including continuous Hashwood root banks",
+    "Canonical desktop/mobile gameplay, world tour, camera/HUD occlusion, performance and exact candidate gates",
+    "Level 1 acceptance before secret/progression additions or Level 2 design"
+  ],
+  "integrationStatus": "paired-runtime-native-world; final candidate verification pending",
+  "nativeRuntimeManifest": "apps/portal/assets/generated/hmh-world-design/world-design.json"
+}

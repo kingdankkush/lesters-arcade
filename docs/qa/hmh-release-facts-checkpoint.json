@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-09-10T16:41:52.878537+00:00",
+  "status": "SOURCE_REVIEWED_OFFLINE_ARTIFACT_VERIFIED_FINAL_CANDIDATE_REFRESH_PENDING",
+  "scope": [
+    "REGISTER:M-2"
+  ],
+  "disclaimer": "This is an offline tooling/source and generated-fact acceptance checkpoint, not an integrated gameplay, build, browser, performance, device, human, on-chain or release certificate. No original register acceptance is closed.",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "sourceDiffSha256": "bbfdec6160be68656156ed8e0e6031dd7e3af0c586423983a9575826c3c86af2",
+  "sourceFiles": [
+    {
+      "path": "scripts/hmh-release-facts.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d",
+      "beforeBytes": 0,
+      "afterBytes": 18212
+    },
+    {
+      "path": "tests/hmh-release-facts.test.mjs",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "fa7c9557df8dbd55204494b168cbda25eacff9be09bf84e9602c918dcf389b7b",
+      "beforeBytes": 0,
+      "afterBytes": 13011
+    },
+    {
+      "path": "scripts/syntax-check.mjs",
+      "beforeSha256": "20c7d89cb5856c5bae7b92bc565c5fd7a5efb5704e18d61ad3b92bb7207b4bea",
+      "afterSha256": "72792d1981ff123e85fbd90a81d9fdf9cccbd5ad7055932f20b82b3397c57d4c",
+      "beforeBytes": 28340,
+      "afterBytes": 28413
+    }
+  ],
+  "node": "v24.20.0",
+  "testCounts": {
+    "focused": {
+      "tests": 37,
+      "pass": 37,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "expanded-source": {
+      "tests": 77,
+      "pass": 77,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "verificationReceipt": ".tmp/team/facts-20260910/verification.json",
+  "verificationSha256": "e4d036c71afd591f3829097e8d1e9fc94e1de87fc619834d53b39e997dd3cf4f",
+  "redEvidence": [
+    {
+      "log": ".tmp/team/facts-20260910/red.tap",
+      "sha256": "8b4e9954c0630cddad1c11b4b35395558198004f5da34f26ad29f5cc5dc7a531",
+      "counts": {
+        "tests": 29,
+        "pass": 0,
+        "fail": 29,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "log": ".tmp/team/facts-20260910/red-02.tap",
+      "sha256": "de0c04e10029ba6c7bb6c8c9b7199fa60db78a4fa46d4f386626ffa7425d3702",
+      "counts": {
+        "tests": 36,
+        "pass": 33,
+        "fail": 3,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "log": ".tmp/team/facts-20260910/red-hardlink.tap",
+      "sha256": "389ec5df554f6ac5b451f06b126644f11a101e11381efeace4dc6551387db48e",
+      "counts": {
+        "tests": 1,
+        "pass": 0,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    }
+  ],
+  "artifacts": {
+    "docs/releases/hmh-fact-sheet.json": "4275edfd0a311f89b2e81d9de229b37bee205fef5e55f17713c8765dc0c8bc19",
+    "docs/releases/hmh-fact-sheet.md": "f135325e0d277711e6002338a630a770654e91e7f2e6feb42b10204b7917f99d"
+  },
+  "sourceSnapshotSha256": "8cd9684abbc23e82d6e2f6744e07f78f17cdc06ea3a6864d801ba62d50a446af",
+  "inventoryCoverage": {
+    "features": 55,
+    "originalIdsInFeatures": 67,
+    "originalRegisterIds": 99,
+    "states": {
+      "public-recorded": 1,
+      "local": 9,
+      "unfinished": 40,
+      "gated": 5
+    }
+  },
+  "pausedExcludedIds": [
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22"
+  ],
+  "review": {
+    "directory": "LestersArcade-Coordination/hmh-textured-rollout/review/hermes-release-facts-source",
+    "verdict": "PASS",
+    "findings": [],
+    "resultSha256": "d0c1fb9758d2994c66fd190e816f0aac3cb07952b45928cfed61d7bbc17e3b56",
+    "eventsSha256": "24c64f522bbad12979c6f7b2e390754878e1329f6906333d284204f0f92a2631",
+    "promptSha256": "88d2095d4f8fc9053c107c79a8c606e6a770bc05675aaa3e41a60e21f7da3721",
+    "packetMembers": 14,
+    "toolCommandEvents": 0,
+    "metadataWarnings": [
+      "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+    ],
+    "startupErrors": [
+      "2026-09-10T16:36:28.159102Z ERROR codex_models_manager::manager: failed to load models cache: missing field `supports_parallel_tool_calls` at line 132 column 5",
+      "2026-09-10T16:36:29.153988Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: \"Bearer realm=\\\"OAuth\\\", resource_metadata=\\\"https://mcp.cloudflare.com/.well-known/oauth-protected-resource/mcp\\\"\" })",
+      "2026-09-10T16:36:29.238784Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: \"Bearer realm=\\\"OAuth\\\", resource_metadata=\\\"https://mcp.cloudflare.com/.well-known/oauth-protected-resource/mcp\\\"\" })"
+    ],
+    "startupErrorDisposition": "Retained CLI models-cache and unused Cloudflare MCP authentication errors. They did not prevent the completed self-contained command-free source review; no tool/command events occurred. This is not evidence those integrations work."
+  },
+  "preservationReceipt": ".tmp/team/facts-20260910/preservation.json",
+  "remaining": [
+    "Explicit Codex frozen return and validation-window release",
+    "Retain parent profile/truth/challenge and additive syntax-registration layers during integration",
+    "Refresh generated facts and --check against the final integrated source/release ledger",
+    "Combined gates, browser/device/performance/endurance, clean-host custody and exact-candidate owner acceptance",
+    "Preview/rollback and single-publisher hosted-byte verification"
+  ],
+  "commitPerformed": false,
+  "pushPerformed": false,
+  "deploymentPerformed": false,
+  "settlementLive": false
+}

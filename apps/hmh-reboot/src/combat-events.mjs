@@ -75,7 +75,8 @@ function validateHit(hit) {
   positive(hit.criticalMultiplier ?? 1.75, `hit ${hit.id} criticalMultiplier`);
   if (nonNegative(hit.armorPenetration ?? 0, `hit ${hit.id} armorPenetration`) > 1) throw new TypeError(`hit ${hit.id} armorPenetration must not exceed one`);
   nonNegative(hit.knockback ?? 0, `hit ${hit.id} knockback`);
-  return { ...hit, tick: hit.tick ?? 0, time, criticalChance };
+  if (hit.provokesAmbient !== undefined && typeof hit.provokesAmbient !== 'boolean') throw new TypeError(`hit ${hit.id} provokesAmbient must be boolean`);
+  return { ...hit, tick: hit.tick ?? 0, time, criticalChance, provokesAmbient: hit.provokesAmbient ?? true };
 }
 
 export function expectedCombatHitDamage({
@@ -152,6 +153,7 @@ export function resolveCombatHits({ sessionSeed, hits = [], targets = [] } = {})
       targetId: target.id,
       sourceId: hit.sourceId,
       weaponId: hit.weaponId,
+      provokesAmbient: hit.provokesAmbient,
       critical,
       shielded,
       armorPiercing: hit.armorPiercing === true,

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { HMH_RUN_SUMMARY_CATALOGS as C } from '../sdk/hmh-run-summary-schema.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS as C, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
+import * as history from '../apps/portal/src/hmh-run-history.mjs';
+import { createRunSummaryAccumulator, finalizeRunSummary } from '../sdk/hmh-run-summary.mjs';
 import {
   HMH_RUN_HISTORY_FILTER_DEFAULTS,
   buildHmhRunHistoryModel,
@@ -99,7 +101,7 @@ test('canonical history model exposes truthful provenance, PBs, accuracy, builds
   assert.deepEqual(model.filters, HMH_RUN_HISTORY_FILTER_DEFAULTS);
   assert.equal(model.totalCanonicalRuns, 2);
   assert.equal(model.rows.length, 2);
-  assert.equal(model.rows[0].provenance.id, 'verified-ranked');
+  assert.equal(model.rows[0].provenance.id, 'local-ranked', 'a cached transaction string is not verified gameplay provenance');
   assert.equal(model.rows[1].provenance.id, 'local-free');
   assert.equal(model.personalBests.score, 10_000);
   assert.equal(model.personalBests.survivalTicks, 900);
@@ -155,4 +157,70 @@ test('history ignores other wallets and malformed summaries and reports explicit
   assert.ok(model.options.heroes.some((row) => row.id === 'lit-commando'));
   assert.ok(model.options.weapons.some((row) => row.id === 'coin-blaster'));
   assert.deepEqual(model.options.results.map((row) => row.id), ['all', 'completed', 'defeated', 'abandoned', 'runtime-error']);
+});
+
+// Every leaf is kept, including zeros and canonical identifiers. Missing old-version
+// counters must remain absent rather than being invented as zero.
+function leafEntries(value, path = '') {
+  return value && typeof value === 'object'
+    ? Object.entries(value).flatMap(([key, child]) => leafEntries(child, path ? `${path}.${key}` : key))
+    : [[path, value]];
+}
+
+test('detailed history exposes every validated schema leaf without changing its value', () => {
+  assert.equal(typeof history.buildHmhRunDetailsModel, 'function');
+  const current = finalizeRunSummary(createRunSummaryAccumulator({
+    seed: 7, buildHash: 'history-test', mode: 'ranked', heroId: 'lit-commando',
+    startPosition: { x: 0, y: 0 },
+  }), { endTick: 600, elapsedMs: 10000, score: 77, level: 1, xp: 0,
+    currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 10, terminalReason: 'defeated' });
+  for (const input of [summary(), current]) {
+    assert.equal(validateRunSummaryPayload(input), '');
+    const before = JSON.stringify(input);
+    const details = history.buildHmhRunDetailsModel(input);
+    const fields = details.sections.flatMap((section) => section.fields);
+    assert.deepEqual(Object.fromEntries(fields.map(({ path, value }) => [path, value])), Object.fromEntries(leafEntries(input)));
+    assert.equal(fields.length, leafEntries(input).length, 'no duplicate or silently omitted fields');
+    assert.ok(fields.every((field) => field.label && field.path));
+    assert.equal(JSON.stringify(input), before);
+    assert.ok(Object.isFrozen(details.sections));
+  }
+  const oldFields = history.buildHmhRunDetailsModel(summary()).sections.flatMap((section) => section.fields);
+  assert.ok(!oldFields.some((field) => field.path.startsWith('lightningLedger.')));
+  assert.ok(!oldFields.some((field) => field.path.endsWith('.chargesStarted')));
+});
+
+test('detailed history rejects malformed or unsupported summaries instead of rendering raw payloads', () => {
+  assert.equal(typeof history.buildHmhRunDetailsModel, 'function');
+  for (const input of [null, {}, { ...summary(), schemaVersion: 99 }, { ...summary(), extra: '<script>untrusted</script>' }]) {
+    assert.equal(history.buildHmhRunDetailsModel(input), null);
+  }
+});
+
+test('cached receipts and flags cannot certify canonical run stats as on-chain', () => {
+  for (const extra of [
+    { settlementTxHash: '0xabc' },
+    { settlementTxHash: `0x${'a'.repeat(64)}` },
+    { primaryTxHash: `0x${'b'.repeat(64)}`, chainVerified: true },
+    { settlement: { mode: 'live', settled: true, primaryTxHash: `0x${'c'.repeat(64)}` } },
+    { settlement: { mode: 'simulated', settled: true, primaryTxHash: 'sim:fixture' } },
+  ]) {
+    const model = buildHmhRunHistoryModel([{ ...records[0], ...extra }], {
+      wallet: WALLET, settlements: [{ sessionId: records[0].sessionId, mode: 'live', primaryTxHash: `0x${'d'.repeat(64)}` }],
+    });
+    assert.equal(model.rows[0].provenance.id, 'local-ranked');
+    assert.equal(model.rows[0].provenance.official, false);
+    assert.equal(model.rows[0].provenance.transactionHash, null);
+  }
+});
+
+test('history reports rejected same-wallet summaries separately from pre-summary legacy runs', () => {
+  const model = buildHmhRunHistoryModel([
+    ...records,
+    { ...records[0], sessionId: 'invalid', runSummary: { schemaVersion: 5 } },
+    { ...records[0], wallet: 'other', runSummary: { schemaVersion: 5 } },
+  ], { wallet: WALLET });
+  assert.equal(model.invalidRuns, 1);
+  assert.equal(model.legacyRuns, 1);
+  assert.equal(model.totalCanonicalRuns, 2);
 });

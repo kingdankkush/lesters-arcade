@@ -30,6 +30,7 @@ from pathlib import Path
 from PIL import Image, ImageChops
 
 from hmh_pipeline_lock import exclusive_pipeline_lock
+import hmh_native_enemy as native_enemy
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "apps" / "hmh-reboot" / "assets" / "source" / "blender" / "hmh-enemy-roster.json"
@@ -44,6 +45,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-render", action="store_true", help="Reuse raw frames already on disk.")
     parser.add_argument("--verify-reproducible", action="store_true",
                         help="Render twice and require byte-identical atlases.")
+    parser.add_argument("--native-candidate", type=Path, help="Generate only a private native bagholder adoption packet.")
+    parser.add_argument("--reuse-native-pair", type=Path, help="Unsupported: native raw reuse is disabled; generate fresh A/B instead.")
     return parser.parse_args()
 
 
@@ -60,10 +63,19 @@ def run_checked(command: list[str], label: str) -> str:
     return combined
 
 
+def validate_blender_executable(blender: Path) -> None:
+    if not blender.is_file():
+        raise FileNotFoundError(f"Blender executable not found: {blender}")
+    version = run_checked([str(blender), "--version"], "blender --version").splitlines()
+    first = version[0].strip() if version else ""
+    if first != EXPECTED_BLENDER_VERSION:
+        raise RuntimeError(f"expected {EXPECTED_BLENDER_VERSION!r}, received {first!r}")
+
+
 def build_scene(blender: Path, blend_path: Path) -> None:
     """Rebuild the source scene from the manifest for a cold reproducibility pass."""
     run_checked([
-        str(blender), "--background", "--factory-startup",
+        str(blender), "--background", "--factory-startup", "--disable-autoexec", "--python-exit-code", "1",
         "--python", str(ROOT / "scripts" / "hmh-blender" / "create-hmh-enemy-roster.py"),
         "--",
         "--manifest", str(MANIFEST_PATH),
@@ -86,8 +98,12 @@ def render_roster_by_actor(
     """Render each actor in a fresh Blender process to isolate GPU render state."""
     for actor in manifest["actors"]:
         actor_id = actor["actorId"]
+        if not native_enemy.is_procedural_actor(actor):
+            native_enemy.render_actor(blender, manifest, actor, raw_dir,
+                                      raw_dir.parent / f"{report_stem}-{actor_id}.json")
+            continue
         run_checked([
-            str(blender), "--background", str(blend_path),
+            str(blender), "--background", "--disable-autoexec", str(blend_path), "--python-exit-code", "1",
             "--python", str(ROOT / "scripts" / "hmh-blender" / "export-hmh-enemy-roster.py"),
             "--",
             "--manifest", str(MANIFEST_PATH),
@@ -592,7 +608,8 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
         "animationProfile": actor.get("animationProfile", {"kind": "shared-roster-v1"}),
         # Cycle 074: which pose table rendered these frames and which grayscale
         # accent the body carries, so a stale atlas is detectable from metadata.
-        "poseAuthoring": manifest.get("poseAuthoring"),
+        "poseAuthoring": actor.get("poseAuthoring", manifest.get("poseAuthoring")),
+        **({"sourceModel": actor["sourceModel"]} if actor.get("sourceModel", {}).get("kind") == native_enemy.KIND else {}),
         "silhouetteAccent": actor.get("silhouetteAccent"),
         "boss": bool(actor.get("boss", False)),
         "image": f"./{atlas_path.name}",
@@ -608,8 +625,9 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
     # human review of silhouette and identity.
     sheet_frames = [record for record in records if record["direction"] == "south"]
     sheet_frames.sort(key=lambda item: (item["phase"] or "", item["state"], item["frameIndex"]))
-    cell = manifest["render"]["frameSize"][0]
-    sheet = Image.new("RGBA", (cell * max(len(sheet_frames), 1), cell), (10, 14, 20, 255))
+    cell = max([manifest["render"]["frameSize"][0], *(record["image"].width for record in sheet_frames)])
+    cell_height = max([manifest["render"]["frameSize"][1], *(record["image"].height for record in sheet_frames)])
+    sheet = Image.new("RGBA", (cell * max(len(sheet_frames), 1), cell_height), (10, 14, 20, 255))
     for index, record in enumerate(sheet_frames):
         sheet.alpha_composite(record["image"], (index * cell, 0))
     sheet_path = output_dir / f"{actor['actorId']}-roster-contact-sheet.png"
@@ -626,20 +644,48 @@ def build_atlas(actor: dict, manifest: dict, records: list[dict], output_dir: Pa
     }
 
 
+def apply_native_source_policy(metrics: dict, manifest: dict, drift_report: dict) -> None:
+    """Describe mixed source ownership truthfully after normal regeneration."""
+    native = next((a for a in manifest['actors'] if a['actorId'] == native_enemy.ACTOR), None)
+    if native is None:
+        return
+    if metrics.get('reproducibleVerified') is not True:
+        raise ValueError('verified A/B is required before claiming native source policy')
+    policy = metrics['reproducibilityPolicy']
+    policy['coldSceneRebuild'] = False
+    policy['sourceModes'] = {
+        a['actorId']: ('independent-native-cold-opens' if a['actorId'] == native_enemy.ACTOR else 'cold-procedural-scene-rebuild')
+        for a in manifest['actors']
+    }
+    native_drift = {name: value for name, value in drift_report.items() if name.startswith(native_enemy.ACTOR + '__')}
+    metrics['nativeSource'] = {
+        'actorId': native_enemy.ACTOR, 'sourceModel': native['sourceModel'],
+        'observed': summarize_observed_drift(native_drift),
+        'decodedChangedFrameCount': len(native_drift),
+        'metadataExactExceptDerivedPixelSha': True,
+    }
+
+
 def main() -> None:
     args = parse_args()
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     blender = Path(os.environ.get("BLENDER_EXECUTABLE", r"D:\Apps\Blender\blender.exe"))
+    if args.native_candidate:
+        validate_blender_executable(blender)
+        print(json.dumps(native_enemy.candidate(sys.modules[__name__], manifest, args.native_candidate,
+                         reuse_pair=args.reuse_native_pair, blender=blender), sort_keys=True))
+        return
+    if args.reuse_native_pair:
+        raise ValueError("--reuse-native-pair requires --native-candidate")
+    if args.skip_render and any(not native_enemy.is_procedural_actor(a) for a in manifest['actors']):
+        raise ValueError('native source forbids unproven --skip-render; generate a fresh paired candidate')
+    if not args.verify_reproducible and any(not native_enemy.is_procedural_actor(a) for a in manifest['actors']):
+        raise ValueError('native source requires --verify-reproducible before any mutations')
     raw_dir = ROOT / manifest["render"]["rawOutputDirectory"]
     blend_path = ROOT / manifest["scene"]["sourceBlend"]
 
     if not args.skip_render or not args.skip_scene:
-        if not blender.exists():
-            raise FileNotFoundError(f"Blender executable not found: {blender}")
-        version = run_checked([str(blender), "--version"], "blender --version").splitlines()
-        first = version[0].strip() if version else ""
-        if first != EXPECTED_BLENDER_VERSION:
-            raise RuntimeError(f"expected {EXPECTED_BLENDER_VERSION!r}, received {first!r}")
+        validate_blender_executable(blender)
 
     if not args.skip_scene:
         build_scene(blender, blend_path)
@@ -748,10 +794,13 @@ def main() -> None:
         "duplicateFrames": 0,
         "actors": results,
     }
+    apply_native_source_policy(metrics, manifest, drift_report)
     write_lf_json(OUTPUT_ROOT / "hmh-enemy-roster-metrics.json", metrics)
     print(json.dumps({k: v for k, v in metrics.items() if k != "actors"}, sort_keys=True))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--native-candidate" in sys.argv:
+    main()  # Fresh private output guard; never acquires/writes the canonical pipeline lock.
+elif __name__ == "__main__":
     with exclusive_pipeline_lock(ROOT / ".tmp" / "hmh-enemy-roster-pipeline.lock", "HMH enemy roster pipeline"):
         main()

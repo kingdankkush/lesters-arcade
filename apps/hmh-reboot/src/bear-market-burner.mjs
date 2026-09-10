@@ -153,6 +153,11 @@ function refreshBurn(state, contact, tick, policy) {
   const duration = contact.boss ? policy.bossBurnDurationTicks : policy.burnDurationTicks;
   const existing = state.burns.get(contact.targetId);
   if (!existing && state.burns.size >= BEAR_MARKET_BURNER_CONFIG.maxActiveBurns) return false;
+  const contactProvokesAmbient = contact.provokesAmbient ?? true;
+  if (typeof contactProvokesAmbient !== 'boolean') throw new TypeError('burn provenance must be boolean');
+  const provokesAmbient = existing
+    ? (existing.provokesAmbient ?? true) || contactProvokesAmbient
+    : contactProvokesAmbient;
   state.burns.set(contact.targetId, {
     targetId: contact.targetId,
     boss: contact.boss,
@@ -161,6 +166,7 @@ function refreshBurn(state, contact, tick, policy) {
     expiresTick: tick + duration,
     nextDamageTick: existing?.nextDamageTick ?? tick + BEAR_MARKET_BURNER_CONFIG.burnTickInterval,
     damage: policy.burnDamage,
+    provokesAmbient,
   });
   return true;
 }
@@ -211,19 +217,31 @@ export function completeBearMarketBurnerCanisterSwap(state, { tick, policy = DEF
 }
 
 export function spreadBearMarketBurnerOnDefeat(state, {
-  tick, source, nearbyTargets = [], lineOfSight = () => true, policy = DEFAULT_POLICY,
+  tick, source, nearbyTargets = [], lineOfSight = () => true, policy = DEFAULT_POLICY, currentEligibleTargetIds = [],
 } = {}) {
   if (!state || !(state.burns instanceof Map) || !Number.isInteger(tick) || tick < 0) throw new TypeError('state and tick are required');
   const origin = point(source, 'defeated source');
-  if (!Array.isArray(nearbyTargets) || nearbyTargets.length > 128 || typeof lineOfSight !== 'function') throw new TypeError('bounded spread targets and lineOfSight are required');
-  if (policy.maxSpreadIgnitions <= 0 || !state.burns.has(String(source?.id))) return freezeDeep({ type: 'burner:defeat-spread', tick, sourceTargetId: String(source?.id ?? ''), targetIds: [] });
+  if (!Array.isArray(nearbyTargets) || nearbyTargets.length > 128 || typeof lineOfSight !== 'function'
+    || !Array.isArray(currentEligibleTargetIds) || currentEligibleTargetIds.length > 256) {
+    throw new TypeError('bounded spread targets, eligibility, and lineOfSight are required');
+  }
+  const sourceTargetId = String(source?.id ?? '');
+  const sourceBurn = state.burns.get(sourceTargetId);
+  const provokesAmbient = sourceBurn?.provokesAmbient ?? true;
+  if (policy.maxSpreadIgnitions <= 0 || !sourceBurn) return freezeDeep({ type: 'burner:defeat-spread', tick, sourceTargetId, provokesAmbient, targetIds: [] });
+  const currentEligibleTargets = new Set(currentEligibleTargetIds.map(String));
   const eligible = nearbyTargets.filter((target) => target?.active !== false && target?.id !== source?.id)
     .map((target) => ({ target, targetId: String(target.id), distance: Math.hypot(finite(target.x, 'target x') - origin.x, finite(target.y, 'target y') - origin.y) }))
-    .filter((entry) => entry.distance <= 180 && lineOfSight(origin, entry.target))
+    .filter((entry) => (provokesAmbient || currentEligibleTargets.has(entry.targetId))
+      && entry.distance <= 180 && lineOfSight(origin, entry.target))
     .sort((a, b) => a.distance - b.distance || lexical(a.targetId, b.targetId))
     .slice(0, Math.min(policy.maxSpreadIgnitions, BEAR_MARKET_BURNER_CONFIG.maxSpreadIgnitionsPerTick));
-  for (const entry of eligible) refreshBurn(state, { targetId: entry.targetId, boss: entry.target.boss === true }, tick, policy);
-  return freezeDeep({ type: 'burner:defeat-spread', tick, sourceTargetId: String(source.id), targetIds: eligible.map((entry) => entry.targetId) });
+  for (const entry of eligible) refreshBurn(state, {
+    targetId: entry.targetId,
+    boss: entry.target.boss === true,
+    provokesAmbient,
+  }, tick, policy);
+  return freezeDeep({ type: 'burner:defeat-spread', tick, sourceTargetId, provokesAmbient, targetIds: eligible.map((entry) => entry.targetId) });
 }
 
 export function stepBearMarketBurner(state, {
@@ -234,17 +252,24 @@ export function stepBearMarketBurner(state, {
   targets = [],
   lineOfSight = () => true,
   policy = DEFAULT_POLICY,
+  provokesAmbient = true,
+  currentEligibleTargetIds = [],
 } = {}) {
   if (!state || !(state.burns instanceof Map) || !Number.isInteger(tick) || tick < 0 || tick <= state.lastTick) throw new TypeError('state requires a strictly increasing integer tick');
+  if (typeof provokesAmbient !== 'boolean' || !Array.isArray(currentEligibleTargetIds) || currentEligibleTargetIds.length > 256) throw new TypeError('bounded burn provenance is required');
   state.lastTick = tick;
   const events = [];
+  const currentEligibleTargets = new Set(currentEligibleTargetIds.map(String));
   for (const [targetId, burn] of [...state.burns]) {
     if (tick >= burn.expiresTick) {
       state.burns.delete(targetId);
       events.push(freezeDeep({ type: 'burner:burn-expired', tick, targetId }));
     } else if (tick >= burn.nextDamageTick) {
       burn.nextDamageTick += BEAR_MARKET_BURNER_CONFIG.burnTickInterval;
-      events.push(freezeDeep({ type: 'burner:burn-tick', tick, targetId, damage: burn.damage }));
+      const burnProvokesAmbient = burn.provokesAmbient ?? true;
+      if (burnProvokesAmbient || currentEligibleTargets.has(targetId)) {
+        events.push(freezeDeep({ type: 'burner:burn-tick', tick, targetId, damage: burn.damage, provokesAmbient: burnProvokesAmbient }));
+      }
     }
   }
   state.scorchZones = state.scorchZones.filter((zone) => tick < zone.expiresTick);
@@ -285,7 +310,7 @@ export function stepBearMarketBurner(state, {
     const contactIds = new Set(contacts.map((contact) => contact.targetId));
     for (const targetId of [...state.contactTicks.keys()]) if (!contactIds.has(targetId)) state.contactTicks.delete(targetId);
     for (const contact of contacts) {
-      refreshBurn(state, contact, tick, policy);
+      refreshBurn(state, { ...contact, provokesAmbient }, tick, policy);
       const heldTicks = (state.contactTicks.get(contact.targetId) ?? 0) + BEAR_MARKET_BURNER_CONFIG.pulseIntervalTicks;
       if (policy.scorchEnabled && heldTicks >= 60) {
         const zone = addBearMarketBurnerScorch(state, { tick, x: contact.x, y: contact.y, sourceTargetId: contact.targetId });
@@ -300,6 +325,7 @@ export function stepBearMarketBurner(state, {
       type: 'burner:pulse',
       tick,
       sequence: state.pulses,
+      provokesAmbient,
       pressurePermille,
       activeBurns: state.burns.size,
       activeScorchZones: state.scorchZones.length,

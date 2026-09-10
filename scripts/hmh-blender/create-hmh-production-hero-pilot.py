@@ -654,7 +654,7 @@ def main() -> None:
     # building a second rig under the manifest's armature name would collide
     # with it.
     procedural_pilots = [entry for entry in manifest["pilots"] if "sourceModel" not in entry]
-    external_pilots = [entry for entry in manifest["pilots"] if "sourceModel" in entry]
+    external_pilots = [entry for entry in manifest["pilots"] if "sourceModel" in entry and entry["sourceModel"].get("format") != "blend"]
     rig = None
     if procedural_pilots:
         rig = concept.create_rig()
@@ -674,6 +674,11 @@ def main() -> None:
     reference_reports = {}
     external_armatures = {}
     for pilot in manifest["pilots"]:
+        # Packed .blend pilots are source-original and are opened directly by
+        # the production runner; this generator must never import or rewrite
+        # them while rebuilding the legacy heroes.
+        if pilot.get("sourceModel", {}).get("format") == "blend":
+            continue
         # An external-model pilot must branch before the four hardcoded actor
         # ids below: find_reference_model fails closed on an unknown actorId,
         # and none of the concept/reference detail kits apply to an imported

@@ -1,0 +1,282 @@
+{
+  "schema": "hmh-revamp-local-integration-checkpoint-v1",
+  "verifiedAt": "2026-09-08T20:55:23.650280+00:00",
+  "root": "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout",
+  "branch": "hermes/hmh-textured-rollout",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "candidate": "mixed staged/unstaged/untracked; not yet exact-index reviewed",
+  "localSourceGates": {
+    "startedAt": "2026-09-08T20:36:33.637260+00:00",
+    "node": "v24.20.0",
+    "spawnedNode": "v24.20.0",
+    "python": "Python 3.11.16",
+    "steps": [
+      {
+        "name": "inventory",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "scripts/build-hmh-curated-level-kit-runtime.mjs"
+        ],
+        "exitCode": 0,
+        "seconds": 0.10899999999674037,
+        "log": ".tmp/team/revamp-resume/source-gates-02/inventory.log",
+        "logSha256": "54f7f784282de93c197e5ab951dcb056d85ccc40f67332663d4f46f74ba2eed5"
+      },
+      {
+        "name": "asset-qa",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "scripts/hmh-reboot-production-asset-qa.mjs"
+        ],
+        "exitCode": 0,
+        "seconds": 3.625,
+        "log": ".tmp/team/revamp-resume/source-gates-02/asset-qa.log",
+        "logSha256": "72a0221e8927e418f1762cf1893ca68d9d82cce84d02060185cfb6c5c32ad41b"
+      },
+      {
+        "name": "check",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "check"
+        ],
+        "exitCode": 0,
+        "seconds": 18.422000000005937,
+        "log": ".tmp/team/revamp-resume/source-gates-02/check.log",
+        "logSha256": "282286c313dcdd0629b1bba823bccace4ac95500c16524d87b29b29f394ca8a4"
+      },
+      {
+        "name": "release",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "test:release"
+        ],
+        "exitCode": 0,
+        "seconds": 130.67199999999139,
+        "log": ".tmp/team/revamp-resume/source-gates-02/release.log",
+        "logSha256": "b7f72cc7b6deb7881309d8e73b08a70da5ea952fee8b426dab36ffdcedc3341b"
+      },
+      {
+        "name": "security",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "design:security-audit"
+        ],
+        "exitCode": 0,
+        "seconds": 0.35899999999674037,
+        "log": ".tmp/team/revamp-resume/source-gates-02/security.log",
+        "logSha256": "a58fe66fac44c193198b6df90effb6f8eff52e4171bee2a0643468c64c29f740"
+      },
+      {
+        "name": "contracts",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "contracts:check"
+        ],
+        "exitCode": 0,
+        "seconds": 0.25,
+        "log": ".tmp/team/revamp-resume/source-gates-02/contracts.log",
+        "logSha256": "cd0ceaf8d8faa162aaa8a8c2a15b16e46cce28e3c988910382ea726ed9a235ce"
+      },
+      {
+        "name": "health",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "repo:health:strict"
+        ],
+        "exitCode": 0,
+        "seconds": 2.4690000000118744,
+        "log": ".tmp/team/revamp-resume/source-gates-02/health.log",
+        "logSha256": "76a0b1b5555baee6ead89ad35643dceea0cac7c75d2b1cf73f49a348c19ae375"
+      },
+      {
+        "name": "docs-links",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "docs:links"
+        ],
+        "exitCode": 0,
+        "seconds": 0.23399999999674037,
+        "log": ".tmp/team/revamp-resume/source-gates-02/docs-links.log",
+        "logSha256": "b4952dffe909730078ea67a769178cb5efdaf1a4568660aa6d72887816b6e184"
+      },
+      {
+        "name": "build",
+        "argv": [
+          "C:\\Users\\just_\\AppData\\Local\\npm-cache\\_npx\\387698761821791d\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "build"
+        ],
+        "exitCode": 0,
+        "seconds": 0.5629999999946449,
+        "log": ".tmp/team/revamp-resume/source-gates-02/build.log",
+        "logSha256": "68498278fcac887b81ab2a0dd9b2cb82f4a694eeff1867f99f8dd33e6f75e0d7"
+      }
+    ],
+    "finished": true,
+    "passed": true,
+    "published": false,
+    "finishedAt": "2026-09-08T20:39:10.913369+00:00"
+  },
+  "releaseLedger": {
+    "schemaVersion": 1,
+    "gate": "hmh-reboot-test-retirement",
+    "status": "PASS",
+    "counts": {
+      "tests": 2929,
+      "failed": 51,
+      "passed": 2878,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 2862,
+      "suites": 8
+    },
+    "expectedFailureCount": 51,
+    "errors": []
+  },
+  "ordinaryFreeFlow": {
+    "profiles": [
+      "desktop",
+      "landscape",
+      "portrait",
+      "tablet",
+      "ultrawide"
+    ],
+    "heroes": [
+      "lit-commando",
+      "lit-valkyrie"
+    ],
+    "passed": 10,
+    "navigationClicks": [
+      3
+    ],
+    "grants": false,
+    "evidencePilotQueries": false,
+    "selectedHeroOnlyTextureRequests": true,
+    "fourCanonicalBiographiesAndTwoLockedHeroes": true,
+    "portraitStartAboveFold": true,
+    "observedInput": "real mouse fire on all viewport profiles, not touch/gamepad or human-device certification",
+    "visualReview": "Parent inspected ordinary full-HUD first-use views: native Commando and Valkyrie readable and grounded, no head/torso/foot overlay obstruction; no minimap. Portrait CTA visible before scrolling. Tablet used keyboard HUD: coarse-pointer propagation needs separate evidence, not an asserted touch-device pass.",
+    "workerResponseBodyLimitation": "Browser observed worker-owned native WebP requests and completion; Playwright body reads failed for those images, so exact URL bodies were independently HTTP-read and matched to disk. Not fabricated network bodies or production readback."
+  },
+  "bagholder": {
+    "adoptedLocally": true,
+    "files": [
+      {
+        "source": ".tmp/team/revamp-resume/native-enemy-current/candidate/ready-to-adopt/hmh-enemy-roster-metrics.json",
+        "target": "apps/portal/assets/generated/hmh-reboot-enemy-roster/hmh-enemy-roster-metrics.json",
+        "backup": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout\\.tmp\\team\\revamp-resume\\bagholder-adoption\\before\\hmh-enemy-roster-metrics.json",
+        "beforeSha256": "cb1ef98795d00389128adbfc00a7752467e9d7d4e65eab1f330463312715899b",
+        "afterSha256": "c8d9307e01dad702a16f44c15ed27eb07bdf01929e8d80dd773a908fd81ce173"
+      },
+      {
+        "source": ".tmp/team/revamp-resume/native-enemy-current/candidate/ready-to-adopt/bagholder-rusher/bagholder-rusher-roster-atlas.json",
+        "target": "apps/portal/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.json",
+        "backup": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout\\.tmp\\team\\revamp-resume\\bagholder-adoption\\before\\bagholder-rusher\\bagholder-rusher-roster-atlas.json",
+        "beforeSha256": "816939ed71c94b1103284c078fa25581d7d6048deebc305f2b1352ee18d48a1a",
+        "afterSha256": "139f2ba97b964c55641acc2c97d8e2329cf9ac00706fea5abb81b0abba02a92a"
+      },
+      {
+        "source": ".tmp/team/revamp-resume/native-enemy-current/candidate/ready-to-adopt/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+        "target": "apps/portal/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+        "backup": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout\\.tmp\\team\\revamp-resume\\bagholder-adoption\\before\\bagholder-rusher\\bagholder-rusher-roster-atlas.png",
+        "beforeSha256": "7df573adb0ea686ade71b04f0a4b025d30defd023d0d0728a428f522eaee03d3",
+        "afterSha256": "9d5607df397a01dda06cc87f3c1636272eacb4235acb02c805fcb8847fefebc0"
+      },
+      {
+        "source": ".tmp/team/revamp-resume/native-enemy-current/candidate/ready-to-adopt/bagholder-rusher/bagholder-rusher-roster-contact-sheet.png",
+        "target": "apps/portal/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-contact-sheet.png",
+        "backup": "C:\\Users\\just_\\Desktop\\Projects\\lesters-arcade-textured-rollout\\.tmp\\team\\revamp-resume\\bagholder-adoption\\before\\bagholder-rusher\\bagholder-rusher-roster-contact-sheet.png",
+        "beforeSha256": "bd4124ca655db6a4273b4257aeab622fa59648072c38af25dd9b3cbdb55974ca",
+        "afterSha256": "b532db405189556a8b2fb2996deeaf21bff9c070a4b7e69ec0c54e5afd7326ac"
+      }
+    ],
+    "visualReview": "Parent inspected desktop, ultrawide, tablet, portrait and landscape full-HUD captures. Native zombie is human-scale, visibly textured, grounded and unobstructed in the positioned real-input view. Existing other-role/world art remains separate unfinished work."
+  },
+  "servedPreflightAfterBuild": [
+    {
+      "rel": "index.html",
+      "bytes": 24039,
+      "sha256": "f90fe0cbc8846b4b4fa98c984874fc02fd6db3c7820bf8ba64aa46630c62d0c9"
+    },
+    {
+      "rel": "dist/main.js",
+      "bytes": 1142160,
+      "sha256": "868689adc7059e94a6806e55a49174ee3e9472c2233fc5dca5de3dd40a427d57"
+    },
+    {
+      "rel": "hmh-reboot/index.html",
+      "bytes": 13371,
+      "sha256": "71f5b303c5533cb7c04c252a44fc704c0d546fc90cafc889bc3e1fcc1d1d09d5"
+    },
+    {
+      "rel": "dist/hmh-reboot/game.js",
+      "bytes": 471911,
+      "sha256": "8a458464ade0fd8a6daf5bd190dad8c6de38c8063116b7d2d2f42a8b43b099c9"
+    },
+    {
+      "rel": "hmh-reboot/styles.css",
+      "bytes": 52478,
+      "sha256": "d6e5f7dae896b6951ad4e8d9d088f8736678f5176468704ce82f69c3e171b4c2"
+    }
+  ],
+  "receipts": [
+    {
+      "path": ".tmp/team/revamp-resume/source-gates-02/receipt.json",
+      "sha256": "379faf0701e7a183012d2a722da8bb5d3e20bda2c4025faa40e2acfdcd6f4872"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/normal-flow-06/receipt.json",
+      "sha256": "3257359e9d29a4ed980a2676638b1bc968778e249d5772b03c494ddd3f52db06"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/bagholder-adoption/receipt.json",
+      "sha256": "131362050fdf659eeb35241baaea3ad9cc0aae3cf72fcdd52b923ddd72a2d38e"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/hud-integration-current/receipt.json",
+      "sha256": "e0fb9277568c546cdc26a720632b62203d1bd26c6b115d3e91f25e84253bf5cb"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/native-enemy-current/parent-receipt.json",
+      "sha256": "c6fa301f0086b5a4a9b8a262ce6399f16c65d27db45e674cf13c632980a1c27e"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/asset-inventory/final.json",
+      "sha256": "c4c24408ad29dd909fc961a3ef9f860e0a176978a850360bea3c7ff48d42a403"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/asset-inventory/inventory.json",
+      "sha256": "09f045715f19d3f893e25b652e16a3d14401483760d4f97edab335507a61e6f2"
+    },
+    {
+      "path": ".tmp/team/revamp-resume/tell-compat/final.json",
+      "sha256": "561649dac42a91d6fb25233364df19f5fffe81b196983b0948110fab890bee23"
+    }
+  ],
+  "notCompleted": [
+    "clean no-Git pointer-only host with CI Python/Pillow",
+    "canonical paired-anchor visual certification",
+    "full action/direction/motion/touch/gamepad/active-combat endurance",
+    "ordinary earned unlock and actual human playtests",
+    "remaining native enemies, held weapons, pickups, authored ruined-yard world, controls/combat/audio/portal/Web3 backlog",
+    "rights/mappings/missing approved input decisions",
+    "exact scoped review, commit/push, immutable Preview, production and rollback readback"
+  ],
+  "published": false,
+  "settlementLive": false,
+  "stacked": "paused; preserve accepted S-01\u2013S-03; no public playable claim"
+}

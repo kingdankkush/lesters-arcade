@@ -1,0 +1,1419 @@
+{
+  "schema": "hmh-release-facts/v1",
+  "scope": "Offline source snapshot; not a release certificate or public-byte verification",
+  "sourceSnapshotSha256": "0df65d71cc45578562fc40d8ffc418ea926d2fbfafdce23f8d9d69a53ae38e92",
+  "sourceInputs": [
+    {
+      "path": "apps/portal/games/chikun/game.manifest.json",
+      "sha256": "0ad24f5c6514ce623b7b8bf0ccef310c6962c5ca1d93c5794eb912440b5b8429",
+      "bytes": 554
+    },
+    {
+      "path": "apps/portal/games/hard-money-heroes/game.manifest.json",
+      "sha256": "beb91dc9f94aba6680c4ea51bbe7408a1ad98d2b30dc59bb4c7993e928d66c5f",
+      "bytes": 587
+    },
+    {
+      "path": "apps/portal/index.html",
+      "sha256": "bbc5bf527f1d119f23e984a42c31e16b4399195733e4908f9d2379b83ef8d686",
+      "bytes": 25429
+    },
+    {
+      "path": "apps/portal/main.js",
+      "sha256": "814f88f3ec9c684bbf3605f0976babfd05cd8473edd64fd862ad73dfadd8514d",
+      "bytes": 662770
+    },
+    {
+      "path": "apps/portal/src/arcade-core.mjs",
+      "sha256": "23b92936901525f7644a1cf9911dd8675e66c44773c69b674601d98a04e8450d",
+      "bytes": 350995
+    },
+    {
+      "path": "apps/portal/src/hmh-challenge-ui.mjs",
+      "sha256": "3633ac9368005d1969e2f30d794334857e8fe40fb0eb5c7afb51fe001f3838f2",
+      "bytes": 2834
+    },
+    {
+      "path": "apps/portal/src/hmh-challenges.mjs",
+      "sha256": "43422c323ffa44b6e6d0e4e19996daefbc5ea44217bde5984c95f0d00ac273a9",
+      "bytes": 4201
+    },
+    {
+      "path": "apps/portal/src/routes/official-app-routes.mjs",
+      "sha256": "5c7bd36d6f324f6a1b957f930264ae45ad40d2f99c32c8a1e1392971fc849ce7",
+      "bytes": 4543
+    },
+    {
+      "path": "apps/portal/src/routes/official-profile-route.mjs",
+      "sha256": "e22650a614406e22644c6d344defbdd67a8170d3c213505e08281c9c4956e2a8",
+      "bytes": 45931
+    },
+    {
+      "path": "apps/portal/src/settlement.mjs",
+      "sha256": "da5f6ac40df6c0fc9ffa173f81b69bc0afc9b6a768cb8883cd67f09136b28fd4",
+      "bytes": 11599
+    },
+    {
+      "path": "apps/portal/styles-arcade-polish.css",
+      "sha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+      "bytes": 66646
+    },
+    {
+      "path": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
+      "sha256": "cd289055ccfda066966e5b133ae9db070f2e6ac2f4d3f8549306039c7bbbc40b",
+      "bytes": 71110
+    },
+    {
+      "path": "docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md",
+      "sha256": "e32d1a0ce373b5aa2e4b6dcb39c396e596de62d0095fc7794a521bc14beb1251",
+      "bytes": 7896
+    },
+    {
+      "path": "docs/qa/hmh-owner-return-checkpoint.json",
+      "sha256": "1ae73744838d7a246f20b1f98e302189960176abfb02349de13b665668b8ca4e",
+      "bytes": 8915
+    },
+    {
+      "path": "docs/qa/hmh-parent-challenges-checkpoint.json",
+      "sha256": "c6a8d70d2ced41f12dd3740e6f6e1e5fa3e8b9f038e9319a4cc5259d9e469777",
+      "bytes": 5730
+    },
+    {
+      "path": "docs/qa/hmh-parent-profile-truth-checkpoint.json",
+      "sha256": "5dcadebb8081e381c56821948661805e24897a8303eac57e02612a7566596126",
+      "bytes": 6738
+    },
+    {
+      "path": "docs/qa/hmh-upgrade-execution-queue.json",
+      "sha256": "5780aeed39e1d24acf2c13670beaff11cdef8a538f8ac07ea4bdfa3a076fd8fc",
+      "bytes": 19550
+    },
+    {
+      "path": "README.md",
+      "sha256": "db4656fdd2045d8c7895fa683a24af8ba8d1794c4734613638fb9b67cde8f1bc",
+      "bytes": 27628
+    },
+    {
+      "path": "scripts/hmh-release-facts.mjs",
+      "sha256": "4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d",
+      "bytes": 18212
+    },
+    {
+      "path": "scripts/syntax-check.mjs",
+      "sha256": "ed7ffac2f89545213ea4d0226c7e2274b01439e4dd42d1d2d66de6f4391c317f",
+      "bytes": 29522
+    },
+    {
+      "path": "tests/arcade-core.test.mjs",
+      "sha256": "b9424ed10192dd9146ebfa3de538642efc79e0b4f810c1917dd7535ffbf5b8fc",
+      "bytes": 190608
+    },
+    {
+      "path": "tests/hmh-challenge-session.test.mjs",
+      "sha256": "8b2f83522c70cdce3b6c35b0b7f37100a763ba272033a65f7258d46e780602f4",
+      "bytes": 3577
+    },
+    {
+      "path": "tests/hmh-challenge-ui.test.mjs",
+      "sha256": "e79be14c8e865b3132fd3129b9a80f92c69cfc83d0651355c3b13b2c0c0140aa",
+      "bytes": 9171
+    },
+    {
+      "path": "tests/hmh-challenges.test.mjs",
+      "sha256": "4f21f59275a442223c67754f8fb833d8d02bb5faec150591e6cc6268dc0eee54",
+      "bytes": 3905
+    },
+    {
+      "path": "tests/official-app-routes.test.mjs",
+      "sha256": "e61e5adf7d376e41531719d0d4280a92d45f43a43b116d772fc37ef593086848",
+      "bytes": 4370
+    },
+    {
+      "path": "tests/official-profile-route.test.mjs",
+      "sha256": "41d01042b40a979feb05c9eafb4b6107f5668ceeea65d1649614478017931736",
+      "bytes": 18459
+    },
+    {
+      "path": "tests/profile-data-truth.test.mjs",
+      "sha256": "450c0d35c2c70f58a1f3c4aa8855767f5a61ae630eda13618f15e9d86ce62dd2",
+      "bytes": 9246
+    }
+  ],
+  "productionPromotionAuthorized": false,
+  "recordedProductionMarker": "lesters-arcade-v33-hmh-playable-update",
+  "cabinets": [
+    {
+      "manifestId": "hard-money-heroes",
+      "name": "Hard Money Heroes",
+      "declaredVersion": "1.0.0",
+      "declaredStatus": "playable",
+      "declaredRankedEligible": true,
+      "declaredCapabilities": [
+        "leaderboard",
+        "achievements",
+        "ranked",
+        "audio"
+      ],
+      "publicVerification": "not-performed",
+      "rankedChainVerification": "not-performed"
+    },
+    {
+      "manifestId": "chikun",
+      "name": "Chikun's Escape",
+      "declaredVersion": "0.5.0",
+      "declaredStatus": "playable",
+      "declaredRankedEligible": true,
+      "declaredCapabilities": [
+        "leaderboard",
+        "achievements",
+        "ranked",
+        "audio"
+      ],
+      "publicVerification": "not-performed",
+      "rankedChainVerification": "not-performed"
+    }
+  ],
+  "counts": {
+    "features": 55,
+    "originalIdsInFeatures": 67,
+    "originalRegisterIds": 99,
+    "states": {
+      "public-recorded": 1,
+      "local": 9,
+      "unfinished": 40,
+      "gated": 5
+    }
+  },
+  "release": {
+    "recordedAt": "2026-09-09T20:12:22.799359+00:00",
+    "recordedHead": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+    "recordedVerdict": "BLOCKED",
+    "recordedGates": {
+      "total": 9,
+      "passed": 8,
+      "failed": 1
+    },
+    "recordedUnexpectedFailures": [
+      "unexpected failure: tests/hmh-reboot-enclosures.test.mjs :: W-10 every piece clears blockers, routes, water, arenas, camps, pickups and the town kit"
+    ],
+    "currentCandidateCertified": false,
+    "scope": "Recorded historical combined run, not rerun or rebound by this generator"
+  },
+  "settlement": {
+    "state": "simulated",
+    "liveFlag": false,
+    "chainAcceptance": "not-performed",
+    "disclosure": "This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, durable history, epoch and authority acceptance remain separate."
+  },
+  "checkpoints": [
+    {
+      "label": "Parent Free challenges",
+      "taskIds": [
+        "REGISTER:M-3"
+      ],
+      "recordedStatus": "source-reviewed; combined build/browser/release pending",
+      "recordedAt": "2026-09-10T15:01:27.459584+00:00",
+      "boundFiles": 10,
+      "currentFileMatches": 8,
+      "mismatches": [
+        "apps/portal/index.html",
+        "scripts/syntax-check.mjs"
+      ],
+      "scope": "Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself a defect or permission to overwrite."
+    },
+    {
+      "label": "Parent profile and achievement truth",
+      "taskIds": [
+        "REGISTER:L-5",
+        "REGISTER:L-6"
+      ],
+      "recordedStatus": "SOURCE_REVIEWED_CORRECTED_BUILD_BROWSER_PENDING",
+      "recordedAt": "2026-09-10T09:22:47.959907+00:00",
+      "boundFiles": 8,
+      "currentFileMatches": 5,
+      "mismatches": [
+        "apps/portal/src/arcade-core.mjs",
+        "tests/arcade-core.test.mjs",
+        "scripts/syntax-check.mjs"
+      ],
+      "scope": "Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself a defect or permission to overwrite."
+    }
+  ],
+  "features": [
+    {
+      "id": "hmh-01",
+      "title": "Finish reference-to-model-to-biography consistency checks for all four approved heroes; preserve the existing identity work.",
+      "originalIds": [
+        "REGISTER:H-1",
+        "REGISTER:B-6"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:H-1",
+          "status": "local_committed_candidate"
+        },
+        {
+          "id": "REGISTER:B-6",
+          "status": "local_integrated_release_pending"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-02",
+      "title": "Close remaining rig, skin weights, waist-seam, source-manifest and LFS custody acceptance for the approved hero models.",
+      "originalIds": [
+        "REGISTER:H-2"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:H-2",
+          "status": "local_integrated_not_release_certified"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-03",
+      "title": "Validate all nine hero actions at gameplay zoom, including foot planting, recoil, recovery, death and baked coat/hair/neckerchief motion.",
+      "originalIds": [
+        "REGISTER:H-3",
+        "REGISTER:C-5"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:H-3",
+          "status": "local_integrated_not_release_certified"
+        },
+        {
+          "id": "REGISTER:C-5",
+          "status": "partial_needs_current_evidence"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-04",
+      "title": "Complete current all-hero gameplay/profile acceptance, ordinary earned unlocks, reproducibility, mobile texture decode and GPU-memory measurements.",
+      "originalIds": [
+        "REGISTER:H-4",
+        "REGISTER:C-6"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:H-4",
+          "status": "local_integrated_not_release_certified"
+        },
+        {
+          "id": "REGISTER:C-6",
+          "status": "partial_needs_current_evidence"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-05",
+      "title": "Verify selectors use the same approved models as gameplay, with readable framing, lighting and identity details.",
+      "originalIds": [
+        "REGISTER:H-5",
+        "REGISTER:B-5"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:H-5",
+          "status": "local_integrated_not_release_certified"
+        },
+        {
+          "id": "REGISTER:B-5",
+          "status": "local_integrated_release_pending"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-06",
+      "title": "Finish held-weapon model/socket/pose acceptance across directions and heroes, prioritizing pistol, shotgun, auto-miner and launcher, then the remaining reference-backed weapons.",
+      "originalIds": [
+        "REGISTER:H-7",
+        "REGISTER:R-4"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:H-7",
+          "status": "source_and_partial_runtime"
+        },
+        {
+          "id": "REGISTER:R-4",
+          "status": "source_and_partial_runtime"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-07",
+      "title": "Finish integration and gameplay acceptance of native town, camp, industrial and bridge kits: grounding, collision proxies, depth, occlusion and authored composition.",
+      "originalIds": [
+        "REGISTER:R-3"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:R-3",
+          "status": "dependency_ordered_open"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-08",
+      "title": "Reconcile any remaining trees, rocks, wrecks, stumps and debris against the already-delivered native source library and provenance.",
+      "originalIds": [
+        "REGISTER:R-2"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:R-2",
+          "status": "owner_or_input_gate_verify_before_action"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-09",
+      "title": "Verify every native pickup object, canonical effect, placement and actual collection path in the final world.",
+      "originalIds": [
+        "REGISTER:R-5"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:R-5",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-10",
+      "title": "Finish or verify real campfire lighting and ember emitters, with feature-specific evidence and particle budgets.",
+      "originalIds": [
+        "REGISTER:W-8f"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:W-8f",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-11",
+      "title": "Review Hashwood canopy clustering, depth and occlusion so foliage does not read as a flat green strip.",
+      "originalIds": [
+        "REGISTER:W-17"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:W-17",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-12",
+      "title": "Review yard slab variation, cracks, stains and decals at gameplay zoom; regenerate from the final topology where needed.",
+      "originalIds": [
+        "REGISTER:W-18"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:W-18",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-13",
+      "title": "Complete current bridge/ramp/platform/pit/terrace traversal and collision acceptance, preserving existing elevation authority.",
+      "originalIds": [
+        "REGISTER:W-11"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:W-11",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-14",
+      "title": "Finish deterministic, genuinely reachable secrets: destructible-hidden caches, ledge rewards and lore props.",
+      "originalIds": [
+        "REGISTER:W-12"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:W-12",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-15",
+      "title": "Confirm the updated spawn/camp/landmark composition does not obscure or overlap the hero's spawn area.",
+      "originalIds": [
+        "REGISTER:B-4"
+      ],
+      "inventoryStatus": "partial",
+      "state": "public-recorded",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-4",
+          "status": "deployed_partial_certification"
+        }
+      ],
+      "evidenceScope": "Historical register snapshot 2026-09-08T11:44:12.951406+00:00; not a fresh hosted check"
+    },
+    {
+      "id": "hmh-16",
+      "title": "Obtain a current owner visual decision on mining-camp haze and contrast; the old density-reduction recommendation is not an accepted change.",
+      "originalIds": [
+        "REGISTER:B-11"
+      ],
+      "inventoryStatus": "owner-gated",
+      "state": "gated",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-11",
+          "status": "owner_or_input_gate_verify_before_action"
+        }
+      ],
+      "evidenceScope": "Owner or operational acceptance remains separate"
+    },
+    {
+      "id": "hmh-17",
+      "title": "Plan Level 2 only after Level 1 meets its world and gameplay acceptance bar.",
+      "originalIds": [
+        "REGISTER:W-16"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:W-16",
+          "status": "dependency_ordered_open"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-18",
+      "title": "Confirm remaining reference/identity approvals for six enemy roles and three Liquidator phases, checking delivered material before requesting more art.",
+      "originalIds": [
+        "REGISTER:E-2"
+      ],
+      "inventoryStatus": "owner-gated",
+      "state": "gated",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:E-2",
+          "status": "private_enemy_candidate"
+        }
+      ],
+      "evidenceScope": "Owner or operational acceptance remains separate"
+    },
+    {
+      "id": "hmh-19",
+      "title": "Carry the already-adopted native Bagholder through final combined gameplay and release acceptance.",
+      "originalIds": [
+        "REGISTER:E-7"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:E-7",
+          "status": "adopted_local_release_pending"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-20",
+      "title": "Measure boss-atlas headroom and roster reproducibility/drift trends; make only demonstrated phase-atlas/pipeline repairs without relaxing limits.",
+      "originalIds": [
+        "REGISTER:E-8",
+        "REGISTER:P-8"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:E-8",
+          "status": "open_needs_scoped_verification"
+        },
+        {
+          "id": "REGISTER:P-8",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-21",
+      "title": "Capture each enemy role's tell-to-hit timing and readability at actual gameplay zoom.",
+      "originalIds": [
+        "REGISTER:E-3f"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:E-3f",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-22",
+      "title": "Prove market-open, margin-call and total-liquidation boss phases are visually distinct.",
+      "originalIds": [
+        "REGISTER:E-5"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:E-5",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-23",
+      "title": "Finish benchmark-backed boss counters, add-wave pressure and arena-use depth after the current swarm baseline.",
+      "originalIds": [
+        "REGISTER:E-6"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:E-6",
+          "status": "dependency_ordered_open"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-24",
+      "title": "Fix ambient defeat-spread burning neutral actors before filtering, and automatic refresh overwriting a manually initiated burn's causal origin; prove replay/partition correctness.",
+      "originalIds": [
+        "REGISTER:G-7"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:G-7",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-25",
+      "title": "Produce current canonical swarm/weapon/boss pressure measurements, including clear time, overkill and projectile load, before balance claims or tuning.",
+      "originalIds": [
+        "REGISTER:G-1"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:G-1",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-26",
+      "title": "Re-run affected weapon, swarm and progression benchmarks after the merged simulation and automatic-action changes.",
+      "originalIds": [
+        "REGISTER:G-6"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:G-6",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-27",
+      "title": "Finish and prove the new automatic close-combat role, including eligibility, cooldown, damage attribution and readable feedback.",
+      "originalIds": [
+        "REGISTER:G-3"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:G-3",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-28",
+      "title": "Finish truthful action-map/help/onboarding for movement, aim and grenade only, including touch auto-targeting when aim is released and first-run cues.",
+      "originalIds": [
+        "REGISTER:K-3",
+        "REGISTER:B-1",
+        "REGISTER:K-8"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:K-3",
+          "status": "open_needs_scoped_verification"
+        },
+        {
+          "id": "REGISTER:B-1",
+          "status": "deployed_partial_certification"
+        },
+        {
+          "id": "REGISTER:K-8",
+          "status": "deployed_partial_certification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-29",
+      "title": "Verify rebinding, applicable aim-assist/sensitivity settings and left-handed touch layout have real consumers and persist parent-side without restoring obsolete controls.",
+      "originalIds": [
+        "REGISTER:K-4"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:K-4",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-30",
+      "title": "Measure input latency, acceleration/deceleration, diagonal normalization and turn response before further movement tuning.",
+      "originalIds": [
+        "REGISTER:K-5"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:K-5",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-31",
+      "title": "Verify automatic dodge, buffering, edge forgiveness, cancellation and reset under the new controls; do not restore double-tap gestures.",
+      "originalIds": [
+        "REGISTER:K-6"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:K-6",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-32",
+      "title": "Recheck first-use mobile hint placement with the complete HUD visible and zero hero obstruction.",
+      "originalIds": [
+        "REGISTER:B-2"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-2",
+          "status": "local_integrated_release_pending"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-33",
+      "title": "Finish narrow-screen arsenal/status readability and unowned-slot collapse; preserve the corrected non-error combo label.",
+      "originalIds": [
+        "REGISTER:B-7",
+        "REGISTER:U-9"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-7",
+          "status": "deployed_partial_certification"
+        },
+        {
+          "id": "REGISTER:U-9",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-34",
+      "title": "Review and accept the actual death, run-summary, replay and restart flow on desktop and phone.",
+      "originalIds": [
+        "REGISTER:U-8"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:U-8",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-35",
+      "title": "Recertify ad-strip containment and the ordinary three-click homepage-to-game flow across required profiles, with truthful competitive proof.",
+      "originalIds": [
+        "REGISTER:B-3",
+        "REGISTER:L-3"
+      ],
+      "inventoryStatus": "partial",
+      "state": "local",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-3",
+          "status": "deployed_partial_certification"
+        },
+        {
+          "id": "REGISTER:L-3",
+          "status": "local_integrated_release_pending"
+        }
+      ],
+      "evidenceScope": "Local source/recorded implementation; combined build, browser and release acceptance not certified here"
+    },
+    {
+      "id": "hmh-36",
+      "title": "Confirm the public leaderboard default and House/demo-score labeling; keep source/provenance filtering ahead of personal-best/top-N selection.",
+      "originalIds": [
+        "REGISTER:L-2"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:L-2",
+          "status": "owner_or_input_gate_verify_before_action"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-37",
+      "title": "Resolve visibility of any still-banner-only cabinets, including the MWEB Invaders/LitVM Legends policy, without claiming unplayable content is playable.",
+      "originalIds": [
+        "REGISTER:L-4"
+      ],
+      "inventoryStatus": "owner-gated",
+      "state": "gated",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:L-4",
+          "status": "owner_or_input_gate_verify_before_action"
+        }
+      ],
+      "evidenceScope": "Owner or operational acceptance remains separate"
+    },
+    {
+      "id": "hmh-38",
+      "title": "Finish independent review, build and desktop/portrait validation of the source-tested detailed profile UI; close the remaining real build-history/data requirements. Durable Ranked history is still separate.",
+      "originalIds": [
+        "REGISTER:L-5"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:L-5",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-39",
+      "title": "Define and finish achievement unlock dates, progress meters and accessible tooltips from real canonical data.",
+      "originalIds": [
+        "REGISTER:L-6"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:L-6",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-40",
+      "title": "Produce matching portal/key art from the accepted approved hero models rather than a separate redesign.",
+      "originalIds": [
+        "REGISTER:L-8"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:L-8",
+          "status": "dependency_ordered_open"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-41",
+      "title": "Obtain exact-copy owner acceptance of the implemented privacy, terms, support, accessibility and Testnet trust surface.",
+      "originalIds": [
+        "REGISTER:L-9"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:L-9",
+          "status": "owner_or_input_gate_verify_before_action"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-42",
+      "title": "Verify or complete the privacy-conscious parent-owned funnel from homepage through first upgrade, death and replay.",
+      "originalIds": [
+        "REGISTER:D-2"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:D-2",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-43",
+      "title": "Publish internal balance dashboards/reports from actual canonical swarm and run-stat outputs.",
+      "originalIds": [
+        "REGISTER:D-3"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:D-3",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-44",
+      "title": "Finish category loudness/LUFS mixing, clipping and voice-budget checks, cue coverage and actual device listening acceptance.",
+      "originalIds": [
+        "REGISTER:S-4"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:S-4",
+          "status": "dependency_ordered_open"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-45",
+      "title": "Investigate the current first-fill atmosphere/performance spike and record isolated p99 measurements before choosing a pool/prewarm fix.",
+      "originalIds": [
+        "REGISTER:B-10"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-10",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-46",
+      "title": "Recheck final repository/deployable size, LFS and clean-host behavior under the existing limits; the old 405 MB failure is not a reason to raise caps.",
+      "originalIds": [
+        "REGISTER:B-9",
+        "REGISTER:N-9"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-9",
+          "status": "needs_current_measurement"
+        },
+        {
+          "id": "REGISTER:N-9",
+          "status": "needs_current_measurement"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-47",
+      "title": "Finish current per-profile browser isolation, hero/enemy crop coverage, full-HUD visual checks and valid final visual baselines.",
+      "originalIds": [
+        "REGISTER:N-8"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:N-8",
+          "status": "partial_needs_current_evidence"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-48",
+      "title": "Reconcile both agents' bundle factoring, then decide whether the remaining lazy debug/evidence split is needed without increasing byte caps.",
+      "originalIds": [
+        "REGISTER:N-4"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:N-4",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-49",
+      "title": "Verify immutable hashed atlas URLs, CDN/cache headers, service-worker updates and stale-client behavior on the exact hosted candidate.",
+      "originalIds": [
+        "REGISTER:N-6"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:N-6",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-50",
+      "title": "Obtain an approved keep/retire inventory for superseded assets before any broad cleanup or deletion.",
+      "originalIds": [
+        "REGISTER:N-2"
+      ],
+      "inventoryStatus": "owner-gated",
+      "state": "gated",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:N-2",
+          "status": "owner_or_input_gate_verify_before_action"
+        }
+      ],
+      "evidenceScope": "Owner or operational acceptance remains separate"
+    },
+    {
+      "id": "hmh-51",
+      "title": "Keep roadmap, handoffs and cabinet status aligned with actual local/preview/public state; do not retry the unnecessary protected AGENTS.md replacement.",
+      "originalIds": [
+        "REGISTER:B-8",
+        "REGISTER:N-3"
+      ],
+      "inventoryStatus": "partial",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:B-8",
+          "status": "partial_protected_edit_blocked"
+        },
+        {
+          "id": "REGISTER:N-3",
+          "status": "partial_protected_edit_blocked"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-52",
+      "title": "Produce final-candidate hero turntables, full-HUD combat clips, map flyovers and mobile gameplay capture assets.",
+      "originalIds": [
+        "REGISTER:M-1"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:M-1",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-53",
+      "title": "Create the truthful launch fact sheet/feature matrix separating public, local, simulated, unfinished and gated functionality.",
+      "originalIds": [
+        "REGISTER:M-2"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:M-2",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-54",
+      "title": "Verify or finish deterministic parent-owned daily/weekly challenge seeds and seed sharing.",
+      "originalIds": [
+        "REGISTER:M-3"
+      ],
+      "inventoryStatus": "open",
+      "state": "unfinished",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:M-3",
+          "status": "open_needs_scoped_verification"
+        }
+      ],
+      "evidenceScope": "Implementation or acceptance remains incomplete/unverified"
+    },
+    {
+      "id": "hmh-55",
+      "title": "Complete five recorded first-time desktop playtests, five recorded first-time mobile playtests, physical-device coverage and owner exact-candidate acceptance.",
+      "originalIds": [
+        "REGISTER:owner-playtests"
+      ],
+      "inventoryStatus": "owner-gated",
+      "state": "gated",
+      "acceptanceClosed": false,
+      "currentPublicVerified": false,
+      "registerStatuses": [
+        {
+          "id": "REGISTER:owner-playtests",
+          "status": "human_gate"
+        }
+      ],
+      "evidenceScope": "Owner or operational acceptance remains separate"
+    }
+  ],
+  "originalRegisterIds": [
+    "REGISTER:B-1",
+    "REGISTER:B-2",
+    "REGISTER:B-3",
+    "REGISTER:B-4",
+    "REGISTER:B-5",
+    "REGISTER:B-6",
+    "REGISTER:B-7",
+    "REGISTER:B-8",
+    "REGISTER:B-9",
+    "REGISTER:B-10",
+    "REGISTER:B-11",
+    "REGISTER:H-0",
+    "REGISTER:H-1",
+    "REGISTER:H-6",
+    "REGISTER:H-2",
+    "REGISTER:H-3",
+    "REGISTER:H-4",
+    "REGISTER:H-5",
+    "REGISTER:H-7",
+    "REGISTER:C-5",
+    "REGISTER:C-6",
+    "REGISTER:E-2",
+    "REGISTER:E-7",
+    "REGISTER:E-8",
+    "REGISTER:E-3f",
+    "REGISTER:E-5",
+    "REGISTER:E-6",
+    "REGISTER:R-4",
+    "REGISTER:R-5",
+    "REGISTER:W-8f",
+    "REGISTER:R-3",
+    "REGISTER:R-2",
+    "REGISTER:W-17",
+    "REGISTER:W-18",
+    "REGISTER:W-9",
+    "REGISTER:W-11",
+    "REGISTER:W-12",
+    "REGISTER:W-16",
+    "REGISTER:G-7",
+    "REGISTER:G-1",
+    "REGISTER:G-3",
+    "REGISTER:G-6",
+    "REGISTER:K-3",
+    "REGISTER:K-4",
+    "REGISTER:K-5",
+    "REGISTER:K-6",
+    "REGISTER:K-8",
+    "REGISTER:U-8",
+    "REGISTER:U-9",
+    "REGISTER:S-1",
+    "REGISTER:S-4",
+    "REGISTER:L-2",
+    "REGISTER:L-4",
+    "REGISTER:L-3",
+    "REGISTER:L-5",
+    "REGISTER:L-6",
+    "REGISTER:L-8",
+    "REGISTER:L-9",
+    "REGISTER:D-2",
+    "REGISTER:D-3",
+    "REGISTER:N-3",
+    "REGISTER:N-7",
+    "REGISTER:N-8",
+    "REGISTER:N-9",
+    "REGISTER:N-2",
+    "REGISTER:N-4",
+    "REGISTER:N-6",
+    "REGISTER:P-8",
+    "REGISTER:M-1",
+    "REGISTER:M-2",
+    "REGISTER:M-3",
+    "REGISTER:owner-playtests",
+    "WEB3:B-1",
+    "WEB3:B-2",
+    "WEB3:B-3",
+    "WEB3:B-4",
+    "WEB3:B-5",
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22"
+  ],
+  "pausedExcludedIds": [
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22"
+  ]
+}

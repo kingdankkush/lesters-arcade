@@ -94,7 +94,7 @@ test('runtime projects production enemy and boss art without mutating combat aut
   assert.match(source, /createProductionEnemyDisplay/);
   assert.match(source, /createLiquidatorProductionDisplay/);
   assert.match(source, /resolveEnemyRuntimeVisualState/);
-  assert.match(source, /enemyMarker\.applyPose\(\{/);
+  assert.match(source, /prepareWorldDesignEnemyPose\(enemyMarker, animate, \{/);
   assert.match(source, /bossVisual\.applyPose\(\{/);
   assert.match(source, /queueEnemyDeathVisual\(defeatedEnemy, tick\)/);
   assert.ok(source.includes('...createCorpseClock(tick, performance.now())'), 'bounded presentation clock is created before authority retires');
@@ -162,7 +162,7 @@ test('the attack phase tick is read-only and counts from the phase the simulatio
 
 test('the runtime plumbs the phase tick into roster poses and draws elite ground rings under animated bodies', () => {
   const source = read('apps/hmh-reboot/src/main.mjs');
-  const applyPoseStart = source.indexOf('enemyMarker.applyPose({');
+  const applyPoseStart = source.indexOf('prepareWorldDesignEnemyPose(enemyMarker, animate, {');
   const applyPoseBlock = source.slice(applyPoseStart, source.indexOf('});', applyPoseStart));
   assert.match(applyPoseBlock, /phaseTick/, 'roster tell/attack frames must be phase-relative');
   assert.match(source, /resolveEnemyRosterPoseSelection/);

@@ -98,10 +98,11 @@ test('the shipped player identity is the production atlas, not the prototype gra
 test('enemy depth sorting and combat VFX draw order are explicit', async () => {
   const source = await readMain();
   assert.match(source, /enemyVisuals\.sortableChildren = true/);
-  assert.match(source, /enemyMarker\.zIndex = enemyScreen\.y/);
+  assert.match(source, /enemyMarker\.zIndex = worldDepthKey\(enemy\.y\)/);
+  assert.match(source, /worldDepthLayer\.attach\(graphic\)/);
   const childOrder = source.slice(source.indexOf('world.addChild('), source.indexOf('app.stage.addChild('));
   assert.ok(
-    childOrder.indexOf('actorVisual') < childOrder.indexOf('combatVisuals'),
+    childOrder.indexOf('worldDepthLayer') >= 0 && childOrder.indexOf('worldDepthLayer') < childOrder.indexOf('combatVisuals'),
     'combat VFX must draw above the actor so muzzle flashes are not occluded',
   );
 });

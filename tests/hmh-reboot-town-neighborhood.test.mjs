@@ -79,7 +79,8 @@ test('W2 keeps visible collision fallback until authored town sprites attach', a
     readFile(mainUrl, 'utf8'),
   ]);
   assert.match(worldArt, /'townBlockers'/, 'town fallback needs a dedicated production-art layer');
-  assert.match(worldArt, /feature\.id\.startsWith\('town-'\) \? layers\.townBlockers : layers\.blockers/);
+  assert.match(worldArt, /const townFeature = feature\.id\.startsWith\('town-'\)/);
+  assert.match(worldArt, /depthNode\?\.body \?\? \(townFeature \? layers\.townBlockers : layers\.blockers\)/);
   assert.doesNotMatch(worldArt, /feature\.id\.startsWith\('town-'\)\) continue/);
   const attachment = main.indexOf('authoredPropLayer.addChild(display.container)');
   const handoff = main.indexOf('worldProduction.layers.townBlockers.visible = false');

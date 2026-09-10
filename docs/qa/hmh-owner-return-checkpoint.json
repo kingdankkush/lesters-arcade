@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-09T20:12:22.799359+00:00",
+  "verdict": "BLOCKED",
+  "branch": "hermes/hmh-textured-rollout",
+  "head": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
+  "originalStagedEntriesPreserved": true,
+  "indexEntriesSha256": "6ed1c062f130edc3e9f7b8177d5029c833f3f203a07dd90e9a4d680311508f5a",
+  "operator": "KingDankKush",
+  "supportEmail": "kingdankkush420@gmail.com",
+  "operatorEntityVerificationClaimed": false,
+  "fullReleaseHumanGate": "Retained: five first-time desktop and five mobile playtests, physical-device coverage and exact-candidate owner approval; no evidence or waiver fabricated",
+  "sourceGates": {
+    "finished": true,
+    "passed": false,
+    "steps": [
+      {
+        "name": "inventory",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/inventory.log",
+        "logSha256": "54f7f784282de93c197e5ab951dcb056d85ccc40f67332663d4f46f74ba2eed5"
+      },
+      {
+        "name": "asset-qa",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/asset-qa.log",
+        "logSha256": "3f03a85f3d1c82bbad806e60648c77314a3c7202f86c11095e1a079515a85bbe"
+      },
+      {
+        "name": "check",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/check.log",
+        "logSha256": "7114cb2ceb23b341d1276ef7345df28bcbe3884fda190334da2794683dbe0578"
+      },
+      {
+        "name": "release",
+        "exitCode": 1,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/release.log",
+        "logSha256": "c7a16cc84acdb607bb0004a17b534cd96322b12c7b727eac95f82d373ac732b9"
+      },
+      {
+        "name": "security",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/security.log",
+        "logSha256": "a58fe66fac44c193198b6df90effb6f8eff52e4171bee2a0643468c64c29f740"
+      },
+      {
+        "name": "contracts",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/contracts.log",
+        "logSha256": "cd0ceaf8d8faa162aaa8a8c2a15b16e46cce28e3c988910382ea726ed9a235ce"
+      },
+      {
+        "name": "health",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/health.log",
+        "logSha256": "09bc7186f56fd3d6f0321c5beb9aca1fbdd0f3af60fa17fa62a6cac8b686c81b"
+      },
+      {
+        "name": "docs-links",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/docs-links.log",
+        "logSha256": "b4952dffe909730078ea67a769178cb5efdaf1a4568660aa6d72887816b6e184"
+      },
+      {
+        "name": "build",
+        "exitCode": 0,
+        "log": ".tmp/team/revamp-resume/source-gates-owner-return-03/build.log",
+        "logSha256": "14ac3e0c67c6e9f7989c447410b519a0843e295b56424b326e62b51784aad318"
+      }
+    ]
+  },
+  "releaseCounts": {
+    "tests": 3087,
+    "failed": 52,
+    "passed": 3035,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "topLevel": 3020,
+    "suites": 8
+  },
+  "expectedFailures": 51,
+  "unexpectedFailures": [
+    "unexpected failure: tests/hmh-reboot-enclosures.test.mjs :: W-10 every piece clears blockers, routes, water, arenas, camps, pickups and the town kit"
+  ],
+  "correctionFocusedTests": 46,
+  "correctionFocusedLog": ".tmp/team/playable-release/owner-return-01/correction-focused-green.log",
+  "supportTests": 4,
+  "supportBrowserReceipt": ".tmp/team/playable-release/owner-return-01/trust-browser/receipt.json",
+  "supportBrowserScope": "1440x900 and 390x844 local Chrome viewports; not physical mobile or game acceptance",
+  "review": {
+    "verdict": "PASS",
+    "scope": "Bounded correction review plus unchanged-source binding; not whole-game/release certification",
+    "sourceHashes": {
+      "apps/hmh-reboot/src/world-decals.mjs": "06e3281e52cc84c2ec158aa67dc1292231c66f91c03c505db53c342d8fe3766f",
+      "tests/hmh-reboot-world-decals.test.mjs": "3e11c17f5e23ae987e04098ddea8e762f8deed40bd9464a9610747f77ac97dbe",
+      "tests/hmh-world-render-lifecycle.test.mjs": "fd5ed707af1fb5834f86c909865071dda1beb08027faa2848a3d4ac9266d0e8a",
+      "apps/hmh-reboot/src/corpse-presentation.mjs": "250c86bf2d3c88f986228bb635c31d7a82379954be3b7a294b1a56e584aa609d"
+    },
+    "mainSha256": "4210c074cb75ac7eab6073e2b2789d3504bcaae4cd1fe53e39692abb0181d3ac",
+    "originalPromptSha256": "32fa70a89afd470e2dc273ae03ea42b6c3849df6633eddf37745c6d949e4648c",
+    "declaredPromptSha256": "6e54159bcb46e414436ad9d5769252e40c3a1f19a4fe8b78cd631cbcaabc5733",
+    "rawPromptSha256": "2bb10d9b020aa2dd30472a5286396a7f5696f7977356afe17d6b83dea00d85bc",
+    "normalizedLfPromptSha256": "6e54159bcb46e414436ad9d5769252e40c3a1f19a4fe8b78cd631cbcaabc5733",
+    "recognizedWarnings": [
+      "Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest."
+    ],
+    "toolEvents": 0,
+    "artifacts": {
+      "inputs.json": "60be9176f64551d5a7916f4c2e7988ffa152aa93919973beef9d4fb6ea533cf9",
+      "prompt.txt": "2bb10d9b020aa2dd30472a5286396a7f5696f7977356afe17d6b83dea00d85bc",
+      "result.json": "ec8591e5fa8228f5f63b2d527e18e3afb8ed8614f35e27aef9dd44f51126d34d",
+      "events.jsonl": "27b462cf1b0c9b352a81db8bda9a3a91938a0715f2653f8ea27c261e32b9d9c0",
+      "stderr.log": "ffe02484779626b74ffdcd2f9248f69abda6947c08e1c2a0cc35f6cae6b20bd9"
+    }
+  },
+  "staticClosure": {
+    "scope": "Current locally emitted static HMH import closure; dynamic imports excluded",
+    "entryBytes": 447021,
+    "entryCap": 480000,
+    "initialBytes": 1027600,
+    "initialCap": 1048576,
+    "files": [
+      {
+        "path": "chunks/chunk-2WGYLO4P.js",
+        "bytes": 655,
+        "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+        "imports": []
+      },
+      {
+        "path": "chunks/chunk-6QJT5C2R.js",
+        "bytes": 300,
+        "sha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+        "imports": []
+      },
+      {
+        "path": "chunks/chunk-QDZNXCI6.js",
+        "bytes": 65773,
+        "sha256": "bd8f0ecf0bc49f9000b3421f026189cd381f4adb83ee4c8d7ab4893c2384750d",
+        "imports": [
+          "./chunk-6QJT5C2R.js"
+        ]
+      },
+      {
+        "path": "chunks/chunk-XA4PS4DE.js",
+        "bytes": 48105,
+        "sha256": "20f70e6af16ebdb9c83e6177e8e2ae1bdaf541acc3bff17b2b54e98d33b6e92a",
+        "imports": [
+          "./chunk-6QJT5C2R.js"
+        ]
+      },
+      {
+        "path": "chunks/hmh-pixi.js",
+        "bytes": 465746,
+        "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+        "imports": []
+      },
+      {
+        "path": "hmh-reboot/game.js",
+        "bytes": 447021,
+        "sha256": "adf75a0f5f0eab7123d23a322eb07d3c340e8d3af3689e9ab630416de22cd332",
+        "imports": [
+          "../chunks/chunk-QDZNXCI6.js",
+          "../chunks/chunk-XA4PS4DE.js",
+          "../chunks/chunk-6QJT5C2R.js",
+          "../chunks/chunk-2WGYLO4P.js",
+          "../chunks/hmh-pixi.js"
+        ]
+      }
+    ],
+    "passed": true
+  },
+  "correctionPacket": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Coordination\\hmh-textured-rollout\\submissions\\hermes\\owner-return-corrections-20260909T195423Z",
+  "correctionSourceFileCount": 27,
+  "requiredProvenanceSupplement": "C:\\Users\\just_\\Desktop\\Projects\\LestersArcade-Coordination\\hmh-textured-rollout\\submissions\\hermes\\owner-return-provenance-supplement-20260909T201222Z",
+  "supplementReceipt": {
+    "sourceFilesVerified": 1,
+    "archiveSha256": "be6c6a1b4d4a764edbd922851a30aa4f5172d867dc6bd7a2c0bea71a77bdd604",
+    "manifestSha256": "ca9e647b835e3308ec13332a6531f212680705f3c5dfb110671130db695fa46e"
+  },
+  "previewListenerStopped": [
+    29276
+  ],
+  "codexNextPacketPending": true,
+  "remainingOutsideThisSlice": [
+    "Resolve fuel-yard/route clearance in Codex active geometry lane; keep guard unchanged",
+    "Reconcile subsequent Codex world/interactions/animations/control packet and duplicate bundle factoring",
+    "Combined actual gameplay, all-hero/action/world/collision/occlusion, audio, visual and performance/endurance acceptance",
+    "First-time human/physical-device playtests and owner exact-candidate visual acceptance",
+    "Read-only deployed ABI/RPC integration blocker and remaining authority/readiness register",
+    "Exact source/build freeze, immutable preview, rollback checks and single-publisher production verification"
+  ],
+  "settlementLive": false,
+  "chikunPreserved": true,
+  "stackedPaused": true,
+  "committed": false,
+  "pushed": false,
+  "published": false
+}

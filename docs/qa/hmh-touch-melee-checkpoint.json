@@ -1,0 +1,394 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-09-09T08:42:00.461993+00:00",
+  "localSliceVerified": true,
+  "roleDecision": "Retain the existing ammo-independent close-range melee as a backup, including reload gaps. Double-tap AIM adds touch reachability; no damage/range/cooldown/physics changes.",
+  "gestureContract": {
+    "controls": 5,
+    "pairWindowMs": 280,
+    "maxContactMs": 180,
+    "maxObservedTravelCssPx": 12,
+    "pulseMs": 90,
+    "rapidPairs": "coalesced into a bounded pulse; existing melee cooldown remains authoritative",
+    "cancellation": "drags, overlap, holds, cancelled/lost capture and invalid final points do not qualify"
+  },
+  "changedFileHashes": {
+    "tests/hmh-grenade-aim.test.mjs": "afede2c9fdeb049df3ecf6d551e153db773e9c340afea98a17df09c6540fdfdd",
+    "tests/hmh-reboot-controls-help.test.mjs": "a2f5b6b5ea18f750bfb5d3707b70ce85c45aa6895371f59581b6580bce432151",
+    "tests/hmh-reboot-touch-controls.test.mjs": "6153d6b36a30033c2a354d0770b9d575d8ca29450bd664882e8b886df66e4a94",
+    "apps/hmh-reboot/src/touch-controls.mjs": "54793555f44e0dace726acd5cc2ccfb1500478025514ea55e323129c5ed54b6e",
+    "apps/hmh-reboot/src/action-map.mjs": "8a283c2b114c454b1e5fdb404b2e1bf542bb27d72cfe9cbb3cb3eafd1b4bca6c"
+  },
+  "redEvidence": [
+    ".tmp/team/playable-release/touch-melee-01/red.log",
+    ".tmp/team/playable-release/touch-melee-01/release-point-red.log"
+  ],
+  "focusedTests": {
+    "tests": 89,
+    "pass": 89,
+    "fail": 0,
+    "skipped": 0
+  },
+  "reviews": {
+    "review": {
+      "verdict": {
+        "verdict": "PASS",
+        "blockers": [],
+        "suggestions": [
+          "Add exact-boundary tests for 12px slop, 180ms contact duration, and the 280ms pair window.",
+          "Define and test expected behavior when a fresh valid pair completes before the preceding 90ms melee pulse expires."
+        ]
+      },
+      "resultSha256": "34fd8fac4b3fa9cc280e0a954a97c009f7fc2e4176b4f37fb29daad6495aee5f",
+      "eventsSha256": "bb52cb89f124ac518165bf923c17dce1fe8979e02f57c2e2e3e5c2fcb7f70d5e",
+      "toolsUsed": 0,
+      "metadataWarningRetained": "Skill descriptions shortened by CLI; completed command-free turn."
+    },
+    "test-supplement": {
+      "verdict": {
+        "verdict": "PASS",
+        "blockers": [],
+        "suggestions": [
+          "Add an exact melee-pulse edge assertion at 90 ms and immediately beyond it; current adapter checks allow a small timing overrun without failing."
+        ]
+      },
+      "resultSha256": "cc81a29489d81f71838c6f407b9eaab6e3a8532e8c4e0c65276fac2a1d3aa9db",
+      "eventsSha256": "6a7755d3b56abfb4c41fb90e3c2877254827d253836c38e9affcfbc2e9766fab",
+      "toolsUsed": 0,
+      "metadataWarningRetained": "Skill descriptions shortened by CLI; completed command-free turn."
+    }
+  },
+  "sourceGates": {
+    "count": 9,
+    "passed": true,
+    "receipt": ".tmp/team/revamp-resume/source-gates-touch-melee-02/receipt.json",
+    "sha256": "e1c73d21f73fd05f1e3463590a1b1cdf383da42538d9e65da48bf1398bb2915f",
+    "ledger": {
+      "evaluated": 2995,
+      "passing": 2944,
+      "expectedLegacyFailures": 51
+    }
+  },
+  "browser": {
+    "expected": 8,
+    "passed": 8,
+    "receipt": ".tmp/team/playable-release/touch-melee-matrix-01/receipt.json",
+    "sha256": "63c1fbc8db16a5aeb8b22c2bcbbc7776a45d2c5185756a3f4229b46131b1235c",
+    "profiles": [
+      {
+        "id": "lit-commando-portrait",
+        "actor": "lit-commando",
+        "width": 390,
+        "height": 844,
+        "meleeTick": "43",
+        "repeatedMeleeTick": "122",
+        "dashReadyTick": 745,
+        "initialBody": {
+          "x": 146.9918797739877,
+          "y": 297.9836734693878,
+          "width": 58.946031746031736,
+          "height": 138.5614512471655,
+          "right": 205.93791152001944,
+          "bottom": 436.5451247165533,
+          "viewportRatio": 0.164172335600907
+        },
+        "meleeBody": {
+          "x": 115.60345892194547,
+          "y": 301.04580498866216,
+          "width": 56.64943310657597,
+          "height": 137.0303854875283,
+          "right": 172.25289202852144,
+          "bottom": 438.07619047619045,
+          "viewportRatio": 0.16235827664399086
+        },
+        "passed": true
+      },
+      {
+        "id": "lit-commando-landscape",
+        "actor": "lit-commando",
+        "width": 844,
+        "height": 390,
+        "meleeTick": "44",
+        "repeatedMeleeTick": "123",
+        "dashReadyTick": 746,
+        "initialBody": {
+          "x": 408.88800885823036,
+          "y": 136.275,
+          "width": 27.912500000000023,
+          "height": 65.61250000000001,
+          "right": 436.8005088582304,
+          "bottom": 201.88750000000002,
+          "viewportRatio": 0.1682371794871795
+        },
+        "meleeBody": {
+          "x": 419.8723933541367,
+          "y": 137.725,
+          "width": 26.82499999999999,
+          "height": 64.88750000000002,
+          "right": 446.6973933541367,
+          "bottom": 202.6125,
+          "viewportRatio": 0.16637820512820517
+        },
+        "passed": true
+      },
+      {
+        "id": "lit-valkyrie-portrait",
+        "actor": "lit-valkyrie",
+        "width": 390,
+        "height": 844,
+        "meleeTick": "43",
+        "repeatedMeleeTick": "121",
+        "dashReadyTick": 745,
+        "initialBody": {
+          "x": 142.45700270464243,
+          "y": 276.42116402116403,
+          "width": 62.518518518518505,
+          "height": 164.3343915343915,
+          "right": 204.97552122316094,
+          "bottom": 440.75555555555553,
+          "viewportRatio": 0.19470899470899466
+        },
+        "meleeBody": {
+          "x": 100.90562515095523,
+          "y": 279.1005291005291,
+          "width": 64.30476190476189,
+          "height": 161.65502645502642,
+          "right": 165.21038705571712,
+          "bottom": 440.75555555555553,
+          "viewportRatio": 0.1915343915343915
+        },
+        "passed": true
+      },
+      {
+        "id": "lit-valkyrie-landscape",
+        "actor": "lit-valkyrie",
+        "width": 844,
+        "height": 390,
+        "meleeTick": "46",
+        "repeatedMeleeTick": "125",
+        "dashReadyTick": 747,
+        "initialBody": {
+          "x": 410.40301331720093,
+          "y": 127.73015873015875,
+          "width": 28.888888888888857,
+          "height": 75.93650793650791,
+          "right": 439.2919022060898,
+          "bottom": 203.66666666666666,
+          "viewportRatio": 0.19470899470899464
+        },
+        "meleeBody": {
+          "x": 417.3067245249828,
+          "y": 128.96825396825398,
+          "width": 29.714285714285722,
+          "height": 74.69841269841271,
+          "right": 447.02101023926855,
+          "bottom": 203.66666666666669,
+          "viewportRatio": 0.19153439153439156
+        },
+        "passed": true
+      },
+      {
+        "id": "lilly-portrait",
+        "actor": "lilly",
+        "width": 390,
+        "height": 844,
+        "meleeTick": "38",
+        "repeatedMeleeTick": "118",
+        "dashReadyTick": 741,
+        "initialBody": {
+          "x": 111.44622727035707,
+          "y": 239.80317460317463,
+          "width": 76.09396825396826,
+          "height": 165.04888888888888,
+          "right": 187.54019552432533,
+          "bottom": 404.8520634920635,
+          "viewportRatio": 0.19555555555555554
+        },
+        "meleeBody": {
+          "x": 72.17640767163985,
+          "y": 241.9466666666667,
+          "width": 68.59174603174603,
+          "height": 162.90539682539682,
+          "right": 140.76815370338588,
+          "bottom": 404.8520634920635,
+          "viewportRatio": 0.193015873015873
+        },
+        "passed": true
+      },
+      {
+        "id": "lilly-landscape",
+        "actor": "lilly",
+        "width": 844,
+        "height": 390,
+        "meleeTick": "46",
+        "repeatedMeleeTick": "125",
+        "dashReadyTick": 748,
+        "initialBody": {
+          "x": 395.18381990624215,
+          "y": 110.80952380952382,
+          "width": 36.15238095238095,
+          "height": 76.26666666666662,
+          "right": 431.3362008586231,
+          "bottom": 187.07619047619045,
+          "viewportRatio": 0.19555555555555545
+        },
+        "meleeBody": {
+          "x": 403.3708322818545,
+          "y": 111.80000000000001,
+          "width": 31.695238095238096,
+          "height": 75.27619047619044,
+          "right": 435.0660703770926,
+          "bottom": 187.07619047619045,
+          "viewportRatio": 0.19301587301587292
+        },
+        "passed": true
+      },
+      {
+        "id": "lester-original-portrait",
+        "actor": "lester-original",
+        "width": 390,
+        "height": 844,
+        "meleeTick": "36",
+        "repeatedMeleeTick": "116",
+        "dashReadyTick": 739,
+        "initialBody": {
+          "x": 124.12973688683883,
+          "y": 256.11034482758623,
+          "width": 66.93793103448274,
+          "height": 162.00919540229881,
+          "right": 191.06766792132157,
+          "bottom": 418.11954022988505,
+          "viewportRatio": 0.1919540229885057
+        },
+        "meleeBody": {
+          "x": 84.770594853185,
+          "y": 259.0206896551724,
+          "width": 73.72873563218388,
+          "height": 160.0689655172414,
+          "right": 158.4993304853689,
+          "bottom": 419.0896551724138,
+          "viewportRatio": 0.18965517241379312
+        },
+        "passed": true
+      },
+      {
+        "id": "lester-original-landscape",
+        "actor": "lester-original",
+        "width": 844,
+        "height": 390,
+        "meleeTick": "50",
+        "repeatedMeleeTick": "131",
+        "dashReadyTick": 754,
+        "initialBody": {
+          "x": 400.67757885820896,
+          "y": 118.79310344827587,
+          "width": 31.82758620689657,
+          "height": 74.41379310344826,
+          "right": 432.50516506510553,
+          "bottom": 193.20689655172413,
+          "viewportRatio": 0.19080459770114938
+        },
+        "meleeBody": {
+          "x": 409.4256747697791,
+          "y": 119.68965517241381,
+          "width": 34.068965517241395,
+          "height": 73.96551724137927,
+          "right": 443.4946402870205,
+          "bottom": 193.65517241379308,
+          "viewportRatio": 0.189655172413793
+        },
+        "passed": true
+      }
+    ],
+    "captures": [
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-commando-portrait-initial-full-hud.png",
+        "sha256": "fa8c577896ba8faad39d121c03cf8a4633484079f9f69f434b8e99f6f694da84"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-commando-portrait-melee-full-hud.png",
+        "sha256": "2b44f78e3294d0b85f28d5e51bbd327992f458d0b0671a22e9a3790e36f8065c"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-commando-landscape-initial-full-hud.png",
+        "sha256": "b277d94d06281b129c4f4c972e6f95809c74d3b94f0df9ecffd15b40dd420fc3"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-commando-landscape-melee-full-hud.png",
+        "sha256": "20fa8f81d4e3cdb472f37ca1ce42b7313923458810c8920b5cc31a71afa9aa1f"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-valkyrie-portrait-initial-full-hud.png",
+        "sha256": "9d3d62d3975075d070cf097328a924eec241e7dc01bcc38de66c005ec8822169"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-valkyrie-portrait-melee-full-hud.png",
+        "sha256": "e818469343a9e2d96849f6aec2b79c2616d656905c4056dfb033e64842b10ca9"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-valkyrie-landscape-initial-full-hud.png",
+        "sha256": "25d36424f6ab3c906c3237b20a75c9ee5d6cb5e52a55c570efdf9480597d79ba"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lit-valkyrie-landscape-melee-full-hud.png",
+        "sha256": "25a60dcd570ebcec4f693f2b5263ee586c8a691a9fbebd1f4c28a036c0c073ec"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lilly-portrait-initial-full-hud.png",
+        "sha256": "4e76bf5f5f54078a577e8d0ba961054ddaff48be315c969127a7c444e3617656"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lilly-portrait-melee-full-hud.png",
+        "sha256": "20c24582ac7f0ae46362f69507fd10d7667b630ba0f98f8de2209fe02a0be2a0"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lilly-landscape-initial-full-hud.png",
+        "sha256": "93d81328ba1e475a6b7cfb0f8f0ccae0df50ef40cd7b9fefa9b1e343b8f4c8a2"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lilly-landscape-melee-full-hud.png",
+        "sha256": "31acde3d2c4f1d48e1d477c0933678915c2e9f2b8935ba3fde3af55fcc3fb7e6"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lester-original-portrait-initial-full-hud.png",
+        "sha256": "5a3ee8662317ced07872ad4ff81f8625d9cc7fe957bd8fa36e8ec4995fdf5a1b"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lester-original-portrait-melee-full-hud.png",
+        "sha256": "c9972b6107261390854424dc81bc716b0535a29b7938427791c4010d6151f736"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lester-original-landscape-initial-full-hud.png",
+        "sha256": "772244c411ea32dc878557c1f0ece5236f43f0ef89f33a42366c430c0e742341"
+      },
+      {
+        "path": ".tmp/team/playable-release/touch-melee-matrix-01/lester-original-landscape-melee-full-hud.png",
+        "sha256": "eafb69c32d1a0c8706a0545f13af8882ca06a31af177e73806bb6955c9c8a70b"
+      }
+    ],
+    "allMeleeCapturesVisuallyReviewed": true,
+    "scope": "Actual CDP input with native hero evidence pilots; not human/physical-device or earned-unlock acceptance."
+  },
+  "entryBytes": 479721,
+  "failedAttemptsPreserved": [
+    "Stopped isolated worker: Node Access denied, no implementation or permission changes. Parent authored a fresh gesture implementation in the authorized integration worktree.",
+    "First browser driver imported a nonexistent preflight helper; no browser launched. Replaced with the existing verified HTML-derived preflight pattern.",
+    "Driver initially lifted the remaining MOVE contact instead of AIM. Trusted event trace proved wrong input. Corrected only the partial touchEnd contacts.",
+    "First full source gate caught obsolete help/cancel callback test expectations. Updated those exact assertions and added real grenade-cancellation coverage; no legacy exclusions added."
+  ],
+  "preservation": {
+    "stagedEntries": true,
+    "indexFlags": true,
+    "codexWorldUnchanged": true,
+    "modelsUnchanged": true,
+    "heroScaleAndHudUnchanged": true,
+    "permissionsUnchanged": true
+  },
+  "scopeLimitations": [
+    "Earlier five-minute pressure checkpoint is a pre-touch candidate baseline, not a new measurement of this changed bundle.",
+    "Canonical30-minute/physical-device/human/public release gates remain.",
+    "Codex world and native-model packets are not integrated."
+  ],
+  "published": false,
+  "currentCandidateCertified": false
+}

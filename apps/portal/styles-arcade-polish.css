@@ -222,6 +222,37 @@
   padding: 16px 18px;
 }
 
+.hmh-challenge-panel {
+  min-width: 0;
+  margin: 16px 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(25, 247, 255, 0.25);
+  border-radius: 18px;
+  background: rgba(5, 7, 15, 0.88);
+}
+.hmh-challenge-panel[hidden] { display: none; }
+.hmh-challenge-panel legend { padding: 0 8px; font-weight: 700; }
+.hmh-challenge-panel label { display: block; margin: 6px 0; }
+.hmh-challenge-panel select,
+.hmh-challenge-panel input,
+.hmh-challenge-panel button {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: #e8f6ff;
+  background: #090f20;
+  border: 1px solid rgba(25, 247, 255, 0.4);
+  border-radius: 8px;
+  font: inherit;
+}
+.hmh-challenge-panel select,
+.hmh-challenge-panel input { width: 100%; }
+.hmh-challenge-panel button { margin-top: 8px; cursor: pointer; }
+.hmh-challenge-panel :disabled { opacity: 0.55; cursor: default; }
+.hmh-challenge-panel :focus-visible { outline: 2px solid #19f7ff; outline-offset: 3px; }
+.hmh-challenge-panel .tiny-note { overflow-wrap: anywhere; }
+
 .arcade-floor-view .official-cabinet-grid,
 .mode-select-view .official-mode-grid {
   padding: 18px;
@@ -955,6 +986,21 @@
   transform: translateX(-50%) translateY(-2px);
 }
 
+/* Parent profile: touch/keyboard disclosures, readable locked records. */
+.profile-achievement-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+.profile-achievement-card { min-width: 0; }
+.profile-achievement-card.locked { opacity: 1; filter: none; }
+.profile-achievement-card.unlocked:hover { transform: none; }
+.profile-achievement-card.locked .achievement-name { color: #d6f6ff; }
+.achievement-disclosure { width: 100%; overflow-wrap: anywhere; }
+.achievement-disclosure summary { min-height: 44px; padding: 6px; cursor: pointer; }
+.achievement-disclosure summary:focus-visible { outline: 2px solid var(--neon-cyan); outline-offset: 2px; border-radius: 6px; }
+.achievement-disclosure .achievement-name,
+.achievement-record-status { display: block; margin-top: 5px; }
+.achievement-requirement { margin: 8px 0 0; color: #d6f6ff; font-size: 0.75rem; line-height: 1.5; }
+.achievement-record-date, .achievement-progress-label { color: #c7d0dc; font-size: 0.7rem; line-height: 1.4; overflow-wrap: anywhere; }
+.profile-achievement-card progress { width: 100%; height: 10px; accent-color: var(--neon-cyan); }
+
 /* ---- Ranked entry-fee / signature modal ---- */
 .ranked-entry-overlay {
   position: fixed; inset: 0; z-index: 90;
@@ -1591,6 +1637,48 @@
   .hmh-history-pb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hmh-history-run-heading { align-items: flex-start; flex-direction: column; }
   .hmh-history-run-row { grid-template-columns: 1fr; padding: 12px; }
+  .hmh-history-table-header { display: none; }
+}
+
+/* Expand detailed stats within this run only; no hidden full-history DOM. */
+.hmh-history-run-row > * { min-width: 0; overflow-wrap: anywhere; }
+.hmh-history-run-heading { flex-wrap: wrap; }
+.hmh-history-run-heading > small { flex-basis: 100%; }
+.hmh-history-build:has(.hmh-history-details[open]) { grid-column: 1 / -1; }
+.hmh-history-details,
+.hmh-history-stat-section { min-width: 0; }
+.hmh-history-details summary {
+  min-height: 44px;
+  padding: 10px 4px;
+  cursor: pointer;
+  color: #e8f7ff;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.hmh-history-details summary:focus-visible {
+  outline: 2px solid #19f7ff;
+  outline-offset: 2px;
+}
+.hmh-history-details-toggle { color: #19f7ff !important; }
+.hmh-history-session-id { overflow-wrap: anywhere; }
+.hmh-history-stat-section { border-top: 1px solid rgba(25, 247, 255, 0.18); }
+.hmh-history-stat-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.hmh-history-stat-pair {
+  min-width: 0;
+  padding: 8px;
+  background: rgba(25, 247, 255, 0.04);
+  overflow-wrap: anywhere;
+}
+.hmh-history-stat-pair dt { color: #adbbdf; font-size: 0.72rem; }
+.hmh-history-stat-pair dd { margin: 4px 0 0; color: #e8f7ff; font-variant-numeric: tabular-nums; }
+.hmh-history-testnet-notice { color: #ffe84d; margin-top: 8px; }
+@media (max-width: 1000px) {
+  .hmh-history-run-row { grid-template-columns: 1fr; }
   .hmh-history-table-header { display: none; }
 }
 

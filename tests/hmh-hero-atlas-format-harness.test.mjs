@@ -4,7 +4,11 @@
 // drift from the numbers the harness measured. Nothing here spawns Python or a
 // browser; the harness entry point does that and is run by hand.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
@@ -154,4 +158,34 @@ test('P-6: the harness, converter and this test are registered in the syntax che
   ]) {
     assert.ok(syntaxCheck.includes(`"${file}"`), `${file} missing from syntax-check`);
   }
+});
+
+
+test('P-6 converter executes on a metadata-selected WebP and emits an honest PNG control', () => {
+  const directory = mkdtempSync(path.join(tmpdir(), 'hmh-format-fixture-'));
+  const program = `import importlib.util,sys,json,hashlib
+from pathlib import Path
+from PIL import Image
+spec=importlib.util.spec_from_file_location('format_converter',sys.argv[1])
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+root=Path(sys.argv[2]);m.REPO_ROOT=root;m.HERO_ROOT=root/'heroes'
+hero=m.HERO_ROOT/'fixture';hero.mkdir(parents=True)
+image=hero/'selected.webp';Image.new('RGBA',(8,8),(200,50,20,180)).save(image,format='WEBP',lossless=True,exact=True)
+original=image.read_bytes()
+(hero/'fixture-production-pilot-atlas.json').write_text(json.dumps({'image':'selected.webp','frames':[{'sourceSize':{'w':8}}]}))
+out=root/'.tmp'/'variants'
+assert m.main(['--hero','fixture','--out',str(out)])==0
+assert (out/'fixture.png').read_bytes().startswith(bytes([137,80,78,71,13,10,26,10]))
+reports=list(out.glob('*.json'));assert len(reports)==1
+report=json.loads(reports[0].read_text())
+assert report['source']['path']=='heroes/fixture/selected.webp'
+assert report['source']['sha256']==hashlib.sha256(original).hexdigest()
+assert report['source']['bytes']==len(original)
+assert report['variants']['png']['fidelity']['identical']
+assert image.read_bytes()==original
+`;
+  try {
+    const result = spawnSync(process.env.PYTHON || 'python', ['-c', program, fileURLToPath(new URL('../scripts/hmh-hero-atlas-format-convert.py', import.meta.url)), directory], {encoding:'utf8'});
+    assert.equal(result.status,0,`${result.stdout}\n${result.stderr}`);
+  } finally { rmSync(directory,{recursive:true,force:true}); }
 });

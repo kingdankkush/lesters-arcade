@@ -203,6 +203,9 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   text-transform: uppercase;
   border-top: 1px solid rgba(25, 247, 255, 0.14);
 }
+.official-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; }
+.official-footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 3px; }
+.official-footer-links a:focus-visible { outline: 2px solid var(--neon-cyan); outline-offset: 3px; }
 .official-footer strong {
   color: var(--neon-cyan);
   font-weight: 800;

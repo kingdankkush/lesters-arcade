@@ -28,20 +28,21 @@ import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
 import { dirname, relative, resolve } from 'node:path';
 import { statSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
-import { assertHmhInitialJsBudget, sumStaticChunkBytes } from './scripts/hmh-reboot-bundle-budget.mjs';
+import { assertHmhEntryJsBudget, assertHmhInitialJsBudget, sumStaticChunkBytes } from './scripts/hmh-reboot-bundle-budget.mjs';
 import { createHmhPixiStubResolver, loadHmhPixiStub } from './scripts/hmh-reboot-pixi-vendor-stubs.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const portalDir = resolve(__dirname, 'apps/portal');
 const portalEntry = resolve(portalDir, 'main.js');
 const hmhRebootEntry = resolve(__dirname, 'apps/hmh-reboot/src/main.mjs');
+const hmhWorldArtEntry = resolve(__dirname, 'apps/hmh-reboot/src/world-production-art.mjs');
 const chikunEntry = resolve(__dirname, 'apps/chikun/src/main.mjs');
 const hmhPixiVendor = resolve(__dirname, 'apps/hmh-reboot/src/pixi-vendor.mjs');
 const nodeModulesDir = resolve(__dirname, 'node_modules');
 const pixiModule = resolve(nodeModulesDir, 'pixi.js/lib/index.mjs');
 const pixiLibDir = resolve(nodeModulesDir, 'pixi.js/lib');
 const outdir = resolve(portalDir, 'dist');
-const HMH_INITIAL_JS_CAP = 1_050_000;
+const HMH_INITIAL_JS_CAP = 1_048_576;
 
 function packageNameFromSpecifier(specifier) {
   return specifier.startsWith('@')
@@ -119,6 +120,10 @@ async function run() {
     entryPoints: {
       main: portalEntry,
       'hmh-reboot/game': hmhRebootEntry,
+      // Keep the world renderer independently cacheable without deferring it.
+      // The game's static imports and their full transitive byte cost remain
+      // in sumStaticChunkBytes and the aggregate initial-JS gate below.
+      'hmh-reboot/world-art': hmhWorldArtEntry,
       'chikun/game': chikunEntry,
     },
     absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
@@ -175,6 +180,7 @@ async function run() {
     metafile: result.metafile,
     entryOutput: relative(__dirname, outChild).replaceAll('\\', '/'),
   });
+  const childEntryBudget = assertHmhEntryJsBudget(childMinSize);
   const hmhBudget = assertHmhInitialJsBudget({
     entryBytes: childMinSize,
     vendorBytes: childVendorSize,
@@ -200,6 +206,7 @@ async function run() {
   console.log(`Bundled main.js:    ${human(minSize)}  (${entryDeltaPct >= 0 ? '+' : ''}${entryDeltaPct.toFixed(1)}% vs source entry; imports included)`);
   console.log(`HMH reboot source:  ${human(childRawSize)}`);
   console.log(`HMH reboot entry:   ${human(childMinSize)}  (${childDeltaPct >= 0 ? '+' : ''}${childDeltaPct.toFixed(1)}% vs child source)`);
+  console.log(`HMH entry cap:      ${childEntryBudget.entryBytes.toLocaleString('en-US')} / ${childEntryBudget.cap.toLocaleString('en-US')} B; ${childEntryBudget.remaining.toLocaleString('en-US')} B remaining`);
   console.log(`Chikun source:      ${human(chikunRawSize)}`);
   console.log(`Chikun entry:       ${human(chikunMinSize)}  (${chikunDeltaPct >= 0 ? '+' : ''}${chikunDeltaPct.toFixed(1)}% vs child source)`);
   console.log(`HMH Pixi vendor:    ${human(childVendorSize)}  (stable preloaded module)`);

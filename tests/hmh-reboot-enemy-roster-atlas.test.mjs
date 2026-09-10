@@ -19,7 +19,8 @@ import {
 import { ENEMY_ARCHETYPES, REQUIRED_ENEMY_VISUAL_STATES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_RUNTIME_SCALE } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
 
-const rosterPath = (actorId) => new URL(
+const rosterPath = (actorId) => actorId === 'bagholder-rusher' && process.env.HMH_ENEMY_CANDIDATE_ROOT
+  ? `${process.env.HMH_ENEMY_CANDIDATE_ROOT}/${actorId}/${actorId}-roster-atlas.json` : new URL(
   `../apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`,
   import.meta.url,
 );
@@ -37,10 +38,13 @@ const median = (values) => {
   return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 };
 
-const frameBounds = (frame) => ({
-  top: -frame.pivot.y,
-  bottom: frame.frame.h - frame.pivot.y,
-});
+const frameBounds = (frame) => {
+  // Pixi schema-2 trim lies within logical orig; density normalization belongs
+  // to the child sprite, independently of its parent's world/camera scale.
+  const densityScale = 160 / (frame.sourceSize?.h ?? 160);
+  const top = ((frame.trim?.y ?? 0) - frame.anchor.y * (frame.orig?.h ?? frame.frame.h)) * densityScale;
+  return { top, bottom: top + frame.frame.h * densityScale };
+};
 
 const unionHeight = (frames) => {
   const bounds = frames.map(frameBounds);
@@ -149,7 +153,7 @@ test('ordinary zombies remain comparable to heroes while the boss reads larger',
   for (const actorId of ENEMY_ROSTER_ACTORS) {
     const metadata = await loadMetadata(actorId);
     const phase = metadata.phases?.[0] ?? null;
-    const scale = metadata.boss ? BOSS_ROSTER_RUNTIME_SCALE : ENEMY_ROSTER_RUNTIME_SCALE;
+    const scale = enemyRosterAsset(actorId).runtimeScale;
     const directionalHeights = metadata.directions.map((direction) => {
       const frame = metadata.frames.find((candidate) => candidate.state === 'idle'
         && candidate.direction === direction
@@ -308,4 +312,110 @@ test('the roster display carries the elite treatment itself and reports it truth
   assert.equal(crown.visible, false);
   assert.equal(elite.eliteProjection, false, 'dropping the elite flag hides the treatment and the telemetry follows');
   assert.equal(body.tint, 0xffffff);
+});
+
+
+test('parity helper matches schema-2 indexed hero sprite trim and source-density geometry', async () => {
+  const { createProductionHeroAtlasIndex, createProductionHeroDisplay } = await import('../apps/hmh-reboot/src/production-hero-atlas.mjs');
+  const fake = makeFakePixi();
+  class GeometryTexture {
+    constructor(options) { Object.assign(this, options); this.orig ??= this.frame; }
+  }
+  for (const actorId of Object.keys(PRODUCTION_HERO_ASSETS)) {
+    const metadata = JSON.parse(await readFile(heroPath(actorId), 'utf8'));
+    const index = createProductionHeroAtlasIndex(metadata, PRODUCTION_HERO_ASSETS[actorId]);
+    const display = createProductionHeroDisplay({ index, atlasTexture: { source: { width: 2048, height: 2048 } },
+      ContainerClass: fake.FakeContainer, SpriteClass: fake.FakeSprite, TextureClass: GeometryTexture, RectangleClass: fake.FakeRectangle });
+    for (const sprite of display.container.children.filter((s) => ['production-hero-lower-body', 'production-hero-torso-head'].includes(s.label))) {
+      const layer = sprite.label.replace('production-hero-', '');
+      const frame = metadata.frames.find((f) => f.layer === layer && f.state === (layer === 'lower-body' ? 'idle' : 'aim') && f.direction === 'east' && f.frameIndex === 0);
+      const expectedTop = (sprite.texture.trim.y - sprite.anchor.y * sprite.texture.orig.height) * sprite.scale.y;
+      const expectedBottom = expectedTop + sprite.texture.frame.height * sprite.scale.y;
+      const actual = frameBounds(frame);
+      assert.ok(Math.abs(actual.top - expectedTop) < 0.0002, `${actorId}/${layer}: top must match actual renderer geometry`);
+      assert.ok(Math.abs(actual.bottom - expectedBottom) < 0.0002, `${actorId}/${layer}: bottom must match actual renderer geometry`);
+    }
+  }
+});
+
+test('native bagholder descriptor alone changes scale; ordinary and boss constants remain exact', () => {
+  assert.equal(enemyRosterAsset('bagholder-rusher').runtimeScale, 0.50);
+  for (const actorId of ENEMY_ROSTER_ACTORS.filter((id) => id !== 'bagholder-rusher')) {
+    assert.equal(enemyRosterAsset(actorId).runtimeScale, actorId === 'the-liquidator' ? 0.86 : 0.75);
+  }
+  assert.equal(ENEMY_ROSTER_RUNTIME_SCALE, 0.75);
+  assert.equal(BOSS_ROSTER_RUNTIME_SCALE, 0.86);
+});
+
+test('actual roster/fallback wiring carries the actor scale into existing camera-zoom composition', async () => {
+  const { createEnemyRosterDisplay } = await import('../apps/hmh-reboot/src/enemy-roster-atlas.mjs');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const start = source.indexOf('const createRosterOrVectorDisplay = ');
+  const end = source.indexOf('\n  };', start) + 5;
+  const wiring = source.slice(start, end);
+  assert.match(wiring, /display\.rosterScale = enemyRosterAsset\(archetypeId\)\.runtimeScale;/,
+    'loaded roster path must bind the descriptor scale');
+  assert.match(wiring, /requestEnemyRosterAtlas\(archetypeId\);[\s\S]*return createProductionEnemyDisplay\(/,
+    'lazy miss must retain the vector fallback');
+  const fake = makeFakePixi();
+  for (const actorId of ENEMY_ROSTER_ACTORS.filter((id) => id !== 'the-liquidator')) {
+    const index = createEnemyRosterAtlasIndex(await loadMetadata(actorId), actorId);
+    const display = createEnemyRosterDisplay({ index, atlasTexture: { source: {} },
+      ContainerClass: fake.FakeContainer, SpriteClass: fake.FakeSprite,
+      TextureClass: fake.FakeTexture, RectangleClass: fake.FakeRectangle,
+      GraphicsClass: fake.FakeGraphics, scale: 1 });
+    display.rosterScale = enemyRosterAsset(actorId).runtimeScale;
+    const expected = actorId === 'bagholder-rusher' ? 0.50 : 0.75;
+    assert.equal(display.rosterScale, expected);
+    for (const zoom of [0.7, 1, 1.6]) {
+      display.scale.set(display.rosterScale * zoom);
+      assert.equal(display.scale.y, expected * zoom);
+    }
+  }
+  assert.match(source, /enemyMarker\.scale\.set\(\(enemyMarker\.rosterScale \?\? 1\) \* camera\.zoom\)/);
+});
+
+test('native hit peak and recovery both occur inside every existing short hit window', async () => {
+  const { resolveEnemyRosterPoseSelection } = await import('../apps/hmh-reboot/src/enemy-production-art.mjs');
+  const metadata = await loadMetadata('bagholder-rusher');
+  assert.deepEqual(metadata.poseAuthoring.sourceFrameSamples, { hit: [12, 25] });
+  const index = createEnemyRosterAtlasIndex(metadata, 'bagholder-rusher');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const assignment = source.match(/enemy\.hitUntilTick = tick \+ (\d+);/);
+  assert.ok(assignment, 'use the actual damage-event hit window');
+  assert.equal(Number(assignment[1]), 6, 'no hit duration change');
+  for (let start = 100; start < 110; start += 1) {
+    for (let direction = 0; direction < 8; direction += 1) {
+      const enemy = { archetypeId: 'bagholder-rusher', active: true, health: 10, attackPhase: 'idle', velocity: { x: 2, y: 0 }, hitUntilTick: start + Number(assignment[1]) };
+      const before = structuredClone(enemy);
+      const samples = new Set();
+      for (let tick = start; tick <= enemy.hitUntilTick; tick += 1) {
+        const selection = resolveEnemyRosterPoseSelection(enemy, tick);
+        assert.equal(selection.state, 'hit');
+        const frame = resolveEnemyRosterPose(index, { ...selection, tick, direction });
+        assert.equal(frame.fps, 12);
+        samples.add(metadata.poseAuthoring.sourceFrameSamples.hit[frame.frameIndex]);
+      }
+      assert.deepEqual([...samples].sort((a, b) => a - b), [12, 25], 'both native samples appear regardless of global-clock phase');
+      assert.equal(resolveEnemyRosterPoseSelection(enemy, enemy.hitUntilTick + 1).state, 'run');
+      assert.deepEqual(enemy, before, 'projection never writes simulation state');
+    }
+  }
+});
+
+test('rendered enemy frame evidence follows the actual texture selection', async () => {
+  const { createEnemyRosterDisplay } = await import('../apps/hmh-reboot/src/enemy-roster-atlas.mjs');
+  const index = createEnemyRosterAtlasIndex(await loadMetadata('bagholder-rusher'), 'bagholder-rusher');
+  const fake = makeFakePixi();
+  const display = createEnemyRosterDisplay({ index, atlasTexture: { source: {} },
+    ContainerClass: fake.FakeContainer, SpriteClass: fake.FakeSprite,
+    TextureClass: fake.FakeTexture, RectangleClass: fake.FakeRectangle,
+    GraphicsClass: fake.FakeGraphics, scale: 1 });
+  for (const phaseTick of [0, 3]) {
+    const frame = display.applyPose({ state: 'hit', tick: 100 + phaseTick, phaseTick, direction: 2, hitFlash: false });
+    assert.equal(display.frameId, frame.id, 'evidence must name the frame applied to the live sprite');
+    assert.equal(display.visualState, frame.state);
+    assert.deepEqual(display.children.find((child) => child.label === 'roster-body-bagholder-rusher').texture.frame,
+      new fake.FakeRectangle(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h));
+  }
 });

@@ -312,7 +312,8 @@ test('WO-58 profile v2 model builds trophy room, session feed, achievements, col
   assert.equal(model.sessionFeed.rows.length, 2);
   assert.equal(model.sessionFeed.rows[0].gameId, 'chikun');
   assert.match(model.sessionFeed.rows[0].detailHref, /^\/play\/chikun\/game-session-/);
-  assert.equal(model.sessionFeed.rows[1].trust.label, 'Settled');
+  assert.equal(model.sessionFeed.rows[1].trust.label, 'Cached receipt');
+  assert.notEqual(model.sessionFeed.rows[1].trust.tone, 'verified');
 
   assert.equal(model.achievements.summary.unlocked >= 4, true);
   assert.equal(model.achievements.groups.some((group) => group.id === 'bronze' && group.unlocked > 0), true);
@@ -471,7 +472,7 @@ test('ranked sessions use one UUID-backed canonical id across routing and eviden
   assert.equal(session.evidence.sessionId, session.sessionId);
   assert.equal(session.canonicalContext.wallet, wallet);
   assert.equal(session.canonicalContext.gameId, 'lester-blaster');
-  assert.equal(session.canonicalContext.buildHash, 'site-1.3.0:game-1.3.0');
+  assert.equal(session.canonicalContext.buildHash, 'site-1.4.0:game-1.4.0');
 });
 
 test('parent session allocator issues deterministic seed, build, and season bindings for every cabinet', () => {
@@ -490,7 +491,7 @@ test('parent session allocator issues deterministic seed, build, and season bind
   assert.notEqual(a.seed, changed.seed);
   assert.equal(Number.isInteger(a.seed), true);
   assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
-  assert.equal(a.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.5.0');
+  assert.equal(a.buildHash, 'site-1.4.0:game-1.4.0:cabinet-0.5.0');
   assert.equal(a.seasonId, 'chikun-season-preview-1');
   assert.equal(a.canonicalContext.seed, a.seed);
   assert.equal(a.canonicalContext.buildHash, a.buildHash);
@@ -2190,7 +2191,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-aaa-cycle-081-gameplan-defects'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-playable-20260910'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -3032,7 +3033,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-aaa-cycle-081-gameplan-defects'), true);
+  assert.equal(smokeScript.includes('hmh-playable-20260910'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
@@ -3062,8 +3063,8 @@ test('buildHardMoneyHeroesStatsModule returns a game-specific breakdown', () => 
   assert.equal(mod.enemyBreakdown[0].kills, 40);
   // Boss-prefixed keys are separated out.
   assert.ok(mod.bossBreakdown.some((b) => b.kills === 2));
-  // Top achievement is the rarest unlocked (login achievement on fresh profile).
-  assert.ok(mod.topAchievement === null || typeof mod.topAchievement.rarityPct === 'number');
+  // A featured local badge is not a measured global unlock-rate statistic.
+  assert.ok(mod.topAchievement === null || (mod.topAchievement.rarityPct === null && mod.topAchievement.rarityStatus === 'unavailable'));
   assert.equal(mod.achievementsTotal, Object.values(ACHIEVEMENTS).length);
 });
 

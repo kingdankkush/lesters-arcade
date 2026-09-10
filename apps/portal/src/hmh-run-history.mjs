@@ -1,5 +1,4 @@
 import { validateRunSummaryPayload } from '../../../sdk/hmh-run-summary-schema.mjs';
-import { RUN_UPGRADE_CATALOG } from '../../hmh-reboot/src/run-progression.mjs';
 import { resolveComboPresentation } from '../../hmh-reboot/src/combo-feedback.mjs';
 
 export const HMH_RUN_HISTORY_FILTER_DEFAULTS = Object.freeze({
@@ -45,18 +44,12 @@ const ratioPermille = (numerator, denominator) => denominator > 0
   : 0;
 const labelFor = (labels, id) => labels[id] ?? String(id).split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
 
-function recordProvenance(record, summary, settlementsBySessionId) {
-  const settlement = settlementsBySessionId.get(record.sessionId);
-  const transactionHash = record.settlementTxHash
-    ?? record.primaryTxHash
-    ?? record.settlement?.primaryTxHash
-    ?? settlement?.primaryTxHash
-    ?? null;
+function recordProvenance(record, summary) {
+  // A local summary (even beside a valid-looking transaction or parent receipt)
+  // is not cryptographically bound to an accepted chain result. Receipt links
+  // remain separate; this model must not certify cached gameplay statistics.
   if (record.seed === true || String(record.wallet ?? '').startsWith('0xSEED')) {
     return Object.freeze({ id: 'house-demo', label: 'HOUSE DEMO', official: false, transactionHash: null });
-  }
-  if (summary.identity.mode === 'ranked' && transactionHash) {
-    return Object.freeze({ id: 'verified-ranked', label: 'VERIFIED RANKED', official: true, transactionHash });
   }
   if (summary.identity.mode === 'ranked') {
     return Object.freeze({ id: 'local-ranked', label: 'LOCAL RANKED', official: false, transactionHash: null });
@@ -77,8 +70,7 @@ function runBuild(summary) {
   return Object.freeze({ ranks, weaponTrees });
 }
 
-function canonicalRows(records, { wallet, settlements = [] }) {
-  const settlementsBySessionId = new Map(settlements.map((row) => [row.sessionId, row]));
+function canonicalRows(records, { wallet }) {
   return records.flatMap((record) => {
     if (!record || record.wallet !== wallet || record.gameId !== 'lester-blaster') return [];
     const summary = record.runSummary;
@@ -115,7 +107,7 @@ function canonicalRows(records, { wallet, settlements = [] }) {
       projectileAccuracyPermille: ratioPermille(projectileTotals.contacts, projectileTotals.emitted),
       primaryWeapons,
       primaryWeaponLabels: primaryWeapons.map((id) => labelFor(WEAPON_LABELS, id)),
-      provenance: recordProvenance(record, summary, settlementsBySessionId),
+      provenance: recordProvenance(record, summary),
       build: runBuild(summary),
       runSummary: summary,
     }];
@@ -207,6 +199,33 @@ function heroAggregate(rows) {
   }).sort((a, b) => b.runs - a.runs || a.heroId.localeCompare(b.heroId));
 }
 
+
+// All scalar facts from the versioned schema are available, including zeros.
+// The validator bounds object depth, field names and catalog rows before walking.
+const detailLabel = (key) => labelFor({}, key.replace(/([a-z0-9])([A-Z])/g, '$1-$2'));
+function detailFields(value, path, labels = []) {
+  if (Array.isArray(value)) return value.flatMap((row, index) => {
+    const id = row.weaponId ?? row.enemyRoleId ?? row.effectId ?? row.upgradeId;
+    return detailFields(row, `${path}.${index}`, [...labels, labelFor(WEAPON_LABELS, id)]);
+  });
+  if (value && typeof value === 'object') return Object.entries(value).flatMap(([key, child]) => (
+    detailFields(child, `${path}.${key}`, [...labels, detailLabel(key)])
+  ));
+  return [Object.freeze({ path, label: labels.join(' · '), value })];
+}
+
+export function buildHmhRunDetailsModel(summary) {
+  if (validateRunSummaryPayload(summary)) return null;
+  return Object.freeze({
+    schemaVersion: summary.schemaVersion,
+    sections: Object.freeze(Object.entries(summary).map(([id, value]) => Object.freeze({
+      id,
+      label: detailLabel(id),
+      fields: Object.freeze(detailFields(value, id, typeof value === 'object' ? [] : [detailLabel(id)])),
+    }))),
+  });
+}
+
 const optionRows = (ids, labels) => [{ id: 'all', label: 'All' }, ...ids.map((id) => ({ id, label: labelFor(labels, id) }))];
 
 export function buildHmhRunHistoryModel(records = [], {
@@ -233,6 +252,7 @@ export function buildHmhRunHistoryModel(records = [], {
     rows,
     totalCanonicalRuns: allRows.length,
     legacyRuns: sourceRecords.filter((record) => record?.wallet === wallet && record?.gameId === 'lester-blaster' && !record.runSummary).length,
+    invalidRuns: sourceRecords.filter((record) => record?.wallet === wallet && record?.gameId === 'lester-blaster' && record.runSummary && validateRunSummaryPayload(record.runSummary)).length,
     personalBests: personalBests(allRows),
     weapons: weaponAggregate(allRows),
     heroes: heroAggregate(allRows),

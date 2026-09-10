@@ -31,7 +31,14 @@ export function leaderboardEntryProvenance(entry = {}, profile = null) {
   if (entry.seed === true || profile?.seed === true || String(entry.wallet ?? '').startsWith('0xSEED')) {
     return HOUSE_SCORE_PROVENANCE;
   }
-  if (entry.settlementTxHash) return OFFICIAL_SCORE_PROVENANCE;
+  const isHex32 = (value) => typeof value === 'string' && /^0x[0-9a-fA-F]{64}$/.test(value);
+  // Older hydrated caches used a session ID as a fake transaction hash.
+  // Require explicit verified-registry provenance for these rows instead.
+  if (entry.onChain === true || String(entry.sessionId ?? '').startsWith('chain:')) {
+    return entry.chainVerified === true && isHex32(entry.onChainSessionId32)
+      ? OFFICIAL_SCORE_PROVENANCE : LOCAL_SCORE_PROVENANCE;
+  }
+  if (isHex32(entry.settlementTxHash)) return OFFICIAL_SCORE_PROVENANCE;
   return LOCAL_SCORE_PROVENANCE;
 }
 

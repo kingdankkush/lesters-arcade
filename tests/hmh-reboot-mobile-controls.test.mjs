@@ -4,8 +4,6 @@ import test from 'node:test';
 
 import { computeTouchControlLayout } from '../apps/hmh-reboot/src/input.mjs';
 import {
-  DOUBLE_TAP_DASH_HOLD_MS,
-  DOUBLE_TAP_DASH_WINDOW_MS,
   TouchControlState,
 } from '../apps/hmh-reboot/src/touch-controls.mjs';
 
@@ -24,12 +22,12 @@ import {
 
 const PHONE = { width: 390, height: 844 };
 
-test('the compact mobile layout exposes movement, aim, weapon swap, power and pause', () => {
+test('the compact mobile layout exposes movement, aim, grenade and pause', () => {
   const layout = computeTouchControlLayout(PHONE);
   assert.ok(layout.moveStick, 'movement stick is required');
   assert.ok(layout.aimStick, 'aim stick is required');
   const buttons = Object.keys(layout.buttons).sort();
-  assert.deepEqual(buttons, ['pause', 'power', 'weapon'], 'only weapon swap, power and pause may remain');
+  assert.deepEqual(buttons, ['pause', 'power'], 'only grenade and pause are buttons');
 });
 
 test('every control sits fully inside the visible viewport', () => {
@@ -92,34 +90,13 @@ test('stick dragging survives a thumb leaving the control, without pointer captu
     'pointermove must be tracked on a surface that spans the screen');
 });
 
-test('double-tapping the movement stick dashes, so touch keeps a core movement mechanic', () => {
-  let clock = 1_000;
-  const state = new TouchControlState({ stickRadius: 60, now: () => clock });
-
-  // A single tap must not dash.
-  state.beginStick(1, 'move', { x: 100, y: 300 });
-  assert.equal(state.snapshot().dash, false, 'one tap is not a dash');
-  state.endPointer(1);
-
-  // A second tap inside the window does.
-  clock += 120;
-  state.beginStick(2, 'move', { x: 100, y: 300 });
-  assert.equal(state.snapshot().dash, true, 'a double tap must dash');
-
-  // ...and it releases on its own rather than latching true forever.
-  clock += DOUBLE_TAP_DASH_HOLD_MS + 5;
-  assert.equal(state.snapshot().dash, false, 'the dash must not latch');
-  state.endPointer(2);
-
-  // A slow pair of taps is just two taps.
-  clock += 5_000;
-  state.beginStick(3, 'move', { x: 100, y: 300 });
-  state.endPointer(3);
-  clock += DOUBLE_TAP_DASH_WINDOW_MS + 50;
-  state.beginStick(4, 'move', { x: 100, y: 300 });
-  assert.equal(state.snapshot().dash, false, 'taps outside the window must not dash');
+test('repeated movement taps only steer and never manually activate a dodge',()=>{
+  const state=new TouchControlState({stickRadius:60});
+  for(let i=0;i<8;i++) {
+    state.beginStick(i,'move',{x:100,y:300});state.movePointer(i,{x:160,y:300});
+    assert.equal(state.snapshot().moveX,1);assert.equal(state.snapshot().dash,false);state.endPointer(i);
+  }
 });
-
 test('double-tapping the AIM stick never dashes', () => {
   let clock = 0;
   const state = new TouchControlState({ stickRadius: 60, now: () => clock });
@@ -127,7 +104,7 @@ test('double-tapping the AIM stick never dashes', () => {
   state.endPointer(1);
   clock += 100;
   state.beginStick(2, 'aim', { x: 500, y: 300 });
-  assert.equal(state.snapshot().dash, false, 'only the movement stick dashes');
+  assert.equal(state.snapshot().dash, false, 'aim taps only control aim');
 });
 
 test('the real-browser smoke rejects keyboard copy and verifies the touch hint exclusion band', async () => {

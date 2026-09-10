@@ -143,17 +143,91 @@
         "accent": "#ff5c7a"
       },
       "detailKit": {
-        "kind": "bagholder-undead-scrapper-v1",
-        "frontReadable": true,
-        "minimumAuthoredParts": 18
+        "kind": "preserved-native-textured-body-and-debt-satchel",
+        "bodyVertices": 62277,
+        "equipmentVertices": 144,
+        "bones": 19
       },
       "animationProfile": {
-        "kind": "undead-straight-lunge-v1",
-        "damageResponse": "snapback-stumble-v1"
+        "kind": "preserved-native-actions",
+        "sourceStates": [
+          "idle",
+          "run",
+          "tell",
+          "attack",
+          "hit",
+          "death"
+        ]
       },
-      "silhouetteAccent": {
-        "kind": "chest-band",
-        "tint": "#ff9fb1"
+      "silhouetteAccent": null,
+      "armature": "bagholder-rusher Rig",
+      "clipActions": {
+        "attack": "HMH_Enemy_Attack",
+        "death": "HMH_Enemy_Death",
+        "hit": "HMH_Enemy_Hit",
+        "idle": "HMH_Enemy_Idle",
+        "run": "HMH_Enemy_Run",
+        "tell": "HMH_Enemy_Tell"
+      },
+      "frameSize": [
+        208,
+        208
+      ],
+      "cameraOrthoScale": 3.055,
+      "sourceModel": {
+        "kind": "packed-native-enemy-blend",
+        "format": "blend",
+        "path": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/bagholder-rusher-packed.blend",
+        "sourceSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+        "sourceBytes": 8599093,
+        "provenance": {
+          "path": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/provenance.json",
+          "sha256": "a78eb863712741d865a702b7af1a817d798ece1001ec27fe965375d7a7a830ef"
+        },
+        "preservation": {
+          "path": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/source-preservation.json",
+          "sha256": "8c1888f0da7c73943bffe527790daafe9a343048b543383520b8a8134ef40de3"
+        }
+      },
+      "poseAuthoring": {
+        "mode": "preserved-native-actions",
+        "version": 1,
+        "adapter": "scripts/hmh-blender/export-hmh-native-enemy.py",
+        "projection": "scripts/hmh-blender/hmh_native_enemy_projection.py",
+        "sourceFrameSamples": { "hit": [12, 25] }
+      },
+      "nativeProjection": {
+        "actorFrameSize": [
+          208,
+          208
+        ],
+        "actorPivot": {
+          "x": 83,
+          "y": 151
+        },
+        "actorPixelsPerMeter": 68.08510638297872,
+        "cameraShift": [
+          0.10096153616905212,
+          -0.2498081922531128
+        ],
+        "canonicalPivot": {
+          "x": 64,
+          "y": 116
+        },
+        "canonicalPixelsPerMeter": 68.08510638297872,
+        "groundZ": 0,
+        "nativeActionsUnmodified": true,
+        "overscanReason": "measured attack/death extents; only canvas expands, projected actor scale is unchanged",
+        "policy": "canonical camera transform/pitch, pixel density and base pivot; actor overscan, film shift and non-destructive per-frame projection-root Z offset",
+        "projectedWorldOriginPixels": [
+          83.00000047683716,
+          150.99999332427979
+        ],
+        "projectionRoot": "HMH_Enemy_Projection_Root",
+        "unshiftedWorldOriginPixels": [
+          104.0,
+          202.9601031243801
+        ]
       }
     },
     {

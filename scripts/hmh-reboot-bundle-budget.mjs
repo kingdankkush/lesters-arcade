@@ -1,10 +1,17 @@
-const DEFAULT_HMH_INITIAL_JS_CAP = 1_050_000;
+const DEFAULT_HMH_INITIAL_JS_CAP = 1_048_576;
 
 function safeByteCount(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) {
     throw new TypeError(`${label} must be a non-negative safe integer`);
   }
   return value;
+}
+
+export function assertHmhEntryJsBudget(entryBytes) {
+  const entry = safeByteCount(entryBytes, 'entryBytes');
+  const cap = 480_000;
+  if (entry > cap) throw new RangeError(`HMH child entry exceeds cap: ${entry.toLocaleString('en-US')} > ${cap.toLocaleString('en-US')}`);
+  return Object.freeze({ cap, entryBytes: entry, remaining: cap - entry });
 }
 
 /**
