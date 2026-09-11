@@ -11,7 +11,7 @@ import {
 } from '../apps/hmh-reboot/src/runtime-performance.mjs';
 import {
   buildEnduranceEncounterCandidates,
-} from '../apps/hmh-reboot/src/encounter-director.mjs';
+} from '../apps/hmh-reboot/src/encounter-endurance-pilot.mjs';
 
 const INPUT = Object.freeze({
   seed: 1337,

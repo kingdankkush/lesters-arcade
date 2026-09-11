@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { buildDebugGridOverlay } from '../apps/hmh-reboot/src/debug-grid-overlay.mjs';
 import { createAuthoredPropAtlasIndex, buildAuthoredPointOfInterestPlacements } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { createTripoPropAppearance } from '../apps/hmh-reboot/src/tripo-prop-appearance.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
@@ -18,7 +19,6 @@ import {
   setCameraShake,
   worldToScreen,
   screenToGround,
-  buildDebugGridOverlay,
 } from '../apps/hmh-reboot/src/world-space.mjs';
 
 test('world coordinate convention and actor spatial state are explicit and finite', () => {

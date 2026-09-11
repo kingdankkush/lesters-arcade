@@ -1,206 +1,2205 @@
 {
-  "pipelineId": "hmh-weapon-sfx-v1",
+  "pipelineId": "hmh-weapon-sfx-v2",
   "license": "synthesised-in-repo",
   "runtimeAuthority": "projection-only",
-  "sampleRate": 22050,
+  "sampleRate": 44100,
   "channels": 1,
   "bitDepth": 16,
-  "notes": "Rendered by scripts/build-hmh-weapon-sfx.py from pure-Python DSP with a fixed xorshift32 PRNG. Regenerate with npm run assets:hmh:weapon-sfx.",
+  "peakCeiling": 0.78,
+  "notes": "Original layered action sounds. No external recordings. Regenerate with npm run assets:hmh:weapon-sfx.",
   "cues": {
+    "hmh-ammo-pickup": {
+      "src": "./assets/audio/sfx/hmh-ammo-pickup.wav",
+      "bytes": 24740,
+      "format": "wav",
+      "durationMs": 280,
+      "sha256": "43d907ae7cfedf7b2da6aa5d896b960d0952e06029ab31852405434d6b8002dd",
+      "runtimeCue": "ammo-pickup",
+      "synth": {
+        "seed": 11649027,
+        "durationMs": 280,
+        "drive": 1.25,
+        "peak": 0.63,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.7,
+            "decayMs": 12,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 930,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 60
+          },
+          {
+            "kind": "noise",
+            "gain": 0.48999999999999994,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "metal",
+            "gain": 0.6,
+            "decayMs": 12,
+            "startMs": 64,
+            "attackMs": 0.35,
+            "hz": 1320,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 60
+          },
+          {
+            "kind": "noise",
+            "gain": 0.42,
+            "decayMs": 3,
+            "startMs": 64,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "tone",
+            "gain": 0.25,
+            "decayMs": 37,
+            "startMs": 90,
+            "attackMs": 0.35,
+            "hz": 440,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 185
+          }
+        ],
+        "runtimeCue": "ammo-pickup"
+      },
+      "pcm": {
+        "peak": 0.629974,
+        "rms": 0.085522,
+        "dcMean": -3.1e-05,
+        "crestDb": 17.345,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-berserk": {
+      "src": "./assets/audio/sfx/hmh-berserk.wav",
+      "bytes": 52964,
+      "format": "wav",
+      "durationMs": 600,
+      "sha256": "813b0fd09af4f1abe76722bd771b633c15db9f6375360604ab1f04f8c922ec97",
+      "runtimeCue": "berserk-activate",
+      "synth": {
+        "seed": 11649029,
+        "durationMs": 600,
+        "drive": 1.6,
+        "peak": 0.72,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.8,
+            "decayMs": 140,
+            "startMs": 0,
+            "attackMs": 6,
+            "hz": 80,
+            "sweep": 2.4,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 700
+          },
+          {
+            "kind": "noise",
+            "gain": 0.7,
+            "decayMs": 110,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 2800,
+            "highpassHz": 0,
+            "lengthMs": 550
+          },
+          {
+            "kind": "metal",
+            "gain": 0.35,
+            "decayMs": 65,
+            "startMs": 90,
+            "attackMs": 0.35,
+            "hz": 660,
+            "sweep": 1.3,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 325
+          }
+        ],
+        "runtimeCue": "berserk-activate"
+      },
+      "pcm": {
+        "peak": 0.719971,
+        "rms": 0.193629,
+        "dcMean": -5e-06,
+        "crestDb": 11.407,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-enemy-hit": {
+      "src": "./assets/audio/sfx/hmh-enemy-hit.wav",
+      "bytes": 15920,
+      "format": "wav",
+      "durationMs": 180,
+      "sha256": "9292a1461a3e33e81868755029edc4b17b49d399570d6bb051f14cc993c0f938",
+      "runtimeCue": "enemy-hit",
+      "synth": {
+        "seed": 3789623575,
+        "durationMs": 180,
+        "drive": 1.8,
+        "peak": 0.7,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 1,
+            "decayMs": 13,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 6000,
+            "highpassHz": 0,
+            "lengthMs": 65
+          },
+          {
+            "kind": "noise",
+            "gain": 0.75,
+            "decayMs": 28,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 800,
+            "highpassHz": 0,
+            "lengthMs": 140
+          },
+          {
+            "kind": "tone",
+            "gain": 0.8,
+            "decayMs": 25,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 128,
+            "sweep": 0.74,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 125
+          }
+        ],
+        "runtimeCue": "enemy-hit"
+      },
+      "pcm": {
+        "peak": 0.699951,
+        "rms": 0.148043,
+        "dcMean": -1.5e-05,
+        "crestDb": 13.494,
+        "clippedSamples": 0
+      }
+    },
     "hmh-fire-auto-miner": {
       "src": "./assets/audio/sfx/hmh-fire-auto-miner.wav",
-      "bytes": 4894,
+      "bytes": 15038,
       "format": "wav",
-      "durationMs": 110,
-      "sha256": "800504c76aa767761d4b3b2215ca1ab5e06d0dfa82045982e863552291f830e2",
+      "durationMs": 170,
+      "sha256": "1276a84d49f85b7b62e83c99dfb0c0f333fca3533c6d0d2df4aded419c364725",
+      "runtimeCue": "hmh-fire-auto-miner",
       "synth": {
         "seed": 172429585,
-        "lowpassHz": 6200,
-        "drive": 2.6,
-        "peak": 0.66,
-        "layers": 3
+        "durationMs": 170,
+        "drive": 1.7,
+        "peak": 0.76,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 1.65,
+            "decayMs": 9,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 8800,
+            "highpassHz": 1400,
+            "lengthMs": 45
+          },
+          {
+            "kind": "noise",
+            "gain": 1.8,
+            "decayMs": 43,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 1700,
+            "highpassHz": 0,
+            "lengthMs": 215
+          },
+          {
+            "kind": "tone",
+            "gain": 1.35,
+            "decayMs": 49.449999999999996,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 158,
+            "sweep": 0.74,
+            "lowpassHz": 1100,
+            "highpassHz": 0,
+            "lengthMs": 247.24999999999997
+          },
+          {
+            "kind": "noise",
+            "gain": 0.35,
+            "decayMs": 34.4,
+            "startMs": 42,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 3600,
+            "highpassHz": 0,
+            "lengthMs": 172.0
+          },
+          {
+            "kind": "metal",
+            "gain": 0.22,
+            "decayMs": 10,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 1900,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 50
+          },
+          {
+            "kind": "noise",
+            "gain": 0.154,
+            "decayMs": 3,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.759949,
+        "rms": 0.276776,
+        "dcMean": 9e-05,
+        "crestDb": 8.773,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-bear-market-burner": {
       "src": "./assets/audio/sfx/hmh-fire-bear-market-burner.wav",
-      "bytes": 7540,
+      "bytes": 19448,
       "format": "wav",
-      "durationMs": 170,
-      "sha256": "75ad5444268dc36b4961a9f9a1419f16ccff9f2232a87964e3e26401585e22d4",
+      "durationMs": 220,
+      "sha256": "e385d82a4837ef830a2a824e0bd4b0e66e868e920f858a97a4af46191cdac350",
+      "runtimeCue": "hmh-fire-bear-market-burner",
       "synth": {
         "seed": 3198480670,
-        "lowpassHz": 3800,
-        "drive": 1.72,
-        "peak": 0.62,
-        "layers": 3
+        "durationMs": 220,
+        "drive": 1.8,
+        "peak": 0.67,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 1.8,
+            "decayMs": 64,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 2400,
+            "highpassHz": 0,
+            "lengthMs": 320
+          },
+          {
+            "kind": "noise",
+            "gain": 0.45,
+            "decayMs": 40,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 8200,
+            "highpassHz": 2500,
+            "lengthMs": 200
+          },
+          {
+            "kind": "tone",
+            "gain": 0.7,
+            "decayMs": 62,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 72,
+            "sweep": 1.3,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 310
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.669952,
+        "rms": 0.185001,
+        "dcMean": -8.7e-05,
+        "crestDb": 11.177,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-coin-blaster": {
       "src": "./assets/audio/sfx/hmh-fire-coin-blaster.wav",
-      "bytes": 6658,
+      "bytes": 21212,
       "format": "wav",
-      "durationMs": 150,
-      "sha256": "e6ea7a229b29ac47e5f28b11748443889054f4b515cf5446f73633fed639d193",
+      "durationMs": 240,
+      "sha256": "e2927bef30267221bb124b07a61ddae337e55862bb8857138a77bdc553b02604",
+      "runtimeCue": "hmh-fire-coin-blaster",
       "synth": {
         "seed": 201437605,
-        "lowpassHz": 7600,
-        "drive": 1.5,
-        "peak": 0.7,
-        "layers": 3
+        "durationMs": 240,
+        "drive": 1.7,
+        "peak": 0.76,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 1.8,
+            "decayMs": 9,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 8800,
+            "highpassHz": 1400,
+            "lengthMs": 45
+          },
+          {
+            "kind": "noise",
+            "gain": 1.8,
+            "decayMs": 54,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 1700,
+            "highpassHz": 0,
+            "lengthMs": 270
+          },
+          {
+            "kind": "tone",
+            "gain": 1.35,
+            "decayMs": 62.099999999999994,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 145,
+            "sweep": 0.74,
+            "lowpassHz": 1100,
+            "highpassHz": 0,
+            "lengthMs": 310.5
+          },
+          {
+            "kind": "noise",
+            "gain": 0.35,
+            "decayMs": 43.2,
+            "startMs": 42,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 3600,
+            "highpassHz": 0,
+            "lengthMs": 216.0
+          },
+          {
+            "kind": "metal",
+            "gain": 0.22,
+            "decayMs": 10,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 1900,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 50
+          },
+          {
+            "kind": "noise",
+            "gain": 0.154,
+            "decayMs": 3,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.759949,
+        "rms": 0.267841,
+        "dcMean": 8e-06,
+        "crestDb": 9.058,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-forked-standard": {
       "src": "./assets/audio/sfx/hmh-fire-forked-standard.wav",
-      "bytes": 10628,
+      "bytes": 27386,
       "format": "wav",
-      "durationMs": 240,
-      "sha256": "32fc412288b0ee3a8b64b46060b4a714c6999a460d54037e21da3a7e42342b70",
+      "durationMs": 310,
+      "sha256": "1e2f06f4ed36aef22e015600e4adff2de9ccec57f1ee7469ce6bf72b3b9093e0",
+      "runtimeCue": "hmh-fire-forked-standard",
       "synth": {
         "seed": 4031528209,
-        "lowpassHz": 6800,
-        "drive": 1.45,
-        "peak": 0.6,
-        "layers": 3
+        "durationMs": 310,
+        "drive": 1.6,
+        "peak": 0.71,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 1.4,
+            "decayMs": 20,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 6500,
+            "highpassHz": 0,
+            "lengthMs": 100
+          },
+          {
+            "kind": "tone",
+            "gain": 0.75,
+            "decayMs": 65,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 235,
+            "sweep": 0.7,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 325
+          },
+          {
+            "kind": "metal",
+            "gain": 0.75,
+            "decayMs": 55,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 860,
+            "sweep": 0.65,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 275
+          },
+          {
+            "kind": "noise",
+            "gain": 0.4,
+            "decayMs": 12,
+            "startMs": 65,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 2500,
+            "lengthMs": 60
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.709961,
+        "rms": 0.166939,
+        "dcMean": -4.2e-05,
+        "crestDb": 12.574,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-hash-rail": {
       "src": "./assets/audio/sfx/hmh-fire-hash-rail.wav",
-      "bytes": 20330,
+      "bytes": 38852,
       "format": "wav",
-      "durationMs": 460,
-      "sha256": "89d20dda2adbae629befb6158f06c5eaada7b9525b8c84fd00c36e47be3d052b",
+      "durationMs": 440,
+      "sha256": "2a2dc09cb887407f80a7f5e7278cea8ef32aebda651a52920d9423bcde5e86ba",
+      "runtimeCue": "hmh-fire-hash-rail",
       "synth": {
         "seed": 2320964113,
-        "lowpassHz": 7200,
-        "drive": 1.7,
-        "peak": 0.72,
-        "layers": 3
+        "durationMs": 440,
+        "drive": 1.8,
+        "peak": 0.76,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 2,
+            "decayMs": 12,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1000,
+            "lengthMs": 60
+          },
+          {
+            "kind": "tone",
+            "gain": 1.1,
+            "decayMs": 75,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 94,
+            "sweep": 0.7,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 375
+          },
+          {
+            "kind": "metal",
+            "gain": 0.65,
+            "decayMs": 95,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 530,
+            "sweep": 0.82,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 475
+          },
+          {
+            "kind": "noise",
+            "gain": 0.4,
+            "decayMs": 110,
+            "startMs": 20,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 4700,
+            "highpassHz": 0,
+            "lengthMs": 550
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.759949,
+        "rms": 0.190753,
+        "dcMean": -3.1e-05,
+        "crestDb": 12.006,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-launcher-rig": {
       "src": "./assets/audio/sfx/hmh-fire-launcher-rig.wav",
-      "bytes": 22976,
+      "bytes": 45908,
       "format": "wav",
       "durationMs": 520,
-      "sha256": "a982d2115e82708bf3c36f80885734cfe5de7cf26b3070f164413f4cc1d55d09",
+      "sha256": "660956f00a938f310489ae6adbc7139e834436bd736d8704164a8ef266aad93b",
+      "runtimeCue": "hmh-fire-launcher-rig",
       "synth": {
         "seed": 437014034,
-        "lowpassHz": 2400,
-        "drive": 1.8,
-        "peak": 0.78,
-        "layers": 3
+        "durationMs": 520,
+        "drive": 1.7,
+        "peak": 0.76,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 0.8,
+            "decayMs": 9,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 3200,
+            "highpassHz": 1400,
+            "lengthMs": 45
+          },
+          {
+            "kind": "noise",
+            "gain": 1.8,
+            "decayMs": 125,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 1700,
+            "highpassHz": 0,
+            "lengthMs": 625
+          },
+          {
+            "kind": "tone",
+            "gain": 1.35,
+            "decayMs": 143.75,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 66,
+            "sweep": 0.74,
+            "lowpassHz": 1100,
+            "highpassHz": 0,
+            "lengthMs": 718.75
+          },
+          {
+            "kind": "noise",
+            "gain": 0.35,
+            "decayMs": 100.0,
+            "startMs": 42,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 3600,
+            "highpassHz": 0,
+            "lengthMs": 500.0
+          },
+          {
+            "kind": "metal",
+            "gain": 0.22,
+            "decayMs": 10,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 1900,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 50
+          },
+          {
+            "kind": "noise",
+            "gain": 0.154,
+            "decayMs": 3,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.759949,
+        "rms": 0.230406,
+        "dcMean": 0.000178,
+        "crestDb": 10.366,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-lightning-ledger": {
       "src": "./assets/audio/sfx/hmh-fire-lightning-ledger.wav",
-      "bytes": 5776,
+      "bytes": 16802,
       "format": "wav",
-      "durationMs": 130,
-      "sha256": "e1cbdf8e1bd5ffc46e9c826942172d65deddff3a0ca6122b2b68ec6c1c233f9e",
+      "durationMs": 190,
+      "sha256": "a2ff401ad8b06bfa3b7dcdbb1d5cc18184ee785afbd950cf8eddb72a4df4d968",
+      "runtimeCue": "hmh-fire-lightning-ledger",
       "synth": {
         "seed": 300343840,
-        "lowpassHz": 7600,
-        "drive": 1.55,
-        "peak": 0.58,
-        "layers": 3
+        "durationMs": 190,
+        "drive": 1.6,
+        "peak": 0.7,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 1.4,
+            "decayMs": 8,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1800,
+            "lengthMs": 40
+          },
+          {
+            "kind": "metal",
+            "gain": 0.8,
+            "decayMs": 27,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 670,
+            "sweep": 1.14,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 135
+          },
+          {
+            "kind": "tone",
+            "gain": 0.65,
+            "decayMs": 40,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 185,
+            "sweep": 0.6,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 200
+          },
+          {
+            "kind": "noise",
+            "gain": 0.6,
+            "decayMs": 13,
+            "startMs": 35,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1000,
+            "lengthMs": 65
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.699951,
+        "rms": 0.152438,
+        "dcMean": -4.5e-05,
+        "crestDb": 13.24,
+        "clippedSamples": 0
       }
     },
     "hmh-fire-scatter-shotgun": {
       "src": "./assets/audio/sfx/hmh-fire-scatter-shotgun.wav",
-      "bytes": 18566,
+      "bytes": 42380,
       "format": "wav",
-      "durationMs": 420,
-      "sha256": "9cac641f56a220c7a3c2161643baca9af63c5608371d95541ea9de3b67999020",
+      "durationMs": 480,
+      "sha256": "dfb0d29c3f42ceb9d02f66440ac7c19cb0f08a135e0297d5e20c78372d4bc96a",
+      "runtimeCue": "hmh-fire-scatter-shotgun",
       "synth": {
         "seed": 1548161588,
-        "lowpassHz": 4200,
-        "drive": 2.1,
+        "durationMs": 480,
+        "drive": 1.7,
         "peak": 0.76,
-        "layers": 3
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 2.3,
+            "decayMs": 9,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 7200,
+            "highpassHz": 1400,
+            "lengthMs": 45
+          },
+          {
+            "kind": "noise",
+            "gain": 1.8,
+            "decayMs": 102,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 1700,
+            "highpassHz": 0,
+            "lengthMs": 510
+          },
+          {
+            "kind": "tone",
+            "gain": 1.35,
+            "decayMs": 117.3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 88,
+            "sweep": 0.74,
+            "lowpassHz": 1100,
+            "highpassHz": 0,
+            "lengthMs": 586.5
+          },
+          {
+            "kind": "noise",
+            "gain": 0.35,
+            "decayMs": 81.60000000000001,
+            "startMs": 42,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 3600,
+            "highpassHz": 0,
+            "lengthMs": 408.00000000000006
+          },
+          {
+            "kind": "metal",
+            "gain": 0.22,
+            "decayMs": 10,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 1900,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 50
+          },
+          {
+            "kind": "noise",
+            "gain": 0.154,
+            "decayMs": 3,
+            "startMs": 26,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.759949,
+        "rms": 0.243584,
+        "dcMean": -1.6e-05,
+        "crestDb": 9.883,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-grenade-boom": {
+      "src": "./assets/audio/sfx/hmh-grenade-boom.wav",
+      "bytes": 88244,
+      "format": "wav",
+      "durationMs": 1000,
+      "sha256": "58fd073832ed4877f021cfeddbc801bb1320f59a1ee1c2e987078ca707bcdeea",
+      "runtimeCue": "grenade-boom",
+      "synth": {
+        "seed": 6961666,
+        "durationMs": 1000,
+        "drive": 2,
+        "peak": 0.78,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 2,
+            "decayMs": 26,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 6500,
+            "highpassHz": 0,
+            "lengthMs": 130
+          },
+          {
+            "kind": "noise",
+            "gain": 2,
+            "decayMs": 145,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 1200,
+            "highpassHz": 0,
+            "lengthMs": 725
+          },
+          {
+            "kind": "tone",
+            "gain": 1.5,
+            "decayMs": 160,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 66,
+            "sweep": 0.62,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 800
+          },
+          {
+            "kind": "noise",
+            "gain": 0.6,
+            "decayMs": 135,
+            "startMs": 100,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 2800,
+            "highpassHz": 0,
+            "lengthMs": 675
+          },
+          {
+            "kind": "metal",
+            "gain": 0.22,
+            "decayMs": 55,
+            "startMs": 180,
+            "attackMs": 0.35,
+            "hz": 2350,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 275
+          },
+          {
+            "kind": "noise",
+            "gain": 0.154,
+            "decayMs": 3,
+            "startMs": 180,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ],
+        "runtimeCue": "grenade-boom"
+      },
+      "pcm": {
+        "peak": 0.779968,
+        "rms": 0.195018,
+        "dcMean": -0.0,
+        "crestDb": 12.04,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-grenade-throw": {
+      "src": "./assets/audio/sfx/hmh-grenade-throw.wav",
+      "bytes": 28268,
+      "format": "wav",
+      "durationMs": 320,
+      "sha256": "3095f7fc5ce716bd17603804491f14ed00cc740c145be6ad00da48f4df768085",
+      "runtimeCue": "grenade",
+      "synth": {
+        "seed": 6961665,
+        "durationMs": 320,
+        "drive": 1.25,
+        "peak": 0.64,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.6,
+            "decayMs": 13,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 1850,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 65
+          },
+          {
+            "kind": "noise",
+            "gain": 0.42,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "noise",
+            "gain": 0.6,
+            "decayMs": 60,
+            "startMs": 48,
+            "attackMs": 24,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 4500,
+            "highpassHz": 500,
+            "lengthMs": 300
+          }
+        ],
+        "runtimeCue": "grenade"
+      },
+      "pcm": {
+        "peak": 0.639954,
+        "rms": 0.079257,
+        "dcMean": -1.6e-05,
+        "crestDb": 18.142,
+        "clippedSamples": 0
       }
     },
     "hmh-hash-rail-charge": {
       "src": "./assets/audio/sfx/hmh-hash-rail-charge.wav",
-      "bytes": 40616,
+      "bytes": 81188,
       "format": "wav",
       "durationMs": 920,
-      "sha256": "d3d86b0959990010e857ffa7e8a629255babc6351225958dca75439aa75a9220",
+      "sha256": "92d88e372228d314605807ec8a6794877e1652f215862d67a02045db8ca3ef13",
+      "runtimeCue": "hmh-hash-rail-charge",
       "synth": {
         "seed": 3298976529,
-        "lowpassHz": 6800,
+        "durationMs": 920,
         "drive": 1.25,
-        "peak": 0.46,
-        "layers": 2
+        "peak": 0.53,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.4,
+            "decayMs": 450,
+            "startMs": 0,
+            "attackMs": 150,
+            "hz": 66,
+            "sweep": 8,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 900
+          },
+          {
+            "kind": "metal",
+            "gain": 0.2,
+            "decayMs": 260,
+            "startMs": 160,
+            "attackMs": 100,
+            "hz": 240,
+            "sweep": 2.7,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 1300
+          },
+          {
+            "kind": "noise",
+            "gain": 0.22,
+            "decayMs": 270,
+            "startMs": 210,
+            "attackMs": 110,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 2400,
+            "lengthMs": 1350
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.529968,
+        "rms": 0.184603,
+        "dcMean": 0.0,
+        "crestDb": 9.16,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-health-pickup": {
+      "src": "./assets/audio/sfx/hmh-health-pickup.wav",
+      "bytes": 40616,
+      "format": "wav",
+      "durationMs": 460,
+      "sha256": "606a78f1278de0b84372cdfe901ea2731e36d2db42fd8c94c31470ef5f0d115d",
+      "runtimeCue": "health-pickup",
+      "synth": {
+        "seed": 11649026,
+        "durationMs": 460,
+        "drive": 1.25,
+        "peak": 0.6,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 523.25,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 0,
+            "attackMs": 1,
+            "hz": 1051.7324999999998,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 72,
+            "attackMs": 2,
+            "hz": 659.25,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 72,
+            "attackMs": 1,
+            "hz": 1325.0925,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 144,
+            "attackMs": 2,
+            "hz": 1046.5,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 144,
+            "attackMs": 1,
+            "hz": 2103.4649999999997,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          }
+        ],
+        "runtimeCue": "health-pickup"
+      },
+      "pcm": {
+        "peak": 0.599976,
+        "rms": 0.157729,
+        "dcMean": -2e-06,
+        "crestDb": 11.604,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-level-up": {
+      "src": "./assets/audio/sfx/hmh-level-up.wav",
+      "bytes": 57374,
+      "format": "wav",
+      "durationMs": 650,
+      "sha256": "2f900a1c694725054218668da006535f25988e0460340a8ad2e33746f9c0d61c",
+      "runtimeCue": "level-up",
+      "synth": {
+        "seed": 11649032,
+        "durationMs": 650,
+        "drive": 1.25,
+        "peak": 0.6,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 523.25,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 0,
+            "attackMs": 1,
+            "hz": 1051.7324999999998,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 72,
+            "attackMs": 2,
+            "hz": 659.25,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 72,
+            "attackMs": 1,
+            "hz": 1325.0925,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 144,
+            "attackMs": 2,
+            "hz": 783.99,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 144,
+            "attackMs": 1,
+            "hz": 1575.8199,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 216,
+            "attackMs": 2,
+            "hz": 1046.5,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 216,
+            "attackMs": 1,
+            "hz": 2103.4649999999997,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          }
+        ],
+        "runtimeCue": "level-up"
+      },
+      "pcm": {
+        "peak": 0.599976,
+        "rms": 0.155162,
+        "dcMean": -2e-06,
+        "crestDb": 11.747,
+        "clippedSamples": 0
       }
     },
     "hmh-lightning-empty": {
       "src": "./assets/audio/sfx/hmh-lightning-empty.wav",
-      "bytes": 9304,
+      "bytes": 16802,
       "format": "wav",
-      "durationMs": 210,
-      "sha256": "6ec6e2cee7e6a1971a3b772dbc4836d3990d50785ebe7632c912e4a8367d0fd8",
+      "durationMs": 190,
+      "sha256": "357748bbf04e3db5d16af53a4f11b766dbe89dfa470bf906fa1650304361b322",
+      "runtimeCue": "hmh-lightning-empty",
       "synth": {
         "seed": 300343843,
-        "lowpassHz": 6400,
-        "drive": 1.3,
-        "peak": 0.5,
-        "layers": 2
+        "durationMs": 190,
+        "drive": 1.25,
+        "peak": 0.57,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.65,
+            "decayMs": 12,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 1300,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 60
+          },
+          {
+            "kind": "noise",
+            "gain": 0.45499999999999996,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "metal",
+            "gain": 0.35,
+            "decayMs": 12,
+            "startMs": 75,
+            "attackMs": 0.35,
+            "hz": 740,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 60
+          },
+          {
+            "kind": "noise",
+            "gain": 0.24499999999999997,
+            "decayMs": 3,
+            "startMs": 75,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.569977,
+        "rms": 0.063354,
+        "dcMean": -4.5e-05,
+        "crestDb": 19.082,
+        "clippedSamples": 0
       }
     },
     "hmh-lightning-interrupt": {
       "src": "./assets/audio/sfx/hmh-lightning-interrupt.wav",
-      "bytes": 7982,
+      "bytes": 16802,
       "format": "wav",
-      "durationMs": 180,
-      "sha256": "7c375099482bb2509e34a369e8b5d56f419f290365b34c239d706a337cdc277a",
+      "durationMs": 190,
+      "sha256": "785e6df6bfd716fda999e94e96cd2a85302e51b7871dca658263f4a878ef5b70",
+      "runtimeCue": "hmh-lightning-interrupt",
       "synth": {
         "seed": 300343841,
-        "lowpassHz": 5800,
-        "drive": 1.35,
-        "peak": 0.52,
-        "layers": 2
+        "durationMs": 190,
+        "drive": 1.25,
+        "peak": 0.58,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.6,
+            "decayMs": 30,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 830,
+            "sweep": 0.3,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 150
+          },
+          {
+            "kind": "noise",
+            "gain": 0.55,
+            "decayMs": 20,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 4200,
+            "highpassHz": 0,
+            "lengthMs": 100
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.579956,
+        "rms": 0.070902,
+        "dcMean": -3.4e-05,
+        "crestDb": 18.255,
+        "clippedSamples": 0
       }
     },
     "hmh-lightning-overheat": {
       "src": "./assets/audio/sfx/hmh-lightning-overheat.wav",
-      "bytes": 21212,
+      "bytes": 45908,
       "format": "wav",
-      "durationMs": 480,
-      "sha256": "b00905dcf2235773945617eabc1348d823c0804b41017bafe8f0167a94554ecd",
+      "durationMs": 520,
+      "sha256": "c9de6377039f888d85df58f9aed7b434c17d25ed0bf7a9edb307993b62b02367",
+      "runtimeCue": "hmh-lightning-overheat",
       "synth": {
         "seed": 300343842,
-        "lowpassHz": 4800,
-        "drive": 1.65,
-        "peak": 0.66,
-        "layers": 3
+        "durationMs": 520,
+        "drive": 1.25,
+        "peak": 0.65,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.8,
+            "decayMs": 27,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 720,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 135
+          },
+          {
+            "kind": "noise",
+            "gain": 0.5599999999999999,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "noise",
+            "gain": 1,
+            "decayMs": 110,
+            "startMs": 45,
+            "attackMs": 20,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 4700,
+            "highpassHz": 1100,
+            "lengthMs": 550
+          },
+          {
+            "kind": "tone",
+            "gain": 0.4,
+            "decayMs": 105,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 160,
+            "sweep": 0.55,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 525
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.649963,
+        "rms": 0.111816,
+        "dcMean": -1.6e-05,
+        "crestDb": 15.288,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-melee": {
+      "src": "./assets/audio/sfx/hmh-melee.wav",
+      "bytes": 22094,
+      "format": "wav",
+      "durationMs": 250,
+      "sha256": "6c1a1d0ab25f7cb55a4a541842cdaa90e6355101df2133973353025ade93c9f4",
+      "runtimeCue": "melee",
+      "synth": {
+        "seed": 727774,
+        "durationMs": 250,
+        "drive": 1.25,
+        "peak": 0.63,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 0.9,
+            "decayMs": 48,
+            "startMs": 0,
+            "attackMs": 16,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 8400,
+            "highpassHz": 1700,
+            "lengthMs": 240
+          },
+          {
+            "kind": "noise",
+            "gain": 0.35,
+            "decayMs": 18,
+            "startMs": 65,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 1700,
+            "highpassHz": 0,
+            "lengthMs": 90
+          },
+          {
+            "kind": "metal",
+            "gain": 0.18,
+            "decayMs": 24,
+            "startMs": 60,
+            "attackMs": 0.35,
+            "hz": 2100,
+            "sweep": 0.7,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 120
+          }
+        ],
+        "runtimeCue": "melee"
+      },
+      "pcm": {
+        "peak": 0.629974,
+        "rms": 0.098471,
+        "dcMean": -0.0,
+        "crestDb": 16.12,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-pickup": {
+      "src": "./assets/audio/sfx/hmh-pickup.wav",
+      "bytes": 26504,
+      "format": "wav",
+      "durationMs": 300,
+      "sha256": "9ebba94ed48d68e6416ebb086ff79e4fa3984e0aff905bc30e2d3c320a30c821",
+      "runtimeCue": "pickup",
+      "synth": {
+        "seed": 11649025,
+        "durationMs": 300,
+        "drive": 1.25,
+        "peak": 0.6,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 880,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 0,
+            "attackMs": 1,
+            "hz": 1768.7999999999997,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 72,
+            "attackMs": 2,
+            "hz": 1320,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 72,
+            "attackMs": 1,
+            "hz": 2653.2,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          }
+        ],
+        "runtimeCue": "pickup"
+      },
+      "pcm": {
+        "peak": 0.599976,
+        "rms": 0.172078,
+        "dcMean": -5e-06,
+        "crestDb": 10.848,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-player-hit": {
+      "src": "./assets/audio/sfx/hmh-player-hit.wav",
+      "bytes": 28268,
+      "format": "wav",
+      "durationMs": 320,
+      "sha256": "c29ed56c639529586e2773aa7a911eed83413450c14e8ab3722f65e75f32d8fa",
+      "runtimeCue": "player-hit",
+      "synth": {
+        "seed": 14293614,
+        "durationMs": 320,
+        "drive": 1.8,
+        "peak": 0.76,
+        "layers": [
+          {
+            "kind": "noise",
+            "gain": 0.9,
+            "decayMs": 26,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 3700,
+            "highpassHz": 0,
+            "lengthMs": 130
+          },
+          {
+            "kind": "tone",
+            "gain": 1.1,
+            "decayMs": 67,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 90,
+            "sweep": 0.78,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 335
+          },
+          {
+            "kind": "noise",
+            "gain": 0.4,
+            "decayMs": 40,
+            "startMs": 32,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 800,
+            "highpassHz": 0,
+            "lengthMs": 200
+          },
+          {
+            "kind": "metal",
+            "gain": 0.25,
+            "decayMs": 22,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 650,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 110
+          },
+          {
+            "kind": "noise",
+            "gain": 0.175,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ],
+        "runtimeCue": "player-hit"
+      },
+      "pcm": {
+        "peak": 0.759949,
+        "rms": 0.212955,
+        "dcMean": -1.3e-05,
+        "crestDb": 11.05,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-reload-complete": {
+      "src": "./assets/audio/sfx/hmh-reload-complete.wav",
+      "bytes": 21212,
+      "format": "wav",
+      "durationMs": 240,
+      "sha256": "7f3f7fe501523302ffc79d58e432427ad71d679a703fec06532c00222a556d5b",
+      "runtimeCue": "reload-complete",
+      "synth": {
+        "seed": 772844920,
+        "durationMs": 240,
+        "drive": 1.7,
+        "peak": 0.72,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.8,
+            "decayMs": 27,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 175,
+            "sweep": 0.84,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 135
+          },
+          {
+            "kind": "metal",
+            "gain": 1,
+            "decayMs": 18,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 1100,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 90
+          },
+          {
+            "kind": "noise",
+            "gain": 0.7,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "noise",
+            "gain": 0.5,
+            "decayMs": 13,
+            "startMs": 52,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 500,
+            "lengthMs": 65
+          },
+          {
+            "kind": "metal",
+            "gain": 0.75,
+            "decayMs": 12,
+            "startMs": 86,
+            "attackMs": 0.35,
+            "hz": 2050,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 60
+          },
+          {
+            "kind": "noise",
+            "gain": 0.5249999999999999,
+            "decayMs": 3,
+            "startMs": 86,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          }
+        ],
+        "runtimeCue": "reload-complete"
+      },
+      "pcm": {
+        "peak": 0.719971,
+        "rms": 0.139853,
+        "dcMean": -3.8e-05,
+        "crestDb": 14.233,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-time-dilation": {
+      "src": "./assets/audio/sfx/hmh-time-dilation.wav",
+      "bytes": 54728,
+      "format": "wav",
+      "durationMs": 620,
+      "sha256": "933a7b89610a3975d846828e4b1f422876d3e34b08f44703f04ba67e2bb1cd33",
+      "runtimeCue": "time-dilation-activate",
+      "synth": {
+        "seed": 11649028,
+        "durationMs": 620,
+        "drive": 1.25,
+        "peak": 0.65,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.38,
+            "decayMs": 125,
+            "startMs": 0,
+            "attackMs": 5,
+            "hz": 1700,
+            "sweep": 0.25,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 625
+          },
+          {
+            "kind": "tone",
+            "gain": 0.5,
+            "decayMs": 130,
+            "startMs": 0,
+            "attackMs": 8,
+            "hz": 660,
+            "sweep": 0.33,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 650
+          },
+          {
+            "kind": "noise",
+            "gain": 0.32,
+            "decayMs": 95,
+            "startMs": 70,
+            "attackMs": 30,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 2000,
+            "lengthMs": 475
+          }
+        ],
+        "runtimeCue": "time-dilation-activate"
+      },
+      "pcm": {
+        "peak": 0.649963,
+        "rms": 0.134388,
+        "dcMean": -0.0,
+        "crestDb": 13.691,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-upgrade-offer": {
+      "src": "./assets/audio/sfx/hmh-upgrade-offer.wav",
+      "bytes": 49436,
+      "format": "wav",
+      "durationMs": 560,
+      "sha256": "a5a112b176b044af84663e00201e05e90b889d8b9953b45f697bde3ea7532190",
+      "runtimeCue": "upgrade-offer",
+      "synth": {
+        "seed": 11649030,
+        "durationMs": 560,
+        "drive": 1.25,
+        "peak": 0.6,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 392,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 0,
+            "attackMs": 1,
+            "hz": 787.92,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 72,
+            "attackMs": 2,
+            "hz": 587.33,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 72,
+            "attackMs": 1,
+            "hz": 1180.5333,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 144,
+            "attackMs": 2,
+            "hz": 783.99,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 144,
+            "attackMs": 1,
+            "hz": 1575.8199,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          }
+        ],
+        "runtimeCue": "upgrade-offer"
+      },
+      "pcm": {
+        "peak": 0.599976,
+        "rms": 0.148645,
+        "dcMean": -2e-06,
+        "crestDb": 12.12,
+        "clippedSamples": 0
+      }
+    },
+    "hmh-upgrade-pick": {
+      "src": "./assets/audio/sfx/hmh-upgrade-pick.wav",
+      "bytes": 47672,
+      "format": "wav",
+      "durationMs": 540,
+      "sha256": "66e8f96206fad7f791271cf828f288266bd9784e1a3257de2de8cdf2f626a958",
+      "runtimeCue": "upgrade-pick",
+      "synth": {
+        "seed": 11649031,
+        "durationMs": 540,
+        "drive": 1.25,
+        "peak": 0.6,
+        "layers": [
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 0,
+            "attackMs": 2,
+            "hz": 587.33,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 0,
+            "attackMs": 1,
+            "hz": 1180.5333,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 72,
+            "attackMs": 2,
+            "hz": 880,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 72,
+            "attackMs": 1,
+            "hz": 1768.7999999999997,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          },
+          {
+            "kind": "tone",
+            "gain": 0.48,
+            "decayMs": 60,
+            "startMs": 144,
+            "attackMs": 2,
+            "hz": 1174.66,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 300
+          },
+          {
+            "kind": "tone",
+            "gain": 0.12,
+            "decayMs": 35,
+            "startMs": 144,
+            "attackMs": 1,
+            "hz": 2361.0666,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 175
+          }
+        ],
+        "runtimeCue": "upgrade-pick"
+      },
+      "pcm": {
+        "peak": 0.599976,
+        "rms": 0.14857,
+        "dcMean": -2e-06,
+        "crestDb": 12.124,
+        "clippedSamples": 0
       }
     },
     "hmh-weapon-empty": {
       "src": "./assets/audio/sfx/hmh-weapon-empty.wav",
-      "bytes": 4012,
+      "bytes": 8864,
       "format": "wav",
-      "durationMs": 90,
-      "sha256": "d8817fb81220604f55b520532df31b22e83bb8b8e85a92620425582c19b05874",
+      "durationMs": 100,
+      "sha256": "0811e67a28e8d4eeb1eaeec856aaa3757a6b1b05fb297ab38883cf0df279b76b",
+      "runtimeCue": "hmh-weapon-empty",
       "synth": {
         "seed": 1026293760,
-        "lowpassHz": 6800,
-        "drive": 1.2,
-        "peak": 0.46,
-        "layers": 2
+        "durationMs": 100,
+        "drive": 1.25,
+        "peak": 0.61,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.7,
+            "decayMs": 7,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 1650,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 35
+          },
+          {
+            "kind": "noise",
+            "gain": 0.48999999999999994,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "tone",
+            "gain": 0.25,
+            "decayMs": 10,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 265,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 50
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.609955,
+        "rms": 0.071359,
+        "dcMean": -7.3e-05,
+        "crestDb": 18.637,
+        "clippedSamples": 0
       }
     },
     "hmh-weapon-reload": {
       "src": "./assets/audio/sfx/hmh-weapon-reload.wav",
-      "bytes": 14156,
+      "bytes": 35324,
       "format": "wav",
-      "durationMs": 320,
-      "sha256": "6f66aa1eb17eaf882fcd15ce67e76cb6680bc2209e514db13cc05319fcf24379",
+      "durationMs": 400,
+      "sha256": "8b3267986e51a6520b6e8390e3deeb5fd6931f0b943519fc514c14570711ee7c",
+      "runtimeCue": "hmh-weapon-reload",
       "synth": {
         "seed": 772844919,
-        "lowpassHz": 5400,
+        "durationMs": 400,
         "drive": 1.4,
-        "peak": 0.58,
-        "layers": 4
+        "peak": 0.7,
+        "layers": [
+          {
+            "kind": "metal",
+            "gain": 0.75,
+            "decayMs": 12,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 1850,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 60
+          },
+          {
+            "kind": "noise",
+            "gain": 0.5249999999999999,
+            "decayMs": 3,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "noise",
+            "gain": 0.38,
+            "decayMs": 43,
+            "startMs": 45,
+            "attackMs": 8,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 5500,
+            "highpassHz": 550,
+            "lengthMs": 215
+          },
+          {
+            "kind": "metal",
+            "gain": 0.5,
+            "decayMs": 18,
+            "startMs": 148,
+            "attackMs": 0.35,
+            "hz": 970,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 90
+          },
+          {
+            "kind": "noise",
+            "gain": 0.35,
+            "decayMs": 3,
+            "startMs": 148,
+            "attackMs": 0.35,
+            "hz": 180,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 1500,
+            "lengthMs": 15
+          },
+          {
+            "kind": "tone",
+            "gain": 0.4,
+            "decayMs": 22,
+            "startMs": 148,
+            "attackMs": 0.35,
+            "hz": 165,
+            "sweep": 1,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 110
+          }
+        ]
+      },
+      "pcm": {
+        "peak": 0.699951,
+        "rms": 0.087411,
+        "dcMean": -1.4e-05,
+        "crestDb": 18.07,
+        "clippedSamples": 0
       }
     }
   },

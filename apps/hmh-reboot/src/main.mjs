@@ -1,5 +1,6 @@
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { automaticDodgeIntent } from './automatic-actions.mjs';
+import { createStartupArtGate } from './startup-art.mjs';
 import { createWorldDesignPacing, stepWorldDesignPacing } from './world-design-pacing.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
@@ -66,7 +67,7 @@ import {
   openingEnemyAttacksEnabled,
   openingEnemyMovementEnabled,
 } from './opening-balance.mjs';
-import { buildEnduranceEncounterCandidates, createEncounterDirector, directorViewBounds, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
+import { createEncounterDirector, directorViewBounds, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
 import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
@@ -251,7 +252,6 @@ import {
   stepWeaponLoadout,
 } from './weapon-system.mjs';
 import {
-  buildDebugGridOverlay,
   createActorSpatialState,
   createCameraState,
   followCameraTarget,
@@ -368,6 +368,10 @@ function setStatus(status, detail = '') {
 async function boot() {
   if (!stageElement) throw new Error('HMH reboot stage is missing');
   const dataset = stageElement.dataset;
+  const startupPanel = document.querySelector('#hmhStartup');
+  const startupCopy = document.querySelector('#hmhStartupCopy');
+  const startupContinue = document.querySelector('#hmhStartupContinue');
+  let startupGate = null;
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const performanceProfile = selectRuntimePerformanceProfile({
     width: window.innerWidth,
@@ -786,6 +790,7 @@ async function boot() {
     const selection = productionHeroAsset(heroId);
     if (requestedProductionHeroActorId === selection.actorId) return;
     requestedProductionHeroActorId = selection.actorId;
+    productionHeroLoadError = null;
     const token = (productionHeroLoadToken += 1);
     loadProductionHeroAtlas(selection).then((display) => {
       // Ignore a stale load: the session may have restarted with another hero,
@@ -1079,6 +1084,9 @@ async function boot() {
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
   const endurancePressurePilotEnabled = evidenceSafeEnabled && runtimeParams.get('endurancePressurePilot') === '1';
+  const buildEnduranceEncounterCandidates = endurancePressurePilotEnabled
+    ? (await import('./encounter-endurance-pilot.mjs')).buildEnduranceEncounterCandidates
+    : null;
   const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams.get('rosterPreview') === '1';
   const rosterCombatEnabled = rosterPreviewEnabled && runtimeParams.get('rosterCombat') === '1';
   const progressionPilotEnabled = evidenceSafeEnabled && runtimeParams.get('progressionPilot') === '1';
@@ -1166,7 +1174,7 @@ async function boot() {
     return inside;
   });
   const debugOverlay = debugGridEnabled
-    ? buildDebugGridOverlay({ bounds: WORLD_BOUNDS, spacing: 512, queryGround })
+    ? (await import('./debug-grid-overlay.mjs')).buildDebugGridOverlay({ bounds: WORLD_BOUNDS, spacing: 512, queryGround })
     : null;
 
   let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false };
@@ -2814,6 +2822,12 @@ async function boot() {
     // standalone payload can reach here; this is the invariant, not a wait.
     const navGrid = navGridAuthority.require();
     stopCurrentSession();
+    combatAudio.pause();
+    startupGate = createStartupArtGate(performance.now());
+    if (startupPanel) startupPanel.hidden = false;
+    if (startupContinue) startupContinue.hidden = true;
+    if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
+    dataset.startupArt = 'loading';
     for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
     worldDesignState=createWorldDesignState();
@@ -2834,6 +2848,7 @@ async function boot() {
     // actor instead; it swaps in when it decodes.
     const sessionHeroSelection = productionHeroAsset(payload.heroId);
     ensureProductionHeroAtlas(sessionHeroSelection.actorId);
+    for (const id of HMH_OPENING_ENEMY_ARCHETYPE_IDS) requestEnemyRosterAtlas(id);
     sessionPayload = payload;
     syncRuntimeSettings(payload.settings);
     elapsedMs = 0;
@@ -3153,7 +3168,9 @@ async function boot() {
         tick,
         actor: motion,
         input: tickInput,
-        targets: grayboxEnemies,
+        targets: liquidatorBoss?.active && liquidatorBoss.health > 0 && tick >= liquidatorBoss.startTick
+          ? [...grayboxEnemies, liquidatorBoss]
+          : grayboxEnemies,
         device: tickInput.aimDevice ?? (tickInput.aimAssist ? 'gamepad' : 'pointer'),
         // Enemies already respect cover before they may fire; auto-target and
         // auto-fire must honour the same rule instead of locking onto — and
@@ -3699,6 +3716,8 @@ async function boot() {
           combatAudio.play('hmh-hash-rail-charge', { volume: HMH_WEAPON_SFX['hmh-hash-rail-charge'].gain });
         } else if (event.type === 'weapon:reload-start') {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
+        } else if (event.type === 'weapon:reload-complete') {
+          combatAudio.play('reload-complete', { volume: 0.18 });
         } else if (event.type === 'weapon:auto-fallback') {
           combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
         } else if (event.type === 'ledger:overheat') {
@@ -4426,7 +4445,9 @@ async function boot() {
       combatAudio.pause();
       combatAudio.play('upgrade-offer', { volume: 0.14 });
       cockpit?.showUpgrade(progressionSnapshot);
-      app.ticker.stop();
+      // Keep painting the loading panel until art is ready; the simulation
+      // remains in its paused upgrade state throughout.
+      app.ticker.start();
       renderActor = actor;
       renderWorld(actor);
     } else {
@@ -4457,7 +4478,9 @@ async function boot() {
     if (!simulation || simulation.state !== 'active') return;
     world.position.set(0, 0);
     simulation.pause();
-    app.ticker.stop();
+    // Keep checking artwork while a visibility/portal pause freezes gameplay.
+    // Otherwise a backgrounded phone can return to a loading panel forever.
+    if (!startupGate) app.ticker.stop();
     combatAudio.pause();
     combatAudio.play('pause', { volume: 0.06 });
     cockpit?.setPaused(true);
@@ -4549,6 +4572,10 @@ async function boot() {
     onResume: () => resumeRuntime('user'),
     onRestart: () => {
       if (!sessionPayload) return;
+      if (bridge?.initialized) {
+        bridge.send('game:exit', { reason: 'restart' });
+        return;
+      }
       initializeSession(sessionPayload);
       marker.scale.set(1);
       if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
@@ -4571,8 +4598,41 @@ async function boot() {
   window.focus?.();
   app.canvas.focus({ preventScroll: true });
   app.renderer.on('resize', handleResize);
+  let pressureArtRequested = false;
+  startupContinue?.addEventListener('click', () => startupGate?.continue());
+  document.querySelector('#hmhStartupExit')?.addEventListener('click', () => {
+    if (bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
+    else window.location.assign('../');
+  });
   app.ticker.add((ticker) => {
+    if (startupGate && sessionPayload) {
+      const worldStates = [dataset.authoredPropStatus, dataset.nativePropStatus, dataset.worldDesignStatus];
+      const openingEnemiesReady = !enemyRosterEnabled || HMH_OPENING_ENEMY_ARCHETYPE_IDS.every(id => enemyRosterIndexes.has(id));
+      const ready = (!productionPilotEnabled || loadedProductionHeroId === productionHeroAsset(sessionPayload.heroId).actorId)
+        && openingEnemiesReady && worldStates.every(state => state === 'ready')
+        && (!terrainTilesEnabled || TERRAIN_MATERIAL_IDS.every(id => terrainTiles.loadedIds.includes(id)));
+      const status = startupGate.check({ ready, now: performance.now(), failed: Boolean(productionHeroLoadError || terrainTileLoadError || enemyRosterLoadError || worldStates.includes('fallback')) });
+      if (!status.ready) {
+        if (startupContinue) startupContinue.hidden = !status.canContinue;
+        if (startupCopy && status.canContinue) startupCopy.textContent = 'Artwork is taking longer to load. You can wait, or play with basic graphics.';
+        return;
+      }
+      dataset.startupArt = ready ? 'ready' : 'basic-graphics';
+      startupGate = null;
+      input.reset('artwork-ready', performance.now());
+      renderWorld();
+      if (startupPanel) startupPanel.hidden = true;
+      // Warm the next encounter band without decoding the entire roster on
+      // a phone at startup. Boss art retains its own pre-arrival load window.
+      requestEnemyRosterAtlas('liquidator-agent');
+      if (simulation.state !== 'active') app.ticker.stop();
+      else combatAudio.resume();
+    }
     if (!simulation || simulation.state !== 'active' || !actor || !camera) return;
+    if (!pressureArtRequested && simulation.tick >= 16200) {
+      pressureArtRequested = true;
+      for (const id of ['whale-enforcer', 'gas-bomber', 'validator-cultist']) requestEnemyRosterAtlas(id);
+    }
     const nowMs = performance.now();
     const gamepad = [...(navigator.getGamepads?.() ?? [])].find(Boolean);
     if (gamepad) {

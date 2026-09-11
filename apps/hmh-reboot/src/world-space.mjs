@@ -316,26 +316,3 @@ export function resolveActorSpatialStep(actor, {
   const screen = transform(actor, ground);
   return { actor, ground, screen };
 }
-
-export function buildDebugGridOverlay({ bounds, spacing, queryGround }) {
-  const worldBounds = finiteBounds(bounds);
-  positive(spacing, 'grid spacing');
-  if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
-  const lines = [];
-  const labels = [];
-
-  for (let x = worldBounds.minX; x <= worldBounds.maxX + Number.EPSILON; x += spacing) {
-    lines.push({ axis: 'x', value: x, from: { x, y: worldBounds.minY }, to: { x, y: worldBounds.maxY } });
-  }
-  for (let y = worldBounds.minY; y <= worldBounds.maxY + Number.EPSILON; y += spacing) {
-    lines.push({ axis: 'y', value: y, from: { x: worldBounds.minX, y }, to: { x: worldBounds.maxX, y } });
-  }
-  for (let y = worldBounds.minY; y <= worldBounds.maxY + Number.EPSILON; y += spacing) {
-    for (let x = worldBounds.minX; x <= worldBounds.maxX + Number.EPSILON; x += spacing) {
-      const contact = queryGround(x, y);
-      const height = finite(contact?.groundZ, 'debug ground height');
-      labels.push({ x, y, height, text: `x=${x} y=${y} h=${height}` });
-    }
-  }
-  return freezeDeep({ bounds: worldBounds, spacing, lines, labels });
-}

@@ -350,6 +350,23 @@ class FakeEventTarget {
   emit(type, event = {}) { for (const listener of this.listeners.get(type) ?? []) listener(event); }
 }
 
+test('releasing a playfield touch cannot invent mouse aim or override the remaining movement thumb', () => {
+  const target = new FakeEventTarget();
+  const windowRef = new FakeEventTarget();
+  const documentRef = new FakeEventTarget();
+  const input = new InputState();
+  const controller = createBrowserInputController({ input, target, windowRef, documentRef, now: () => 10 });
+  input.setTouch({ moveX: 1 }, 9);
+  target.emit('pointerup', { pointerType: 'touch', clientX: 600, clientY: 300 });
+  const released = input.snapshot({ ...context, nowMs: 11 });
+  assert.equal(released.actions.aim.active, false, 'touch release must leave auto-aim available');
+  assert.deepEqual(released.actions.move, { x: 1, y: 0 });
+  assert.equal(released.metadata.lastActiveDevice, 'touch');
+  target.emit('pointerup', { pointerType: 'mouse', clientX: 600, clientY: 300 });
+  assert.equal(input.snapshot({ ...context, nowMs: 12 }).actions.aim.active, true);
+  controller.destroy();
+});
+
 test('browser controller prevents gameplay scrolling and resets on blur visibility and cancellation', () => {
   const target = new FakeEventTarget();
   const windowRef = new FakeEventTarget();

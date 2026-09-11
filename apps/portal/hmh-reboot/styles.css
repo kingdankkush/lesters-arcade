@@ -44,6 +44,11 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-run-rail:has(#hmhBossBar:not([hidden])) ~ .hmh-controls-hint { display: none !important; }
 .hmh-reboot-shell { position: relative; min-height: 320px; isolation: isolate; }
 .hmh-reboot-stage, .hmh-reboot-stage canvas { display: block; width: 100%; height: 100%; }
+.hmh-startup { position: absolute; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at top, #163d43, #07121f 70%); }
+.hmh-startup-card { max-width: 440px; text-align: center; line-height: 1.6; }
+.hmh-startup-card h1 { margin: 8px 0; font-size: clamp(24px, 6vw, 38px); }
+.hmh-startup-hint { color: var(--ink-muted); font-size: 14px; }
+.hmh-startup-card button { margin: 8px 4px; min-height: 44px; }
 
 .hmh-reboot-status-card,
 .hmh-run-rail,

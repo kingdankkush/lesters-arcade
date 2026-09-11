@@ -384,7 +384,7 @@ export function createBrowserInputController({ input, target, windowRef = global
     target.focus?.({ preventScroll: true });
     input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: event.button === 0, grenade: event.button === 2 }, now());
   });
-  listen(target, 'pointerup', (event) => input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: false }, now()));
+  listen(target, 'pointerup', (event) => event.pointerType !== 'touch' && input.setPointer({ screenX: event.clientX, screenY: event.clientY, fire: false }, now()));
   listen(target, 'pointercancel', () => input.reset('pointer-cancel', now()));
   listen(target, 'touchcancel', (event) => { event.preventDefault?.(); input.reset('touch-cancel', now()); }, { passive: false });
   listen(target, 'contextmenu', (event) => event.preventDefault?.());

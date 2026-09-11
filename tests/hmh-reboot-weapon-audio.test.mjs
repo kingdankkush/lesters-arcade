@@ -63,7 +63,7 @@ test('no two weapon fire cues are byte-identical', () => {
 });
 
 test('the synth manifest records the parameters it rendered from', () => {
-  assert.equal(manifest.pipelineId, 'hmh-weapon-sfx-v1');
+  assert.equal(manifest.pipelineId, 'hmh-weapon-sfx-v2');
   assert.equal(manifest.license, 'synthesised-in-repo');
   assert.ok(manifest.sampleRate >= 22_050, 'sample rate too low for a fire transient');
   for (const cue of Object.values(manifest.cues)) {

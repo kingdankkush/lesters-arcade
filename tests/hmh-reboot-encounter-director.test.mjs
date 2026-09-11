@@ -18,6 +18,8 @@ import {
 import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { createEnemyPopulation, createEnemyState } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { MAX_ACTIVE_PROJECTILES } from '../apps/hmh-reboot/src/runtime-performance.mjs';
+import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
+import { HMH_WEAPON_DEFINITIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
 
 const CAMERA = { minX: -480, minY: -270, maxX: 480, maxY: 270 };
 const PLAYER = { x: 0, y: 0, groundZ: 0 };
@@ -50,6 +52,49 @@ function stepAt({
     visualMode: 'prototype',
   });
 }
+
+test('every opening director spawn stays killable in two ordinary starter-pistol hits', () => {
+  for (const tick of [0, 600, 1_800, 3_599]) {
+    for (let seed = 0; seed < 20; seed += 1) {
+      const population = createEnemyPopulation();
+      const result = stepAt({ tick, population, state: createEncounterDirector({ seed }) });
+      assert.equal(result.inserted, true);
+      const enemy = population.active[0];
+      const resolution = resolveCombatHits({ sessionSeed: seed, targets: [enemy], hits: [0, 1].map((index) => ({
+        id: `shot-${index}`, targetId: enemy.id, sourceId: 'hero', weaponId: 'coin-blaster',
+        tick: tick + index * 20, damage: HMH_WEAPON_DEFINITIONS['coin-blaster'].damage, criticalChance: 0,
+      })) });
+      assert.equal(resolution.targets[enemy.id].health, 0, `${enemy.archetypeId} at tick ${tick}`);
+      assert.ok(resolution.deathEvents.length === 1);
+    }
+  }
+});
+
+test('ordinary enemy health grows gradually with elapsed simulation time and preserves late difficulty', () => {
+  let previousHealth = 0;
+  for (const tick of [0, 3_599, 3_600, 7_200, 18_000, 35_999, 36_000, 72_000]) {
+    const population = createEnemyPopulation();
+    assert.equal(stepAt({ tick, population }).inserted, true);
+    const enemy = population.active[0];
+    assert.ok(enemy.health >= previousHealth, `health dropped at ${tick}`);
+    assert.equal(enemy.maxHealth, enemy.health);
+    if (tick === 3_600) assert.ok(enemy.health <= 7, 'one minute must not jump to full health');
+    if (tick === 7_200 || tick === 18_000) assert.ok(enemy.health > previousHealth && enemy.health < ENEMY_ARCHETYPES[enemy.archetypeId].maxHealth);
+    if (tick >= 36_000) assert.equal(enemy.health, ENEMY_ARCHETYPES[enemy.archetypeId].maxHealth);
+    previousHealth = enemy.health;
+  }
+});
+
+test('later spawns never heal or rescale an already damaged enemy', () => {
+  const state = createEncounterDirector();
+  const population = createEnemyPopulation();
+  stepAt({ state, population });
+  population.active[0].health = 1;
+  const original = structuredClone(population.active[0]);
+  stepAt({ state, population, tick: 18_000 });
+  assert.deepEqual(population.active[0], original);
+  assert.ok(population.active[1].health > original.maxHealth);
+});
 
 test('six immutable pacing bands expose independent fixed budgets and exact boundaries', () => {
   assert.deepEqual(ENCOUNTER_BANDS.map((band) => band.id), ['opening', 'build', 'pressure', 'elite', 'boss', 'endurance']);

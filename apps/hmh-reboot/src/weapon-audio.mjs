@@ -15,22 +15,17 @@
 //   launcher-rig    low, swept, hollow     -- a thump with a departing whoosh
 //   lightning-ledger bright, stepped arc   -- a compact electrical chain snap
 
-export const HMH_WEAPON_SFX = Object.freeze({
-  'hmh-fire-coin-blaster': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-coin-blaster.wav', gain: 0.10 }),
-  'hmh-fire-scatter-shotgun': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-scatter-shotgun.wav', gain: 0.15 }),
-  'hmh-fire-auto-miner': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-auto-miner.wav', gain: 0.08 }),
-  'hmh-fire-launcher-rig': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-launcher-rig.wav', gain: 0.17 }),
-  'hmh-fire-hash-rail': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-hash-rail.wav', gain: 0.14 }),
-  'hmh-fire-lightning-ledger': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-lightning-ledger.wav', gain: 0.07 }),
-  'hmh-fire-bear-market-burner': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-bear-market-burner.wav', gain: 0.065 }),
-  'hmh-fire-forked-standard': Object.freeze({ src: '../assets/audio/sfx/hmh-fire-forked-standard.wav', gain: 0.08 }),
-  'hmh-lightning-interrupt': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-interrupt.wav', gain: 0.07 }),
-  'hmh-lightning-overheat': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-overheat.wav', gain: 0.085 }),
-  'hmh-lightning-empty': Object.freeze({ src: '../assets/audio/sfx/hmh-lightning-empty.wav', gain: 0.075 }),
-  'hmh-hash-rail-charge': Object.freeze({ src: '../assets/audio/sfx/hmh-hash-rail-charge.wav', gain: 0.08 }),
-  'hmh-weapon-reload': Object.freeze({ src: '../assets/audio/sfx/hmh-weapon-reload.wav', gain: 0.11 }),
-  'hmh-weapon-empty': Object.freeze({ src: '../assets/audio/sfx/hmh-weapon-empty.wav', gain: 0.09 }),
-});
+// Gains feed the existing category multiplier and 0.16 output ceiling. The
+// older quiet input gains were being attenuated a second time by that mix.
+export const HMH_WEAPON_SFX = Object.freeze(Object.fromEntries([
+  ['fire-coin-blaster', .22], ['fire-scatter-shotgun', .22],
+  ['fire-auto-miner', .21], ['fire-launcher-rig', .20],
+  ['fire-hash-rail', .21], ['fire-lightning-ledger', .19],
+  ['fire-bear-market-burner', .15], ['fire-forked-standard', .19],
+  ['lightning-interrupt', .14], ['lightning-overheat', .15],
+  ['lightning-empty', .15], ['hash-rail-charge', .11],
+  ['weapon-reload', .24], ['weapon-empty', .20],
+].map(([id, gain]) => [`hmh-${id}`, Object.freeze({ src: `../assets/audio/sfx/hmh-${id}.wav`, gain })])));
 
 const FIRE_CUE_BY_WEAPON = Object.freeze({
   'coin-blaster': 'hmh-fire-coin-blaster',

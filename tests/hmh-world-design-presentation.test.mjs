@@ -12,6 +12,30 @@ test('an enemy outside the animation budget keeps a real pose, and refreshes as 
   assert.equal(prepareWorldDesignEnemyPose(marker,true,{state:'attack'}).state,'attack');
   assert.equal(calls,2);
 });
+test('budget-limited enemies still show attack tells, hits, changed facing and phase immediately',()=>{
+  const poses=[];
+  const marker={applyPose:pose=>{const displayed={...pose};poses.push(displayed);return displayed;}};
+  const first={state:'run',tick:100,direction:0,phase:'market-open',phaseTick:9};
+  prepareWorldDesignEnemyPose(marker,false,first);
+  assert.equal(prepareWorldDesignEnemyPose(marker,false,{...first,tick:101,phaseTick:10}),poses[0]);
+  for(const change of [{state:'tell',phaseTick:0},{state:'attack',phaseTick:0},{state:'hit'}, {direction:4}, {phase:'margin-call'}, {elite:true}]) {
+    Object.assign(first,change);first.tick++;
+    const displayed=prepareWorldDesignEnemyPose(marker,false,first);
+    for(const [key,value] of Object.entries(change))assert.equal(displayed[key],value,key);
+  }
+  assert.equal(poses.length,7,'each semantic transition refreshes exactly once');
+  assert.equal(prepareWorldDesignEnemyPose(marker,false,{...first,tick:120,phaseTick:1}),poses.at(-1));
+});
+test('a repeated attack refreshes its starting pose even if render frames skipped the intervening state',()=>{
+  let calls=0;const marker={applyPose:pose=>({frame:++calls,...pose})};
+  const old={state:'attack',tick:100,direction:2,phaseTick:0};
+  const first=prepareWorldDesignEnemyPose(marker,false,old);
+  assert.equal(prepareWorldDesignEnemyPose(marker,false,{...old,tick:112,phaseTick:12}),first);
+  const restarted=prepareWorldDesignEnemyPose(marker,false,{...old,tick:160,phaseTick:0});
+  assert.equal(restarted.frame,2);
+  assert.equal(restarted.phaseTick,0);
+  assert.equal(prepareWorldDesignEnemyPose(marker,false,{...old,tick:161,phaseTick:1}),restarted);
+});
 test('foreground fades only when a body is concealed; reduced motion still preserves visibility',()=>{
   const options={placement:{assetId:'conifer-tree',x:4,y:5},bounds:{left:0,top:0,right:100,bottom:200},focusPoints:[{x:50,y:150}],tick:100};
   assert.equal(worldDesignPropPresentation(options).alpha,.38);

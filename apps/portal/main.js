@@ -3207,7 +3207,8 @@ function renderCombatMenuActionGrid() {
   const elapsedSeconds = Math.max(0, Math.floor(combat.elapsedGameSeconds ?? 0));
   const elapsedLabel = `${Math.floor(elapsedSeconds / 60)}:${String(elapsedSeconds % 60).padStart(2, '0')}`;
   const weaponTitle = weaponById(combat.weaponId)?.title ?? 'The Settler';
-  const runSignature = `${elapsedLabel}:${combat.roguelikeRun?.level ?? 1}:${Math.round(combat.health)}:${combat.score}:${weaponTitle}`;
+  const runLevel = (hmhRebootActive ? combat.runLevel : combat.roguelikeRun?.level) ?? 1;
+  const runSignature = `${elapsedLabel}:${runLevel}:${Math.round(combat.health)}:${combat.score}:${weaponTitle}`;
   const signature = `${menu.version}:${menu.state}:${runSignature}:` + actions.map((action) => `${action.id}:${action.label}:${action.enabled}`).join('|');
   if (dom.combatMenuActionGrid.dataset.signature === signature) return;
   dom.combatMenuActionGrid.dataset.signature = signature;
@@ -3240,7 +3241,7 @@ function renderCombatMenuActionGrid() {
     const snapshot = el('div', { className: 'pause-run-snapshot', ariaLabel: 'Current run snapshot' });
     for (const metric of [
       { label: 'SURVIVED', value: elapsedLabel },
-      { label: 'LEVEL', value: String(combat.roguelikeRun?.level ?? 1) },
+      { label: 'LEVEL', value: String(runLevel) },
       { label: 'HEALTH', value: `${Math.max(0, Math.round(combat.health))} / ${Math.max(1, Math.round(combat.maxHealth ?? PLAYER_MAX_HEALTH))}` },
       { label: 'SCORE', value: Math.max(0, Math.round(combat.score)).toLocaleString() },
       { label: 'WEAPON', value: weaponTitle.toUpperCase(), wide: true },
@@ -3867,6 +3868,7 @@ function renderCombatSettingsPanel() {
 async function restartCombatRun() {
   playSfxCue('level-start');
   if (hmhRebootActive) {
+    void startArcadeMusicForGame('hard-money-heroes');
     const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
     currentSession = beginTrackedSession({ mode: wasPaid ? 'paid' : 'free' });
     gameAdapter?.teardown?.();
@@ -4884,7 +4886,7 @@ function mountHmhRebootSession() {
       },
       onState: (message) => hmhRebootLifecycle?.handleState(message),
       onRunSummary: (message) => hmhRebootLifecycle?.handleRunSummary(message),
-      onExit: () => returnToOfficialGameMenu(),
+      onExit: (message) => message.payload.reason === 'restart' ? restartCombatRun() : returnToOfficialGameMenu(),
       onRunEvent: (message) => {
         if (!currentSession?.isPaid || !currentSession.evidence) return;
         recordSessionEvent(currentSession.evidence, {
@@ -5331,6 +5333,9 @@ function requestRankedEntry() {
 
 async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID, options = {}) {
   if (selectedGameId === 'lester-blaster') {
+    // Start in the player's click turn, before session work can consume the
+    // browser's autoplay permission. Playback failure never blocks gameplay.
+    void startArcadeMusicForGame('hard-money-heroes');
     combat.currentCampaignLevelId = levelId;
     if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
     setOfficialView('gameplay');

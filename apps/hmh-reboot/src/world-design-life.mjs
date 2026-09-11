@@ -19,7 +19,15 @@ export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,
 }
 
 export function prepareWorldDesignEnemyPose(marker, animate, pose) {
-  if(animate || !marker.worldDesignLastPose) marker.worldDesignLastPose=marker.applyPose(pose);
+  const previous=marker.worldDesignPoseInput;
+  // Budgeting freezes in-between frames, never attack warnings or a new pose.
+  const changed=!previous || ['state','direction','phase','elite'].some(key=>pose[key]!==previous[key])
+    || (Number.isFinite(pose.phaseTick)&&Number.isFinite(previous.phaseTick)&&pose.phaseTick<previous.phaseTick);
+  if(animate || !marker.worldDesignLastPose || changed) {
+    marker.worldDesignLastPose=marker.applyPose(pose);
+    marker.worldDesignPoseInput={...pose};
+  }
+  marker.worldDesignPoseInput.phaseTick=pose.phaseTick;
   return marker.worldDesignLastPose;
 }
 
