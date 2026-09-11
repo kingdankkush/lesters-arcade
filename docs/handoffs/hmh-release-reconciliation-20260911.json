@@ -1,0 +1,875 @@
+{
+  "schema": "hmh-release-reconciliation-v1",
+  "at": "2026-09-11T03:32:33.759Z",
+  "scope": "Combined playable release, with all original AAA, human, Web3 and paused work retained.",
+  "canonicalCheckout": "C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout",
+  "canonicalBranch": "hermes/hmh-textured-rollout",
+  "releaseReceipt": "docs/qa/hmh-consolidated-release-20260911.json",
+  "precedingRelease": "cabe95165c68bdea77bb626d6c630b872e8c83b2",
+  "contributions": {
+    "hermes": "Combined native hero/enemy/prop delivery, parent profiles/achievements/challenges, provenance and leaderboard fixes, saved-control compatibility, navigation optimization, clean-host verification and initial publication.",
+    "codex": "Incremental world/routes/secrets/machinery, simplified controls, automatic combat/dodge, HUD/mobile corrections and independent saved-control/navigation review.",
+    "followup": "Reauthenticated all 59 returned paths; reviewed the four integrated differences; corrected parent onboarding; verified and published the exact follow-up; reconciled the remaining task inventory."
+  },
+  "sourceAudit": {
+    "taskCommit": "63a0602024fbbc32ed45d2c09fd0409ca5d2ead0",
+    "archiveSha256": "c133506d2521cf6d990db86135f18de9d3d5a18ee698969726e2e34d5ade0451",
+    "manifestSha256": "bdcd5a44361a2b3506009ac17df6aa5e1e6fa32b3a70aa699409fcf156de9416",
+    "total": 59,
+    "exactGitBlobs": 55,
+    "missing": 0,
+    "reviewedDifferences": {
+      "apps/hmh-reboot/src/main.mjs": "Only a trailing blank line differs from the frozen return.",
+      "scripts/hmh-reboot-visual-regression.mjs": "Additional boot-failure diagnostics; assertions and thresholds are preserved.",
+      "scripts/syntax-check.mjs": "Preserves newer parent profile/challenge/fact-sheet and release-test entries.",
+      "tests/hmh-world-design-interactions.test.mjs": "Adds a regression exercising the actual runtime restart/gate-navigation loop."
+    }
+  },
+  "counts": {
+    "groups": 55,
+    "originalIdsInGroups": 67,
+    "preservedOriginalRegisterIds": 99,
+    "separateWeb3PreparationEntries": 5,
+    "additionalRetainedItems": 12,
+    "pausedStackedExclusions": 22
+  },
+  "groups": [
+    {
+      "id": "hmh-01",
+      "originalIds": [
+        "REGISTER:H-1",
+        "REGISTER:B-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Four approved hero identities, biographies and native asset selections are integrated.",
+      "remainingRequirement": "partial: Finish reference-to-model-to-biography consistency checks for all four approved heroes; preserve the existing identity work. (`REGISTER:H-1`, `REGISTER:B-6`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-02",
+      "originalIds": [
+        "REGISTER:H-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Native weighted hero sources and provenance are retained; broader rig acceptance remains.",
+      "remainingRequirement": "partial: Close remaining rig, skin weights, waist-seam, source-manifest and LFS custody acceptance for the approved hero models. (`REGISTER:H-2`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-03",
+      "originalIds": [
+        "REGISTER:H-3",
+        "REGISTER:C-5"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Native action atlases and projection are integrated; complete animation acceptance remains.",
+      "remainingRequirement": "partial: Validate all nine hero actions at gameplay zoom, including foot planting, recoil, recovery, death and baked coat/hair/neckerchief motion. (`REGISTER:H-3`, `REGISTER:C-5`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-04",
+      "originalIds": [
+        "REGISTER:H-4",
+        "REGISTER:C-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Four hero atlases and parent unlock rules are integrated; device/earned-unlock acceptance remains.",
+      "remainingRequirement": "partial: Complete current all-hero gameplay/profile acceptance, ordinary earned unlocks, reproducibility, mobile texture decode and GPU-memory measurements. (`REGISTER:H-4`, `REGISTER:C-6`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-05",
+      "originalIds": [
+        "REGISTER:H-5",
+        "REGISTER:B-5"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Four native hero selectors are integrated; ordinary starter selection was release-tested.",
+      "remainingRequirement": "partial: Verify selectors use the same approved models as gameplay, with readable framing, lighting and identity details. (`REGISTER:H-5`, `REGISTER:B-5`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-06",
+      "originalIds": [
+        "REGISTER:H-7",
+        "REGISTER:R-4"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Existing approved weapon/action routes are preserved; full weapon/socket coverage remains.",
+      "remainingRequirement": "partial: Finish held-weapon model/socket/pose acceptance across directions and heroes, prioritizing pistol, shotgun, auto-miner and launcher, then the remaining reference-backed weapons. (`REGISTER:H-7`, `REGISTER:R-4`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-07",
+      "originalIds": [
+        "REGISTER:R-3"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Native town, camp, industrial and bridge composition plus alternate routes are integrated.",
+      "remainingRequirement": "partial: Finish integration and gameplay acceptance of native town, camp, industrial and bridge kits: grounding, collision proxies, depth, occlusion and authored composition. (`REGISTER:R-3`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-08",
+      "originalIds": [
+        "REGISTER:R-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Delivered native terrain props and provenance are retained; remaining inventory acceptance stays open.",
+      "remainingRequirement": "partial: Reconcile any remaining trees, rocks, wrecks, stumps and debris against the already-delivered native source library and provenance. (`REGISTER:R-2`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-09",
+      "originalIds": [
+        "REGISTER:R-5"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Native pickups and automatic collection are integrated; full final-world pickup acceptance remains.",
+      "remainingRequirement": "partial: Verify every native pickup object, canonical effect, placement and actual collection path in the final world. (`REGISTER:R-5`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-10",
+      "originalIds": [
+        "REGISTER:W-8f"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Bounded campfire ground lighting and embers are implemented and shipped.",
+      "remainingRequirement": "open: Finish or verify real campfire lighting and ember emitters, with feature-specific evidence and particle budgets. (`REGISTER:W-8f`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-11",
+      "originalIds": [
+        "REGISTER:W-17"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Canopy depth, foreground fading and spatial culling are integrated; visual composition debt remains.",
+      "remainingRequirement": "partial: Review Hashwood canopy clustering, depth and occlusion so foliage does not read as a flat green strip. (`REGISTER:W-17`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-12",
+      "originalIds": [
+        "REGISTER:W-18"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Final-topology yard materials/decals are integrated; repetition and seam polish remain.",
+      "remainingRequirement": "partial: Review yard slab variation, cracks, stains and decals at gameplay zoom; regenerate from the final topology where needed. (`REGISTER:W-18`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-13",
+      "originalIds": [
+        "REGISTER:W-11"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Water/bridge/elevation safety, enclosure clearance and gate navigation are integrated.",
+      "remainingRequirement": "partial: Complete current bridge/ramp/platform/pit/terrace traversal and collision acceptance, preserving existing elevation authority. (`REGISTER:W-11`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-14",
+      "originalIds": [
+        "REGISTER:W-12"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Destructible supplies, same-height ledge/lore rewards and pause field map are implemented.",
+      "remainingRequirement": "open: Finish deterministic, genuinely reachable secrets: destructible-hidden caches, ledge rewards and lore props. (`REGISTER:W-12`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-15",
+      "originalIds": [
+        "REGISTER:B-4"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Spawn/camp/landmark clearance fixes are integrated; full AAA composition acceptance remains.",
+      "remainingRequirement": "partial: Confirm the updated spawn/camp/landmark composition does not obscure or overlap the hero's spawn area. (`REGISTER:B-4`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-16",
+      "originalIds": [
+        "REGISTER:B-11"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "owner-gated: Obtain a current owner visual decision on mining-camp haze and contrast; the old density-reduction recommendation is not an accepted change. (`REGISTER:B-11`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-17",
+      "originalIds": [
+        "REGISTER:W-16"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Plan Level 2 only after Level 1 meets its world and gameplay acceptance bar. (`REGISTER:W-16`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-18",
+      "originalIds": [
+        "REGISTER:E-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "owner-gated: Confirm remaining reference/identity approvals for six enemy roles and three Liquidator phases, checking delivered material before requesting more art. (`REGISTER:E-2`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-19",
+      "originalIds": [
+        "REGISTER:E-7"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Native Bagholder and enemy projection/lifecycle fixes are integrated.",
+      "remainingRequirement": "partial: Carry the already-adopted native Bagholder through final combined gameplay and release acceptance. (`REGISTER:E-7`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-20",
+      "originalIds": [
+        "REGISTER:E-8",
+        "REGISTER:P-8"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Measure boss-atlas headroom and roster reproducibility/drift trends; make only demonstrated phase-atlas/pipeline repairs without relaxing limits. (`REGISTER:E-8`, `REGISTER:P-8`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-21",
+      "originalIds": [
+        "REGISTER:E-3f"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Capture each enemy role's tell-to-hit timing and readability at actual gameplay zoom. (`REGISTER:E-3f`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-22",
+      "originalIds": [
+        "REGISTER:E-5"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Prove market-open, margin-call and total-liquidation boss phases are visually distinct. (`REGISTER:E-5`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-23",
+      "originalIds": [
+        "REGISTER:E-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Finish benchmark-backed boss counters, add-wave pressure and arena-use depth after the current swarm baseline. (`REGISTER:E-6`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-24",
+      "originalIds": [
+        "REGISTER:G-7"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Runtime Burner eligibility and manual-origin causality are implemented; historical ambient program was not imported.",
+      "remainingRequirement": "open: Fix ambient defeat-spread burning neutral actors before filtering, and automatic refresh overwriting a manually initiated burn's causal origin; prove replay/partition correctness. (`REGISTER:G-7`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-25",
+      "originalIds": [
+        "REGISTER:G-1"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Existing deterministic swarm baseline and pressure tooling are preserved; current broad tuning remains.",
+      "remainingRequirement": "partial: Produce current canonical swarm/weapon/boss pressure measurements, including clear time, overkill and projectile load, before balance claims or tuning. (`REGISTER:G-1`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-26",
+      "originalIds": [
+        "REGISTER:G-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Merged release retained weapon/Burner source benchmarks; full current balance acceptance remains.",
+      "remainingRequirement": "partial: Re-run affected weapon, swarm and progression benchmarks after the merged simulation and automatic-action changes. (`REGISTER:G-6`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-27",
+      "originalIds": [
+        "REGISTER:G-3"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Automatic close combat with eligibility, cooldown, attribution and native feedback is implemented.",
+      "remainingRequirement": "partial: Finish and prove the new automatic close-combat role, including eligibility, cooldown, damage attribution and readable feedback. (`REGISTER:G-3`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-28",
+      "originalIds": [
+        "REGISTER:K-3",
+        "REGISTER:B-1",
+        "REGISTER:K-8"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Simplified gameplay controls are integrated; this follow-up corrects the stale parent pre-game instructions.",
+      "remainingRequirement": "partial: Finish truthful action-map/help/onboarding for movement, aim and grenade only, including touch auto-targeting when aim is released and first-run cues. (`REGISTER:K-3`, `REGISTER:B-1`, `REGISTER:K-8`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-29",
+      "originalIds": [
+        "REGISTER:K-4"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Saved custom-control startup compatibility and parent settings authority are integrated and independently reviewed.",
+      "remainingRequirement": "partial: Verify rebinding, applicable aim-assist/sensitivity settings and left-handed touch layout have real consumers and persist parent-side without restoring obsolete controls. (`REGISTER:K-4`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-30",
+      "originalIds": [
+        "REGISTER:K-5"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Canonical movement and browser event-to-render measurements exist; physical input latency is unmeasured.",
+      "remainingRequirement": "open: Measure input latency, acceleration/deceleration, diagonal normalization and turn response before further movement tuning. (`REGISTER:K-5`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-31",
+      "originalIds": [
+        "REGISTER:K-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Automatic safe dodge, buffering, cancellation and reset are implemented without extra gestures.",
+      "remainingRequirement": "partial: Verify automatic dodge, buffering, edge forgiveness, cancellation and reset under the new controls; do not restore double-tap gestures. (`REGISTER:K-6`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-32",
+      "originalIds": [
+        "REGISTER:B-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Short dodge status and phone hint-position corrections are integrated.",
+      "remainingRequirement": "partial: Recheck first-use mobile hint placement with the complete HUD visible and zero hero obstruction. (`REGISTER:B-2`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-33",
+      "originalIds": [
+        "REGISTER:B-7",
+        "REGISTER:U-9"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Cockpit and status readability fixes are integrated; broader arsenal acceptance remains.",
+      "remainingRequirement": "partial: Finish narrow-screen arsenal/status readability and unowned-slot collapse; preserve the corrected non-error combo label. (`REGISTER:B-7`, `REGISTER:U-9`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-34",
+      "originalIds": [
+        "REGISTER:U-8"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Existing death, run-summary and replay flows are release-tested; human acceptance remains. Follow-up observation: parent pause snapshot can show Level 1 while the child HUD shows Level 2 after an upgrade; reconcile that display.",
+      "remainingRequirement": "open: Review and accept the actual death, run-summary, replay and restart flow on desktop and phone. (`REGISTER:U-8`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-35",
+      "originalIds": [
+        "REGISTER:B-3",
+        "REGISTER:L-3"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Three-click Free entry and portal containment are integrated and release-tested.",
+      "remainingRequirement": "partial: Recertify ad-strip containment and the ordinary three-click homepage-to-game flow across required profiles, with truthful competitive proof. (`REGISTER:B-3`, `REGISTER:L-3`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-36",
+      "originalIds": [
+        "REGISTER:L-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Leaderboard source/provenance filtering before ranking is integrated; public competitive authority remains separate.",
+      "remainingRequirement": "partial: Confirm the public leaderboard default and House/demo-score labeling; keep source/provenance filtering ahead of personal-best/top-N selection. (`REGISTER:L-2`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-37",
+      "originalIds": [
+        "REGISTER:L-4"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "owner-gated: Resolve visibility of any still-banner-only cabinets, including the MWEB Invaders/LitVM Legends policy, without claiming unplayable content is playable. (`REGISTER:L-4`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-38",
+      "originalIds": [
+        "REGISTER:L-5"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Detailed local profile history and truthful mode/receipt projection are integrated; durable Ranked history remains.",
+      "remainingRequirement": "partial: Finish independent review, build and desktop/portrait validation of the source-tested detailed profile UI; close the remaining real build-history/data requirements. Durable Ranked history is still separate. (`REGISTER:L-5`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-39",
+      "originalIds": [
+        "REGISTER:L-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Parent-local achievement dates/progress/disclosures are integrated; canonical/NFT acceptance remains.",
+      "remainingRequirement": "open: Define and finish achievement unlock dates, progress meters and accessible tooltips from real canonical data. (`REGISTER:L-6`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-40",
+      "originalIds": [
+        "REGISTER:L-8"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Produce matching portal/key art from the accepted approved hero models rather than a separate redesign. (`REGISTER:L-8`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-41",
+      "originalIds": [
+        "REGISTER:L-9"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Implemented trust surfaces are preserved; exact-copy/legal acceptance remains separate.",
+      "remainingRequirement": "partial: Obtain exact-copy owner acceptance of the implemented privacy, terms, support, accessibility and Testnet trust surface. (`REGISTER:L-9`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-42",
+      "originalIds": [
+        "REGISTER:D-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Verify or complete the privacy-conscious parent-owned funnel from homepage through first upgrade, death and replay. (`REGISTER:D-2`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-43",
+      "originalIds": [
+        "REGISTER:D-3"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Publish internal balance dashboards/reports from actual canonical swarm and run-stat outputs. (`REGISTER:D-3`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-44",
+      "originalIds": [
+        "REGISTER:S-4"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Finish category loudness/LUFS mixing, clipping and voice-budget checks, cue coverage and actual device listening acceptance. (`REGISTER:S-4`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-45",
+      "originalIds": [
+        "REGISTER:B-10"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Investigate the current first-fill atmosphere/performance spike and record isolated p99 measurements before choosing a pool/prewarm fix. (`REGISTER:B-10`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-46",
+      "originalIds": [
+        "REGISTER:B-9",
+        "REGISTER:N-9"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Clean-host and cloud builds prove the combined candidate under unchanged repository and delivery caps.",
+      "remainingRequirement": "partial: Recheck final repository/deployable size, LFS and clean-host behavior under the existing limits; the old 405 MB failure is not a reason to raise caps. (`REGISTER:B-9`, `REGISTER:N-9`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-47",
+      "originalIds": [
+        "REGISTER:N-8"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Desktop/mobile release flows and reviewed scenes exist; detailed enemy-crop repeatability and full visual acceptance remain.",
+      "remainingRequirement": "partial: Finish current per-profile browser isolation, hero/enemy crop coverage, full-HUD visual checks and valid final visual baselines. (`REGISTER:N-8`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-48",
+      "originalIds": [
+        "REGISTER:N-4"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Combined bundle factoring ships under original entry/aggregate caps; only 378 bytes aggregate headroom remains.",
+      "remainingRequirement": "partial: Reconcile both agents' bundle factoring, then decide whether the remaining lazy debug/evidence split is needed without increasing byte caps. (`REGISTER:N-4`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-49",
+      "originalIds": [
+        "REGISTER:N-6"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "This release reverified 60 served assets/routes in each hosted environment and returning-client intro refresh; broader stale-client/endurance coverage remains.",
+      "remainingRequirement": "open: Verify immutable hashed atlas URLs, CDN/cache headers, service-worker updates and stale-client behavior on the exact hosted candidate. (`REGISTER:N-6`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-50",
+      "originalIds": [
+        "REGISTER:N-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "owner-gated: Obtain an approved keep/retire inventory for superseded assets before any broad cleanup or deletion. (`REGISTER:N-2`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-51",
+      "originalIds": [
+        "REGISTER:B-8",
+        "REGISTER:N-3"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Live release identities and contribution reconciliation are recorded; historical snapshots are retained.",
+      "remainingRequirement": "partial: Keep roadmap, handoffs and cabinet status aligned with actual local/preview/public state; do not retry the unnecessary protected AGENTS.md replacement. (`REGISTER:B-8`, `REGISTER:N-3`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-52",
+      "originalIds": [
+        "REGISTER:M-1"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "open: Produce final-candidate hero turntables, full-HUD combat clips, map flyovers and mobile gameplay capture assets. (`REGISTER:M-1`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    },
+    {
+      "id": "hmh-53",
+      "originalIds": [
+        "REGISTER:M-2"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Offline fact-sheet generator and source coverage are integrated; this release receipt supplies current hosted facts.",
+      "remainingRequirement": "open: Create the truthful launch fact sheet/feature matrix separating public, local, simulated, unfinished and gated functionality. (`REGISTER:M-2`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-54",
+      "originalIds": [
+        "REGISTER:M-3"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Parent-owned daily/weekly Free challenges and validated seed sharing are integrated; Ranked remains separate.",
+      "remainingRequirement": "open: Verify or finish deterministic parent-owned daily/weekly challenge seeds and seed sharing. (`REGISTER:M-3`)",
+      "evidence": [
+        "docs/qa/hmh-playable-release-20260910.json",
+        "docs/qa/hmh-consolidated-release-20260911.json"
+      ]
+    },
+    {
+      "id": "hmh-55",
+      "originalIds": [
+        "REGISTER:owner-playtests"
+      ],
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group.",
+      "remainingRequirement": "owner-gated: Complete five recorded first-time desktop playtests, five recorded first-time mobile playtests, physical-device coverage and owner exact-candidate acceptance. (`REGISTER:owner-playtests`)",
+      "evidence": [
+        "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json"
+      ]
+    }
+  ],
+  "preservedOriginalRegisterIds": [
+    "REGISTER:B-1",
+    "REGISTER:B-10",
+    "REGISTER:B-11",
+    "REGISTER:B-2",
+    "REGISTER:B-3",
+    "REGISTER:B-4",
+    "REGISTER:B-5",
+    "REGISTER:B-6",
+    "REGISTER:B-7",
+    "REGISTER:B-8",
+    "REGISTER:B-9",
+    "REGISTER:C-5",
+    "REGISTER:C-6",
+    "REGISTER:D-2",
+    "REGISTER:D-3",
+    "REGISTER:E-2",
+    "REGISTER:E-3f",
+    "REGISTER:E-5",
+    "REGISTER:E-6",
+    "REGISTER:E-7",
+    "REGISTER:E-8",
+    "REGISTER:G-1",
+    "REGISTER:G-3",
+    "REGISTER:G-6",
+    "REGISTER:G-7",
+    "REGISTER:H-0",
+    "REGISTER:H-1",
+    "REGISTER:H-2",
+    "REGISTER:H-3",
+    "REGISTER:H-4",
+    "REGISTER:H-5",
+    "REGISTER:H-6",
+    "REGISTER:H-7",
+    "REGISTER:K-3",
+    "REGISTER:K-4",
+    "REGISTER:K-5",
+    "REGISTER:K-6",
+    "REGISTER:K-8",
+    "REGISTER:L-2",
+    "REGISTER:L-3",
+    "REGISTER:L-4",
+    "REGISTER:L-5",
+    "REGISTER:L-6",
+    "REGISTER:L-8",
+    "REGISTER:L-9",
+    "REGISTER:M-1",
+    "REGISTER:M-2",
+    "REGISTER:M-3",
+    "REGISTER:N-2",
+    "REGISTER:N-3",
+    "REGISTER:N-4",
+    "REGISTER:N-6",
+    "REGISTER:N-7",
+    "REGISTER:N-8",
+    "REGISTER:N-9",
+    "REGISTER:P-8",
+    "REGISTER:R-2",
+    "REGISTER:R-3",
+    "REGISTER:R-4",
+    "REGISTER:R-5",
+    "REGISTER:S-1",
+    "REGISTER:S-4",
+    "REGISTER:U-8",
+    "REGISTER:U-9",
+    "REGISTER:W-11",
+    "REGISTER:W-12",
+    "REGISTER:W-16",
+    "REGISTER:W-17",
+    "REGISTER:W-18",
+    "REGISTER:W-8f",
+    "REGISTER:W-9",
+    "REGISTER:owner-playtests",
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22",
+    "WEB3:B-1",
+    "WEB3:B-2",
+    "WEB3:B-3",
+    "WEB3:B-4",
+    "WEB3:B-5"
+  ],
+  "pausedStackedExcludedIds": [
+    "STACKED:S-01",
+    "STACKED:S-02",
+    "STACKED:S-03",
+    "STACKED:S-04",
+    "STACKED:S-05",
+    "STACKED:S-06",
+    "STACKED:S-07",
+    "STACKED:S-08",
+    "STACKED:S-09",
+    "STACKED:S-10",
+    "STACKED:S-11",
+    "STACKED:S-12",
+    "STACKED:S-13",
+    "STACKED:S-14",
+    "STACKED:S-15",
+    "STACKED:S-16",
+    "STACKED:S-17",
+    "STACKED:S-18",
+    "STACKED:S-19",
+    "STACKED:S-20",
+    "STACKED:S-21",
+    "STACKED:S-22"
+  ],
+  "financialActivation": false
+}

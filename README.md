@@ -8,18 +8,18 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 ## Current verified playable release
 
-- **Source:** `cabe95165c68bdea77bb626d6c630b872e8c83b2` on `hermes/hmh-textured-rollout`.
-- **Production deployment:** `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8` ([immutable URL](https://lesters-arcade-aew9i7szl-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
-- **Verified Preview:** `dpl_ETJ7zj3zmnKBk1yz3VPCAhggCHkq`.
-- **Retained rollback:** `dpl_DBodNtqBWjYzT87FcwgTLCRJy3xs` ([immutable URL](https://lesters-arcade-c496423zz-justin-agent-projects.vercel.app)).
+- **Source:** `4122eb04b77804e2ab19b9917c0217bf59015867`; canonical continuation is `hermes/hmh-textured-rollout`.
+- **Production deployment:** `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt` ([immutable URL](https://lesters-arcade-8xxxo7nvh-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
+- **Verified Preview:** `dpl_4hnvAkqMw5jAnrppaU4z181YYUvd`.
+- **Retained rollback:** `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8` ([immutable URL](https://lesters-arcade-aew9i7szl-justin-agent-projects.vercel.app)).
 **Production cache marker:** `lesters-arcade-v33-hmh-playable-update`
-- **Verification:** 3,224 local tests passed with the unchanged 51 retirement exceptions; the cloud build passed. Public desktop/mobile flows have zero console errors, and 60 served-file/route checks match the verified build. A previously visited client received the new entry on reload without clearing storage.
+- **Verification:** Both preview and production cloud builds passed the unchanged release gate: 3,224 tests passed and exactly 51 documented retirement exceptions. All 60 served assets/routes match in each environment. The 36 emitted JavaScript files match the preceding verified release; the change corrects the pre-game control instructions. Public desktop/mobile browser checks and returning-client refresh passed. The original broader release-flow evidence remains linked separately.
 
-This is a **playable release, not final AAA acceptance**. Full human/device acceptance, world/animation polish, the detailed enemy-crop repeatability issue and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
+The combined overhaul is playable. Full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
 
-[Release receipt](docs/qa/hmh-playable-release-20260910.json) · [Current handoff](docs/handoffs/hmh-textured-rollout-progress.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md) · [Preserved task-list snapshot](docs/handoffs/hmh-polish-task-list-2026-09-10.md)
+[Current release receipt](docs/qa/hmh-consolidated-release-20260911.json) · [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) · [Current handoff](docs/handoffs/hmh-textured-rollout-progress.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
 
-Earlier Cycle 077/080 production claims are [preserved as historical evidence](docs/handoffs/hmh-readme-release-header-before-20260910.txt), not current deployment identities. Continue from the canonical `hermes/hmh-textured-rollout` checkout; reconcile this release before using an older branch for publication.
+The [preceding release receipt](docs/qa/hmh-playable-release-20260910.json) retains Hermes's original combined release evidence. Earlier Cycle 077/080 claims are [historical](docs/handoffs/hmh-readme-release-header-before-20260910.txt). Continue from the canonical `hermes/hmh-textured-rollout` checkout; the retained task snapshot and full backlog preserve unfinished work.
 
 ---
 

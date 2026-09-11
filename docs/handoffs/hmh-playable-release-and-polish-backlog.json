@@ -1,7 +1,7 @@
 {
   "schema": "hmh-playable-release-and-polish-backlog-v1",
-  "savedAt": "2026-09-10T19:58:25.863609+00:00",
-  "scope": "Playable website update now; preserve all unfinished polish/AAA/Web3 work for later. This file is not evidence of completed acceptance.",
+  "savedAt": "2026-09-11T03:32:33.759Z",
+  "scope": "Verified combined playable release is live. Pending group statuses refer to remaining acceptance, not missing integration.",
   "ownerPublicationDecision": "Yes, publish the verified update with those items open.",
   "controlContract": "Movement, aim, grenade only. Releasing touch aim restores automatic targeting; gates/switches/pickups/power-ups/close combat/dodge are automatic with feedback. No extra combat buttons, double-tap gestures or stand-still requirement. Supersedes historical contrary control wording.",
   "financialActivation": false,
@@ -31,32 +31,44 @@
     {
       "id": "reconcile",
       "requirement": "Authenticate Codex incremental commit/patch, before/after hashes and dependencies; preserve parent profile/challenge/M-2 and approved assets.",
-      "status": "pending-verification"
+      "status": "verified-playable-release",
+      "evidence": "docs/qa/hmh-consolidated-release-20260911.json",
+      "acceptanceScope": "Playable release only; retained full AAA/human/device acceptance is not closed."
     },
     {
       "id": "validation",
       "requirement": "Run the exact host build and current release ledger; resolve unexpected failures without relaxing caps or hiding tests.",
-      "status": "pending-verification"
+      "status": "verified-playable-release",
+      "evidence": "docs/qa/hmh-consolidated-release-20260911.json",
+      "acceptanceScope": "Playable release only; retained full AAA/human/device acceptance is not closed."
     },
     {
       "id": "source-review",
       "requirement": "Complete independent source/integration review and freeze the exact intended Git candidate.",
-      "status": "pending-verification"
+      "status": "verified-playable-release",
+      "evidence": "docs/qa/hmh-consolidated-release-20260911.json",
+      "acceptanceScope": "Prior independent integration/control/navigation reviews carry forward for unchanged runtime. Narrow onboarding follow-up received direct source review and unchanged full gates; no new independent-agent review is claimed."
     },
     {
       "id": "playable-browser",
       "requirement": "Verify ordinary Free entry, selectors, actual controls, combat, death/replay, parent profiles/challenges and Chikun in serial clean browser profiles.",
-      "status": "pending-verification"
+      "status": "verified-playable-release",
+      "evidence": "docs/qa/hmh-consolidated-release-20260911.json",
+      "acceptanceScope": "Prior full desktop/mobile flow evidence remains; current follow-up rechecked public Free entry, two starter heroes, responsive intro, gameplay, upgrade, pause/resume, death/restart and warm refresh. Physical devices and full human acceptance remain open."
     },
     {
       "id": "clean-host-preview",
       "requirement": "Prove generated/LFS dependencies on a clean host; create and verify an immutable Preview and retain rollback.",
-      "status": "pending-verification"
+      "status": "verified-playable-release",
+      "evidence": "docs/qa/hmh-consolidated-release-20260911.json",
+      "acceptanceScope": "Playable release only; retained full AAA/human/device acceptance is not closed."
     },
     {
       "id": "publish",
       "requirement": "Commit/push only the coherent verified website candidate, promote, then verify exact production identity, served assets and live playable flows.",
-      "status": "pending-verification"
+      "status": "verified-playable-release",
+      "evidence": "docs/qa/hmh-consolidated-release-20260911.json",
+      "acceptanceScope": "Playable release only; retained full AAA/human/device acceptance is not closed."
     }
   ],
   "retainedGroups": [
@@ -68,7 +80,8 @@
         "REGISTER:H-1",
         "REGISTER:B-6"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Four approved hero identities, biographies and native asset selections are integrated."
     },
     {
       "id": "hmh-02",
@@ -77,7 +90,8 @@
       "originalIds": [
         "REGISTER:H-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Native weighted hero sources and provenance are retained; broader rig acceptance remains."
     },
     {
       "id": "hmh-03",
@@ -87,7 +101,8 @@
         "REGISTER:H-3",
         "REGISTER:C-5"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Native action atlases and projection are integrated; complete animation acceptance remains."
     },
     {
       "id": "hmh-04",
@@ -97,7 +112,8 @@
         "REGISTER:H-4",
         "REGISTER:C-6"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Four hero atlases and parent unlock rules are integrated; device/earned-unlock acceptance remains."
     },
     {
       "id": "hmh-05",
@@ -107,7 +123,8 @@
         "REGISTER:H-5",
         "REGISTER:B-5"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Four native hero selectors are integrated; ordinary starter selection was release-tested."
     },
     {
       "id": "hmh-06",
@@ -117,7 +134,8 @@
         "REGISTER:H-7",
         "REGISTER:R-4"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Existing approved weapon/action routes are preserved; full weapon/socket coverage remains."
     },
     {
       "id": "hmh-07",
@@ -126,7 +144,8 @@
       "originalIds": [
         "REGISTER:R-3"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Native town, camp, industrial and bridge composition plus alternate routes are integrated."
     },
     {
       "id": "hmh-08",
@@ -135,7 +154,8 @@
       "originalIds": [
         "REGISTER:R-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Delivered native terrain props and provenance are retained; remaining inventory acceptance stays open."
     },
     {
       "id": "hmh-09",
@@ -144,7 +164,8 @@
       "originalIds": [
         "REGISTER:R-5"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Native pickups and automatic collection are integrated; full final-world pickup acceptance remains."
     },
     {
       "id": "hmh-10",
@@ -153,7 +174,8 @@
       "originalIds": [
         "REGISTER:W-8f"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Bounded campfire ground lighting and embers are implemented and shipped."
     },
     {
       "id": "hmh-11",
@@ -162,7 +184,8 @@
       "originalIds": [
         "REGISTER:W-17"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Canopy depth, foreground fading and spatial culling are integrated; visual composition debt remains."
     },
     {
       "id": "hmh-12",
@@ -171,7 +194,8 @@
       "originalIds": [
         "REGISTER:W-18"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Final-topology yard materials/decals are integrated; repetition and seam polish remain."
     },
     {
       "id": "hmh-13",
@@ -180,7 +204,8 @@
       "originalIds": [
         "REGISTER:W-11"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Water/bridge/elevation safety, enclosure clearance and gate navigation are integrated."
     },
     {
       "id": "hmh-14",
@@ -189,7 +214,8 @@
       "originalIds": [
         "REGISTER:W-12"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Destructible supplies, same-height ledge/lore rewards and pause field map are implemented."
     },
     {
       "id": "hmh-15",
@@ -198,7 +224,8 @@
       "originalIds": [
         "REGISTER:B-4"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Spawn/camp/landmark clearance fixes are integrated; full AAA composition acceptance remains."
     },
     {
       "id": "hmh-16",
@@ -207,7 +234,8 @@
       "originalIds": [
         "REGISTER:B-11"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-17",
@@ -216,7 +244,8 @@
       "originalIds": [
         "REGISTER:W-16"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-18",
@@ -225,7 +254,8 @@
       "originalIds": [
         "REGISTER:E-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-19",
@@ -234,7 +264,8 @@
       "originalIds": [
         "REGISTER:E-7"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Native Bagholder and enemy projection/lifecycle fixes are integrated."
     },
     {
       "id": "hmh-20",
@@ -244,7 +275,8 @@
         "REGISTER:E-8",
         "REGISTER:P-8"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-21",
@@ -253,7 +285,8 @@
       "originalIds": [
         "REGISTER:E-3f"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-22",
@@ -262,7 +295,8 @@
       "originalIds": [
         "REGISTER:E-5"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-23",
@@ -271,7 +305,8 @@
       "originalIds": [
         "REGISTER:E-6"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-24",
@@ -280,7 +315,8 @@
       "originalIds": [
         "REGISTER:G-7"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Runtime Burner eligibility and manual-origin causality are implemented; historical ambient program was not imported."
     },
     {
       "id": "hmh-25",
@@ -289,7 +325,8 @@
       "originalIds": [
         "REGISTER:G-1"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Existing deterministic swarm baseline and pressure tooling are preserved; current broad tuning remains."
     },
     {
       "id": "hmh-26",
@@ -298,7 +335,8 @@
       "originalIds": [
         "REGISTER:G-6"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Merged release retained weapon/Burner source benchmarks; full current balance acceptance remains."
     },
     {
       "id": "hmh-27",
@@ -307,7 +345,8 @@
       "originalIds": [
         "REGISTER:G-3"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Automatic close combat with eligibility, cooldown, attribution and native feedback is implemented."
     },
     {
       "id": "hmh-28",
@@ -318,7 +357,8 @@
         "REGISTER:B-1",
         "REGISTER:K-8"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Simplified gameplay controls are integrated; this follow-up corrects the stale parent pre-game instructions."
     },
     {
       "id": "hmh-29",
@@ -327,7 +367,8 @@
       "originalIds": [
         "REGISTER:K-4"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Saved custom-control startup compatibility and parent settings authority are integrated and independently reviewed."
     },
     {
       "id": "hmh-30",
@@ -336,7 +377,8 @@
       "originalIds": [
         "REGISTER:K-5"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Canonical movement and browser event-to-render measurements exist; physical input latency is unmeasured."
     },
     {
       "id": "hmh-31",
@@ -345,7 +387,8 @@
       "originalIds": [
         "REGISTER:K-6"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Automatic safe dodge, buffering, cancellation and reset are implemented without extra gestures."
     },
     {
       "id": "hmh-32",
@@ -354,7 +397,8 @@
       "originalIds": [
         "REGISTER:B-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Short dodge status and phone hint-position corrections are integrated."
     },
     {
       "id": "hmh-33",
@@ -364,7 +408,8 @@
         "REGISTER:B-7",
         "REGISTER:U-9"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Cockpit and status readability fixes are integrated; broader arsenal acceptance remains."
     },
     {
       "id": "hmh-34",
@@ -373,7 +418,8 @@
       "originalIds": [
         "REGISTER:U-8"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Existing death, run-summary and replay flows are release-tested; human acceptance remains. Follow-up observation: parent pause snapshot can show Level 1 while the child HUD shows Level 2 after an upgrade; reconcile that display."
     },
     {
       "id": "hmh-35",
@@ -383,7 +429,8 @@
         "REGISTER:B-3",
         "REGISTER:L-3"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Three-click Free entry and portal containment are integrated and release-tested."
     },
     {
       "id": "hmh-36",
@@ -392,7 +439,8 @@
       "originalIds": [
         "REGISTER:L-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Leaderboard source/provenance filtering before ranking is integrated; public competitive authority remains separate."
     },
     {
       "id": "hmh-37",
@@ -401,7 +449,8 @@
       "originalIds": [
         "REGISTER:L-4"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-38",
@@ -411,7 +460,8 @@
         "REGISTER:L-5"
       ],
       "acceptanceClosed": false,
-      "newEvidence": "Previous frozen history source independently reviewed PASS; final parent-focused regression 73/73. Inventory/build/browser and durable history remain open."
+      "newEvidence": "Previous frozen history source independently reviewed PASS; final parent-focused regression 73/73. Inventory/build/browser and durable history remain open.",
+      "currentDelivery": "Detailed local profile history and truthful mode/receipt projection are integrated; durable Ranked history remains."
     },
     {
       "id": "hmh-39",
@@ -421,7 +471,8 @@
         "REGISTER:L-6"
       ],
       "acceptanceClosed": false,
-      "newEvidence": "Parent-local date/progress/disclosure delta source-reviewed PASS, 73/73 focused. Unsupported canonical progress and built/browser/device acceptance remain open."
+      "newEvidence": "Parent-local date/progress/disclosure delta source-reviewed PASS, 73/73 focused. Unsupported canonical progress and built/browser/device acceptance remain open.",
+      "currentDelivery": "Parent-local achievement dates/progress/disclosures are integrated; canonical/NFT acceptance remains."
     },
     {
       "id": "hmh-40",
@@ -430,7 +481,8 @@
       "originalIds": [
         "REGISTER:L-8"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-41",
@@ -439,7 +491,8 @@
       "originalIds": [
         "REGISTER:L-9"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Implemented trust surfaces are preserved; exact-copy/legal acceptance remains separate."
     },
     {
       "id": "hmh-42",
@@ -448,7 +501,8 @@
       "originalIds": [
         "REGISTER:D-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-43",
@@ -457,7 +511,8 @@
       "originalIds": [
         "REGISTER:D-3"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-44",
@@ -466,7 +521,8 @@
       "originalIds": [
         "REGISTER:S-4"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-45",
@@ -475,7 +531,8 @@
       "originalIds": [
         "REGISTER:B-10"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-46",
@@ -485,7 +542,8 @@
         "REGISTER:B-9",
         "REGISTER:N-9"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Clean-host and cloud builds prove the combined candidate under unchanged repository and delivery caps."
     },
     {
       "id": "hmh-47",
@@ -494,7 +552,8 @@
       "originalIds": [
         "REGISTER:N-8"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Desktop/mobile release flows and reviewed scenes exist; detailed enemy-crop repeatability and full visual acceptance remain."
     },
     {
       "id": "hmh-48",
@@ -503,7 +562,8 @@
       "originalIds": [
         "REGISTER:N-4"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Combined bundle factoring ships under original entry/aggregate caps; only 378 bytes aggregate headroom remains."
     },
     {
       "id": "hmh-49",
@@ -512,7 +572,8 @@
       "originalIds": [
         "REGISTER:N-6"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "This release reverified 60 served assets/routes in each hosted environment and returning-client intro refresh; broader stale-client/endurance coverage remains."
     },
     {
       "id": "hmh-50",
@@ -521,7 +582,8 @@
       "originalIds": [
         "REGISTER:N-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-51",
@@ -531,7 +593,8 @@
         "REGISTER:B-8",
         "REGISTER:N-3"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Live release identities and contribution reconciliation are recorded; historical snapshots are retained."
     },
     {
       "id": "hmh-52",
@@ -540,7 +603,8 @@
       "originalIds": [
         "REGISTER:M-1"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     },
     {
       "id": "hmh-53",
@@ -549,7 +613,8 @@
       "originalIds": [
         "REGISTER:M-2"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Offline fact-sheet generator and source coverage are integrated; this release receipt supplies current hosted facts."
     },
     {
       "id": "hmh-54",
@@ -558,7 +623,8 @@
       "originalIds": [
         "REGISTER:M-3"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Parent-owned daily/weekly Free challenges and validated seed sharing are integrated; Ranked remains separate."
     },
     {
       "id": "hmh-55",
@@ -567,7 +633,8 @@
       "originalIds": [
         "REGISTER:owner-playtests"
       ],
-      "acceptanceClosed": false
+      "acceptanceClosed": false,
+      "currentDelivery": "Retained unfinished or owner-gated work; this release makes no new completion claim for this group."
     }
   ],
   "web3Preparation": [
@@ -812,13 +879,14 @@
   "canonicalRegisterPath": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
   "historicalAcceptanceWarning": "Original register statuses/doneWhen are historical. Current control, scope, owner and evidence decisions take precedence. Publication does not close full-group AAA requirements; check the final release receipt for what actually shipped.",
   "latestVerifiedPlayableRelease": {
-    "commit": "cabe95165c68bdea77bb626d6c630b872e8c83b2",
+    "commit": "4122eb04b77804e2ab19b9917c0217bf59015867",
     "url": "https://lestersarcade.io",
-    "receipt": "docs/qa/hmh-playable-release-20260910.json"
+    "receipt": "docs/qa/hmh-consolidated-release-20260911.json"
   },
   "remainingReleasePolish": [
     "Detailed enemy-crop repeatability",
     "Brief asynchronous native-atlas loading fallback",
     "Original full AAA/human/device and backlog acceptance"
-  ]
+  ],
+  "currentReconciliation": "docs/handoffs/hmh-release-reconciliation-20260911.json"
 }

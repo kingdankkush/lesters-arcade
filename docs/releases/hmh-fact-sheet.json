@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "0df65d71cc45578562fc40d8ffc418ea926d2fbfafdce23f8d9d69a53ae38e92",
+  "sourceSnapshotSha256": "dbf463e7d682a14613eff99b503713cd78cca9b194377e54d604c6eabc555eef",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -15,8 +15,8 @@
     },
     {
       "path": "apps/portal/index.html",
-      "sha256": "bbc5bf527f1d119f23e984a42c31e16b4399195733e4908f9d2379b83ef8d686",
-      "bytes": 25429
+      "sha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+      "bytes": 25462
     },
     {
       "path": "apps/portal/main.js",
@@ -70,13 +70,13 @@
     },
     {
       "path": "docs/qa/hmh-owner-return-checkpoint.json",
-      "sha256": "1ae73744838d7a246f20b1f98e302189960176abfb02349de13b665668b8ca4e",
-      "bytes": 8915
+      "sha256": "a6bd89b9ddacf825c880b3dc9a09d3db667a5e0ec9a23bfa7bcd896fbc0e9477",
+      "bytes": 8715
     },
     {
       "path": "docs/qa/hmh-parent-challenges-checkpoint.json",
-      "sha256": "c6a8d70d2ced41f12dd3740e6f6e1e5fa3e8b9f038e9319a4cc5259d9e469777",
-      "bytes": 5730
+      "sha256": "daa072d9e62c48cacbce18b3658ebbc3910f2858e6f687ed297b2e2d6c343650",
+      "bytes": 5589
     },
     {
       "path": "docs/qa/hmh-parent-profile-truth-checkpoint.json",
@@ -85,13 +85,13 @@
     },
     {
       "path": "docs/qa/hmh-upgrade-execution-queue.json",
-      "sha256": "5780aeed39e1d24acf2c13670beaff11cdef8a538f8ac07ea4bdfa3a076fd8fc",
-      "bytes": 19550
+      "sha256": "9a0412c2dae0db940b9b08a1e5c7a1e3bc12f0069230521af0c65434c2aa09d4",
+      "bytes": 19028
     },
     {
       "path": "README.md",
-      "sha256": "db4656fdd2045d8c7895fa683a24af8ba8d1794c4734613638fb9b67cde8f1bc",
-      "bytes": 27628
+      "sha256": "70ad950afbf8d582d3688b38af99c56bbd77b1bde7c924aa4740ef123d679ff5",
+      "bytes": 26858
     },
     {
       "path": "scripts/hmh-release-facts.mjs",

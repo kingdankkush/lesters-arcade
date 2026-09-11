@@ -2,20 +2,22 @@
 
 ## Latest playable release
 
-Verified live at https://lestersarcade.io from `cabe95165c68bdea77bb626d6c630b872e8c83b2`. [Release receipt](../qa/hmh-playable-release-20260910.json). The original work groups remain below as retained polish/acceptance work, not unstarted tasks. Additional follow-up: eliminate the brief first-frame loading fallback while preserving safe asynchronous native-atlas loading; stabilize the detailed enemy-crop capture. No financial activation or STACKED resumption is authorized.
+Verified live at https://lestersarcade.io from `4122eb04b77804e2ab19b9917c0217bf59015867`. [Release receipt](../qa/hmh-consolidated-release-20260911.json). [Current delivery for all 55 groups](hmh-release-reconciliation-20260911.md). The original work groups remain below as retained polish/acceptance work, not unstarted tasks. Additional follow-up: eliminate the brief first-frame loading fallback while preserving safe asynchronous native-atlas loading; stabilize the detailed enemy-crop capture. No financial activation or STACKED resumption is authorized.
 
 ## Current priority
 
 Ship a verified, playable combined website/game update. Preserve approved heroes and Chikun, reconcile the incremental Codex return, and keep financial activation disabled. The owner explicitly approved publication with human playtests and unfinished AAA art still open. This is not full AAA acceptance.
 
-## Release gates still requiring actual evidence
+## Playable-release gates completed
 
-- [ ] **reconcile** — Authenticate Codex incremental commit/patch, before/after hashes and dependencies; preserve parent profile/challenge/M-2 and approved assets.
-- [ ] **validation** — Run the exact host build and current release ledger; resolve unexpected failures without relaxing caps or hiding tests.
-- [ ] **source-review** — Complete independent source/integration review and freeze the exact intended Git candidate.
-- [ ] **playable-browser** — Verify ordinary Free entry, selectors, actual controls, combat, death/replay, parent profiles/challenges and Chikun in serial clean browser profiles.
-- [ ] **clean-host-preview** — Prove generated/LFS dependencies on a clean host; create and verify an immutable Preview and retain rollback.
-- [ ] **publish** — Commit/push only the coherent verified website candidate, promote, then verify exact production identity, served assets and live playable flows.
+- [x] **reconcile** — Authenticate Codex incremental commit/patch, before/after hashes and dependencies; preserve parent profile/challenge/M-2 and approved assets.
+- [x] **validation** — Run the exact host build and current release ledger; resolve unexpected failures without relaxing caps or hiding tests.
+- [x] **source-review** — Complete independent source/integration review and freeze the exact intended Git candidate.
+- [x] **playable-browser** — Verify ordinary Free entry, selectors, actual controls, combat, death/replay, parent profiles/challenges and Chikun in serial clean browser profiles.
+- [x] **clean-host-preview** — Prove generated/LFS dependencies on a clean host; create and verify an immutable Preview and retain rollback.
+- [x] **publish** — Commit/push only the coherent verified website candidate, promote, then verify exact production identity, served assets and live playable flows.
+
+All six gates refer to the verified playable release and its narrow onboarding follow-up. Prior independent source reviews and broader desktop/mobile flow evidence carry forward for unchanged runtime; the current release receipt states exactly which checks were rerun. Full AAA, physical-device and human acceptance remain open. Historical requirement wording below does not override the current delivery table.
 
 ## Retained improvement groups
 

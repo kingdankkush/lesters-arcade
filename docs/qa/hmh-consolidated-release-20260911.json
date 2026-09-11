@@ -1,0 +1,1284 @@
+{
+  "schema": "hmh-consolidated-playable-release-v1",
+  "verifiedAt": "2026-09-11T03:32:33.759Z",
+  "sourceCommit": "4122eb04b77804e2ab19b9917c0217bf59015867",
+  "sourceBranch": "codex/hmh-release-reconciliation-20260910",
+  "canonicalContinuationBranch": "hermes/hmh-textured-rollout",
+  "runtimeBaseCommit": "cabe95165c68bdea77bb626d6c630b872e8c83b2",
+  "integrationBaseCommit": "014acfa08f17120b25777d5fb9cce3b87ec20a40",
+  "publicUrl": "https://lestersarcade.io",
+  "production": {
+    "id": "dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt",
+    "url": "https://lesters-arcade-8xxxo7nvh-justin-agent-projects.vercel.app",
+    "state": "READY",
+    "aliases": [
+      "lestersarcade.io",
+      "lesters-arcade-beige.vercel.app",
+      "lesters-arcade-justin-agent-projects.vercel.app",
+      "lesters-arcade-git-codex-hmh-relea-b2b00b-justin-agent-projects.vercel.app"
+    ]
+  },
+  "preview": {
+    "id": "dpl_4hnvAkqMw5jAnrppaU4z181YYUvd",
+    "url": "https://lesters-arcade-bdbqud823-justin-agent-projects.vercel.app",
+    "state": "READY"
+  },
+  "rollback": {
+    "id": "dpl_YF1dFwixGJXqsxSfXGF39Yez37r8",
+    "url": "https://lesters-arcade-aew9i7szl-justin-agent-projects.vercel.app",
+    "stateBeforePromotion": "READY"
+  },
+  "change": {
+    "files": [
+      "apps/portal/index.html"
+    ],
+    "description": "Correct the parent pre-game instructions to describe actual automatic firing, mobile aim, grenades, dodge, combat, machinery and upgrade controls; retain death-only survival explanation."
+  },
+  "verification": {
+    "cloud": {
+      "production": {
+        "sha256": "024bbedb093fb608c4ac6a3a4173c735d2ec412bdb0792b803e0258efbdfb966",
+        "tests": 3275,
+        "passed": 3224,
+        "expectedRetirementFailures": 51,
+        "unexpectedFailures": 0,
+        "syntax": {
+          "javascriptModules": 490,
+          "pythonScripts": 81
+        },
+        "assetVerification": "passed",
+        "contractStructure": "passed",
+        "build": "passed"
+      },
+      "preview": {
+        "sha256": "ecd8130f04e879041f6fa31aab15762881d4cab255c7d0dd15a35d37571b248d",
+        "tests": 3275,
+        "passed": 3224,
+        "expectedRetirementFailures": 51,
+        "unexpectedFailures": 0,
+        "syntax": {
+          "javascriptModules": 490,
+          "pythonScripts": 81
+        },
+        "assetVerification": "passed",
+        "contractStructure": "passed",
+        "build": "passed"
+      }
+    },
+    "localFocused": {
+      "passed": 20,
+      "failed": 0
+    },
+    "hosted": {
+      "preview": {
+        "mode": "preview",
+        "base": "https://lesters-arcade-bdbqud823-justin-agent-projects.vercel.app",
+        "at": "2026-09-11T03:26:13.657Z",
+        "verified": 60,
+        "expected": 60,
+        "passed": true,
+        "results": [
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json",
+            "expectedSha256": "6cc0cd0451143a82172f10b99eb4e8d22f4b5509707f984caa1fa34c255a18df",
+            "servedSha256": "6cc0cd0451143a82172f10b99eb4e8d22f4b5509707f984caa1fa34c255a18df",
+            "normalizedSha256": "6cc0cd0451143a82172f10b99eb4e8d22f4b5509707f984caa1fa34c255a18df",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png",
+            "expectedSha256": "78d7fcf90ef500605c8812915558ef741fc524bdbbd47b118d37e35c0ba8a89b",
+            "servedSha256": "78d7fcf90ef500605c8812915558ef741fc524bdbbd47b118d37e35c0ba8a89b",
+            "normalizedSha256": "78d7fcf90ef500605c8812915558ef741fc524bdbbd47b118d37e35c0ba8a89b",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png",
+            "expectedSha256": "835bf2ad6a61033e247fac5bd3bf70f208f66ff54433bb1d05aca39286ab2076",
+            "servedSha256": "835bf2ad6a61033e247fac5bd3bf70f208f66ff54433bb1d05aca39286ab2076",
+            "normalizedSha256": "835bf2ad6a61033e247fac5bd3bf70f208f66ff54433bb1d05aca39286ab2076",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png",
+            "expectedSha256": "387ffcb72d9605742d870b015e42dd02bff6d4ea2b67f7b5f15854c5f480e0d5",
+            "servedSha256": "387ffcb72d9605742d870b015e42dd02bff6d4ea2b67f7b5f15854c5f480e0d5",
+            "normalizedSha256": "387ffcb72d9605742d870b015e42dd02bff6d4ea2b67f7b5f15854c5f480e0d5",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png",
+            "expectedSha256": "9711bbc1b366c1d6038ed211e961ef35baafbc9bef35d4e302c54d2f48759663",
+            "servedSha256": "9711bbc1b366c1d6038ed211e961ef35baafbc9bef35d4e302c54d2f48759663",
+            "normalizedSha256": "9711bbc1b366c1d6038ed211e961ef35baafbc9bef35d4e302c54d2f48759663",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.json",
+            "expectedSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+            "servedSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+            "normalizedSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.webp",
+            "expectedSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
+            "servedSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
+            "normalizedSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.json",
+            "expectedSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+            "servedSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+            "normalizedSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.webp",
+            "expectedSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
+            "servedSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
+            "normalizedSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
+            "expectedSha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199",
+            "servedSha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199",
+            "normalizedSha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "expectedSha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749",
+            "servedSha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749",
+            "normalizedSha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
+            "expectedSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+            "servedSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+            "normalizedSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.webp",
+            "expectedSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
+            "servedSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
+            "normalizedSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-world-decals/hmh-world-decals.json",
+            "expectedSha256": "97446edf8a91a57c6717ed38ac83c1a181f6570eee6fba8904ddc5b8bd3938ad",
+            "servedSha256": "97446edf8a91a57c6717ed38ac83c1a181f6570eee6fba8904ddc5b8bd3938ad",
+            "normalizedSha256": "97446edf8a91a57c6717ed38ac83c1a181f6570eee6fba8904ddc5b8bd3938ad",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chikun/game.js",
+            "expectedSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+            "servedSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+            "normalizedSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-2WGYLO4P.js",
+            "expectedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+            "servedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+            "normalizedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-6QJT5C2R.js",
+            "expectedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+            "servedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+            "normalizedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-CT2SWMC3.js",
+            "expectedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+            "servedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+            "normalizedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-FH4FMBET.js",
+            "expectedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+            "servedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+            "normalizedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-FUVZNDDM.js",
+            "expectedSha256": "bc3a7f4e007f6b1214b53e3d63f0e9dc3e6cfa1476899498ebeb86cb0fc05150",
+            "servedSha256": "bc3a7f4e007f6b1214b53e3d63f0e9dc3e6cfa1476899498ebeb86cb0fc05150",
+            "normalizedSha256": "bc3a7f4e007f6b1214b53e3d63f0e9dc3e6cfa1476899498ebeb86cb0fc05150",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-LAKL27IL.js",
+            "expectedSha256": "b5b49335d5f7ef05a9ab3ab95c71b1003855ce8f1697be777d788b97d73c8878",
+            "servedSha256": "b5b49335d5f7ef05a9ab3ab95c71b1003855ce8f1697be777d788b97d73c8878",
+            "normalizedSha256": "b5b49335d5f7ef05a9ab3ab95c71b1003855ce8f1697be777d788b97d73c8878",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-SGCGIAAP.js",
+            "expectedSha256": "1fb0c84b1a3b6d3ae634a17ee97b03e2103f9668e87bdf950a5106280a593846",
+            "servedSha256": "1fb0c84b1a3b6d3ae634a17ee97b03e2103f9668e87bdf950a5106280a593846",
+            "normalizedSha256": "1fb0c84b1a3b6d3ae634a17ee97b03e2103f9668e87bdf950a5106280a593846",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-VSG3JNSZ.js",
+            "expectedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+            "servedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+            "normalizedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-XB24W4G6.js",
+            "expectedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+            "servedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+            "normalizedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-ZZIAFSA2.js",
+            "expectedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+            "servedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+            "normalizedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/ethers.min-STJTETNS.js",
+            "expectedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+            "servedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+            "normalizedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+            "expectedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+            "servedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+            "normalizedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-complete-animations-CJX6INFR.js",
+            "expectedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+            "servedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+            "normalizedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+            "expectedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+            "servedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+            "normalizedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+            "expectedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+            "servedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+            "normalizedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+            "expectedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+            "servedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+            "normalizedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+            "expectedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+            "servedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+            "normalizedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+            "expectedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+            "servedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+            "normalizedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+            "expectedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+            "servedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+            "normalizedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+            "expectedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+            "servedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+            "normalizedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-level-environment-FD3WFZKW.js",
+            "expectedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+            "servedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+            "normalizedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+            "expectedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+            "servedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+            "normalizedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-pixi.js",
+            "expectedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+            "servedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+            "normalizedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+            "expectedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+            "servedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+            "normalizedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+            "expectedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+            "servedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+            "normalizedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+            "expectedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+            "servedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+            "normalizedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+            "expectedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+            "servedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+            "normalizedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/litvm-chain-client-DZCSQZF3.js",
+            "expectedSha256": "088ce865f1e1b0039ffdbe989a2f10cfec39430146e48bd8ab616f4ce7338adb",
+            "servedSha256": "088ce865f1e1b0039ffdbe989a2f10cfec39430146e48bd8ab616f4ce7338adb",
+            "normalizedSha256": "088ce865f1e1b0039ffdbe989a2f10cfec39430146e48bd8ab616f4ce7338adb",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/loader-L6P76OXQ.js",
+            "expectedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+            "servedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+            "normalizedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+            "expectedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+            "servedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+            "normalizedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/runtime-manifest-7IN2B6KL.js",
+            "expectedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+            "servedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+            "normalizedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/world-design-field-map-J65ML4PU.js",
+            "expectedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+            "servedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+            "normalizedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/hmh-reboot/game.js",
+            "expectedSha256": "a115bc9fe578d2d84a91735947cb21954fc4e76ef42cfd5c80828aa7223c568c",
+            "servedSha256": "a115bc9fe578d2d84a91735947cb21954fc4e76ef42cfd5c80828aa7223c568c",
+            "normalizedSha256": "a115bc9fe578d2d84a91735947cb21954fc4e76ef42cfd5c80828aa7223c568c",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/hmh-reboot/world-art.js",
+            "expectedSha256": "9ea6dac0accba688a1d96753c3acce1cd57a7a2a51e599f62269c6d47d716332",
+            "servedSha256": "9ea6dac0accba688a1d96753c3acce1cd57a7a2a51e599f62269c6d47d716332",
+            "normalizedSha256": "9ea6dac0accba688a1d96753c3acce1cd57a7a2a51e599f62269c6d47d716332",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/main.js",
+            "expectedSha256": "02289ea45dee2c47419642397f336f27e5d5508ed5378ac95ec266e71e10946e",
+            "servedSha256": "02289ea45dee2c47419642397f336f27e5d5508ed5378ac95ec266e71e10946e",
+            "normalizedSha256": "02289ea45dee2c47419642397f336f27e5d5508ed5378ac95ec266e71e10946e",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/hmh-reboot/index.html",
+            "expectedSha256": "759c57e42b74374bedc07aa9d18a5b250e46249eb6f25077630d5c7f7d923f30",
+            "servedSha256": "712336ced8aa853aabb1bd019d9d6e7ccd349620f3ee9778cdabc3adc6146aaf",
+            "normalizedSha256": "759c57e42b74374bedc07aa9d18a5b250e46249eb6f25077630d5c7f7d923f30",
+            "match": true,
+            "normalization": "Only official Vercel Live feedback script"
+          },
+          {
+            "path": "/hmh-reboot/styles.css",
+            "expectedSha256": "f418bd63b59bd2815505503242f5f82201c919ff9a2daa305729393ff473a7da",
+            "servedSha256": "f418bd63b59bd2815505503242f5f82201c919ff9a2daa305729393ff473a7da",
+            "normalizedSha256": "f418bd63b59bd2815505503242f5f82201c919ff9a2daa305729393ff473a7da",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/index.html",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "dff1a695922928156824f7de32cf00705a5c625669ce09d7d6068608f3e9e99c",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": "Only official Vercel Live feedback script"
+          },
+          {
+            "path": "/styles-arcade-polish.css",
+            "expectedSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+            "servedSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+            "normalizedSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/styles.css",
+            "expectedSha256": "814bb29ff3884afef96abb78b7e6b837b56a5c2bfb279307999f25083c8e65e1",
+            "servedSha256": "814bb29ff3884afef96abb78b7e6b837b56a5c2bfb279307999f25083c8e65e1",
+            "normalizedSha256": "814bb29ff3884afef96abb78b7e6b837b56a5c2bfb279307999f25083c8e65e1",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/sw.js",
+            "expectedSha256": "470e13de77f64ebdc43de10ddaf3a8f14e329ec4f9a2727cdb1aed6bad554288",
+            "servedSha256": "470e13de77f64ebdc43de10ddaf3a8f14e329ec4f9a2727cdb1aed6bad554288",
+            "normalizedSha256": "470e13de77f64ebdc43de10ddaf3a8f14e329ec4f9a2727cdb1aed6bad554288",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/trust.css",
+            "expectedSha256": "fd416a6aabe53b148e5b3de93e70ff5b790898f3c9b48c7e79b1b7b1dea7f5c8",
+            "servedSha256": "fd416a6aabe53b148e5b3de93e70ff5b790898f3c9b48c7e79b1b7b1dea7f5c8",
+            "normalizedSha256": "fd416a6aabe53b148e5b3de93e70ff5b790898f3c9b48c7e79b1b7b1dea7f5c8",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/play/hard-money-heroes",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/profile",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/leaderboards",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          }
+        ]
+      },
+      "production": {
+        "mode": "production",
+        "base": "https://lestersarcade.io",
+        "at": "2026-09-11T03:30:59.120Z",
+        "verified": 60,
+        "expected": 60,
+        "passed": true,
+        "results": [
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json",
+            "expectedSha256": "6cc0cd0451143a82172f10b99eb4e8d22f4b5509707f984caa1fa34c255a18df",
+            "servedSha256": "6cc0cd0451143a82172f10b99eb4e8d22f4b5509707f984caa1fa34c255a18df",
+            "normalizedSha256": "6cc0cd0451143a82172f10b99eb4e8d22f4b5509707f984caa1fa34c255a18df",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png",
+            "expectedSha256": "78d7fcf90ef500605c8812915558ef741fc524bdbbd47b118d37e35c0ba8a89b",
+            "servedSha256": "78d7fcf90ef500605c8812915558ef741fc524bdbbd47b118d37e35c0ba8a89b",
+            "normalizedSha256": "78d7fcf90ef500605c8812915558ef741fc524bdbbd47b118d37e35c0ba8a89b",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png",
+            "expectedSha256": "835bf2ad6a61033e247fac5bd3bf70f208f66ff54433bb1d05aca39286ab2076",
+            "servedSha256": "835bf2ad6a61033e247fac5bd3bf70f208f66ff54433bb1d05aca39286ab2076",
+            "normalizedSha256": "835bf2ad6a61033e247fac5bd3bf70f208f66ff54433bb1d05aca39286ab2076",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png",
+            "expectedSha256": "387ffcb72d9605742d870b015e42dd02bff6d4ea2b67f7b5f15854c5f480e0d5",
+            "servedSha256": "387ffcb72d9605742d870b015e42dd02bff6d4ea2b67f7b5f15854c5f480e0d5",
+            "normalizedSha256": "387ffcb72d9605742d870b015e42dd02bff6d4ea2b67f7b5f15854c5f480e0d5",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png",
+            "expectedSha256": "9711bbc1b366c1d6038ed211e961ef35baafbc9bef35d4e302c54d2f48759663",
+            "servedSha256": "9711bbc1b366c1d6038ed211e961ef35baafbc9bef35d4e302c54d2f48759663",
+            "normalizedSha256": "9711bbc1b366c1d6038ed211e961ef35baafbc9bef35d4e302c54d2f48759663",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.json",
+            "expectedSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+            "servedSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+            "normalizedSha256": "418a588051697ca3b939917dd37a95991ca6a9836eb3cdbd9cb74867e82bfc95",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.webp",
+            "expectedSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
+            "servedSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
+            "normalizedSha256": "d88ccb70a3e83a1a6613094e9b8520456c0eb672e114248f9b83b3c80d9be914",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.json",
+            "expectedSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+            "servedSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+            "normalizedSha256": "8b3fd6bd4fc69e99d0bf68884dea52dae0a550c5342a69e60856c348d3ffb419",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.webp",
+            "expectedSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
+            "servedSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
+            "normalizedSha256": "9433d8ad30431e2af6c659739ea1f327d220d45c0f7732406897165656e4c116",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.json",
+            "expectedSha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199",
+            "servedSha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199",
+            "normalizedSha256": "bd2b91492a03b69898e90c5b0c6e3eab279bc315a0c03e174297090e6a295199",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "expectedSha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749",
+            "servedSha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749",
+            "normalizedSha256": "37679ea9f5c78f69b276e381969585d2298bcb2072cb343e6d4a0b95a7b8b749",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.json",
+            "expectedSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+            "servedSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+            "normalizedSha256": "2cc758c774e8e78b76b28008a4b184ab95e1029bd6af8a0bcd4ab74c8b21bb6f",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.webp",
+            "expectedSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
+            "servedSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
+            "normalizedSha256": "8facfdcdc5ec0f2fac950c7abc687b77f01e1de60e43f35f50b15433aa15c7d0",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/assets/generated/hmh-world-decals/hmh-world-decals.json",
+            "expectedSha256": "97446edf8a91a57c6717ed38ac83c1a181f6570eee6fba8904ddc5b8bd3938ad",
+            "servedSha256": "97446edf8a91a57c6717ed38ac83c1a181f6570eee6fba8904ddc5b8bd3938ad",
+            "normalizedSha256": "97446edf8a91a57c6717ed38ac83c1a181f6570eee6fba8904ddc5b8bd3938ad",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chikun/game.js",
+            "expectedSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+            "servedSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+            "normalizedSha256": "4e104b2fa6b11262ecffd067e0ef3abced13af9805e326d8f860337635d372d4",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-2WGYLO4P.js",
+            "expectedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+            "servedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+            "normalizedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-6QJT5C2R.js",
+            "expectedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+            "servedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+            "normalizedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-CT2SWMC3.js",
+            "expectedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+            "servedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+            "normalizedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-FH4FMBET.js",
+            "expectedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+            "servedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+            "normalizedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-FUVZNDDM.js",
+            "expectedSha256": "bc3a7f4e007f6b1214b53e3d63f0e9dc3e6cfa1476899498ebeb86cb0fc05150",
+            "servedSha256": "bc3a7f4e007f6b1214b53e3d63f0e9dc3e6cfa1476899498ebeb86cb0fc05150",
+            "normalizedSha256": "bc3a7f4e007f6b1214b53e3d63f0e9dc3e6cfa1476899498ebeb86cb0fc05150",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-LAKL27IL.js",
+            "expectedSha256": "b5b49335d5f7ef05a9ab3ab95c71b1003855ce8f1697be777d788b97d73c8878",
+            "servedSha256": "b5b49335d5f7ef05a9ab3ab95c71b1003855ce8f1697be777d788b97d73c8878",
+            "normalizedSha256": "b5b49335d5f7ef05a9ab3ab95c71b1003855ce8f1697be777d788b97d73c8878",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-SGCGIAAP.js",
+            "expectedSha256": "1fb0c84b1a3b6d3ae634a17ee97b03e2103f9668e87bdf950a5106280a593846",
+            "servedSha256": "1fb0c84b1a3b6d3ae634a17ee97b03e2103f9668e87bdf950a5106280a593846",
+            "normalizedSha256": "1fb0c84b1a3b6d3ae634a17ee97b03e2103f9668e87bdf950a5106280a593846",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-VSG3JNSZ.js",
+            "expectedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+            "servedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+            "normalizedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-XB24W4G6.js",
+            "expectedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+            "servedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+            "normalizedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/chunk-ZZIAFSA2.js",
+            "expectedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+            "servedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+            "normalizedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/ethers.min-STJTETNS.js",
+            "expectedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+            "servedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+            "normalizedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+            "expectedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+            "servedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+            "normalizedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-complete-animations-CJX6INFR.js",
+            "expectedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+            "servedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+            "normalizedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+            "expectedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+            "servedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+            "normalizedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+            "expectedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+            "servedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+            "normalizedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+            "expectedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+            "servedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+            "normalizedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+            "expectedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+            "servedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+            "normalizedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+            "expectedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+            "servedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+            "normalizedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+            "expectedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+            "servedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+            "normalizedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+            "expectedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+            "servedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+            "normalizedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-level-environment-FD3WFZKW.js",
+            "expectedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+            "servedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+            "normalizedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+            "expectedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+            "servedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+            "normalizedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-pixi.js",
+            "expectedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+            "servedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+            "normalizedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+            "expectedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+            "servedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+            "normalizedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+            "expectedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+            "servedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+            "normalizedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+            "expectedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+            "servedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+            "normalizedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+            "expectedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+            "servedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+            "normalizedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/litvm-chain-client-DZCSQZF3.js",
+            "expectedSha256": "088ce865f1e1b0039ffdbe989a2f10cfec39430146e48bd8ab616f4ce7338adb",
+            "servedSha256": "088ce865f1e1b0039ffdbe989a2f10cfec39430146e48bd8ab616f4ce7338adb",
+            "normalizedSha256": "088ce865f1e1b0039ffdbe989a2f10cfec39430146e48bd8ab616f4ce7338adb",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/loader-L6P76OXQ.js",
+            "expectedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+            "servedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+            "normalizedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+            "expectedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+            "servedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+            "normalizedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/runtime-manifest-7IN2B6KL.js",
+            "expectedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+            "servedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+            "normalizedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/chunks/world-design-field-map-J65ML4PU.js",
+            "expectedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+            "servedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+            "normalizedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/hmh-reboot/game.js",
+            "expectedSha256": "a115bc9fe578d2d84a91735947cb21954fc4e76ef42cfd5c80828aa7223c568c",
+            "servedSha256": "a115bc9fe578d2d84a91735947cb21954fc4e76ef42cfd5c80828aa7223c568c",
+            "normalizedSha256": "a115bc9fe578d2d84a91735947cb21954fc4e76ef42cfd5c80828aa7223c568c",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/hmh-reboot/world-art.js",
+            "expectedSha256": "9ea6dac0accba688a1d96753c3acce1cd57a7a2a51e599f62269c6d47d716332",
+            "servedSha256": "9ea6dac0accba688a1d96753c3acce1cd57a7a2a51e599f62269c6d47d716332",
+            "normalizedSha256": "9ea6dac0accba688a1d96753c3acce1cd57a7a2a51e599f62269c6d47d716332",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/dist/main.js",
+            "expectedSha256": "02289ea45dee2c47419642397f336f27e5d5508ed5378ac95ec266e71e10946e",
+            "servedSha256": "02289ea45dee2c47419642397f336f27e5d5508ed5378ac95ec266e71e10946e",
+            "normalizedSha256": "02289ea45dee2c47419642397f336f27e5d5508ed5378ac95ec266e71e10946e",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/hmh-reboot/index.html",
+            "expectedSha256": "759c57e42b74374bedc07aa9d18a5b250e46249eb6f25077630d5c7f7d923f30",
+            "servedSha256": "759c57e42b74374bedc07aa9d18a5b250e46249eb6f25077630d5c7f7d923f30",
+            "normalizedSha256": "759c57e42b74374bedc07aa9d18a5b250e46249eb6f25077630d5c7f7d923f30",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/hmh-reboot/styles.css",
+            "expectedSha256": "f418bd63b59bd2815505503242f5f82201c919ff9a2daa305729393ff473a7da",
+            "servedSha256": "f418bd63b59bd2815505503242f5f82201c919ff9a2daa305729393ff473a7da",
+            "normalizedSha256": "f418bd63b59bd2815505503242f5f82201c919ff9a2daa305729393ff473a7da",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/index.html",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/styles-arcade-polish.css",
+            "expectedSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+            "servedSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+            "normalizedSha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/styles.css",
+            "expectedSha256": "814bb29ff3884afef96abb78b7e6b837b56a5c2bfb279307999f25083c8e65e1",
+            "servedSha256": "814bb29ff3884afef96abb78b7e6b837b56a5c2bfb279307999f25083c8e65e1",
+            "normalizedSha256": "814bb29ff3884afef96abb78b7e6b837b56a5c2bfb279307999f25083c8e65e1",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/sw.js",
+            "expectedSha256": "470e13de77f64ebdc43de10ddaf3a8f14e329ec4f9a2727cdb1aed6bad554288",
+            "servedSha256": "470e13de77f64ebdc43de10ddaf3a8f14e329ec4f9a2727cdb1aed6bad554288",
+            "normalizedSha256": "470e13de77f64ebdc43de10ddaf3a8f14e329ec4f9a2727cdb1aed6bad554288",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/trust.css",
+            "expectedSha256": "fd416a6aabe53b148e5b3de93e70ff5b790898f3c9b48c7e79b1b7b1dea7f5c8",
+            "servedSha256": "fd416a6aabe53b148e5b3de93e70ff5b790898f3c9b48c7e79b1b7b1dea7f5c8",
+            "normalizedSha256": "fd416a6aabe53b148e5b3de93e70ff5b790898f3c9b48c7e79b1b7b1dea7f5c8",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/play/hard-money-heroes",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/profile",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          },
+          {
+            "path": "/leaderboards",
+            "expectedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "servedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "normalizedSha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
+            "match": true,
+            "normalization": null
+          }
+        ]
+      }
+    },
+    "browser": {
+      "passed": true,
+      "url": "https://lestersarcade.io/play/hard-money-heroes",
+      "method": "CUA ordinary public UI interactions; no injected game state or simulated wallets",
+      "desktop": {
+        "freeEntry": true,
+        "hero": "Lit Commando",
+        "correctedIntroVisible": true,
+        "nativeGameplayScreenshotReviewed": true,
+        "automaticFireAndEnemyDefeatsObserved": true,
+        "upgradeApplied": "Diamond Hands selected; health increased from 76 to 96 and gameplay resumed",
+        "pauseResume": true,
+        "consoleErrors": 0,
+        "deathAndResult": true,
+        "playAgain": true,
+        "playAgainObservation": "Ordinary death reached parent Game Over; Play Again remounted the native run with zero score, Level 1 and ready combat."
+      },
+      "mobileViewport": {
+        "width": 390,
+        "height": 844,
+        "freeEntry": true,
+        "hero": "Lit Valkyrie",
+        "correctedIntroVisible": true,
+        "horizontalOverflow": false,
+        "instructionsAndStartButtonScreenshotReviewed": true,
+        "nativeHeroGameplayScreenshotReviewed": true,
+        "automaticFireAndEnemyDefeatsObserved": true,
+        "consoleErrors": 0,
+        "physicalTouchDeviceTested": false,
+        "viewportReset": true
+      },
+      "returningClient": {
+        "passed": true,
+        "newIntroReceivedOnReload": true,
+        "storageCleared": false,
+        "serviceWorkerUnregistered": false
+      },
+      "preview": {
+        "browser": "Vercel preview requires login unavailable in the testing browser; no new account or access grant was made",
+        "alternativeEvidence": "The candidate UI was browser-tested locally; all 60 authenticated preview asset/route responses match the verified build, followed by actual public UI verification after promotion"
+      },
+      "knownObservations": [
+        "Parent pause snapshot showed Level 1 while native HUD showed Level 2; captured in retained polish work",
+        "Initial enemy atlas fallback is still visible during early mobile loading; existing visual debt remains open"
+      ],
+      "scope": "Narrow release follow-up. The original broader seven desktop/seven mobile release flows are historical evidence in hmh-playable-release-20260910.json, not newly rerun or physical-device certification. Screenshots and live DOM evidence were reviewed in the release conversation."
+    },
+    "runtimeParity": [
+      {
+        "path": "dist/chikun/game.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-2WGYLO4P.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-6QJT5C2R.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-CT2SWMC3.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-FH4FMBET.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-FUVZNDDM.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-LAKL27IL.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-SGCGIAAP.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-VSG3JNSZ.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-XB24W4G6.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/chunk-ZZIAFSA2.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/ethers.min-STJTETNS.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-complete-animations-CJX6INFR.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-level-environment-FD3WFZKW.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-pixi.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/litvm-chain-client-DZCSQZF3.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/loader-L6P76OXQ.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/runtime-manifest-7IN2B6KL.js",
+        "match": true
+      },
+      {
+        "path": "dist/chunks/world-design-field-map-J65ML4PU.js",
+        "match": true
+      },
+      {
+        "path": "dist/hmh-reboot/game.js",
+        "match": true
+      },
+      {
+        "path": "dist/hmh-reboot/world-art.js",
+        "match": true
+      },
+      {
+        "path": "dist/main.js",
+        "match": true
+      }
+    ],
+    "sourceReview": "All 59 returned Codex paths are integrated. Prior independent source/control/navigation reviews carry forward for unchanged game code. This follow-up reviews only parent onboarding copy and the integration inventory; no new independent-agent review is claimed.",
+    "documentation": {
+      "focusedTests": {
+        "passed": 56,
+        "failed": 0
+      },
+      "generatedFactsFresh": true,
+      "currentPublicDocumentLinks": 8,
+      "cabinetManifests": 3,
+      "liveServiceWorkerMarker": "lesters-arcade-v33-hmh-playable-update"
+    }
+  },
+  "attempts": {
+    "firstPreview": {
+      "id": "dpl_CzHQnSBHUVqTLEkp38kTVcdE4fGq",
+      "result": "Failed: missing death-only survival sentence in onboarding. Sentence restored in final source; original assertion unchanged."
+    },
+    "localFullBuild": "Interrupted without a final verdict; successful complete hosted builds provide full release-gate evidence."
+  },
+  "limits": {
+    "entryBytes": 472960,
+    "entryCap": 480000,
+    "aggregateBytes": 1048198,
+    "aggregateCap": 1048576,
+    "aggregateHeadroom": 378
+  },
+  "retainedOpen": [
+    "Brief initial native-atlas loading fallback",
+    "Detailed frontier-relay enemy-crop repeatability NONPASS",
+    "Parent pause snapshot displayed Level 1 while native HUD showed Level 2 after a successful upgrade; display reconciliation remains",
+    "Full human and physical-device acceptance",
+    "Remaining world, animation, audio, performance and balance polish",
+    "Separately scoped Web3 completion and financial activation"
+  ],
+  "settlementLive": false,
+  "stacked": "paused",
+  "priorReleaseReceipt": "docs/qa/hmh-playable-release-20260910.json"
+}

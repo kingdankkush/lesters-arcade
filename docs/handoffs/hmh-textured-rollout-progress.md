@@ -2,6 +2,18 @@
 
 ## Current verified live playable release
 
+**Live:** https://lestersarcade.io. Website source `4122eb04b77804e2ab19b9917c0217bf59015867`, production `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt`, verified Preview `dpl_4hnvAkqMw5jAnrppaU4z181YYUvd`, retained Ready rollback `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8`. Continue in `C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout` on `hermes/hmh-textured-rollout`.
+
+[Exact release receipt](../qa/hmh-consolidated-release-20260911.json) · [Contributions and all 55 work groups](hmh-release-reconciliation-20260911.md) · [Full retained backlog](hmh-playable-release-and-polish-backlog.md).
+
+The supplied handoffs predated Hermes's publication of the combined overhaul. The Codex follow-up reauthenticated all 59 returned paths, reviewed the four integration differences and corrected stale parent onboarding controls. Preview and production cloud builds pass the unchanged 3,224-pass/51-retirement-exception gate. Each environment passes 60 served-file/route comparisons. All 36 emitted JavaScript files match the preceding release. Public desktop/mobile checks and returning-client refresh verify this narrow follow-up; broader original flow evidence is retained below.
+
+Playable-release gates are closed with evidence. All 99 original register IDs, 55 work groups, five Web3 preparation items, 12 additional tasks and 22 paused STACKED IDs are retained. Full AAA/human/device acceptance, brief atlas-loading fallback and detailed enemy-crop repeatability remain open. Financial activation is disabled.
+
+**Everything below is historical source and coordination evidence. Earlier publisher ownership, pending windows and candidate-only statuses do not override this live checkpoint or the user's current release request.**
+
+## Preceding verified release: 2026-09-10
+
 **Live:** https://lestersarcade.io. Runtime source `cabe95165c68bdea77bb626d6c630b872e8c83b2` on `hermes/hmh-textured-rollout`; production `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8`; verified Preview `dpl_ETJ7zj3zmnKBk1yz3VPCAhggCHkq`; retained Ready rollback `dpl_DBodNtqBWjYzT87FcwgTLCRJy3xs`.
 
 [Machine-readable release receipt](../qa/hmh-playable-release-20260910.json). The full suite, exact clean-source build, public desktop/mobile flows, 60 served artifact/route checks and warm-client entry refresh are verified. Native heroes, incremental world/controls work and parent fixes are integrated. Financial activation remains disabled and STACKED paused.
@@ -9,6 +21,7 @@
 The owner prioritized a playable release and explicitly retained unfinished AAA/human acceptance. [All remaining polish](hmh-playable-release-and-polish-backlog.md) and the [complete task snapshot](hmh-polish-task-list-2026-09-10.md) are saved. The detailed enemy-crop repeatability warning and brief asynchronous atlas-loading fallback remain open; do not label them passed.
 
 **Everything below is historical source/coordination evidence. Earlier pending windows, no-commit statements and candidate-only statuses do not override this verified live checkpoint.** Continue in the canonical checkout/branch above rather than replacing the mixed integration or reviving STACKED.
+
 
 ## Historical continuation notes
 

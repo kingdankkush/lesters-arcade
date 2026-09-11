@@ -2,7 +2,7 @@
 
 **Internal source snapshot. Not a release certificate, launch announcement or current public/chain verification.**
 
-Input snapshot SHA-256: `0df65d71cc45578562fc40d8ffc418ea926d2fbfafdce23f8d9d69a53ae38e92`
+Input snapshot SHA-256: `dbf463e7d682a14613eff99b503713cd78cca9b194377e54d604c6eabc555eef`
 
 ## What the labels mean
 
@@ -118,7 +118,7 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | --- | --- | --- |
 | apps/portal/games/chikun/game.manifest.json | 0ad24f5c6514ce623b7b8bf0ccef310c6962c5ca1d93c5794eb912440b5b8429 | 554 |
 | apps/portal/games/hard-money-heroes/game.manifest.json | beb91dc9f94aba6680c4ea51bbe7408a1ad98d2b30dc59bb4c7993e928d66c5f | 587 |
-| apps/portal/index.html | bbc5bf527f1d119f23e984a42c31e16b4399195733e4908f9d2379b83ef8d686 | 25429 |
+| apps/portal/index.html | 8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327 | 25462 |
 | apps/portal/main.js | 814f88f3ec9c684bbf3605f0976babfd05cd8473edd64fd862ad73dfadd8514d | 662770 |
 | apps/portal/src/arcade-core.mjs | 23b92936901525f7644a1cf9911dd8675e66c44773c69b674601d98a04e8450d | 350995 |
 | apps/portal/src/hmh-challenge-ui.mjs | 3633ac9368005d1969e2f30d794334857e8fe40fb0eb5c7afb51fe001f3838f2 | 2834 |
@@ -129,11 +129,11 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | apps/portal/styles-arcade-polish.css | 26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1 | 66646 |
 | docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json | cd289055ccfda066966e5b133ae9db070f2e6ac2f4d3f8549306039c7bbbc40b | 71110 |
 | docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md | e32d1a0ce373b5aa2e4b6dcb39c396e596de62d0095fc7794a521bc14beb1251 | 7896 |
-| docs/qa/hmh-owner-return-checkpoint.json | 1ae73744838d7a246f20b1f98e302189960176abfb02349de13b665668b8ca4e | 8915 |
-| docs/qa/hmh-parent-challenges-checkpoint.json | c6a8d70d2ced41f12dd3740e6f6e1e5fa3e8b9f038e9319a4cc5259d9e469777 | 5730 |
+| docs/qa/hmh-owner-return-checkpoint.json | a6bd89b9ddacf825c880b3dc9a09d3db667a5e0ec9a23bfa7bcd896fbc0e9477 | 8715 |
+| docs/qa/hmh-parent-challenges-checkpoint.json | daa072d9e62c48cacbce18b3658ebbc3910f2858e6f687ed297b2e2d6c343650 | 5589 |
 | docs/qa/hmh-parent-profile-truth-checkpoint.json | 5dcadebb8081e381c56821948661805e24897a8303eac57e02612a7566596126 | 6738 |
-| docs/qa/hmh-upgrade-execution-queue.json | 5780aeed39e1d24acf2c13670beaff11cdef8a538f8ac07ea4bdfa3a076fd8fc | 19550 |
-| README.md | db4656fdd2045d8c7895fa683a24af8ba8d1794c4734613638fb9b67cde8f1bc | 27628 |
+| docs/qa/hmh-upgrade-execution-queue.json | 9a0412c2dae0db940b9b08a1e5c7a1e3bc12f0069230521af0c65434c2aa09d4 | 19028 |
+| README.md | 70ad950afbf8d582d3688b38af99c56bbd77b1bde7c924aa4740ef123d679ff5 | 26858 |
 | scripts/hmh-release-facts.mjs | 4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d | 18212 |
 | scripts/syntax-check.mjs | ed7ffac2f89545213ea4d0226c7e2274b01439e4dd42d1d2d66de6f4391c317f | 29522 |
 | tests/arcade-core.test.mjs | b9424ed10192dd9146ebfa3de538642efc79e0b4f810c1917dd7535ffbf5b8fc | 190608 |
