@@ -20,6 +20,17 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/hmh-reboot/src/creature-presentation.mjs',
+  'apps/hmh-reboot/src/gore-presentation.mjs',
+  'tests/hmh-creature-presentation.test.mjs',
+  'tests/hmh-gore-presentation.test.mjs',
+  'apps/portal/src/generated/hmh-hero-portraits.mjs',
+  'tests/hmh-native-portraits.test.mjs',
+  'apps/hmh-reboot/src/world-tour-spawns.mjs',
+  'apps/hmh-reboot/src/level-entry.mjs',
+  'apps/hmh-reboot/src/pickup-indicators.mjs',
+  'tests/hmh-level-entry.test.mjs',
+  'tests/hmh-pickup-indicators.test.mjs',
   "tests/hmh-reboot-restart-authority.test.mjs",
   "tests/hmh-reboot-startup-runtime.test.mjs",
   "tests/hmh-reboot-runtime-boss-aim.test.mjs",
@@ -528,6 +539,8 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/hmh-hero-portraits.py',
+  'scripts/hmh-blender/export-hmh-hero-portraits.py',
   "scripts/hmh_native_hero_diagnostics.py",
   "scripts/hmh-blender/export-hmh-world-design.py",
   "scripts/hmh-world-design-published-image-qa.py",

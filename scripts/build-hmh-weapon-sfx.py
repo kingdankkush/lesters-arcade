@@ -172,6 +172,47 @@ CUES = {
     'hmh-upgrade-offer': reward(0xB1C006, [392, 587.33, 783.99], 'upgrade-offer', duration=560),
     'hmh-upgrade-pick': reward(0xB1C007, [587.33, 880, 1174.66], 'upgrade-pick', duration=540),
     'hmh-level-up': reward(0xB1C008, [523.25, 659.25, 783.99, 1046.5], 'level-up', duration=650),
+    # Original throat-like oscillators, air and impact layers. No sampled voices.
+    'hmh-enemy-death': cue(0xDEAD01, 650, [
+        layer('growl', 1.2, 145, hz=105, sweep=.48, attack=5),
+        layer('noise', .8, 22, low=1700), layer('noise', .28, 95, at=140, low=1100),
+        layer('tone', .6, 48, hz=94, sweep=.65),
+    ], peak=.73, drive=1.9, runtime='enemy-death'),
+    'hmh-enemy-melee-tell': cue(0xDEAD02, 500, [
+        layer('growl', 1.1, 110, hz=115, sweep=1.55, attack=14),
+        layer('noise', .35, 85, low=2100, attack=24),
+    ], peak=.67, drive=1.6, runtime='enemy-melee-tell'),
+    'hmh-enemy-ranged-tell': cue(0xDEAD03, 260, [
+        *metal(.8, 0, hz=1020, decay=25), *metal(.6, 105, hz=1740, decay=18),
+        layer('noise', .5, 36, at=40, high=700, low=4200, attack=6),
+    ], peak=.65, runtime='enemy-ranged-tell'),
+    'hmh-boss-phase': cue(0xDEAD04, 900, [
+        layer('growl', 1.3, 250, hz=64, sweep=.8, attack=28),
+        layer('growl', .38, 185, at=45, hz=96, sweep=.7, attack=45),
+        layer('noise', .45, 190, low=1600, attack=40), layer('tone', .6, 130, hz=56, sweep=.8),
+    ], peak=.76, drive=2, runtime='boss-phase'),
+    'hmh-boss-hit': cue(0xDEAD05, 230, [
+        layer('growl', .8, 55, hz=82, sweep=.6, attack=2),
+        *metal(.8, 0, hz=440, decay=26), layer('noise', .8, 17, low=2900),
+    ], peak=.7, drive=1.8, runtime='boss-hit'),
+    'hmh-boss-death': cue(0xDEAD06, 1450, [
+        layer('growl', 1.2, 310, hz=77, sweep=.48, attack=8),
+        layer('noise', .7, 160, at=260, low=1600),
+        layer('tone', 1.2, 125, at=500, hz=58, sweep=.7),
+        *metal(.5, 500, hz=340, decay=80), layer('noise', .5, 105, at=510, low=800),
+    ], peak=.78, drive=2, runtime='boss-death'),
+    'hmh-dash': cue(0xDA501, 280, [
+        layer('noise', 1, 54, high=650, low=4300, attack=10),
+        layer('tone', .24, 38, hz=125, sweep=.7),
+    ], peak=.6, runtime='dash'),
+    'hmh-footstep-dirt': cue(0xDA502, 140, [
+        layer('noise', 1, 22, low=2100), layer('tone', .5, 20, hz=110, sweep=.75),
+        layer('noise', .3, 18, at=35, high=1000, low=3500),
+    ], peak=.58, runtime='footstep-dirt'),
+    'hmh-footstep-road': cue(0xDA503, 130, [
+        layer('tone', .8, 22, hz=158, sweep=.8), layer('noise', .8, 9, low=4800),
+        *metal(.15, 25, hz=1200, decay=8),
+    ], peak=.58, runtime='footstep-road'),
 }
 
 
@@ -197,6 +238,14 @@ def render_cue(spec):
                 modes = [(1, 1), (1.47, .58), (2.11, .39), (2.89, .22), (4.17, .12)]
                 value = sum(math.sin(phase * ratio) * gain for ratio, gain in modes
                             if hz * ratio < SAMPLE_RATE * .45) / 2.31
+            elif recipe['kind'] == 'growl':
+                # Harmonic throat excitation with two broad formants and a
+                # rough subharmonic. Frequency changes preserve the vowel body.
+                value = sum(math.sin(phase * harmonic) * (
+                    .12 / harmonic + .22 * math.exp(-((hz * harmonic - 460) / 260) ** 2)
+                    + .12 * math.exp(-((hz * harmonic - 1150) / 370) ** 2))
+                    for harmonic in range(1, 21))
+                value = value * (.76 + .24 * math.sin(phase * .37)) + .16 * math.sin(phase * .5)
             else:
                 raise ValueError(f"unknown kind {recipe['kind']}")
             attack = min(1, ms / max(.01, recipe['attackMs']))

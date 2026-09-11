@@ -35,9 +35,9 @@ export function resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framin
   if (!Number.isFinite(framingZoom) || framingZoom < ENCOUNTER_FRAMING.zoomOut || framingZoom > 1) throw new RangeError('invalid encounter framing zoom');
   if (!Number.isFinite(viewportHeight) || viewportHeight <= 0 || !Number.isFinite(bodyHeight) || bodyHeight <= 0) return framingZoom;
   // Reserve the existing crowd pullback while keeping actual body pixels at
-  // least twelve percent of the viewport. This scales the entire scene, not
+  // least ten percent of the viewport. This scales the entire scene, not
   // the hero alone, preserving art/ground/weapon/enemy projection parity.
-  return Math.max(1, viewportHeight * 0.12 / (bodyHeight * ENCOUNTER_FRAMING.zoomOut)) * framingZoom;
+  return Math.max(0.9, viewportHeight * 0.10 / (bodyHeight * ENCOUNTER_FRAMING.zoomOut)) * framingZoom;
 }
 
 export const DASH_FEEL = F({

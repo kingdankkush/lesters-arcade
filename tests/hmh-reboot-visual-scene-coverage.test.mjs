@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { VISUAL_SCENES } from '../scripts/hmh-reboot-visual-regression.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { buildAuthoredPointOfInterestPlacements } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { createWorldTourSpawns } from '../apps/hmh-reboot/src/world-tour-spawns.mjs';
 
 const repoUrl = (path) => fileURLToPath(new URL(`../${path}`, import.meta.url));
 const mainSource = readFileSync(repoUrl('apps/hmh-reboot/src/main.mjs'), 'utf8');
@@ -43,17 +44,18 @@ test('the camp kit and water dressing each have a pinned scene', () => {
 // player spawn, which would quietly re-shoot the opening frame under a new
 // name and look like coverage while adding none.
 test('every worldTour a scene requests has a spawn in the runtime', () => {
+  const views = createWorldTourSpawns(buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest));
   const collectibleTours = new Set(buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest).map((placement) => `collectible-${placement.pointOfInterestId}`));
   for (const scene of VISUAL_SCENES) {
     const match = /worldTour=([a-z0-9-]+)/.exec(scene.query);
     if (!match) continue;
     const tour = match[1];
     if (collectibleTours.has(tour)) {
-      assert.match(mainSource, /`collectible-\$\{placement\.pointOfInterestId\}`/, 'runtime collectible-tour generator is missing');
+      assert.ok(views[tour], 'runtime collectible-tour generator is missing');
       continue;
     }
     assert.ok(
-      new RegExp(`(^|\\s|,)['"]?${tour}['"]?:`, 'm').test(mainSource),
+      Boolean(views[tour]),
       `worldTour=${tour} has no spawn entry, so ${scene.id} would silently re-shoot the default spawn`,
     );
   }

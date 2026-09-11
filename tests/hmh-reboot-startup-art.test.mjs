@@ -3,6 +3,21 @@ import test from 'node:test';
 import { createStartupArtGate } from '../apps/hmh-reboot/src/startup-art.mjs';
 import { DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
 
+test('a warm start shows the briefing and early entry still waits for actual assets', () => {
+  const gate = createStartupArtGate(100, {minimumMs:2800});
+  assert.equal(gate.check({ready:true,now:200}).ready,false);
+  assert.equal(gate.check({ready:true,now:2900}).ready,true);
+  const early = createStartupArtGate(100,{minimumMs:2800});
+  early.enter();
+  assert.equal(early.check({ready:false,now:200}).ready,false);
+  assert.equal(early.check({ready:true,now:200}).ready,true);
+  const briefing = createStartupArtGate(0,{requireEntry:true});
+  assert.equal(briefing.check({ready:true,now:90000}).ready,false);
+  assert.equal(briefing.check({ready:true,now:90000}).canContinue,false, 'reading a ready briefing is not an asset failure');
+  briefing.enter();
+  assert.equal(briefing.check({ready:true,now:90001}).ready,true);
+});
+
 test('slow artwork cannot spend survival time or damage the player before the first visible frame', () => {
   const gate = createStartupArtGate(0);
   const simulation = new DeterministicSimulation({ seed: 42 });
