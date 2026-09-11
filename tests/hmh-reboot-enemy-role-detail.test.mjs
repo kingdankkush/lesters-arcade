@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { ENEMY_ROSTER_RUNTIME_SCALE } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
+import { ENEMY_ARCHETYPE_IDS } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+import { createRosterPreviewOffsets } from '../apps/hmh-reboot/src/world-tour-spawns.mjs';
 
 const repoUrl = new URL('../', import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('apps/hmh-reboot/assets/source/blender/hmh-enemy-roster.json', repoUrl), 'utf8'));
@@ -290,7 +292,8 @@ test('evidence-safe roster preview instantiates every enemy family for non-vacuo
   assert.match(runtimeSource, /const rosterPreviewEnabled = evidenceSafeEnabled && runtimeParams\.get\('rosterPreview'\) === '1'/);
   assert.match(runtimeSource, /const rosterCombatEnabled = rosterPreviewEnabled && runtimeParams\.get\('rosterCombat'\) === '1'/);
   assert.match(runtimeSource, /const initialEnemyArchetypeIds = rosterPreviewEnabled \? ENEMY_ARCHETYPE_IDS : HMH_OPENING_ENEMY_ARCHETYPE_IDS/);
-  assert.match(runtimeSource, /const rosterPreviewOffsets = Object\.freeze/);
+  assert.match(runtimeSource, /const tourModule = evidenceSafeEnabled \? await import\('\.\/world-tour-spawns\.mjs'\) : null/);
+  assert.match(runtimeSource, /const rosterPreviewOffsets = rosterPreviewEnabled \? tourModule\.createRosterPreviewOffsets\(\{forkedStandardPilotEnabled,bearMarketBurnerPilotEnabled\}\) : null/);
   assert.match(runtimeSource, /runtimePlayerSpawn\.x \+ offset\.x/);
   assert.match(runtimeSource, /runtimePlayerSpawn\.y \+ offset\.y/);
   assert.match(runtimeSource, /autoFireEnabled: !rosterPreviewEnabled/);
@@ -298,6 +301,24 @@ test('evidence-safe roster preview instantiates every enemy family for non-vacuo
   assert.match(runtimeSource, /!rosterPreviewEnabled && openingEnemyMovementEnabled\(tick\)/);
   assert.match(runtimeSource, /\(!rosterPreviewEnabled \|\| rosterCombatEnabled\) && openingEnemyAttacksEnabled\(tick\)/);
   assert.match(runtimeSource, /rosterPreviewEnabled[\s\S]*?reason: 'roster-preview'[\s\S]*?: stepEncounterDirector\(/);
+});
+
+for (const [name, options] of [
+  ['ordinary roster', {forkedStandardPilotEnabled:false,bearMarketBurnerPilotEnabled:false}],
+  ['Forked Standard corridor', {forkedStandardPilotEnabled:true,bearMarketBurnerPilotEnabled:false}],
+  ['Bear Market Burner corridor', {forkedStandardPilotEnabled:false,bearMarketBurnerPilotEnabled:true}],
+]) test(`${name} preview helper retains every family in a frozen, distinct nearby placement`, () => {
+  const offsets = createRosterPreviewOffsets(options);
+  assert.deepEqual(Object.keys(offsets).sort(), [...ENEMY_ARCHETYPE_IDS].sort());
+  assert.ok(Object.isFrozen(offsets));
+  const positions = new Set();
+  for (const offset of Object.values(offsets)) {
+    assert.ok(Object.isFrozen(offset));
+    assert.ok(Number.isFinite(offset.x) && Number.isFinite(offset.y));
+    assert.ok(Math.abs(offset.x) <= 180 && Math.abs(offset.y) <= 160, 'preview bodies must stay near the centered hero');
+    positions.add(`${offset.x},${offset.y}`);
+  }
+  assert.equal(positions.size, ENEMY_ARCHETYPE_IDS.length, 'each family needs its own visible review position');
 });
 
 test('Cycle 032 keeps rank-and-file zombies in the measured human-scale parity band', () => {

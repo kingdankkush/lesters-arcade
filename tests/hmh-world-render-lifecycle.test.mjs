@@ -10,6 +10,7 @@ import { createAuthoredPropDisplay } from '../apps/hmh-reboot/src/authored-prop-
 import { createWorldProductionLayers, renderWorldProductionArt } from '../apps/hmh-reboot/src/world-production-art.mjs';
 import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { worldDepthKey } from '../apps/hmh-reboot/src/world-depth.mjs';
+import { deterministicUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity, CORPSE_VISUAL_CAP, CORPSE_LIFETIME_MS } from '../apps/hmh-reboot/src/corpse-presentation.mjs';
 import { createWorldDesignAppearance } from '../apps/hmh-reboot/src/world-design-native-assets.mjs';
 import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from '../apps/hmh-reboot/src/world-design-layout.mjs';
@@ -27,20 +28,43 @@ function corpseSubject() {
   const depth = new RenderLayer({sortableChildren:true});
   const deaths = new Container();
   const markers = new Map();
+  const playedCues = [];
   const context = vm.createContext({
     worldDepthLayer: depth, worldDepthKey, enemyDeathVisuals: deaths, enemyDeathMarkers: markers,
     enemyVisualFacing: new Map(), createCorpseClock, pruneCorpseCapacity,
     performance: {now:()=>1000}, isEliteEnemyProjection:()=>false,
     pushCombatVisualEvent:()=>{}, ENEMY_ARCHETYPES:{forkrunner:{visual:{color:0xffffff}}},
     createRosterOrVectorDisplay:()=>new Container(),
+    actor:{x:100,y:220}, deterministicUnit,
+    combatAudio:{play:(cue, options)=>playedCues.push({cue,...options})},
   });
-  return { context, depth, deaths, markers, queue:callback(declaration('queueEnemyDeathVisual'),context), clear:callback(declaration('clearEnemyDeathMarkers'),context) };
+  return { context, depth, deaths, markers, playedCues, queue:callback(declaration('queueEnemyDeathVisual'),context), clear:callback(declaration('clearEnemyDeathMarkers'),context) };
 }
 
 test('queued corpses join the real ground-depth layer at their captured world Y', () => {
   const s=corpseSubject(); const enemy={id:'corpse-fixture',archetypeId:'forkrunner',x:100,y:220,groundZ:0};const before=JSON.stringify(enemy);
-  try { s.queue(enemy,20);const graphic=s.markers.get(enemy.id).graphic;assert.ok(s.depth.renderLayerChildren.includes(graphic));assert.equal(graphic.zIndex,220);assert.equal(JSON.stringify(enemy),before); }
+  try {
+    s.queue(enemy,20);
+    const graphic=s.markers.get(enemy.id).graphic;
+    assert.ok(s.depth.renderLayerChildren.includes(graphic));
+    assert.equal(graphic.zIndex,220);
+    assert.equal(JSON.stringify(enemy),before);
+    assert.deepEqual(s.playedCues,[{cue:'enemy-death',volume:.13,playbackRate:.85+deterministicUnit(enemy.id)*.3}]);
+    s.queue(enemy,21);
+    assert.equal(s.markers.size,1,'duplicate deaths must not allocate another corpse');
+    assert.equal(s.playedCues.length,1,'duplicate deaths must not replay their sound');
+  }
   finally { s.clear();s.deaths.destroy({children:true});clearLayer(s.depth); }
+});
+
+test('distant deaths still attach corpse art without playing nearby combat audio', () => {
+  const s=corpseSubject();
+  try {
+    s.queue({id:'distant',archetypeId:'forkrunner',x:1200,y:220,groundZ:0},20);
+    assert.equal(s.markers.size,1);
+    assert.equal(s.depth.renderLayerChildren.length,1);
+    assert.deepEqual(s.playedCues,[]);
+  } finally {s.clear();s.deaths.destroy({children:true});clearLayer(s.depth);}
 });
 
 test('corpse capacity and reset leave no orphaned depth attachments', () => {
