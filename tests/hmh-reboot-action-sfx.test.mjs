@@ -97,3 +97,13 @@ test('rapid combat audio respects the voice cap, protects damage, and still obey
   assert.equal(player.play('hmh-fire-coin-blaster', { now: 6000 }).played, false);
   player.destroy();
 });
+
+test('creature deaths, melee and ranged warnings, and each boss beat have distinct original samples', () => {
+  AudioProbe.voices=[];
+  const player=createCombatAudio({AudioCtor:AudioProbe});
+  const cues=['enemy-death','enemy-melee-tell','enemy-ranged-tell','boss-phase','boss-hit','boss-death','dash','footstep-dirt','footstep-road'];
+  for(const [i,cue] of cues.entries())assert.equal(player.play(cue,{now:i*1500}).played,true,cue);
+  const hashes=AudioProbe.voices.map(voice=>createHash('sha256').update(pcm(voice.src).bytes).digest('hex'));
+  assert.equal(new Set(hashes).size,cues.length);
+  player.destroy();
+});

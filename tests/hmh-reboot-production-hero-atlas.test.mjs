@@ -28,6 +28,22 @@ import {
 } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
 
 const DIRECTIONS = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
+test('hero hips follow aim before the waist twists beyond one eighth-turn', () => {
+  const index = createProductionHeroAtlasIndex(metadataFixture());
+  for (const locomotion of ['idle', 'moving']) {
+    for (const action of ['aim', 'pistol-fire', 'hurt', 'interact', 'dash', 'melee', 'grenade', 'death']) {
+      for (let legs = 0; legs < 8; legs++) for (let torso = 0; torso < 8; torso++) {
+        const pose = resolveProductionHeroPose(index, {simulationTick: 12, actionTick: 3, locomotion, legDirection: legs, torsoDirection: torso, action});
+        const lower = DIRECTIONS.indexOf(pose[1].direction);
+        const upper = DIRECTIONS.indexOf(pose[2].direction);
+        const twist = Math.min((lower - upper + 8) % 8, (upper - lower + 8) % 8);
+        assert.ok(twist <= 1, `${locomotion}/${action}: legs ${legs}, torso ${torso} twists ${twist * 45} degrees`);
+        assert.equal(pose[2].direction, directionNameForProductionIndex(torso), 'aim stays authoritative');
+        assert.equal(pose[0].direction, pose[1].direction, 'shadow follows hips');
+      }
+    }
+  }
+});
 test('automatic interaction uses the authored arm reach while preserving moving legs', () => {
   const index=createProductionHeroAtlasIndex(metadataFixture());
   const frames=resolveProductionHeroPose(index,{simulationTick:12,actionTick:6,locomotion:'moving',legDirection:2,torsoDirection:4,action:'interact'});
@@ -325,7 +341,7 @@ test('production direction mapping preserves simulation semantics', () => {
   assert.equal(directionNameForProductionIndex(-1), 'north-east');
 });
 
-test('production pose resolver composes independent locomotion aim fire and hurt layers', () => {
+test('production pose resolver composes locomotion and aim with bounded waist rotation', () => {
   const index = createProductionHeroAtlasIndex(metadataFixture());
   const idle = resolveProductionHeroPose(index, {
     simulationTick: 30,
@@ -336,8 +352,8 @@ test('production pose resolver composes independent locomotion aim fire and hurt
     action: 'aim',
   });
   assert.deepEqual(idle.map((frame) => [frame.layer, frame.state, frame.direction, frame.frameIndex]), [
-    ['shadow', 'idle', 'east', 0],
-    ['lower-body', 'idle', 'east', 1],
+    ['shadow', 'idle', 'north-east', 0],
+    ['lower-body', 'idle', 'north-east', 1],
     ['torso-head', 'aim', 'north', 1],
     ['weapon', 'aim', 'north', 1],
   ]);
@@ -351,8 +367,8 @@ test('production pose resolver composes independent locomotion aim fire and hurt
     action: 'pistol-fire',
   });
   assert.deepEqual(firing.map((frame) => [frame.layer, frame.state, frame.direction, frame.frameIndex]), [
-    ['shadow', 'idle', 'south-east', 0],
-    ['lower-body', 'run', 'south-east', 1],
+    ['shadow', 'idle', 'east', 0],
+    ['lower-body', 'run', 'east', 1],
     ['torso-head', 'pistol-fire', 'north-east', 1],
     ['weapon', 'pistol-fire', 'north-east', 1],
   ]);

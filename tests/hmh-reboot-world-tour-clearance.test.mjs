@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import vm from 'node:vm';
+import { createWorldTourSpawns } from '../apps/hmh-reboot/src/world-tour-spawns.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { buildAuthoredDistrictLandmarkPlacements, buildAuthoredPointOfInterestPlacements } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
@@ -9,13 +9,7 @@ import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounte
 // Execute the actual runtime's static view table, including its real POI expansion.
 // Keeping this source-bound avoids a test-only duplicate of the tour coordinates.
 function runtimeTourViews() {
-  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  const initializer = source.match(/const worldTourSpawns = (Object\.freeze\(\{[\s\S]*?\n  \}\));/);
-  assert.ok(initializer, 'runtime tour table must remain inspectable');
-  return vm.runInNewContext(initializer[1], {
-    WORLD_DESIGN_SITES,
-    authoredPointOfInterestPlacements: buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest),
-  });
+  return createWorldTourSpawns(buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest));
 }
 
 const landmarks = buildAuthoredDistrictLandmarkPlacements({ worldId: LEVEL_ONE_WORLD.id });

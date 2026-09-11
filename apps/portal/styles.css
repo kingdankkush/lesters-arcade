@@ -457,6 +457,7 @@ svg.arcade-icon {
 }
 
 .hero-character-rotator .cabinet-rotation-frame {
+  animation-name: hmhHeroPortraitFrame;
   transform: scale(var(--hero-rotation-scale-x), var(--hero-rotation-scale-y));
   transform-origin: 50% 58%;
   /* 384 px source frames are downsampled into the card, so let the browser
@@ -489,6 +490,11 @@ svg.arcade-icon {
 @keyframes hmhCabinetFrame {
   0%, 15.8% { opacity: 1; }
   16%, 100% { opacity: 0; }
+}
+
+@keyframes hmhHeroPortraitFrame {
+  0%, 12.49% { opacity: 1; }
+  12.5%, 100% { opacity: 0; }
 }
 
 /* Reduced motion: still the float and the spin and show one frame. Turntables

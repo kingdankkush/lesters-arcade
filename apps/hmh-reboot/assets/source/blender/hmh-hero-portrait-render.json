@@ -1,0 +1,17 @@
+{
+  "pipelineId": "hmh-native-portraits-v1",
+  "runtimeAuthority": "projection-only",
+  "sourceManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+  "frameSize": 384,
+  "angles": [-24, -12, 0, 12, 24],
+  "playOrder": [2, 3, 4, 3, 2, 1, 0, 1],
+  "frameDurationMs": 500,
+  "action": "HMH_Idle",
+  "cameraPitchDegrees": 84,
+  "cameraTargetHeight": 1.60,
+  "cameraOrthoScale": 1.25,
+  "hideLayers": ["weapon", "shadow"],
+  "maxBytesPerAtlas": 524288,
+  "maxTotalBytes": 2097152,
+  "reproducibilityBudget": {"maxChangedVisiblePixels": 8, "maxChannelDelta": 2, "maxTotalChannelDelta": 32}
+}

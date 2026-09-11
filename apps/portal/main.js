@@ -19,7 +19,7 @@ import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
-import { HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-reboot-hero-selector-atlas.mjs';
+import { HMH_HERO_PORTRAITS as HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-hero-portraits.mjs';
 import { restFrameIndex } from './src/hmh-hero-select-ui.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
 import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame, selectAnimatedEnemySet } from './src/combat-sprite-bridge.mjs';
@@ -2125,7 +2125,7 @@ const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west
 // (hero ~260-294 px tall). Scaling the 180 px card box by 1.4 keeps the on-card
 // hero height Cycle 073 shipped (~185 px) while every device pixel up to 2 DPR
 // is a downsample of the source instead of a 1.44x upscale of a 160 px frame.
-const HERO_SELECTOR_DISPLAY_SCALE = 1.4;
+const HERO_SELECTOR_DISPLAY_SCALE = 1;
 const HERO_ROTATION_DISPLAY_SCALE = Object.freeze({
   // Per-axis card-only normalization. Lester/Lilly have wider original bounds
   // than Commando/Valkyrie, so uniform scaling made them too wide when height

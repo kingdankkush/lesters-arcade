@@ -34,14 +34,15 @@ const nearEnemies = (count) => Array.from({ length: count }, (_, index) => enemy
 // 1. Tables
 // ---------------------------------------------------------------------------
 
-test('gameplay camera keeps body pixels at twelve percent even at maximum crowd framing', () => {
+test('gameplay camera widens the view while keeping bodies readable at ten percent', () => {
   assert.equal(typeof gameFeel.resolveReadableGameplayZoom, 'function');
   for (const viewportHeight of [390, 768, 844, 900, 1080, 1440]) {
     for (const bodyHeight of [55, 62.35, 72]) {
       for (const framingZoom of [0.9, 0.94, 1]) {
         const zoom = gameFeel.resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framingZoom });
-        assert.ok(bodyHeight * zoom / viewportHeight >= 0.12 - 1e-12, `${viewportHeight}/${bodyHeight}/${framingZoom}`);
-        assert.ok(zoom >= framingZoom, 'short viewports must not shrink the established scene');
+        assert.ok(bodyHeight * zoom / viewportHeight >= 0.10 - 1e-12, `${viewportHeight}/${bodyHeight}/${framingZoom}`);
+        const previous = Math.max(1, viewportHeight * 0.12 / (bodyHeight * 0.9)) * framingZoom;
+        assert.ok(zoom <= previous * 0.9 + 1e-12, 'at least ten percent wider on short viewports too');
       }
     }
   }

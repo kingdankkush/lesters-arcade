@@ -1,6 +1,7 @@
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { automaticDodgeIntent } from './automatic-actions.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
+import { selectLevelEntry } from './level-entry.mjs';
 import { createWorldDesignPacing, stepWorldDesignPacing } from './world-design-pacing.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
@@ -10,7 +11,7 @@ import { createWorldDesignLife, prepareWorldDesignEnemyPose, worldDesignFootstep
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
-import { createCombatAudio } from './combat-audio.mjs';
+import { creatureAnimationTick, liquidatorPose } from './creature-presentation.mjs';
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
@@ -98,7 +99,7 @@ import {
   traceHeightAwareLineOfSight,
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
-import { rebindKeyboardAction } from './action-map.mjs';
+import { rebindKeyboardAction, normalizeKeyboardBindings } from './action-map.mjs';
 import { createGrenadeSystem, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
 import { buildGrenadeDangerProjection } from './grenade-vfx.mjs';
 // grenade feedback (V-3): pure projection resolvers for the arc shadow, fuse
@@ -544,6 +545,9 @@ async function boot() {
   const projectileImpacts = new Graphics();
   const grenadeVisuals = new Graphics();
   const combatVisuals = new Graphics();
+  const pickupSignals = new Graphics();
+  let pickupPresentation = null;
+  let pickupPresentationRequested = false;
   // Soft glows and dust go through the pooled sprites; with the pool
   // unavailable the same call degrades to a flat vector disc so art can never
   // break a run. Past the pool cap a placement is counted, not drawn.
@@ -651,6 +655,11 @@ async function boot() {
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
   world.addChild(backdrop, worldProduction.root, worldDecalLayer, worldLife.ground, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, worldDepthLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, worldLife.overlay, collisionDebug, label);
+  world.addChildAt(pickupSignals, world.children.indexOf(authoredPropLayer));
+  const goreGround = new Graphics(), goreAir = new Graphics();
+  world.addChildAt(goreGround, world.children.indexOf(groundShadowLayer));
+  world.addChildAt(goreAir, world.children.indexOf(projectileImpacts));
+  let gorePresentation = null, goreRequested = false;
   app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel);
 
 
@@ -1051,6 +1060,9 @@ async function boot() {
 
   const queueEnemyDeathVisual = (enemy, tick) => {
     if (!enemy || enemyDeathMarkers.has(enemy.id)) return;
+    if (Math.hypot(enemy.x - actor.x, enemy.y - actor.y) < 1100) combatAudio.play('enemy-death', {
+      volume: .13, playbackRate: .85 + deterministicUnit(enemy.id) * .3,
+    });
     const eliteProjection = isEliteEnemyProjection(enemy.id);
     pushCombatVisualEvent({
       type: 'kill',
@@ -1115,50 +1127,9 @@ async function boot() {
   const standardEventPilot = evidenceSafeEnabled ? runtimeParams.get('standardEventPilot') : null;
   const weaponPilotEnabled = evidenceSafeEnabled && (runtimeParams.get('weaponPilot') === '1' || lightningLedgerPilotEnabled || bearMarketBurnerPilotEnabled || forkedStandardPilotEnabled);
   const worldTourId = runtimeParams.get('worldTour');
-  const worldTourSpawns = Object.freeze({
-    ...Object.fromEntries(WORLD_DESIGN_SITES.map(s=>[`site-${s.id}`,{x:s.x,y:s.y+100}])),
-    farmhouse: Object.freeze({x:650,y:1880}),
-    reservoir: Object.freeze({x:5770,y:4150}),
-    chapel: Object.freeze({x:11480,y:750}),
-    duplex: Object.freeze({x:11320,y:4450}),
-    warehouse: Object.freeze({x:10700,y:3990}),
-    escarpment: Object.freeze({x:3680,y:4460}),
-    footbridge: Object.freeze({x:4750,y:975}),
-    // W-6 (Cycle 074): the ravine and mining set-pieces now stand on the
-    // contract landmarks north of the route, so these two cameras step north
-    // to keep the spire and the headframe in frame below the HUD while the
-    // ledge fronts stay in the bottom of the view.
-    // ravine stays at y 1500: the collectibles smoke walks north-east from here into the
-    // overlook cache at (3200, 1400); the ravine set-piece at y 1250 is still inside the frame.
-    ravine: Object.freeze({ x: 3_050, y: 1_500 }),
-    bridge: Object.freeze({ x: 4_700, y: 2_400 }),
-    hazard: Object.freeze({ x: 3_500, y: 3_100 }),
-    // Keep the tour hero east of the beacon, not at its exact foot pivot.
-    // Northward framing keeps the full beacon below the desktop cockpit.
-    hashwood: Object.freeze({ x: 7_350, y: 800 }),
-    // mining stays at y 1600: the collectibles smoke walks east from here through the
-    // auto-miner cache, and the mining set-piece at y 1250 is still inside the frame.
-    mining: Object.freeze({ x: 9_200, y: 1_600 }),
-    yard: Object.freeze({ x: 11_000, y: 800 }),
-    // P5: the A1-A7 waves added 29 props that no pinned scene could see, so
-    // the regression gate was not watching them. These two tours put the camp
-    // kit and the water dressing on camera.
-    'camp-hashwood': Object.freeze({ x: 7_150, y: 2_500 }),
-    'crossing-water': Object.freeze({ x: 4_900, y: 1_050 }),
-    // W-8: the two spawn camps no existing window sees (relay-north and
-    // yard-south are offscreen for all twelve pinned scenes).
-    'camp-relay-north': Object.freeze({ x: 1_550, y: 620 }),
-    'camp-yard-south': Object.freeze({ x: 11_500, y: 3_700 }),
-    // W-10: the two fence yards no pinned window sees (the fuel yard is on
-    // the collectible-crossing-fuel-depot tour).
-    'yard-relay-depot': Object.freeze({ x: 1_550, y: 3_700 }),
-    'yard-mining-shack': Object.freeze({ x: 8_900, y: 3_715 }),
-    ...Object.fromEntries(authoredPointOfInterestPlacements.map((placement) => [
-      `collectible-${placement.pointOfInterestId}`,
-      Object.freeze({ x: placement.x, y: placement.y }),
-    ])),
-  });
-  const runtimePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
+  const tourModule = evidenceSafeEnabled ? await import('./world-tour-spawns.mjs') : null;
+  const worldTourSpawns = tourModule?.createWorldTourSpawns(authoredPointOfInterestPlacements) ?? {};
+  let runtimePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
     ? worldTourSpawns[worldTourId]
     : LEVEL_ONE_WORLD.player.spawn;
   const authoredSpawnPoints = LEVEL_ONE_WORLD.spawnPoints;
@@ -1185,6 +1156,9 @@ async function boot() {
     : null;
 
   let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false };
+  // The bridge shell is already ready; load the audio player during asset
+  // preparation, before accepting a run, instead of delaying the first paint.
+  const { createCombatAudio } = await import('./combat-audio.mjs');
   const combatAudio = createCombatAudio({
     standalone: window.parent === window,
     musicEnabled: settings.musicEnabled,
@@ -1213,6 +1187,18 @@ async function boot() {
     const rankedActive = Boolean(sessionPayload?.mode === 'ranked' && simulation);
     const keyboardBindings = rankedActive ? sessionPayload.settings.keyboardBindings : nextSettings.keyboardBindings;
     settings = { ...settings, ...nextSettings, keyboardBindings };
+    const briefingBindings = normalizeKeyboardBindings(keyboardBindings);
+    const keyName = code => code.replace(/^Key|^Digit/, '').replace('Arrow', '');
+    const moveCopy = startupPanel?.querySelector?.('[data-briefing-move]');
+    const grenadeCopy = startupPanel?.querySelector?.('[data-briefing-grenade]');
+    if (moveCopy) moveCopy.textContent = ['moveUp','moveLeft','moveDown','moveRight'].map(id => keyName(briefingBindings[id])).join(' / ');
+    if (grenadeCopy) grenadeCopy.textContent = keyName(briefingBindings.grenade);
+    if (settings.gore && !goreRequested) {
+      goreRequested = true;
+      void import('./gore-presentation.mjs').then(module => { gorePresentation = module.createGorePresentation(); })
+        .catch(() => { dataset.goreStatus = 'unavailable'; });
+    }
+    if (!settings.gore) { gorePresentation?.clear(); goreGround.clear(); goreAir.clear(); }
     if (sessionPayload) sessionPayload = { ...sessionPayload, settings: { ...settings } };
     combatAudio.setMusicEnabled(settings.musicEnabled);
     combatAudio.setBusLevels(settings);
@@ -1355,6 +1341,7 @@ async function boot() {
   revealLevelOneAt(revealState, runtimePlayerSpawn);
   let revealSnapshot = getLevelOneRevealSnapshot(revealState);
   const pushCombatVisualEvent = (event) => {
+    if (settings.gore && event.point) gorePresentation?.add(event, queryGround(event.point.x, event.point.y).groundZ);
     if (combatVisualEvents.length >= MAX_COMBAT_VISUAL_EVENTS) combatVisualEvents.shift();
     combatVisualEvents.push(Object.freeze({ ...event }));
   };
@@ -1441,6 +1428,11 @@ async function boot() {
     projectileImpacts.clear();
     grenadeVisuals.clear();
     combatVisuals.clear();
+    if (gorePresentation && camera) {
+      const goreFrame = gorePresentation.render({ground:goreGround,air:goreAir,tick:simulation?.tick ?? 0,
+        settings,particleScale,camera,view,project:worldToScreen});
+      if (releaseTelemetryEnabled) { dataset.goreMarks = String(goreFrame.marks.length); dataset.goreFragments = String(goreFrame.fragments.length); }
+    }
     if (debugOverlay && camera) {
       for (const line of debugOverlay.lines) {
         const from = worldToScreen({ ...line.from, z: 0 }, camera, view);
@@ -1478,6 +1470,18 @@ async function boot() {
       atmosphereTint.height = view.height;
       atmosphereTint.visible = atmosphereGrade.alpha > 0;
       const authoredPropTick = simulation?.tick ?? 0;
+      if (!pickupPresentationRequested && collectibleState?.entries.some(({placement:p}) =>
+        !collectibleState.collectedIds.has(p.id) && authoredPropTick >= p.availableTick &&
+        Math.hypot(p.x-renderState.x,p.y-renderState.y) < Math.hypot(view.width,view.height)/camera.zoom/2+150)) {
+        pickupPresentationRequested = true;
+        import('./pickup-indicators.mjs').then(module => { pickupPresentation=module; }).catch(() => { dataset.pickupMarkerStatus="unavailable"; });
+      }
+      if (pickupPresentation) {
+        const pickupMarkers = pickupPresentation.pickupIndicators({state:collectibleState,tick:authoredPropTick,camera,view,worldToScreen,queryGround,
+          reduceMotion:settings.reduceMotion || performanceProfile.particlesPerHazard === 0});
+        pickupPresentation.drawPickupIndicators(pickupSignals,pickupMarkers,camera.zoom);
+        dataset.pickupMarkers = String(pickupMarkers.length);
+      }
       const hiddenAuthoredPropIds = new Set([...(collectibleState?.collectedIds ?? []), ...worldDesignHiddenSecretProps(worldSecretState)]);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
@@ -1568,7 +1572,7 @@ async function boot() {
             // Roster bodies follow the simulation's tell / strike / recovery
             // windows (Cycle 074); the vector fallback keeps the six-state map.
             state: enemyMarker.phaseRelativePoses ? poseSelection.state : resolveEnemyRuntimeVisualState(enemy, simulation?.tick ?? 0),
-            tick: simulation?.tick ?? 0,
+            tick: creatureAnimationTick(enemy.id, simulation?.tick ?? 0, poseSelection.state, (enemy.hitUntilTick ?? 6) - 6),
             direction: enemyDirection,
             elite: isEliteEnemyProjection(enemy.id),
             phaseTick: enemyMarker.phaseRelativePoses ? poseSelection.phaseTick : null,
@@ -1668,7 +1672,7 @@ async function boot() {
         const deathScreen = worldToScreen({ x: death.x, y: death.y, z: death.groundZ }, camera, view);
         death.graphic.visible = isScreenPointVisible(deathScreen, view, performanceProfile.enemyCullMargin);
         if (!death.graphic.visible) continue;
-        const deathPose = death.graphic.applyPose({ state: 'death', tick: simulation?.tick ?? death.startTick, direction: death.direction, elite: death.elite });
+        const deathPose = death.graphic.applyPose({ state: 'death', tick: Math.max(0, (simulation?.tick ?? death.startTick) - death.startTick), direction: death.direction, elite: death.elite });
         death.graphic.position.set(deathScreen.x, deathScreen.y);
         death.graphic.scale.set((death.graphic.rosterScale ?? 1) * camera.zoom);
         // Fade the corpse out instead of hard-deleting it mid-frame.
@@ -1693,11 +1697,8 @@ async function boot() {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
         const bossPhaseTick = lastBossStep?.elapsedTick ?? 45;
         const bossPose = bossVisual.applyPose({
-          state: !liquidatorBoss.active ? 'death' : bossVisualTick <= bossHitVisualUntilTick ? 'hit' : liquidatorBoss.pendingAttacks.length > 0 ? 'tell' : 'idle',
-          tick: bossVisualTick,
-          direction: 0,
-          elite: true,
-          phase: liquidatorBoss.phaseId,
+          ...liquidatorPose({boss: liquidatorBoss, player: actor, tick: bossVisualTick,
+            lastAttack: lastBossResolvedAttack, hitUntil: bossHitVisualUntilTick, deathUntil: bossDeathVisualUntilTick}),
         });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
@@ -2797,6 +2798,7 @@ async function boot() {
     lastGrenadeDetonation = null;
     grenadeFxEvents = [];
     combatVisualEvents = [];
+    gorePresentation?.clear(); goreGround.clear(); goreAir.clear();
     lastAccessibleCombatStatus = '';
     playerDefeatController = null;
     playerHealth = 100;
@@ -2830,7 +2832,16 @@ async function boot() {
     const navGrid = navGridAuthority.require();
     stopCurrentSession();
     combatAudio.pause();
-    startupGate = createStartupArtGate(performance.now());
+    if (!evidenceSafeEnabled) runtimePlayerSpawn = selectLevelEntry(payload.session.seed);
+    revealState = createLevelOneRevealState();
+    revealLevelOneAt(revealState, runtimePlayerSpawn);
+    revealSnapshot = getLevelOneRevealSnapshot(revealState);
+    dataset.entryId = runtimePlayerSpawn.id ?? 'evidence';
+    const entryLabel = startupPanel?.querySelector?.('[data-level-entry]');
+    if (entryLabel) entryLabel.textContent = runtimePlayerSpawn.name ?? 'Frontier Relay';
+    startupGate = createStartupArtGate(performance.now(), { requireEntry: !evidenceSafeEnabled });
+    const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
+    if (entryButton) { entryButton.disabled = true; entryButton.textContent = 'Preparing Level 1…'; }
     if (startupPanel) startupPanel.hidden = false;
     if (startupContinue) { startupContinue.hidden = true; startupContinue.disabled = false; }
     if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
@@ -2898,42 +2909,17 @@ async function boot() {
       'gas-bomber': Object.freeze({ x: 520, y: 2720 }),
       'validator-cultist': Object.freeze({ x: 1100, y: 2050 }),
     });
-    const rosterPreviewOffsets = Object.freeze(forkedStandardPilotEnabled ? {
-      // Evidence-only melee corridor: three nearby human/zombie targets prove
-      // thrust/sweep contacts without changing canonical encounter placement.
-      'bagholder-rusher': Object.freeze({ x: -54, y: -8 }),
-      forkrunner: Object.freeze({ x: -68, y: 0 }),
-      'liquidator-agent': Object.freeze({ x: -82, y: 10 }),
-      'whale-enforcer': Object.freeze({ x: 120, y: -100 }),
-      'gas-bomber': Object.freeze({ x: 140, y: 20 }),
-      'validator-cultist': Object.freeze({ x: 100, y: 140 }),
-    } : bearMarketBurnerPilotEnabled ? {
-      // Evidence-only close corridor: three human/zombie targets sit inside
-      // the Burner's base 25-degree cone while the remaining roster stays
-      // visible behind the player. Canonical encounter placement is unchanged.
-      'bagholder-rusher': Object.freeze({ x: -100, y: -20 }),
-      forkrunner: Object.freeze({ x: -140, y: 0 }),
-      'liquidator-agent': Object.freeze({ x: -180, y: 20 }),
-      'whale-enforcer': Object.freeze({ x: 120, y: -100 }),
-      'gas-bomber': Object.freeze({ x: 140, y: 20 }),
-      'validator-cultist': Object.freeze({ x: 100, y: 140 }),
-    } : {
-      'bagholder-rusher': Object.freeze({ x: -120, y: -80 }),
-      forkrunner: Object.freeze({ x: 0, y: -100 }),
-      'liquidator-agent': Object.freeze({ x: 120, y: -80 }),
-      'whale-enforcer': Object.freeze({ x: -120, y: 140 }),
-      'gas-bomber': Object.freeze({ x: 0, y: 160 }),
-      'validator-cultist': Object.freeze({ x: 120, y: 140 }),
-    });
+    const rosterPreviewOffsets = rosterPreviewEnabled ? tourModule.createRosterPreviewOffsets({forkedStandardPilotEnabled,bearMarketBurnerPilotEnabled}) : null;
     enemyPopulation = createEnemyPopulation({
       capacity: 192,
       threatCapacity: endurancePressurePilotEnabled ? runtimeEncounterSnapshot(0).threatCap : 1024,
     });
     const openingEnemyByArchetypeId = new Map(ENEMY_ARCHETYPE_IDS.map((archetypeId, index) => {
-      const offset = rosterPreviewOffsets[archetypeId];
+      const offset = rosterPreviewOffsets?.[archetypeId];
       const position = rosterPreviewEnabled
         ? { x: runtimePlayerSpawn.x + offset.x, y: runtimePlayerSpawn.y + offset.y }
-        : previewSpawns[archetypeId];
+        : { x: runtimePlayerSpawn.x + previewSpawns[archetypeId].x - 800,
+            y: runtimePlayerSpawn.y + previewSpawns[archetypeId].y - 2400 };
       const enemy = createEnemyState({
         archetypeId,
         id: `prototype-${String(index + 1).padStart(2, '0')}-${archetypeId}`,
@@ -4029,6 +4015,13 @@ async function boot() {
       } else {
         lastEnemyAttack = Object.freeze({ tick, tokens: Object.freeze([]), events: Object.freeze([]), droppedEvents: 0 });
       }
+      for (const enemy of grayboxEnemies) {
+        if (enemy.attackTellStartedTick !== tick || Math.hypot(enemy.x-actor.x,enemy.y-actor.y)>900) continue;
+        const ranged = ['ranged','area','support'].includes(ENEMY_ARCHETYPES[enemy.archetypeId]?.attack.tokenFamily);
+        combatAudio.play(ranged ? 'enemy-ranged-tell' : 'enemy-melee-tell', {
+          volume:.1, playbackRate:.85+deterministicUnit(enemy.id)*.3,
+        });
+      }
       for (const event of lastEnemyAttack.events) {
         pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
         const resolved = resolveEnemyAttackAgainstPlayer(event, {
@@ -4245,7 +4238,7 @@ async function boot() {
           if (damageEvent.targetId === 'player' && damageEvent.weaponId === 'satoshi-frag') {
             recordRunGrenade(runSummaryAccumulator, { type: 'self-damage', amount: damageEvent.damageApplied });
           }
-          combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : 'enemy-hit', {
+          combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : damageEvent.targetId === liquidatorBoss.id ? 'boss-hit' : 'enemy-hit', {
             volume: damageEvent.critical ? 0.14 : 0.09,
           });
           pushImpactVisual({
@@ -4280,6 +4273,8 @@ async function boot() {
             const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.damageApplied, tick });
             if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
             if (bossDamage.runEvent) {
+              combatAudio.play('boss-death', {volume:.18});
+              pushCombatVisualEvent({type:'kill',tick,point:{x:liquidatorBoss.x,y:liquidatorBoss.y,z:liquidatorBoss.groundZ+24},color:0xff6b5c});
               bossDeathVisualUntilTick = tick + 45;
               triggerCameraShake(tick, 12);
             }
@@ -4615,6 +4610,7 @@ async function boot() {
     startupContinue.disabled = false;
     if (startupGate === gate) gate.continue();
   });
+  document.querySelector('#hmhStartupEnter')?.addEventListener('click', () => startupGate?.enter());
   document.querySelector('#hmhStartupExit')?.addEventListener('click', () => {
     if (bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
     else window.location.assign('../');
@@ -4627,6 +4623,21 @@ async function boot() {
         && openingEnemiesReady && worldStates.every(state => state === 'ready')
         && (!terrainTilesEnabled || TERRAIN_MATERIAL_IDS.every(id => terrainTiles.loadedIds.includes(id)));
       const status = startupGate.check({ ready, now: performance.now(), failed: Boolean(productionHeroLoadError || terrainTileLoadError || enemyRosterLoadError || worldStates.includes('fallback')) });
+      const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
+      if (entryButton) {
+        const flags = [!productionPilotEnabled || loadedProductionHeroId === productionHeroAsset(sessionPayload.heroId).actorId,
+          openingEnemiesReady, ...worldStates.map(state => state === 'ready'),
+          ...TERRAIN_MATERIAL_IDS.map(id => !terrainTilesEnabled || terrainTiles.loadedIds.includes(id))];
+        const percent = Math.round(flags.filter(Boolean).length / flags.length * 100);
+        const progress = startupPanel.querySelector('[role="progressbar"]');
+        progress?.setAttribute('aria-valuenow', String(percent));
+        if (progress?.firstElementChild) progress.firstElementChild.style.width = `${percent}%`;
+        startupPanel.setAttribute('aria-busy', String(!ready));
+        if (ready && entryButton.disabled) { renderWorld(); entryButton.focus({preventScroll:true}); }
+        entryButton.disabled = !ready;
+        entryButton.textContent = ready ? 'Enter Level 1' : 'Preparing Level 1…';
+        if (ready && startupCopy) startupCopy.textContent = 'Ready when you are. Take a moment to plan your run.';
+      }
       if (!status.ready) {
         if (startupContinue) startupContinue.hidden = !status.canContinue;
         if (startupCopy && status.canContinue) startupCopy.textContent = 'Artwork is taking longer to load. You can wait, or play with basic graphics.';

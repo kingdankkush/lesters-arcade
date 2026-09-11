@@ -338,10 +338,17 @@ export function resolveProductionHeroPose(index, {
   if (!index?.frameByKey || index.pipelineId !== EXPECTED_PIPELINE_ID || index.runtimeAuthority !== 'projection-only') throw new TypeError('production hero atlas index is required');
   const tick = positiveInteger(simulationTick, 'simulationTick');
   const resolvedActionTick = positiveInteger(actionTick, 'actionTick');
-  const legName = directionNameForProductionIndex(legDirection);
   const torsoName = directionNameForProductionIndex(torsoDirection);
   const moving = locomotion === 'moving';
   const fullBodyActions = new Set(['dash', 'melee', 'grenade', 'death']);
+  // Aim remains authoritative. Hips follow any turn beyond a modest waist
+  // twist; authored full-body actions use a single facing at the waist seam.
+  directionNameForProductionIndex(legDirection);
+  const delta = ((torsoDirection - legDirection + 12) % 8) - 4;
+  const bodyDirection = fullBodyActions.has(action) ? torsoDirection
+    : Math.abs(delta) <= 1 ? legDirection
+      : (torsoDirection - Math.sign(delta) + 8) % 8;
+  const legName = directionNameForProductionIndex(bodyDirection);
   if (fullBodyActions.has(action)) {
     return Object.freeze([
       requireFrame(index, 'shadow', 'idle', legName, 0),
@@ -352,7 +359,13 @@ export function resolveProductionHeroPose(index, {
   }
 
   const lowerState = moving ? 'run' : 'idle';
-  const lower = frameFor(index, 'lower-body', lowerState, legName, tick);
+  // Backpedalling plays the planted run cycle in reverse, without altering
+  // simulation velocity or the timing of any combat action.
+  const travelDelta = ((legDirection - bodyDirection + 12) % 8) - 4;
+  const lowerClip = clipFor(index, 'lower-body', lowerState, legName);
+  const lowerFrame = animationFrame(tick, lowerClip);
+  const lower = requireFrame(index, 'lower-body', lowerState, legName,
+    moving && Math.abs(travelDelta) > 2 ? (lowerClip.frameCount - lowerFrame) % lowerClip.frameCount : lowerFrame);
   let torsoState = 'aim';
   let weaponState = 'aim';
   let actionCadenceTick = tick;
