@@ -20,6 +20,10 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  "tests/hmh-reboot-terrain-source-provenance.test.mjs",
+  "apps/hmh-reboot/src/world-ground-fallback.mjs",
+  "tests/hmh-reboot-world-ground-fallback.test.mjs",
+  "tests/hmh-reboot-roadside-composition.test.mjs",
   "tests/hmh-reboot-restart-authority.test.mjs",
   "tests/hmh-reboot-startup-runtime.test.mjs",
   "tests/hmh-reboot-runtime-boss-aim.test.mjs",
@@ -35,6 +39,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-player-flow.test.mjs",
   "tests/hmh-reboot-startup-art.test.mjs",
   "tests/hmh-playable-release.test.mjs",
+  "tests/portal-service-worker-cache.test.mjs",
   "scripts/hmh-world-design-movement-report.mjs",
   "tests/hmh-world-design-campfires.test.mjs",
   "tests/hmh-world-design-secrets.test.mjs",
@@ -528,6 +533,8 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  "scripts/build-hmh-terrain-tiles.py",
+  "scripts/hmh-blender/bake-world-ground.py",
   "scripts/hmh_native_hero_diagnostics.py",
   "scripts/hmh-blender/export-hmh-world-design.py",
   "scripts/hmh-world-design-published-image-qa.py",

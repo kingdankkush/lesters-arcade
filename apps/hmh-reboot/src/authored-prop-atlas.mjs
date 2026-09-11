@@ -436,6 +436,28 @@ const clampToBand = (district, band, x, y) => [
 ];
 const tooClose = (placed, x, y, minimum) => placed.some((p) => Math.hypot(p.x - x, p.y - y) < minimum);
 
+// Fixed compositions replace the first three distant groups in these districts.
+// The remaining density and far scenery stay intact. Low plants frame the road;
+// trees mark the woodland edge. Coordinates never depend on run seed or camera.
+const SHOULDER_ASSETS = Object.freeze(['scrub-bush', 'fern-cluster', 'flowering-weeds', 'rock-shelf', 'hashwood-pine', 'birch-cluster', 'wrecked-sedan', 'thorn-bramble', 'hashwood-stump']);
+const SHOULDER_GROUPS = freezeDeep({
+  'frontier-relay': [
+    [[510,2380,0,1],[500,2450,1,.9],[550,2510,2,1]],
+    [[800,2600,0,1],[860,2640,1,1]],
+    [[1100,2250,0,1],[1110,2320,2,1],[1100,2390,1,.9],[1100,2450,3,.4]],
+  ],
+  hashwood: [
+    [[6490,2110,4,.65],[6550,2150,1,1],[6460,2180,0,.9]],
+    [[6250,2450,5,.5],[6300,2400,1,1]],
+    [[6600,2610,4,.55],[6530,2620,1,1],[6580,2680,2,1],[6600,2730,8,.7]],
+  ],
+  'liquidation-yard': [
+    [[10130,2310,6,1],[10075,2340,7,.7],[10120,2230,0,.9]],
+    [[10250,2640,0,1],[10300,2690,2,1]],
+    [[10010,2715,7,.9],[10010,2800,2,1],[10080,2780,0,.9],[10090,2690,3,.45]],
+  ],
+});
+
 export function buildAuthoredWorldPropPlacements({ worldId, seed, countPerDistrict = 8 } = {}) {
   if (worldId !== 'forked-frontier') throw new TypeError(`unsupported authored prop world ${String(worldId)}`);
   if (!Number.isInteger(countPerDistrict) || countPerDistrict < 0 || countPerDistrict > AUTHORED_DRESSING_CAP) throw new TypeError(`countPerDistrict must be an integer from 0 to ${AUTHORED_DRESSING_CAP}`);
@@ -454,6 +476,21 @@ export function buildAuthoredWorldPropPlacements({ worldId, seed, countPerDistri
       const anchorIndex = index;
       const clusterId = `cluster:${district.id}:${String(clusterIndex).padStart(2, '0')}`;
       const anchorKey = `${worldId}:${district.id}:${anchorIndex}`;
+      const shoulder = SHOULDER_GROUPS[district.id]?.[clusterIndex];
+      if (shoulder) {
+        shoulder.forEach(([x,y,asset,scale], member) => {
+          if (placementBlocked(x,y)) throw new RangeError(`blocked roadside group ${clusterId}`);
+          const placement = freezeDeep({
+            id: `dressing:${district.id}:${String(index + member).padStart(2, '0')}`,
+            assetId: SHOULDER_ASSETS[asset], clusterId, clusterRole: member ? 'satellite' : 'anchor',
+            category: 'world-prop', districtId: district.id, x, y, scale, composition: 'roadside', runtimeAuthority: 'projection-only',
+          });
+          placements.push(placement); placed.push(placement);
+          if (!member) anchors.push(placement);
+        });
+        index += shoulder.length; clusterIndex += 1;
+        continue;
+      }
       // Alternate shoulders by CLUSTER, not by item, so a group stays on one
       // side of the route instead of being split across the map.
       const north = clusterIndex % 2 === 0;

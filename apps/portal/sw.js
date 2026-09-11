@@ -6,11 +6,13 @@
 //   - JS / CSS           -> NETWORK-FIRST (always get the freshest bundle; the
 //                            app already cache-busts with ?v= but network-first
 //                            guarantees a new deploy wins immediately)
-//   - images/fonts/audio -> CACHE-FIRST  (heavy, effectively immutable assets;
-//                            this is where the repeat-visit speedup comes from)
-// Bumping CACHE_VERSION drops every old cache on activate.
+//   - images/fonts/audio -> CACHE-FIRST within this release, revalidated when
+//                            filling a new release cache
+// Bumping CACHE_VERSION retires only this app's old caches on activate. Mutable
+// requests bypass stale HTTP-cache responses; content-hashed chunks retain their
+// immutable HTTP-cache policy. An already running game is never force-reloaded.
 
-const CACHE_VERSION = 'lesters-arcade-v33-hmh-playable-update';
+const CACHE_VERSION = 'lesters-arcade-v34-hmh-world-polish';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
@@ -34,7 +36,7 @@ const CACHE_FIRST_DESTINATIONS = new Set(['image', 'font', 'audio', 'video']);
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS).catch(() => {}))
+      .then((cache) => cache.addAll(PRECACHE_URLS.map((url) => new Request(new URL(url, self.location.origin), { cache: 'reload' }))).catch(() => {}))
       .then(() => self.skipWaiting()),
   );
 });
@@ -42,16 +44,23 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('lesters-arcade-') && k !== CACHE_NAME).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
 
-// Network-first: try the network, cache a copy on success, fall back to cache.
+// Network-first alone still permits stale-while-revalidate HTTP-cache responses.
+// Only content-addressed build chunks may reuse them without revalidation.
+function fetchCurrent(request) {
+  const immutableChunk = /^\/dist\/chunks\/[^/]+-[A-Z0-9]{8}\.js$/i.test(new URL(request.url).pathname);
+  return immutableChunk ? fetch(request) : fetch(request, { cache: 'no-cache' });
+}
+
+// Network-first: revalidate, cache a copy on success, fall back to cache offline.
 async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   try {
-    const response = await fetch(request);
+    const response = await fetchCurrent(request);
     if (response && response.ok && request.method === 'GET') {
       cache.put(request, response.clone());
     }
@@ -73,7 +82,7 @@ async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
   if (cached) return cached;
-  const response = await fetch(request);
+  const response = await fetchCurrent(request);
   if (response && response.ok && request.method === 'GET') {
     cache.put(request, response.clone());
   }
@@ -87,6 +96,10 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  if (request.cache === 'no-store') {
+    event.respondWith(fetch(request));
+    return;
+  }
 
   if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith(networkFirst(request));

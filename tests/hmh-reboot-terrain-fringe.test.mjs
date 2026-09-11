@@ -31,7 +31,7 @@ test('every material bakes a fringe strip and the manifest records it', async ()
 
 test('fringe assets resolve per material and reject unknown ids', () => {
   const asset = terrainFringeAsset('packed-earth');
-  assert.match(asset.imageUrl, /packed-earth-fringe\.png$/);
+  assert.match(new URL(asset.imageUrl, 'https://lestersarcade.io/hmh-reboot/').pathname, /packed-earth-fringe\.png$/);
   assert.throws(() => terrainFringeAsset('not-a-material'), /unknown terrain material/);
 });
 

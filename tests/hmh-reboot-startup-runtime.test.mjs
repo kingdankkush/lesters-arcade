@@ -26,6 +26,8 @@ const pauseNode = findNode(node => node.type === 'VariableDeclarator' && node.id
 const resumeNode = findNode(node => node.type === 'VariableDeclarator' && node.id.name === 'resumeRuntime').init;
 const tickerNode = findNode(node => node.type === 'CallExpression'
   && source.slice(node.callee.start, node.callee.end) === 'app.ticker.add').arguments[0];
+const continueNode = findNode(node => node.type === 'CallExpression'
+  && source.slice(node.callee.start, node.callee.end) === 'startupContinue?.addEventListener').arguments[1];
 
 // Execute the shipped handlers rather than a second implementation of their
 // loading conditions. The renderer and transport are only observation stubs.
@@ -54,12 +56,13 @@ function runtime({ paused = true } = {}) {
     } },
     combatAudio: { pause() {}, resume() {}, play() {} }, cockpit: { setPaused() {} },
     document: { getElementById: () => null }, setStatus() {}, bridge: null,
+    loadGroundFallback: async () => events.push(['load-basic-ground']),
   });
   const execute = node => vm.runInContext(`(${source.slice(node.start, node.end)})`, context,
     { importModuleDynamically: () => Promise.reject(new Error('Map renderer is outside this loading test.')) });
   const pause = execute(pauseNode);
   const frame = execute(tickerNode);
-  return { context, events, pause, resume: execute(resumeNode), frame: () => frame({ deltaMS: 1000 / 60 }) };
+  return { context, events, pause, continueWithBasicGraphics: execute(continueNode), resume: execute(resumeNode), frame: () => frame({ deltaMS: 1000 / 60 }) };
 }
 
 test('the portal can pause an upgrade choice and receive current run stats without losing the choice', () => {
@@ -156,17 +159,64 @@ test('a warm restart cannot reveal the previously selected hero as the new hero'
   assert.deepEqual(events[0], ['input-reset', 'artwork-ready']);
 });
 
-test('failed artwork waits at tick zero until the player explicitly accepts basic graphics', () => {
-  const { context, frame } = runtime();
+test('failed artwork waits at tick zero until the player explicitly accepts basic graphics', async () => {
+  const { context, frame, continueWithBasicGraphics } = runtime();
   context.loadedProductionHeroId = null;
   context.productionHeroLoadError = 'unavailable';
   frame();
   assert.equal(context.startupContinue.hidden, false);
   assert.equal(context.startupPanel.hidden, false);
   assert.equal(context.simulation.tick, 0);
-  context.startupGate.continue();
+  await continueWithBasicGraphics();
   frame();
   assert.equal(context.startupPanel.hidden, true);
   assert.equal(context.dataset.startupArt, 'basic-graphics');
+  assert.equal(context.simulation.tick, 0);
+});
+
+test('normal authored startup never requests the optional basic ground renderer', () => {
+  const { context, frame, events } = runtime();
+  context.loadedProductionHeroId = null;
+  frame();
+  context.loadedProductionHeroId = 'lilly';
+  frame();
+  assert.equal(context.dataset.startupArt, 'ready');
+  assert.equal(events.some(([kind]) => kind === 'load-basic-ground'), false);
+});
+
+test('explicit basic graphics waits for its ground renderer before releasing the run', async () => {
+  const { context, frame, continueWithBasicGraphics } = runtime();
+  context.terrainTiles.loadedIds = [];
+  context.terrainTileLoadError = 'unavailable';
+  let finishLoading;
+  context.loadGroundFallback = () => new Promise(resolve => { finishLoading = resolve; });
+  frame();
+  const continuation = continueWithBasicGraphics();
+  frame();
+  assert.equal(context.startupPanel.hidden, false);
+  assert.equal(context.simulation.tick, 0);
+  assert.equal(context.startupContinue.disabled, true);
+  assert.equal(typeof finishLoading, 'function');
+  finishLoading();
+  await continuation;
+  frame();
+  assert.equal(context.startupPanel.hidden, true);
+  assert.equal(context.dataset.startupArt, 'basic-graphics');
+  assert.equal(context.startupContinue.disabled, false);
+});
+
+test('a delayed basic-graphics choice cannot release a replacement session', async () => {
+  const { context, frame, continueWithBasicGraphics } = runtime();
+  context.terrainTiles.loadedIds = [];
+  let finishLoading;
+  context.loadGroundFallback = () => new Promise(resolve => { finishLoading = resolve; });
+  const continuation = continueWithBasicGraphics();
+  context.startupGate = createStartupArtGate(100);
+  assert.equal(typeof finishLoading, 'function');
+  finishLoading();
+  await continuation;
+  frame();
+  assert.notEqual(context.startupGate, null);
+  assert.equal(context.startupPanel.hidden, false);
   assert.equal(context.simulation.tick, 0);
 });

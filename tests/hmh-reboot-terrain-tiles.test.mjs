@@ -10,6 +10,9 @@ import {
   TERRAIN_TILE_PIPELINE_ID,
   createTerrainTileRegistry,
   terrainTileAsset,
+  terrainFringeAsset,
+  terrainOverlayAsset,
+  terrainManifestUrl,
   validateTerrainManifest,
 } from '../apps/hmh-reboot/src/terrain-tile-atlas.mjs';
 import { DISTRICT_PRODUCTION_MATERIALS } from '../apps/hmh-reboot/src/world-production-art.mjs';
@@ -43,41 +46,33 @@ test('the baked manifest is present, projection-only, and complete', async () =>
   }
 });
 
-test('tiles are baked at 512px with painted layering and proportional fringes', async () => {
+test('tiles preserve 512px Blender ground detail with proportional fringes', async () => {
   // MAP-REDO slice 2: raise the bake to 512px with painted-style layering.
   // The world-unit repeat is fixed by the renderer, so a larger bake means
   // more texel density at gameplay zoom, not larger features.
   const manifest = await loadManifest();
   assert.ok(manifest.tileSize >= 512, `tileSize ${manifest.tileSize} is below the 512px fidelity bar`);
-  assert.equal(manifest.paintedLayering, true, 'bakery must record the painted-layering pass');
+  assert.equal(manifest.materialAuthoring, 'blender-ground-and-retained-surface-bakes');
   assert.ok(manifest.fringeHeight >= 128, `fringeHeight ${manifest.fringeHeight} must scale with the bake`);
 });
 
-test('each district tile bakes three named sub-materials through a deterministic wrapped patch mask', async () => {
+test('each district tile is bound to its original Blender material and measured wrap statistics', async () => {
   const manifest = await loadManifest();
-  assert.equal(manifest.intraDistrictPatches, true, 'T1 patch baking must be explicit in the manifest');
-
-  const districtMaterialIds = new Set(Object.values(DISTRICT_TERRAIN_MATERIAL));
-  const patches = new Map((manifest.districtPatches ?? []).map((entry) => [entry.id, entry]));
-  assert.equal(patches.size, districtMaterialIds.size, 'every district material needs one patch recipe');
-
-  for (const materialId of districtMaterialIds) {
-    const patch = patches.get(materialId);
-    assert.ok(patch, `${materialId} has no intra-district patch recipe`);
-    assert.equal(patch.bakedInto, materialId, `${materialId} patches must stay in the existing runtime tile`);
-    assert.equal(patch.mask?.source, 'wrapped-fbm', `${materialId} mask must be deterministic and seamless`);
-    assert.deepEqual(patch.mask?.periods, [2, 4, 8], `${materialId} mask periods must wrap the tile`);
-    assert.ok(Number.isInteger(patch.mask?.seed), `${materialId} mask seed must be an integer`);
-    assert.equal(patch.variants?.length, 3, `${materialId} must carry three sub-materials`);
-    assert.equal(new Set(patch.variants.map((variant) => variant.id)).size, 3, `${materialId} variant ids must be unique`);
-    for (const variant of patch.variants) {
-      assert.match(variant.id, /^[a-z0-9-]+$/, `${materialId} has a non-semantic variant id`);
-      for (const key of ['base', 'shadow', 'highlight']) {
-        assert.match(variant[key] ?? '', /^#[0-9a-f]{6}$/i, `${materialId}/${variant.id} must record ${key}`);
-      }
-    }
-    assert.ok(manifest.seamStatistics?.[materialId], `${materialId} needs measured wrap statistics`);
+  const materials = new Map(manifest.materials.map(entry => [entry.id, entry]));
+  for (const materialId of Object.values(DISTRICT_TERRAIN_MATERIAL)) {
+    const material = materials.get(materialId);
+    assert.equal(material.source.kind, 'blender-cycles', materialId);
+    assert.match(material.source.sha256, /^[a-f0-9]{64}$/, materialId);
+    assert.match(material.source.decodedRgbaSha256, /^[a-f0-9]{64}$/, materialId);
+    assert.ok(manifest.seamStatistics[materialId], materialId);
   }
+});
+
+test('terrain requests use a new version key even under the preceding service worker', () => {
+  const urls = [terrainManifestUrl(), ...TERRAIN_MATERIAL_IDS.flatMap(id => [terrainTileAsset(id).imageUrl, terrainFringeAsset(id).imageUrl]),
+    ...['road-shoulder', 'shore-band', 'scree-skirt', 'rock-face', 'shallows-band'].map(id => terrainOverlayAsset(id).imageUrl)];
+  assert.equal(new Set(urls).size, 28);
+  for (const path of urls) assert.equal(new URL(path, 'https://lestersarcade.io/hmh-reboot/').searchParams.get('v'), TERRAIN_TILE_PIPELINE_ID);
 });
 
 test('every material file referenced by the manifest exists on disk', async () => {
@@ -189,7 +184,7 @@ test('sprite pooling reuses sprites, excludes the mask, and hides stale ones', a
   const source = await readFile(new URL('../apps/hmh-reboot/src/world-production-art.mjs', import.meta.url), 'utf8');
   // The road container holds its mask at child 0. Indexing raw children hid
   // the sprite that had just been placed.
-  assert.match(source, /const poolable = \(\) => container\.children\.filter\(\(child\) => child\.label !== 'world-road-mask'\)/);
+  assert.match(source, /const poolable = \(\) => container\.children\.filter\(\(child\) => child\.label !== 'world-road-mask' && child\.label !== 'world-path-mask'\)/);
   assert.match(source, /let sprite = poolable\(\)\[cursor\]/, 'placement must index the filtered pool');
   const finishBlock = source.slice(source.indexOf('    finish() {'), source.indexOf('    finish() {') + 260);
   assert.ok(finishBlock.includes('poolable()'), 'finish must hide over the same filtered view');

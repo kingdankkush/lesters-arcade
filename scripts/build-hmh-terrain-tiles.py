@@ -1,36 +1,12 @@
-"""Deterministic seamless terrain tile bakery for Hard Money Heroes.
+"""Build verified Blender ground tiles and deterministic terrain edge strips.
 
-Playtest feedback: "the level design doesn't have very good terrain tiling and
-it's hard to know what you're walking on, what's elevated, what's water."
+Seven land materials preserve the original Blender source pixels. Their recipe,
+native scene and two-render receipt are authenticated before any output is written.
+Water, shallows, bridge deck and ledge top retain their established height-field
+recipes. Fringes and edge strips share the new land pixels and periodic alpha
+profiles. Seam checks compare wrap variation against normal neighboring texels.
 
-The runtime drew every surface as a flat colour fill, so water, walkable
-ground, road and raised decks were distinguishable only by hue. This bakes a
-distinct, physically-shaded material per surface type.
-
-Seamlessness is mathematical, not eyeballed: value noise is sampled on a
-periodic lattice whose period divides the tile size, so the left edge is the
-same lattice column as the right edge by construction. Tiles cannot seam.
-Every later pass -- scatter stamps, ambient occlusion, the cast shadow -- is
-built from wrapped neighbour reads (`np.roll`) for the same reason.
-
-Shading is a real lit surface -- multi-octave height field -> screen-space
-normal -> Lambert + specular against a fixed light -- so each material reads
-as a physical substance rather than a colour.
-
-Cycle 072 W-1 (v3, "lit micro-terrain"): the owner's standing verdict was
-"still single color, no texture". Two things caused it. The runtime drew a
-512-texel tile across 66.56 world units, point-sampling roughly every eighth
-texel, so all baked detail collapsed into salt-and-pepper aliasing with a
-visible 67px grid; the runtime repeat is now 399.36. And the bake had no
-object-scale relief at all: no pebbles, no tufts, no contact shading. This
-version adds a broad macro height component, hashed scatter stamps pressed
-into the HEIGHT field before shading (so they receive the same real light as
-everything else), a multi-scale wrapped ambient-occlusion term, and a
-directional pseudo-shadow -- then vectorises the whole pipeline with numpy so
-the extra work stays affordable.
-
-Output is projection-only art: nothing here informs collision, elevation,
-damage or AI.
+Output is projection-only art; it cannot alter gameplay geometry or authority.
 """
 from __future__ import annotations
 
@@ -50,7 +26,7 @@ TILE_SIZE = 512
 # them with the tile size keeps every feature the same size in world units --
 # a bigger bake buys texel density, not bigger pebbles.
 PERIOD_SCALE = TILE_SIZE // 256
-PIPELINE_ID = "hmh-terrain-tiles-v3"
+PIPELINE_ID = "hmh-terrain-tiles-v4"
 
 # Light direction for every material, so surfaces share one lighting model and
 # read as one world. Normalised at use.
@@ -408,199 +384,85 @@ def bake_surface(material: dict) -> Image.Image:
     return Image.fromarray(pixels, "RGBA")
 
 
-PATCH_MASK_PERIODS = [2, 4, 8]
-PATCH_MASK_OCTAVES = [(2, 1.0), (4, 0.55), (8, 0.25)]
+# Source-ground tiles are rendered in Blender and verified before deriving strips.
+# Their seeds are only used to shape deterministic fringe alpha.
+BLENDER_MATERIAL_SEEDS = {
+    "packed-earth": 11, "red-rock": 23, "wet-bank": 37, "forest-floor": 53,
+    "crushed-ore": 71, "industrial-slab": 89, "road": 101,
+}
+SOURCE_DIR = ROOT / "apps" / "hmh-reboot" / "assets" / "source" / "terrain"
+BLENDER_RECIPE = ROOT / "scripts" / "hmh-blender" / "bake-world-ground.py"
+OVERLAY_SOURCES = {
+    "road-shoulder": "packed-earth", "shore-band": "wet-bank", "scree-skirt": "crushed-ore",
+}
 
 
-def material_variant(base: dict, variant: dict) -> dict:
-    """Resolve one named sub-material without leaking patch metadata into baking."""
-    resolved = {key: value for key, value in base.items() if key != "patchVariants"}
-    resolved.update({key: value for key, value in variant.items() if key != "id"})
-    return resolved
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def bake_material(name: str, material: dict) -> tuple[Image.Image, dict | None]:
-    """Bake one runtime tile, folding district variation into the existing asset.
+def load_blender_ground(source_dir: Path = SOURCE_DIR) -> tuple[dict, dict]:
+    """Authenticate the native scene, recipe and exact repeat-rendered tiles.
 
-    Districts keep one texture request and one pooled TilingSprite. Three authored
-    sub-materials are composited with a low-frequency wrapped FBM mask at build
-    time, so the visual patches add no child-JS bytes and cannot gain gameplay
-    authority. Shared world-locked sampling in the renderer keeps the result from
-    swimming under the camera.
+    The builder fails before writing any generated assets if the source packet is
+    incomplete, mutated, or no longer tied to the saved Blender recipe.
     """
-    variants = material.get("patchVariants")
-    if not variants:
-        return bake_surface(material), None
-    if len(variants) != 3:
-        raise ValueError(f"{name}: district materials require exactly three patch variants")
-
-    resolved = [material_variant(material, variant) for variant in variants]
-    variant_tiles = [np.asarray(bake_surface(spec), dtype=np.float64) for spec in resolved]
-    mask_seed = int(material["seed"]) ^ 0x544831
-    mask_periods = [4, 8, 16] if name == "road" else PATCH_MASK_PERIODS
-    mask_octaves = [(period, amplitude) for period, (_, amplitude) in zip(mask_periods, PATCH_MASK_OCTAVES)]
-    selector = fbm(TILE_SIZE, mask_octaves, mask_seed)
-
-    # The centre variant is the connective material. Low and high wrapped-FBM
-    # lobes fade into the other two variants, producing broad readable patches
-    # without threshold seams or runtime mask sprites.
-    if name == "road":
-        # Road patches must not resolve as district-scale coloured islands.
-        # Continuously crossfade gravel -> asphalt -> dirt; medium wrapped
-        # periods keep the texture varied but calm at gameplay zoom.
-        position = smootherstep(selector) * 2.0
-        low = np.clip(position.astype(np.int64), 0, 1)
-        amount = smootherstep(position - low)[:, :, None]
-        left = np.where((low == 0)[:, :, None], variant_tiles[0], variant_tiles[1])
-        right = np.where((low == 0)[:, :, None], variant_tiles[1], variant_tiles[2])
-        blended = left + (right - left) * amount
-    else:
-        centre = variant_tiles[1]
-        low_amount = smootherstep(np.clip((0.46 - selector) / 0.18, 0.0, 1.0))
-        high_amount = smootherstep(np.clip((selector - 0.54) / 0.18, 0.0, 1.0))
-        amount = np.where(selector < 0.46, low_amount, np.where(selector > 0.54, high_amount, 0.0))
-        source = np.where((selector < 0.46)[:, :, None], variant_tiles[0],
-                          np.where((selector > 0.54)[:, :, None], variant_tiles[2], centre))
-        blended = centre + (source - centre) * amount[:, :, None]
-
-    output = Image.fromarray(np.clip(np.round(blended), 0, 255).astype(np.uint8), "RGBA")
-    return output, {
-        "id": name,
-        "bakedInto": name,
-        "mask": {
-            "source": "wrapped-fbm",
-            "seed": mask_seed,
-            "periods": mask_periods,
-        },
-        "variants": [
-            {
-                "id": variant["id"],
-                "base": spec["base"],
-                "shadow": spec["shadow"],
-                "highlight": spec["highlight"],
-            }
-            for variant, spec in zip(variants, resolved)
-        ],
+    receipt_path = source_dir / "ground-source.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    if receipt.get("pipeline") != "hmh-blender-ground-v1" or receipt.get("engine") != "CYCLES":
+        raise ValueError("native ground pipeline or renderer mismatch")
+    if receipt.get("repeatVerified") is not True:
+        raise ValueError("native ground repeat rendering is unverified")
+    if file_sha256(BLENDER_RECIPE) != receipt.get("sourceScriptSha256"):
+        raise ValueError("native ground recipe digest mismatch")
+    if receipt.get("nativeSource") != "hmh-world-ground-materials.blend":
+        raise ValueError("unexpected native ground scene")
+    scene = source_dir / receipt["nativeSource"]
+    if file_sha256(scene) != receipt.get("nativeSourceSha256"):
+        raise ValueError("native ground scene digest mismatch")
+    records = receipt.get("materials", [])
+    if len(records) != len(BLENDER_MATERIAL_SEEDS) or {record.get("id") for record in records} != set(BLENDER_MATERIAL_SEEDS):
+        raise ValueError("complete seven-material native ground roster required")
+    images = {}
+    sources = {}
+    for record in records:
+        name = record["id"]
+        if record.get("file") != f"{name}.png":
+            raise ValueError(f"{name}: unsafe native tile filename")
+        path = source_dir / record["file"]
+        if file_sha256(path) != record.get("sha256"):
+            raise ValueError(f"{name}: native tile digest mismatch")
+        if record.get("repeatPixelExact") is not True or record.get("repeatFileExact") is not True:
+            raise ValueError(f"{name}: exact native repeat evidence required")
+        with Image.open(path) as original:
+            if original.size != (TILE_SIZE, TILE_SIZE) or original.mode != "RGBA":
+                raise ValueError(f"{name}: 512px RGBA source required")
+            image = original.copy()
+        if image.getextrema()[3] != (255, 255):
+            raise ValueError(f"{name}: native ground must be opaque")
+        images[name] = image
+        sources[name] = {
+            "kind": "blender-cycles", "file": path.relative_to(ROOT).as_posix(),
+            "sha256": record["sha256"],
+            "decodedRgbaSha256": hashlib.sha256(image.tobytes()).hexdigest(),
+        }
+    provenance = {
+        "pipeline": receipt["pipeline"],
+        "receipt": receipt_path.relative_to(ROOT).as_posix(),
+        "receiptSha256": file_sha256(receipt_path),
+        "recipe": BLENDER_RECIPE.relative_to(ROOT).as_posix(),
+        "recipeSha256": receipt["sourceScriptSha256"],
+        "blend": scene.relative_to(ROOT).as_posix(),
+        "blendSha256": receipt["nativeSourceSha256"],
+        "materialIds": list(BLENDER_MATERIAL_SEEDS),
+        "sources": sources,
     }
+    return images, provenance
 
 
-# Surface materials. Each must be identifiable at a glance from the others --
-# that is the whole point of the change.
+# Four established water/deck materials retain their existing baked recipes.
 MATERIALS = {
-    # Walkable ground per district.
-    "packed-earth": {
-        "seed": 11, "base": "#2f5f52", "shadow": "#173a32", "highlight": "#4d8a76",
-        "accent": "#6fbfa1", "accentAmount": 0.3, "octaves": [(8, 1.0), (16, 0.5), (32, 0.25), (64, 0.12)],
-        "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 46, "grain": 0.14, "specular": 0.06,
-        "scatterLight": "#8fae8c", "scatterDark": "#1d3b31",
-        "scatter": [
-            {"kind": "tuft", "cells": 13, "radius": 16.0, "amount": 0.34, "density": 0.52, "tint": 0.42},
-            {"kind": "pebble", "cells": 36, "radius": 5.0, "amount": 0.24, "density": 0.42, "tint": 0.55},
-        ],
-        "patchVariants": [
-            {"id": "relay-loam", "seed": 111, "base": "#315b4d", "shadow": "#17352d", "highlight": "#56806d"},
-            {"id": "gravelly-earth", "seed": 112, "base": "#4b6258", "shadow": "#273b35", "highlight": "#748a7d", "relief": 58, "grain": 0.2},
-            {"id": "signal-lichen", "seed": 113, "base": "#365f46", "shadow": "#183825", "highlight": "#68926a", "accent": "#9ecf7e"},
-        ],
-    },
-    "red-rock": {
-        "seed": 23, "base": "#6b3b33", "shadow": "#3a1d19", "highlight": "#a3614a",
-        "accent": "#d97852", "accentAmount": 0.35, "octaves": [(6, 1.0), (12, 0.6), (24, 0.3), (48, 0.16)],
-        "detailOctaves": [(48, 1.0), (96, 0.6)], "relief": 62, "grain": 0.18, "specular": 0.08,
-        "scatterLight": "#c69277", "scatterDark": "#341a16",
-        "scatter": [
-            {"kind": "pebble", "cells": 24, "radius": 8.5, "amount": 0.42, "density": 0.5, "tint": 0.62},
-            {"kind": "pebble", "cells": 44, "radius": 4.0, "amount": 0.26, "density": 0.5, "tint": 0.5},
-        ],
-        "patchVariants": [
-            {"id": "iron-dust", "seed": 231, "base": "#724036", "shadow": "#3d211c", "highlight": "#ad674d"},
-            {"id": "shale-scree", "seed": 232, "base": "#5d4542", "shadow": "#302524", "highlight": "#8b7069", "relief": 70, "grain": 0.23},
-            {"id": "sunbaked-clay", "seed": 233, "base": "#7e4938", "shadow": "#45251d", "highlight": "#bd7452", "accent": "#e49a63"},
-        ],
-    },
-    "wet-bank": {
-        "seed": 37, "base": "#2a5a63", "shadow": "#123239", "highlight": "#4d8f95",
-        "accent": "#7fc4c8", "accentAmount": 0.27, "octaves": [(8, 1.0), (16, 0.5), (32, 0.28)],
-        "detailOctaves": [(64, 1.0), (128, 0.45)], "relief": 40, "grain": 0.12, "specular": 0.2,
-        "scatterLight": "#8fc0a4", "scatterDark": "#123036",
-        "scatter": [
-            {"kind": "tuft", "cells": 13, "radius": 15.0, "amount": 0.32, "density": 0.46, "tint": 0.4},
-            {"kind": "pebble", "cells": 38, "radius": 4.5, "amount": 0.2, "density": 0.4, "tint": 0.5},
-        ],
-        "patchVariants": [
-            {"id": "river-silt", "seed": 371, "base": "#365d5e", "shadow": "#1a3638", "highlight": "#618b89"},
-            {"id": "reed-mud", "seed": 372, "base": "#31564b", "shadow": "#17342d", "highlight": "#5c8670", "accent": "#87b883"},
-            {"id": "mineral-wash", "seed": 373, "base": "#326875", "shadow": "#163a43", "highlight": "#61a1a8", "specular": 0.24},
-        ],
-    },
-    "forest-floor": {
-        "seed": 53, "base": "#2c5434", "shadow": "#14301c", "highlight": "#4a8850",
-        "accent": "#7fc878", "accentAmount": 0.41, "octaves": [(6, 1.0), (14, 0.6), (28, 0.32), (56, 0.18)],
-        "detailOctaves": [(56, 1.0), (112, 0.6)], "relief": 56, "grain": 0.2, "specular": 0.05,
-        "scatterLight": "#93c17f", "scatterDark": "#1a3520",
-        "scatter": [
-            {"kind": "tuft", "cells": 12, "radius": 19.0, "amount": 0.44, "density": 0.6, "tint": 0.5},
-            {"kind": "tuft", "cells": 26, "radius": 7.5, "amount": 0.3, "density": 0.52, "tint": 0.42},
-        ],
-        "patchVariants": [
-            {"id": "needle-litter", "seed": 531, "base": "#40513a", "shadow": "#222f20", "highlight": "#68775a", "accent": "#9b8b5d"},
-            {"id": "mossy-floor", "seed": 532, "base": "#315d38", "shadow": "#17351f", "highlight": "#559258", "accent": "#8ed17f"},
-            {"id": "root-mat", "seed": 533, "base": "#4a5535", "shadow": "#29301d", "highlight": "#77805a", "relief": 64, "grain": 0.24},
-        ],
-    },
-    "crushed-ore": {
-        "seed": 71, "base": "#4a4b4e", "shadow": "#26272a", "highlight": "#78797d",
-        "accent": "#f0ae4c", "accentAmount": 0.32, "octaves": [(10, 1.0), (20, 0.55), (40, 0.3), (80, 0.18)],
-        "detailOctaves": [(64, 1.0), (128, 0.5)], "relief": 58, "grain": 0.22, "specular": 0.14,
-        "scatterLight": "#9a9ca2", "scatterDark": "#222327",
-        "scatter": [
-            {"kind": "pebble", "cells": 22, "radius": 9.0, "amount": 0.46, "density": 0.55, "tint": 0.66},
-            {"kind": "pebble", "cells": 42, "radius": 4.0, "amount": 0.28, "density": 0.55, "tint": 0.55},
-        ],
-        "patchVariants": [
-            {"id": "granite-tailings", "seed": 711, "base": "#55575a", "shadow": "#2d2f32", "highlight": "#85878a"},
-            {"id": "coal-fines", "seed": 712, "base": "#3b3d42", "shadow": "#1d1f23", "highlight": "#676a70", "grain": 0.26},
-            {"id": "oxidized-ore", "seed": 713, "base": "#5d4e47", "shadow": "#302924", "highlight": "#8e7566", "accent": "#e49b45"},
-        ],
-    },
-    "industrial-slab": {
-        "seed": 89, "base": "#4a2b3f", "shadow": "#24121e", "highlight": "#734a63",
-        "structure": "slab-grid", "structurePeriod": 64,
-        "accent": "#ff527e", "accentAmount": 0.18, "accentThreshold": 0.88,
-        "octaves": [(4, 1.0), (16, 0.4), (32, 0.2)],
-        "detailOctaves": [(64, 1.0), (128, 0.4)], "relief": 30, "grain": 0.1, "specular": 0.12,
-        "macroAmount": 0.22,
-        "scatterLight": "#6f5266", "scatterDark": "#1e1219",
-        "scatter": [
-            {"kind": "pebble", "cells": 40, "radius": 4.0, "amount": 0.14, "density": 0.26, "tint": 0.4},
-        ],
-        "patchVariants": [
-            {"id": "patched-slab", "seed": 891, "base": "#55384a", "shadow": "#2c1d27", "highlight": "#805c70"},
-            {"id": "oil-darkened-slab", "seed": 892, "base": "#3d2a37", "shadow": "#1d131a", "highlight": "#664756", "specular": 0.18},
-            {"id": "rust-stained-slab", "seed": 893, "base": "#5b3440", "shadow": "#2d1920", "highlight": "#8a5661", "accent": "#d96a4f"},
-        ],
-    },
-    # Shared, non-district surfaces. These carry the semantic load the player
-    # complained about: am I on a road, in water, or on something raised?
-    "road": {
-        "seed": 101, "base": "#8a7350", "shadow": "#4f4130", "highlight": "#bda278",
-        "accent": "#d8c199", "accentAmount": 0.22, "octaves": [(12, 1.0), (24, 0.5), (48, 0.3), (96, 0.2)],
-        "detailOctaves": [(64, 1.0), (128, 0.55)], "relief": 52, "grain": 0.16, "specular": 0.07,
-        "macroAmount": 0.24,
-        "scatterLight": "#b8a488", "scatterDark": "#3f3527",
-        "scatter": [
-            {"kind": "pebble", "cells": 40, "radius": 4.5, "amount": 0.26, "density": 0.55, "tint": 0.5},
-        ],
-        # T4: the runtime keeps one pooled/masked road texture request. These
-        # three materials are composited into that tile with the same wrapped
-        # mask as district patches, so roads gain local material identity with
-        # no child code, request, collision, or navigation authority.
-        "patchVariants": [
-            {"id": "gravel-shoulder", "seed": 1011, "base": "#766f62", "shadow": "#454039", "highlight": "#a69b89", "relief": 62, "grain": 0.2},
-            {"id": "cracked-asphalt", "seed": 1012, "base": "#625f59", "shadow": "#33312e", "highlight": "#8b877e", "relief": 68, "grain": 0.22, "specular": 0.04},
-            {"id": "dirt-track", "seed": 1013, "base": "#7a6855", "shadow": "#44372c", "highlight": "#aa9075", "relief": 56, "grain": 0.18, "accent": "#c3a483"},
-        ],
-    },
+    **{name: {"seed": seed} for name, seed in BLENDER_MATERIAL_SEEDS.items()},
     "water": {
         "seed": 131, "base": "#12617f", "shadow": "#07374d", "highlight": "#3fa7c4",
         "accent": "#a8ecff", "accentAmount": 0.34, "accentThreshold": 0.86,
@@ -742,7 +604,7 @@ def bake_fringe(name: str, tile: Image.Image, seed: int) -> Image.Image:
     return Image.fromarray(pixels, "RGBA")
 
 
-def bake_overlay(name: str, overlay: dict) -> Image.Image:
+def bake_overlay(name: str, overlay: dict, source_tile: Image.Image | None = None) -> Image.Image:
     """Bake one authored edge strip: a full material, cropped to strip height,
     shaped by its own profile, with a ragged alpha falloff outward.
 
@@ -753,7 +615,7 @@ def bake_overlay(name: str, overlay: dict) -> Image.Image:
     `face` (an opaque wall: lit cap, horizontal strata, shaded foot), `ford`
     (the submerged deep-to-shallow slope inside a crossing, no crest).
     """
-    tile = np.asarray(bake_surface(overlay), dtype=np.float64)[:OVERLAY_HEIGHT].copy()
+    tile = np.asarray(source_tile if source_tile is not None else bake_surface(overlay), dtype=np.float64)[:OVERLAY_HEIGHT].copy()
     rows = np.arange(OVERLAY_HEIGHT, dtype=np.float64)[:, None]
     columns = np.arange(TILE_SIZE, dtype=np.int64)[None, :]
     profile = wrapped_value_noise(TILE_SIZE, 24, overlay["seed"] ^ 0x51D0_2C77)[0]
@@ -896,29 +758,27 @@ def seam_report(name: str, image: Image.Image, axes: str = "xy") -> dict:
 
 
 def bake_everything(verify_seamless: bool):
-    """Bake every image once. Returns (images, patch_records, seam_stats).
+    """Bake every image once. Returns (images, native_provenance, seam_stats).
 
     Kept as one pure function so --verify-reproducible can call it twice and
     compare pixels, with no state carried between runs.
     """
     images = {}
-    patch_records = []
+    native_images, native_provenance = load_blender_ground()
     seam_stats = {}
     for name, material in sorted(MATERIALS.items()):
-        image, patch_record = bake_material(name, material)
-        if patch_record:
-            patch_records.append(patch_record)
+        image = native_images[name] if name in native_images else bake_surface(material)
         if verify_seamless:
             seam_stats[name] = seam_report(name, image)
         images[name] = image
         images[f"{name}-fringe"] = bake_fringe(name, image, material["seed"])
     for name, overlay in sorted(OVERLAYS.items()):
-        strip = bake_overlay(name, overlay)
+        strip = bake_overlay(name, overlay, native_images.get(OVERLAY_SOURCES.get(name)))
         if verify_seamless:
             # Strips repeat along U only, so only the X wrap can seam.
             seam_stats[name] = seam_report(name, strip, axes="x")
         images[name] = strip
-    return images, patch_records, seam_stats
+    return images, native_provenance, seam_stats
 
 
 def digest_pixels(images) -> dict:
@@ -934,7 +794,7 @@ def main() -> None:
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    images, patch_records, seam_stats = bake_everything(args.verify_seamless)
+    images, native_provenance, seam_stats = bake_everything(args.verify_seamless)
 
     if args.verify_reproducible:
         second, _, _ = bake_everything(False)
@@ -962,6 +822,7 @@ def main() -> None:
             "id": name,
             "file": f"./{path.name}",
             "size": TILE_SIZE,
+            "source": native_provenance["sources"].get(name, {"kind": "procedural-heightfield", "recipe": Path(__file__).relative_to(ROOT).as_posix()}),
             "bytes": path.stat().st_size,
             "sha256": digest,
         })
@@ -970,6 +831,7 @@ def main() -> None:
         fringe_records.append({
             "id": name,
             "file": f"./{fringe_path.name}",
+            "derivedFrom": name,
             "width": TILE_SIZE,
             "height": FRINGE_HEIGHT,
             "bytes": fringe_path.stat().st_size,
@@ -983,6 +845,7 @@ def main() -> None:
             "width": TILE_SIZE,
             "height": OVERLAY_HEIGHT,
             "addressV": "clamp-to-edge",
+            "source": {"kind": "profiled-blender-ground", "material": OVERLAY_SOURCES[name]} if name in OVERLAY_SOURCES else {"kind": "procedural-heightfield"},
             "bytes": path.stat().st_size,
             "sha256": digest,
         })
@@ -999,18 +862,16 @@ def main() -> None:
                 raise RuntimeError(f"bake is not reproducible -- PNG byte drift in {name}")
 
     manifest = {
-        "schemaVersion": 3,
+        "schemaVersion": 4,
         "pipelineId": PIPELINE_ID,
         "classification": "production-art",
         "runtimeAuthority": "projection-only",
         "tileSize": TILE_SIZE,
         "fringeHeight": FRINGE_HEIGHT,
         "overlayHeight": OVERLAY_HEIGHT,
-        "paintedLayering": True,
-        "intraDistrictPatches": True,
-        "litMicroTerrain": True,
-        "districtPatches": [record for record in patch_records if record["id"] != "road"],
-        "roadNetwork": next((record for record in patch_records if record["id"] == "road"), None),
+        "materialAuthoring": "blender-ground-and-retained-surface-bakes",
+        "nativeGround": {key: value for key, value in native_provenance.items() if key != "sources"},
+        "roadNetwork": {"travelledMaterial": "road", "pathMaterial": "packed-earth", "shoulderOverlay": "road-shoulder"},
         "fringes": fringe_records,
         "overlays": overlay_records,
         "seamlessVerified": bool(args.verify_seamless),

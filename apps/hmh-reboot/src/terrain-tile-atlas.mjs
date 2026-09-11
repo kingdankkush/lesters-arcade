@@ -11,7 +11,7 @@
  * `level-one-world.mjs`; this module only decides what a surface looks like.
  */
 
-export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v3';
+export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v4';
 export const TERRAIN_TILE_SIZE = 512;
 
 const TILE_ROOT = '../assets/generated/hmh-terrain-tiles';
@@ -44,7 +44,7 @@ export function terrainTileAsset(materialId) {
   if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);
   return Object.freeze({
     materialId,
-    imageUrl: `${TILE_ROOT}/${materialId}.png`,
+    imageUrl: `${TILE_ROOT}/${materialId}.png?v=${TERRAIN_TILE_PIPELINE_ID}`,
   });
 }
 
@@ -62,7 +62,7 @@ export function terrainOverlayAsset(overlayId) {
   if (!TERRAIN_OVERLAY_IDS.includes(overlayId)) throw new TypeError(`unknown terrain overlay: ${String(overlayId)}`);
   return Object.freeze({
     overlayId,
-    imageUrl: `${TILE_ROOT}/${overlayId}.png`,
+    imageUrl: `${TILE_ROOT}/${overlayId}.png?v=${TERRAIN_TILE_PIPELINE_ID}`,
   });
 }
 
@@ -70,12 +70,12 @@ export function terrainFringeAsset(materialId) {
   if (!TERRAIN_MATERIAL_IDS.includes(materialId)) throw new TypeError(`unknown terrain material: ${String(materialId)}`);
   return Object.freeze({
     materialId,
-    imageUrl: `${TILE_ROOT}/${materialId}-fringe.png`,
+    imageUrl: `${TILE_ROOT}/${materialId}-fringe.png?v=${TERRAIN_TILE_PIPELINE_ID}`,
   });
 }
 
 export function terrainManifestUrl() {
-  return `${TILE_ROOT}/hmh-terrain-tiles.json`;
+  return `${TILE_ROOT}/hmh-terrain-tiles.json?v=${TERRAIN_TILE_PIPELINE_ID}`;
 }
 
 export function validateTerrainManifest(manifest) {

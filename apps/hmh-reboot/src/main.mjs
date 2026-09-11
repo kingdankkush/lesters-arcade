@@ -464,6 +464,13 @@ async function boot() {
   const backdrop = new Graphics();
   const worldDepthLayer = createWorldDepthLayer(RenderLayer);
   const worldProduction = createWorldProductionLayers({ ContainerClass: Container, GraphicsClass: Graphics, TilingSpriteClass: TilingSprite, depthLayer: worldDepthLayer });
+  // Authored startup never downloads this optional renderer. A failed chunk
+  // still leaves the existing flat fills usable when basic graphics is chosen.
+  let groundFallbackLoad;
+  const loadGroundFallback = () => groundFallbackLoad ??= import('./world-ground-fallback.mjs')
+    .then(({ drawDistrictMaterial }) => { worldProduction.groundFallback.draw = drawDistrictMaterial; })
+    .catch(() => {});
+  if (!terrainTilesEnabled) await loadGroundFallback();
   const worldLife = createWorldDesignLife({ ContainerClass: Container, GraphicsClass: Graphics, TextClass: Text });
   // T2: ground decals sit above the terrain material and BELOW every prop and
   // actor layer, so a mark on the floor can never occlude something the player
@@ -2825,7 +2832,7 @@ async function boot() {
     combatAudio.pause();
     startupGate = createStartupArtGate(performance.now());
     if (startupPanel) startupPanel.hidden = false;
-    if (startupContinue) startupContinue.hidden = true;
+    if (startupContinue) { startupContinue.hidden = true; startupContinue.disabled = false; }
     if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
     dataset.startupArt = 'loading';
     for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
@@ -4600,7 +4607,14 @@ async function boot() {
   app.canvas.focus({ preventScroll: true });
   app.renderer.on('resize', handleResize);
   let pressureArtRequested = false;
-  startupContinue?.addEventListener('click', () => startupGate?.continue());
+  startupContinue?.addEventListener('click', async () => {
+    const gate = startupGate;
+    if (!gate || startupContinue.disabled) return;
+    startupContinue.disabled = true;
+    await loadGroundFallback();
+    startupContinue.disabled = false;
+    if (startupGate === gate) gate.continue();
+  });
   document.querySelector('#hmhStartupExit')?.addEventListener('click', () => {
     if (bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
     else window.location.assign('../');

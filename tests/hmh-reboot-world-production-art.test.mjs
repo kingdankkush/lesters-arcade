@@ -128,7 +128,7 @@ test('world art contract is production, layered, and never gains gameplay author
   assert.doesNotMatch(source, /worldProduction(?:Layers)?\.(?:collision|damage|health|spawn|score|wallet|settlement|bridge|persistence)\s*=/);
 
   const worldSource = read('apps/hmh-reboot/src/world-production-art.mjs');
-  assert.match(worldSource, /const details = layers\.groundDetails;/);
+  assert.match(read('apps/hmh-reboot/src/world-ground-fallback.mjs'), /const details = layers\.groundDetails;/);
   assert.match(worldSource, /layers\.details\.roundRect\(center\.x-s/);
   // Cycle 046 regression guard: circle blockers project from the canonical
   // x/y fields. The old `shape.center` read produced NaN anchors that

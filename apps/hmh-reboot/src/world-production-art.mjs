@@ -13,12 +13,12 @@ function artKit(spec) {
 }
 
 export const DISTRICT_PRODUCTION_MATERIALS = freezeDeep({
-  'frontier-relay': artKit({ groundColor: 0x153c35, detailColor: 0x42c89c, routeColor: 0xa68d61, motif: 'relay-circuit', materialLayers: ['packed-earth', 'relay-traces', 'signal-pads'] }),
-  'rugpull-ravine': artKit({ groundColor: 0x4a2b28, detailColor: 0xd97852, routeColor: 0xb88962, motif: 'forked-strata', materialLayers: ['red-rock', 'fracture-lines', 'salvage-scrap'] }),
-  'liquidity-crossing': artKit({ groundColor: 0x103a4b, detailColor: 0x31c8e8, routeColor: 0xc0a06c, motif: 'liquidity-ripples', materialLayers: ['wet-bank', 'flow-lines', 'bridge-seams'] }),
-  hashwood: artKit({ groundColor: 0x163d2a, detailColor: 0x62c878, routeColor: 0x8f8558, motif: 'hash-ring-roots', materialLayers: ['forest-floor', 'root-rings', 'spore-patches'] }),
-  'mining-camp': artKit({ groundColor: 0x343638, detailColor: 0xf0ae4c, routeColor: 0xa68d67, motif: 'ore-grid', materialLayers: ['crushed-ore', 'loader-tracks', 'warning-marks'] }),
-  'liquidation-yard': artKit({ groundColor: 0x3e1c31, detailColor: 0xff527e, routeColor: 0xb18b68, motif: 'margin-grid', materialLayers: ['industrial-slab', 'liquidation-grid', 'warning-chevrons'] }),
+  'frontier-relay': artKit({ groundColor: 0x63523c, detailColor: 0x42c89c, routeColor: 0xa68d61, motif: 'relay-circuit', materialLayers: ['packed-earth', 'relay-traces', 'signal-pads'] }),
+  'rugpull-ravine': artKit({ groundColor: 0x715340, detailColor: 0xd97852, routeColor: 0xb88962, motif: 'forked-strata', materialLayers: ['red-rock', 'fracture-lines', 'salvage-scrap'] }),
+  'liquidity-crossing': artKit({ groundColor: 0x4c5340, detailColor: 0x31c8e8, routeColor: 0xc0a06c, motif: 'liquidity-ripples', materialLayers: ['wet-bank', 'flow-lines', 'bridge-seams'] }),
+  hashwood: artKit({ groundColor: 0x3e4933, detailColor: 0x62c878, routeColor: 0x8f8558, motif: 'hash-ring-roots', materialLayers: ['forest-floor', 'root-rings', 'spore-patches'] }),
+  'mining-camp': artKit({ groundColor: 0x555958, detailColor: 0xf0ae4c, routeColor: 0xa68d67, motif: 'ore-grid', materialLayers: ['crushed-ore', 'loader-tracks', 'warning-marks'] }),
+  'liquidation-yard': artKit({ groundColor: 0x62645e, detailColor: 0xff527e, routeColor: 0xb18b68, motif: 'margin-grid', materialLayers: ['industrial-slab', 'liquidation-grid', 'warning-chevrons'] }),
 });
 
 export const BLOCKER_PRODUCTION_KITS = freezeDeep({
@@ -146,171 +146,6 @@ export function resolveWorldParticleField({ id, x, y, tick, count, radius }) {
   }));
 }
 
-// Visible world-space window for a camera, padded by one tile. Every material
-// pass iterates only these cells, so cost tracks screen area rather than the
-// 12,000 x 4,800 world.
-function visibleTileRange({ area, camera, view, cell }) {
-  const halfWidth = view.width / (2 * camera.zoom);
-  const halfHeight = view.height / (2 * camera.zoom);
-  return {
-    startCol: Math.floor(Math.max(area.minX, camera.x - halfWidth - cell) / cell),
-    endCol: Math.ceil(Math.min(area.maxX, camera.x + halfWidth + cell) / cell),
-    startRow: Math.floor(Math.max(area.minY, camera.y - halfHeight - cell) / cell),
-    endRow: Math.ceil(Math.min(area.maxY, camera.y + halfHeight + cell) / cell),
-  };
-}
-
-function insideArea(area, x, y) {
-  return x >= area.minX && x <= area.maxX && y >= area.minY && y <= area.maxY;
-}
-
-// Per-district ground motifs. Each district names its material layers in
-// DISTRICT_PRODUCTION_MATERIALS (packed-earth / relay-traces / signal-pads and
-// so on); these draw them so a district reads as a place rather than a colour
-// field. All marks are seeded from world cell indices, so the pattern is
-// deterministic, world-locked, and identical on replay.
-const DISTRICT_MOTIF_RENDERERS = Object.freeze({
-  // Orthogonal circuit traces with solder nodes.
-  'frontier-relay': ({ details, x, y, seed, zoom, color, span }) => {
-    const run = span * (0.5 + ((seed >>> 4) & 7) / 16);
-    const horizontal = ((seed >>> 9) & 1) === 0;
-    const endX = horizontal ? x + run : x;
-    const endY = horizontal ? y : y + run;
-    details.moveTo(x, y).lineTo(endX, endY).stroke({ color, width: Math.max(1, 1.6 * zoom), alpha: 0.16 });
-    details.circle(endX, endY, Math.max(1.2, 2.4 * zoom)).fill({ color, alpha: 0.22 });
-    if (((seed >>> 11) & 3) === 0) {
-      details.moveTo(endX, endY).lineTo(endX + (horizontal ? 0 : run * 0.4), endY + (horizontal ? run * 0.4 : 0))
-        .stroke({ color, width: Math.max(1, 1.2 * zoom), alpha: 0.12 });
-    }
-  },
-  // Angular fracture strata.
-  'rugpull-ravine': ({ details, x, y, seed, zoom, color, span }) => {
-    const length = span * (0.55 + ((seed >>> 5) & 7) / 14);
-    const lean = (((seed >>> 8) & 15) / 15 - 0.5) * 0.8;
-    const midX = x + length * 0.45 + lean * span * 0.2;
-    details.moveTo(x, y)
-      .lineTo(midX, y + length * 0.42)
-      .lineTo(x + length * lean * 0.6, y + length)
-      .stroke({ color, width: Math.max(1, 2 * zoom), alpha: 0.15 });
-  },
-  // Flow ripples running with the crossing.
-  'liquidity-crossing': ({ details, x, y, seed, zoom, color, span }) => {
-    const width = span * (0.6 + ((seed >>> 6) & 7) / 16);
-    for (let ripple = 0; ripple < 2; ripple += 1) {
-      const offsetY = y + ripple * span * 0.18;
-      details.moveTo(x, offsetY)
-        .bezierCurveTo(x + width * 0.3, offsetY - span * 0.07, x + width * 0.7, offsetY + span * 0.07, x + width, offsetY)
-        .stroke({ color, width: Math.max(1, 1.5 * zoom), alpha: 0.13 - ripple * 0.03 });
-    }
-  },
-  // Concentric root rings.
-  hashwood: ({ details, x, y, seed, zoom, color, span }) => {
-    const rings = 2 + ((seed >>> 7) & 1);
-    for (let ring = 0; ring < rings; ring += 1) {
-      const radius = span * (0.12 + ring * 0.1);
-      details.circle(x, y, radius * zoom)
-        .stroke({ color, width: Math.max(1, 1.4 * zoom), alpha: 0.14 - ring * 0.035 });
-    }
-  },
-  // Ore grid with occasional hazard chevrons.
-  'mining-camp': ({ details, x, y, seed, zoom, color, span }) => {
-    const size = span * (0.3 + ((seed >>> 6) & 3) / 12);
-    details.rect(x, y, size, size * 0.62).stroke({ color, width: Math.max(1, 1.4 * zoom), alpha: 0.14 });
-    if (((seed >>> 12) & 3) === 0) {
-      for (let chevron = 0; chevron < 3; chevron += 1) {
-        const chevronY = y + size * 0.18 * chevron;
-        details.moveTo(x, chevronY).lineTo(x + size * 0.22, chevronY + size * 0.16).lineTo(x + size * 0.44, chevronY)
-          .stroke({ color, width: Math.max(1, 1.6 * zoom), alpha: 0.18 });
-      }
-    }
-  },
-  // Diagonal margin-call warning banding.
-  'liquidation-yard': ({ details, x, y, seed, zoom, color, span }) => {
-    const bandLength = span * (0.5 + ((seed >>> 6) & 7) / 14);
-    const bands = 2 + ((seed >>> 10) & 1);
-    for (let band = 0; band < bands; band += 1) {
-      const offset = band * span * 0.14;
-      details.moveTo(x + offset, y)
-        .lineTo(x + offset - bandLength * 0.5, y + bandLength)
-        .stroke({ color, width: Math.max(1, 2.2 * zoom), alpha: 0.13 });
-    }
-  },
-});
-
-export function drawDistrictMaterial({ layers, district, kit, camera, view, project, tick }) {
-  const details = layers.groundDetails;
-  const zoom = camera.zoom;
-
-  // Pass 1 — macro tonal patches. Large soft blocks of a slightly shifted
-  // ground tone so the base plane stops reading as one flat colour.
-  const MACRO_CELL = 760;
-  const macro = visibleTileRange({ area: district.area, camera, view, cell: MACRO_CELL });
-  for (let col = macro.startCol; col <= macro.endCol; col += 1) {
-    for (let row = macro.startRow; row <= macro.endRow; row += 1) {
-      const seed = fnv1a(`${district.id}:macro:${col}:${row}`);
-      const centreX = col * MACRO_CELL + ((seed & 0xff) / 255) * MACRO_CELL;
-      const centreY = row * MACRO_CELL + (((seed >>> 8) & 0xff) / 255) * MACRO_CELL;
-      if (!insideArea(district.area, centreX, centreY)) continue;
-      const screen = project({ x: centreX, y: centreY, z: 0 });
-      const radiusWorld = MACRO_CELL * (0.36 + ((seed >>> 16) & 15) / 40);
-      const radius = radiusWorld * zoom;
-      if (screen.x + radius < 0 || screen.x - radius > view.width) continue;
-      if (screen.y + radius < 0 || screen.y - radius > view.height) continue;
-      const lighter = ((seed >>> 20) & 1) === 0;
-      layers.terrain.circle(screen.x, screen.y, radius)
-        .fill({
-          color: lighter ? mixColor(kit.groundColor, kit.detailColor, 0.16) : mixColor(kit.groundColor, 0x000000, 0.2),
-          alpha: 0.3,
-        });
-    }
-  }
-
-  // Pass 2 — the district motif.
-  const MOTIF_CELL = 300;
-  const motif = DISTRICT_MOTIF_RENDERERS[district.id];
-  if (motif) {
-    const range = visibleTileRange({ area: district.area, camera, view, cell: MOTIF_CELL });
-    for (let col = range.startCol; col <= range.endCol; col += 1) {
-      for (let row = range.startRow; row <= range.endRow; row += 1) {
-        const seed = fnv1a(`${district.id}:motif:${col}:${row}`);
-        if ((seed & 7) === 0) continue; // leave breathing room
-        const worldX = col * MOTIF_CELL + ((seed & 0xff) / 255) * MOTIF_CELL * 0.8;
-        const worldY = row * MOTIF_CELL + (((seed >>> 8) & 0xff) / 255) * MOTIF_CELL * 0.8;
-        if (!insideArea(district.area, worldX, worldY)) continue;
-        const screen = project({ x: worldX, y: worldY, z: 0 });
-        const span = MOTIF_CELL * 0.55 * zoom;
-        if (screen.x + span < 0 || screen.x - span > view.width) continue;
-        if (screen.y + span < 0 || screen.y - span > view.height) continue;
-        motif({ details, x: screen.x, y: screen.y, seed, zoom, color: kit.detailColor, span, tick });
-      }
-    }
-  }
-
-  // Pass 3 — micro scatter: fine grain so the surface holds up close in.
-  const MICRO_CELL = 150;
-  const micro = visibleTileRange({ area: district.area, camera, view, cell: MICRO_CELL });
-  const grainWidth = Math.max(1, zoom * 1.4);
-  for (let col = micro.startCol; col <= micro.endCol; col += 1) {
-    for (let row = micro.startRow; row <= micro.endRow; row += 1) {
-      const seed = fnv1a(`${district.id}:micro:${col}:${row}`);
-      if ((seed & 1) === 0) continue;
-      const worldX = col * MICRO_CELL + ((seed & 0xff) / 255) * MICRO_CELL;
-      const worldY = row * MICRO_CELL + (((seed >>> 8) & 0xff) / 255) * MICRO_CELL;
-      if (!insideArea(district.area, worldX, worldY)) continue;
-      const screen = project({ x: worldX, y: worldY, z: 0 });
-      if (screen.x < -MICRO_CELL || screen.x > view.width + MICRO_CELL) continue;
-      if (screen.y < -MICRO_CELL || screen.y > view.height + MICRO_CELL) continue;
-      const grain = (2 + ((seed >>> 18) & 3)) * zoom;
-      if (((seed >>> 21) & 1) === 0) {
-        details.circle(screen.x, screen.y, grain * 0.5).fill({ color: kit.detailColor, alpha: 0.075 });
-      } else {
-        details.moveTo(screen.x, screen.y).lineTo(screen.x + grain, screen.y + grain * 0.5)
-          .stroke({ color: kit.detailColor, width: grainWidth, alpha: 0.07 });
-      }
-    }
-  }
-}
-
 export function createWorldProductionLayers({ ContainerClass, GraphicsClass, TilingSpriteClass = null, depthLayer = null }) {
   if (typeof ContainerClass !== 'function' || typeof GraphicsClass !== 'function') throw new TypeError('Pixi classes are required');
   const root = new ContainerClass();
@@ -380,12 +215,18 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   root.addChildAt(blockerFaceSprites, root.getChildIndex(layers.blockers) + 1);
   // Roads are stroked polylines, so they tile through a mask rather than a
   // rectangle: one viewport-sized sprite clipped to the road surface.
+  const pathSprites = new ContainerClass();
+  pathSprites.label = 'world-path-tiles';
+  const pathMask = new GraphicsClass();
+  pathMask.label = 'world-path-mask';
+  pathSprites.addChild(pathMask);
+  root.addChildAt(pathSprites, root.getChildIndex(layers.routes) + 1);
   const roadSprites = new ContainerClass();
   roadSprites.label = 'world-road-tiles';
   const roadMask = new GraphicsClass();
   roadMask.label = 'world-road-mask';
   roadSprites.addChild(roadMask);
-  root.addChildAt(roadSprites, root.getChildIndex(layers.routes) + 1);
+  root.addChildAt(roadSprites, root.getChildIndex(pathSprites) + 1);
   const depthFeatureRoot = new ContainerClass();
   depthFeatureRoot.label = 'world-depth-fallback-features';
   root.addChild(depthFeatureRoot);
@@ -405,6 +246,9 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
     surfaceCues,
     roadSprites,
     roadMask,
+    pathSprites,
+    pathMask,
+    groundFallback: { draw: null },
     depthLayer,
     depthFeatureRoot,
     depthFeatureState,
@@ -940,7 +784,7 @@ function createTerrainSpritePlacer({ container, terrainTiles, camera, view }) {
   let cursor = 0;
   // The road container also holds its mask, which must never be pooled or
   // hidden as if it were a terrain sprite.
-  const poolable = () => container.children.filter((child) => child.label !== 'world-road-mask');
+  const poolable = () => container.children.filter((child) => child.label !== 'world-road-mask' && child.label !== 'world-path-mask');
   const scale = (TERRAIN_TILE_REPEAT_WORLD / (terrainTiles.tileSize || 256)) * camera.zoom;
   // World-locked so the pattern does not swim under a moving camera.
   const originX = view.width / 2 - camera.x * camera.zoom;
@@ -1109,6 +953,11 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   if (roadMaskGraphic) roadMaskGraphic.visible = false;
   const roadPlacer = createTerrainSpritePlacer({ container: worldProduction.roadSprites, terrainTiles, camera, view });
   const roadTiled = Boolean(terrainTiles?.ready && terrainTiles.textureFor?.('road'));
+  const pathMaskGraphic = worldProduction.pathMask ?? null;
+  pathMaskGraphic?.clear();
+  if (pathMaskGraphic) pathMaskGraphic.visible = false;
+  const pathPlacer = createTerrainSpritePlacer({ container: worldProduction.pathSprites, terrainTiles, camera, view });
+  const pathTiled = Boolean(pathPlacer && terrainTiles.textureFor?.('packed-earth'));
   const stripPlacer = createStripPlacer({
     container: worldProduction.stripSprites,
     TilingSpriteClass: worldProduction.TilingSpriteClass,
@@ -1173,11 +1022,11 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     if (!screenBoundsVisible([a, b], view, performanceProfile.worldCullMargin)) continue;
     const groundMaterial = DISTRICT_TERRAIN_MATERIAL[district.id];
     layers.terrain.rect(a.x, a.y, b.x-a.x, b.y-a.y).fill({ color: kit.groundColor, alpha: 1 });
-    const groundTiled = tilePlacer?.place(groundMaterial, a.x, a.y, b.x-a.x, b.y-a.y, 0.58) ?? null;
+    const groundTiled = tilePlacer?.place(groundMaterial, a.x, a.y, b.x-a.x, b.y-a.y, 0.96) ?? null;
     if (!groundTiled) {
       // Only draw the procedural motif when the authored tile is absent; the
       // tile already carries material detail and the two would fight.
-      drawDistrictMaterial({ layers, district, kit, camera, view, project, tick });
+      worldProduction.groundFallback?.draw?.({ layers, district, kit, camera, view, project, tick });
     }
   }
 
@@ -1210,7 +1059,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       fringeCursor += 1;
       sprite.visible = true;
       sprite.texture = texture;
-      sprite.alpha = 0.58;
+      sprite.alpha = 0.96;
       // Rotated -90deg: the strip's U axis runs down the screen along the
       // boundary and its V falloff bleeds eastward into the next district.
       sprite.rotation = -Math.PI / 2;
@@ -1236,7 +1085,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     routePoints.zoom = camera.zoom;
     if (!screenBoundsVisible(routePoints, view, performanceProfile.worldCullMargin)) continue;
     const firstNode = routeNodes[0];
-    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], roadMaskGraphic, roadTiled);
+    const paved = route.kind === 'main' || route.kind === 'street';
+    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], paved ? roadMaskGraphic : pathMaskGraphic, paved ? roadTiled : pathTiled);
     if (!stripPlacer || !shoulderTexture) continue;
     // Both verges of every segment. The strip's inner edge sits just inside the
     // travelled width so the surface tile covers the join.
@@ -1246,12 +1096,12 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       if (overDeck(midX, midY)) continue;
       for (const side of [1, -1]) {
         stripPlacer.placeStrip(shoulderTexture, routePoints[index - 1], routePoints[index], {
-          depthWorld: SHOULDER_WORLD_DEPTH,
+          depthWorld: paved ? SHOULDER_WORLD_DEPTH : 18,
           sideOffsetWorld: route.width / 2 - 6,
           side,
           tileSize: terrainTiles.tileSize,
           stripHeight: terrainTiles.overlayHeight,
-          alpha: route.kind === 'main' ? 0.95 : 0.82,
+          alpha: paved ? 0.95 : 0.62,
         });
       }
     }
@@ -1371,8 +1221,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
         if (edge.a.y === edge.b.y && (edge.a.y<=worldMinY || edge.a.y>=worldMaxY)) continue;
         const a=project({...edge.a,z:edge.z}),b=project({...edge.b,z:edge.z});
-        cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0xcdf6ff,width:Math.max(2,5*camera.zoom),alpha:0.42});
-        cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0x7fdcf0,width:Math.max(1,2*camera.zoom),alpha:0.68});
+        cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0xcdf6ff,width:Math.max(2,3*camera.zoom),alpha:0.18});
+        cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0x7fdcf0,width:Math.max(1,1.2*camera.zoom),alpha:0.3});
       }
       if (surface.area.type !== 'rect') {
         const step=70*camera.zoom, minY=Math.max(-step,Math.min(...points.map(p=>p.y))), maxY=Math.min(view.height+step,Math.max(...points.map(p=>p.y)));
@@ -1380,7 +1230,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
           for (const [left,right] of clipHorizontalWaterLine(points,y)) {
             if(right-left<24*camera.zoom) continue;
             const inset=12*camera.zoom;
-            cueLayer.moveTo(left+inset,y).lineTo(right-inset,y).stroke({color:0xbaf5ff,width:Math.max(1,1.8*camera.zoom),alpha:0.1+shader.waterShimmer*0.1});
+            cueLayer.moveTo(left+inset,y).lineTo(right-inset,y).stroke({color:0xbaf5ff,width:Math.max(1,1.2*camera.zoom),alpha:0.045+shader.waterShimmer*0.06});
           }
         }
       }
@@ -1416,7 +1266,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       const depthBand = Math.max(1, (bottom - top) * 0.5);
       if (!ford) {
         cueLayer.rect(left, midY - depthBand * 0.5, right - left, depthBand)
-          .fill({ color: 0x062b3d, alpha: 0.34 });
+          .fill({ color: 0x062b3d, alpha: 0.12 });
       }
       const step = BAND * camera.zoom;
       for (let y = Math.ceil(visibleTop / step) * step; y < visibleBottom; y += step) {
@@ -1429,7 +1279,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
             left + (right - left) * 0.65, y + 6 * camera.zoom,
             right - inset + drift, y,
           )
-          .stroke({ color: 0xbaf5ff, width: Math.max(1, 1.8 * camera.zoom), alpha: 0.1 + shader.waterShimmer * 0.12 });
+          .stroke({ color: 0xbaf5ff, width: Math.max(1, 1.2 * camera.zoom), alpha: 0.045 + shader.waterShimmer * 0.06 });
         // Short caustic flecks between the long bands.
         const fleckSeed = fnv1a(`${surface.id ?? 'water'}:${Math.round(y)}`);
         const fleckX = left + inset + ((fleckSeed & 0xff) / 255) * Math.max(1, right - left - inset * 2);
@@ -1532,11 +1382,11 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   // normal-blended layer, in graduated bands so the frame edge falls off
   // smoothly instead of showing a hard 36px border.
   const vignetteDepth=Math.max(48,Math.min(view.width,view.height)*0.14);
-  const BANDS=4;
+  const BANDS=12;
   for(let band=0;band<BANDS;band+=1){
     const inset=vignetteDepth*(band/BANDS);
     const thickness=vignetteDepth/BANDS;
-    const alpha=0.055+band*0.02;
+    const alpha=0.1*(1-band/BANDS)**2;
     layers.vignette.rect(0,inset,view.width,thickness).fill({color:0x03080e,alpha});
     layers.vignette.rect(0,view.height-inset-thickness,view.width,thickness).fill({color:0x03080e,alpha});
     layers.vignette.rect(inset,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
@@ -1549,6 +1399,17 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   waterStripPlacer?.finish();
   facePlacer?.finish();
   blockerFacePlacer?.finish();
+  if (pathPlacer && pathMaskGraphic) {
+    const pathSprite = pathPlacer.place('packed-earth', 0, 0, view.width, view.height, 0.98);
+    if (pathSprite) {
+      // Compacted earth stays legible even where the surrounding district
+      // shares this soil texture; the tint adds no extra material request.
+      pathSprite.tint = 0xd4c4ab;
+      pathSprite.mask = pathMaskGraphic;
+      pathMaskGraphic.visible = true;
+    }
+    pathPlacer.finish();
+  }
   if (roadPlacer && roadMaskGraphic) {
     const roadSprite = roadPlacer.place('road', 0, 0, view.width, view.height, 0.96);
     if (roadSprite) {

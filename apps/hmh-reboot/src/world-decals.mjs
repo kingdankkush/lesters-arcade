@@ -18,13 +18,13 @@ import { exposedWaterEdges, waterAreaContains } from './world-design-water.mjs';
 
 export const DECAL_KINDS = Object.freeze({
   // Footpath wear where the authored route runs.
-  'route-wear': Object.freeze({ color: '#6b5a3f', alpha: 0.22, shape: 'ellipse', stretch: 2.4 }),
+  'route-wear': Object.freeze({ color: '#6b5a3f', alpha: 0.075, shape: 'ellipse', stretch: 2.4 }),
   // Wheel ruts: paired, long and narrow, along road-ish stretches.
   'tire-rut': Object.freeze({ color: '#4a3f2e', alpha: 0.26, shape: 'rut', stretch: 4.2 }),
   // Scorching around the hazard the world contract already marks.
-  scorch: Object.freeze({ color: '#241c18', alpha: 0.30, shape: 'ellipse', stretch: 1.15 }),
+  scorch: Object.freeze({ color: '#241c18', alpha: 0.13, shape: 'ellipse', stretch: 1.15 }),
   // Dried spill at encounter arenas.
-  'arena-stain': Object.freeze({ color: '#3a1f22', alpha: 0.24, shape: 'ellipse', stretch: 1.4 }),
+  'arena-stain': Object.freeze({ color: '#3a1f22', alpha: 0.10, shape: 'ellipse', stretch: 1.4 }),
   // Cracked mud where water meets land.
   'shore-crack': Object.freeze({ color: '#5a4d38', alpha: 0.20, shape: 'crack', stretch: 1.0 }),
   // W-6: the worn apron a composed set-piece stands on.

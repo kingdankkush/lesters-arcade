@@ -1,0 +1,195 @@
+{
+  "pipeline": "hmh-blender-ground-v1",
+  "status": "review-candidate",
+  "blenderVersion": "5.1.2",
+  "engine": "CYCLES",
+  "samples": 16,
+  "seed": 42819,
+  "sourceScriptSha256": "7033397804f30c30db99d8a53e34d07ddee08698075d4c5cb015fc6e18757a18",
+  "nativeSource": "hmh-world-ground-materials.blend",
+  "nativeSourceSha256": "9f028bfdb6f1933d614bd326898df4d953d75758cc78e798792558c9fa73d647",
+  "license": "Original project-authored procedural Blender materials; no external texture inputs.",
+  "seamMethod": "4D torus of sine/cosine UV; one period in both axes; oversized plane and uniform sun/world. Opposing pixel centers are adjacent samples, not duplicated edge pixels.",
+  "repeatVerified": true,
+  "resumedFromSavedNativeScene": true,
+  "pngNormalization": "Only volatile text/time metadata chunks removed; IDAT compressed pixels and color-space chunks unchanged.",
+  "contactSheetOrder": [
+    "packed-earth",
+    "red-rock",
+    "wet-bank",
+    "forest-floor",
+    "crushed-ore",
+    "industrial-slab",
+    "road"
+  ],
+  "materials": [
+    {
+      "id": "packed-earth",
+      "file": "packed-earth.png",
+      "sha256": "b5c74c047ea6d315b7621a946a27b4c31ee984b1e6cc7080b0c080fa792eced4",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.008560559712350368,
+      "verticalSeamMean": 0.00728400656953454,
+      "interiorHorizontalMean": 0.00807596929371357,
+      "interiorVerticalMean": 0.00804191455245018,
+      "horizontalSeamToInterior": 1.0600039958953857,
+      "verticalSeamToInterior": 0.9057552814483643,
+      "opaque": true,
+      "rgbMean": [
+        0.5181742906570435,
+        0.42606574296951294,
+        0.2936607599258423
+      ],
+      "repeatSha256": "b5c74c047ea6d315b7621a946a27b4c31ee984b1e6cc7080b0c080fa792eced4",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    },
+    {
+      "id": "red-rock",
+      "file": "red-rock.png",
+      "sha256": "80ec5e0e5c6d59691b1df9f2772ef372702902eaad97eb206b8644b10e72e691",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.0082618473097682,
+      "verticalSeamMean": 0.008139298297464848,
+      "interiorHorizontalMean": 0.008252015337347984,
+      "interiorVerticalMean": 0.008171215653419495,
+      "horizontalSeamToInterior": 1.00119149684906,
+      "verticalSeamToInterior": 0.9960939288139343,
+      "opaque": true,
+      "rgbMean": [
+        0.5607499480247498,
+        0.38516056537628174,
+        0.2733270227909088
+      ],
+      "repeatSha256": "80ec5e0e5c6d59691b1df9f2772ef372702902eaad97eb206b8644b10e72e691",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    },
+    {
+      "id": "wet-bank",
+      "file": "wet-bank.png",
+      "sha256": "0234ab591e7b650eed66c51117304518bb53b495c9f89193d6976283b57edf3d",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.0051317401230335236,
+      "verticalSeamMean": 0.005284925922751427,
+      "interiorHorizontalMean": 0.0056357961148023605,
+      "interiorVerticalMean": 0.005615381058305502,
+      "horizontalSeamToInterior": 0.9105616807937622,
+      "verticalSeamToInterior": 0.9411517977714539,
+      "opaque": true,
+      "rgbMean": [
+        0.30395394563674927,
+        0.3069523870944977,
+        0.2339973747730255
+      ],
+      "repeatSha256": "0234ab591e7b650eed66c51117304518bb53b495c9f89193d6976283b57edf3d",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    },
+    {
+      "id": "forest-floor",
+      "file": "forest-floor.png",
+      "sha256": "2e6b14b9bce9994a345b0b218a99f48a81f579be2affd6de094689397ace1b7b",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.013054023496806622,
+      "verticalSeamMean": 0.011935763992369175,
+      "interiorHorizontalMean": 0.012363926507532597,
+      "interiorVerticalMean": 0.01233522780239582,
+      "horizontalSeamToInterior": 1.05581533908844,
+      "verticalSeamToInterior": 0.9676160216331482,
+      "opaque": true,
+      "rgbMean": [
+        0.32307833433151245,
+        0.32750406861305237,
+        0.23122164607048035
+      ],
+      "repeatSha256": "2e6b14b9bce9994a345b0b218a99f48a81f579be2affd6de094689397ace1b7b",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    },
+    {
+      "id": "crushed-ore",
+      "file": "crushed-ore.png",
+      "sha256": "51364794ddb4b8b20e38c1a07fc58138e3fd75521eab8393e71c0272904ba1f1",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.02022569626569748,
+      "verticalSeamMean": 0.018727025017142296,
+      "interiorHorizontalMean": 0.019520878791809082,
+      "interiorVerticalMean": 0.019408617168664932,
+      "horizontalSeamToInterior": 1.0361058712005615,
+      "verticalSeamToInterior": 0.964881956577301,
+      "opaque": true,
+      "rgbMean": [
+        0.40456530451774597,
+        0.42786967754364014,
+        0.4240882694721222
+      ],
+      "repeatSha256": "51364794ddb4b8b20e38c1a07fc58138e3fd75521eab8393e71c0272904ba1f1",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    },
+    {
+      "id": "industrial-slab",
+      "file": "industrial-slab.png",
+      "sha256": "f8bcc27f022e16f8afa2d764f675c6fbb260e2acaee93025bbeb01a2255afc0c",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.004541973117738962,
+      "verticalSeamMean": 0.0039522056467831135,
+      "interiorHorizontalMean": 0.00439702020958066,
+      "interiorVerticalMean": 0.004420657642185688,
+      "horizontalSeamToInterior": 1.032966136932373,
+      "verticalSeamToInterior": 0.8940311670303345,
+      "opaque": true,
+      "rgbMean": [
+        0.46065378189086914,
+        0.46754008531570435,
+        0.42697280645370483
+      ],
+      "repeatSha256": "f8bcc27f022e16f8afa2d764f675c6fbb260e2acaee93025bbeb01a2255afc0c",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    },
+    {
+      "id": "road",
+      "file": "road.png",
+      "sha256": "8c3be8012cc6735151ee1db51a627d23e080cc98255d64c4d1017a9909bdace2",
+      "size": [
+        512,
+        512
+      ],
+      "horizontalSeamMean": 0.005126633681356907,
+      "verticalSeamMean": 0.005499386694282293,
+      "interiorHorizontalMean": 0.00567111000418663,
+      "interiorVerticalMean": 0.00566387502476573,
+      "horizontalSeamToInterior": 0.9039912223815918,
+      "verticalSeamToInterior": 0.9709583520889282,
+      "opaque": true,
+      "rgbMean": [
+        0.25397002696990967,
+        0.2689509093761444,
+        0.24974752962589264
+      ],
+      "repeatSha256": "8c3be8012cc6735151ee1db51a627d23e080cc98255d64c4d1017a9909bdace2",
+      "repeatPixelExact": true,
+      "repeatFileExact": true
+    }
+  ]
+}

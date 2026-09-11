@@ -20,17 +20,16 @@ const rendererUrl = new URL('../apps/hmh-reboot/src/world-production-art.mjs', i
 
 const readManifest = async () => JSON.parse(await readFile(manifestUrl, 'utf8'));
 
-test('W-1 ships a lit micro-terrain bake under a bumped pipeline id', async () => {
+test('terrain v4 ships verified Blender ground under a bumped pipeline id', async () => {
   const manifest = await readManifest();
-  assert.equal(TERRAIN_TILE_PIPELINE_ID, 'hmh-terrain-tiles-v3');
+  assert.equal(TERRAIN_TILE_PIPELINE_ID, 'hmh-terrain-tiles-v4');
   assert.equal(manifest.pipelineId, TERRAIN_TILE_PIPELINE_ID, 'bakery and runtime must bump in lockstep');
-  assert.equal(manifest.schemaVersion, 3);
-  assert.equal(manifest.litMicroTerrain, true, 'height-field scatter, AO and cast shadow must be baked in');
+  assert.equal(manifest.schemaVersion, 4);
+  assert.equal(manifest.materialAuthoring, 'blender-ground-and-retained-surface-bakes');
   assert.equal(manifest.reproducibleVerified, true, 'the shipped bake must be byte-reproducible');
   // Existing contracts the runtime and the T1/T4 tests depend on.
   assert.equal(manifest.runtimeAuthority, 'projection-only');
-  assert.equal(manifest.paintedLayering, true);
-  assert.equal(manifest.intraDistrictPatches, true);
+  assert.equal(manifest.nativeGround.materialIds.length, 7);
   assert.equal(manifest.seamlessVerified, true);
 });
 
@@ -61,7 +60,7 @@ test('W-3/W-4 bake authored edge strips as overlays, not base materials', async 
     // Overlays must never enter `materials`: that array is size-checked against
     // tileSize and drives one texture request per runtime material.
     assert.equal(manifest.materials.filter((entry) => entry.id === id).length, 0);
-    assert.equal(terrainOverlayAsset(id).imageUrl.endsWith(`/${id}.png`), true);
+    assert.equal(new URL(terrainOverlayAsset(id).imageUrl, 'https://lestersarcade.io/hmh-reboot/').pathname.endsWith(`/${id}.png`), true);
   }
   assert.throws(() => terrainOverlayAsset('nope'), /unknown terrain overlay/);
 });

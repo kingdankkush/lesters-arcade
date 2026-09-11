@@ -123,6 +123,48 @@ test('W-3 draws no black outline stroke on any route, at the bridge or at spawn'
   }
 });
 
+test('roads and exploration paths receive separate materials and pooled masks', () => {
+  const production = layersFor();
+  const textures = new Map(['road', 'packed-earth'].map(id => [id, { id, source: { style: {} } }]));
+  const tiles = fakeTerrainTiles();
+  tiles.textureFor = id => textures.get(id) ?? TEXTURE;
+  const camera = { x: 600, y: 3400, zoom: 1, shakeX: 0, shakeY: 0 };
+  const draw = () => renderWorldProductionArt({ worldProduction: production, world: LEVEL_ONE_WORLD, camera,
+    view: VIEW, queryGround: createLevelOneGroundQuery(), worldToScreen, tick: 180, performanceProfile: PROFILE, terrainTiles: tiles });
+  draw();
+  const road = production.roadSprites.children.find(child => child.texture?.id === 'road');
+  const path = production.pathSprites?.children.find(child => child.texture?.id === 'packed-earth');
+  assert.ok(road && path, 'asphalt and dirt must each be drawn');
+  assert.equal(road.mask, production.roadMask);
+  assert.equal(path.mask, production.pathMask);
+  assert.notEqual(road.mask, path.mask, 'footpaths must not fill the asphalt mask');
+  assert.ok(path.mask.strokes.length > 0, 'the dirt material must follow visible exploration paths');
+  const total = production.pathSprites.children.length;
+  draw();
+  assert.equal(production.pathSprites.children.length, total);
+  assert.equal(production.pathSprites.children.find(child => child.texture?.id === 'packed-earth'), path);
+  const index = child => production.root.getChildIndex(child);
+  assert.ok(index(production.pathSprites) < index(production.roadSprites), 'asphalt takes precedence at junctions');
+  assert.ok(index(production.roadSprites) < index(production.layers.surfaces), 'water and bridges must still cover roads');
+});
+
+test('authored ground keeps its baked palette instead of a strong district colour wash', () => {
+  const production = layersFor();
+  render(SPAWN, production);
+  const ground = production.terrainSprites.children.filter(child => child.visible);
+  assert.ok(ground.length > 0);
+  assert.ok(ground.every(child => child.alpha >= 0.9));
+});
+
+test('edge shading fades toward the playable centre instead of making a dark inner rectangle', () => {
+  const production = layersFor();
+  render(SPAWN, production);
+  const bands = production.layers.vignette.fills.filter((_, index) => index % 4 === 0);
+  assert.ok(bands.length >= 4);
+  for (let index = 1; index < bands.length; index++) assert.ok(bands[index].alpha < bands[index - 1].alpha);
+  assert.ok(bands.at(-1).alpha < 0.01, 'the inner edge should dissolve into the scene');
+});
+
 test('W-3/W-4 place authored edge strips where the world actually has edges', () => {
   const worldProduction = layersFor();
   render(BRIDGE, worldProduction);
