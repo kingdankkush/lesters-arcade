@@ -62,11 +62,38 @@ function pointInsideInflatedShape(shape, x, y, inflate) {
   return inside;
 }
 
+// Per-build conservative broad phase. Unknown/degenerate shapes keep the exact
+// narrow-phase path; this never changes the nine sample points or blocker order.
+function navBlockerBounds(blocker) {
+  const shape = blocker?.shape;
+  const round = shape?.type === 'circle' || shape?.type === 'capsule';
+  const points = shape?.type === 'circle' ? [shape] : shape?.type === 'capsule' ? [shape.a, shape.b] : shape?.vertices;
+  const radius = round ? shape.radius : 0;
+  if (!Array.isArray(points) || points.length < (round ? 1 : 3) || !Number.isFinite(radius) || radius < 0) return { blocker };
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity, area = 0;
+  for (let i = 0; i < points.length; i += 1) {
+    const p = points[i];
+    if (!Number.isFinite(p?.x) || !Number.isFinite(p?.y)) return { blocker };
+    minX = Math.min(minX, p.x); minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y);
+    if (!round) { const q = points[(i + 1) % points.length]; area += p.x * q?.y - p.y * q?.x; }
+  }
+  if (!round && (!Number.isFinite(area) || area === 0)) return { blocker };
+  const padding = radius + ENEMY_CLEARANCE_RADIUS;
+  return { blocker, minX: minX - padding, minY: minY - padding, maxX: maxX + padding, maxY: maxY + padding };
+}
+
+function outsideNavSamples(b, minX, minY, column, row, cellSize) {
+  return minX + (column + 0.9) * cellSize < b.minX || minX + (column + 0.1) * cellSize > b.maxX
+    || minY + (row + 0.9) * cellSize < b.minY || minY + (row + 0.1) * cellSize > b.maxY;
+}
+
 export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CELL_SIZE } = {}) {
   if (!world?.bounds || !Array.isArray(world.collisionBlockers)) throw new TypeError('world with bounds and collisionBlockers is required');
   if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
   if (!Number.isFinite(cellSize) || cellSize <= 0) throw new TypeError('cellSize must be positive');
   const { minX, minY, maxX, maxY } = world.bounds;
+  const blockerBounds = world.collisionBlockers.map(navBlockerBounds);
   const columns = Math.ceil((maxX - minX) / cellSize);
   const rows = Math.ceil((maxY - minY) / cellSize);
   const walkable = new Uint8Array(columns * rows);
@@ -82,7 +109,9 @@ export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CE
       const ground = queryGround(centreX(column), centreY(row));
       let open = !(ground.kind === 'water' && ground.deepWater);
       if (open) {
-        blocked: for (const blocker of world.collisionBlockers) {
+        blocked: for (const entry of blockerBounds) {
+          if (outsideNavSamples(entry, minX, minY, column, row, cellSize)) continue;
+          const blocker = entry.blocker;
           for (const oy of SAMPLE_OFFSETS) {
             for (const ox of SAMPLE_OFFSETS) {
               const x = minX + (column + ox) * cellSize;
@@ -204,6 +233,7 @@ export async function createEnemyNavGridChunked({
   if (typeof now !== 'function') throw new TypeError('now must be a function');
   if (typeof scheduleYield !== 'function') throw new TypeError('scheduleYield must be a function');
   const { minX, minY, maxX, maxY } = world.bounds;
+  const blockerBounds = world.collisionBlockers.map(navBlockerBounds);
   const columns = Math.ceil((maxX - minX) / cellSize);
   const rows = Math.ceil((maxY - minY) / cellSize);
   const total = columns * rows;
@@ -236,7 +266,9 @@ export async function createEnemyNavGridChunked({
     const ground = queryGround(centreX(column), centreY(row));
     let open = !(ground.kind === 'water' && ground.deepWater);
     if (open) {
-      blocked: for (const blocker of world.collisionBlockers) {
+      blocked: for (const entry of blockerBounds) {
+        if (outsideNavSamples(entry, minX, minY, column, row, cellSize)) continue;
+        const blocker = entry.blocker;
         for (const oy of sampleOffsets) {
           for (const ox of sampleOffsets) {
             const x = minX + (column + ox) * cellSize;

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { createHash } from 'node:crypto';
 
 import {
   ENEMY_NAV_CELL_SIZE,
@@ -558,4 +559,51 @@ test('ranged roles fall back to prior behaviour with no navigation', () => {
     }
   }
   assert.ok(compared > 0, 'the comparison must actually run');
+});
+
+
+test('broad-phase rejection avoids repeated narrow-phase reads for a remote blocker', async () => {
+  const { createEnemyNavGridChunked } = await import('../apps/hmh-reboot/src/enemy-navgrid.mjs');
+  for (const build of [createEnemyNavGrid, createEnemyNavGridChunked]) {
+    let reads = 0;
+    const vertices = [{x:5000,y:5000},{x:5100,y:5000},{x:5100,y:5100},{x:5000,y:5100}];
+    const shape = {type:'polygon',get vertices(){reads++;return vertices;}};
+    const world = {bounds:{minX:0,minY:0,maxX:120,maxY:120},collisionBlockers:[{id:'remote',shape}]};
+    const grid = await build({world,queryGround:()=>({kind:'ground',groundZ:0}),now:()=>0,scheduleYield:async()=>undefined});
+    assert.ok(grid.walkable.every(Boolean));
+    assert.ok(reads<=2,`remote geometry was read ${reads} times instead of once per build`);
+  }
+});
+
+test('nav broad-phase retains the established full-world walkability and directed edges byte-for-byte', () => {
+  const grid = createEnemyNavGrid({world:LEVEL_ONE_WORLD,queryGround:createLevelOneGroundQuery()});
+  assert.equal(createHash('sha256').update(grid.walkable).update(grid.edges).digest('hex'),'1ce1e9b850dfad71f5b2775cfed48a93e57ec2192b793772452335520541fcb9');
+});
+
+test('broad-phase includes tangent circle, capsule and polygon contacts', () => {
+  const shapes = [
+    {type:'circle',x:72,y:30,radius:0},
+    {type:'capsule',a:{x:72,y:6},b:{x:72,y:54},radius:0},
+    {type:'polygon',vertices:[{x:72,y:6},{x:90,y:6},{x:90,y:54},{x:72,y:54}]},
+  ];
+  for (const shape of shapes) {
+    const world={bounds:{minX:0,minY:0,maxX:60,maxY:60},collisionBlockers:[{shape}]};
+    assert.equal(createEnemyNavGrid({world,queryGround:()=>({kind:'ground',groundZ:0})}).walkable[0],0,shape.type);
+  }
+});
+
+test('bounds are rebuilt when geometry changes between grid constructions', () => {
+  const shape={type:'circle',x:5000,y:5000,radius:0};
+  const world={bounds:{minX:0,minY:0,maxX:60,maxY:60},collisionBlockers:[{shape}]};
+  const build=()=>createEnemyNavGrid({world,queryGround:()=>({kind:'ground',groundZ:0})});
+  assert.equal(build().walkable[0],1);
+  shape.x=72;shape.y=30;
+  assert.equal(build().walkable[0],0);
+});
+
+test('a degenerate polygon retains conservative narrow-phase behavior instead of being culled', () => {
+  const world = {bounds:{minX:0,minY:0,maxX:120,maxY:120},collisionBlockers:[{shape:{type:'polygon',vertices:[{x:5000,y:5000},{x:5100,y:5100},{x:5200,y:5200}]}}]};
+  const grid=createEnemyNavGrid({world,queryGround:()=>({kind:'ground',groundZ:0})});
+  assert.equal(grid.walkable[0],0);
+  assert.equal(grid.walkable[3],0);
 });
