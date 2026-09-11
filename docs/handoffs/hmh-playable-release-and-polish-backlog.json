@@ -810,5 +810,15 @@
     "STACKED:S-22"
   ],
   "canonicalRegisterPath": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
-  "historicalAcceptanceWarning": "Original register statuses/doneWhen are historical. Current control, scope, owner and evidence decisions take precedence. Publication does not close full-group AAA requirements; check the final release receipt for what actually shipped."
+  "historicalAcceptanceWarning": "Original register statuses/doneWhen are historical. Current control, scope, owner and evidence decisions take precedence. Publication does not close full-group AAA requirements; check the final release receipt for what actually shipped.",
+  "latestVerifiedPlayableRelease": {
+    "commit": "cabe95165c68bdea77bb626d6c630b872e8c83b2",
+    "url": "https://lestersarcade.io",
+    "receipt": "docs/qa/hmh-playable-release-20260910.json"
+  },
+  "remainingReleasePolish": [
+    "Detailed enemy-crop repeatability",
+    "Brief asynchronous native-atlas loading fallback",
+    "Original full AAA/human/device and backlog acceptance"
+  ]
 }

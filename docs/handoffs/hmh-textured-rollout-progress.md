@@ -1,5 +1,17 @@
 # Textured rollout: current continuation checkpoint
 
+## Current verified live playable release
+
+**Live:** https://lestersarcade.io. Runtime source `cabe95165c68bdea77bb626d6c630b872e8c83b2` on `hermes/hmh-textured-rollout`; production `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8`; verified Preview `dpl_ETJ7zj3zmnKBk1yz3VPCAhggCHkq`; retained Ready rollback `dpl_DBodNtqBWjYzT87FcwgTLCRJy3xs`.
+
+[Machine-readable release receipt](../qa/hmh-playable-release-20260910.json). The full suite, exact clean-source build, public desktop/mobile flows, 60 served artifact/route checks and warm-client entry refresh are verified. Native heroes, incremental world/controls work and parent fixes are integrated. Financial activation remains disabled and STACKED paused.
+
+The owner prioritized a playable release and explicitly retained unfinished AAA/human acceptance. [All remaining polish](hmh-playable-release-and-polish-backlog.md) and the [complete task snapshot](hmh-polish-task-list-2026-09-10.md) are saved. The detailed enemy-crop repeatability warning and brief asynchronous atlas-loading fallback remain open; do not label them passed.
+
+**Everything below is historical source/coordination evidence. Earlier pending windows, no-commit statements and candidate-only statuses do not override this verified live checkpoint.** Continue in the canonical checkout/branch above rather than replacing the mixed integration or reviving STACKED.
+
+## Historical continuation notes
+
 ## Current priority: verified playable release, retain polish backlog
 
 The [complete preserved task-list snapshot](hmh-polish-task-list-2026-09-10.md) is saved alongside the consolidated requirement backlog. Its old waiting statuses are historical: Codex's 59-path committed incremental source and evidence packet have now arrived, and its validation window is explicitly released to Hermes.

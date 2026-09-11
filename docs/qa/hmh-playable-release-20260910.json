@@ -1,0 +1,92 @@
+{
+  "schema": "hmh-verified-playable-release-v1",
+  "verifiedAtUtc": "2026-09-11T01:19:33.817111+00:00",
+  "releaseType": "verified playable update; not final AAA acceptance",
+  "siteVersion": "1.4.0",
+  "sourceCommit": "cabe95165c68bdea77bb626d6c630b872e8c83b2",
+  "sourceBranch": "hermes/hmh-textured-rollout",
+  "sourceTree": "eac30c82ab8b02d974ca2f1fc75401f1a44f1240",
+  "preview": {
+    "id": "dpl_ETJ7zj3zmnKBk1yz3VPCAhggCHkq",
+    "url": "https://lesters-arcade-eaqp49bym-justin-agent-projects.vercel.app"
+  },
+  "production": {
+    "id": "dpl_YF1dFwixGJXqsxSfXGF39Yez37r8",
+    "url": "https://lesters-arcade-aew9i7szl-justin-agent-projects.vercel.app",
+    "domain": "https://lestersarcade.io",
+    "ready": true,
+    "domainAliasMatches": true
+  },
+  "rollback": {
+    "id": "dpl_DBodNtqBWjYzT87FcwgTLCRJy3xs",
+    "url": "https://lesters-arcade-c496423zz-justin-agent-projects.vercel.app",
+    "ready": true
+  },
+  "verification": {
+    "localFullSuite": {
+      "tests": 3275,
+      "failed": 51,
+      "passed": 3224,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 3208,
+      "suites": 8
+    },
+    "retirementExceptionsUnchanged": 51,
+    "cloudBuild": "READY on the exact runtime source",
+    "publicArtifactsAndRoutes": {
+      "verified": 60,
+      "allMatched": true,
+      "htmlNormalization": "Only the official Vercel Live feedback script, where present"
+    },
+    "publicBrowserFlows": {
+      "desktop": {
+        "implementedFlowsPassed": 7,
+        "consoleErrors": 0,
+        "atlasSettledScreenshotReviewed": true
+      },
+      "mobile": {
+        "implementedFlowsPassed": 7,
+        "consoleErrors": 0,
+        "atlasSettledScreenshotReviewed": true
+      }
+    },
+    "warmClient": {
+      "passed": true,
+      "newEntryReceivedOnReload": true,
+      "storageCleared": false,
+      "workerUnregistered": false,
+      "scope": "Previously visited client receives the new entry; not a full persistent-state/endurance certificate"
+    },
+    "navigation": {
+      "beforeProfileMs": 651.8809,
+      "afterProfileMs": 230.28269999999998,
+      "walkabilityAndEdgesSha256": "1ce1e9b850dfad71f5b2775cfed48a93e57ec2192b793772452335520541fcb9",
+      "unchangedOutput": true,
+      "timingLimitUnchangedMs": 1500
+    },
+    "budgets": {
+      "entryBytes": 472960,
+      "entryLimit": 480000,
+      "initialAggregateBytes": 1048198,
+      "initialAggregateLimit": 1048576
+    }
+  },
+  "authority": {
+    "SETTLEMENT_LIVE": false,
+    "financialActivationAuthorized": false,
+    "STACKED": "paused; not part of this release"
+  },
+  "openAcceptance": [
+    "Full human/physical-device acceptance and broader AAA polish remain open under explicit owner approval.",
+    "One detailed frontier-relay enemy-crop repeatability check remains NON-PASS/open; thresholds were not relaxed.",
+    "An initial loading fallback can appear before the native hero atlas finishes decoding. Settled ordinary public desktop/mobile views show the native hero."
+  ],
+  "backlogs": [
+    "docs/handoffs/hmh-playable-release-and-polish-backlog.md",
+    "docs/handoffs/hmh-playable-release-and-polish-backlog.json",
+    "docs/handoffs/hmh-polish-task-list-2026-09-10.md"
+  ],
+  "sourceVsDocumentation": "This identifies the deployed runtime commit. A later documentation-only commit records these results and is not the deployed runtime source."
+}

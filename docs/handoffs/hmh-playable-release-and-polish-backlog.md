@@ -1,5 +1,9 @@
 # HMH playable release and retained polish backlog
 
+## Latest playable release
+
+Verified live at https://lestersarcade.io from `cabe95165c68bdea77bb626d6c630b872e8c83b2`. [Release receipt](../qa/hmh-playable-release-20260910.json). The original work groups remain below as retained polish/acceptance work, not unstarted tasks. Additional follow-up: eliminate the brief first-frame loading fallback while preserving safe asynchronous native-atlas loading; stabilize the detailed enemy-crop capture. No financial activation or STACKED resumption is authorized.
+
 ## Current priority
 
 Ship a verified, playable combined website/game update. Preserve approved heroes and Chikun, reconcile the incremental Codex return, and keep financial activation disabled. The owner explicitly approved publication with human playtests and unfinished AAA art still open. This is not full AAA acceptance.
