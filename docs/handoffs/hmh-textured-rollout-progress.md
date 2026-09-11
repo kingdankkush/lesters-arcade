@@ -1,6 +1,16 @@
 # Textured rollout: current continuation checkpoint
 
-## Current verified live playable release
+## Current verified quality release — 2026-09-11
+
+**Live:** https://lestersarcade.io. Source `67b9f4509bbd677f7c3235bf618c09d311045f4b`, production `dpl_GifxR3BD7XZ4Bd2m9PYvtT8kTwYi`, Preview `dpl_4JQXy8HwoRckgRB4HMtgDp1PSFQx`, retained rollback `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt`. Continue in the canonical checkout on `hermes/hmh-textured-rollout`.
+
+[Exact quality release receipt](../qa/hmh-quality-release-20260911.json) · [Completed quality changes and remaining work](hmh-quality-pass-20260911.md) · [Full retained backlog](hmh-playable-release-and-polish-backlog.md).
+
+Both hosted builds pass 3,273 tests with exactly 51 unchanged retired-test exceptions and zero unexpected failures. Each environment passes 93 exact served-file/route comparisons. New action sounds, randomized launch/replay music, easier opening combat, asset-ready startup, touch/boss aim, fresh-session restart and pause/upgrade corrections are live. The world remains Level 1; hero XP levels increase within it. Full native weapon/enemy completion, formal enemy-crop repeatability, physical-device and AAA acceptance remain open. Financial activation remains disabled.
+
+Everything below is historical release and coordination evidence.
+
+## Preceding consolidated playable release
 
 **Live:** https://lestersarcade.io. Website source `4122eb04b77804e2ab19b9917c0217bf59015867`, production `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt`, verified Preview `dpl_4hnvAkqMw5jAnrppaU4z181YYUvd`, retained Ready rollback `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8`. Continue in `C:/Users/just_/Desktop/Projects/lesters-arcade-textured-rollout` on `hermes/hmh-textured-rollout`.
 

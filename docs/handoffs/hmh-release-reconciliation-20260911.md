@@ -1,6 +1,6 @@
 # Consolidated playable release and remaining work
 
-Live at https://lestersarcade.io from `4122eb04b77804e2ab19b9917c0217bf59015867`. [Exact release receipt](../qa/hmh-consolidated-release-20260911.json).
+Preceding consolidated release at https://lestersarcade.io from `4122eb04b77804e2ab19b9917c0217bf59015867`. [Historical release receipt](../qa/hmh-consolidated-release-20260911.json). The [current quality release](hmh-quality-pass-20260911.md) supersedes that runtime while retaining this contribution reconciliation and backlog.
 
 Hermes had already integrated and published the overhaul after the supplied Codex handoffs. This follow-up verified that integration and fixed a remaining pre-game instruction mismatch: the old text advertised manual dash/power-ups and incorrect mobile aiming. The intro now describes the controls that actually ship.
 
