@@ -4475,7 +4475,7 @@ async function boot() {
   };
 
   const pauseRuntime = (source) => {
-    if (!simulation || simulation.state !== 'active') return;
+    if (!simulation || (simulation.state !== 'active' && simulation.state !== 'upgrade')) return;
     world.position.set(0, 0);
     simulation.pause();
     // Keep checking artwork while a visibility/portal pause freezes gameplay.
@@ -4503,8 +4503,9 @@ async function boot() {
   const resumeRuntime = (source = 'portal') => {
     if (simulation?.state !== 'paused') return;
     simulation.resume();
-    app.ticker.start();
-    combatAudio.resume();
+    if (simulation.state === 'active' || startupGate) app.ticker.start();
+    else app.ticker.stop();
+    if (simulation.state === 'active') combatAudio.resume();
     combatAudio.play('resume', { volume: 0.06 });
     cockpit?.setPaused(false);
     setStatus(bridge?.initialized ? 'Portal session connected' : 'Standalone session ready', `Resumed by ${source}.`);

@@ -23,6 +23,7 @@ function findNode(predicate, node = ast) {
   return null;
 }
 const pauseNode = findNode(node => node.type === 'VariableDeclarator' && node.id.name === 'pauseRuntime').init;
+const resumeNode = findNode(node => node.type === 'VariableDeclarator' && node.id.name === 'resumeRuntime').init;
 const tickerNode = findNode(node => node.type === 'CallExpression'
   && source.slice(node.callee.start, node.callee.end) === 'app.ticker.add').arguments[0];
 
@@ -58,8 +59,27 @@ function runtime({ paused = true } = {}) {
     { importModuleDynamically: () => Promise.reject(new Error('Map renderer is outside this loading test.')) });
   const pause = execute(pauseNode);
   const frame = execute(tickerNode);
-  return { context, events, pause, frame: () => frame({ deltaMS: 1000 / 60 }) };
+  return { context, events, pause, resume: execute(resumeNode), frame: () => frame({ deltaMS: 1000 / 60 }) };
 }
+
+test('the portal can pause an upgrade choice and receive current run stats without losing the choice', () => {
+  const { context, pause, resume } = runtime({ paused: false });
+  context.startupGate = null;
+  context.simulation.enterUpgrade();
+  const sent = [];
+  let audioResumed = false;
+  context.bridge = { initialized: true, send: (type, payload) => sent.push({ type, payload }) };
+  context.statePayload = status => ({ status, level: 2, score: 475, paused: status === 'paused' });
+  context.combatAudio.resume = () => { audioResumed = true; };
+  pause('portal');
+  assert.equal(context.simulation.state, 'paused');
+  assert.equal(sent.find(message => message.type === 'game:state')?.payload.level, 2);
+  resume('portal');
+  assert.equal(context.simulation.state, 'upgrade', 'resuming must return to the unchosen upgrade');
+  assert.equal(context.app.ticker.running, false);
+  assert.equal(audioResumed, false, 'combat remains silent while an upgrade is pending');
+  assert.equal(context.simulation.tick, 0);
+});
 
 test('visibility pause keeps the artwork ticker alive until the first complete frame', () => {
   const { context, events, pause, frame } = runtime({ paused: false });
