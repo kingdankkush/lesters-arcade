@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { Script, createContext } from 'node:vm';
 import { createAimState, resolveAimIntent } from '../apps/hmh-reboot/src/aim.mjs';
 import { createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { traceHeightAwareLineOfSight } from '../apps/hmh-reboot/src/elevation.mjs';
@@ -10,12 +11,8 @@ import { traceHeightAwareLineOfSight } from '../apps/hmh-reboot/src/elevation.mj
 const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const call = source.match(/aimIntent = (resolveAimIntent\(aimState, \{[\s\S]*?\n {6}\}\));/);
 assert.ok(call, 'the simulation step must contain the runtime aim call');
-const resolveRuntimeAim = new Function('context', `
-  const { resolveAimIntent, aimState, tick, motion, actor, tickInput,
-    grayboxEnemies, liquidatorBoss, traceHeightAwareLineOfSight,
-    PROJECTILE_FLIGHT_HEIGHT, WORLD_BLOCKERS } = context;
-  return ${call[1]};
-`);
+const runtimeAimScript = new Script(call[1], { filename: 'runtime-aim-fixture.mjs' });
+const resolveRuntimeAim = context => runtimeAimScript.runInContext(createContext(context), { timeout: 1000 });
 const projectileHeight = Number(source.match(/const PROJECTILE_FLIGHT_HEIGHT = (\d+);/)?.[1]);
 assert.ok(Number.isFinite(projectileHeight), 'use the runtime projectile height for cover checks');
 
