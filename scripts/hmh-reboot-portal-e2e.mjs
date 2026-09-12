@@ -78,7 +78,7 @@ export const PORTAL_E2E_FLOWS = Object.freeze([
     id: 'game-over-run-summary',
     status: 'implemented',
     covers: Object.freeze(['game-over', 'restart-play-again', 'scores-session-history']),
-    description: 'An evidence-gated deterministic child defeat emits exactly one canonical summary; the parent accepts matching terminal messages and persists the same score, kills, mode, and terminal reason.',
+    description: 'An evidence-gated deterministic child defeat emits exactly one canonical (schema 6) summary; the parent accepts matching terminal messages, persists the same score, kills, mode, and terminal reason, and renders the death recap (killer, build, milestones) inside the scrollable game-over panel with Run It Back reachable on desktop and phone viewports.',
   }),
   Object.freeze({
     id: 'service-worker-offline-update',
@@ -525,6 +525,48 @@ if (isMain) {
       assert.equal(record.score, record.runSummary.totals.score);
       assert.equal(record.kills, record.runSummary.kills.total);
       assert.equal(record.elapsedSeconds, Math.round(record.runSummary.totals.elapsedMs / 1000));
+      // Schema 6: the terminal pilot hit is stamped enemy-bagholder-rusher, so
+      // the child must attribute the defeat to an enemy and the parent must
+      // render it from the payload (never from legacy in-portal combat state).
+      assert.equal(record.runSummary.schemaVersion, 6, 'child must emit schema 6');
+      assert.equal(record.runSummary.defeat.kind, 'enemy');
+      assert.equal(record.runSummary.defeat.causeId, 'enemy-bagholder-rusher');
+      assert.equal(record.killedBy, 'Bagholder Rusher', 'free record killedBy must come from the recap');
+      const recap = page.locator('#combatGameOverSummary [data-testid="hmh-run-recap"]');
+      await recap.waitFor({ state: 'visible', timeout: 10_000 });
+      const recapText = await recap.textContent();
+      assert.ok(recapText.includes('Bagholder Rusher'), `recap must name the killer: ${recapText}`);
+      assert.ok(recapText.includes('Cause of defeat') && recapText.includes('Build') && recapText.includes('Milestones'), `recap rows missing: ${recapText}`);
+      assert.ok(recapText.includes(`Seed ${record.runSummary.identity.seed}`), 'recap must expose the run seed');
+      assert.equal(await recap.evaluate((node) => node.querySelector('script, img, a, iframe') === null), true, 'recap is text only');
+      const bossesMetric = await page.locator('#combatGameOverSummary .summary-metric-card').filter({ hasText: 'Bosses' }).locator('.summary-metric-value').textContent();
+      assert.equal(bossesMetric.trim(), String(record.runSummary.kills.boss), 'Bosses metric must read from the payload');
+      const menuCopy = await page.locator('#combatMenuCopy').textContent();
+      assert.ok(!/^defeated\b/.test(menuCopy.trim()), `game-over copy must not print the raw reason literal: ${menuCopy}`);
+      assert.ok(menuCopy.includes('Lester was defeated.'), `game-over copy must read as a sentence: ${menuCopy}`);
+      // Both the recap and Run It Back live inside the scrollable game-over
+      // panel; on the phone profile they must scroll into the viewport rather
+      // than be clipped below it.
+      const runItBack = page.locator('#combatGameOverSummary .run-it-back-button');
+      const panelGeometry = async (locator) => {
+        await locator.scrollIntoViewIfNeeded();
+        return locator.evaluate((node) => {
+          const panel = node.closest('#combatMenuPanel');
+          const rect = (element) => {
+            const bounds = element.getBoundingClientRect();
+            return { left: bounds.left, top: bounds.top, right: bounds.right, bottom: bounds.bottom, height: bounds.height };
+          };
+          return { node: rect(node), panel: rect(panel), overflowY: getComputedStyle(panel).overflowY, scrollable: panel.scrollHeight > panel.clientHeight };
+        });
+      };
+      const viewport = page.viewportSize();
+      for (const [name, locator] of [['recap', recap], ['run-it-back', runItBack]]) {
+        const geometry = await panelGeometry(locator);
+        assert.ok(geometry.node.height > 0, `${name} must have layout`);
+        assert.ok(geometry.node.top >= geometry.panel.top - 1 && geometry.node.bottom <= geometry.panel.bottom + 1, `${name} escapes the game-over panel: ${JSON.stringify(geometry)}`);
+        assert.ok(geometry.node.top >= 0 && geometry.node.bottom <= viewport.height && geometry.node.left >= 0 && geometry.node.right <= viewport.width, `${name} is clipped by the ${browserProfile} viewport: ${JSON.stringify(geometry)}`);
+        assert.ok(['auto', 'scroll'].includes(geometry.overflowY) || !geometry.scrollable, `game-over panel must scroll when its content overflows: ${JSON.stringify(geometry)}`);
+      }
       await page.screenshot({ path: evidencePath('06-game-over-run-summary'), fullPage: false });
       return {
         sessionId: record.sessionId,
@@ -532,6 +574,9 @@ if (isMain) {
         score: record.score,
         kills: record.kills,
         terminalReason: record.runSummary.identity.terminalReason,
+        schemaVersion: record.runSummary.schemaVersion,
+        defeat: record.runSummary.defeat,
+        recapVisible: true,
       };
     });
   } finally {

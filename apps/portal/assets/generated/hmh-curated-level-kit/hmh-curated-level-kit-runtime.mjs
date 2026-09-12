@@ -105,6 +105,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-reboot-portal-lifecycle.mjs",
     "apps/portal/src/hmh-run-history.mjs",
     "apps/portal/src/hmh-run-integrity.mjs",
+    "apps/portal/src/hmh-run-recap.mjs",
     "apps/portal/src/hmh-run-simulator.mjs",
     "apps/portal/src/hmh-terrain-blob-map.mjs",
     "apps/portal/src/hmh-terrain-presentation.mjs",

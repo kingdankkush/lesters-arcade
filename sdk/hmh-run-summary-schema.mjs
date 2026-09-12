@@ -82,7 +82,30 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
     'yard-extraction-console',
     'yard-medbay-cache',
   ]),
+  // Schema 6 milestone catalogs. Ids mirror WORLD_DESIGN_SITES and
+  // WORLD_DESIGN_SECRETS in the child; the summary carries only the catalog
+  // index, so the parent never receives authored world coordinates.
+  worldSites: Object.freeze([
+    'relay-power',
+    'ravine-winch',
+    'crossing-pump',
+    'hashwood-shrine',
+    'mining-valve',
+    'yard-warehouse',
+  ]),
+  secrets: Object.freeze([
+    'farmstead-hidden-supplies',
+    'ravine-surveyor-cache',
+    'warehouse-logbook',
+  ]),
+  // 'unknown' is the defeated fallback when no killing hit was attributed;
+  // 'none' is reserved for runs that did not end in a defeat.
+  defeatKinds: Object.freeze(['none', 'enemy', 'boss', 'hazard', 'self', 'unknown']),
 });
+
+// Bounded catalog-style ids (heroId, defeat causeId); shared with the child
+// accumulator so an unattributable killer is reported rather than transmitted.
+export const HMH_RUN_SUMMARY_ID_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
 
 const plain = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
   && [Object.prototype, null].includes(Object.getPrototypeOf(value));
@@ -109,11 +132,12 @@ const rows = (value, ids, idKey, fields, label) => {
 };
 
 export function validateRunSummaryPayload(payload) {
-  if (![1, 2, 3, 4, 5].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
+  if (![1, 2, 3, 4, 5, 6].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
   const payloadFields = ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'];
   if (payload.schemaVersion >= 3) payloadFields.push('lightningLedger');
   if (payload.schemaVersion >= 4) payloadFields.push('bearMarketBurner');
   if (payload.schemaVersion >= 5) payloadFields.push('forkedStandard');
+  if (payload.schemaVersion >= 6) payloadFields.push('defeat', 'milestones');
   let error = keys(payload, payloadFields, 'game:run-summary payload');
   if (error) return error;
   const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
@@ -123,7 +147,7 @@ export function validateRunSummaryPayload(payload) {
   if (!integer(identity.seed, 0xffff_ffff)) return 'game:run-summary seed is invalid';
   if (typeof identity.buildHash !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(identity.buildHash)) return 'game:run-summary buildHash is invalid';
   if (!['free', 'ranked'].includes(identity.mode)) return 'game:run-summary mode is invalid';
-  if (typeof identity.heroId !== 'string' || !/^[a-z0-9][a-z0-9-]{1,63}$/.test(identity.heroId)) return 'game:run-summary heroId is invalid';
+  if (typeof identity.heroId !== 'string' || !HMH_RUN_SUMMARY_ID_PATTERN.test(identity.heroId)) return 'game:run-summary heroId is invalid';
   if (!['defeated', 'completed', 'abandoned', 'runtime-error'].includes(identity.terminalReason)) return 'game:run-summary terminalReason is invalid';
   if (!integer(identity.startTick) || !integer(identity.endTick) || identity.endTick < identity.startTick) return 'game:run-summary ticks are invalid';
 
@@ -197,6 +221,35 @@ export function validateRunSummaryPayload(payload) {
       || payload.forkedStandard.whiffs > payload.forkedStandard.attacks
       || payload.forkedStandard.thrusts + payload.forkedStandard.sweeps !== payload.forkedStandard.attacks
       || payload.forkedStandard.capstoneAttacks > payload.forkedStandard.attacks) return 'game:run-summary forkedStandard totals are inconsistent';
+  }
+
+  if (payload.schemaVersion >= 6) {
+    // Cause of defeat: the first killing hit the child attributed. The kind is
+    // bound to the terminal reason so a "completed" run can never carry a
+    // killer and a "defeated" run always names one (or admits 'unknown').
+    const defeat = payload.defeat;
+    const milestones = payload.milestones;
+    const tickFields = ['levelUps', 'firstLevelUpTick', 'lastLevelUpTick', 'bossEngagedTick'];
+    error = keys(defeat, ['kind', 'causeId', 'tick', 'damage'], 'game:run-summary defeat')
+      || keys(milestones, [...tickFields, 'sites', 'secrets'], 'game:run-summary milestones')
+      || rows(milestones.sites, HMH_RUN_SUMMARY_CATALOGS.worldSites, 'siteId', ['operated', 'tick'], 'game:run-summary milestones.sites')
+      || rows(milestones.secrets, HMH_RUN_SUMMARY_CATALOGS.secrets, 'secretId', ['found', 'tick'], 'game:run-summary milestones.secrets');
+    if (error) return error;
+    const none = defeat.kind === 'none';
+    if (!HMH_RUN_SUMMARY_CATALOGS.defeatKinds.includes(defeat.kind)
+      || typeof defeat.causeId !== 'string' || !HMH_RUN_SUMMARY_ID_PATTERN.test(defeat.causeId)
+      || !integer(defeat.tick, identity.endTick) || !finite(defeat.damage)
+      || none !== (identity.terminalReason !== 'defeated')
+      || (none && (defeat.causeId !== 'none' || defeat.tick !== 0 || defeat.damage !== 0))) return 'game:run-summary defeat is invalid';
+    // Level-ups must reconcile with totals.level; every tick sits inside the
+    // run and a milestone that never fired carries tick 0.
+    if (!tickFields.every((field) => integer(milestones[field]))
+      || milestones.levelUps !== payload.totals.level - 1
+      || milestones.firstLevelUpTick > milestones.lastLevelUpTick
+      || milestones.lastLevelUpTick > identity.endTick || milestones.bossEngagedTick > identity.endTick
+      || (milestones.levelUps === 0 && milestones.lastLevelUpTick !== 0)
+      || [...milestones.sites.map((row) => [row.operated, row.tick]), ...milestones.secrets.map((row) => [row.found, row.tick])]
+        .some(([flag, tick]) => flag > 1 || tick > identity.endTick || (flag === 0 && tick !== 0))) return 'game:run-summary milestones are invalid';
   }
 
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');
