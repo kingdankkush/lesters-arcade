@@ -523,4 +523,15 @@ test('the child shell and stylesheet carry the per-effect chip identity, the dra
   assert.match(css, /\.hmh-hud-powerups b\[data-ending="true"\] \{ animation: hmh-powerup-ending/);
   assert.match(css, /\.hmh-hud-powerups b\[data-refresh-flash="true"\] \{ animation: hmh-powerup-refresh [0-9]+ms ease-out 1; \}/);
   assert.match(css, /\.hmh-reboot-stage\[data-setting-reduce-motion="true"\] ~ \.hmh-run-rail \.hmh-hud-powerups b \{ animation: none; \}/);
+  // The ending and refresh rules tie on specificity and hud.mjs holds the
+  // refresh flash until the effect ends, so a refreshed chip needs a combined
+  // selector (one class, two attributes, one type) that outranks the refresh
+  // rule, declares the same pulse as the plain ending rule, and still sits
+  // below the reduce-motion gate (three classes, one attribute, one type).
+  const endingRule = css.match(/\.hmh-hud-powerups b\[data-ending="true"\] \{ animation: (hmh-powerup-ending [^;]+); \}/);
+  const combinedRule = css.match(/\.hmh-hud-powerups b\[data-ending="true"\]\[data-refresh-flash="true"\] \{ animation: (hmh-powerup-ending [^;]+); \}/);
+  assert.ok(endingRule && combinedRule, 'both the plain and the combined ending rules ship');
+  assert.equal(combinedRule[1], endingRule[1], 'the combined rule replays the same pulse');
+  assert.ok(combinedRule.index > css.indexOf('.hmh-hud-powerups b[data-refresh-flash="true"] {'), 'the combined rule follows the refresh rule');
+  assert.ok(css.indexOf('.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-powerups b {') > combinedRule.index, 'the reduce-motion gate follows the combined rule');
 });

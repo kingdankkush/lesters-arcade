@@ -379,6 +379,12 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 }
 .hmh-hud-powerups b[data-ending="true"] { animation: hmh-powerup-ending 500ms ease-in-out infinite; }
 .hmh-hud-powerups b[data-refresh-flash="true"] { animation: hmh-powerup-refresh 360ms ease-out 1; }
+/* hud.mjs holds data-refresh-flash="true" until the effect ends, so a refreshed
+   chip reaches its last two seconds with both attributes set; the two rules
+   above tie on specificity and the later refresh rule would win, leaving the
+   chip without its pulse. The combined selector outranks both and the
+   reduce-motion gate below still outranks it. */
+.hmh-hud-powerups b[data-ending="true"][data-refresh-flash="true"] { animation: hmh-powerup-ending 500ms ease-in-out infinite; }
 .hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-powerups b { animation: none; }
 
 /* ---- U-3 boss bar (DOM; replaces the Pixi bar and its phase label) -------- */

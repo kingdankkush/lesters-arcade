@@ -172,6 +172,15 @@ try {
   assert.equal(refreshed.silhouettes, 'clock-orbit');
   assert.equal(refreshed.audioCues, 'time-dilation-activate');
   assert.match(refreshedAccessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining, refreshed 1 time/i);
+  // The refreshed chip still holds its flash attribute when the last two
+  // seconds open; the ending pulse must win that cascade (the plain ending and
+  // refresh rules tie on specificity, so a combined selector carries it).
+  await refreshPage.waitForFunction(() => document.querySelector('#hmhHudPowerups b[data-effect="time-dilation"][data-ending="true"]') !== null, null, { timeout: 12_000 });
+  const endingChip = await refreshPage.locator('#hmhHudPowerups b[data-effect="time-dilation"]').evaluate((chip) => {
+    const style = getComputedStyle(chip);
+    return { ending: chip.dataset.ending, refreshFlash: chip.dataset.refreshFlash, animationName: style.animationName, iterationCount: style.animationIterationCount };
+  });
+  assert.deepEqual(endingChip, { ending: 'true', refreshFlash: 'true', animationName: 'hmh-powerup-ending', iterationCount: 'infinite' });
   await refreshPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === '', null, { timeout: 14_000 });
   const refreshedExpired = await refreshPage.locator('#hmhRebootStage').evaluate((element) => ({
     active: element.dataset.collectibleActive,
