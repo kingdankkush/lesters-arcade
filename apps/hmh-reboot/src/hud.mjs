@@ -109,6 +109,7 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
     weaponId: null, weaponName: null, ammoMode: null, ammoLit: null, ammoVisible: null,
     ammoRatio: null, ammoText: null, ammoCap: null, reserve: null, stateLabel: null, weaponState: null,
     ringActive: null, ringProgress: null,
+    reloadProgress: null, ammoLow: null, reserveLow: null, reloadFlash: null,
     ownedMask: null, activeSlot: null,
     grenades: null, grenadeMax: null,
     dashReady: null, dashProgress: null, dashRawReady: null, dashActive: null, readyFlash: null,
@@ -143,6 +144,14 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       if (pip.hidden !== !shown) pip.hidden = !shown;
       pip.dataset.filled = String(shown && index < litCount);
     }
+  };
+
+  // Boolean data-* flags on the weapon card, keyed by their `last` slot.
+  const setWeaponFlag = (key, value) => {
+    const text = String(value);
+    if (last[key] === text) return;
+    last[key] = text;
+    elements.weapon.dataset[key] = text;
   };
 
   const applyRing = (mode, ticksRemaining, ticksTotal, heat) => {
@@ -206,6 +215,7 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
         elements.weapon.dataset.weapon = weaponId;
       }
       const mode = String(view.mode ?? 'ready');
+      const previousMode = last.weaponState;
       if (last.weaponState !== mode) {
         last.weaponState = mode;
         elements.weapon.dataset.state = mode;
@@ -233,7 +243,30 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       const secondsRemaining = Number(view.secondsRemaining) || 0;
       const heat = Number(view.heat) || 0;
       setText(elements.weaponState, 'stateLabel', weaponStateLabel(mode, secondsRemaining, heat));
-      applyRing(mode, Math.max(0, Number(view.ticksRemaining) || 0), Math.max(0, Number(view.reloadTicksTotal) || 0), heat);
+      const ticksRemaining = Math.max(0, Number(view.ticksRemaining) || 0);
+      const reloadTicksTotal = Math.max(0, Number(view.reloadTicksTotal) || 0);
+      applyRing(mode, ticksRemaining, reloadTicksTotal, heat);
+
+      // Reload readability. The ring already sweeps; the card itself now
+      // carries the same progress (a bar under the pips, driven by --reload),
+      // an ammo-low tint for the last quarter of a clip, a reserve-low colour
+      // when the pocket cannot fill another clip (the exhausted-shotgun trap),
+      // and a one-shot flash the moment a reload completes. All derived from
+      // primitives the view already carries and all diffed through `last`.
+      const reloadProgress = (mode === 'reloading' && reloadTicksTotal > 0 ? clamp01(1 - ticksRemaining / reloadTicksTotal) : 0).toFixed(3);
+      if (last.reloadProgress !== reloadProgress) {
+        last.reloadProgress = reloadProgress;
+        elements.weapon.style.setProperty('--reload', reloadProgress);
+      }
+      setWeaponFlag('ammoLow', ammoMode !== 'melee' && clipSize > 0 && ammoInClip > 0 && ammoInClip <= Math.max(1, Math.ceil(clipSize * 0.25)));
+      // A null reserve is the pistol's unlimited carry and never runs low.
+      setWeaponFlag('reserveLow', ammoMode !== 'melee' && view.reserveAmmo !== null && view.reserveAmmo !== undefined
+        && Number(view.reserveAmmo) < clipSize);
+      // Same shape as the K-6 dash flash: rises only on reloading -> ready,
+      // clears when the next reload starts so the CSS animation can replay,
+      // and is never rewritten while holding.
+      if (mode === 'reloading' && previousMode !== 'reloading') setWeaponFlag('reloadFlash', false);
+      if (mode === 'ready' && previousMode === 'reloading') setWeaponFlag('reloadFlash', true);
 
       const ownedMask = Number(view.ownedMask) || 0;
       const activeSlot = Number.isInteger(view.activeSlot) ? view.activeSlot : -1;

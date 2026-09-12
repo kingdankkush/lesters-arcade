@@ -715,3 +715,58 @@ test('dash renders moving legs facing the dash direction rather than stale pre-d
   assert.match(source, /locomotion: dashing \? 'moving' : motion\.locomotion/);
   assert.match(source, /legDirection: dashing && lastDashDirection \? quantizeDirection\(lastDashDirection, 8\)/);
 });
+
+test('setLayerOffset moves only the named non-shadow layer, is idempotent and survives applyPose', () => {
+  const metadata = emittedMetadata('lit-commando');
+  const index = createProductionHeroAtlasIndex(metadata);
+  const mocks = displayMocks();
+  const positionWrites = [];
+  class OffsetSprite extends mocks.SpriteClass {
+    constructor(options) {
+      super(options);
+      this.rotation = 0;
+      this.position = { x: 0, y: 0, set: (x, y) => { positionWrites.push(this.label); this.position.x = x; this.position.y = y; } };
+    }
+  }
+  const display = createProductionHeroDisplay({ index, atlasTexture: { source: { width: 2048, height: 2048 } }, ...mocks, SpriteClass: OffsetSprite });
+  assert.equal(typeof display.setLayerOffset, 'function');
+  assert.equal(Object.isFrozen(display), true);
+  const sprites = new Map(display.container.children.map((sprite) => [sprite.label, sprite]));
+  const weapon = sprites.get('production-hero-weapon');
+  display.applyPose({ simulationTick: 0, actionTick: 0, locomotion: 'idle', legDirection: 0, torsoDirection: 0, action: 'aim' });
+
+  display.setLayerOffset('weapon', { y: 6, rotation: -0.22 });
+  assert.equal(weapon.position.x, 0);
+  assert.equal(weapon.position.y, 6);
+  assert.equal(weapon.rotation, -0.22);
+  for (const layer of ['shadow', 'lower-body', 'torso-head']) {
+    assert.equal(sprites.get(`production-hero-${layer}`).position.y, 0, `${layer} must not move`);
+    assert.equal(sprites.get(`production-hero-${layer}`).rotation, 0);
+  }
+  positionWrites.length = 0;
+  display.setLayerOffset('weapon', { y: 6, rotation: -0.22 });
+  display.setLayerOffset('weapon', { y: 6, rotation: -0.22 });
+  assert.deepEqual(positionWrites, [], 'a steady offset is free of sprite writes');
+
+  // The pose swap rewrites texture, anchor and scale but never the offset,
+  // and the offset never touches the anchors the pose set.
+  const frames = display.applyPose({ simulationTick: 12, actionTick: 12, locomotion: 'moving', legDirection: 3, torsoDirection: 3, action: 'aim' });
+  assert.equal(weapon.position.y, 6);
+  assert.equal(weapon.rotation, -0.22);
+  assert.deepEqual(display.container.children.map((sprite) => [sprite.anchor.x, sprite.anchor.y]),
+    frames.map((frame) => [frame.anchor.x, frame.anchor.y]), 'anchors come from the pose, not the offset');
+
+  display.setLayerOffset('weapon');
+  assert.deepEqual([weapon.position.x, weapon.position.y, weapon.rotation], [0, 0, 0]);
+  assert.throws(() => display.setLayerOffset('shadow', { y: 6 }), /shadow/);
+  assert.throws(() => display.setLayerOffset('cape', { y: 6 }), /cape/);
+});
+
+test('the runtime applies the reload offset only through the lazy resolver and keeps the weapon layer ownership pin', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /setLayerVisible\('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative\)/);
+  assert.match(source, /productionHeroDisplay\.setLayerOffset\('weapon', reloadPose && reloadPresentation\.resolveReloadHeroAction\(\{ action: productionAction \}\)/);
+  assert.match(source, /reloadPresentation\.resolveReloadLayerOffset\(\{ pose: reloadPose, facingWest: motion\.torsoDirection >= 4 \}\)/);
+  assert.match(source, /resolveReloadPose\(\{ progress: heldReloadProgress, reduceMotion: settings\.reduceMotion \}\)/);
+});

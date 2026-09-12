@@ -107,3 +107,54 @@ test('creature deaths, melee and ranged warnings, and each boss beat have distin
   assert.equal(new Set(hashes).size,cues.length);
   player.destroy();
 });
+
+// Dry fire: a real trigger re-press on a reloading or empty weapon clicks,
+// but never while the 400 ms reload rattle is still playing and never from
+// autofire holding on a target.
+test('a manual re-press clicks only on a reloading or empty weapon and only after the reload rattle', async () => {
+  const { resolveDryFireClick, DRY_FIRE_CLICK_DELAY_TICKS } = await import('../apps/hmh-reboot/src/weapon-audio.mjs');
+  const { getWeaponReadabilityStatus, getActiveWeaponState } = await import('../apps/hmh-reboot/src/weapon-system.mjs');
+  assert.equal(DRY_FIRE_CLICK_DELAY_TICKS, 24);
+  assert.ok(manifest.cues['hmh-weapon-reload'].durationMs <= 1000 * DRY_FIRE_CLICK_DELAY_TICKS / 60, 'the click must wait out the whole rattle');
+  const run = (repressOffset) => {
+    const state = createWeaponLoadout({ weaponIds: ['coin-blaster'], seed: 17 });
+    let reloadStart = null;
+    let lastFire = false;
+    let clicks = 0;
+    for (let tick = 1; tick <= 232; tick++) {
+      // Hold the trigger, release for one tick and press again at the offset.
+      const fire = reloadStart === null || tick !== reloadStart + repressOffset - 1;
+      const frame = stepWeaponLoadout(state, { tick, fire, direction: { x: 1, y: 0 } });
+      const start = frame.events.find(event => event.type === 'weapon:reload-start');
+      if (start) reloadStart = start.tick;
+      const status = getWeaponReadabilityStatus(state, { tick });
+      // The same manual rising edge the runtime gates on (source-pinned below).
+      const firePressed = fire && !lastFire;
+      if (firePressed && resolveDryFireClick({ mode: status.mode, tick, reloadStartedTick: getActiveWeaponState(state).reloadStartedTick })) clicks += 1;
+      lastFire = fire;
+    }
+    assert.notEqual(reloadStart, null, 'the pistol must reload inside the loop');
+    return clicks;
+  };
+  assert.equal(run(20), 0, 'a re-press 20 ticks after reload-start is still inside the rattle');
+  assert.equal(run(30), 1, 'a re-press 30 ticks after reload-start clicks exactly once');
+  // A ready weapon or a channel cooldown never clicks; an empty weapon with
+  // no reload pending does; a reload clicks only past the rattle.
+  assert.equal(resolveDryFireClick({ mode: 'reloading', tick: 100, reloadStartedTick: 80 }), false);
+  assert.equal(resolveDryFireClick({ mode: 'reloading', tick: 104, reloadStartedTick: 80 }), true);
+  assert.equal(resolveDryFireClick({ mode: 'ready', tick: 100, reloadStartedTick: null }), false);
+  assert.equal(resolveDryFireClick({ mode: 'cooldown', tick: 100, reloadStartedTick: null }), false);
+  assert.equal(resolveDryFireClick({ mode: 'empty', tick: 100, reloadStartedTick: null }), true);
+});
+
+test('the runtime clicks hmh-weapon-empty only on a manual fire rising edge while reloading or empty', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /const firePressed = aimIntent\.fire && !lastFireIntent;\s*lastFireIntent = aimIntent\.fire;/);
+  assert.match(source, /if \(firePressed && !aimIntent\.automatic && resolveDryFireClick\(\{[\s\S]{0,300}reloadStartedTick: getActiveWeaponState\(weaponLoadout\)\.reloadStartedTick,\s*\}\)\) combatAudio\.play\('hmh-weapon-empty'/);
+  assert.match(source, /mode: getWeaponReadabilityStatus\(weaponLoadout, \{ tick, progressionByWeapon \}\)\.mode,/);
+  // The trigger edge is projection state and resets with the run.
+  assert.match(source, /lastWeaponFire = null;\s*lastFireIntent = false;\s*lastReloadComplete = null;/);
+  // The completion beat keys the chamber glow off the same event as the cue.
+  assert.match(source, /event\.type === 'weapon:reload-complete'[\s\S]{0,160}play\('reload-complete'[\s\S]{0,320}lastReloadComplete = \{ tick, weaponId: event\.weaponId \};/);
+  assert.doesNotMatch(source, /new Audio\('[^']*weapon-empty/, 'no second player path for the click');
+});

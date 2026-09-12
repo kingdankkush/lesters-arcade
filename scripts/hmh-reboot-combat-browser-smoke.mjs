@@ -278,7 +278,28 @@ async function mobileSmoke() {
   const mobileReload = await state(page);
   assert.equal(mobileReload.weaponClipSize, 2);
   assert.ok(mobileReload.weaponReloadTicksRemaining > 0 && mobileReload.weaponReloadTicksRemaining <= 120);
+  // The cockpit card projects the same reload: data-state and a --reload
+  // progress strictly inside (0, 1) while the magazine is still cycling.
+  const hudReloadHandle = await page.waitForFunction(() => {
+    const card = document.querySelector('#hmhHudWeapon');
+    const reload = Number(card?.style.getPropertyValue('--reload'));
+    return card?.dataset.state === 'reloading' && reload > 0 && reload < 1 ? { state: card.dataset.state, reload } : null;
+  }, null, { polling: 16, timeout: 5_000 });
+  const hudReload = await hudReloadHandle.jsonValue();
+  assert.equal(hudReload.state, 'reloading');
+  assert.ok(hudReload.reload > 0 && hudReload.reload < 1, `--reload ${hudReload.reload} must be inside (0, 1)`);
   await page.screenshot({ path: fileURLToPath(new URL('mobile-weapon-reload.png', evidenceDir)), fullPage: true });
+  // The one-shot completion flash rises on the frame the weapon returns to
+  // ready and holds until the next reload starts, so it is readable here
+  // with the same frame's telemetry.
+  const hudReloadDoneHandle = await page.waitForFunction(() => {
+    const card = document.querySelector('#hmhHudWeapon');
+    const stage = document.querySelector('#hmhRebootStage');
+    return card?.dataset.reloadFlash === 'true' ? { weaponStatus: stage?.dataset.weaponStatus, state: card.dataset.state } : null;
+  }, null, { polling: 16, timeout: 5_000 });
+  const hudReloadDone = await hudReloadDoneHandle.jsonValue();
+  assert.notEqual(hudReloadDone.weaponStatus, 'reloading', 'the flash must not be up while a reload is running');
+  assert.notEqual(hudReloadDone.state, 'reloading');
   await holdKey(page, 'KeyE');
   await page.waitForFunction(() => Boolean(document.querySelector('#hmhRebootStage')?.dataset.lastMeleeTick));
   await tapTouchControl(page, 'power', 73);

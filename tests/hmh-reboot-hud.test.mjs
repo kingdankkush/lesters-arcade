@@ -344,3 +344,84 @@ test('the runtime gates the Pixi telemetry strip without disturbing its pinned l
   assert.match(main, /applyWeaponProgression\(/);
   assert.doesNotMatch(main, /localStorage/);
 });
+
+test('the weapon card projects reload progress, ammo-low and reserve-low from primitives it already receives', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const weapon = elements.get('hmhHudWeapon');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 90, reloadTicksTotal: 120, secondsRemaining: 1.5 });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.250');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 30, reloadTicksTotal: 120, secondsRemaining: 0.5 });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.750');
+  hud.update({ ...baseView, mode: 'ready' });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.000', 'outside a reload the bar rests at zero');
+  hud.update({ ...baseView, weaponId: 'lightning-ledger', mode: 'cooldown', ticksRemaining: 60, reloadTicksTotal: 0, secondsRemaining: 1 });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.000', 'a channel cooldown is not a reload');
+
+  // Ammo-low is the last quarter of a clip, never an empty or a full one.
+  hud.update({ ...baseView, ammoInClip: 2, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'true', '2/8 pistol');
+  hud.update({ ...baseView, ammoInClip: 3, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'false', '3/8 pistol');
+  hud.update({ ...baseView, weaponId: 'auto-miner', ammoInClip: 30, clipSize: 120, reserveAmmo: 240 });
+  assert.equal(weapon.dataset.ammoLow, 'true', '30/120 machine gun bar');
+  hud.update({ ...baseView, ammoInClip: 0, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'false', '0/8 is empty, not low');
+  hud.update({ ...baseView, ammoInClip: 8, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'false', '8/8');
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 1, clipSize: 2, reserveAmmo: 12 });
+  assert.equal(weapon.dataset.ammoLow, 'true', 'a two-round shotgun is low on its last shell');
+  hud.update({ ...baseView, weaponId: 'forked-standard', ammoInClip: 1, clipSize: 1, reserveAmmo: 0, meleeNext: 'THRUST' });
+  assert.equal(weapon.dataset.ammoLow, 'false', 'the melee weapon has no ammo to run low on');
+  assert.equal(weapon.dataset.reserveLow, 'false');
+
+  // Reserve-low: the pocket cannot fill another clip. The pistol's null
+  // reserve is unlimited carry and never warns.
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 2, clipSize: 2, reserveAmmo: 1 });
+  assert.equal(weapon.dataset.reserveLow, 'true');
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 2, clipSize: 2, reserveAmmo: 2 });
+  assert.equal(weapon.dataset.reserveLow, 'false');
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 0, clipSize: 2, reserveAmmo: 0, mode: 'empty' });
+  assert.equal(weapon.dataset.reserveLow, 'true', 'an exhausted shotgun is the case the warning exists for');
+  hud.update({ ...baseView, reserveAmmo: null });
+  assert.equal(weapon.dataset.reserveLow, 'false');
+});
+
+test('the reload flash rises only on reloading -> ready and an unchanged frame performs zero DOM writes', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const weapon = elements.get('hmhHudWeapon');
+  hud.update({ ...baseView });
+  assert.equal(weapon.dataset.reloadFlash, undefined, 'a ready weapon that never reloaded has no flash attribute');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 90, reloadTicksTotal: 90, secondsRemaining: 1.5 });
+  assert.equal(weapon.dataset.reloadFlash, 'false', 'a reload start clears, never raises, the flash');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 1, reloadTicksTotal: 90, secondsRemaining: 0 });
+  assert.equal(weapon.dataset.reloadFlash, 'false');
+  hud.update({ ...baseView });
+  assert.equal(weapon.dataset.reloadFlash, 'true', 'the completion frame raises the flash');
+  writes = 0;
+  hud.update({ ...baseView });
+  hud.update({ ...baseView });
+  assert.equal(writes, 0, 'holding the flash must not rewrite the DOM');
+  hud.update({ ...baseView, ammoInClip: 7 });
+  assert.equal(weapon.dataset.reloadFlash, 'true', 'firing after the reload does not touch the flash');
+  hud.update({ ...baseView, mode: 'empty', ammoInClip: 0, reserveAmmo: 0, weaponId: 'scatter-shotgun', clipSize: 2 });
+  assert.equal(weapon.dataset.reloadFlash, 'true', 'ready -> empty is not a completion');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 90, reloadTicksTotal: 90, secondsRemaining: 1.5 });
+  assert.equal(weapon.dataset.reloadFlash, 'false', 'the next reload re-arms the one-shot');
+  hud.update({ ...baseView });
+  assert.equal(weapon.dataset.reloadFlash, 'true');
+});
+
+test('the child stylesheet carries the reload bar, the ammo warnings and the reduce-motion gate for the reload flash', () => {
+  assert.match(css, /\.hmh-hud-weapon\[data-state="reloading"\] \.hmh-hud-weapon-body::after \{[^}]*width: calc\(var\(--reload, 0\) \* 100%\)/s);
+  assert.match(css, /\.hmh-hud-weapon\[data-ammo-low="true"\] \.hmh-hud-pips--ammo b\[data-filled="true"\]/);
+  assert.match(css, /\.hmh-hud-weapon\[data-ammo-low="true"\] \.hmh-hud-ammo-bar i/);
+  assert.match(css, /\.hmh-hud-weapon\[data-reserve-low="true"\] #hmhHudReserve \{ color: var\(--danger\); \}/);
+  assert.match(css, /@keyframes hmh-reload-done/);
+  assert.match(css, /\.hmh-hud-weapon\[data-reload-flash="true"\] \.hmh-hud-ring \{ animation: hmh-reload-done/);
+  assert.match(css, /\.hmh-reboot-stage\[data-setting-reduce-motion="true"\] ~ \.hmh-run-rail \.hmh-hud-weapon\[data-reload-flash="true"\] \.hmh-hud-ring \{ animation: none; \}/);
+  // Both compact breakpoints keep the bar at 2px under the single-line card.
+  const compactBars = css.match(/\.hmh-hud-weapon\[data-state="reloading"\] \.hmh-hud-weapon-body::after \{ bottom: -2px; height: 2px; \}/g) ?? [];
+  assert.equal(compactBars.length, 2);
+});

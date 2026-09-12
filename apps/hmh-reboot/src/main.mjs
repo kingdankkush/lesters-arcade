@@ -15,7 +15,7 @@ import { createHmhChildBridge } from './bridge.mjs';
 import { creatureAnimationTick, liquidatorPose } from './creature-presentation.mjs';
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
-import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
+import { HMH_WEAPON_SFX, resolveDryFireClick, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
 import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './bear-market-burner.mjs';
@@ -1237,6 +1237,11 @@ async function boot() {
   let motion = null;
   let aimState = null;
   let aimIntent = null;
+  // Projection-only trigger edge for the dry-fire click, and the lazily
+  // loaded reload pose resolver (a dynamic chunk; absent means no bob).
+  let lastFireIntent = false;
+  let lastReloadComplete = null;
+  let reloadPresentation = null;
   // Render-only cursor tracking for the aim reticle; never feeds simulation.
   let pointerReticleScreen = null;
   window.addEventListener('pointermove', (event) => {
@@ -2214,10 +2219,19 @@ async function boot() {
       actorVisual.position.set(atlasActorEnabled ? groundScreen.x : screen.x, atlasActorEnabled ? groundScreen.y : screen.y);
       actorVisual.zIndex = worldDepthKey(renderState.y);
       heldWeaponLayer.zIndex = worldDepthKey(renderState.y,0.1);
-      if (authoredHeldWeaponDisplay && weaponLoadout) {
-        const heldWeapon = getActiveWeaponState(weaponLoadout);
-        const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
-        const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
+      // Reload progress is read from the active weapon's authoritative reload
+      // ticks (the same read the rail charge line makes below) and drives
+      // nothing but sprite offsets and a glow. It is 0 outside a reload.
+      const heldWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
+      const heldReloadProgress = heldWeapon && heldWeapon.reloadStartedTick !== null && heldWeapon.reloadCompleteTick !== null
+        ? Math.min(1, Math.max(0, ((simulation?.tick ?? 0) - heldWeapon.reloadStartedTick) / Math.max(1, heldWeapon.reloadCompleteTick - heldWeapon.reloadStartedTick)))
+        : 0;
+      const reloadPose = reloadPresentation && heldReloadProgress > 0
+        ? reloadPresentation.resolveReloadPose({ progress: heldReloadProgress, reduceMotion: settings.reduceMotion })
+        : null;
+      const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
+      const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
+      if (authoredHeldWeaponDisplay && heldWeapon) {
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
         if (heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
@@ -2226,7 +2240,7 @@ async function boot() {
           aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)
             .stroke({ color: 0x8ff3ff, width: 1 + chargeRatio, alpha: 0.18 + chargeRatio * 0.42 });
         }
-        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom });
+        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom, reloadDip: reloadPose });
       }
       if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
       if (productionHeroDisplay && motion) {
@@ -2287,6 +2301,23 @@ async function boot() {
           && !actionOwnsWeaponLayer
           && !nativeWeaponOwnsLayer;
         productionHeroDisplay.setLayerVisible('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative);
+        // Reload presentation: the weapon layer dips while a magazine reloads
+        // and snaps level on the completion tick. Only the 'aim' / 'hurt'
+        // poses may carry it, so the 12-tick pistol-fire clip plays out first
+        // and the authored full-body clips keep the layer to themselves. The
+        // resolver is a lazy chunk; until it is resident (well before the
+        // first magazine can run dry) the offset simply stays at zero.
+        productionHeroDisplay.setLayerOffset('weapon', reloadPose && reloadPresentation.resolveReloadHeroAction({ action: productionAction })
+          ? reloadPresentation.resolveReloadLayerOffset({ pose: reloadPose, facingWest: motion.torsoDirection >= 4 })
+          : undefined);
+        // The visible half of the reload-complete beat: the cue, the HUD ring
+        // flash and the snap-back all land on this tick, and so does a six-tick
+        // chamber glow at the muzzle. reduceFlash halves it.
+        if (lastReloadComplete && visualTick - lastReloadComplete.tick < 6) {
+          const chamberFade = 1 - (visualTick - lastReloadComplete.tick) / 6;
+          const chamber = worldToScreen({ x: renderState.x + heldAim.x * 18, y: renderState.y + heldAim.y * 18, z: renderState.z + 34 }, camera, view);
+          placeWeaponGlow(chamber.x, chamber.y, 5 * camera.zoom * chamberFade, WEAPON_COLORS[lastReloadComplete.weaponId] ?? 0x49ddff, (settings.reduceFlash ? 0.25 : 0.5) * chamberFade);
+        }
         if(releaseTelemetryEnabled) dataset.heroAutomaticAction=productionAction==='interact'?'interact':productionAction==='dash'?'dodge':productionAction==='melee'?'melee':'';
         if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
         actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
@@ -2782,6 +2813,8 @@ async function boot() {
     suppressedGroundImpacts = 0;
     lastCombatResolution = null;
     lastWeaponFire = null;
+    lastFireIntent = false;
+    lastReloadComplete = null;
     lastLightningLedgerPulse = null;
     lastBearMarketBurnerPulse = null;
     lastForkedStandardStrike = null;
@@ -3713,6 +3746,9 @@ async function boot() {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
         } else if (event.type === 'weapon:reload-complete') {
           combatAudio.play('reload-complete', { volume: 0.18 });
+          // Projection-only: the chamber glow and the weapon snap-back key
+          // off this tick so they land with the cue and the HUD ring flash.
+          lastReloadComplete = { tick, weaponId: event.weaponId };
         } else if (event.type === 'weapon:auto-fallback') {
           combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
         } else if (event.type === 'ledger:overheat') {
@@ -3723,6 +3759,20 @@ async function boot() {
           combatAudio.play('hmh-lightning-interrupt', { volume: HMH_WEAPON_SFX['hmh-lightning-interrupt'].gain });
         }
       }
+      // Dry fire: a real trigger re-press while the active weapon is reloading
+      // or empty clicks, so the player hears the empty chamber instead of
+      // learning about it from the HUD. Only a manual rising edge counts
+      // (autofire holding on a target never clicks) and the click waits out
+      // the reload rattle. Projection-only: it reads the readability status
+      // and the same reloadStartedTick the hero pose reads, and the registry
+      // cooldown caps mashing. No new cue: hmh-weapon-empty already ships.
+      const firePressed = aimIntent.fire && !lastFireIntent;
+      lastFireIntent = aimIntent.fire;
+      if (firePressed && !aimIntent.automatic && resolveDryFireClick({
+        mode: getWeaponReadabilityStatus(weaponLoadout, { tick, progressionByWeapon }).mode,
+        tick,
+        reloadStartedTick: getActiveWeaponState(weaponLoadout).reloadStartedTick,
+      })) combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain * 0.7 });
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:channel-pulse')) {
         lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
         lastLightningLedgerPulse = { tick, attackId: event.attackId, hits: event.hits.length, rampPermille: event.rampPermille };
@@ -4555,6 +4605,12 @@ async function boot() {
   };
 
   hud = createHud({ documentRef: document, weaponOrder: WEAPON_ORDER });
+  // The reload pose resolver is presentation-only and stays out of the
+  // initial bundle, like pickup-indicators. The first pistol magazine cannot
+  // run dry before eight shots (~2.7 s), so it is resident long before the
+  // first reload; if it never arrives the weapon simply does not bob.
+  void import('./reload-presentation.mjs').then((module) => { reloadPresentation = module; })
+    .catch(() => { dataset.reloadPresentationStatus = 'unavailable'; });
 
   cockpit = createCockpitUi({
     documentRef: document,
