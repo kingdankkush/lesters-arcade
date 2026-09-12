@@ -49,8 +49,8 @@ export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, sta
     // milestones. Level is tracked here so level-ups get a tick instead of
     // only the final total.
     defeat: null,
-    milestones: [0, 0, 0, 0], // level-ups, first level-up tick, last level-up tick, boss engaged tick
-    sites: rows(C.worldSites, 2), // operated, tick
+    milestones: [0, 0, 0], // first level-up tick, last level-up tick, boss engaged tick
+    worldSites: rows(C.worldSites, 2), // operated, tick
     secrets: rows(C.secrets, 2), // found, tick
     lastLevel: 1,
     lastPosition: point(startPosition, 'startPosition'),
@@ -61,17 +61,16 @@ export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, sta
 
 // Level-ups are attributed to the tick that first reported the higher level.
 // Shared by recordRunTick and finalize so a kill in the terminal tick (which
-// lands after that tick's recordRunTick) still gets a tick stamp.
+// lands after that tick's recordRunTick) still gets a tick stamp. The count
+// itself is reconciled from the final level, so a lower level is a no-op.
 const recordLevel = (state, level, tick) => {
   if (level <= state.lastLevel) return;
-  const milestones = state.milestones;
-  milestones[0] += level - state.lastLevel;
-  milestones[1] ||= tick;
-  milestones[2] = tick;
+  state.milestones[0] ||= tick;
+  state.milestones[1] = tick;
   state.lastLevel = level;
 };
 
-export function recordRunTick(state, { tick, position, activeWeaponId, districtId, discoveredPoiIds = [], activeEffectIds = [], level, bossEngaged = false } = {}) {
+export function recordRunTick(state, { tick, position, activeWeaponId, districtId, discoveredPoiIds = [], activeEffectIds = [], level, bossEngaged } = {}) {
   count(tick, 'tick');
   if (tick <= state.lastTick) throw new TypeError('run-summary tick must be monotonic');
   const next = point(position, 'position');
@@ -83,17 +82,17 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
   for (const id of discoveredPoiIds) state.exploration[1] |= 1 << index(C.pointsOfInterest, id, 'point of interest');
   for (const id of activeEffectIds) state.collectibles[index(C.collectibles, id, 'collectible effect')][1] += 1;
   if (level !== undefined) recordLevel(state, count(level, 'level'), tick);
-  if (bossEngaged === true) state.milestones[3] ||= tick;
+  if (bossEngaged) state.milestones[2] ||= tick;
 }
 
 // Machinery activation and secrets are one-shot world events; the first tick
-// wins so a replayed event can never move a milestone.
+// wins so a replayed event can never move a milestone. Each type maps to the
+// catalog (and accumulator table) of the same name.
 export function recordRunMilestone(state, { type, id, tick } = {}) {
-  const row = type === 'site-operated' ? state.sites[index(C.worldSites, id, 'world site')]
-    : type === 'secret-found' ? state.secrets[index(C.secrets, id, 'secret')]
-      : null;
-  if (!row) throw new TypeError(`unknown milestone ${String(type)}`);
-  count(tick, 'milestone tick');
+  const catalog = { 'site-operated': 'worldSites', 'secret-found': 'secrets' }[type];
+  if (!catalog) throw new TypeError(`unknown milestone ${type}`);
+  const row = state[catalog][index(C[catalog], id, type)];
+  count(tick, 'tick');
   if (!row[0]) { row[0] = 1; row[1] = tick; }
 }
 
@@ -241,11 +240,12 @@ export function recordRunForkedStandardEvent(state, event = {}) {
 // The child stamps every player hit with the attacker's weaponId:
 // `enemy-<archetype>`, `boss-<attackId>`, `world-<hazard>`, or the player's own
 // grenade (sourceId 'player'). Anything else is reported rather than guessed.
-const DEFEAT_KIND_BY_PREFIX = { enemy: 'enemy', boss: 'boss', world: 'hazard' };
 const classifyDefeat = ({ sourceId, weaponId }) => {
   const causeId = typeof weaponId === 'string' && HMH_RUN_SUMMARY_ID_PATTERN.test(weaponId) ? weaponId : 'none';
-  const kind = causeId === 'none' ? 'unknown'
-    : DEFEAT_KIND_BY_PREFIX[causeId.slice(0, causeId.indexOf('-'))] ?? (sourceId === 'player' ? 'self' : 'unknown');
+  const prefix = causeId.split('-')[0];
+  const kind = prefix === 'world' ? 'hazard'
+    : prefix === 'enemy' || prefix === 'boss' ? prefix
+      : causeId !== 'none' && sourceId === 'player' ? 'self' : 'unknown';
   return { kind, causeId };
 };
 
@@ -330,7 +330,6 @@ export function finalizeRunSummary(state, {
   if (!['defeated', 'completed', 'abandoned', 'runtime-error'].includes(terminalReason)) throw new TypeError('terminalReason is invalid');
   for (const [value, label] of [[score, 'score'], [level, 'level'], [xp, 'xp'], [currentCombo, 'currentCombo'], [maxCombo, 'maxCombo'], [revealedCells, 'revealedCells'], [totalCells, 'totalCells']]) count(value, label);
   if (level < 1 || revealedCells > totalCells || currentCombo > maxCombo) throw new TypeError('final run-summary totals are inconsistent');
-  if (level < state.lastLevel) throw new TypeError('final level precedes recorded level');
   // recordRunTick runs before combat resolution in the same tick, so a level
   // gained by a kill in the terminal tick is only visible here.
   recordLevel(state, level, endTick);
@@ -350,10 +349,7 @@ export function finalizeRunSummary(state, {
   const byWeapon = C.weapons.map((weaponId, i) => ({ weaponId, count: state.weapons[i][11] }));
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
   const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
-  // A killed event outside a 'defeated' terminal is contradictory input; the
-  // summary reports 'none' rather than failing the terminal bridge send.
-  const noDefeat = { kind: terminalReason === 'defeated' ? 'unknown' : 'none', causeId: 'none', tick: 0, damage: 0 };
-  const milestones = state.milestones;
+  const defeated = terminalReason === 'defeated';
   const summary = {
     schemaVersion: 6,
     identity: { ...state.identity, terminalReason, endTick },
@@ -423,14 +419,16 @@ export function finalizeRunSummary(state, {
       revealedPermille: totalCells === 0 ? 0 : Math.round(revealedCells * 1000 / totalCells),
       distanceMilli,
     },
-    defeat: terminalReason === 'defeated' && state.defeat ? { ...state.defeat } : noDefeat,
+    // A killed event outside a 'defeated' terminal is contradictory input; the
+    // summary reports 'none' rather than failing the terminal bridge send.
+    defeat: (defeated && state.defeat) || { kind: defeated ? 'unknown' : 'none', causeId: 'none', tick: 0, damage: 0 },
     milestones: {
-      levelUps: milestones[0],
-      firstLevelUpTick: milestones[1],
-      lastLevelUpTick: milestones[2],
-      bossEngagedTick: milestones[3],
-      sites: C.worldSites.map((siteId, i) => ({ siteId, operated: state.sites[i][0], tick: state.sites[i][1] })),
-      secrets: C.secrets.map((secretId, i) => ({ secretId, found: state.secrets[i][0], tick: state.secrets[i][1] })),
+      levelUps: level - 1,
+      firstLevelUpTick: state.milestones[0],
+      lastLevelUpTick: state.milestones[1],
+      bossEngagedTick: state.milestones[2],
+      sites: state.worldSites.map(([operated, tick], i) => ({ siteId: C.worldSites[i], operated, tick })),
+      secrets: state.secrets.map(([found, tick], i) => ({ secretId: C.secrets[i], found, tick })),
     },
   };
   return freezeDeep(summary);

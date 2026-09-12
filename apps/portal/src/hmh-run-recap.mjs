@@ -5,10 +5,11 @@ import { WEAPON_LABELS } from './hmh-run-history.mjs';
 // the same payload renders the same recap in Free and Ranked; mode stays with
 // identity.mode and the record writers.
 
-// Titles from RUN_UPGRADE_CATALOG. Importing the child module would hoist
-// run-progression into a shared chunk game.js loads statically (~4 KB of
-// split overhead against the HMH initial-JS cap), so the titles are copied
-// here and tests/hmh-run-recap.test.mjs pins them to the catalog.
+// Titles copied from RUN_UPGRADE_CATALOG. Importing the child module hoists
+// run-progression into a shared chunk game.js loads statically; measured at
+// +123 B against the HMH initial-JS cap (1,032,546 B vs 1,032,423 B), which
+// this slice's byte allocation cannot absorb. The copy is hand-maintained, so
+// tests/hmh-run-recap.test.mjs deepEquals it to the catalog on every run.
 export const UPGRADE_LABELS = Object.freeze({
   'proof-of-work': 'Proof of Work',
   'diamond-hands': 'Diamond Hands',
@@ -180,6 +181,18 @@ function buildMilestones(summary) {
   if (summary.kills.boss > 0) push('boss-defeated', `${BOSS_NAME} defeated`, 0);
   timed.sort((a, b) => a.tick - b.tick);
   return Object.freeze([...timed, ...untimed].map((entry) => Object.freeze({ ...entry, clock: entry.tick === null ? null : formatRunClock(entry.tick) })));
+}
+
+// Game-over metric sources: the canonical payload when the lifecycle finalized
+// one for the run on screen, otherwise the legacy in-portal combat fields
+// (which are stale for reboot runs: combat.bossDefeated is never set from the
+// payload, which is why the Bosses metric used to read 0). Pure, so the
+// selection is unit-tested without the DOM; main.js only forwards the result.
+export function selectGameOverRecapFields(summary, { bossesDefeated = 0, killedBy = null, bestUpgrade = null, runSeed = null } = {}) {
+  const recap = buildHmhRunRecapModel(summary);
+  return Object.freeze(recap
+    ? { bossesDefeated: summary.kills.boss, killedBy: recap.defeat.label, bestUpgrade: recap.build.topUpgradeLabel, runSeed: recap.seed }
+    : { bossesDefeated, killedBy, bestUpgrade, runSeed });
 }
 
 export function buildHmhRunRecapModel(summary) {

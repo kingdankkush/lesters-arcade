@@ -7,7 +7,7 @@ if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
-import { buildHmhRunRecapModel } from './src/hmh-run-recap.mjs';
+import { buildHmhRunRecapModel, selectGameOverRecapFields } from './src/hmh-run-recap.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
@@ -2556,22 +2556,22 @@ function currentGameOverSummaryModel() {
     maxCombo: combat.maxCombo,
     deaths: combat.gameOver && !cleared ? 1 : 0,
   }) : null;
-  // Reboot runs answer from the canonical payload; combat.bossDefeated is never
-  // set from it, which is why the Bosses metric used to read 0.
-  const recap = currentHmhRunRecap();
+  // Reboot runs answer from the canonical payload (Bosses, Killed By, Best
+  // Augment, Run Seed); the legacy in-portal fields only apply without one.
+  const recapFields = selectGameOverRecapFields(lastHmhRunSummary, {
+    bossesDefeated: (combat.bossDefeated || combat.scriptedBossTriggered || Boolean(lastBossId)) ? 1 : 0,
+    killedBy: cleared ? null : combat.killedBy,
+    bestUpgrade: bestRoguelikeUpgradeTitle(),
+    runSeed: combat.roguelikeRun?.seed ?? null,
+  });
   return buildGameOverSummaryModel({
     session,
     score: combat.score || lastRunScore,
     elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
     kills: combat.kills,
-    bossesDefeated: lastHmhRunSummary
-      ? lastHmhRunSummary.kills.boss
-      : (combat.bossDefeated || combat.scriptedBossTriggered || Boolean(lastBossId)) ? 1 : 0,
+    ...recapFields,
     acceptedForGlobalLeaderboard: Boolean(lastSettlementSucceeded),
     extraction,
-    killedBy: recap ? recap.defeat.label : (cleared ? null : combat.killedBy),
-    bestUpgrade: recap ? recap.build.topUpgradeLabel : bestRoguelikeUpgradeTitle(),
-    runSeed: lastHmhRunSummary?.identity.seed ?? combat.roguelikeRun?.seed ?? null,
     previousBestScore: lastRunPreviousBestScore || currentPlayerBestScoreForMode(session?.mode),
     sessionStreak: sessionRunStreak || 1,
     backgroundSettlementQueued: Boolean(lastSettlementQueued && !lastSettlementSucceeded),

@@ -22,6 +22,7 @@ import {
   UPGRADE_LABELS,
   buildHmhRunRecapModel,
   formatRunClock,
+  selectGameOverRecapFields,
 } from '../apps/portal/src/hmh-run-recap.mjs';
 import { RUN_UPGRADE_CATALOG } from '../apps/hmh-reboot/src/run-progression.mjs';
 import { LIQUIDATOR_ATTACK_DEFINITIONS } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
@@ -137,4 +138,26 @@ test('recap tolerates pre-schema-6 payloads and rejects non-summaries', () => {
   assert.deepEqual([recap.defeat.kind, recap.defeat.label], ['unknown', 'Unknown cause']);
   assert.deepEqual(recap.milestones.map((milestone) => milestone.id), ['cache:scatter-shotgun-cache', 'boss-defeated']);
   for (const input of [null, undefined, 42, 'summary', {}, { identity: {} }]) assert.equal(buildHmhRunRecapModel(input), null);
+});
+
+test('game-over metric sources come from the payload when one exists and from the legacy fields otherwise', () => {
+  const legacy = { bossesDefeated: 1, killedBy: 'Sandbox Grunt', bestUpgrade: 'Sandbox Augment (Rank 2)', runSeed: 12 };
+  // A schema 6 payload wins on every field, including ones the legacy state
+  // claims differently (no boss kill here, so bossesDefeated must read 0).
+  assert.deepEqual(selectGameOverRecapFields(defeatedRun({ bossKill: false }), legacy), {
+    bossesDefeated: 0, killedBy: 'Bagholder Rusher', bestUpgrade: 'Diamond Hands (Rank 2)', runSeed: 777,
+  });
+  assert.deepEqual(selectGameOverRecapFields(defeatedRun({ kill: { sourceId: 'boss-liquidator', weaponId: 'boss-crash-lane' } }), legacy), {
+    bossesDefeated: 1, killedBy: 'Liquidator: Crash Lane', bestUpgrade: 'Diamond Hands (Rank 2)', runSeed: 777,
+  });
+  // A survived run names no killer rather than falling back to the legacy one.
+  assert.equal(selectGameOverRecapFields(defeatedRun({ terminalReason: 'completed', bossKill: false }), legacy).killedBy, null);
+  // No payload (menu, legacy sandbox, or a non-summary) passes legacy through
+  // verbatim, nulls and zeros included, and never adds fields.
+  for (const missing of [null, undefined, {}, 'summary']) assert.deepEqual(selectGameOverRecapFields(missing, legacy), legacy);
+  assert.deepEqual(selectGameOverRecapFields(null, { bossesDefeated: 0, killedBy: null, bestUpgrade: null, runSeed: null }), { bossesDefeated: 0, killedBy: null, bestUpgrade: null, runSeed: null });
+  assert.deepEqual(selectGameOverRecapFields(null), { bossesDefeated: 0, killedBy: null, bestUpgrade: null, runSeed: null });
+  assert.ok(Object.isFrozen(selectGameOverRecapFields(defeatedRun(), legacy)));
+  // Free and Ranked payloads select identically (mode never feeds the recap).
+  assert.deepEqual(selectGameOverRecapFields(defeatedRun({ mode: 'free' }), legacy), selectGameOverRecapFields(defeatedRun({ mode: 'ranked' }), legacy));
 });

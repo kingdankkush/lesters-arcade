@@ -3255,33 +3255,31 @@ test('AVATAR_RULES re-encodes to a metadata-stripping raster format', () => {
 
 test('game-over summary reads bosses and killed-by from the canonical reboot recap instead of stale combat state', async () => {
   const { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunKill } = await import('../sdk/hmh-run-summary.mjs');
-  const { buildHmhRunRecapModel } = await import('../apps/portal/src/hmh-run-recap.mjs');
+  const { selectGameOverRecapFields } = await import('../apps/portal/src/hmh-run-recap.mjs');
   const state = createRunSummaryAccumulator({ seed: 4242, buildHash: 'game-over-recap', mode: 'free', heroId: 'lit-commando', startPosition: { x: 0, y: 0 } });
   recordRunKill(state, { enemyRoleId: 'liquidator', weaponId: 'coin-blaster', boss: true });
   recordRunDamage(state, { sourceId: 'enemy-1', targetId: 'player', weaponId: 'enemy-bagholder-rusher', damageApplied: 20, killed: true, tick: 50 });
   const runSummary = finalizeRunSummary(state, { endTick: 50, elapsedMs: 833.333, terminalReason: 'defeated', score: 120, level: 1, xp: 0, currentCombo: 0, maxCombo: 2, revealedCells: 1, totalCells: 10 });
-  const recap = buildHmhRunRecapModel(runSummary);
-  // Mirrors currentGameOverSummaryModel's wiring: combat.bossDefeated stays
-  // false for reboot runs, so the payload is the only truthful source.
-  const summary = buildGameOverSummaryModel({
-    session: null,
-    score: runSummary.totals.score,
-    elapsedSeconds: 1,
-    kills: runSummary.kills.total,
-    bossesDefeated: runSummary.kills.boss,
-    killedBy: recap.defeat.label,
-    bestUpgrade: recap.build.topUpgradeLabel,
-    runSeed: runSummary.identity.seed,
-  });
+  // The legacy in-portal fields are what a reboot run leaves behind: no boss
+  // flag, a stale killer, a sandbox augment and no seed. The selection helper
+  // (the exact call currentGameOverSummaryModel forwards) must prefer the
+  // payload for every metric it feeds.
+  const legacy = { bossesDefeated: 0, killedBy: 'Stale sandbox enemy', bestUpgrade: 'Sandbox Augment (Rank 3)', runSeed: null };
+  const fields = selectGameOverRecapFields(runSummary, legacy);
+  assert.deepEqual(fields, { bossesDefeated: 1, killedBy: 'Bagholder Rusher', bestUpgrade: null, runSeed: 4242 });
+  const summary = buildGameOverSummaryModel({ session: null, score: runSummary.totals.score, elapsedSeconds: 1, kills: runSummary.kills.total, ...fields });
   assert.equal(summary.metrics.find((metric) => metric.id === 'bosses').value, '1');
   assert.equal(summary.metrics.find((metric) => metric.id === 'killed-by').value, 'Bagholder Rusher');
   assert.equal(summary.metrics.find((metric) => metric.id === 'run-seed').value, '4242');
   assert.equal(summary.metrics.some((metric) => metric.id === 'best-upgrade'), false, 'no augment taken means no Best Augment row');
+  // Without a finalized payload the legacy fields pass through untouched.
+  const fallback = buildGameOverSummaryModel({ session: null, score: 1, elapsedSeconds: 1, kills: 0, ...selectGameOverRecapFields(null, legacy) });
+  assert.equal(fallback.metrics.find((metric) => metric.id === 'bosses').value, '0');
+  assert.equal(fallback.metrics.find((metric) => metric.id === 'killed-by').value, 'Stale sandbox enemy');
+  assert.equal(fallback.metrics.find((metric) => metric.id === 'best-upgrade').value, 'Sandbox Augment (Rank 3)');
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
-  assert.equal(mainSource.includes("from './src/hmh-run-recap.mjs'"), true);
-  assert.equal(mainSource.includes('lastHmhRunSummary.kills.boss'), true);
-  assert.equal(mainSource.includes("dataset: { testid: 'hmh-run-recap' }"), true);
-  assert.equal(mainSource.includes('gameOverReasonCopy(combat.gameOverReason)'), true);
+  assert.match(mainSource, /selectGameOverRecapFields\(lastHmhRunSummary, \{/, 'currentGameOverSummaryModel must route the metric sources through the tested helper');
+  assert.equal(mainSource.includes('gameOverReasonCopy(combat.gameOverReason)'), true, 'the raw reason literal must stay mapped to a sentence');
 });
 
 
