@@ -65,3 +65,19 @@ export function buildWorldHazardHits(hazards, { tick, targets, queryGround }) {
   }
   return hits;
 }
+
+// Environmental damage never lands the killing blow on a protected target
+// (the boss): its defeat must flow through the player-attributed authority
+// path, since the run summary needs a catalog weapon row for every kill and
+// none of the world-* ids may join that catalog. Hits are capped at health-1
+// and dropped once only 1 HP remains, so the boss can be worn down but never
+// retired by a rockfall or the grid.
+export function withholdLethalHazardHits(hits, { targetId, health }) {
+  const cap = Math.max(0, Math.floor(health) - 1);
+  const kept = [];
+  for (const hit of hits) {
+    if (hit.targetId !== targetId) kept.push(hit);
+    else if (cap >= 1) kept.push(hit.damage > cap ? { ...hit, damage: cap } : hit);
+  }
+  return kept;
+}

@@ -9,7 +9,7 @@ import { deterministicUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } from './world-design-interactions.mjs';
 import { createWorldDesignLife, prepareWorldDesignEnemyPose, worldDesignFootstep } from './world-design-life.mjs';
-import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits } from './world-hazards.mjs';
+import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
@@ -1519,7 +1519,7 @@ async function boot() {
         focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
           .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
-      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
+      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
       if(releaseTelemetryEnabled) {
         dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
         dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
@@ -3539,8 +3539,12 @@ async function boot() {
         ...grayboxEnemies,
         ...(liquidatorBoss.active && tick >= liquidatorBoss.startTick ? [liquidatorBoss] : []),
       ];
-      combatHitIntents.push(...buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}));
-      combatHitIntents.push(...buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }));
+      // The boss can be worn down by steam, rock and the grid but never retired
+      // by them: a boss defeat must reach the run summary through the weapon
+      // catalog, and no world-* id may join that catalog.
+      const bossHazardCap = { targetId: liquidatorBoss.id, health: liquidatorBoss.health };
+      combatHitIntents.push(...withholdLethalHazardHits(buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}), bossHazardCap));
+      combatHitIntents.push(...withholdLethalHazardHits(buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }), bossHazardCap));
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
@@ -4254,7 +4258,9 @@ async function boot() {
             : String(hit.targetId).includes(':bad-debt-summon:')
               ? 'add'
               : null;
-          if (!targetKind) return hit;
+          // Role checks and punish windows scale player weapons only; a
+          // capped hazard hit must land exactly as capped.
+          if (!targetKind || WORLD_ENVIRONMENT_WEAPON_IDS.has(hit.weaponId)) return hit;
           const roleCheck = getLiquidatorRoleCheck({
             weaponId: hit.weaponId,
             distance: targetKind === 'boss' ? Math.hypot(actor.x - liquidatorBoss.x, actor.y - liquidatorBoss.y) : 0,
@@ -4345,7 +4351,13 @@ async function boot() {
           }
           if (damageEvent.targetId === liquidatorBoss.id) {
             const roleCheck = roleChecksByHitId.get(damageEvent.hitId) ?? Object.freeze({ roleId: null, multiplier: 1, applied: false });
-            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.damageApplied, tick });
+            // Second gate behind withholdLethalHazardHits: a same-tick player
+            // hit ordered ahead of the hazard can push the resolution past the
+            // intent cap, and environmental damage still stops at 1 HP.
+            const bossHitAmount = WORLD_ENVIRONMENT_WEAPON_IDS.has(damageEvent.weaponId)
+              ? Math.min(damageEvent.damageApplied, Math.max(0, liquidatorBoss.health - 1))
+              : damageEvent.damageApplied;
+            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: bossHitAmount, tick });
             if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
             if (bossDamage.runEvent) {
               combatAudio.play('boss-death', {volume:.18});
