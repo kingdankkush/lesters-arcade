@@ -124,44 +124,41 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
     const hazardTelegraphs=[];
     for(const hazard of hazards) {
       const rule=WORLD_HAZARD_RULES[hazard.kind]; if(!rule) continue;
-      const a=hazard.anchor,hp=project(a.x,a.y,queryGround(a.x,a.y).groundZ),z=camera.zoom,r=rule.radius??rule.halfLength;
+      const a=hazard.anchor,hp=project(a.x,a.y,queryGround(a.x,a.y).groundZ),z=camera.zoom,r=(rule.radius??rule.halfLength)*z,rock=hazard.kind==='rockfall';
       if(hp.x < -260*z || hp.x > view.width+260*z || hp.y < -260*z || hp.y > view.height+260*z) continue;
+      // The rockfall plate is its circle; the grid plate is a 2r by 1.4r slab.
+      const plate=(scale=1)=>rock?ground.circle(hp.x,hp.y,r*scale):ground.rect(hp.x-r,hp.y-r*.7,2*r,1.4*r);
       if(rule.periodTicks) {
         const ph=worldHazardPhase(hazard,tick),since=tick%rule.periodTicks,flash=tick>=rule.periodTicks&&since<8?1-since/8:0;
         if(ph.phase==='warning') {
           hazardTelegraphs.push(hazard.id);
           // One caption per cycle, and only when the hero is close enough to be under it.
-          if(announce && Math.hypot(actor.x-a.x,actor.y-a.y)<r*1.6 && lastWarned.get(hazard.id)!==ph.cycle) {
+          if(announce && Math.hypot(actor.x-a.x,actor.y-a.y)*z<r*1.6 && lastWarned.get(hazard.id)!==ph.cycle) {
             lastWarned.set(hazard.id,ph.cycle);
-            announce(hazard.kind==='rockfall'?'Rockfall warning: move clear.':'Liquidation grid charging: move clear.');
+            announce(rock?'Rockfall warning: move clear.':'Liquidation grid charging: move clear.');
           }
-          if(hazard.kind==='rockfall') {
+          if(rock) {
             // The ring collapses from 1.4r to r while three slab shadows swell.
-            ground.circle(hp.x,hp.y,r*z*(1.4-.4*ph.progress)).stroke({color:0xffcd86,width:3*z,alpha:.35+.55*ph.progress});
+            plate(1.4-.4*ph.progress).stroke({color:0xffcd86,width:3*z,alpha:.35+.55*ph.progress});
             for(let i=0;i<3;i++) ground.circle(hp.x+Math.cos(i*2.1+.6)*46*z,hp.y+Math.sin(i*2.1+.6)*28*z,(9+19*ph.progress)*z).fill({color:0x0d1214,alpha:.14+.36*ph.progress});
-          } else {
-            // A hatched plate whose blink accelerates through the charge.
-            const on=Math.floor(ph.progress*ph.progress*14)%2===0;
-            ground.rect(hp.x-r*z,hp.y-r*.7*z,2*r*z,1.4*r*z).stroke({color:0x7ee0ff,width:2*z,alpha:on?.7:.18});
-            for(let i=-2;i<=2;i++) ground.moveTo(hp.x+i*r*.4*z,hp.y-r*.7*z).lineTo(hp.x+i*r*.4*z,hp.y+r*.7*z).stroke({color:0x7ee0ff,width:z,alpha:on?.3:.08});
-          }
+          // The slab's blink accelerates through the charge.
+          } else plate().stroke({color:0x7ee0ff,width:2*z,alpha:Math.floor(ph.progress*ph.progress*14)%2?.18:.7});
         }
         if(flash>0) {
           hazardTelegraphs.push(`${hazard.id}:impact`);
-          if(hazard.kind==='rockfall') ground.circle(hp.x,hp.y,r*z).fill({color:0xf1e6d2,alpha:.5*flash});
-          else ground.rect(hp.x-r*z,hp.y-r*.7*z,2*r*z,1.4*r*z).fill({color:0x7ee0ff,alpha:.45*flash});
+          plate().fill({color:rock?0xf1e6d2:0x7ee0ff,alpha:.5*flash});
           if(!reduceMotion) for(let i=0;i<6&&particles<particleBudget;i++) {
-            dot(hp.x+Math.cos(i*1.05)*(20+60*(1-flash))*z,hp.y-(10+40*(1-flash))*z+Math.sin(i*1.05)*12*z,(4+6*flash)*z,hazard.kind==='rockfall'?0xcbbfae:0x9fe9ff,.5*flash);particles++;
+            dot(hp.x+Math.cos(i*1.05)*(80-60*flash)*z,hp.y-(50-40*flash)*z+Math.sin(i*1.05)*12*z,(4+6*flash)*z,rock?0xcbbfae:0x9fe9ff,.5*flash);particles++;
           }
         }
       } else if(rule.speedMultiplier!==undefined) {
-        ground.circle(hp.x,hp.y,r*z).fill({color:0x7bd98a,alpha:.07}).stroke({color:0x9de7a5,width:2*z,alpha:.28});
+        ground.circle(hp.x,hp.y,r).fill({color:0x7bd98a,alpha:.07}).stroke({color:0x9de7a5,width:2*z,alpha:.28});
       } else if(rule.push!==undefined) {
         // Chevrons scroll with the tick along the belt axis, inside the capsule.
-        const step=48,{x:ax,y:ay}=rule.axis,px=-ay,py=ax,offset=reduceMotion?0:(tick*2.5)%step;
-        for(let s=-rule.halfLength+offset;s<rule.halfLength;s+=step) {
+        const {x:ax,y:ay}=rule.axis,offset=reduceMotion?0:(tick*2.5)%48;
+        for(let s=-rule.halfLength+offset;s<rule.halfLength;s+=48) {
           const cx=hp.x+s*ax*z,cy=hp.y+s*ay*z;
-          ground.moveTo(cx-(ax*10-px*18)*z,cy-(ay*10-py*18)*z).lineTo(cx+ax*6*z,cy+ay*6*z).lineTo(cx-(ax*10+px*18)*z,cy-(ay*10+py*18)*z).stroke({color:0xffd27a,width:2*z,alpha:.32});
+          ground.moveTo(cx-(ax*10+ay*18)*z,cy-(ay*10-ax*18)*z).lineTo(cx+ax*6*z,cy+ay*6*z).lineTo(cx-(ax*10-ay*18)*z,cy-(ay*10+ax*18)*z).stroke({color:0xffd27a,width:2*z,alpha:.32});
         }
       }
     }
