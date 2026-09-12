@@ -3,6 +3,11 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
+import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+
+// Tell length per archetype, handed into the page so the browser gate can
+// compare the runtime's measured tell-to-strike against the authored table.
+const TELL_TICKS_BY_ARCHETYPE = Object.fromEntries(Object.entries(ENEMY_ARCHETYPES).map(([id, archetype]) => [id, archetype.attack.tellTicks]));
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const candidateBundlePath = fileURLToPath(new URL('../apps/portal/dist/hmh-reboot/game.js', import.meta.url));
@@ -96,8 +101,35 @@ async function captureCanister(profile) {
   assert.deepEqual(session.errors, []);
   const screenshot = join(evidenceDir, `a14-canister-${profile.name}.png`);
   await page.screenshot({ path: screenshot, fullPage: false });
+
+  // Tell-to-hit at gameplay zoom. The runtime publishes the last strike's
+  // measured tell-to-strike ticks with its archetype and the camera zoom it
+  // was drawn at; wait for a strike whose tell was not pushed back by the
+  // same-tick stagger and compare it with the authored tell length. The
+  // predicate hands back the frame it accepted: the page keeps stepping at
+  // 60 Hz between CDP round trips and a later staggered strike (+9 ticks
+  // per extra same-tick tell) would overwrite the dataset before a second
+  // read, so the asserted values must come from the frame that matched.
+  const timingHandle = await page.waitForFunction((tellTicks) => {
+    const stage = document.querySelector('#hmhRebootStage');
+    const raw = stage?.dataset.enemyTellToStrikeTicks ?? '';
+    const measured = Number(raw);
+    if (raw === '' || measured !== tellTicks[stage.dataset.enemyTellToStrikeArchetype]) return null;
+    return {
+      tick: Number(stage.dataset.simulationTick),
+      tellToStrikeTicks: measured,
+      archetypeId: stage.dataset.enemyTellToStrikeArchetype,
+      cameraZoom: Number(stage.dataset.cameraZoom),
+    };
+  }, TELL_TICKS_BY_ARCHETYPE, { timeout: 20_000 });
+  const timing = await timingHandle.jsonValue();
+  assert.ok(Object.hasOwn(TELL_TICKS_BY_ARCHETYPE, timing.archetypeId), `${profile.name}: strike archetype ${timing.archetypeId} is unknown`);
+  assert.equal(timing.tellToStrikeTicks, TELL_TICKS_BY_ARCHETYPE[timing.archetypeId], `${profile.name}: ${timing.archetypeId} tell-to-strike at gameplay zoom`);
+  assert.ok(timing.tellToStrikeTicks >= 12, `${profile.name}: tell shorter than the 200 ms readability floor`);
+  assert.ok(Number.isFinite(timing.cameraZoom) && timing.cameraZoom > 0, `${profile.name}: no gameplay zoom was published`);
+  assert.deepEqual(session.errors, []);
   await session.context.close();
-  return { ...state, screenshot };
+  return { ...state, screenshot, timing };
 }
 
 async function captureBossPhase(profile) {
@@ -205,10 +237,16 @@ const profiles = [
 
 try {
   const results = [];
+  // The canister half (ordinary tells, tell-to-strike at gameplay zoom) runs
+  // for every profile before the boss half so its assertions execute on both
+  // profiles even when a later boss-phase assertion stops the run, and each
+  // sample is printed as it lands so the evidence survives that stop.
   for (const profile of profiles) {
-    results.push(await captureCanister(profile));
-    results.push(await captureBossPhase(profile));
+    const canister = await captureCanister(profile);
+    console.log(JSON.stringify({ status: 'CANISTER', profile: profile.name, tick: canister.tick, tells: canister.tells, timing: canister.timing }));
+    results.push(canister);
   }
+  for (const profile of profiles) results.push(await captureBossPhase(profile));
   console.log(JSON.stringify({ status: 'PASS', results }));
 } finally {
   await browser.close();

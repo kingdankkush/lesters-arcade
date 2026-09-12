@@ -419,3 +419,42 @@ test('rendered enemy frame evidence follows the actual texture selection', async
       new fake.FakeRectangle(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h));
   }
 });
+
+// ---------------------------------------------------------------------------
+// Enemy hit feedback (projection): the roster display exposes a tint hook so
+// a hit can flash the body inside a tell or strike frame without touching the
+// pose precedence. null hands the tint back to applyPose, elite tint included.
+// ---------------------------------------------------------------------------
+
+test('the roster display exposes setTint and null restores the tint applyPose owns', async () => {
+  const { createEnemyRosterDisplay } = await import('../apps/hmh-reboot/src/enemy-roster-atlas.mjs');
+  const { FakeContainer, FakeSprite, FakeTexture, FakeRectangle, FakeGraphics } = makeFakePixi();
+  const index = createEnemyRosterAtlasIndex(await loadMetadata('forkrunner'), 'forkrunner');
+  const make = (elite) => createEnemyRosterDisplay({
+    index,
+    atlasTexture: { source: { id: 'atlas' } },
+    ContainerClass: FakeContainer,
+    SpriteClass: FakeSprite,
+    TextureClass: FakeTexture,
+    RectangleClass: FakeRectangle,
+    GraphicsClass: FakeGraphics,
+    scale: 1,
+    elite,
+  });
+  for (const elite of [false, true]) {
+    const display = make(elite);
+    const body = display.children.find((child) => child.label === 'roster-body-forkrunner');
+    const base = elite ? 0xfff0c0 : 0xffffff;
+    assert.equal(typeof display.setTint, 'function');
+    assert.equal(body.tint, base);
+    display.setTint(0xffd6d6);
+    assert.equal(body.tint, 0xffd6d6, 'the flash reaches the body sprite');
+    display.setTint(null);
+    assert.equal(body.tint, base, `null restores ${elite ? 'the elite tint' : 'white'}`);
+    display.setTint(0xffd6d6);
+    display.applyPose({ state: 'tell', tick: 3, direction: 0, elite, phaseTick: 3 });
+    assert.equal(body.tint, base, 'a pose refresh never leaks the flash');
+    assert.equal(display.visualState, 'tell', 'the flash changes no pose state');
+    assert.equal(display.eliteProjection, elite);
+  }
+});

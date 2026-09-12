@@ -661,6 +661,12 @@ async function boot() {
   world.addChildAt(goreGround, world.children.indexOf(groundShadowLayer));
   world.addChildAt(goreAir, world.children.indexOf(projectileImpacts));
   let gorePresentation = null, goreRequested = false;
+  // Projection-only enemy hit reactions (tint flash, knock offset, squash,
+  // armour shards). The resolver is a dynamic chunk; the Map holds one frozen
+  // descriptor per hit enemy, keyed by id, and nothing in the simulation
+  // reads it. Pruned on retirement, cleared on run reset.
+  let enemyHitFeedback = null, enemyHitFeedbackRequested = false;
+  const enemyHitFeedbackById = new Map();
   app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel);
 
 
@@ -1060,6 +1066,9 @@ async function boot() {
   };
 
   const queueEnemyDeathVisual = (enemy, tick) => {
+    // A retiring body takes its hit descriptor with it: the corpse is its own
+    // presentation and must not inherit a knock offset or flash.
+    enemyHitFeedbackById.delete(enemy?.id);
     if (!enemy || enemyDeathMarkers.has(enemy.id)) return;
     if (Math.hypot(enemy.x - actor.x, enemy.y - actor.y) < 1100) combatAudio.play('enemy-death', {
       volume: .13, playbackRate: .85 + deterministicUnit(enemy.id) * .3,
@@ -1200,6 +1209,12 @@ async function boot() {
         .catch(() => { dataset.goreStatus = 'unavailable'; });
     }
     if (!settings.gore) { gorePresentation?.clear(); goreGround.clear(); goreAir.clear(); }
+    // Not gated on a setting: every run shows hits. A chunk that fails to
+    // load is left to surface as a page error rather than a silent status.
+    if (!enemyHitFeedbackRequested) {
+      enemyHitFeedbackRequested = true;
+      void import('./enemy-hit-feedback.mjs').then(module => { enemyHitFeedback = module; });
+    }
     if (sessionPayload) sessionPayload = { ...sessionPayload, settings: { ...settings } };
     combatAudio.setMusicEnabled(settings.musicEnabled);
     combatAudio.setBusLevels(settings);
@@ -1261,6 +1276,9 @@ async function boot() {
   let lastBossResolvedAttack = null;
   let lastBossPunishWindow = null;
   let lastEnemyAttack = null;
+  // Telemetry only: the most recent enemy strike event, kept across frames so
+  // the browser gate can read tell-to-strike ticks after the strike tick.
+  let lastEnemyStrike = null;
   let playerBody = null;
   let lastCollision = null;
   let lastTraversal = null;
@@ -1593,6 +1611,31 @@ async function boot() {
             dataset.targetArtScreenY = String(enemyMarker.y);
             dataset.targetArtScale = String(enemyMarker.scale.y);
           }
+          // Hit reaction on the body itself, layered over whatever pose the
+          // precedence chose, so a hit inside a tell or strike still lands
+          // visibly. Position and squash are applied after the pinned
+          // scale.set above; the tint hands back to the display's own base
+          // tint when there is nothing to show.
+          const hit = enemyHitFeedback && enemyHitFeedbackById.get(enemy.id);
+          const hitAge = hit ? (simulation?.tick ?? 0) - hit.tick : 6;
+          const reaction = hitAge < 6 ? enemyHitFeedback.resolveEnemyHitReaction({
+            ...hit,
+            age: hitAge,
+            zoom: camera.zoom,
+            particleScale,
+            reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+            reduceFlash: settings.reduceFlash,
+            seed: `${enemy.id}:${hit.tick}`,
+          }) : null;
+          if (reaction) {
+            enemyMarker.position.set(enemyScreen.x + reaction.offsetX, enemyScreen.y + reaction.offsetY);
+            enemyMarker.scale.x *= reaction.squashX;
+            enemyMarker.scale.y *= reaction.squashY;
+            // Shards sit at chest height; the impact burst already owns the
+            // hit point itself, so no second ring is drawn here.
+            for (const shard of reaction.shards) placeWeaponGlow(enemyScreen.x + shard.dx, enemyScreen.y - 24 * camera.zoom + shard.dy, shard.radius, shard.color, shard.alpha);
+          }
+          enemyMarker.setTint(reaction?.tint ?? null);
           // Health is shown on a pip below the body. It used to drive alpha,
           // which made the highest-priority target the hardest one to see and
           // turned dense fights into overlapping ghosts.
@@ -2690,6 +2733,12 @@ async function boot() {
         dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
         dataset.enemyScreenRects = JSON.stringify(projectEnemyScreenRects(grayboxEnemies));
         dataset.enemyTells = String(enemyTellCount);
+        // Tell-to-strike measured from the authoritative event, alongside the
+        // zoom it was read at, so the browser gate can prove the archetype's
+        // tell length survives to gameplay zoom.
+        dataset.enemyTellToStrikeTicks = String(lastEnemyStrike ? lastEnemyStrike.tick - lastEnemyStrike.tellStartedTick : '');
+        dataset.enemyTellToStrikeArchetype = lastEnemyStrike?.archetypeId ?? '';
+        dataset.cameraZoom = String(camera?.zoom ?? '');
         dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
         dataset.enemyDecisionBudget = String(lastEnemyStep?.decisionBudget ?? 0);
         dataset.enemyDeferredDecisions = String(lastEnemyStep?.deferredDecisions ?? 0);
@@ -2789,6 +2838,8 @@ async function boot() {
     lastBossResolvedAttack = null;
     lastBossPunishWindow = null;
     lastEnemyAttack = null;
+    lastEnemyStrike = null;
+    enemyHitFeedbackById.clear();
     resetEnemyMarkers([]);
     clearEnemyDeathMarkers();
     enemyVisualFacing.clear();
@@ -4066,6 +4117,7 @@ async function boot() {
         });
       }
       for (const event of lastEnemyAttack.events) {
+        lastEnemyStrike = event;
         pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
         const resolved = resolveEnemyAttackAgainstPlayer(event, {
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
@@ -4336,6 +4388,20 @@ async function boot() {
           const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
           if (!enemy) continue;
           enemy.hitUntilTick = tick + 6;
+          // Render-side hit descriptor for the projection reaction. Frozen
+          // copies of the authoritative damage fields only; the simulation
+          // never reads this Map.
+          enemyHitFeedbackById.set(enemy.id, Object.freeze({
+            tick,
+            knockback: damageEvent.knockback,
+            knockbackResistance: enemy.knockbackResistance,
+            damageApplied: damageEvent.damageApplied,
+            critical: damageEvent.critical,
+            shielded: damageEvent.shielded,
+            armor: enemy.armor,
+            supportArmored: (enemy.supportArmorUntilTick ?? 0) > tick,
+            maxHealth: enemy.maxHealth,
+          }));
           const knockbackCollision = resolveSweptCircleMotion({
             body: enemy.collisionBody,
             start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
