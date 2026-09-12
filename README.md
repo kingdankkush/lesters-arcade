@@ -8,18 +8,18 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 ## Current verified playable release
 
-- **Source:** `4122eb04b77804e2ab19b9917c0217bf59015867`; canonical continuation is `hermes/hmh-textured-rollout`.
-- **Production deployment:** `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt` ([immutable URL](https://lesters-arcade-8xxxo7nvh-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
-- **Verified Preview:** `dpl_4hnvAkqMw5jAnrppaU4z181YYUvd`.
-- **Retained rollback:** `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8` ([immutable URL](https://lesters-arcade-aew9i7szl-justin-agent-projects.vercel.app)).
+- **Source:** `cad94e7d684c450d28052de87821fc9afc5f281c`; branch `fable/hmh-roadmap-pass-20260911`, cut from canonical `hermes/hmh-textured-rollout` at `b0ee9046`.
+- **Production deployment:** `dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg` ([immutable URL](https://lesters-arcade-mgh1j0kip-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
+- **Verified Preview:** `dpl_F5Hytj9fjABnmDVDmVBNwhGeFusU` ([immutable URL](https://lesters-arcade-gr2ph79el-justin-agent-projects.vercel.app)).
+- **Retained rollback:** `dpl_3PQPwrqBQaS6sAChSpZ9uca9wXoN` ([immutable URL](https://lesters-arcade-mbvuvv29s-justin-agent-projects.vercel.app)), source `b0ee904655191e6376cdb94103d086d7158c09ff`.
 **Production cache marker:** `lesters-arcade-v35-hmh-briefing`
-- **Verification:** Both preview and production cloud builds passed the unchanged release gate: 3,224 tests passed and exactly 51 documented retirement exceptions. All 60 served assets/routes match in each environment. The 36 emitted JavaScript files match the preceding verified release; the change corrects the pre-game control instructions. Public desktop/mobile browser checks and returning-client refresh passed. The original broader release-flow evidence remains linked separately.
+- **Verification:** Local `npm run vercel:build`, the Preview cloud build and the promoted production cloud build each passed the unchanged release gate: 3,389 tests, 3,338 passed, exactly 51 documented retirement exceptions, syntax (520 modules, 86 scripts), assets and contract structure. All six mutable entry files read back from the public alias match the local build byte for byte; the service worker serves `lesters-arcade-v35-hmh-briefing`. The portal interaction smoke passed against production. The portal flow smoke passed against production once its stale PNG hero-atlas probes were pointed at the shipped WebP atlases.
 
-The combined overhaul is playable. Full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
+The combined overhaul is playable. This pass adds the per-insertion-point Level 1 briefing and spawn-safety proofs only; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
 
-[Current release receipt](docs/qa/hmh-consolidated-release-20260911.json) · [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) · [Current handoff](docs/handoffs/hmh-textured-rollout-progress.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
+[Current release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) · [Roadmap reconciliation and agent scope](docs/handoffs/hmh-roadmap-reconciliation-20260911.md) · [Briefing evidence](docs/qa/hmh-roadmap-briefing-evidence-20260911.json) · [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
 
-The [preceding release receipt](docs/qa/hmh-playable-release-20260910.json) retains Hermes's original combined release evidence. Earlier Cycle 077/080 claims are [historical](docs/handoffs/hmh-readme-release-header-before-20260910.txt). Continue from the canonical `hermes/hmh-textured-rollout` checkout; the retained task snapshot and full backlog preserve unfinished work.
+The [preceding release receipt](docs/qa/hmh-quality-release-20260911.json) retains the Hermes quality-pass evidence and the [consolidated release receipt](docs/qa/hmh-consolidated-release-20260911.json) the earlier combined release. Earlier Cycle 077/080 claims are [historical](docs/handoffs/hmh-readme-release-header-before-20260910.txt). Continue from `hermes/hmh-textured-rollout` plus this branch; the retained task snapshot and full backlog preserve unfinished work.
 
 ---
 

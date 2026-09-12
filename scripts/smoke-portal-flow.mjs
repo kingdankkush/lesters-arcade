@@ -214,17 +214,12 @@ try {
     if (width <= 0 || height <= 0) throw new Error(`PixelLab sprite probe ${spritePath} has invalid dimensions ${width}x${height}`);
   }
 
-  const productionSpriteProbePaths = [
-    'assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png',
-    'assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png',
-    'assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.png',
-  ];
-  for (const spritePath of productionSpriteProbePaths) {
-    const [width, height] = await fetchPngSize(`${portalUrl}${spritePath}`);
-    if (width <= 0 || height <= 0) throw new Error(`HMH production sprite probe ${spritePath} has invalid dimensions ${width}x${height}`);
+  // All four native hero atlases ship as 2048x2048 lossless WebP; the PNG
+  // variants no longer exist in the tree, so probing them only proved a 404.
+  for (const heroId of ['lit-commando', 'lester-original', 'lilly', 'lit-valkyrie']) {
+    const [width, height] = await fetchWebpSize(`${portalUrl}assets/generated/hmh-reboot-production-heroes/${heroId}/${heroId}-production-pilot-atlas.webp`);
+    if (width !== 2048 || height !== 2048) throw new Error(`HMH ${heroId} WebP atlas has invalid dimensions ${width}x${height}`);
   }
-  const [commandoWidth, commandoHeight] = await fetchWebpSize(`${portalUrl}assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp`);
-  if (commandoWidth !== 2048 || commandoHeight !== 2048) throw new Error(`HMH Commando WebP has invalid dimensions ${commandoWidth}x${commandoHeight}`);
 
   const playlist = JSON.parse(playlistManifest);
   if (playlist.tracks.length < 20) throw new Error(`playlist manifest expected 20 tracks, got ${playlist.tracks.length}`);

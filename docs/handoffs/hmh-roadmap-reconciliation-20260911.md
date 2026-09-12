@@ -71,7 +71,9 @@ All of it is projection-only or test-only. Nothing touches the fixed-step simula
 ### 3.3 Release plumbing
 
 - Portal cache token `hmh-briefing-20260911` and service-worker namespace `lesters-arcade-v35-hmh-briefing` across the 21 pinned locations (index, `sw.js`, README marker, smokes and tests), because the precached `/hmh-reboot/index.html` and `styles.css` changed.
-- Browser evidence for the briefing panel was captured through the ordinary portal flow (guest → cabinet → Free → hero → begin) on a local static build rather than by injecting copy; see the release receipt for the observed entries and screenshot hashes.
+- Browser evidence for the briefing panel was captured through the ordinary portal flow (guest → cabinet → Free → hero → begin) on a local static build rather than by injecting copy: all five entries were observed across eight sessions with zero page or console errors (`docs/qa/hmh-roadmap-briefing-evidence-20260911.json`).
+- Release: source `cad94e7d`, Preview `dpl_F5Hytj9fjABnmDVDmVBNwhGeFusU`, promoted production `dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg`, rollback `dpl_3PQPwrqBQaS6sAChSpZ9uca9wXoN` (`b0ee9046`). Local, Preview and production builds each passed the unchanged gate (3,389 tests, 51 documented exceptions); the six mutable entry files read back from `https://lestersarcade.io` match the local build byte for byte. Receipt: `docs/qa/hmh-roadmap-pass-release-20260911.json`.
+- Two findings recorded, not fixed as gameplay: the desktop portal end-to-end smoke's `pause-resume` and `mid-run-restart` flows fail identically on the untouched base commit on this machine (pre-existing, zero console errors); and `scripts/smoke-portal-flow.mjs` probed PNG hero atlases that no longer exist, so it always failed against production. The probe now checks the four shipped 2048×2048 WebP atlases and the flow smoke passes against production.
 
 ## 4. What an implementation agent can still take on without owner input
 
