@@ -547,3 +547,36 @@ test('population telemetry counts flank lanes truthfully and resets to zero', ()
   });
   assert.equal(withoutNav.flankLaneSeeking, 0, 'no navigation means the count resets to zero');
 });
+
+test('an optional movement field slows and drifts enemies deterministically across frame partitions, and its absence reproduces positions exactly', () => {
+  const player = { x: 900, y: 0, groundZ: 0 };
+  const run = (fieldAt, partition, ticks = 36) => {
+    const population = createEnemyPopulation({ capacity: 2, threatCapacity: 10 });
+    population.active.push(enemy('bagholder-rusher', 'belt-runner', 0, 0));
+    const options = { population, player, dtSeconds: 1 / 60, blockers: [], bounds, queryGround: flatGround, fullAiCap: 2 };
+    if (fieldAt !== undefined) options.fieldAt = fieldAt;
+    // Frames batch 1, 2 or 3 fixed ticks (60/30/20 Hz); the tick stream is identical.
+    for (let frame = partition; frame <= ticks; frame += partition) for (let tick = frame - partition + 1; tick <= frame; tick++) stepEnemyPopulation({ ...options, tick });
+    const member = population.active[0];
+    return { x: member.x, y: member.y };
+  };
+  const baseline = run(undefined, 1);
+  assert.ok(baseline.x > 0, 'the rusher must close on the player for the field to matter');
+  for (const partition of [1, 2, 3]) {
+    assert.deepEqual(run(undefined, partition), baseline);
+    assert.deepEqual(run(null, partition), baseline);
+    assert.deepEqual(run(() => ({ speed: 1, drift: { x: 0, y: 0 } }), partition), baseline);
+  }
+  const slowed = run(() => ({ speed: 0.55, drift: { x: 0, y: 0 } }), 1);
+  const drifted = run(() => ({ speed: 1, drift: { x: -150, y: 0 } }), 1);
+  assert.ok(slowed.x < baseline.x && slowed.x > 0, `slow ${slowed.x} vs ${baseline.x}`);
+  assert.ok(drifted.x < baseline.x, `drift ${drifted.x} vs ${baseline.x}`);
+  for (const partition of [2, 3]) {
+    assert.deepEqual(run(() => ({ speed: 0.55, drift: { x: 0, y: 0 } }), partition), slowed);
+    assert.deepEqual(run(() => ({ speed: 1, drift: { x: -150, y: 0 } }), partition), drifted);
+  }
+  // The field is sampled at the enemy's own ground so ledges can opt out.
+  const samples = [];
+  run((x, y, ground) => { samples.push(ground.kind); return { speed: 1, drift: { x: 0, y: 0 } }; }, 1, 2);
+  assert.deepEqual(samples, ['ground', 'ground']);
+});

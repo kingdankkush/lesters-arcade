@@ -1,5 +1,6 @@
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_EXPLORATION_PATHS } from './world-design-encounters.mjs';
 import { worldDesignHazardPhase } from './world-design-interactions.mjs';
+import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
 
 export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,camera,view,tick,particleBudget=0,reduceMotion=false}) {
   const fires=[],embers=[],budget=Math.min(12,Math.max(0,Math.floor(particleBudget)));
@@ -61,9 +62,10 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
   prompt.anchor.set(.5,1); overlay.addChild(effects,prompt);
   ground.label='world-interaction-ground'; overlay.label='world-interaction-prompts';
   let lastPrompt='';
-  const render=({state,secretState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,particleBudget=10,campfirePlacements=[]})=>{
+  const lastWarned=new Map();
+  const render=({state,secretState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null})=>{
     ground.clear(); effects.clear(); prompt.visible=false;
-    if(!state||!actor) return {visibleSites:0,particles:0};
+    if(!state||!actor) return {visibleSites:0,particles:0,hazardTelegraphs:[]};
     const project=(x,y,z=0)=>worldToScreen({x,y,z},camera,view);
     let visibleSites=0,particles=0;
     const dot=(x,y,r,color,alpha)=>effects.circle(x,y,r).fill({color,alpha});
@@ -116,6 +118,59 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
         }
       }
     }
+    // Authored hazard telegraphs: every stroke is a function of (hazard, tick,
+    // actor position); the production-art ring and particle field stay as
+    // they are, this only adds the danger phase on top.
+    const hazardTelegraphs=[];
+    for(const hazard of hazards) {
+      const rule=WORLD_HAZARD_RULES[hazard.kind]; if(!rule) continue;
+      const a=hazard.anchor,hp=project(a.x,a.y,queryGround(a.x,a.y).groundZ),z=camera.zoom,r=rule.radius??rule.halfLength;
+      if(hp.x < -260*z || hp.x > view.width+260*z || hp.y < -260*z || hp.y > view.height+260*z) continue;
+      if(rule.periodTicks) {
+        const ph=worldHazardPhase(hazard,tick),since=tick%rule.periodTicks,flash=tick>=rule.periodTicks&&since<8?1-since/8:0;
+        if(ph.phase==='warning') {
+          hazardTelegraphs.push(hazard.id);
+          // One caption per cycle, and only when the hero is close enough to be under it.
+          if(announce && Math.hypot(actor.x-a.x,actor.y-a.y)<r*1.6 && lastWarned.get(hazard.id)!==ph.cycle) {
+            lastWarned.set(hazard.id,ph.cycle);
+            announce(hazard.kind==='rockfall'?'Rockfall warning: move clear.':'Liquidation grid charging: move clear.');
+          }
+          if(hazard.kind==='rockfall') {
+            // The ring collapses from 1.4r to r while three slab shadows swell.
+            ground.circle(hp.x,hp.y,r*z*(1.4-.4*ph.progress)).stroke({color:0xffcd86,width:3*z,alpha:.35+.55*ph.progress});
+            for(let i=0;i<3;i++) ground.circle(hp.x+Math.cos(i*2.1+.6)*46*z,hp.y+Math.sin(i*2.1+.6)*28*z,(9+19*ph.progress)*z).fill({color:0x0d1214,alpha:.14+.36*ph.progress});
+          } else {
+            // A hatched plate whose blink accelerates through the charge.
+            const on=Math.floor(ph.progress*ph.progress*14)%2===0;
+            ground.rect(hp.x-r*z,hp.y-r*.7*z,2*r*z,1.4*r*z).stroke({color:0x7ee0ff,width:2*z,alpha:on?.7:.18});
+            for(let i=-2;i<=2;i++) ground.moveTo(hp.x+i*r*.4*z,hp.y-r*.7*z).lineTo(hp.x+i*r*.4*z,hp.y+r*.7*z).stroke({color:0x7ee0ff,width:z,alpha:on?.3:.08});
+          }
+        }
+        if(flash>0) {
+          hazardTelegraphs.push(`${hazard.id}:impact`);
+          if(hazard.kind==='rockfall') ground.circle(hp.x,hp.y,r*z).fill({color:0xf1e6d2,alpha:.5*flash});
+          else ground.rect(hp.x-r*z,hp.y-r*.7*z,2*r*z,1.4*r*z).fill({color:0x7ee0ff,alpha:.45*flash});
+          if(!reduceMotion) for(let i=0;i<6&&particles<particleBudget;i++) {
+            dot(hp.x+Math.cos(i*1.05)*(20+60*(1-flash))*z,hp.y-(10+40*(1-flash))*z+Math.sin(i*1.05)*12*z,(4+6*flash)*z,hazard.kind==='rockfall'?0xcbbfae:0x9fe9ff,.5*flash);particles++;
+          }
+        }
+      } else if(rule.speedMultiplier!==undefined) {
+        ground.circle(hp.x,hp.y,r*z).fill({color:0x7bd98a,alpha:.07}).stroke({color:0x9de7a5,width:2*z,alpha:.28});
+      } else if(rule.push!==undefined) {
+        // Chevrons scroll with the tick along the belt axis, inside the capsule.
+        const step=48,{x:ax,y:ay}=rule.axis,px=-ay,py=ax,offset=reduceMotion?0:(tick*2.5)%step;
+        for(let s=-rule.halfLength+offset;s<rule.halfLength;s+=step) {
+          const cx=hp.x+s*ax*z,cy=hp.y+s*ay*z;
+          ground.moveTo(cx-(ax*10-px*18)*z,cy-(ay*10-py*18)*z).lineTo(cx+ax*6*z,cy+ay*6*z).lineTo(cx-(ax*10+px*18)*z,cy-(ay*10+py*18)*z).stroke({color:0xffd27a,width:2*z,alpha:.32});
+        }
+      }
+    }
+    if(hazards.length && worldHazardField(hazards,{x:actor.x,y:actor.y,groundZ:actor.groundZ??0}).speed<1) {
+      // The bed is slowing the hero right now: a green wash, not a sprite change.
+      const p=project(actor.x,actor.y,actor.groundZ??0);
+      effects.circle(p.x,p.y-18*camera.zoom,24*camera.zoom).fill({color:0x7bd98a,alpha:.16});
+      hazardTelegraphs.push('hero-slow');
+    }
     const campfires=buildWorldDesignCampfires({placements:campfirePlacements,worldToScreen,queryGround,camera,view,tick,reduceMotion,particleBudget:Math.max(0,particleBudget-particles)});
     for(const f of campfires.fires) {
       ground.circle(f.x,f.y,f.radius).fill({color:0xff9845,alpha:f.alpha*.4});
@@ -130,7 +185,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       prompt.style.wordWrap=true;prompt.style.wordWrapWidth=Math.min(430,view.width-48);
       prompt.position.set(view.width/2,view.height<500?145:view.width<600?280:190);prompt.visible=true;
     }
-    return {visibleSites,particles:particles+campfires.embers.length,campfireLights:campfires.fires.length,campfireEmbers:campfires.embers.length};
+    return {visibleSites,particles:particles+campfires.embers.length,campfireLights:campfires.fires.length,campfireEmbers:campfires.embers.length,hazardTelegraphs};
   };
   return {ground,overlay,render};
 }

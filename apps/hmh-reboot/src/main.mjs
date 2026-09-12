@@ -9,6 +9,7 @@ import { deterministicUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } from './world-design-interactions.mjs';
 import { createWorldDesignLife, prepareWorldDesignEnemyPose, worldDesignFootstep } from './world-design-life.mjs';
+import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
@@ -1518,8 +1519,9 @@ async function boot() {
         focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
           .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
-      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements});
+      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
       if(releaseTelemetryEnabled) {
+        dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
         dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
         dataset.worldInteractionTarget=worldDesignState.targetId??'';
         dataset.worldInteractionProgress=String(worldDesignState.progress);
@@ -3297,6 +3299,9 @@ async function boot() {
           );
           terrainSpeedMultiplier = movementSpeedMultiplierForTransition(currentGround, probeGround, probeDistance);
         }
+        // Sampled once at the tick's start: a spore bed slows the step, a
+        // conveyor drifts it (below), both from the same authored field.
+        const playerHazardField = worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x: motion.x, y: motion.y, groundZ: currentGround.groundZ });
         stepPlayerMovement(motion, {
           move: tickInput.move,
           aim: { ...aimIntent.direction, active: true },
@@ -3304,7 +3309,8 @@ async function boot() {
           dtSeconds,
           speedMultiplier: terrainSpeedMultiplier
             * (collectibleSnapshot?.speedMultiplier ?? 1)
-            * runEffects.moveSpeedMultiplier,
+            * runEffects.moveSpeedMultiplier
+            * playerHazardField.speed,
         });
         const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
           ? [...grayboxEnemies, liquidatorBoss]
@@ -3324,6 +3330,10 @@ async function boot() {
           const delta = pressure.enemyDeltas.get(enemy.id);
           if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
         }
+        // Conveyor drift folds into the swept delta below, so the push stays
+        // wall-safe and the traversal pass still refuses deep water.
+        motion.x += playerHazardField.drift.x * dtSeconds;
+        motion.y += playerHazardField.drift.y * dtSeconds;
         lastCollision = resolveSweptCircleMotion({
           body: playerBody,
           start: movementStart,
@@ -3468,6 +3478,8 @@ async function boot() {
           preservePrevious: true,
           navigation: enemyNavigation,
           fullAiCap: runtimeEncounterSnapshot(tick).fullAiCap,
+          // Spore beds and conveyors act on enemies through the same field the hero uses.
+          fieldAt: (x, y, ground) => worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ }),
         });
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
@@ -3518,7 +3530,17 @@ async function boot() {
         maxZ: 92,
       }));
       const combatHitIntents = [];
-      combatHitIntents.push(...buildWorldDesignHazardHits(worldDesignState,{tick,targets:[{...actor,id:'player'},...grayboxEnemies],queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}));
+      // Hoisted ahead of the hazard hooks: evidence tours spawn the hero on
+      // the rockfall anchor, and dash i-frames dodge falling rock the same
+      // way they dodge shots.
+      const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
+      const hazardTargets = [
+        ...(playerInvulnerable ? [] : [{ ...actor, id: 'player' }]),
+        ...grayboxEnemies,
+        ...(liquidatorBoss.active && tick >= liquidatorBoss.startTick ? [liquidatorBoss] : []),
+      ];
+      combatHitIntents.push(...buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}));
+      combatHitIntents.push(...buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }));
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
@@ -4023,7 +4045,6 @@ async function boot() {
         } else if (grenadeSpawn.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
       }
       previousGrenade = tickInput.grenade;
-      const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
       const playerHurtTarget = playerHealth > 0 && !playerInvulnerable ? createHurtTarget({
         id: 'player',
         bodyShape: { type: 'circle', radius: playerBody.radius },
@@ -4385,7 +4406,7 @@ async function boot() {
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
           // Environmental deaths retire bodies without inventing a player
           // weapon attribution, XP award, official kill or new summary ID.
-          if(scoreEvent.weaponId==='world-steam') {
+          if(WORLD_ENVIRONMENT_WEAPON_IDS.has(scoreEvent.weaponId)) {
             const enemy=grayboxEnemies.find(e=>e.id===scoreEvent.enemyId);
             if(enemy) {
               queueEnemyDeathVisual(enemy,tick);
