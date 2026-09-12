@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import vm from 'node:vm';
 
 import { ENEMY_ARCHETYPE_IDS, ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import {
@@ -255,4 +256,53 @@ test('the runtime publishes the measured tell-to-strike and the zoom it was read
   assert.match(source, /lastEnemyStrike = null;/);
   assert.ok(source.indexOf('for (const event of lastEnemyAttack.events) {') < source.indexOf('lastEnemyStrike = event;'));
   assert.ok(source.lastIndexOf('if (releaseTelemetryEnabled) {', telemetryStart) >= 0);
+});
+
+// The browser gate must assert the frame its predicate accepted. The page
+// keeps stepping between CDP round trips and a staggered strike (+9 ticks
+// per extra same-tick tell) overwrites lastEnemyStrike, so a second read of
+// the dataset can disagree with the predicate. The predicate therefore
+// returns the sample (or null) and the script asserts on that handle.
+const smokeUrl = new URL('../scripts/hmh-reboot-enemy-boss-presentation-browser-smoke.mjs', import.meta.url);
+
+test('the boss presentation smoke samples tell-to-strike from the frame its predicate accepted', async () => {
+  const smoke = await readFile(smokeUrl, 'utf8');
+  const waitStart = smoke.indexOf('const timingHandle = await page.waitForFunction((tellTicks) => {');
+  assert.ok(waitStart >= 0, 'the predicate is awaited as a handle');
+  const predicateStart = smoke.indexOf('(tellTicks) => {', waitStart);
+  const predicateEnd = smoke.indexOf('}, TELL_TICKS_BY_ARCHETYPE, { timeout: 20_000 });', predicateStart);
+  assert.ok(predicateEnd > predicateStart);
+  assert.match(smoke.slice(predicateEnd, predicateEnd + 200), /const timing = await timingHandle\.jsonValue\(\);/, 'the asserted sample is the handle the predicate resolved with');
+  assert.equal(smoke.match(/dataset\.enemyTellToStrikeTicks/g).length, 1, 'the dataset is read only inside the predicate; no second evaluate');
+  assert.equal(smoke.match(/dataset\.cameraZoom/g).length, 1);
+  assert.equal(smoke.match(/dataset\.enemyTellToStrikeArchetype/g).length, 2, 'archetype read once for the match and once for the sample');
+
+  // Execute the real predicate against a fake stage.
+  const predicate = vm.runInContext(`(${smoke.slice(predicateStart, predicateEnd + 1)})`, vm.createContext({ document: { querySelector: () => null } }));
+  const tellTicks = Object.fromEntries(Object.entries(ENEMY_ARCHETYPES).map(([id, archetype]) => [id, archetype.attack.tellTicks]));
+  const withDataset = (dataset) => vm.runInContext(`(${smoke.slice(predicateStart, predicateEnd + 1)})`, vm.createContext({ document: { querySelector: () => ({ dataset }) } }));
+  const rusher = ENEMY_ARCHETYPES['bagholder-rusher'].attack.tellTicks;
+  assert.deepEqual(
+    // Spread across the vm boundary so the comparison is by value, not by realm prototype.
+    { ...withDataset({ enemyTellToStrikeTicks: String(rusher), enemyTellToStrikeArchetype: 'bagholder-rusher', simulationTick: '508', cameraZoom: '1.689' })(tellTicks) },
+    { tick: 508, tellToStrikeTicks: rusher, archetypeId: 'bagholder-rusher', cameraZoom: 1.689 },
+    'an unstaggered strike resolves with the sample the assertions use',
+  );
+  assert.equal(withDataset({ enemyTellToStrikeTicks: String(rusher + ENEMY_TELL_STAGGER_TICKS), enemyTellToStrikeArchetype: 'bagholder-rusher', simulationTick: '517', cameraZoom: '1.689' })(tellTicks), null, 'a staggered strike keeps waiting');
+  assert.equal(withDataset({ enemyTellToStrikeTicks: '', enemyTellToStrikeArchetype: '', simulationTick: '40', cameraZoom: '1.689' })(tellTicks), null, 'no strike yet keeps waiting');
+  assert.equal(withDataset({ enemyTellToStrikeTicks: '15', enemyTellToStrikeArchetype: 'not-an-archetype', simulationTick: '40', cameraZoom: '1.689' })(tellTicks), null, 'an unknown archetype keeps waiting');
+  assert.equal(predicate(tellTicks), null, 'a missing stage keeps waiting instead of throwing');
+});
+
+test('the boss presentation smoke runs the canister half for every profile before the boss half', async () => {
+  const smoke = await readFile(smokeUrl, 'utf8');
+  const canisterLoop = smoke.indexOf('for (const profile of profiles) {\n    const canister = await captureCanister(profile);');
+  const bossLoop = smoke.indexOf('for (const profile of profiles) results.push(await captureBossPhase(profile));');
+  assert.ok(canisterLoop >= 0, 'the canister half (ordinary tells and tell-to-strike at gameplay zoom) has its own profile loop');
+  assert.ok(bossLoop > canisterLoop, 'the boss half runs after every profile has produced the tell-to-strike evidence');
+  const printed = smoke.indexOf("console.log(JSON.stringify({ status: 'CANISTER', profile: profile.name, tick: canister.tick, tells: canister.tells, timing: canister.timing }));", canisterLoop);
+  assert.ok(printed > canisterLoop && printed < bossLoop, 'each canister sample is printed before the boss half can stop the run');
+  assert.equal(smoke.match(/await captureCanister\(/g).length, 1);
+  assert.equal(smoke.match(/await captureBossPhase\(/g).length, 1);
+  assert.doesNotMatch(smoke, /Promise\.all/, 'the profiles stay serial');
 });

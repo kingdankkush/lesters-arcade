@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import vm from 'node:vm';
 
+import * as enemyHitFeedbackModule from '../apps/hmh-reboot/src/enemy-hit-feedback.mjs';
 import { ENEMY_HIT_REACTION, resolveEnemyHitReaction } from '../apps/hmh-reboot/src/enemy-hit-feedback.mjs';
 import { createProductionEnemyDisplay } from '../apps/hmh-reboot/src/enemy-production-art.mjs';
 
@@ -227,4 +229,109 @@ test('the runtime loads the resolver as a dynamic chunk, records hits after the 
     const sim = await readFile(new URL(`../apps/hmh-reboot/src/${file}`, import.meta.url), 'utf8');
     assert.doesNotMatch(sim, /enemyHitFeedback|enemy-hit-feedback/, `${file} must not know about the projection Map`);
   }
+});
+
+// Executed harness for the runtime integration. The source pins above fix
+// the statement order; this runs the real marker-branch slice of main.mjs
+// (from the Map read to the tint hand-back) against the real resolver, so a
+// wrong hit age, a dropped resolver call or a mis-applied offset/squash/tint
+// fails here instead of hiding behind substring pins.
+const REACTION_SLICE_START = 'const hit = enemyHitFeedback && enemyHitFeedbackById.get(enemy.id);';
+const REACTION_SLICE_END = 'enemyMarker.setTint(reaction?.tint ?? null);';
+const HIT = Object.freeze({ tick: 100, knockback: { x: 12, y: 0 }, knockbackResistance: 1, damageApplied: 16, maxHealth: 80, critical: false, shielded: false, armor: 1.35, supportArmored: false });
+
+async function reactionSubject({ hit = HIT, loaded = true, settings = {}, particlesPerHazard = 10 } = {}) {
+  const source = await readFile(mainUrl, 'utf8');
+  const start = source.indexOf(REACTION_SLICE_START);
+  const end = source.indexOf(REACTION_SLICE_END, start);
+  assert.ok(start >= 0 && end > start, 'the marker-branch reaction slice exists');
+  assert.equal(source.indexOf(REACTION_SLICE_START, start + 1), -1, 'exactly one reaction site');
+  const slice = source.slice(start, end + REACTION_SLICE_END.length);
+  class FakePoint { constructor(x, y = x) { this.x = x; this.y = y; } set(x, y = x) { this.x = x; this.y = y; } }
+  const enemyScreen = Object.freeze({ x: 400, y: 300 });
+  const camera = Object.freeze({ zoom: 1.4 });
+  const tints = [];
+  const glows = [];
+  const enemyMarker = { rosterScale: 0.5, position: new FakePoint(0, 0), scale: new FakePoint(1), setTint: (color) => tints.push(color) };
+  const context = vm.createContext({
+    enemyHitFeedback: loaded ? enemyHitFeedbackModule : null,
+    enemyHitFeedbackById: new Map(hit ? [['enemy-1', hit]] : []),
+  });
+  const apply = vm.runInContext(`(function (enemy, enemyMarker, enemyScreen, simulation, camera, settings, performanceProfile, particleScale, placeWeaponGlow) {\n${slice}\n})`, context);
+  const run = (tick) => {
+    tints.length = 0;
+    glows.length = 0;
+    // The two pinned statements that precede the slice every frame.
+    enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
+    enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);
+    apply({ id: 'enemy-1', archetypeId: 'forkrunner' }, enemyMarker, enemyScreen, { tick }, camera, settings, { particlesPerHazard }, 10, (...args) => glows.push(args));
+    return { position: { x: enemyMarker.position.x, y: enemyMarker.position.y }, scale: { x: enemyMarker.scale.x, y: enemyMarker.scale.y }, tints: [...tints], glows: [...glows] };
+  };
+  return { run, enemyScreen, baseScale: (enemyMarker.rosterScale ?? 1) * camera.zoom };
+}
+
+test('the runtime slice knocks, squashes, flashes and sheds shards from the hit tick and hands the body back after six ticks', async () => {
+  const subject = await reactionSubject();
+  const fresh = subject.run(100);
+  assert.ok(fresh.position.x < subject.enemyScreen.x, 'the body knocks back against the +x hit');
+  assert.equal(fresh.position.y, subject.enemyScreen.y);
+  assert.ok(fresh.scale.x > fresh.scale.y, 'squash widens and shortens the body on the hit tick');
+  assert.ok(fresh.scale.x > subject.baseScale && fresh.scale.y < subject.baseScale);
+  assert.deepEqual(fresh.tints, [ENEMY_HIT_REACTION.flashTint]);
+  assert.equal(fresh.glows.length, ENEMY_HIT_REACTION.shardsFull, 'armour 1.35 sheds the full shard tier');
+  for (const glow of fresh.glows) {
+    assert.equal(glow.length, 5, 'placeWeaponGlow(x, y, radius, color, alpha)');
+    assert.equal(glow[2], 5 * 1.4, 'the shard radius follows the camera zoom the marker was drawn at');
+    assert.equal(glow[3], ENEMY_HIT_REACTION.armorShard);
+    assert.ok(glow[4] > 0);
+    assert.ok(glow[1] < subject.enemyScreen.y, 'shards sit at chest height above the feet');
+  }
+
+  const afterFlash = subject.run(102);
+  assert.deepEqual(afterFlash.tints, [null], 'the flash ends after two ticks');
+  assert.equal(afterFlash.scale.x, afterFlash.scale.y, 'the squash ends with the flash');
+  assert.equal(afterFlash.scale.x, subject.baseScale);
+  assert.ok(afterFlash.position.x < subject.enemyScreen.x && afterFlash.position.x > fresh.position.x, 'the knock offset decays');
+  assert.equal(afterFlash.glows.length, ENEMY_HIT_REACTION.shardsFull, 'shards keep fading through the window');
+
+  const expired = subject.run(106);
+  assert.deepEqual(expired.position, { x: subject.enemyScreen.x, y: subject.enemyScreen.y }, 'six ticks later the body stands where the projection put it');
+  assert.deepEqual(expired.scale, { x: subject.baseScale, y: subject.baseScale });
+  assert.deepEqual(expired.tints, [null]);
+  assert.deepEqual(expired.glows, []);
+
+  const before = subject.run(99);
+  assert.deepEqual(before.position, { x: subject.enemyScreen.x, y: subject.enemyScreen.y }, 'a descriptor from the future never renders');
+  assert.deepEqual(before.tints, [null]);
+});
+
+test('the runtime slice leaves an unhit body alone and still hands the tint back before the chunk loads', async () => {
+  const unhit = await reactionSubject({ hit: null });
+  const frame = unhit.run(100);
+  assert.deepEqual(frame.position, { x: unhit.enemyScreen.x, y: unhit.enemyScreen.y });
+  assert.deepEqual(frame.scale, { x: unhit.baseScale, y: unhit.baseScale });
+  assert.deepEqual(frame.tints, [null], 'the base tint is restored every frame');
+  assert.deepEqual(frame.glows, []);
+
+  const unloaded = await reactionSubject({ loaded: false });
+  const pending = unloaded.run(100);
+  assert.deepEqual(pending.position, { x: unloaded.enemyScreen.x, y: unloaded.enemyScreen.y }, 'no reaction before the dynamic chunk resolves');
+  assert.deepEqual(pending.tints, [null]);
+  assert.deepEqual(pending.glows, []);
+});
+
+test('the runtime slice honours reduce-motion (settings or a zero particle profile) and reduce-flash', async () => {
+  for (const options of [{ settings: { reduceMotion: true } }, { particlesPerHazard: 0 }]) {
+    const still = await reactionSubject(options);
+    const frame = still.run(100);
+    assert.deepEqual(frame.position, { x: still.enemyScreen.x, y: still.enemyScreen.y }, `${JSON.stringify(options)}: no knock offset`);
+    assert.deepEqual(frame.scale, { x: still.baseScale, y: still.baseScale }, `${JSON.stringify(options)}: no squash`);
+    assert.deepEqual(frame.glows, [], `${JSON.stringify(options)}: no shards`);
+    assert.deepEqual(frame.tints, [ENEMY_HIT_REACTION.flashTint], `${JSON.stringify(options)}: the colour cue survives`);
+  }
+  const noFlash = await reactionSubject({ settings: { reduceFlash: true } });
+  const frame = noFlash.run(100);
+  assert.deepEqual(frame.tints, [null], 'reduce-flash never tints the body');
+  assert.ok(frame.position.x < noFlash.enemyScreen.x, 'reduce-flash keeps the motion');
+  assert.equal(frame.glows.length, ENEMY_HIT_REACTION.shardsFull);
 });
