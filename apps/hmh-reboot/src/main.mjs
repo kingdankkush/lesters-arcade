@@ -2724,6 +2724,8 @@ async function boot() {
         dataset.collectibleCount = String(collectibleSnapshot?.collectedCount ?? 0);
         dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
         dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
+        // The pickup's own award, so evidence can separate it from kill XP.
+        dataset.collectibleLastXp = String(lastCollectibleEvent?.xpGain ?? 0);
         dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
         dataset.collectibleCountdown = powerupPresentation.hudLabel;
         dataset.collectibleRefreshCount = String(powerupPresentation.effects.reduce((total, effect) => total + effect.refreshCount, 0));

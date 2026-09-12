@@ -278,7 +278,12 @@ try {
     const healthPilot = pointOfInterestId === 'relay-cache' ? '&collectibleHealthPilot=1' : '';
     const ammoPilot = pointOfInterestId === 'crossing-bank-cache' ? '&collectibleAmmoPilot=1' : '';
     await casePage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=collectible-${pointOfInterestId}${healthPilot}${ammoPilot}`, { waitUntil: 'networkidle' });
-    await casePage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleCount) === 1, null, { timeout: 5000 });
+    try {
+      await casePage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleCount) === 1, null, { timeout: 5000 });
+    } catch (error) {
+      const snapshot = await casePage.locator('#hmhRebootStage').evaluate((element) => ({ tick: element.dataset.simulationTick, startupArt: element.dataset.startupArt, actorX: element.dataset.actorX, actorY: element.dataset.actorY, count: element.dataset.collectibleCount, health: element.dataset.playerHealth })).catch(() => null);
+      throw new Error(`${pointOfInterestId}: pickup not collected within 5 s (${JSON.stringify(snapshot)}): ${String(error.message).split(String.fromCharCode(10))[0]}`);
+    }
     if (effectId === 'berserk-candle' && process.env.HMH_COLLECTIBLE_BERSERK_SCREENSHOT) {
       await casePage.screenshot({ path: process.env.HMH_COLLECTIBLE_BERSERK_SCREENSHOT, fullPage: true });
     }
@@ -295,15 +300,21 @@ try {
       playerHealth: Number(element.dataset.playerHealth),
       ammo: Number(element.dataset.weaponAmmo),
       runXp: Number(element.dataset.runXp),
+      pickupXp: Number(element.dataset.collectibleLastXp),
       silhouettes: element.dataset.timedEffectSilhouettes,
       audioCues: element.dataset.timedEffectAudioCues,
     }));
+    // The shipped opening balance lets auto-fire kill the tour's enemies
+    // before this readout, so total run XP also carries kill XP. The pickup's
+    // own award is read from its event instead; the nuke still has to have
+    // cleared both tour enemies, which is what its 260 kill XP proves.
     if (effectId === 'hash-rail-core') {
       assert.equal(observed.ammo, 3, 'Hash Rail pickup did not load its bounded magazine');
-      assert.equal(observed.runXp, 160, 'Hash Rail pickup did not award canonical run XP');
+      assert.equal(observed.pickupXp, 160, 'Hash Rail pickup did not award canonical run XP');
+      assert.ok(observed.runXp >= 160, 'Hash Rail XP did not reach the run total');
     } else {
-      const expectedRunXp = effectId === 'nuke-liquidation' ? 260 : 0;
-      assert.equal(observed.runXp, expectedRunXp, `${effectId} XP drifted`);
+      assert.equal(observed.pickupXp, 0, `${effectId} XP drifted`);
+      if (effectId === 'nuke-liquidation') assert.equal(observed.runXp, 260, 'nuke did not clear both tour enemies');
     }
     const expectedIdentity = effectId === 'time-dilation'
       ? { silhouettes: 'clock-orbit', audioCues: 'time-dilation-activate' }
@@ -311,8 +322,13 @@ try {
         ? { silhouettes: 'spiked-ring', audioCues: 'berserk-activate' }
         : { silhouettes: '', audioCues: '' };
     assert.deepEqual({ silhouettes: observed.silhouettes, audioCues: observed.audioCues }, expectedIdentity, `${effectId} identity drifted`);
-    const { ammo, runXp, silhouettes: _silhouettes, audioCues: _audioCues, ...contract } = observed;
-    assert.deepEqual(contract, { effectId, weaponId, damageMultiplier, speedMultiplier, handGrenades, enemyCount: effectId === 'nuke-liquidation' ? 0 : 2, playerHealth: 100 }, pointOfInterestId);
+    const { ammo, runXp, pickupXp, enemyCount, silhouettes: _silhouettes, audioCues: _audioCues, ...contract } = observed;
+    assert.deepEqual(contract, { effectId, weaponId, damageMultiplier, speedMultiplier, handGrenades, playerHealth: 100 }, pointOfInterestId);
+    // The tour spawns two enemies; the nuke must clear them, while any other
+    // pickup leaves them to the hero's auto-fire, which may already have
+    // finished them by this readout under the shipped opening balance.
+    if (effectId === 'nuke-liquidation') assert.equal(enemyCount, 0, `${pointOfInterestId}: nuke left enemies alive`);
+    else assert.ok(enemyCount >= 0 && enemyCount <= 2, `${pointOfInterestId}: unexpected enemy count ${enemyCount}`);
     canonical.push({ pointOfInterestId, ...observed });
     await casePage.close();
   }

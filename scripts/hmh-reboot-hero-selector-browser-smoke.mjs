@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { readHeroSelectorEvidence } from './hmh-reboot-hero-selector-browser-contract.mjs';
 import { startPortalStaticServer } from './hmh-reboot-portal-e2e.mjs';
 import { HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES as heroIdentities } from '../apps/portal/src/hmh-character-config.mjs';
+import { HMH_HERO_PORTRAITS } from '../apps/portal/src/generated/hmh-hero-portraits.mjs';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
@@ -23,7 +24,10 @@ const profiles = [
 ];
 const SELECTOR_FRAME_SIZE = 384;
 const HERO_COUNT = 4;
-const REST_FRAME_INDEX = 6;
+// The select screen consumes the face-on portrait strip (main.js imports
+// HMH_HERO_PORTRAITS as the selector atlas), whose rest frame is its own
+// restDirection, not the retired eight-direction turntable's index 6.
+const REST_FRAME_INDEX = HMH_HERO_PORTRAITS.directions.indexOf(HMH_HERO_PORTRAITS.restDirection);
 
 const { chromium } = await import('../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
 const { server, origin } = await startPortalStaticServer({ rootDir: portalRoot });
