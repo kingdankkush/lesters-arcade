@@ -101,6 +101,22 @@ try {
   assert.equal(timed.silhouettes, 'clock-orbit');
   assert.equal(timed.audioCues, 'time-dilation-activate');
   assert.match(accessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining/i);
+  // Cycle 072 (powerup-timers): the DOM chip carries the effect identity and a
+  // continuous drain, not just the whole-second label.
+  const timedChips = await timedPage.locator('#hmhHudPowerups').evaluate((element) => [...element.querySelectorAll('b:not([hidden])')].map((chip) => ({
+    effect: chip.dataset.effect,
+    text: chip.textContent,
+    ending: chip.dataset.ending,
+    progress: Number(chip.style.getPropertyValue('--progress')),
+    chip: chip.style.getPropertyValue('--chip'),
+    accent: chip.style.getPropertyValue('--chip-accent'),
+  })));
+  assert.equal(timedChips.length, 1, `expected one visible chip, saw ${JSON.stringify(timedChips)}`);
+  assert.equal(timedChips[0].effect, 'time-dilation');
+  assert.match(timedChips[0].text, /^DILATION (?:9|10)S$/);
+  assert.ok(timedChips[0].progress > 0 && timedChips[0].progress <= 1, `chip drain out of range: ${timedChips[0].progress}`);
+  assert.equal(timedChips[0].ending, 'false');
+  assert.deepEqual({ chip: timedChips[0].chip, accent: timedChips[0].accent }, { chip: '#6fd8ff', accent: '#c9f4ff' });
 
   const mobilePage = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
   mobilePage.on('pageerror', (error) => errors.push(error.message));
@@ -135,6 +151,8 @@ try {
   });
   await refreshPage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&collectibleRefreshPilot=1&worldTour=collectible-ravine-overlook-cache`, { waitUntil: 'networkidle' });
   await refreshPage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleRefreshCount) === 1, null, { timeout: 5000 });
+  // The refresh raises the one-shot chip flash on the same effect.
+  await refreshPage.waitForFunction(() => document.querySelector('#hmhHudPowerups b[data-effect="time-dilation"][data-refresh-flash="true"]') !== null, null, { timeout: 5000 });
   if (process.env.HMH_COLLECTIBLE_REFRESH_SCREENSHOT) {
     await refreshPage.screenshot({ path: process.env.HMH_COLLECTIBLE_REFRESH_SCREENSHOT, fullPage: true });
   }
@@ -154,6 +172,15 @@ try {
   assert.equal(refreshed.silhouettes, 'clock-orbit');
   assert.equal(refreshed.audioCues, 'time-dilation-activate');
   assert.match(refreshedAccessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining, refreshed 1 time/i);
+  // The refreshed chip still holds its flash attribute when the last two
+  // seconds open; the ending pulse must win that cascade (the plain ending and
+  // refresh rules tie on specificity, so a combined selector carries it).
+  await refreshPage.waitForFunction(() => document.querySelector('#hmhHudPowerups b[data-effect="time-dilation"][data-ending="true"]') !== null, null, { timeout: 12_000 });
+  const endingChip = await refreshPage.locator('#hmhHudPowerups b[data-effect="time-dilation"]').evaluate((chip) => {
+    const style = getComputedStyle(chip);
+    return { ending: chip.dataset.ending, refreshFlash: chip.dataset.refreshFlash, animationName: style.animationName, iterationCount: style.animationIterationCount };
+  });
+  assert.deepEqual(endingChip, { ending: 'true', refreshFlash: 'true', animationName: 'hmh-powerup-ending', iterationCount: 'infinite' });
   await refreshPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === '', null, { timeout: 14_000 });
   const refreshedExpired = await refreshPage.locator('#hmhRebootStage').evaluate((element) => ({
     active: element.dataset.collectibleActive,
@@ -163,6 +190,14 @@ try {
   const expiredAccessibleStatus = await refreshPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
   assert.deepEqual(refreshedExpired, { active: '', countdown: '', refreshCount: 0 });
   assert.match(expiredAccessibleStatus, /no active powerups/i);
+  // Expiry hides every chip, clears the flash, and its audio cue is a known
+  // one (the unknown-cue counter would tick otherwise).
+  const expiredChips = await refreshPage.locator('#hmhHudPowerups').evaluate((element) => ({
+    hidden: [...element.children].map((chip) => chip.hidden),
+    refreshFlash: [...element.children].map((chip) => chip.dataset.refreshFlash ?? ''),
+    audioUnknownCues: document.querySelector('#hmhRebootStage').dataset.audioUnknownCues,
+  }));
+  assert.deepEqual(expiredChips, { hidden: [true, true], refreshFlash: ['false', ''], audioUnknownCues: '0' });
   await refreshPage.close();
 
   const timedResetPage = await browser.newPage({ viewport: { width: 1024, height: 720 }, deviceScaleFactor: 1 });
@@ -316,7 +351,7 @@ try {
   }));
   assert.deepEqual(expired, { active: '', speedMultiplier: 1 });
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, mobile, refreshed, refreshedExpired, refreshedAccessibleStatus, expiredAccessibleStatus, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
+  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, timedChips, mobile, refreshed, refreshedExpired, expiredChips, refreshedAccessibleStatus, expiredAccessibleStatus, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
 } finally {
   await browser.close();
 }

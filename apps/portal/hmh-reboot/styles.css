@@ -342,17 +342,50 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-hud-dash[data-ready-flash="true"] { animation: hmh-dash-ready 420ms ease-out 1; }
 .hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-dash[data-ready-flash="true"] { animation: none; }
 .hmh-hud-powerups { display: flex; gap: 5px; align-items: center; margin-left: 4px; }
+/* Cycle 072 (powerup-timers): hud.mjs feeds each chip --chip, --chip-accent
+   and --progress plus data-effect / data-ending / data-refresh-flash. The
+   background is the drain: the effect colour covers the fraction of the
+   600-tick window still left and a pale track shows what has run out, so the
+   chip empties continuously instead of jumping a second at a time. The
+   ::before dot carries the accent so berserk (orange) and dilation (cyan) read
+   apart even at the compact sizes below. */
 .hmh-hud-powerups b {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
   padding: 4px 9px;
   border-radius: 999px;
   color: var(--text-inverse);
-  background: linear-gradient(120deg, var(--warning), var(--fiat-orange));
+  background: linear-gradient(90deg, var(--chip, var(--warning)) calc(var(--progress, 1) * 100%), rgba(255, 255, 255, 0.32) 0);
   box-shadow: 0 0 13px rgba(255, 232, 77, 0.35);
   font-family: var(--font-mono);
   font-size: 0.55rem;
   font-weight: 900;
   letter-spacing: 0.05em;
 }
+.hmh-hud-powerups b::before { content: ''; flex: 0 0 auto; width: 8px; height: 8px; margin-right: 5px; border-radius: 50%; background: var(--chip-accent, #fff); box-shadow: 0 0 6px var(--chip-accent, #fff); }
+.hmh-hud-powerups b[data-effect="berserk-candle"] { box-shadow: 0 0 12px rgba(255, 107, 53, 0.45); }
+.hmh-hud-powerups b[data-effect="time-dilation"] { box-shadow: 0 0 12px rgba(111, 216, 255, 0.45); }
+/* The last two seconds pulse and a repeat pickup (a refresh, never a stack)
+   pops the chip once. Both gates mirror the K-6 dash flash: the OS block
+   below zeroes every animation and the pause-menu reduce-motion setting on
+   the stage (the rail's preceding sibling) disables them explicitly. */
+@keyframes hmh-powerup-ending { 50% { opacity: 0.55; } }
+@keyframes hmh-powerup-refresh {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.hmh-hud-powerups b[data-ending="true"] { animation: hmh-powerup-ending 500ms ease-in-out infinite; }
+.hmh-hud-powerups b[data-refresh-flash="true"] { animation: hmh-powerup-refresh 360ms ease-out 1; }
+/* hud.mjs holds data-refresh-flash="true" until the effect ends, so a refreshed
+   chip reaches its last two seconds with both attributes set; the two rules
+   above tie on specificity and the later refresh rule would win, leaving the
+   chip without its pulse. The combined selector outranks both and the
+   reduce-motion gate below still outranks it. */
+.hmh-hud-powerups b[data-ending="true"][data-refresh-flash="true"] { animation: hmh-powerup-ending 500ms ease-in-out infinite; }
+.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-powerups b { animation: none; }
 
 /* ---- U-3 boss bar (DOM; replaces the Pixi bar and its phase label) -------- */
 .hmh-boss-bar {

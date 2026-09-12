@@ -10,7 +10,7 @@ import {
 } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { createEnemyState } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { createGrenadeSystem, rechargeHandGrenades } from '../apps/hmh-reboot/src/grenades.mjs';
-import { buildTimedEffectIdentity, buildTimedEffectPresentation } from '../apps/hmh-reboot/src/hud-layout.mjs';
+import { buildTimedEffectChips, buildTimedEffectIdentity, buildTimedEffectPresentation } from '../apps/hmh-reboot/src/hud-layout.mjs';
 import { HMH_SFX_CUE_REGISTRY } from '../apps/portal/src/hmh-audio-system.mjs';
 import { applyLiquidatorDamage, createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
@@ -214,6 +214,56 @@ test('timed power-up identity derives bounded silhouettes and distinct activatio
   assert.equal(HMH_SFX_CUE_REGISTRY['time-dilation-activate'].family, 'reward');
   assert.equal(HMH_SFX_CUE_REGISTRY['berserk-activate'].family, 'reward');
   assert.deepEqual(buildTimedEffectIdentity({ tick: 900, activeEffects: [snapshot.activeEffects[0]] }), { active: false, effects: [] });
+});
+
+test('timed-effect chips project text, drain, ending and identity from the same snapshot without touching the pinned shapes (Cycle 072 powerup-timers)', () => {
+  const activeEffects = [
+    { effectId: 'time-dilation', collectedTick: 300, expiresTick: 900, damageMultiplier: 1, speedMultiplier: 1.2, refreshCount: 1 },
+    { effectId: 'berserk-candle', collectedTick: 400, expiresTick: 1_000, damageMultiplier: 2, speedMultiplier: 1, refreshCount: 0 },
+  ];
+  const chips = buildTimedEffectChips({ tick: 450, activeEffects });
+  assert.deepEqual(chips, [
+    {
+      effectId: 'berserk-candle', code: 'BERSERK', text: 'BERSERK 10S',
+      remainingTicks: 550, remainingSeconds: 10, durationTicks: 600, progress: '0.917', ending: false, refreshCount: 0,
+      color: '#ff6b35', accentColor: '#ffd166', iconAssetId: 'berserk-candle',
+    },
+    {
+      effectId: 'time-dilation', code: 'DILATION', text: 'DILATION 8S R1',
+      remainingTicks: 450, remainingSeconds: 8, durationTicks: 600, progress: '0.750', ending: false, refreshCount: 1,
+      color: '#6fd8ff', accentColor: '#c9f4ff', iconAssetId: 'time-dilation',
+    },
+  ]);
+  assert.ok(Object.isFrozen(chips));
+  assert.ok(Object.isFrozen(chips[0]));
+  // The chip text is the split hudLabel, byte for byte, so the telemetry
+  // dataset and the DOM chips can never disagree.
+  assert.equal(chips.map((chip) => chip.text).join(' + '), buildTimedEffectPresentation({ tick: 450, activeEffects }).hudLabel);
+  assert.deepEqual(buildTimedEffectChips({ tick: 899, activeEffects: [activeEffects[0]] }), [{
+    effectId: 'time-dilation', code: 'DILATION', text: 'DILATION 1S R1',
+    remainingTicks: 1, remainingSeconds: 1, durationTicks: 600, progress: '0.002', ending: true, refreshCount: 1,
+    color: '#6fd8ff', accentColor: '#c9f4ff', iconAssetId: 'time-dilation',
+  }]);
+  // The ending threshold is the last two seconds, inclusive.
+  assert.equal(buildTimedEffectChips({ tick: 780, activeEffects: [activeEffects[0]] })[0].ending, true);
+  assert.equal(buildTimedEffectChips({ tick: 779, activeEffects: [activeEffects[0]] })[0].ending, false);
+  assert.deepEqual(buildTimedEffectChips({ tick: 900, activeEffects: [activeEffects[0]] }), []);
+  assert.throws(() => buildTimedEffectChips({ tick: -1, activeEffects: [] }), TypeError);
+});
+
+test('runtime feeds the chips, sounds expiry from the authoritative event and registers the cue (Cycle 072 powerup-timers)', async () => {
+  const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const audio = await readFile(new URL('../apps/hmh-reboot/src/combat-audio.mjs', import.meta.url), 'utf8');
+  assert.match(main, /buildTimedEffectChips\(collectibleSnapshot/);
+  assert.match(main, /hud\.update\(\{[\s\S]*?powerupHudLabel: powerupPresentation\.hudLabel,\s*powerupChips,/);
+  assert.match(main, /collectible:expired[\s\S]{0,200}combatAudio\.play\('powerup-expire'/);
+  // Expiry audio lives inside the existing onStep event loop, after the
+  // authoritative step and before the collected branch, never elsewhere.
+  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor \}\)[\s\S]{0,700}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
+  assert.equal((main.match(/powerup-expire/g) ?? []).length, 1);
+  assert.match(audio, /'powerup-expire': '\.\.\/assets\/audio\/sfx\/hmh-[a-z-]+\.wav'/);
+  assert.equal(HMH_SFX_CUE_REGISTRY['powerup-expire'].family, 'reward');
+  assert.ok(HMH_SFX_CUE_REGISTRY['powerup-expire'].cooldownMs >= 40);
 });
 
 test('runtime renders and sounds timed-effect identity from the shared active-effect snapshot', async () => {
