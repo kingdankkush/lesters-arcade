@@ -3,6 +3,11 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
+import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+
+// Tell length per archetype, handed into the page so the browser gate can
+// compare the runtime's measured tell-to-strike against the authored table.
+const TELL_TICKS_BY_ARCHETYPE = Object.fromEntries(Object.entries(ENEMY_ARCHETYPES).map(([id, archetype]) => [id, archetype.attack.tellTicks]));
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const candidateBundlePath = fileURLToPath(new URL('../apps/portal/dist/hmh-reboot/game.js', import.meta.url));
@@ -96,8 +101,29 @@ async function captureCanister(profile) {
   assert.deepEqual(session.errors, []);
   const screenshot = join(evidenceDir, `a14-canister-${profile.name}.png`);
   await page.screenshot({ path: screenshot, fullPage: false });
+
+  // Tell-to-hit at gameplay zoom. The runtime publishes the last strike's
+  // measured tell-to-strike ticks with its archetype and the camera zoom it
+  // was drawn at; wait for a strike whose tell was not pushed back by the
+  // same-tick stagger and compare it with the authored tell length.
+  await page.waitForFunction((tellTicks) => {
+    const stage = document.querySelector('#hmhRebootStage');
+    const measured = Number(stage?.dataset.enemyTellToStrikeTicks);
+    return stage?.dataset.enemyTellToStrikeTicks !== '' && measured === tellTicks[stage.dataset.enemyTellToStrikeArchetype];
+  }, TELL_TICKS_BY_ARCHETYPE, { timeout: 20_000 });
+  const timing = await page.locator('#hmhRebootStage').evaluate((stage) => ({
+    tick: Number(stage.dataset.simulationTick),
+    tellToStrikeTicks: Number(stage.dataset.enemyTellToStrikeTicks),
+    archetypeId: stage.dataset.enemyTellToStrikeArchetype,
+    cameraZoom: Number(stage.dataset.cameraZoom),
+  }));
+  assert.ok(Object.hasOwn(TELL_TICKS_BY_ARCHETYPE, timing.archetypeId), `${profile.name}: strike archetype ${timing.archetypeId} is unknown`);
+  assert.equal(timing.tellToStrikeTicks, TELL_TICKS_BY_ARCHETYPE[timing.archetypeId], `${profile.name}: ${timing.archetypeId} tell-to-strike at gameplay zoom`);
+  assert.ok(timing.tellToStrikeTicks >= 12, `${profile.name}: tell shorter than the 200 ms readability floor`);
+  assert.ok(Number.isFinite(timing.cameraZoom) && timing.cameraZoom > 0, `${profile.name}: no gameplay zoom was published`);
+  assert.deepEqual(session.errors, []);
   await session.context.close();
-  return { ...state, screenshot };
+  return { ...state, screenshot, timing };
 }
 
 async function captureBossPhase(profile) {
