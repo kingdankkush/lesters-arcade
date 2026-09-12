@@ -229,27 +229,27 @@ export function validateRunSummaryPayload(payload) {
     // killer and a "defeated" run always names one (or admits 'unknown').
     const defeat = payload.defeat;
     const milestones = payload.milestones;
-    const tickFields = ['levelUps', 'firstLevelUpTick', 'lastLevelUpTick', 'bossEngagedTick'];
     error = keys(defeat, ['kind', 'causeId', 'tick', 'damage'], 'game:run-summary defeat')
-      || keys(milestones, [...tickFields, 'sites', 'secrets'], 'game:run-summary milestones')
-      || rows(milestones.sites, HMH_RUN_SUMMARY_CATALOGS.worldSites, 'siteId', ['operated', 'tick'], 'game:run-summary milestones.sites')
-      || rows(milestones.secrets, HMH_RUN_SUMMARY_CATALOGS.secrets, 'secretId', ['found', 'tick'], 'game:run-summary milestones.secrets');
+      || keys(milestones, ['levelUps', 'firstLevelUpTick', 'lastLevelUpTick', 'bossEngagedTick', 'sites', 'secrets'], 'game:run-summary milestones')
+      || rows(milestones.sites, HMH_RUN_SUMMARY_CATALOGS.worldSites, 'siteId', ['operated', 'tick'], 'game:run-summary sites')
+      || rows(milestones.secrets, HMH_RUN_SUMMARY_CATALOGS.secrets, 'secretId', ['found', 'tick'], 'game:run-summary secrets');
     if (error) return error;
+    // Every tick sits inside the run; an event that never fired (flag 0, no
+    // defeat, no level-up) carries tick 0, and a flag is only ever 0 or 1.
+    const inRun = (tick, flag = 1) => integer(tick, identity.endTick) && (flag === 1 || !(flag || tick));
     const none = defeat.kind === 'none';
     if (!HMH_RUN_SUMMARY_CATALOGS.defeatKinds.includes(defeat.kind)
       || typeof defeat.causeId !== 'string' || !HMH_RUN_SUMMARY_ID_PATTERN.test(defeat.causeId)
-      || !integer(defeat.tick, identity.endTick) || !finite(defeat.damage)
+      || !inRun(defeat.tick, +!none) || !finite(defeat.damage)
       || none !== (identity.terminalReason !== 'defeated')
-      || (none && (defeat.causeId !== 'none' || defeat.tick !== 0 || defeat.damage !== 0))) return 'game:run-summary defeat is invalid';
-    // Level-ups must reconcile with totals.level; every tick sits inside the
-    // run and a milestone that never fired carries tick 0.
-    if (!tickFields.every((field) => integer(milestones[field]))
-      || milestones.levelUps !== payload.totals.level - 1
-      || milestones.firstLevelUpTick > milestones.lastLevelUpTick
-      || milestones.lastLevelUpTick > identity.endTick || milestones.bossEngagedTick > identity.endTick
-      || (milestones.levelUps === 0 && milestones.lastLevelUpTick !== 0)
-      || [...milestones.sites.map((row) => [row.operated, row.tick]), ...milestones.secrets.map((row) => [row.found, row.tick])]
-        .some(([flag, tick]) => flag > 1 || tick > identity.endTick || (flag === 0 && tick !== 0))) return 'game:run-summary milestones are invalid';
+      || (none && (defeat.causeId !== 'none' || defeat.damage !== 0))) return 'game:run-summary defeat is invalid';
+    // Level-ups must reconcile with totals.level; the first level-up sits at
+    // or before the last one, which sits inside the run.
+    if (milestones.levelUps !== payload.totals.level - 1
+      || !inRun(milestones.lastLevelUpTick, +(milestones.levelUps > 0)) || !integer(milestones.firstLevelUpTick, milestones.lastLevelUpTick)
+      || !inRun(milestones.bossEngagedTick)
+      || milestones.sites.some((row) => !inRun(row.tick, row.operated))
+      || milestones.secrets.some((row) => !inRun(row.tick, row.found))) return 'game:run-summary milestones are invalid';
   }
 
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');

@@ -20,6 +20,7 @@ import {
   recordRunWeaponLifecycleEvent,
   recordRunWeaponTriggerContact,
 } from '../sdk/hmh-run-summary.mjs';
+import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
 
 function exerciseAccumulator() {
   const state = createRunSummaryAccumulator({
@@ -418,9 +419,15 @@ test('terminal-tick level gains reconcile to endTick and milestones stay idempot
   recordRunTick(stepped, { tick: 30, position: { x: 1, y: 0 }, activeWeaponId: 'coin-blaster', districtId: 'frontier-relay', level: 2, bossEngaged: true });
   recordRunMilestone(stepped, { type: 'secret-found', id: 'ravine-surveyor-cache', tick: 25 });
   recordRunMilestone(stepped, { type: 'secret-found', id: 'ravine-surveyor-cache', tick: 26 });
-  assert.throws(() => recordRunMilestone(stepped, { type: 'secret-found', id: 'relay-power', tick: 27 }), /unknown secret/);
+  assert.throws(() => recordRunMilestone(stepped, { type: 'secret-found', id: 'relay-power', tick: 27 }), /unknown secret-found relay-power/);
   assert.throws(() => recordRunMilestone(stepped, { type: 'district-visited', id: 'hashwood', tick: 27 }), /unknown milestone/);
-  assert.throws(() => finalizeRunSummary({ ...stepped, finalized: false, lastLevel: 5 }, { ...FINAL_DEFEATED, level: 2 }), /final level precedes/);
+  // levelUps is reconciled from the final level (never a running counter), so
+  // a final level below the recorded one is a no-op instead of a throw.
+  const regressed = freshState();
+  recordRunTick(regressed, { tick: 10, position: { x: 1, y: 0 }, activeWeaponId: 'coin-blaster', districtId: 'frontier-relay', level: 4 });
+  const reconciled = finalizeRunSummary(regressed, { ...FINAL_DEFEATED, level: 2 });
+  assert.deepEqual([reconciled.milestones.levelUps, reconciled.milestones.firstLevelUpTick, reconciled.milestones.lastLevelUpTick], [1, 10, 10]);
+  assert.equal(validateRunSummaryPayload(reconciled), '');
   const summary = finalizeRunSummary(stepped, { ...FINAL_DEFEATED, level: 3 });
   assert.deepEqual({
     levelUps: summary.milestones.levelUps,
