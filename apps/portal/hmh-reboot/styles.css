@@ -59,6 +59,10 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-startup-route i { flex:1; height:1px; background:#35534a; }
 .hmh-startup-entry { font-size:10px; letter-spacing:.13em; color:#89aaa0; }
 .hmh-startup-entry strong { display:inline-block; margin-left:14px; color:#e4ba71; font-size:13px; letter-spacing:.03em; }
+.hmh-startup-brief { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 28px; margin:14px 0 0; font-size:13px; line-height:1.5; }
+.hmh-startup-brief div { display:grid; grid-template-columns:104px minmax(0,1fr); gap:10px; align-items:baseline; }
+.hmh-startup-brief dt { font-size:10px; letter-spacing:.13em; color:#89aaa0; text-transform:uppercase; }
+.hmh-startup-brief dd { margin:0; color:#dcdfcf; }
 .hmh-startup-tips { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; margin:26px 0; border-top:1px solid #35534a; padding-top:20px; }
 .hmh-startup-tips article { font-size:13px; color:#acc2ba; }
 .hmh-startup-tips h2 { color:#edf1e7; font-size:18px; margin:4px 0 10px; }
@@ -844,6 +848,6 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 #hmhFieldMap svg { display: block; width: 100%; height: auto; max-height: 250px; }
 .hmh-field-map-key { font-size: 12px; line-height: 1.5; color: #d1e1d7; }
 
-@media(max-width:600px) { .hmh-startup { padding:24px 20px; align-items:start; } .hmh-startup-tips { grid-template-columns:1fr; gap:12px; margin:18px 0; } .hmh-startup-tips article p { margin:5px 0; } .hmh-startup-tips h2 { display:inline; margin-left:12px; font-size:16px; } .hmh-startup-route { gap:6px; font-size:8px; } }
-@media(max-height:600px) and (min-width:601px) { .hmh-startup { padding:16px 24px; align-items:start; } .hmh-startup-card h1 { font-size:30px; margin:8px 0; } .hmh-startup-story { display:none; } .hmh-startup-tips { margin:14px 0; padding-top:12px; } }
+@media(max-width:600px) { .hmh-startup { padding:24px 20px; align-items:start; } .hmh-startup-brief { grid-template-columns:1fr; gap:6px; margin-top:10px; font-size:12px; } .hmh-startup-brief div { display:block; } .hmh-startup-brief dt { display:inline; margin-right:8px; } .hmh-startup-brief dd { display:inline; } .hmh-startup-tips { grid-template-columns:1fr; gap:12px; margin:18px 0; } .hmh-startup-tips article p { margin:5px 0; } .hmh-startup-tips h2 { display:inline; margin-left:12px; font-size:16px; } .hmh-startup-route { gap:6px; font-size:8px; } }
+@media(max-height:600px) and (min-width:601px) { .hmh-startup { padding:16px 24px; align-items:start; } .hmh-startup-brief { margin-top:8px; gap:4px 24px; } .hmh-startup-card h1 { font-size:30px; margin:8px 0; } .hmh-startup-story { display:none; } .hmh-startup-tips { margin:14px 0; padding-top:12px; } }
 @media(prefers-reduced-motion:reduce) { .hmh-startup-progress span { transition:none; } }

@@ -1,6 +1,7 @@
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { automaticDodgeIntent } from './automatic-actions.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
+import { resolveLevelBriefing, applyLevelBriefing } from './level-briefing.mjs';
 import { selectLevelEntry } from './level-entry.mjs';
 import { createWorldDesignPacing, stepWorldDesignPacing } from './world-design-pacing.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
@@ -2839,6 +2840,7 @@ async function boot() {
     dataset.entryId = runtimePlayerSpawn.id ?? 'evidence';
     const entryLabel = startupPanel?.querySelector?.('[data-level-entry]');
     if (entryLabel) entryLabel.textContent = runtimePlayerSpawn.name ?? 'Frontier Relay';
+    applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed }));
     startupGate = createStartupArtGate(performance.now(), { requireEntry: !evidenceSafeEnabled });
     const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
     if (entryButton) { entryButton.disabled = true; entryButton.textContent = 'Preparing Level 1…'; }

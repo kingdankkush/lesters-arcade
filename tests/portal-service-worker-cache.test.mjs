@@ -64,7 +64,7 @@ function worker({ offline = false, cacheNames = [] } = {}) {
 
 test('returning visits revalidate mutable entry scripts, styles, navigation and asset manifests', async () => {
   for (const [path, overrides] of [
-    ['/dist/main.js?v=hmh-world-polish-20260911', { destination: 'script' }],
+    ['/dist/main.js?v=hmh-briefing-20260911', { destination: 'script' }],
     ['/dist/hmh-reboot/game.js', { destination: 'script' }],
     ['/dist/chunks/hmh-pixi.js', { destination: 'script' }],
     ['/hmh-reboot/styles.css', { destination: 'style' }],

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { SITE_VERSION, GAME_VERSION, isCurrentVersion } from '../apps/portal/src/version-tracking.mjs';
 
 const read = (name) => readFileSync(new URL(`../${name}`, import.meta.url), 'utf8');
-const token = 'hmh-world-polish-20260911';
+const token = 'hmh-briefing-20260911';
 
 test('playable update gives all linked startup resources the same fresh cache token', () => {
   const html = read('apps/portal/index.html');
@@ -17,7 +17,7 @@ test('playable update gives all linked startup resources the same fresh cache to
 
 test('playable update invalidates the prior service-worker asset cache', () => {
   const sw = read('apps/portal/sw.js');
-  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v34-hmh-world-polish';/);
+  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v35-hmh-briefing';/);
   assert.doesNotMatch(sw, /lesters-arcade-v32-hmh-gameplan-defects/);
 });
 

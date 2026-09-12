@@ -12,7 +12,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 - **Production deployment:** `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt` ([immutable URL](https://lesters-arcade-8xxxo7nvh-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
 - **Verified Preview:** `dpl_4hnvAkqMw5jAnrppaU4z181YYUvd`.
 - **Retained rollback:** `dpl_YF1dFwixGJXqsxSfXGF39Yez37r8` ([immutable URL](https://lesters-arcade-aew9i7szl-justin-agent-projects.vercel.app)).
-**Production cache marker:** `lesters-arcade-v34-hmh-world-polish`
+**Production cache marker:** `lesters-arcade-v35-hmh-briefing`
 - **Verification:** Both preview and production cloud builds passed the unchanged release gate: 3,224 tests passed and exactly 51 documented retirement exceptions. All 60 served assets/routes match in each environment. The 36 emitted JavaScript files match the preceding verified release; the change corrects the pre-game control instructions. Public desktop/mobile browser checks and returning-client refresh passed. The original broader release-flow evidence remains linked separately.
 
 The combined overhaul is playable. Full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
