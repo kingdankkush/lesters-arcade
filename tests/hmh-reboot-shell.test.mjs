@@ -299,3 +299,15 @@ test('service worker versions both playable cabinet shells for offline startup',
   }
   assert.doesNotMatch(preCache, /hmh-reboot.*(?:atlas|audio)|assets\/audio/, 'heavy HMH art and audio packages must remain lazy');
 });
+
+test('reload presentation is a lazy chunk and the stylesheet carries its cockpit markers', async () => {
+  const source = await read('../apps/hmh-reboot/src/main.mjs');
+  assert.match(source, /void import\('\.\/reload-presentation\.mjs'\)\.then\(\(module\) => \{ reloadPresentation = module; \}\)/);
+  assert.doesNotMatch(source, /^import[^\n]*reload-presentation/m, 'the pose resolver must never be static initial JS');
+  assert.doesNotMatch(source, /from '\.\/reload-presentation\.mjs'/);
+  const css = await read('../apps/portal/hmh-reboot/styles.css');
+  for (const marker of ['data-ammo-low', 'data-reserve-low', 'var(--reload, 0)', 'data-reload-flash', '@keyframes hmh-reload-done']) {
+    assert.ok(css.includes(marker), `styles.css must carry ${marker}`);
+  }
+  assert.match(css, /\.hmh-reboot-stage\[data-setting-reduce-motion="true"\] ~ \.hmh-run-rail \.hmh-hud-weapon\[data-reload-flash="true"\] \.hmh-hud-ring \{ animation: none; \}/);
+});

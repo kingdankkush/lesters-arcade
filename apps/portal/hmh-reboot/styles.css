@@ -227,7 +227,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-hud-weapon[data-weapon="lightning-ledger"] .hmh-hud-ring-core::after { content: "LDGR"; }
 .hmh-hud-weapon[data-weapon="bear-market-burner"] .hmh-hud-ring-core::after { content: "BURN"; }
 .hmh-hud-weapon[data-weapon="forked-standard"] .hmh-hud-ring-core::after { content: "STD"; }
-.hmh-hud-weapon-body { display: grid; gap: 3px; flex: 1 1 auto; min-width: 0; }
+.hmh-hud-weapon-body { position: relative; display: grid; gap: 3px; flex: 1 1 auto; min-width: 0; }
 #hmhHudWeaponName { color: #fff; font-size: 0.77rem; letter-spacing: 0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hmh-hud-pips--ammo { display: flex; flex-wrap: wrap; gap: 2px; }
 .hmh-hud-pips--ammo b { width: 7px; height: 13px; border-radius: 2px; background: rgba(143, 243, 255, 0.14); box-shadow: inset 0 0 0 1px rgba(143, 243, 255, 0.24); }
@@ -251,6 +251,40 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-hud-weapon-state:empty { display: none; }
 .hmh-hud-weapon[data-state="empty"] .hmh-hud-weapon-state,
 .hmh-hud-weapon[data-state="overheated"] .hmh-hud-weapon-state { color: var(--danger); }
+/* Reload readability. The runtime writes --reload (0..1) on the card while
+   the state is reloading; the bar under the pips is that value, so it runs
+   on the same authoritative ticks as the ring. Ammo-low tints the last
+   quarter of a clip toward the fiat orange; reserve-low turns the pocket
+   count red when it cannot fill another clip, which is the exhausted-shotgun
+   trap the C1 cues were added for. */
+.hmh-hud-weapon[data-state="reloading"] .hmh-hud-weapon-body::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 2px;
+  width: calc(var(--reload, 0) * 100%);
+  border-radius: 1px;
+  background: var(--warning);
+  box-shadow: 0 0 6px rgba(255, 232, 77, 0.6);
+}
+.hmh-hud-weapon[data-ammo-low="true"] .hmh-hud-pips--ammo b[data-filled="true"],
+.hmh-hud-weapon[data-ammo-low="true"] .hmh-hud-ammo-bar i { background: linear-gradient(180deg, #ffe2a8, var(--fiat-orange)); box-shadow: 0 0 8px rgba(255, 123, 47, 0.5); }
+.hmh-hud-weapon[data-ammo-low="true"] #hmhHudAmmoText { color: var(--warning); }
+.hmh-hud-weapon[data-reserve-low="true"] #hmhHudReserve { color: var(--danger); }
+/* One-shot reload-complete flash on the ring, same contract as the dash
+   flash: the runtime raises data-reload-flash only on reloading -> ready and
+   clears it when the next reload starts. Reduce-motion is honoured twice: the
+   OS media block below zeroes every animation, and the pause-menu setting
+   (data-setting-reduce-motion on the stage, the rail's preceding sibling)
+   disables it explicitly. */
+@keyframes hmh-reload-done {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(25, 247, 255, 0); }
+  40% { transform: scale(1.1); box-shadow: 0 0 16px 4px rgba(25, 247, 255, 0.55); }
+  100% { transform: scale(1); box-shadow: 0 0 13px rgba(25, 247, 255, 0.2); }
+}
+.hmh-hud-weapon[data-reload-flash="true"] .hmh-hud-ring { animation: hmh-reload-done 360ms ease-out 1; }
+.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-weapon[data-reload-flash="true"] .hmh-hud-ring { animation: none; }
 
 /* ---- U-3 arsenal strip --------------------------------------------------- */
 /* The arsenal shows ownership and the automatically equipped weapon. */
@@ -563,6 +597,8 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   .hmh-hud-ring-core { width: 20px; height: 20px; }
   .hmh-hud-ring-core::after { font-size: 0.36rem; }
   .hmh-hud-weapon-body { display: flex; gap: 6px; align-items: center; min-width: 0; }
+  /* The card is one flex line here, so the reload bar hugs its underside. */
+  .hmh-hud-weapon[data-state="reloading"] .hmh-hud-weapon-body::after { bottom: -2px; height: 2px; }
   /* min-width:0 lets the longest weapon name ellipsize instead of pushing the
      ammo counts out of the card and over the reload/cooling state label. */
   #hmhHudWeaponName { flex: 0 1 auto; min-width: 0; font-size: 0.62rem; }
@@ -704,6 +740,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
   .hmh-hud-ring-core { width: 20px; height: 20px; }
   .hmh-hud-ring-core::after { font-size: 0.36rem; }
   .hmh-hud-weapon-body { display: flex; gap: 6px; align-items: center; min-width: 0; }
+  .hmh-hud-weapon[data-state="reloading"] .hmh-hud-weapon-body::after { bottom: -2px; height: 2px; }
   #hmhHudWeaponName { flex: 0 1 auto; min-width: 0; font-size: 0.62rem; }
   #hmhHudAmmoText { font-size: 0.72rem; }
   #hmhHudAmmoCap,

@@ -107,3 +107,87 @@ test('creature deaths, melee and ranged warnings, and each boss beat have distin
   assert.equal(new Set(hashes).size,cues.length);
   player.destroy();
 });
+
+// Dry fire. The shipped input model carries no trigger: input.mjs writes
+// fire:false into every snapshot ("retiring manual combat extras"), so
+// aimIntent.fire is the autofire request. It rises when aim activates or a
+// target is acquired and never on a button press, which means a click keyed
+// off that edge would sound on a mouse wake and stay silent on a real press.
+// This drives the real input, aim and weapon modules to prove both halves,
+// and pins the runtime to 'hmh-weapon-empty' on the authoritative
+// 'weapon:auto-fallback' event only.
+test('the input model carries no trigger edge, so hmh-weapon-empty stays on the authoritative auto-fallback', async () => {
+  const { InputState, POINTER_AIM_IDLE_MS } = await import('../apps/hmh-reboot/src/input.mjs');
+  const { createAimState, resolveAimIntent } = await import('../apps/hmh-reboot/src/aim.mjs');
+  const { createCameraState } = await import('../apps/hmh-reboot/src/world-space.mjs');
+  const { getWeaponReadabilityStatus } = await import('../apps/hmh-reboot/src/weapon-system.mjs');
+  const actor = { x: 100, y: 100, z: 0, visualLiftZ: 0 };
+  const context = { actor, camera: createCameraState({ x: 100, y: 100 }), viewport: { width: 800, height: 600 } };
+  const input = new InputState();
+  const aim = createAimState({ autoFireEnabled: true });
+  const intents = [];
+  let tick = 0;
+  const step = (nowMs, targets) => {
+    const snapshot = input.snapshot({ ...context, nowMs });
+    assert.equal(snapshot.actions.fire, false, 'the retired trigger never reaches the simulation');
+    assert.equal(snapshot.heldActions.fire, false);
+    const intent = resolveAimIntent(aim, { tick: tick++, actor, input: snapshot.actions, targets });
+    intents.push(intent);
+    return intent;
+  };
+  const risingEdge = () => intents.length > 1 && intents.at(-1).fire && !intents.at(-2).fire;
+
+  // Pointer aim with no target: aiming is the fire request.
+  input.setPointer({ screenX: 700, screenY: 300, fire: false }, 0);
+  const aiming = step(5, []);
+  assert.deepEqual([aiming.fire, aiming.automatic, aiming.source], [true, false, 'manual']);
+  // A real left-button press changes nothing: no rising edge to click on.
+  input.setPointer({ screenX: 700, screenY: 300, fire: true }, 10);
+  const pressed = step(15, []);
+  assert.equal(pressed.fire, true);
+  assert.equal(risingEdge(), false, 'a genuine press never produces an edge');
+  input.setPointer({ screenX: 700, screenY: 300, fire: false }, 20);
+  input.setPointer({ screenX: 700, screenY: 300, fire: true }, 30);
+  step(35, []);
+  assert.equal(risingEdge(), false, 'a re-press never produces an edge either');
+  // The only edge the runtime can observe is aim activation: the pointer
+  // goes idle for POINTER_AIM_IDLE_MS, then moves with no button held.
+  input.setPointer({ screenX: 700, screenY: 300, fire: false }, 40);
+  const idle = step(40 + POINTER_AIM_IDLE_MS + 1, []);
+  assert.equal(idle.fire, false);
+  input.setPointer({ screenX: 710, screenY: 300, fire: false }, 40 + POINTER_AIM_IDLE_MS + 10);
+  const woken = step(40 + POINTER_AIM_IDLE_MS + 15, []);
+  assert.deepEqual([woken.fire, woken.automatic, risingEdge()], [true, false, true], 'a mouse wake with no button is the "manual" edge');
+  // With a target in range autofire holds fire high through a whole reload,
+  // so no press, release or re-press during it could ever click.
+  const targets = [{ id: 'e1', x: 300, y: 100, active: true }];
+  const state = createWeaponLoadout({ weaponIds: ['coin-blaster'], seed: 17 });
+  let reloadTicks = 0;
+  let edges = 0;
+  for (let i = 0; i < 232; i++) {
+    const at = 3000 + i * 16;
+    input.setPointer({ screenX: 700, screenY: 300, fire: i % 3 === 0 }, at);
+    const intent = step(at + 1, targets);
+    if (risingEdge()) edges += 1;
+    stepWeaponLoadout(state, { tick: i + 1, fire: intent.fire, direction: intent.direction });
+    if (getWeaponReadabilityStatus(state, { tick: i + 1 }).mode === 'reloading') reloadTicks += 1;
+  }
+  assert.equal(reloadTicks, 90, 'the pistol reloaded once inside the loop');
+  assert.equal(edges, 0, 'autofire on a target leaves no edge for a click');
+
+  // Hence the runtime never derives a click: the empty cue plays once, on
+  // the auto-fallback event, through the one combat audio player.
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.equal(source.match(/play\('hmh-weapon-empty'/g).length, 1, 'exactly one hmh-weapon-empty play site');
+  assert.match(source, /event\.type === 'weapon:auto-fallback'[\s\S]{0,160}play\('hmh-weapon-empty'/);
+  assert.doesNotMatch(source, /lastFireIntent|resolveDryFireClick|DRY_FIRE_CLICK/, 'no projection trigger edge in the runtime');
+  assert.doesNotMatch(source, /new Audio\('[^']*weapon-empty/, 'no second player path for the click');
+  const weaponAudio = await import('../apps/hmh-reboot/src/weapon-audio.mjs');
+  assert.equal(weaponAudio.resolveDryFireClick, undefined, 'the initial-JS audio registry carries no click predicate');
+});
+
+test('the reload-complete chamber glow keys off the same authoritative event as the cue and resets with the run', () => {
+  const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(source, /event\.type === 'weapon:reload-complete'[\s\S]{0,160}play\('reload-complete'[\s\S]{0,320}lastReloadComplete = \{ tick, weaponId: event\.weaponId \};/);
+  assert.match(source, /lastWeaponFire = null;\s*lastReloadComplete = null;/);
+});
