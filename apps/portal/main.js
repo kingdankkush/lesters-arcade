@@ -7,6 +7,7 @@ if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
+import { buildHmhRunRecapModel } from './src/hmh-run-recap.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
@@ -1833,6 +1834,9 @@ const bootRuntimeSearch = window.location.search;
 let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
+// The canonical summary the lifecycle finalized for the run on screen. Cleared
+// on restart and teardown so a Free recap can never surface on a Ranked screen.
+let lastHmhRunSummary = null;
 let chikunHost = null;
 let chikunLifecycle = null;
 let chikunActive = false;
@@ -2552,17 +2556,22 @@ function currentGameOverSummaryModel() {
     maxCombo: combat.maxCombo,
     deaths: combat.gameOver && !cleared ? 1 : 0,
   }) : null;
+  // Reboot runs answer from the canonical payload; combat.bossDefeated is never
+  // set from it, which is why the Bosses metric used to read 0.
+  const recap = currentHmhRunRecap();
   return buildGameOverSummaryModel({
     session,
     score: combat.score || lastRunScore,
     elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
     kills: combat.kills,
-    bossesDefeated: (combat.bossDefeated || combat.scriptedBossTriggered || Boolean(lastBossId)) ? 1 : 0,
+    bossesDefeated: lastHmhRunSummary
+      ? lastHmhRunSummary.kills.boss
+      : (combat.bossDefeated || combat.scriptedBossTriggered || Boolean(lastBossId)) ? 1 : 0,
     acceptedForGlobalLeaderboard: Boolean(lastSettlementSucceeded),
     extraction,
-    killedBy: cleared ? null : combat.killedBy,
-    bestUpgrade: bestRoguelikeUpgradeTitle(),
-    runSeed: combat.roguelikeRun?.seed ?? null,
+    killedBy: recap ? recap.defeat.label : (cleared ? null : combat.killedBy),
+    bestUpgrade: recap ? recap.build.topUpgradeLabel : bestRoguelikeUpgradeTitle(),
+    runSeed: lastHmhRunSummary?.identity.seed ?? combat.roguelikeRun?.seed ?? null,
     previousBestScore: lastRunPreviousBestScore || currentPlayerBestScoreForMode(session?.mode),
     sessionStreak: sessionRunStreak || 1,
     backgroundSettlementQueued: Boolean(lastSettlementQueued && !lastSettlementSucceeded),
@@ -2572,6 +2581,46 @@ function currentGameOverSummaryModel() {
 
 // The run's defining augment: highest-ranked roguelike skill, for the death
 // recap. Ties break toward library order (earlier = more foundational).
+function currentHmhRunRecap() {
+  return lastHmhRunSummary ? buildHmhRunRecapModel(lastHmhRunSummary) : null;
+}
+
+// The reboot lifecycle stores the bridge's terminal reason verbatim
+// ('defeated'); the legacy sandbox stores a sentence. Both must read as one.
+function gameOverReasonCopy(reason) {
+  const REASON_COPY = { defeated: 'Lester was defeated.', completed: 'Run complete.', abandoned: 'Run abandoned.', 'runtime-error': 'The run ended on a runtime error.' };
+  return REASON_COPY[reason] ?? (reason || 'Lester was defeated.');
+}
+
+// Hades-style death recap rows built from the canonical summary. textContent
+// only: every label comes from a fixed map or a validated catalog id.
+function renderHmhRunRecap(recap) {
+  const section = el('section', { className: 'hmh-run-recap', dataset: { testid: 'hmh-run-recap' } });
+  const row = (label, children) => {
+    const wrapper = el('div', { className: 'hmh-run-recap-row' });
+    appendText(wrapper, 'span', label, 'hmh-run-recap-label');
+    const body = el('div', { className: 'hmh-run-recap-body' });
+    for (const child of children) body.append(child);
+    wrapper.append(body);
+    section.append(wrapper);
+  };
+  const chip = (text) => el('span', { className: 'hmh-run-recap-chip', textContent: text });
+  const chips = (items) => {
+    const list = el('div', { className: 'hmh-run-recap-chips' });
+    for (const item of items) list.append(chip(item));
+    return list;
+  };
+  const defeatCopy = el('p', { className: 'hmh-run-recap-copy', textContent: recap.defeat.detail ? `${recap.defeat.sentence} ${recap.defeat.detail}.` : recap.defeat.sentence });
+  row('Cause of defeat', [defeatCopy]);
+  const weaponChips = recap.build.weapons.map((weapon) => `${weapon.label} · ${weapon.kills} kills`);
+  const upgradeChips = recap.build.upgrades.map((upgrade) => `${upgrade.label} (Rank ${upgrade.rank})`);
+  row('Build', [chips(weaponChips.length ? weaponChips : ['No weapon used']), chips(upgradeChips.length ? upgradeChips : ['No augments taken'])]);
+  const milestoneChips = recap.milestones.map((milestone) => (milestone.clock ? `${milestone.clock} ${milestone.label}` : milestone.label));
+  row('Milestones', [chips(milestoneChips.length ? milestoneChips : ['No milestones reached'])]);
+  row('Run', [chips([`Seed ${recap.seed}`, `Max combo ${recap.maxCombo}`, `Level ${recap.level}`, `Survived ${recap.survivalClock}`])]);
+  return section;
+}
+
 function bestRoguelikeUpgradeTitle() {
   const skills = combat.roguelikeRun?.skills;
   if (!skills) return null;
@@ -2612,6 +2661,8 @@ function renderGameOverSummary() {
     metricGrid.append(card);
   }
   dom.combatGameOverSummary.append(metricGrid);
+  const recap = currentHmhRunRecap();
+  if (recap) dom.combatGameOverSummary.append(renderHmhRunRecap(recap));
 
   const loopNote = el('p', { className: 'game-over-one-more-run-copy' });
   loopNote.textContent = `${summary.oneMoreRun.copy} ${summary.streak.copy} ${summary.settlement.copy}`;
@@ -2707,6 +2758,9 @@ async function checkpointCurrentSessionEvidence() {
 }
 
 function submitCombatGameOver(runSummary) {
+  // syncCombatOverlay re-enters with no argument; only a real payload may
+  // replace the recap, and restart/teardown are what clear it.
+  if (runSummary) lastHmhRunSummary = runSummary;
   if (!combat.gameOver || !currentSession?.isPaid || combat.gameOverSubmitted) return;
   recordCurrentSessionEvent('run-end', currentCanonicalFinalState());
   lastRunPreviousBestScore = currentPlayerBestScoreForMode(currentSession?.mode);
@@ -3610,7 +3664,7 @@ function syncCombatOverlay() {
   if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.levelUpPaused ? `Level ${combat.roguelikeRun?.level ?? 1} Upgrade` : menu.title;
   if (dom.combatMenuCopy) {
     dom.combatMenuCopy.textContent = combat.gameOver
-      ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again starts a fresh ${currentSession?.isPaid ? (SETTLEMENT_LIVE ? 'verified Ranked session' : 'local Ranked preview') : 'Free practice run'}.`
+      ? `${gameOverReasonCopy(combat.gameOverReason)} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again starts a fresh ${currentSession?.isPaid ? (SETTLEMENT_LIVE ? 'verified Ranked session' : 'local Ranked preview') : 'Free practice run'}.`
       : combat.levelUpPaused
         ? 'The isometric roguelike run is paused. Pick one of two guided augments: continue your build or start a new tree. Reroll refreshes both slots.'
         : menu.copy;
@@ -3869,6 +3923,7 @@ async function restartCombatRun() {
   playSfxCue('level-start');
   if (hmhRebootActive) {
     void startArcadeMusicForGame('hard-money-heroes');
+    lastHmhRunSummary = null;
     const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
     currentSession = beginTrackedSession({ mode: wasPaid ? 'paid' : 'free' });
     gameAdapter?.teardown?.();
@@ -4824,12 +4879,15 @@ function destroyHmhRebootSession() {
   hmhRebootHost?.destroy();
   hmhRebootHost = null;
   hmhRebootLifecycle = null;
+  lastHmhRunSummary = null;
   gameAdapter?.teardown?.();
   gameAdapter = null;
   hmhRebootActive = false;
 }
 
 function finalizeHmhRebootFreeGameOver(runSummary) {
+  lastHmhRunSummary = runSummary;
+  const recap = currentHmhRunRecap();
   lastCompletedSession = currentSession;
   lastRunResult = {
     score: combat.score,
@@ -4847,7 +4905,7 @@ function finalizeHmhRebootFreeGameOver(runSummary) {
     elapsedSeconds: Math.round(runSummary.totals.elapsedMs / 1000),
     kills: runSummary.kills.total,
     characterId: runSummary.identity.heroId,
-    killedBy: null,
+    killedBy: recap?.defeat.label ?? null,
     bossDefeated: runSummary.kills.boss > 0,
     runSummary,
   });

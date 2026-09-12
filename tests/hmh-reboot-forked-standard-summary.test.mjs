@@ -20,7 +20,7 @@ test('W9B schema stores bounded aggregate Standard attacks without target histor
     endTick: 30, elapsedMs: 500, terminalReason: 'completed', score: 0, level: 1, xp: 0,
     currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 1,
   });
-  assert.equal(result.schemaVersion, 5);
+  assert.equal(result.schemaVersion, 6);
   assert.deepEqual(result.forkedStandard, {
     attacks: 2, contacts: 2, whiffs: 1, thrusts: 1, sweeps: 1, capstoneAttacks: 1, droppedContacts: 4,
   });

@@ -1140,6 +1140,55 @@ svg.arcade-icon {
   gap: 8px;
 }
 
+/* Death recap (cause, build, milestones) below the metric grid. Lives inside
+   the game-over panel's scroll container so Run It Back stays reachable. */
+.hmh-run-recap {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.hmh-run-recap-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 4px 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.hmh-run-recap-label {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  line-height: 1.6;
+}
+
+.hmh-run-recap-body {
+  display: grid;
+  gap: 6px;
+}
+
+.hmh-run-recap-copy {
+  margin: 0;
+  color: white;
+  line-height: 1.45;
+}
+
+.hmh-run-recap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hmh-run-recap-chip {
+  padding: 3px 8px;
+  border: 1px solid rgba(25, 247, 255, 0.2);
+  border-radius: 999px;
+  color: white;
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
 .hmh-loading-overlay {
   position: fixed;
   inset: 0;
@@ -5229,6 +5278,9 @@ body.suggest-landscape:has(#levelUpOverlay:not([hidden]))::after {
   .pause-action-group-controls { grid-template-columns: 1fr; }
   .combat-settings-panel { padding: 11px; border-radius: 16px; }
   .combat-settings-grid { grid-template-columns: 1fr; }
+  /* Phones: stack recap rows and keep the metric grid readable at two columns. */
+  .hmh-run-recap-row { grid-template-columns: 1fr; }
+  .game-over-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .level-up-overlay[data-density="short"] .level-up-shell {

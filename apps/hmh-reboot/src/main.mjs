@@ -170,6 +170,7 @@ import {
   recordRunLightningLedgerEvent,
   recordRunBearMarketBurnerEvent,
   recordRunForkedStandardEvent,
+  recordRunMilestone,
   recordRunProjectileContacts,
   recordRunProjectileResolution,
   recordRunTick,
@@ -3339,6 +3340,7 @@ async function boot() {
         return sweep.contacts.length>0 || sweep.depenetrations.length>0;
       }});
       for(const event of worldDesignFrame.events) {
+        recordRunMilestone(runSummaryAccumulator,{type:'site-operated',id:event.siteId,tick});
         if(event.gateId) {
           WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
@@ -3353,6 +3355,7 @@ async function boot() {
         if(settings.captionCriticalAudio) setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated.`);
       }
       for(const secret of stepWorldDesignSecrets(worldSecretState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
+        recordRunMilestone(runSummaryAccumulator,{type:'secret-found',id:secret.id,tick});
         if(secret.reward==='heal') {const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
         if(secret.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
         combatAudio.play('pickup',{volume:.11});
@@ -4142,6 +4145,10 @@ async function boot() {
         districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
         discoveredPoiIds: minimapDiscovery.discoveredPoiIds,
         activeEffectIds: collectibleSnapshot.activeEffects.map((effect) => effect.effectId),
+        // Same engaged predicate as the boss step above; the summary only needs
+        // the first tick it held.
+        level: runProgression.level,
+        bossEngaged: liquidatorBoss.active && tick >= liquidatorBoss.startTick,
       });
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)

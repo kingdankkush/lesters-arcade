@@ -9,6 +9,7 @@ import {
   validateParentMessage,
 } from '../sdk/hmh-bridge-protocol.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS as summaryCatalogs } from '../sdk/hmh-run-summary-schema.mjs';
+import { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunMilestone, recordRunTick } from '../sdk/hmh-run-summary.mjs';
 import { projectHmhRuntimeSettings } from '../apps/portal/src/hmh-player-settings.mjs';
 
 const settings = projectHmhRuntimeSettings();
@@ -269,4 +270,59 @@ test('portal init rejects wrong game identity and malformed canonical bindings',
   assert.equal(validateParentMessage(parentInit({ profile: { displayName: '<script>', locale: 'en' } })).ok, false);
   assert.equal(validateParentMessage(parentInit({ session: { seed: -1, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: false } })).ok, false);
   assert.equal(validateParentMessage(parentInit({ session: { seed: 1, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: 'yes' } })).ok, false);
+});
+
+// Schema 6 payload exactly as the child emits it: a defeat attributed to an
+// enemy hit plus tick-stamped milestones.
+function runSummaryV6() {
+  const state = createRunSummaryAccumulator({ seed: 1234567890, buildHash: 'site-106:hmh-wave-6a', mode: 'free', heroId: 'lit-commando', startPosition: { x: 0, y: 0 } });
+  recordRunTick(state, { tick: 30, position: { x: 1, y: 0 }, activeWeaponId: 'coin-blaster', districtId: 'frontier-relay', level: 2, bossEngaged: true });
+  recordRunMilestone(state, { type: 'site-operated', id: 'relay-power', tick: 40 });
+  recordRunMilestone(state, { type: 'secret-found', id: 'warehouse-logbook', tick: 50 });
+  recordRunDamage(state, { sourceId: 'enemy-4', targetId: 'player', weaponId: 'enemy-bagholder-rusher', damageApplied: 30, killed: true, tick: 60 });
+  return JSON.parse(JSON.stringify(finalizeRunSummary(state, {
+    endTick: 60, elapsedMs: 1000, terminalReason: 'defeated', score: 300, level: 2, xp: 40, currentCombo: 0, maxCombo: 3, revealedCells: 2, totalCells: 40,
+  })));
+}
+
+const summaryEnvelope = (payload) => createBridgeEnvelope({ type: 'game:run-summary', sessionId: 'game-session-000000001', messageId: 'game-summary-v6', payload });
+
+test('schema 6 run-summary passes bridge validation and stays far below the envelope cap', () => {
+  const envelope = summaryEnvelope(runSummaryV6());
+  assert.equal(envelope.payload.schemaVersion, 6);
+  const result = validateChildMessage(envelope);
+  assert.equal(result.ok, true, result.error);
+  assert.ok(new TextEncoder().encode(JSON.stringify(envelope)).byteLength < HMH_MAX_MESSAGE_BYTES / 4);
+  // Older payloads keep validating and keep rejecting the schema 6 sections.
+  const legacy = summaryEnvelope(runSummary());
+  assert.equal(validateChildMessage(legacy).ok, true);
+  legacy.payload.defeat = runSummaryV6().defeat;
+  assert.match(validateChildMessage(legacy).error, /unexpected|exact fields/i);
+});
+
+test('schema 6 run-summary rejects malformed defeat and milestone sections', () => {
+  const reject = (mutate, pattern) => {
+    const envelope = summaryEnvelope(runSummaryV6());
+    mutate(envelope.payload);
+    const result = validateChildMessage(envelope);
+    assert.equal(result.ok, false, `expected rejection: ${pattern}`);
+    assert.match(result.error, pattern);
+  };
+  reject((payload) => { payload.defeat.kind = 'gravity'; }, /defeat is invalid/);
+  reject((payload) => { payload.defeat.causeId = 'Enemy Rusher!'; }, /defeat is invalid/);
+  reject((payload) => { payload.defeat.tick = payload.identity.endTick + 1; }, /defeat is invalid/);
+  reject((payload) => { payload.defeat.damage = -1; }, /defeat is invalid/);
+  reject((payload) => { payload.defeat.kind = 'none'; }, /defeat is invalid/);
+  reject((payload) => { payload.identity.terminalReason = 'completed'; }, /defeat is invalid/);
+  reject((payload) => { payload.defeat.owner = '0x1234'; }, /unexpected|exact fields/i);
+  reject((payload) => { payload.milestones.levelUps = 5; }, /milestones are invalid/);
+  reject((payload) => { payload.milestones.bossEngagedTick = payload.identity.endTick + 1; }, /milestones are invalid/);
+  reject((payload) => { payload.milestones.firstLevelUpTick = payload.milestones.lastLevelUpTick + 1; }, /milestones are invalid/);
+  reject((payload) => { payload.milestones.sites[1].tick = 12; }, /milestones are invalid/);
+  reject((payload) => { payload.milestones.sites[0].operated = 2; }, /milestones are invalid/);
+  reject((payload) => { payload.milestones.secrets[2].tick = payload.identity.endTick + 1; }, /milestones are invalid/);
+  reject((payload) => { payload.milestones.secrets[0].secretId = 'wallet'; }, /secrets\[0\]/);
+  reject((payload) => { payload.milestones.sites[0].x = 340; }, /sites\[0\]/);
+  reject((payload) => { payload.milestones.walletAddress = '0x1234'; }, /unexpected|exact fields/i);
+  reject((payload) => { delete payload.milestones; }, /missing field|exact fields/i);
 });
