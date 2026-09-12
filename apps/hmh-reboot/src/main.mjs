@@ -27,7 +27,7 @@ import { loadWorldDesignAppearance } from './world-design-native-assets.mjs';
 import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from './world-design-layout.mjs';
 import { createWorldDepthLayer, worldDepthKey } from './world-depth.mjs';
 import { createHud } from './hud.mjs';
-import { buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout } from './hud-layout.mjs';
+import { TIMED_EFFECT_ENDING_TICKS, buildTimedEffectChips, buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -1870,8 +1870,15 @@ async function boot() {
           const phase = settings.reduceMotion ? 0 : (identityTick % effectIdentity.pulsePeriodTicks) / effectIdentity.pulsePeriodTicks;
           const radius = effectIdentity.radius * camera.zoom;
           const pulse = 0.92 + Math.sin(phase * Math.PI * 2) * 0.08;
+          // Cycle 072 (powerup-timers): the ring breathes down for the last two
+          // seconds in step with the chip's ending pulse, read straight from the
+          // authoritative snapshot; reduceFlash holds it steady.
+          const endingTicks = (collectibleSnapshot?.activeEffects.find((effect) => effect.effectId === effectIdentity.effectId)?.expiresTick ?? Infinity) - identityTick;
+          const ringAlpha = !settings.reduceFlash && endingTicks <= TIMED_EFFECT_ENDING_TICKS
+            ? 0.36 + 0.36 * Math.abs(Math.sin(identityTick * Math.PI / 30))
+            : 0.72;
           combatVisuals.ellipse(heroGround.x, heroGround.y + 8, radius * pulse, radius * 0.42 * pulse)
-            .stroke({ color: effectIdentity.color, width: 3, alpha: 0.72 });
+            .stroke({ color: effectIdentity.color, width: 3, alpha: ringAlpha });
           if (effectIdentity.silhouette === 'spiked-ring') {
             for (let spike = 0; spike < 8; spike += 1) {
               const angle = spike / 8 * Math.PI * 2 + phase * 0.35;
@@ -2416,6 +2423,7 @@ async function boot() {
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
       const powerupPresentation = buildTimedEffectPresentation(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
+      const powerupChips = buildTimedEffectChips(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
       const activePowerupLabels = powerupPresentation.active ? [powerupPresentation.hudLabel] : [];
       const powerupHud = powerupPresentation.active ? ` // POWER ${powerupPresentation.hudLabel}` : '';
       const compactWeaponHud = compactWeaponHudLabel({ weaponId: weaponStatus?.weaponId ?? 'none', hudLabel: weaponHud });
@@ -2493,6 +2501,7 @@ async function boot() {
           dashActive: dashStatus?.active === true,
           kills: runKills,
           powerupHudLabel: powerupPresentation.hudLabel,
+          powerupChips,
         });
       }
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
@@ -3505,6 +3514,10 @@ async function boot() {
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
         lastCollectibleEvent = event;
+        // Expiry was the one collectible event without a cue: the chip and the
+        // aura simply vanished. Audio from an authoritative event is projection,
+        // exactly like the activation cue below, and cannot feed back.
+        if (event.type === 'collectible:expired') { combatAudio.play('powerup-expire', { volume: 0.12 }); continue; }
         if (event.type !== 'collectible:collected') continue;
         recordRunCollectible(runSummaryAccumulator, { effectId: event.effectId });
         const placement = authoredPointOfInterestPlacements.find((candidate) => candidate.id === event.placementId);

@@ -101,6 +101,17 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
   const grenadePips = elements.grenades.children;
   const slotChips = elements.slots.children;
   const powerupChips = elements.powerups.children;
+  // Cycle 072 (powerup-timers): per-chip memory for the view-model path. Each
+  // field is a primitive for the same cheap identity diff as `last` below.
+  const chipState = Array.from(powerupChips, () => ({
+    text: null, hidden: null, effect: null, ending: null, progress: null, color: null, accent: null,
+    refreshCount: 0, flash: null, rearm: false,
+  }));
+  const setChipVar = (state, node, key, name, value) => {
+    if (state[key] === value) return;
+    state[key] = value;
+    node.style.setProperty(name, value);
+  };
 
   // Only what a frame can change is remembered. Every field is a primitive so
   // the comparison is a cheap identity check.
@@ -311,14 +322,56 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       }
       setText(elements.kills, 'kills', String(Math.max(0, Math.round(Number(view.kills) || 0))));
 
-      const powerupLabel = String(view.powerupHudLabel ?? '');
-      if (last.powerupLabel !== powerupLabel) {
-        last.powerupLabel = powerupLabel;
-        const parts = powerupLabel ? powerupLabel.split(' + ') : [];
+      const chipViews = Array.isArray(view.powerupChips) ? view.powerupChips : null;
+      if (chipViews) {
+        // Cycle 072 (powerup-timers): the chips take a view-model instead of a
+        // split label. The text stays byte-identical to the label path; the
+        // effect, its ending state, the drain and the colours ride data
+        // attributes and custom properties so the stylesheet owns the look.
+        // The refresh flash is the K-6 dash pattern per chip: it rises when
+        // refreshCount climbs while the same effect holds, drops for one frame
+        // and re-rises when it climbs again (a held attribute never replays a
+        // CSS animation), and clears when the effect ends or the slot changes.
         for (let index = 0; index < powerupChips.length; index += 1) {
-          const text = parts[index] ?? '';
-          if (text) powerupChips[index].textContent = text;
-          powerupChips[index].hidden = !text;
+          const chip = chipViews[index];
+          const node = powerupChips[index];
+          const state = chipState[index];
+          const effectId = String(chip?.effectId ?? '');
+          const text = String(chip?.text ?? '');
+          const refreshCount = Number(chip?.refreshCount) || 0;
+          const hidden = !text;
+          let flash = state.flash;
+          if (!effectId || state.effect !== effectId) {
+            state.rearm = false;
+            if (flash === 'true') flash = 'false';
+          } else if (refreshCount > state.refreshCount) {
+            if (flash === 'true') { flash = 'false'; state.rearm = true; } else flash = 'true';
+          } else if (state.rearm) {
+            state.rearm = false;
+            flash = 'true';
+          }
+          state.refreshCount = refreshCount;
+          if (state.text !== text) { state.text = text; if (text) node.textContent = text; }
+          if (state.hidden !== hidden) { state.hidden = hidden; node.hidden = hidden; }
+          if (state.effect !== effectId) { state.effect = effectId; node.dataset.effect = effectId; }
+          if (state.flash !== flash) { state.flash = flash; node.dataset.refreshFlash = flash; }
+          if (!chip) continue;
+          const ending = String(Boolean(chip.ending));
+          if (state.ending !== ending) { state.ending = ending; node.dataset.ending = ending; }
+          setChipVar(state, node, 'progress', '--progress', String(chip.progress ?? '1'));
+          setChipVar(state, node, 'color', '--chip', String(chip.color ?? ''));
+          setChipVar(state, node, 'accent', '--chip-accent', String(chip.accentColor ?? ''));
+        }
+      } else {
+        const powerupLabel = String(view.powerupHudLabel ?? '');
+        if (last.powerupLabel !== powerupLabel) {
+          last.powerupLabel = powerupLabel;
+          const parts = powerupLabel ? powerupLabel.split(' + ') : [];
+          for (let index = 0; index < powerupChips.length; index += 1) {
+            const text = parts[index] ?? '';
+            if (text) powerupChips[index].textContent = text;
+            powerupChips[index].hidden = !text;
+          }
         }
       }
     },
