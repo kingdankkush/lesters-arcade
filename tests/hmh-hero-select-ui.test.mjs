@@ -12,6 +12,7 @@ import {
 } from '../apps/portal/src/hmh-hero-select-ui.mjs';
 import { HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES } from '../apps/portal/src/hmh-character-config.mjs';
 import { createOfficialPlayRoutes } from '../apps/portal/src/routes/official-play-routes.mjs';
+import { auditSelectStylesheet } from '../scripts/lib/select-stylesheet-audit.mjs';
 
 const read = (relative) => readFileSync(new URL(`../${relative}`, import.meta.url), 'utf8');
 const SPIN_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
@@ -238,4 +239,44 @@ test('select-screen stylesheets carry the reduced-motion guard, crisp rotator sa
   assert.match(routes, /hmh-hero-select-ui\.mjs/u);
   assert.match(routes, /hero-carousel-dots/u);
   assert.match(routes, /activeCarouselIndex/u);
+});
+
+// The phone carousel block is audited against the class names the page can
+// actually emit. Cycle 013's `.hero-card-inner` / `.hero-card-bio` rules never
+// matched a node, so the tightening they promised never happened and the
+// 390x844 document drifted from 1717 px to 1866 px against the smoke's 1800 px
+// pin. Every hero class the block selects must come from the roster renderer,
+// the stat-bar helper in main.js, or the static markup.
+function selectStylesheetAudit() {
+  return auditSelectStylesheet({
+    polish: read('apps/portal/styles-arcade-polish.css'),
+    sources: [
+      read('apps/portal/src/routes/official-play-routes.mjs'),
+      read('apps/portal/main.js'),
+      read('apps/portal/index.html'),
+    ],
+  });
+}
+
+test('mobile carousel block only styles hero classes the select screen renders', () => {
+  const audit = selectStylesheetAudit();
+  assert.deepEqual(audit.orphanedClassNames, [], 'dead phone rules silently forfeit the height they were written to save');
+  assert.deepEqual(audit.lineClampSelectors, [], 'the selector smoke forbids clipped bios; do not revive the bio clamp');
+});
+
+test('phone hero cards use the tightened padding the carousel block declares', () => {
+  const { phoneCard } = selectStylesheetAudit();
+  assert.ok(phoneCard, 'the <=700 px block must style #officialCharacterRoster .hero-card');
+  assert.equal(phoneCard.padding, '16px');
+  assert.equal(phoneCard.gap, '10px');
+});
+
+test('phone stage height is not overridden by the carousel block', () => {
+  const audit = selectStylesheetAudit();
+  assert.equal(audit.narrowStageHeight, 132, 'the <=420 px block sets the phone stage height');
+  assert.equal(
+    audit.carouselStageOverridesNarrowHeight,
+    false,
+    `an ID-specific min-height in the <=700 px block beats the <=420 px height: ${audit.carouselStageMinHeights.join(',')}`,
+  );
 });
