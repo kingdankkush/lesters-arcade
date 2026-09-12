@@ -15,7 +15,7 @@ import { createHmhChildBridge } from './bridge.mjs';
 import { creatureAnimationTick, liquidatorPose } from './creature-presentation.mjs';
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
-import { HMH_WEAPON_SFX, resolveDryFireClick, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
+import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
 import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './bear-market-burner.mjs';
@@ -1237,9 +1237,8 @@ async function boot() {
   let motion = null;
   let aimState = null;
   let aimIntent = null;
-  // Projection-only trigger edge for the dry-fire click, and the lazily
-  // loaded reload pose resolver (a dynamic chunk; absent means no bob).
-  let lastFireIntent = false;
+  // Projection-only reload-complete beat, and the lazily loaded reload pose
+  // resolver (a dynamic chunk; absent means no bob).
   let lastReloadComplete = null;
   let reloadPresentation = null;
   // Render-only cursor tracking for the aim reticle; never feeds simulation.
@@ -2223,8 +2222,11 @@ async function boot() {
       // ticks (the same read the rail charge line makes below) and drives
       // nothing but sprite offsets and a glow. It is 0 outside a reload.
       const heldWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
-      const heldReloadProgress = heldWeapon && heldWeapon.reloadStartedTick !== null && heldWeapon.reloadCompleteTick !== null
-        ? Math.min(1, Math.max(0, ((simulation?.tick ?? 0) - heldWeapon.reloadStartedTick) / Math.max(1, heldWeapon.reloadCompleteTick - heldWeapon.reloadStartedTick)))
+      const visualTick = simulation?.tick ?? 0;
+      // startReload/completeReloads set and clear both reload ticks together,
+      // so a non-null completeTick implies a non-null startedTick.
+      const heldReloadProgress = heldWeapon && heldWeapon.reloadCompleteTick !== null
+        ? Math.min(1, (visualTick - heldWeapon.reloadStartedTick) / Math.max(1, heldWeapon.reloadCompleteTick - heldWeapon.reloadStartedTick))
         : 0;
       const reloadPose = reloadPresentation && heldReloadProgress > 0
         ? reloadPresentation.resolveReloadPose({ progress: heldReloadProgress, reduceMotion: settings.reduceMotion })
@@ -2244,7 +2246,6 @@ async function boot() {
       }
       if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
       if (productionHeroDisplay && motion) {
-        const visualTick = simulation?.tick ?? 0;
         const pistolFireAge = lastWeaponFire?.weaponId === 'coin-blaster' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
         const playerHitAge = lastPlayerHit ? visualTick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
         const meleeAge = lastMeleeAttack ? visualTick - lastMeleeAttack.tick : Number.POSITIVE_INFINITY;
@@ -2316,7 +2317,7 @@ async function boot() {
         if (lastReloadComplete && visualTick - lastReloadComplete.tick < 6) {
           const chamberFade = 1 - (visualTick - lastReloadComplete.tick) / 6;
           const chamber = worldToScreen({ x: renderState.x + heldAim.x * 18, y: renderState.y + heldAim.y * 18, z: renderState.z + 34 }, camera, view);
-          placeWeaponGlow(chamber.x, chamber.y, 5 * camera.zoom * chamberFade, WEAPON_COLORS[lastReloadComplete.weaponId] ?? 0x49ddff, (settings.reduceFlash ? 0.25 : 0.5) * chamberFade);
+          placeWeaponGlow(chamber.x, chamber.y, 5 * camera.zoom * chamberFade, WEAPON_COLORS[lastReloadComplete.weaponId], (settings.reduceFlash ? 0.25 : 0.5) * chamberFade);
         }
         if(releaseTelemetryEnabled) dataset.heroAutomaticAction=productionAction==='interact'?'interact':productionAction==='dash'?'dodge':productionAction==='melee'?'melee':'';
         if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
@@ -2813,7 +2814,6 @@ async function boot() {
     suppressedGroundImpacts = 0;
     lastCombatResolution = null;
     lastWeaponFire = null;
-    lastFireIntent = false;
     lastReloadComplete = null;
     lastLightningLedgerPulse = null;
     lastBearMarketBurnerPulse = null;
@@ -3759,20 +3759,11 @@ async function boot() {
           combatAudio.play('hmh-lightning-interrupt', { volume: HMH_WEAPON_SFX['hmh-lightning-interrupt'].gain });
         }
       }
-      // Dry fire: a real trigger re-press while the active weapon is reloading
-      // or empty clicks, so the player hears the empty chamber instead of
-      // learning about it from the HUD. Only a manual rising edge counts
-      // (autofire holding on a target never clicks) and the click waits out
-      // the reload rattle. Projection-only: it reads the readability status
-      // and the same reloadStartedTick the hero pose reads, and the registry
-      // cooldown caps mashing. No new cue: hmh-weapon-empty already ships.
-      const firePressed = aimIntent.fire && !lastFireIntent;
-      lastFireIntent = aimIntent.fire;
-      if (firePressed && !aimIntent.automatic && resolveDryFireClick({
-        mode: getWeaponReadabilityStatus(weaponLoadout, { tick, progressionByWeapon }).mode,
-        tick,
-        reloadStartedTick: getActiveWeaponState(weaponLoadout).reloadStartedTick,
-      })) combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain * 0.7 });
+      // No dry-fire click: the shipped input model carries no trigger
+      // (input.mjs writes fire:false on every path, so aimIntent.fire is the
+      // autofire request and rises on aim activation or target acquisition,
+      // not on a press). 'hmh-weapon-empty' stays reserved for the
+      // authoritative 'weapon:auto-fallback' event above.
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:channel-pulse')) {
         lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
         lastLightningLedgerPulse = { tick, attackId: event.attackId, hits: event.hits.length, rampPermille: event.rampPermille };

@@ -47,18 +47,3 @@ export function weaponFireCueId(weaponId) {
 export function weaponFireGain(weaponId) {
   return HMH_WEAPON_SFX[weaponFireCueId(weaponId)].gain;
 }
-
-// The dry-fire click waits out the full 400 ms hmh-weapon-reload rattle
-// (24 ticks at 60 Hz) so the two cues never stack on the same trigger.
-export const DRY_FIRE_CLICK_DELAY_TICKS = 24;
-
-// Whether a manual trigger pull should click instead of fire. Projection-only:
-// the caller has already established a manual rising edge (autofire holding
-// on a target never clicks, and holding the trigger through a reload clicks
-// once at most) and passes the readability mode and the active weapon's
-// reload tick. Only a weapon that is actually reloading or empty clicks.
-export function resolveDryFireClick({ mode, tick, reloadStartedTick } = {}) {
-  if (mode !== 'reloading' && mode !== 'empty') return false;
-  if (reloadStartedTick === null || reloadStartedTick === undefined) return true;
-  return tick - reloadStartedTick >= DRY_FIRE_CLICK_DELAY_TICKS;
-}
