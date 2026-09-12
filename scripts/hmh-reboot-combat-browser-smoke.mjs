@@ -128,10 +128,22 @@ async function ready(page, errors, targetUrl = url) {
 }
 
 async function waitForEnemyRoster(page) {
-  await page.waitForFunction((expected) => {
-    const observed = new Set(String(document.querySelector('#hmhRebootStage')?.dataset.enemyArchetypes || '').split(',').filter(Boolean));
-    return expected.every((id) => observed.has(id));
-  }, expectedEnemyArchetypes, { timeout: 15000 });
+  // The shipped XP ramp raises a level-up offer (which pauses the run) at
+  // about tick 732, before the second archetype has spawned. Accept the first
+  // upgrade whenever the offer is up, exactly as a player would, so the
+  // director keeps inserting; the roster assertion itself is unchanged.
+  const deadline = Date.now() + 45_000;
+  while (Date.now() < deadline) {
+    const complete = await page.evaluate((expected) => {
+      const observed = new Set(String(document.querySelector('#hmhRebootStage')?.dataset.enemyArchetypes || '').split(',').filter(Boolean));
+      return expected.every((id) => observed.has(id));
+    }, expectedEnemyArchetypes);
+    if (complete) return;
+    const offer = page.locator('#hmhUpgradePanel:not([hidden]) .hmh-upgrade-choice').first();
+    if (await offer.count() > 0 && await offer.isVisible()) await offer.click();
+    await page.waitForTimeout(250);
+  }
+  throw new Error(`enemy roster never listed ${expectedEnemyArchetypes.join(', ')} within 45 s`);
 }
 
 async function desktopSmoke() {

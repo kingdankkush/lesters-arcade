@@ -187,7 +187,7 @@ async function captureBossPhase(profile) {
   assert.equal(firstSector.bossTelegraphPrimitives, 2);
   assert.equal(secondSector.bossTelegraphPrimitives, 2);
   assert.ok(firstSector.playerHealth > 0 && secondSector.playerHealth > 0);
-  assert.ok(firstSector.audioSources.some((src) => src === '../assets/audio/sfx/boss-warning.ogg'), `${profile.name}: boss phase sample was not requested`);
+  assert.ok(firstSector.audioSources.some((src) => src === '../assets/audio/sfx/hmh-boss-phase.wav'), `${profile.name}: boss phase sample was not requested`);
   assert.equal(firstSector.canvasCount, 1);
   assert.equal(secondSector.canvasCount, 1);
   assert.ok(firstSector.scrollWidth <= firstSector.viewportWidth + 1);
