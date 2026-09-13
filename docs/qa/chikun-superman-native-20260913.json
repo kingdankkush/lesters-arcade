@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "animations": [
+    "accelerate",
+    "barrel_roll",
+    "brake",
+    "climb",
+    "collect",
+    "crest",
+    "cruise",
+    "descend",
+    "dive",
+    "dodge_high",
+    "dodge_low",
+    "fall",
+    "impact",
+    "ready",
+    "recover",
+    "squeeze",
+    "takeoff",
+    "tumble"
+  ],
+  "joints": 15,
+  "renderedFrames": 432,
+  "proneFramesWiderThanTall": 96,
+  "allFramesInsideCanvas": true,
+  "nativeGLBSha256": "57b8bb58432f486405319796919993db15d80a8e7b9b2e4c816bc619b43d17be",
+  "nativeBytes": 2348300
+}

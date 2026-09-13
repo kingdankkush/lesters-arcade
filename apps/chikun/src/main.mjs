@@ -623,12 +623,12 @@ function frame(now) {
         accumulator -= STEP_MS;
         steps += 1;
         if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); spawnVfx('coin'); animateFlight('collect'); }
-        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); spawnVfx('near-miss'); animateFlight(latestSnapshot.chikun.y < 360 ? 'near_miss_high' : 'near_miss_low'); }
+        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); spawnVfx('near-miss'); animateFlight(latestSnapshot.chikun.y < 360 ? 'dodge_high' : 'dodge_low'); }
         if (latestSnapshot.forksPassed > previousForks) {
           previousForks = latestSnapshot.forksPassed;
           tone(660, 0.09, 0.03, 'square');
           spawnVfx('fork');
-          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} fork streak`); spawnVfx('milestone'); animateFlight(latestSnapshot.forksPassed % 10 === 0 ? 'celebrate' : 'streak'); flightAudio.play('streak'); }
+          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} fork streak`); spawnVfx('milestone'); animateFlight('barrel_roll'); flightAudio.play('streak'); }
         }
         if (latestSnapshot.difficulty.level > previousDifficultyLevel) {
           previousDifficultyLevel = latestSnapshot.difficulty.level;
