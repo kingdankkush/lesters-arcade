@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "local-browser-review-pending",
+  "status": "local-browser-reviewed",
   "heroes": [
     {
       "actorId": "lit-commando",
@@ -91,7 +91,7 @@
       "imageSha256": "54c4e2c0a96cf01863c9f018e6785186d87b5f52a0b2801440a3190cf79536d7",
       "metadataSha256": "d91c6983c548292ee2dc861fa6951bed6f17d4b25f28aee4f508d2d779296496",
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "actorId": "lit-valkyrie",
@@ -182,7 +182,7 @@
       "imageSha256": "79a1e1adba29e8adab04a4b7929883ec6b2c2b38599dc0f189cc4fa8b04eab83",
       "metadataSha256": "78a5edcc717cfb83f457c0cecbf3df3d2b5d9acd282ec42507409f332917be3d",
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "actorId": "lester-original",
@@ -273,7 +273,7 @@
       "imageSha256": "83d9556476855d5ff618e32690b52621770540b64a33aaa5995892cd008f7e0e",
       "metadataSha256": "4f1cc1bdcea6be3f5a1c64ee534077a124505d2d117b02228a425319bda3379f",
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "actorId": "lilly",
@@ -364,7 +364,7 @@
       "imageSha256": "151f2c6d0136df8ddf88d048f9d0ef0b9ae36cbcb01a921feee6684e179b890d",
       "metadataSha256": "e2a42a022d1d871bfa7e5c61cb61d095c6cb6c8d3e28340758806a1f5c6f80ec",
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     }
   ],
   "totalMotionImageBytes": 11137080,

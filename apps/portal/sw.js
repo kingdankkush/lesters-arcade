@@ -1,4 +1,4 @@
-// Lester's Arcade â€” service worker (PWA offline + repeat-visit caching).
+// Lester's Arcade — service worker (PWA offline + repeat-visit caching).
 //
 // Strategy is deliberately conservative so a deploy is NEVER trapped behind a
 // stale cache (the classic PWA footgun):
@@ -12,7 +12,7 @@
 // requests bypass stale HTTP-cache responses; content-hashed chunks retain their
 // immutable HTTP-cache policy. An already running game is never force-reloaded.
 
-const CACHE_VERSION = 'lesters-arcade-v39-hmh-fluid-mobile';
+const CACHE_VERSION = 'lesters-arcade-v40-hmh-fluid-mobile';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.

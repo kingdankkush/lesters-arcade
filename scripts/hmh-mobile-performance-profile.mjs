@@ -1,4 +1,5 @@
 import {mkdir,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
 import path from 'node:path';
 import {chromium} from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 import {startPortalStaticServer} from './hmh-reboot-portal-e2e.mjs';
@@ -20,8 +21,16 @@ try{
   const cdp=await context.newCDPSession(page);
   await cdp.send('Emulation.setCPUThrottlingRate',{rate:cpu});
   await page.addInitScript(()=>{
-    globalThis.__frames=[];globalThis.__longTasks=[];let previous=0;
-    const frame=now=>{if(previous)globalThis.__frames.push(now-previous);previous=now;requestAnimationFrame(frame);};requestAnimationFrame(frame);
+    globalThis.__frames=[];globalThis.__longTasks=[];globalThis.__activeMs=0;globalThis.__upgradePicks=0;let previous=0,previousActive=false;
+    const frame=now=>{
+      const panel=document.querySelector('#hmhUpgradePanel');
+      const active=Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick)>0 && (!panel || panel.hidden);
+      if(previous&&active&&previousActive){globalThis.__frames.push(now-previous);globalThis.__activeMs+=now-previous;}
+      // Benchmark automation uses the normal upgrade button and excludes the
+      // paused menu interval. A level-up must not inflate combat performance.
+      if(panel&&!panel.hidden){panel.querySelector('.hmh-upgrade-choice')?.click();globalThis.__upgradePicks++;}
+      previous=now;previousActive=active;requestAnimationFrame(frame);
+    };requestAnimationFrame(frame);
     new PerformanceObserver(list=>{for(const e of list.getEntries())globalThis.__longTasks.push(e.duration);}).observe({entryTypes:['longtask']});
   });
   const query=scenario==='pressure'?'&endurancePressurePilot=1':scenario==='hazard'?'&worldTour=hazard&director=1&boss=1':'';
@@ -31,7 +40,8 @@ try{
   await page.waitForTimeout(3000);
   const before=await sample();
   if(recordCpu){await cdp.send('Profiler.enable');await cdp.send('Profiler.start');}
-  await page.evaluate(()=>{__frames.length=0;__longTasks.length=0;});
+  await page.evaluate(()=>{__frames.length=0;__longTasks.length=0;__activeMs=0;__upgradePicks=0;});
+  const measureFor=async ms=>{const target=await page.evaluate(ms=>__activeMs+ms,ms);await page.waitForFunction(target=>__activeMs>=target,target,{timeout:60000});};
   let touchStart=null,held=null,release=null;
   if(mobile){
     const b=await page.locator('[data-hmh-control="move"]').boundingBox();
@@ -39,14 +49,14 @@ try{
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touchStart,id:1}]});
     await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touchStart.x+45,y:touchStart.y,id:1}]});
   }else await page.keyboard.down('KeyD');
-  await page.waitForTimeout(5000);held=await sample();
+  await measureFor(5000);held=await sample();
   if(mobile)await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await page.keyboard.up('KeyD');
-  await page.waitForTimeout(400);release=await sample();
-  await page.waitForTimeout(4600);
+  await measureFor(400);release=await sample();
+  await measureFor(4600);
   const after=await sample(),profile=recordCpu?(await cdp.send('Profiler.stop')).profile:{nodes:[],samples:[],timeDeltas:[]};
   const timing=await page.evaluate(()=>{
     const times=__frames.slice(1).sort((a,b)=>a-b),p=q=>times[Math.floor((times.length-1)*q)];
-    return {frames:times.length,meanMs:times.reduce((a,b)=>a+b,0)/times.length,p50Ms:p(.5),p95Ms:p(.95),p99Ms:p(.99),maxMs:times.at(-1),longTasks:__longTasks};
+    return {frames:times.length,activeMs:__activeMs,upgradePicks:__upgradePicks,meanMs:times.reduce((a,b)=>a+b,0)/times.length,p50Ms:p(.5),p95Ms:p(.95),p99Ms:p(.99),maxMs:times.at(-1),longTasks:__longTasks};
   });
   const count=new Map();for(let i=0;i<(profile.samples??[]).length;i++)count.set(profile.samples[i],(count.get(profile.samples[i])??0)+profile.timeDeltas[i]);
   const hottest=profile.nodes.map(n=>({...n.callFrame,selfMs:(count.get(n.id)??0)/1000})).sort((a,b)=>b.selfMs-a.selfMs).slice(0,40);
@@ -55,4 +65,7 @@ try{
   await writeFile(path.join(output,'profile.cpuprofile'),JSON.stringify(profile));
   await page.screenshot({path:path.join(output,'gameplay.png')});
   console.log(JSON.stringify({profileId,cpu,scenario,timing,beforeTick:before.simulationTick,afterTick:after.simulationTick,enemies:after.enemyCount,droppedMs:after.simulationDroppedMs,errors,hottest:hottest.slice(0,12)},null,2));
+  assert.deepEqual(errors,[]);
+  assert.ok(timing.activeMs>=10000,'at least ten seconds of active gameplay must be measured');
+  assert.ok(Number(after.simulationTick)-Number(before.simulationTick)>=450,'simulation must keep advancing during measurement');
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}

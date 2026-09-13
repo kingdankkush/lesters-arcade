@@ -1,6 +1,6 @@
 # Repo CDN cleanup gate
 
-Generated: 2026-08-01T04:37:02.474Z
+Generated: 2026-09-13T22:29:37.228Z
 Status: **approval-gated**
 
 ## Verdict
@@ -9,11 +9,11 @@ Status: **approval-gated**
 
 ## Current metrics
 
-- Working tree bytes: 308 MB
-- Portal asset bytes: 191 MB
-- Git pack size: 2.08 GiB
+- Working tree bytes: 2.1 GB
+- Portal asset bytes: 247 MB
+- Git pack size: 2.26 GiB
 - CDN candidate media: 33 files / 101 MB
-- Vault exists: yes
+- Vault exists: no
 - Vault remote configured: no
 
 ## Top CDN candidates
@@ -59,17 +59,17 @@ Status: **approval-gated**
 | apps/portal/assets/audio/playlist/adventure-16-bit-arcade-music.mp3 | 4.3 MB | no |
 | apps/portal/assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3 | 4.0 MB | no |
 | apps/portal/assets/video/arcade-promo-loop.gif | 4.0 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png | 3.9 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.webp | 3.8 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.webp | 3.8 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp | 3.7 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.webp | 3.7 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-contact-sheet.png | 3.6 MB | no |
 | apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3 | 3.4 MB | no |
 | apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3 | 3.2 MB | no |
 | apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3 | 3.2 MB | no |
 | apps/portal/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3 | 3.2 MB | no |
-| apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3 | 3.1 MB | no |
-| apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3 | 3.1 MB | no |
-| apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png | 3.1 MB | no |
-| apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3 | 3.0 MB | no |
-| apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3 | 3.0 MB | no |
-| apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png | 2.9 MB | no |
-| apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png | 2.9 MB | no |
+| apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-contact-sheet.png | 3.1 MB | no |
 
 ## Safe next actions
 

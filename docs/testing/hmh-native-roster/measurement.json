@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "local-browser-review-pending",
+  "status": "local-browser-reviewed",
   "actors": [
     {
       "status": "verified-private-candidate",
@@ -75,7 +75,7 @@
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "status": "verified-private-candidate",
@@ -150,7 +150,7 @@
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "status": "verified-private-candidate",
@@ -225,7 +225,7 @@
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "status": "verified-private-candidate",
@@ -300,7 +300,7 @@
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "status": "verified-private-candidate",
@@ -375,7 +375,7 @@
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     },
     {
       "status": "verified-private-candidate",
@@ -546,7 +546,7 @@
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "pending"
+      "browserReview": "desktop-mobile-runtime-reviewed"
     }
   ],
   "totalImageBytes": 13533396,

@@ -6,11 +6,13 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Chikun Superman flight and STACKED beta
+## HMH motion and mobile release candidate
 
-The `codex/stacked-playable-release` branch integrates live Chikun Afterlight source `d7a5ad69` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
+This combined candidate adds four hero motion pages, the six remaining native enemy animation atlases, breakable supply caches, fuel chain reactions, refined weapon sounds and a collision optimization for crowded mobile play. It preserves the live Chikun Superman flight update (`9d14b18c`) and STACKED public beta (`98204a1c`). The owner requested publication after testing. See the [HMH release handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md) for measured performance, verification and unfinished polish. This candidate marker is not a production receipt.
 
-**Production cache marker:** `lesters-arcade-v39-hmh-fluid-mobile`
+STACKED remains playable through the normal cabinet selector. Ranked Game is device-local and replay-verified, with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md). Physical-device acceptance and further polish remain open for all games.
+
+**Production cache marker:** `lesters-arcade-v40-hmh-fluid-mobile`
 
 ## Chikun Superman flight
 
@@ -33,7 +35,7 @@ The revision is on `codex/chikun-superman-flight`. See the [Superman flight hand
 
 The combined overhaul is playable. This release adds reload presentation, enemy hit feedback, simulated Level 1 hazards, the game-over run recap and power-up timer chips on top of the insertion-point briefing; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
 
-[Current release receipt](docs/qa/hmh-roadmap-package-release-20260912.json) Â· [Roadmap reconciliation and agent scope](docs/handoffs/hmh-roadmap-reconciliation-20260911.md) Â· [Briefing evidence](docs/qa/hmh-roadmap-briefing-evidence-20260911.json) Â· [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) Â· [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
+[Current release receipt](docs/qa/hmh-roadmap-package-release-20260912.json) · [Roadmap reconciliation and agent scope](docs/handoffs/hmh-roadmap-reconciliation-20260911.md) · [Briefing evidence](docs/qa/hmh-roadmap-briefing-evidence-20260911.json) · [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
 
 The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) retains the briefing-pass evidence, the [quality-pass receipt](docs/qa/hmh-quality-release-20260911.json) the Hermes quality pass, and the [consolidated release receipt](docs/qa/hmh-consolidated-release-20260911.json) the earlier combined release. Earlier Cycle 077/080 claims are [historical](docs/handoffs/hmh-readme-release-header-before-20260910.txt). Continue from `hermes/hmh-textured-rollout` plus this branch; the retained task snapshot and full backlog preserve unfinished work.
 
@@ -44,7 +46,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open â€” see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
 | STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
@@ -214,39 +216,39 @@ Verified identities, evidence and remaining work are recorded in the [release ha
 
 ```text
 Browser
-â””â”€â”€ Lester's Arcade parent portal
-    â”œâ”€â”€ Wallet/profile/session/leaderboard authority
-    â”œâ”€â”€ Local persistence and canonical evidence
-    â”œâ”€â”€ LitVM chain client, disabled writes by default
-    â””â”€â”€ Sandboxed HMH iframe
-        â””â”€â”€ PixiJS child runtime
-            â”œâ”€â”€ Fixed-step simulation
-            â”œâ”€â”€ Input/movement/collision/elevation
-            â”œâ”€â”€ Combat/enemies/boss/progression
-            â””â”€â”€ Projection-only rendering and audio
+└── Lester's Arcade parent portal
+    ├── Wallet/profile/session/leaderboard authority
+    ├── Local persistence and canonical evidence
+    ├── LitVM chain client, disabled writes by default
+    └── Sandboxed HMH iframe
+        └── PixiJS child runtime
+            ├── Fixed-step simulation
+            ├── Input/movement/collision/elevation
+            ├── Combat/enemies/boss/progression
+            └── Projection-only rendering and audio
 ```
 
 ### Core directories
 
 ```text
 apps/
-â”œâ”€â”€ hmh-reboot/              PixiJS HMH child runtime and editable Blender sources
-â””â”€â”€ portal/                  Parent portal, child host, profiles, sessions, leaderboards, assets
+├── hmh-reboot/              PixiJS HMH child runtime and editable Blender sources
+└── portal/                  Parent portal, child host, profiles, sessions, leaderboards, assets
 
 contracts/
-â”œâ”€â”€ src/                     Solidity contracts
-â”œâ”€â”€ artifacts/               Compiled artifacts
-â”œâ”€â”€ deploy-config.testnet.json
-â””â”€â”€ deployment-record.json   June legacy deployment record
+├── src/                     Solidity contracts
+├── artifacts/               Compiled artifacts
+├── deploy-config.testnet.json
+└── deployment-record.json   June legacy deployment record
 
 docs/
-â”œâ”€â”€ handoffs/                Agent handoffs
-â”œâ”€â”€ hmh-reboot/              Reboot design, evidence, certificates, cycle records
-â”œâ”€â”€ qa/                      Generated audits
-â””â”€â”€ web3/                    LitVM specs, readiness, hardened dry-run manifest
+├── handoffs/                Agent handoffs
+├── hmh-reboot/              Reboot design, evidence, certificates, cycle records
+├── qa/                      Generated audits
+└── web3/                    LitVM specs, readiness, hardened dry-run manifest
 
 sdk/
-â””â”€â”€ hmh-bridge-protocol.mjs  Parent/child protocol contract
+└── hmh-bridge-protocol.mjs  Parent/child protocol contract
 
 scripts/                     Build, QA, browser, asset, contract, and audit tooling
 tests/                       Node and contract-facing regression suites
@@ -256,52 +258,52 @@ tests/                       Node and contract-facing regression suites
 
 ```text
 apps/hmh-reboot/src/
-â”œâ”€â”€ main.mjs
-â”œâ”€â”€ simulation.mjs
-â”œâ”€â”€ input.mjs
-â”œâ”€â”€ movement.mjs
-â”œâ”€â”€ aim.mjs
-â”œâ”€â”€ dash.mjs
-â”œâ”€â”€ collision.mjs
-â”œâ”€â”€ elevation.mjs
-â”œâ”€â”€ world-space.mjs
-â”œâ”€â”€ weapon-system.mjs
-â”œâ”€â”€ projectile-physics.mjs
-â”œâ”€â”€ melee.mjs
-â”œâ”€â”€ grenades.mjs
-â”œâ”€â”€ enemy-archetypes.mjs
-â”œâ”€â”€ enemy-simulation.mjs
-â”œâ”€â”€ enemy-combat.mjs
-â”œâ”€â”€ encounter-director.mjs
-â”œâ”€â”€ liquidator-boss.mjs
-â”œâ”€â”€ level-one-world.mjs
-â”œâ”€â”€ run-progression.mjs
-â”œâ”€â”€ collectible-system.mjs
-â”œâ”€â”€ liquidator-telegraph-renderer.mjs
-â”œâ”€â”€ authored-prop-atlas.mjs
-â”œâ”€â”€ combat-audio.mjs
-â”œâ”€â”€ hud-layout.mjs
-â”œâ”€â”€ production-hero-atlas.mjs
-â”œâ”€â”€ enemy-production-art.mjs
-â”œâ”€â”€ world-production-art.mjs
-â””â”€â”€ runtime-performance.mjs
+├── main.mjs
+├── simulation.mjs
+├── input.mjs
+├── movement.mjs
+├── aim.mjs
+├── dash.mjs
+├── collision.mjs
+├── elevation.mjs
+├── world-space.mjs
+├── weapon-system.mjs
+├── projectile-physics.mjs
+├── melee.mjs
+├── grenades.mjs
+├── enemy-archetypes.mjs
+├── enemy-simulation.mjs
+├── enemy-combat.mjs
+├── encounter-director.mjs
+├── liquidator-boss.mjs
+├── level-one-world.mjs
+├── run-progression.mjs
+├── collectible-system.mjs
+├── liquidator-telegraph-renderer.mjs
+├── authored-prop-atlas.mjs
+├── combat-audio.mjs
+├── hud-layout.mjs
+├── production-hero-atlas.mjs
+├── enemy-production-art.mjs
+├── world-production-art.mjs
+└── runtime-performance.mjs
 ```
 
 ### Parent platform code
 
 ```text
 apps/portal/src/
-â”œâ”€â”€ arcade-core.mjs
-â”œâ”€â”€ persistence.mjs
-â”œâ”€â”€ session-integrity.mjs
-â”œâ”€â”€ leaderboard-engine.mjs
-â”œâ”€â”€ hmh-profile-parity.mjs
-â”œâ”€â”€ wallet-auth.mjs
-â”œâ”€â”€ settlement.mjs
-â”œâ”€â”€ litvm-chain-client.mjs
-â”œâ”€â”€ hmh-reboot-host.mjs
-â”œâ”€â”€ hmh-reboot-bridge.mjs
-â””â”€â”€ hmh-reboot-portal-lifecycle.mjs
+├── arcade-core.mjs
+├── persistence.mjs
+├── session-integrity.mjs
+├── leaderboard-engine.mjs
+├── hmh-profile-parity.mjs
+├── wallet-auth.mjs
+├── settlement.mjs
+├── litvm-chain-client.mjs
+├── hmh-reboot-host.mjs
+├── hmh-reboot-bridge.mjs
+└── hmh-reboot-portal-lifecycle.mjs
 ```
 
 ---
