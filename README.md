@@ -8,19 +8,15 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 ## Chikun Superman flight and STACKED beta
 
-The `codex/stacked-playable-release` branch integrates live Chikun Afterlight source `d7a5ad69` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
+Chikun's Escape is live with eighteen Blender-authored moves based on horizontal Superman flight, smooth pose transitions, coat and crest wind, trees and drone-guarded airspace. The layered city, mountains, day/night cycle and original flight sounds remain. [Play Chikun](https://lestersarcade.io/play/chikun) or explore his moves in the [Flight Room](https://lestersarcade.io/chikun/flight-room.html).
 
 **Production cache marker:** `lesters-arcade-v39-chikun-stacked`
 
-## Chikun Superman flight
+**Verified live:** deployment `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`, runtime source `9d14b18c20c3cfe7ba1fe88789a6f61feb9c9da3`, branch `codex/chikun-superman-flight`. The [release receipt](docs/qa/chikun-superman-release-20260913.json) records both passing cloud builds, public guest/touch/replay flows, exact asset checks, performance measurements and limitations. The [handoff](docs/handoffs/chikun-superman-flight-20260913.md) documents the editable native assets and presentation pipeline.
 
-Chikun's Escape now uses eighteen Blender-authored actions built around horizontal Superman flight, smooth pose transitions, coat and crest wind, trees and drone-guarded airspace alongside industrial gates. The layered city, mountain scenery, day/night cycle and original flight sounds remain. The [Flight Room](https://lestersarcade.io/chikun/flight-room.html) lets players explore every animation.
+The concurrent STACKED public beta source `98204a1c36c682a70adbb986fb6941289eed8501` is preserved in this release. All three public cabinets remain available. STACKED Free Mode is playable, and its Ranked Game is explicitly device-local with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md) for that game's remaining acceptance scope.
 
-**Previous Chikun cache marker:** `lesters-arcade-v37-chikun-afterlight`
-
-**Previous production (rollback):** deployment `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`. The [release receipt](docs/qa/chikun-afterlight-release-20260913.json) records the passing cloud gates and public desktop/touch-phone flows.
-
-The revision is on `codex/chikun-superman-flight`. See the [Superman flight handoff](docs/handoffs/chikun-superman-flight-20260913.md) for implementation and verification. The prior Afterlight release is documented below. The [Chikun handoff](docs/handoffs/chikun-afterlight-20260913.md) records the scope and verification. Retained rollback: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). Canonical simulation and parent Ranked verification are preserved; `SETTLEMENT_LIVE=false`.
+Retained rollback: `dpl_3GBNYfeQrHjoGUEm91QD41WuAj83` ([immutable URL](https://lesters-arcade-ff358a4c6-justin-agent-projects.vercel.app)), source `98204a1c36c682a70adbb986fb6941289eed8501`. Canonical Chikun simulation and parent verification are unchanged; `SETTLEMENT_LIVE=false`. The preceding Chikun release remains documented in its [Afterlight receipt](docs/qa/chikun-afterlight-release-20260913.json).
 
 ## Previous HMH package release (historical)
 
