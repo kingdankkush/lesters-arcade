@@ -837,7 +837,7 @@ test('initial arcade state exposes every shipped public cabinet as playable', ()
   const playableIds = playable.map((game) => game.id);
   const chikun = ARCADE_GAMES.find((game) => game.id === 'chikun');
 
-  assert.deepEqual(playableIds, ['lester-blaster', 'chikun']);
+  assert.deepEqual(playableIds, ['lester-blaster', 'chikun', 'stacked']);
   assert.equal(playable[0].title, 'Hard Money Heroes');
   assert.equal(chikun.status, 'playable');
   assert.equal(chikun.publicPlayable, true);
@@ -2097,7 +2097,7 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   assert.equal(chikunCabinet.leaderboardEligible, true);
   assert.match(chikunCabinet.description, /replay-verified Ranked scores/i);
   assert.equal(chikunCabinet.desktopCabinetSprite.id, 'chikun-cabinet');
-  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 2);
+  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).map(cabinet => cabinet.id), ['hard-money-heroes', 'chikun', 'stacked']);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.durationSeconds, 8);
@@ -3281,5 +3281,4 @@ test('game-over summary reads bosses and killed-by from the canonical reboot rec
   assert.match(mainSource, /selectGameOverRecapFields\(lastHmhRunSummary, \{/, 'currentGameOverSummaryModel must route the metric sources through the tested helper');
   assert.equal(mainSource.includes('gameOverReasonCopy(combat.gameOverReason)'), true, 'the raw reason literal must stay mapped to a sentence');
 });
-
 

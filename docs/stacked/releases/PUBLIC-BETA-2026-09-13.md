@@ -26,3 +26,5 @@ Fresh local public-entry Chrome flows passed at 1440×1000, 390×844, 320×740, 
 Pending fresh beta build, hosted verification and exact deployment promotion. Retained rollback at preparation: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g`, source `1a8d4f420767f32ef97ca7952b782dce284242f0`; re-read production immediately before promotion.
 
 Production advanced during testing to Chikun Afterlight `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`, deployment `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`. That exact source is merged into the beta; both Chikun Flight Room and STACKED build entries and offline resources are retained. This is the updated rollback, subject to final alias readback. The earlier STACKED-only preview must not be promoted over it.
+
+Combined local five-size playtests pass again. Public route entry, no-real-wallet Ranked rejection and portrait/landscape rotation also pass. The first combined cloud gate caught two old public-roster expectations (two games instead of three); both failures reproduced locally and were updated to exact three-game identity lists. No release exceptions, skips or budget relaxations were introduced. Fresh cloud certification is required.
