@@ -250,7 +250,7 @@ test('portal main integrates the reboot host at the official combat mount', asyn
   assert.match(lifecycleSource, /message\.type === 'game:pause'/);
   assert.match(source, /onExit:[\s\S]*?returnToOfficialGameMenu\(\)/);
   assert.match(source, /onRunEvent:[\s\S]*?recordSessionEvent\(/);
-  assert.match(source, /function drawCombatScene[\s\S]*?if \(hmhRebootActive\)[\s\S]*?requestAnimationFrame\(drawCombatScene\)/);
+  assert.match(source, /function drawCombatScene[\s\S]*?if \(hmhRebootActive \|\| stackedHost\)\s*\{[\s\S]*?requestAnimationFrame\(drawCombatScene\);\s*return;/);
 });
 
 test('portal frame fills the active gameplay viewport without a fixed 72vh dead zone', async () => {
@@ -282,7 +282,7 @@ test('built child bundle exists after the project build', async () => {
 
 test('service worker versions both playable cabinet shells for offline startup', async () => {
   const source = await read('../apps/portal/sw.js');
-  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v36-hmh-package'/);
+  assert.match(source, /CACHE_VERSION\s*=\s*'lesters-arcade-v37-stacked-preview'/);
   const preCache = source.match(/const PRECACHE_URLS = \[([^\]]+)\]/s)?.[1] ?? '';
   for (const asset of [
     '/hmh-reboot/index.html',

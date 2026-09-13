@@ -5086,7 +5086,21 @@ export function getSessionByUrlId(state, urlSessionId) {
   if (!state || !urlSessionId) return null;
   const indexed = state.sessionsByUrlId?.[urlSessionId];
   if (indexed) return indexed;
-  return (state.officialSessions ?? []).find((s) => s.urlSessionId === urlSessionId) ?? null;
+  const active = (state.officialSessions ?? []).find((s) => s.urlSessionId === urlSessionId);
+  if (active) return active;
+  for (const profile of Object.values(state.profiles ?? {})) {
+    const archived = stackedArchivedSessions(profile).find(session => session.urlSessionId === urlSessionId);
+    if (archived) return archived;
+  }
+  return null;
+}
+
+// Read the durable local archive directly; bounded cross-game runHistory is
+// not the source of truth for STACKED. These records are never online receipts.
+function stackedArchivedSessions(profile) {
+  return Object.entries(profile?.progress?.stacked?.rankedArchive ?? {})
+    .filter(([id, record]) => record?.gameId === 'stacked' && record.sessionId === id && record.wallet === profile.wallet && record.status === 'local-replay-preview')
+    .map(([, record]) => record);
 }
 
 export function getCartridgeSelectModel() {
@@ -5549,9 +5563,8 @@ export function recordStackedScore(state, session, evidence, claim) {
   state.leaderboards.stacked.sort(compareStackedRows);
   // No unbacked deletion: every canonical session and cadence remains retained.
   recordCadenceScore(state, 'stacked', { wallet: profile.wallet, score: canonical.score, sessionId: session.sessionId, recordedAt, runStats }, { limitPerPeriod: Infinity });
-  const record = { ...entry, status: 'local-replay-preview', canonical, syncedAt: recordedAt };
-  // Profile persistence retains this non-lossy archive even if quota fallback
-  // drops the cached leaderboard slice. It also survives a page reload.
+  const record = { ...entry, urlSessionId: session.urlSessionId ?? null, status: 'local-replay-preview', canonical, syncedAt: recordedAt };
+  // Profile persistence retains the complete local archive across page reloads.
   progress.rankedArchive ??= {};
   progress.rankedArchive[session.sessionId] = record;
   state.sessions ??= {}; state.sessions[session.sessionId] = record; state.officialSessions ??= []; state.officialSessions.push(record);
@@ -5848,7 +5861,7 @@ function collectProfileOfficialSessions(state, profile) {
       recordedAt: run.recordedAt ?? null,
     });
   }
-  for (const session of state.officialSessions ?? []) {
+  for (const session of [...stackedArchivedSessions(profile), ...(state.officialSessions ?? [])]) {
     if (!session?.sessionId || session.wallet !== profile.wallet) continue;
     const cached = bySessionId.get(session.sessionId);
     const preserveCachedMode = cached

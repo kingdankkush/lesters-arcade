@@ -12,13 +12,13 @@ export function createStackedInput({ target, controls, settings, onPause, onUndo
   const clear = () => { held.clear(); queued.clear(); shift.reset(); };
   const actionFor = code => STACKED_ACTIONS.find(key => Object.values(settings.controls.keyboardBindings[key]).includes(code));
   listen(target, 'keydown', event => {
-    if (/INPUT|SELECT|TEXTAREA/.test(event.target?.tagName)) return;
+    if (/INPUT|SELECT|TEXTAREA|BUTTON/.test(event.target?.tagName) || event.target?.isContentEditable) return;
     if (event.code === 'Escape' || event.code === 'KeyP') { event.preventDefault(); if (!event.repeat) onPause(); return; }
     if (event.code === 'KeyU') { event.preventDefault(); if (!event.repeat) onUndo(); return; }
     const action = actionFor(event.code); if (!action) return;
     event.preventDefault(); device = 'keyboard'; if (!event.repeat) press(action, event.code);
   });
-  listen(target, 'keyup', event => { if (actionFor(event.code)) event.preventDefault(); release(event.code); });
+  listen(target, 'keyup', event => { if (actionFor(event.code) && !/INPUT|SELECT|TEXTAREA|BUTTON/.test(event.target?.tagName) && !event.target?.isContentEditable) event.preventDefault(); release(event.code); });
   for (const button of controls.querySelectorAll('[data-action]')) {
     listen(button, 'pointerdown', event => { event.preventDefault(); button.setPointerCapture(event.pointerId); device = 'touch'; press(button.dataset.action, 'pointer-' + event.pointerId); });
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) listen(button, type, event => release('pointer-' + event.pointerId));

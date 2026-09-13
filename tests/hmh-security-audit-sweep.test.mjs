@@ -13,6 +13,7 @@ test('WO-39 security audit sweep passes static checks without findings', () => {
   assert.equal(audit.summary.status, 'PASS', JSON.stringify(audit, null, 2));
   assert.equal(audit.summary.findingCount, 0);
   assert.ok(audit.scope.filesScanned > 20);
+  assert.ok(audit.scope.directories.some(dir => /apps[\\/]stacked$/.test(dir)), 'STACKED child is part of the security sweep');
 });
 
 test('WO-39 sign-out modal avoids innerHTML and uses safe DOM construction', () => {

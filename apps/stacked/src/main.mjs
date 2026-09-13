@@ -8,9 +8,11 @@ import { buildStackedRunSummary } from './run-summary.mjs';
 import { chunkStackedEvidence } from '../../portal/src/stacked-evidence-transport.mjs';
 import { STACKED_CAPABILITIES } from '../../portal/src/stacked-contracts.mjs';
 import { createStackedPauseClock } from './pause-clock.mjs';
+import { manageOverlayFocus } from './overlay-focus.mjs';
 
 const $ = id => document.getElementById(id);
 const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameOverlay');
+const releaseOverlayFocus = manageOverlayFocus(overlay, () => stage.querySelector('canvas'));
 let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTime = 0, accumulator = 0, started = false, submitted = false, pauseCount = 0, forfeited = false;
 const pauseClock = createStackedPauseClock();
 let counters = { hardDrops: 0, spinClears: 0, allClearStreakMax: 0 }, allClearStreak = 0;
@@ -73,10 +75,28 @@ async function finish() {
   if (submitted) return; submitted = true; input.clear(); state();
   const s = run.snapshot;
   $('overlayTitle').textContent = s.terminalReason === 'tick-ceiling' ? 'Ledger complete' : 'Run complete';
+  $('preferencePanel').open = false;
   $('overlayCopy').textContent = run.assisted ? 'Assisted Free practice. No profile or leaderboard write.' : 'Verifying your recorded run…';
   $('resultStats').textContent = s.score.toLocaleString() + ' POINTS\n' + s.lines + ' LINES · LEVEL ' + s.level + ' · ' + Math.floor(s.tick / 3600) + ':' + String(Math.floor(s.tick / 60) % 60).padStart(2, '0') + '\n' + s.quadClears + ' HALVINGS · BEST COMBO ' + s.maxCombo;
   $('continueButton').hidden = true; $('restartButton').hidden = false; $('restartButton').textContent = init.mode === 'ranked' ? 'Choose a new Ranked run' : 'Play again';
   $('restartButton').disabled = !run.assisted; overlay.hidden = false; $('restartButton').focus();
+  if (init.mode === 'free') {
+    $('freeMedalShelf').hidden = false;
+    $('freeMedalSummary').textContent = run.assisted ? 'Assisted practice does not earn medals.' : 'Opening your practice shelf…';
+    if (!run.assisted) {
+      try {
+        const { completeFreeMedals } = await import('./free-medals.mjs');
+        if (disposed) return;
+        const shelf = completeFreeMedals(window.localStorage, { mode: init.mode, sessionId: bridge.sessionId, snapshot: s, spinClears: counters.spinClears });
+        $('freeMedalSummary').textContent = shelf.saved ? `${shelf.total} / 16 medals · ${shelf.runs} completed ${shelf.runs === 1 ? 'run' : 'runs'} on this device.` : 'Device storage is unavailable. This run’s medals could not be saved.';
+        for (const medal of shelf.medals) {
+          const item = document.createElement('li');
+          item.textContent = (shelf.newMedals.includes(medal) ? 'NEW · ' : '') + medal.title;
+          $('freeMedalList').append(item);
+        }
+      } catch { $('freeMedalSummary').textContent = 'Your practice shelf is unavailable. You can still play again.'; }
+    }
+  }
   if (run.assisted) return;
   try {
     const evidence = run.evidence();
@@ -145,7 +165,7 @@ function undo() {
   input.clear(); accumulator = 0; status.textContent = 'Placement undone. Assisted Free practice.'; state();
 }
 function dispose() {
-  if (disposed) return; disposed = true; cancelAnimationFrame(raf); input?.destroy(); renderer?.destroy(); app?.destroy(true, { children: true }); bridge.destroy(); void soundContext?.close(); soundContext = null;
+  if (disposed) return; disposed = true; releaseOverlayFocus(); cancelAnimationFrame(raf); input?.destroy(); renderer?.destroy(); app?.destroy(true, { children: true }); bridge.destroy(); void soundContext?.close(); soundContext = null;
 }
 $('continueButton').disabled = true;
 $('continueButton').addEventListener('click', () => { sound(440); resume(); });

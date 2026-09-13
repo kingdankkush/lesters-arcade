@@ -1,5 +1,15 @@
 # STACKED delivery status
 
+## September 13 preview hardening
+
+See [the current playable-preview checkpoint](releases/PLAYABLE-PREVIEW-2026-09-13.md).
+Free medals, results/focus improvements, non-destructive Ranked storage and
+post-reload session history are implemented and browser/source tested. Five
+responsive Chrome flows pass with actual music data and zero browser errors.
+The initial cloud candidate failed four stale release assertions, now corrected;
+the replacement cloud build still needs certification. Public cabinet and
+physical-device acceptance remain open; no new production promotion is claimed.
+
 ## September 12 playable continuation
 
 The current implementation is isolated on `codex/stacked-playable-release`, checkpoint `f4c27f21`, with current live source `1a8d4f42` integrated for verification. See [the playable checkpoint](releases/PLAYABLE-CANDIDATE-2026-09-12.md). The sections below preserve the earlier recovery record, not the current runtime implementation count.

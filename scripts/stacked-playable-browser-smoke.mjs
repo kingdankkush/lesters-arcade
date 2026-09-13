@@ -12,9 +12,15 @@ const { server, origin } = await startPortalStaticServer({ rootDir: path.join(ro
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--enable-webgl', '--enable-gpu', '--ignore-gpu-blocklist'] });
 const reports = [];
 try {
-  for (const mobile of [false, true]) {
-    const errors = [], warnings = [], name = mobile ? 'mobile' : 'desktop';
-    const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, deviceScaleFactor: mobile ? 2 : 1, isMobile: mobile, hasTouch: mobile });
+  for (const { name, mobile, width, height } of [
+    { name:'desktop', mobile:false, width:1440, height:1000 },
+    { name:'mobile', mobile:true, width:390, height:844 },
+    { name:'small-mobile', mobile:true, width:320, height:740 },
+    { name:'tablet', mobile:true, width:768, height:1024 },
+    { name:'small-desktop', mobile:false, width:1024, height:768 },
+  ]) {
+    const errors = [], warnings = [];
+    const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: mobile ? 2 : 1, isMobile: mobile, hasTouch: mobile });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); else if (message.type() === 'warning') warnings.push(message.text()); });
@@ -41,10 +47,16 @@ try {
     await page.locator('#officialFreeModeButton').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await frame.waitForSelector('#stackedStage[data-assets-ready="true"]', { timeout: 30000 });
+    await frame.locator('#soundToggle').focus();
+    await page.keyboard.press('Tab');
+    assert.equal(await frame.evaluate(() => document.activeElement.id), 'continueButton', 'dialog focus wraps to its first control');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await frame.evaluate(() => document.activeElement.id), 'soundToggle', 'dialog focus wraps backwards');
     await frame.locator('#motionToggle').check();
     await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
     await frame.locator('#motionToggle').uncheck();
-    await frame.locator('#continueButton').click();
+    await frame.locator('#continueButton').focus();
+    await page.keyboard.press('Space');
     await frame.waitForFunction(() => Number(document.querySelector('#stackedStage').dataset.simulationTick) > 60);
     const baselineTick = await frame.locator('#stackedStage').getAttribute('data-simulation-tick');
     await frame.locator('#pauseButton').click();
@@ -76,7 +88,11 @@ try {
     await frame.waitForSelector('#restartButton:not([hidden])');
     await frame.waitForFunction(() => document.querySelector('#overlayCopy').textContent.includes('Replay verified'), { timeout: 20000 });
     const result = await frame.locator('#overlayCopy').textContent();
+    assert.match(await frame.locator('#freeMedalSummary').textContent(), /1 completed run on this device/);
+    const shelf = await frame.evaluate(() => JSON.parse(localStorage.getItem('stacked-free-medals-v1')));
+    assert.equal(shelf.runs, 1);
     await page.screenshot({ path: path.join(evidenceDir, name + '-result.png') });
+    await frame.locator('#preferencePanel > summary').click();
     await frame.locator('#effectsToggle').check();
     await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
     await frame.locator('#restartButton').click();

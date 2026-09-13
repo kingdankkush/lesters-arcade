@@ -24,10 +24,11 @@
     <button type="button" id="undoButton">UNDO</button>
   </nav>
   <footer>← → move · ↑ / X rotate · Z reverse · V 180° · Space drop · C hold · P pause</footer>
-  <section id="gameOverlay" class="overlay" aria-labelledby="overlayTitle">
+  <section id="gameOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayCopy">
     <div class="panel"><span class="eyebrow">STACK · CLEAR · SURVIVE</span><h2 id="overlayTitle">Welcome to STACKED</h2><p id="overlayCopy">Loading your cabinet…</p><p id="resultStats"></p>
-    <div id="visualPreferences"><label><input id="motionToggle" type="checkbox"> Reduced motion</label><label><input id="effectsToggle" type="checkbox"> Minimal effects</label><label><input id="reactiveToggle" type="checkbox" checked> Music-reactive visuals</label><label><input id="ghostToggle" type="checkbox" checked> Landing guide</label><label><input id="gridToggle" type="checkbox" checked> Board grid</label><label><input id="soundToggle" type="checkbox" checked> Game sound effects</label></div>
-    <button id="continueButton" type="button">Start game</button><button id="restartButton" type="button" hidden>Play again</button><button id="overlayExitButton" type="button">Back to arcade</button></div>
+    <div class="result-actions"><button id="continueButton" type="button">Start game</button><button id="restartButton" type="button" hidden>Play again</button><button id="overlayExitButton" type="button">Back to arcade</button></div>
+    <section id="freeMedalShelf" aria-labelledby="freeMedalTitle" hidden><h3 id="freeMedalTitle">Free Mode medal shelf</h3><p id="freeMedalSummary" role="status"></p><details><summary>View earned medals</summary><ul id="freeMedalList"></ul></details><p>Practice-only. No profile badges or Ranked progress.</p></section>
+    <details id="preferencePanel" open><summary>Visual and sound settings</summary><div id="visualPreferences"><label><input id="motionToggle" type="checkbox"> Reduced motion</label><label><input id="effectsToggle" type="checkbox"> Minimal effects</label><label><input id="reactiveToggle" type="checkbox" checked> Music-reactive visuals</label><label><input id="ghostToggle" type="checkbox" checked> Landing guide</label><label><input id="gridToggle" type="checkbox" checked> Board grid</label><label><input id="soundToggle" type="checkbox" checked> Game sound effects</label></div></details></div>
   </section>
   <script type="module" src="../dist/stacked/game.js"></script>
 </body>

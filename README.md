@@ -6,16 +6,21 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Current verified playable release
+## STACKED preview candidate — not yet promoted
+
+The `codex/stacked-playable-release` branch integrates production source `1a8d4f42` and adds STACKED behind `?devCabinets=1`. Its candidate cache marker is listed below for build consistency; this is **not** a claim that the public alias serves this candidate. Public cabinet unlock, physical-device acceptance and exact-deployment promotion remain pending. See [STACKED status](docs/stacked/STATUS.md).
+
+**Production cache marker:** `lesters-arcade-v37-stacked-preview`
+
+## Previous verified playable release (historical receipt)
 
 - **Source:** `cad94e7d684c450d28052de87821fc9afc5f281c`; branch `fable/hmh-roadmap-pass-20260911`, cut from canonical `hermes/hmh-textured-rollout` at `b0ee9046`.
 - **Production deployment:** `dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg` ([immutable URL](https://lesters-arcade-mgh1j0kip-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
 - **Verified Preview:** `dpl_F5Hytj9fjABnmDVDmVBNwhGeFusU` ([immutable URL](https://lesters-arcade-gr2ph79el-justin-agent-projects.vercel.app)).
 - **Retained rollback:** `dpl_3PQPwrqBQaS6sAChSpZ9uca9wXoN` ([immutable URL](https://lesters-arcade-mbvuvv29s-justin-agent-projects.vercel.app)), source `b0ee904655191e6376cdb94103d086d7158c09ff`.
-**Production cache marker:** `lesters-arcade-v36-hmh-package`
 - **Verification:** Local `npm run vercel:build`, the Preview cloud build and the promoted production cloud build each passed the unchanged release gate: 3,389 tests, 3,338 passed, exactly 51 documented retirement exceptions, syntax (520 modules, 86 scripts), assets and contract structure. All six mutable entry files read back from the public alias match the local build byte for byte; the service worker serves `lesters-arcade-v36-hmh-package`. The portal interaction smoke passed against production. The portal flow smoke passed against production once its stale PNG hero-atlas probes were pointed at the shipped WebP atlases.
 
-The combined overhaul is playable. This pass adds the per-insertion-point Level 1 briefing and spawn-safety proofs only; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
+The combined HMH overhaul is playable. That pass added the per-insertion-point Level 1 briefing and spawn-safety proofs only; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED development has resumed in the preview described above.
 
 [Current release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) · [Roadmap reconciliation and agent scope](docs/handoffs/hmh-roadmap-reconciliation-20260911.md) · [Briefing evidence](docs/qa/hmh-roadmap-briefing-evidence-20260911.json) · [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
 
