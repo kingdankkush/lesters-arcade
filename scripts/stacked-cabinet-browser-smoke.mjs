@@ -5,13 +5,16 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { startPortalStaticServer } from './hmh-reboot-portal-e2e.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const evidenceDir = path.join(root, 'outputs/stacked-cabinet-browser');
+const evidenceDir = path.resolve(process.env.STACKED_CABINET_EVIDENCE_DIR || path.join(root, 'outputs/stacked-cabinet-browser'));
 await mkdir(evidenceDir, { recursive: true });
 const dependency = process.env.STACKED_PLAYWRIGHT_PATH || path.join(root, 'benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
 const { chromium } = await import(pathToFileURL(dependency).href);
-const { server, origin } = await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
+const { server, origin } = process.env.STACKED_CABINET_BASE_URL
+  ? { server: null, origin: process.env.STACKED_CABINET_BASE_URL }
+  : await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const reports = [];
+let failure = null;
 try {
   for (const [name, width, height, mobile] of [
     ['desktop', 1440, 1000, false], ['small-desktop', 1024, 768, false],
@@ -90,12 +93,13 @@ try {
     await context.close();
   }
 } catch (error) {
+  failure = String(error.stack || error);
   for (const context of browser.contexts()) for (const page of context.pages()) {
     await page.screenshot({ path: path.join(evidenceDir, 'failure.png'), fullPage: true });
   }
   throw error;
 } finally {
-  await writeFile(path.join(evidenceDir, 'verification.json'), JSON.stringify({ passed: reports.length === 5, reports }, null, 2));
+  await writeFile(path.join(evidenceDir, 'verification.json'), JSON.stringify({ passed: reports.length === 5, origin, failure, reports }, null, 2));
   await browser.close();
-  server.close();
+  server?.close();
 }

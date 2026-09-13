@@ -4,6 +4,7 @@ node_modules
 .vercel-python
 .hermes
 .tmp
+outputs
 *.blend1
 .env
 .env.*
