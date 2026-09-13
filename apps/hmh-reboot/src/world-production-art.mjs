@@ -1345,15 +1345,19 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   }
 
   for (const destructible of world.interactions.destructibles) {
+    if(nativeBlockerIds.has(destructible.id))continue;
     const ground=queryGround(destructible.anchor.x,destructible.anchor.y); const center=project({...destructible.anchor,z:ground.groundZ}); const s=18*camera.zoom;
     if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     layers.details.roundRect(center.x-s,center.y-s*0.7,s*2,s*1.4,4).fill({color:0x5c4433,alpha:1}).stroke({color:0xd7a766,width:3});
     layers.details.moveTo(center.x-s,center.y).lineTo(center.x+s,center.y).moveTo(center.x,center.y-s*0.7).lineTo(center.x,center.y+s*0.7).stroke({color:0x2e211a,width:2,alpha:0.7});
   }
   for (const zone of world.interactions.explosiveZones) {
-    const ground=queryGround(zone.anchor.x,zone.anchor.y); const center=project({...zone.anchor,z:ground.groundZ}); const s=12*camera.zoom;
-    if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
-    for(let index=-1;index<=1;index+=1) layers.details.roundRect(center.x+index*s*1.6-s*0.5,center.y-s,s,s*2,3).fill({color:0xa13b31}).stroke({color:0xffbe55,width:2});
+    for(const [index,[dx,dy]] of [[-40,0],[0,-38],[40,0]].entries()){
+      if(nativeBlockerIds.has(`${zone.id}:drum-${index}`))continue;
+      const x=zone.anchor.x+dx,y=zone.anchor.y+dy,center=project({x,y,z:queryGround(x,y).groundZ}),s=14*camera.zoom;
+      if(!isScreenPointVisible(center,view,performanceProfile.worldCullMargin))continue;
+      layers.details.roundRect(center.x-s,center.y-s*2,s*2,s*2,3).fill({color:0xa13b31}).stroke({color:0xffbe55,width:2});
+    }
   }
 
   for (const landmark of world.landmarks) {

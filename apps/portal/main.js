@@ -3683,6 +3683,11 @@ async function toggleCombatPause(forcePaused) {
     combat.paused = nextPaused;
     if (nextPaused) hmhRebootHost?.pause();
     else hmhRebootHost?.resume();
+    if (nextPaused) pauseCombatMusic();
+    else {
+      combat.menuSettingsOpen = false;
+      if (combat.musicEnabled) ensureCombatMusic('gameplay');
+    }
     playSfxCue(nextPaused ? 'pause' : 'resume');
     syncCombatOverlay();
     return;

@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "forkrunner",
+  "identityForm": "human",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lilly - Weighted Gameplay compact-v2.blend",
+  "baseSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
+  "sourceUnchanged": true,
+  "source": "forkrunner.blend",
+  "sourceSha256": "a3f56a810c4dde961c9b7d7391bd95d89603a765636a98e522395c5ba6f9dc67",
+  "sourceBytes": 56146351,
+  "armature": "forkrunner Native Rig",
+  "bones": 24,
+  "nativeBodyVertices": 238426,
+  "costumeMeshes": 1,
+  "gearMeshes": 19,
+  "clipActions": {
+    "idle": "HMH_forkrunner_idle",
+    "run": "HMH_forkrunner_run",
+    "tell": "HMH_forkrunner_tell",
+    "attack": "HMH_forkrunner_attack",
+    "hit": "HMH_forkrunner_hit",
+    "death": "HMH_forkrunner_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 2.0250000190734863,
+  "animationProfile": {
+    "kind": "forkrunner-quick-fork-slash-v1",
+    "damageResponse": "crossed-fork-guard-break-v1"
+  },
+  "builderSha256": "025ce0e983c561cc82aab2863e4bc199f88f971a961fecdffce5a90c08b5fb75",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "reviewedCandidateSha256": "534fb88eec53cd5a7d1e91c1687345ab4c22869948cd5bb0912ef9b07b37ed78",
+  "storageCompactorSha256": "84d30936601ea3a3873936d9ecadf718a9987c5becdf13744486c766a23c47a7",
+  "reviewedCandidateUnchanged": true
+}

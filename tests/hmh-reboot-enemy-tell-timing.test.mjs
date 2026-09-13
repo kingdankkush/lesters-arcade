@@ -244,9 +244,10 @@ test('the authored roster clip cadence fits inside every measured window', async
 
 test('the runtime publishes the measured tell-to-strike and the zoom it was read at under release telemetry', async () => {
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  const telemetryStart = source.indexOf('dataset.enemyTells = String(enemyTellCount);');
+  const telemetry = await readFile(new URL('../apps/hmh-reboot/src/runtime-telemetry-writer.mjs',import.meta.url),'utf8');
+  const telemetryStart = telemetry.indexOf('dataset.enemyTells = String(enemyTellCount);');
   assert.ok(telemetryStart >= 0);
-  const block = source.slice(telemetryStart, telemetryStart + 800);
+  const block = telemetry.slice(telemetryStart, telemetryStart + 800);
   assert.match(block, /dataset\.enemyTellToStrikeTicks = String\(lastEnemyStrike \? lastEnemyStrike\.tick - lastEnemyStrike\.tellStartedTick : ''\)/);
   assert.match(block, /dataset\.enemyTellToStrikeArchetype = lastEnemyStrike\?\.archetypeId \?\? ''/);
   assert.match(block, /dataset\.cameraZoom = /);
@@ -255,7 +256,7 @@ test('the runtime publishes the measured tell-to-strike and the zoom it was read
   assert.match(source, /^\s*lastEnemyStrike = event;$/m);
   assert.match(source, /lastEnemyStrike = null;/);
   assert.ok(source.indexOf('for (const event of lastEnemyAttack.events) {') < source.indexOf('lastEnemyStrike = event;'));
-  assert.ok(source.lastIndexOf('if (releaseTelemetryEnabled) {', telemetryStart) >= 0);
+  assert.match(source,/if \(debugGridEnabled \|\| releaseTelemetryEnabled\) \{\s*telemetryWriter\(/);
 });
 
 // The browser gate must assert the frame its predicate accepted. The page

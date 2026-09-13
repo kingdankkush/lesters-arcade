@@ -21,6 +21,7 @@ opaque = sum(1 for alpha in pixels[3::4] if alpha >= 200)
 if not transparent or not opaque:
     raise RuntimeError('atlas must contain transparent and opaque pixels')
 logical_hashes = {}
+motion_clips = {}
 intentional_hidden = []
 for frame in metadata['frames']:
     rect = frame['frame']
@@ -43,6 +44,11 @@ for frame in metadata['frames']:
     if actual_opaque != frame['opaquePixels']:
         raise RuntimeError(f"opaque pixel count drift: {frame['id']}")
     logical_hashes.setdefault(hashlib.sha256(rebuilt.tobytes()).hexdigest(), []).append(frame)
+    if metadata.get('motionSchema') == 1:
+        full = Image.new('RGBA', (frame['sourceSize']['w'], frame['sourceSize']['h']))
+        full.paste(rebuilt, (frame['spriteSourceSize']['x'], frame['spriteSourceSize']['y']))
+        key = (frame['layer'], frame['state'], frame['direction'])
+        motion_clips.setdefault(key, set()).add(hashlib.sha256(full.tobytes()).hexdigest())
 illegal_duplicates = [
     [frame['id'] for frame in frames]
     for frames in logical_hashes.values()
@@ -50,6 +56,14 @@ illegal_duplicates = [
     and not all(frame['layer'] == 'shadow' for frame in frames)
     and not all(is_released_prop_frame(frame) for frame in frames)
 ]
+if metadata.get('motionSchema') == 1:
+    # Gestures return through neutral poses. Verify motion within each clip,
+    # rather than demanding different pixels across unrelated clip boundaries.
+    for (layer, state, direction), hashes in motion_clips.items():
+        minimum = 10 if state == 'run' else 4 if layer == 'weapon' and state == 'reload' else 6 if state in ('reload', 'idle-check') else 3
+        if len(hashes) < minimum:
+            raise RuntimeError(f'insufficient decoded motion: {layer}/{state}/{direction}')
+    illegal_duplicates = []
 if illegal_duplicates:
     raise RuntimeError(f'animated decoded-frame duplicates: {illegal_duplicates[:2]}')
 print(json.dumps({
@@ -65,4 +79,5 @@ print(json.dumps({
     'intentionalHiddenFrameCount': len(intentional_hidden),
     'uniqueLogicalFrames': len(logical_hashes),
     'illegalDuplicateGroups': len(illegal_duplicates),
+    'motionPosesByClip': {'|'.join(key): len(value) for key, value in motion_clips.items()},
 }))

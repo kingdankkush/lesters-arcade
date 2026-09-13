@@ -1,5 +1,8 @@
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
+import { WORLD_DESTRUCTIBLE_PROPS, createWorldDestructibleState, worldDestructibleTargets, worldDestructibleHurtProfile, worldDestructibleCoverHit, applyWorldDestructibleDamage, worldDestructibleHiddenProps, stepWorldDestructibleSupplies } from './world-destructibles.mjs';
 import { automaticDodgeIntent } from './automatic-actions.mjs';
+import { loadRuntimeTelemetry } from './runtime-telemetry-loader.mjs';
+import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
 import { resolveLevelBriefing, applyLevelBriefing } from './level-briefing.mjs';
 import { selectLevelEntry } from './level-entry.mjs';
@@ -616,14 +619,26 @@ async function boot() {
     ]);
     if (!metadataResponse.ok) throw new Error(`Production hero metadata failed with ${metadataResponse.status}`);
     const metadata = await metadataResponse.json();
-    return createProductionHeroDisplay({
-      index: createProductionHeroAtlasIndex(metadata, selection),
+    const baseIndex = createProductionHeroAtlasIndex(metadata, selection);
+    const display = createProductionHeroDisplay({
+      index: baseIndex,
       atlasTexture,
       ContainerClass: Container,
       SpriteClass: Sprite,
       TextureClass: Texture,
       RectangleClass: Rectangle,
     });
+    // Begin play with the base hero as soon as it is decoded. Only this
+    // selected hero fetches an extra motion page, and a failed upgrade leaves
+    // the complete base animation set usable.
+    import('./hero-motion-atlas.mjs')
+      .then(({ loadHeroMotionPage }) => loadHeroMotionPage({ selection, baseIndex, Assets }))
+      .then(page => { if (!display.container.destroyed) display.attachMotionPage(page); })
+      .catch(error => {
+        display.container.motionStatus = 'fallback';
+        display.container.motionError = String(error?.message ?? error);
+      });
+    return display;
   };
   let mannequinDisplay = null;
   let mannequinRuntimeScale = 1;
@@ -738,7 +753,7 @@ async function boot() {
     if (app.stage.destroyed || !world.parent) return;
     const worldDesign = buildWorldDesignPlacements(LEVEL_ONE_WORLD,worldDesignAssets);
     const candidateBlockerIds = worldDesign.blockerIds;
-    const siteProps = [...WORLD_DESIGN_SITE_PROPS, ...WORLD_DESIGN_ORCHARD, ...WORLD_DESIGN_SECRET_PROPS];
+    const siteProps = [...WORLD_DESIGN_SITE_PROPS, ...WORLD_DESIGN_ORCHARD, ...WORLD_DESIGN_SECRET_PROPS, ...WORLD_DESTRUCTIBLE_PROPS];
     for (const p of siteProps) if(p.collisionBlockerId) candidateBlockerIds.add(p.collisionBlockerId);
     for (const [id, asset] of worldDesignAssets) candidateAppearance.set(id, asset);
     extendWorldDesignLandmarks(candidateAppearance);
@@ -1124,6 +1139,7 @@ async function boot() {
   const terminalPilotEnabled = evidenceSafeEnabled && runtimeParams.get('terminalPilot') === '1';
   const releaseAnchorEnabled = progressionPilotEnabled && runtimeParams.get('releaseAnchor') === '1';
   const releaseTelemetryEnabled = evidenceSafeEnabled && runtimeParams.get('telemetry') === '1';
+  const telemetryWriter = await loadRuntimeTelemetry({debugGridEnabled,releaseTelemetryEnabled});
   const runtimeEncounterSnapshot = (tick) => getEncounterSnapshot(tick + (endurancePressurePilotEnabled ? 75_600 : 0));
   const collectibleHealthPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleHealthPilot') === '1';
   const collectibleAmmoPilotEnabled = evidenceSafeEnabled && runtimeParams.get('collectibleAmmoPilot') === '1';
@@ -1342,6 +1358,7 @@ async function boot() {
   let collectibleState = null;
   let worldDesignState = createWorldDesignState();
   let worldSecretState=createWorldDesignSecretState();
+  let worldDestructibleState=createWorldDestructibleState();
   let worldDesignFrame = { events: [] };
   let worldPacingState=createWorldDesignPacing();
   let collectibleSnapshot = null;
@@ -1507,7 +1524,7 @@ async function boot() {
         pickupPresentation.drawPickupIndicators(pickupSignals,pickupMarkers,camera.zoom);
         dataset.pickupMarkers = String(pickupMarkers.length);
       }
-      const hiddenAuthoredPropIds = new Set([...(collectibleState?.collectedIds ?? []), ...worldDesignHiddenSecretProps(worldSecretState)]);
+      const hiddenAuthoredPropIds = new Set([...(collectibleState?.collectedIds ?? []), ...worldDesignHiddenSecretProps(worldSecretState), ...worldDestructibleHiddenProps(worldDestructibleState)]);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
       if (forkedStandardEventPlacement && authoredPropTick < forkedStandardEventPlacement.availableTick) hiddenAuthoredPropIds.add(forkedStandardEventPlacement.id);
@@ -1524,7 +1541,7 @@ async function boot() {
         focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
           .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
-      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
+      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
       if(releaseTelemetryEnabled) {
         dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
         dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
@@ -1537,6 +1554,9 @@ async function boot() {
         dataset.worldOpenGates=JSON.stringify([...worldDesignState.openGates]);
         dataset.worldSecrets=JSON.stringify([...worldSecretState.collected]);
         dataset.worldSecretSealHealth=String(worldSecretState.sealHealth);
+        dataset.worldDestructiblesBroken=JSON.stringify([...worldDestructibleState.brokenTick.keys()]);
+        dataset.worldSuppliesCollected=JSON.stringify([...worldDestructibleState.collected]);
+        dataset.worldFuelExploded=JSON.stringify([...worldDestructibleState.exploded.keys()]);
       }
       if (releaseTelemetryEnabled || debugGridEnabled) {
         dataset.authoredPropVisible = String(authoredPropReport?.visibleCount ?? 0);
@@ -2342,6 +2362,9 @@ async function boot() {
           legDirection: dashing && lastDashDirection ? quantizeDirection(lastDashDirection, 8) : motion.legDirection,
           torsoDirection: productionAction === 'interact' ? quantizeDirection({x:interactionSite.x-actor.x,y:interactionSite.y-actor.y},8) : motion.torsoDirection,
           action: productionAction,
+          reloadProgress: heldReloadProgress,
+          idleAllowed: !aimIntent?.fire,
+          reduceMotion: settings.reduceMotion,
         });
         // The textured Commando owns its baked pistol and its authored knife /
         // grenade action layers. Other heroes keep the accepted external prop
@@ -2361,7 +2384,7 @@ async function boot() {
         // and the authored full-body clips keep the layer to themselves. The
         // resolver is a lazy chunk; until it is resident (well before the
         // first magazine can run dry) the offset simply stays at zero.
-        productionHeroDisplay.setLayerOffset('weapon', reloadPose && reloadPresentation.resolveReloadHeroAction({ action: productionAction })
+        productionHeroDisplay.setLayerOffset('weapon', reloadPose && productionHeroDisplay.container.motionAction !== 'reload' && reloadPresentation.resolveReloadHeroAction({ action: productionAction })
           ? reloadPresentation.resolveReloadLayerOffset({ pose: reloadPose, facingWest: motion.torsoDirection >= 4 })
           : undefined);
         // The visible half of the reload-complete beat: the cue, the HUD ring
@@ -2606,213 +2629,101 @@ async function boot() {
         overlayVisuals.rect(view.width - band, 0, band, view.height).fill({ color: 0xff2d4f, alpha: intensity * 0.45 });
       }
       if (debugGridEnabled || releaseTelemetryEnabled) {
-        dataset.actorX = renderState.x.toFixed(3);
-        dataset.actorY = renderState.y.toFixed(3);
-        dataset.targetX = grayboxEnemies[0]?.x.toFixed(3) ?? '';
-        dataset.aimSource = aimIntent?.source ?? 'none';
-        dataset.aimDirectionX = String(aimState?.stableDirection?.x ?? 0);
-        dataset.aimDirectionY = String(aimState?.stableDirection?.y ?? 0);
-        dataset.firing = String(aimIntent?.fire === true);
-        dataset.collisionBlocker = lastCollision?.contacts.at(-1)?.blockerId ?? '';
-        dataset.collisionStalls = String(zeroDisplacementFrames);
-        dataset.surfaceId = lastGround?.surfaceId ?? '';
-        dataset.groundZ = String(lastGround?.groundZ ?? 0);
-        dataset.traversal = lastTraversal?.reason ?? '';
-        dataset.projectileCount = String(activeProjectiles.length);
-        dataset.projectileDrops = String(droppedProjectiles);
-        dataset.projectileHit = lastProjectileHit?.targetId ?? '';
-        dataset.lastImpactSurface = lastImpactSurface;
-        dataset.weaponId = weaponLoadout?.activeWeaponId ?? '';
-        dataset.weaponClipSize = String(weaponStatus?.clipSize ?? 0);
-        dataset.weaponStatus = weaponStatus?.mode ?? 'unavailable';
-        dataset.weaponReloadTicksRemaining = String(weaponStatus?.mode === 'reloading' ? weaponStatus.ticksRemaining : 0);
-        dataset.actorArt = actorVisual.label ?? '';
-        // Report what actually rendered, not what was requested: a failed
-        // atlas load falls back to the prototype and must say so.
-        dataset.actorArtSource = productionHeroDisplay ? productionHeroDisplay.artSource : mannequinDisplay ? 'blender-atlas-v1' : 'pixi-graybox';
-        dataset.actorArtActor = productionHeroDisplay && loadedProductionHeroId ? loadedProductionHeroId : mannequinDisplay ? 'neutral-mannequin' : 'prototype-human';
-        dataset.actorArtFallbackReason = productionHeroLoadError ?? '';
-        dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
-        dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
-        // Projection-only evidence uses the actual rendered anchor, including shake.
-        dataset.actorScreenX = String(actorVisual.x + world.position.x);
-        dataset.actorScreenY = String(actorVisual.y + world.position.y);
-        dataset.actorScreenScale = String(actorVisual.scale.x);
-        // Report the art actually in use: the authored roster only applies to
-        // archetypes whose atlas has resolved.
-        dataset.enemyArt = enemyRosterIndexes.size > 0 ? 'production-roster-atlas-v1' : 'production-vector-enemies-v1';
-        dataset.bossArt = enemyRosterIndexes.has('the-liquidator') ? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1';
-        dataset.enemyRosterLoaded = [...enemyRosterIndexes.keys()].sort().join(',');
-        dataset.enemyRosterError = enemyRosterLoadError ?? '';
-        dataset.rosterPreview = String(rosterPreviewEnabled);
-        dataset.rosterPreviewAutoFire = String(aimState?.autoFireEnabled === true);
-        dataset.terrainTiles = terrainTiles.ready ? 'authored-tiles-v1' : 'flat-colour-fallback';
-        dataset.terrainTilesLoaded = terrainTiles.loadedIds.join(',');
-        dataset.terrainTilesError = terrainTileLoadError ?? '';
-        dataset.worldArt = 'production-vector-world-v1';
-        dataset.worldShader = worldArtReport?.shaderIds.join(',') ?? '';
-        dataset.worldParticles = String(worldArtReport?.particleCount ?? 0);
-        dataset.worldRenderedParticles = String(worldArtReport?.renderedParticleCount ?? 0);
-        dataset.worldBlockers = String(worldArtReport?.blockerCount ?? 0);
-        dataset.worldLandmarks = String(worldArtReport?.landmarkCount ?? 0);
-        dataset.performanceProfile = performanceProfile.id;
-        dataset.renderResolution = String(performanceProfile.resolution);
-        dataset.animatedEnemies = String(animatedEnemyCount);
-        dataset.contactShadows = String(contactShadowPool?.count ?? 0);
-        dataset.contactShadowsDropped = String(contactShadowPool?.dropped ?? 0);
-        dataset.atmosphereSprites = String(atmosphereReport.fog + atmosphereReport.motes);
-        dataset.atmosphereDropped = String(atmosphereReport.dropped);
-        dataset.atmosphereTint = `${atmosphereGrade.color.toString(16).padStart(6, '0')}@${atmosphereGrade.alpha.toFixed(3)}`;
-        const runSnapshot = runProgression ? getRunProgressionSnapshot(runProgression) : null;
-        const audioSnapshot = combatAudio.status();
-        dataset.runScore = String(runSnapshot?.score ?? 0);
-        dataset.runXp = String(runSnapshot?.xp ?? 0);
-        dataset.runLevel = String(runSnapshot?.level ?? 1);
-        dataset.runPendingLevels = String(runSnapshot?.pendingLevels ?? 0);
-        dataset.musicEnabled = String(audioSnapshot.musicEnabled);
-        dataset.musicActive = String(audioSnapshot.musicActive);
-        dataset.bossVisualState = bossVisual.visible ? bossVisual.visualState ?? 'idle' : 'hidden';
-        dataset.inputWeaponSlot = String(lastInputWeaponSlot);
-        dataset.simulationTick = String(simulation?.tick ?? 0);
-        dataset.weaponAmmo = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).ammoInClip) : '';
-        dataset.weaponHeat = weaponLoadout ? String(getActiveWeaponState(weaponLoadout).heat) : '';
-        dataset.weaponOverheated = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).overheated : false);
-        dataset.weaponChargeStartedTick = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).chargeStartedTick ?? '' : '');
-        dataset.weaponChargeReady = String(weaponLoadout ? getActiveWeaponState(weaponLoadout).chargeReadyAnnounced : false);
-        dataset.lightningLedgerPulses = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.pulses ?? 0);
-        dataset.lightningLedgerRamp = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.maxRampPermille ?? 1000);
-        dataset.lightningLedgerCells = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.cellsRemaining ?? 0);
-        dataset.lightningLedgerActive = String(weaponLoadout?.weapons['lightning-ledger']?.channelState?.active === true);
-        dataset.lightningLedgerLastHits = String(lastLightningLedgerPulse?.hits ?? 0);
-        dataset.lightningLedgerLastRamp = String(lastLightningLedgerPulse?.rampPermille ?? 1000);
-        dataset.lightningLedgerEventId = String(lightningLedgerEventPlacement?.id ?? '');
-        dataset.lightningLedgerEventTick = String(lightningLedgerEventPlacement?.availableTick ?? '');
-        dataset.lightningLedgerEventCollected = String(Boolean(lightningLedgerEventPlacement && collectibleState?.collectedIds.has(lightningLedgerEventPlacement.id)));
-        dataset.bearMarketBurnerEventId = String(bearMarketBurnerEventPlacement?.id ?? '');
-        dataset.bearMarketBurnerEventTick = String(bearMarketBurnerEventPlacement?.availableTick ?? '');
-        dataset.bearMarketBurnerEventCollected = String(Boolean(bearMarketBurnerEventPlacement && collectibleState?.collectedIds.has(bearMarketBurnerEventPlacement.id)));
-        dataset.bearMarketBurnerFuel = String(weaponLoadout?.weapons['bear-market-burner']?.ammoInClip ?? 0);
-        dataset.bearMarketBurnerPulses = String(weaponLoadout?.weapons['bear-market-burner']?.burnerState?.pulses ?? 0);
-        dataset.bearMarketBurnerLastHits = String(lastBearMarketBurnerPulse?.hits ?? 0);
-        dataset.bearMarketBurnerActiveBurns = String(weaponLoadout?.weapons['bear-market-burner']?.burnerState?.burns?.size ?? 0);
-        dataset.bearMarketBurnerScorchZones = String(weaponLoadout?.weapons['bear-market-burner']?.burnerState?.scorchZones?.length ?? 0);
-        dataset.bearMarketBurnerFlameVisuals = String(combatVisualEvents.filter((event) => event.type === 'bear-market-burner').length);
-        dataset.forkedStandardEventId = String(forkedStandardEventPlacement?.id ?? '');
-        dataset.forkedStandardEventTick = String(forkedStandardEventPlacement?.availableTick ?? '');
-        dataset.forkedStandardEventCollected = String(Boolean(forkedStandardEventPlacement && collectibleState?.collectedIds.has(forkedStandardEventPlacement.id)));
-        dataset.forkedStandardAttacks = String(weaponLoadout?.weapons['forked-standard']?.standardState?.attacks ?? 0);
-        dataset.forkedStandardLastForm = String(lastForkedStandardStrike?.form ?? '');
-        dataset.forkedStandardLastHits = String(lastForkedStandardStrike?.hits ?? 0);
-        dataset.forkedStandardWhiffs = String(weaponLoadout?.weapons['forked-standard']?.standardState?.whiffs ?? 0);
-        dataset.forkedStandardVisuals = String(combatVisualEvents.filter((event) => event.type === 'forked-standard').length);
-        dataset.grenadeCount = String(grenadeSystem?.active.length ?? 0);
-        dataset.activeGrenadeWarnings = String(activeGrenadeWarnings);
-        dataset.activeGrenadeWarningRadius = String(activeGrenadeWarningRadius);
-        dataset.activeGrenadeWarningUrgent = String(activeGrenadeWarningUrgent);
-        dataset.handGrenades = String(grenadeSystem?.handCharges ?? 0);
-        // grenade feedback (V-3): new keys only; the grenade keys above and
-        // worldRenderedParticles stay byte-identical for the browser smokes.
-        dataset.grenadeFxParticles = String(drawnGrenadeFxParticles);
-        dataset.killFxDrawn = String(drawnKillFx);
-        dataset.killFxShards = String(drawnKillFxShards);
-        dataset.grenadeFxEvents = String(grenadeFxEvents.length);
-        dataset.dashReadyTick = dashState ? String(dashState.cooldownReadyTick) : '';
-        dataset.dashActive = String(dashStatus?.active === true);
-        dataset.dashInvulnerable = String(dashStatus?.invulnerable === true);
-        dataset.dashStopReason = dashStatus?.lastStopReason ?? '';
-        dataset.playerHealth = String(playerHealth);
-        dataset.collectibleCount = String(collectibleSnapshot?.collectedCount ?? 0);
-        dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
-        dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
-        // The pickup's own award, so evidence can separate it from kill XP.
-        dataset.collectibleLastXp = String(lastCollectibleEvent?.xpGain ?? 0);
-        dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
-        dataset.collectibleCountdown = powerupPresentation.hudLabel;
-        dataset.collectibleRefreshCount = String(powerupPresentation.effects.reduce((total, effect) => total + effect.refreshCount, 0));
-        dataset.timedEffectSilhouettes = timedEffectIdentity.effects.map((effect) => effect.silhouette).join(',');
-        dataset.timedEffectAudioCues = timedEffectIdentity.effects.map((effect) => effect.audioCue).join(',');
-        dataset.collectibleDamageMultiplier = String(collectibleSnapshot?.damageMultiplier ?? 1);
-        dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
-        dataset.audioVoices = String(combatAudio.status().activeVoices);
-        dataset.audioUnknownCues = String(combatAudio.status().unknownCues);
-        dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
-        dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
-        dataset.lastMeleeHits = String(lastMeleeAttack?.hits ?? 0);
-        dataset.lastGrenadeReason = lastGrenadeDetonation?.reason ?? '';
-        dataset.lastGrenadeTick = lastGrenadeDetonation ? String(lastGrenadeDetonation.tick) : '';
-        dataset.projectileCover = lastProjectileResolution?.resolutions
-          ?.find((resolution) => resolution.coverHit)?.coverHit?.blockerId ?? '';
-        dataset.targetHealth = String(grayboxEnemies[0]?.health ?? 0);
-        dataset.enemyCount = String(activeEnemyCount);
-        dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
-        dataset.enemyScreenRects = JSON.stringify(projectEnemyScreenRects(grayboxEnemies));
-        dataset.enemyTells = String(enemyTellCount);
-        // Tell-to-strike measured from the authoritative event, alongside the
-        // zoom it was read at, so the browser gate can prove the archetype's
-        // tell length survives to gameplay zoom.
-        dataset.enemyTellToStrikeTicks = String(lastEnemyStrike ? lastEnemyStrike.tick - lastEnemyStrike.tellStartedTick : '');
-        dataset.enemyTellToStrikeArchetype = lastEnemyStrike?.archetypeId ?? '';
-        dataset.cameraZoom = String(camera?.zoom ?? '');
-        dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
-        dataset.enemyDecisionBudget = String(lastEnemyStep?.decisionBudget ?? 0);
-        dataset.enemyDeferredDecisions = String(lastEnemyStep?.deferredDecisions ?? 0);
-        dataset.enemySafetySteps = String(lastEnemyStep?.safetySteps ?? 0);
-        dataset.enemyCollisionContacts = String(lastEnemyStep?.collisionContacts ?? 0);
-        dataset.enemyTraversalBlocks = String(lastEnemyStep?.traversalBlocks ?? 0);
-        dataset.enemyRouteReplans = String(lastEnemyStep?.routeReplans ?? 0);
-        dataset.enemyStuckRecoveries = String(lastEnemyStep?.stuckRecoveries ?? 0);
-        dataset.enemyHazardAvoiding = String(lastEnemyStep?.hazardAvoiding ?? 0);
-        dataset.enemyChokepointSeeking = String(lastEnemyStep?.chokepointSeeking ?? 0);
-        dataset.enemyChokepointHolding = String(lastEnemyStep?.chokepointHolding ?? 0);
-        dataset.enemyFlankLaneSeeking = String(lastEnemyStep?.flankLaneSeeking ?? 0);
-        dataset.enemyFormationAdjusted = String(lastEnemyStep?.formationAdjusted ?? 0);
-        dataset.enemyPoolPressure = `${lastEnemyStep?.activeCount ?? 0}/${enemyPopulation?.capacity ?? 0}`;
-        dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
-        dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;
-        dataset.effectPoolPressure = `${combatVisualEvents.length}/${MAX_COMBAT_VISUAL_EVENTS}`;
-        dataset.weaponVfxPoolPressure = `${weaponVfxPool?.placed ?? 0}/${MAX_WEAPON_VFX_SPRITES}`;
-        dataset.weaponVfxDropped = String(weaponVfxPool?.dropped ?? 0);
-        dataset.weaponVfxSuppressed = String(suppressedGroundImpacts);
-        const tokenFamilies = Object.fromEntries(['melee', 'ranged', 'area', 'support'].map((family) => [
-          family,
-          lastEnemyAttack?.tokens.filter((token) => token.family === family).length ?? 0,
-        ]));
-        dataset.enemyAttackTokens = String(lastEnemyAttack?.tokens.length ?? 0);
-        dataset.enemyAttackTokensMelee = String(tokenFamilies.melee);
-        dataset.enemyAttackTokensRanged = String(tokenFamilies.ranged);
-        dataset.enemyAttackTokensArea = String(tokenFamilies.area);
-        dataset.enemyAttackTokensSupport = String(tokenFamilies.support);
-        dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
-        dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
-        dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
-        const encounterSnapshot = runtimeEncounterSnapshot(simulation?.tick ?? 0);
-        dataset.encounterBand = encounterSnapshot.bandId;
-        dataset.endurancePressurePilot = String(endurancePressurePilotEnabled);
-        dataset.directorInsertions = String(encounterDirector?.insertedCount ?? 0);
-        dataset.directorRejections = String(encounterDirector?.rejectedCount ?? 0);
-        dataset.directorLastReason = lastDirectorStep?.reason ?? '';
-        dataset.directorBodyCap = String(encounterSnapshot.bodyCap);
-        dataset.directorThreatCap = String(encounterSnapshot.threatCap);
-        dataset.bossActive = String(liquidatorBoss?.active === true && (simulation?.tick ?? 0) >= liquidatorBoss.startTick);
-        dataset.bossPhase = liquidatorBoss?.phaseId ?? '';
-        dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
-        dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
-        dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
-        const pendingSafeSector = liquidatorBoss?.pendingAttacks.find((pending) => pending.geometry?.sectorId);
-        dataset.bossSafeSector = pendingSafeSector?.geometry.sectorId ?? '';
-        dataset.bossSafeZoneCount = String(pendingSafeSector?.geometry.zones.length ?? 0);
-        dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
-        dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);
-        dataset.bossLastRoleCheck = lastBossRoleCheck?.roleId ?? '';
-        dataset.bossLastRoleCheckTick = String(lastBossRoleCheck?.tick ?? -1);
-        dataset.bossPunishWindow = lastBossPunishWindow?.windowId ?? '';
-        dataset.bossPunishMultiplier = String(lastBossPunishWindow?.multiplier ?? 1);
-        dataset.worldId = LEVEL_ONE_WORLD.id;
-        dataset.worldWidth = String(WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX);
-        dataset.worldHeight = String(WORLD_BOUNDS.maxY - WORLD_BOUNDS.minY);
-        dataset.districtId = getLevelOneDistrictAt(renderState.x, renderState.y)?.id ?? '';
-        dataset.revealedCells = String(revealSnapshot.revealedCellIds.length);
-        dataset.revealTotalCells = String(revealSnapshot.totalCells);
+        telemetryWriter({
+          LEVEL_ONE_WORLD,
+          MAX_ACTIVE_PROJECTILES,
+          MAX_COMBAT_VISUAL_EVENTS,
+          MAX_WEAPON_VFX_SPRITES,
+          WORLD_BOUNDS,
+          activeEnemyCount,
+          activeGrenadeWarningRadius,
+          activeGrenadeWarningUrgent,
+          activeGrenadeWarnings,
+          activeProjectiles,
+          actorVisual,
+          aimIntent,
+          aimState,
+          animatedEnemyCount,
+          atmosphereGrade,
+          atmosphereReport,
+          bearMarketBurnerEventPlacement,
+          bossTelegraphPrimitiveCount,
+          bossVisual,
+          camera,
+          collectibleSnapshot,
+          collectibleState,
+          combatAudio,
+          combatVisualEvents,
+          contactShadowPool,
+          dashState,
+          dashStatus,
+          dataset,
+          drawnGrenadeFxParticles,
+          drawnKillFx,
+          drawnKillFxShards,
+          droppedProjectiles,
+          encounterDirector,
+          endurancePressurePilotEnabled,
+          enemyDeathMarkers,
+          enemyMarkers,
+          enemyPopulation,
+          enemyRosterIndexes,
+          enemyRosterLoadError,
+          enemyTellCount,
+          forkedStandardEventPlacement,
+          getActiveWeaponState,
+          getLevelOneDistrictAt,
+          getRunProgressionSnapshot,
+          grayboxEnemies,
+          grenadeFxEvents,
+          grenadeSystem,
+          lastBearMarketBurnerPulse,
+          lastBossPunishWindow,
+          lastBossRoleCheck,
+          lastCollectibleEvent,
+          lastCollision,
+          lastDirectorStep,
+          lastEnemyAttack,
+          lastEnemyStep,
+          lastEnemyStrike,
+          lastForkedStandardStrike,
+          lastGrenadeDetonation,
+          lastGround,
+          lastImpactSurface,
+          lastInputWeaponSlot,
+          lastLightningLedgerPulse,
+          lastMeleeAttack,
+          lastProjectileHit,
+          lastProjectileResolution,
+          lastTraversal,
+          lastWeaponFire,
+          lightningLedgerEventPlacement,
+          liquidatorBoss,
+          loadedProductionHeroId,
+          mannequinDisplay,
+          performanceProfile,
+          playerHealth,
+          powerupPresentation,
+          productionHeroDisplay,
+          productionHeroLoadError,
+          projectEnemyScreenRects,
+          renderState,
+          revealSnapshot,
+          rosterPreviewEnabled,
+          runProgression,
+          runtimeEncounterSnapshot,
+          simulation,
+          suppressedGroundImpacts,
+          terrainTileLoadError,
+          terrainTiles,
+          timedEffectIdentity,
+          weaponLoadout,
+          weaponStatus,
+          weaponVfxPool,
+          world,
+          worldArtReport,
+          zeroDisplacementFrames
+        });
       }
     } else {
       hud?.setBoss(false, 0, '');
@@ -2950,6 +2861,7 @@ async function boot() {
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
     worldDesignState=createWorldDesignState();
     worldSecretState=createWorldDesignSecretState();
+    worldDestructibleState=createWorldDestructibleState();
     worldPacingState=createWorldDesignPacing();
     worldDesignFrame={events:[]};
     // The flow field is per-run simulation state: a restart resets the tick
@@ -3466,6 +3378,12 @@ async function boot() {
         combatAudio.play('pickup',{volume:.11});
         setAccessibleCombatStatus(`${secret.name}. ${secret.lore}`);
       }
+      for(const supply of stepWorldDestructibleSupplies(worldDestructibleState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
+        if(supply.reward==='heal'){const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
+        if(supply.reward==='ammo')refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
+        combatAudio.play(supply.reward==='heal'?'health-pickup':'pickup',{volume:.11});
+        setAccessibleCombatStatus(`${supply.name}. ${supply.lore}`);
+      }
       if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
 
       const worldPacing=stepWorldDesignPacing(worldPacingState,{tick,player:actor,enemies:grayboxEnemies,arenas:LEVEL_ONE_WORLD.encounterArenas});
@@ -3534,11 +3452,11 @@ async function boot() {
 
       const hurtTargets = [];
       const meleeTargets = [];
-      for (const enemy of [...grayboxEnemies,...worldDesignSecretTargets(worldSecretState)]) {
+      for (const enemy of [...grayboxEnemies,...worldDesignSecretTargets(worldSecretState),...worldDestructibleTargets(worldDestructibleState)]) {
         if (!enemy.active || enemy.health <= 0) continue;
-        const profile = enemy.id===WORLD_DESIGN_SECRET_SEAL.id
+        const profile = worldDestructibleHurtProfile(enemy.id) ?? (enemy.id===WORLD_DESIGN_SECRET_SEAL.id
           ? {bodyShape:{type:'circle',radius:20},projectileShape:{type:'circle',radius:20},meleeRadius:20,minZ:0,maxZ:40}
-          : createOrdinaryEnemyHurtboxProfile(enemy.radius);
+          : createOrdinaryEnemyHurtboxProfile(enemy.radius));
         hurtTargets.push(createHurtTarget({
           id: enemy.id,
           bodyShape: profile.bodyShape,
@@ -3592,6 +3510,12 @@ async function boot() {
       const bossHazardCap = { targetId: liquidatorBoss.id, health: liquidatorBoss.health };
       combatHitIntents.push(...withholdLethalHazardHits(buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}), bossHazardCap));
       combatHitIntents.push(...withholdLethalHazardHits(buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }), bossHazardCap));
+      const fuelBlasts=stepWorldExplosions(worldDestructibleState,{tick,targets:[...hazardTargets,...worldDestructibleTargets(worldDestructibleState)],queryGround,blockers:WORLD_BLOCKERS});
+      combatHitIntents.push(...withholdLethalHazardHits(fuelBlasts.hits,bossHazardCap));
+      for(const blast of fuelBlasts.events){
+        pushCombatVisualEvent({type:'blast',...blast,mode:'launcher'});
+        if(Math.hypot(actor.x-blast.point.x,actor.y-blast.point.y)<700){combatAudio.play('grenade-boom',{volume:.14});triggerCameraShake(tick,5);}
+      }
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
@@ -3714,6 +3638,8 @@ async function boot() {
         for (const resolution of batch.resolutions) {
           const shot = shotById.get(resolution.projectileId);
           const secretImpact=worldDesignSecretCoverHit({resolution,shot,tick});
+          const coverImpact=worldDestructibleCoverHit({resolution,shot,tick});
+          if(coverImpact)combatHitIntents.push(coverImpact);
           if(secretImpact)combatHitIntents.push(secretImpact);
           recordRunProjectileResolution(runSummaryAccumulator, shot, resolution.hits);
           for (const hit of resolution.hits) {
@@ -4298,6 +4224,7 @@ async function boot() {
           knockbackResistance: enemy.knockbackResistance,
         }));
         combatTargets.push(...worldDesignSecretTargets(worldSecretState));
+        combatTargets.push(...worldDestructibleTargets(worldDestructibleState));
         if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) combatTargets.push({
           id: liquidatorBoss.id,
           health: liquidatorBoss.health,
@@ -4356,6 +4283,14 @@ async function boot() {
             enemyFlowFieldTick=-1; enemyFlowField=null;
           }
         }
+        for(const broken of applyWorldDestructibleDamage(worldDestructibleState,{targets:lastCombatResolution.targets,tick})) {
+          worldDesignState.openGates.add(broken.id);
+          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
+          refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,broken.id,WORLD_BLOCKERS);
+          enemyFlowFieldTick=-1;enemyFlowField=null;
+          combatAudio.play('land',{volume:.14});
+          setAccessibleCombatStatus(broken.blastRadius?'Fuel barrel leaking. Move clear.':'Cover destroyed. Supplies exposed.');
+        }
         for (const enemy of grayboxEnemies) {
           const state = lastCombatResolution.targets[enemy.id];
           if (!state) continue;
@@ -4375,7 +4310,7 @@ async function boot() {
           lowHealthWarned = false;
         }
         for (const damageEvent of lastCombatResolution.damageEvents) {
-          if (damageEvent.damageApplied <= 0 || damageEvent.targetId === WORLD_DESIGN_SECRET_SEAL.id) continue;
+          if (damageEvent.damageApplied <= 0 || damageEvent.targetId === WORLD_DESIGN_SECRET_SEAL.id || worldDestructibleState.health.has(damageEvent.targetId)) continue;
           recordRunDamage(runSummaryAccumulator, damageEvent.targetId === 'player'
             ? { ...damageEvent, equippedWeaponId: weaponLoadout.activeWeaponId }
             : damageEvent);

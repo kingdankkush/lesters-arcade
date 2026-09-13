@@ -402,12 +402,19 @@ if (isMain) {
         const menu = rect('#combatMenuPanel');
         const overlapWidth = deck && menu ? Math.max(0, Math.min(deck.right, menu.right) - Math.max(deck.left, menu.left)) : 0;
         const overlapHeight = deck && menu ? Math.max(0, Math.min(deck.bottom, menu.bottom) - Math.max(deck.top, menu.top)) : 0;
-        return { deck, menu, overlapArea: overlapWidth * overlapHeight };
+        const icon = rect('#combatMenuIconButton');
+        const iconOverlap = Math.max(0, Math.min(deck.right, icon.right) - Math.max(deck.left, icon.left))
+          * Math.max(0, Math.min(deck.bottom, icon.bottom) - Math.max(deck.top, icon.top));
+        return { deck, menu, overlapArea: overlapWidth * overlapHeight, iconOverlap,
+          position: getComputedStyle(document.querySelector('#arcadeMusicPlayer')).position,
+          documentHeight: document.documentElement.scrollHeight };
       });
       if (browserProfile === 'desktop') {
         assert.equal(pauseSurfaceGeometry.overlapArea, 0, `pause soundtrack overlaps the primary pause menu: ${JSON.stringify(pauseSurfaceGeometry)}`);
       } else {
         assert.ok(pauseSurfaceGeometry.overlapArea > 0, 'mobile soundtrack should open as an explicit contained drawer over the pause surface');
+        assert.equal(pauseSurfaceGeometry.position, 'fixed', 'phone pause deck must not re-enter document flow');
+        assert.equal(pauseSurfaceGeometry.iconOverlap, 0, 'expanded phone deck must clear the pause icon');
       }
       assert.ok(controls.every((rect) => rect.left >= pauseSurfaceGeometry.deck.left && rect.right <= pauseSurfaceGeometry.deck.right && rect.top >= pauseSurfaceGeometry.deck.top && rect.bottom <= pauseSurfaceGeometry.deck.bottom), `pause soundtrack controls escape their deck: ${JSON.stringify({ controls, deck: pauseSurfaceGeometry.deck })}`);
       await page.locator('#arcadeMusicVolume').fill('42');
@@ -441,6 +448,9 @@ if (isMain) {
         await page.waitForSelector('#arcadeMusicPlayer[data-expanded="false"]', { timeout: 10_000 });
         const launcher = await page.locator('#arcadeMusicPlayer').boundingBox();
         assert.ok(launcher && launcher.width <= 64 && launcher.height <= 64 && launcher.x >= viewport.width - 80 && launcher.y <= 80, `collapsed mobile soundtrack launcher is too large or blocks the pause title: ${JSON.stringify(launcher)}`);
+        const icon = await page.locator('#combatMenuIconButton').boundingBox();
+        assert.ok(icon && launcher.y >= icon.y + icon.height, 'phone soundtrack launcher must clear the pause icon');
+        assert.equal(await page.evaluate(() => document.documentElement.scrollHeight), pauseSurfaceGeometry.documentHeight, 'opening the phone soundtrack must not shift the page');
         await page.screenshot({ path: evidencePath('03b-paused-soundtrack-launcher'), fullPage: false });
       }
       if (browserProfile === 'mobile') await page.click('#combatMenuActionGrid [data-action="resume"]');

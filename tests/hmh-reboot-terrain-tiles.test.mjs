@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -193,6 +194,6 @@ test('sprite pooling reuses sprites, excludes the mask, and hides stale ones', a
 
 test('terrain load status is observable so a silent failure cannot hide', async () => {
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /dataset\.terrainTiles = terrainTiles\.ready \? 'authored-tiles-v1' : 'flat-colour-fallback'/);
-  assert.match(source, /dataset\.terrainTilesError = terrainTileLoadError/);
+  assert.match(runtimeTelemetrySource, /dataset\.terrainTiles = terrainTiles\.ready \? 'authored-tiles-v1' : 'flat-colour-fallback'/);
+  assert.match(runtimeTelemetrySource, /dataset\.terrainTilesError = terrainTileLoadError/);
 });

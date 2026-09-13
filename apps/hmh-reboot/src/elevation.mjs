@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { blockerSweepMayOverlap, immutableBlockerIndex } from './blocker-bounds.mjs';
 const EPSILON = 1e-9;
 
 import { clamp, finite } from './value-guards.mjs';
@@ -321,7 +322,8 @@ export function traceHeightAwareLineOfSight({ from, to, radius = 0, blockers = [
   nonNegative(radius, 'radius');
   if (!Array.isArray(blockers)) throw new TypeError('blockers must be an array');
   const hits = [];
-  for (const blocker of blockers) {
+  for (const blocker of immutableBlockerIndex(blockers)?.query(start.x,start.y,delta.x,delta.y,radius)??blockers) {
+    if(!blockerSweepMayOverlap(blocker.shape,start.x,start.y,delta.x,delta.y,radius))continue;
     const time = sweepShape(start, delta, radius, blocker.shape);
     if (time === null) continue;
     const z = fromZ + (toZ - fromZ) * time;

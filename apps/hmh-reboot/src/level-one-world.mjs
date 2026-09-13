@@ -1,4 +1,5 @@
 import { WORLD_DESIGN_SECRET_SEAL } from './world-design-secrets.mjs';
+import { WORLD_DESTRUCTIBLES, WORLD_DESTRUCTIBLE_BLOCKERS, WORLD_EXPLOSIVE_ZONES } from './world-destructibles.mjs';
 import { WORLD_DESIGN_NEW_LOTS } from './world-design-layout.mjs';
 import { WORLD_DESIGN_COURT_BLOCKERS, WORLD_DESIGN_PROP_BLOCKERS, buildWorldDesignPerimeter } from './world-design-encounters.mjs';
 import { freezeDeep } from './value-guards.mjs';
@@ -158,6 +159,7 @@ const BLOCKER_FEATURES = [
   ...buildWorldDesignPerimeter(BOUNDS),
   ...WORLD_DESIGN_COURT_BLOCKERS,
   WORLD_DESIGN_SECRET_SEAL,
+  ...WORLD_DESTRUCTIBLE_BLOCKERS,
   ...WORLD_DESIGN_PROP_BLOCKERS,
   ...WORLD_DESIGN_NEW_LOTS.map(lot => block(lot.id, lot.districtId, lot.x, lot.y, lot.width, lot.depth, lot.maxZ, lot.asset === 'hedge' ? 'dense-trees' : 'building')),
   // Frontier Relay: a fenced compound with a depot shed, an interior fence
@@ -282,16 +284,7 @@ const ENCOUNTER_ARENAS = [
   ['liquidator-arena', 'liquidation-yard', 11_000, 2_400, 620],
 ].map(([id, districtId, x, y, radius]) => freezeDeep({ id, districtId, anchor: point(x, y), radius }));
 
-const DESTRUCTIBLES = [
-  ['relay-barricade-a', 'frontier-relay', 1_600, 2_950],
-  ['ravine-barricade-a', 'rugpull-ravine', 2_100, 2_600],
-  ['ravine-barricade-b', 'rugpull-ravine', 3_400, 2_750],
-  ['crossing-crate-a', 'liquidity-crossing', 5_400, 2_850],
-  ['hashwood-deadfall-a', 'hashwood', 6_550, 2_700],
-  ['hashwood-deadfall-b', 'hashwood', 7_550, 2_850],
-  ['mining-pallet-a', 'mining-camp', 8_650, 2_800],
-  ['yard-container-lock', 'liquidation-yard', 10_450, 2_950],
-].map(([id, districtId, x, y]) => freezeDeep({ id, districtId, anchor: point(x, y), hitPoints: 80, visualKind: 'destructible-cover' }));
+const DESTRUCTIBLES = WORLD_DESTRUCTIBLES;
 
 const HAZARDS = [
   ['ravine-rockfall', 'rugpull-ravine', 3_500, 3_100, 'rockfall'],
@@ -301,11 +294,7 @@ const HAZARDS = [
   ['yard-liquidation-grid', 'liquidation-yard', 11_200, 3_300, 'damage-zone'],
 ].map(([id, districtId, x, y, kind]) => freezeDeep({ id, districtId, anchor: point(x, y), kind }));
 
-const EXPLOSIVE_ZONES = [
-  ['crossing-fuel-route', 'liquidity-crossing', 5_450, 3_050, 180],
-  ['mining-generator-bank', 'mining-camp', 8_550, 1_250, 160],
-  ['yard-tanker-row', 'liquidation-yard', 10_450, 3_550, 200],
-].map(([id, districtId, x, y, radius]) => freezeDeep({ id, districtId, anchor: point(x, y), radius, chainCap: 4 }));
+const EXPLOSIVE_ZONES = WORLD_EXPLOSIVE_ZONES;
 
 const SPAWN_POINTS = [
   ['relay-north-spawn', 'frontier-relay', 1_550, 500],

@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -237,9 +238,9 @@ test('runtime consumes the director before enemy movement and exposes bounded te
   assert.match(source, /budgets: runtimeEncounterSnapshot\(tick\)\.attackTokens/);
   assert.match(source, /runtimeEncounterSnapshot = \(tick\) => getEncounterSnapshot\(tick \+ \(endurancePressurePilotEnabled \? 75_600 : 0\)\)/);
   assert.ok(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled') < source.indexOf('lastEnemyStep = stepEnemyPopulation'));
-  assert.match(source, /dataset\.encounterBand/);
-  assert.match(source, /dataset\.directorInsertions/);
-  assert.match(source, /dataset\.enemyAttackTokensSupport/);
+  assert.match(runtimeTelemetrySource, /dataset\.encounterBand/);
+  assert.match(runtimeTelemetrySource, /dataset\.directorInsertions/);
+  assert.match(runtimeTelemetrySource, /dataset\.enemyAttackTokensSupport/);
 });
 
 test('a saturated ranged cap advances the spawn ordinal instead of deadlocking every spawn', () => {

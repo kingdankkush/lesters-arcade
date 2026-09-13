@@ -21,7 +21,7 @@ import { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_RUNTIME_SCALE } from '../apps/h
 
 const rosterPath = (actorId) => actorId === 'bagholder-rusher' && process.env.HMH_ENEMY_CANDIDATE_ROOT
   ? `${process.env.HMH_ENEMY_CANDIDATE_ROOT}/${actorId}/${actorId}-roster-atlas.json` : new URL(
-  `../apps/portal/assets/generated/hmh-reboot-enemy-roster/${actorId}/${actorId}-roster-atlas.json`,
+  `../apps/portal/${enemyRosterAsset(actorId).metadataUrl.replace('../','')}`,
   import.meta.url,
 );
 
@@ -76,9 +76,9 @@ test('every roster atlas is present, projection-only, and complete', async () =>
     // Index construction throws on any missing state/direction, so reaching
     // here already proves full coverage; assert the frame count as evidence.
     assert.equal(index.frameCount, metadata.frames.length);
-    // Rank-and-file actors carry one 152-frame set. The boss carries the same
-    // complete set for each of three authored phase silhouettes.
-    assert.equal(index.frameCount, actorId === 'the-liquidator' ? 456 : 152, `${actorId} frame count regressed`);
+    // Bagholder retains its preserved native clips; the new derivatives carry
+    // denser locomotion and all six actions across every boss phase.
+    assert.equal(index.frameCount, actorId === 'the-liquidator' ? 840 : actorId==='bagholder-rusher'?152:280, `${actorId} frame count regressed`);
     if (actorId === 'the-liquidator') assert.deepEqual([...index.phases], ['market-open', 'margin-call', 'total-liquidation']);
   }
 });
@@ -132,8 +132,8 @@ test('roster headings match the certified hero direction mapping exactly', async
 
 test('roster assets resolve to committed paths and reject unknown actors', () => {
   const asset = enemyRosterAsset('gas-bomber');
-  assert.match(asset.imageUrl, /hmh-reboot-enemy-roster\/gas-bomber\/gas-bomber-roster-atlas\.png$/);
-  assert.match(asset.metadataUrl, /gas-bomber-roster-atlas\.json$/);
+  assert.match(asset.imageUrl, /hmh-native-roster\/gas-bomber\/gas-bomber-native-roster\.webp$/);
+  assert.match(asset.metadataUrl, /gas-bomber-native-roster\.json$/);
   assert.throws(() => enemyRosterAsset('not-an-actor'), /unknown roster actor/);
 });
 
@@ -176,8 +176,9 @@ test('the runtime falls back to vector art and reports what it rendered', async 
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /createRosterOrVectorDisplay/, 'a fallback path must exist');
   assert.match(source, /createProductionEnemyDisplay\(\{\s*\n\s*archetypeId,/, 'vector art remains the fallback');
-  assert.match(source, /enemyRosterIndexes\.size > 0 \? 'production-roster-atlas-v1'/, 'art telemetry must be truthful');
-  assert.match(source, /dataset\.enemyRosterError/, 'a failed roster load must be observable');
+  const telemetry=await readFile(new URL('../apps/hmh-reboot/src/runtime-telemetry-writer.mjs',import.meta.url),'utf8');
+  assert.match(telemetry, /enemyRosterIndexes\.size > 0 \? 'production-roster-atlas-v1'/, 'art telemetry must be truthful');
+  assert.match(telemetry, /dataset\.enemyRosterError/, 'a failed roster load must be observable');
 });
 
 test('roster art carries no gameplay authority', async () => {
@@ -338,10 +339,10 @@ test('parity helper matches schema-2 indexed hero sprite trim and source-density
   }
 });
 
-test('native bagholder descriptor alone changes scale; ordinary and boss constants remain exact', () => {
+test('native descriptors use measured body scale while fallback constants remain exact', () => {
   assert.equal(enemyRosterAsset('bagholder-rusher').runtimeScale, 0.50);
   for (const actorId of ENEMY_ROSTER_ACTORS.filter((id) => id !== 'bagholder-rusher')) {
-    assert.equal(enemyRosterAsset(actorId).runtimeScale, actorId === 'the-liquidator' ? 0.86 : 0.75);
+    assert.equal(enemyRosterAsset(actorId).runtimeScale, actorId === 'the-liquidator' ? 0.88 : 0.55);
   }
   assert.equal(ENEMY_ROSTER_RUNTIME_SCALE, 0.75);
   assert.equal(BOSS_ROSTER_RUNTIME_SCALE, 0.86);
@@ -365,7 +366,7 @@ test('actual roster/fallback wiring carries the actor scale into existing camera
       TextureClass: fake.FakeTexture, RectangleClass: fake.FakeRectangle,
       GraphicsClass: fake.FakeGraphics, scale: 1 });
     display.rosterScale = enemyRosterAsset(actorId).runtimeScale;
-    const expected = actorId === 'bagholder-rusher' ? 0.50 : 0.75;
+    const expected = actorId === 'bagholder-rusher' ? 0.50 : 0.55;
     assert.equal(display.rosterScale, expected);
     for (const zoom of [0.7, 1, 1.6]) {
       display.scale.set(display.rosterScale * zoom);

@@ -107,7 +107,7 @@ test('the movement field slows inside the spore bed, drifts inside the conveyor 
   // The hashwood shrine stays outside the bed so resting there is never slowed.
   const query = createLevelOneGroundQuery();
   assert.equal(worldHazardField(HAZARDS, { x: 7380, y: 3450, groundZ: query(7380, 3450).groundZ }).speed, 1);
-  assert.deepEqual([...WORLD_ENVIRONMENT_WEAPON_IDS], ['world-steam', 'world-rockfall', 'world-grid']);
+  assert.deepEqual([...WORLD_ENVIRONMENT_WEAPON_IDS], ['world-steam', 'world-rockfall', 'world-grid', 'world-fuel']);
   for (const id of WORLD_ENVIRONMENT_WEAPON_IDS) assert.ok(!(id in HMH_RUN_SUMMARY_CATALOGS.weapons) && !Object.values(HMH_RUN_SUMMARY_CATALOGS.weapons).includes(id), `${id} must stay off the run-summary weapon catalog`);
 });
 

@@ -12,7 +12,9 @@ import hashlib
 import json
 import math
 import struct
+import platform
 from pathlib import Path
+from hmh_sfx_metrics import analyse
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / 'apps/portal/assets/audio/sfx'
@@ -46,9 +48,9 @@ def lowpass(samples, hz):
 
 
 def layer(kind, gain, decay, *, at=0, attack=.35, hz=180, sweep=1,
-          low=9500, high=0, length=None):
+          low=9500, high=0, length=None, post=False):
     return dict(kind=kind, gain=gain, decayMs=decay, startMs=at, attackMs=attack,
-                hz=hz, sweep=sweep, lowpassHz=low, highpassHz=high, lengthMs=length or decay * 5)
+                hz=hz, sweep=sweep, lowpassHz=low, highpassHz=high, lengthMs=length or decay * 5,postSaturation=post)
 
 
 def metal(gain, at, hz=1500, decay=12):
@@ -57,13 +59,14 @@ def metal(gain, at, hz=1500, decay=12):
             layer('noise', gain * .7, 3, at=at, high=1500)]
 
 
-def shot(seed, duration, hz, decay, *, crack=1.8, low=8800):
-    return dict(seed=seed, durationMs=duration, drive=1.7, peak=.76, layers=[
-        layer('noise', crack, 9, low=low, high=1400),
-        layer('noise', 1.8, decay, low=1700),
-        layer('tone', 1.35, decay * 1.15, hz=hz, sweep=.74, low=1100),
-        layer('noise', .35, decay * .8, at=42, low=3600),
-        *metal(.22, 26, hz=1900, decay=10),
+def shot(seed, duration, hz, decay, *, crack=4.2, sub=66, heavy=False):
+    return dict(seed=seed, durationMs=duration, drive=1.1, peak=.76, layers=[
+        layer('noise', crack, 3.5 if heavy else 2.5, low=9000, high=1600,attack=.12,length=24,post=True),
+        layer('noise', .34, decay*.7, low=1800),
+        layer('tone', .75, decay, hz=hz, sweep=.92, low=1100),
+        layer('sub', .85 if heavy else .33, decay*1.05, hz=sub, sweep=.94, low=400),
+        layer('noise', .14, decay * .6, at=35, low=3600),
+        *metal(.13, 26, hz=1900, decay=8),
     ])
 
 
@@ -85,14 +88,15 @@ def reward(seed, notes, runtime, *, duration=460):
 CUES = {
     # Immediate crack, low-mid pressure that survives laptop speakers, then
     # a brief reflected tail. The fired event never starts with a charge-up.
-    'hmh-fire-coin-blaster': shot(0x0C01B1A5, 240, 145, 54),
-    'hmh-fire-scatter-shotgun': shot(0x5C471234, 480, 88, 102, crack=2.3, low=7200),
-    'hmh-fire-auto-miner': shot(0x0A471111, 170, 158, 43, crack=1.65),
-    'hmh-fire-launcher-rig': shot(0x1A0C4E12, 520, 66, 125, crack=.8, low=3200),
-    'hmh-fire-hash-rail': cue(0x8A571A11, 440, [
-        layer('noise', 2, 12, high=1000), layer('tone', 1.1, 75, hz=94, sweep=.7),
-        layer('metal', .65, 95, hz=530, sweep=.82), layer('noise', .4, 110, at=20, low=4700),
-    ], peak=.76, drive=1.8),
+    'hmh-fire-coin-blaster': shot(0x0C01B1A5, 190, 165, 32,crack=1.9),
+    'hmh-fire-scatter-shotgun': shot(0x5C471234, 400, 170, 76, crack=4.8,sub=67,heavy=True),
+    'hmh-fire-auto-miner': shot(0x0A471111, 120, 178, 27, crack=1.0,sub=74),
+    'hmh-fire-launcher-rig': shot(0x1A0C4E12, 460, 145, 90, crack=4.1,sub=59,heavy=True),
+    'hmh-fire-hash-rail': cue(0x8A571A11, 350, [
+        layer('noise', 3.2, 3.5, high=1600,attack=.12,length=24,post=True),
+        layer('sub', .66, 62, hz=71, sweep=.94),layer('tone', .70, 58, hz=190,sweep=.88),
+        layer('metal', .3, 65, hz=530, sweep=.82), layer('noise', .2, 65, at=20, low=4700),
+    ], peak=.76, drive=1.1),
     'hmh-fire-lightning-ledger': cue(0x11E6E220, 190, [
         layer('noise', 1.4, 8, high=1800), layer('metal', .8, 27, hz=670, sweep=1.14),
         layer('tone', .65, 40, hz=185, sweep=.6), layer('noise', .6, 13, at=35, high=1000),
@@ -219,6 +223,7 @@ CUES = {
 def render_cue(spec):
     total = round(SAMPLE_RATE * spec['durationMs'] / 1000)
     out = [0.0] * total
+    transient = [0.0] * total
     rng = Rng(spec['seed'])
     for recipe in spec['layers']:
         start = round(recipe['startMs'] * SAMPLE_RATE / 1000)
@@ -234,6 +239,8 @@ def render_cue(spec):
                 value = rng.next_unit()
             elif recipe['kind'] == 'tone':
                 value = math.sin(phase)
+            elif recipe['kind'] == 'sub':
+                value = (math.sin(phase)+.16*math.sin(phase*2)+.05*math.sin(phase*3))/1.21
             elif recipe['kind'] == 'metal':
                 modes = [(1, 1), (1.47, .58), (2.11, .39), (2.89, .22), (4.17, .12)]
                 value = sum(math.sin(phase * ratio) * gain for ratio, gain in modes
@@ -258,8 +265,9 @@ def render_cue(spec):
             bass = lowpass(values, recipe['highpassHz'])
             values = [value - low for value, low in zip(values, bass)]
         for index, value in enumerate(values):
-            out[start + index] += value * recipe['gain']
-    out = [math.tanh(value * spec['drive']) for value in out]
+            target=transient if recipe.get('postSaturation') else out
+            target[start + index] += value * recipe['gain']
+    out = [math.tanh(value * spec['drive'])+crack for value,crack in zip(out,transient)]
     # Saturation creates upper harmonics after the layer filters. Restrict
     # those before normalization to retain intersample reconstruction margin.
     out = lowpass(lowpass(out, 9000), 9000)
@@ -290,7 +298,7 @@ def pcm_metrics(payload):
     peak = max(map(abs, values))
     return dict(peak=round(peak, 6), rms=round(rms, 6), dcMean=round(sum(values) / len(values), 6),
                 crestDb=round(20 * math.log10(peak / rms), 3),
-                clippedSamples=sum(abs(x) >= .999 for x in values))
+                clippedSamples=sum(abs(x) >= .999 for x in values),weight=analyse(values,SAMPLE_RATE))
 
 
 def build(verify):
@@ -307,7 +315,7 @@ def build(verify):
     manifest = dict(pipelineId=PIPELINE_ID, license='synthesised-in-repo', runtimeAuthority='projection-only',
                     sampleRate=SAMPLE_RATE, channels=1, bitDepth=16, peakCeiling=PEAK_CEILING,
                     notes='Original layered action sounds. No external recordings. Regenerate with npm run assets:hmh:weapon-sfx.',
-                    cues=cues, reproducibleVerified=verify)
+                    cues=cues, reproducibleVerified=verify,renderRevision='pressure-crack-v3',pythonVersion=platform.python_version())
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')
     return manifest
 

@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "whale-enforcer",
+  "identityForm": "zombie",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/bagholder-rusher-packed.blend",
+  "baseSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+  "sourceUnchanged": true,
+  "source": "whale-enforcer.blend",
+  "sourceSha256": "9e2ded2b63c852e46ea3b49349ca48f8e7fe1eb73804438ea5b306a737fefe50",
+  "sourceBytes": 17589251,
+  "armature": "whale-enforcer Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 62277,
+  "costumeMeshes": 1,
+  "gearMeshes": 39,
+  "clipActions": {
+    "idle": "HMH_whale-enforcer_idle",
+    "run": "HMH_whale-enforcer_run",
+    "tell": "HMH_whale-enforcer_tell",
+    "attack": "HMH_whale-enforcer_attack",
+    "hit": "HMH_whale-enforcer_hit",
+    "death": "HMH_whale-enforcer_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.7478000354766845,
+  "animationProfile": {
+    "kind": "undead-shoulder-charge-v1",
+    "damageResponse": "armored-shoulder-absorb-v1"
+  },
+  "builderSha256": "025ce0e983c561cc82aab2863e4bc199f88f971a961fecdffce5a90c08b5fb75",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "reviewedCandidateSha256": "d35f1ae1f7692b0830aed8de78d0a0404cbe0ad8ad13bef8a815116ba424f56f",
+  "storageCompactorSha256": "84d30936601ea3a3873936d9ecadf718a9987c5becdf13744486c766a23c47a7",
+  "reviewedCandidateUnchanged": true
+}

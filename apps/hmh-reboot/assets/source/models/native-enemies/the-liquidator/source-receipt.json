@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "the-liquidator",
+  "identityForm": "zombie",
+  "boss": true,
+  "phaseVisuals": {
+    "market-open": {
+      "accent": "#ff496c",
+      "silhouetteCue": "crown-rig"
+    },
+    "margin-call": {
+      "accent": "#ffc857",
+      "silhouetteCue": "margin-spikes"
+    },
+    "total-liquidation": {
+      "accent": "#e26dff",
+      "silhouetteCue": "liquidation-halo"
+    }
+  },
+  "baseSource": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/bagholder-rusher-packed.blend",
+  "baseSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+  "sourceUnchanged": true,
+  "source": "the-liquidator.blend",
+  "sourceSha256": "56a9e240a8cc053f09e2ef95046bf84520ffa65ec561c5dec5e1f46c6ebed574",
+  "sourceBytes": 17601526,
+  "armature": "the-liquidator Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 62277,
+  "costumeMeshes": 1,
+  "gearMeshes": 50,
+  "clipActions": {
+    "idle": "HMH_the-liquidator_idle",
+    "run": "HMH_the-liquidator_run",
+    "tell": "HMH_the-liquidator_tell",
+    "attack": "HMH_the-liquidator_attack",
+    "hit": "HMH_the-liquidator_hit",
+    "death": "HMH_the-liquidator_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.7478000354766845,
+  "animationProfile": {},
+  "builderSha256": "025ce0e983c561cc82aab2863e4bc199f88f971a961fecdffce5a90c08b5fb75",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "reviewedCandidateSha256": "b1c1314f77496b5e82454bf2e4299abf2b63d65f732227d05ad832e0c6ef099a",
+  "storageCompactorSha256": "84d30936601ea3a3873936d9ecadf718a9987c5becdf13744486c766a23c47a7",
+  "reviewedCandidateUnchanged": true
+}

@@ -1,0 +1,5331 @@
+{
+  "actorId": "forkrunner",
+  "preview": false,
+  "sourceSha256": "a3f56a810c4dde961c9b7d7391bd95d89603a765636a98e522395c5ba6f9dc67",
+  "sourceUnchanged": true,
+  "exporterSha256": "0836b0bf503b341e61b0090b3dab1d3b77729fe6edf814461be36b5064e64baa",
+  "frames": [
+    {
+      "id": "forkrunner__body__idle__south__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "south",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__south__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "south",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__south__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "south",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__south__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "south",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-east__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-east",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-east__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-east",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-east__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-east",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-east__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-east",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__east__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "east",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__east__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "east",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__east__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "east",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__east__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "east",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-east__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-east",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-east__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-east",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-east__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-east",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-east__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-east",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__north__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "north",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__north__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "north",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__north__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "north",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__north__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "north",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-west__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-west",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-west__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-west",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-west__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-west",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__north-west__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "north-west",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__west__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "west",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__west__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "west",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__west__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "west",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__west__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "west",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-west__000",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-west",
+      "frameIndex": 0,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4231156798014695e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-west__001",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-west",
+      "frameIndex": 1,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-west__002",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-west",
+      "frameIndex": 2,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.8604801033106355e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__idle__south-west__003",
+      "phase": null,
+      "state": "idle",
+      "direction": "south-west",
+      "frameIndex": 3,
+      "fps": 6,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.651280749445874e-11,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__south__000",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__south__001",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.235425426519669e-10,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__south__002",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__south__003",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4561145056954956e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__south__004",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__south__005",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.783952288813566e-10,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__south__006",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__south__007",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.0114843124474646e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__south__008",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__south__009",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.810269516042354e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__south__010",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__south__011",
+      "phase": null,
+      "state": "run",
+      "direction": "south",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__000",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__001",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.1332359212422602e-09,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__002",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__003",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4561145056954956e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__004",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__005",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.312981497089368e-10,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__006",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__007",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.0114843124474646e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__008",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__009",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.810269516042354e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__010",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__south-east__011",
+      "phase": null,
+      "state": "run",
+      "direction": "south-east",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__east__000",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__east__001",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.235425426519669e-10,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__east__002",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__east__003",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4561145056954956e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__east__004",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__east__005",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.783952288813566e-10,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__east__006",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__east__007",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.0114843124474646e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__east__008",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__east__009",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.810269516042354e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__east__010",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__east__011",
+      "phase": null,
+      "state": "run",
+      "direction": "east",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__000",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__001",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.1332359212422602e-09,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__002",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__003",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4561145056954956e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__004",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__005",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.312981497089368e-10,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__006",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__007",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.0114843124474646e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__008",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__009",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.810269516042354e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__010",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__north-east__011",
+      "phase": null,
+      "state": "run",
+      "direction": "north-east",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__north__000",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__north__001",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.235425426519669e-10,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__north__002",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__north__003",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4561145056954956e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__north__004",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__north__005",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.783952288813566e-10,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__north__006",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__north__007",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.0114843124474646e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__north__008",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__north__009",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.810269516042354e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__north__010",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__north__011",
+      "phase": null,
+      "state": "run",
+      "direction": "north",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__000",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__001",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.7639001370639562e-11,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__002",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__003",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4325003405701864e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__004",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__005",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.6901534616309277e-09,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__006",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__007",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 8.106586513179082e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__008",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__009",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.833883681167663e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__010",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__north-west__011",
+      "phase": null,
+      "state": "run",
+      "direction": "north-west",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__west__000",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__west__001",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.235425426519669e-10,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__west__002",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__west__003",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.4561145056954956e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__west__004",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__west__005",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.783952288813566e-10,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__west__006",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__west__007",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.0114843124474646e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__west__008",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__west__009",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.810269516042354e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__west__010",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__west__011",
+      "phase": null,
+      "state": "run",
+      "direction": "west",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__000",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.9397192185799383e-12,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__001",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.7639001370639562e-11,
+      "nativeFrame": 3.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__002",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.7376514388777196e-09,
+      "nativeFrame": 5.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__003",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4325003405701864e-09,
+      "nativeFrame": 7.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__004",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.708085311553532e-09,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__005",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.6901534616309277e-09,
+      "nativeFrame": 11.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__006",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 6,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.304771158274769e-16,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__007",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 7,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 8.106586513179082e-10,
+      "nativeFrame": 15.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__008",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 8,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.339855834231912e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__009",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 9,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.833883681167663e-09,
+      "nativeFrame": 19.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__010",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 10,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.0295080343780683e-09,
+      "nativeFrame": 21.0
+    },
+    {
+      "id": "forkrunner__body__run__south-west__011",
+      "phase": null,
+      "state": "run",
+      "direction": "south-west",
+      "frameIndex": 11,
+      "fps": 24,
+      "loop": true,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.1143983513761668e-09,
+      "nativeFrame": 23.0
+    },
+    {
+      "id": "forkrunner__body__tell__south__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "south",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.796179980421812e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__south__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "south",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 7.58975104986348e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__south__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "south",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4780905388533938e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__south__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "south",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.3304478347085933e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-east__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.425935339393618e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-east__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 7.58975104986348e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-east__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4780905388533938e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-east__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-east",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.3304478347085933e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__east__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.796179980421812e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__east__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 7.58975104986348e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__east__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4780905388533938e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__east__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "east",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.3304478347085933e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-east__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.425935339393618e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-east__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 7.58975104986348e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-east__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4780905388533938e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-east__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-east",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.3304478347085933e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__north__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "north",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.796179980421812e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__north__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "north",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 7.58975104986348e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__north__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "north",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4780905388533938e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__north__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "north",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.3304478347085933e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-west__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.666207699064671e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-west__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.528319775763066e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-west__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -5.455236262719154e-10,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__north-west__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "north-west",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.520799486343094e-08,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__west__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.796179980421812e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__west__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 7.58975104986348e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__west__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.4780905388533938e-09,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__west__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "west",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.3304478347085933e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-west__000",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.666207699064671e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-west__001",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.528319775763066e-10,
+      "nativeFrame": 9.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-west__002",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -5.455236262719154e-10,
+      "nativeFrame": 17.0
+    },
+    {
+      "id": "forkrunner__body__tell__south-west__003",
+      "phase": null,
+      "state": "tell",
+      "direction": "south-west",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.520799486343094e-08,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__south__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "south",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.990994450006838e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__south__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "south",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__south__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "south",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__south__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "south",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__south__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "south",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__south__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "south",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.532019204361859e-11,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__south-east__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-east",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.522209356456642e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__south-east__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-east",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__south-east__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-east",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__south-east__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-east",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__south-east__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-east",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__south-east__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-east",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.532019204361859e-11,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__east__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "east",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.990994450006838e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__east__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "east",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__east__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "east",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__east__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "east",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__east__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "east",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__east__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "east",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.532019204361859e-11,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__north-east__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-east",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.522209356456642e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__north-east__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-east",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__north-east__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-east",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__north-east__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-east",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__north-east__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-east",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__north-east__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-east",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.532019204361859e-11,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__north__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "north",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.990994450006838e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__north__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "north",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__north__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "north",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__north__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "north",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__north__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "north",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__north__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "north",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.532019204361859e-11,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__north-west__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-west",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.522209356456642e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__north-west__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-west",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__north-west__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-west",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__north-west__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-west",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__north-west__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-west",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__north-west__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "north-west",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.393453322317555e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__west__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "west",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 6.990994450006838e-09,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__west__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "west",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__west__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "west",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__west__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "west",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__west__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "west",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__west__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "west",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.532019204361859e-11,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__attack__south-west__000",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-west",
+      "frameIndex": 0,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 5.522209356456642e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__attack__south-west__001",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-west",
+      "frameIndex": 1,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -7.132010537702627e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__attack__south-west__002",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-west",
+      "frameIndex": 2,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.208376592705008e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__attack__south-west__003",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-west",
+      "frameIndex": 3,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -9.95575177853425e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__attack__south-west__004",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-west",
+      "frameIndex": 4,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.803091898011644e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__attack__south-west__005",
+      "phase": null,
+      "state": "attack",
+      "direction": "south-west",
+      "frameIndex": 5,
+      "fps": 24,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.393453322317555e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__south__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "south",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__south__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "south",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__south__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "south",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__south-east__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "south-east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__south-east__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "south-east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__south-east__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "south-east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__east__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__east__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__east__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__north-east__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "north-east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__north-east__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "north-east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__north-east__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "north-east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__north__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "north",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__north__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "north",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__north__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "north",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__north-west__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "north-west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__north-west__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "north-west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__north-west__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "north-west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__west__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__west__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__west__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__hit__south-west__000",
+      "phase": null,
+      "state": "hit",
+      "direction": "south-west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__hit__south-west__001",
+      "phase": null,
+      "state": "hit",
+      "direction": "south-west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 13.0
+    },
+    {
+      "id": "forkrunner__body__hit__south-west__002",
+      "phase": null,
+      "state": "hit",
+      "direction": "south-west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.3056244974052333e-10,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__south__000",
+      "phase": null,
+      "state": "death",
+      "direction": "south",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__south__001",
+      "phase": null,
+      "state": "death",
+      "direction": "south",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.515868624541895e-09,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__south__002",
+      "phase": null,
+      "state": "death",
+      "direction": "south",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 9.85013404175561e-10,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__south__003",
+      "phase": null,
+      "state": "death",
+      "direction": "south",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.684413329985148e-09,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__south__004",
+      "phase": null,
+      "state": "death",
+      "direction": "south",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.2521732256919336e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__south__005",
+      "phase": null,
+      "state": "death",
+      "direction": "south",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -3.5218885585663884e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__south-east__000",
+      "phase": null,
+      "state": "death",
+      "direction": "south-east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__south-east__001",
+      "phase": null,
+      "state": "death",
+      "direction": "south-east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 9.061752459516015e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__south-east__002",
+      "phase": null,
+      "state": "death",
+      "direction": "south-east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.204400161356148e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__south-east__003",
+      "phase": null,
+      "state": "death",
+      "direction": "south-east",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.6502657280456106e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__south-east__004",
+      "phase": null,
+      "state": "death",
+      "direction": "south-east",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.424798471016402e-10,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__south-east__005",
+      "phase": null,
+      "state": "death",
+      "direction": "south-east",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -3.5218885585663884e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__east__000",
+      "phase": null,
+      "state": "death",
+      "direction": "east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__east__001",
+      "phase": null,
+      "state": "death",
+      "direction": "east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.515868624541895e-09,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__east__002",
+      "phase": null,
+      "state": "death",
+      "direction": "east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 9.85013404175561e-10,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__east__003",
+      "phase": null,
+      "state": "death",
+      "direction": "east",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.684413329985148e-09,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__east__004",
+      "phase": null,
+      "state": "death",
+      "direction": "east",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.2521732256919336e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__east__005",
+      "phase": null,
+      "state": "death",
+      "direction": "east",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -3.5218885585663884e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__north-east__000",
+      "phase": null,
+      "state": "death",
+      "direction": "north-east",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__north-east__001",
+      "phase": null,
+      "state": "death",
+      "direction": "north-east",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 9.061752459516015e-10,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__north-east__002",
+      "phase": null,
+      "state": "death",
+      "direction": "north-east",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.204400161356148e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__north-east__003",
+      "phase": null,
+      "state": "death",
+      "direction": "north-east",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 4.6502657280456106e-10,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__north-east__004",
+      "phase": null,
+      "state": "death",
+      "direction": "north-east",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.424798471016402e-10,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__north-east__005",
+      "phase": null,
+      "state": "death",
+      "direction": "north-east",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -3.5218885585663884e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__north__000",
+      "phase": null,
+      "state": "death",
+      "direction": "north",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__north__001",
+      "phase": null,
+      "state": "death",
+      "direction": "north",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.515868624541895e-09,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__north__002",
+      "phase": null,
+      "state": "death",
+      "direction": "north",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 9.85013404175561e-10,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__north__003",
+      "phase": null,
+      "state": "death",
+      "direction": "north",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.684413329985148e-09,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__north__004",
+      "phase": null,
+      "state": "death",
+      "direction": "north",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.2521732256919336e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__north__005",
+      "phase": null,
+      "state": "death",
+      "direction": "north",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -3.5218885585663884e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__north-west__000",
+      "phase": null,
+      "state": "death",
+      "direction": "north-west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__north-west__001",
+      "phase": null,
+      "state": "death",
+      "direction": "north-west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.5040615419792402e-09,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__north-west__002",
+      "phase": null,
+      "state": "death",
+      "direction": "north-west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.0386007609497483e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__north-west__003",
+      "phase": null,
+      "state": "death",
+      "direction": "north-west",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.5234443140907956e-09,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__north-west__004",
+      "phase": null,
+      "state": "death",
+      "direction": "north-west",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.424798471016402e-10,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__north-west__005",
+      "phase": null,
+      "state": "death",
+      "direction": "north-west",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.557309806254352e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__west__000",
+      "phase": null,
+      "state": "death",
+      "direction": "west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__west__001",
+      "phase": null,
+      "state": "death",
+      "direction": "west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 2.515868624541895e-09,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__west__002",
+      "phase": null,
+      "state": "death",
+      "direction": "west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 9.85013404175561e-10,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__west__003",
+      "phase": null,
+      "state": "death",
+      "direction": "west",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.684413329985148e-09,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__west__004",
+      "phase": null,
+      "state": "death",
+      "direction": "west",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -2.2521732256919336e-09,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__west__005",
+      "phase": null,
+      "state": "death",
+      "direction": "west",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -3.5218885585663884e-09,
+      "nativeFrame": 25.0
+    },
+    {
+      "id": "forkrunner__body__death__south-west__000",
+      "phase": null,
+      "state": "death",
+      "direction": "south-west",
+      "frameIndex": 0,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -8.687937530648553e-16,
+      "nativeFrame": 1.0
+    },
+    {
+      "id": "forkrunner__body__death__south-west__001",
+      "phase": null,
+      "state": "death",
+      "direction": "south-west",
+      "frameIndex": 1,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 1.5040615419792402e-09,
+      "nativeFrame": 5.8
+    },
+    {
+      "id": "forkrunner__body__death__south-west__002",
+      "phase": null,
+      "state": "death",
+      "direction": "south-west",
+      "frameIndex": 2,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -1.0386007609497483e-09,
+      "nativeFrame": 10.6
+    },
+    {
+      "id": "forkrunner__body__death__south-west__003",
+      "phase": null,
+      "state": "death",
+      "direction": "south-west",
+      "frameIndex": 3,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": 3.5234443140907956e-09,
+      "nativeFrame": 15.4
+    },
+    {
+      "id": "forkrunner__body__death__south-west__004",
+      "phase": null,
+      "state": "death",
+      "direction": "south-west",
+      "frameIndex": 4,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.424798471016402e-10,
+      "nativeFrame": 20.2
+    },
+    {
+      "id": "forkrunner__body__death__south-west__005",
+      "phase": null,
+      "state": "death",
+      "direction": "south-west",
+      "frameIndex": 5,
+      "fps": 12,
+      "loop": false,
+      "sourceSize": [
+        256,
+        256
+      ],
+      "sourcePivot": [
+        128,
+        162
+      ],
+      "groundResidual": -6.557309806254352e-09,
+      "nativeFrame": 25.0
+    }
+  ],
+  "runtimeScale": 0.5053191425952506,
+  "blenderVersion": "5.1.2"
+}

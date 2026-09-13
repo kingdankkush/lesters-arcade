@@ -41,13 +41,14 @@ export const ENEMY_ROSTER_ACTORS = Object.freeze([
 
 export function enemyRosterAsset(actorId) {
   if (!ENEMY_ROSTER_ACTORS.includes(actorId)) throw new TypeError(`unknown roster actor: ${String(actorId)}`);
+  const native=actorId!=='bagholder-rusher';
   return Object.freeze({
     actorId,
-    imageUrl: `${ROSTER_ROOT}/${actorId}/${actorId}-roster-atlas.png`,
-    metadataUrl: `${ROSTER_ROOT}/${actorId}/${actorId}-roster-atlas.json`,
+    imageUrl: native?`../assets/generated/hmh-native-roster/${actorId}/${actorId}-native-roster.webp`:`${ROSTER_ROOT}/${actorId}/${actorId}-roster-atlas.png`,
+    metadataUrl: native?`../assets/generated/hmh-native-roster/${actorId}/${actorId}-native-roster.json`:`${ROSTER_ROOT}/${actorId}/${actorId}-roster-atlas.json`,
     // Native overscan retains raster detail; world size is projection-only.
     runtimeScale: actorId === 'bagholder-rusher' ? 0.50
-      : actorId === 'the-liquidator' ? BOSS_ROSTER_RUNTIME_SCALE : ENEMY_ROSTER_RUNTIME_SCALE,
+      : actorId === 'the-liquidator' ? .88 : .55,
     ...(actorId === 'bagholder-rusher' ? {
       nativeSourceSha256: 'd71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856',
     } : {}),
@@ -79,6 +80,9 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
       || metadata.poseAuthoring?.mode !== 'preserved-native-actions')) {
     throw new TypeError('bagholder roster native source mismatch');
   }
+  if(metadata.actorId!=='bagholder-rusher' && (metadata.sourceModel?.kind!=='packed-native-roster-derivative'
+    || !/^[a-f0-9]{64}$/.test(metadata.sourceModel.sourceSha256??'')
+    || metadata.poseAuthoring?.mode!=='retargeted-native-role-actions'))throw new TypeError('roster native source mismatch');
 
   const byKey = new Map();
   const clipByKey = new Map();

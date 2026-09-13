@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -343,19 +344,19 @@ test('main.mjs wires bounce puffs, class shake, the blast mode and the new telem
   assert.match(source, /capGrenadeFxParticles\(/u);
   assert.match(source, /resolveGrenadeArcShadow\(/u);
   assert.match(source, /event\.type [!=]== 'grenade-bounce'/u, 'the bounce event must be rendered');
-  assert.match(source, /dataset\.grenadeFxParticles/u);
-  assert.match(source, /dataset\.grenadeFxEvents/u);
+  assert.match(runtimeTelemetrySource, /dataset\.grenadeFxParticles/u);
+  assert.match(runtimeTelemetrySource, /dataset\.grenadeFxEvents/u);
   assert.doesNotMatch(source, /Math\.random/u);
   // The bounce queue is separate from the 64-slot combat pool so
   // effectPoolPressure and impact feedback are unaffected.
   assert.match(source, /grenadeFxEvents = \[\]/u);
   assert.match(source, /MAX_GRENADE_FX_EVENTS/u);
   // Pinned telemetry the browser smokes read must stay byte-identical.
-  assert.match(source, /dataset\.grenadeCount = String\(grenadeSystem\?\.active\.length \?\? 0\);/u);
-  assert.match(source, /dataset\.activeGrenadeWarningRadius = String\(activeGrenadeWarningRadius\);/u);
-  assert.match(source, /dataset\.lastGrenadeReason = lastGrenadeDetonation\?\.reason \?\? '';/u);
-  assert.match(source, /dataset\.effectPoolPressure = `\$\{combatVisualEvents\.length\}\/\$\{MAX_COMBAT_VISUAL_EVENTS\}`;/u);
-  assert.match(source, /dataset\.worldRenderedParticles = String\(worldArtReport\?\.renderedParticleCount \?\? 0\);/u, 'grenade fragments never count as world particles');
+  assert.match(runtimeTelemetrySource, /dataset\.grenadeCount = String\(grenadeSystem\?\.active\.length \?\? 0\);/u);
+  assert.match(runtimeTelemetrySource, /dataset\.activeGrenadeWarningRadius = String\(activeGrenadeWarningRadius\);/u);
+  assert.match(runtimeTelemetrySource, /dataset\.lastGrenadeReason = lastGrenadeDetonation\?\.reason \?\? '';/u);
+  assert.match(runtimeTelemetrySource, /dataset\.effectPoolPressure = `\$\{combatVisualEvents\.length\}\/\$\{MAX_COMBAT_VISUAL_EVENTS\}`;/u);
+  assert.match(runtimeTelemetrySource, /dataset\.worldRenderedParticles = String\(worldArtReport\?\.renderedParticleCount \?\? 0\);/u, 'grenade fragments never count as world particles');
   // The reset path must clear the queue or a restarted run replays stale puffs.
   const resets = source.match(/grenadeFxEvents = \[\];/gu) ?? [];
   assert.ok(resets.length >= 2, `expected the queue to be declared and reset, found ${resets.length} assignments`);

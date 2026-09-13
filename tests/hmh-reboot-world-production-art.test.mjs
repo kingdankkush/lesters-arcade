@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -123,8 +124,8 @@ test('world art contract is production, layered, and never gains gameplay author
   const source = read('apps/hmh-reboot/src/main.mjs');
   assert.match(source, /createWorldProductionLayers/);
   assert.match(source, /renderWorldProductionArt/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.worldArt = 'production-vector-world-v1'/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.worldShader/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.worldArt = 'production-vector-world-v1'/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.worldShader/);
   assert.doesNotMatch(source, /worldProduction(?:Layers)?\.(?:collision|damage|health|spawn|score|wallet|settlement|bridge|persistence)\s*=/);
 
   const worldSource = read('apps/hmh-reboot/src/world-production-art.mjs');

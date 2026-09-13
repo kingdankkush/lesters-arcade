@@ -1,8 +1,10 @@
 import { WORLD_DESIGN_SITES } from './world-design-encounters.mjs';
+import { WORLD_DESTRUCTIBLES } from './world-destructibles.mjs';
 
 // Loaded only for an explicitly requested evidence tour.
 export function createWorldTourSpawns(authoredPointOfInterestPlacements) {
   const worldTourSpawns = Object.freeze({
+    ...Object.fromEntries(WORLD_DESTRUCTIBLES.map(d=>[`cover-${d.id}`,{x:d.anchor.x,y:d.anchor.y+110}])),
     ...Object.fromEntries(WORLD_DESIGN_SITES.map(s=>[`site-${s.id}`,{x:s.x,y:s.y+100}])),
     farmhouse: Object.freeze({x:650,y:1880}),
     reservoir: Object.freeze({x:5770,y:4150}),

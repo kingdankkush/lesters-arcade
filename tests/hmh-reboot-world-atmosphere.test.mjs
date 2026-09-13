@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -434,13 +435,13 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
     /dataset\.atmosphereTint = /u,
     /const atmosphereBudget = resolveAtmosphereBudget\(performanceProfile\)/u,
   ]) {
-    assert.match(source, pin, `main.mjs is missing ${pin}`);
+    assert.match(pin.source.includes('dataset') ? runtimeTelemetrySource : source, pin, `runtime is missing ${pin}`);
   }
   // Art must never be able to break a run: the same degrade-to-null rule as
   // the shadows and weapon VFX.
   assert.match(source, /atmospherePool = null;\s*console\.warn\('\[HMH\] world atmosphere disabled'/u);
   // The world hazard particle cap the perf smoke asserts stays byte-identical.
-  assert.match(source, /dataset\.worldRenderedParticles = String\(worldArtReport\?\.renderedParticleCount \?\? 0\);/u);
+  assert.match(runtimeTelemetrySource, /dataset\.worldRenderedParticles = String\(worldArtReport\?\.renderedParticleCount \?\? 0\);/u);
   assert.doesNotMatch(source, /worldRenderedParticles = String\([^)]*atmosphere/u, 'atmosphere never inflates the world particle count');
   // Projection state never lands on simulation entities.
   assert.doesNotMatch(source, /simulation\.atmosphere|actor\.atmosphere|enemy\.atmosphere/u);
