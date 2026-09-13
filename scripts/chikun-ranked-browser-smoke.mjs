@@ -199,7 +199,8 @@ try {
   await frame.locator('#resultScore').evaluate((node) => new Promise((resolve, reject) => {
     const deadline = performance.now() + 15_000;
     const check = () => {
-      if (!document.querySelector('#resultOverlay')?.hidden && Number.parseInt(node.textContent ?? '', 10) > 0) resolve(true);
+      const overlay = document.querySelector('#resultOverlay');
+      if (overlay && getComputedStyle(overlay).display !== 'none' && Number.parseInt(node.textContent ?? '', 10) > 0) resolve(true);
       else if (performance.now() >= deadline) reject(new Error('timed out waiting for Chikun result'));
       else setTimeout(check, 50);
     };

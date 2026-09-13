@@ -125,6 +125,7 @@ async function run() {
       // in sumStaticChunkBytes and the aggregate initial-JS gate below.
       'hmh-reboot/world-art': hmhWorldArtEntry,
       'chikun/game': chikunEntry,
+      'chikun/flight-room': resolve(__dirname, 'apps/chikun/src/flight-room.mjs'),
     },
     absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
     plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],

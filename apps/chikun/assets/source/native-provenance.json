@@ -1,0 +1,242 @@
+{
+  "schema": "chikun-native-character-v1",
+  "source_sha256": "a0896f51ea8de4ff2243476a2d77daae0761a4acc074e968ea695a22b911b8fc",
+  "source_vertices": 243502,
+  "source_triangles": 487027,
+  "triangles": 59999,
+  "bones": [
+    "root",
+    "spine",
+    "head",
+    "crest",
+    "arm.L",
+    "hand.L",
+    "arm.R",
+    "hand.R",
+    "leg.L",
+    "boot.L",
+    "leg.R",
+    "boot.R",
+    "coat.L",
+    "coat.R",
+    "coat.back"
+  ],
+  "vertex_color_attribute": "Color",
+  "frameSize": 256,
+  "columns": 4,
+  "rows": 4,
+  "clips": [
+    {
+      "name": "idle_hover",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "idle_hover.webp"
+    },
+    {
+      "name": "idle_breathe",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "idle_breathe.webp"
+    },
+    {
+      "name": "idle_look",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "idle_look.webp"
+    },
+    {
+      "name": "idle_ready",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "idle_ready.webp"
+    },
+    {
+      "name": "takeoff",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "takeoff.webp"
+    },
+    {
+      "name": "flap_power",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "flap_power.webp"
+    },
+    {
+      "name": "flap_soft",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "flap_soft.webp"
+    },
+    {
+      "name": "rise_fast",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "rise_fast.webp"
+    },
+    {
+      "name": "rise_soft",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "rise_soft.webp"
+    },
+    {
+      "name": "apex",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "apex.webp"
+    },
+    {
+      "name": "glide",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "glide.webp"
+    },
+    {
+      "name": "glide_fast",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "glide_fast.webp"
+    },
+    {
+      "name": "fall_soft",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "fall_soft.webp"
+    },
+    {
+      "name": "fall_fast",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "fall_fast.webp"
+    },
+    {
+      "name": "dive",
+      "frames": 16,
+      "fps": 24,
+      "loop": true,
+      "sheet": "dive.webp"
+    },
+    {
+      "name": "brake",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "brake.webp"
+    },
+    {
+      "name": "recover",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "recover.webp"
+    },
+    {
+      "name": "bank_up",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "bank_up.webp"
+    },
+    {
+      "name": "bank_down",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "bank_down.webp"
+    },
+    {
+      "name": "gust",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "gust.webp"
+    },
+    {
+      "name": "near_miss_high",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "near_miss_high.webp"
+    },
+    {
+      "name": "near_miss_low",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "near_miss_low.webp"
+    },
+    {
+      "name": "collect",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "collect.webp"
+    },
+    {
+      "name": "streak",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "streak.webp"
+    },
+    {
+      "name": "celebrate",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "celebrate.webp"
+    },
+    {
+      "name": "hit_front",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "hit_front.webp"
+    },
+    {
+      "name": "hit_ceiling",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "hit_ceiling.webp"
+    },
+    {
+      "name": "hit_ground",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "hit_ground.webp"
+    },
+    {
+      "name": "death_tumble",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "death_tumble.webp"
+    },
+    {
+      "name": "death_fall",
+      "frames": 16,
+      "fps": 24,
+      "loop": false,
+      "sheet": "death_fall.webp"
+    }
+  ],
+  "character": "chikun-original",
+  "notes": "Owner-supplied Tripo surface; authored spatial skin weights, 30 bone actions; 24fps baked runtime projection. No separate UV texture was present in source."
+}
