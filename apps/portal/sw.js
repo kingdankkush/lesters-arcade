@@ -27,6 +27,7 @@ const PRECACHE_URLS = [
   '/chikun/index.html',
   '/chikun/game.css',
   '/dist/chikun/game.js',
+  '/assets/generated/chikun-flight-v1/poster.webp',
   '/assets/generated/chikun-game/chikun-coast.webp',
   '/assets/generated/chikun-game/chikun-fall.webp',
 ];
