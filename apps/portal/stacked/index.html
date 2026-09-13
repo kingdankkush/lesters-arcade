@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>STACKED — Lester's Arcade</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="modulepreload" href="../dist/stacked/stacked-pixi-v1.js">
+  <link rel="stylesheet" href="./game.css">
+</head>
+<body>
+  <header class="game-header"><div><span class="eyebrow">LESTER'S ARCADE</span><h1>STACKED</h1></div><div class="header-actions"><span id="modeLabel">CONNECTING</span><button id="pauseButton" type="button">Pause</button><button id="exitButton" type="button">Exit</button></div></header>
+  <main id="stackedStage" aria-label="STACKED falling-block game"><p id="stackedStatus" class="sr-only" role="status" aria-live="polite">Connecting to the arcade…</p></main>
+  <div class="session-info"><span id="epochLabel">GENESIS VAULT</span><span id="audioLabel">MUSIC REACTIVE</span></div>
+  <nav id="touchControls" aria-label="Game controls">
+    <button type="button" data-action="hold" aria-label="Hold piece">HOLD</button>
+    <button type="button" data-action="rotateCCW" aria-label="Rotate counterclockwise">↶</button>
+    <button type="button" data-action="rotateCW" aria-label="Rotate clockwise">↷</button>
+    <button type="button" data-action="hardDrop" aria-label="Hard drop">DROP ⇓</button>
+    <button type="button" data-action="moveLeft" aria-label="Move left">←</button>
+    <button type="button" data-action="softDrop" aria-label="Soft drop">↓</button>
+    <button type="button" data-action="moveRight" aria-label="Move right">→</button>
+    <button type="button" id="undoButton">UNDO</button>
+  </nav>
+  <footer>← → move · ↑ / X rotate · Z reverse · V 180° · Space drop · C hold · P pause</footer>
+  <section id="gameOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayCopy">
+    <div class="panel"><span class="eyebrow">STACK · CLEAR · SURVIVE</span><h2 id="overlayTitle">Welcome to STACKED</h2><p id="overlayCopy">Loading your cabinet…</p><p id="resultStats"></p>
+    <div class="result-actions"><button id="continueButton" type="button">Start game</button><button id="restartButton" type="button" hidden>Play again</button><button id="overlayExitButton" type="button">Back to arcade</button></div>
+    <section id="freeMedalShelf" aria-labelledby="freeMedalTitle" hidden><h3 id="freeMedalTitle">Free Mode medal shelf</h3><p id="freeMedalSummary" role="status"></p><details><summary>View earned medals</summary><ul id="freeMedalList"></ul></details><p>Practice-only. No profile badges or Ranked progress.</p></section>
+    <details id="preferencePanel" open><summary>Visual and sound settings</summary><div id="visualPreferences"><label><input id="motionToggle" type="checkbox"> Reduced motion</label><label><input id="effectsToggle" type="checkbox"> Minimal effects</label><label><input id="reactiveToggle" type="checkbox" checked> Music-reactive visuals</label><label><input id="ghostToggle" type="checkbox" checked> Landing guide</label><label><input id="gridToggle" type="checkbox" checked> Board grid</label><label><input id="soundToggle" type="checkbox" checked> Game sound effects</label></div></details></div>
+  </section>
+  <script type="module" src="../dist/stacked/game.js"></script>
+</body>
+</html>

@@ -14,6 +14,8 @@ Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural d
 
 ## Current game direction
 
+STACKED 0.2.0 is a public playable beta with Free Mode and wallet-bound, device-local Ranked preview. The owner explicitly approved launching the tested public beta on September 13, 2026, including promotion without another exact-deployment approval prompt. This bounded approval supersedes the earlier STACKED launch hold; physical-device acceptance and remaining polish stay open. It does not authorize funds, fees, prizes, online ranking, contracts or settlement.
+
 Hard Money Heroes is a deterministic PixiJS `8.19.0` top-down 2.5D authored roguelike run-and-gun.
 
 Preserve:
@@ -46,7 +48,7 @@ What shipped is the `0.5.0` vertical slice, not the creator's full original game
 - Work on `reboot/hmh-aaa-continuous` or a new branch from it.
 - Do not push ordinary work directly to `main`.
 - Do not rewrite or discard unrelated working-tree changes.
-- Do not promote a Vercel deployment without explicit approval for that exact deployment.
+- Do not promote a Vercel deployment without explicit approval for that exact deployment, except the owner's September 13 approval to promote the tested STACKED public beta without another prompt.
 - Do not deploy contracts, send transactions, change authority, or enable real settlement without a separate explicit HALT approval.
 - Do not expose private keys, API credentials, or verifier secrets.
 

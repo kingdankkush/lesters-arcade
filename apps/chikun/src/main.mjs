@@ -1,3 +1,6 @@
+import { createChikunCharacter } from './character.mjs';
+import { createChikunWorld, drawChikunObstacle } from './world.mjs';
+import { createChikunAudio } from './audio.mjs';
 import {
   CHIKUN_FIXED_STEP_HZ,
   buildChikunReplayClaim,
@@ -65,6 +68,18 @@ const fallSprite = new Image();
 coastSprite.src = '/assets/generated/chikun-game/chikun-coast.webp';
 fallSprite.src = '/assets/generated/chikun-game/chikun-fall.webp';
 Promise.allSettled([coastSprite.decode?.(), fallSprite.decode?.()]);
+
+const flightCharacter = createChikunCharacter();
+const flightWorld = createChikunWorld();
+const flightAudio = createChikunAudio();
+let renderDt = 0;
+let idleTime = 0;
+let terminalAge = 0;
+let flapAge = Infinity;
+let flapVelocity = 0;
+let flightEvent = '';
+let flightEventAge = Infinity;
+function animateFlight(event) { flightEvent = event; flightEventAge = 0; }
 
 let port = null;
 let sessionId = '';
@@ -172,6 +187,7 @@ function startReplayViewer() {
   } else {
     replayPlaying = true;
     latestSnapshot = replayPlayback.seek(0);
+    flapAge = Infinity; flightEventAge = Infinity; terminalAge = 0;
     watchReplayButton.textContent = 'Pause Replay';
     setLive('Watching canonical replay. Score is already final.');
   }
@@ -188,6 +204,7 @@ function toggleReplayViewer() {
   }
   if (replayPlayback.terminal && !replayPlaying) {
     latestSnapshot = replayPlayback.seek(0);
+    flapAge = Infinity; flightEventAge = Infinity; terminalAge = 0;
     replayPlaying = !reduceMotion();
     watchReplayButton.textContent = replayPlaying ? 'Pause Replay' : 'Play Replay';
     updateReplayPlayhead();
@@ -241,6 +258,8 @@ function sendState(status = phase === 'running' ? 'running' : phase === 'game-ov
 
 function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') {
   if (muted || initPayload?.settings.musicEnabled === false) return;
+  const cue = ({420:'launch',96:'impact',560:'flap',880:'coin',1040:'near',660:'pass'})[frequency];
+  if (cue && flightAudio.play(cue)) return;
   try {
     if (activeAudioVoices.size >= MAX_AUDIO_VOICES) return;
     const AudioContextCtor = globalThis.AudioContext ?? globalThis.webkitAudioContext;
@@ -296,6 +315,7 @@ function setModePresentation() {
 function syncAudioControl() {
   const parentDisabled = initPayload?.settings.musicEnabled === false;
   const disabled = parentDisabled || muted;
+  flightAudio.setEnabled(!disabled);
   muteButton.disabled = parentDisabled;
   muteButton.textContent = disabled ? '×' : '♪';
   muteButton.setAttribute('aria-pressed', String(disabled));
@@ -329,6 +349,7 @@ function toggleFullscreen() {
 }
 
 function prepareRun() {
+  terminalAge = 0; flapAge = Infinity; flightEventAge = Infinity; flightEvent = '';
   runtime = createChikunRuntime({ seed: initPayload.session.seed, maxTicks: MAX_RUN_TICKS });
   latestSnapshot = runtime.snapshot();
   updateHud();
@@ -361,7 +382,7 @@ function startRun() {
   canvas.focus();
   const flightLabel = mode === 'ranked' ? 'Ranked' : dailyChallenge ? dailyChallenge.label : 'Free';
   setLive(`${flightLabel} flight started. Tap or press Space to flap.`);
-  tone(420, 0.1, 0.04, 'square');
+  flightAudio.unlock().then(() => { if (!disposed && phase === 'running') flightAudio.play('launch'); });
   sendState('running');
 }
 
@@ -376,6 +397,7 @@ function updateHud() {
 function finishRun() {
   if (phase === 'game-over') return;
   phase = 'game-over';
+  terminalAge = 0;
   paused = false;
   const result = runtime.result();
   lastCompletedResult = result;
@@ -432,7 +454,7 @@ function finishRun() {
   restartButton.disabled = false;
   restartButton.textContent = 'Fly Again';
   if (watchReplayButton) watchReplayButton.textContent = 'Watch Replay';
-  resultOverlay.classList.remove('is-hidden');
+  resultOverlay.classList.toggle('is-hidden', !reduceMotion());
   setLive(`Game over. Score ${result.score}. ${result.coinsCollected} coins and ${result.forksPassed} forks.`);
 }
 
@@ -469,108 +491,11 @@ function queueFlap(event) {
 }
 
 function drawSky(snapshot) {
-  const ranked = mode === 'ranked';
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  if (ranked) {
-    gradient.addColorStop(0, '#050b2b');
-    gradient.addColorStop(0.55, '#243b89');
-    gradient.addColorStop(1, '#815869');
-  } else {
-    gradient.addColorStop(0, '#105be5');
-    gradient.addColorStop(0.58, '#49aef4');
-    gradient.addColorStop(1, '#d6edff');
-  }
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  const tick = snapshot?.tick ?? 0;
-  const motionTick = reduceMotion() ? 0 : tick;
-  if (!ranked) {
-    ctx.fillStyle = 'rgba(255,255,255,.78)';
-    for (let index = 0; index < 7; index += 1) {
-      const x = ((index * 263 - motionTick * (0.12 + index * 0.01)) % 1580 + 1580) % 1580 - 150;
-      const y = 72 + (index * 83) % 310;
-      const size = 28 + (index % 3) * 14;
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.arc(x + size, y + 7, size * 0.75, 0, Math.PI * 2);
-      ctx.arc(x - size, y + 10, size * 0.68, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  } else {
-    ctx.strokeStyle = 'rgba(190,220,255,.32)';
-    ctx.lineWidth = 2;
-    for (let index = 0; index < 70; index += 1) {
-      const x = ((index * 73 - motionTick * 8) % 1400 + 1400) % 1400 - 60;
-      const y = (index * 137 + motionTick * 13) % 760 - 40;
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 13, y + 35); ctx.stroke();
-    }
-    if (!reduceMotion() && tick % 420 < 4) {
-      ctx.fillStyle = 'rgba(235,245,255,.32)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#eaf4ff';
-      ctx.lineWidth = 7;
-      ctx.beginPath(); ctx.moveTo(920, 0); ctx.lineTo(850, 120); ctx.lineTo(905, 108); ctx.lineTo(820, 260); ctx.stroke();
-    }
-  }
-
-  ctx.fillStyle = ranked ? '#090d1f' : '#4c6f9b';
-  for (let index = 0; index < 18; index += 1) {
-    const width = 60 + (index * 29) % 70;
-    const height = 90 + (index * 47) % 170;
-    const x = index * 82 - (motionTick * 0.25) % 82;
-    ctx.fillRect(x, canvas.height - 42 - height, width, height);
-  }
-  ctx.fillStyle = ranked ? '#02040b' : '#20344d';
-  ctx.fillRect(0, canvas.height - 42, canvas.width, 42);
-  ctx.fillStyle = mode === 'ranked' ? '#ffe138' : '#2dff5c';
-  ctx.fillRect(0, canvas.height - 42, canvas.width, 5);
+  flightWorld.draw(ctx, snapshot, { reduced: reduceMotion(), mode, idleTime });
 }
 
 function drawFork(fork) {
-  if (fork.passed) return;
-  const topHeight = Math.max(0, fork.gapTop);
-  const bottomY = fork.gapBottom;
-  const bottomHeight = canvas.height - 42 - bottomY;
-  const gradient = ctx.createLinearGradient(fork.x, 0, fork.x + fork.width, 0);
-  gradient.addColorStop(0, '#03250d'); gradient.addColorStop(0.18, '#0ca735'); gradient.addColorStop(0.5, '#43ef67'); gradient.addColorStop(0.82, '#087326'); gradient.addColorStop(1, '#021b0a');
-  ctx.fillStyle = gradient;
-  ctx.strokeStyle = '#020805';
-  ctx.lineWidth = 6;
-  ctx.fillRect(fork.x, 0, fork.width, topHeight);
-  ctx.strokeRect(fork.x, -4, fork.width, topHeight + 4);
-  ctx.fillRect(fork.x, bottomY, fork.width, bottomHeight);
-  ctx.strokeRect(fork.x, bottomY, fork.width, bottomHeight + 5);
-  ctx.fillStyle = '#12a63c';
-  ctx.fillRect(fork.x - 13, topHeight - 32, fork.width + 26, 32);
-  ctx.strokeRect(fork.x - 13, topHeight - 32, fork.width + 26, 32);
-  ctx.fillRect(fork.x - 13, bottomY, fork.width + 26, 32);
-  ctx.strokeRect(fork.x - 13, bottomY, fork.width + 26, 32);
-  ctx.save();
-  ctx.translate(fork.x + fork.width / 2, Math.max(60, topHeight / 2));
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillStyle = 'rgba(0,0,0,.56)';
-  ctx.font = '900 22px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText('BIG CORP', 0, 7);
-  ctx.restore();
-
-  if (!fork.coin.collected) {
-    const pulse = 1 + ((latestSnapshot.tick + fork.index * 11) % 60 < 30 ? 0.06 : 0);
-    ctx.save();
-    ctx.translate(fork.coin.x, fork.coin.y);
-    ctx.scale(pulse, pulse);
-    ctx.fillStyle = '#dce4ef';
-    ctx.strokeStyle = '#596475';
-    ctx.lineWidth = 6;
-    ctx.beginPath(); ctx.arc(0, 0, fork.coin.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#737f90';
-    ctx.font = '900 31px Georgia';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Ł', 0, 2);
-    ctx.restore();
-  }
+  drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
 
 function drawGhost(snapshot) {
@@ -598,6 +523,7 @@ function drawGhost(snapshot) {
 }
 
 function drawChikun(snapshot) {
+  if (flightCharacter.draw(ctx, snapshot, renderDt, { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) })) return;
   const bird = snapshot.chikun;
   const sprite = bird.velocityY > 1.6 ? fallSprite : coastSprite;
   const ready = sprite.complete && sprite.naturalWidth > 0;
@@ -638,7 +564,8 @@ function drawVfx(snapshot) {
 }
 
 function draw(snapshot = latestSnapshot) {
-  vfxFrame += 1;
+  shell.dataset.phase = phase;
+  vfxFrame += renderDt * 60;
   ctx.save();
   if (activeShake && !reduceMotion()) {
     const age = vfxFrame - activeShake.bornFrame;
@@ -673,11 +600,21 @@ function frame(now) {
   if (!previousFrameAt) previousFrameAt = now;
   const elapsed = Math.min(100, Math.max(0, now - previousFrameAt));
   previousFrameAt = now;
+  renderDt = paused || document.visibilityState === 'hidden' ? 0 : elapsed / 1000;
+  idleTime += renderDt;
+  flapAge += renderDt;
+  flightEventAge += renderDt;
+  if (phase === 'game-over' && !replayPlayback) {
+    terminalAge += renderDt;
+    if (terminalAge >= 1.15) resultOverlay.classList.remove('is-hidden');
+  }
+  flightAudio.ambience(phase === 'running' && !paused);
   if (phase === 'running' && !paused && runtime) {
     accumulator = Math.min(accumulator + elapsed, STEP_MS * MAX_CATCH_UP_STEPS);
     let steps = 0;
     try {
       while (accumulator >= STEP_MS && !runtime.terminal && steps < MAX_CATCH_UP_STEPS) {
+        if (flapQueued) { flapAge = 0; flapVelocity = latestSnapshot?.chikun?.velocityY ?? 0; }
         latestSnapshot = runtime.step({ flap: flapQueued });
         if (flapQueued) {
           flapQueued = false;
@@ -685,13 +622,13 @@ function frame(now) {
         }
         accumulator -= STEP_MS;
         steps += 1;
-        if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); spawnVfx('coin'); }
-        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); spawnVfx('near-miss'); }
+        if (latestSnapshot.coinsCollected > previousCoins) { previousCoins = latestSnapshot.coinsCollected; tone(880, 0.12, 0.04, 'sine'); showCallout('Litecoin +25'); spawnVfx('coin'); animateFlight('collect'); }
+        if (latestSnapshot.nearMisses > previousNearMisses) { previousNearMisses = latestSnapshot.nearMisses; tone(1040, 0.12, 0.04, 'triangle'); showCallout('Near miss +40'); spawnVfx('near-miss'); animateFlight(latestSnapshot.chikun.y < 360 ? 'near_miss_high' : 'near_miss_low'); }
         if (latestSnapshot.forksPassed > previousForks) {
           previousForks = latestSnapshot.forksPassed;
           tone(660, 0.09, 0.03, 'square');
           spawnVfx('fork');
-          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} fork streak`); spawnVfx('milestone'); }
+          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} fork streak`); spawnVfx('milestone'); animateFlight(latestSnapshot.forksPassed % 10 === 0 ? 'celebrate' : 'streak'); flightAudio.play('streak'); }
         }
         if (latestSnapshot.difficulty.level > previousDifficultyLevel) {
           previousDifficultyLevel = latestSnapshot.difficulty.level;
@@ -714,6 +651,8 @@ function frame(now) {
     accumulator += elapsed;
     let steps = 0;
     while (accumulator >= STEP_MS && !replayPlayback.terminal && steps < MAX_CATCH_UP_STEPS) {
+      const replayTick = replayPlayback.tick;
+      if (lastCompletedResult?.evidence?.flapSteps?.includes(replayTick)) { flapAge = 0; flapVelocity = latestSnapshot?.chikun?.velocityY ?? 0; }
       latestSnapshot = replayPlayback.step();
       accumulator -= STEP_MS;
       steps += 1;
@@ -768,6 +707,9 @@ function handleParentMessage(event) {
       try { voice.oscillator.stop(); voice.oscillator.disconnect(); voice.gain.disconnect(); } catch { /* already released */ }
     }
     activeAudioVoices.clear();
+    flightCharacter.dispose();
+    flightWorld.dispose();
+    flightAudio.dispose();
     audioContext?.close?.();
     audioContext = null;
     port.onmessage = null;
@@ -794,6 +736,8 @@ window.addEventListener('message', (event) => {
 }, false);
 
 startButton.addEventListener('click', startRun);
+canvas.addEventListener('pointerdown', () => flightAudio.unlock(), { once: true });
+canvas.addEventListener('keydown', () => flightAudio.unlock(), { once: true });
 canvas.addEventListener('pointerdown', queueFlap);
 canvas.addEventListener('keydown', (event) => {
   if (event.repeat) return;

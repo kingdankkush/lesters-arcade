@@ -221,5 +221,5 @@ test('the repository as committed satisfies its own cabinet status gate', async 
   const result = await assertCabinetStatusDocs();
   assert.equal(result.playableManifests.length >= 1, true);
   const ids = result.playableManifests.map((manifest) => manifest.id).sort();
-  assert.deepEqual(ids, ['chikun', 'hard-money-heroes']);
+  assert.deepEqual(ids, ['chikun', 'hard-money-heroes', 'stacked']);
 });

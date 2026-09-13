@@ -352,6 +352,11 @@ export function createOfficialPlayRoutes({
     const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
     const game = selectedGame();
     if (dom.officialGameplay) dom.officialGameplay.dataset.gameId = game.id;
+    if (game.id === 'stacked') {
+      dom.officialGameModeTitle.textContent = 'STACKED // ' + (officialSelectedMode === 'ranked' ? 'Local Ranked Preview' : 'Free Mode');
+      if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Stack, clear and survive. Visuals follow the Lester’s Arcade music player.';
+      return;
+    }
     if (game.id === 'chikun') {
       dom.officialGameModeTitle.textContent = `${game.title} // ${modeLabel}`;
       if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = officialSelectedMode === 'ranked'

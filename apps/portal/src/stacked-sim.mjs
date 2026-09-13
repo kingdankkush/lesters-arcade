@@ -1,11 +1,11 @@
 import { SeededRng, createSeededSubstreams } from './seeded-rng.mjs';
 import {
   BOARD_WIDTH, BOARD_ROWS, BOARD_VISIBLE_ROWS, STACKED_MAX_TICKS,
-  STACKED_GRAVITY_Q16, GRAVITY_LEVEL_CAP, LOCK_LEVEL_CAP,
+  STACKED_GRAVITY_Q16, STACKED_Q16_SCALE, GRAVITY_LEVEL_CAP, LOCK_LEVEL_CAP,
   LOCK_DELAY_TICKS, LOCK_RESET_CAP, SOFT_DROP_FACTOR,
   STACKED_LEVEL_CAP, STACKED_COMBO_BONUS_CAP, STACKED_MAX_EVIDENCE_BYTES,
   STACKED_MAX_PIECES, STACKED_MAX_LINES, STACKED_MAX_QUAD_CLEARS, STACKED_MAX_SCORE,
-  STACKED_MAX_INPUT_TRANSITIONS,
+  STACKED_MAX_INPUT_TRANSITIONS, STACKED_EVIDENCE_CODEC_VERSION, STACKED_FIXED_STEP_HZ,
   STACKED_CLEAR_SCORES, STACKED_MINI_SPIN_SCORES, STACKED_FULL_SPIN_SCORES,
   PERFECT_CLEAR_BONUS, GARBAGE_START_TICK, GARBAGE_INTERVAL_START_TICKS,
   GARBAGE_INTERVAL_STEP_TICKS, GARBAGE_INTERVAL_STEP_PERIOD_TICKS,
@@ -57,6 +57,16 @@ export const normalizeSeed = (seed) => {
 };
 export const cellsFor = (kind, rotation, x, y) => PIECE_CELLS[kind][rotation].map(([bx, by]) => [x + bx, y + by]);
 export const collides = (board, cells) => cells.some(([x, y]) => x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_ROWS || board[y * BOARD_WIDTH + x] !== 0);
+function collidesPiece(board, kind, rotation, x, y) {
+  const points = PIECE_CELLS[kind][rotation];
+  for (let i = 0; i < points.length; i += 1) {
+    const cx = x + points[i][0];
+    const cy = y + points[i][1];
+    if (cx < 0 || cx >= BOARD_WIDTH || cy < 0 || cy >= BOARD_ROWS || board[cy * BOARD_WIDTH + cx] !== 0) return true;
+  }
+  return false;
+}
+
 
 function shuffledBag(rng) {
   const bag = ['I','J','L','O','S','T','Z'];
@@ -81,7 +91,7 @@ export function attemptRotation(board, active, targetRotation) {
   const kicks = table[`${active.rotation}>${targetRotation}`];
   for (let index=0; index<kicks.length; index+=1) {
     const [dx,dy]=kicks[index];
-    if (!collides(board, cellsFor(active.kind,targetRotation,active.x+dx,active.y+dy))) return freeze({ ...active, x:active.x+dx, y:active.y+dy, rotation:targetRotation, lastKickIndex:index });
+    if (!collidesPiece(board, active.kind, targetRotation, active.x+dx, active.y+dy)) return freeze({ ...active, x:active.x+dx, y:active.y+dy, rotation:targetRotation, lastKickIndex:index });
   }
   return null;
 }
@@ -90,11 +100,11 @@ export function detectSpin(board, active) {
   if (active.kind === 'T') {
     const corners=[[0,0],[2,0],[0,2],[2,2]].map(([dx,dy])=>[active.x+dx,active.y+dy]);
     const occupied=corners.map(([x,y])=>x<0||x>=BOARD_WIDTH||y<0||y>=BOARD_ROWS||board[y*BOARD_WIDTH+x]!==0);
-    if (occupied.filter(Boolean).length < 3) return 'none';
+    if (occupied.filter(value => value).length < 3) return 'none';
     const front = active.rotation===0?[2,3]:active.rotation===1?[1,3]:active.rotation===2?[0,1]:[0,2];
     return front.filter((i)=>occupied[i]).length>=2 || active.lastKickIndex===4 ? 'full' : 'mini';
   }
-  for (const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]) if (!collides(board,cellsFor(active.kind,active.rotation,active.x+dx,active.y+dy))) return 'none';
+  for (const [dx,dy] of [[0,-1],[-1,0],[1,0],[0,1]]) if (!collidesPiece(board, active.kind, active.rotation, active.x+dx, active.y+dy)) return 'none';
   return 'mini';
 }
 
@@ -150,23 +160,24 @@ export function compactCompletedRows(board) {
   for (let y = 0; y < BOARD_ROWS; y += 1) {
     let full = true;
     let hasGarbage = false;
+    const start = y * BOARD_WIDTH;
     for (let x = 0; x < BOARD_WIDTH; x += 1) {
-      const value = board[y * BOARD_WIDTH + x];
-      if (value === 0) full = false;
+      const value = board[start + x];
+      if (value === 0) { full = false; break; }
       if (value === 8) hasGarbage = true;
     }
-    if (full) {
-      fullRows.push(y);
-      if (hasGarbage) garbageRowsCleared += 1;
-    }
+    if (full) { fullRows.push(y); if (hasGarbage) garbageRowsCleared += 1; }
   }
-  const fullSet = new Set(fullRows);
-  const compacted = new Uint8Array(board.length);
-  let targetY = 0;
-  for (let sourceY = 0; sourceY < BOARD_ROWS; sourceY += 1) {
-    if (fullSet.has(sourceY)) continue;
-    compacted.set(board.subarray(sourceY * BOARD_WIDTH, (sourceY + 1) * BOARD_WIDTH), targetY * BOARD_WIDTH);
-    targetY += 1;
+  const compacted = board.slice();
+  if (fullRows.length > 0) {
+    let targetY = 0;
+    let clearIndex = 0;
+    for (let sourceY = 0; sourceY < BOARD_ROWS; sourceY += 1) {
+      if (fullRows[clearIndex] === sourceY) { clearIndex += 1; continue; }
+      if (sourceY !== targetY) compacted.copyWithin(targetY * BOARD_WIDTH, sourceY * BOARD_WIDTH, (sourceY + 1) * BOARD_WIDTH);
+      targetY += 1;
+    }
+    compacted.fill(0, targetY * BOARD_WIDTH);
   }
   return Object.freeze({ board: compacted, lines: fullRows.length, fullRows: Object.freeze(fullRows), garbageRowsCleared });
 }
@@ -346,6 +357,7 @@ export function buildStackedResultTuple(state) {
 
   const maxTicks = requireTupleInteger(state, 'maxTicks', 1, STACKED_MAX_TICKS);
   if (ticks > maxTicks) throw new RangeError('maxTicks out of range');
+  if (transitionCount > ticks) throw new RangeError('transitionCount exceeds ticks');
   if (state.terminalReason === 'tick-ceiling' && ticks !== maxTicks) throw new RangeError('tick-ceiling tick mismatch');
   if (singles + 2 * doubles + 3 * triples + 4 * quadClears !== lines) throw new RangeError('clear counters do not equal lines');
   if (lines > Math.floor(pieces * 4 / 10) + garbageRowsReceived) throw new RangeError('lines exceed placed material');
@@ -383,6 +395,7 @@ export const fnv1a32Bytes = (bytes) => {
   return hash >>> 0;
 };
 const runtimeStateBytes = new WeakMap();
+const runtimeHeadlessSteps = new WeakMap();
 export function stackedRuntimeStateBytes(runtime) {
   const encode = runtimeStateBytes.get(runtime);
   if (!encode) throw new TypeError('runtime must be a STACKED runtime');
@@ -463,11 +476,11 @@ function createStackedRuntimeInternal(
       lockTimer: currentLockDelay(), lockResetsUsed: 0, lowestYReached: origin.y,
     };
     activeSpawnTick = tick;
-    if (collides(board, cellsFor(kind, 0, active.x, active.y))) {
+    if (collidesPiece(board, kind, 0, active.x, active.y)) {
       terminalReason = 'block-out';
       return;
     }
-    if (!collides(board, cellsFor(kind, 0, active.x, active.y - 1))) active.y -= 1;
+    if (!collidesPiece(board, kind, 0, active.x, active.y - 1)) active.y -= 1;
     active.lowestYReached = active.y;
   };
   const spawnFromQueue = () => {
@@ -477,7 +490,7 @@ function createStackedRuntimeInternal(
     activate(kind);
   };
   spawnFromQueue();
-  const canMove = (dx, dy) => !collides(board, cellsFor(active.kind, active.rotation, active.x + dx, active.y + dy));
+  const canMove = (dx, dy) => !collidesPiece(board, active.kind, active.rotation, active.x + dx, active.y + dy);
   const establishNewLowestY = () => {
     if (active.y >= active.lowestYReached) return false;
     active.lowestYReached = active.y;
@@ -738,8 +751,8 @@ function createStackedRuntimeInternal(
   const processGravityAndLock = (mask) => {
     const soft = (mask & 4) !== 0;
     const gravity = STACKED_GRAVITY_Q16[Math.min(level, GRAVITY_LEVEL_CAP)];
-    gravityAccQ16 += soft ? Math.min(gravity * SOFT_DROP_FACTOR, 20 * 65536) : gravity;
-    while (gravityAccQ16 >= 65536) {
+    gravityAccQ16 += soft ? Math.min(gravity * SOFT_DROP_FACTOR, 20 * STACKED_Q16_SCALE) : gravity;
+    while (gravityAccQ16 >= STACKED_Q16_SCALE) {
       if (!canMove(0, -1)) {
         gravityAccQ16 = 0;
         break;
@@ -747,7 +760,7 @@ function createStackedRuntimeInternal(
       active.y -= 1;
       active.lastActionWasRotation = false;
       if (soft) { softDropCells += 1; score += 1; }
-      gravityAccQ16 -= 65536;
+      gravityAccQ16 -= STACKED_Q16_SCALE;
       establishNewLowestY();
     }
     if (!canMove(0, -1)) {
@@ -755,7 +768,7 @@ function createStackedRuntimeInternal(
       if (active.lockTimer <= 0) lock();
     }
   };
-  const step = (mask) => {
+  const advance = (mask) => {
     if (terminalReason) throw new Error('cannot step terminal STACKED runtime');
     if (!Number.isInteger(mask) || mask < 0 || mask > 255) throw new RangeError('mask must be uint8');
     tick += 1;
@@ -764,15 +777,7 @@ function createStackedRuntimeInternal(
     const rising = mask & ~oldMask;
     if (mask !== oldMask) {
       const gap = tick - lastTransitionTick;
-      const changed = mask ^ oldMask;
-      const oneBit = changed !== 0 && (changed & (changed - 1)) === 0;
-      if (oneBit && gap >= 1 && gap <= 16) encodedEvidenceBytes += 1;
-      else {
-        let value = gap - 1;
-        let varintBytes = 1;
-        while (value >= 128) { value = Math.floor(value / 128); varintBytes += 1; }
-        encodedEvidenceBytes += 2 + varintBytes;
-      }
+      encodedEvidenceBytes += sic1TransitionByteLength(oldMask, mask, gap);
       transitionCount += 1;
       lastTransitionTick = tick;
     }
@@ -802,10 +807,11 @@ function createStackedRuntimeInternal(
       }
     }
     if (!terminalReason && tick >= maxTicks) terminalReason = 'tick-ceiling';
-    return snapshot();
   };
+  const step = mask => { advance(mask); return snapshot(); };
   const runtime = Object.freeze({step,snapshot,stateHash,result,get terminal(){return terminalReason!==null;}});
   runtimeStateBytes.set(runtime, canonicalStateBytes);
+  runtimeHeadlessSteps.set(runtime, advance);
   return runtime;
 }
 
@@ -817,4 +823,212 @@ export function createStackedMatchRuntime(args, lockBoundary, acknowledgeMatchGa
   if (typeof lockBoundary !== 'function') throw new TypeError('lockBoundary must be a function');
   if (typeof acknowledgeMatchGarbage !== 'function') throw new TypeError('acknowledgeMatchGarbage must be a function');
   return createStackedRuntimeInternal(args, lockBoundary, acknowledgeMatchGarbage);
+}
+
+
+export const STACKED_SIM_CONSTANTS = freeze({
+  fixedStepHz: STACKED_FIXED_STEP_HZ, maxTicks: STACKED_MAX_TICKS,
+  maxEvidenceBytes: STACKED_MAX_EVIDENCE_BYTES, evidenceCodecVersion: STACKED_EVIDENCE_CODEC_VERSION,
+});
+
+const sicInteger = (value, max) => Number.isInteger(value) && value >= 0 && value <= max;
+function sicVarintLength(value) {
+  let length = 1;
+  while (value >= 128) { value = Math.floor(value / 128); length += 1; }
+  return length;
+}
+function sicWriteVarint(bytes, offset, value) {
+  do {
+    const digit = value % 128;
+    value = Math.floor(value / 128);
+    bytes[offset++] = digit | (value > 0 ? 128 : 0);
+  } while (value > 0);
+  return offset;
+}
+const sicSingleBit = changed => changed !== 0 && (changed & (changed - 1)) === 0;
+
+// Header and terminator are not transition bytes. Keep encoder sizing independent
+// so real-run and varint-boundary tests can falsify this simulation predictor.
+export function sic1TransitionByteLength(previousMask, mask, gap) {
+  if (!sicInteger(previousMask, 255) || !sicInteger(mask, 255) ||
+      !sicInteger(gap, STACKED_MAX_TICKS) || gap === 0) {
+    throw new RangeError('SIC1 transition masks/gap invalid');
+  }
+  if (previousMask === mask) return 0;
+  if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 1;
+  return 2 + sicVarintLength(gap - 1);
+}
+
+export function encodeSic1({ seed, totalTicks, transitions } = {}) {
+  if (!sicInteger(seed, 0xffffffff) || !sicInteger(totalTicks, STACKED_MAX_TICKS)) throw new RangeError('SIC1 seed/ticks invalid');
+  if (!Array.isArray(transitions) || transitions.length > STACKED_MAX_INPUT_TRANSITIONS) throw new RangeError('SIC1 transitions invalid');
+  let previousTick = 0;
+  let previousMask = 0;
+  let length = 24 + 1 + sicVarintLength(totalTicks);
+  for (let index = 0; index < transitions.length; index += 1) {
+    const entry = transitions[index];
+    if (!Object.hasOwn(transitions, index) || !entry || typeof entry !== 'object' || Array.isArray(entry)) throw new TypeError('SIC1 transition invalid');
+    if (Reflect.ownKeys(entry).length !== 2 || !['tick', 'mask'].every(key => {
+      const descriptor = Object.getOwnPropertyDescriptor(entry, key);
+      return descriptor && Object.hasOwn(descriptor, 'value');
+    })) throw new TypeError('SIC1 transition keys invalid');
+    const { tick, mask } = entry;
+    if (!sicInteger(tick, totalTicks) || tick <= previousTick || !sicInteger(mask, 255) || mask === previousMask) throw new RangeError('SIC1 transition order/mask invalid');
+    const gap = tick - previousTick;
+    length += sicSingleBit(mask ^ previousMask) && gap <= 16 ? 1 : 2 + sicVarintLength(gap - 1);
+    previousTick = tick;
+    previousMask = mask;
+  }
+  if (length > STACKED_MAX_EVIDENCE_BYTES) throw new RangeError('SIC1 evidence exceeds byte cap');
+  const bytes = new Uint8Array(length);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x53, 0x49, 0x43, 0x31, STACKED_EVIDENCE_CODEC_VERSION, 1]);
+  view.setUint16(6, STACKED_FIXED_STEP_HZ);
+  view.setUint32(8, seed);
+  view.setUint32(12, totalTicks);
+  view.setUint32(16, transitions.length);
+  let offset = 24;
+  previousTick = 0;
+  previousMask = 0;
+  for (let index = 0; index < transitions.length; index += 1) {
+    const { tick, mask } = transitions[index];
+    const gap = tick - previousTick;
+    const changed = mask ^ previousMask;
+    if (sicSingleBit(changed) && gap <= 16) {
+      let bit = 0;
+      while ((1 << bit) !== changed) bit += 1;
+      bytes[offset++] = ((gap - 1) << 3) | bit;
+    } else {
+      bytes[offset++] = 128;
+      offset = sicWriteVarint(bytes, offset, gap - 1);
+      bytes[offset++] = mask;
+    }
+    previousTick = tick;
+    previousMask = mask;
+  }
+  bytes[offset++] = 255;
+  sicWriteVarint(bytes, offset, totalTicks);
+  view.setUint32(20, fnv1a32Bytes(bytes.subarray(24)));
+  return bytes;
+}
+
+export function decodeSic1(input) {
+  if (!(input instanceof Uint8Array) || input.length < 26 || input.length > STACKED_MAX_EVIDENCE_BYTES) throw new RangeError('SIC1 byte length invalid');
+  // A private byte snapshot also prevents mutable shared input changing mid-parse.
+  const bytes = Uint8Array.from(input);
+  const view = new DataView(bytes.buffer);
+  if (view.getUint32(0) !== 0x53494331 || bytes[4] !== STACKED_EVIDENCE_CODEC_VERSION || bytes[5] !== 1 || view.getUint16(6) !== STACKED_FIXED_STEP_HZ) throw new Error('SIC1 header invalid');
+  const seed = view.getUint32(8);
+  const totalTicks = view.getUint32(12);
+  const transitionCount = view.getUint32(16);
+  if (totalTicks > STACKED_MAX_TICKS || transitionCount > STACKED_MAX_INPUT_TRANSITIONS || transitionCount > totalTicks) throw new RangeError('SIC1 counts invalid');
+  if (view.getUint32(20) !== fnv1a32Bytes(bytes.subarray(24))) throw new Error('SIC1 checksum mismatch');
+  let offset = 24;
+  const readVarint = () => {
+    let value = 0;
+    let multiplier = 1;
+    for (let index = 0; index < 3; index += 1) {
+      if (offset >= bytes.length) throw new Error('truncated SIC1 varint');
+      const byte = bytes[offset++];
+      value += (byte & 127) * multiplier;
+      if ((byte & 128) === 0) {
+        if ((index > 0 && byte === 0) || value > STACKED_MAX_TICKS) throw new Error('noncanonical SIC1 varint');
+        return value;
+      }
+      multiplier *= 128;
+    }
+    throw new Error('SIC1 varint overflow');
+  };
+  const transitions = [];
+  let tick = 0;
+  let mask = 0;
+  while (offset < bytes.length) {
+    const lead = bytes[offset++];
+    if (lead === 255) {
+      if (readVarint() !== totalTicks || offset !== bytes.length || transitions.length !== transitionCount) throw new Error('SIC1 terminator/count mismatch');
+      return freeze({ seed, totalTicks, transitionCount, transitions });
+    }
+    let gap;
+    let nextMask;
+    if (lead < 128) {
+      gap = (lead >> 3) + 1;
+      nextMask = mask ^ (1 << (lead & 7));
+    } else if (lead === 128) {
+      gap = readVarint() + 1;
+      if (offset >= bytes.length) throw new Error('truncated SIC1 mask');
+      nextMask = bytes[offset++];
+      if (nextMask === mask || (sicSingleBit(nextMask ^ mask) && gap <= 16)) throw new Error('noncanonical SIC1 transition');
+    } else throw new Error('reserved SIC1 lead');
+    tick += gap;
+    if (tick > totalTicks || transitions.length >= transitionCount) throw new Error('SIC1 transition out of range');
+    mask = nextMask;
+    transitions.push({ tick, mask });
+  }
+  throw new Error('SIC1 terminator missing');
+}
+
+// The pending input tick is never a consumed simulation tick. Stopping can clear
+// pending input but cannot rewrite evidence already handed to the runtime.
+export function createStackedInputRecorder({ seed } = {}) {
+  normalizeSeed(seed);
+  let tick = 0;
+  let mask = 0;
+  let pendingMask = 0;
+  let forceNeutral = false;
+  const transitions = [];
+  return Object.freeze({
+    sample(index, value) {
+      if (!Number.isInteger(value) || value < 0 || value > 255) throw new RangeError('mask must be uint8');
+      if (index === 0 && tick === 0) return 0;
+      if (!Number.isInteger(index) || index !== tick + 1 || index > STACKED_MAX_TICKS) throw new RangeError('only the next pending tick can be sampled');
+      if (!forceNeutral) pendingMask = value;
+      return forceNeutral ? 0 : value;
+    },
+    commit() {
+      if (tick >= STACKED_MAX_TICKS) throw new RangeError('recorder tick ceiling reached');
+      tick += 1;
+      if (mask !== pendingMask) transitions.push({ tick, mask: pendingMask });
+      mask = pendingMask;
+      forceNeutral = false;
+      return mask;
+    },
+    stop(reason) {
+      if (!['pause', 'blur', 'visibility-hidden'].includes(reason)) throw new TypeError('invalid loop stop reason');
+      forceNeutral = true;
+      pendingMask = 0;
+    },
+    encode() { return encodeSic1({ seed, totalTicks: tick, transitions }); },
+    get tick() { return tick; },
+  });
+}
+
+export function simulateStackedRun({ seed, inputs, maxTicks = STACKED_MAX_TICKS, config = {} } = {}) {
+  if (!(Array.isArray(inputs) || inputs instanceof Uint8Array) || inputs.length < 1 || inputs.length > STACKED_MAX_TICKS) {
+    throw new RangeError('inputs must be a bounded dense array of masks');
+  }
+  for (let index = 0; index < inputs.length; index += 1) {
+    if (!Object.hasOwn(inputs, index) || !Number.isInteger(inputs[index]) || inputs[index] < 0 || inputs[index] > 255) throw new RangeError('input must be uint8');
+  }
+  const runtime = createStackedRuntime({ seed, maxTicks, config });
+  const advance = runtimeHeadlessSteps.get(runtime);
+  for (let index = 0; index < inputs.length; index += 1) advance(inputs[index]);
+  if (!runtime.terminal) throw new Error('replay ended before a terminal state');
+  return runtime.result();
+}
+
+export function replayStackedRun(evidence, { expectedSeed, maxTicks = STACKED_MAX_TICKS, config = {} } = {}) {
+  const decoded = decodeSic1(evidence);
+  if (expectedSeed !== undefined && decoded.seed !== expectedSeed) throw new Error('replay seed mismatch');
+  const runtime = createStackedRuntime({ seed: decoded.seed, maxTicks, config });
+  const advance = runtimeHeadlessSteps.get(runtime);
+  let mask = 0;
+  let cursor = 0;
+  for (let tick = 1; tick <= decoded.totalTicks; tick += 1) {
+    if (cursor < decoded.transitions.length && decoded.transitions[cursor].tick === tick) mask = decoded.transitions[cursor++].mask;
+    advance(mask);
+  }
+  if (!runtime.terminal) throw new Error('replay ended before a terminal state');
+  const result = runtime.result();
+  if (result.transitionCount !== decoded.transitionCount) throw new Error('replay transition count mismatch');
+  return result;
 }

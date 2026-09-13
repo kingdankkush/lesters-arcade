@@ -6,7 +6,21 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Current verified playable release
+## STACKED public beta release candidate
+
+The `codex/stacked-playable-release` branch integrates live Chikun Afterlight source `d7a5ad69` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
+
+**Production cache marker:** `lesters-arcade-v38-stacked-beta`
+
+## Chikun Afterlight release
+
+Chikun's Escape now includes the owner's original Tripo character with a Blender flight rig, 30 animation clips, a layered city and mountain environment, a day/night cycle, metal obstacles, and original flight sounds. The [Flight Room](https://lestersarcade.io/chikun/flight-room.html) lets players explore every animation.
+
+**Previous Chikun cache marker:** `lesters-arcade-v37-chikun-afterlight`
+
+The release is on `codex/chikun-afterlight-release`, based on production source `1a8d4f420767f32ef97ca7952b782dce284242f0`. The [Chikun handoff](docs/handoffs/chikun-afterlight-20260913.md) records the scope and verification. Retained rollback: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). Canonical simulation and parent Ranked verification are preserved; `SETTLEMENT_LIVE=false`.
+
+## Previous HMH package release (historical)
 
 - **Source:** `1a8d4f420767f32ef97ca7952b782dce284242f0`; branch `fable/hmh-roadmap-pass-20260911`, cut from canonical `hermes/hmh-textured-rollout` at `b0ee9046`.
 - **Production deployment:** `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
@@ -29,6 +43,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
 | Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---
