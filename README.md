@@ -10,7 +10,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 The `codex/stacked-playable-release` branch integrates live Chikun Afterlight source `d7a5ad69` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
 
-**Production cache marker:** `lesters-arcade-v38-stacked-beta`
+**Production cache marker:** `lesters-arcade-v39-hmh-fluid-mobile`
 
 ## Chikun Afterlight release
 

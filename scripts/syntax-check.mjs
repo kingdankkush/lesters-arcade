@@ -20,6 +20,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/hmh-world-fuel-browser-smoke.mjs',
   'tests/helpers/hmh-runtime-source.mjs',
   'apps/hmh-reboot/src/blocker-bounds.mjs',
   'apps/hmh-reboot/src/cover-break-presentation.mjs',

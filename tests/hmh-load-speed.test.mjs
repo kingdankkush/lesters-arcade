@@ -11,13 +11,13 @@ function repoText(relativePath) {
 
 test('WO-36 index boots through optimized dist bundle with first-screen preload hints', () => {
   const index = repoText('apps/portal/index.html');
-  assert.equal(index.includes('src="./dist/main.js?v=stacked-beta-20260913"'), true);
-  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=stacked-beta-20260913"'), true);
+  assert.equal(index.includes('src="./dist/main.js?v=hmh-fluid-mobile-20260913"'), true);
+  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-fluid-mobile-20260913"'), true);
   assert.equal(index.includes('hard-money-heroes-keyart-bg.jpg'), true);
   assert.equal(index.includes('fetchpriority="high"'), true);
   const sw = repoText('apps/portal/sw.js');
   assert.equal(sw.includes("'/dist/main.js'"), true);
-  assert.equal(sw.includes('lesters-arcade-v38-stacked-beta'), true);
+  assert.equal(sw.includes('lesters-arcade-v39-hmh-fluid-mobile'), true);
 });
 
 test('WO-36 Vercel build generates the optimized dist bundle before deploy', () => {
