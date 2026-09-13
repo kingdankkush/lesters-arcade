@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { createHud } from '../apps/hmh-reboot/src/hud.mjs';
+import { buildTimedEffectChips } from '../apps/hmh-reboot/src/hud-layout.mjs';
 
 const read = (relative) => readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8');
 const html = read('../apps/portal/hmh-reboot/index.html');
@@ -343,4 +344,194 @@ test('the runtime gates the Pixi telemetry strip without disturbing its pinned l
   // new field on the deepEqual-pinned readability status.
   assert.match(main, /applyWeaponProgression\(/);
   assert.doesNotMatch(main, /localStorage/);
+});
+
+test('the weapon card projects reload progress, ammo-low and reserve-low from primitives it already receives', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const weapon = elements.get('hmhHudWeapon');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 90, reloadTicksTotal: 120, secondsRemaining: 1.5 });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.250');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 30, reloadTicksTotal: 120, secondsRemaining: 0.5 });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.750');
+  hud.update({ ...baseView, mode: 'ready' });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.000', 'outside a reload the bar rests at zero');
+  hud.update({ ...baseView, weaponId: 'lightning-ledger', mode: 'cooldown', ticksRemaining: 60, reloadTicksTotal: 0, secondsRemaining: 1 });
+  assert.equal(weapon.style.getPropertyValue('--reload'), '0.000', 'a channel cooldown is not a reload');
+
+  // Ammo-low is the last quarter of a clip, never an empty or a full one.
+  hud.update({ ...baseView, ammoInClip: 2, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'true', '2/8 pistol');
+  hud.update({ ...baseView, ammoInClip: 3, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'false', '3/8 pistol');
+  hud.update({ ...baseView, weaponId: 'auto-miner', ammoInClip: 30, clipSize: 120, reserveAmmo: 240 });
+  assert.equal(weapon.dataset.ammoLow, 'true', '30/120 machine gun bar');
+  hud.update({ ...baseView, ammoInClip: 0, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'false', '0/8 is empty, not low');
+  hud.update({ ...baseView, ammoInClip: 8, clipSize: 8 });
+  assert.equal(weapon.dataset.ammoLow, 'false', '8/8');
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 1, clipSize: 2, reserveAmmo: 12 });
+  assert.equal(weapon.dataset.ammoLow, 'true', 'a two-round shotgun is low on its last shell');
+  hud.update({ ...baseView, weaponId: 'forked-standard', ammoInClip: 1, clipSize: 1, reserveAmmo: 0, meleeNext: 'THRUST' });
+  assert.equal(weapon.dataset.ammoLow, 'false', 'the melee weapon has no ammo to run low on');
+  assert.equal(weapon.dataset.reserveLow, 'false');
+
+  // Reserve-low: the pocket cannot fill another clip. The pistol's null
+  // reserve is unlimited carry and never warns.
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 2, clipSize: 2, reserveAmmo: 1 });
+  assert.equal(weapon.dataset.reserveLow, 'true');
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 2, clipSize: 2, reserveAmmo: 2 });
+  assert.equal(weapon.dataset.reserveLow, 'false');
+  hud.update({ ...baseView, weaponId: 'scatter-shotgun', ammoInClip: 0, clipSize: 2, reserveAmmo: 0, mode: 'empty' });
+  assert.equal(weapon.dataset.reserveLow, 'true', 'an exhausted shotgun is the case the warning exists for');
+  hud.update({ ...baseView, reserveAmmo: null });
+  assert.equal(weapon.dataset.reserveLow, 'false');
+});
+
+test('the reload flash rises only on reloading -> ready and an unchanged frame performs zero DOM writes', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const weapon = elements.get('hmhHudWeapon');
+  hud.update({ ...baseView });
+  assert.equal(weapon.dataset.reloadFlash, undefined, 'a ready weapon that never reloaded has no flash attribute');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 90, reloadTicksTotal: 90, secondsRemaining: 1.5 });
+  assert.equal(weapon.dataset.reloadFlash, 'false', 'a reload start clears, never raises, the flash');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 1, reloadTicksTotal: 90, secondsRemaining: 0 });
+  assert.equal(weapon.dataset.reloadFlash, 'false');
+  hud.update({ ...baseView });
+  assert.equal(weapon.dataset.reloadFlash, 'true', 'the completion frame raises the flash');
+  writes = 0;
+  hud.update({ ...baseView });
+  hud.update({ ...baseView });
+  assert.equal(writes, 0, 'holding the flash must not rewrite the DOM');
+  hud.update({ ...baseView, ammoInClip: 7 });
+  assert.equal(weapon.dataset.reloadFlash, 'true', 'firing after the reload does not touch the flash');
+  hud.update({ ...baseView, mode: 'empty', ammoInClip: 0, reserveAmmo: 0, weaponId: 'scatter-shotgun', clipSize: 2 });
+  assert.equal(weapon.dataset.reloadFlash, 'true', 'ready -> empty is not a completion');
+  hud.update({ ...baseView, mode: 'reloading', ammoInClip: 0, ticksRemaining: 90, reloadTicksTotal: 90, secondsRemaining: 1.5 });
+  assert.equal(weapon.dataset.reloadFlash, 'false', 'the next reload re-arms the one-shot');
+  hud.update({ ...baseView });
+  assert.equal(weapon.dataset.reloadFlash, 'true');
+});
+
+test('the child stylesheet carries the reload bar, the ammo warnings and the reduce-motion gate for the reload flash', () => {
+  assert.match(css, /\.hmh-hud-weapon\[data-state="reloading"\] \.hmh-hud-weapon-body::after \{[^}]*width: calc\(var\(--reload, 0\) \* 100%\)/s);
+  assert.match(css, /\.hmh-hud-weapon\[data-ammo-low="true"\] \.hmh-hud-pips--ammo b\[data-filled="true"\]/);
+  assert.match(css, /\.hmh-hud-weapon\[data-ammo-low="true"\] \.hmh-hud-ammo-bar i/);
+  assert.match(css, /\.hmh-hud-weapon\[data-reserve-low="true"\] #hmhHudReserve \{ color: var\(--danger\); \}/);
+  assert.match(css, /@keyframes hmh-reload-done/);
+  assert.match(css, /\.hmh-hud-weapon\[data-reload-flash="true"\] \.hmh-hud-ring \{ animation: hmh-reload-done/);
+  assert.match(css, /\.hmh-reboot-stage\[data-setting-reduce-motion="true"\] ~ \.hmh-run-rail \.hmh-hud-weapon\[data-reload-flash="true"\] \.hmh-hud-ring \{ animation: none; \}/);
+  // Both compact breakpoints keep the bar at 2px under the single-line card.
+  const compactBars = css.match(/\.hmh-hud-weapon\[data-state="reloading"\] \.hmh-hud-weapon-body::after \{ bottom: -2px; height: 2px; \}/g) ?? [];
+  assert.equal(compactBars.length, 2);
+});
+
+// Cycle 072 (powerup-timers): the chips take the view-model from
+// buildTimedEffectChips. The text pins from the label path survive unchanged.
+const chipsAt = (tick, activeEffects) => buildTimedEffectChips({ tick, activeEffects });
+const TWO_EFFECTS = [
+  { effectId: 'time-dilation', expiresTick: 600, refreshCount: 1 },
+  { effectId: 'berserk-candle', expiresTick: 540, refreshCount: 0 },
+];
+
+test('power-up chips take the view-model: identical text, per-effect identity, a drain and an ending state', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const chips = elements.get('hmhHudPowerups').children;
+  hud.update({ ...baseView, powerupHudLabel: 'BERSERK 9S + DILATION 10S R1', powerupChips: chipsAt(0, TWO_EFFECTS) });
+  assert.equal(chips[0].textContent, 'BERSERK 9S');
+  assert.equal(chips[1].textContent, 'DILATION 10S R1');
+  assert.deepEqual(chips.map((chip) => chip.hidden), [false, false]);
+  assert.deepEqual(chips.map((chip) => chip.dataset.effect), ['berserk-candle', 'time-dilation']);
+  assert.deepEqual(chips.map((chip) => chip.dataset.ending), ['false', 'false']);
+  assert.deepEqual(chips.map((chip) => chip.style.getPropertyValue('--progress')), ['0.900', '1.000']);
+  assert.deepEqual(chips.map((chip) => chip.style.getPropertyValue('--chip')), ['#ff6b35', '#6fd8ff']);
+  assert.deepEqual(chips.map((chip) => chip.style.getPropertyValue('--chip-accent')), ['#ffd166', '#c9f4ff']);
+  assert.equal(chips[0].dataset.refreshFlash, undefined, 'a first frame never flashes');
+  // The berserk window enters its last two seconds (120 ticks) at tick 420;
+  // dilation still has 180 left.
+  hud.update({ ...baseView, powerupChips: chipsAt(419, TWO_EFFECTS) });
+  assert.deepEqual(chips.map((chip) => chip.dataset.ending), ['false', 'false']);
+  hud.update({ ...baseView, powerupChips: chipsAt(420, TWO_EFFECTS) });
+  assert.deepEqual(chips.map((chip) => chip.dataset.ending), ['true', 'false']);
+  assert.equal(chips[0].textContent, 'BERSERK 2S');
+  assert.equal(chips[0].style.getPropertyValue('--progress'), '0.200');
+  // Berserk expires: dilation shifts into the first slot with its own identity.
+  hud.update({ ...baseView, powerupChips: chipsAt(540, TWO_EFFECTS) });
+  assert.deepEqual(chips.map((chip) => chip.hidden), [false, true]);
+  assert.deepEqual(chips.map((chip) => chip.dataset.effect), ['time-dilation', '']);
+  assert.equal(chips[0].style.getPropertyValue('--chip'), '#6fd8ff');
+  assert.equal(chips[0].textContent, 'DILATION 1S R1');
+  hud.update({ ...baseView, powerupChips: [] });
+  assert.deepEqual(chips.map((chip) => chip.hidden), [true, true]);
+  assert.deepEqual(chips.map((chip) => chip.dataset.effect), ['', '']);
+  // Without the array the label path still drives the chips (older callers).
+  hud.update({ ...baseView, powerupHudLabel: 'BERSERK 9S' });
+  assert.deepEqual(chips.map((chip) => chip.hidden), [false, true]);
+  assert.equal(chips[0].textContent, 'BERSERK 9S');
+});
+
+test('a repeat pickup raises the refresh flash exactly once, re-arms per refresh, clears on expiry, and an unchanged frame performs zero DOM writes', () => {
+  const { documentRef, elements } = fakeDocument();
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  const chip = elements.get('hmhHudPowerups').children[0];
+  const dilation = (tick, expiresTick, refreshCount) => chipsAt(tick, [{ effectId: 'time-dilation', expiresTick, refreshCount }]);
+  hud.update({ ...baseView, powerupChips: dilation(0, 600, 0) });
+  hud.update({ ...baseView, powerupChips: dilation(30, 600, 0) });
+  assert.equal(chip.dataset.refreshFlash, undefined, 'counting down never flashes');
+  // The refresh: the same effect, refreshCount 0 -> 1, a fresh 600-tick window.
+  hud.update({ ...baseView, powerupChips: dilation(60, 660, 1) });
+  assert.equal(chip.dataset.refreshFlash, 'true');
+  assert.equal(chip.textContent, 'DILATION 10S R1');
+  writes = 0;
+  hud.update({ ...baseView, powerupChips: dilation(60, 660, 1) });
+  hud.update({ ...baseView, powerupChips: dilation(60, 660, 1) });
+  assert.equal(writes, 0, 'an unchanged frame must not touch the chips');
+  hud.update({ ...baseView, powerupChips: dilation(120, 660, 1) });
+  assert.equal(chip.dataset.refreshFlash, 'true', 'holding the flash while the countdown runs');
+  // A second refresh while the attribute is still 'true' drops it for one
+  // frame so the CSS animation can replay, then raises it again.
+  hud.update({ ...baseView, powerupChips: dilation(180, 780, 2) });
+  assert.equal(chip.dataset.refreshFlash, 'false');
+  hud.update({ ...baseView, powerupChips: dilation(181, 780, 2) });
+  assert.equal(chip.dataset.refreshFlash, 'true');
+  // Expiry clears it and hides the chip.
+  hud.update({ ...baseView, powerupChips: [] });
+  assert.equal(chip.dataset.refreshFlash, 'false');
+  assert.equal(chip.hidden, true);
+  // A fresh activation with refreshCount 0 is not a refresh.
+  hud.update({ ...baseView, powerupChips: dilation(900, 1_500, 0) });
+  assert.equal(chip.dataset.refreshFlash, 'false');
+  assert.equal(chip.hidden, false);
+  // A different effect landing in the same slot inherits nothing.
+  hud.update({ ...baseView, powerupChips: chipsAt(0, [{ effectId: 'berserk-candle', expiresTick: 600, refreshCount: 3 }]) });
+  assert.equal(chip.dataset.refreshFlash, 'false');
+  assert.equal(chip.dataset.effect, 'berserk-candle');
+});
+
+test('the child shell and stylesheet carry the per-effect chip identity, the drain, the ending pulse, the refresh flash and their reduce-motion gate', () => {
+  assert.equal((html.match(/<b hidden data-effect=""><\/b>/g) ?? []).length, 2, 'both chips ship data-effect');
+  assert.match(html, /id="hmhHudPowerups" class="hmh-hud-powerups" aria-hidden="true"/);
+  assert.match(html, /Grab the same candle again to restart its timer\./);
+  assert.match(css, /\.hmh-hud-powerups b \{[^}]*background: linear-gradient\(90deg, var\(--chip, var\(--warning\)\) calc\(var\(--progress, 1\) \* 100%\)/s);
+  assert.match(css, /\.hmh-hud-powerups b::before \{[^}]*background: var\(--chip-accent, #fff\)/);
+  assert.match(css, /\.hmh-hud-powerups b\[data-effect="berserk-candle"\]/);
+  assert.match(css, /\.hmh-hud-powerups b\[data-effect="time-dilation"\]/);
+  assert.match(css, /@keyframes hmh-powerup-ending/);
+  assert.match(css, /@keyframes hmh-powerup-refresh/);
+  assert.match(css, /\.hmh-hud-powerups b\[data-ending="true"\] \{ animation: hmh-powerup-ending/);
+  assert.match(css, /\.hmh-hud-powerups b\[data-refresh-flash="true"\] \{ animation: hmh-powerup-refresh [0-9]+ms ease-out 1; \}/);
+  assert.match(css, /\.hmh-reboot-stage\[data-setting-reduce-motion="true"\] ~ \.hmh-run-rail \.hmh-hud-powerups b \{ animation: none; \}/);
+  // The ending and refresh rules tie on specificity and hud.mjs holds the
+  // refresh flash until the effect ends, so a refreshed chip needs a combined
+  // selector (one class, two attributes, one type) that outranks the refresh
+  // rule, declares the same pulse as the plain ending rule, and still sits
+  // below the reduce-motion gate (three classes, one attribute, one type).
+  const endingRule = css.match(/\.hmh-hud-powerups b\[data-ending="true"\] \{ animation: (hmh-powerup-ending [^;]+); \}/);
+  const combinedRule = css.match(/\.hmh-hud-powerups b\[data-ending="true"\]\[data-refresh-flash="true"\] \{ animation: (hmh-powerup-ending [^;]+); \}/);
+  assert.ok(endingRule && combinedRule, 'both the plain and the combined ending rules ship');
+  assert.equal(combinedRule[1], endingRule[1], 'the combined rule replays the same pulse');
+  assert.ok(combinedRule.index > css.indexOf('.hmh-hud-powerups b[data-refresh-flash="true"] {'), 'the combined rule follows the refresh rule');
+  assert.ok(css.indexOf('.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-run-rail .hmh-hud-powerups b {') > combinedRule.index, 'the reduce-motion gate follows the combined rule');
 });

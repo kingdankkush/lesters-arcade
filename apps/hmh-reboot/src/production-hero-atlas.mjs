@@ -491,6 +491,22 @@ export function createProductionHeroDisplay({
     sprite.visible = Boolean(visible);
   };
 
+  // Reload presentation: a projection-only position/rotation offset on one
+  // named layer, used by the runtime to dip the weapon while a magazine
+  // reloads. applyPose only rewrites texture, anchor and scale, so the offset
+  // survives frame swaps; the shadow is ground-locked and refuses it. The
+  // cached key makes a steady pose free of sprite writes.
+  const layerOffsetKeys = new Map();
+  const setLayerOffset = (layer, { x = 0, y = 0, rotation = 0 } = {}) => {
+    const sprite = spriteByLayer.get(layer);
+    if (!sprite || layer === 'shadow') throw new RangeError(`cannot offset production hero layer ${layer}`);
+    const key = `${x}|${y}|${rotation}`;
+    if (layerOffsetKeys.get(layer) === key) return;
+    layerOffsetKeys.set(layer, key);
+    sprite.position.set(x, y);
+    sprite.rotation = rotation;
+  };
+
   // Cycle 074 (V-5): an additive body tint over every non-shadow layer for
   // the hero hit flash. Idempotent per frame; white restores the atlas colour.
   let currentTint = 0xffffff;
@@ -508,6 +524,7 @@ export function createProductionHeroDisplay({
     applyPose,
     setLayerVisible,
     setTint,
+    setLayerOffset,
     hasNativeWeapon: index.hasNativeWeapon,
     hasNativeAction: index.hasNativeAction,
   });

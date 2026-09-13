@@ -292,6 +292,12 @@ export function createEnemyRosterDisplay({
     container.visualPhase = frame.phase ?? null;
     return frame;
   };
+  // Projection-only hit flash. null restores the tint applyPose owns (the
+  // elite body tint included) so a flash can never leak past its window, and
+  // applyPose itself keeps resetting the tint on every frame change.
+  container.setTint = (color) => {
+    sprite.tint = color ?? (container.eliteProjection ? 0xfff0c0 : 0xffffff);
+  };
   container.applyPose({ state: 'idle', tick: 0, direction: 0, elite });
   return container;
 }

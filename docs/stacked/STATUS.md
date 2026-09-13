@@ -1,5 +1,11 @@
 # STACKED delivery status
 
+## September 12 playable continuation
+
+The current implementation is isolated on `codex/stacked-playable-release`, checkpoint `f4c27f21`, with current live source `1a8d4f42` integrated for verification. See [the playable checkpoint](releases/PLAYABLE-CANDIDATE-2026-09-12.md). The sections below preserve the earlier recovery record, not the current runtime implementation count.
+
+The user has requested continued implementation and publication of completed, verified website work. This does not waive human-device acceptance for the public cabinet unlock, nor authorize paid entry or settlement. Automated desktop/mobile Free play passes; full combined release certification is in progress. Public status remains coming-soon.
+
 ## Current continuation
 
 **STACKED only.** The active continuation is the real linked worktree **Lesters-Arcade-Stacked-S04-Integrity**, branch `feature/stacked-s04-integrity`, based on raw preservation commit `74b72f495ad05a5bcbd323b68871b6465eedc67a`. The Release, Renderer, Portal and historical Stacked worktrees are preserved inputs, not parallel source writers. Do not reset, clean, delete or wholesale-merge them.

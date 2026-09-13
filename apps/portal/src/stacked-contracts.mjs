@@ -81,8 +81,10 @@ export const STACKED_QUALITY_TIERS = freeze({
   desktopLow: { particleCapacity: 2600, resolutionCap: 1.5, maxPixelArea: 1600000, bloomCap: 0.22, antialias: false },
   mobile: { particleCapacity: 1200, resolutionCap: 1.25, maxPixelArea: 1600000, bloomCap: 0, antialias: false }
 });
-export const STACKED_ENTRY_JS_CAP = null;
-export const STACKED_INITIAL_JS_CAP = null;
+// September 12 candidate: 26,277 B entry; 561,537 B complete static graph.
+// Eight percent margin, rounded up to 1,000 B. HMH's cap is unchanged.
+export const STACKED_ENTRY_JS_CAP = 29_000;
+export const STACKED_INITIAL_JS_CAP = 607_000;
 export const CELL_PX = 32;
 export const STACKED_FRAME_SIZES = freeze({ wide: { width: 512, height: 640 }, tall: { width: 320, height: 800 } });
 export const STACKED_ZONE_TRANSITION_TICKS = 150;

@@ -29,6 +29,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, relative, resolve } from 'node:path';
 import { statSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
 import { assertHmhEntryJsBudget, assertHmhInitialJsBudget, sumStaticChunkBytes } from './scripts/hmh-reboot-bundle-budget.mjs';
+import { assertStackedJsBudget } from './scripts/write-stacked-contracts.mjs';
 import { createHmhPixiStubResolver, loadHmhPixiStub } from './scripts/hmh-reboot-pixi-vendor-stubs.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -201,6 +202,11 @@ async function run() {
     cap: HMH_INITIAL_JS_CAP,
   });
   const entryDeltaPct = 100 * (minSize / rawSize - 1);
+  const stackedEntryBytes = statSync(resolve(outdir, 'stacked/game.js')).size;
+  const stackedVendorBytes = statSync(resolve(outdir, 'stacked/stacked-pixi-v1.js')).size;
+  const stackedShared = sumStaticChunkBytes({ metafile: combinedMetafile, entryOutput: 'apps/portal/dist/stacked/game.js' });
+  const stackedInitialBytes = stackedEntryBytes + stackedVendorBytes + stackedShared.bytes;
+  assertStackedJsBudget({ entryBytes: stackedEntryBytes, initialBytes: stackedInitialBytes });
   const childDeltaPct = 100 * (childMinSize / childRawSize - 1);
   const chikunDeltaPct = 100 * (chikunMinSize / chikunRawSize - 1);
 
@@ -215,6 +221,7 @@ async function run() {
   for (const f of chunkFiles) totalOut += statSync(resolve(__dirname, f)).size;
 
   console.log('\n=== Bundle report ===');
+  console.log('STACKED initial JS: ' + stackedInitialBytes + ' B (entry ' + stackedEntryBytes + ', vendor ' + stackedVendorBytes + ', shared ' + stackedShared.bytes + ')');
   console.log(`Source main.js:     ${human(rawSize)}`);
   console.log(`Bundled main.js:    ${human(minSize)}  (${entryDeltaPct >= 0 ? '+' : ''}${entryDeltaPct.toFixed(1)}% vs source entry; imports included)`);
   console.log(`HMH reboot source:  ${human(childRawSize)}`);

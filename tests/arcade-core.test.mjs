@@ -2191,7 +2191,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-world-polish-20260911'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-package-20260912'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -3033,7 +3033,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-world-polish-20260911'), true);
+  assert.equal(smokeScript.includes('hmh-package-20260912'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
@@ -3251,6 +3251,35 @@ test('AVATAR_RULES re-encodes to a metadata-stripping raster format', () => {
   assert.ok(['image/jpeg', 'image/png'].includes(AVATAR_RULES.outputType));
   assert.ok(AVATAR_RULES.maxDimension > 0 && AVATAR_RULES.maxDimension <= 1024);
   assert.ok(AVATAR_RULES.outputQuality > 0 && AVATAR_RULES.outputQuality <= 1);
+});
+
+test('game-over summary reads bosses and killed-by from the canonical reboot recap instead of stale combat state', async () => {
+  const { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunKill } = await import('../sdk/hmh-run-summary.mjs');
+  const { selectGameOverRecapFields } = await import('../apps/portal/src/hmh-run-recap.mjs');
+  const state = createRunSummaryAccumulator({ seed: 4242, buildHash: 'game-over-recap', mode: 'free', heroId: 'lit-commando', startPosition: { x: 0, y: 0 } });
+  recordRunKill(state, { enemyRoleId: 'liquidator', weaponId: 'coin-blaster', boss: true });
+  recordRunDamage(state, { sourceId: 'enemy-1', targetId: 'player', weaponId: 'enemy-bagholder-rusher', damageApplied: 20, killed: true, tick: 50 });
+  const runSummary = finalizeRunSummary(state, { endTick: 50, elapsedMs: 833.333, terminalReason: 'defeated', score: 120, level: 1, xp: 0, currentCombo: 0, maxCombo: 2, revealedCells: 1, totalCells: 10 });
+  // The legacy in-portal fields are what a reboot run leaves behind: no boss
+  // flag, a stale killer, a sandbox augment and no seed. The selection helper
+  // (the exact call currentGameOverSummaryModel forwards) must prefer the
+  // payload for every metric it feeds.
+  const legacy = { bossesDefeated: 0, killedBy: 'Stale sandbox enemy', bestUpgrade: 'Sandbox Augment (Rank 3)', runSeed: null };
+  const fields = selectGameOverRecapFields(runSummary, legacy);
+  assert.deepEqual(fields, { bossesDefeated: 1, killedBy: 'Bagholder Rusher', bestUpgrade: null, runSeed: 4242 });
+  const summary = buildGameOverSummaryModel({ session: null, score: runSummary.totals.score, elapsedSeconds: 1, kills: runSummary.kills.total, ...fields });
+  assert.equal(summary.metrics.find((metric) => metric.id === 'bosses').value, '1');
+  assert.equal(summary.metrics.find((metric) => metric.id === 'killed-by').value, 'Bagholder Rusher');
+  assert.equal(summary.metrics.find((metric) => metric.id === 'run-seed').value, '4242');
+  assert.equal(summary.metrics.some((metric) => metric.id === 'best-upgrade'), false, 'no augment taken means no Best Augment row');
+  // Without a finalized payload the legacy fields pass through untouched.
+  const fallback = buildGameOverSummaryModel({ session: null, score: 1, elapsedSeconds: 1, kills: 0, ...selectGameOverRecapFields(null, legacy) });
+  assert.equal(fallback.metrics.find((metric) => metric.id === 'bosses').value, '0');
+  assert.equal(fallback.metrics.find((metric) => metric.id === 'killed-by').value, 'Stale sandbox enemy');
+  assert.equal(fallback.metrics.find((metric) => metric.id === 'best-upgrade').value, 'Sandbox Augment (Rank 3)');
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.match(mainSource, /selectGameOverRecapFields\(lastHmhRunSummary, \{/, 'currentGameOverSummaryModel must route the metric sources through the tested helper');
+  assert.equal(mainSource.includes('gameOverReasonCopy(combat.gameOverReason)'), true, 'the raw reason literal must stay mapped to a sentence');
 });
 
 

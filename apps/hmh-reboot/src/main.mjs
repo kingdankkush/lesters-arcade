@@ -1,6 +1,7 @@
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { automaticDodgeIntent } from './automatic-actions.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
+import { resolveLevelBriefing, applyLevelBriefing } from './level-briefing.mjs';
 import { selectLevelEntry } from './level-entry.mjs';
 import { createWorldDesignPacing, stepWorldDesignPacing } from './world-design-pacing.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
@@ -8,6 +9,7 @@ import { deterministicUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } from './world-design-interactions.mjs';
 import { createWorldDesignLife, prepareWorldDesignEnemyPose, worldDesignFootstep } from './world-design-life.mjs';
+import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
@@ -26,7 +28,7 @@ import { loadWorldDesignAppearance } from './world-design-native-assets.mjs';
 import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from './world-design-layout.mjs';
 import { createWorldDepthLayer, worldDepthKey } from './world-depth.mjs';
 import { createHud } from './hud.mjs';
-import { buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout } from './hud-layout.mjs';
+import { TIMED_EFFECT_ENDING_TICKS, buildTimedEffectChips, buildTimedEffectIdentity, buildTimedEffectPresentation, compactWeaponHudLabel, computeCombatStatusLayout } from './hud-layout.mjs';
 import { createPlayerDefeatController } from './combat-lifecycle.mjs';
 import { resolveCombatHits } from './combat-events.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from './enemy-combat.mjs';
@@ -169,6 +171,7 @@ import {
   recordRunLightningLedgerEvent,
   recordRunBearMarketBurnerEvent,
   recordRunForkedStandardEvent,
+  recordRunMilestone,
   recordRunProjectileContacts,
   recordRunProjectileResolution,
   recordRunTick,
@@ -660,6 +663,12 @@ async function boot() {
   world.addChildAt(goreGround, world.children.indexOf(groundShadowLayer));
   world.addChildAt(goreAir, world.children.indexOf(projectileImpacts));
   let gorePresentation = null, goreRequested = false;
+  // Projection-only enemy hit reactions (tint flash, knock offset, squash,
+  // armour shards). The resolver is a dynamic chunk; the Map holds one frozen
+  // descriptor per hit enemy, keyed by id, and nothing in the simulation
+  // reads it. Pruned on retirement, cleared on run reset.
+  let enemyHitFeedback = null, enemyHitFeedbackRequested = false;
+  const enemyHitFeedbackById = new Map();
   app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel);
 
 
@@ -1059,6 +1068,9 @@ async function boot() {
   };
 
   const queueEnemyDeathVisual = (enemy, tick) => {
+    // A retiring body takes its hit descriptor with it: the corpse is its own
+    // presentation and must not inherit a knock offset or flash.
+    enemyHitFeedbackById.delete(enemy?.id);
     if (!enemy || enemyDeathMarkers.has(enemy.id)) return;
     if (Math.hypot(enemy.x - actor.x, enemy.y - actor.y) < 1100) combatAudio.play('enemy-death', {
       volume: .13, playbackRate: .85 + deterministicUnit(enemy.id) * .3,
@@ -1199,6 +1211,12 @@ async function boot() {
         .catch(() => { dataset.goreStatus = 'unavailable'; });
     }
     if (!settings.gore) { gorePresentation?.clear(); goreGround.clear(); goreAir.clear(); }
+    // Not gated on a setting: every run shows hits. A chunk that fails to
+    // load is left to surface as a page error rather than a silent status.
+    if (!enemyHitFeedbackRequested) {
+      enemyHitFeedbackRequested = true;
+      void import('./enemy-hit-feedback.mjs').then(module => { enemyHitFeedback = module; });
+    }
     if (sessionPayload) sessionPayload = { ...sessionPayload, settings: { ...settings } };
     combatAudio.setMusicEnabled(settings.musicEnabled);
     combatAudio.setBusLevels(settings);
@@ -1236,6 +1254,10 @@ async function boot() {
   let motion = null;
   let aimState = null;
   let aimIntent = null;
+  // Projection-only reload-complete beat, and the lazily loaded reload pose
+  // resolver (a dynamic chunk; absent means no bob).
+  let lastReloadComplete = null;
+  let reloadPresentation = null;
   // Render-only cursor tracking for the aim reticle; never feeds simulation.
   let pointerReticleScreen = null;
   window.addEventListener('pointermove', (event) => {
@@ -1256,6 +1278,9 @@ async function boot() {
   let lastBossResolvedAttack = null;
   let lastBossPunishWindow = null;
   let lastEnemyAttack = null;
+  // Telemetry only: the most recent enemy strike event, kept across frames so
+  // the browser gate can read tell-to-strike ticks after the strike tick.
+  let lastEnemyStrike = null;
   let playerBody = null;
   let lastCollision = null;
   let lastTraversal = null;
@@ -1499,8 +1524,9 @@ async function boot() {
         focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
           .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
-      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements});
+      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
       if(releaseTelemetryEnabled) {
+        dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
         dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
         dataset.worldInteractionTarget=worldDesignState.targetId??'';
         dataset.worldInteractionProgress=String(worldDesignState.progress);
@@ -1588,6 +1614,31 @@ async function boot() {
             dataset.targetArtScreenY = String(enemyMarker.y);
             dataset.targetArtScale = String(enemyMarker.scale.y);
           }
+          // Hit reaction on the body itself, layered over whatever pose the
+          // precedence chose, so a hit inside a tell or strike still lands
+          // visibly. Position and squash are applied after the pinned
+          // scale.set above; the tint hands back to the display's own base
+          // tint when there is nothing to show.
+          const hit = enemyHitFeedback && enemyHitFeedbackById.get(enemy.id);
+          const hitAge = hit ? (simulation?.tick ?? 0) - hit.tick : 6;
+          const reaction = hitAge < 6 ? enemyHitFeedback.resolveEnemyHitReaction({
+            ...hit,
+            age: hitAge,
+            zoom: camera.zoom,
+            particleScale,
+            reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
+            reduceFlash: settings.reduceFlash,
+            seed: `${enemy.id}:${hit.tick}`,
+          }) : null;
+          if (reaction) {
+            enemyMarker.position.set(enemyScreen.x + reaction.offsetX, enemyScreen.y + reaction.offsetY);
+            enemyMarker.scale.x *= reaction.squashX;
+            enemyMarker.scale.y *= reaction.squashY;
+            // Shards sit at chest height; the impact burst already owns the
+            // hit point itself, so no second ring is drawn here.
+            for (const shard of reaction.shards) placeWeaponGlow(enemyScreen.x + shard.dx, enemyScreen.y - 24 * camera.zoom + shard.dy, shard.radius, shard.color, shard.alpha);
+          }
+          enemyMarker.setTint(reaction?.tint ?? null);
           // Health is shown on a pip below the body. It used to drive alpha,
           // which made the highest-priority target the hardest one to see and
           // turned dense fights into overlapping ghosts.
@@ -1865,8 +1916,15 @@ async function boot() {
           const phase = settings.reduceMotion ? 0 : (identityTick % effectIdentity.pulsePeriodTicks) / effectIdentity.pulsePeriodTicks;
           const radius = effectIdentity.radius * camera.zoom;
           const pulse = 0.92 + Math.sin(phase * Math.PI * 2) * 0.08;
+          // Cycle 072 (powerup-timers): the ring breathes down for the last two
+          // seconds in step with the chip's ending pulse, read straight from the
+          // authoritative snapshot; reduceFlash holds it steady.
+          const endingTicks = (collectibleSnapshot?.activeEffects.find((effect) => effect.effectId === effectIdentity.effectId)?.expiresTick ?? Infinity) - identityTick;
+          const ringAlpha = !settings.reduceFlash && endingTicks <= TIMED_EFFECT_ENDING_TICKS
+            ? 0.36 + 0.36 * Math.abs(Math.sin(identityTick * Math.PI / 30))
+            : 0.72;
           combatVisuals.ellipse(heroGround.x, heroGround.y + 8, radius * pulse, radius * 0.42 * pulse)
-            .stroke({ color: effectIdentity.color, width: 3, alpha: 0.72 });
+            .stroke({ color: effectIdentity.color, width: 3, alpha: ringAlpha });
           if (effectIdentity.silhouette === 'spiked-ring') {
             for (let spike = 0; spike < 8; spike += 1) {
               const angle = spike / 8 * Math.PI * 2 + phase * 0.35;
@@ -2213,10 +2271,22 @@ async function boot() {
       actorVisual.position.set(atlasActorEnabled ? groundScreen.x : screen.x, atlasActorEnabled ? groundScreen.y : screen.y);
       actorVisual.zIndex = worldDepthKey(renderState.y);
       heldWeaponLayer.zIndex = worldDepthKey(renderState.y,0.1);
-      if (authoredHeldWeaponDisplay && weaponLoadout) {
-        const heldWeapon = getActiveWeaponState(weaponLoadout);
-        const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
-        const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
+      // Reload progress is read from the active weapon's authoritative reload
+      // ticks (the same read the rail charge line makes below) and drives
+      // nothing but sprite offsets and a glow. It is 0 outside a reload.
+      const heldWeapon = weaponLoadout ? getActiveWeaponState(weaponLoadout) : null;
+      const visualTick = simulation?.tick ?? 0;
+      // startReload/completeReloads set and clear both reload ticks together,
+      // so a non-null completeTick implies a non-null startedTick.
+      const heldReloadProgress = heldWeapon && heldWeapon.reloadCompleteTick !== null
+        ? Math.min(1, (visualTick - heldWeapon.reloadStartedTick) / Math.max(1, heldWeapon.reloadCompleteTick - heldWeapon.reloadStartedTick))
+        : 0;
+      const reloadPose = reloadPresentation && heldReloadProgress > 0
+        ? reloadPresentation.resolveReloadPose({ progress: heldReloadProgress, reduceMotion: settings.reduceMotion })
+        : null;
+      const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
+      const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
+      if (authoredHeldWeaponDisplay && heldWeapon) {
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
         if (heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
@@ -2225,11 +2295,10 @@ async function boot() {
           aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)
             .stroke({ color: 0x8ff3ff, width: 1 + chargeRatio, alpha: 0.18 + chargeRatio * 0.42 });
         }
-        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom });
+        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom, reloadDip: reloadPose });
       }
       if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
       if (productionHeroDisplay && motion) {
-        const visualTick = simulation?.tick ?? 0;
         const pistolFireAge = lastWeaponFire?.weaponId === 'coin-blaster' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
         const playerHitAge = lastPlayerHit ? visualTick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
         const meleeAge = lastMeleeAttack ? visualTick - lastMeleeAttack.tick : Number.POSITIVE_INFINITY;
@@ -2286,6 +2355,23 @@ async function boot() {
           && !actionOwnsWeaponLayer
           && !nativeWeaponOwnsLayer;
         productionHeroDisplay.setLayerVisible('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative);
+        // Reload presentation: the weapon layer dips while a magazine reloads
+        // and snaps level on the completion tick. Only the 'aim' / 'hurt'
+        // poses may carry it, so the 12-tick pistol-fire clip plays out first
+        // and the authored full-body clips keep the layer to themselves. The
+        // resolver is a lazy chunk; until it is resident (well before the
+        // first magazine can run dry) the offset simply stays at zero.
+        productionHeroDisplay.setLayerOffset('weapon', reloadPose && reloadPresentation.resolveReloadHeroAction({ action: productionAction })
+          ? reloadPresentation.resolveReloadLayerOffset({ pose: reloadPose, facingWest: motion.torsoDirection >= 4 })
+          : undefined);
+        // The visible half of the reload-complete beat: the cue, the HUD ring
+        // flash and the snap-back all land on this tick, and so does a six-tick
+        // chamber glow at the muzzle. reduceFlash halves it.
+        if (lastReloadComplete && visualTick - lastReloadComplete.tick < 6) {
+          const chamberFade = 1 - (visualTick - lastReloadComplete.tick) / 6;
+          const chamber = worldToScreen({ x: renderState.x + heldAim.x * 18, y: renderState.y + heldAim.y * 18, z: renderState.z + 34 }, camera, view);
+          placeWeaponGlow(chamber.x, chamber.y, 5 * camera.zoom * chamberFade, WEAPON_COLORS[lastReloadComplete.weaponId], (settings.reduceFlash ? 0.25 : 0.5) * chamberFade);
+        }
         if(releaseTelemetryEnabled) dataset.heroAutomaticAction=productionAction==='interact'?'interact':productionAction==='dash'?'dodge':productionAction==='melee'?'melee':'';
         if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
         actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
@@ -2383,6 +2469,7 @@ async function boot() {
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
       const powerupPresentation = buildTimedEffectPresentation(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
+      const powerupChips = buildTimedEffectChips(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
       const activePowerupLabels = powerupPresentation.active ? [powerupPresentation.hudLabel] : [];
       const powerupHud = powerupPresentation.active ? ` // POWER ${powerupPresentation.hudLabel}` : '';
       const compactWeaponHud = compactWeaponHudLabel({ weaponId: weaponStatus?.weaponId ?? 'none', hudLabel: weaponHud });
@@ -2460,6 +2547,7 @@ async function boot() {
           dashActive: dashStatus?.active === true,
           kills: runKills,
           powerupHudLabel: powerupPresentation.hudLabel,
+          powerupChips,
         });
       }
       // Screen-space overlays: enemy health pips, boss bar, damage flash, and
@@ -2636,6 +2724,8 @@ async function boot() {
         dataset.collectibleCount = String(collectibleSnapshot?.collectedCount ?? 0);
         dataset.collectibleRemaining = String(collectibleSnapshot?.remainingCount ?? 9);
         dataset.collectibleLast = lastCollectibleEvent?.effectId ?? '';
+        // The pickup's own award, so evidence can separate it from kill XP.
+        dataset.collectibleLastXp = String(lastCollectibleEvent?.xpGain ?? 0);
         dataset.collectibleActive = collectibleSnapshot?.activeEffects.map((effect) => effect.effectId).join(',') ?? '';
         dataset.collectibleCountdown = powerupPresentation.hudLabel;
         dataset.collectibleRefreshCount = String(powerupPresentation.effects.reduce((total, effect) => total + effect.refreshCount, 0));
@@ -2657,6 +2747,12 @@ async function boot() {
         dataset.enemyArchetypes = grayboxEnemies.map((enemy) => enemy.archetypeId).join(',');
         dataset.enemyScreenRects = JSON.stringify(projectEnemyScreenRects(grayboxEnemies));
         dataset.enemyTells = String(enemyTellCount);
+        // Tell-to-strike measured from the authoritative event, alongside the
+        // zoom it was read at, so the browser gate can prove the archetype's
+        // tell length survives to gameplay zoom.
+        dataset.enemyTellToStrikeTicks = String(lastEnemyStrike ? lastEnemyStrike.tick - lastEnemyStrike.tellStartedTick : '');
+        dataset.enemyTellToStrikeArchetype = lastEnemyStrike?.archetypeId ?? '';
+        dataset.cameraZoom = String(camera?.zoom ?? '');
         dataset.enemyDecisions = String(lastEnemyStep?.decisions ?? 0);
         dataset.enemyDecisionBudget = String(lastEnemyStep?.decisionBudget ?? 0);
         dataset.enemyDeferredDecisions = String(lastEnemyStep?.deferredDecisions ?? 0);
@@ -2756,6 +2852,8 @@ async function boot() {
     lastBossResolvedAttack = null;
     lastBossPunishWindow = null;
     lastEnemyAttack = null;
+    lastEnemyStrike = null;
+    enemyHitFeedbackById.clear();
     resetEnemyMarkers([]);
     clearEnemyDeathMarkers();
     enemyVisualFacing.clear();
@@ -2781,6 +2879,7 @@ async function boot() {
     suppressedGroundImpacts = 0;
     lastCombatResolution = null;
     lastWeaponFire = null;
+    lastReloadComplete = null;
     lastLightningLedgerPulse = null;
     lastBearMarketBurnerPulse = null;
     lastForkedStandardStrike = null;
@@ -2839,6 +2938,7 @@ async function boot() {
     dataset.entryId = runtimePlayerSpawn.id ?? 'evidence';
     const entryLabel = startupPanel?.querySelector?.('[data-level-entry]');
     if (entryLabel) entryLabel.textContent = runtimePlayerSpawn.name ?? 'Frontier Relay';
+    applyLevelBriefing(startupPanel, resolveLevelBriefing({ entryId: runtimePlayerSpawn.id, seed: payload.session.seed }));
     startupGate = createStartupArtGate(performance.now(), { requireEntry: !evidenceSafeEnabled });
     const entryButton = startupPanel?.querySelector?.('#hmhStartupEnter');
     if (entryButton) { entryButton.disabled = true; entryButton.textContent = 'Preparing Level 1…'; }
@@ -3244,6 +3344,9 @@ async function boot() {
           );
           terrainSpeedMultiplier = movementSpeedMultiplierForTransition(currentGround, probeGround, probeDistance);
         }
+        // Sampled once at the tick's start: a spore bed slows the step, a
+        // conveyor drifts it (below), both from the same authored field.
+        const playerHazardField = worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x: motion.x, y: motion.y, groundZ: currentGround.groundZ });
         stepPlayerMovement(motion, {
           move: tickInput.move,
           aim: { ...aimIntent.direction, active: true },
@@ -3251,7 +3354,8 @@ async function boot() {
           dtSeconds,
           speedMultiplier: terrainSpeedMultiplier
             * (collectibleSnapshot?.speedMultiplier ?? 1)
-            * runEffects.moveSpeedMultiplier,
+            * runEffects.moveSpeedMultiplier
+            * playerHazardField.speed,
         });
         const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
           ? [...grayboxEnemies, liquidatorBoss]
@@ -3271,6 +3375,10 @@ async function boot() {
           const delta = pressure.enemyDeltas.get(enemy.id);
           if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
         }
+        // Conveyor drift folds into the swept delta below, so the push stays
+        // wall-safe and the traversal pass still refuses deep water.
+        motion.x += playerHazardField.drift.x * dtSeconds;
+        motion.y += playerHazardField.drift.y * dtSeconds;
         lastCollision = resolveSweptCircleMotion({
           body: playerBody,
           start: movementStart,
@@ -3337,6 +3445,7 @@ async function boot() {
         return sweep.contacts.length>0 || sweep.depenetrations.length>0;
       }});
       for(const event of worldDesignFrame.events) {
+        recordRunMilestone(runSummaryAccumulator,{type:'site-operated',id:event.siteId,tick});
         if(event.gateId) {
           WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
@@ -3351,6 +3460,7 @@ async function boot() {
         if(settings.captionCriticalAudio) setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated.`);
       }
       for(const secret of stepWorldDesignSecrets(worldSecretState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
+        recordRunMilestone(runSummaryAccumulator,{type:'secret-found',id:secret.id,tick});
         if(secret.reward==='heal') {const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
         if(secret.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
         combatAudio.play('pickup',{volume:.11});
@@ -3415,6 +3525,8 @@ async function boot() {
           preservePrevious: true,
           navigation: enemyNavigation,
           fullAiCap: runtimeEncounterSnapshot(tick).fullAiCap,
+          // Spore beds and conveyors act on enemies through the same field the hero uses.
+          fieldAt: (x, y, ground) => worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ }),
         });
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
@@ -3465,11 +3577,29 @@ async function boot() {
         maxZ: 92,
       }));
       const combatHitIntents = [];
-      combatHitIntents.push(...buildWorldDesignHazardHits(worldDesignState,{tick,targets:[{...actor,id:'player'},...grayboxEnemies],queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}));
+      // Hoisted ahead of the hazard hooks: evidence tours spawn the hero on
+      // the rockfall anchor, and dash i-frames dodge falling rock the same
+      // way they dodge shots.
+      const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
+      const hazardTargets = [
+        ...(playerInvulnerable ? [] : [{ ...actor, id: 'player' }]),
+        ...grayboxEnemies,
+        ...(liquidatorBoss.active && tick >= liquidatorBoss.startTick ? [liquidatorBoss] : []),
+      ];
+      // The boss can be worn down by steam, rock and the grid but never retired
+      // by them: a boss defeat must reach the run summary through the weapon
+      // catalog, and no world-* id may join that catalog.
+      const bossHazardCap = { targetId: liquidatorBoss.id, health: liquidatorBoss.health };
+      combatHitIntents.push(...withholdLethalHazardHits(buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}), bossHazardCap));
+      combatHitIntents.push(...withholdLethalHazardHits(buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }), bossHazardCap));
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
         lastCollectibleEvent = event;
+        // Expiry was the one collectible event without a cue: the chip and the
+        // aura simply vanished. Audio from an authoritative event is projection,
+        // exactly like the activation cue below, and cannot feed back.
+        if (event.type === 'collectible:expired') { combatAudio.play('powerup-expire', { volume: 0.12 }); continue; }
         if (event.type !== 'collectible:collected') continue;
         recordRunCollectible(runSummaryAccumulator, { effectId: event.effectId });
         const placement = authoredPointOfInterestPlacements.find((candidate) => candidate.id === event.placementId);
@@ -3711,6 +3841,9 @@ async function boot() {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
         } else if (event.type === 'weapon:reload-complete') {
           combatAudio.play('reload-complete', { volume: 0.18 });
+          // Projection-only: the chamber glow and the weapon snap-back key
+          // off this tick so they land with the cue and the HUD ring flash.
+          lastReloadComplete = { tick, weaponId: event.weaponId };
         } else if (event.type === 'weapon:auto-fallback') {
           combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
         } else if (event.type === 'ledger:overheat') {
@@ -3721,6 +3854,11 @@ async function boot() {
           combatAudio.play('hmh-lightning-interrupt', { volume: HMH_WEAPON_SFX['hmh-lightning-interrupt'].gain });
         }
       }
+      // No dry-fire click: the shipped input model carries no trigger
+      // (input.mjs writes fire:false on every path, so aimIntent.fire is the
+      // autofire request and rises on aim activation or target acquisition,
+      // not on a press). 'hmh-weapon-empty' stays reserved for the
+      // authoritative 'weapon:auto-fallback' event above.
       for (const event of weaponFrame.events.filter((candidate) => candidate.type === 'weapon:channel-pulse')) {
         lastWeaponFire = { tick, weaponId: event.weaponId, attackId: event.attackId };
         lastLightningLedgerPulse = { tick, attackId: event.attackId, hits: event.hits.length, rampPermille: event.rampPermille };
@@ -3970,7 +4108,6 @@ async function boot() {
         } else if (grenadeSpawn.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
       }
       previousGrenade = tickInput.grenade;
-      const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
       const playerHurtTarget = playerHealth > 0 && !playerInvulnerable ? createHurtTarget({
         id: 'player',
         bodyShape: { type: 'circle', radius: playerBody.radius },
@@ -4023,6 +4160,7 @@ async function boot() {
         });
       }
       for (const event of lastEnemyAttack.events) {
+        lastEnemyStrike = event;
         pushCombatVisualEvent({ type: 'enemy-attack', tick, point: event.target, color: ENEMY_ARCHETYPES[event.archetypeId].visual.color });
         const resolved = resolveEnemyAttackAgainstPlayer(event, {
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
@@ -4140,6 +4278,10 @@ async function boot() {
         districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
         discoveredPoiIds: minimapDiscovery.discoveredPoiIds,
         activeEffectIds: collectibleSnapshot.activeEffects.map((effect) => effect.effectId),
+        // Same engaged predicate as the boss step above; the summary only needs
+        // the first tick it held.
+        level: runProgression.level,
+        bossEngaged: liquidatorBoss.active && tick >= liquidatorBoss.startTick,
       });
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
@@ -4179,7 +4321,9 @@ async function boot() {
             : String(hit.targetId).includes(':bad-debt-summon:')
               ? 'add'
               : null;
-          if (!targetKind) return hit;
+          // Role checks and punish windows scale player weapons only; a
+          // capped hazard hit must land exactly as capped.
+          if (!targetKind || WORLD_ENVIRONMENT_WEAPON_IDS.has(hit.weaponId)) return hit;
           const roleCheck = getLiquidatorRoleCheck({
             weaponId: hit.weaponId,
             distance: targetKind === 'boss' ? Math.hypot(actor.x - liquidatorBoss.x, actor.y - liquidatorBoss.y) : 0,
@@ -4270,7 +4414,13 @@ async function boot() {
           }
           if (damageEvent.targetId === liquidatorBoss.id) {
             const roleCheck = roleChecksByHitId.get(damageEvent.hitId) ?? Object.freeze({ roleId: null, multiplier: 1, applied: false });
-            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: damageEvent.damageApplied, tick });
+            // Second gate behind withholdLethalHazardHits: a same-tick player
+            // hit ordered ahead of the hazard can push the resolution past the
+            // intent cap, and environmental damage still stops at 1 HP.
+            const bossHitAmount = WORLD_ENVIRONMENT_WEAPON_IDS.has(damageEvent.weaponId)
+              ? Math.min(damageEvent.damageApplied, Math.max(0, liquidatorBoss.health - 1))
+              : damageEvent.damageApplied;
+            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: bossHitAmount, tick });
             if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
             if (bossDamage.runEvent) {
               combatAudio.play('boss-death', {volume:.18});
@@ -4293,6 +4443,20 @@ async function boot() {
           const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
           if (!enemy) continue;
           enemy.hitUntilTick = tick + 6;
+          // Render-side hit descriptor for the projection reaction. Frozen
+          // copies of the authoritative damage fields only; the simulation
+          // never reads this Map.
+          enemyHitFeedbackById.set(enemy.id, Object.freeze({
+            tick,
+            knockback: damageEvent.knockback,
+            knockbackResistance: enemy.knockbackResistance,
+            damageApplied: damageEvent.damageApplied,
+            critical: damageEvent.critical,
+            shielded: damageEvent.shielded,
+            armor: enemy.armor,
+            supportArmored: (enemy.supportArmorUntilTick ?? 0) > tick,
+            maxHealth: enemy.maxHealth,
+          }));
           const knockbackCollision = resolveSweptCircleMotion({
             body: enemy.collisionBody,
             start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
@@ -4317,7 +4481,7 @@ async function boot() {
         for (const scoreEvent of lastCombatResolution.scoreEvents) {
           // Environmental deaths retire bodies without inventing a player
           // weapon attribution, XP award, official kill or new summary ID.
-          if(scoreEvent.weaponId==='world-steam') {
+          if(WORLD_ENVIRONMENT_WEAPON_IDS.has(scoreEvent.weaponId)) {
             const enemy=grayboxEnemies.find(e=>e.id===scoreEvent.enemyId);
             if(enemy) {
               queueEnemyDeathVisual(enemy,tick);
@@ -4553,6 +4717,12 @@ async function boot() {
   };
 
   hud = createHud({ documentRef: document, weaponOrder: WEAPON_ORDER });
+  // The reload pose resolver is presentation-only and stays out of the
+  // initial bundle, like pickup-indicators. The first pistol magazine cannot
+  // run dry before eight shots (~2.7 s), so it is resident long before the
+  // first reload; if it never arrives the weapon simply does not bob.
+  void import('./reload-presentation.mjs').then((module) => { reloadPresentation = module; })
+    .catch(() => { dataset.reloadPresentationStatus = 'unavailable'; });
 
   cockpit = createCockpitUi({
     documentRef: document,

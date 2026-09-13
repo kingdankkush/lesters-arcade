@@ -354,3 +354,31 @@ test('held weapon display can select all six authored weapons', async () => {
   assert.equal(display.container.applyWeapon({ weaponId: 'fake' }), null);
   assert.equal(display.container.visible, false);
 });
+
+test('held weapon overlay takes a reload dip that lowers and tilts the prop toward the ground on the facing side', async () => {
+  const index = createAuthoredPropAtlasIndex(await loadMetadata());
+  const display = createAuthoredHeldWeaponDisplay({ index, atlasTexture: fakeAtlasTexture, ContainerClass: FakeContainer, SpriteClass: FakeSprite, TextureClass: FakeTexture, RectangleClass: FakeRectangle });
+  const container = display.container;
+  const right = { weaponId: 'scatter-shotgun', screen: { x: 100, y: 100 }, aimScreen: { x: 180, y: 100 }, cameraZoom: 1.5 };
+  container.applyWeapon(right);
+  const pinned = { x: container.position.x, y: container.position.y, rotation: container.rotation };
+  assert.equal(pinned.rotation, 0);
+
+  container.applyWeapon({ ...right, reloadDip: { dy: 6, rotation: -0.22 } });
+  assert.equal(container.position.x, pinned.x, 'the dip never moves the prop sideways');
+  assert.equal(container.position.y, pinned.y + 6 * 1.5, 'dy scales with the camera zoom');
+  // Pixi rotates clockwise for positive radians: a right-pointing muzzle dips
+  // with +0.22, so the authored left-facing sign is mirrored here.
+  assert.ok(Math.abs(container.rotation - 0.22) < 1e-9);
+
+  const left = { ...right, aimScreen: { x: 20, y: 100 } };
+  container.applyWeapon(left);
+  const leftPinned = container.rotation;
+  container.applyWeapon({ ...left, reloadDip: { dy: 6, rotation: -0.22 } });
+  assert.ok(Math.abs(container.rotation - (leftPinned - 0.22)) < 1e-9, 'a left-pointing muzzle keeps the authored sign');
+
+  container.applyWeapon(right);
+  assert.deepEqual({ x: container.position.x, y: container.position.y, rotation: container.rotation }, pinned, 'omitting reloadDip restores the pinned placement');
+  container.applyWeapon({ ...right, reloadDip: null });
+  assert.deepEqual({ x: container.position.x, y: container.position.y, rotation: container.rotation }, pinned);
+});

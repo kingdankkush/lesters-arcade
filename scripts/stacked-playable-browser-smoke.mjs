@@ -29,10 +29,21 @@ try {
     await page.locator('#officialGuestEnterButton').click();
     await page.locator('.official-cabinet-card').filter({ hasText: 'STACKED' }).click();
     assert.equal(await page.locator('#officialModeTitle').textContent(), 'STACKED');
+    await page.waitForFunction(() => ['officialFreeModeBanner', 'officialRankedModeBanner'].every(id => {
+      const image = document.getElementById(id); return image.complete && image.naturalWidth > 0;
+    }));
+    assert.equal(await page.locator('#officialModeArtNote').isHidden(), true);
+    await page.evaluate(async () => {
+      await Promise.all(['officialFreeModeBanner', 'officialRankedModeBanner'].map(id => document.getElementById(id).decode()));
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
     await page.screenshot({ path: path.join(evidenceDir, name + '-mode-select.png') });
     await page.locator('#officialFreeModeButton').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await frame.waitForSelector('#stackedStage[data-assets-ready="true"]', { timeout: 30000 });
+    await frame.locator('#motionToggle').check();
+    await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
+    await frame.locator('#motionToggle').uncheck();
     await frame.locator('#continueButton').click();
     await frame.waitForFunction(() => Number(document.querySelector('#stackedStage').dataset.simulationTick) > 60);
     const baselineTick = await frame.locator('#stackedStage').getAttribute('data-simulation-tick');
@@ -66,10 +77,13 @@ try {
     await frame.waitForFunction(() => document.querySelector('#overlayCopy').textContent.includes('Replay verified'), { timeout: 20000 });
     const result = await frame.locator('#overlayCopy').textContent();
     await page.screenshot({ path: path.join(evidenceDir, name + '-result.png') });
+    await frame.locator('#effectsToggle').check();
+    await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
     await frame.locator('#restartButton').click();
     await page.waitForTimeout(600);
     const restarted = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await restarted.waitForSelector('#stackedStage[data-assets-ready="true"]');
+    assert.equal(await restarted.locator('#effectsToggle').isChecked(), true, 'preferences persist across a fresh run');
     await restarted.locator('#overlayExitButton').click();
     await page.waitForSelector('#officialWalletSplash:not([hidden])');
     assert.equal(await page.locator('iframe.stacked-game-frame').count(), 0);

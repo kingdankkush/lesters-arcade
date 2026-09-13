@@ -263,6 +263,12 @@ function makeDisplay({ kitData, actorId, elite = false, scale = 1, ContainerClas
   root.productionActorId = actorId;
   root.productionAuthority = 'projection-only';
   root.eliteProjection = elite;
+  // The tint the current pose owns, so a projection hit flash can hand it
+  // back with setTint(null) instead of guessing white over the hit clip.
+  let poseTint = 0xffffff;
+  root.setTint = (color) => {
+    for (const graphic of [parts.body, parts.head, parts.identity]) graphic.tint = color ?? poseTint;
+  };
   root.applyPose = ({ state, tick, direction = 0, elite: poseElite = elite } = {}) => {
     const pose = actorId === 'the-liquidator'
       ? resolveBossPose({ state, tick, direction, elite: poseElite })
@@ -280,6 +286,7 @@ function makeDisplay({ kitData, actorId, elite = false, scale = 1, ContainerClas
     parts.rightLeg.rotation = -pose.stride;
     parts.leftArm.rotation = state === 'attack' ? -pose.recoil : state === 'tell' ? -0.18 : 0;
     parts.rightArm.rotation = state === 'attack' ? pose.recoil : state === 'tell' ? 0.18 : 0;
+    poseTint = pose.tint;
     for (const graphic of [parts.body, parts.head, parts.identity]) graphic.tint = pose.tint;
     parts.tell.clear();
     if (state === 'tell') parts.tell.circle(0, (y + 38 * scale), width * (0.62 + pose.tellPulse * 0.16)).stroke({ color: kitData.telegraphColor, width: 3 * scale, alpha: pose.tellPulse });

@@ -21,6 +21,7 @@ const TIMED_EFFECT_IDENTITY = Object.freeze({
   'time-dilation': Object.freeze({ color: 0x6fd8ff, accentColor: 0xc9f4ff, silhouette: 'clock-orbit', pulsePeriodTicks: 60, radius: 40, audioCue: 'time-dilation-activate' }),
 });
 const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
+const chipText = (hud, effect) => `${hud} ${effect.remainingSeconds}S${effect.refreshCount > 0 ? ` R${effect.refreshCount}` : ''}`;
 
 export function buildTimedEffectIdentity(snapshot = {}) {
   const tick = snapshot?.tick;
@@ -74,10 +75,44 @@ export function buildTimedEffectPresentation(snapshot = {}) {
   const refreshText = (count) => count > 0 ? `, refreshed ${count} time${count === 1 ? '' : 's'}` : '';
   return freezeDeep({
     active: true,
-    hudLabel: effects.map((effect) => `${effect.labels.hud} ${effect.remainingSeconds}S${effect.refreshCount > 0 ? ` R${effect.refreshCount}` : ''}`).join(' + '),
+    hudLabel: effects.map((effect) => chipText(effect.labels.hud, effect)).join(' + '),
     accessibleLabel: `Active powerups: ${effects.map((effect) => `${effect.labels.accessible}, ${secondsText(effect.remainingSeconds)}${refreshText(effect.refreshCount)}`).join('; ')}.`,
     effects: effects.map(({ labels: _labels, ...effect }) => effect),
   });
+}
+
+// Cycle 072 (powerup-timers): every timed effect runs the same 600-tick window
+// (collectible-system COLLECTIBLE_EFFECTS). The chip needs the total to draw a
+// drain, and it lives here rather than on the identity rows because
+// buildTimedEffectIdentity's output shape is pinned. The last two seconds
+// read as "ending" on the chip and on the hero aura alike.
+export const TIMED_EFFECT_DURATION_TICKS = 600;
+export const TIMED_EFFECT_ENDING_TICKS = 120;
+const cssColor = (value) => `#${value.toString(16).padStart(6, '0')}`;
+
+// One chip per active effect for the DOM cockpit. `text` is built by the same
+// helper as hudLabel, so the chip never drifts from the telemetry label; the
+// colours are the identity table's numbers rendered for CSS so chip, aura and
+// activation audio share a single source.
+export function buildTimedEffectChips(snapshot = {}) {
+  return freezeDeep(buildTimedEffectPresentation(snapshot).effects.map((effect) => {
+    const identity = TIMED_EFFECT_IDENTITY[effect.effectId];
+    const code = TIMED_EFFECT_PRESENTATION[effect.effectId].hud;
+    return {
+      effectId: effect.effectId,
+      code,
+      text: chipText(code, effect),
+      remainingTicks: effect.remainingTicks,
+      remainingSeconds: effect.remainingSeconds,
+      durationTicks: TIMED_EFFECT_DURATION_TICKS,
+      progress: Math.min(1, Math.max(0, effect.remainingTicks / TIMED_EFFECT_DURATION_TICKS)).toFixed(3),
+      ending: effect.remainingTicks <= TIMED_EFFECT_ENDING_TICKS,
+      refreshCount: effect.refreshCount,
+      color: cssColor(identity.color),
+      accentColor: cssColor(identity.accentColor),
+      iconAssetId: effect.effectId,
+    };
+  }));
 }
 
 export function minimapWidthFor({ width, height } = {}) {

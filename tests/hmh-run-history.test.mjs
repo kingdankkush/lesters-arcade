@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { HMH_RUN_SUMMARY_CATALOGS as C, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
 import * as history from '../apps/portal/src/hmh-run-history.mjs';
-import { createRunSummaryAccumulator, finalizeRunSummary } from '../sdk/hmh-run-summary.mjs';
+import { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunMilestone } from '../sdk/hmh-run-summary.mjs';
 import {
   HMH_RUN_HISTORY_FILTER_DEFAULTS,
   buildHmhRunHistoryModel,
@@ -223,4 +223,29 @@ test('history reports rejected same-wallet summaries separately from pre-summary
   assert.equal(model.invalidRuns, 1);
   assert.equal(model.legacyRuns, 1);
   assert.equal(model.totalCanonicalRuns, 2);
+});
+
+test('detailed history labels schema 6 site and secret rows and surfaces the defeat on history cards', () => {
+  const state = createRunSummaryAccumulator({ seed: 9, buildHash: 'history-v6', mode: 'free', heroId: 'lilly', startPosition: { x: 0, y: 0 } });
+  recordRunMilestone(state, { type: 'site-operated', id: 'crossing-pump', tick: 12 });
+  recordRunMilestone(state, { type: 'secret-found', id: 'ravine-surveyor-cache', tick: 30 });
+  recordRunDamage(state, { sourceId: 'boss-liquidator', targetId: 'player', weaponId: 'boss-circuit-breaker', damageApplied: 24, killed: true, tick: 40 });
+  const current = finalizeRunSummary(state, { endTick: 40, elapsedMs: 666.667, score: 5, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 10, terminalReason: 'defeated' });
+  assert.equal(current.schemaVersion, 6);
+  const details = history.buildHmhRunDetailsModel(current);
+  const fields = details.sections.flatMap((section) => section.fields);
+  assert.ok(!fields.some((field) => /undefined/i.test(field.label)), 'every schema 6 row must resolve a label');
+  assert.equal(fields.find((field) => field.path === 'milestones.sites.2.operated').label, 'Sites · Crossing Pump · Operated');
+  assert.equal(fields.find((field) => field.path === 'milestones.secrets.1.tick').label, 'Secrets · Ravine Surveyor Cache · Tick');
+  assert.equal(fields.find((field) => field.path === 'defeat.causeId').value, 'boss-circuit-breaker');
+  assert.equal(fields.length, leafEntries(current).length);
+  // Older records keep their exact leaf set and carry no invented defeat.
+  const legacyFields = history.buildHmhRunDetailsModel(summary()).sections.flatMap((section) => section.fields);
+  assert.ok(!legacyFields.some((field) => field.path.startsWith('defeat.') || field.path.startsWith('milestones.')));
+  const model = buildHmhRunHistoryModel([
+    ...records,
+    { sessionId: 'v6', wallet: WALLET, gameId: 'lester-blaster', recordedAt: '2026-08-07T12:00:00.000Z', runSummary: current },
+  ], { wallet: WALLET, now: Date.parse('2026-08-08T12:00:00.000Z') });
+  assert.deepEqual(model.rows[0].defeat, { kind: 'boss', causeId: 'boss-circuit-breaker', tick: 40, damage: 24 });
+  assert.equal(model.rows[1].defeat, null);
 });

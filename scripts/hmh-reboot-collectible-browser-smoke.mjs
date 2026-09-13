@@ -101,6 +101,22 @@ try {
   assert.equal(timed.silhouettes, 'clock-orbit');
   assert.equal(timed.audioCues, 'time-dilation-activate');
   assert.match(accessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining/i);
+  // Cycle 072 (powerup-timers): the DOM chip carries the effect identity and a
+  // continuous drain, not just the whole-second label.
+  const timedChips = await timedPage.locator('#hmhHudPowerups').evaluate((element) => [...element.querySelectorAll('b:not([hidden])')].map((chip) => ({
+    effect: chip.dataset.effect,
+    text: chip.textContent,
+    ending: chip.dataset.ending,
+    progress: Number(chip.style.getPropertyValue('--progress')),
+    chip: chip.style.getPropertyValue('--chip'),
+    accent: chip.style.getPropertyValue('--chip-accent'),
+  })));
+  assert.equal(timedChips.length, 1, `expected one visible chip, saw ${JSON.stringify(timedChips)}`);
+  assert.equal(timedChips[0].effect, 'time-dilation');
+  assert.match(timedChips[0].text, /^DILATION (?:9|10)S$/);
+  assert.ok(timedChips[0].progress > 0 && timedChips[0].progress <= 1, `chip drain out of range: ${timedChips[0].progress}`);
+  assert.equal(timedChips[0].ending, 'false');
+  assert.deepEqual({ chip: timedChips[0].chip, accent: timedChips[0].accent }, { chip: '#6fd8ff', accent: '#c9f4ff' });
 
   const mobilePage = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
   mobilePage.on('pageerror', (error) => errors.push(error.message));
@@ -135,6 +151,8 @@ try {
   });
   await refreshPage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&collectibleRefreshPilot=1&worldTour=collectible-ravine-overlook-cache`, { waitUntil: 'networkidle' });
   await refreshPage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleRefreshCount) === 1, null, { timeout: 5000 });
+  // The refresh raises the one-shot chip flash on the same effect.
+  await refreshPage.waitForFunction(() => document.querySelector('#hmhHudPowerups b[data-effect="time-dilation"][data-refresh-flash="true"]') !== null, null, { timeout: 5000 });
   if (process.env.HMH_COLLECTIBLE_REFRESH_SCREENSHOT) {
     await refreshPage.screenshot({ path: process.env.HMH_COLLECTIBLE_REFRESH_SCREENSHOT, fullPage: true });
   }
@@ -154,6 +172,15 @@ try {
   assert.equal(refreshed.silhouettes, 'clock-orbit');
   assert.equal(refreshed.audioCues, 'time-dilation-activate');
   assert.match(refreshedAccessibleStatus, /active powerups: time dilation, (?:9|10) seconds remaining, refreshed 1 time/i);
+  // The refreshed chip still holds its flash attribute when the last two
+  // seconds open; the ending pulse must win that cascade (the plain ending and
+  // refresh rules tie on specificity, so a combined selector carries it).
+  await refreshPage.waitForFunction(() => document.querySelector('#hmhHudPowerups b[data-effect="time-dilation"][data-ending="true"]') !== null, null, { timeout: 12_000 });
+  const endingChip = await refreshPage.locator('#hmhHudPowerups b[data-effect="time-dilation"]').evaluate((chip) => {
+    const style = getComputedStyle(chip);
+    return { ending: chip.dataset.ending, refreshFlash: chip.dataset.refreshFlash, animationName: style.animationName, iterationCount: style.animationIterationCount };
+  });
+  assert.deepEqual(endingChip, { ending: 'true', refreshFlash: 'true', animationName: 'hmh-powerup-ending', iterationCount: 'infinite' });
   await refreshPage.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.collectibleActive === '', null, { timeout: 14_000 });
   const refreshedExpired = await refreshPage.locator('#hmhRebootStage').evaluate((element) => ({
     active: element.dataset.collectibleActive,
@@ -163,6 +190,14 @@ try {
   const expiredAccessibleStatus = await refreshPage.locator('#hmhRebootCombatStatus').evaluate((element) => element.value || element.textContent);
   assert.deepEqual(refreshedExpired, { active: '', countdown: '', refreshCount: 0 });
   assert.match(expiredAccessibleStatus, /no active powerups/i);
+  // Expiry hides every chip, clears the flash, and its audio cue is a known
+  // one (the unknown-cue counter would tick otherwise).
+  const expiredChips = await refreshPage.locator('#hmhHudPowerups').evaluate((element) => ({
+    hidden: [...element.children].map((chip) => chip.hidden),
+    refreshFlash: [...element.children].map((chip) => chip.dataset.refreshFlash ?? ''),
+    audioUnknownCues: document.querySelector('#hmhRebootStage').dataset.audioUnknownCues,
+  }));
+  assert.deepEqual(expiredChips, { hidden: [true, true], refreshFlash: ['false', ''], audioUnknownCues: '0' });
   await refreshPage.close();
 
   const timedResetPage = await browser.newPage({ viewport: { width: 1024, height: 720 }, deviceScaleFactor: 1 });
@@ -243,7 +278,12 @@ try {
     const healthPilot = pointOfInterestId === 'relay-cache' ? '&collectibleHealthPilot=1' : '';
     const ammoPilot = pointOfInterestId === 'crossing-bank-cache' ? '&collectibleAmmoPilot=1' : '';
     await casePage.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=collectible-${pointOfInterestId}${healthPilot}${ammoPilot}`, { waitUntil: 'networkidle' });
-    await casePage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleCount) === 1, null, { timeout: 5000 });
+    try {
+      await casePage.waitForFunction(() => Number(document.querySelector('#hmhRebootStage')?.dataset.collectibleCount) === 1, null, { timeout: 5000 });
+    } catch (error) {
+      const snapshot = await casePage.locator('#hmhRebootStage').evaluate((element) => ({ tick: element.dataset.simulationTick, startupArt: element.dataset.startupArt, actorX: element.dataset.actorX, actorY: element.dataset.actorY, count: element.dataset.collectibleCount, health: element.dataset.playerHealth })).catch(() => null);
+      throw new Error(`${pointOfInterestId}: pickup not collected within 5 s (${JSON.stringify(snapshot)}): ${String(error.message).split(String.fromCharCode(10))[0]}`);
+    }
     if (effectId === 'berserk-candle' && process.env.HMH_COLLECTIBLE_BERSERK_SCREENSHOT) {
       await casePage.screenshot({ path: process.env.HMH_COLLECTIBLE_BERSERK_SCREENSHOT, fullPage: true });
     }
@@ -260,15 +300,21 @@ try {
       playerHealth: Number(element.dataset.playerHealth),
       ammo: Number(element.dataset.weaponAmmo),
       runXp: Number(element.dataset.runXp),
+      pickupXp: Number(element.dataset.collectibleLastXp),
       silhouettes: element.dataset.timedEffectSilhouettes,
       audioCues: element.dataset.timedEffectAudioCues,
     }));
+    // The shipped opening balance lets auto-fire kill the tour's enemies
+    // before this readout, so total run XP also carries kill XP. The pickup's
+    // own award is read from its event instead; the nuke still has to have
+    // cleared both tour enemies, which is what its 260 kill XP proves.
     if (effectId === 'hash-rail-core') {
       assert.equal(observed.ammo, 3, 'Hash Rail pickup did not load its bounded magazine');
-      assert.equal(observed.runXp, 160, 'Hash Rail pickup did not award canonical run XP');
+      assert.equal(observed.pickupXp, 160, 'Hash Rail pickup did not award canonical run XP');
+      assert.ok(observed.runXp >= 160, 'Hash Rail XP did not reach the run total');
     } else {
-      const expectedRunXp = effectId === 'nuke-liquidation' ? 260 : 0;
-      assert.equal(observed.runXp, expectedRunXp, `${effectId} XP drifted`);
+      assert.equal(observed.pickupXp, 0, `${effectId} XP drifted`);
+      if (effectId === 'nuke-liquidation') assert.equal(observed.runXp, 260, 'nuke did not clear both tour enemies');
     }
     const expectedIdentity = effectId === 'time-dilation'
       ? { silhouettes: 'clock-orbit', audioCues: 'time-dilation-activate' }
@@ -276,8 +322,13 @@ try {
         ? { silhouettes: 'spiked-ring', audioCues: 'berserk-activate' }
         : { silhouettes: '', audioCues: '' };
     assert.deepEqual({ silhouettes: observed.silhouettes, audioCues: observed.audioCues }, expectedIdentity, `${effectId} identity drifted`);
-    const { ammo, runXp, silhouettes: _silhouettes, audioCues: _audioCues, ...contract } = observed;
-    assert.deepEqual(contract, { effectId, weaponId, damageMultiplier, speedMultiplier, handGrenades, enemyCount: effectId === 'nuke-liquidation' ? 0 : 2, playerHealth: 100 }, pointOfInterestId);
+    const { ammo, runXp, pickupXp, enemyCount, silhouettes: _silhouettes, audioCues: _audioCues, ...contract } = observed;
+    assert.deepEqual(contract, { effectId, weaponId, damageMultiplier, speedMultiplier, handGrenades, playerHealth: 100 }, pointOfInterestId);
+    // The tour spawns two enemies; the nuke must clear them, while any other
+    // pickup leaves them to the hero's auto-fire, which may already have
+    // finished them by this readout under the shipped opening balance.
+    if (effectId === 'nuke-liquidation') assert.equal(enemyCount, 0, `${pointOfInterestId}: nuke left enemies alive`);
+    else assert.ok(enemyCount >= 0 && enemyCount <= 2, `${pointOfInterestId}: unexpected enemy count ${enemyCount}`);
     canonical.push({ pointOfInterestId, ...observed });
     await casePage.close();
   }
@@ -316,7 +367,7 @@ try {
   }));
   assert.deepEqual(expired, { active: '', speedMultiplier: 1 });
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, mobile, refreshed, refreshedExpired, refreshedAccessibleStatus, expiredAccessibleStatus, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
+  console.log(JSON.stringify({ status: 'PASS', before, collected, reset, timed, timedChips, mobile, refreshed, refreshedExpired, expiredChips, refreshedAccessibleStatus, expiredAccessibleStatus, timedReset, landscape, bossSafety, expired, accessibleStatus, canonical, errors }));
 } finally {
   await browser.close();
 }

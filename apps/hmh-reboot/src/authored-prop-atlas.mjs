@@ -781,7 +781,13 @@ export function createAuthoredHeldWeaponDisplay({ index, atlasTexture, Container
     sprite.label = 'authored-held-weapon-sprite';
     sprite.anchor.set(0.5, 0.5);
     container.addChild(sprite);
-    container.applyWeapon = ({ weaponId, screen, aimScreen, cameraZoom = 1 } = {}) => {
+    // reloadDip is the reload-presentation pose ({ dy, rotation } in body
+    // units) for the shotgun / MG / rail / launcher props, which have no
+    // native reload frame either. Its rotation is authored for a muzzle
+    // pointing screen-left and is mirrored when the aim points right, so
+    // the muzzle always tilts toward the ground. Omitted, the placement is
+    // exactly the pinned one.
+    container.applyWeapon = ({ weaponId, screen, aimScreen, cameraZoom = 1, reloadDip = null } = {}) => {
       const assetId = weaponId;
       const frame = index.frameFor(assetId);
       const texture = textures.get(assetId);
@@ -792,8 +798,10 @@ export function createAuthoredHeldWeaponDisplay({ index, atlasTexture, Container
       container.visible = true;
       sprite.texture = texture;
       const angle = Math.atan2(aimScreen.y - screen.y, aimScreen.x - screen.x);
-      container.position.set(screen.x + Math.cos(angle) * 20 * cameraZoom, screen.y + Math.sin(angle) * 20 * cameraZoom);
-      container.rotation = angle;
+      const dipDy = reloadDip ? (Number(reloadDip.dy) || 0) * cameraZoom : 0;
+      const dipRotation = reloadDip ? (Number(reloadDip.rotation) || 0) * (Math.cos(angle) < 0 ? 1 : -1) : 0;
+      container.position.set(screen.x + Math.cos(angle) * 20 * cameraZoom, screen.y + Math.sin(angle) * 20 * cameraZoom + dipDy);
+      container.rotation = angle + dipRotation;
       container.scale.set(frame.runtimeScale * 0.72 * cameraZoom);
       container.productionAssetId = weaponId;
       return frame;

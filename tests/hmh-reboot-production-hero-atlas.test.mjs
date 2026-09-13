@@ -715,3 +715,96 @@ test('dash renders moving legs facing the dash direction rather than stale pre-d
   assert.match(source, /locomotion: dashing \? 'moving' : motion\.locomotion/);
   assert.match(source, /legDirection: dashing && lastDashDirection \? quantizeDirection\(lastDashDirection, 8\)/);
 });
+
+test('setLayerOffset moves only the named non-shadow layer, is idempotent and survives applyPose', () => {
+  const metadata = emittedMetadata('lit-commando');
+  const index = createProductionHeroAtlasIndex(metadata);
+  const mocks = displayMocks();
+  const positionWrites = [];
+  class OffsetSprite extends mocks.SpriteClass {
+    constructor(options) {
+      super(options);
+      this.rotation = 0;
+      this.position = { x: 0, y: 0, set: (x, y) => { positionWrites.push(this.label); this.position.x = x; this.position.y = y; } };
+    }
+  }
+  const display = createProductionHeroDisplay({ index, atlasTexture: { source: { width: 2048, height: 2048 } }, ...mocks, SpriteClass: OffsetSprite });
+  assert.equal(typeof display.setLayerOffset, 'function');
+  assert.equal(Object.isFrozen(display), true);
+  const sprites = new Map(display.container.children.map((sprite) => [sprite.label, sprite]));
+  const weapon = sprites.get('production-hero-weapon');
+  display.applyPose({ simulationTick: 0, actionTick: 0, locomotion: 'idle', legDirection: 0, torsoDirection: 0, action: 'aim' });
+
+  display.setLayerOffset('weapon', { y: 6, rotation: -0.22 });
+  assert.equal(weapon.position.x, 0);
+  assert.equal(weapon.position.y, 6);
+  assert.equal(weapon.rotation, -0.22);
+  for (const layer of ['shadow', 'lower-body', 'torso-head']) {
+    assert.equal(sprites.get(`production-hero-${layer}`).position.y, 0, `${layer} must not move`);
+    assert.equal(sprites.get(`production-hero-${layer}`).rotation, 0);
+  }
+  positionWrites.length = 0;
+  display.setLayerOffset('weapon', { y: 6, rotation: -0.22 });
+  display.setLayerOffset('weapon', { y: 6, rotation: -0.22 });
+  assert.deepEqual(positionWrites, [], 'a steady offset is free of sprite writes');
+
+  // The pose swap rewrites texture, anchor and scale but never the offset,
+  // and the offset never touches the anchors the pose set.
+  const frames = display.applyPose({ simulationTick: 12, actionTick: 12, locomotion: 'moving', legDirection: 3, torsoDirection: 3, action: 'aim' });
+  assert.equal(weapon.position.y, 6);
+  assert.equal(weapon.rotation, -0.22);
+  assert.deepEqual(display.container.children.map((sprite) => [sprite.anchor.x, sprite.anchor.y]),
+    frames.map((frame) => [frame.anchor.x, frame.anchor.y]), 'anchors come from the pose, not the offset');
+
+  display.setLayerOffset('weapon');
+  assert.deepEqual([weapon.position.x, weapon.position.y, weapon.rotation], [0, 0, 0]);
+  assert.throws(() => display.setLayerOffset('shadow', { y: 6 }), /shadow/);
+  assert.throws(() => display.setLayerOffset('cape', { y: 6 }), /cape/);
+});
+
+test('the reload offset the weapon layer receives follows the action gate and the facing sign', async () => {
+  const { resolveReloadPose, resolveReloadHeroAction, resolveReloadLayerOffset } = await import('../apps/hmh-reboot/src/reload-presentation.mjs');
+  const metadata = emittedMetadata('lit-commando');
+  const index = createProductionHeroAtlasIndex(metadata);
+  const mocks = displayMocks();
+  class OffsetSprite extends mocks.SpriteClass {
+    constructor(options) {
+      super(options);
+      this.rotation = 0;
+      this.position = { x: 0, y: 0, set: (x, y) => { this.position.x = x; this.position.y = y; } };
+    }
+  }
+  const display = createProductionHeroDisplay({ index, atlasTexture: { source: { width: 2048, height: 2048 } }, ...mocks, SpriteClass: OffsetSprite });
+  const weapon = display.container.children.find((sprite) => sprite.label === 'production-hero-weapon');
+  display.applyPose({ simulationTick: 0, actionTick: 0, locomotion: 'idle', legDirection: 0, torsoDirection: 0, action: 'aim' });
+  // The derivation main.mjs performs after setLayerVisible('weapon', ...):
+  // progress from the authoritative reload ticks, the pose from the lazy
+  // resolver, and the offset only for the poses that leave the layer idle.
+  const apply = ({ progress, action, torsoDirection, reduceMotion = false }) => {
+    const pose = progress > 0 ? resolveReloadPose({ progress, reduceMotion }) : null;
+    display.setLayerOffset('weapon', pose && resolveReloadHeroAction({ action })
+      ? resolveReloadLayerOffset({ pose, facingWest: torsoDirection >= 4 })
+      : undefined);
+    return [weapon.position.x, weapon.position.y, weapon.rotation];
+  };
+  const hold = resolveReloadPose({ progress: 0.5 });
+  assert.ok(hold.dy > 0 && hold.rotation < 0, 'the hold window dips the muzzle');
+  // Facing east (torso 0-3) the muzzle points screen-right, so the authored
+  // tilt is mirrored; facing west (4-7) it applies as authored. The x term
+  // cancels the drift of a rotation about the feet, so it flips with the sign.
+  const east = apply({ progress: 0.5, action: 'aim', torsoDirection: 1 });
+  const west = apply({ progress: 0.5, action: 'hurt', torsoDirection: 5 });
+  assert.deepEqual([east[1], east[2]], [hold.dy, -hold.rotation]);
+  assert.deepEqual([west[1], west[2]], [hold.dy, hold.rotation]);
+  assert.ok(east[0] < 0 && west[0] > 0 && east[0] === -west[0], `drift cancel mirrors with facing: ${east[0]} / ${west[0]}`);
+  // Full-body clips and the 12-tick pistol-fire pose keep the layer level.
+  for (const action of ['pistol-fire', 'melee', 'grenade', 'dash', 'death', 'interact']) {
+    assert.deepEqual(apply({ progress: 0.5, action, torsoDirection: 1 }), [0, 0, 0], `${action} must not carry the dip`);
+  }
+  // Outside a reload, on the completion tick and under reduceMotion the
+  // layer is level, and coming back from a dip fully restores it.
+  assert.deepEqual(apply({ progress: 0.5, action: 'aim', torsoDirection: 1 }), east);
+  assert.deepEqual(apply({ progress: 1, action: 'aim', torsoDirection: 1 }), [0, 0, 0]);
+  assert.deepEqual(apply({ progress: 0, action: 'aim', torsoDirection: 1 }), [0, 0, 0]);
+  assert.deepEqual(apply({ progress: 0.5, action: 'aim', torsoDirection: 1, reduceMotion: true }), [0, 0, 0]);
+});

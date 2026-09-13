@@ -1,0 +1,123 @@
+{
+  "schema": "hmh-quality-release-v1",
+  "verifiedAt": "2026-09-12T05:45:00.000Z",
+  "sourceCommit": "cad94e7d684c450d28052de87821fc9afc5f281c",
+  "canonicalBranch": "fable/hmh-roadmap-pass-20260911",
+  "baseBranch": "hermes/hmh-textured-rollout",
+  "baseCommit": "b0ee9046",
+  "publicUrl": "https://lestersarcade.io",
+  "production": {
+    "id": "dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg",
+    "url": "https://lesters-arcade-mgh1j0kip-justin-agent-projects.vercel.app",
+    "state": "READY",
+    "createdAt": "2026-09-12T05:32:58Z",
+    "promotedFrom": "dpl_F5Hytj9fjABnmDVDmVBNwhGeFusU",
+    "aliases": [
+      "lestersarcade.io"
+    ]
+  },
+  "preview": {
+    "id": "dpl_F5Hytj9fjABnmDVDmVBNwhGeFusU",
+    "url": "https://lesters-arcade-gr2ph79el-justin-agent-projects.vercel.app",
+    "state": "READY",
+    "createdAt": "2026-09-12T05:26:57Z"
+  },
+  "rollback": {
+    "id": "dpl_3PQPwrqBQaS6sAChSpZ9uca9wXoN",
+    "url": "https://lesters-arcade-mbvuvv29s-justin-agent-projects.vercel.app",
+    "sourceCommit": "b0ee904655191e6376cdb94103d086d7158c09ff"
+  },
+  "changes": [
+    "Per-insertion-point briefing on the Level 1 loading panel: objective, watch-for, nearby supply and a seeded field tip, proven against authored world data",
+    "Spawn-safety proofs for the five randomized insertion points: blocker clearance, landmark and set-piece distance, main-route placement, district spawn pairs, director opening under real rules",
+    "Compact inline briefing layout on phones (widths at or under 600 px)",
+    "Portal cache token hmh-briefing-20260911 and service-worker namespace lesters-arcade-v35-hmh-briefing",
+    "Roadmap reconciliation handoff mapping the 2026-09-11 vision roadmap to live source, agent-doable work and owner-gated items"
+  ],
+  "verification": {
+    "local": {
+      "command": "npm run vercel:build",
+      "tests": 3389,
+      "passed": 3338,
+      "expectedRetirementFailures": 51,
+      "unexpectedFailures": 0,
+      "syntax": {
+        "javascriptModules": 520,
+        "pythonScripts": 86
+      },
+      "assets": "PASS",
+      "contractStructure": "PASS",
+      "build": "PASS",
+      "initialChildJsBytes": 897379,
+      "initialChildJsWithSharedChunksBytes": 1029429,
+      "focusedTests": [
+        "tests/hmh-level-briefing.test.mjs (7)",
+        "tests/hmh-level-entry.test.mjs (5)",
+        "tests/hmh-reboot-startup-runtime.test.mjs (9)"
+      ],
+      "portalE2eDesktop": "7 flows; pause-resume and mid-run-restart fail identically on the untouched base commit b0ee9046 on this machine, so they are pre-existing and not caused by this change; 0 console/page errors"
+    },
+    "cloud": {
+      "preview": {
+        "tests": 3389,
+        "passed": 3338,
+        "expectedRetirementFailures": 51,
+        "unexpectedFailures": 0,
+        "syntax": {
+          "javascriptModules": 520,
+          "pythonScripts": 86
+        },
+        "assets": "PASS",
+        "contractStructure": "PASS",
+        "build": "PASS",
+        "initialChildJsBytes": 897379
+      },
+      "production": {
+        "tests": 3389,
+        "passed": 3338,
+        "expectedRetirementFailures": 51,
+        "unexpectedFailures": 0,
+        "syntax": {
+          "javascriptModules": 520,
+          "pythonScripts": 86
+        },
+        "assets": "PASS",
+        "contractStructure": "PASS",
+        "build": "PASS",
+        "initialChildJsBytes": 897379
+      }
+    },
+    "preview": {
+      "method": "vercel curl through Deployment Protection",
+      "serviceWorkerVersion": "lesters-arcade-v35-hmh-briefing",
+      "briefingSlotsServed": 6
+    },
+    "production": {
+      "origin": "https://lestersarcade.io",
+      "filesMatchingLocalBuild": [
+        "/index.html",
+        "/dist/main.js",
+        "/sw.js",
+        "/hmh-reboot/index.html",
+        "/hmh-reboot/styles.css",
+        "/dist/hmh-reboot/game.js"
+      ],
+      "gameBundleBytes": 431633,
+      "serviceWorkerVersion": "lesters-arcade-v35-hmh-briefing",
+      "portalCacheToken": "hmh-briefing-20260911",
+      "briefingSlotsServed": true,
+      "gameBundleCarriesBriefing": true,
+      "cacheHeaders": "as configured in vercel.json (must-revalidate for mutable entries, immutable for hashed chunks)",
+      "smokePortalInteractions": "PASS (wallet-profile-free-ranked-exit)",
+      "smokePortalFlow": "PASS after correcting the script's stale PNG hero-atlas probes to the shipped 2048x2048 WebP atlases (the PNG variants do not exist in the tree; the probe was a pre-existing 404 unrelated to this release)"
+    },
+    "briefingEvidence": "docs/qa/hmh-roadmap-briefing-evidence-20260911.json"
+  },
+  "scopeNotes": [
+    "Projection-only and test-only changes; no simulation, RNG, collision, replay, bridge, profile, wallet or contract behavior changed.",
+    "No native models, animations, audio files or terrain were regenerated in this pass.",
+    "Desktop and phone-size browser checks are scoped release checks, not physical-device or full AAA certification.",
+    "SETTLEMENT_LIVE remains false; Ranked entry pricing, platform fee and Mainnet items remain owner-gated.",
+    "The 99-entry status register and retained backlog are unchanged; this pass adds evidence for roadmap sections 7 and 12 only."
+  ]
+}

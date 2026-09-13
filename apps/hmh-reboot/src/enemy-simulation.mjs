@@ -534,6 +534,9 @@ export function stepEnemyPopulation({
   preservePrevious = false,
   navigation = null,
   fullAiCap = ENEMY_CAPACITY,
+  // Optional (x, y, ground) => {speed, drift:{x,y}} movement field from the
+  // authored hazards; null leaves every existing position bit-identical.
+  fieldAt = null,
 } = {}) {
   if (!population || !Array.isArray(population.active)) throw new TypeError('population is required');
   nonNegativeInteger(tick, 'tick');
@@ -601,9 +604,10 @@ export function stepEnemyPopulation({
     const archetype = getEnemyArchetype(enemy.archetypeId);
     const waterMultiplier = currentGround.kind === 'shallow-water' ? archetype.movement.shallowWaterMultiplier : 1;
     const separationDelta = separation.deltas.get(enemy.id) ?? { x: 0, y: 0 };
+    const field = fieldAt ? fieldAt(enemy.x, enemy.y, currentGround) : null;
     const requested = movementLocked ? { x: 0, y: 0 } : {
-      x: enemy.velocity.x * dtSeconds * waterMultiplier + separationDelta.x,
-      y: enemy.velocity.y * dtSeconds * waterMultiplier + separationDelta.y,
+      x: enemy.velocity.x * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.x ?? 0) * dtSeconds + separationDelta.x,
+      y: enemy.velocity.y * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.y ?? 0) * dtSeconds + separationDelta.y,
     };
     const collision = resolveSweptCircleMotion({
       body: enemy.collisionBody,

@@ -433,8 +433,8 @@ backdrop shader → static gradient; L3 `×0.15`, board glow off, shake ×0.5, p
 
 | Constant | Frozen value | Note |
 | --- | --- | --- |
-| `STACKED_ENTRY_JS_CAP` | `null` | **Hard-fails until measured.** `assertStackedJsBudget` throws `Error('STACKED_ENTRY_JS_CAP has no measured baseline yet')` — a readable failure, not the `TypeError` `safeByteCount()` would raise. S-11's first clean build sets it to `measured × 1.08`, rounded up to the nearest 1,000, with the measurement quoted in the ledger. |
-| `STACKED_INITIAL_JS_CAP` | `null` | Same discipline. Set from `graphBytes` = `dist/stacked/game.js` plus every output in its transitive static import graph, the number a phone actually downloads. |
+| `STACKED_ENTRY_JS_CAP` | `29_000` | September 12 first integrated build: 26,277 B × 1.08, rounded up to 1,000 B. Enforced by the build. |
+| `STACKED_INITIAL_JS_CAP` | `607_000` | September 12: 561,537 B complete static graph (26,277 entry + 496,615 dedicated vendor + 38,645 shared), with the same 8% rounded margin. The existing HMH aggregate cap remains unchanged. |
 | `HMH_INITIAL_JS_CAP` | `1_050_000` — **unchanged** | Do **not** retarget it at the sum of the split caps: `HMH_ENTRY_JS_CAP + ARCADE_PIXI_VENDOR_CAP` is 1,077,000, which is 27,000 bytes *looser* than what the build promises today. Per-artifact caps are additional gates, never a replacement. |
 
 Rejected: `200_000` and `260_000` (portal §6.2) and `220 KB` (gates §6.2) — all three are guesses, and

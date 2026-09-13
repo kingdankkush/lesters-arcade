@@ -564,7 +564,7 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
     title: 'STACKED',
     eyebrow: 'Selected Cabinet',
     copy: 'Practice in Free Mode, or play one wallet-bound Ranked preview run. Ranked results are replay-verified and saved on this device. Online scores and paid entry are not enabled.',
-    artStatus: 'generated-original',
+    artStatus: 'production',
     backgroundAsset: './assets/stacked-mode-select/stacked-mode-bg.svg',
     backgroundPosition: 'center center',
     free: Object.freeze({

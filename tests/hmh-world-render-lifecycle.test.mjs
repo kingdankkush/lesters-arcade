@@ -29,8 +29,12 @@ function corpseSubject() {
   const deaths = new Container();
   const markers = new Map();
   const playedCues = [];
+  // Projection hit descriptors (enemy-hit-feedback): a retiring body must
+  // drop its entry so the corpse never inherits a knock offset or flash.
+  const hitFeedback = new Map([['corpse-fixture', Object.freeze({ tick: 19 })]]);
   const context = vm.createContext({
     worldDepthLayer: depth, worldDepthKey, enemyDeathVisuals: deaths, enemyDeathMarkers: markers,
+    enemyHitFeedbackById: hitFeedback,
     enemyVisualFacing: new Map(), createCorpseClock, pruneCorpseCapacity,
     performance: {now:()=>1000}, isEliteEnemyProjection:()=>false,
     pushCombatVisualEvent:()=>{}, ENEMY_ARCHETYPES:{forkrunner:{visual:{color:0xffffff}}},
@@ -38,7 +42,7 @@ function corpseSubject() {
     actor:{x:100,y:220}, deterministicUnit,
     combatAudio:{play:(cue, options)=>playedCues.push({cue,...options})},
   });
-  return { context, depth, deaths, markers, playedCues, queue:callback(declaration('queueEnemyDeathVisual'),context), clear:callback(declaration('clearEnemyDeathMarkers'),context) };
+  return { context, depth, deaths, markers, playedCues, hitFeedback, queue:callback(declaration('queueEnemyDeathVisual'),context), clear:callback(declaration('clearEnemyDeathMarkers'),context) };
 }
 
 test('queued corpses join the real ground-depth layer at their captured world Y', () => {
@@ -47,6 +51,7 @@ test('queued corpses join the real ground-depth layer at their captured world Y'
     s.queue(enemy,20);
     const graphic=s.markers.get(enemy.id).graphic;
     assert.ok(s.depth.renderLayerChildren.includes(graphic));
+    assert.equal(s.hitFeedback.has(enemy.id), false, 'a retiring body drops its projection hit descriptor');
     assert.equal(graphic.zIndex,220);
     assert.equal(JSON.stringify(enemy),before);
     assert.deepEqual(s.playedCues,[{cue:'enemy-death',volume:.13,playbackRate:.85+deterministicUnit(enemy.id)*.3}]);

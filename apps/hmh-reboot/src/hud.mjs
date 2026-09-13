@@ -101,6 +101,17 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
   const grenadePips = elements.grenades.children;
   const slotChips = elements.slots.children;
   const powerupChips = elements.powerups.children;
+  // Cycle 072 (powerup-timers): per-chip memory for the view-model path. Each
+  // field is a primitive for the same cheap identity diff as `last` below.
+  const chipState = Array.from(powerupChips, () => ({
+    text: null, hidden: null, effect: null, ending: null, progress: null, color: null, accent: null,
+    refreshCount: 0, flash: null, rearm: false,
+  }));
+  const setChipVar = (state, node, key, name, value) => {
+    if (state[key] === value) return;
+    state[key] = value;
+    node.style.setProperty(name, value);
+  };
 
   // Only what a frame can change is remembered. Every field is a primitive so
   // the comparison is a cheap identity check.
@@ -109,6 +120,7 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
     weaponId: null, weaponName: null, ammoMode: null, ammoLit: null, ammoVisible: null,
     ammoRatio: null, ammoText: null, ammoCap: null, reserve: null, stateLabel: null, weaponState: null,
     ringActive: null, ringProgress: null,
+    reloadProgress: null, ammoLow: null, reserveLow: null, reloadFlash: null,
     ownedMask: null, activeSlot: null,
     grenades: null, grenadeMax: null,
     dashReady: null, dashProgress: null, dashRawReady: null, dashActive: null, readyFlash: null,
@@ -143,6 +155,14 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       if (pip.hidden !== !shown) pip.hidden = !shown;
       pip.dataset.filled = String(shown && index < litCount);
     }
+  };
+
+  // Boolean data-* flags on the weapon card, keyed by their `last` slot.
+  const setWeaponFlag = (key, value) => {
+    const text = String(value);
+    if (last[key] === text) return;
+    last[key] = text;
+    elements.weapon.dataset[key] = text;
   };
 
   const applyRing = (mode, ticksRemaining, ticksTotal, heat) => {
@@ -206,6 +226,7 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
         elements.weapon.dataset.weapon = weaponId;
       }
       const mode = String(view.mode ?? 'ready');
+      const previousMode = last.weaponState;
       if (last.weaponState !== mode) {
         last.weaponState = mode;
         elements.weapon.dataset.state = mode;
@@ -233,7 +254,30 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       const secondsRemaining = Number(view.secondsRemaining) || 0;
       const heat = Number(view.heat) || 0;
       setText(elements.weaponState, 'stateLabel', weaponStateLabel(mode, secondsRemaining, heat));
-      applyRing(mode, Math.max(0, Number(view.ticksRemaining) || 0), Math.max(0, Number(view.reloadTicksTotal) || 0), heat);
+      const ticksRemaining = Math.max(0, Number(view.ticksRemaining) || 0);
+      const reloadTicksTotal = Math.max(0, Number(view.reloadTicksTotal) || 0);
+      applyRing(mode, ticksRemaining, reloadTicksTotal, heat);
+
+      // Reload readability. The ring already sweeps; the card itself now
+      // carries the same progress (a bar under the pips, driven by --reload),
+      // an ammo-low tint for the last quarter of a clip, a reserve-low colour
+      // when the pocket cannot fill another clip (the exhausted-shotgun trap),
+      // and a one-shot flash the moment a reload completes. All derived from
+      // primitives the view already carries and all diffed through `last`.
+      const reloadProgress = (mode === 'reloading' && reloadTicksTotal > 0 ? clamp01(1 - ticksRemaining / reloadTicksTotal) : 0).toFixed(3);
+      if (last.reloadProgress !== reloadProgress) {
+        last.reloadProgress = reloadProgress;
+        elements.weapon.style.setProperty('--reload', reloadProgress);
+      }
+      setWeaponFlag('ammoLow', ammoMode !== 'melee' && clipSize > 0 && ammoInClip > 0 && ammoInClip <= Math.max(1, Math.ceil(clipSize * 0.25)));
+      // A null reserve is the pistol's unlimited carry and never runs low.
+      setWeaponFlag('reserveLow', ammoMode !== 'melee' && view.reserveAmmo !== null && view.reserveAmmo !== undefined
+        && Number(view.reserveAmmo) < clipSize);
+      // Same shape as the K-6 dash flash: rises only on reloading -> ready,
+      // clears when the next reload starts so the CSS animation can replay,
+      // and is never rewritten while holding.
+      if (mode === 'reloading' && previousMode !== 'reloading') setWeaponFlag('reloadFlash', false);
+      if (mode === 'ready' && previousMode === 'reloading') setWeaponFlag('reloadFlash', true);
 
       const ownedMask = Number(view.ownedMask) || 0;
       const activeSlot = Number.isInteger(view.activeSlot) ? view.activeSlot : -1;
@@ -278,14 +322,56 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       }
       setText(elements.kills, 'kills', String(Math.max(0, Math.round(Number(view.kills) || 0))));
 
-      const powerupLabel = String(view.powerupHudLabel ?? '');
-      if (last.powerupLabel !== powerupLabel) {
-        last.powerupLabel = powerupLabel;
-        const parts = powerupLabel ? powerupLabel.split(' + ') : [];
+      const chipViews = Array.isArray(view.powerupChips) ? view.powerupChips : null;
+      if (chipViews) {
+        // Cycle 072 (powerup-timers): the chips take a view-model instead of a
+        // split label. The text stays byte-identical to the label path; the
+        // effect, its ending state, the drain and the colours ride data
+        // attributes and custom properties so the stylesheet owns the look.
+        // The refresh flash is the K-6 dash pattern per chip: it rises when
+        // refreshCount climbs while the same effect holds, drops for one frame
+        // and re-rises when it climbs again (a held attribute never replays a
+        // CSS animation), and clears when the effect ends or the slot changes.
         for (let index = 0; index < powerupChips.length; index += 1) {
-          const text = parts[index] ?? '';
-          if (text) powerupChips[index].textContent = text;
-          powerupChips[index].hidden = !text;
+          const chip = chipViews[index];
+          const node = powerupChips[index];
+          const state = chipState[index];
+          const effectId = String(chip?.effectId ?? '');
+          const text = String(chip?.text ?? '');
+          const refreshCount = Number(chip?.refreshCount) || 0;
+          const hidden = !text;
+          let flash = state.flash;
+          if (!effectId || state.effect !== effectId) {
+            state.rearm = false;
+            if (flash === 'true') flash = 'false';
+          } else if (refreshCount > state.refreshCount) {
+            if (flash === 'true') { flash = 'false'; state.rearm = true; } else flash = 'true';
+          } else if (state.rearm) {
+            state.rearm = false;
+            flash = 'true';
+          }
+          state.refreshCount = refreshCount;
+          if (state.text !== text) { state.text = text; if (text) node.textContent = text; }
+          if (state.hidden !== hidden) { state.hidden = hidden; node.hidden = hidden; }
+          if (state.effect !== effectId) { state.effect = effectId; node.dataset.effect = effectId; }
+          if (state.flash !== flash) { state.flash = flash; node.dataset.refreshFlash = flash; }
+          if (!chip) continue;
+          const ending = String(Boolean(chip.ending));
+          if (state.ending !== ending) { state.ending = ending; node.dataset.ending = ending; }
+          setChipVar(state, node, 'progress', '--progress', String(chip.progress ?? '1'));
+          setChipVar(state, node, 'color', '--chip', String(chip.color ?? ''));
+          setChipVar(state, node, 'accent', '--chip-accent', String(chip.accentColor ?? ''));
+        }
+      } else {
+        const powerupLabel = String(view.powerupHudLabel ?? '');
+        if (last.powerupLabel !== powerupLabel) {
+          last.powerupLabel = powerupLabel;
+          const parts = powerupLabel ? powerupLabel.split(' + ') : [];
+          for (let index = 0; index < powerupChips.length; index += 1) {
+            const text = parts[index] ?? '';
+            if (text) powerupChips[index].textContent = text;
+            powerupChips[index].hidden = !text;
+          }
         }
       }
     },

@@ -15,7 +15,7 @@ const HERO_LABELS = Object.freeze({
   'lester-original': 'Lester',
   lilly: 'Lilly',
 });
-const WEAPON_LABELS = Object.freeze({
+export const WEAPON_LABELS = Object.freeze({
   'coin-blaster': 'Coin Blaster',
   'scatter-shotgun': 'Scatter Shotgun',
   'auto-miner': 'Auto Miner',
@@ -103,6 +103,8 @@ function canonicalRows(records, { wallet }) {
       damage: summary.totals.damageDealt,
       kills: summary.kills.total,
       bossKills: summary.kills.boss,
+      // Schema 6 only; older records keep null rather than an invented cause.
+      defeat: summary.defeat ?? null,
       triggerAccuracyPermille: ratioPermille(triggerTotals.contacts, triggerTotals.attempts),
       projectileAccuracyPermille: ratioPermille(projectileTotals.contacts, projectileTotals.emitted),
       primaryWeapons,
@@ -205,7 +207,7 @@ function heroAggregate(rows) {
 const detailLabel = (key) => labelFor({}, key.replace(/([a-z0-9])([A-Z])/g, '$1-$2'));
 function detailFields(value, path, labels = []) {
   if (Array.isArray(value)) return value.flatMap((row, index) => {
-    const id = row.weaponId ?? row.enemyRoleId ?? row.effectId ?? row.upgradeId;
+    const id = row.weaponId ?? row.enemyRoleId ?? row.effectId ?? row.upgradeId ?? row.siteId ?? row.secretId;
     return detailFields(row, `${path}.${index}`, [...labels, labelFor(WEAPON_LABELS, id)]);
   });
   if (value && typeof value === 'object') return Object.entries(value).flatMap(([key, child]) => (

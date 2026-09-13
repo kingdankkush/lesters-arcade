@@ -35,6 +35,9 @@ const SAMPLE_PATHS = Object.freeze({
   'level-up': '../assets/audio/sfx/hmh-level-up.wav',
   'upgrade-offer': '../assets/audio/sfx/hmh-upgrade-offer.wav',
   'upgrade-pick': '../assets/audio/sfx/hmh-upgrade-pick.wav',
+  // A timed effect running out reuses the soft hit sample at low volume; no
+  // new file, same "something was taken away" register as combo-reset.
+  'powerup-expire': '../assets/audio/sfx/hmh-player-hit.wav',
   dash: '../assets/audio/sfx/hmh-dash.wav',
   land: '../assets/audio/sfx/land.ogg',
   'footstep-dirt': '../assets/audio/sfx/hmh-footstep-dirt.wav',

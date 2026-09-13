@@ -1,0 +1,234 @@
+{
+  "schema": "hmh-roadmap-briefing-evidence-v1",
+  "capturedAt": "2026-09-12T05:17:17.709Z",
+  "method": "Ordinary portal flow (guest entry, cabinet, Free mode, active hero, Begin Level) on a local static build of apps/portal; the child loading panel copy was read back from the DOM for each session seed until every insertion point had been observed. No copy was injected. Screenshots are retained outside the repository; their sha256 values are recorded here.",
+  "sourceBranch": "fable/hmh-roadmap-pass-20260911",
+  "expectedEntries": [
+    "relay",
+    "ravine",
+    "hashwood",
+    "mining",
+    "yard"
+  ],
+  "observedEntries": [
+    "mining",
+    "relay",
+    "ravine",
+    "hashwood",
+    "yard"
+  ],
+  "desktop": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "observations": [
+      {
+        "attempt": 1,
+        "entryId": "mining",
+        "entryName": "Mining Outskirts",
+        "hidden": false,
+        "enterText": "Preparing Level 1\u00e2\u20ac\u00a6",
+        "slots": {
+          "objective": "Work east through the camp toward the Liquidation Yard.",
+          "watch": "The mining yard south-east is an arena, and its relief valve vents a steam hazard when run.",
+          "supply": "The Machine Gun is in the control room to the north-east.",
+          "tip": "Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest."
+        },
+        "artReady": true,
+        "readyState": {
+          "enterText": "Enter Level 1",
+          "status": "Ready when you are. Take a moment to plan your run.",
+          "slots": {
+            "objective": "Work east through the camp toward the Liquidation Yard.",
+            "watch": "The mining yard south-east is an arena, and its relief valve vents a steam hazard when run.",
+            "supply": "The Machine Gun is in the control room to the north-east.",
+            "tip": "Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest."
+          }
+        },
+        "screenshot": "briefing-mining-desktop.png",
+        "screenshotSha256": "f5a5e3f61a338d2ca4c221e5c838900cea15074496b14d318ec640031761f54b",
+        "errors": [],
+        "gameplayScreenshot": "gameplay-mining-desktop.png",
+        "gameplayScreenshotSha256": "48e9af077d96d0d4fd655c270a6339432720796469b77b227fb5468911eca7c1",
+        "afterEnter": {
+          "startupHidden": true,
+          "startupArt": "ready"
+        }
+      },
+      {
+        "attempt": 2,
+        "entryId": "relay",
+        "entryName": "Frontier Relay",
+        "hidden": false,
+        "enterText": "Preparing Level 1\u00e2\u20ac\u00a6",
+        "slots": {
+          "objective": "Follow the road east through the relay gate into Rugpull Ravine.",
+          "watch": "The training yard south of the road is the first fight; the horde gathers there.",
+          "supply": "A medkit cache sits south-east. The farmstead power station to the south opens a supply gate while you stand near it.",
+          "tip": "Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest."
+        },
+        "artReady": true,
+        "readyState": {
+          "enterText": "Enter Level 1",
+          "status": "Ready when you are. Take a moment to plan your run.",
+          "slots": {
+            "objective": "Follow the road east through the relay gate into Rugpull Ravine.",
+            "watch": "The training yard south of the road is the first fight; the horde gathers there.",
+            "supply": "A medkit cache sits south-east. The farmstead power station to the south opens a supply gate while you stand near it.",
+            "tip": "Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest."
+          }
+        },
+        "screenshot": "briefing-relay-desktop.png",
+        "screenshotSha256": "4410ec100ef72faba67f2d92c1e333b5e01dfb3b0fc08665400c5ac3e5e662ff",
+        "errors": []
+      },
+      {
+        "attempt": 3,
+        "entryId": "ravine",
+        "entryName": "Ravine Approach",
+        "hidden": false,
+        "enterText": "Enter Level 1",
+        "slots": {
+          "objective": "Salvage the ravine, then follow it east to the Proof-of-Work bridge.",
+          "watch": "The ambush bowl south-east funnels the horde. The quarry winch beyond it opens the salvage gate when held.",
+          "supply": "The Shotgun waits to the south, below the road.",
+          "tip": "Throw grenades into the thickest pack, not at the nearest enemy."
+        },
+        "artReady": true,
+        "readyState": {
+          "enterText": "Enter Level 1",
+          "status": "Ready when you are. Take a moment to plan your run.",
+          "slots": {
+            "objective": "Salvage the ravine, then follow it east to the Proof-of-Work bridge.",
+            "watch": "The ambush bowl south-east funnels the horde. The quarry winch beyond it opens the salvage gate when held.",
+            "supply": "The Shotgun waits to the south, below the road.",
+            "tip": "Throw grenades into the thickest pack, not at the nearest enemy."
+          }
+        },
+        "screenshot": "briefing-ravine-desktop.png",
+        "screenshotSha256": "a2dcf9474b30f6925d4cacc1f9abfef2a6331e7a9b7f43ac3594afde71b6be60",
+        "errors": []
+      },
+      {
+        "attempt": 4,
+        "entryId": "hashwood",
+        "entryName": "Hashwood Clearing",
+        "hidden": false,
+        "enterText": "Enter Level 1",
+        "slots": {
+          "objective": "Cross the beacon clearing and head east into the Mining Camp.",
+          "watch": "You start inside the clearing arena; enemies close from the tree line on every side.",
+          "supply": "The Berserk candle rests at the shrine to the south. The woodland sanctuary, also south, heals you while you hold it.",
+          "tip": "Dodges and close combat trigger on their own. Keep moving so they have room to work."
+        },
+        "artReady": true,
+        "readyState": {
+          "enterText": "Enter Level 1",
+          "status": "Ready when you are. Take a moment to plan your run.",
+          "slots": {
+            "objective": "Cross the beacon clearing and head east into the Mining Camp.",
+            "watch": "You start inside the clearing arena; enemies close from the tree line on every side.",
+            "supply": "The Berserk candle rests at the shrine to the south. The woodland sanctuary, also south, heals you while you hold it.",
+            "tip": "Dodges and close combat trigger on their own. Keep moving so they have room to work."
+          }
+        },
+        "screenshot": "briefing-hashwood-desktop.png",
+        "screenshotSha256": "f15b33017ba6b228d9b211bc06a8fc57133ed35f941a2e03ec22bdb1664365f4",
+        "errors": []
+      },
+      {
+        "attempt": 8,
+        "entryId": "yard",
+        "entryName": "Yard Approach",
+        "hidden": false,
+        "enterText": "Enter Level 1",
+        "slots": {
+          "objective": "The Liquidator\u00e2\u20ac\u2122s arena lies just east. Arm up, then hold your ground.",
+          "watch": "The arena east is the Liquidator\u00e2\u20ac\u2122s. The warehouse to the south opens a supply gate while you hold it.",
+          "supply": "The Grenade Launcher sits at the extraction console to the south; a medkit cache lies south-east.",
+          "tip": "Dodges and close combat trigger on their own. Keep moving so they have room to work."
+        },
+        "artReady": true,
+        "readyState": {
+          "enterText": "Enter Level 1",
+          "status": "Ready when you are. Take a moment to plan your run.",
+          "slots": {
+            "objective": "The Liquidator\u00e2\u20ac\u2122s arena lies just east. Arm up, then hold your ground.",
+            "watch": "The arena east is the Liquidator\u00e2\u20ac\u2122s. The warehouse to the south opens a supply gate while you hold it.",
+            "supply": "The Grenade Launcher sits at the extraction console to the south; a medkit cache lies south-east.",
+            "tip": "Dodges and close combat trigger on their own. Keep moving so they have room to work."
+          }
+        },
+        "screenshot": "briefing-yard-desktop.png",
+        "screenshotSha256": "b41fe90ca04bf56eceee38ba5b60179c0ed4a3302c647efbc2525c37a4ea40d3",
+        "errors": []
+      }
+    ]
+  },
+  "mobilePortrait": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "note": "Captured after the compact inline-label layout for widths at or under 600 px; the briefing block measures 162 px tall (252 px before compaction).",
+    "observations": [
+      {
+        "profile": "mobile-portrait",
+        "entryId": "mining",
+        "entryName": "Mining Outskirts",
+        "hidden": false,
+        "enterText": "Preparing Level 1\u00e2\u20ac\u00a6",
+        "slots": {
+          "objective": "Work east through the camp toward the Liquidation Yard.",
+          "watch": "The mining yard south-east is an arena, and its relief valve vents a steam hazard when run.",
+          "supply": "The Machine Gun is in the control room to the north-east.",
+          "tip": "Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest."
+        },
+        "artReady": true,
+        "screenshot": "briefing-mining-mobile.png",
+        "screenshotSha256": "428e887296442a237cdc9467308c90031cfbaaec41a8d8286a9f1b8d7f238743",
+        "layout": {
+          "viewport": {
+            "width": 348,
+            "height": 832,
+            "scrollHeight": 832
+          },
+          "card": {
+            "x": 20,
+            "y": 24,
+            "width": 308,
+            "height": 1044.296875,
+            "top": 24,
+            "right": 328,
+            "bottom": 1068.296875,
+            "left": 20
+          },
+          "brief": {
+            "x": 20,
+            "y": 304.171875,
+            "width": 308,
+            "height": 162,
+            "top": 304.171875,
+            "right": 328,
+            "bottom": 466.171875,
+            "left": 20
+          },
+          "enter": {
+            "x": 24,
+            "y": 1016.296875,
+            "width": 82.453125,
+            "height": 44,
+            "top": 1016.296875,
+            "right": 106.453125,
+            "bottom": 1060.296875,
+            "left": 24
+          },
+          "briefColumns": "308px"
+        },
+        "errors": []
+      }
+    ]
+  },
+  "failures": []
+}
