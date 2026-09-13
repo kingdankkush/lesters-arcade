@@ -32,6 +32,7 @@ const PRECACHE_URLS = [
   '/dist/stacked/game.js',
   '/dist/stacked/verify-worker.js',
   '/dist/stacked/stacked-pixi-v1.js',
+  '/assets/generated/chikun-flight-v1/poster.webp',
   '/assets/generated/chikun-game/chikun-coast.webp',
   '/assets/generated/chikun-game/chikun-fall.webp',
 ];

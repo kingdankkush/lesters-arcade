@@ -8,16 +8,25 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 ## STACKED public beta release candidate
 
-The `codex/stacked-playable-release` branch integrates production source `1a8d4f42` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
+The `codex/stacked-playable-release` branch integrates live Chikun Afterlight source `d7a5ad69` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
 
 **Production cache marker:** `lesters-arcade-v38-stacked-beta`
 
-## Previous verified playable release (historical receipt)
+## Chikun Afterlight release
+
+Chikun's Escape now includes the owner's original Tripo character with a Blender flight rig, 30 animation clips, a layered city and mountain environment, a day/night cycle, metal obstacles, and original flight sounds. The [Flight Room](https://lestersarcade.io/chikun/flight-room.html) lets players explore every animation.
+
+**Previous Chikun cache marker:** `lesters-arcade-v37-chikun-afterlight`
+
+The release is on `codex/chikun-afterlight-release`, based on production source `1a8d4f420767f32ef97ca7952b782dce284242f0`. The [Chikun handoff](docs/handoffs/chikun-afterlight-20260913.md) records the scope and verification. Retained rollback: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). Canonical simulation and parent Ranked verification are preserved; `SETTLEMENT_LIVE=false`.
+
+## Previous HMH package release (historical)
 
 - **Source:** `cad94e7d684c450d28052de87821fc9afc5f281c`; branch `fable/hmh-roadmap-pass-20260911`, cut from canonical `hermes/hmh-textured-rollout` at `b0ee9046`.
 - **Production deployment:** `dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg` ([immutable URL](https://lesters-arcade-mgh1j0kip-justin-agent-projects.vercel.app)). The custom domain was read back against this exact Ready deployment.
 - **Verified Preview:** `dpl_F5Hytj9fjABnmDVDmVBNwhGeFusU` ([immutable URL](https://lesters-arcade-gr2ph79el-justin-agent-projects.vercel.app)).
 - **Retained rollback:** `dpl_3PQPwrqBQaS6sAChSpZ9uca9wXoN` ([immutable URL](https://lesters-arcade-mbvuvv29s-justin-agent-projects.vercel.app)), source `b0ee904655191e6376cdb94103d086d7158c09ff`.
+**Previous cache marker:** `lesters-arcade-v36-hmh-package`
 - **Verification:** Local `npm run vercel:build`, the Preview cloud build and the promoted production cloud build each passed the unchanged release gate: 3,389 tests, 3,338 passed, exactly 51 documented retirement exceptions, syntax (520 modules, 86 scripts), assets and contract structure. All six mutable entry files read back from the public alias match the local build byte for byte; the service worker serves `lesters-arcade-v36-hmh-package`. The portal interaction smoke passed against production. The portal flow smoke passed against production once its stale PNG hero-atlas probes were pointed at the shipped WebP atlases.
 
 The combined HMH overhaul is playable. That pass added the per-insertion-point Level 1 briefing and spawn-safety proofs only; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED development has resumed in the preview described above.

@@ -133,6 +133,7 @@ async function run() {
       'chikun/game': chikunEntry,
       'stacked/game': stackedEntry,
       'stacked/verify-worker': resolve(__dirname, 'apps/stacked/src/verify-worker.mjs'),
+      'chikun/flight-room': resolve(__dirname, 'apps/chikun/src/flight-room.mjs'),
     },
     absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
     plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],

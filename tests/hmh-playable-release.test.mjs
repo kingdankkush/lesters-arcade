@@ -19,6 +19,7 @@ test('playable update invalidates the prior service-worker asset cache', () => {
   const sw = read('apps/portal/sw.js');
   assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v38-stacked-beta';/);
   assert.doesNotMatch(sw, /lesters-arcade-v32-hmh-gameplan-defects/);
+  assert.doesNotMatch(sw, /lesters-arcade-v36-hmh-package/);
 });
 
 test('playable update versions canonical sessions without deleting historical versions', () => {
