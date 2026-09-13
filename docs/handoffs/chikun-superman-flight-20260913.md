@@ -10,10 +10,12 @@ The editable Blender file and GLB contain eighteen actions and fifteen joints. F
 
 Industrial gates alternate with tree canopies and drone-guarded electric fields. Their marked hazard rectangles preserve collision clarity and the canonical opening. No flight physics, score, seed, collision, parent verification, replay evidence or settlement changes are included. Trees and drones add visual variety, not new collision mechanics. Reduced motion suppresses rolls and decorative wind motion.
 
-Flight Room uses the same compositor and all eighteen actions. The service-worker namespace is `lesters-arcade-v38-chikun-superman`, and character/audio requests use the new versioned asset directory.
+Flight Room uses the same compositor and all eighteen actions. The service-worker namespace is `lesters-arcade-v39-chikun-stacked`, and character/audio requests use the new versioned asset directory.
 
 ## Verification
 
 Native inspection confirms eighteen GLB animations, one fifteen-joint skin, 432 nonempty frames inside the render bounds, and horizontal silhouettes throughout cruise/climb/descent/passage. Focused Chikun tests, build, syntax, desktop browser flow and all Flight Room controls/asset hashes pass. Further hosted and touch results are recorded in the release receipt after verification. Physical-device testing is not implied by Chrome touch emulation.
 
 Previous production retained for rollback: `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, `https://lesters-arcade-apyh3lp3o-justin-agent-projects.vercel.app`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`.
+
+The concurrent STACKED beta production source `98204a1c36c682a70adbb986fb6941289eed8501` is merged before promotion, preserving all three public cabinets. Shared cache conflicts are resolved with a new v39 namespace, all STACKED offline resources, and Chikun v2 poster. No STACKED gameplay changes were authored in this revision.

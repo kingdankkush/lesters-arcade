@@ -6,11 +6,17 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Chikun Superman flight revision
+## Chikun Superman flight and STACKED beta
+
+The `codex/stacked-playable-release` branch integrates live Chikun Afterlight source `d7a5ad69` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
+
+**Production cache marker:** `lesters-arcade-v39-chikun-stacked`
+
+## Chikun Superman flight
 
 Chikun's Escape now uses eighteen Blender-authored actions built around horizontal Superman flight, smooth pose transitions, coat and crest wind, trees and drone-guarded airspace alongside industrial gates. The layered city, mountain scenery, day/night cycle and original flight sounds remain. The [Flight Room](https://lestersarcade.io/chikun/flight-room.html) lets players explore every animation.
 
-**Production cache marker:** `lesters-arcade-v38-chikun-superman`
+**Previous Chikun cache marker:** `lesters-arcade-v37-chikun-afterlight`
 
 **Previous production (rollback):** deployment `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`. The [release receipt](docs/qa/chikun-afterlight-release-20260913.json) records the passing cloud gates and public desktop/touch-phone flows.
 
@@ -25,7 +31,7 @@ The revision is on `codex/chikun-superman-flight`. See the [Superman flight hand
 **Previous cache marker:** `lesters-arcade-v36-hmh-package`
 - **Verification:** Local `npm run vercel:build`, the Preview cloud build and the promoted production cloud build each passed the unchanged release gate: 3,389 tests, 3,338 passed, exactly 51 documented retirement exceptions, syntax (520 modules, 86 scripts), assets and contract structure. All six mutable entry files read back from the public alias match the local build byte for byte; the service worker serves `lesters-arcade-v36-hmh-package`. The portal interaction smoke passed against production. The portal flow smoke passed against production once its stale PNG hero-atlas probes were pointed at the shipped WebP atlases.
 
-The combined overhaul is playable. This pass adds the per-insertion-point Level 1 briefing and spawn-safety proofs only; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED stays paused.
+The combined HMH overhaul is playable. That pass added the per-insertion-point Level 1 briefing and spawn-safety proofs only; full human/device acceptance, world/animation polish, detailed enemy-crop repeatability and the brief initial atlas-loading fallback remain open. `SETTLEMENT_LIVE=false`; financial activation remains separately gated. STACKED development has resumed in the preview described above.
 
 [Current release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) · [Roadmap reconciliation and agent scope](docs/handoffs/hmh-roadmap-reconciliation-20260911.md) · [Briefing evidence](docs/qa/hmh-roadmap-briefing-evidence-20260911.json) · [Contribution and task reconciliation](docs/handoffs/hmh-release-reconciliation-20260911.md) · [Complete polish backlog](docs/handoffs/hmh-playable-release-and-polish-backlog.md)
 
@@ -39,6 +45,7 @@ The [preceding release receipt](docs/qa/hmh-quality-release-20260911.json) retai
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
 | Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---

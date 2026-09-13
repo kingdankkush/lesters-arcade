@@ -18,9 +18,11 @@ export const STACKED_MIN_PLACEMENT_TICKS = 2;
 export const SOFT_DROP_FACTOR = 20;
 export const STACKED_LEVEL_CAP = 30;
 export const STACKED_COMBO_BONUS_CAP = 20;
+export const STACKED_Q16_SCALE = 65536;
 export const GRAVITY_LEVEL_CAP = 15;
 export const LOCK_LEVEL_CAP = 20;
 export const STACKED_ZONE_COUNT = 6;
+// Gravity uses direct level indexing: [min(level, GRAVITY_LEVEL_CAP)]; index 0 duplicates level 1.
 export const STACKED_GRAVITY_Q16 = freeze([1092, 1092, 1365, 1771, 2341, 3121, 4096, 5461, 7282, 9362, 13107, 16384, 21845, 32768, 65536, 131072]);
 export const STACKED_LOCK_RULES = freeze([
   { minLevel: 1, maxLevel: 10, lockDelayTicks: 30, lockResetCap: 15 },
@@ -30,6 +32,7 @@ export const STACKED_LOCK_RULES = freeze([
   { minLevel: 19, maxLevel: 19, lockDelayTicks: 15, lockResetCap: 8 },
   { minLevel: 20, maxLevel: 30, lockDelayTicks: 12, lockResetCap: 6 }
 ]);
+// Lock tables store 1-based levels at [min(level, LOCK_LEVEL_CAP) - 1].
 export const LOCK_DELAY_TICKS = freeze([30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 26, 26, 26, 22, 22, 22, 18, 18, 15, 12]);
 export const LOCK_RESET_CAP = freeze([15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 12, 12, 12, 10, 10, 8, 6]);
 export const STACKED_MAX_TICKS = 432000;
@@ -78,8 +81,10 @@ export const STACKED_QUALITY_TIERS = freeze({
   desktopLow: { particleCapacity: 2600, resolutionCap: 1.5, maxPixelArea: 1600000, bloomCap: 0.22, antialias: false },
   mobile: { particleCapacity: 1200, resolutionCap: 1.25, maxPixelArea: 1600000, bloomCap: 0, antialias: false }
 });
-export const STACKED_ENTRY_JS_CAP = null;
-export const STACKED_INITIAL_JS_CAP = null;
+// September 12 candidate: 26,277 B entry; 561,537 B complete static graph.
+// Eight percent margin, rounded up to 1,000 B. HMH's cap is unchanged.
+export const STACKED_ENTRY_JS_CAP = 29_000;
+export const STACKED_INITIAL_JS_CAP = 607_000;
 export const CELL_PX = 32;
 export const STACKED_FRAME_SIZES = freeze({ wide: { width: 512, height: 640 }, tall: { width: 320, height: 800 } });
 export const STACKED_ZONE_TRANSITION_TICKS = 150;
@@ -92,6 +97,7 @@ export const STACKED_URL_SLUG = 'stacked';
 export const STACKED_URL_SLUG_ALIAS = 'stack';
 export const STACKED_SEASON_ID = 'stacked-season-preview-1';
 export const STACKED_BRIDGE_PROTOCOL = 'stacked-bridge/v1';
+export const STACKED_MAX_MESSAGE_BYTES = 65536;
 export const STACKED_RESULT_TUPLE_TAG = 'stacked-result-v1';
 export const STACKED_RUN_SUMMARY_VERSION = 1;
 export const STACKED_PLAYER_SETTINGS_KEY = 'stacked-player-settings-v1';

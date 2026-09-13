@@ -24,7 +24,7 @@ function findSecurityHeader(key, source = null) {
 }
 
 test('production Vercel config keeps portal framing closed except for same-origin playable children', () => {
-  const portalSource = '/((?!(?:hmh-reboot|chikun)/).*)';
+  const portalSource = '/((?!(?:hmh-reboot|chikun|stacked)/).*)';
   const found = findSecurityHeader('Content-Security-Policy', portalSource);
   assert.ok(found, 'portal Content-Security-Policy header should be configured');
 
@@ -35,7 +35,7 @@ test('production Vercel config keeps portal framing closed except for same-origi
   assert.deepEqual(csp.get('frame-ancestors'), ["'none'"]);
   assert.equal(csp.has('upgrade-insecure-requests'), true);
 
-  for (const childSource of ['/hmh-reboot/(.*)', '/chikun/(.*)']) {
+  for (const childSource of ['/hmh-reboot/(.*)', '/chikun/(.*)', '/stacked/(.*)']) {
     const child = findSecurityHeader('Content-Security-Policy', childSource);
     assert.ok(child, `${childSource} Content-Security-Policy header should be configured`);
     const childCsp = parseCsp(child.header.value);
@@ -44,6 +44,7 @@ test('production Vercel config keeps portal framing closed except for same-origi
     assert.deepEqual(childCsp.get('object-src'), ["'none'"]);
     assert.equal(childCsp.get('script-src').includes("'unsafe-inline'"), false);
     assert.equal(childCsp.get('style-src').includes("'unsafe-inline'"), false);
+    if (childSource === '/stacked/(.*)') assert.equal(childCsp.get('script-src').includes("'unsafe-eval'"), false);
   }
 
   const scriptSrc = csp.get('script-src') ?? [];

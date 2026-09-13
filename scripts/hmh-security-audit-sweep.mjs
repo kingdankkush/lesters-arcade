@@ -33,7 +33,7 @@ function lineForOffset(text, offset) {
 }
 
 export function buildSecurityAuditSweep({ repoRoot = repoRootFromHere() } = {}) {
-  const scopeDirs = [path.join(repoRoot, 'apps', 'portal'), path.join(repoRoot, 'scripts'), path.join(repoRoot, 'tests')];
+  const scopeDirs = [path.join(repoRoot, 'apps', 'portal'), path.join(repoRoot, 'apps', 'stacked'), path.join(repoRoot, 'scripts'), path.join(repoRoot, 'tests')];
   const files = scopeDirs.flatMap((dir) => walk(dir));
   const findings = [];
   for (const file of files) {
