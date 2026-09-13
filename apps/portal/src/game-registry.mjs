@@ -32,21 +32,18 @@ const REGISTERED_GAMES = {
     devWallet: null,
     feeSplit: { dev: 100, platform: 0, liquidity: 0, treasury: 0 },
     adapter: null,
-    status: 'coming-soon',
+    status: 'live',
   }),
 };
 
-const NATIVE_RUNTIME_GAME_IDS = new Set(['hard-money-heroes']);
+const NATIVE_RUNTIME_GAME_IDS = new Set(['hard-money-heroes', 'stacked']);
 
 export function getCabinetLaunchReadiness(gameId) {
   const registryId = gameId === 'lester-blaster' ? 'hard-money-heroes' : gameId;
   const game = REGISTERED_GAMES[registryId];
   if (!game) return Object.freeze({ ready: false, reason: `Unknown game '${gameId}'.` });
   if (game.status !== 'live') {
-    const reason = gameId === 'stacked'
-      ? 'STACKED gameplay is staged and will be enabled when its S-16 runtime mount lands.'
-      : `${game.name} is not playable yet.`;
-    return Object.freeze({ ready: false, reason });
+    return Object.freeze({ ready: false, reason: `${game.name} is not playable yet.` });
   }
   if (!game.adapter && !NATIVE_RUNTIME_GAME_IDS.has(registryId)) {
     return Object.freeze({ ready: false, reason: `${game.name} has no launch adapter.` });

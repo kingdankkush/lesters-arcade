@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "runtimeVersion": "pixi-runtime-v1",
   "sdkVersion": "1.0.0",
-  "status": "coming-soon",
+  "status": "playable",
   "aspectSupport": ["9:16", "16:9"],
   "controlScheme": "dpad-buttons",
   "capabilities": ["leaderboard", "achievements", "ranked", "audio", "haptics"],

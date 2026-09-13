@@ -1,5 +1,11 @@
 # STACKED owner decisions
 
+## Public beta launch approval — 2026-09-13 (current authority)
+
+The owner explicitly answered **“Yes, launch the tested public beta”** to approval of public Free Mode, clearly labelled local-only Ranked, and promotion after automated desktop/mobile tests without another approval prompt. This replaces the earlier public-launch hold and exact-ID prompt requirement for this beta only. Physical-device acceptance, remaining polish and full original-plan acceptance remain open. No fees, prizes, funds, online rankings, contracts, settlement or new multiplayer service are authorized. Preserve current production ancestry and a verified rollback; promote only the tested beta deployment.
+
+The earlier sections below are historical where they conflict with this approval.
+
 ## Current session boundaries — Stacked-only reprompt, 2026-09-07
 
 The owner's newly supplied Stacked-only briefing takes precedence over broader historical publication language below. G-15 requires explicit approval for each exact production deployment ID. G-2/S-22 still requires recorded human-device acceptance before public launch, and G-3 still gates Ranked writes. F-11's keep/park decision is owner-gated; this continuation does not change the accepted match seam or choose its future scope. No HMH cycle work, worktree reconciliation, paid entry, settlement activation, authority changes, contract deployment or new online-versus backend is authorized here.

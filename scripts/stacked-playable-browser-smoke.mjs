@@ -31,10 +31,13 @@ try {
       const response = await route.fetch();
       await route.fulfill({ response, headers: { ...response.headers(), 'content-security-policy': csp.replace('; upgrade-insecure-requests', '') } });
     });
-    await page.goto(origin + '/?devCabinets=1', { waitUntil: 'networkidle' });
+    await page.goto(origin + '/', { waitUntil: 'networkidle' });
     await page.locator('#officialGuestEnterButton').click();
     await page.locator('.official-cabinet-card').filter({ hasText: 'STACKED' }).click();
     assert.equal(await page.locator('#officialModeTitle').textContent(), 'STACKED');
+    assert.match(await page.locator('#officialModeCopy').textContent(), /Public beta/);
+    assert.match(await page.locator('#officialRankedModeTitle').textContent(), /Local Only/);
+    assert.match(await page.locator('#officialRankedModeCopy').textContent(), /No fees, prizes or online ranking/);
     await page.waitForFunction(() => ['officialFreeModeBanner', 'officialRankedModeBanner'].every(id => {
       const image = document.getElementById(id); return image.complete && image.naturalWidth > 0;
     }));

@@ -1,5 +1,9 @@
 # STACKED delivery status
 
+## September 13 public beta (current)
+
+The owner approved **“Yes, launch the tested public beta”**, superseding the old launch hold and authorizing promotion of the tested release without another prompt. Normal cabinet entry is enabled; Free Mode is playable and Ranked is explicitly device-local. No fees, prizes, online ranking or settlement are enabled. See [launch authorization](DECISIONS.md) and [beta release record](releases/PUBLIC-BETA-2026-09-13.md). Older status sections below are historical.
+
 ## September 13 preview hardening
 
 See [the current playable-preview checkpoint](releases/PLAYABLE-PREVIEW-2026-09-13.md).

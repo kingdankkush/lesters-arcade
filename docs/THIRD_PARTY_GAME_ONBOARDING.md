@@ -6,6 +6,8 @@ schema, security requirements, and step-by-step onboarding.
 
 ## 1. Overview
 
+STACKED 0.2.0 is a public playable first-party beta mounted through the parent-owned native runtime bridge. Its Ranked results are device-local replay previews, not online rankings or settlement; Free Mode never writes Ranked progress. Its native bridge is not a replacement for the third-party SDK contract below.
+
 Lester's Arcade is a parent portal that owns wallet identity, profiles,
 leaderboards, and on-chain settlement. Games run as child cabinets that
 request actions through the SDK — they never touch the wallet directly.

@@ -6,11 +6,11 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## STACKED preview candidate — not yet promoted
+## STACKED public beta release candidate
 
-The `codex/stacked-playable-release` branch integrates production source `1a8d4f42` and adds STACKED behind `?devCabinets=1`. Its candidate cache marker is listed below for build consistency; this is **not** a claim that the public alias serves this candidate. Public cabinet unlock, physical-device acceptance and exact-deployment promotion remain pending. See [STACKED status](docs/stacked/STATUS.md).
+The `codex/stacked-playable-release` branch integrates production source `1a8d4f42` and opens STACKED through the normal arcade cabinet selector. Free Mode is playable; Ranked Game is explicitly local-only, replay-verified, with no fees, prizes or online ranking. The owner approved promotion after automated desktop/mobile checks. Physical-device acceptance and remaining polish stay open. This candidate marker is not itself a production receipt; see [STACKED status](docs/stacked/STATUS.md).
 
-**Production cache marker:** `lesters-arcade-v37-stacked-preview`
+**Production cache marker:** `lesters-arcade-v38-stacked-beta`
 
 ## Previous verified playable release (historical receipt)
 
@@ -34,6 +34,7 @@ The [preceding release receipt](docs/qa/hmh-quality-release-20260911.json) retai
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
 | Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---
