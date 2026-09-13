@@ -37,6 +37,8 @@ const portalEntry = resolve(portalDir, 'main.js');
 const hmhRebootEntry = resolve(__dirname, 'apps/hmh-reboot/src/main.mjs');
 const hmhWorldArtEntry = resolve(__dirname, 'apps/hmh-reboot/src/world-production-art.mjs');
 const chikunEntry = resolve(__dirname, 'apps/chikun/src/main.mjs');
+const stackedEntry = resolve(__dirname, 'apps/stacked/src/main.mjs');
+const stackedVendor = resolve(__dirname, 'apps/stacked/src/pixi-vendor.mjs');
 const hmhPixiVendor = resolve(__dirname, 'apps/hmh-reboot/src/pixi-vendor.mjs');
 const nodeModulesDir = resolve(__dirname, 'node_modules');
 const pixiModule = resolve(nodeModulesDir, 'pixi.js/lib/index.mjs');
@@ -76,6 +78,9 @@ function createHmhPixiPlugin({ externalizeRuntimeImports }) {
     setup(buildApi) {
       buildApi.onResolve({ filter: /^pixi\.js$/ }, (args) => {
         const importer = args.importer.replaceAll('\\', '/');
+        if (externalizeRuntimeImports && importer.includes('/apps/stacked/src/')) {
+          return { path: './stacked-pixi-v1.js', external: true };
+        }
         if (externalizeRuntimeImports && importer.includes('/apps/hmh-reboot/src/')) {
           return { path: '../chunks/hmh-pixi.js', external: true };
         }
@@ -125,6 +130,8 @@ async function run() {
       // in sumStaticChunkBytes and the aggregate initial-JS gate below.
       'hmh-reboot/world-art': hmhWorldArtEntry,
       'chikun/game': chikunEntry,
+      'stacked/game': stackedEntry,
+      'stacked/verify-worker': resolve(__dirname, 'apps/stacked/src/verify-worker.mjs'),
     },
     absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
     plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],
@@ -161,9 +168,15 @@ async function run() {
     metafile: true,
     logLevel: 'info',
   });
+  const stackedVendorResult = await build({
+    entryPoints: { 'stacked/stacked-pixi-v1': stackedVendor },
+    plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: false })],
+    bundle: true, splitting: false, format: 'esm', minify: true, treeShaking: true,
+    target: ['es2020'], outdir, entryNames: '[dir]/[name]', legalComments: 'none', metafile: true,
+  });
   const combinedMetafile = {
-    inputs: { ...result.metafile.inputs, ...vendorResult.metafile.inputs },
-    outputs: { ...result.metafile.outputs, ...vendorResult.metafile.outputs },
+    inputs: { ...result.metafile.inputs, ...vendorResult.metafile.inputs, ...stackedVendorResult.metafile.inputs },
+    outputs: { ...result.metafile.outputs, ...vendorResult.metafile.outputs, ...stackedVendorResult.metafile.outputs },
   };
 
   const outMain = resolve(outdir, 'main.js');

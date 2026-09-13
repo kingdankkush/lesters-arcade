@@ -26,7 +26,33 @@ const REGISTERED_GAMES = {
     adapter: 'games/chikun/main.mjs',
     status: 'live', // WO-55 playable vertical slice ships through Cabinet SDK v1
   }),
+  'stacked': Object.freeze({
+    id: 'stacked',
+    name: 'STACKED',
+    devWallet: null,
+    feeSplit: { dev: 100, platform: 0, liquidity: 0, treasury: 0 },
+    adapter: null,
+    status: 'coming-soon',
+  }),
 };
+
+const NATIVE_RUNTIME_GAME_IDS = new Set(['hard-money-heroes']);
+
+export function getCabinetLaunchReadiness(gameId) {
+  const registryId = gameId === 'lester-blaster' ? 'hard-money-heroes' : gameId;
+  const game = REGISTERED_GAMES[registryId];
+  if (!game) return Object.freeze({ ready: false, reason: `Unknown game '${gameId}'.` });
+  if (game.status !== 'live') {
+    const reason = gameId === 'stacked'
+      ? 'STACKED gameplay is staged and will be enabled when its S-16 runtime mount lands.'
+      : `${game.name} is not playable yet.`;
+    return Object.freeze({ ready: false, reason });
+  }
+  if (!game.adapter && !NATIVE_RUNTIME_GAME_IDS.has(registryId)) {
+    return Object.freeze({ ready: false, reason: `${game.name} has no launch adapter.` });
+  }
+  return Object.freeze({ ready: true, reason: null });
+}
 
 // Register a third-party cabinet (e.g. Chikun). Validates the minimal shape a
 // game needs to participate in shared identity + ranked sessions.

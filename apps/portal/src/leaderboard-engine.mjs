@@ -5,6 +5,9 @@
 //
 import { isCurrentVersion } from './version-tracking.mjs';
 import { filterLeaderboardEntriesBySource } from './leaderboard-seed.mjs';
+import { compareStackedRows } from './stacked-score-order.mjs';
+const defaultCompare = (a, b) => b.score - a.score || String(a.recordedAt ?? '').localeCompare(String(b.recordedAt ?? ''));
+const compareForGame = gameId => gameId === 'stacked' ? compareStackedRows : defaultCompare;
 
 // Each ranked run is filed into the period it belongs to (derived from the run
 // timestamp, UTC). Reads filter to the *current* period for daily/weekly/etc,
@@ -75,7 +78,7 @@ function ensureCadenceStore(state, gameId) {
 // Record a ranked score across all five cadence buckets. `entry` must carry
 // at least { wallet, score } and should carry { gameId, recordedAt, runStats }.
 // `limitPerPeriod` caps stored rows per bucket to keep state bounded.
-export function recordCadenceScore(state, gameId, entry, { limitPerPeriod = 100 } = {}) {
+export function recordCadenceScore(state, gameId, entry, { limitPerPeriod = 100, compareRows = compareForGame(gameId) } = {}) {
   if (!state || typeof state !== 'object') throw new Error('state is required');
   if (!gameId) throw new Error('gameId is required');
   if (!entry?.wallet || !Number.isFinite(entry.score)) {
@@ -107,7 +110,7 @@ export function recordCadenceScore(state, gameId, entry, { limitPerPeriod = 100 
       if (existing !== -1) bucket.splice(existing, 1);
     }
     bucket.push({ ...baseRow });
-    bucket.sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
+    bucket.sort(compareRows);
     if (bucket.length > limitPerPeriod) bucket.length = limitPerPeriod;
   }
 
@@ -124,6 +127,7 @@ export function getLeaderboard(state, gameId, cadence, {
   displayNameFor = (w) => w,
   filterToCurrentVersion = true,
   source = null,
+  compareRows = compareForGame(gameId),
 } = {}) {
   if (!LEADERBOARD_CADENCES.includes(cadence)) {
     throw new Error(`Unknown leaderboard cadence: ${cadence}`);
@@ -147,12 +151,12 @@ export function getLeaderboard(state, gameId, cadence, {
     const walletKey = String(row.wallet ?? '').trim().toLowerCase();
     if (!walletKey) continue;
     const current = bestByWallet.get(walletKey);
-    if (!current || row.score > current.score || (row.score === current.score && String(row.recordedAt ?? '').localeCompare(String(current.recordedAt ?? '')) < 0)) {
+    if (!current || compareRows(row, current) < 0) {
       bestByWallet.set(walletKey, row);
     }
   }
   const uniqueBestRows = [...bestByWallet.values()]
-    .sort((a, b) => b.score - a.score || String(a.recordedAt ?? '').localeCompare(String(b.recordedAt ?? '')));
+    .sort(compareRows);
   const currentWalletKey = wallet ? String(wallet).trim().toLowerCase() : null;
   const ranked = uniqueBestRows.map((row, index) => ({
     ...row,

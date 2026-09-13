@@ -8,6 +8,8 @@ import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
+import { recordStackedScore } from './src/arcade-core.mjs';
+import { readStackedSettings } from './src/stacked-player-settings.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
 import { mountHmhChallengeUi } from './src/hmh-challenge-ui.mjs';
@@ -1834,6 +1836,38 @@ let hmhRebootHost = null;
 let hmhRebootLifecycle = null;
 let hmhRebootActive = false;
 let chikunHost = null;
+let stackedHost = null;
+let stackedMountGeneration = 0;
+function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; }
+async function mountStackedSession() {
+  if (!currentSession || currentSession.gameId !== 'stacked') return;
+  destroyHmhRebootSession(); destroyChikunSession(); destroyStackedSession();
+  const generation = stackedMountGeneration, boundSession = currentSession;
+  const { createStackedHost } = await import('./src/stacked-host.mjs');
+  if (generation !== stackedMountGeneration || currentSession !== boundSession) return;
+  const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
+  const startLevel = boundSession.leaderboardEligible ? 1 : Number(document.querySelector('#stackedStartLevel')?.value ?? 1);
+  stackedHost = createStackedHost({
+    mount: dom.officialCombatMount, session: boundSession, startLevel,
+    profile: { displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest', locale: document.documentElement.lang || 'en' },
+    settings: readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), music: arcadeMusicAudio(),
+    onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; },
+    onState(value) { combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; },
+    onResult(result) {
+      combat.active = false; combat.gameOver = true;
+      if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = result.ok ? 'STACKED replay verified locally. Online settlement is disabled.' : 'STACKED run not saved: ' + result.reason;
+    },
+    async persistRanked(canonical, evidence) {
+      const { persistStackedScore } = await import('./src/stacked-persistence.mjs');
+      if (generation !== stackedMountGeneration || currentSession !== boundSession) throw new Error('cabinet-closed');
+      return persistStackedScore(state, ARCADE_STORAGE, boundSession, evidence, canonical);
+    },
+    onRestart() { const ranked = boundSession.leaderboardEligible; destroyStackedSession(); if (ranked) setOfficialView('mode-select'); else void startOfficialMode('free'); },
+    onExit: exitToArcade,
+    onError(error) { console.error('[STACKED]', error); if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = error.message; },
+  });
+  void startArcadeMusicForGame('stacked');
+}
 let chikunLifecycle = null;
 let chikunActive = false;
 let lastCompletedSession = null;
@@ -4110,6 +4144,7 @@ function returnToOfficialGameMenu() {
 }
 
 function exitToArcade() {
+  destroyStackedSession();
   destroyHmhRebootSession();
   destroyChikunSession();
   if (document.fullscreenElement) exitCombatFullscreen();
@@ -5117,6 +5152,15 @@ const renderOfficialGameplay = () => {
 const renderOfficialModeSelect = () => {
   officialPlayRoutes.renderModeSelect();
   hmhChallengeUi.render(selectedGameId);
+  let options = document.querySelector('#stackedStartOptions');
+  if (!options) {
+    options = document.createElement('div'); options.id = 'stackedStartOptions'; options.className = 'stacked-start-options';
+    const label = document.createElement('label'); label.textContent = 'Free Mode starting level ';
+    const select = document.createElement('select'); select.id = 'stackedStartLevel';
+    for (let level = 1; level <= 15; level++) { const option = document.createElement('option'); option.value = String(level); option.textContent = 'Level ' + level; select.append(option); }
+    label.append(select); options.append(label); dom.officialModeSelect.append(options);
+  }
+  options.hidden = selectedGameId !== 'stacked';
 };
 
 const officialAppRoutes = createOfficialAppRoutes({
@@ -5220,6 +5264,7 @@ async function startOfficialMode(mode) {
   }
   setOfficialView(selectedGameId === 'lester-blaster' ? 'character-select' : 'gameplay');
   if (selectedGameId === 'chikun') mountChikunSession();
+  if (selectedGameId === 'stacked') await mountStackedSession();
 }
 
 // Parent-owned Ranked prerequisite modal. Read-only contract/chain/gas checks
@@ -5942,6 +5987,7 @@ function beginTrackedSession({ mode }) {
     gameId: selectedGameId,
     mode: normalizedMode,
     hmhChallenge: hmhChallengeUi.requestFor(selectedGameId, normalizedMode),
+    allowDevCabinet: DEV_CABINETS_ENABLED,
   });
 }
 
@@ -5953,7 +5999,7 @@ async function startMode(mode) {
     await ensureWalletConnected();
   }
   const game = selectedGame();
-  if (game.status !== 'playable') return;
+  if (game.status !== 'playable' && !(DEV_CABINETS_ENABLED && game.devPlayable)) return;
 
   currentSession = beginTrackedSession({ mode });
   lastCompletedSession = null;
@@ -12720,7 +12766,7 @@ function isAdaptiveBossThreat(enemy) {
 
 function drawCombatScene(timestamp = 0) {
   const canvas = dom.combatCanvas;
-  if (hmhRebootActive) {
+  if (hmhRebootActive || stackedHost) {
     combat.lastTimestamp = timestamp;
     combat.accumulatorMs = 0;
     requestAnimationFrame(drawCombatScene);
@@ -14463,18 +14509,21 @@ dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
 
 dom.combatPauseButton?.addEventListener('click', () => {
+  if (stackedHost) { if (combat.paused) stackedHost.resume(); else stackedHost.pause(); return; }
   if (chikunActive) {
     if (combat.paused) chikunHost?.resume();
     else chikunHost?.pause();
   } else toggleCombatPause();
 });
 dom.combatMenuIconButton?.addEventListener('click', () => {
+  if (stackedHost) { if (combat.paused) stackedHost.resume(); else stackedHost.pause(); return; }
   if (chikunActive) {
     if (combat.paused) chikunHost?.resume();
     else chikunHost?.pause();
   } else toggleCombatPause();
 });
 dom.combatRestartButton?.addEventListener('click', () => {
+  if (stackedHost) { destroyStackedSession(); setOfficialView('mode-select'); return; }
   if (chikunActive) void restartChikunSession();
   else restartCombatRun();
 });

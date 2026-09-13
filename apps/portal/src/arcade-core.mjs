@@ -8,6 +8,9 @@ import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
 import { buildAchievementProgress, normalizeAchievementUnlockDate } from './achievement-progress.mjs';
 import { resolveHmhChallenge } from './hmh-challenges.mjs';
 import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
+import { STACKED_CABINET_VERSION } from './stacked-cabinet.mjs';
+import { replayStackedRun } from './stacked-sim.mjs';
+import { compareStackedRows } from './stacked-score-order.mjs';
 import {
   CURRENT_RANKED_SEASON_ID,
   createCanonicalSessionHandle,
@@ -556,6 +559,29 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       copy: 'Wallet-bound deterministic play with parent replay verification. Accepted scores are recorded to your profile and the Chikun’s Escape leaderboards; on-chain publishing remains safely gated.',
     }),
   }),
+  stacked: Object.freeze({
+    gameId: 'stacked',
+    title: 'STACKED',
+    eyebrow: 'Selected Cabinet',
+    copy: 'Practice in Free Mode, or play one wallet-bound Ranked preview run. Ranked results are replay-verified and saved on this device. Online scores and paid entry are not enabled.',
+    artStatus: 'generated-original',
+    backgroundAsset: './assets/stacked-mode-select/stacked-mode-bg.svg',
+    backgroundPosition: 'center center',
+    free: Object.freeze({
+      label: 'Free Mode', official: false, icon: 'infinity', options: 'starting-level',
+      startLevelRange: Object.freeze({ min: 1, max: 15 }),
+      bannerAsset: './assets/stacked-mode-select/stacked-free-v1.png',
+      bannerPosition: 'center center', bannerAlt: 'STACKED practice sandbox key art',
+      copy: 'Practice sandbox: instant restart, starting-level selector, and optional practice aids. Local score only — no profile progress, leaderboard placement, or chain writes.',
+    }),
+    ranked: Object.freeze({
+      label: 'Ranked Game', official: true, icon: 'star', requiresZkLtc: false,
+      chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
+      bannerAsset: './assets/stacked-mode-select/stacked-ranked-v1.png',
+      bannerPosition: 'center center', bannerAlt: 'STACKED ranked run key art',
+      copy: 'Local Ranked preview. Start at level 1 with no undo. Your recorded inputs must pass replay verification before a result is saved. No fees, prizes or online ranking.',
+    }),
+  }),
 });
 
 export function buildGameModeSelectModel(gameId = 'lester-blaster') {
@@ -613,6 +639,12 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
           Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2', durationMs: 600 }),
         ]),
       }),
+    }),
+    Object.freeze({
+      id: 'stacked', gameId: 'stacked', title: 'STACKED', status: 'coming-soon',
+      playable: false, devPlayable: true, leaderboardEligible: true,
+      description: 'Stack, spin, and seal falling ledger blocks. Free practice stays local; replay-verified Ranked runs write to your profile and the STACKED score boards.',
+      bannerArt: './assets/cabinet-stacked.svg',
     }),
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
     Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
@@ -2230,6 +2262,20 @@ export const ARCADE_GAMES = Object.freeze([
         Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-left.png?v=transparent-v2', durationMs: 600 }),
         Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2', durationMs: 600 }),
       ]),
+    }),
+  },
+  {
+    id: 'stacked', title: 'STACKED', cabinet: 'BLOCK CABINET 05',
+    genre: 'Falling-block ledger stacker puzzle', status: 'coming-soon',
+    publicPlayable: false, devPlayable: true, developer: "Lester's Arcade Core Team",
+    entryFeeMicroUsdc: 0, livesPaid: 1, livesFree: Infinity,
+    tagline: 'Seal the blocks. Clear the ledger. Do not let the chain reorg.',
+    systemRole: 'child-dapp-cartridge', rankedSeasonId: 'stacked-season-preview-1',
+    cabinetVersion: STACKED_CABINET_VERSION, parentSystem: "Lester's Arcade",
+    presentation: Object.freeze({
+      medium: 'upright-cabinet', colorway: 'silver-neon-cyan',
+      cabinetAsset: './assets/cabinet-stacked.svg', cartridgeAsset: './assets/cartridge-stacked.svg',
+      marquee: 'STACKED',
     }),
   },
 ]);
@@ -5054,6 +5100,7 @@ export function getCartridgeSelectModel() {
       ...(discoveryText.includes('run') ? ['run-and-gun'] : []),
       ...(discoveryText.includes('pinball') ? ['pinball'] : []),
       ...(discoveryText.includes('platform') ? ['platformer'] : []),
+      ...(discoveryText.includes('stacker') ? ['puzzle', 'stacker'] : []),
     ].filter(Boolean);
     return {
       id: game.id,
@@ -5481,7 +5528,39 @@ function updateProgressFromRun(progress, session, score, runStats = {}) {
   }
 }
 
+export function recordStackedScore(state, session, evidence, claim) {
+  if (session?.gameId !== 'stacked') throw new Error('STACKED session required');
+  if (!session.leaderboardEligible) return { acceptedForGlobalLeaderboard: false, trackingDisabled: true };
+  const canonical = replayStackedRun(evidence, { expectedSeed: session.seed, config: { startLevel: 1, buildHash: session.buildHash, seasonId: session.seasonId } });
+  if (!claim || Object.keys(canonical).some(key => canonical[key] !== claim[key])) throw new Error('STACKED result mismatch');
+  if (state.sessions?.[session.sessionId] || Object.values(state.profiles ?? {}).some(profile => Object.hasOwn(profile.progress?.stacked?.rankedArchive ?? {}, session.sessionId))) throw new Error('STACKED session already recorded');
+  const profile = ensureProfile(state, session.wallet), progress = ensureGameProgress(profile, 'stacked');
+  const recordedAt = nowIso();
+  const runStats = { elapsedSeconds: canonical.ticks / 60, survivalTicks: canonical.ticks, linesCleared: canonical.lines, level: canonical.level, maxCombo: canonical.maxCombo, maxBackToBack: canonical.maxBackToBack, quadClears: canonical.quadClears, spins: canonical.spins, perfectClears: canonical.perfectClears, pieces: canonical.pieces, garbageRowsCleared: canonical.garbageRowsCleared };
+  progress.paidRuns += 1; progress.bestPaidScore = Math.max(progress.bestPaidScore, canonical.score);
+  progress.longestRunSeconds = Math.max(progress.longestRunSeconds, canonical.ticks / 60);
+  progress.lastSessionId = session.sessionId; progress.lastPlayedAt = recordedAt;
+  progress.stacked ??= { totalLines: 0, totalPieces: 0, totalHalvings: 0, bestLevel: 1, bestCombo: 0 };
+  progress.stacked.totalLines += canonical.lines; progress.stacked.totalPieces += canonical.pieces; progress.stacked.totalHalvings += canonical.quadClears;
+  progress.stacked.bestLevel = Math.max(progress.stacked.bestLevel, canonical.level); progress.stacked.bestCombo = Math.max(progress.stacked.bestCombo, canonical.maxCombo);
+  profile.totalPaidRuns += 1; profile.xp += Math.max(25, Math.floor(canonical.score / 20)); updateRank(profile);
+  const entry = { sessionId: session.sessionId, wallet: profile.wallet, handle: profile.handle, displayName: resolveDisplayName(profile, profile.wallet), gameId: 'stacked', gameTitle: 'STACKED', score: canonical.score, mode: 'paid', runStats, recordedAt, verification: 'local-replay-preview', seasonId: session.seasonId };
+  state.leaderboards.stacked ??= []; state.leaderboards.stacked.push(entry);
+  state.leaderboards.stacked.sort(compareStackedRows);
+  // No unbacked deletion: every canonical session and cadence remains retained.
+  recordCadenceScore(state, 'stacked', { wallet: profile.wallet, score: canonical.score, sessionId: session.sessionId, recordedAt, runStats }, { limitPerPeriod: Infinity });
+  const record = { ...entry, status: 'local-replay-preview', canonical, syncedAt: recordedAt };
+  // Profile persistence retains this non-lossy archive even if quota fallback
+  // drops the cached leaderboard slice. It also survives a page reload.
+  progress.rankedArchive ??= {};
+  progress.rankedArchive[session.sessionId] = record;
+  state.sessions ??= {}; state.sessions[session.sessionId] = record; state.officialSessions ??= []; state.officialSessions.push(record);
+  if (session.urlSessionId) { state.sessionsByUrlId ??= {}; state.sessionsByUrlId[session.urlSessionId] = record; }
+  return { acceptedForGlobalLeaderboard: false, acceptedForLocalLeaderboard: true, canonical, leaderboardEntry: entry };
+}
+
 export function recordScore(state, session, score, runStats = {}) {
+  if (session?.gameId === 'stacked') throw new Error('STACKED requires its parent replay verifier');
   if (!state || typeof state !== 'object') {
     throw new Error('state is required');
   }

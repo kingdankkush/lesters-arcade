@@ -3520,6 +3520,7 @@ body.suggest-landscape.ingame::after {
 }
 
 body.suggest-landscape.hide-rotate-hint::after,
+html[data-embedded-cabinet="stacked"] body.suggest-landscape::after,
 html[data-embedded-cabinet="chikun"] body.suggest-landscape::after,
 body.suggest-landscape:has(#combatMenuPanel:not([hidden]))::after,
 body.suggest-landscape:has(#levelUpOverlay:not([hidden]))::after {
@@ -5323,6 +5324,18 @@ html[data-touch="true"] .combat-menu-panel {
   border-radius: inherit;
   background: #071522;
 }
+
+.stacked-game-frame { display:block;width:100%;height:calc(100dvh - 160px);min-height:440px;border:0;border-radius:inherit;background:#050910; }
+.gameplay-view[data-game-id="stacked"] #roguelikeStatBar,
+.gameplay-view[data-game-id="stacked"] #combatMenuIconButton,
+.gameplay-view[data-game-id="stacked"] #combatHudOverlay,
+.gameplay-view[data-game-id="stacked"] #tacticalBalanceDebugOverlay,
+.gameplay-view[data-game-id="stacked"] #officialGameplayControls,
+.gameplay-view[data-game-id="stacked"] #combatMenuPanel,
+.gameplay-view[data-game-id="stacked"] #combatGameOverSummary { display:none!important; }
+.stacked-start-options { position:relative;z-index:1;margin:20px auto;max-width:640px;padding:18px;color:#e1f6ff;background:#0a1721ee;border:1px solid #386572;border-radius:8px; }
+.stacked-start-options select { margin-left:12px;padding:10px;background:#102735;color:#e8faff;border:1px solid #6a9cad;border-radius:4px;font:inherit; }
+@media(max-width:600px){.stacked-game-frame{height:calc(100dvh - 120px);min-height:400px}.gameplay-view[data-game-id="stacked"]{padding:0!important}}
 
 html[data-touch="true"] .hmh-reboot-frame,
 html[data-touch="true"] .chikun-game-frame {
