@@ -119,6 +119,9 @@ export function createChikunWorld() {
   };
 }
 
+export function chikunObstacleStyle(index=0) {
+  return ['industrial','canopy','drone'][Math.abs(Math.trunc(index))%3]??'industrial';
+}
 export function drawChikunObstacle(ctx,fork,tick=0,reduced=false) {
   if(fork.passed)return;
   const {x,width:w,gapTop:top,gapBottom:bottom}=fork;
@@ -140,8 +143,62 @@ export function drawChikunObstacle(ctx,fork,tick=0,reduced=false) {
     const lampY=upper?edge-39:edge+38;ctx.fillStyle='#f3a27a';ctx.beginPath();ctx.arc(x+w/2,lampY,3,0,TAU);ctx.fill();
     if(!reduced)glow(ctx,x+w/2,lampY,14,[246,151,104],.12+.06*Math.sin(tick*.04));
   }
-  column(0,top,top,true);column(bottom,720-bottom,bottom,false);
-  if(top>125){
+  const style=chikunObstacleStyle(fork.index),time=reduced?0:tick/60;
+  function tree() {
+    // Dense foliage fills the same bounded hazard as the canonical lower gate.
+    // Trim all leaves to the boundary: no decorative leaf can punish a safe pass.
+    ctx.save();ctx.beginPath();ctx.rect(x,bottom,w,720-bottom);ctx.clip();
+    const shade=ctx.createLinearGradient(x,bottom,x+w,720);shade.addColorStop(0,'#40785e');shade.addColorStop(.42,'#1d4d44');shade.addColorStop(1,'#102e32');ctx.fillStyle=shade;ctx.fillRect(x,bottom,w,720-bottom);
+    ctx.strokeStyle='#5a5140';ctx.lineWidth=24;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x+w*.53,720);ctx.bezierCurveTo(x+w*.35,640,x+w*.64,bottom+95,x+w*.46,bottom+20);ctx.stroke();
+    ctx.strokeStyle='#ac9770';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x+w*.58,720);ctx.lineTo(x+w*.48,bottom+32);ctx.stroke();
+    for(let j=0;j<4;j++){
+      const yy=bottom+58+j*57;ctx.strokeStyle='#746549';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x+w*.49,yy+35);ctx.lineTo(x+(j%2?.90:.10)*w,yy);ctx.stroke();
+    }
+    for(let row=0;row<Math.min(5,Math.ceil((690-bottom)/42));row++)for(let col=0;col<3;col++){
+      const seed=fork.index*43+row*7+col,xx=x+(col+.4)*w/3+Math.sin(time*1.7+row)*2,yy=bottom+10+row*42+noise(seed)*22;
+      ctx.fillStyle=['#315f49','#44816a','#285b50'][Math.floor(noise(seed+40)*3)];
+      ctx.beginPath();ctx.ellipse(xx,yy,26+noise(seed+10)*12,24+noise(seed+21)*12,-.25,0,TAU);ctx.fill();
+      ctx.strokeStyle='rgba(167,210,150,.30)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(xx-2,yy-3,17,3.6,5.2);ctx.stroke();
+    }
+    polygon(ctx,[[x+w*.32,700],[x+w*.46,bottom+105],[x+w*.60,bottom+98],[x+w*.65,700]],'#71604a');
+    polygon(ctx,[[x+w*.48,700],[x+w*.48,bottom+116],[x+w*.54,bottom+115],[x+w*.57,700]],'#af9365');
+    for(let j=0;j<3;j++){
+      const yy=bottom+130+j*38,sign=j%2?1:-1;ctx.strokeStyle='#8c7853';ctx.lineWidth=9-j;ctx.beginPath();ctx.moveTo(x+w*.53,yy+33);ctx.quadraticCurveTo(x+w*(.53+sign*.1),yy+12,x+w*(.53+sign*.34),yy-19);ctx.stroke();
+    }
+    ctx.fillStyle='#173b34';ctx.fillRect(x,690,w,30);ctx.fillStyle='#b5c794';ctx.fillRect(x,690,w,3);
+    ctx.restore();
+    ctx.strokeStyle='#153d34';ctx.lineWidth=2;ctx.strokeRect(x+1,bottom+1,w-2,718-bottom);
+    ctx.fillStyle='#b6e7a2';ctx.fillRect(x+2,bottom,w-4,3);
+    // Edge beacons identify the opening consistently across every hazard type.
+    ctx.fillStyle='#72ead3';ctx.fillRect(x+3,bottom,w-6,2);
+  }
+  function drones() {
+    // Drones guard a visibly filled electric exclusion field. The field, not
+    // the spinning rotor silhouette, communicates the full collision rectangle.
+    ctx.save();ctx.beginPath();ctx.rect(x,0,w,top);ctx.clip();
+    const field=ctx.createLinearGradient(x,0,x+w,0);field.addColorStop(0,'#273d50');field.addColorStop(.5,'rgba(29,54,74,.88)');field.addColorStop(1,'#273d50');ctx.fillStyle=field;ctx.fillRect(x,0,w,top);
+    ctx.strokeStyle='rgba(124,177,204,.20)';ctx.lineWidth=1;
+    for(let yy=-w;yy<top;yy+=26){ctx.beginPath();ctx.moveTo(x,yy);ctx.lineTo(x+w,yy+w);ctx.stroke();}
+    ctx.fillStyle='#edaa76';ctx.fillRect(x,0,3,top);ctx.fillRect(x+w-3,0,3,top);
+    const count=Math.max(1,Math.floor(top/115));
+    for(let i=0;i<count;i++){
+      const yy=top-41-i*112+Math.sin(time*2.3+i)*3,xx=x+w/2;
+      ctx.strokeStyle='#728d9c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(xx-43,yy-9);ctx.lineTo(xx+43,yy-9);ctx.stroke();
+      ctx.fillStyle='#162431';ctx.fillRect(xx-46,yy-16,17,12);ctx.fillRect(xx+29,yy-16,17,12);
+      ctx.strokeStyle='#b5d4d6';ctx.lineWidth=2;
+      for(const sign of [-1,1]){ctx.beginPath();ctx.ellipse(xx+sign*38,yy-18,17,2+Math.abs(Math.sin(time*42+i))*2,0,0,TAU);ctx.stroke();}
+      polygon(ctx,[[xx-27,yy-13],[xx+27,yy-13],[xx+21,yy+13],[xx-21,yy+13]],'#718c9b');
+      polygon(ctx,[[xx-27,yy-13],[xx+27,yy-13],[xx+19,yy-3],[xx-20,yy-3]],'#bbc9c7');
+      ctx.fillStyle='#172b3b';ctx.fillRect(xx-14,yy-2,28,10);ctx.fillStyle='#ff9d72';ctx.fillRect(xx-7,yy+1,14,4);
+      ctx.strokeStyle='#8ba5ac';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(xx-18,yy+11);ctx.lineTo(xx-23,yy+20);ctx.moveTo(xx+18,yy+11);ctx.lineTo(xx+23,yy+20);ctx.stroke();
+    }
+    ctx.fillStyle='#edaa76';ctx.fillRect(x,top-8,w,8);ctx.fillStyle='#243c4e';
+    for(let xx=x;xx<x+w;xx+=18)polygon(ctx,[[xx,top-8],[xx+7,top-8],[xx+14,top-2],[xx+7,top-2]],'#243c4e');
+    ctx.fillStyle='#72ead3';ctx.fillRect(x+3,top-2,w-6,2);ctx.restore();
+  }
+  if(style==='industrial')column(0,top,top,true);else drones();
+  if(style==='canopy')tree();else column(bottom,720-bottom,bottom,false);
+  if(style==='industrial' && top>125){
     ctx.save();ctx.translate(x+w/2,Math.max(55,top*.45));ctx.fillStyle='#111f2b';ctx.fillRect(-43,-22,86,44);ctx.strokeStyle='#617784';ctx.lineWidth=1;ctx.strokeRect(-43,-22,86,44);ctx.font='800 12px system-ui';ctx.fillStyle='#b7c6c6';ctx.textAlign='center';ctx.fillText('BIG CORP',0,-3);ctx.font='8px system-ui';ctx.fillStyle='#7899a2';ctx.fillText('AIRSPACE CONTROL',0,11);ctx.restore();
   }
   if(!fork.coin.collected){

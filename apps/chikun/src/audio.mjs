@@ -1,4 +1,4 @@
-const BASE='/assets/generated/chikun-flight-v1/audio/';
+const BASE='/assets/generated/chikun-flight-v2/audio/';
 const CUES=['flap','launch','coin','near','pass','streak','impact','air'];
 export function createChikunAudio() {
   const encoded=new Map(),buffers=new Map(),voices=new Set();let context=null,master=null,wind=null,closed=false,enabled=true;

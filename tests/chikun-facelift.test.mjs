@@ -6,24 +6,29 @@ import { CHIKUN_CLIPS, selectChikunAnimation, sampleChikunFrame } from '../apps/
 import { chikunSkyState } from '../apps/chikun/src/world.mjs';
 import { createChikunRuntime } from '../apps/portal/src/chikun-cabinet.mjs';
 
-test('30 bounded animation clips cover flight, reactions and death', () => {
-  assert.equal(Object.keys(CHIKUN_CLIPS).length, 30);
+test('prone flight clips cover input changes, passage, reactions and death', () => {
+  assert.equal(Object.keys(CHIKUN_CLIPS).length, 18);
   for (const clip of Object.keys(CHIKUN_CLIPS)) {
     for (const time of [-1,0,.01,.65,100,Infinity,NaN]) {
       const f = sampleChikunFrame(clip,time);
-      assert.ok(f.frame>=0 && f.frame<16);
-      assert.ok(f.next>=0 && f.next<16);
+      assert.ok(f.frame>=0 && f.frame<24);
+      assert.ok(f.next>=0 && f.next<24);
       assert.ok(f.mix>=0 && f.mix<=1);
     }
   }
-  assert.equal(selectChikunAnimation({tick:120,chikun:{velocityY:-3}}), 'rise_fast');
+  assert.equal(selectChikunAnimation({tick:120,chikun:{velocityY:-3}}), 'climb');
   assert.equal(selectChikunAnimation({tick:120,chikun:{velocityY:5}}), 'dive');
-  assert.equal(selectChikunAnimation({tick:120,terminal:true,terminalReason:'fork'}, {terminalAge:.1}), 'hit_front');
-  assert.equal(selectChikunAnimation({terminal:true,terminalReason:'ceiling'}, {terminalAge:.1}), 'hit_ceiling');
-  assert.equal(selectChikunAnimation({terminal:true,terminalReason:'ground'}, {terminalAge:.1}), 'hit_ground');
-  assert.equal(selectChikunAnimation({terminal:true}, {terminalAge:.6}), 'death_tumble');
-  assert.equal(selectChikunAnimation({terminal:true}, {terminalAge:3}), 'death_fall');
-  assert.equal(sampleChikunFrame('death_fall',100).frame,15);
+  assert.equal(selectChikunAnimation({tick:120,terminal:true,terminalReason:'fork'}, {terminalAge:.1}), 'impact');
+  assert.equal(selectChikunAnimation({terminal:true,terminalReason:'ceiling'}, {terminalAge:.1}), 'impact');
+  assert.equal(selectChikunAnimation({terminal:true,terminalReason:'ground'}, {terminalAge:.1}), 'impact');
+  assert.equal(selectChikunAnimation({terminal:true}, {terminalAge:.6}), 'tumble');
+  assert.equal(selectChikunAnimation({terminal:true}, {terminalAge:3}), 'fall');
+  assert.equal(sampleChikunFrame('fall',100).frame,23);
+  const flying={tick:120,chikun:{x:280,y:350,velocityY:-2}};
+  assert.equal(selectChikunAnimation(flying,{flapAge:.04,event:'collect',eventAge:.05}), 'accelerate','control response takes priority over a collectible');
+  assert.equal(selectChikunAnimation(flying,{flapAge:.04,flapVelocity:5}), 'brake');
+  assert.equal(selectChikunAnimation({...flying,forks:[{x:330,gapTop:200,gapBottom:500}]}), 'squeeze');
+  assert.equal(selectChikunAnimation(flying,{event:'barrel_roll',eventAge:.7}), 'barrel_roll','a roll completes instead of snapping upright midway');
 });
 
 test('art sampling does not affect deterministic simulation, score, or replay', () => {
@@ -56,9 +61,10 @@ test('day/night cycle wraps without discontinuities and reduced motion freezes a
 });
 
 test('all shipped clips are genuine distinct native frames within the payload budget', () => {
-  const base=new URL('../apps/portal/assets/generated/chikun-flight-v1/',import.meta.url);
+  const base=new URL('../apps/portal/assets/generated/chikun-flight-v2/',import.meta.url);
   const manifest=JSON.parse(readFileSync(new URL('character.json',base),'utf8'));
-  assert.equal(manifest.clips.length,30);
+  assert.equal(manifest.clips.length,18);
+  assert.equal(manifest.flightPose,'prone-superman-right');
   assert.equal(manifest.bones.length,15);
   assert.ok(manifest.triangles<=60000);
   assert.ok(manifest.runtimeBytes<4*1024*1024);

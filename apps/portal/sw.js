@@ -12,7 +12,7 @@
 // requests bypass stale HTTP-cache responses; content-hashed chunks retain their
 // immutable HTTP-cache policy. An already running game is never force-reloaded.
 
-const CACHE_VERSION = 'lesters-arcade-v37-chikun-afterlight';
+const CACHE_VERSION = 'lesters-arcade-v38-chikun-superman';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
@@ -27,7 +27,7 @@ const PRECACHE_URLS = [
   '/chikun/index.html',
   '/chikun/game.css',
   '/dist/chikun/game.js',
-  '/assets/generated/chikun-flight-v1/poster.webp',
+  '/assets/generated/chikun-flight-v2/poster.webp',
   '/assets/generated/chikun-game/chikun-coast.webp',
   '/assets/generated/chikun-game/chikun-fall.webp',
 ];

@@ -5,11 +5,11 @@ from PIL import Image, ImageDraw, ImageFont
 p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--out',required=True);p.add_argument('--proof',required=True);a=p.parse_args()
 source=Path(a.source);out=Path(a.out);out.mkdir(parents=True,exist_ok=True);proof=Path(a.proof);proof.mkdir(parents=True,exist_ok=True)
 manifest=json.loads((source/'character.json').read_text());manifest['frameSize']=192;manifest['runtimeBytes']=0
-contact=Image.new('RGB',(1200,6*240),(13,28,42));draw=ImageDraw.Draw(contact)
+contact=Image.new('RGB',(1200,math.ceil(len(manifest['clips'])/5)*240),(13,28,42));draw=ImageDraw.Draw(contact)
 fontpath=Path('C:/Windows/Fonts/segoeui.ttf');font=ImageFont.truetype(str(fontpath),17)
 for k,clip in enumerate(manifest['clips']):
- sheet=Image.new('RGBA',(768,768));hashes=[]
- for i in range(16):
+ sheet=Image.new('RGBA',(manifest['columns']*192,math.ceil(clip['frames']/manifest['columns'])*192));hashes=[]
+ for i in range(clip['frames']):
   path=source/'frames'/f"{clip['name']}-{i:02}.png";img=Image.open(path).convert('RGBA')
   assert img.getbbox() is not None,f'Empty render {path}'
   hashes.append(hashlib.sha256(img.tobytes()).hexdigest());img=img.resize((192,192),Image.Resampling.LANCZOS);sheet.paste(img,((i%4)*192,(i//4)*192))
@@ -19,8 +19,8 @@ for k,clip in enumerate(manifest['clips']):
  path=out/clip['sheet'];sheet.save(path,'WEBP',quality=88,method=4)
  clip['sha256']=hashlib.sha256(path.read_bytes()).hexdigest();clip['bytes']=path.stat().st_size;manifest['runtimeBytes']+=clip['bytes'];clip['uniqueFrames']=len(set(hashes))
  draw.text(((k%5)*240+15,(k//5)*240+211),f"{k+1:02}  {clip['name'].replace('_',' ')}",font=font,fill=(208,227,223))
-Image.open(source/'frames/idle_hover-04.png').save(out/'poster.webp','WEBP',quality=95)
-contact.save(proof/'Chikun-30-Animations.png')
+Image.open(source/'frames/cruise-04.png').save(out/'poster.webp','WEBP',quality=95)
+contact.save(proof/'Chikun-Superman-Moves.png')
 (out/'character.json').write_text(json.dumps(manifest,indent=2))
 audio=out/'audio';audio.mkdir(exist_ok=True);sr=24000
 specs={'flap':.21,'launch':.75,'coin':.46,'near':.42,'pass':.37,'streak':.9,'impact':.8,'air':8}
@@ -55,4 +55,4 @@ for name,duration in specs.items():
  with wave.open(str(path),'wb') as f:f.setnchannels(1);f.setsampwidth(2);f.setframerate(sr);f.writeframes(pcm)
  audio_report.append({'cue':name,'seconds':duration,'peak':max(abs(v) for v in data),'bytes':path.stat().st_size})
 (out/'audio/manifest.json').write_text(json.dumps(audio_report,indent=2))
-print(json.dumps({'clips':len(manifest['clips']),'frames':480,'atlasBytes':manifest['runtimeBytes'],'decodedMiB':30*768*768*4/1024/1024,'audio':audio_report},indent=2))
+print(json.dumps({'clips':len(manifest['clips']),'frames':sum(c['frames'] for c in manifest['clips']),'atlasBytes':manifest['runtimeBytes'],'decodedMiB':sum(c['frames']*192*192*4 for c in manifest['clips'])/1024/1024,'audio':audio_report},indent=2))

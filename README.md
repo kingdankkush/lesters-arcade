@@ -6,15 +6,15 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Chikun Afterlight release
+## Chikun Superman flight revision
 
-Chikun's Escape now includes the owner's original Tripo character with a Blender flight rig, 30 animation clips, a layered city and mountain environment, a day/night cycle, metal obstacles, and original flight sounds. The [Flight Room](https://lestersarcade.io/chikun/flight-room.html) lets players explore every animation.
+Chikun's Escape now uses eighteen Blender-authored actions built around horizontal Superman flight, smooth pose transitions, coat and crest wind, trees and drone-guarded airspace alongside industrial gates. The layered city, mountain scenery, day/night cycle and original flight sounds remain. The [Flight Room](https://lestersarcade.io/chikun/flight-room.html) lets players explore every animation.
 
-**Production cache marker:** `lesters-arcade-v37-chikun-afterlight`
+**Production cache marker:** `lesters-arcade-v38-chikun-superman`
 
-**Verified live:** deployment `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`. The [release receipt](docs/qa/chikun-afterlight-release-20260913.json) records the passing cloud gates and public desktop/touch-phone flows.
+**Previous production (rollback):** deployment `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`. The [release receipt](docs/qa/chikun-afterlight-release-20260913.json) records the passing cloud gates and public desktop/touch-phone flows.
 
-The release is on `codex/chikun-afterlight-release`, based on production source `1a8d4f420767f32ef97ca7952b782dce284242f0`. The [Chikun handoff](docs/handoffs/chikun-afterlight-20260913.md) records the scope and verification. Retained rollback: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). Canonical simulation and parent Ranked verification are preserved; `SETTLEMENT_LIVE=false`.
+The revision is on `codex/chikun-superman-flight`. See the [Superman flight handoff](docs/handoffs/chikun-superman-flight-20260913.md) for implementation and verification. The prior Afterlight release is documented below. The [Chikun handoff](docs/handoffs/chikun-afterlight-20260913.md) records the scope and verification. Retained rollback: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). Canonical simulation and parent Ranked verification are preserved; `SETTLEMENT_LIVE=false`.
 
 ## Previous HMH package release (historical)
 
