@@ -12,6 +12,8 @@ Chikun's Escape now includes the owner's original Tripo character with a Blender
 
 **Production cache marker:** `lesters-arcade-v37-chikun-afterlight`
 
+**Verified live:** deployment `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`. The [release receipt](docs/qa/chikun-afterlight-release-20260913.json) records the passing cloud gates and public desktop/touch-phone flows.
+
 The release is on `codex/chikun-afterlight-release`, based on production source `1a8d4f420767f32ef97ca7952b782dce284242f0`. The [Chikun handoff](docs/handoffs/chikun-afterlight-20260913.md) records the scope and verification. Retained rollback: `dpl_H8HskA2fttzXpdVHc8GyAcXccd9g` ([immutable URL](https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app)). Canonical simulation and parent Ranked verification are preserved; `SETTLEMENT_LIVE=false`.
 
 ## Previous HMH package release (historical)

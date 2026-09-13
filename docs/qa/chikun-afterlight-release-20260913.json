@@ -1,0 +1,110 @@
+{
+  "schema": "chikun-afterlight-release-v1",
+  "status": "LIVE_VERIFIED",
+  "checked": "2026-09-13T17:30:38.3118029Z",
+  "branch": "codex/chikun-afterlight-release",
+  "runtimeCommit": "d7a5ad691b2fe3f34f4453b5bc39429ec2648042",
+  "implementationCommit": "76af72591918b07acb1cba68734f794d7e40905b",
+  "production": {
+    "alias": "https://lestersarcade.io",
+    "id": "dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi",
+    "url": "https://lesters-arcade-apyh3lp3o-justin-agent-projects.vercel.app",
+    "ready": true
+  },
+  "preview": {
+    "url": "https://lesters-arcade-num6fh6d5-justin-agent-projects.vercel.app",
+    "id": "dpl_LoT9me9D1iyMpD4TZ7EYYZYBzhym"
+  },
+  "rollback": {
+    "source": "1a8d4f420767f32ef97ca7952b782dce284242f0",
+    "id": "dpl_H8HskA2fttzXpdVHc8GyAcXccd9g",
+    "url": "https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app"
+  },
+  "cacheMarker": "lesters-arcade-v37-chikun-afterlight",
+  "gates": {
+    "releaseMarkerTests": 43,
+    "focusedChikunTests": 48,
+    "tests": 3455,
+    "production": "PASS",
+    "unexpectedFailures": 0,
+    "productionMarker": "PASS",
+    "contractStructure": "PASS",
+    "syntaxJs": 525,
+    "assetVerification": "PASS",
+    "passed": 3404,
+    "documentedLegacyExceptions": 51,
+    "syntaxPython": 88,
+    "preview": "PASS"
+  },
+  "browser": {
+    "wallet": "Synthetic browser test provider, no real transaction or settlement",
+    "flow": [
+      "cabinet selection",
+      "mode selection",
+      "launch",
+      "pointer and keyboard input",
+      "touch input",
+      "pause and resume",
+      "mute",
+      "score and game over",
+      "replay and share",
+      "exit",
+      "Free profile isolation",
+      "Ranked parent replay verification and local profile"
+    ],
+    "mobile": {
+      "status": "PASS",
+      "frameTiming": {
+        "frames": 92,
+        "p95Ms": 7.099999999999909
+      },
+      "mode": "ranked",
+      "touch": true,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2
+    },
+    "physicalDevice": "Not performed; Chrome viewport and touch emulation on this computer",
+    "issues": [],
+    "desktop": {
+      "mode": "free",
+      "frameTiming": {
+        "frames": 93,
+        "p95Ms": 7
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "status": "PASS"
+    }
+  },
+  "assets": {
+    "desktopAndPhoneFlightRoom": "PASS",
+    "triangles": 59999,
+    "nativeFrames": 480,
+    "bones": 15,
+    "reducedMotion": "PASS",
+    "verifiedRuntimeAssets": 38,
+    "animations": 30
+  },
+  "sustainedFlight": {
+    "seconds": 22.19,
+    "flaps": 23,
+    "coins": 4,
+    "method": "Ordinary keyboard input guided by canvas screenshots; no simulation or score modification",
+    "stillRunning": true,
+    "origin": "http://127.0.0.1:8794",
+    "forks": 4
+  },
+  "scope": {
+    "canonicalPhysics": "unchanged",
+    "hmhSourceAndAssets": "unchanged",
+    "financialActivation": false,
+    "hmhEntrySha256": "5bc4f07ee0127b0241cfc2c50c3a6706c3b2f9004eef661396c2e7e274b729e5",
+    "parentReplay": "unchanged"
+  },
+  "visualBaselineNote": "Required HMH visual suite captured 12 scenes with no runtime errors, but all differ from historical saved baselines. No HMH source/assets changed and HMH entry was byte-identical to pre-release production. No unrelated baselines were accepted. A live HMH reference capture timed out on manual-aim telemetry and is not counted as certification."
+}
