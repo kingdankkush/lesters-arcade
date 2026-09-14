@@ -8,7 +8,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v49-mobile-worlds`
+**Production cache marker:** `lesters-arcade-v50-chikun-audio`
 
 # Lester's Arcade
 

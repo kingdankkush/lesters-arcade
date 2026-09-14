@@ -1,7 +1,7 @@
 const BASE='/assets/generated/chikun-flight-v2/audio/';
-const CUES=['flap','launch','coin','near','pass','streak','impact','air'];
+const CUES=['flap','launch','coin','near','pass','streak','impact'];
 export function createChikunAudio() {
-  const encoded=new Map(),buffers=new Map(),voices=new Set();let context=null,master=null,wind=null,closed=false,enabled=true;
+  const encoded=new Map(),buffers=new Map(),voices=new Set();let context=null,master=null,closed=false,enabled=true;
   const loaded=Promise.allSettled(CUES.map(async name=>{try{const r=await fetch(BASE+name+'.wav');if(r.ok)encoded.set(name,await r.arrayBuffer());}catch{/* Optional sound. */}}));
   async function unlock(){
     if(closed)return;
@@ -20,11 +20,9 @@ export function createChikunAudio() {
   return {
     unlock,play,
     setEnabled(value){enabled=Boolean(value);if(master&&context)master.gain.setTargetAtTime(enabled?.65:0,context.currentTime,.03);},
-    ambience(running){
-      if(closed||!context)return;
-      if(!running){if(wind){wind.stop();wind.disconnect();wind=null;}return;}
-      if(!wind&&buffers.has('air')){wind=context.createBufferSource();wind.buffer=buffers.get('air');wind.loop=true;wind.connect(master);wind.start();}
-    },
-    dispose(){closed=true;wind?.stop();wind=null;for(const v of voices){try{v.stop();}catch{}}voices.clear();context?.close();context=null;encoded.clear();buffers.clear();}
+    // Kept as a compatibility seam for the render loop; flight atmosphere is
+    // intentionally silent so the old repeating white-noise cue cannot return.
+    ambience(){},
+    dispose(){closed=true;for(const v of voices){try{v.stop();}catch{}}voices.clear();context?.close();context=null;encoded.clear();buffers.clear();}
   };
 }

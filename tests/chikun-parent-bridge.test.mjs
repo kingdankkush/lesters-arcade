@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createChikunBridgeEnvelope, validateChikunParentMessage } from '../apps/portal/src/chikun-bridge-protocol.mjs';
+import { createChikunBridgeEnvelope, validateChikunChildMessage, validateChikunParentMessage } from '../apps/portal/src/chikun-bridge-protocol.mjs';
 import { createChikunParentBridge } from '../apps/portal/src/chikun-bridge.mjs';
 
 class FakePort {
@@ -72,4 +72,57 @@ test('Chikun parent bridge validates commands and closes both ports', () => {
   assert.equal(port1.sent.at(-1).type, 'portal:dispose');
   assert.equal(port1.closed, true);
   assert.equal(port2.closed, true);
+});
+
+test('Chikun parent bridge accepts building and canopy collision results', () => {
+  for (const terminalReason of ['town', 'forest', 'canopy']) {
+    const finalState = {
+      step: 120,
+      y: 660,
+      velocity: 0,
+      score: 120,
+      coinsCollected: 0,
+      forksPassed: 1,
+      nearMisses: 0,
+      bestCombo: 1,
+      survivalTicks: 120,
+      survivalTime: 2,
+      crashed: true,
+      terminalReason,
+    };
+    const evidence = {
+      version: 'chikun-flap-evidence-v4',
+      seed: 1,
+      fixedStepHz: 60,
+      maxTicks: 3600,
+      flapSteps: [],
+    };
+    const payload = {
+      score: 120,
+      survivalTime: 2,
+      survivalTicks: 120,
+      coinsCollected: 0,
+      forksPassed: 1,
+      nearMisses: 0,
+      bestCombo: 1,
+      achievements: [],
+      evidence,
+      finalState,
+      replayClaim: {
+        version: 'chikun-parent-replay-v1',
+        seed: 1,
+        buildHash: 'site-1:chikun-1',
+        seasonId: 'chikun-season-1',
+        evidence,
+        finalState,
+      },
+    };
+    const message = createChikunBridgeEnvelope({
+      type: 'game:result',
+      sessionId: 'game-session-000000001',
+      messageId: `game-${terminalReason}`,
+      payload,
+    });
+    assert.equal(validateChikunChildMessage(message).ok, true, terminalReason);
+  }
 });

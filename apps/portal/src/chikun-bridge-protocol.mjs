@@ -101,7 +101,7 @@ function validateFinalState(value) {
   if (!integer(value.step, 0, 216_000) || !finite(value.y, -10_000, 10_000) || !finite(value.velocity, -1_000, 1_000)) return 'finalState motion values are invalid';
   for (const field of ['score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks']) if (!integer(value[field], 0, 1_000_000_000)) return `finalState ${field} is invalid`;
   if (!finite(value.survivalTime, 0, 3_600) || typeof value.crashed !== 'boolean') return 'finalState terminal values are invalid';
-  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone', 'rock', 'log', 'thorn', 'hurdle', 'crate', 'shiba', 'pit', 'waterfall', 'hawk', 'eagle', 'pelican', 'plane', 'storm', 'pipe'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
+  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone', 'rock', 'log', 'thorn', 'hurdle', 'crate', 'shiba', 'pit', 'waterfall', 'forest', 'town', 'canopy', 'hawk', 'eagle', 'pelican', 'plane', 'storm', 'pipe'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
   return '';
 }
 

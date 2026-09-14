@@ -126,7 +126,7 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
 
   const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
   assert.equal(ctx.seed, session.seed);
-  assert.equal(ctx.buildHash, 'site-1.5.0:game-1.5.0:cabinet-0.8.0');
+  assert.equal(ctx.buildHash, 'site-1.5.1:game-1.5.1:cabinet-0.8.0');
   assert.equal(ctx.seasonId, 'chikun-season-preview-1');
   assert.equal(result.seed, session.seed);
   assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));
