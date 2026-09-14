@@ -1,6 +1,6 @@
 # Chikun open-air flight polish — September 13, 2026
 
-The owner authorized the tested website update and public source/artwork publication. This branch preserves the deployed HMH motion/mobile source `0e858cde582f10be767c170de6f7f2588cf4e977` and the subsequently published STACKED cabinet source `e7e28d57ba2964dfba419e4aa31804939ed142bc`. Production promotion and hosted verification remain pending until the release receipt is recorded.
+The owner authorized the tested website update and public source/artwork publication. This branch preserves the deployed HMH motion/mobile source `0e858cde582f10be767c170de6f7f2588cf4e977` and the subsequently published STACKED cabinet source `e7e28d57ba2964dfba419e4aa31804939ed142bc`. The combined website also preserves the newer live HMH world polish source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`. Publication of unrelated HMH editable sources is not authorized; only Chikun-specific commits will be pushed publicly. Production promotion and hosted verification remain pending until the release receipt is recorded.
 
 ## Player-facing changes
 

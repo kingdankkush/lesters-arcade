@@ -12,7 +12,7 @@ The release candidate removes the oval ghost marker and gives freestanding trees
 
 **Candidate cache marker:** `lesters-arcade-v42-chikun-open-air`. Publication checks are pending. [Chikun handoff](docs/handoffs/chikun-open-air-20260913.md).
 
-**Current production / rollback:** `dpl_BGVoP3QSQ8ygroorkPPBrecAJH1w`, source `e7e28d57ba2964dfba419e4aa31804939ed142bc`, includes the HMH motion/mobile update, Chikun Superman flight and the new rotating STACKED cabinet. The candidate preserves this exact published source. [HMH handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md).
+**Current production / rollback:** `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7`, source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`, includes the HMH world polish and Chikun Superman flight. The candidate preserves that release plus the rotating STACKED cabinet from `e7e28d57`. [HMH handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md).
 
 All three public cabinets remain available. STACKED Free Mode is playable and its Ranked Game is device-local, with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md). `SETTLEMENT_LIVE=false`.
 

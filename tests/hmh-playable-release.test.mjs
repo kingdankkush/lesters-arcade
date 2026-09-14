@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { SITE_VERSION, GAME_VERSION, isCurrentVersion } from '../apps/portal/src/version-tracking.mjs';
 
 const read = (name) => readFileSync(new URL(`../${name}`, import.meta.url), 'utf8');
-const token = 'hmh-fluid-mobile-20260913';
+const token = 'hmh-world-polish-20260913';
 
 test('playable update gives all linked startup resources the same fresh cache token', () => {
   const html = read('apps/portal/index.html');

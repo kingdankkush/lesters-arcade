@@ -1,8 +1,16 @@
 # Textured rollout: current continuation checkpoint
 
-## Active motion and mobile publication candidate — 2026-09-13
+## World polish candidate — 2026-09-13
 
-The owner prioritizes publishing completed work after mobile playtesting and fixes. [Current candidate, measurements, release requirements and retained unfinished work](2026-09-13-hmh-motion-mobile-release.md). HMH changes are local until a verified release receipt is recorded. The candidate preserves the newer Chikun Superman flight and STACKED beta source `9d14b18c`, live at `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`. The September 11 and earlier live statements below are historical.
+The next package adds finer native ground materials, transparent terrain edges, varied canopy composition, industrial ground wear and tapered campfire flames. See [implementation and remaining work](2026-09-13-hmh-world-polish-release.md). Desktop/mobile camp approach, reduced-motion flames, all 12 visual scenes, portal desktop/mobile and five STACKED layouts have been exercised. Final release checks and alternating comparison against public v40 precede promotion. This paragraph is a candidate checkpoint, not a live claim.
+
+Diagnostics-off active gameplay is now measured separately from paused upgrades. A neighbor-selection experiment was reverted after worse browser timings, despite an isolated computation speedup. Canonical enemy simulation remains the v40 source. Physical-device performance acceptance and the broader art/world/audio roadmap remain open.
+
+## Published motion and mobile update — 2026-09-13
+
+Live at https://lestersarcade.io: runtime source `0e858cde582f10be767c170de6f7f2588cf4e977`, deployment `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7`, cache `lesters-arcade-v40-hmh-fluid-mobile`. It preserves Chikun Superman flight and STACKED beta from `9d14b18c`. Immediate rollback is `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`. [Release receipt](../qa/hmh-motion-mobile-release-20260913.json) · [Measurements and retained unfinished work](2026-09-13-hmh-motion-mobile-release.md).
+
+The cloud gate passed 3,636 tests with exactly 51 unchanged retirement exceptions. All 122 public file hashes, desktop/mobile portal, five STACKED layouts, Chikun desktop/mobile, and cache migration passed. Public GitHub source/model disclosure remains pending separate explicit permission. The candidate checkpoint above carries the subsequent performance investigation. September 12 and earlier live statements below are historical.
 
 ## Current verified quality release — 2026-09-11
 

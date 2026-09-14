@@ -29,6 +29,8 @@ export const DECAL_KINDS = Object.freeze({
   'shore-crack': Object.freeze({ color: '#5a4d38', alpha: 0.20, shape: 'crack', stretch: 1.0 }),
   // W-6: the worn apron a composed set-piece stands on.
   'landmark-ring': Object.freeze({ color: '#2b2622', alpha: 0.18, shape: 'ring', stretch: 1.0 }),
+  'concrete-crack': Object.freeze({ color: '#343b35', alpha: 0.18, shape: 'crack', stretch: 1.0 }),
+  'oil-stain': Object.freeze({ color: '#292b25', alpha: 0.12, shape: 'ellipse', stretch: 1.4 }),
 });
 
 // Hard cap so the layer cannot grow without limit as the world contract does.
@@ -43,7 +45,7 @@ export const WORLD_DECAL_URL = '/assets/generated/hmh-world-decals/hmh-world-dec
 
 function districtAt(world, x) {
   for (const district of world.districts) {
-    if (x >= district.minX && x <= district.maxX) return district.id;
+    if (x >= (district.minX??district.area.minX) && x <= (district.maxX??district.area.maxX)) return district.id;
   }
   return null;
 }
@@ -63,6 +65,12 @@ export function buildWorldDecals({ world, seed = 0x484d4432, landmarks = [] } = 
       const expendableIndex = decals.findLastIndex((entry) => entry.kind === 'shore-crack');
       if (expendableIndex < 0) return;
       decals.splice(expendableIndex, 1);
+    }
+    if(decal.kind==='route-wear'&&decal.districtId==='liquidation-yard') {
+      // Reuse the existing ground-detail allocation; no extra per-frame marks.
+      decal={...decal,kind:'concrete-crack',radius:decal.radius*.7};
+    } else if(decal.kind==='arena-stain'&&['mining-camp','liquidation-yard'].includes(decal.districtId)) {
+      decal={...decal,kind:'oil-stain'};
     }
     decals.push(freezeDecal(decal));
   };
@@ -241,7 +249,9 @@ export function drawWorldDecals({ target, decals, camera, view, project, cullPad
     if (spec.shape === 'rut') {
       const long = radius * spec.stretch;
       const short = Math.max(1.5, radius * 0.16);
-      target.ellipse(centre.x, centre.y, long, short).fill({ color, alpha: spec.alpha });
+      const dx=Math.cos(decal.rotation)*long,dy=Math.sin(decal.rotation)*long;
+      target.moveTo(centre.x-dx,centre.y-dy).lineTo(centre.x+dx,centre.y+dy)
+        .stroke({color,width:short*2,alpha:spec.alpha,cap:'round'});
     } else if (spec.shape === 'ring') {
       // A worn apron seen at 55 degrees: a squashed ring at the set-piece's
       // foot and a fainter inner pool. ellipse(), never arc(): arc() joins

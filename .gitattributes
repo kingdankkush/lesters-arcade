@@ -30,7 +30,7 @@ apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend filter=lfs diff=l
 # Preserve genuine producer bytes through Git clean/checkout on every host.
 apps/hmh-reboot/assets/source/blender/*-packed-source-inspection.json -text
 apps/hmh-reboot/assets/source/blender/*-gameplay-reproducibility.json -text
-apps/hmh-reboot/assets/source/terrain/ground-source.json -text
+apps/hmh-reboot/assets/source/terrain/ground-source.json -text whitespace=cr-at-eol
 
 # Native motion metadata and bake receipts retain their raw producer hashes.
 apps/portal/assets/generated/hmh-hero-motion/**/*.json -text whitespace=cr-at-eol

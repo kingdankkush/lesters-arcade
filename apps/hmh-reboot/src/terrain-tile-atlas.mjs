@@ -11,7 +11,7 @@
  * `level-one-world.mjs`; this module only decides what a surface looks like.
  */
 
-export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v4';
+export const TERRAIN_TILE_PIPELINE_ID = 'hmh-terrain-tiles-v5';
 export const TERRAIN_TILE_SIZE = 512;
 
 const TILE_ROOT = '../assets/generated/hmh-terrain-tiles';

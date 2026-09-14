@@ -20,9 +20,9 @@ const rendererUrl = new URL('../apps/hmh-reboot/src/world-production-art.mjs', i
 
 const readManifest = async () => JSON.parse(await readFile(manifestUrl, 'utf8'));
 
-test('terrain v4 ships verified Blender ground under a bumped pipeline id', async () => {
+test('terrain v5 ships verified Blender ground under a bumped pipeline id', async () => {
   const manifest = await readManifest();
-  assert.equal(TERRAIN_TILE_PIPELINE_ID, 'hmh-terrain-tiles-v4');
+  assert.equal(TERRAIN_TILE_PIPELINE_ID, 'hmh-terrain-tiles-v5');
   assert.equal(manifest.pipelineId, TERRAIN_TILE_PIPELINE_ID, 'bakery and runtime must bump in lockstep');
   assert.equal(manifest.schemaVersion, 4);
   assert.equal(manifest.materialAuthoring, 'blender-ground-and-retained-surface-bakes');

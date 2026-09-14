@@ -25,7 +25,7 @@ MATERIALS = {
     "packed-earth": ("6a5036", "89704b", "af9670", "b9a584", 5.5, 74.0, .27),
     "red-rock": ("754c39", "966647", "bb8660", "c99b72", 7.0, 61.0, .30),
     "wet-bank": ("34382e", "4f503c", "6c6b4e", "7b7760", 5.0, 82.0, .18),
-    "forest-floor": ("343b29", "505338", "6c7044", "91836a", 6.0, 59.0, .27),
+    "forest-floor": ("303328", "4d4e35", "686749", "78694e", 3.2, 90.0, .23),
     "crushed-ore": ("40464a", "646b6c", "818987", "a2a69b", 8.0, 67.0, .31),
     "industrial-slab": ("64645a", "7a7c71", "94958a", "a1a396", 4.5, 108.0, .11),
     "road": ("2d302e", "414540", "535952", "777d71", 4.0, 122.0, .14),
@@ -135,7 +135,7 @@ def material(name, spec):
         cellular.feature = "DISTANCE_TO_EDGE"
         links.new(coords.outputs[0], cellular.inputs["Vector"])
         links.new(fourth, cellular.inputs["W"])
-        cellular.inputs["Scale"].default_value = 11 if name == "forest-floor" else 17
+        cellular.inputs["Scale"].default_value = 32 if name == "forest-floor" else 17
         cracks = math_node("LESS_THAN", cellular.outputs["Distance"], .035)
         crack_mix = node("ShaderNodeMixRGB", "Fine fragment boundaries")
         crack_mix.inputs[2].default_value = linear_color(dark)
@@ -153,10 +153,14 @@ def material(name, spec):
             channels = node("ShaderNodeSeparateColor", "Fragment variation")
             channels.mode = "RGB"
             links.new(chips.outputs["Color"], channels.inputs[0])
-            selected = math_node("GREATER_THAN", channels.outputs[0], .83 if name == "forest-floor" else .71)
+            selected = math_node("GREATER_THAN", channels.outputs[0], .88 if name == "forest-floor" else .71)
+            if name == "forest-floor":
+                # Litter collects in patches, leaving readable soil between
+                # them instead of carpeting the whole ground with large chips.
+                selected = math_node("MULTIPLY", selected, math_node("GREATER_THAN", noise(4.5, 2, "Litter beds"), .49))
             interior = math_node("GREATER_THAN", cellular.outputs["Distance"], .045)
             flecks = node("ShaderNodeMixRGB", "Flat small fragments")
-            links.new(math_node("MULTIPLY", math_node("MULTIPLY", selected, interior), .52), flecks.inputs[0])
+            links.new(math_node("MULTIPLY", math_node("MULTIPLY", selected, interior), .40 if name == "forest-floor" else .52), flecks.inputs[0])
             links.new(color, flecks.inputs[1])
             flecks.inputs[2].default_value = linear_color(fleck)
             color = flecks.outputs[0]
@@ -170,6 +174,29 @@ def material(name, spec):
         links.new(color, layers.inputs[1])
         layers.inputs[2].default_value = linear_color(dark)
         color = layers.outputs[0]
+
+    if name == "industrial-slab":
+        # Two staggered courses per seamless repeat. Expansion joints, chipped
+        # edges and restrained grime provide scale without resembling walls.
+        row = math_node("MULTIPLY", split.outputs["Y"], 2)
+        stagger = math_node("MULTIPLY", math_node("MODULO", math_node("FLOOR", row), 2), .5)
+        col = math_node("ADD", math_node("MULTIPLY", split.outputs["X"], 2), stagger)
+        fu, fv = math_node("FRACT", col), math_node("FRACT", row)
+        eu = math_node("MINIMUM", fu, math_node("SUBTRACT", 1, fu))
+        ev = math_node("MINIMUM", fv, math_node("SUBTRACT", 1, fv))
+        edge = math_node("MINIMUM", eu, ev)
+        joint = math_node("LESS_THAN", edge, .008)
+        weather = node("ShaderNodeMixRGB", "Recessed concrete joints")
+        links.new(math_node("MULTIPLY", joint, .58), weather.inputs[0])
+        links.new(color, weather.inputs[1])
+        weather.inputs[2].default_value = linear_color("353a34")
+        color = weather.outputs[0]
+        grime = math_node("GREATER_THAN", noise(2.2, 3, "Old runoff patches"), .60)
+        stains = node("ShaderNodeMixRGB", "Weathered slab patches")
+        links.new(math_node("MULTIPLY", grime, .13), stains.inputs[0])
+        links.new(color, stains.inputs[1])
+        stains.inputs[2].default_value = linear_color("4a473c")
+        color = stains.outputs[0]
 
     bump = node("ShaderNodeBump", "Restrained micro relief")
     bump.inputs["Strength"].default_value = bump_strength

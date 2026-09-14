@@ -26,7 +26,7 @@ TILE_SIZE = 512
 # them with the tile size keeps every feature the same size in world units --
 # a bigger bake buys texel density, not bigger pebbles.
 PERIOD_SCALE = TILE_SIZE // 256
-PIPELINE_ID = "hmh-terrain-tiles-v4"
+PIPELINE_ID = "hmh-terrain-tiles-v5"
 
 # Light direction for every material, so surfaces share one lighting model and
 # read as one world. Normalised at use.
@@ -710,8 +710,10 @@ def bake_overlay(name: str, overlay: dict, source_tile: Image.Image | None = Non
         edge = (0.12 + profile * 0.2) * OVERLAY_HEIGHT
         falloff = 1.0
 
-    span = np.maximum(1.0, (OVERLAY_HEIGHT - edge[None, :]) * falloff)
-    fade = np.clip(1.0 - (rows - edge[None, :]) / span, 0.0, 1.0)
+    # Falloff controls the curve, not its endpoint: extending the span past
+    # the image left a partly opaque final row and a straight visible seam.
+    span = np.maximum(1.0, OVERLAY_HEIGHT - 1 - edge[None, :])
+    fade = smootherstep(np.clip(1.0 - (rows - edge[None, :]) / span, 0.0, 1.0)) ** (1.0 / falloff)
     dither = ((columns * 5 + rows.astype(np.int64) * 11 + (overlay["seed"] & 31)) % 4) / 9.0
     alpha = np.clip(fade - dither, 0.0, 1.0)
     alpha = np.where(rows <= edge[None, :], 1.0, alpha)

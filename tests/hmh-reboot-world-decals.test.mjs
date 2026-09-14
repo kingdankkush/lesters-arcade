@@ -187,7 +187,7 @@ test('W-4 no route wear or tire rut is centred on water', () => {
   // assertions above and the independent polygon/dry-side regression fixture.
   const counts = {};
   for (const entry of build()) counts[entry.kind] = (counts[entry.kind] ?? 0) + 1;
-  assert.deepEqual(counts, { 'route-wear': 148, 'tire-rut': 18, 'arena-stain': 24, scorch: 12, 'shore-crack': 12, 'landmark-ring': 6 });
+  assert.deepEqual(counts, { 'route-wear': 133, 'concrete-crack': 15, 'tire-rut': 18, 'arena-stain': 16, 'oil-stain': 8, scorch: 12, 'shore-crack': 12, 'landmark-ring': 6 });
 });
 
 test('every district gets some ground history', () => {

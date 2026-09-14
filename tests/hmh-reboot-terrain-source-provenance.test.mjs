@@ -12,9 +12,9 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const bytes = path => readFile(new URL(path, root));
 const manifest = async () => JSON.parse(await bytes(`${directory}hmh-terrain-tiles.json`));
 
-test('terrain v4 binds the original Blender recipe, native scene and repeat-render receipt', async () => {
+test('terrain v5 binds the original Blender recipe, native scene and repeat-render receipt', async () => {
   const m = await manifest();
-  assert.equal(m.pipelineId, 'hmh-terrain-tiles-v4');
+  assert.equal(m.pipelineId, 'hmh-terrain-tiles-v5');
   assert.equal(m.materialAuthoring, 'blender-ground-and-retained-surface-bakes');
   const source = m.nativeGround;
   assert.equal(source.receipt, `${sourceDirectory}ground-source.json`);
