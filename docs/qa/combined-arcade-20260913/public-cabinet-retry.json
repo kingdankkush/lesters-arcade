@@ -1,0 +1,267 @@
+{
+  "passed": true,
+  "origin": "https://lestersarcade.io",
+  "failure": null,
+  "reports": [
+    {
+      "name": "desktop",
+      "dimensions": {
+        "width": 1440,
+        "scrollWidth": 1440
+      },
+      "frameStats": [
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 39152
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 70357
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 51388
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 14503
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 57091
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 67519
+        }
+      ],
+      "visibleFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "atlasRequests": 1,
+      "paused": true,
+      "reducedMotion": true,
+      "freeModeStarted": true,
+      "errors": []
+    },
+    {
+      "name": "small-desktop",
+      "dimensions": {
+        "width": 1024,
+        "scrollWidth": 1024
+      },
+      "frameStats": [
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 39152
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 70357
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 51388
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 14503
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 57091
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 67519
+        }
+      ],
+      "visibleFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "atlasRequests": 1,
+      "paused": true,
+      "reducedMotion": true,
+      "freeModeStarted": true,
+      "errors": []
+    },
+    {
+      "name": "tablet",
+      "dimensions": {
+        "width": 768,
+        "scrollWidth": 768
+      },
+      "frameStats": [
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 39152
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 70357
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 51388
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 14503
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 57091
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 67519
+        }
+      ],
+      "visibleFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "atlasRequests": 1,
+      "paused": true,
+      "reducedMotion": true,
+      "freeModeStarted": true,
+      "errors": []
+    },
+    {
+      "name": "mobile",
+      "dimensions": {
+        "width": 390,
+        "scrollWidth": 390
+      },
+      "frameStats": [
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 39152
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 70357
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 51388
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 14503
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 57091
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 67519
+        }
+      ],
+      "visibleFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "atlasRequests": 1,
+      "paused": true,
+      "reducedMotion": true,
+      "freeModeStarted": true,
+      "errors": []
+    },
+    {
+      "name": "small-mobile",
+      "dimensions": {
+        "width": 320,
+        "scrollWidth": 320
+      },
+      "frameStats": [
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 39152
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 70357
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 51388
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 14503
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 57091
+        },
+        {
+          "width": 424,
+          "height": 512,
+          "brightPixels": 67519
+        }
+      ],
+      "visibleFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "atlasRequests": 1,
+      "paused": true,
+      "reducedMotion": true,
+      "freeModeStarted": true,
+      "errors": []
+    }
+  ]
+}

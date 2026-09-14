@@ -6,9 +6,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Combined arcade release candidate
+## Combined arcade release — live
 
-The combined candidate preserves the live HMH world polish and adds STACKED’s rotating cabinet and music-reactive living visualizers, plus Chikun 0.6.0 open-air obstacles, portrait/fullscreen presentation, high-refresh input and shared music fixes. Publication and hosted verification are pending. The production cache marker below is the target marker for this release wave.
+All three completed game upgrades are live. HMH world polish is preserved; STACKED adds its rotating cabinet and music-reactive living visualizers; Chikun 0.6.0 adds open-air obstacles, portrait/fullscreen presentation, high-refresh input and shared music fixes. The shared player now reuses unchanged icons and queue nodes to eliminate repeated SVG requests. Source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`; deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`. All 163 public hashes and the desktop/mobile/browser/cache checks passed. [Release receipt](docs/qa/combined-arcade-release-20260913.json). Immediate rollback: `dpl_4AiDLsq5Kngz4rtjQWj6u6i9kz7P`.
 
 **Production cache marker:** `lesters-arcade-v44-music-controls`
 

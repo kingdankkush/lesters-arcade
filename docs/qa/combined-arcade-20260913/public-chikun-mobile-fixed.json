@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "origin": "https://lestersarcade.io",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "playfield": {
+    "x": 0,
+    "y": 75.328125,
+    "width": 390,
+    "height": 693.328125
+  },
+  "rotation": "portrait-landscape-portrait",
+  "highRefreshHz": 240,
+  "firstTrack": "lit-country-16-bit-arcade-music-track-2",
+  "secondTrack": "lit-zero-16-bit-arcade-music-track-2",
+  "passes": 8,
+  "coins": 8,
+  "terminalReason": "ground",
+  "samples": [
+    {
+      "tick": 467,
+      "kind": "tree",
+      "x": 479.20000000000005
+    },
+    {
+      "tick": 718,
+      "kind": "drone",
+      "x": 478.72
+    },
+    {
+      "tick": 968,
+      "kind": "tree",
+      "x": 477.4399999999996
+    },
+    {
+      "tick": 1203,
+      "kind": "drone",
+      "x": 478.2399999999998
+    },
+    {
+      "tick": 1883,
+      "kind": "tree",
+      "x": 477.7600000000002
+    },
+    {
+      "tick": 2095,
+      "kind": "drone",
+      "x": 479.1999999999998
+    }
+  ],
+  "issues": []
+}

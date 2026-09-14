@@ -1,0 +1,448 @@
+{
+  "schema": "combined-arcade-release-v1",
+  "recordedAt": "2026-09-14T05:43:27.904620+00:00",
+  "status": "LIVE_VERIFIED",
+  "origin": "https://lestersarcade.io",
+  "source": "dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25",
+  "deployment": "dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS",
+  "immutableUrl": "https://lesters-arcade-inlluldkc-justin-agent-projects.vercel.app",
+  "rollback": "dpl_4AiDLsq5Kngz4rtjQWj6u6i9kz7P",
+  "cache": "lesters-arcade-v44-music-controls",
+  "resourceMarker": "arcade-music-controls-20260913",
+  "included": {
+    "hmh": "a3b2b0299b5617636f144fcb3936bac4a87e19d6 world polish preserved",
+    "stacked": "e7e28d57 rotating cabinet + 9aab1203 living visualizers",
+    "chikun": "c40149bd completed 0.6.0 open-air, portrait/fullscreen, input and shared music"
+  },
+  "releaseTests": {
+    "schemaVersion": 1,
+    "gate": "hmh-reboot-test-retirement",
+    "status": "PASS",
+    "counts": {
+      "tests": 3715,
+      "failed": 51,
+      "passed": 3664,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 3648,
+      "suites": 8
+    },
+    "expectedFailureCount": 51,
+    "errors": []
+  },
+  "preFixLocalChecks": {
+    "running": null,
+    "results": [
+      {
+        "name": "curated",
+        "exit": 0,
+        "seconds": 0.23
+      },
+      {
+        "name": "generated",
+        "exit": 0,
+        "seconds": 0.25
+      },
+      {
+        "name": "build",
+        "exit": 0,
+        "seconds": 0.68
+      },
+      {
+        "name": "tests",
+        "exit": 0,
+        "seconds": 326.72
+      },
+      {
+        "name": "syntax",
+        "exit": 0,
+        "seconds": 39.78
+      },
+      {
+        "name": "assets",
+        "exit": 0,
+        "seconds": 8.81
+      },
+      {
+        "name": "contracts",
+        "exit": 0,
+        "seconds": 0.19
+      },
+      {
+        "name": "visual",
+        "exit": 0,
+        "seconds": 64.06
+      },
+      {
+        "name": "stacked",
+        "exit": 0,
+        "seconds": 27.35
+      },
+      {
+        "name": "cabinet",
+        "exit": 0,
+        "seconds": 40.95
+      },
+      {
+        "name": "living",
+        "exit": 0,
+        "seconds": 3.51
+      },
+      {
+        "name": "stacked-perf",
+        "exit": 0,
+        "seconds": 50.38
+      },
+      {
+        "name": "portal-desktop",
+        "exit": 0,
+        "seconds": 18.56
+      },
+      {
+        "name": "portal-mobile",
+        "exit": 0,
+        "seconds": 14.68
+      }
+    ]
+  },
+  "musicFixChecks": {
+    "running": null,
+    "results": [
+      {
+        "name": "curated",
+        "exit": 0,
+        "seconds": 0.77,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "generated",
+        "exit": 0,
+        "seconds": 0.26,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "build",
+        "exit": 0,
+        "seconds": 0.85,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "tests",
+        "exit": 0,
+        "seconds": 321.72,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "syntax",
+        "exit": 0,
+        "seconds": 40.29,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "assets",
+        "exit": 0,
+        "seconds": 9.58,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "contracts",
+        "exit": 0,
+        "seconds": 0.18,
+        "source": "ee0dd1e947a3203a98eecccf94348186fcb3c544",
+        "note": "The subsequent commit only adds bounded waits in the standalone music browser harness. Product source is identical; the final cloud build reruns the complete gate on the final commit."
+      },
+      {
+        "name": "music",
+        "exit": 0,
+        "seconds": 6.29
+      },
+      {
+        "name": "portal-desktop",
+        "exit": 0,
+        "seconds": 17.8
+      },
+      {
+        "name": "portal-mobile",
+        "exit": 0,
+        "seconds": 13.87
+      },
+      {
+        "name": "stacked",
+        "exit": 0,
+        "seconds": 29.42
+      },
+      {
+        "name": "chikun-desktop",
+        "exit": 0,
+        "seconds": 24.74
+      },
+      {
+        "name": "chikun-mobile",
+        "exit": 0,
+        "seconds": 25.3
+      },
+      {
+        "name": "chikun-open-desktop",
+        "exit": 0,
+        "seconds": 24.76
+      },
+      {
+        "name": "chikun-open-mobile",
+        "exit": 0,
+        "seconds": 27.02
+      },
+      {
+        "name": "cabinet",
+        "exit": 0,
+        "seconds": 38.69
+      }
+    ]
+  },
+  "performanceMeasurementSource": "eb64e8509a4643378a3d608c89a37aee965102e6; child game builds are unchanged in the final music-control fix",
+  "additionalChecks": {
+    "running": null,
+    "results": [
+      {
+        "name": "open-desktop",
+        "exit": 0,
+        "seconds": 29.19
+      },
+      {
+        "name": "open-mobile",
+        "exit": 0,
+        "seconds": 24.28
+      },
+      {
+        "name": "ranked",
+        "exit": 0,
+        "seconds": 23.56
+      },
+      {
+        "name": "chikun-perf",
+        "exit": 0,
+        "seconds": 96.92
+      },
+      {
+        "name": "hmh-mobile",
+        "exit": 0,
+        "seconds": 23.95
+      },
+      {
+        "name": "links",
+        "exit": 0,
+        "seconds": 0.2
+      }
+    ]
+  },
+  "publicChecks": {
+    "running": null,
+    "results": [
+      {
+        "name": "http",
+        "exit": 0,
+        "seconds": 27.33
+      },
+      {
+        "name": "portal-desktop",
+        "exit": 0,
+        "seconds": 31.4
+      },
+      {
+        "name": "portal-mobile",
+        "exit": 0,
+        "seconds": 22.08
+      },
+      {
+        "name": "stacked",
+        "exit": 0,
+        "seconds": 52.34
+      },
+      {
+        "name": "chikun-desktop",
+        "exit": 0,
+        "seconds": 11.89
+      },
+      {
+        "name": "chikun-mobile",
+        "exit": 0,
+        "seconds": 11.15
+      },
+      {
+        "name": "chikun-open-desktop",
+        "exit": 0,
+        "seconds": 13.3
+      },
+      {
+        "name": "chikun-open-mobile",
+        "exit": 0,
+        "seconds": 13.3
+      },
+      {
+        "name": "cabinet",
+        "exit": 0,
+        "seconds": 50.99
+      },
+      {
+        "name": "cache",
+        "exit": 0,
+        "seconds": 15.02
+      },
+      {
+        "name": "music",
+        "exit": 0,
+        "attempts": [
+          {
+            "name": "music",
+            "exit": 1,
+            "seconds": 9.31
+          },
+          {
+            "exit": 0,
+            "evidence": ".tmp/music-fix-public-dom/verification.json"
+          }
+        ],
+        "note": "Final public retry passed after the harness waited up to 3 seconds for the new track title and active queue together. The original premature assertion is retained. Product code was unchanged."
+      }
+    ]
+  },
+  "protectedFiles": 110,
+  "publicFiles": 163,
+  "initialJsBytes": {
+    "hmh": 1047335,
+    "hmhCap": 1048576,
+    "stacked": 566864
+  },
+  "publicRetest": "Original public failures and diagnostics are retained. Vercel recorded a ten-minute system challenge. The first post-expiry diagnostic traced repeated 403s to the shared pause-icon SVG. A local real-clock regression proved 70 unnecessary icon/queue replacements and 14 repeated SVG requests in 3.5 seconds. The shared music controls now retain unchanged SVGs and queue nodes; the same test measured zero replacements and zero repeated requests, with working pause/resume/mute/next/active queue. The final source reran the release gate and affected game browsers, then all public checks with slower pacing. No security setting was changed. The cache diagnostic added bounded HTTP/registration checks while preserving its cache/hash assertions.",
+  "visualCaptureRepair": "The initial desktop opening crop received one additional automatic hit before the delayed aim timer. Immediate ordinary mouse aim is now set for the opening-only capture; gameplay, tolerances and accepted baselines are unchanged. Full 12-scene comparison was rerun after the fix. Ten focused harness tests passed; the final cloud build reran the complete release gate.",
+  "releaseHarnessRepair": "The first music-fix full run caught stale v43 token assertions plus a generated visualizer-qa.js left under apps/portal/.tmp. Exact expectations now use the v44 token. The existing visualizer smoke now bundles its fixture in memory and serves it only through its local test route. The old generated file was preserved outside the source tree; eight focused checks and all three visualizer layouts passed before the full suite was rerun. No retirement exception, game constant or assertion threshold was loosened.",
+  "musicBrowserTiming": "The standalone regression now waits at most 2 seconds for play/pause icons and 3 seconds for the new track title and active queue selection together. Audio state changes before its asynchronous UI event; reading those at separate instants produced premature assertion failures. Zero mutations/requests and actual control behavior remain required. The final public music run passed with zero browser errors; no product change followed the published dcc22ae4 source.",
+  "limitations": [
+    "Physical iOS/Android acceptance remains open.",
+    "Chikun performance is a short real-clock repeated-flight smoke, not a thermal endurance certification.",
+    "HMH 4x CPU stress remains a measured limitation; no new FPS improvement is claimed.",
+    "Profiles and Ranked preview are device-local; trusted global services and real settlement remain unfinished.",
+    "SETTLEMENT_LIVE=false; no financial activation.",
+    "Public GitHub upload of additional HMH source/editable models is still pending explicit permission after automatic approval review rejected disclosure."
+  ],
+  "evidence": {
+    "cache-migration.json": {
+      "path": "docs/qa/combined-arcade-20260913/cache-migration.json",
+      "sha256": "9dc37060a5a5ad2c720aa34223b1387cbb2bfdc00ce2a186c1fa533276a4507a"
+    },
+    "chikun-desktop.png": {
+      "path": "docs/qa/combined-arcade-20260913/chikun-desktop.png",
+      "sha256": "adf41c48d22f6c49acabc14b6ca480f32a817a7598d88a921ece763a6b3d2c53"
+    },
+    "chikun-performance.json": {
+      "path": "docs/qa/combined-arcade-20260913/chikun-performance.json",
+      "sha256": "864afd325d5deb5e40254e2dd8ff3b59c5b6be69f2cb68ffc98c46e54d03f6eb"
+    },
+    "chikun-portrait.png": {
+      "path": "docs/qa/combined-arcade-20260913/chikun-portrait.png",
+      "sha256": "d1762928f05e853da0d777258ad4e3a5ba0a0640dfbedb8cc857800e07f910b0"
+    },
+    "hmh-matched-comparison.json": {
+      "path": "docs/qa/combined-arcade-20260913/hmh-matched-comparison.json",
+      "sha256": "1f0d3c1620a5af69154c607fb12e3150a0f822577af5498f86382ba59a41f587"
+    },
+    "hmh-mobile-performance.json": {
+      "path": "docs/qa/combined-arcade-20260913/hmh-mobile-performance.json",
+      "sha256": "89fd26e2acc4a154d25d7f4fa26732bf15b3477598c5767e6d6d0609c4ca1adc"
+    },
+    "hosted-files.json": {
+      "path": "docs/qa/combined-arcade-20260913/hosted-files.json",
+      "sha256": "b6f299138d11c3b452f04ccb9ed9d29c3a2b8f0ce45871e265e9d9e7af724c20"
+    },
+    "hosting-challenge-sanitized.json": {
+      "path": "docs/qa/combined-arcade-20260913/hosting-challenge-sanitized.json",
+      "sha256": "909297154cc044b75ca9fcd6e1d20516458025305ac1d386c80b9f06486d5cd3"
+    },
+    "music-control-event-race.json": {
+      "path": "docs/qa/combined-arcade-20260913/music-control-event-race.json",
+      "sha256": "2089959b402e1ba60b754ca56c684b475f4a2586da6b5b9150fd26f23ad9e18b"
+    },
+    "music-dom-after.json": {
+      "path": "docs/qa/combined-arcade-20260913/music-dom-after.json",
+      "sha256": "5e506ea922fbc22c5520b8dad22ddb2692503ba071c46da61c0399e5ee80ce18"
+    },
+    "music-dom-before.json": {
+      "path": "docs/qa/combined-arcade-20260913/music-dom-before.json",
+      "sha256": "16469ecda246f123cccd7bc2c0241064237b1a2edbb0c5f46dba6a6bd0661a2a"
+    },
+    "music-dom-public.json": {
+      "path": "docs/qa/combined-arcade-20260913/music-dom-public.json",
+      "sha256": "01e43ebd397eee3541090fa01851d01333f3284345fb5fd6c98983450b885c8a"
+    },
+    "music-fix-initial-checks.json": {
+      "path": "docs/qa/combined-arcade-20260913/music-fix-initial-checks.json",
+      "sha256": "785518d2dcd826018b619ccf72a25fb2adf8526dedff33916974767a8383a13d"
+    },
+    "music-fix-initial-gate.json": {
+      "path": "docs/qa/combined-arcade-20260913/music-fix-initial-gate.json",
+      "sha256": "9fc6b13cacd3fa9c0361f31b79f3b1b0e50dffc0d74819138c1ade942affb354"
+    },
+    "public-cabinet-network.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-cabinet-network.json",
+      "sha256": "e54621cf785d008eada61624e7ac45aa0b3ada31581a9963b2edf66bb63b2ac5"
+    },
+    "public-cabinet-retry.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-cabinet-retry.json",
+      "sha256": "0f89daa795ff782350e639e205c935885c7535cfba66ec44eead4eeb28cfdb5e"
+    },
+    "public-cache-network.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-cache-network.json",
+      "sha256": "781cd30916df02b8c2cb95a64139c4ac085753289f661619eebf1cdad2c6d5b9"
+    },
+    "public-chikun-checkpoint.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-chikun-checkpoint.json",
+      "sha256": "a2032fda39668986c4c7185a1029ac36ddfde8bd5d2582ec430c07292f9c0a6d"
+    },
+    "public-chikun-mobile-fixed.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-chikun-mobile-fixed.json",
+      "sha256": "dfd659a598b7c403aa3a3d55400e334c5dff35f45b935125f2ae315687b68320"
+    },
+    "public-chikun-mobile-network.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-chikun-mobile-network.json",
+      "sha256": "fde34b85eba653e1d467147899878c288b785ca55f329c4520d3f8016804176e"
+    },
+    "public-icon-request-failure.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-icon-request-failure.json",
+      "sha256": "321317750a9edeb7721f334316c0a27b9db51bc6e3eac4ec43ecc61ae404ea88"
+    },
+    "public-initial-attempt.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-initial-attempt.json",
+      "sha256": "c9f135820e5ec3509cf8d573d923a42694881f814f7db88d756f8820b3e9c225"
+    },
+    "public-music-initial-attempt.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-music-initial-attempt.json",
+      "sha256": "29f90eda8447189a7c6a43075611a4c0ad8f4a175417c8a345e59161d4e626bb"
+    },
+    "public-retry-checks.json": {
+      "path": "docs/qa/combined-arcade-20260913/public-retry-checks.json",
+      "sha256": "3b0b3c0e9f002f8d062b15ce15b156303ddca465896de4fae513578b5025dfab"
+    },
+    "stacked-living-desktop.png": {
+      "path": "docs/qa/combined-arcade-20260913/stacked-living-desktop.png",
+      "sha256": "55b0dd0657f8d4f64f443c8ea52a7672db082183b28ea2ddb26cdca7abe917ce"
+    },
+    "stacked-living-mobile.png": {
+      "path": "docs/qa/combined-arcade-20260913/stacked-living-mobile.png",
+      "sha256": "3fb091d0f993d00786e8ecf106624c333e060cf906e5df904ac95265ff6ec222"
+    },
+    "stacked-living-visuals.json": {
+      "path": "docs/qa/combined-arcade-20260913/stacked-living-visuals.json",
+      "sha256": "1be33aabab6fee110020c6239efa64ab33efa528f7fb3219998e5f964033e9d6"
+    },
+    "stacked-performance.json": {
+      "path": "docs/qa/combined-arcade-20260913/stacked-performance.json",
+      "sha256": "0fe921572ade74166454c8c272cad0f0da88e6f4a49f23c9f86490e72d56aac6"
+    }
+  }
+}

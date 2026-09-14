@@ -5,7 +5,11 @@ Prepared September 13, 2026. This document separates the playable beta and compl
 ## Release and starting point
 
 <!-- RELEASE_FACTS_START -->
-Combined release certification is in progress. The public predecessor is deployment `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7` at https://lestersarcade.io. The candidate preserves its HMH world polish and adds the completed STACKED rotating cabinet and living visualizers plus Chikun open-air flight. Candidate-only work must not be described as live until this block is replaced by the final receipt.
+**Live and publicly verified:** https://lestersarcade.io. Combined runtime source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`; deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`; cache `lesters-arcade-v44-music-controls`. Immutable build: https://lesters-arcade-inlluldkc-justin-agent-projects.vercel.app. Immediate rollback: `dpl_4AiDLsq5Kngz4rtjQWj6u6i9kz7P`. All 163 public file hashes matched the certified local build. The complete release gate evaluated 3,715 tests: 3,664 passed and exactly 51 unchanged retired-test exceptions were accounted for; all required desktop/mobile/browser, visual and cache checks completed. Initial public checks exposed repeated SVG icon requests and a temporary Vercel system challenge. The shared music controls were fixed; the final source passed the full release gate, affected game browsers and public retests. Before/after measurements and original failures are retained; no security setting was changed. Physical-device and remaining full-game acceptance are still open. Exact evidence is in `docs/qa/combined-arcade-release-20260913.json` and `docs/qa/combined-arcade-20260913/`.
+
+This release combines the completed HMH world polish, STACKED rotating cabinet/living visualizers and Chikun 0.6.0 open-air, portrait/fullscreen, input and shared-music improvements. The final shared-player fix eliminates repeated unchanged icon/queue replacement and icon requests. Website publication is complete. Public GitHub disclosure of additional HMH source/editable models remains pending explicit permission; no live settlement was enabled.
+
+Pre-fix combined-build 12-second Chrome samples: desktop p95 7.0 ms, 0 long tasks; mobile-stress p95 20.9 ms, 0 long tasks; mobile-minimal p95 14.0 ms, 0 long tasks. These are desktop/emulated-phone measurements, not sustained physical-device acceptance.
 <!-- RELEASE_FACTS_END -->
 
 - Integrated repository: `C:/Users/just_/Documents/Codex/2026-09-12/my/work/lesters-arcade`.

@@ -59,10 +59,16 @@ try {
   assert.equal(await page.locator('#arcadeMusicAudio').evaluate(audio => audio.muted), true);
   assert.match(await page.locator('#arcadeMusicMuteButton use').getAttribute('href'), /#mute$/);
   const previousTrack = await page.locator('#arcadeMusicAudio').getAttribute('data-track-id');
+  const previousTitle = await page.locator('#arcadeMusicTitle').textContent();
   await page.locator('#arcadeMusicNextButton').click();
-  await page.waitForFunction(previous => document.querySelector('#arcadeMusicAudio').dataset.trackId !== previous, previousTrack);
-  const activeTitle = await page.locator('#arcadeMusicQueueList li.active').textContent();
-  assert.ok(activeTitle.startsWith(await page.locator('#arcadeMusicTitle').textContent()), 'queue selection follows the actual track');
+  await page.waitForFunction(previous => {
+    const title = document.querySelector('#arcadeMusicTitle').textContent;
+    return document.querySelector('#arcadeMusicAudio').dataset.trackId !== previous.track
+      && title !== previous.title
+      && document.querySelector('#arcadeMusicQueueList li.active')?.textContent.startsWith(title);
+  }, {track: previousTrack, title: previousTitle}, {timeout: 3000});
+  const selection = await page.evaluate(() => ({title: document.querySelector('#arcadeMusicTitle').textContent, active: document.querySelector('#arcadeMusicQueueList li.active').textContent}));
+  assert.ok(selection.active.startsWith(selection.title), 'queue selection follows the actual track');
   assert.deepEqual(errors, []);
   await writeFile(path.join(out, 'verification.json'), JSON.stringify({status: 'PASS', ...report, controlsVerified: ['pause', 'resume', 'mute', 'next', 'active queue']}, null, 2));
   console.log(JSON.stringify({status: 'PASS', ...report}));

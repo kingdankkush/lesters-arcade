@@ -1,5 +1,9 @@
 # Textured rollout: current continuation checkpoint
 
+## Combined arcade release — live, September 13, 2026
+
+The tested combined release is live at https://lestersarcade.io, source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`, deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`, cache `lesters-arcade-v44-music-controls`. It preserves HMH world polish and adds the completed STACKED cabinet/living visualizers and Chikun open-air/portrait/input/music changes. All 163 public file hashes and public browser/cache flows passed. See `docs/qa/combined-arcade-release-20260913.json` and the three independent `docs/handoffs/*REMAINING-WORK-2026-09-13.md` handoffs. Older release claims below are historical. Physical-device and financial-service acceptance remain open.
+
 ## Published world polish — 2026-09-13
 
 The next package adds finer native ground materials, transparent terrain edges, varied canopy composition, industrial ground wear and tapered campfire flames. See [implementation and remaining work](2026-09-13-hmh-world-polish-release.md). Desktop/mobile camp approach, reduced-motion flames, all 12 visual scenes, portal desktop/mobile and five STACKED layouts have been exercised. Live at https://lestersarcade.io: source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`, deployment `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7`, cache `lesters-arcade-v41-hmh-world-polish`. All 151 public file hashes, HMH desktop/mobile portal flows, five STACKED layouts, Chikun desktop/mobile and cache migration passed. Immediate rollback: `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7`. [Release receipt](../qa/hmh-world-polish-release-20260913.json).

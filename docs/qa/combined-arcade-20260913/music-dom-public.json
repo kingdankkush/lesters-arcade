@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "origin": "https://lestersarcade.io",
+  "mutations": 0,
+  "retainedNodes": true,
+  "audioAdvanced": 3.5151830000000004,
+  "repeatedIconRequests": 0,
+  "errors": [],
+  "controlsVerified": [
+    "pause",
+    "resume",
+    "mute",
+    "next",
+    "active queue"
+  ]
+}

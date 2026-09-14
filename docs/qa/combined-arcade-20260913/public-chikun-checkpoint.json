@@ -1,0 +1,31 @@
+{
+  "networkDiagnostics": [
+    {
+      "url": "https://lestersarcade.io/",
+      "status": 403
+    },
+    {
+      "error": "Failed to load resource: the server responded with a status of 403 ()",
+      "location": {
+        "url": "https://lestersarcade.io/",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "url": "https://lestersarcade.io/.well-known/vercel/security/request-challenge",
+      "status": 708
+    },
+    {
+      "url": "https://lestersarcade.io/.well-known/vercel/security/request-challenge",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "issues": [
+    "Failed to load resource: the server responded with a status of 403 ()"
+  ],
+  "url": "https://lestersarcade.io/",
+  "title": "Vercel Security Checkpoint"
+}

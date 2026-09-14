@@ -1,5 +1,9 @@
 # Chikun open-air flight polish — September 13, 2026
 
+## Combined arcade release — live, September 13, 2026
+
+The tested combined release is live at https://lestersarcade.io, source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`, deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`, cache `lesters-arcade-v44-music-controls`. It preserves HMH world polish and adds the completed STACKED cabinet/living visualizers and Chikun open-air/portrait/input/music changes. All 163 public file hashes and public browser/cache flows passed. See `docs/qa/combined-arcade-release-20260913.json` and the three independent `docs/handoffs/*REMAINING-WORK-2026-09-13.md` handoffs. Older release claims below are historical. Physical-device and financial-service acceptance remain open.
+
 The owner authorized the tested website update and public source/artwork publication. This branch preserves the deployed HMH motion/mobile source `0e858cde582f10be767c170de6f7f2588cf4e977` and the subsequently published STACKED cabinet source `e7e28d57ba2964dfba419e4aa31804939ed142bc`. The combined website also preserves the newer live HMH world polish source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`. Publication of unrelated HMH editable sources is not authorized; only Chikun-specific commits will be pushed publicly. Production promotion and hosted verification remain pending until the release receipt is recorded.
 
 ## Player-facing changes

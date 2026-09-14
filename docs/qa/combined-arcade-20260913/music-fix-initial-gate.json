@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "gate": "hmh-reboot-test-retirement",
+  "status": "FAIL",
+  "counts": {
+    "tests": 3715,
+    "failed": 57,
+    "passed": 3658,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "topLevel": 3648,
+    "suites": 8
+  },
+  "expectedFailureCount": 51,
+  "errors": [
+    "unexpected failure: tests/arcade-core.test.mjs :: streamlined Lester arcade UX keeps public flow simple while preserving hidden tools and audio/gameplay polish hooks",
+    "unexpected failure: tests/hmh-load-speed.test.mjs :: WO-36 index boots through optimized dist bundle with first-screen preload hints",
+    "unexpected failure: tests/hmh-playable-release.test.mjs :: playable update gives all linked startup resources the same fresh cache token",
+    "unexpected failure: tests/hmh-playable-release.test.mjs :: playable update invalidates the prior service-worker asset cache",
+    "unexpected failure: tests/hmh-reboot-shell.test.mjs :: service worker versions both playable cabinet shells for offline startup",
+    "unexpected failure: tests/stacked-contracts.test.mjs :: actual source-tree guard catches planted duplicates and cleans up"
+  ]
+}
