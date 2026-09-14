@@ -1,4 +1,8 @@
-import { createChikunCharacter } from './character.mjs';
+import { exportChikunReplay, importChikunReplay, REPLAY_FILE_LIMIT } from './replay-file.mjs';
+import { chikunAchievements } from '../../portal/src/chikun-profile.mjs';
+import { loadGroundArt, drawGround, drawGroundObstacle } from './ground-world.mjs';
+import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdoll.mjs';
+import { createChikunCharacter, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
@@ -67,6 +71,8 @@ const resultScore = document.querySelector('#resultScore');
 const resultCopy = document.querySelector('#resultCopy');
 const resultStats = document.querySelector('#resultStats');
 const replayTimeline = document.querySelector('#replayTimeline');
+const replayTime = document.querySelector('#replayTime');
+const replaySpeed = document.querySelector('#replaySpeed');
 const watchReplayButton = document.querySelector('#watchReplayButton');
 const shareRunButton = document.querySelector('#shareRunButton');
 const liveStatus = document.querySelector('#liveStatus');
@@ -81,17 +87,42 @@ coastSprite.src = '/assets/generated/chikun-game/chikun-coast.webp';
 fallSprite.src = '/assets/generated/chikun-game/chikun-fall.webp';
 Promise.allSettled([coastSprite.decode?.(), fallSprite.decode?.()]);
 
-const flightCharacter = createChikunCharacter();
+const assetStatus = document.querySelector('#assetStatus');
+let assetsFinished = false;
+function syncAssetStatus() {
+  if (disposed) return;
+  const usable = flightCharacter.renderable;
+  startButton.disabled = !usable && !assetsFinished;
+  startButton.textContent = usable ? 'Start Running' : assetsFinished ? 'Retry character download' : 'Loading Chikun…';
+  assetStatus.textContent = flightCharacter.complete ? '' : assetsFinished
+    ? usable ? 'Some animations are unavailable. You can still fly.' : 'Chikun could not load. Check your connection and retry.'
+    : `Loading animations · ${flightCharacter.loaded}/31`;
+  assetStatus.hidden = flightCharacter.complete;
+}
+const flightCharacter = createChikunCharacter({onProgress:syncAssetStatus});
+startButton.disabled = true;
+startButton.textContent = 'Loading Chikun…';
+flightCharacter.ready.then(() => { assetsFinished = true; syncAssetStatus(); });
 const flightWorld = createChikunWorld();
 const flightAudio = createChikunAudio();
 let renderDt = 0;
 let idleTime = 0;
 let terminalAge = 0;
+let ragdoll = null;
+let goreEnabled = true;
+try { goreEnabled = localStorage.getItem('chikun-gore-v1') !== 'off'; } catch {}
+loadGroundArt(); loadRagdollArt();
+const speedValue = document.querySelector('#speedValue');
+const routeReadout = document.querySelector('#routeReadout');
+const goreButton = document.querySelector('#goreButton');
 let flapAge = Infinity;
 let flapVelocity = 0;
 let flightEvent = '';
 let flightEventAge = Infinity;
-function animateFlight(event) { flightEvent = event; flightEventAge = 0; }
+function animateFlight(event) {
+  if (CHIKUN_FLOURISHES.includes(flightEvent) && flightEventAge < .8) return;
+  flightEvent = event; flightEventAge = 0;
+}
 
 let port = null;
 let sessionId = '';
@@ -177,6 +208,9 @@ function updateReplayPlayhead() {
   const playhead = replayPlayheadEl();
   if (playhead) playhead.style.left = `${ratio * 100}%`;
   replayTimeline.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+  const timeLabel = `${(tick / 60).toFixed(1)} / ${(duration / 60).toFixed(1)} s`;
+  replayTime.textContent = timeLabel;
+  replayTimeline.setAttribute('aria-valuetext', `${(tick / 60).toFixed(1)} seconds of ${(duration / 60).toFixed(1)}`);
 }
 
 function stopReplayViewer() {
@@ -268,7 +302,7 @@ function sendState(status = phase === 'running' ? 'running' : phase === 'game-ov
 }
 
 function tone(frequency, duration = 0.08, gainValue = 0.035, type = 'triangle') {
-  if (muted || initPayload?.settings.musicEnabled === false) return;
+  if (muted) return;
   const cue = ({420:'launch',96:'impact',560:'flap',880:'coin',1040:'near',660:'pass'})[frequency];
   if (cue && flightAudio.play(cue)) return;
   try {
@@ -311,30 +345,29 @@ function setModePresentation() {
   dailyChallenge = ranked ? null : chikunDailyChallengeForSeed(initPayload?.session?.seed);
   shell.dataset.mode = mode;
   modeLabel.textContent = ranked
-    ? 'Ranked Mode · Replay Verified'
+    ? 'Ranked Preview · Device Local'
     : dailyChallenge
       ? `${dailyChallenge.label} · Shared Course`
       : 'Free Mode · Practice Flight';
   modeCopy.textContent = ranked
-    ? 'Dodge trees and drones, thread the gates, collect Litecoin, and skim the edges for bonuses. Lester’s Arcade replays every input before the score reaches your profile and Ranked boards.'
+    ? 'Collect Litecoin and skim the edges for bonuses. Lester’s Arcade verifies your replay for this device’s profile and local Ranked boards.'
     : dailyChallenge
-      ? `Dodge trees and drones, thread the gates, collect Litecoin, and skim the edges for bonuses. Everyone flies the ${dailyChallenge.dayKey} course today, and your daily best stays on this seed without entering Ranked boards.`
-      : 'Dodge trees and drones, thread the gates, collect Litecoin, and skim the edges for bonuses. This practice score never enters your profile or Ranked boards.';
+      ? `The ${dailyChallenge.dayKey} course resets at 00:00 UTC. Collect Litecoin and beat your best on this device. This flight keeps its course through reset.`
+      : 'Collect Litecoin and skim the edges for bonuses. Practice scores stay separate from your Ranked profile.';
   loadGhostForSeed(initPayload?.session?.seed);
 }
 
 function syncAudioControl() {
-  const parentDisabled = initPayload?.settings.musicEnabled === false;
-  const disabled = parentDisabled || muted;
+  const disabled = muted;
   flightAudio.setEnabled(!disabled);
-  muteButton.disabled = parentDisabled;
+  muteButton.disabled = false;
   muteButton.textContent = disabled ? '×' : '♪';
   muteButton.setAttribute('aria-pressed', String(disabled));
-  muteButton.setAttribute('aria-label', parentDisabled ? 'Sound disabled in arcade settings' : muted ? 'Unmute flight sounds' : 'Mute flight sounds');
-  pauseMuteButton.disabled = parentDisabled;
-  pauseMuteButton.textContent = parentDisabled ? 'Sound Off' : muted ? 'SFX On' : 'SFX Off';
+  muteButton.setAttribute('aria-label', muted ? 'Unmute flight sounds' : 'Mute flight sounds');
+  pauseMuteButton.disabled = false;
+  pauseMuteButton.textContent = muted ? 'SFX On' : 'SFX Off';
   pauseMuteButton.setAttribute('aria-pressed', String(disabled));
-  pauseMuteButton.setAttribute('aria-label', parentDisabled ? 'Sound disabled in arcade settings' : muted ? 'Unmute flight sounds' : 'Mute flight sounds');
+  pauseMuteButton.setAttribute('aria-label', muted ? 'Unmute flight sounds' : 'Mute flight sounds');
 }
 
 function syncFullscreenControl() {
@@ -349,7 +382,6 @@ function syncFullscreenControl() {
 }
 
 function toggleMute() {
-  if (initPayload?.settings.musicEnabled === false) return;
   muted = !muted;
   syncAudioControl();
 }
@@ -360,6 +392,7 @@ function toggleFullscreen() {
 }
 
 function prepareRun() {
+  ragdoll?.dispose(); ragdoll = null;
   terminalAge = 0; flapAge = Infinity; flightEventAge = Infinity; flightEvent = '';
   runtime = createChikunRuntime({ seed: initPayload.session.seed, maxTicks: MAX_RUN_TICKS });
   latestSnapshot = runtime.snapshot();
@@ -369,11 +402,18 @@ function prepareRun() {
 
 function startRun() {
   if (!initPayload || disposed) return;
+  if (!flightCharacter.renderable) {
+    if (assetsFinished) {
+      assetsFinished = false; syncAssetStatus();
+      flightCharacter.retry().then(() => { assetsFinished = true; syncAssetStatus(); });
+    }
+    return;
+  }
   stopReplayViewer();
   prepareRun();
   phase = 'running';
   paused = false;
-  flapQueued = true;
+  flapQueued = false;
   accumulator = 0;
   previousFrameAt = performance.now();
   lastStateTick = -1;
@@ -391,7 +431,7 @@ function startRun() {
   resultOverlay.classList.add('is-hidden');
   canvas.focus();
   const flightLabel = mode === 'ranked' ? 'Ranked' : dailyChallenge ? dailyChallenge.label : 'Free';
-  setLive(`${flightLabel} flight started. Tap or press Space to flap.`);
+  setLive(`${flightLabel} flight started. Tap to jump, tap again to fly. Descend to land and run.`);
   flightAudio.unlock().then(() => { if (!disposed && phase === 'running') flightAudio.play('launch'); });
   sendState('running');
 }
@@ -402,6 +442,8 @@ function updateHud() {
   forkValue.textContent = String(latestSnapshot?.forksPassed ?? 0);
   comboValue.textContent = String(latestSnapshot?.combo ?? 0);
   nearMissValue.textContent = String(latestSnapshot?.nearMisses ?? 0);
+  if(speedValue)speedValue.textContent = Math.round((latestSnapshot?.difficulty?.speedMultiplier??1)*100)+'%';
+  if(routeReadout)routeReadout.textContent = (latestSnapshot?.region??'Meadow')+' · '+(latestSnapshot?.chikun?.locomotion==='run'?'RUNNING':'AIRBORNE');
 }
 
 function finishRun() {
@@ -410,6 +452,7 @@ function finishRun() {
   terminalAge = 0;
   paused = false;
   const result = runtime.result();
+  if(result.crashed)ragdoll=createChikunRagdoll({...latestSnapshot.chikun,...latestSnapshot.impact,kind:result.finalState.terminalReason,tick:latestSnapshot.tick,grounded:latestSnapshot.chikun.y>610,reduceMotion:reduceMotion(),gore:goreEnabled});
   lastCompletedResult = result;
   let ghostComparison = null;
   if (ghostTrack && ghostTrack.seed === result.seed) {
@@ -447,22 +490,27 @@ function finishRun() {
       : 'Free flight complete';
   resultScore.textContent = String(result.score);
   resultCopy.textContent = mode === 'ranked'
-    ? 'Lester’s Arcade is verifying this input log. Accepted scores update your profile and the Chikun’s Escape score boards.'
+    ? 'Lester’s Arcade is verifying this input log. Accepted scores update this device’s profile and local Chikun score boards.'
     : ghostComparison
       ? `${ghostComparison.beatGhost ? 'You beat your daily best' : 'Your daily best leads'} by ${Math.abs(ghostComparison.scoreDelta)} points. Practice score only.`
       : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
   resultStats.replaceChildren();
+  const cause = {ground:'Reached the ground',ceiling:'Reached the flight ceiling',fork:'Hit a gate',tree:'Hit a tree',drone:'Decapitated by a drone',rock:'Hit a boulder',log:'Hit a fallen log',thorn:'Caught in thorns',hurdle:'Hit a hurdle',crate:'Hit a crate',shiba:'Caught by a Shiba',pit:'Fell into a gap',waterfall:'Fell into the waterfall',hawk:'Hit a hawk',eagle:'Hit an eagle',pelican:'Hit a pelican',plane:'Hit a plane',storm:'Caught in a storm',pipe:'Hit an industrial pipe','run-complete':'Course complete'}[result.finalState?.terminalReason ?? latestSnapshot?.terminalReason];
   const statLabels = [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} obstacles`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`];
+  if(cause)statLabels.unshift(cause);
+  if(latestSnapshot.distancePixels)statLabels.push(Math.floor(latestSnapshot.distancePixels/10)+' m travelled');
   if (ghostComparison) statLabels.push(`daily best ${ghostComparison.scoreDelta >= 0 ? '+' : ''}${ghostComparison.scoreDelta}`);
   for (const label of statLabels) {
     const chip = document.createElement('span');
     chip.textContent = label;
     resultStats.append(chip);
   }
+  const awards=chikunAchievements(result);
+  document.querySelector('#runObjectives').textContent=awards.map(a=>a.title+': '+(a.unlocked?'✓':Math.min(a.value??0,a.target)+'/'+a.target)).join(' · ');
   renderReplayTimeline(result.evidence);
   stopReplayViewer();
   restartButton.disabled = false;
-  restartButton.textContent = 'Fly Again';
+  restartButton.textContent = 'Run Again';
   if (watchReplayButton) watchReplayButton.textContent = 'Watch Replay';
   resultOverlay.classList.toggle('is-hidden', !reduceMotion());
   setLive(`Game over. Score ${result.score}. ${result.coinsCollected} coins and ${result.forksPassed} obstacles.`);
@@ -473,6 +521,7 @@ function togglePause(source = 'user', force = null) {
   paused = force === null ? !paused : Boolean(force);
   if(paused)flapQueued=false;
   pauseOverlay.classList.toggle('is-hidden', !paused);
+  if (paused) resumeButton.focus({preventScroll:true});
   pauseButton.textContent = paused ? '▶' : 'Ⅱ';
   send('game:pause', { paused, source });
   sendState(paused ? 'paused' : 'running');
@@ -496,8 +545,6 @@ function queueFlap(event) {
   if (phase === 'ready') startRun();
   else if (phase === 'running' && !paused) {
     flapQueued = true;
-    tone(560, 0.055, 0.025, 'square');
-    spawnVfx('flap');
   }
 }
 
@@ -506,11 +553,13 @@ function drawSky(snapshot) {
 }
 
 function drawFork(fork) {
-  drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
+  if(fork.family)drawGroundObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
+  else drawChikunObstacle(ctx, fork, latestSnapshot?.tick ?? 0, reduceMotion());
 }
 
 function drawChikun(snapshot) {
-  const menuPosition = flightViewport.portrait ? {x: flightViewport.left + flightViewport.width / 2, y: 258, size: 280} : null;
+  if(ragdoll && phase==='game-over' && !replayPlayback && !reduceMotion()){drawChikunRagdoll(ctx,ragdoll);return;}
+  const menuPosition = flightViewport.portrait ? {x: flightViewport.left + flightViewport.width / 2, y: 155, size: 280} : null;
   if (flightCharacter.draw(ctx, snapshot, renderDt, { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) })) return;
   const bird = snapshot.chikun;
   const sprite = bird.velocityY > 1.6 ? fallSprite : coastSprite;
@@ -561,19 +610,20 @@ function draw(snapshot = latestSnapshot) {
     } else activeShake = null;
   }
   drawSky(snapshot);
+  if(snapshot?.chikun?.locomotion)drawGround(ctx,snapshot,{reduced:reduceMotion()});
   for (const fork of snapshot?.forks ?? []) drawFork(fork);
   if (snapshot?.chikun) {
     drawChikun(snapshot);
   }
   drawVfx(snapshot);
-  const approaching = phase === 'running' ? upcomingChikunObstacle(snapshot?.forks ?? [], flightViewport) : null;
+  const approaching = phase === 'running' ? upcomingChikunObstacle(snapshot?.forks ?? [], flightViewport, snapshot?.difficulty?.speedMultiplier??1) : null;
   if (approaching) {
     const x = flightViewport.left + flightViewport.width - 12;
     const y = Math.max(118, Math.min(620, approaching.gapCenter));
     ctx.fillStyle = '#102a3bce'; ctx.fillRect(x - 84, y - 20, 84, 36);
     ctx.textAlign = 'right'; ctx.fillStyle = '#f1dfb8'; ctx.font = '700 10px system-ui';
-    ctx.fillText(approaching.kind.toUpperCase() + ' AHEAD', x - 7, y - 5);
-    ctx.fillStyle = '#bcd9d7'; ctx.font = '10px system-ui'; ctx.fillText('‹  OPEN AIR', x - 7, y + 8);
+    ctx.fillText((approaching.variant??approaching.kind).toUpperCase() + ' AHEAD', x - 7, y - 5);
+    ctx.fillStyle = '#bcd9d7'; ctx.font = '10px system-ui'; ctx.fillText(approaching.family==='sky'?'↓ STAY LOW':approaching.family==='tree'?'↑ FLY OVER':'↑ JUMP / FLY', x - 7, y + 8);
   }
   ctx.restore();
 }
@@ -589,7 +639,9 @@ function frame(now) {
   flightEventAge += renderDt;
   if (phase === 'game-over' && !replayPlayback) {
     terminalAge += renderDt;
-    if (terminalAge >= 1.15) resultOverlay.classList.remove('is-hidden');
+    ragdoll?.step(renderDt);
+    if (terminalAge >= (ragdoll?6:1.15)) {resultOverlay.classList.remove('is-hidden');if(document.activeElement===canvas)restartButton.focus({preventScroll:true});}
+    document.querySelector('#skipDeathButton').hidden=terminalAge>=6||!ragdoll;
   }
   flightAudio.ambience(phase === 'running' && !paused);
   if (phase === 'running' && !paused && runtime) {
@@ -601,6 +653,8 @@ function frame(now) {
         latestSnapshot = runtime.step({ flap: flapQueued });
         if (flapQueued) {
           flapQueued = false;
+          tone(560, 0.055, 0.025, 'square');
+          spawnVfx('flap');
         }
         accumulator -= STEP_MS;
         steps += 1;
@@ -610,11 +664,11 @@ function frame(now) {
           previousForks = latestSnapshot.forksPassed;
           tone(660, 0.09, 0.03, 'square');
           spawnVfx('fork');
-          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} clear streak`); spawnVfx('milestone'); animateFlight('barrel_roll'); flightAudio.play('streak'); }
+          if (latestSnapshot.forksPassed % 5 === 0) { showCallout(`${latestSnapshot.forksPassed} clear streak`); spawnVfx('milestone'); animateFlight(milestoneFlourish(latestSnapshot.forksPassed)); flightAudio.play('streak'); }
         }
         if (latestSnapshot.difficulty.level > previousDifficultyLevel) {
           previousDifficultyLevel = latestSnapshot.difficulty.level;
-          showCallout(`Pressure level ${previousDifficultyLevel}`);
+          showCallout(Math.round(latestSnapshot.difficulty.speedMultiplier*100)+'% speed');
         }
       }
     } catch (error) {
@@ -628,7 +682,7 @@ function frame(now) {
     }
     if (runtime.terminal) finishRun();
   } else if (phase === 'game-over' && replayPlaying && replayPlayback) {
-    accumulator += elapsed;
+    accumulator = Math.min(accumulator + elapsed * Number(replaySpeed.value), STEP_MS * MAX_CATCH_UP_STEPS);
     let steps = 0;
     while (accumulator >= STEP_MS && !replayPlayback.terminal && steps < MAX_CATCH_UP_STEPS) {
       const replayTick = replayPlayback.tick;
@@ -668,7 +722,7 @@ function handleParentMessage(event) {
     prepareRun();
     phase = 'ready';
     startOverlay.classList.remove('is-hidden');
-    send('game:ready', { runtimeVersion: '0.6.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
+    send('game:ready', { runtimeVersion: '0.7.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
     sendState('ready');
     setLive(`Ready for ${mode === 'ranked' ? 'Ranked' : 'Free'} Mode.`);
   } else if (message.type === 'portal:pause') togglePause('portal', true);
@@ -687,6 +741,7 @@ function handleParentMessage(event) {
       try { voice.oscillator.stop(); voice.oscillator.disconnect(); voice.gain.disconnect(); } catch { /* already released */ }
     }
     activeAudioVoices.clear();
+    ragdoll?.dispose();
     flightCharacter.dispose();
     flightWorld.dispose();
     flightResizeObserver.disconnect();
@@ -761,12 +816,12 @@ watchReplayButton?.addEventListener('click', () => toggleReplayViewer());
 replayTimeline.addEventListener('pointerdown', seekReplayFromEvent);
 replayTimeline.addEventListener('keydown', (event) => {
   if (phase !== 'game-over' || !lastCompletedResult) return;
-  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
   event.preventDefault();
   if (!replayPlayback) startReplayViewer();
   if (!replayPlayback) return;
   const delta = event.key === 'ArrowRight' ? 15 : -15;
-  latestSnapshot = replayPlayback.seek(replayPlayback.tick + delta);
+  latestSnapshot = replayPlayback.seek(event.key==='Home'?0:event.key==='End'?replayPlayback.durationTicks:replayPlayback.tick + delta);
   replayPlaying = false;
   watchReplayButton.textContent = replayPlayback.terminal ? 'Replay Again' : 'Play Replay';
   updateReplayPlayhead();
@@ -784,9 +839,35 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden' && phase === 'running' && !paused) togglePause('visibility', true);
   else if (document.visibilityState === 'visible') { accumulator = 0; previousFrameAt = performance.now(); }
 });
+window.addEventListener('blur', () => {
+  flapQueued = false;
+  if (phase === 'running' && !paused) togglePause('visibility', true);
+});
 
 latestSnapshot = createChikunRuntime({ seed: 1, maxTicks: MAX_RUN_TICKS }).snapshot();
 syncAudioControl();
 syncFullscreenControl();
 draw(latestSnapshot);
 requestAnimationFrame(frame);
+
+function syncGore(){goreButton.textContent='Blood & gore: '+(goreEnabled?'On':'Off');goreButton.setAttribute('aria-pressed',String(goreEnabled));}
+goreButton.addEventListener('click',()=>{goreEnabled=!goreEnabled;try{localStorage.setItem('chikun-gore-v1',goreEnabled?'on':'off');}catch{}syncGore();});
+syncGore();
+document.querySelector('#skipDeathButton').addEventListener('click',()=>{terminalAge=6;ragdoll?.dispose();ragdoll=null;resultOverlay.classList.remove('is-hidden');document.querySelector('#skipDeathButton').hidden=true;restartButton.focus();});
+
+document.querySelector('#exportReplayButton').addEventListener('click',()=>{
+ if(!lastCompletedResult)return;
+ const blob=new Blob([exportChikunReplay(lastCompletedResult)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='chikun-replay.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setLive('Replay downloaded. It contains inputs and a course seed, without your wallet or account identity.');
+});
+document.querySelector('#importReplayButton').addEventListener('click',()=>document.querySelector('#replayFile').click());
+document.querySelector('#replayFile').addEventListener('change',async event=>{
+ const file=event.target.files?.[0];event.target.value='';if(!file)return;
+ try{
+  if(file.size>REPLAY_FILE_LIMIT)throw new Error('Replay file must be smaller than 64 KB.');
+  const imported=importChikunReplay(await file.text());stopReplayViewer();lastCompletedResult=imported;ragdoll?.dispose();ragdoll=null;
+  renderReplayTimeline(imported.evidence);resultScore.textContent=String(imported.score);resultStats.replaceChildren();document.querySelector('#runObjectives').textContent='';
+  resultEyebrow.textContent=imported.evidence.version==='chikun-flap-evidence-v3'?'Imported replay · Ground & Sky':'Imported historical flight';
+  resultCopy.textContent='Playback only. This replay does not write a score, best, achievement or profile record.';startReplayViewer();
+ }catch(error){setLive(error.message);resultCopy.textContent=error.message;}
+});

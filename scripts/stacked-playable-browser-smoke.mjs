@@ -18,6 +18,7 @@ try {
     { name:'desktop', mobile:false, width:1440, height:1000 },
     { name:'mobile', mobile:true, width:390, height:844 },
     { name:'small-mobile', mobile:true, width:320, height:740 },
+    { name:'landscape-mobile', mobile:true, width:844, height:390 },
     { name:'tablet', mobile:true, width:768, height:1024 },
     { name:'small-desktop', mobile:false, width:1024, height:768 },
   ]) {
@@ -60,6 +61,23 @@ try {
     await frame.locator('#motionToggle').check();
     await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
     await frame.locator('#motionToggle').uncheck();
+    await frame.locator('#flashToggle').uncheck();
+    if(mobile) await frame.locator('#leftHandToggle').check();
+    for (const mode of mobile ? [] : ['aurora', 'spectrum', 'orbit']) {
+      await frame.locator('#visualizerSelect').selectOption(mode);
+      await frame.waitForFunction(mode => document.querySelector('#stackedStage').dataset.visualizerMode === mode, mode);
+    }
+    if(mobile) {
+      assert.equal(await frame.locator('#visualizerSelect').isVisible(),false);
+      assert.equal(await frame.locator('#stackedStage').getAttribute('data-visualizer-mode'),'gameplay');
+      assert.equal(await frame.locator('#stackedStage').getAttribute('data-rendered-particles'),'0');
+      assert.equal(await frame.locator('#stackedStage').getAttribute('data-particle-capacity'),'128');
+    }
+    await frame.locator('#intensityRange').fill('55');
+    await frame.locator('#intensityRange').dispatchEvent('change');
+    await frame.locator('#volumeRange').fill('20');
+    await frame.locator('#volumeRange').dispatchEvent('change');
+    await page.screenshot({ path: path.join(evidenceDir, name + '-music-settings.png') });
     await frame.locator('#continueButton').focus();
     await page.keyboard.press('Space');
     await frame.waitForFunction(() => Number(document.querySelector('#stackedStage').dataset.simulationTick) > 60);
@@ -75,7 +93,7 @@ try {
       await frame.locator('[data-action="rotateCW"]').tap();
       await frame.locator('[data-action="hardDrop"]').tap();
     } else {
-      await frame.locator('canvas').focus();
+      await frame.locator('#stackedStage canvas').focus();
       await page.keyboard.press('ArrowLeft');
       await page.keyboard.press('ArrowUp');
       await page.keyboard.press('Space');
@@ -105,6 +123,11 @@ try {
     const restarted = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await restarted.waitForSelector('#stackedStage[data-assets-ready="true"]');
     assert.equal(await restarted.locator('#effectsToggle').isChecked(), true, 'preferences persist across a fresh run');
+    assert.equal(await restarted.locator('#visualizerSelect').inputValue(), mobile ? 'journey' : 'orbit');
+    assert.equal(await restarted.locator('#intensityRange').inputValue(), '55');
+    assert.equal(await restarted.locator('#volumeRange').inputValue(), '20');
+    assert.equal(await restarted.locator('#flashToggle').isChecked(),false);
+    assert.equal(await restarted.locator('#leftHandToggle').isChecked(),mobile);
     await restarted.locator('#overlayExitButton').click();
     await page.waitForSelector('#officialWalletSplash:not([hidden])');
     assert.equal(await page.locator('iframe.stacked-game-frame').count(), 0);

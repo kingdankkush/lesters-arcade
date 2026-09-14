@@ -61,21 +61,21 @@ test('recap names the killer, the build, and the milestones in tick order from t
     kind: 'enemy', causeId: 'enemy-bagholder-rusher', label: 'Bagholder Rusher', sentence: 'Killed by Bagholder Rusher.', detail: '18 damage at 0:01', tick: 100, damage: 18, clock: '0:01',
   });
   assert.deepEqual(recap.build.weapons.map((weapon) => [weapon.weaponId, weapon.label, weapon.kills, weapon.equippedTicks, weapon.equippedPermille]), [
-    ['scatter-shotgun', 'Scatter Shotgun', 3, 60, 600],
-    ['coin-blaster', 'Coin Blaster', 1, 40, 400],
+    ['scatter-shotgun', 'Shotgun', 3, 60, 600],
+    ['coin-blaster', 'Pistol', 1, 40, 400],
   ]);
   assert.deepEqual(recap.build.upgrades, [
-    { upgradeId: 'proof-of-work', label: 'Proof of Work', rank: 1 },
-    { upgradeId: 'diamond-hands', label: 'Diamond Hands', rank: 2 },
+    { upgradeId: 'proof-of-work', label: 'Damage', rank: 1 },
+    { upgradeId: 'diamond-hands', label: 'Max Health', rank: 2 },
   ]);
-  assert.equal(recap.build.topUpgradeLabel, 'Diamond Hands (Rank 2)');
+  assert.equal(recap.build.topUpgradeLabel, 'Max Health (Rank 2)');
   assert.deepEqual(recap.milestones.map((milestone) => [milestone.id, milestone.label, milestone.tick, milestone.clock]), [
     ['secret:farmstead-hidden-supplies', 'Boarded supply chest', 20, '0:00'],
     ['level-up:first', 'Level 2', 60, '0:01'],
     ['site:ravine-winch', 'Quarry winch', 75, '0:01'],
     ['boss-engaged', 'Liquidator engaged', 90, '0:01'],
     ['level-up:last', 'Level 3', 100, '0:01'],
-    ['cache:scatter-shotgun-cache', 'Scatter Shotgun cache', null, null],
+    ['cache:scatter-shotgun-cache', 'Shotgun cache', null, null],
     ['boss-defeated', 'Liquidator defeated', null, null],
   ]);
   assert.equal(recap.seed, 777);
@@ -91,7 +91,7 @@ test('recap labels boss attacks, hazards, self-kills, and survivals distinctly',
   const hazard = buildHmhRunRecapModel(defeatedRun({ kill: { sourceId: 'mining-valve', weaponId: 'world-steam' } }));
   assert.equal(hazard.defeat.label, 'Steam vent');
   const self = buildHmhRunRecapModel(defeatedRun({ kill: { sourceId: 'player', weaponId: 'satoshi-frag' } }));
-  assert.equal(self.defeat.label, 'Your own Satoshi Frag');
+  assert.equal(self.defeat.label, 'Your own Frag Grenade');
   const unknown = buildHmhRunRecapModel(defeatedRun({ kill: { sourceId: 'enemy-1', weaponId: 'glitch' } }));
   assert.equal(unknown.defeat.label, 'Unknown cause');
   const survived = buildHmhRunRecapModel(defeatedRun({ terminalReason: 'completed', bossKill: false }));
@@ -145,10 +145,10 @@ test('game-over metric sources come from the payload when one exists and from th
   // A schema 6 payload wins on every field, including ones the legacy state
   // claims differently (no boss kill here, so bossesDefeated must read 0).
   assert.deepEqual(selectGameOverRecapFields(defeatedRun({ bossKill: false }), legacy), {
-    bossesDefeated: 0, killedBy: 'Bagholder Rusher', bestUpgrade: 'Diamond Hands (Rank 2)', runSeed: 777,
+    bossesDefeated: 0, killedBy: 'Bagholder Rusher', bestUpgrade: 'Max Health (Rank 2)', runSeed: 777,
   });
   assert.deepEqual(selectGameOverRecapFields(defeatedRun({ kill: { sourceId: 'boss-liquidator', weaponId: 'boss-crash-lane' } }), legacy), {
-    bossesDefeated: 1, killedBy: 'Liquidator: Crash Lane', bestUpgrade: 'Diamond Hands (Rank 2)', runSeed: 777,
+    bossesDefeated: 1, killedBy: 'Liquidator: Crash Lane', bestUpgrade: 'Max Health (Rank 2)', runSeed: 777,
   });
   // A survived run names no killer rather than falling back to the legacy one.
   assert.equal(selectGameOverRecapFields(defeatedRun({ terminalReason: 'completed', bossKill: false }), legacy).killedBy, null);

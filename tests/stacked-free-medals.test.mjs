@@ -2,6 +2,21 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { completeFreeMedals, FREE_MEDALS } from '../apps/stacked/src/free-medals.mjs';
 import { STACKED_FREE_MEDALS_KEY } from '../apps/portal/src/stacked-contracts.mjs';
+import { describeFreeMedal } from '../apps/stacked/src/free-medals.mjs';
+
+test('practice records retain real bests, milestone progress and truthful unlock dates', () => {
+  let saved=JSON.stringify({version:1,medals:['stacked-first-seal'],runs:1,sessions:['old']});
+  const storage={getItem:()=>saved,setItem:(k,v)=>{saved=v;}};
+  const run={mode:'free',sessionId:'new',snapshot:{score:1234,lines:40,level:5,tick:1000,maxCombo:3},recordedAt:1789380000000};
+  const first=completeFreeMedals(storage,run);
+  assert.equal(first.previousBest,null);assert.equal(first.bestScore,1234);
+  assert.equal(first.progress['stacked-lines-150'],40);
+  assert.equal(first.earnedAt['stacked-first-seal'],null,'older unknown unlock dates stay unknown');
+  assert.equal(first.earnedAt['stacked-lines-40'],1789380000000);
+  const next=completeFreeMedals(storage,{...run,sessionId:'newer',snapshot:{...run.snapshot,score:1000,lines:5},recordedAt:1789380001000});
+  assert.equal(next.previousBest,1234);assert.equal(next.bestScore,1234);assert.equal(next.progress['stacked-lines-150'],40,'single-run progress is not cumulative');
+  assert.match(describeFreeMedal(FREE_MEDALS.find(m=>m.id==='stacked-lines-150')),/150.*one run/);
+});
 test('Ranked and assisted runs never touch the Free shelf', () => {
   const storage = new Proxy({}, {get(){throw Error('storage access forbidden');}});
   assert.deepEqual(completeFreeMedals(storage, {mode:'ranked'}).newMedals, []);

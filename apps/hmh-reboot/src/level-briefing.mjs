@@ -13,7 +13,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     relay: {
       objective: 'Follow the road east through the relay gate into Rugpull Ravine.',
       watch: 'The training yard south of the road is the first fight; the horde gathers there.',
-      supply: 'A medkit cache sits south-east. The farmstead power station to the south opens a supply gate while you stand near it.',
+      supply: 'Find a medkit south-east. Start the farmstead generator to the south, then enter its court for a Shotgun.',
       features: [
         { kind: 'arena', id: 'relay-training-yard', bearing: 'south' },
         { kind: 'poi', id: 'relay-cache', bearing: 'south-east', asset: 'bonus-life' },
@@ -22,7 +22,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     },
     ravine: {
       objective: 'Salvage the ravine, then follow it east to the Proof-of-Work bridge.',
-      watch: 'The ambush bowl south-east funnels the horde. The quarry winch beyond it opens the salvage gate when held.',
+      watch: 'The ambush bowl south-east funnels the horde. Start the quarry winch beyond it to open a Railgun salvage court.',
       supply: 'The Shotgun waits to the south, below the road.',
       features: [
         { kind: 'arena', id: 'ravine-ambush-bowl', bearing: 'south-east' },
@@ -33,7 +33,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     hashwood: {
       objective: 'Cross the beacon clearing and head east into the Mining Camp.',
       watch: 'You start inside the clearing arena; enemies close from the tree line on every side.',
-      supply: 'The Berserk candle rests at the shrine to the south. The woodland sanctuary, also south, heals you while you hold it.',
+      supply: 'Head south for Double Damage. Activate the woodland sanctuary for healing and a medkit that restocks after two minutes of play.',
       features: [
         { kind: 'arena', id: 'hashwood-clearing-arena', inside: true },
         { kind: 'poi', id: 'hashwood-shrine', bearing: 'south', asset: 'berserk-candle' },
@@ -52,7 +52,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     },
     yard: {
       objective: 'The Liquidator’s arena lies just east. Arm up, then hold your ground.',
-      watch: 'The arena east is the Liquidator’s. The warehouse to the south opens a supply gate while you hold it.',
+      watch: 'The arena east is the Liquidator’s. Start the warehouse control to the south for a Flamethrower. Defeat the boss to release an Arc Rifle vault.',
       supply: 'The Grenade Launcher sits at the extraction console to the south; a medkit cache lies south-east.',
       features: [
         { kind: 'arena', id: 'liquidator-arena', bearing: 'east' },
@@ -66,7 +66,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     'Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest.',
     'Throw grenades into the thickest pack, not at the nearest enemy.',
     'Dodges and close combat trigger on their own. Keep moving so they have room to work.',
-    'Stand near machinery to run it. Gates open and supplies unlock while you hold position.',
+    'Approach machinery once to start it. Keep moving while it opens gates and unlocks supplies.',
     'Level-ups offer a choice of upgrades. Pick the one that changes how you fight.',
     'The pause menu holds the field map: routes, machinery and every cache you have found.',
   ],

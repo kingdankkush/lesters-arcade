@@ -21,6 +21,14 @@ export const FREE_MEDALS = Object.freeze([
   ['ranked-25', 'Practice Stacker', 'runs', 25],
 ].map(([id, title, field, threshold]) => Object.freeze({ id: 'stacked-' + id, title, field, threshold })));
 
+export function describeFreeMedal(medal) {
+  if (medal.field === 'runs') return `Complete ${medal.threshold} unassisted Free runs.`;
+  if (medal.field === 'tick') return `Survive ${medal.threshold / 3600} minutes in one run.`;
+  if (medal.field === 'zone') return `Reach zone ${medal.threshold} in one run.`;
+  const labels = { lines:'rows', quadClears:'Halvings', spinClears:'rows with a spin', maxCombo:'consecutive clears', perfectClears:'all-clear', maxBackToBack:'back-to-back difficult clears' };
+  return `Make ${medal.threshold} ${labels[medal.field]} in one run.`;
+}
+
 export function completeFreeMedals(storage, run) {
   const empty = { newMedals: [], medals: [], total: 0, runs: 0, saved: false };
   if (run?.mode !== 'free' || run.assisted || !run.snapshot || typeof run.sessionId !== 'string' || !run.sessionId || run.sessionId.length > 128) return empty;
@@ -34,14 +42,28 @@ export function completeFreeMedals(storage, run) {
     const repeated = sessions.includes(run.sessionId);
     const runs = Math.min(1000000, previous.runs + (repeated ? 0 : 1));
     const values = { ...run.snapshot, spinClears: run.spinClears, zone: zoneForTick(run.snapshot.tick) + 1, runs };
+    const recordedAt = Number.isSafeInteger(run.recordedAt) && run.recordedAt > 0 ? run.recordedAt : Date.now();
+    const earnedAt = {}, progress = {};
+    for (const medal of FREE_MEDALS) {
+      const date = previous.earnedAt?.[medal.id];
+      if (earned.has(medal.id)) earnedAt[medal.id] = Number.isSafeInteger(date) && date > 0 ? date : null;
+      const old = previous.progress?.[medal.id];
+      const current = values[medal.field];
+      const best = Math.max(Number.isSafeInteger(old) && old >= 0 ? old : 0, !repeated && Number.isSafeInteger(current) && current >= 0 ? current : 0);
+      progress[medal.id] = Math.min(medal.threshold, best);
+    }
+    const previousBest = Number.isSafeInteger(previous.bestScore) && previous.bestScore >= 0 ? previous.bestScore : null;
+    const currentScore = Number.isSafeInteger(run.snapshot.score) && run.snapshot.score >= 0 ? run.snapshot.score : null;
+    const bestScore = currentScore === null ? previousBest : Math.max(previousBest ?? 0, currentScore);
     const newMedals = repeated ? [] : FREE_MEDALS.filter(medal => !earned.has(medal.id) && Number.isFinite(values[medal.field]) && values[medal.field] >= medal.threshold);
-    for (const medal of newMedals) earned.add(medal.id);
+    for (const medal of newMedals) { earned.add(medal.id); earnedAt[medal.id] = recordedAt; }
     const medals = FREE_MEDALS.filter(medal => earned.has(medal.id));
     if (!repeated) {
-      const encoded = JSON.stringify({ version: 1, medals: medals.map(medal => medal.id), runs, sessions: [...sessions, run.sessionId].slice(-128) });
+      const encoded = JSON.stringify({ ...previous, version: 1, medals: medals.map(medal => medal.id), runs, sessions: [...sessions, run.sessionId].slice(-128), earnedAt, progress, bestScore });
+      if (encoded.length > 24000) return empty;
       storage.setItem(STACKED_FREE_MEDALS_KEY, encoded);
       if (storage.getItem(STACKED_FREE_MEDALS_KEY) !== encoded) return empty;
     }
-    return { newMedals, medals, total: medals.length, runs, saved: true };
+    return { newMedals, medals, total: medals.length, runs, saved: true, earnedAt, progress, previousBest, bestScore };
   } catch { return empty; }
 }

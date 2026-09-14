@@ -17,12 +17,12 @@ test('trees and drones are independent obstacles with open air around their silh
  assert.ok(obstacleClearance(drone,drone.x+drone.width/2,drone.y,30)<0,'drone body is solid');
  assert.ok(tree.shapes.every(s=>s.type!=='rect'));assert.ok(drone.shapes.every(s=>s.type!=='rect'));
 });
-test('new course emits versioned evidence and moving drones replay deterministically',()=>{
- const run=simulateChikunRun({seed:99,taps:[0,50,100],maxTicks:120});
+test('historical open-air course retains versioned evidence and moving drones replay deterministically',()=>{
+ const run=simulateChikunRun({seed:99,taps:[0,50,100],maxTicks:120,evidenceVersion:'chikun-flap-evidence-v2'});
  assert.equal(run.evidence.version,'chikun-flap-evidence-v2');assert.deepEqual(replayChikunRun(run.evidence),run);
  const a=buildChikunObstacle({seed:3,index:2,tick:20,x:500,safeGapHeight:320}),b=buildChikunObstacle({seed:3,index:2,tick:100,x:500,safeGapHeight:320});
  assert.notEqual(a.y,b.y);assert.deepEqual(a,buildChikunObstacle({seed:3,index:2,tick:20,x:500,safeGapHeight:320}));
- const snapshot=createChikunRuntime({seed:3,maxTicks:120}).snapshot();assert.ok(snapshot.forks.some(f=>f.kind==='tree'));assert.ok(snapshot.forks.some(f=>f.kind==='gate'));
+ const snapshot=createChikunRuntime({seed:3,maxTicks:120,evidenceVersion:'chikun-flap-evidence-v2'}).snapshot();assert.ok(snapshot.forks.some(f=>f.kind==='tree'));assert.ok(snapshot.forks.some(f=>f.kind==='gate'));
  assert.ok(Object.isFrozen(snapshot.forks[1].shapes));assert.ok(Object.isFrozen(snapshot.forks[1].shapes[0]));
 });
 test('saved v1 flights retain their exact old course, score and seek behavior',()=>{
@@ -33,8 +33,8 @@ test('saved v1 flights retain their exact old course, score and seek behavior',(
 });
 test('an old course cannot be submitted as a new Ranked run',()=>{
  const old=JSON.parse(readFileSync(new URL('./fixtures/chikun-v1-replay.json',import.meta.url)));
- const replayClaim=buildChikunReplayClaim({buildHash:'cabinet-0.6.0',seasonId:'test',result:old});
- assert.throws(()=>verifyChikunReplayClaim({expectedSeed:old.seed,expectedBuildHash:'cabinet-0.6.0',expectedSeasonId:'test',score:old.score,runStats:old,replayClaim}),/course|evidence version/i);
+ const replayClaim=buildChikunReplayClaim({buildHash:'cabinet-0.7.0',seasonId:'test',result:old});
+ assert.throws(()=>verifyChikunReplayClaim({expectedSeed:old.seed,expectedBuildHash:'cabinet-0.7.0',expectedSeasonId:'test',score:old.score,runStats:old,replayClaim}),/course|evidence version/i);
 });
 test('the character has no oval ghost marker and no box around the next opening',()=>{
  const main=readFileSync(new URL('../apps/chikun/src/main.mjs',import.meta.url),'utf8');

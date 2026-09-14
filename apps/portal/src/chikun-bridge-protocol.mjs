@@ -84,7 +84,7 @@ function validateState(payload) {
 function validateEvidence(value) {
   const error = exactKeys(value, ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapSteps'], 'evidence');
   if (error) return error;
-  if (!['chikun-flap-evidence-v1','chikun-flap-evidence-v2'].includes(value.version)) return 'evidence version is invalid';
+  if (!['chikun-flap-evidence-v1','chikun-flap-evidence-v2','chikun-flap-evidence-v3'].includes(value.version)) return 'evidence version is invalid';
   if (!integer(value.seed, 0, 0xffff_ffff) || value.fixedStepHz !== 60 || !integer(value.maxTicks, 1, 216_000)) return 'evidence metadata is invalid';
   if (!Array.isArray(value.flapSteps) || value.flapSteps.length > 4096) return 'evidence flapSteps are invalid';
   let previous = -1;
@@ -101,7 +101,7 @@ function validateFinalState(value) {
   if (!integer(value.step, 0, 216_000) || !finite(value.y, -10_000, 10_000) || !finite(value.velocity, -1_000, 1_000)) return 'finalState motion values are invalid';
   for (const field of ['score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks']) if (!integer(value[field], 0, 1_000_000_000)) return `finalState ${field} is invalid`;
   if (!finite(value.survivalTime, 0, 3_600) || typeof value.crashed !== 'boolean') return 'finalState terminal values are invalid';
-  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
+  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone', 'rock', 'log', 'thorn', 'hurdle', 'crate', 'shiba', 'pit', 'waterfall', 'hawk', 'eagle', 'pelican', 'plane', 'storm', 'pipe'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
   return '';
 }
 

@@ -1,8 +1,9 @@
 import { WORLD_DESIGN_SECRETS } from './world-design-secrets.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_EXPLORATION_PATHS } from './world-design-encounters.mjs';
+import { OBJECTIVE_REWARDS, objectiveRewardStatus, objectiveRewardState, SUPPLY_NAMES } from './objective-rewards.mjs';
 
 // Presentation of existing discovery state, read only and constructed on pause.
-export function buildWorldDesignFieldMap({ world, player, reveal, completed = new Map(), secrets = [] }) {
+export function buildWorldDesignFieldMap({ world, player, reveal, completed = new Map(), activating = new Map(), collectibles = null, tick = 0, secrets = [] }) {
   const b = world.bounds, sx = 600 / (b.maxX - b.minX), sy = 240 / (b.maxY - b.minY);
   const project = p => ({ x: (p.x - b.minX) * sx, y: (p.y - b.minY) * sy });
   const seen = new Set(reveal.revealedCellIds), size = reveal.cellSize;
@@ -16,6 +17,12 @@ export function buildWorldDesignFieldMap({ world, player, reveal, completed = ne
       ...WORLD_DESIGN_EXPLORATION_PATHS.map(p=>({id:p.id,points:p.points.map(project)}))],
     water: world.surfaces.filter(s=>s.kind==='water').map(s=>({id:s.id,points:(s.area.type==='polygon'?s.area.vertices:[{x:s.area.minX,y:s.area.minY},{x:s.area.maxX,y:s.area.minY},{x:s.area.maxX,y:s.area.maxY},{x:s.area.minX,y:s.area.maxY}]).map(project)})),
     sites: WORLD_DESIGN_SITES.filter(s=>discovered(s)||completed.has(s.id)).map(s=>({id:s.id,name:s.name,...project(s),complete:completed.has(s.id)})),
+    objectives: OBJECTIVE_REWARDS.filter(r=>discovered(r)||completed.has(r.objectiveId)||collectibles?.unlockedObjectives.has(r.objectiveId)).map(r=>({
+      id:r.id,name:r.name,reward:r.rewardName,task:r.task,...project(r),
+      state:objectiveRewardState(collectibles,r.id,{tick,discovered:true,activating}).state,
+      status:activating.has(r.objectiveId)?'activating':objectiveRewardStatus(collectibles,r.id,tick),
+    })),
+    supplies: (collectibles?.entries??[]).filter(({placement:p})=>!p.requiredObjective&&p.respawnTicks&&discovered(p)).map(({placement:p})=>({id:p.id,name:SUPPLY_NAMES[p.assetId]??p.assetId,status:collectibles.readyTicks.has(p.id)&&tick<collectibles.readyTicks.get(p.id)?`restocks in ${Math.ceil((collectibles.readyTicks.get(p.id)-tick)/60)}s`:'ready'})),
   };
 }
 
@@ -31,9 +38,12 @@ export function renderWorldDesignFieldMap(mount, model) {
   make('rect',{width:600,height:240,fill:'#344b3e'},explored);
   for(const water of model.water)make('polygon',{points:water.points.map(p=>`${p.x},${p.y}`).join(' '),fill:'#327887'},explored);
   for(const path of model.paths)make('polyline',{points:path.points.map(p=>`${p.x},${p.y}`).join(' '),fill:'none',stroke:'#cbb581','stroke-width':1.5,'stroke-linejoin':'round'},explored);
-  for(const s of model.sites){const g=make('g',{},svg);make('circle',{cx:s.x,cy:s.y,r:3,fill:s.complete?'#a8eb9c':'#ffd27d'},g);const t=make('title',{},g);t.textContent=`${s.name}${s.complete?' · complete':''}`;}
+  for(const s of model.sites){const g=make('g',{},svg);if(s.complete)make('circle',{cx:s.x,cy:s.y,r:3.5,fill:'#a8eb9c'},g);else make('rect',{x:s.x-3,y:s.y-3,width:6,height:6,fill:'#ffd27d'},g);const t=make('title',{},g);t.textContent=`${s.name}${s.complete?' · complete':' · task available'}`;}
   make('circle',{cx:model.player.x,cy:model.player.y,r:5,fill:'#fff',stroke:'#08181b','stroke-width':2},svg);
-  const list=doc.createElement('p');list.className='hmh-field-map-key';list.textContent='White: you · Gold: discovered machinery · Green: complete. '+(model.sites.map(s=>`${s.name}${s.complete?' ✓':''}`).join(' · ')||'Follow the paths to discover places.');
+  const list=doc.createElement('p');list.className='hmh-field-map-key';list.textContent='White ring: you · Square: task available · Circle: complete. '+(model.sites.map(s=>`${s.name}${s.complete?' ✓':''}`).join(' · ')||'Follow the paths to discover places.');
+  const objectives=doc.createElement('ul');objectives.className='hmh-field-map-key';
+  for(const r of model.objectives??[]){const row=doc.createElement('li');row.textContent=`${r.name} · ${r.reward} · ${r.status}. ${r.status==='locked'?r.task:''}`;objectives.append(row);}
+  for(const s of model.supplies??[]){const row=doc.createElement('li');row.textContent=`${s.name} · ${s.status}`;objectives.append(row);}
   const lore=doc.createElement('p');lore.className='hmh-field-map-key';lore.textContent=(model.lore??[]).join(' ');
-  mount.replaceChildren(svg,list,lore);
+  mount.replaceChildren(svg,list,objectives,lore);
 }

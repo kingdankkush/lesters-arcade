@@ -1,7 +1,7 @@
-import { createChikunRuntime, replayChikunRun } from './chikun-cabinet.mjs';
+import { createChikunRuntime, replayChikunRun, CHIKUN_EVIDENCE_VERSION } from './chikun-cabinet.mjs';
 
-export const CHIKUN_DAILY_CHALLENGE_VERSION = 'chikun-daily-v2';
-export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v2';
+export const CHIKUN_DAILY_CHALLENGE_VERSION = 'chikun-daily-v3';
+export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v3';
 const MAX_GHOST_SAMPLES = 720;
 const MS_PER_DAY = 86_400_000;
 
@@ -143,6 +143,7 @@ export function compareChikunGhost({ run, ghost } = {}) {
 }
 
 export function createChikunGhostRecord(result) {
+  if(result?.evidence?.version !== CHIKUN_EVIDENCE_VERSION)throw new Error("Historical replays cannot update current daily records");
   const track = buildChikunGhostTrack(result.evidence);
   return Object.freeze({
     version: CHIKUN_GHOST_STORAGE_VERSION,

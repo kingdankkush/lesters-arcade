@@ -1,0 +1,118 @@
+{
+  "schema": "chikun-ground-props-v1",
+  "runtimeBytes": 142752,
+  "assets": [
+    {
+      "name": "cherry",
+      "file": "cherry.webp",
+      "width": 249,
+      "height": 448,
+      "bytes": 24246,
+      "sha256": "28e3d7d3b98dba69fc10252f1eb977af6ccfa35297a8d08c6c16a0c1215030ea"
+    },
+    {
+      "name": "crate",
+      "file": "crate.webp",
+      "width": 124,
+      "height": 116,
+      "bytes": 2560,
+      "sha256": "93368ef65101ebb3f8d9b75c3869cd77e7be0bef1df500f5f47992bd5443cc18"
+    },
+    {
+      "name": "eagle",
+      "file": "eagle.webp",
+      "width": 193,
+      "height": 89,
+      "bytes": 2994,
+      "sha256": "0e1f293a5879233f0dcdec277715d55fd1317ff2bf7e0f0c1f35c850803c80d7"
+    },
+    {
+      "name": "hawk",
+      "file": "hawk.webp",
+      "width": 193,
+      "height": 89,
+      "bytes": 3338,
+      "sha256": "12e29a90f8970af91baaee8a9aa0fe9353bea24d694e0c14cb8cc1a8db20c54f"
+    },
+    {
+      "name": "hurdle",
+      "file": "hurdle.webp",
+      "width": 217,
+      "height": 118,
+      "bytes": 3290,
+      "sha256": "d80ce9d71f77b748f85fc87f29d33b8963451cb00bbbca2dd6cfce61b7c16e2f"
+    },
+    {
+      "name": "log",
+      "file": "log.webp",
+      "width": 231,
+      "height": 79,
+      "bytes": 2112,
+      "sha256": "5c2f5eb90dc1e622fc0d0294e7621224ffee02385312a18f0de3fa2ed0260c0d"
+    },
+    {
+      "name": "maple",
+      "file": "maple.webp",
+      "width": 249,
+      "height": 448,
+      "bytes": 26532,
+      "sha256": "43d0e8003d2e50fc272927009b4d6aeea3d4c720899e500bb19ecfed720c4d82"
+    },
+    {
+      "name": "oak",
+      "file": "oak.webp",
+      "width": 248,
+      "height": 448,
+      "bytes": 24540,
+      "sha256": "d1696ceb7ab6a28c5c5c59920ab56f1454f3cf0f0790719994ee2b7077d42ea4"
+    },
+    {
+      "name": "pelican",
+      "file": "pelican.webp",
+      "width": 217,
+      "height": 89,
+      "bytes": 3186,
+      "sha256": "e6927c0e0cde2644382c5c19aa15ffc007459f98a26c0dfb4a28eb7d35046f4d"
+    },
+    {
+      "name": "plane",
+      "file": "plane.webp",
+      "width": 256,
+      "height": 99,
+      "bytes": 6254,
+      "sha256": "22a4f3de35bb1d15327fb6217efeda9fe841502fd5c4c56681882bc356ed278a"
+    },
+    {
+      "name": "rock",
+      "file": "rock.webp",
+      "width": 188,
+      "height": 99,
+      "bytes": 2188,
+      "sha256": "b6277ad71469c4a2a47bba8f33f3bd48fe6a83df4a102360ac764ebc287a5038"
+    },
+    {
+      "name": "shiba",
+      "file": "shiba.webp",
+      "width": 220,
+      "height": 145,
+      "bytes": 5210,
+      "sha256": "b32baa53f85298c345957bd81535fc3996208df2dd7235a66984ae7c949a3966"
+    },
+    {
+      "name": "thorn",
+      "file": "thorn.webp",
+      "width": 210,
+      "height": 95,
+      "bytes": 8266,
+      "sha256": "a82bdad60050b02da3b94a02c00c408db2205e0eae037bf59627c9cd86a86295"
+    },
+    {
+      "name": "willow",
+      "file": "willow.webp",
+      "width": 248,
+      "height": 448,
+      "bytes": 28036,
+      "sha256": "bae9fa1ab9b106322783b924870c9690b1283d78c363a2ec017aaea81afc9247"
+    }
+  ]
+}

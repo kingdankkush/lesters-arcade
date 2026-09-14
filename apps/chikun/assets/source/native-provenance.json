@@ -1,10 +1,15 @@
 {
-  "schema": "chikun-native-character-v2",
+  "schema": "chikun-native-character-v3",
   "flightPose": "prone-superman-right",
   "source_sha256": "a0896f51ea8de4ff2243476a2d77daae0761a4acc074e968ea695a22b911b8fc",
   "source_vertices": 243502,
   "source_triangles": 487027,
-  "triangles": 59999,
+  "triangles": 62830,
+  "surfaceRepair": {
+    "openEdgesBefore": 955,
+    "openEdgesAfter": 0,
+    "method": "independently capped and triangulated sleeve, torso and cuff seams; original paint and skin weights retained"
+  },
   "bones": [
     "root",
     "spine",
@@ -152,8 +157,29 @@
       "fps": 30,
       "loop": false,
       "sheet": "fall.webp"
+    },
+    {
+      "name": "reverse_roll",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "reverse_roll.webp"
+    },
+    {
+      "name": "corkscrew",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "corkscrew.webp"
+    },
+    {
+      "name": "victory_twirl",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "victory_twirl.webp"
     }
   ],
   "character": "chikun-original",
-  "notes": "Owner mesh and colors, rightward prone Superman flight with raised arms and forward neck aim. 18 motion states, 30fps projection. No separate UV texture was present in source."
+  "notes": "Owner mesh and colors, closed surface, rightward prone Superman flight. 21 motion states including four full-turn flourishes, 30fps projection. No separate UV texture was present in source."
 }

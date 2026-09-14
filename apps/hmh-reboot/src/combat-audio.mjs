@@ -7,6 +7,9 @@ import {
 import { HMH_WEAPON_SFX } from './weapon-audio.mjs';
 
 const SAMPLE_PATHS = Object.freeze({
+  'silver-collect':'../assets/audio/sfx/hmh-silver-collect.wav',
+  'objective-complete':'../assets/audio/sfx/hmh-objective-complete.wav',
+  'supply-ready':'../assets/audio/sfx/hmh-supply-ready.wav',
   // C1: per-weapon fire, reload and empty-click, synthesised in-repo. Spread
   // first so a sourced cue of the same name would still win -- these are
   // additions, not overrides.

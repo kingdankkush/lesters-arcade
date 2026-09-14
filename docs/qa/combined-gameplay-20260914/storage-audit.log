@@ -1,0 +1,106 @@
+Lester's Arcade repo health
+===========================
+Tracked files: 3480
+Tracked bytes: 942 MB
+Working tree files (excluding .git/node_modules/.vercel/dist): 19746
+Working tree bytes (same exclusions): 2.4 GB
+.git bytes: 2.9 GB
+
+Git status:
+## codex/hmh-objective-rewards-20260914
+ M .gitattributes
+ M .vercelignore
+ M apps/hmh-reboot/src/authored-prop-atlas.mjs
+ M apps/hmh-reboot/src/cockpit-ui.mjs
+ M apps/hmh-reboot/src/collectible-system.mjs
+ M apps/hmh-reboot/src/level-briefing.mjs
+ M apps/hmh-reboot/src/main.mjs
+ M apps/hmh-reboot/src/pickup-indicators.mjs
+ M apps/hmh-reboot/src/production-hero-atlas.mjs
+ M apps/hmh-reboot/src/run-progression.mjs
+ M apps/hmh-reboot/src/upgrade-card-presentation.mjs
+ M apps/hmh-reboot/src/weapon-system.mjs
+ M apps/hmh-reboot/src/world-design-field-map.mjs
+ M apps/hmh-reboot/src/world-design-life.mjs
+ M apps/portal/hmh-reboot/index.html
+ M apps/portal/index.html
+ M apps/portal/src/arcade-core.mjs
+ M apps/portal/src/hmh-character-config.mjs
+ M apps/portal/src/hmh-run-history.mjs
+ M apps/portal/src/hmh-run-recap.mjs
+ M apps/portal/src/hmh-upgrade-menu-ui.mjs
+ M apps/portal/sw.js
+ M docs/testing/hmh-reboot-test-retirement-gate.json
+ M scripts/hmh-mobile-performance-profile.mjs
+ M scripts/hmh-reboot-collectible-browser-smoke.mjs
+ M scripts/smoke-portal-flow.mjs
+ M scripts/smoke-portal-interactions.mjs
+ M scripts/syntax-check.mjs
+ M tests/arcade-core.test.mjs
+ M tests/hmh-character-config.test.mjs
+ M tests/hmh-load-speed.test.mjs
+ M tests/hmh-playable-release.test.mjs
+ M tests/hmh-reboot-bear-market-burner-runtime.test.mjs
+ M tests/hmh-reboot-deterministic-hash.test.mjs
+ M tests/hmh-reboot-hash-rail.test.mjs
+ M tests/hmh-reboot-lightning-ledger-runtime.test.mjs
+ M tests/hmh-reboot-power-up-lifecycle.test.mjs
+ M tests/hmh-reboot-production-unlockable-pilot.test.mjs
+ M tests/hmh-reboot-shell.test.mjs
+ M tests/hmh-run-recap.test.mjs
+ M tests/hmh-tripo-gameplay-driver.test.mjs
+ M tests/hmh-upgrade-menu-ui.test.mjs
+ M tests/hmh-world-render-lifecycle.test.mjs
+ M tests/portal-service-worker-cache.test.mjs
+?? apps/hmh-reboot/src/authored-prop-display.mjs
+?? apps/hmh-reboot/src/authored-prop-layout.mjs
+?? apps/hmh-reboot/src/collectible-capacity.mjs
+?? apps/hmh-reboot/src/native-barriers.mjs
+?? apps/hmh-reboot/src/objective-rewards.mjs
+?? apps/hmh-reboot/src/production-hero-assets.mjs
+?? apps/hmh-reboot/src/selected-hero-renderer-loader.mjs
+?? apps/hmh-reboot/src/silver-drop-presentation.mjs
+?? apps/hmh-reboot/src/silver-drops.mjs
+?? apps/portal/assets/generated/hmh-barriers/
+?? apps/portal/assets/generated/hmh-silver-coin/
+?? assets-source/
+?? outputs/
+?? scripts/hmh-blender/build-hmh-barriers.py
+?? scripts/hmh-blender/build-hmh-silver-coin.py
+?? scripts/hmh-blender/pack-hmh-barriers.py
+?? scripts/hmh-objective-rewards-browser.mjs
+?? tests/hmh-native-barriers.test.mjs
+?? tests/hmh-objective-rewards.test.mjs
+?? tests/hmh-objective-state.test.mjs
+?? tests/hmh-ranked-recruitment.test.mjs
+?? tests/hmh-selected-hero-loader.test.mjs
+?? tests/hmh-silver-drops.test.mjs
+?? tests/hmh-silver-presentation-lifecycle.test.mjs
+?? work/
+
+Largest files:
+   86 MB  apps/hmh-reboot/assets/source/models/tripo-gameplay/Lit Commando - Layered Gameplay Pilot v2.blend
+   80 MB  apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend
+   72 MB  .tmp/native-roster-v5/liquidator-agent/liquidator-agent.blend
+   72 MB  .tmp/native-roster-final/liquidator-agent/liquidator-agent.blend
+   72 MB  apps/hmh-reboot/assets/source/models/native-enemies/liquidator-agent/liquidator-agent.blend
+   58 MB  apps/hmh-reboot/assets/source/models/tripo-gameplay/Lit Valkyrie - Weighted Gameplay compact-v2.blend
+   58 MB  .tmp/native-roster-v4/liquidator-agent/liquidator-agent.blend
+   57 MB  apps/hmh-reboot/assets/source/models/tripo-gameplay/Lester Original - Weighted Gameplay compact-v2.blend
+   57 MB  apps/hmh-reboot/assets/source/models/tripo-gameplay/Lilly - Weighted Gameplay compact-v2.blend
+   54 MB  .tmp/native-roster-v5/forkrunner/forkrunner.blend
+   54 MB  .tmp/native-roster-v4/forkrunner/forkrunner.blend
+   54 MB  .tmp/native-roster-final/forkrunner/forkrunner.blend
+   54 MB  apps/hmh-reboot/assets/source/models/native-enemies/forkrunner/forkrunner.blend
+   20 MB  .tmp/unfinished-equipment-work/apps/hmh-reboot/assets/source/models/native-weapons/coin-blaster/coin-blaster.blend
+   17 MB  .tmp/native-roster-final/the-liquidator/the-liquidator.blend
+   17 MB  apps/hmh-reboot/assets/source/models/native-enemies/the-liquidator/the-liquidator.blend
+   17 MB  .tmp/native-roster-v5/the-liquidator/the-liquidator.blend
+   17 MB  .tmp/native-roster-v4/the-liquidator/the-liquidator.blend
+   17 MB  .tmp/native-roster-v4/validator-cultist/validator-cultist.blend
+   17 MB  .tmp/native-roster-final/whale-enforcer/whale-enforcer.blend
+
+Asset keep-list: docs/cleanup/asset-reference-map.json not found; run npm run repo:audit.
+
+SHIP repo budget failed: tracked bytes 942 MB > 350 MB.
+Atlas-aware runtime packaging and CDN migration are required; do not delete referenced loose frames to force this gate green.

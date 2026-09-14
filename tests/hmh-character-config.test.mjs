@@ -28,18 +28,18 @@ test('WO-95 character slot config uses structured ranked-match gates for Lester 
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId, 'lit-commando');
   assert.deepEqual([...HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds], ['lit-commando', 'lit-valkyrie']);
   const byId = Object.fromEntries(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.unlockableCharacters.map((unlock) => [unlock.id, unlock]));
-  assert.deepEqual(byId['lester-original'].gate, { type: 'ranked-matches-played', count: 10 });
-  assert.deepEqual(byId.lilly.gate, { type: 'ranked-matches-played', count: 20 });
+  assert.deepEqual(byId['lester-original'].gate, { type: 'ranked-matches-played', count: 5 });
+  assert.deepEqual(byId.lilly.gate, { type: 'ranked-matches-played', count: 10 });
   assert.equal(byId['lester-original'].legacyMigrationAchievementId, 'getaway-clear');
   assert.match(byId['lester-original'].description, /Free mode does not count/);
   assert.match(byId.lilly.description, /Free mode does not count/);
 });
 
-test('WO-95 buildCharacterUnlockMap uses settled ranked matches with 9→10 and 19→20 boundaries', () => {
-  const locked = buildCharacterUnlockMap({ achievements: [], totalPaidRuns: 9 });
-  const lesterUnlocked = buildCharacterUnlockMap({ achievements: [], totalPaidRuns: 10 });
-  const lillyLocked = buildCharacterUnlockMap({ achievements: [], totalPaidRuns: 19 });
-  const lillyUnlocked = buildCharacterUnlockMap({ achievements: [], totalPaidRuns: 20 });
+test('WO-95 buildCharacterUnlockMap uses settled ranked matches with 4→5 and 9→10 boundaries', () => {
+  const locked = buildCharacterUnlockMap({ achievements: [], progress: { 'lester-blaster': { paidRuns: 4 } } });
+  const lesterUnlocked = buildCharacterUnlockMap({ achievements: [], progress: { 'lester-blaster': { paidRuns: 5 } } });
+  const lillyLocked = buildCharacterUnlockMap({ achievements: [], progress: { 'lester-blaster': { paidRuns: 9 } } });
+  const lillyUnlocked = buildCharacterUnlockMap({ achievements: [], progress: { 'lester-blaster': { paidRuns: 10 } } });
 
   assert.equal(locked['lit-commando'], true);
   assert.equal(locked['lit-valkyrie'], true);
@@ -52,8 +52,8 @@ test('WO-95 buildCharacterUnlockMap uses settled ranked matches with 9→10 and 
 });
 
 test('WO-95 old Level-1-clear Lester unlock migrates once without unlocking Lilly', () => {
-  const migratedByAchievement = buildCharacterUnlockMap({ achievements: ['getaway-clear'], totalPaidRuns: 0 });
-  const migratedByStoredFlag = buildCharacterUnlockMap({ achievements: [], totalPaidRuns: 0, unlocks: { characters: { 'lester-original': true } } });
+  const migratedByAchievement = buildCharacterUnlockMap({ achievements: ['getaway-clear'], progress: { 'lester-blaster': { paidRuns: 0 } } });
+  const migratedByStoredFlag = buildCharacterUnlockMap({ achievements: [], progress: { 'lester-blaster': { paidRuns: 0 } }, unlocks: { characters: { 'lester-original': true } } });
   assert.equal(migratedByAchievement['lester-original'], true);
   assert.equal(migratedByStoredFlag['lester-original'], true);
   assert.equal(migratedByAchievement.lilly, false);
@@ -77,7 +77,7 @@ test('setPreferredCharacter persists unlocked characters and rejects locked unlo
   assert.deepEqual(setPreferredCharacter(profile, 'lit-commando'), { ok: true, selectedCharacterId: 'lit-commando' });
   assert.deepEqual(setPreferredCharacter(profile, 'lilly'), { ok: false, reason: 'locked', selectedCharacterId: 'lit-commando' });
 
-  profile.totalPaidRuns = 20;
+  profile.progress = { 'lester-blaster': { paidRuns: 10 } };
   assert.deepEqual(setPreferredCharacter(profile, 'lilly'), { ok: true, selectedCharacterId: 'lilly' });
 });
 
@@ -103,7 +103,7 @@ test('WO-53 select entries override stale card data with truthful central stats 
     { id: 'lit-valkyrie' },
     { id: 'lester-original' },
     { id: 'lilly' },
-  ], { achievements: ['getaway-clear'], preferences: { selectedCharacterId: 'lester-original' }, totalPaidRuns: 7 });
+  ], { achievements: ['getaway-clear'], preferences: { selectedCharacterId: 'lester-original' }, progress: { 'lester-blaster': { paidRuns: 7 } } });
   const byId = Object.fromEntries(entries.map((entry) => [entry.id, entry]));
 
   assert.equal(byId['lit-commando'].name, playableCharacterStatIdentityFor('lit-commando').name);
@@ -113,13 +113,13 @@ test('WO-53 select entries override stale card data with truthful central stats 
   assert.equal(byId['lester-original'].selected, true);
   assert.equal(byId.lilly.locked, true);
   assert.equal(byId.lilly.unlockProgress.current, 7);
-  assert.equal(byId.lilly.unlockProgress.required, 20);
-  assert.equal(byId.lilly.unlockProgress.meterText, 'RANKED MATCHES: 7 / 20');
-  assert.equal(byId.lilly.unlockDescription.includes('20 Ranked'), true);
+  assert.equal(byId.lilly.unlockProgress.required, 10);
+  assert.equal(byId.lilly.unlockProgress.meterText, 'RANKED MATCHES: 7 / 10');
+  assert.equal(byId.lilly.unlockDescription.includes('10 completed Ranked'), true);
 });
 
 test('WO-95 unlock persistence and roguelike sim stats resolve from the same character identity source', () => {
-  const profile = { achievements: [], totalPaidRuns: 20, preferences: { selectedCharacterId: 'lilly' } };
+  const profile = { achievements: [], progress: { 'lester-blaster': { paidRuns: 10 } }, preferences: { selectedCharacterId: 'lilly' } };
   syncConfiguredCharacterUnlocks(profile);
   assert.equal(profile.unlocks.characters.lilly, true);
   assert.equal(resolveSelectedCharacterId(profile), 'lilly');
@@ -141,7 +141,7 @@ test('buildCharacterSelectEntries keeps starters playable and shows unlock CTAs 
     { id: 'lit-valkyrie', name: 'Lit Valkyrie' },
     { id: 'lester-original', name: 'Lester' },
     { id: 'lilly', name: 'Lilly' },
-  ], { achievements: [], totalPaidRuns: 4 });
+  ], { achievements: [], progress: { 'lester-blaster': { paidRuns: 4 } } });
   const byId = Object.fromEntries(entries.map((entry) => [entry.id, entry]));
 
   assert.equal(byId['lit-commando'].locked, false);
@@ -149,11 +149,11 @@ test('buildCharacterSelectEntries keeps starters playable and shows unlock CTAs 
   assert.equal(byId['lit-valkyrie'].locked, false);
   assert.equal(byId['lit-valkyrie'].cta.includes('SELECT'), true);
   assert.equal(byId['lester-original'].locked, true);
-  assert.equal(byId['lester-original'].cta, 'LESTER — The original. Survive 10 Ranked runs to recruit him.');
-  assert.equal(byId['lester-original'].unlockProgress.meterText, 'RANKED MATCHES: 4 / 10');
+  assert.equal(byId['lester-original'].cta, 'Complete 5 Ranked games to unlock Lester.');
+  assert.equal(byId['lester-original'].unlockProgress.meterText, 'RANKED MATCHES: 4 / 5');
   assert.equal(byId.lilly.locked, true);
-  assert.equal(byId.lilly.cta, 'LILLY — Precision and poise. 20 Ranked runs earn her trust.');
-  assert.equal(byId.lilly.unlockProgress.meterText, 'RANKED MATCHES: 4 / 20');
+  assert.equal(byId.lilly.cta, 'Complete 10 Ranked games to unlock Lilly.');
+  assert.equal(byId.lilly.unlockProgress.meterText, 'RANKED MATCHES: 4 / 10');
 });
 
 test('playable character visual kit metadata exposes repo-local manifests and direction mode', () => {

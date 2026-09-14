@@ -1,0 +1,54 @@
+{
+  "schema": "chikun-ragdoll-v1",
+  "runtimeBytes": 8906,
+  "assets": [
+    {
+      "name": "armL",
+      "file": "armL.webp",
+      "width": 78,
+      "height": 43,
+      "bytes": 1010,
+      "sha256": "140427c8704bc257b4fdd1b5880990dcf04a22ff2c12bc5a5c35e4bb25aef825"
+    },
+    {
+      "name": "armR",
+      "file": "armR.webp",
+      "width": 81,
+      "height": 28,
+      "bytes": 852,
+      "sha256": "b10ae2aabc2b6e3703b8c5f21066301f4e5daf880e4b92bc7f5e7ae2a360e46d"
+    },
+    {
+      "name": "head",
+      "file": "head.webp",
+      "width": 53,
+      "height": 72,
+      "bytes": 1762,
+      "sha256": "d632e29b8236a6a862182b3794b8dcd11ff96236639b9f10054d8be5922de450"
+    },
+    {
+      "name": "legL",
+      "file": "legL.webp",
+      "width": 81,
+      "height": 57,
+      "bytes": 1714,
+      "sha256": "93432c4e6c0a47526a5f280cad6cb6dc799f42135f827fd779280563afec68e5"
+    },
+    {
+      "name": "legR",
+      "file": "legR.webp",
+      "width": 79,
+      "height": 49,
+      "bytes": 1352,
+      "sha256": "2303c5f36ed9416904861b53dacf8b5c3cbc8bc9fa20b3b0d57e8280a2bac691"
+    },
+    {
+      "name": "torso",
+      "file": "torso.webp",
+      "width": 118,
+      "height": 62,
+      "bytes": 2216,
+      "sha256": "483b25910d1e80fc0dba8af756d73cc6071a58435fe3fd69b651611a363ee149"
+    }
+  ]
+}

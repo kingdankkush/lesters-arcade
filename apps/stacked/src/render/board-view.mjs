@@ -4,13 +4,25 @@ export const BOARD_LAYER_ORDER = Object.freeze(['wellFrame','stackLayer','garbag
 const COLORS = Object.freeze({ I:0x32d9ff, J:0x5688ff, L:0xffa447, O:0xffd84d, S:0x60e889, T:0xb66cff, Z:0xff6078, garbage:0x718092 });
 const LOCKED_KIND_BY_ID = Object.freeze([null,'I','J','L','O','S','T','Z','garbage']);
 const WELL_X = Object.freeze({ wide: 96, tall: 0 });
+const MARKS = Object.freeze({ I:[3,4,5], J:[0,3,4,5], L:[2,3,4,5], O:[0,2,6,8], S:[1,2,3,4], T:[1,3,4,5], Z:[0,1,4,5], garbage:[0,2,4,6,8] });
 
 export function boardCellToAuthored({ x, y, frame }) {
   return Object.freeze({ x: WELL_X[frame] + x * CELL_PX, y: (BOARD_VISIBLE_ROWS - 1 - y) * CELL_PX, visible: y >= 0 && y < BOARD_VISIBLE_ROWS && x >= 0 && x < 10 });
 }
 
-function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2 }) {
-  graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: COLORS[kind] ?? 0xa8bdca, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
+function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterned = false }) {
+  // Moving a cell only changes its transform. Reuse its geometry until the
+  // appearance changes, avoiding hundreds of triangulations per render tick.
+  const key = `${kind}:${alpha}:${size}:${patterned}`;
+  if (graphic.__appearance !== key) {
+    graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: COLORS[kind] ?? 0xa8bdca, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
+    graphic.rect(4, 3, Math.max(2,size-6), 2).fill({color:0xffffff,alpha:alpha*.2});
+    if (patterned) {
+      const unit = size / 9, start = size / 2 - unit * 2;
+      for (const cell of MARKS[kind] ?? []) graphic.rect(start+(cell%3)*unit*1.45,start+Math.floor(cell/3)*unit*1.45,unit,unit).fill({color:0x071321,alpha:alpha*.72});
+    }
+    graphic.__appearance = key;
+  }
   graphic.position.set(x, y);
   graphic.__stackedKind = kind;
   graphic.__stackedColor = COLORS[kind] ?? 0xa8bdca;
@@ -37,7 +49,9 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
   const layers = Object.fromEntries(BOARD_LAYER_ORDER.map(name => [name, name === 'wellFrame' ? new Graphics() : new Container()]));
   root.addChild(...BOARD_LAYER_ORDER.map(name => layers[name]));
   let currentFrame = frame;
+  let trailsEnabled = true;
   let gridLines = true;
+  let colorblindPieces = false;
   const drawWellFrame = () => {
     const wellX = WELL_X[currentFrame];
     layers.wellFrame.clear().rect(wellX, 0, 320, 640).fill({ color: 0x071321, alpha: 1 }).stroke({ color: 0x35f2ff, alpha: 0.82, width: 2 });
@@ -51,6 +65,7 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
   const pools=[stackPool, activePool, ghostPool, previewPool, trailPool];
   let destroyed=false; let layout={ x:0,y:0,scale:1,visible:true }; let last=Object.freeze({ boardIndex:index, activeVisuals:0, poolAllocated:0, poolFree:0, lockedVisible:0, bufferClipped:0, trails:0 });
   let lastModel=null;
+  let presentationDirty=true;
 
   const normalizePiece = piece => typeof piece === 'string' ? { kind:piece,rotation:0,x:0,y:0 } : piece;
   const pieceCells = piece => {
@@ -66,13 +81,13 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     for (const [x,y] of pieceCells(normalized)) {
       const point=boardCellToAuthored({ x, y, frame:currentFrame });
       if (!point.visible) continue;
-      drawMino(pool.acquire(parent), { ...point, kind:normalized.kind, alpha }); used++;
+      drawMino(pool.acquire(parent), { ...point, kind:normalized.kind, alpha, patterned:colorblindPieces }); used++;
     }
     pool.end(); return used;
   };
   const renderPreview = (piece, originX, originY, scale=0.55) => {
     const normalized=normalizePiece(piece);
-    let used=0; for (const [x,y] of pieceCells(normalized)) { const visual=previewPool.acquire(layers.hudLayer); drawMino(visual,{ x:originX+x*CELL_PX*scale,y:originY-y*CELL_PX*scale,kind:normalized.kind,size:(CELL_PX-2)*scale }); used++; } return used;
+    let used=0; for (const [x,y] of pieceCells(normalized)) { const visual=previewPool.acquire(layers.hudLayer); drawMino(visual,{ x:originX+x*CELL_PX*scale,y:originY-y*CELL_PX*scale,kind:normalized.kind,size:(CELL_PX-2)*scale,patterned:colorblindPieces }); used++; } return used;
   };
   const ghostFor = (board, active) => {
     const normalized=normalizePiece(active);
@@ -83,11 +98,13 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
   };
   const setModel = model => {
     if (destroyed) throw new Error('board view is destroyed');
+    if(model===lastModel&&Object.isFrozen(model)&&!presentationDirty)return last;
     if (!Array.isArray(model?.board) || model.board.length !== cells*rows) throw new TypeError('snapshot board must be an ordinary 240-cell array');
     lastModel=model;
+    presentationDirty=false;
     stackPool.begin();
     let lockedVisible=0, bufferClipped=0;
-    for (let position=0; position<model.board.length; position++) { const cell=model.board[position]; if (!cell) continue; const y=Math.floor(position/cells); if (y>=BOARD_VISIBLE_ROWS) { bufferClipped++; continue; } const kind=LOCKED_KIND_BY_ID[Number(cell)]; if(!kind)continue; const point=boardCellToAuthored({x:position%cells,y,frame:currentFrame}); drawMino(stackPool.acquire(layers.stackLayer),{...point,kind}); lockedVisible++; }
+    for (let position=0; position<model.board.length; position++) { const cell=model.board[position]; if (!cell) continue; const y=Math.floor(position/cells); if (y>=BOARD_VISIBLE_ROWS) { bufferClipped++; continue; } const kind=LOCKED_KIND_BY_ID[Number(cell)]; if(!kind)continue; const point=boardCellToAuthored({x:position%cells,y,frame:currentFrame}); drawMino(stackPool.acquire(layers.stackLayer),{...point,kind,patterned:colorblindPieces}); lockedVisible++; }
     const activeVisuals=renderPiece(model.active,activePool,layers.activeLayer,1);
     const ghostVisuals=renderPiece(ghostFor(model.board,model.active),ghostPool,layers.ghostLayer,0.24);
     previewPool.begin(); let previews=0;
@@ -102,20 +119,23 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     }
     previewPool.end();
     trailPool.begin(); let trails=0;
-    if (model.active) for (let step=1;step<=2;step++) for (const [x,y] of pieceCells(model.active)) { const point=boardCellToAuthored({x,y:y+step,frame:currentFrame}); if(point.visible){ drawMino(trailPool.acquire(layers.effectLayer),{...point,kind:model.active.kind,alpha:0.06,size:CELL_PX-5}); trails++; } }
+    if (trailsEnabled && model.active) for (let step=1;step<=2;step++) for (const [x,y] of pieceCells(model.active)) { const point=boardCellToAuthored({x,y:y+step,frame:currentFrame}); if(point.visible){ drawMino(trailPool.acquire(layers.effectLayer),{...point,kind:model.active.kind,alpha:0.06,size:CELL_PX-5}); trails++; } }
     stackPool.end(); trailPool.end();
     const totals=pools.reduce((sum,pool)=>{const value=pool.stats();sum.allocated+=value.allocated;sum.free+=value.free;return sum;},{allocated:0,free:0});
     last=Object.freeze({boardIndex:index,activeVisuals,ghostVisuals,previewVisuals:previews,lockedVisible,bufferClipped,trails,poolAllocated:totals.allocated,poolFree:totals.free});
     return last;
   };
   const present = model => { const result=setModel(model); onPresent(result); onFrameReleased(result); return result; };
-  const setFrame = nextFrame => { if(!STACKED_FRAME_SIZES[nextFrame])throw new RangeError('unknown board frame'); if(nextFrame===currentFrame)return last; currentFrame=nextFrame; drawWellFrame(); return lastModel?setModel(lastModel):last; };
+  const setFrame = nextFrame => { if(!STACKED_FRAME_SIZES[nextFrame])throw new RangeError('unknown board frame'); if(nextFrame===currentFrame)return last; currentFrame=nextFrame; presentationDirty=true; drawWellFrame(); return lastModel?setModel(lastModel):last; };
   const resize = slot => { layout={...slot}; root.visible=slot.visible; root.scale.set(slot.scale,slot.scale); root.position.set(slot.x,slot.y); };
   const applyShake = (dx,dy) => root.position.set(layout.x+dx,layout.y+dy);
   const reset = () => { lastModel=null; for (const pool of pools) pool.reset(); last=Object.freeze({...last,activeVisuals:0,ghostVisuals:0,previewVisuals:0,lockedVisible:0,bufferClipped:0,trails:0,poolFree:pools.reduce((n,p)=>n+p.stats().free,0)}); };
   const destroy = () => { if (destroyed) return; destroyed=true; lastModel=null; for(const pool of pools)pool.destroy(); root.destroy?.({children:true}); };
   return Object.freeze({ root, layers:Object.freeze(layers), setFrame, setModel, present, setZone:()=>{}, applyShake, resize, reset, stats:()=>last, destroy,
     setGridLines(value) { if (gridLines !== value) { gridLines = value; drawWellFrame(); } },
+    setColorblindPieces(value) { if(colorblindPieces!==!!value)presentationDirty=true; colorblindPieces = !!value; },
+    setTrails(value) { if(trailsEnabled!==!!value)presentationDirty=true; trailsEnabled=!!value; },
+    get frame() { return currentFrame; },
   });
 }
 

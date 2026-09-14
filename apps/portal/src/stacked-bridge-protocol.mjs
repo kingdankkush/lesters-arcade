@@ -8,6 +8,7 @@ import {
 } from './stacked-contracts.mjs';
 import { validateStackedChunkMessage } from './stacked-evidence-transport.mjs';
 import { validateStackedRunSummary } from '../../../sdk/stacked-run-summary-schema.mjs';
+import { STACKED_VISUALIZERS } from './stacked-player-settings.mjs';
 
 function exact(value, keys) {
   if (!value || ![Object.prototype, null].includes(Object.getPrototypeOf(value)) || Reflect.ownKeys(value).length !== keys.length) return false;
@@ -23,6 +24,15 @@ const token = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9._:-]
 const season = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{1,63}$/.test(value);
 const string = (value, min, max) => typeof value === 'string' && value.length >= min && value.length <= max;
 const fields = (value, validators) => exact(value, Object.keys(validators)) && Object.entries(validators).every(([key, test]) => test(value[key]));
+// Optional additive presentation fields preserve existing v1 clients while
+// retaining exact-key, own-data-property validation at this trust boundary.
+const presentationFields = (value, required, optional) => {
+  if (!value) return false;
+  const validators = { ...required };
+  for (const key of Object.keys(optional)) if (Object.hasOwn(value, key)) validators[key] = optional[key];
+  return fields(value, validators);
+};
+const visualPreferences = { visualizer:v=>STACKED_VISUALIZERS.includes(v), effectsIntensity:v=>number(v,0,1) };
 const tick = value => integer(value, 0, STACKED_MAX_TICKS);
 const line = value => integer(value, 0, STACKED_MAX_LINES);
 const piece = value => integer(value, 0, STACKED_MAX_PIECES);
@@ -42,7 +52,7 @@ export function validateStackedBridgeSettings(settings, { initial = false } = {}
       touchLayout: v => ['gesture', 'buttons'].includes(v), touchOpacity: v => number(v, 0.2, 0.8),
       touchLeftHanded: bool, touchSensitivity: v => number(v, 0.5, 2),
     })) return false;
-    if (!fields(settings.video, { qualityTier: v => ['auto', 'desktopHigh', 'desktopLow', 'mobile'].includes(v), reducedEffects: bool, audioReactive: bool, ghostPiece: bool, gridLines: bool })) return false;
+    if (!presentationFields(settings.video, { qualityTier: v => ['auto', 'desktopHigh', 'desktopLow', 'mobile'].includes(v), reducedEffects: bool, audioReactive: bool, ghostPiece: bool, gridLines: bool }, visualPreferences)) return false;
     if (!fields(settings.audio, { musicEnabled: bool, sfxEnabled: bool, sfxVolume: v => number(v, 0, 1) })) return false;
     return fields(settings.accessibility, { reduceMotion: bool, reduceFlash: bool, colorblindPieces: bool, hudScale: v => number(v, 0.75, 1.5) });
   } catch { return false; }
@@ -98,7 +108,7 @@ function result(payload) {
 }
 const validators = {
   'portal:preferences-status': p => fields(p, { saved: bool }),
-  'game:preferences-request': p => fields(p, { reduceMotion: bool, reducedEffects: bool, audioReactive: bool, ghostPiece: bool, gridLines: bool, sfxEnabled: bool }),
+  'game:preferences-request': p => presentationFields(p, { reduceMotion: bool, reducedEffects: bool, audioReactive: bool, ghostPiece: bool, gridLines: bool, sfxEnabled: bool }, { ...visualPreferences, sfxVolume:v=>number(v,0,1), colorblindPieces:bool, reduceFlash:bool, touchLeftHanded:bool }),
   'game:restart-request': p => exact(p, []),
   'game:exit-request': p => exact(p, []),
   'portal:result-status': p => fields(p, { accepted: bool, message: v => string(v, 1, 512) }),

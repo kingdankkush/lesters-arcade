@@ -123,7 +123,7 @@ export const HARD_MONEY_HEROES_CANON = Object.freeze({
   characters: Object.freeze([
     Object.freeze({ id: 'lit-commando', title: 'Lit Commando', playable: true, personality: 'stubborn, brave, goofy-gritty arcade tough guy; says little, solves scams with steel and gunfire', role: 'starter playable Hard Money Hero' }),
     Object.freeze({ id: 'lit-valkyrie', title: 'Lit Valkyrie', playable: true, personality: 'sharp, quick, fearless skirmisher; darts through the panic and punishes mistakes', role: 'starter playable Hard Money Hero' }),
-    Object.freeze({ id: 'lester-original', title: 'Lester', playable: 'unlockable-level-1-clear', personality: 'Rambo-like arcade commando: stubborn, brave, over-the-top, one-liners implied, walks against the panic.', role: 'unlockable playable Hard Money Hero' }),
+    Object.freeze({ id: 'lester-original', title: 'Lester', playable: 'unlockable-5-ranked-hmh-games', personality: 'Rambo-like arcade commando: stubborn, brave, over-the-top, one-liners implied, walks against the panic.', role: 'unlockable playable Hard Money Hero' }),
     Object.freeze({ id: 'lilly', title: 'Lilly', playable: 'unlockable-10-ranked-matches', personality: 'teal-haired tactical companion with agile veteran energy and distinct weapon silhouettes.', role: 'unlockable playable Hard Money Hero' }),
   ]),
   levels: Object.freeze([
@@ -328,7 +328,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ title: 'Survive as long as possible', body: 'Level 1 and 2 introduce mechanics; Level 3 becomes an infinite escalation run.' }),
     Object.freeze({ title: 'Keep the combo alive', body: 'Damage chains and kills without taking damage grow your score faster.' }),
     Object.freeze({ title: 'Save the grenade for swarms', body: 'The grenade is your one manual weapon: a wide blast that clears packed waves. Right click (or the NADE button on mobile) when enemies bunch up.' }),
-    Object.freeze({ title: 'Save rare weapons for bosses', body: 'The Hashstorm suppresses waves; rare charged weapons are intended for armor, boss phases, and clutch survival moments.' }),
+    Object.freeze({ title: 'Save rare weapons for bosses', body: 'The machine gun suppresses waves; rare charged weapons are intended for armor, boss phases, and clutch survival moments.' }),
     Object.freeze({ title: 'Watch for arena locks', body: 'Mini-boss and boss rooms pause forward progression until the threat is defeated; use cover and vertical space before pushing right again.' }),
   ]),
   tooltips: Object.freeze([
@@ -1621,7 +1621,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
   primaryWeapons: Object.freeze([
     Object.freeze({
       id: 'coin-blaster',
-      title: 'The Settler',
+      title: 'Pistol',
       displayName: 'Pistol',
       type: 'starter',
       rarity: 'starter',
@@ -1643,7 +1643,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     }),
     Object.freeze({
       id: 'scatter-shotgun',
-      title: 'The Block Breaker',
+      title: 'Shotgun',
       displayName: 'Shotgun',
       type: 'weapon-pickup',
       rarity: 'uncommon',
@@ -1665,7 +1665,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     }),
     Object.freeze({
       id: 'auto-miner',
-      title: 'The Hashstorm',
+      title: 'Machine Gun',
       displayName: 'Machine Gun',
       type: 'weapon-pickup',
       rarity: 'uncommon',
@@ -1703,8 +1703,8 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     }),
     Object.freeze({
       id: 'hash-rail',
-      title: 'Hash Rail',
-      displayName: 'Rail Gun',
+      title: 'Railgun',
+      displayName: 'Railgun',
       type: 'upgrade',
       rarity: 'rare',
       damage: 9,
@@ -1776,21 +1776,21 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
 
 export const LESTER_BLASTER_POWER_UPS = Object.freeze([
   Object.freeze({ id: 'health-pack', title: 'Cold Storage', category: 'health', effect: 'heal', amount: 35, sprite: 'glowing blue hardware-wallet medkit with white Ł heartbeat glow', rarity: 'common' }),
-  Object.freeze({ id: 'grenade-crate', title: 'Crypto Bomb Cache', category: 'ammo', effect: 'grenades', amount: 2, sprite: 'matte-black bomb cache stamped with small blue Ł', rarity: 'common' }),
+  Object.freeze({ id: 'grenade-crate', title: 'Grenade Cache', category: 'ammo', effect: 'grenades', amount: 2, sprite: 'matte-black bomb cache stamped with small blue Ł', rarity: 'common' }),
   Object.freeze({ id: 'bonus-life', title: 'Extra Hard Money Hero', category: 'life', effect: 'life', amount: 1, sprite: 'tiny Lester head icon with silver-blue halo', rarity: 'rare' }),
-  Object.freeze({ id: 'block-breaker-shells', title: 'Block Breaker Shells', category: 'weapon', effect: 'weapon', weaponId: 'scatter-shotgun', durationSeconds: 16, sprite: 'orange shotgun shell chip that unlocks a short-range pellet cone', rarity: 'uncommon' }),
-  Object.freeze({ id: 'hashstorm-drum', title: 'Hashstorm Drum', category: 'weapon', effect: 'weapon', weaponId: 'auto-miner', durationSeconds: 15, sprite: 'cyan machine-gun drum magazine with rapid-fire tracer sparks', rarity: 'uncommon' }),
-  Object.freeze({ id: 'spread-ltc-chip', title: 'Spread LTC Chip', category: 'weapon', effect: 'weapon', weaponId: 'spread-ltc', durationSeconds: 18, sprite: 'cyan fan chip', rarity: 'uncommon' }),
-  Object.freeze({ id: 'hash-rail-core', title: 'Hash Rail Core', category: 'weapon', effect: 'weapon', weaponId: 'hash-rail', durationSeconds: 14, sprite: 'glowing white/cyan core', rarity: 'rare' }),
+  Object.freeze({ id: 'block-breaker-shells', title: 'Shotgun', category: 'weapon', effect: 'weapon', weaponId: 'scatter-shotgun', durationSeconds: 16, sprite: 'orange shotgun shell chip that unlocks a short-range pellet cone', rarity: 'uncommon' }),
+  Object.freeze({ id: 'hashstorm-drum', title: 'Machine Gun', category: 'weapon', effect: 'weapon', weaponId: 'auto-miner', durationSeconds: 15, sprite: 'cyan machine-gun drum magazine with rapid-fire tracer sparks', rarity: 'uncommon' }),
+  Object.freeze({ id: 'spread-ltc-chip', title: 'Spread Gun', category: 'weapon', effect: 'weapon', weaponId: 'spread-ltc', durationSeconds: 18, sprite: 'cyan fan chip', rarity: 'uncommon' }),
+  Object.freeze({ id: 'hash-rail-core', title: 'Railgun', category: 'weapon', effect: 'weapon', weaponId: 'hash-rail', durationSeconds: 14, sprite: 'glowing white/cyan core', rarity: 'rare' }),
   Object.freeze({ id: 'score-multiplier', title: '2x Hard Money Multiplier', category: 'score', effect: 'scoreMultiplier', multiplier: 2, durationSeconds: 20, sprite: 'gold x2 token with subtle blue rim', rarity: 'uncommon' }),
-  Object.freeze({ id: 'shield-cache', title: 'Cold Wallet Shield', category: 'defense', effect: 'shield', amount: 1, durationSeconds: 12, sprite: 'hovering blue-and-silver hex barrier device', rarity: 'uncommon' }),
+  Object.freeze({ id: 'shield-cache', title: 'Shield', category: 'defense', effect: 'shield', amount: 1, durationSeconds: 12, sprite: 'hovering blue-and-silver hex barrier device', rarity: 'uncommon' }),
   Object.freeze({ id: 'ammo-cache', title: 'Ammo Cache', category: 'ammo', effect: 'ammo', amount: 30, sprite: 'silver magazine crate with orange hazard stripe', rarity: 'common' }),
   Object.freeze({ id: 'ltc-cache', title: 'LTC Cache', category: 'score', effect: 'scoreBonus', score: 250, sprite: 'sparkling silver coin pile used as pickup accent, not wallpaper', rarity: 'common' }),
   // --- Roguelike power-ups (wave: hmh-fx-powerups) ---
-  Object.freeze({ id: 'magnet-surge', title: 'Magnet Wallet Surge', category: 'utility', effect: 'magnet', durationSeconds: 8, sprite: 'glowing horseshoe magnet with blue pull rings', rarity: 'uncommon' }),
-  Object.freeze({ id: 'time-dilation', title: 'Block-Time Dilation', category: 'utility', effect: 'slowEnemies', durationSeconds: 6, sprite: 'blue hourglass with slow-motion swirl', rarity: 'rare' }),
-  Object.freeze({ id: 'berserk-candle', title: 'Green-Candle Berserk', category: 'offense', effect: 'berserk', durationSeconds: 7, sprite: 'red-and-green flaming candlestick', rarity: 'rare' }),
-  Object.freeze({ id: 'nuke-liquidation', title: 'Liquidation Nuke', category: 'offense', effect: 'screenNuke', sprite: 'red glowing screen-clear nuke', rarity: 'super-rare' }),
+  Object.freeze({ id: 'magnet-surge', title: 'XP Magnet', category: 'utility', effect: 'magnet', durationSeconds: 8, sprite: 'glowing horseshoe magnet with blue pull rings', rarity: 'uncommon' }),
+  Object.freeze({ id: 'time-dilation', title: 'Slow Motion', category: 'utility', effect: 'slowEnemies', durationSeconds: 6, sprite: 'blue hourglass with slow-motion swirl', rarity: 'rare' }),
+  Object.freeze({ id: 'berserk-candle', title: 'Double Damage', category: 'offense', effect: 'berserk', durationSeconds: 7, sprite: 'red-and-green flaming candlestick', rarity: 'rare' }),
+  Object.freeze({ id: 'nuke-liquidation', title: 'Nuke', category: 'offense', effect: 'screenNuke', sprite: 'red glowing screen-clear nuke', rarity: 'super-rare' }),
 ]);
 
 export const LESTER_BLASTER_ENVIRONMENTS = Object.freeze([
@@ -5550,7 +5550,7 @@ function updateProgressFromRun(progress, session, score, runStats = {}) {
   }
 }
 
-export function recordStackedScore(state, session, evidence, claim) {
+export function recordStackedScore(state, session, evidence, claim, metadata = {}) {
   if (session?.gameId !== 'stacked') throw new Error('STACKED session required');
   if (!session.leaderboardEligible) return { acceptedForGlobalLeaderboard: false, trackingDisabled: true };
   const canonical = replayStackedRun(evidence, { expectedSeed: session.seed, config: { startLevel: 1, buildHash: session.buildHash, seasonId: session.seasonId } });
@@ -5559,6 +5559,9 @@ export function recordStackedScore(state, session, evidence, claim) {
   const profile = ensureProfile(state, session.wallet), progress = ensureGameProgress(profile, 'stacked');
   const recordedAt = nowIso();
   const runStats = { elapsedSeconds: canonical.ticks / 60, survivalTicks: canonical.ticks, linesCleared: canonical.lines, level: canonical.level, maxCombo: canonical.maxCombo, maxBackToBack: canonical.maxBackToBack, quadClears: canonical.quadClears, spins: canonical.spins, perfectClears: canonical.perfectClears, pieces: canonical.pieces, garbageRowsCleared: canonical.garbageRowsCleared };
+  // Device provenance is self-reported, separately from the replay-verified score.
+  runStats.inputDevice=['keyboard','touch','gamepad','mixed'].includes(metadata.inputDevice)?metadata.inputDevice:null;
+  runStats.inputDeviceSource=runStats.inputDevice?'self-reported':null;
   progress.paidRuns += 1; progress.bestPaidScore = Math.max(progress.bestPaidScore, canonical.score);
   progress.longestRunSeconds = Math.max(progress.longestRunSeconds, canonical.ticks / 60);
   progress.lastSessionId = session.sessionId; progress.lastPlayedAt = recordedAt;
@@ -5598,8 +5601,12 @@ export function recordScore(state, session, score, runStats = {}) {
   runStats = { ...runStats };
   delete runStats.replayClaim;
   const game = getGame(session.gameId);
+  if (session.leaderboardEligible && game.id === 'lester-blaster' &&
+      (state.sessions?.[session.sessionId] || state.officialSessions?.some(row => row.sessionId === session.sessionId))) {
+    throw new Error('HMH session already recorded');
+  }
   if (session.leaderboardEligible && game.id === 'chikun') {
-    verifyChikunReplayClaim({
+    const canonical = verifyChikunReplayClaim({
       expectedSeed: session.seed,
       expectedBuildHash: session.buildHash,
       expectedSeasonId: session.seasonId,
@@ -5607,6 +5614,9 @@ export function recordScore(state, session, score, runStats = {}) {
       runStats,
       replayClaim,
     });
+    runStats.evidenceVersion = canonical.evidence.version;
+    runStats.flapCount = canonical.evidence.flapSteps.length;
+    runStats.runtimeVersion = CHIKUN_RUNTIME_VERSION;
   }
 
   const profile = ensureProfile(state, session.wallet);

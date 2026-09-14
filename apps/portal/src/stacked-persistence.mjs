@@ -2,12 +2,12 @@ import { recordStackedScore } from './arcade-core.mjs';
 import { snapshotArcadeState, ARCADE_PERSIST_KEY } from './persistence.mjs';
 
 // Do not announce acceptance or mutate live profiles until durable readback.
-export function persistStackedScore(state, storage, session, evidence, canonical) {
+export function persistStackedScore(state, storage, session, evidence, canonical, metadata = {}) {
   if (!session.leaderboardEligible) return { trackingDisabled: true, acceptedForGlobalLeaderboard: false };
   const keys = ['profiles', 'usernames', 'loginEvents', 'leaderboards', 'cadenceLeaderboards', 'sessions', 'sessionsByUrlId', 'officialSessions'];
   const candidate = { ...state };
   for (const key of keys) if (state[key] !== undefined) candidate[key] = structuredClone(state[key]);
-  const result = recordStackedScore(candidate, session, evidence, canonical);
+  const result = recordStackedScore(candidate, session, evidence, canonical, metadata);
   // localStorage.setItem is atomic on quota failure. Never invoke the legacy
   // lossy fallback: another cabinet's avatars and boards belong to the player.
   let encoded;

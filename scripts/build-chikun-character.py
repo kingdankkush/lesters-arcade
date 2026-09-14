@@ -2,7 +2,7 @@
 blender -b --factory-startup --python scripts/build-chikun-character.py -- --source MODEL.obj --out DIRECTORY
 No external assets, automatic weights, or simulation changes. Frames are orthographic RGBA.
 """
-import bpy, math, json, sys, argparse, hashlib
+import bpy, bmesh, math, json, sys, argparse, hashlib
 from mathutils import Vector, Euler, Matrix, Quaternion
 from pathlib import Path
 
@@ -29,7 +29,9 @@ def arm_mask(co,paint):
  x,y,z=co;ax=abs(x)
  boundary=(.165 if z<.32 else .165-(min(z,.50)-.32)*.21)+y*.46
  arm=smooth(boundary-.003,boundary+.003,ax)*(1-smooth(.59,.67,z)) if .235<z<.67 and y<.075 else 0
- if z<.365:arm=1 if .235<z and ax>.13 and paint[1]>.06 and paint[2]>.045 else 0
+ # The wrist's charcoal cuff belongs to the sleeve. The lower red coat tail
+ # still needs its paint mask because it touches the glove in the source.
+ if z<.365:arm=1 if .235<z and ax>.13 and (paint[1]>.06 and paint[2]>.045 or z>.335 and ax>.15 and y<.04) else 0
  if z<.53 and paint[0]>paint[1]*2 and paint[0]>.07:arm=0
  return arm
 
@@ -37,10 +39,35 @@ def arm_mask(co,paint):
 # before skinning so a raised sleeve cannot pull triangles out of the coat.
 original=mesh.data;paints=[tuple(c.color) for c in original.color_attributes[0].data]
 mask=[arm_mask(v.co,paints[v.index]) for v in original.vertices]
+face_regions=[('L' if face.center.x<0 else 'R') if sum(mask[i]>.5 for i in face.vertices)>=2 else 'body' for face in original.polygons]
+# Remove isolated classification islands at the touching glove/cuff/coat seam.
+# A material threshold may surround a few cuff faces with sleeve faces; those
+# enclosed islands must follow their surrounding anatomy, not float at rest.
+edge_owner={};neighbors=[set() for face in original.polygons]
+for face in original.polygons:
+ for key in face.edge_keys:
+  if key in edge_owner:
+   other=edge_owner[key];neighbors[face.index].add(other);neighbors[other].add(face.index)
+  else:edge_owner[key]=face.index
+for region in ['body','L','R']:
+ pending={i for i,value in enumerate(face_regions) if value==region};components=[]
+ while pending:
+  seed=min(pending);pending.remove(seed);stack=[seed];component=[]
+  while stack:
+   i=stack.pop();component.append(i)
+   for adjacent in neighbors[i]:
+    if adjacent in pending:pending.remove(adjacent);stack.append(adjacent)
+  components.append(component)
+ components.sort(key=len,reverse=True)
+ print('ANATOMY_COMPONENTS',region,[len(c) for c in components],flush=True)
+ for component in components[1:]:
+  surround={face_regions[n] for i in component for n in neighbors[i] if face_regions[n]!=region}
+  if len(surround)==1:
+   replacement=next(iter(surround))
+   for i in component:face_regions[i]=replacement
 verts=[];faces=[];colors=[];regions=[];lookup={}
 for face in original.polygons:
- arm=sum(mask[i]>.5 for i in face.vertices)>=2
- region=('L' if face.center.x<0 else 'R') if arm else 'body'
+ region=face_regions[face.index]
  indices=[]
  for i in face.vertices:
   key=(i,region)
@@ -48,9 +75,34 @@ for face in original.polygons:
    lookup[key]=len(verts);verts.append(tuple(original.vertices[i].co));colors.append(paints[i]);regions.append(region)
   indices.append(lookup[key])
  faces.append(indices)
+# A cut can touch itself at a vertex. Split those disconnected face fans too;
+# otherwise a pinched boundary has four edges and Blender cannot cap its hole.
+incident={};edge_faces={};cut_faces=[tuple(face) for face in faces]
+for fi,face in enumerate(faces):
+ for vi in face:incident.setdefault(vi,set()).add(fi)
+ for i,vi in enumerate(face):edge_faces.setdefault(tuple(sorted((vi,face[(i+1)%len(face)]))),[]).append(fi)
+for vi,linked in incident.items():
+ pending=set(linked);fans=[]
+ while pending:
+  seed=min(pending);pending.remove(seed);fan=[];stack=[seed]
+  while stack:
+   fi=stack.pop();fan.append(fi);face=cut_faces[fi]
+   for other in face:
+    if other==vi:continue
+    for adjacent in edge_faces.get(tuple(sorted((vi,other))),[]):
+     if adjacent in pending:pending.remove(adjacent);stack.append(adjacent)
+  fans.append(fan)
+ for fan in fans[1:]:
+  duplicate=len(verts);verts.append(verts[vi]);colors.append(colors[vi]);regions.append(regions[vi])
+  for fi in fan:faces[fi]=[duplicate if i==vi else i for i in faces[fi]]
 surface=bpy.data.meshes.new('Chikun_Separated_Sleeve_Seams');surface.from_pydata(verts,[],faces);surface.update()
 attribute=surface.color_attributes.new(name='Color',type='FLOAT_COLOR',domain='POINT')
-for i,c in enumerate(colors):attribute.data[i].color=c
+for i,c in enumerate(colors):
+ # The fused reference stamped pale glove paint onto the coat beside the hips.
+ # Restore charcoal only on those torso-side remnants, leaving shirt/trim intact.
+ x,y,z=verts[i]
+ if regions[i]=='body' and .23<z<.42 and abs(x)>.115 and c[1]>.06 and c[2]>.045:c=(.015,.021,.024,1)
+ attribute.data[i].color=c
 surface.materials.append(mat)
 for f in surface.polygons:f.use_smooth=True
 mesh.data=surface
@@ -86,7 +138,65 @@ for v in mesh.data.vertices:
   if weight>0:groups[name].add([v.index],weight,'REPLACE')
 mesh.parent=rig;mod=mesh.modifiers.new('Chikun skin','ARMATURE');mod.object=rig;mod.use_deform_preserve_volume=True
 
-names=['ready','takeoff','cruise','accelerate','climb','crest','descend','dive','brake','recover','squeeze','dodge_high','dodge_low','collect','barrel_roll','impact','tumble','fall']
+# Close both sides of every separated contact seam. Filling after assigning skin
+# weights retains the correct independent sleeve/body weights and vertex paint.
+# The original separation left 1,603 boundary edges exposed during flight/rolls.
+bm=bmesh.new();bm.from_mesh(mesh.data)
+boundary=[edge for edge in bm.edges if edge.is_boundary]
+open_edges_before=len(boundary)
+remaining=set(boundary);caps=[];hole_sizes=[]
+while remaining:
+ first=min(remaining,key=lambda edge:edge.index);remaining.remove(first);start=first.verts[0];cursor=first.verts[1];ring=[start,cursor]
+ while cursor!=start:
+  candidates=[e for e in cursor.link_edges if e in remaining]
+  assert len(candidates)==1, 'The separated boundary must be a simple loop'
+  edge=candidates[0];remaining.remove(edge);cursor=edge.other_vert(cursor)
+  if cursor!=start:ring.append(cursor)
+ hole_sizes.append(len(ring))
+ existing=[f for f in ring[0].link_faces if set(f.verts)==set(ring)]
+ if existing:
+  # The source also contains one isolated, sub-pixel triangle at the cuff.
+  # It has no volume and cannot receive a second identical face.
+  assert len(ring)==3 and len(existing)==1 and all(len(v.link_faces)==1 for v in ring)
+  bmesh.ops.delete(bm,geom=existing,context='FACES')
+  continue
+ # Give the cap its own interior ring. Direct ngon triangulation can reuse a
+ # diagonal already inside the source surface, creating four-face edges.
+ center=sum((v.co for v in ring),Vector())/len(ring);inset=[]
+ for v in ring:
+  inner=bm.verts.new(center+(v.co-center)*.97)
+  for group,weight in v[bm.verts.layers.deform.active].items():inner[bm.verts.layers.deform.active][group]=weight
+  inner[bm.verts.layers.float_color['Color']]=v[bm.verts.layers.float_color['Color']]
+  inset.append(inner)
+ for i in range(len(ring)):
+  j=(i+1)%len(ring);caps.append(bm.faces.new([ring[i],ring[j],inset[j],inset[i]]))
+ caps.append(bm.faces.new(inset))
+print('CAPPED_LOOPS',hole_sizes,flush=True)
+for face in caps:face.smooth=True
+bmesh.ops.triangulate(bm,faces=caps,quad_method='BEAUTY',ngon_method='BEAUTY')
+# Relax the coat-side glove impressions left by the fused source. Keep the
+# raised sleeves, gloves, face, red lapels and rig intact.
+limb_groups={groups[n].index for n in bones if n.startswith(('arm.','hand.'))}
+deform=bm.verts.layers.deform.active
+coat_patch=[v for v in bm.verts if .235<v.co.z<.42 and abs(v.co.x)>.115 and not any(v[deform].get(g,0)>.001 for g in limb_groups)]
+for v in coat_patch:
+ # Pull the former glove contact back into the coat's side contour instead of
+ # retaining a thin finger-shaped projection below the flying character.
+ influence=smooth(.235,.28,v.co.z)*(1-smooth(.38,.42,v.co.z))
+ if abs(v.co.x)>.15:
+  target=.15+(abs(v.co.x)-.15)*.12
+  v.co.x=math.copysign(abs(v.co.x)*(1-influence)+target*influence,v.co.x)
+for iteration in range(12):
+ relaxed=[v.co*.55+sum((e.other_vert(v).co for e in v.link_edges),Vector())*(.45/len(v.link_edges)) for v in coat_patch]
+ for v,co in zip(coat_patch,relaxed):v.co=co
+bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces))
+open_edges_after=sum(edge.is_boundary for edge in bm.edges)
+print('SURFACE_REPAIR',open_edges_before,open_edges_after,flush=True)
+assert open_edges_after==0, 'Every sleeve, torso and cuff must be closed before baking'
+assert all(edge.is_manifold for edge in bm.edges), 'Caps must not reuse source diagonals'
+bm.to_mesh(mesh.data);bm.free();mesh.data.update()
+
+names=['ready','takeoff','cruise','accelerate','climb','crest','descend','dive','brake','recover','squeeze','dodge_high','dodge_low','collect','barrel_roll','impact','tumble','fall','reverse_roll','corkscrew','victory_twirl']
 loops={'ready','cruise','climb','descend','dive','squeeze'}
 # Upright model axes -> flight: height points right (+X), chest faces down (-Z),
 # shoulder span runs into the scene (+Y). This is a prone flight pose, not a
@@ -112,6 +222,9 @@ def pose(name,t):
  elif name=='dodge_low':pitch=.16*pulse;bank=-.16*pulse;extension=1+.02*pulse;leg=.09*pulse
  elif name=='collect':bank=-.075*pulse;head=-1.18-.04*pulse;extension=1+.03*pulse
  elif name=='barrel_roll':bank=math.tau*ease;pitch=.015
+ elif name=='reverse_roll':bank=-math.tau*ease;pitch=.015+.06*pulse;leg=.025+.14*pulse
+ elif name=='corkscrew':bank=math.tau*ease;pitch=.015+.12*math.sin(math.tau*t)*pulse;extension=1-.09*pulse;leg=.025+.22*pulse
+ elif name=='victory_twirl':bank=-math.tau*ease;pitch=.015+.12*pulse;extension=1-.14*pulse;spread=.035+.13*pulse;leg=.025+.30*pulse
  elif name=='impact':pitch=.12*pulse;bank=-.22*pulse;recoil=.30*pulse;extension=1-.25*pulse;leg=.38*pulse;head=-1.18+.25*pulse
  elif name=='tumble':bank=-.22+math.tau*ease;pitch=-.12-.38*ease;extension=.75-.12*pulse;leg=.38;head=-.93
  elif name=='fall':bank=.55;pitch=-.65;extension=.65;leg=.26;head=-.82
@@ -150,7 +263,7 @@ center=Vector((.10,0,.45));bpy.ops.object.camera_add(location=(.50,-3.5,1.65));c
 for name,loc,power,size,color in [('Warm key',(-2,-3,4),160,3,(1,.90,.76)),('Sky fill',(3,-2,2),100,3,(.67,.84,1)),('Coat rim',(.4,2,2.4),220,2,(.65,.85,1))]:
  bpy.ops.object.light_add(type='AREA',location=loc);l=bpy.context.object;l.name=name;l.data.energy=power;l.data.color=color;l.data.shape='DISK';l.data.size=size;l.rotation_euler=(center-l.location).to_track_quat('-Z','Y').to_euler()
 bpy.ops.object.select_all(action='DESELECT');mesh.select_set(True);rig.select_set(True);bpy.context.view_layer.objects.active=rig
-report={'schema':'chikun-native-character-v2','flightPose':'prone-superman-right','source_sha256':hashlib.sha256(Path(a.source).read_bytes()).hexdigest(),'source_vertices':source_vertices,'source_triangles':source_triangles,'triangles':len(mesh.data.polygons),'bones':list(bones),'vertex_color_attribute':color.layer_name if hasattr(color,'layer_name') else mesh.data.color_attributes[0].name,'frameSize':256,'columns':4,'rows':6,'clips':clips,'character':'chikun-original','notes':'Owner mesh and colors, rightward prone Superman flight with raised arms and forward neck aim. 18 motion states, 30fps projection. No separate UV texture was present in source.'}
+report={'schema':'chikun-native-character-v3','flightPose':'prone-superman-right','source_sha256':hashlib.sha256(Path(a.source).read_bytes()).hexdigest(),'source_vertices':source_vertices,'source_triangles':source_triangles,'triangles':len(mesh.data.polygons),'surfaceRepair':{'openEdgesBefore':open_edges_before,'openEdgesAfter':open_edges_after,'method':'independently capped and triangulated sleeve, torso and cuff seams; original paint and skin weights retained'},'bones':list(bones),'vertex_color_attribute':mesh.data.color_attributes[0].name,'frameSize':256,'columns':4,'rows':6,'clips':clips,'character':'chikun-original','notes':'Owner mesh and colors, closed surface, rightward prone Superman flight. 21 motion states including four full-turn flourishes, 30fps projection. No separate UV texture was present in source.'}
 (out/'character.json').write_text(json.dumps(report,indent=2))
 bpy.ops.wm.save_as_mainfile(filepath=str(out/'Chikun-Superman-Rig.blend'),compress=True)
 if not a.preview:

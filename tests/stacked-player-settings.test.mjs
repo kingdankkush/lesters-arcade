@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { defaultStackedSettings, readStackedSettings, saveStackedSettings } from '../apps/portal/src/stacked-player-settings.mjs';
+import { defaultStackedSettings, readStackedSettings, saveStackedSettings, applyStackedPresentationPreferences } from '../apps/portal/src/stacked-player-settings.mjs';
 import { validateStackedBridgeMessage, validateStackedBridgeSettings } from '../apps/portal/src/stacked-bridge-protocol.mjs';
 test('settings survive reload, preserve safe defaults and never recover unaccepted input timing', () => {
   let raw;
@@ -17,4 +17,14 @@ test('preference requests accept only bounded projection choices', () => {
   const m = {protocol:'stacked-bridge/v1', type:'game:preferences-request', sessionId:'test-session', messageId:'game-1', payload:{reduceMotion:true,reducedEffects:false,audioReactive:true,ghostPiece:true,gridLines:true,sfxEnabled:true}};
   assert.equal(validateStackedBridgeMessage(m).ok, true);
   assert.equal(validateStackedBridgeMessage({...m,payload:{...m.payload,startLevel:15}}).ok, false);
+});
+
+test('left-handed layout and flash preferences roundtrip without changing handling', () => {
+  const settings=defaultStackedSettings(),p={reduceMotion:false,reducedEffects:false,audioReactive:true,ghostPiece:true,gridLines:true,sfxEnabled:true,reduceFlash:false,touchLeftHanded:true};
+  const updated=applyStackedPresentationPreferences(settings,p);
+  let raw; const storage={setItem:(k,v)=>{raw=v;},getItem:()=>raw};
+  saveStackedSettings(storage,updated); const restored=readStackedSettings(storage);
+  assert.equal(restored.controls.touchLeftHanded,true);assert.equal(restored.accessibility.reduceFlash,false);
+  assert.deepEqual(restored.handling,settings.handling);
+  assert.equal(validateStackedBridgeMessage({protocol:'stacked-bridge/v1',type:'game:preferences-request',sessionId:'test-session',messageId:'game-1',payload:p}).ok,true);
 });

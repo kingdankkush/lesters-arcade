@@ -48,28 +48,21 @@ test('terminal runtime is immutable and ignores post-terminal input', () => {
   assert.deepEqual(runtime.result(), before);
 });
 
-test('Chikun difficulty rises smoothly from canonical fork progress', () => {
+test('Chikun difficulty follows elapsed time without shrinking gaps', () => {
   const opening = createChikunRuntime({ seed: 77, maxTicks: 3_000 }).snapshot();
-  const later = buildChikunDifficulty(2_900);
+  const later = buildChikunDifficulty(28_800);
 
   assert.equal(opening.difficulty.level, 1);
-  assert.equal(later.level, 7);
+  assert.equal(later.level, 5);
   assert.ok(later.scrollPixelsPerTick >= opening.difficulty.scrollPixelsPerTick);
   assert.ok(later.safeGapHeight <= opening.difficulty.safeGapHeight);
   assert.ok(later.safeGapHeight >= 238);
-  assert.ok(later.scrollPixelsPerTick <= 3.35);
+  assert.ok(later.scrollPixelsPerTick === 4.8);
   assert.equal(Object.isFrozen(later), true);
 });
 
 test('near-miss scoring is deterministic, bounded, and included in terminal results', () => {
-  const runtime = createChikunRuntime({ seed: 1, maxTicks: 1_560 });
-  while (!runtime.terminal) {
-    const snapshot = runtime.snapshot();
-    const nextFork = snapshot.forks.find((fork) => !fork.passed && fork.x + fork.width > snapshot.chikun.x);
-    const targetY = nextFork?.gapCenter ?? 360;
-    runtime.step({ flap: snapshot.chikun.y > targetY + 12 || (snapshot.chikun.velocityY > 2.2 && snapshot.chikun.y > targetY - 20) });
-  }
-  const a = runtime.result();
+  const a = simulateChikunRun({seed:1,taps:[352],maxTicks:470});
   const b = replayChikunRun(a.evidence);
 
   assert.deepEqual(a, b);

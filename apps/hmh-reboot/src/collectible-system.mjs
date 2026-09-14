@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { collectibleIsAvailable } from './objective-rewards.mjs';
 const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 function validTick(value) {
@@ -26,24 +27,30 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
   'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999 },
 });
 
-export function createCollectibleState({ placements, collectionRadius = 80 } = {}) {
+export function createCollectibleState({ placements, objectivePlacements = [], collectionRadius = 80 } = {}) {
   if (!Array.isArray(placements) || placements.length < 10 || placements.length > 13) throw new TypeError('ten authored placements and at most three scheduled rare placements are required');
   if (!Number.isFinite(collectionRadius) || collectionRadius <= 0) throw new TypeError('collectionRadius must be positive');
+  if (!Array.isArray(objectivePlacements) || objectivePlacements.length > 7 || objectivePlacements.some(p=>!p.requiredObjective)) throw new TypeError('at most seven objective rewards are allowed');
   const ids = new Set();
-  const entries = placements.map((placement) => {
+  const entries = [...placements,...objectivePlacements].map((placement) => {
     if (!placement?.id || ids.has(placement.id)) throw new TypeError(`invalid or duplicate collectible ${String(placement?.id)}`);
     ids.add(placement.id);
     finitePoint(placement, `collectible ${placement.id}`);
-    const effect = COLLECTIBLE_EFFECTS[placement.assetId];
+    const baseEffect = COLLECTIBLE_EFFECTS[placement.assetId];
+    const effect = baseEffect && Object.freeze({...baseEffect,...(placement.requiredObjective ? {xpGain:0,...(placement.kind ? {kind:placement.kind} : {})} : {})});
     if (!effect) throw new TypeError(`unsupported collectible asset ${String(placement.assetId)}`);
     const availableTick = placement.availableTick ?? 0;
     if (!Number.isInteger(availableTick) || availableTick < 0 || availableTick > 32_400) throw new TypeError('collectible availableTick must be within the first nine minutes');
+    if (placement.respawnTicks !== undefined && ![7200,10800].includes(placement.respawnTicks)) throw new TypeError('respawn must be 120 or 180 simulation seconds');
     return Object.freeze({ placement: Object.freeze({ ...placement, availableTick }), effect });
   }).sort((left, right) => lexical(left.placement.id, right.placement.id));
   return {
     entries: Object.freeze(entries),
     collectionRadius,
     collectedIds: new Set(),
+    unlockedObjectives: new Set(),
+    collectionCounts: new Map(),
+    readyTicks: new Map(),
     activeEffects: new Map(),
     sequence: 0,
     lastTick: -1,
@@ -52,6 +59,12 @@ export function createCollectibleState({ placements, collectionRadius = 80 } = {
 
 export function getCollectibleSnapshot(state, { tick } = {}) {
   validTick(tick);
+  let readyCount=0,cooldownCount=0,lockedCount=0;
+  for(const {placement} of state.entries){
+    if(collectibleIsAvailable(state,placement,tick))readyCount++;
+    if(state.readyTicks.has(placement.id)&&tick<state.readyTicks.get(placement.id))cooldownCount++;
+    if(placement.requiredObjective&&!state.unlockedObjectives.has(placement.requiredObjective))lockedCount++;
+  }
   const activeEffects = [...state.activeEffects.values()]
     .filter((effect) => tick < effect.expiresTick)
     .sort((left, right) => lexical(left.effectId, right.effectId))
@@ -60,6 +73,9 @@ export function getCollectibleSnapshot(state, { tick } = {}) {
     tick,
     collectedCount: state.collectedIds.size,
     remainingCount: state.entries.length - state.collectedIds.size,
+    readyCount,
+    cooldownCount,
+    lockedCount,
     collectedIds: [...state.collectedIds].sort(),
     activeEffects,
     damageMultiplier: activeEffects.some((effect) => effect.effectId === 'berserk-candle') ? 2 : 1,
@@ -67,7 +83,7 @@ export function getCollectibleSnapshot(state, { tick } = {}) {
   });
 }
 
-export function stepCollectibles(state, { tick, player } = {}) {
+export function stepCollectibles(state, { tick, player, canCollect = () => true, canReach = () => true } = {}) {
   validTick(tick);
   finitePoint(player, 'player');
   if (tick <= state.lastTick) throw new TypeError('collectible tick must be monotonic');
@@ -86,10 +102,13 @@ export function stepCollectibles(state, { tick, player } = {}) {
   }
   for (const entry of state.entries) {
     const placement = entry.placement;
-    if (state.collectedIds.has(placement.id)) continue;
-    if (tick < placement.availableTick) continue;
+    if (!collectibleIsAvailable(state, placement, tick)) continue;
     if (Math.hypot(player.x - placement.x, player.y - placement.y) > state.collectionRadius) continue;
+    if (!canCollect(entry.effect, placement) || !canReach(placement)) continue;
     state.collectedIds.add(placement.id);
+    const collectionCount=(state.collectionCounts.get(placement.id)??0)+1;
+    state.collectionCounts.set(placement.id,collectionCount);
+    if (placement.respawnTicks) state.readyTicks.set(placement.id,tick+placement.respawnTicks);
     const effect = entry.effect;
     const event = {
       id: `collectible-event:${String(state.sequence).padStart(6, '0')}`,
@@ -102,6 +121,7 @@ export function stepCollectibles(state, { tick, player } = {}) {
       effectId: effect.effectId,
       kind: effect.kind,
       ...effect,
+      ...(collectionCount > 1 ? {xpGain:0} : {}),
     };
     state.sequence += 1;
     if (effect.kind === 'timed') {

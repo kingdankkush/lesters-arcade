@@ -3,14 +3,16 @@ import { validateStackedBridgeMessage } from './stacked-bridge-protocol.mjs';
 import { reassembleStackedEvidence } from './stacked-evidence-transport.mjs';
 import { createStackedPortalLifecycle } from './stacked-portal-lifecycle.mjs';
 import { createStackedAudioSampler } from './stacked-audio.mjs';
-import { saveStackedSettings } from './stacked-player-settings.mjs';
+import { saveStackedSettings, applyStackedPresentationPreferences } from './stacked-player-settings.mjs';
 
 export function createStackedHost({ mount, session, startLevel = 1, profile, settings, music, onReady = () => {}, onState = () => {}, onResult = () => {}, onRestart = () => {}, onExit = () => {}, onError = () => {}, persistRanked }) {
   const sessionId = session.urlSessionId ?? session.sessionId;
   const iframe = document.createElement('iframe');
   iframe.className = 'stacked-game-frame'; iframe.title = "STACKED — Lester's Arcade"; iframe.src = '/stacked/index.html';
   iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin'); iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad');
-  const channel = new MessageChannel(), sampler = createStackedAudioSampler(music);
+  const channel = new MessageChannel();
+  let sampler=null;
+  const visualizersEnabled=()=>!matchMedia('(pointer: coarse)').matches && iframe.clientWidth>600;
   let sequence = 0, childSequence = 0, ready = false, disposed = false, audioRaf = 0, lastAudio = 0, worker = null, cancelVerification = null;
   const chunks = [];
   const send = (type, payload = {}) => {
@@ -35,7 +37,8 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
   const readyTimer = setTimeout(() => { if (!ready) { fail(new Error('STACKED did not finish loading. Return to the arcade and try again.')); destroy(); } }, 20000);
   const sample = now => {
     if (disposed) return;
-    if (ready && now - lastAudio >= 1000 / 30) {
+    if (ready && !document.hidden && visualizersEnabled() && settings.video.audioReactive && now - lastAudio >= 1000 / 30) {
+      if(!sampler) { sampler=createStackedAudioSampler(music); sampler.resume(); }
       const audio = sampler.sample(now); if (audio) send('portal:audio-frame', { audio }); lastAudio = now;
     }
     audioRaf = requestAnimationFrame(sample);
@@ -57,13 +60,13 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
         const digest = '0x' + [...new Uint8Array(await crypto.subtle.digest('SHA-256', evidence))].map(byte => byte.toString(16).padStart(2, '0')).join('');
         if (disposed) return;
         if (digest !== data.payload.evidenceDigest || evidence.length !== data.payload.totalRawBytes) throw new Error('Evidence digest mismatch');
-        const result = await lifecycle.finish(evidence, data.payload.tuple);
+        const result = await lifecycle.finish(evidence, data.payload.tuple, {inputDevice:data.payload.summary.handling.inputDevice});
         if (disposed) return;
         send('portal:result-status', { accepted: result.ok, message: result.ok ? result.ranked ? 'Replay verified. This is a local Ranked preview, not an online or paid leaderboard.' : 'Replay verified locally. Free Mode did not write to your profile, achievements or score boards.' : 'Not saved: ' + result.reason });
         onResult(result);
       } else if (data.type === 'game:preferences-request') {
         const p = data.payload;
-        settings = { ...settings, accessibility: { ...settings.accessibility, reduceMotion: p.reduceMotion }, video: { ...settings.video, reducedEffects: p.reducedEffects, audioReactive: p.audioReactive, ghostPiece: p.ghostPiece, gridLines: p.gridLines }, audio: { ...settings.audio, sfxEnabled: p.sfxEnabled } };
+        settings = applyStackedPresentationPreferences(settings, p);
         let saved = false;
         try { saved = saveStackedSettings(window.localStorage, settings); } catch {}
         send('portal:settings', { settings });
@@ -90,6 +93,6 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
     iframe.remove();
   }
   document.documentElement.dataset.embeddedCabinet = 'stacked';
-  mount.replaceChildren(iframe); channel.port1.start(); sampler.resume(); audioRaf = requestAnimationFrame(sample);
+  mount.replaceChildren(iframe); channel.port1.start(); audioRaf = requestAnimationFrame(sample);
   return { destroy, pause: () => send('portal:pause'), resume: () => send('portal:resume'), frame: iframe };
 }

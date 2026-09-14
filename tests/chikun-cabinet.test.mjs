@@ -40,8 +40,8 @@ test('WO-55 Chikun ships one valid playable ranked Cabinet SDK manifest', () => 
   assert.equal(result.manifest.id, 'chikun');
   assert.equal(result.manifest.version, CHIKUN_CABINET_VERSION);
   assert.equal(raw.runtimeVersion, CHIKUN_RUNTIME_VERSION);
-  assert.equal(CHIKUN_CABINET_VERSION, '0.6.0');
-  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v4');
+  assert.equal(CHIKUN_CABINET_VERSION, '0.7.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v5');
   assert.equal(result.manifest.status, 'playable');
   assert.equal(result.manifest.controlScheme, 'tap');
   assert.equal(result.manifest.rankedEligible, true);
@@ -55,7 +55,7 @@ test('WO-55 Chikun vertical slice has deterministic flap/fork/coin scoring rules
   assert.equal(config.version, CHIKUN_CABINET_VERSION);
   assert.equal(config.runtimeVersion, CHIKUN_RUNTIME_VERSION);
   assert.equal(config.sdkVersion, '1.0.0');
-  assert.equal(config.rules.input, 'tap-to-flap');
+  assert.equal(config.rules.input, 'tap-jump-tap-fly');
   assert.equal(config.rules.score.coinValue, 25);
   assert.equal(config.rules.score.forkPassValue, 10);
   assert.equal(config.rules.score.nearMissValue, 40);
@@ -82,7 +82,7 @@ test('Chikun deterministic core normalizes bounded flap evidence and replays the
   assert.equal(CHIKUN_FIXED_STEP_HZ, 60);
   assert.equal(result.seed, 55);
   assert.equal(result.fixedStepHz, CHIKUN_FIXED_STEP_HZ);
-  assert.equal(result.evidence.version, 'chikun-flap-evidence-v2');
+  assert.equal(result.evidence.version, 'chikun-flap-evidence-v3');
   assert.deepEqual(result.evidence.flapSteps, [0, 4, 11, 18, 27]);
   assert.equal(Object.isFrozen(result.evidence), true);
   assert.equal(Object.isFrozen(result.evidence.flapSteps), true);
@@ -126,7 +126,7 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
 
   const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
   assert.equal(ctx.seed, session.seed);
-  assert.equal(ctx.buildHash, 'site-1.4.0:game-1.4.0:cabinet-0.6.0');
+  assert.equal(ctx.buildHash, 'site-1.4.0:game-1.4.0:cabinet-0.7.0');
   assert.equal(ctx.seasonId, 'chikun-season-preview-1');
   assert.equal(result.seed, session.seed);
   assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));

@@ -5,6 +5,7 @@ node_modules
 .hermes
 .tmp
 outputs
+work
 *.blend1
 .env
 .env.*

@@ -1,6 +1,8 @@
+import { buildChikunProfile } from '../chikun-profile.mjs';
 import { buildHmhRunHistoryModel, buildHmhRunDetailsModel } from '../hmh-run-history.mjs';
 import { RUN_HISTORY_LIMIT } from '../persistence.mjs';
 import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
+import { buildStackedProfileFacts, stackedInputLabel } from '../stacked-profile.mjs';
 
 const formatPermille = (value) => `${(Math.max(0, Number(value) || 0) / 10).toFixed(1)}%`;
 const titleCase = (value) => String(value ?? '').split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
@@ -464,39 +466,40 @@ export function createOfficialProfileRoute({
     statsCard.append(statsGameBar);
 
     const gp = snapshot?.progress?.[routeState.gameId];
+    const stackedFacts=routeState.gameId==='stacked'?buildStackedProfileFacts(gp,connectedWallet):null;
+    const factText=value=>value===null?'Not recorded':value.toLocaleString();
     const hmhStats = routeState.gameId === 'lester-blaster'
       ? buildHardMoneyHeroesStatsModule(state, connectedWallet, routeState.gameId)
       : null;
-    const chikunRuns = routeState.gameId === 'chikun'
-      ? Object.values(state.sessions ?? {}).filter((session) => session.gameId === 'chikun' && session.wallet === connectedWallet)
-      : [];
-    const chikunTotals = chikunRuns.reduce((totals, session) => {
-      totals.coins += session.runStats?.coinsCollected ?? 0;
-      totals.forks += session.runStats?.forksPassed ?? 0;
-      totals.nearMisses = (totals.nearMisses ?? 0) + (session.runStats?.nearMisses ?? 0);
-      totals.bestCombo = Math.max(totals.bestCombo ?? 0, session.runStats?.bestCombo ?? 0);
-      totals.flaps += session.runStats?.flapCount ?? 0;
-      totals.awards += session.runStats?.achievements?.length ?? 0;
-      return totals;
-    }, { coins: 0, forks: 0, nearMisses: 0, bestCombo: 0, flaps: 0, awards: 0 });
+    const chikunTotals = buildChikunProfile(state.sessions, connectedWallet);
+    const chikunNumber = value => value == null ? 'Unknown' : value.toLocaleString();
     if (!gp || (gp.paidRuns + gp.freeRuns) === 0) {
       const empty = el('div', { className: 'profile-empty-state' });
       appendText(empty, 'strong', `No runs recorded for ${getGame(routeState.gameId).title} yet.`);
-      appendText(empty, 'small', 'Start Free Mode to practice. Local run metadata can fill this card with recorded score, kills, survival, achievements, and cached receipt entries.');
+      appendText(empty, 'small', routeState.gameId==='stacked'?'Play Free Mode for its separate practice medal shelf, or a local Ranked run to record verified scores, lines, level and combos here.':'Start Free Mode to practice. Local run metadata can fill this card with recorded score, kills, survival, achievements, and cached receipt entries.');
       statsCard.append(empty);
     } else {
       const bestScore = hmhStats?.bestScore ?? Math.max(gp.bestPaidScore ?? 0, gp.bestFreeScore ?? 0);
-      const stats = routeState.gameId === 'chikun' ? [
-        ['Best Score', bestScore.toLocaleString()],
-        ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
-        ['Longest Flight', formatSeconds(gp.longestRunSeconds ?? 0)],
-        ['Coins', chikunTotals.coins.toLocaleString()],
-        ['Obstacles Cleared', chikunTotals.forks.toLocaleString()],
-        ['Near Misses', chikunTotals.nearMisses.toLocaleString()],
-        ['Best Combo', chikunTotals.bestCombo.toLocaleString()],
-        ['Flaps', chikunTotals.flaps.toLocaleString()],
-        ['Awards', chikunTotals.awards.toLocaleString()],
-        ['Integrity', 'Replay verified'],
+      const stats = stackedFacts ? [
+        ['Best Score',factText(stackedFacts.bestScore)],['Local Ranked Runs',String(stackedFacts.runs)],
+        ['Total Lines',factText(stackedFacts.totalLines)],['Pieces',factText(stackedFacts.totalPieces)],
+        ['HALVINGS',factText(stackedFacts.totalHalvings)],['Best Level',factText(stackedFacts.bestLevel)],
+        ['Best Combo',factText(stackedFacts.bestCombo)],['Best Back-to-Back',factText(stackedFacts.bestBackToBack)],
+        ['Perfect Clears',factText(stackedFacts.perfectClears)],['Spins',factText(stackedFacts.spins)],
+        ['Ledger Rows Cleared',factText(stackedFacts.ledgerCleared)],['Holds',factText(stackedFacts.holds)],
+        ['Longest Run',stackedFacts.longestTicks===null?'Not recorded':formatSeconds(stackedFacts.longestTicks/60)],
+      ] : routeState.gameId === 'chikun' ? [
+        ['Best Score · Ground & Sky', chikunNumber(chikunTotals.bestScore)],
+        ['Current Runs', chikunNumber(chikunTotals.runs)],
+        ['Longest Run', chikunTotals.longest == null ? 'Unknown' : formatSeconds(chikunTotals.longest)],
+        ['Coins', chikunNumber(chikunTotals.coins)],
+        ['Obstacles Cleared', chikunNumber(chikunTotals.forks)],
+        ['Near Misses', chikunNumber(chikunTotals.nearMisses)],
+        ['Best Combo', chikunNumber(chikunTotals.bestCombo)],
+        ['Flaps', chikunNumber(chikunTotals.flaps)],
+        ['Awards', chikunNumber(chikunTotals.awards)],
+        ['Score Source', 'Device-local'],
+        ['Historical Runs', chikunNumber(chikunTotals.historicalRuns)],
       ] : [
         ['Best Score', bestScore.toLocaleString()],
         ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
@@ -526,16 +529,16 @@ export function createOfficialProfileRoute({
 
       const breakdown = el('div', { className: 'profile-breakdown-grid' });
       const enemyCard = el('div', { className: 'profile-breakdown-card' });
-      appendText(enemyCard, 'span', routeState.gameId === 'chikun' ? 'Flight ledger' : 'Enemy breakdown', 'cabinet-status-label');
-      const enemyCopy = routeState.gameId === 'chikun'
-        ? `${chikunTotals.coins} coins collected · ${chikunTotals.forks} forks cleared · ${chikunTotals.nearMisses} near misses · ${chikunTotals.flaps} recorded flaps.`
+      appendText(enemyCard, 'span', stackedFacts?'Rising ledger':routeState.gameId === 'chikun' ? 'Flight ledger' : 'Enemy breakdown', 'cabinet-status-label');
+      const enemyCopy = stackedFacts?`${factText(stackedFacts.ledgerReceived)} rows received · ${factText(stackedFacts.ledgerCleared)} rows cleared. Older fields without a captured value stay unrecorded.`:routeState.gameId === 'chikun'
+        ? `Ground & Sky records: ${chikunNumber(chikunTotals.coins)} coins · ${chikunNumber(chikunTotals.forks)} obstacles · ${chikunNumber(chikunTotals.nearMisses)} near misses. Older physics remain in history.`
         : hmhStats?.enemyBreakdown?.length
         ? hmhStats.enemyBreakdown.slice(0, 3).map((enemy) => `${enemy.title}: ${enemy.kills}`).join(' · ')
         : 'No typed enemy kills recorded yet.';
       appendText(enemyCard, 'small', enemyCopy);
       const bossCard = el('div', { className: 'profile-breakdown-card' });
-      appendText(bossCard, 'span', routeState.gameId === 'chikun' ? 'Ranked integrity' : 'Boss ledger', 'cabinet-status-label');
-      const bossCopy = routeState.gameId === 'chikun'
+      appendText(bossCard, 'span', stackedFacts?'Device-local preview':routeState.gameId === 'chikun' ? 'Ranked integrity' : 'Boss ledger', 'cabinet-status-label');
+      const bossCopy = stackedFacts?'Scores are replay-verified on this device. Input labels are self-reported. Free medals are separate; these records are not online rankings or chain confirmations.':routeState.gameId === 'chikun'
         ? 'Ranked results are accepted only after the parent replays the child input evidence against the issued seed, build, and season.'
         : hmhStats?.bossBreakdown?.length
         ? hmhStats.bossBreakdown.slice(0, 3).map((boss) => `${boss.title}: ${boss.kills}`).join(' · ')
@@ -556,8 +559,8 @@ export function createOfficialProfileRoute({
           const row = el('div', { className: 'game-history-row' });
           const rs = s.runStats ?? {};
           appendText(row, 'span', `${(s.score ?? rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
-          appendText(row, 'span', routeState.gameId === 'chikun'
-            ? `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.coinsCollected ?? 0} coins · ${rs.forksPassed ?? 0} forks · ${rs.nearMisses ?? 0} near misses · ${s.survivalLabel ?? formatSurvive(rs.elapsedSeconds ?? 0)}`
+          appendText(row, 'span', stackedFacts?`${s.urlSessionId??s.sessionId.slice(0,12)} · ${rs.linesCleared??'—'} lines · Level ${rs.level??'—'} · Combo ${rs.maxCombo??'—'} · ${stackedInputLabel(rs.inputDevice)} · ${formatSurvive(rs.elapsedSeconds??0)}`:routeState.gameId === 'chikun'
+            ? `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.coinsCollected ?? "?"} coins · ${rs.forksPassed ?? "?"} obstacles · ${rs.nearMisses ?? "?"} near misses · ${s.survivalLabel ?? formatSurvive(rs.elapsedSeconds ?? 0)}`
             : `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${s.survivalLabel ?? formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
           appendText(row, 'span', s.trust?.label ?? 'Cached metadata', `game-history-chain trust-${s.trust?.tone ?? 'muted'}`);
           if (s.detailHref) {

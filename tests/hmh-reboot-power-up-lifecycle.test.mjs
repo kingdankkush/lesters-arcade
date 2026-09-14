@@ -260,7 +260,7 @@ test('runtime feeds the chips, sounds expiry from the authoritative event and re
   assert.match(main, /collectible:expired[\s\S]{0,200}combatAudio\.play\('powerup-expire'/);
   // Expiry audio lives inside the existing onStep event loop, after the
   // authoritative step and before the collected branch, never elsewhere.
-  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor \}\)[\s\S]{0,700}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
+  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)[\s\S]{0,700}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
   assert.equal((main.match(/powerup-expire/g) ?? []).length, 1);
   assert.match(audio, /'powerup-expire': '\.\.\/assets\/audio\/sfx\/hmh-[a-z-]+\.wav'/);
   assert.equal(HMH_SFX_CUE_REGISTRY['powerup-expire'].family, 'reward');
@@ -391,7 +391,7 @@ test('healing, timed-effect telemetry, refresh, expiry, and reset are 60/30/20 p
 
 test('runtime keeps collectibles inside fixed-tick authority and routes nuke hits through normal combat and boss resolution', async () => {
   const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(main, /simulation\.onStep[\s\S]*stepCollectibles\(collectibleState, \{ tick, player: actor \}\)/);
+  assert.match(main, /simulation\.onStep[\s\S]*stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)/);
   assert.match(main, /event\.kind === 'nuke'[\s\S]*combatHitIntents\.push/);
   assert.match(main, /resolveCombatHits\([\s\S]*applyLiquidatorDamage/);
   assert.doesNotMatch(main, /event\.kind === 'nuke'[\s\S]{0,900}liquidatorBoss\.health\s*=/);

@@ -151,7 +151,7 @@ test('no child module keeps a private copy of the shared hash helpers', async ()
   const srcDir = new URL('../apps/hmh-reboot/src/', import.meta.url);
   const files = (await readdir(srcDir)).filter((name) => name.endsWith('.mjs') && name !== 'deterministic-hash.mjs');
   const importers = {
-    seededUnit: ['authored-prop-atlas.mjs', 'combat-events.mjs', 'weapon-system.mjs', 'world-decals.mjs'],
+    seededUnit: ['authored-prop-layout.mjs', 'authored-prop-display.mjs', 'combat-events.mjs', 'weapon-system.mjs', 'world-decals.mjs'],
     feedbackUnit: ['combat-feedback.mjs', 'grenade-feedback.mjs'],
     deterministicUnit: ['main.mjs', 'weapon-vfx.mjs'],
     mix: ['bear-market-burner-event.mjs', 'forked-standard-event.mjs', 'lightning-ledger-event.mjs'],

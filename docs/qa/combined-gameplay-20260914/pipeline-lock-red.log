@@ -1,0 +1,24 @@
+F
+======================================================================
+FAIL: test_live_owner_query_never_signals_on_windows (__main__.ProcessProbeTests.test_live_owner_query_never_signals_on_windows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\just_\Documents\Codex\2026-09-12\my\work\lesters-arcade\tests\hmh-pipeline-lock.test.py", line 16, in test_live_owner_query_never_signals_on_windows
+    self.assertTrue(pid_is_alive(os.getpid()))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\just_\Documents\Codex\2026-09-12\my\work\lesters-arcade\scripts\hmh_pipeline_lock.py", line 14, in pid_is_alive
+    os.kill(pid, 0)
+  File "C:\Users\just_\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\just_\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\just_\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py", line 1198, in _execute_mock_call
+    raise effect
+AssertionError: Windows liveness query must not send a signal
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

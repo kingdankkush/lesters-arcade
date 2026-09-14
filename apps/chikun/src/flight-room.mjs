@@ -5,6 +5,8 @@ const canvas=document.querySelector('#stage'),ctx=canvas.getContext('2d',{alpha:
 const names=Object.keys(CHIKUN_CLIPS),buttons=new Map();
 let clip='cruise',age=0,last=0,clock=0,disposed=false,paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const motion=document.querySelector('#motion'),time=document.querySelector('#time');
+const pose=document.querySelector('#pose');
+pose.addEventListener('input',()=>{paused=true;age=Number(pose.value)/30;sync();});
 function sync(){motion.textContent=paused?'Play animation':'Pause animation';motion.setAttribute('aria-pressed',String(paused));}
 function label(){document.querySelector('#clipLabel').textContent=clip.replaceAll('_',' ');document.querySelector('.caption span:last-child').textContent=`${String(names.indexOf(clip)+1).padStart(2,'0')} / ${names.length}`;}
 for(const [i,name] of names.entries()){
@@ -16,6 +18,7 @@ document.querySelector('#sound').addEventListener('click',async()=>{await audio.
 function frame(now){
  if(disposed)return;const dt=last?Math.min(.05,(now-last)/1000):0;last=now;
  if(!paused&&document.visibilityState!=='hidden')age+=dt;
+ if(!paused)pose.value=String(Math.min(23,Math.floor((age%(CHIKUN_CLIPS[clip].loop?.8:1.1))*30)));
  world.draw(ctx,{tick:clock*60},{reduced:false});
  character.draw(ctx,{tick:0,chikun:{x:825,y:365,velocityY:0}},dt,{previewClip:clip,previewTime:age%(CHIKUN_CLIPS[clip].loop?10000:1.1)});
  requestAnimationFrame(frame);

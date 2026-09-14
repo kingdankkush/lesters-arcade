@@ -16,7 +16,7 @@ test('W8B Lightning Ledger is a six-cell channel weapon in the authoritative loa
   const definition = HMH_WEAPON_DEFINITIONS['lightning-ledger'];
   assert.equal(definition.kind, 'channel');
   assert.equal(definition.clipSize, 6);
-  assert.equal(definition.displayName, 'Lightning Ledger');
+  assert.equal(definition.displayName, 'Arc Rifle');
 
   const state = createWeaponLoadout({
     weaponIds: ['coin-blaster', 'lightning-ledger'],

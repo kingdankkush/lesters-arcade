@@ -114,9 +114,9 @@ test('native art manifest locks Lester and Lilly identities while the parent own
   assert.equal(Object.hasOwn(lester, 'unlockGate'), false, 'projection metadata must not duplicate parent unlock policy');
   assert.equal(Object.hasOwn(lilly, 'unlockGate'), false, 'projection metadata must not duplicate parent unlock policy');
   const unlocks = Object.fromEntries(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.unlockableCharacters.map((entry) => [entry.id, entry]));
-  assert.deepEqual(unlocks['lester-original'].gate, { type: 'ranked-matches-played', count: 10 });
+  assert.deepEqual(unlocks['lester-original'].gate, { type: 'ranked-matches-played', count: 5 });
   assert.equal(unlocks['lester-original'].legacyMigrationAchievementId, 'getaway-clear');
-  assert.deepEqual(unlocks.lilly.gate, { type: 'ranked-matches-played', count: 20 });
+  assert.deepEqual(unlocks.lilly.gate, { type: 'ranked-matches-played', count: 10 });
   assert.equal(Object.hasOwn(unlocks.lilly, 'legacyMigrationAchievementId'), false);
   assert.deepEqual(lester.animationClips, lilly.animationClips);
   assert.equal(new Set(lester.animationClips).size, 9);

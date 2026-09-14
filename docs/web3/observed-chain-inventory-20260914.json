@@ -1,0 +1,194 @@
+{
+  "schema": "hmh-readonly-chain-inventory-v1",
+  "observedAt": "2026-09-14T07:49:18.625Z",
+  "chainId": 4441,
+  "blockNumber": 50679123,
+  "rpcUrl": "https://liteforge.rpc.caldera.xyz/http",
+  "officialDocs": "https://docs.litvm.com/get-started-on-testnet/add-to-wallet",
+  "settlementLive": false,
+  "transactionsSent": 0,
+  "scoreArtifactSha256": "ca59d7049f591f4eed4b2f383911fd133c75579da818f49af1054dfd89fb1c6b",
+  "contracts": [
+    {
+      "name": "playerProfileRegistry",
+      "address": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+      "lane": "legacy",
+      "codeBytes": 3303,
+      "codeHash": "0x5e76cc453f5870eb4defc62216ad131f56e939db7c168257446dc4351ce9a1a1",
+      "deployed": true
+    },
+    {
+      "name": "gameRegistry",
+      "address": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",
+      "lane": "legacy",
+      "codeBytes": 4059,
+      "codeHash": "0x3b45a62d371bd05ea230f47ba66859cac618b2ab9828e37274e7451b20c4c475",
+      "deployed": true
+    },
+    {
+      "name": "arcadePaymentRouter",
+      "address": "0x7c999E9570D44090b9279dbAbE33B361e94bf78B",
+      "lane": "legacy",
+      "codeBytes": 2004,
+      "codeHash": "0x1322b15eee10393f94da26150e127d1d444398cd3967db079696b866e798349d",
+      "deployed": true
+    },
+    {
+      "name": "scoreSubmissionRegistry",
+      "address": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+      "lane": "legacy",
+      "codeBytes": 3736,
+      "codeHash": "0x3f3bf69c94a6d6f0e268750d30f299ff646c2322da5a4f8a4a60290b16929c70",
+      "deployed": true,
+      "selectorsPresent": [
+        {
+          "signature": "MAX_ACHIEVEMENTS_PER_SESSION()",
+          "selector": "0xd8ef1d37",
+          "present": false
+        },
+        {
+          "signature": "MAX_COMBO()",
+          "selector": "0x8b53dd05",
+          "present": false
+        },
+        {
+          "signature": "MAX_KILLS()",
+          "selector": "0x91b95b9f",
+          "present": false
+        },
+        {
+          "signature": "MAX_SCORE()",
+          "selector": "0x27ff6223",
+          "present": false
+        },
+        {
+          "signature": "MAX_SURVIVAL_SECONDS()",
+          "selector": "0xd34d9212",
+          "present": false
+        },
+        {
+          "signature": "attestationDigest((bytes32,bytes32,uint256,uint64,uint64,uint64,bytes32,bytes32,uint64),address,bytes32)",
+          "selector": "0x27ae424a",
+          "present": false
+        },
+        {
+          "signature": "gameRegistry()",
+          "selector": "0xda090755",
+          "present": false
+        },
+        {
+          "signature": "getPlayerSessions(address,uint256,uint256)",
+          "selector": "0x49cb049f",
+          "present": true
+        },
+        {
+          "signature": "getRecentSessions(uint256,uint256)",
+          "selector": "0x46412bb6",
+          "present": true
+        },
+        {
+          "signature": "getSession(bytes32)",
+          "selector": "0x39b240bd",
+          "present": true
+        },
+        {
+          "signature": "getSessionAchievements(bytes32)",
+          "selector": "0x930c4941",
+          "present": true
+        },
+        {
+          "signature": "playerSessionCount(address)",
+          "selector": "0x16ed9eab",
+          "present": true
+        },
+        {
+          "signature": "scoresBySession(bytes32)",
+          "selector": "0xe47e6260",
+          "present": true
+        },
+        {
+          "signature": "sessionEnvelopeHash(bytes32)",
+          "selector": "0x2e953325",
+          "present": false
+        },
+        {
+          "signature": "submitSession(bytes32,bytes32,uint256,uint64,uint64,uint64,bytes32,bytes32[])",
+          "selector": "0x7df9b328",
+          "present": true
+        },
+        {
+          "signature": "submitVerifiedSession((bytes32,bytes32,uint256,uint64,uint64,uint64,bytes32,bytes32,uint64),bytes32[],uint8,bytes32,bytes32)",
+          "selector": "0x252900ef",
+          "present": false
+        },
+        {
+          "signature": "totalSessions()",
+          "selector": "0x6f5db0b5",
+          "present": true
+        },
+        {
+          "signature": "trustedVerifier()",
+          "selector": "0x052b82dd",
+          "present": false
+        }
+      ],
+      "selectorCheckIsNotCompatibilityProof": true
+    },
+    {
+      "name": "sessionLedger",
+      "address": "0x699c2313884A68B7dfCffC01337eB429b6609798",
+      "lane": "legacy",
+      "codeBytes": 3172,
+      "codeHash": "0x71cdd1b31e6a07766187c3a85056bce6f8d58b2dc42aca0497f13f93049af1b1",
+      "deployed": true
+    },
+    {
+      "name": "achievementRegistry",
+      "address": "0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53",
+      "lane": "legacy",
+      "codeBytes": 2758,
+      "codeHash": "0x89de5e90cced604dff724fec0eb688e77aeca6273615b76fe482a87bbfcefd92",
+      "deployed": true
+    },
+    {
+      "name": "tournamentPool",
+      "address": "0xbc88DFBaaA82D0F0Cce356924e619f9DCBD17c66",
+      "lane": "legacy",
+      "codeBytes": 2071,
+      "codeHash": "0x4fc78f941875904fc55a75ed8d846ee1c74f4c18aae9845125334da02e96d979",
+      "deployed": true
+    },
+    {
+      "name": "lestersArcadeCore",
+      "address": "0x609CBED352699003dec2381a79EFe5090B56F1D2",
+      "lane": "legacy",
+      "codeBytes": 416,
+      "codeHash": "0x0460a6076f5161364c324a0c2b384d0761e65c92e3c5486a2571a024424c5bf4",
+      "deployed": true
+    },
+    {
+      "name": "GameRegistry",
+      "address": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
+      "lane": "hardened-predicted",
+      "codeBytes": 0,
+      "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+      "deployed": false
+    },
+    {
+      "name": "PlayerProfileRegistry",
+      "address": "0xd49EdAD8c5247ce99D12e70a95293291d2Ee191C",
+      "lane": "hardened-predicted",
+      "codeBytes": 0,
+      "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+      "deployed": false
+    },
+    {
+      "name": "ScoreSubmissionRegistry",
+      "address": "0x55D37C5516F17e12bBd7Ec9ab520D10Cc5098782",
+      "lane": "hardened-predicted",
+      "codeBytes": 0,
+      "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+      "deployed": false
+    }
+  ]
+}

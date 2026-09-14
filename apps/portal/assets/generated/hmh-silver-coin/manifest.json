@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "kind": "cosmetic-game-collectible",
+  "scoreXpAuthority": "none",
+  "blenderVersion": "5.1.2",
+  "frameSize": 96,
+  "columns": 6,
+  "frames": 12,
+  "image": "silver-coin.png",
+  "imageSha256": "b77be4cc1266295a8005b0acce4c6945be8ab8db5157c3d58721c6b0413613f0",
+  "source": "assets-source/hmh-silver-coin/silver-litecoin.blend",
+  "sourceSha256": "81f3d18659a057e9b9abc274590e5dafbafabf2bf8523ac30423f49f5cdcb311",
+  "recipe": "scripts/hmh-blender/build-hmh-silver-coin.py",
+  "recipeSha256": "63394f478e697d44133f2cb7d9f13240a29c30ed88568beb28384309fcd5e95d"
+}

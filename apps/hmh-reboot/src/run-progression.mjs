@@ -4,7 +4,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'proof-of-work': {
     id: 'proof-of-work',
     branch: 'power',
-    title: 'Proof of Work',
+    title: 'Damage',
     mechanicalLabel: '+8% damage + Pistol Power',
     description: 'Gain 8% damage and one Pistol Power tier.',
     maxRank: 3,
@@ -14,7 +14,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'diamond-hands': {
     id: 'diamond-hands',
     branch: 'survival',
-    title: 'Diamond Hands',
+    title: 'Max Health',
     mechanicalLabel: '+20 maximum health',
     description: 'Gain 20 max health and restore the added capacity.',
     maxRank: 3,
@@ -24,7 +24,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'gas-optimization': {
     id: 'gas-optimization',
     branch: 'mobility',
-    title: 'Gas Optimization',
+    title: 'Dash Recharge',
     mechanicalLabel: 'Faster Dash cooldown',
     description: 'Shorten Dash cooldown, up to the authored cap.',
     maxRank: 2,
@@ -34,8 +34,8 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'cold-storage': {
     id: 'cold-storage',
     branch: 'utility',
-    title: 'Cold Storage',
-    mechanicalLabel: '+1 Crypto Bomb',
+    title: 'Extra Grenade',
+    mechanicalLabel: '+1 Grenade',
     description: 'Add one hand grenade charge for the current run.',
     maxRank: 3,
     effect: 'bonusGrenadeCharges',
@@ -44,7 +44,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'block-reward': {
     id: 'block-reward',
     branch: 'power',
-    title: 'Block Reward',
+    title: 'Score & Magazine',
     mechanicalLabel: '+25% score + Pistol Magazine',
     description: 'Gain 25% score and one Pistol Magazine tier. No wallet value.',
     maxRank: 3,
@@ -54,7 +54,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'validator-training': {
     id: 'validator-training',
     branch: 'utility',
-    title: 'Validator Training',
+    title: 'XP Gain',
     mechanicalLabel: '+25% XP gain',
     description: 'Gain 25% more XP from every source.',
     maxRank: 3,
@@ -69,7 +69,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'compound-interest': {
     id: 'compound-interest',
     branch: 'power',
-    title: 'Compound Interest',
+    title: 'Damage Mastery',
     mechanicalLabel: '+3% outgoing damage',
     description: 'Repeatable: gain 3% outgoing damage.',
     maxRank: 25,
@@ -83,7 +83,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'precision-ledger': {
     id: 'precision-ledger',
     branch: 'power',
-    title: 'Precision Ledger',
+    title: 'Critical Chance',
     mechanicalLabel: '+6% critical chance',
     description: 'Add 6% critical chance, up to the authored cap.',
     maxRank: 3,
@@ -93,7 +93,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'hard-fork-rounds': {
     id: 'hard-fork-rounds',
     branch: 'power',
-    title: 'Hard Fork Rounds',
+    title: 'Critical Damage',
     mechanicalLabel: '+35% critical damage',
     description: 'Add 35% critical damage for heavier burst hits.',
     maxRank: 3,
@@ -105,7 +105,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'hot-wallet': {
     id: 'hot-wallet',
     branch: 'mobility',
-    title: 'Hot Wallet',
+    title: 'Movement Speed',
     mechanicalLabel: '+6% speed + Pistol Velocity',
     description: 'Gain 6% speed and one Pistol Velocity tier.',
     maxRank: 3,
@@ -115,7 +115,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'layer-two': {
     id: 'layer-two',
     branch: 'mobility',
-    title: 'Layer Two',
+    title: 'Speed Mastery',
     mechanicalLabel: '+2% movement speed',
     description: 'Repeatable: gain 2% movement speed.',
     maxRank: 25,
@@ -126,7 +126,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'hardened-wallet': {
     id: 'hardened-wallet',
     branch: 'survival',
-    title: 'Hardened Wallet',
+    title: 'Health Mastery',
     mechanicalLabel: '+6 maximum health',
     description: 'Repeatable: gain 6 maximum health.',
     maxRank: 25,
@@ -137,7 +137,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'ledger-conductivity': {
     id: 'ledger-conductivity',
     branch: 'lightning-ledger',
-    title: 'Conductivity',
+    title: 'Arc Range',
     mechanicalLabel: 'Longer and denser chain mesh',
     description: 'Extend jump range, add bounded arcs, and preserve late-chain damage.',
     maxRank: 3,
@@ -148,7 +148,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'ledger-voltage': {
     id: 'ledger-voltage',
     branch: 'lightning-ledger',
-    title: 'Voltage',
+    title: 'Arc Damage',
     mechanicalLabel: 'Harder contact and faster ramp',
     description: 'Raise contact damage, accelerate ramp, and empower the last arc.',
     maxRank: 3,
@@ -159,7 +159,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'ledger-reconciliation': {
     id: 'ledger-reconciliation',
     branch: 'lightning-ledger',
-    title: 'Reconciliation',
+    title: 'Energy Reserves',
     mechanicalLabel: 'Reserve, recovery, and full-chain refund',
     description: 'Carry more cells, reload faster, and refund one bounded full-chain cell.',
     maxRank: 3,
@@ -170,7 +170,7 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'proof-of-network': {
     id: 'proof-of-network',
     branch: 'lightning-ledger-capstone',
-    title: 'Proof of Network',
+    title: 'Overcharged Pulse',
     mechanicalLabel: 'Every fifth pulse gains 25% damage',
     description: 'Deterministically amplify every fifth pulse without adding targets.',
     maxRank: 1,
@@ -180,25 +180,25 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     amount: 1,
   },
   'burner-liquidity': {
-    id: 'burner-liquidity', branch: 'bear-market-burner', title: 'Liquidity',
+    id: 'burner-liquidity', branch: 'bear-market-burner', title: 'Fuel Capacity',
     mechanicalLabel: 'More fuel and faster canister swaps',
     description: 'Increase fuel capacity, improve efficiency, and unlock one emergency refill.',
     maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerLiquidityTier', amount: 1,
   },
   'burner-volatility': {
-    id: 'burner-volatility', branch: 'bear-market-burner', title: 'Volatility',
+    id: 'burner-volatility', branch: 'bear-market-burner', title: 'Burn Damage',
     mechanicalLabel: 'Harder flame and longer burn pressure',
     description: 'Raise contact pressure, extend burn duration, and unlock bounded defeat spread.',
     maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerVolatilityTier', amount: 1,
   },
   'burner-contagion': {
-    id: 'burner-contagion', branch: 'bear-market-burner', title: 'Contagion',
+    id: 'burner-contagion', branch: 'bear-market-burner', title: 'Flame Reach',
     mechanicalLabel: 'Wider cone, longer reach, and scorch hazard',
     description: 'Expand the cone, preserve edge damage, and add capped deterministic scorch zones.',
     maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerContagionTier', amount: 1,
   },
   'total-selloff': {
-    id: 'total-selloff', branch: 'bear-market-burner-capstone', title: 'Total Selloff',
+    id: 'total-selloff', branch: 'bear-market-burner-capstone', title: 'Flame Surge',
     mechanicalLabel: 'Sustained fire triggers one bounded pressure pulse',
     description: 'After a fixed fuel threshold, amplify one pulse and enter a deterministic cooldown.',
     maxRank: 1, requiresWeaponId: 'bear-market-burner',
@@ -206,25 +206,25 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     effect: 'burnerTotalSelloffTier', amount: 1,
   },
   'standard-reach': {
-    id: 'standard-reach', branch: 'forked-standard', title: 'Longer Tines',
+    id: 'standard-reach', branch: 'forked-standard', title: 'Melee Reach',
     mechanicalLabel: 'Longer reach and wider attack arcs',
     description: 'Extend both attacks while preserving bounded contact caps.',
     maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardReachTier', amount: 1,
   },
   'standard-force': {
-    id: 'standard-force', branch: 'forked-standard', title: 'Hard Consensus',
+    id: 'standard-force', branch: 'forked-standard', title: 'Melee Damage',
     mechanicalLabel: 'More damage and knockback',
     description: 'Increase thrust and sweep pressure without adding contacts.',
     maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardForceTier', amount: 1,
   },
   'standard-tempo': {
-    id: 'standard-tempo', branch: 'forked-standard', title: 'Fast Finality',
+    id: 'standard-tempo', branch: 'forked-standard', title: 'Attack Speed',
     mechanicalLabel: 'Faster cadence and shorter whiff recovery',
     description: 'Shorten fixed-tick recovery while retaining a finite whiff cost.',
     maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardTempoTier', amount: 1,
   },
   'canonical-fork': {
-    id: 'canonical-fork', branch: 'forked-standard-capstone', title: 'Canonical Fork',
+    id: 'canonical-fork', branch: 'forked-standard-capstone', title: 'Power Strike',
     mechanicalLabel: 'Every fourth attack gains 25% damage',
     description: 'Deterministically empower every fourth attack without raising target caps.',
     maxRank: 1, requiresWeaponId: 'forked-standard',

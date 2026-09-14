@@ -1,4 +1,6 @@
 import { createLivingField } from './living-field.mjs';
+import { createMusicMotion } from './music-motion.mjs';
+import { createMusicWorld, MUSIC_WORLD_NAMES, JOURNEY_WORLDS } from './music-worlds.mjs';
 
 export const STACKED_EPOCHS = Object.freeze([
   { name: 'GENESIS VAULT', color: 0x53e9ef, accent: 0xbacfff },
@@ -21,42 +23,48 @@ export function createStackedAtmosphere({ layer, Graphics }) {
   const links = Array.from({ length: 192 }, (_, i) => i ? filament.clone() : filament);
   layer.addChild(...links, ...points);
   const field = createLivingField();
-  let audio = null, receivedAt = -10000, level = 0, bass = 0, high = 0;
+  const motion = createMusicMotion(), world = createMusicWorld();
+  let mode = '', changedAt = 0;
   return {
-    audio(frame, now) { audio = frame; receivedAt = now; },
-    draw({ now, tick, lines = 0, width, height, settings }) {
+    audio(frame, now) { motion.audio(frame, now); },
+    draw({ now, tick, lines = 0, width, height, settings, feedback = {} }) {
       const zoneIndex = Math.max(0, boundaries.findLastIndex(value => tick >= value));
       const zone = STACKED_EPOCHS[zoneIndex], previous = STACKED_EPOCHS[Math.max(0, zoneIndex - 1)];
       const mix = Math.min(1, (tick - boundaries[zoneIndex]) / 150);
       const color = mixColor(previous.color, zone.color, mix);
       const reduced = settings.accessibility.reduceMotion;
-      const available = audio?.available && now - receivedAt < 500 && settings.video.audioReactive;
-      level += ((available ? audio.level / 1000 : 0.08) - level) * 0.13;
-      bass += ((available ? audio.bass / 1000 : 0.05) - bass) * 0.15;
-      high += ((available ? audio.high / 1000 : 0.02) - high) * 0.1;
-      const living = field.update({ now, width, height, lines, reducedMotion: reduced, reducedEffects: settings.video.reducedEffects, level, bass, high });
+      const { time, available, level, bass, high, beat } = motion.update(now, reduced, settings.video.audioReactive);
+      const intensity = settings.video.effectsIntensity ?? 0.7;
+      const chosen = settings.video.visualizer ?? 'journey';
+      const nextMode = chosen === 'journey' ? JOURNEY_WORLDS[zoneIndex] : MUSIC_WORLD_NAMES[chosen] ? chosen : 'living';
+      if (mode !== nextMode) { mode = nextMode; changedAt = time; }
+      const fade = reduced ? 1 : Math.min(1, 0.25 + (time - changedAt) * 2.5);
+      const living = field.update({ now: time * 1000, width, height, lines, reducedMotion: reduced, reducedEffects: settings.video.reducedEffects, level, bass, high });
+      const shapes = mode === 'living' ? living : world.update({ mode, time, width, height, minimal: settings.video.reducedEffects, reducedMotion: reduced, bass, high, level, beat, ...feedback, generation: living.generation });
+      const count = intensity > 0 ? shapes.count : 0;
       // Membranes dissolve with the particles, then reappear as new organisms.
       // Everything stays behind the dark board well, never over active pieces.
       for (let i = 0; i < points.length; i++) {
         const point = points[i], link = links[i];
-        point.visible = i < living.count;
-        link.visible = i < living.count && !!living.connected[i] && living.cohesion > 0;
+        point.visible = i < count;
+        link.visible = i < count && !!shapes.connected[i] && (mode !== 'living' || living.cohesion > 0);
         if (!point.visible) continue;
         if (link.visible) {
-          const dx = living.x[i] - living.x[i - 1], dy = living.y[i] - living.y[i - 1];
+          const dx = shapes.x[i] - shapes.x[i - 1], dy = shapes.y[i] - shapes.y[i - 1];
           const distance = Math.hypot(dx, dy);
-          link.visible = distance < Math.min(width, height) * 0.095;
-          link.position.set(living.x[i - 1], living.y[i - 1]);
-          link.scale.set(distance, 1.4); link.rotation = Math.atan2(dy, dx);
-          link.tint = color; link.alpha = living.cohesion * (0.32 + level * 0.22);
+          if (mode === 'living') link.visible = distance < Math.min(width, height) * 0.095;
+          link.position.set(shapes.x[i - 1], shapes.y[i - 1]);
+          link.scale.set(distance, mode === 'spectrum' ? (settings.video.reducedEffects ? 5 : 3) : mode === 'aurora' ? 3.2 : 1.4); link.rotation = Math.atan2(dy, dx);
+          link.tint = i % 5 ? color : zone.accent;
+          link.alpha = intensity * fade * (mode === 'living' ? living.cohesion : shapes.weight[i]) * (0.28 + level * 0.18);
         }
         const size = 1.4 + (i % 3) * 0.55 + (reduced ? 0 : high * 1.4 + (1 - living.cohesion) * 1.2);
-        point.position.set(living.x[i], living.y[i]); point.scale.set(size);
+        point.position.set(shapes.x[i], shapes.y[i]); point.scale.set(mode === 'living' ? size : mode === 'orbit' ? 1.4 + (shapes.weight[i] * 0.8) : 0.7);
         point.tint = (i + living.generation) % 4 ? color : zone.accent;
-        point.alpha = 0.48 + level * 0.25;
+        point.alpha = (0.48 + level * 0.25) * intensity * fade;
       }
       // No full-screen flashes or strobe, including on beat onsets.
-      return { name: zone.name, color, particles: living.count, available: !!available, phase: living.phase, generation: living.generation, organisms: living.organisms };
+      return { name: zone.name, color, particles: count, available: !!available, phase: living.phase, generation: living.generation, organisms: living.organisms, mode, visualizerName: MUSIC_WORLD_NAMES[mode] };
     },
     destroy() {
       for (const visual of [...points, ...links]) visual.destroy();

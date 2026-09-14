@@ -130,7 +130,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   },
   'hash-rail': {
     id: 'hash-rail',
-    displayName: 'Rail Gun',
+    displayName: 'Railgun',
     kind: 'projectile',
     damage: 54,
     fireRatePerSecond: 0.7,
@@ -149,7 +149,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   'lightning-ledger': {
     id: 'lightning-ledger',
     title: 'The Lightning Ledger',
-    displayName: 'Lightning Ledger',
+    displayName: 'Arc Rifle',
     kind: 'channel',
     damage: 5,
     fireRatePerSecond: 10,
@@ -167,7 +167,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   'bear-market-burner': {
     id: 'bear-market-burner',
     title: 'Bear Market Burner',
-    displayName: 'Flame Projector',
+    displayName: 'Flamethrower',
     kind: 'flame-channel',
     damage: BEAR_MARKET_BURNER_CONFIG.directDamage,
     fireRatePerSecond: 10,
@@ -185,7 +185,7 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   'forked-standard': {
     id: 'forked-standard',
     title: 'The Forked Standard',
-    displayName: 'Forked Standard',
+    displayName: 'War Fork',
     kind: 'melee-alternating',
     ammoModel: 'none',
     damage: FORKED_STANDARD_CONFIG.thrust.damage,

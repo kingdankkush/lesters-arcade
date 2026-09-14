@@ -29,7 +29,7 @@ test('quota never discards existing HMH or Chikun saves to fit a STACKED score',
 test('STACKED profile feed and session links survive reload without changing other games', () => {
   const { run, session } = rankedFixture(), state = createInitialArcadeState(), values = new Map();
   const storage = { getItem:key => values.get(key) ?? null, setItem:(key,value) => values.set(key,value) };
-  persistStackedScore(state, storage, session, run.evidence(), run.result);
+  persistStackedScore(state, storage, session, run.evidence(), run.result, {inputDevice:'touch',score:999999});
   const restored = createInitialArcadeState();
   assert.equal(loadArcadeState(restored, storage), true);
   const model = buildProfileExperienceV2Model(restored, session.wallet, { selectedGameId:'stacked' });
@@ -38,6 +38,9 @@ test('STACKED profile feed and session links survive reload without changing oth
   assert.equal(model.sessionFeed.rows[0].sessionId, session.sessionId);
   assert.equal(getSessionByUrlId(restored, session.urlSessionId)?.canonical.resultHash, run.result.resultHash);
   assert.equal(restored.profiles[session.wallet].progress.stacked.paidRuns, 1);
+  const archived=restored.profiles[session.wallet].progress.stacked.rankedArchive[session.sessionId];
+  assert.equal(archived.runStats.inputDevice,'touch');assert.equal(archived.runStats.inputDeviceSource,'self-reported');
+  assert.equal(archived.score,run.result.score);
   assert.ok(values.get(ARCADE_PERSIST_KEY));
 });
 test('failed storage leaves profile, boards, sessions and XP unchanged', () => {

@@ -1,0 +1,249 @@
+{
+  "schema": "chikun-native-character-v3",
+  "flightPose": "prone-superman-right",
+  "source_sha256": "a0896f51ea8de4ff2243476a2d77daae0761a4acc074e968ea695a22b911b8fc",
+  "source_vertices": 243502,
+  "source_triangles": 487027,
+  "triangles": 62830,
+  "surfaceRepair": {
+    "openEdgesBefore": 955,
+    "openEdgesAfter": 0,
+    "method": "independently capped and triangulated sleeve, torso and cuff seams; original paint and skin weights retained"
+  },
+  "bones": [
+    "root",
+    "spine",
+    "head",
+    "crest",
+    "arm.L",
+    "hand.L",
+    "arm.R",
+    "hand.R",
+    "leg.L",
+    "boot.L",
+    "leg.R",
+    "boot.R",
+    "coat.L",
+    "coat.R",
+    "coat.back"
+  ],
+  "vertex_color_attribute": "Color",
+  "frameSize": 192,
+  "columns": 4,
+  "rows": 6,
+  "clips": [
+    {
+      "name": "ready",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "ready.webp",
+      "sha256": "34941ca9a1dccef434ed18e4d06e633c1e9b6e3308b2d9461a67ff1757847404",
+      "bytes": 103408,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "takeoff",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "takeoff.webp",
+      "sha256": "1f9a3a5295ce1f66d47721f7d0f89c925af8611e9a2eee9af79c118bd0284e5d",
+      "bytes": 103290,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "cruise",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "cruise.webp",
+      "sha256": "7b28f271baba77e7f76e258d3423e05a3c2eb45bb83bd08817b81f3e3b602446",
+      "bytes": 100796,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "accelerate",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "accelerate.webp",
+      "sha256": "eb3b8d8c4b733afd40ac23e5b74bb19b4909355049a34eca4bbcccef376a1541",
+      "bytes": 100358,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "climb",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "climb.webp",
+      "sha256": "b8d443e09e8dc2d37bea8b98958221bb8996f24a6986dfb05448388166f54255",
+      "bytes": 97320,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "crest",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "crest.webp",
+      "sha256": "92ca1da8622a0ea0f06cdeda456002fbaa0994a45be5a32ba507c9890ff493e5",
+      "bytes": 103182,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "descend",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "descend.webp",
+      "sha256": "76acb9c5742cbd3272eb455b52133b6855ad693bb39ca7bb11869930b93f2f0c",
+      "bytes": 103114,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "dive",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "dive.webp",
+      "sha256": "ca963e460fd4518c5ed06ad04eb4bfb8a291a2ac2e02b80ca726eadd1b2912e5",
+      "bytes": 104706,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "brake",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "brake.webp",
+      "sha256": "7ab608c3756cd4c1480de3d0dfa666e038da02872fd12861e9058764aacdf6ed",
+      "bytes": 106826,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "recover",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "recover.webp",
+      "sha256": "3c1dd2ecad667a4077aaef299eca888784ae3a0758f3bed5efacc0a5142da07f",
+      "bytes": 105208,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "squeeze",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "squeeze.webp",
+      "sha256": "fc57e5ef7bbd348a51469ca7505cc067f117c96329b12637017586124c340556",
+      "bytes": 95284,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "dodge_high",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "dodge_high.webp",
+      "sha256": "b54471780da0fa5fd71445900153a2bc36712115fc59cd61a8936a96c656be79",
+      "bytes": 109184,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "dodge_low",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "dodge_low.webp",
+      "sha256": "018dc8947b208e4e1060921ff0319cf5e986e40c0caedbe587c524f13e61ffd5",
+      "bytes": 100386,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "collect",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "collect.webp",
+      "sha256": "27994e857fe27c41c4b8f8625b117e7d4a49164ae8adc907d4840dc64267bb17",
+      "bytes": 99656,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "barrel_roll",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "barrel_roll.webp",
+      "sha256": "f7f92b5070c121710cb86e86d7e11b8fb3d00ba11c344ad407e30e86619520f1",
+      "bytes": 108626,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "impact",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "impact.webp",
+      "sha256": "0837bd5b6ae99680010a4023a201e354a233be105f02ac1c820faaa0da000100",
+      "bytes": 104372,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "tumble",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "tumble.webp",
+      "sha256": "665963cb9a20545c14d38cf0e7fc22416034fedb24a73708ebfd6f344a6a5ec5",
+      "bytes": 109810,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "fall",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "fall.webp",
+      "sha256": "4c60f409d459c52b8099530440486380464e1d4bd86a50339deaa705fe8d6c6b",
+      "bytes": 107312,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "reverse_roll",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "reverse_roll.webp",
+      "sha256": "dade050f0a4f42b82f6c04b535c4bdf1b15803008c291f5be4f71fcfc9aa04b9",
+      "bytes": 108850,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "corkscrew",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "corkscrew.webp",
+      "sha256": "6418eb58ad4dff0c583d2f356008f36f2dc9cd2291d29fc47d6833a5a79d4c5d",
+      "bytes": 109284,
+      "uniqueFrames": 24
+    },
+    {
+      "name": "victory_twirl",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "victory_twirl.webp",
+      "sha256": "88f52ef3f803bfe74e9985abb16dff82ef3e2cdf359446f485cc898c8f90a0a9",
+      "bytes": 109022,
+      "uniqueFrames": 24
+    }
+  ],
+  "character": "chikun-original",
+  "notes": "Owner mesh and colors, closed surface, rightward prone Superman flight. 21 motion states including four full-turn flourishes, 30fps projection. No separate UV texture was present in source.",
+  "runtimeBytes": 2189994
+}

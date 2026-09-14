@@ -1872,10 +1872,10 @@ async function mountStackedSession() {
       combat.active = false; combat.gameOver = true;
       if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = result.ok ? 'STACKED replay verified locally. Online settlement is disabled.' : 'STACKED run not saved: ' + result.reason;
     },
-    async persistRanked(canonical, evidence) {
+    async persistRanked(canonical, evidence, metadata) {
       const { persistStackedScore } = await import('./src/stacked-persistence.mjs');
       if (generation !== stackedMountGeneration || currentSession !== boundSession) throw new Error('cabinet-closed');
-      return persistStackedScore(state, ARCADE_STORAGE, boundSession, evidence, canonical);
+      return persistStackedScore(state, ARCADE_STORAGE, boundSession, evidence, canonical, metadata);
     },
     onRestart() { const ranked = boundSession.leaderboardEligible; destroyStackedSession(); if (ranked) setOfficialView('mode-select'); else void startOfficialMode('free'); },
     onExit: exitToArcade,

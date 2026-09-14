@@ -1,0 +1,41 @@
+{
+  "gameId": "chikun",
+  "seed": 99,
+  "fixedStepHz": 60,
+  "score": 267,
+  "coinsCollected": 0,
+  "forksPassed": 0,
+  "nearMisses": 0,
+  "bestCombo": 0,
+  "survivalTicks": 268,
+  "survivalTime": 4.466667,
+  "crashed": true,
+  "achievements": [
+    "chikun-first-flight"
+  ],
+  "finalState": {
+    "step": 268,
+    "y": 662.909771,
+    "velocity": 5,
+    "score": 267,
+    "coinsCollected": 0,
+    "forksPassed": 0,
+    "nearMisses": 0,
+    "bestCombo": 0,
+    "survivalTicks": 268,
+    "survivalTime": 4.466667,
+    "crashed": true,
+    "terminalReason": "ground"
+  },
+  "evidence": {
+    "version": "chikun-flap-evidence-v2",
+    "seed": 99,
+    "fixedStepHz": 60,
+    "maxTicks": 500,
+    "flapSteps": [
+      0,
+      50,
+      100
+    ]
+  }
+}

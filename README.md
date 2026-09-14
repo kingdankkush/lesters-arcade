@@ -6,11 +6,17 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Combined arcade release — live
+## Combined gameplay update — release candidate
+
+HMH adds seven objective-owned rewards, pause-aware supply restocks, native silver collectibles and barriers, clearer weapon names, earned hero recruitment and interaction sounds. Chikun 0.7.0 adds grounded running, jumps, flight/landing transitions, varied ground/air hazards, impact ragdolls and replay save/open. STACKED adds desktop music worlds, bounded mobile gameplay particles, richer practice medals, accessibility preferences and factual local profile counters. Startup limits remain unchanged. Validation and publication evidence will be recorded in the September 14 release receipt. The preceding verified production is retained below until this candidate is promoted.
+
+**Production cache marker:** `lesters-arcade-v47-combined-gameplay`
+
+## Preceding combined arcade release — verified live
 
 All three completed game upgrades are live. HMH world polish is preserved; STACKED adds its rotating cabinet and music-reactive living visualizers; Chikun 0.6.0 adds open-air obstacles, portrait/fullscreen presentation, high-refresh input and shared music fixes. The shared player now reuses unchanged icons and queue nodes to eliminate repeated SVG requests. Source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`; deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`. All 163 public hashes and the desktop/mobile/browser/cache checks passed. [Release receipt](docs/qa/combined-arcade-release-20260913.json). Immediate rollback: `dpl_4AiDLsq5Kngz4rtjQWj6u6i9kz7P`.
 
-**Production cache marker:** `lesters-arcade-v44-music-controls`
+Preceding cache marker: `lesters-arcade-v44-music-controls`.
 
 Independent completion handoffs: [Hard Money Heroes](docs/handoffs/HARD-MONEY-HEROES-REMAINING-WORK-2026-09-13.md), [STACKED](docs/handoffs/STACKED-REMAINING-WORK-2026-09-13.md), and [Chikun's Escape](docs/handoffs/CHIKUN-ESCAPE-REMAINING-WORK-2026-09-13.md). Each separates completed foundations, remaining tasks, acceptance evidence and separately authorized Web3 activation.
 
@@ -58,7 +64,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.6.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.7.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
 | STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 

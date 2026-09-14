@@ -1,0 +1,30 @@
+
+  apps\portal\dist\chunks\hmh-animated-roster-LWW4EAQC.js      1.8mb
+  apps\portal\dist\main.js                                     1.1mb
+  apps\portal\dist\chunks\chunk-Y6L2BVYC.js                  807.8kb
+  apps\portal\dist\chunks\hmh-curated-level-art-ILZ4JAAC.js  726.3kb
+  apps\portal\dist\chunks\chunk-VSG3JNSZ.js                  383.3kb
+  ...and 75 more output files...
+
+Done in 146ms
+
+  apps\portal\dist\chunks\hmh-pixi.js  454.8kb
+
+Done in 129ms
+
+=== Bundle report ===
+STACKED initial JS: 567749 B (entry 25343, vendor 496615, shared 45791)
+Source main.js:     657.0 KB
+Bundled main.js:    1.10 MB  (+71.6% vs source entry; imports included)
+HMH reboot source:  261.8 KB
+HMH reboot entry:   343.8 KB  (+31.3% vs child source)
+HMH entry cap:      352,058 / 480,000 B; 127,942 B remaining
+Chikun source:      40.9 KB
+Chikun entry:       34.3 KB  (-16.1% vs child source)
+HMH Pixi vendor:    454.8 KB  (stable preloaded module)
+HMH shared chunks:  212.5 KB (217,611 B) across 16 hoisted chunk(s) game.js imports statically
+HMH initial JS:     798.6 KB (817,804 B) / 1.00 MB raw aggregate, entry + vendor
+HMH initial JS + shared: 1011.1 KB (1,035,415 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor
+HMH headroom:       225.4 KB entry + vendor; 12.9 KB including shared chunks
+Total emitted JS:   6.97 MB across 82 files
+Output dir:         apps/portal/dist/

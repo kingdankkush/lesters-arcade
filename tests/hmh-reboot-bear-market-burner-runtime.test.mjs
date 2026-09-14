@@ -13,7 +13,7 @@ import {
 
 test('W9A Burner is a finite-fuel authoritative loadout weapon with a stable numeric slot', () => {
   assert.deepEqual(HMH_WEAPON_DEFINITIONS['bear-market-burner'], {
-    id: 'bear-market-burner', title: 'Bear Market Burner', displayName: 'Flame Projector', kind: 'flame-channel',
+    id: 'bear-market-burner', title: 'Bear Market Burner', displayName: 'Flamethrower', kind: 'flame-channel',
     damage: 4, fireRatePerSecond: 10, reloadSeconds: 2, clipSize: 1200,
     projectileSpeed: 0, range: 360, projectileRadius: 0, spreadRadians: Math.PI * 25 / 180,
     pelletCount: 1, recoil: 2, pickupReserveAmmo: 2400, policy: { type: 'stop' },

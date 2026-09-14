@@ -1,0 +1,22 @@
+✔ pipeline lock process probes preserve live owners and release exited owners (291.4651ms)
+✔ Cycle 007 aligns every Blender gameplay pipeline to the certified 55 degree projection (4.5229ms)
+✔ Cycle 007 authors every important hero action across body layers (0.7595ms)
+✔ Cycle 007 consumes authored per-clip cadence for heroes and enemies (0.8388ms)
+✔ Cycle 007 preserves the last meaningful enemy facing while stationary (0.9886ms)
+✔ Cycle 007 gives every Liquidator phase authored visual coverage (2.1644ms)
+✔ Cycle 007 replaces pale reflective enemy skin with warm rough authored materials (0.6074ms)
+✔ Cycle 007 prop manifest covers weapons, P0 pickups, power-ups and world dressing (1.6836ms)
+✔ Cycle 007 authored prop runtime is deterministic and covers every district (37.0742ms)
+✔ Cycle 007 general asset QA owns heroes, enemy roster and authored props (0.7763ms)
+✔ Cycle 007 Blender pipelines exclusively own their shared generation paths (220.8099ms)
+✔ Cycle 007 runtime can select all authored hero actions and boss phases (1.3439ms)
+✔ Cycle 007 gives one weapon renderer authority at a time (1.2936ms)
+✔ repository visual policy points to a dated current HMH cycle handoff and the active reboot gate (1.5545ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 436.1183

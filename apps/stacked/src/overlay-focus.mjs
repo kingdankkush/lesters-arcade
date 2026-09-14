@@ -2,7 +2,7 @@ export function manageOverlayFocus(overlay, returnTarget) {
   const doc = overlay.ownerDocument;
   const siblings = [...overlay.parentElement.children].filter(node => node !== overlay);
   const previous = siblings.map(node => node.inert);
-  const targets = () => [...overlay.querySelectorAll('button:not(:disabled), input:not(:disabled), summary, a[href], [tabindex="0"]')].filter(node => !node.hidden && node.getClientRects().length);
+  const targets = () => [...overlay.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), summary, a[href], [tabindex="0"]')].filter(node => !node.hidden && node.getClientRects().length);
   const sync = () => {
     siblings.forEach((node, index) => { node.inert = overlay.hidden ? previous[index] : true; });
     if (overlay.hidden) returnTarget()?.focus({ preventScroll: true });

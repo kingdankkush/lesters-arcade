@@ -16,17 +16,17 @@ const HERO_LABELS = Object.freeze({
   lilly: 'Lilly',
 });
 export const WEAPON_LABELS = Object.freeze({
-  'coin-blaster': 'Coin Blaster',
-  'scatter-shotgun': 'Scatter Shotgun',
-  'auto-miner': 'Auto Miner',
-  'launcher-rig': 'Launcher Rig',
+  'coin-blaster': 'Pistol',
+  'scatter-shotgun': 'Shotgun',
+  'auto-miner': 'Machine Gun',
+  'launcher-rig': 'Grenade Launcher',
   'litecoin-knife': 'Litecoin Knife',
-  'satoshi-frag': 'Satoshi Frag',
-  'nuke-liquidation': 'Nuke Liquidation',
-  'hash-rail': 'Hash Rail',
-  'lightning-ledger': 'Lightning Ledger',
-  'bear-market-burner': 'Bear Market Burner',
-  'forked-standard': 'Forked Standard',
+  'satoshi-frag': 'Frag Grenade',
+  'nuke-liquidation': 'Nuke',
+  'hash-rail': 'Railgun',
+  'lightning-ledger': 'Arc Rifle',
+  'bear-market-burner': 'Flamethrower',
+  'forked-standard': 'War Fork',
 });
 const UPGRADE_WEAPON_TREES = Object.freeze({
   'proof-of-work': 'coin-blaster',

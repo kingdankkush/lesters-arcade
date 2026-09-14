@@ -2,7 +2,7 @@
 // frozen RUN_UPGRADE_CATALOG fields. Nothing here is stored on a choice, so
 // pendingChoices, the run-summary offer/selection records and replays keep
 // their shape. Pure: no DOM, no RNG, no snapshot access.
-import { AUTHORED_PROP_ASSETS } from './authored-prop-atlas.mjs';
+import { AUTHORED_PROP_ASSETS } from './authored-prop-layout.mjs';
 
 // "How special is this pick", lowest to highest: a repeatable stat tail, a core
 // build pick, a weapon-branch pick, and the single-rank branch capstone.

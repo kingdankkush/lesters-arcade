@@ -106,16 +106,16 @@ test('WO-40 upgrade category style covers all live card categories with producti
   assert.doesNotMatch(source, /⚔|🛡|🥾|💎|🌀|💣|🔥|🔫/);
 });
 
-test('liquid-glass cards pair clear mechanical types with Litecoin and LitVM names', () => {
+test('liquid-glass cards use concise mechanical names and matching types', () => {
   const expected = [
-    ['damage-alpha', 'Litecoin Payload', 'Weapon Damage', 'damage'],
-    ['max-health', 'Cold Storage Reserve', 'Max Health', 'health'],
-    ['armor', 'Cold Wallet Shielding', 'Damage Reduction', 'shield'],
-    ['move-speed', 'Litecoin Trailblazer', 'Movement Speed', 'mobility'],
-    ['critical-chance', 'Crit Candle Signal', 'Critical Chance', 'critical-chance'],
-    ['critical-damage', 'LitVM Crit Payout', 'Critical Damage', 'critical-hit'],
-    ['rate-of-fire', 'Hashrate Accelerator', 'Fire Rate', 'fire-rate'],
-    ['magazine-size', 'Blockspace Magazine', 'Magazine Size', 'magazine'],
+    ['damage-alpha', 'Damage', 'Weapon Damage', 'damage'],
+    ['max-health', 'Max Health', 'Max Health', 'health'],
+    ['armor', 'Armor', 'Damage Reduction', 'shield'],
+    ['move-speed', 'Movement Speed', 'Movement Speed', 'mobility'],
+    ['critical-chance', 'Critical Chance', 'Critical Chance', 'critical-chance'],
+    ['critical-damage', 'Critical Damage', 'Critical Damage', 'critical-hit'],
+    ['rate-of-fire', 'Fire Rate', 'Fire Rate', 'fire-rate'],
+    ['magazine-size', 'Magazine Size', 'Magazine Size', 'magazine'],
   ];
   const byId = new Map(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((choice) => [choice.id, choice]));
   const sprite = repoText('apps/portal/assets/icons/arcade-ui.svg');
@@ -137,7 +137,7 @@ test('every live upgrade has readable liquid-glass presentation metadata', () =>
   for (const choice of LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY) {
     const copy = upgradePresentationCopy(choice);
     const type = upgradeTypeStyle(choice);
-    assert.ok(copy.title.length >= 6, `${choice.id} themed title`);
+    assert.ok(copy.title.length >= 3 && copy.title.length <= 32, `${choice.id} concise readable title`);
     assert.ok(copy.description.length >= 20, `${choice.id} clear description`);
     assert.notEqual(type.label, 'Augment', `${choice.id} should expose a specific type`);
     assert.match(sprite, new RegExp(`id=["']${type.iconId}["']`), `${choice.id} icon ${type.iconId} exists`);

@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { createOfficialProfileRoute } from '../apps/portal/src/routes/official-profile-route.mjs';
 import * as profileRoute from '../apps/portal/src/routes/official-profile-route.mjs';
 import * as arcadeCore from '../apps/portal/src/arcade-core.mjs';
+import { createStackedPlaySession } from '../apps/stacked/src/play-session.mjs';
 import { createRunSummaryAccumulator, finalizeRunSummary } from '../sdk/hmh-run-summary.mjs';
 
 function node(tag = 'div', props = {}) {
@@ -128,11 +129,17 @@ test('profile UI scopes cache statistics and does not render heuristic unlock ra
   assert.doesNotMatch(source, /rarityPct|approx.*unlock rate|Rarest unlocked badge|Rarest Badge/);
 });
 
-function connectedProfileTree({ history = [], settlements = [] } = {}) {
+function connectedProfileTree({ history = [], settlements = [], gameId='lester-blaster' } = {}) {
   const wallet = `0x${'c'.repeat(40)}`;
   const state = arcadeCore.createInitialArcadeState();
   state.profiles[wallet] = arcadeCore.createPlayerProfile(wallet, { handle: 'QA_Profile' });
   state.profiles[wallet].usernameSet = true;
+  if(gameId==='stacked') {
+    const session=arcadeCore.startPlaySession({wallet,gameId:'stacked',mode:'paid',allowDevCabinet:true});
+    const run=createStackedPlaySession({...session,mode:'ranked'});
+    while(!run.result)run.step(run.snapshot.tick%2?0:8);
+    arcadeCore.recordStackedScore(state,session,run.evidence(),run.result,{inputDevice:'touch'});
+  }
   state.runHistory = history.map((row) => ({ wallet, gameId: 'lester-blaster', recordedAt: '2026-09-01T00:00:00.000Z', ...row }));
   const gameHistory = history.filter((row) => !row.gameId || row.gameId === 'lester-blaster');
   state.profiles[wallet].progress['lester-blaster'].paidRuns = gameHistory.filter((row) => row.mode === 'paid' || row.mode === 'ranked').length;
@@ -149,7 +156,7 @@ function connectedProfileTree({ history = [], settlements = [] } = {}) {
   const route = createOfficialProfileRoute({
     ...arcadeCore, el,
     dom: { officialCabinetGrid: grid },
-    routeState: { gameId: 'lester-blaster', avatarJustSaved: false, usernameJustSaved: false },
+    routeState: { gameId, avatarJustSaved: false, usernameJustSaved: false },
     getContext: () => ({ connectedWallet: wallet, connectedChainId: null, walletConnector: 'qa-fixture', state, combat: {} }),
     appendText: (parent, tag, text, className = '') => parent.append(el(tag, { textContent: text, className })),
     renderAvatarChip: () => el('div'), renderAchievementIcon: () => el('img'), renderSimulatedWalletNotice: () => el('div'),
@@ -166,6 +173,13 @@ function connectedProfileTree({ history = [], settlements = [] } = {}) {
 function descendants(element) { return [element, ...(element.children ?? []).flatMap(descendants)]; }
 function hasClass(element, className) { return String(element.className ?? '').split(/\s+/).includes(className); }
 function renderedText(element) { return descendants(element).map((n) => n.textContent ?? '').join(' '); }
+
+test('STACKED profile renders replay facts and device provenance without combat statistics',()=>{
+  const tree=connectedProfileTree({gameId:'stacked'}),card=descendants(tree).find(n=>hasClass(n,'game-stats-card'));
+  const text=renderedText(card);
+  assert.match(text,/HALVINGS/);assert.match(text,/Total Lines/);assert.match(text,/Touch/);assert.match(text,/Device-local preview/);
+  assert.doesNotMatch(text,/Total Kills|Power-Ups|Boss Kills|Enemy breakdown|Boss ledger|\d+ kills/);
+});
 
 test('the rendered trophy heading qualifies its count as cache coverage', () => {
   const tree = connectedProfileTree({ history: [{ sessionId: 'paid-one', score: 702, mode: 'paid' }] });

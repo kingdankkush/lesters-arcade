@@ -16,24 +16,24 @@ export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
   tenRankedUnlockLegacyId: 'lilly',
   tenRankedUnlockAchievementId: 'ten-paid-runs',
   tenRankedUnlockTitle: 'Lilly',
-  tenRankedUnlockDescription: 'Legacy achievement only; WO-95 unlocks Lilly after 20 settled Ranked matches.',
+  tenRankedUnlockDescription: 'Complete 10 Ranked Hard Money Heroes games on this wallet to unlock Lilly.',
   unlockableCharacters: Object.freeze([
     Object.freeze({
       id: 'lester-original',
       legacyId: 'lester-original',
       title: 'Lester',
-      gate: Object.freeze({ type: 'ranked-matches-played', count: 10 }),
+      gate: Object.freeze({ type: 'ranked-matches-played', count: 5 }),
       legacyMigrationAchievementId: 'getaway-clear',
-      cta: 'LESTER — The original. Survive 10 Ranked runs to recruit him.',
-      description: 'Unlock Lester after 10 Ranked Hard Money Heroes matches. Free mode does not count. Existing Level 1 clear profiles keep him.',
+      cta: 'Complete 5 Ranked games to unlock Lester.',
+      description: 'Unlock Lester after 5 completed Ranked Hard Money Heroes games on this wallet. Free mode does not count. Previously earned unlocks are kept.',
     }),
     Object.freeze({
       id: 'lilly',
       legacyId: 'lilly',
       title: 'Lilly',
-      gate: Object.freeze({ type: 'ranked-matches-played', count: 20 }),
-      cta: 'LILLY — Precision and poise. 20 Ranked runs earn her trust.',
-      description: 'Unlock Lilly after 20 Ranked Hard Money Heroes matches. Free mode does not count.',
+      gate: Object.freeze({ type: 'ranked-matches-played', count: 10 }),
+      cta: 'Complete 10 Ranked games to unlock Lilly.',
+      description: 'Unlock Lilly after 10 completed Ranked Hard Money Heroes games on this wallet. Free mode does not count.',
     }),
   ]),
 });
@@ -71,7 +71,7 @@ export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
     id: 'lester-original',
     name: 'Lester',
     tagline: 'Original Commando',
-    bio: 'Cobalt-blue spherical mascot head with Litecoin mark, blue scarf and olive vest. Balanced stats. Unlock after 10 Ranked Hard Money Heroes matches; legacy Level 1 clear profiles keep him.',
+    bio: 'Cobalt-blue spherical mascot head with Litecoin mark, blue scarf and olive vest. Balanced stats. Unlock after 5 completed Ranked Hard Money Heroes games on this wallet.',
     stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 3]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 3])]),
     simMultipliers: Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0, xpGain: 1.12 }),
     combatStats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
@@ -85,7 +85,7 @@ export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
     id: 'lilly',
     name: 'Lilly',
     tagline: 'Ranked Veteran',
-    bio: 'Tactical veteran with wavy teal hair, round tinted glasses, and a long gold-trimmed teal coat. Unlock after 20 Ranked Hard Money Heroes matches.',
+    bio: 'Tactical veteran with wavy teal hair, round tinted glasses, and a long gold-trimmed teal coat. Unlock after 10 completed Ranked Hard Money Heroes games on this wallet.',
     stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 4]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 4])]),
     simMultipliers: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96, luck: 1.15 }),
     combatStats: Object.freeze({ maxHealth: 96, speed: 1.08, jump: 1.0, melee: 1.05, luck: 1.08 }),
@@ -191,12 +191,10 @@ function configuredUnlockables(config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG)
 }
 
 function profileRankedRuns(profile = {}) {
-  const topLevel = Math.max(0, Number(profile.totalPaidRuns) || 0);
-  const progressMax = Math.max(
-    0,
-    ...Object.values(profile.progress ?? {}).map((game) => Number(game?.paidRuns) || 0),
-  );
-  return Math.max(topLevel, progressMax);
+  // The parent stores this completed-game aggregate inside the wallet profile.
+  // Arcade totals and another game's history cannot recruit HMH characters.
+  const count = Number(profile.progress?.['lester-blaster']?.paidRuns);
+  return Number.isSafeInteger(count) && count >= 0 ? count : 0;
 }
 
 function gateProgress(unlock = {}, profile = {}) {
@@ -213,7 +211,7 @@ function gateProgress(unlock = {}, profile = {}) {
     remaining: Math.max(0, required - current),
     percent: required > 0 ? Math.round((current / required) * 100) : 100,
     meterText: `RANKED MATCHES: ${current} / ${required}`,
-    note: 'Ranked matches only. Free mode does not count.',
+    note: 'Completed HMH Ranked games on this wallet. Free mode does not count.',
   });
 }
 

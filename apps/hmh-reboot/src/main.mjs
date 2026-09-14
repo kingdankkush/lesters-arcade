@@ -1,3 +1,6 @@
+import { createSilverDropState, addSilverDrop, stepSilverDrops, silverDropAccounting } from './silver-drops.mjs';
+import { OBJECTIVE_REWARDS, objectiveRewardPlacements, collectibleIsAvailable, hiddenCollectibleIds } from './objective-rewards.mjs';
+import { canAcceptCollectible } from './collectible-capacity.mjs';
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { WORLD_DESTRUCTIBLE_PROPS, createWorldDestructibleState, worldDestructibleTargets, worldDestructibleHurtProfile, worldDestructibleCoverHit, applyWorldDestructibleDamage, worldDestructibleHiddenProps, stepWorldDestructibleSupplies } from './world-destructibles.mjs';
 import { automaticDodgeIntent } from './automatic-actions.mjs';
@@ -199,10 +202,9 @@ import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid, measureMinimu
 import {
   PRODUCTION_HERO_ASSETS,
   PRODUCTION_HERO_RUNTIME_SCALE,
-  createProductionHeroAtlasIndex,
-  createProductionHeroDisplay,
   productionHeroAsset,
-} from './production-hero-atlas.mjs';
+} from './production-hero-assets.mjs';
+import { createSelectedHeroRendererLoader } from './selected-hero-renderer-loader.mjs';
 import {
   AUTHORED_DRESSING_SEED,
   AUTHORED_PROP_ATLAS_IMAGE_URL,
@@ -214,10 +216,8 @@ import {
   buildAuthoredPointOfInterestPlacements,
   buildAuthoredTownPlacements,
   buildAuthoredWorldPropPlacements,
-  createAuthoredHeldWeaponDisplay,
   createAuthoredPropAtlasIndex,
-  createAuthoredPropDisplay,
-} from './authored-prop-atlas.mjs';
+} from './authored-prop-layout.mjs';
 import { CONTACT_SHADOW_BASE_ALPHA, createContactShadowPool, createContactShadowTextures } from './contact-shadows.mjs';
 import {
   MAX_WEAPON_VFX_SPRITES,
@@ -424,6 +424,7 @@ async function boot() {
           cockpit?.destroy();
           hud?.destroy();
           stopCurrentSession();
+          silverPresentation?.destroy();
           app.destroy(true);
         }
       },
@@ -612,12 +613,15 @@ async function boot() {
   // timeout, so the run is brought up on the prototype actor immediately and
   // the atlas is swapped in as soon as it decodes. A failure leaves the
   // prototype in place and is reported through evidence dataset.
+  const loadSelectedHeroRenderer = createSelectedHeroRendererLoader();
   const loadProductionHeroAtlas = async (selection) => {
-    const [metadataResponse, atlasTexture] = await Promise.all([
+    const [renderer, metadataResponse, atlasTexture] = await Promise.all([
+      loadSelectedHeroRenderer(),
       fetch(selection.metadataUrl, { credentials: 'same-origin' }),
       Assets.load(selection.imageUrl),
     ]);
     if (!metadataResponse.ok) throw new Error(`Production hero metadata failed with ${metadataResponse.status}`);
+    const { createProductionHeroAtlasIndex, createProductionHeroDisplay } = renderer;
     const metadata = await metadataResponse.json();
     const baseIndex = createProductionHeroAtlasIndex(metadata, selection);
     const display = createProductionHeroDisplay({
@@ -703,11 +707,13 @@ async function boot() {
     // W-10: roofless fence yards with an authored entrance. Dressing only.
     ...buildAuthoredEnclosurePlacements({ worldId: LEVEL_ONE_WORLD.id }),
     ...authoredPointOfInterestPlacements,
+    ...objectiveRewardPlacements(),
   ]);
   worldDepthLayer.attach(actorVisual, heldWeaponLayer, bossVisual);
   let authoredPropDisplay = null;
   let tripoPropAppearance = new Map();
   let worldDesignBlockerIds = new Set();
+  let nativeBarrierPlacements = [], nativeBarrierModule = null;
   let authoredHeldWeaponDisplay = null;
   let lightningLedgerEventPlacement = null;
   let bearMarketBurnerEventPlacement = null;
@@ -724,7 +730,12 @@ async function boot() {
   Promise.all([
     fetch(AUTHORED_PROP_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
     Assets.load(AUTHORED_PROP_ATLAS_IMAGE_URL),
-  ]).then(async ([metadataResponse, atlasTexture]) => {
+    import('./authored-prop-display.mjs'),
+  ]).then(async ([metadataResponse, atlasTexture, {createAuthoredHeldWeaponDisplay,createAuthoredPropDisplay}]) => {
+    dataset.nativeBarrierStatus = 'loading';
+    const barrierPromise = import('./native-barriers.mjs').then(async module => ({module,assets:await module.loadNativeBarrierAppearance(url=>Assets.load(url),{mobile:performanceProfile.id!=='desktop'})})).catch(error=>{
+      dataset.nativeBarrierStatus='fallback';console.warn('[HMH] Native barrier fallback',error);return null;
+    });
     if (!metadataResponse.ok) throw new Error(`Authored prop metadata failed with ${metadataResponse.status}`);
     const propIndex = createAuthoredPropAtlasIndex(await metadataResponse.json());
     const candidateAppearance = new Map();
@@ -753,12 +764,22 @@ async function boot() {
     if (app.stage.destroyed || !world.parent) return;
     const worldDesign = buildWorldDesignPlacements(LEVEL_ONE_WORLD,worldDesignAssets);
     const candidateBlockerIds = worldDesign.blockerIds;
+    const barrierResult=await barrierPromise;
+    if (app.stage.destroyed || !world.parent) return;
+    if(barrierResult){
+      nativeBarrierModule=barrierResult.module;
+      const barriers=nativeBarrierModule.buildNativeBarrierPlacements(LEVEL_ONE_WORLD,barrierResult.assets);
+      nativeBarrierPlacements=barriers.placements;
+      for(const id of barriers.blockerIds)candidateBlockerIds.add(id);
+      for(const [id,asset]of barrierResult.assets)candidateAppearance.set(id,asset);
+      dataset.nativeBarrierStatus='ready';dataset.nativeBarrierCount=String(barriers.placements.length);
+    }
     const siteProps = [...WORLD_DESIGN_SITE_PROPS, ...WORLD_DESIGN_ORCHARD, ...WORLD_DESIGN_SECRET_PROPS, ...WORLD_DESTRUCTIBLE_PROPS];
     for (const p of siteProps) if(p.collisionBlockerId) candidateBlockerIds.add(p.collisionBlockerId);
     for (const [id, asset] of worldDesignAssets) candidateAppearance.set(id, asset);
     extendWorldDesignLandmarks(candidateAppearance);
     const townPlacements = buildAuthoredTownPlacements({ worldId: LEVEL_ONE_WORLD.id, index: propIndex }).filter(p=>!candidateBlockerIds.has(p.collisionBlockerId));
-    const placements = Object.freeze([...authoredPropPlacements, ...townPlacements, ...worldDesign.placements, ...siteProps]);
+    const placements = Object.freeze([...authoredPropPlacements, ...townPlacements, ...worldDesign.placements, ...siteProps, ...nativeBarrierPlacements]);
     let display = null;
     let heldWeaponDisplay = null;
     let committed = false;
@@ -1355,6 +1376,7 @@ async function boot() {
   let grenadeFxEvents = [];
   let playerDefeatController = null;
   let playerHealth = 100;
+  let silverDropState=createSilverDropState(),silverPresentation=null,silverRequested=false;
   let collectibleState = null;
   let worldDesignState = createWorldDesignState();
   let worldSecretState=createWorldDesignSecretState();
@@ -1512,8 +1534,17 @@ async function boot() {
       atmosphereTint.height = view.height;
       atmosphereTint.visible = atmosphereGrade.alpha > 0;
       const authoredPropTick = simulation?.tick ?? 0;
+      if(!silverRequested && silverDropState.dropped>0){
+        silverRequested=true;
+        import('./silver-drop-presentation.mjs').then(m=>m.createSilverDropPresentation({Assets,Container,Graphics,Sprite,Texture,Rectangle})).then(display=>{
+          if(app.stage.destroyed || !world.parent){display.destroy();return;}
+          silverPresentation=display;world.addChildAt(display.container,world.children.indexOf(enemyVisuals));
+        }).catch(()=>{dataset.silverArt='unavailable';});
+      }
+      if(silverPresentation)dataset.silverVisible=String(silverPresentation.render({state:silverDropState,tick:authoredPropTick,camera,view,worldToScreen,queryGround,reduceMotion:settings.reduceMotion}));
+      if(releaseTelemetryEnabled)dataset.silverAccounting=JSON.stringify(silverDropAccounting(silverDropState));
       if (!pickupPresentationRequested && collectibleState?.entries.some(({placement:p}) =>
-        !collectibleState.collectedIds.has(p.id) && authoredPropTick >= p.availableTick &&
+        collectibleIsAvailable(collectibleState,p,authoredPropTick) &&
         Math.hypot(p.x-renderState.x,p.y-renderState.y) < Math.hypot(view.width,view.height)/camera.zoom/2+150)) {
         pickupPresentationRequested = true;
         import('./pickup-indicators.mjs').then(module => { pickupPresentation=module; }).catch(() => { dataset.pickupMarkerStatus="unavailable"; });
@@ -1524,7 +1555,8 @@ async function boot() {
         pickupPresentation.drawPickupIndicators(pickupSignals,pickupMarkers,camera.zoom);
         dataset.pickupMarkers = String(pickupMarkers.length);
       }
-      const hiddenAuthoredPropIds = new Set([...(collectibleState?.collectedIds ?? []), ...worldDesignHiddenSecretProps(worldSecretState), ...worldDestructibleHiddenProps(worldDestructibleState)]);
+      const hiddenAuthoredPropIds = new Set([...hiddenCollectibleIds(collectibleState,authoredPropTick), ...worldDesignHiddenSecretProps(worldSecretState), ...worldDestructibleHiddenProps(worldDestructibleState)]);
+      for(const id of nativeBarrierModule?.hiddenNativeBarriers(nativeBarrierPlacements,worldDesignState.openGates)??[])hiddenAuthoredPropIds.add(id);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
       if (forkedStandardEventPlacement && authoredPropTick < forkedStandardEventPlacement.availableTick) hiddenAuthoredPropIds.add(forkedStandardEventPlacement.id);
@@ -1541,7 +1573,7 @@ async function boot() {
         focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
           .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
-      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
+      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,destructibleState:worldDestructibleState,collectibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
       if(releaseTelemetryEnabled) {
         dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
         dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
@@ -1552,6 +1584,7 @@ async function boot() {
         dataset.worldCampfireLights=String(worldLifeReport.campfireLights);
         dataset.worldCampfireEmbers=String(worldLifeReport.campfireEmbers);
         dataset.worldOpenGates=JSON.stringify([...worldDesignState.openGates]);
+        dataset.objectiveRewards=JSON.stringify([...collectibleState?.collectionCounts??[]].filter(([id])=>id.startsWith('reward:')));
         dataset.worldSecrets=JSON.stringify([...worldSecretState.collected]);
         dataset.worldSecretSealHealth=String(worldSecretState.sealHealth);
         dataset.worldDestructiblesBroken=JSON.stringify([...worldDestructibleState.brokenTick.keys()]);
@@ -2812,6 +2845,8 @@ async function boot() {
     lastAccessibleCombatStatus = '';
     playerDefeatController = null;
     playerHealth = 100;
+    silverDropState=createSilverDropState();
+    const silverCounter=document.getElementById('hmhSilverCount');if(silverCounter)silverCounter.textContent='0';
     collectibleState = null;
     collectibleSnapshot = null;
     lastCollectibleEvent = null;
@@ -3099,7 +3134,7 @@ async function boot() {
     }
     const scheduledCollectiblePlacements = [lightningLedgerEventPlacement, bearMarketBurnerEventPlacement, forkedStandardEventPlacement];
     if (collectibleRefreshPilotEnabled) scheduledCollectiblePlacements.pop();
-    const collectiblePlacements = [...authoredPointOfInterestPlacements, ...scheduledCollectiblePlacements];
+    const collectiblePlacements = [...authoredPointOfInterestPlacements.map(p=>['coin-blaster','scatter-shotgun','auto-miner','launcher-rig','time-dilation','berserk-candle'].includes(p.assetId)?Object.freeze({...p,respawnTicks:10800}):p), ...scheduledCollectiblePlacements];
     if (collectibleRefreshPilotEnabled) {
       const timeDilationPlacement = authoredPointOfInterestPlacements.find((placement) => placement.assetId === 'time-dilation');
       if (!timeDilationPlacement) throw new Error('time-dilation refresh pilot requires the authored pickup');
@@ -3109,7 +3144,7 @@ async function boot() {
         availableTick: 120,
       }));
     }
-    collectibleState = createCollectibleState({ placements: collectiblePlacements });
+    collectibleState = createCollectibleState({ placements: collectiblePlacements, objectivePlacements: objectiveRewardPlacements() });
     collectibleSnapshot = getCollectibleSnapshot(collectibleState, { tick: 0 });
     lastCollectibleEvent = null;
     lastDashReady = true;
@@ -3358,6 +3393,7 @@ async function boot() {
       }});
       for(const event of worldDesignFrame.events) {
         recordRunMilestone(runSummaryAccumulator,{type:'site-operated',id:event.siteId,tick});
+        collectibleState.unlockedObjectives.add(event.siteId);
         if(event.gateId) {
           WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
@@ -3368,8 +3404,8 @@ async function boot() {
           recordRunHealing(runSummaryAccumulator,playerHealth-before);
         }
         if(event.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
-        combatAudio.play(event.reward==='heal'?'health-pickup':'pickup',{volume:.11});
-        if(settings.captionCriticalAudio) setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated.`);
+        combatAudio.play('objective-complete',{volume:.16});
+        setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated. ${OBJECTIVE_REWARDS.find(r=>r.objectiveId===event.siteId)?.rewardName ?? 'Reward'} ready nearby.`);
       }
       for(const secret of stepWorldDesignSecrets(worldSecretState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
         recordRunMilestone(runSummaryAccumulator,{type:'secret-found',id:secret.id,tick});
@@ -3516,7 +3552,25 @@ async function boot() {
         pushCombatVisualEvent({type:'blast',...blast,mode:'launcher'});
         if(Math.hypot(actor.x-blast.point.x,actor.y-blast.point.y)<700){combatAudio.play('grenade-boom',{volume:.14});triggerCameraShake(tick,5);}
       }
-      const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor });
+      const silverCollected=stepSilverDrops(silverDropState,{tick,player:actor,canReach:p=>Math.abs(queryGround(p.x,p.y).groundZ-actor.groundZ)<=8 && traceHeightAwareLineOfSight({from:{x:actor.x,y:actor.y,z:actor.groundZ+8},to:{x:p.x,y:p.y,z:queryGround(p.x,p.y).groundZ+8},blockers:WORLD_BLOCKERS}).clear});
+      if(silverCollected>0){
+        combatAudio.play('silver-collect',{volume:.10});
+        const counter=document.getElementById('hmhSilverCount');if(counter)counter.textContent=String(silverDropState.collected);
+      }
+      const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor,
+        canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon}),
+        canReach:p=>{
+          if(Math.abs(queryGround(p.x,p.y).groundZ-actor.groundZ)>8)return false;
+          const sweep=resolveSweptCircleMotion({body:playerBody,start:{x:actor.x,y:actor.y,z:actor.groundZ},delta:{x:p.x-actor.x,y:p.y-actor.y},blockers:WORLD_BLOCKERS,bounds:WORLD_BOUNDS});
+          return sweep.contacts.length===0 && sweep.depenetrations.length===0;
+        },
+      });
+      for(const {placement} of collectibleState.entries){
+        if(collectibleState.readyTicks.get(placement.id)===tick&&Math.hypot(actor.x-placement.x,actor.y-placement.y)<400){
+          combatAudio.play('supply-ready',{volume:.10});
+          setAccessibleCombatStatus('Nearby supplies have restocked. Open the field map for details.');
+        }
+      }
       collectibleSnapshot = collectibleFrame.snapshot;
       for (const event of collectibleFrame.events) {
         lastCollectibleEvent = event;
@@ -3526,7 +3580,9 @@ async function boot() {
         if (event.type === 'collectible:expired') { combatAudio.play('powerup-expire', { volume: 0.12 }); continue; }
         if (event.type !== 'collectible:collected') continue;
         recordRunCollectible(runSummaryAccumulator, { effectId: event.effectId });
-        const placement = authoredPointOfInterestPlacements.find((candidate) => candidate.id === event.placementId);
+        const placement = collectibleState.entries.find(e=>e.placement.id===event.placementId)?.placement;
+        const objectiveReward=OBJECTIVE_REWARDS.find(r=>r.id===event.placementId);
+        if(objectiveReward)setAccessibleCombatStatus(`${objectiveReward.rewardName} collected.${objectiveReward.respawnTicks ? ` Returns in ${objectiveReward.respawnTicks/60} seconds of play.` : ""}`);
         if (event.kind === 'heal') {
           const healthBefore = playerHealth;
           playerHealth = Math.min(maxPlayerHealth, playerHealth + event.amount);
@@ -3545,6 +3601,8 @@ async function boot() {
           if (weaponLoadout.activeWeaponId !== previousWeaponId) recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: event.weaponId });
         } else if (event.kind === 'ammo-refill') {
           refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
+        } else if (event.kind === 'grenade-supply') {
+          rechargeHandGrenades(grenadeSystem,{tick,amount:1});
         } else if (event.kind === 'nuke') {
           rechargeHandGrenades(grenadeSystem, { tick, amount: 1 });
           for (const target of hurtTargets) {
@@ -4425,6 +4483,7 @@ async function boot() {
             continue;
           }
           if (scoreEvent.enemyId === liquidatorBoss.id) {
+            if(liquidatorBoss.health<=0){collectibleState.unlockedObjectives.add('liquidator-defeated');addSilverDrop(silverDropState,{sequence:runKills+1,tick,x:liquidatorBoss.x,y:liquidatorBoss.y,value:10});}
             recordRunKill(runSummaryAccumulator, {
               enemyRoleId: 'liquidator',
               weaponId: scoreEvent.weaponId,
@@ -4463,6 +4522,7 @@ async function boot() {
           });
           queueEnemyDeathVisual(defeatedEnemy, tick);
           runKills += 1;
+          addSilverDrop(silverDropState,{sequence:runKills,tick,x:defeatedEnemy.x,y:defeatedEnemy.y});
           const progressionSnapshot = awardComboXp(recordRunDefeat(runProgression, {
             enemyId: defeatedEnemy.id,
             threatCost: ENEMY_ARCHETYPES[defeatedEnemy.archetypeId].costs.threat,
@@ -4590,7 +4650,7 @@ async function boot() {
     // The map is used only in the pause menu; gameplay never waits for it.
     void import('./world-design-field-map.mjs').then(({ buildWorldDesignFieldMap, renderWorldDesignFieldMap }) => {
       if (simulation?.state !== 'paused') return;
-      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, completed: worldDesignState.completed, secrets: [...worldSecretState.collected] }));
+      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, completed: worldDesignState.completed, activating: worldDesignState.activating, collectibles: collectibleState, tick: simulation.tick, secrets: [...worldSecretState.collected] }));
     }).catch(() => {
       if (simulation?.state === 'paused' && fieldMapMount) fieldMapMount.textContent = 'Field map unavailable. You can still resume your run.';
     });
@@ -4794,6 +4854,8 @@ async function boot() {
     if (frame.steps >= simulation.maxCatchUpSteps) catchUpSaturationFrames += 1;
     const simulationLoss = simulation.getLossMetrics();
     dataset.simulationFrameSteps = String(frame.steps);
+    dataset.simulationStepsTotal = String(simulation.tick);
+    dataset.simulationState = simulation.state;
     dataset.simulationCatchUpSaturationFrames = String(catchUpSaturationFrames);
     dataset.simulationDroppedMs = simulationLoss.totalDroppedMs.toFixed(3);
     if (frame.steps > 0) input.consumeBufferedActions(snapshot.sequence);

@@ -333,7 +333,7 @@ test('player profiles initialize configurable character unlocks and selected-cha
   assert.equal(profile.preferences.selectedCharacterId, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId);
 });
 
-test('WO-95 settled ranked matches unlock Lester at 10 and Lilly at 20 while free runs do not count', () => {
+test('WO-95 settled ranked matches unlock Lester at 5 and Lilly at 10 while free runs do not count', () => {
   const state = createInitialArcadeState();
   const wallet = '0x' + 'b'.repeat(40);
 
@@ -344,7 +344,7 @@ test('WO-95 settled ranked matches unlock Lester at 10 and Lilly at 20 while fre
   assert.equal(state.profiles[wallet].unlocks.characters['lester-original'], false);
   assert.equal(state.profiles[wallet].unlocks.characters.lilly, false);
 
-  for (let index = 0; index < 9; index += 1) {
+  for (let index = 0; index < 4; index += 1) {
     const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
     recordScore(state, session, 1000 + index, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
   }
@@ -356,7 +356,7 @@ test('WO-95 settled ranked matches unlock Lester at 10 and Lilly at 20 while fre
   assert.equal(state.profiles[wallet].unlocks.characters['lester-original'], true);
   assert.equal(state.profiles[wallet].unlocks.characters.lilly, false);
 
-  for (let index = 10; index < 19; index += 1) {
+  for (let index = 5; index < 9; index += 1) {
     session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
     recordScore(state, session, 2000 + index, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
   }
@@ -365,7 +365,7 @@ test('WO-95 settled ranked matches unlock Lester at 10 and Lilly at 20 while fre
   session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
   recordScore(state, session, 3000, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
   const snapshot = buildPlayerArcadeSnapshot(state, wallet);
-  assert.equal(snapshot.profile.totalPaidRuns, 20);
+  assert.equal(snapshot.profile.totalPaidRuns, 10);
   assert.equal(snapshot.profile.unlocks.characters['lester-original'], true);
   assert.equal(snapshot.profile.unlocks.characters.lilly, true);
 });
@@ -491,7 +491,7 @@ test('parent session allocator issues deterministic seed, build, and season bind
   assert.notEqual(a.seed, changed.seed);
   assert.equal(Number.isInteger(a.seed), true);
   assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
-  assert.equal(a.buildHash, 'site-1.4.0:game-1.4.0:cabinet-0.6.0');
+  assert.equal(a.buildHash, 'site-1.4.0:game-1.4.0:cabinet-0.7.0');
   assert.equal(a.seasonId, 'chikun-season-preview-1');
   assert.equal(a.canonicalContext.seed, a.seed);
   assert.equal(a.canonicalContext.buildHash, a.buildHash);
@@ -1942,9 +1942,9 @@ test('level plan uses the confirmed ground-outward, vertical-upward, and high-sp
   assert.equal(LESTER_BLASTER_LEVEL_PLAN.every((level) => level.miniBossScrollLocks.length >= 1), true);
 });
 
-test('weapons include the confirmed hybrid Hard Money Heroes kit: Settler, Block Breaker, Hashstorm, Litecoin Blade, Crypto Bombs, and Hard Forks', () => {
+test('weapons use familiar firearm names while retaining the themed melee and grenade catalog', () => {
   const titles = LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.map((weapon) => weapon.title);
-  assert.deepEqual(['The Settler', 'The Block Breaker', 'The Hashstorm'].every((title) => titles.includes(title)), true);
+  assert.deepEqual(['Pistol', 'Shotgun', 'Machine Gun'].every((title) => titles.includes(title)), true);
   assert.equal(LESTER_BLASTER_WEAPON_SYSTEM.melee.title, 'The Litecoin Blade');
   assert.equal(LESTER_BLASTER_WEAPON_SYSTEM.melee.signatureMechanic, true);
   assert.equal(LESTER_BLASTER_WEAPON_SYSTEM.grenades.some((grenade) => grenade.title === 'Crypto Bombs'), true);
@@ -2191,7 +2191,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=arcade-music-controls-20260913'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=combined-gameplay-20260914'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -3033,7 +3033,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('arcade-music-controls-20260913'), true);
+  assert.equal(smokeScript.includes('combined-gameplay-20260914'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
@@ -3281,4 +3281,3 @@ test('game-over summary reads bosses and killed-by from the canonical reboot rec
   assert.match(mainSource, /selectGameOverRecapFields\(lastHmhRunSummary, \{/, 'currentGameOverSummaryModel must route the metric sources through the tested helper');
   assert.equal(mainSource.includes('gameOverReasonCopy(combat.gameOverReason)'), true, 'the raw reason literal must stay mapped to a sentence');
 });
-

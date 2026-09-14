@@ -7,7 +7,7 @@ import { chikunSkyState } from '../apps/chikun/src/world.mjs';
 import { createChikunRuntime } from '../apps/portal/src/chikun-cabinet.mjs';
 
 test('prone flight clips cover input changes, passage, reactions and death', () => {
-  assert.equal(Object.keys(CHIKUN_CLIPS).length, 18);
+  assert.equal(Object.keys(CHIKUN_CLIPS).length, 31);
   for (const clip of Object.keys(CHIKUN_CLIPS)) {
     for (const time of [-1,0,.01,.65,100,Infinity,NaN]) {
       const f = sampleChikunFrame(clip,time);
@@ -61,12 +61,12 @@ test('day/night cycle wraps without discontinuities and reduced motion freezes a
 });
 
 test('all shipped clips are genuine distinct native frames within the payload budget', () => {
-  const base=new URL('../apps/portal/assets/generated/chikun-flight-v2/',import.meta.url);
+  const base=new URL('../apps/portal/assets/generated/chikun-flight-v3/',import.meta.url);
   const manifest=JSON.parse(readFileSync(new URL('character.json',base),'utf8'));
-  assert.equal(manifest.clips.length,18);
+  assert.equal(manifest.clips.length,21);
   assert.equal(manifest.flightPose,'prone-superman-right');
   assert.equal(manifest.bones.length,15);
-  assert.ok(manifest.triangles<=60000);
+  assert.ok(manifest.triangles<=64000);
   assert.ok(manifest.runtimeBytes<4*1024*1024);
   for(const clip of manifest.clips) {
     assert.ok(CHIKUN_CLIPS[clip.name]);

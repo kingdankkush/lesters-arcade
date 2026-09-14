@@ -2,6 +2,7 @@ import { WORLD_DESIGN_SITES, WORLD_DESIGN_EXPLORATION_PATHS } from './world-desi
 import { worldDesignHazardPhase } from './world-design-interactions.mjs';
 import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
 import { buildCoverBreakPresentation } from './cover-break-presentation.mjs';
+import { OBJECTIVE_REWARDS, objectiveRewardStatus } from './objective-rewards.mjs';
 
 export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,camera,view,tick,particleBudget=0,reduceMotion=false,reduceFlash=false}) {
   const fires=[],embers=[],budget=Math.min(12,Math.max(0,Math.floor(particleBudget)));
@@ -66,7 +67,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
   ground.label='world-interaction-ground'; overlay.label='world-interaction-prompts';
   let lastPrompt='';
   const lastWarned=new Map();
-  const render=({state,secretState,destructibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null})=>{
+  const render=({state,secretState,destructibleState,collectibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null})=>{
     ground.clear(); effects.clear(); prompt.visible=false;
     if(!state||!actor) return {visibleSites:0,particles:0,hazardTelegraphs:[]};
     const project=(x,y,z=0)=>worldToScreen({x,y,z},camera,view);
@@ -88,7 +89,8 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       }
       if(near) {
         const actions={generator:'Restore power',winch:'Open salvage court',pump:'Start pump · supplies',shrine:'Rest · recover health',vent:'Release steam · keep clear',cache:'Open supplies'};
-        const text=done?`${site.name} · complete`:state.activating.has(site.id)?`${site.name} · activating`:`${site.name}\nApproach · ${actions[site.kind].toLowerCase()}`;
+        const reward=OBJECTIVE_REWARDS.find(r=>r.objectiveId===site.id);
+        const text=done?`${site.name}\n${reward?.rewardName??'Reward'} · ${objectiveRewardStatus(collectibleState,reward?.id,tick)}`:state.activating.has(site.id)?`${site.name} · activating`:`${site.name}\nApproach · ${actions[site.kind].toLowerCase()}${reward?`\nReward: ${reward.rewardName}`:''}`;
         if(lastPrompt!==text) {prompt.text=text;lastPrompt=text;}
         prompt.style.fontSize=view.width<600||view.height<500?11:13;
         const safeTop=view.height<500?125:view.width<600?266:185;

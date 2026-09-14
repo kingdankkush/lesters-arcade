@@ -1,0 +1,1290 @@
+{
+  "schema": "hmh-barriers/v1",
+  "source": "assets-source/hmh-barriers/barrier-library.blend",
+  "sourceSha256": "bc18b40eb7e2ba79361ed5242848b283b2024120defc81ff3e06277d8b2a9513",
+  "recipeSha256": "dd2121865f540b223c66f006262391c589c8ab082bec83160e50843216743302",
+  "blenderVersion": "5.1.2",
+  "frames": [
+    {
+      "assetId": "hmh-barrier-stone-wall-0",
+      "kind": "stone-wall",
+      "direction": 0,
+      "yawRadians": 0.0,
+      "file": "stone-wall-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "709d8f54238b5350e5c4fdef4f1e0114b6a40e546e50e34829ef6dfa30db601d"
+    },
+    {
+      "assetId": "hmh-barrier-stone-wall-1",
+      "kind": "stone-wall",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "stone-wall-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "9abf32b1b25df6b69145e14c3df4bf95dbdd64b033e4cc51cfe13893fc4d774b"
+    },
+    {
+      "assetId": "hmh-barrier-stone-wall-2",
+      "kind": "stone-wall",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "stone-wall-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "46d1e7132c732e59a2c048e603a94157f92c3088cb951fb71bc6e258747b3f6a"
+    },
+    {
+      "assetId": "hmh-barrier-stone-wall-3",
+      "kind": "stone-wall",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "stone-wall-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "f17397b8df335e20efae43d321dda412eb25655879beb717fb8a1784f3152c68"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-wall-0",
+      "kind": "concrete-wall",
+      "direction": 0,
+      "yawRadians": 0.0,
+      "file": "concrete-wall-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "5c6d5888eb315a8abc63f7fd63c0e3ee5f5b74f98c425c735edaf32949386616"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-wall-1",
+      "kind": "concrete-wall",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "concrete-wall-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "b22bf6a86bd9952f14e229bcdacd6f712e0f6d10d7a1a46cbb7466c4fbdfa2f1"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-wall-2",
+      "kind": "concrete-wall",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "concrete-wall-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "8683d07ee8b2f0513b7bb5bba47f9fca6147231459e7fea7b6d6715c89bb211b"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-wall-3",
+      "kind": "concrete-wall",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "concrete-wall-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "2e4017ce6f0a3ad1a9f7f6bb89333aebe11f68c68c63d02d4d93093f5482715c"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-barrier-0",
+      "kind": "concrete-barrier",
+      "direction": 0,
+      "yawRadians": 0.0,
+      "file": "concrete-barrier-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "c05bc2aa8092edd5285e1d69f18ae61a99236bb3a361a5a2b50fd8df58fa4368"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-barrier-1",
+      "kind": "concrete-barrier",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "concrete-barrier-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "962dcbb26e4e88b802ad3d46b21befb5ec30899d5037f1fd6842b1d78b7a02d8"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-barrier-2",
+      "kind": "concrete-barrier",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "concrete-barrier-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "0f29252f59f369920fabe8b56a7a9bba3ea40008fd6999abea09a6189c6fcb1b"
+    },
+    {
+      "assetId": "hmh-barrier-concrete-barrier-3",
+      "kind": "concrete-barrier",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "concrete-barrier-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "5425688059e7d7fc82497723c5bbe2c4a07332fea2b8c94b946ae9fe451e591a"
+    },
+    {
+      "assetId": "hmh-barrier-wood-fence-0",
+      "kind": "wood-fence",
+      "direction": 0,
+      "yawRadians": 0.0,
+      "file": "wood-fence-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "71ebdf161ef7561765cee197fa69908a27ad92dee21584a9537bf37f0898184b"
+    },
+    {
+      "assetId": "hmh-barrier-wood-fence-1",
+      "kind": "wood-fence",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "wood-fence-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "bd6b2c6f87c6da87db9c027456b1c60d33cb935de9d35ecceaeb0676123028b3"
+    },
+    {
+      "assetId": "hmh-barrier-wood-fence-2",
+      "kind": "wood-fence",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "wood-fence-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "e02f0cf4719fce3cc7437e8ca7f9aa6204589d6a7a65f127eb6d36d8c3e5c170"
+    },
+    {
+      "assetId": "hmh-barrier-wood-fence-3",
+      "kind": "wood-fence",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "wood-fence-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "471f8dfb4cb7c757e0ccf23b00ded45ffefe63e64bd9e14c30b4a7e8eb2aebe1"
+    },
+    {
+      "assetId": "hmh-barrier-steel-fence-0",
+      "kind": "steel-fence",
+      "direction": 0,
+      "yawRadians": 0.0,
+      "file": "steel-fence-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "57c8287a9eb5cb51dc27dd0592941ce5e38ada68caa1f664f2fb5bb775ce8e95"
+    },
+    {
+      "assetId": "hmh-barrier-steel-fence-1",
+      "kind": "steel-fence",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "steel-fence-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "38d021a5d3e8e5651eafd8beca5224e96332a3366d6bd3b67596c83787f6926c"
+    },
+    {
+      "assetId": "hmh-barrier-steel-fence-2",
+      "kind": "steel-fence",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "steel-fence-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "716d3c0a8e071ab49f770849a6371662001d2170e6e035401d5720e4c5cf9d8e"
+    },
+    {
+      "assetId": "hmh-barrier-steel-fence-3",
+      "kind": "steel-fence",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "steel-fence-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "37cd8aab1cb62de48800f0a9d5742cbc461b9977b6f449e3b3112d91ad855d15"
+    },
+    {
+      "assetId": "hmh-barrier-rock-formation-0",
+      "kind": "rock-formation",
+      "direction": 0,
+      "yawRadians": 0.0,
+      "file": "rock-formation-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "4934a50ce1dc9734262e7424e668761518f99bb128ccae3f817f4cb9a6ad32e8"
+    },
+    {
+      "assetId": "hmh-barrier-rock-formation-1",
+      "kind": "rock-formation",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "rock-formation-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "e18ed35ee7ab8d049d8fd24a7c15105c29f2191f8a06898d655daa6a7d621a8b"
+    },
+    {
+      "assetId": "hmh-barrier-rock-formation-2",
+      "kind": "rock-formation",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "rock-formation-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "dfd378bb40780f20d09293b73e694d386abe40a5308997da58d5b93b69517e4d"
+    },
+    {
+      "assetId": "hmh-barrier-rock-formation-3",
+      "kind": "rock-formation",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "rock-formation-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "e7104c39ed5da69aa3475ed39141e014db31109f697d5aba210143b9ef14d906"
+    },
+    {
+      "assetId": "hmh-barrier-boulders-0",
+      "kind": "boulders",
+      "direction": 0,
+      "yawRadians": 0.24497866312686414,
+      "file": "boulders-0.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "f524035ace9a8c83d04dfd8fc145a45798d68f7e26c8cb71440da6ba9cc791ab"
+    },
+    {
+      "assetId": "hmh-barrier-boulders-1",
+      "kind": "boulders",
+      "direction": 1,
+      "yawRadians": 0.7853981633974483,
+      "file": "boulders-1.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "bf8436f30ab62dc46ee9b1ba0ba6ef1611f6823b7826cd9cde28cb1f18d1eaca"
+    },
+    {
+      "assetId": "hmh-barrier-boulders-2",
+      "kind": "boulders",
+      "direction": 2,
+      "yawRadians": 1.5707963267948966,
+      "file": "boulders-2.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "494a4644a8540b2a325806aba24cd76343e4c6f44c0234964912749c406f3448"
+    },
+    {
+      "assetId": "hmh-barrier-boulders-3",
+      "kind": "boulders",
+      "direction": 3,
+      "yawRadians": 2.356194490192345,
+      "file": "boulders-3.png",
+      "anchor": {
+        "x": 0.5,
+        "y": 0.6237437129020691
+      },
+      "runtimeScale": 0.03125,
+      "projectionY": 1.4142135623730951,
+      "nativeABPixelExact": true,
+      "nativeRgbaSha256": "f36566e515a9beb888b9a04bdbf8bcf6963be4ca5a1ecd71c7ccef8518711708"
+    }
+  ],
+  "tiers": {
+    "desktop": {
+      "image": "barriers-desktop.webp",
+      "sha256": "d99a5d8412e4d17d11d4cf80723b1a8452834e10f76e2d3f37e7a3b735082521",
+      "bytes": 252892,
+      "width": 1024,
+      "height": 1792,
+      "frames": [
+        {
+          "assetId": "hmh-barrier-stone-wall-0",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-stone-wall-1",
+          "frame": {
+            "x": 256,
+            "y": 0,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-stone-wall-2",
+          "frame": {
+            "x": 512,
+            "y": 0,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-stone-wall-3",
+          "frame": {
+            "x": 768,
+            "y": 0,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-0",
+          "frame": {
+            "x": 0,
+            "y": 256,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-1",
+          "frame": {
+            "x": 256,
+            "y": 256,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-2",
+          "frame": {
+            "x": 512,
+            "y": 256,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-3",
+          "frame": {
+            "x": 768,
+            "y": 256,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-0",
+          "frame": {
+            "x": 0,
+            "y": 512,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-1",
+          "frame": {
+            "x": 256,
+            "y": 512,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-2",
+          "frame": {
+            "x": 512,
+            "y": 512,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-3",
+          "frame": {
+            "x": 768,
+            "y": 512,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-0",
+          "frame": {
+            "x": 0,
+            "y": 768,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-1",
+          "frame": {
+            "x": 256,
+            "y": 768,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-2",
+          "frame": {
+            "x": 512,
+            "y": 768,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-3",
+          "frame": {
+            "x": 768,
+            "y": 768,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-0",
+          "frame": {
+            "x": 0,
+            "y": 1024,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-1",
+          "frame": {
+            "x": 256,
+            "y": 1024,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-2",
+          "frame": {
+            "x": 512,
+            "y": 1024,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-3",
+          "frame": {
+            "x": 768,
+            "y": 1024,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-0",
+          "frame": {
+            "x": 0,
+            "y": 1280,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-1",
+          "frame": {
+            "x": 256,
+            "y": 1280,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-2",
+          "frame": {
+            "x": 512,
+            "y": 1280,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-3",
+          "frame": {
+            "x": 768,
+            "y": 1280,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-0",
+          "frame": {
+            "x": 0,
+            "y": 1536,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-1",
+          "frame": {
+            "x": 256,
+            "y": 1536,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-2",
+          "frame": {
+            "x": 512,
+            "y": 1536,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-3",
+          "frame": {
+            "x": 768,
+            "y": 1536,
+            "w": 256,
+            "h": 256
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.03125,
+          "projectionY": 1.4142135623730951
+        }
+      ]
+    },
+    "mobile": {
+      "image": "barriers-mobile.webp",
+      "sha256": "f9ff0605de4aa0339ce48d0569f3e1da1884fa07e46e1390b5375ddc6f64eb4c",
+      "bytes": 102830,
+      "width": 512,
+      "height": 896,
+      "frames": [
+        {
+          "assetId": "hmh-barrier-stone-wall-0",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-stone-wall-1",
+          "frame": {
+            "x": 128,
+            "y": 0,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-stone-wall-2",
+          "frame": {
+            "x": 256,
+            "y": 0,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-stone-wall-3",
+          "frame": {
+            "x": 384,
+            "y": 0,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-0",
+          "frame": {
+            "x": 0,
+            "y": 128,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-1",
+          "frame": {
+            "x": 128,
+            "y": 128,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-2",
+          "frame": {
+            "x": 256,
+            "y": 128,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-wall-3",
+          "frame": {
+            "x": 384,
+            "y": 128,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-0",
+          "frame": {
+            "x": 0,
+            "y": 256,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-1",
+          "frame": {
+            "x": 128,
+            "y": 256,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-2",
+          "frame": {
+            "x": 256,
+            "y": 256,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-concrete-barrier-3",
+          "frame": {
+            "x": 384,
+            "y": 256,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-0",
+          "frame": {
+            "x": 0,
+            "y": 384,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-1",
+          "frame": {
+            "x": 128,
+            "y": 384,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-2",
+          "frame": {
+            "x": 256,
+            "y": 384,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-wood-fence-3",
+          "frame": {
+            "x": 384,
+            "y": 384,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-0",
+          "frame": {
+            "x": 0,
+            "y": 512,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-1",
+          "frame": {
+            "x": 128,
+            "y": 512,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-2",
+          "frame": {
+            "x": 256,
+            "y": 512,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-steel-fence-3",
+          "frame": {
+            "x": 384,
+            "y": 512,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-0",
+          "frame": {
+            "x": 0,
+            "y": 640,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-1",
+          "frame": {
+            "x": 128,
+            "y": 640,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-2",
+          "frame": {
+            "x": 256,
+            "y": 640,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-rock-formation-3",
+          "frame": {
+            "x": 384,
+            "y": 640,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-0",
+          "frame": {
+            "x": 0,
+            "y": 768,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-1",
+          "frame": {
+            "x": 128,
+            "y": 768,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-2",
+          "frame": {
+            "x": 256,
+            "y": 768,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        },
+        {
+          "assetId": "hmh-barrier-boulders-3",
+          "frame": {
+            "x": 384,
+            "y": 768,
+            "w": 128,
+            "h": 128
+          },
+          "anchor": {
+            "x": 0.5,
+            "y": 0.6237437129020691
+          },
+          "runtimeScale": 0.0625,
+          "projectionY": 1.4142135623730951
+        }
+      ]
+    }
+  },
+  "packerSha256": "7726b00bfafd4eb19c95268c0a43372c4affebcd5b6d08e2e7d8e980f3217047"
+}

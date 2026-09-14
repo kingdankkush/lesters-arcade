@@ -1,0 +1,1 @@
+{"running":null,"results":[{"name":"tests","exit":0,"seconds":257.551},{"name":"syntax","exit":0,"seconds":42.929},{"name":"assets","exit":0,"seconds":10.002},{"name":"generated","exit":0,"seconds":0.141},{"name":"contracts","exit":0,"seconds":0.074},{"name":"docs","exit":0,"seconds":0.078},{"name":"cabinet-docs","exit":0,"seconds":0.08}]}

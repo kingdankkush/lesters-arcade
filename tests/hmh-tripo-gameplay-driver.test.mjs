@@ -88,7 +88,7 @@ assert pelvis.location.y==0
 });
 
 test('native source stays source-only while runtime references only derived art', () => {
-  const runtime = readFileSync(new URL('../apps/hmh-reboot/src/production-hero-atlas.mjs', import.meta.url), 'utf8');
+  const runtime = ['production-hero-atlas.mjs','production-hero-assets.mjs'].map(name=>readFileSync(new URL(`../apps/hmh-reboot/src/${name}`, import.meta.url),'utf8')).join('\n');
   assert.doesNotMatch(runtime, /\.blend|\.glb/i);
   assert.match(runtime, /lit-commando-production-pilot-atlas\.webp/);
   const portalEntry = readFileSync(new URL('../apps/portal/index.html', import.meta.url), 'utf8');

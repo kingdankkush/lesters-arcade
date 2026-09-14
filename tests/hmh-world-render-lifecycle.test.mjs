@@ -144,7 +144,7 @@ function assetLoadSubject(failure) {
   const depth=new RenderLayer({sortableChildren:true});let disposed=0;
   const ctx=vm.createContext({
     Map,Set,Object,app:{stage:{destroyed:false}},world:{parent:{}},dataset:{},performanceProfile:{id:'desktop'},
-    tripoPropAppearance:new Map(),worldDesignBlockerIds:new Set(),authoredPropDisplay:null,authoredHeldWeaponDisplay:null,authoredPropLoadError:null,
+    tripoPropAppearance:new Map(),worldDesignBlockerIds:new Set(),authoredPropDisplay:null,authoredHeldWeaponDisplay:null,authoredPropLoadError:null,nativeBarrierPlacements:[],nativeBarrierModule:null,
     createAuthoredPropAtlasIndex:()=>({}),loadTripoPropAppearance:async()=>new Map(),loadWorldDesignAppearance:async()=>appearance,
     WORLD_DESTRUCTIBLE_PROPS,WORLD_DESIGN_SECRET_PROPS,WORLD_DESIGN_SITE_PROPS,WORLD_DESIGN_ORCHARD,buildWorldDesignPlacements,extendWorldDesignLandmarks,LEVEL_ONE_WORLD,buildAuthoredTownPlacements:()=>[],authoredPropPlacements:[],
     Container,Graphics,Sprite,Texture,Rectangle,worldDepthLayer:depth,Assets:{load:async()=>Texture.WHITE},
@@ -153,7 +153,7 @@ function assetLoadSubject(failure) {
     createAuthoredPropDisplay:()=>{if(failure==='props')throw new Error('fixture props failure');const container=new Container();const sprite=new Container();container.addChild(sprite);depth.attach(sprite);return {container,entries:[],addPlacement:()=>{},destroy(){disposed++;depth.detach(sprite);container.destroy({children:true});}};},
     createAuthoredHeldWeaponDisplay:()=>{throw new Error('fixture held failure');},console:{warn(){}},
   });
-  return {ctx,depth,run:()=>callback(nativeLoad,ctx)([{ok:true,json:async()=>({})},Texture.WHITE]).catch(callback(catcher,ctx)),disposed:()=>disposed};
+  return {ctx,depth,run:()=>callback(nativeLoad,ctx)([{ok:true,json:async()=>({})},Texture.WHITE,{createAuthoredPropDisplay:ctx.createAuthoredPropDisplay,createAuthoredHeldWeaponDisplay:ctx.createAuthoredHeldWeaponDisplay}]).catch(callback(catcher,ctx)),disposed:()=>disposed};
 }
 for(const failure of ['props','held'])test(`failed ${failure} construction never hides canonical fallback collision art`, async()=>{
   const s=assetLoadSubject(failure);

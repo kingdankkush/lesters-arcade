@@ -1,0 +1,76 @@
+{
+  "schema": "chikun-ground-props-v1",
+  "author": "New native Blender geometry authored for Lester\u2019s Arcade",
+  "sources": [
+    {
+      "name": "willow",
+      "source": "willow.blend",
+      "sha256": "a39568068fe5581e336a18d62224970e4f547e372b6ae7500573a08a488acb2c"
+    },
+    {
+      "name": "cherry",
+      "source": "cherry.blend",
+      "sha256": "8f2e110530132f4cdf4192dd01e0485c4c57e5beaa11411d9f1d7868b7d8887c"
+    },
+    {
+      "name": "maple",
+      "source": "maple.blend",
+      "sha256": "6053b21cc8bb2cdfbc9a044ede7ba207338bcac20459b1301b6a1ea1086bd118"
+    },
+    {
+      "name": "oak",
+      "source": "oak.blend",
+      "sha256": "d73db16e1073fe9aacd6d58f8917bb31de1831a2654a19e236a218e6a7e14cf3"
+    },
+    {
+      "name": "rock",
+      "source": "rock.blend",
+      "sha256": "c58c4a7da8ff280921d8e53b738a128996476db6573338fb7ae1c5fc341d0266"
+    },
+    {
+      "name": "log",
+      "source": "log.blend",
+      "sha256": "e3e583a6d065d9fb15c5446146369d8f0c1064d1e83c85fe21abb109acf17962"
+    },
+    {
+      "name": "crate",
+      "source": "crate.blend",
+      "sha256": "647582fa283966295376b8af5c125597485a5676421aed4cc34a92342c3e84b1"
+    },
+    {
+      "name": "hurdle",
+      "source": "hurdle.blend",
+      "sha256": "d20db9511c608f66f2a15c5dd0d27e7fc544ebac4584003aedf3b85d3b90d992"
+    },
+    {
+      "name": "thorn",
+      "source": "thorn.blend",
+      "sha256": "9ccd011697b5a918fbba030fcc1da397eea3ff5160a7a5928a8d9708f0d4e1b0"
+    },
+    {
+      "name": "shiba",
+      "source": "shiba.blend",
+      "sha256": "93da994632c4c6e35bc4a65829d3ef0178a8c182eccbb5b4aece6e8e1fba9c55"
+    },
+    {
+      "name": "hawk",
+      "source": "hawk.blend",
+      "sha256": "2f9acd63ce22fc55a9f8352d5adac8577c04f940a9270908d82e2c9ef0656517"
+    },
+    {
+      "name": "eagle",
+      "source": "eagle.blend",
+      "sha256": "375640a1d171f7a4b17e618098a9a5860ea08e2cf4f5934227a3e5475e99c4af"
+    },
+    {
+      "name": "pelican",
+      "source": "pelican.blend",
+      "sha256": "35bc0adbf7b0ae471fae1aed35d3c9533f979517bf069f38354dbe85767c41a5"
+    },
+    {
+      "name": "plane",
+      "source": "plane.blend",
+      "sha256": "f29a8c83dcc48ab30c07ffa881dbd3e289d6f66d6cec25ecca3b0ea305ed91d4"
+    }
+  ]
+}

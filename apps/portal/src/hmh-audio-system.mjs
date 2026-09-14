@@ -1,4 +1,7 @@
 export const HMH_SFX_CUE_REGISTRY = Object.freeze({
+  'silver-collect': Object.freeze({family:'reward',priority:2,cooldownMs:150,tone:Object.freeze([1568,2093]),synth:'sine',gainMul:.75,samplePreferred:true}),
+  'objective-complete': Object.freeze({family:'reward',priority:4,cooldownMs:800,tone:Object.freeze([392,587,784]),synth:'sine',gainMul:1,samplePreferred:true}),
+  'supply-ready': Object.freeze({family:'reward',priority:2,cooldownMs:1000,tone:Object.freeze([659,988]),synth:'sine',gainMul:.8,samplePreferred:true}),
   'wallet-connect': Object.freeze({ family: 'ui', priority: 3, cooldownMs: 110, tone: Object.freeze([523, 659, 784]), synth: 'triangle', gainMul: 1.0, samplePreferred: true }),
   'menu-click': Object.freeze({ family: 'ui', priority: 1, cooldownMs: 70, tone: Object.freeze([392, 523]), synth: 'triangle', gainMul: 0.75, samplePreferred: true }),
   'hero-select': Object.freeze({ family: 'ui', priority: 3, cooldownMs: 160, tone: Object.freeze([523, 659, 784, 1047]), synth: 'triangle', gainMul: 1.1, samplePreferred: false }),

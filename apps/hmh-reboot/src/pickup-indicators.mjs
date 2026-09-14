@@ -1,16 +1,17 @@
+import { collectibleIsAvailable } from './objective-rewards.mjs';
 // Persistent pickup landmarks use only presentation inputs. Hidden or collected
 // items never advertise themselves, and reduced motion keeps a steady marker.
 export function pickupIndicators({state,tick,camera,view,worldToScreen,queryGround,reduceMotion=false}) {
   const markers=[];
   for (const {placement:p,effect} of state?.entries ?? []) {
-    if(state.collectedIds.has(p.id) || tick < p.availableTick) continue;
+    if(!collectibleIsAvailable(state,p,tick)) continue;
     const q=worldToScreen({x:p.x,y:p.y,z:queryGround(p.x,p.y).groundZ},camera,view);
     if(q.x < -70 || q.x > view.width+70 || q.y < -100 || q.y > view.height+100) continue;
     const phase=(tick%180)/180*Math.PI*2+p.x*.01+p.y*.013;
     markers.push({id:p.id,x:q.x,y:q.y,color:effect.kind==='weapon-cache'?0x72ddeb:effect.kind==='heal'?0x99e7a5:0xf2c56e,
       radius:24*camera.zoom,beamHeight:56*camera.zoom,pulse:reduceMotion?1:1+Math.sin(phase)*.09,
       sparks:reduceMotion?[]:[0,1].map(i=>{const f=((tick+i*52)%120)/120;return {x:q.x+Math.sin(phase+i*3)*12*camera.zoom,y:q.y-(12+f*42)*camera.zoom,alpha:(1-f)*.55};})});
-    if(markers.length===13) break;
+    if(markers.length===20) break;
   }
   return markers;
 }

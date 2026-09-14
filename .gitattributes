@@ -5,6 +5,7 @@
 *.gif binary
 *.ico binary
 *.svg text eol=lf
+assets-source/hmh-silver-coin/*.blend -text
 
 # Source models (roadmap P-5). External GLB/FBX actors and their sidecar
 # buffers/textures under apps/hmh-reboot/assets/source/models/ travel through
@@ -38,3 +39,5 @@ apps/portal/assets/generated/hmh-native-roster/**/*.json -text whitespace=cr-at-
 docs/testing/hmh-hero-motion/**/*.json -text whitespace=cr-at-eol
 docs/testing/hmh-native-roster/**/*.json -text whitespace=cr-at-eol
 apps/hmh-reboot/assets/source/models/native-enemies/**/source-receipt.json -text whitespace=cr-at-eol
+
+assets-source/hmh-barriers/*.blend -text

@@ -1,0 +1,94 @@
+{
+  "source": "Original deterministic synthesis",
+  "sampleRate": 24000,
+  "cues": [
+    {
+      "name": "step",
+      "duration": 0.095,
+      "peak": 0.0817947339475032,
+      "rms": 0.019203153724273392,
+      "bytes": 4604,
+      "sha256": "dba0a774034481e3db0a8ef76cf4fe47a1d915d511b53003da0bb9682299d0de"
+    },
+    {
+      "name": "jump",
+      "duration": 0.24,
+      "peak": 0.1073270566569688,
+      "rms": 0.031365942675605156,
+      "bytes": 11564,
+      "sha256": "f63c49ecdadf3b5f798c5b3d44ab783ec87cd02e8fb1ef8aa1eb1404cb1781c4"
+    },
+    {
+      "name": "land",
+      "duration": 0.26,
+      "peak": 0.20146238445153972,
+      "rms": 0.037948239774140476,
+      "bytes": 12524,
+      "sha256": "4dfbf2f261f8c25296a44e4e25be339ab77844a2319168bd9c81c2fceca9cc1a"
+    },
+    {
+      "name": "wood",
+      "duration": 0.42,
+      "peak": 0.2851201070920757,
+      "rms": 0.04351943205057618,
+      "bytes": 20204,
+      "sha256": "523e2125508c0909e5328187475361760a745db276a780ddffea30cea0c258d1"
+    },
+    {
+      "name": "splash",
+      "duration": 0.65,
+      "peak": 0.09627583872526954,
+      "rms": 0.021375948955830195,
+      "bytes": 31244,
+      "sha256": "3fe07c763ccb6e8f4f8b14474fd1fa007571abc12345a697943551560fa71c96"
+    },
+    {
+      "name": "drone",
+      "duration": 0.55,
+      "peak": 0.11828978586451502,
+      "rms": 0.029503464590487805,
+      "bytes": 26444,
+      "sha256": "af947ae537a1f3ab4b6c2777b097df664a58c86a3fc9488cf5f34b1f2c68572c"
+    },
+    {
+      "name": "gore",
+      "duration": 0.32,
+      "peak": 0.2008222212603256,
+      "rms": 0.03130804000616176,
+      "bytes": 15404,
+      "sha256": "d3d0d9e21c97cfd348da552b66aae40845b78e819c6a8f1051c77b59ae2fe144"
+    },
+    {
+      "name": "menu",
+      "duration": 0.09,
+      "peak": 0.04997884750411003,
+      "rms": 0.024748565915934214,
+      "bytes": 4364,
+      "sha256": "2b4e08ca262c099722453e3891fcc8817d0170364b3a55f263c75294a35ccc37"
+    },
+    {
+      "name": "water",
+      "duration": 4,
+      "peak": 0.055312802171081844,
+      "rms": 0.013050438738028226,
+      "bytes": 192044,
+      "sha256": "fa414af76e659414fefad96200424c21ad7ec45212dfcc312cd3611465e4a6a4"
+    },
+    {
+      "name": "forest",
+      "duration": 4,
+      "peak": 0.0441152289892955,
+      "rms": 0.010613339535820294,
+      "bytes": 192044,
+      "sha256": "dd6ce8cedc09915e74d25905c4ef6577703dfb0a614b4392116c01e4bb2565fa"
+    },
+    {
+      "name": "industry",
+      "duration": 4,
+      "peak": 0.030483059733665205,
+      "rms": 0.009426272633250833,
+      "bytes": 192044,
+      "sha256": "3a5550b797eae0ec9f1ee6f440fed8488e4564cc5f90cd0a850aeff54c9cce7d"
+    }
+  ]
+}

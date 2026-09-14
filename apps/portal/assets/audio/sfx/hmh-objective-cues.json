@@ -1,0 +1,29 @@
+{
+  "schema": "hmh-original-objective-audio-v1",
+  "provenance": "Original additive synthesis; no external samples",
+  "recipe": "scripts/build-hmh-objective-sfx.py",
+  "recipeSha256": "da2afcf2fc8050ecae5ac8f56518be5e4fd0730be3876da9f2794350b40ee16e",
+  "cues": [
+    {
+      "cue": "silver-collect",
+      "file": "hmh-silver-collect.wav",
+      "durationSeconds": 0.19002267573696144,
+      "peak": 0.37998596148564107,
+      "sha256": "5da3f1fcc57af9c1448e7b84192d4aef172a6f3908533d2d6eb3adbc64704942"
+    },
+    {
+      "cue": "objective-complete",
+      "file": "hmh-objective-complete.wav",
+      "durationSeconds": 0.66,
+      "peak": 0.37998596148564107,
+      "sha256": "5eb634544e5ba345ed305178a42a1a115c440b4cebd12666ac90a3f3efee143c"
+    },
+    {
+      "cue": "supply-ready",
+      "file": "hmh-supply-ready.wav",
+      "durationSeconds": 0.34,
+      "peak": 0.37998596148564107,
+      "sha256": "77f2bd8e34db540bf65c4c645291e9687008744d952b9b2174af4899a91d1757"
+    }
+  ]
+}

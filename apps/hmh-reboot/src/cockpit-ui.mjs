@@ -1,4 +1,4 @@
-import { authoredPropItemUrl } from './authored-prop-atlas.mjs';
+import { authoredPropItemUrl } from './authored-prop-layout.mjs';
 import { RUN_UPGRADE_CATALOG } from './run-progression.mjs';
 import { resolveComboPresentation } from './combo-feedback.mjs';
 import { actionHelpRows } from './action-map.mjs';
