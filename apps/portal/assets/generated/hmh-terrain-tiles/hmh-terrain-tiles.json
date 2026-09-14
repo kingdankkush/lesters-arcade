@@ -21,21 +21,21 @@
       "width": 512
     },
     {
-      "bytes": 120521,
+      "bytes": 103281,
       "derivedFrom": "forest-floor",
       "file": "./forest-floor-fringe.png",
       "height": 128,
       "id": "forest-floor",
-      "sha256": "2ec0f4f4f18d84cdb7812aaea51e9969a9da20d791ae7439f944c314b4732779",
+      "sha256": "c1a6cd6c31b74d45d35cd36deafe85febc1bdd0574a30fb65ccb5093d7495e86",
       "width": 512
     },
     {
-      "bytes": 91962,
+      "bytes": 94313,
       "derivedFrom": "industrial-slab",
       "file": "./industrial-slab-fringe.png",
       "height": 128,
       "id": "industrial-slab",
-      "sha256": "00dc19a38d54df65310608dc9325120f257162dfe631333d4f783ded5e863928",
+      "sha256": "755d3c562e00456a0da6f457620208f6003fac8c60171c6fac31dc29d78445e4",
       "width": 512
     },
     {
@@ -62,7 +62,7 @@
       "file": "./red-rock-fringe.png",
       "height": 128,
       "id": "red-rock",
-      "sha256": "4892f6033d36cbcbc9d1f74d9e0f3c9b39a9061b61b1a56c45c8c2e919a6cbfa",
+      "sha256": "43195619522405bcc988faaae5e4088d047d3836265e07c751273983a5c3c798",
       "width": 512
     },
     {
@@ -71,7 +71,7 @@
       "file": "./road-fringe.png",
       "height": 128,
       "id": "road",
-      "sha256": "1c7f1a1a0e9bb90bc98e24a017627343a846bbac6ad08afbb00dea5125de53ef",
+      "sha256": "aa8e6d39343fbb6c4a4fecb56e50a67e50a2b715a933f6b3df0674ab16e696fa",
       "width": 512
     },
     {
@@ -129,29 +129,29 @@
       }
     },
     {
-      "bytes": 360525,
+      "bytes": 288659,
       "file": "./forest-floor.png",
       "id": "forest-floor",
-      "sha256": "4007b7b596490fcfeeef447704b2150420913beadbbb927caea529183192e32f",
+      "sha256": "4a9b88fcd7ffed224581d516e8cae4624977910e18fba04da9498196834322c7",
       "size": 512,
       "source": {
-        "decodedRgbaSha256": "603d80cdf15ca8f208be191ff8357e561e383b9fe71c35d7442398ae9338b72b",
+        "decodedRgbaSha256": "7341c199989ff649d8fa03cb017bbdea3c8e62a8dd3cc5bce92bed3a3fcd6828",
         "file": "apps/hmh-reboot/assets/source/terrain/forest-floor.png",
         "kind": "blender-cycles",
-        "sha256": "2e6b14b9bce9994a345b0b218a99f48a81f579be2affd6de094689397ace1b7b"
+        "sha256": "c9ffb2cfd8bc1b888c1289412f859f7458f543379149cfe90d1d20fb00566479"
       }
     },
     {
-      "bytes": 263405,
+      "bytes": 265995,
       "file": "./industrial-slab.png",
       "id": "industrial-slab",
-      "sha256": "29fb6fe84d815b0520376cb31e8ba500f1dd0b23994090ed413e1e096b149f16",
+      "sha256": "6bdd4b3ae67de6f223b3137ebda976f2f4bcf4a305c8a116715ea86f43e5da53",
       "size": 512,
       "source": {
-        "decodedRgbaSha256": "c50400390874bfcb2b39b84822630e7efd247467700234cabcec9d668741c7cc",
+        "decodedRgbaSha256": "4c2db7b84f8ab133452a6c2fdc1944e3be3d7f87899da8ff36c9f7dd3ee533cb",
         "file": "apps/hmh-reboot/assets/source/terrain/industrial-slab.png",
         "kind": "blender-cycles",
-        "sha256": "f8bcc27f022e16f8afa2d764f675c6fbb260e2acaee93025bbeb01a2255afc0c"
+        "sha256": "7efe2894aad527929a9e964bdd093e927d5df5c47c398e3f6a030cb7e63c656b"
       }
     },
     {
@@ -208,7 +208,7 @@
       "bytes": 224354,
       "file": "./shallow-water.png",
       "id": "shallow-water",
-      "sha256": "2b9282bfe7fd0aadfea3990c6000ceb03f02c7a2fb61a40a168c7ed5cd3edd3b",
+      "sha256": "41814aecdd011fd57b1db172f5db4db17049ca5d76cc52657c9ba5d678cdc051",
       "size": 512,
       "source": {
         "kind": "procedural-heightfield",
@@ -242,7 +242,7 @@
   ],
   "nativeGround": {
     "blend": "apps/hmh-reboot/assets/source/terrain/hmh-world-ground-materials.blend",
-    "blendSha256": "9f028bfdb6f1933d614bd326898df4d953d75758cc78e798792558c9fa73d647",
+    "blendSha256": "4e4e66e0a8cf1fcc104865f3c488b3392378c772e9fa3b927f8df7bd98d617b1",
     "materialIds": [
       "packed-earth",
       "red-rock",
@@ -254,19 +254,19 @@
     ],
     "pipeline": "hmh-blender-ground-v1",
     "receipt": "apps/hmh-reboot/assets/source/terrain/ground-source.json",
-    "receiptSha256": "a80861ecdd71126f04ede9e90475fd23485e58f426644836d2c802a109cdac37",
+    "receiptSha256": "d25613eb4743ab4a91ba832ca788032fb172bff6f36800400a30970b0d4ad23c",
     "recipe": "scripts/hmh-blender/bake-world-ground.py",
-    "recipeSha256": "7033397804f30c30db99d8a53e34d07ddee08698075d4c5cb015fc6e18757a18"
+    "recipeSha256": "91c3a0e7e1a722f1135c918c78cd58fa05b5c1c5bd4de9665faaddbdd89ef3eb"
   },
   "overlayHeight": 128,
   "overlays": [
     {
       "addressV": "clamp-to-edge",
-      "bytes": 94745,
+      "bytes": 101527,
       "file": "./road-shoulder.png",
       "height": 128,
       "id": "road-shoulder",
-      "sha256": "1442d7f2ceb2d70c388c5fa624e347d9d3bca2701cd433d2e2608a5eb54c9862",
+      "sha256": "3b6b6bc7d4440faca919941ac19d03f3c46bc81883aeca8939ea75d73de5404a",
       "source": {
         "kind": "profiled-blender-ground",
         "material": "packed-earth"
@@ -287,11 +287,11 @@
     },
     {
       "addressV": "clamp-to-edge",
-      "bytes": 132299,
+      "bytes": 132140,
       "file": "./scree-skirt.png",
       "height": 128,
       "id": "scree-skirt",
-      "sha256": "e63c3b4fb770d6d338c14b42cbb4dec369778e37113f56d05a33a09b3fb700ae",
+      "sha256": "8e3f811456ccc3159537deaaeb64f1e6a2595d9a533f8f335203114ffb80e1f7",
       "source": {
         "kind": "profiled-blender-ground",
         "material": "crushed-ore"
@@ -300,11 +300,11 @@
     },
     {
       "addressV": "clamp-to-edge",
-      "bytes": 86913,
+      "bytes": 91260,
       "file": "./shallows-band.png",
       "height": 128,
       "id": "shallows-band",
-      "sha256": "c1934d41d43d806d5d4c9b7d089b5acbb6d1d8f04ed1986fb752e82695a197f1",
+      "sha256": "9db94ea2665797a04d1b334138cdd94cf67af1288ddd9465457767269968973c",
       "source": {
         "kind": "procedural-heightfield"
       },
@@ -312,11 +312,11 @@
     },
     {
       "addressV": "clamp-to-edge",
-      "bytes": 85734,
+      "bytes": 87562,
       "file": "./shore-band.png",
       "height": 128,
       "id": "shore-band",
-      "sha256": "f8308383f59dc5ad1f09e32961d48cbbd8fe010055798643aa9b8f0af3154356",
+      "sha256": "c1d255535c0e5a86534fd0093d897cea6b809a2811005e3115d4619bc5f1b1f4",
       "source": {
         "kind": "profiled-blender-ground",
         "material": "wet-bank"
@@ -324,7 +324,7 @@
       "width": 512
     }
   ],
-  "pipelineId": "hmh-terrain-tiles-v4",
+  "pipelineId": "hmh-terrain-tiles-v5",
   "reproducibleVerified": true,
   "roadNetwork": {
     "pathMaterial": "packed-earth",
@@ -347,16 +347,16 @@
       "wrapY": 4.775
     },
     "forest-floor": {
-      "interiorX": 3.112,
-      "interiorY": 3.156,
-      "wrapX": 3.329,
-      "wrapY": 3.044
+      "interiorX": 1.697,
+      "interiorY": 1.704,
+      "wrapX": 1.632,
+      "wrapY": 1.776
     },
     "industrial-slab": {
-      "interiorX": 1.107,
-      "interiorY": 1.124,
-      "wrapX": 1.158,
-      "wrapY": 1.008
+      "interiorX": 1.133,
+      "interiorY": 1.148,
+      "wrapX": 0.981,
+      "wrapY": 0.808
     },
     "ledge-top": {
       "interiorX": 4.268,

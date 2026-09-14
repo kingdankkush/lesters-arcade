@@ -5,13 +5,13 @@
   "engine": "CYCLES",
   "samples": 16,
   "seed": 42819,
-  "sourceScriptSha256": "7033397804f30c30db99d8a53e34d07ddee08698075d4c5cb015fc6e18757a18",
+  "sourceScriptSha256": "91c3a0e7e1a722f1135c918c78cd58fa05b5c1c5bd4de9665faaddbdd89ef3eb",
   "nativeSource": "hmh-world-ground-materials.blend",
-  "nativeSourceSha256": "9f028bfdb6f1933d614bd326898df4d953d75758cc78e798792558c9fa73d647",
+  "nativeSourceSha256": "4e4e66e0a8cf1fcc104865f3c488b3392378c772e9fa3b927f8df7bd98d617b1",
   "license": "Original project-authored procedural Blender materials; no external texture inputs.",
   "seamMethod": "4D torus of sine/cosine UV; one period in both axes; oversized plane and uniform sun/world. Opposing pixel centers are adjacent samples, not duplicated edge pixels.",
   "repeatVerified": true,
-  "resumedFromSavedNativeScene": true,
+  "resumedFromSavedNativeScene": false,
   "pngNormalization": "Only volatile text/time metadata chunks removed; IDAT compressed pixels and color-space chunks unchanged.",
   "contactSheetOrder": [
     "packed-earth",
@@ -98,24 +98,24 @@
     {
       "id": "forest-floor",
       "file": "forest-floor.png",
-      "sha256": "2e6b14b9bce9994a345b0b218a99f48a81f579be2affd6de094689397ace1b7b",
+      "sha256": "c9ffb2cfd8bc1b888c1289412f859f7458f543379149cfe90d1d20fb00566479",
       "size": [
         512,
         512
       ],
-      "horizontalSeamMean": 0.013054023496806622,
-      "verticalSeamMean": 0.011935763992369175,
-      "interiorHorizontalMean": 0.012363926507532597,
-      "interiorVerticalMean": 0.01233522780239582,
-      "horizontalSeamToInterior": 1.05581533908844,
-      "verticalSeamToInterior": 0.9676160216331482,
+      "horizontalSeamMean": 0.006398079916834831,
+      "verticalSeamMean": 0.0069648693315684795,
+      "interiorHorizontalMean": 0.006667999550700188,
+      "interiorVerticalMean": 0.006655058357864618,
+      "horizontalSeamToInterior": 0.959520161151886,
+      "verticalSeamToInterior": 1.0465526580810547,
       "opaque": true,
       "rgbMean": [
-        0.32307833433151245,
-        0.32750406861305237,
-        0.23122164607048035
+        0.29524028301239014,
+        0.2954291105270386,
+        0.20786024630069733
       ],
-      "repeatSha256": "2e6b14b9bce9994a345b0b218a99f48a81f579be2affd6de094689397ace1b7b",
+      "repeatSha256": "c9ffb2cfd8bc1b888c1289412f859f7458f543379149cfe90d1d20fb00566479",
       "repeatPixelExact": true,
       "repeatFileExact": true
     },
@@ -146,24 +146,24 @@
     {
       "id": "industrial-slab",
       "file": "industrial-slab.png",
-      "sha256": "f8bcc27f022e16f8afa2d764f675c6fbb260e2acaee93025bbeb01a2255afc0c",
+      "sha256": "7efe2894aad527929a9e964bdd093e927d5df5c47c398e3f6a030cb7e63c656b",
       "size": [
         512,
         512
       ],
-      "horizontalSeamMean": 0.004541973117738962,
-      "verticalSeamMean": 0.0039522056467831135,
-      "interiorHorizontalMean": 0.00439702020958066,
-      "interiorVerticalMean": 0.004420657642185688,
-      "horizontalSeamToInterior": 1.032966136932373,
-      "verticalSeamToInterior": 0.8940311670303345,
+      "horizontalSeamMean": 0.003847528249025345,
+      "verticalSeamMean": 0.003168402472510934,
+      "interiorHorizontalMean": 0.0052340091206133366,
+      "interiorVerticalMean": 0.005260698962956667,
+      "horizontalSeamToInterior": 0.735101580619812,
+      "verticalSeamToInterior": 0.6022778749465942,
       "opaque": true,
       "rgbMean": [
-        0.46065378189086914,
-        0.46754008531570435,
-        0.42697280645370483
+        0.45594626665115356,
+        0.462853342294693,
+        0.42260390520095825
       ],
-      "repeatSha256": "f8bcc27f022e16f8afa2d764f675c6fbb260e2acaee93025bbeb01a2255afc0c",
+      "repeatSha256": "7efe2894aad527929a9e964bdd093e927d5df5c47c398e3f6a030cb7e63c656b",
       "repeatPixelExact": true,
       "repeatFileExact": true
     },

@@ -3,14 +3,16 @@ import { worldDesignHazardPhase } from './world-design-interactions.mjs';
 import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
 import { buildCoverBreakPresentation } from './cover-break-presentation.mjs';
 
-export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,camera,view,tick,particleBudget=0,reduceMotion=false}) {
+export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,camera,view,tick,particleBudget=0,reduceMotion=false,reduceFlash=false}) {
   const fires=[],embers=[],budget=Math.min(12,Math.max(0,Math.floor(particleBudget)));
   for(const p of placements) {
     if(p.assetId!=='campfire-ring')continue;
     const q=worldToScreen({x:p.x,y:p.y,z:queryGround(p.x,p.y).groundZ},camera,view);
     if(q.x < -90 || q.x>view.width+90 || q.y < -90 || q.y>view.height+110)continue;
     const phase=p.x*.013+p.y*.017;
-    fires.push({...q,radius:52*camera.zoom,alpha:reduceMotion?.10:.10+Math.sin(tick/19+phase)*.015});
+    const flicker=reduceMotion?0:Math.sin(tick/9+phase),lean=reduceMotion?0:Math.sin(tick/23+phase)*3;
+    fires.push({...q,radius:52*camera.zoom,alpha:reduceMotion||reduceFlash?.10:.10+Math.sin(tick/19+phase)*.015,
+      flameHeight:(23+flicker*4)*camera.zoom,flameWidth:(7-flicker)*camera.zoom,flameLean:lean*camera.zoom});
     if(!reduceMotion) for(let i=0;i<3&&embers.length<budget;i++) {
       const life=((tick+i*29+Math.floor(phase))%96)/96;
       embers.push({x:q.x+(Math.sin(phase+i*2+life*3)*10+life*8)*camera.zoom,y:q.y-(9+life*58)*camera.zoom,radius:(1.7-life)*camera.zoom,alpha:(1-life)*.8});
@@ -189,11 +191,15 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       effects.poly([c.x-dx,c.y-dy,c.x+dy,c.y-dx,c.x+dx,c.y+dy,c.x-dy,c.y+dx]).fill({color:c.color,alpha:c.alpha});
     }
     particles+=cover.chips.length;
-    const campfires=buildWorldDesignCampfires({placements:campfirePlacements,worldToScreen,queryGround,camera,view,tick,reduceMotion,particleBudget:Math.max(0,particleBudget-particles)});
+    const campfires=buildWorldDesignCampfires({placements:campfirePlacements,worldToScreen,queryGround,camera,view,tick,reduceMotion,reduceFlash,particleBudget:Math.max(0,particleBudget-particles)});
     for(const f of campfires.fires) {
       ground.circle(f.x,f.y,f.radius).fill({color:0xff9845,alpha:f.alpha*.4});
       ground.circle(f.x,f.y,f.radius*.55).fill({color:0xffbd6e,alpha:f.alpha});
-      effects.circle(f.x,f.y-5*camera.zoom,5*camera.zoom).fill({color:0xffcf76,alpha:.6});
+      for(const [scale,color,alpha] of [[1,0xff853c,.78],[.58,0xffdf8b,.92]]) {
+        const w=f.flameWidth*scale,h=f.flameHeight*scale,lean=f.flameLean*scale,y=f.y-3*camera.zoom;
+        effects.moveTo(f.x-w,y).bezierCurveTo(f.x-w*1.3,y-h*.45,f.x+lean-w*.4,y-h*.7,f.x+lean,y-h)
+          .bezierCurveTo(f.x+lean+w*.1,y-h*.5,f.x+w*1.5,y-h*.3,f.x+w,y).closePath().fill({color,alpha});
+      }
     }
     for(const e of campfires.embers)dot(e.x,e.y,e.radius,0xffc277,e.alpha);
     const notice=(destructibleState?.lastNotice?.tick??-1)>(secretState?.lastNotice?.tick??-1)?destructibleState.lastNotice:secretState?.lastNotice;

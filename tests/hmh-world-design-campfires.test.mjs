@@ -11,3 +11,14 @@ test('campfires have grounded warm light and bounded moving embers with determin
  assert.equal(buildWorldDesignCampfires({...options,worldToScreen:()=>({x:-500,y:-500})}).fires.length,0);
  assert.equal(fires[0].x,100);
 });
+
+test('campfire flame silhouettes animate smoothly and accessibility modes retain a steady light',()=>{
+ const a=buildWorldDesignCampfires(options).fires[0],b=buildWorldDesignCampfires({...options,tick:43}).fires[0];
+ assert.ok(a.flameHeight>12&&a.flameWidth>3,'a visible tapered flame rises from the ring');
+ assert.ok(Math.abs(a.flameHeight-b.flameHeight)<2,'consecutive poses must blend smoothly');
+ assert.notEqual(a.flameHeight,buildWorldDesignCampfires({...options,tick:70}).fires[0].flameHeight);
+ const still=buildWorldDesignCampfires({...options,reduceMotion:true}).fires;
+ assert.deepEqual(still,buildWorldDesignCampfires({...options,reduceMotion:true,tick:90}).fires);
+ assert.equal(buildWorldDesignCampfires({...options,reduceFlash:true}).fires[0].alpha,
+   buildWorldDesignCampfires({...options,reduceFlash:true,tick:90}).fires[0].alpha);
+});

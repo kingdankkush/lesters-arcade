@@ -1,4 +1,5 @@
 import { freezeDeep } from './value-guards.mjs';
+import { seededUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_EXPLORATION_PATHS } from './world-design-encounters.mjs';
 
 const model = (id,name) => `hmh-ld2-${id}-${name}`;
@@ -49,9 +50,16 @@ export function buildWorldDesignPlacements(world,assets) {
     const {a,b,radius}=feature.shape,dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy),steps=Math.max(1,Math.ceil(length/92));
     const nx=-dy/length,ny=dx/length;
     for(let i=0;i<=steps;i++) {
-      const x=a.x+dx*i/steps,y=a.y+dy*i/steps;
-      for(const [j,offset] of [-radius*.7,0,radius*.7].entries()) add(`${feature.id}:brush:${i}:${j}`,'hedge',x+nx*offset,y+ny*offset,150,{collisionBlockerId:feature.id});
-      if(i%2===0) add(`${feature.id}:tree:${i}`,'conifer',x,y,270+(i%3)*16,{collisionBlockerId:feature.id});
+      const variation=seededUnit(0,`${feature.id}:${i}`);
+      const along=i===0||i===steps?0:(variation-.5)*18;
+      const x=a.x+dx*i/steps+dx/length*along,y=a.y+dy*i/steps+dy/length*along;
+      for(const [j,offset] of [-radius*.7,0,radius*.7].entries()) add(`${feature.id}:brush:${i}:${j}`,'hedge',x+nx*offset,y+ny*offset,126+((i+j*2)%5)*7,{collisionBlockerId:feature.id});
+      // Uneven groups and gaps break the planted-row silhouette. Root anchors
+      // stay inside the same capsule; the lower bank still covers its length.
+      if(i%5===0||i%5===3) {
+        const across=i===0?0:(variation-.5)*radius*.8;
+        add(`${feature.id}:tree:${i}`,'conifer',x+nx*across,y+ny*across,195+variation*88,{collisionBlockerId:feature.id});
+      }
     }
     blockerIds.add(feature.id);
   }

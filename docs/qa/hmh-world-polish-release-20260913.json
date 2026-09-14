@@ -1,0 +1,923 @@
+{
+  "schema": "hmh-world-polish-release-v1",
+  "status": "local-certified-awaiting-deployment",
+  "cache": "lesters-arcade-v41-hmh-world-polish",
+  "preservedRuntimeSource": "0e858cde582f10be767c170de6f7f2588cf4e977",
+  "checks": {
+    "running": null,
+    "results": [
+      {
+        "name": "tests",
+        "exit": 0,
+        "seconds": 265.62
+      },
+      {
+        "name": "syntax",
+        "exit": 0,
+        "seconds": 40.53
+      },
+      {
+        "name": "assets",
+        "exit": 0,
+        "seconds": 9.31
+      },
+      {
+        "name": "contracts",
+        "exit": 0,
+        "seconds": 0.47
+      },
+      {
+        "name": "links",
+        "exit": 0,
+        "seconds": 0.48
+      }
+    ]
+  },
+  "browser": {
+    "running": null,
+    "results": [
+      {
+        "name": "camp",
+        "exit": 0,
+        "seconds": 18.0
+      },
+      {
+        "name": "visual-accept",
+        "exit": 0,
+        "seconds": 65.1
+      },
+      {
+        "name": "mobile-4-1",
+        "exit": 0,
+        "seconds": 23.96
+      },
+      {
+        "name": "mobile-4-2",
+        "exit": 0,
+        "seconds": 23.65
+      },
+      {
+        "name": "mobile-4-3",
+        "exit": 0,
+        "seconds": 22.84
+      },
+      {
+        "name": "desktop-1-1",
+        "exit": 0,
+        "seconds": 18.23
+      },
+      {
+        "name": "landscape-1-1",
+        "exit": 0,
+        "seconds": 18.52
+      },
+      {
+        "name": "portal-desktop",
+        "exit": 0,
+        "seconds": 16.54
+      },
+      {
+        "name": "portal-mobile",
+        "exit": 0,
+        "seconds": 14.79
+      },
+      {
+        "name": "stacked",
+        "exit": 0,
+        "seconds": 28.33
+      }
+    ]
+  },
+  "releaseGate": {
+    "schemaVersion": 1,
+    "gate": "hmh-reboot-test-retirement",
+    "status": "PASS",
+    "counts": {
+      "tests": 3692,
+      "failed": 51,
+      "passed": 3641,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 3625,
+      "suites": 8
+    },
+    "expectedFailureCount": 51,
+    "errors": []
+  },
+  "visualComparison": {
+    "schema": "hmh-reboot-visual-signature-v1",
+    "tolerance": 2.5,
+    "accepted": false,
+    "baselineDir": "docs/testing/VISUAL_BASELINES/hmh-reboot",
+    "currentDir": ".hermes/evidence/hmh-reboot-visual/current",
+    "reducedMotionEvidence": {
+      "sceneId": "frontier-relay-desktop",
+      "landmarkVisible": 7,
+      "animatedSignals": 0,
+      "atmosphereSprites": 0
+    },
+    "results": [
+      {
+        "sceneId": "frontier-relay-desktop",
+        "observedTick": 90,
+        "status": "unchanged",
+        "meanDelta": 0.012,
+        "maxDelta": 1,
+        "changedCells": 0,
+        "enemyCrops": {
+          "status": "unchanged",
+          "count": 1,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "frontier-relay-mobile",
+        "observedTick": 240,
+        "status": "unchanged",
+        "meanDelta": 0.102,
+        "maxDelta": 1,
+        "changedCells": 0,
+        "enemyCrops": {
+          "status": "unchanged",
+          "count": 2,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0.1,
+              "maxCellDelta": 4,
+              "status": "unchanged"
+            },
+            {
+              "archetypeId": "forkrunner",
+              "meanLumaDelta": 0.02,
+              "maxCellDelta": 1,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "combat-engaged-desktop",
+        "observedTick": 420,
+        "status": "unchanged",
+        "meanDelta": 0.425,
+        "maxDelta": 4,
+        "changedCells": 11,
+        "enemyCrops": {
+          "status": "unchanged",
+          "count": 1,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0.01,
+              "maxCellDelta": 1,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "ravine-overlook-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.043,
+        "maxDelta": 3,
+        "changedCells": 1,
+        "errors": []
+      },
+      {
+        "sceneId": "mining-camp-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.042,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidity-bridge-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0.038,
+        "maxDelta": 3,
+        "changedCells": 1,
+        "errors": []
+      },
+      {
+        "sceneId": "hashwood-foliage-desktop",
+        "observedTick": 180,
+        "status": "changed",
+        "meanDelta": 4.891,
+        "maxDelta": 17,
+        "changedCells": 415,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-yard-desktop",
+        "observedTick": 180,
+        "status": "changed",
+        "meanDelta": 0.625,
+        "maxDelta": 8,
+        "changedCells": 65,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-market-desktop",
+        "observedTick": 180,
+        "status": "changed",
+        "meanDelta": 0.606,
+        "maxDelta": 7,
+        "changedCells": 65,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-residential-desktop",
+        "observedTick": 180,
+        "status": "changed",
+        "meanDelta": 0.368,
+        "maxDelta": 6,
+        "changedCells": 41,
+        "errors": []
+      },
+      {
+        "sceneId": "hashwood-camp-desktop",
+        "observedTick": 180,
+        "status": "changed",
+        "meanDelta": 3.766,
+        "maxDelta": 34,
+        "changedCells": 261,
+        "errors": []
+      },
+      {
+        "sceneId": "crossing-water-desktop",
+        "observedTick": 180,
+        "status": "unchanged",
+        "meanDelta": 0,
+        "maxDelta": 0,
+        "changedCells": 0,
+        "errors": []
+      }
+    ]
+  },
+  "visualAccepted": {
+    "schema": "hmh-reboot-visual-signature-v1",
+    "tolerance": 2.5,
+    "accepted": true,
+    "baselineDir": "docs/testing/VISUAL_BASELINES/hmh-reboot",
+    "currentDir": ".hermes/evidence/hmh-reboot-visual/current",
+    "reducedMotionEvidence": {
+      "sceneId": "frontier-relay-desktop",
+      "landmarkVisible": 7,
+      "animatedSignals": 0,
+      "atmosphereSprites": 0
+    },
+    "results": [
+      {
+        "sceneId": "frontier-relay-desktop",
+        "observedTick": 90,
+        "status": "accepted",
+        "meanDelta": 0.012,
+        "maxDelta": 1,
+        "changedCells": 0,
+        "enemyCrops": {
+          "status": "accepted",
+          "count": 1,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "frontier-relay-mobile",
+        "observedTick": 240,
+        "status": "accepted",
+        "meanDelta": 0.023,
+        "maxDelta": 1,
+        "changedCells": 0,
+        "enemyCrops": {
+          "status": "accepted",
+          "count": 2,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0.02,
+              "maxCellDelta": 1,
+              "status": "unchanged"
+            },
+            {
+              "archetypeId": "forkrunner",
+              "meanLumaDelta": 0,
+              "maxCellDelta": 0,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "combat-engaged-desktop",
+        "observedTick": 420,
+        "status": "accepted",
+        "meanDelta": 0.099,
+        "maxDelta": 1,
+        "changedCells": 0,
+        "enemyCrops": {
+          "status": "accepted",
+          "count": 1,
+          "crops": [
+            {
+              "archetypeId": "bagholder-rusher",
+              "meanLumaDelta": 0.05,
+              "maxCellDelta": 1,
+              "status": "unchanged"
+            }
+          ]
+        },
+        "errors": []
+      },
+      {
+        "sceneId": "ravine-overlook-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0.043,
+        "maxDelta": 3,
+        "changedCells": 1,
+        "errors": []
+      },
+      {
+        "sceneId": "mining-camp-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0.042,
+        "maxDelta": 2,
+        "changedCells": 0,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidity-bridge-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0.038,
+        "maxDelta": 3,
+        "changedCells": 1,
+        "errors": []
+      },
+      {
+        "sceneId": "hashwood-foliage-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 4.891,
+        "maxDelta": 17,
+        "changedCells": 415,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-yard-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0.625,
+        "maxDelta": 8,
+        "changedCells": 65,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-market-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0.606,
+        "maxDelta": 7,
+        "changedCells": 65,
+        "errors": []
+      },
+      {
+        "sceneId": "liquidation-residential-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0.368,
+        "maxDelta": 6,
+        "changedCells": 41,
+        "errors": []
+      },
+      {
+        "sceneId": "hashwood-camp-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 3.766,
+        "maxDelta": 34,
+        "changedCells": 261,
+        "errors": []
+      },
+      {
+        "sceneId": "crossing-water-desktop",
+        "observedTick": 180,
+        "status": "accepted",
+        "meanDelta": 0,
+        "maxDelta": 0,
+        "changedCells": 0,
+        "errors": []
+      }
+    ]
+  },
+  "campfire": {
+    "status": "PASS",
+    "results": [
+      {
+        "id": "desktop",
+        "reduced": false,
+        "errors": [],
+        "actorX": "7426.385",
+        "actorY": "2882.786",
+        "lights": "1",
+        "embers": "3",
+        "cameraZoom": "1.8766127140511377"
+      },
+      {
+        "id": "mobile",
+        "reduced": false,
+        "errors": [],
+        "actorX": "7410.171",
+        "actorY": "2857.905",
+        "lights": "1",
+        "embers": "3",
+        "cameraZoom": "1.7598457007324002"
+      },
+      {
+        "id": "mobile-reduced",
+        "reduced": true,
+        "errors": [],
+        "actorX": "7416.113",
+        "actorY": "2865.819",
+        "lights": "1",
+        "embers": "0",
+        "cameraZoom": "1.7598457007324002"
+      }
+    ]
+  },
+  "terrain": {
+    "pipeline": "hmh-terrain-tiles-v5",
+    "bytes": 3200055,
+    "repeatVerified": true,
+    "materials": [
+      {
+        "id": "packed-earth",
+        "file": "packed-earth.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      },
+      {
+        "id": "red-rock",
+        "file": "red-rock.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      },
+      {
+        "id": "wet-bank",
+        "file": "wet-bank.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      },
+      {
+        "id": "forest-floor",
+        "file": "forest-floor.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      },
+      {
+        "id": "crushed-ore",
+        "file": "crushed-ore.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      },
+      {
+        "id": "industrial-slab",
+        "file": "industrial-slab.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      },
+      {
+        "id": "road",
+        "file": "road.png",
+        "repeatPixelExact": true,
+        "repeatFileExact": true
+      }
+    ],
+    "pixelEncodingAudit": [
+      {
+        "file": "red-rock-fringe.png",
+        "changedChannels": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0.0,
+        "oldOpaqueEdgeAlpha": 0,
+        "newOpaqueEdgeAlpha": 0
+      },
+      {
+        "file": "road-fringe.png",
+        "changedChannels": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0.0,
+        "oldOpaqueEdgeAlpha": 0,
+        "newOpaqueEdgeAlpha": 0
+      },
+      {
+        "file": "shallow-water.png",
+        "changedChannels": 0,
+        "maxChannelDelta": 0,
+        "meanChannelDelta": 0.0,
+        "oldOpaqueEdgeAlpha": 130560,
+        "newOpaqueEdgeAlpha": 130560
+      },
+      {
+        "file": "shallows-band.png",
+        "changedChannels": 36580,
+        "maxChannelDelta": 54,
+        "meanChannelDelta": 4.313911437988281,
+        "oldOpaqueEdgeAlpha": 0,
+        "newOpaqueEdgeAlpha": 0
+      }
+    ]
+  },
+  "initialJs": {
+    "bytes": 1047335,
+    "cap": 1048576
+  },
+  "performance": {
+    "baseline": [
+      {
+        "evidence": ".tmp/mobile-performance/normal-performance-1-telemetry-0-profiler-0/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 257,
+          "activeMs": 11568.000000000002,
+          "upgradePicks": 2,
+          "meanMs": 44.82256809338522,
+          "p50Ms": 41.70000000000073,
+          "p95Ms": 62.599999999998545,
+          "p99Ms": 76.39999999999964,
+          "maxMs": 125.09999999999854
+        },
+        "observedSteps": 697,
+        "droppedMs": "496.200",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/mobile-performance/normal-performance-2-telemetry-0-profiler-0/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 262,
+          "activeMs": 11470.399999999998,
+          "upgradePicks": 2,
+          "meanMs": 43.621374045801524,
+          "p50Ms": 41.70000000000073,
+          "p95Ms": 62.5,
+          "p99Ms": 83.30000000000109,
+          "maxMs": 125
+        },
+        "observedSteps": 692,
+        "droppedMs": "418.033",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/mobile-performance/normal-performance-3-telemetry-0-profiler-0/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 263,
+          "activeMs": 11394.399999999996,
+          "upgradePicks": 3,
+          "meanMs": 43.16653992395435,
+          "p50Ms": 41.70000000000073,
+          "p95Ms": 55.70000000000073,
+          "p99Ms": 83.20000000000073,
+          "maxMs": 104.19999999999891
+        },
+        "observedSteps": 697,
+        "droppedMs": "486.267",
+        "errors": []
+      }
+    ],
+    "candidate": [
+      {
+        "evidence": ".tmp/world-performance/desktop-1-1/report.json",
+        "profile": "desktop",
+        "cpuSlowdown": 1,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 1439,
+          "activeMs": 10053.3,
+          "upgradePicks": 0,
+          "meanMs": 6.981445448227935,
+          "p50Ms": 6.900000000001455,
+          "p95Ms": 7,
+          "p99Ms": 7.100000000000364,
+          "maxMs": 19.600000000000364
+        },
+        "observedSteps": 603,
+        "droppedMs": "0.000",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-performance/landscape-1-1/report.json",
+        "profile": "landscape",
+        "cpuSlowdown": 1,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 1441,
+          "activeMs": 10199.199999999999,
+          "upgradePicks": 2,
+          "meanMs": 7.0730742539902804,
+          "p50Ms": 6.900000000001455,
+          "p95Ms": 7,
+          "p99Ms": 13.799999999999272,
+          "maxMs": 48.600000000000364
+        },
+        "observedSteps": 615,
+        "droppedMs": "0.000",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-performance/mobile-4-1/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 243,
+          "activeMs": 11540.100000000002,
+          "upgradePicks": 3,
+          "meanMs": 47.290123456790134,
+          "p50Ms": 41.70000000000073,
+          "p95Ms": 69.40000000000146,
+          "p99Ms": 90.29999999999927,
+          "maxMs": 152.89999999999782
+        },
+        "observedSteps": 699,
+        "droppedMs": "629.967",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-performance/mobile-4-2/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 269,
+          "activeMs": 11449.800000000003,
+          "upgradePicks": 2,
+          "meanMs": 42.40892193308551,
+          "p50Ms": 41.600000000000364,
+          "p95Ms": 69.39999999999782,
+          "p99Ms": 111.19999999999709,
+          "maxMs": 187.60000000000218
+        },
+        "observedSteps": 680,
+        "droppedMs": "649.767",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-performance/mobile-4-3/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 223,
+          "activeMs": 11616.599999999995,
+          "upgradePicks": 2,
+          "meanMs": 51.90582959641254,
+          "p50Ms": 48.70000000000073,
+          "p95Ms": 69.5,
+          "p99Ms": 83.40000000000146,
+          "maxMs": 132
+        },
+        "observedSteps": 691,
+        "droppedMs": "591.033",
+        "errors": []
+      }
+    ],
+    "revertedExperiment": [
+      {
+        "evidence": ".tmp/mobile-performance/neighbor-performance-1-mobile-4-profiler-0/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 172,
+          "activeMs": 12026.600000000002,
+          "upgradePicks": 2,
+          "meanMs": 69.59941860465118,
+          "p50Ms": 69.39999999999964,
+          "p95Ms": 104.19999999999891,
+          "p99Ms": 152.89999999999782,
+          "maxMs": 201.5
+        },
+        "observedSteps": 642,
+        "droppedMs": "2101.733",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/mobile-performance/neighbor-performance-2-mobile-4-profiler-0/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 239,
+          "activeMs": 11637.499999999998,
+          "upgradePicks": 2,
+          "meanMs": 48.48870292887029,
+          "p50Ms": 41.79999999999927,
+          "p95Ms": 69.5,
+          "p99Ms": 90.29999999999927,
+          "maxMs": 145.89999999999782
+        },
+        "observedSteps": 685,
+        "droppedMs": "853.900",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/mobile-performance/neighbor-performance-3-mobile-4-profiler-0/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 200,
+          "activeMs": 12283.500000000002,
+          "upgradePicks": 2,
+          "meanMs": 61.07050000000001,
+          "p50Ms": 55.60000000000218,
+          "p95Ms": 83.39999999999964,
+          "p99Ms": 97.30000000000109,
+          "maxMs": 125
+        },
+        "observedSteps": 702,
+        "droppedMs": "1332.967",
+        "errors": []
+      }
+    ],
+    "experimentDecision": "Reverted despite isolated speedup because repeated active browser timing regressed. Enemy simulation source matches v40.",
+    "limits": "Synthetic desktop Chrome with touch and CPU throttling; not physical-phone acceptance. Diagnostics and CPU profiler disabled for comparisons. Paused upgrade intervals excluded.",
+    "alternatingLiveComparison": [
+      {
+        "evidence": ".tmp/world-comparison/candidate-v41-1/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 304,
+          "activeMs": 11143.999999999996,
+          "upgradePicks": 1,
+          "meanMs": 36.544078947368405,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 48.600000000000364,
+          "p99Ms": 62.5,
+          "maxMs": 111.09999999999854
+        },
+        "observedSteps": 670,
+        "droppedMs": "267.000",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-comparison/candidate-v41-2/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 312,
+          "activeMs": 11144.099999999999,
+          "upgradePicks": 3,
+          "meanMs": 35.606730769230765,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 48.600000000000364,
+          "p99Ms": 55.600000000000364,
+          "maxMs": 111.09999999999854
+        },
+        "observedSteps": 683,
+        "droppedMs": "290.733",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-comparison/candidate-v41-3/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 327,
+          "activeMs": 11109.4,
+          "upgradePicks": 1,
+          "meanMs": 33.86727828746177,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 41.80000000000109,
+          "p99Ms": 55.5,
+          "maxMs": 111.20000000000073
+        },
+        "observedSteps": 670,
+        "droppedMs": "206.933",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-comparison/live-v40-1/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 315,
+          "activeMs": 11109.400000000003,
+          "upgradePicks": 2,
+          "meanMs": 35.179682539682545,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 48.600000000000364,
+          "p99Ms": 55.60000000000218,
+          "maxMs": 90.30000000000109
+        },
+        "observedSteps": 677,
+        "droppedMs": "205.000",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-comparison/live-v40-2/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 313,
+          "activeMs": 11074.599999999999,
+          "upgradePicks": 2,
+          "meanMs": 35.249201277955265,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 48.599999999998545,
+          "p99Ms": 51.60000000000218,
+          "maxMs": 58.79999999999927
+        },
+        "observedSteps": 674,
+        "droppedMs": "144.100",
+        "errors": []
+      },
+      {
+        "evidence": ".tmp/world-comparison/live-v40-3/report.json",
+        "profile": "mobile",
+        "cpuSlowdown": 4,
+        "telemetry": false,
+        "cpuProfiler": false,
+        "timing": {
+          "frames": 316,
+          "activeMs": 11144.400000000001,
+          "upgradePicks": 3,
+          "meanMs": 35.15696202531646,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 48.600000000000364,
+          "p99Ms": 49.20000000000073,
+          "maxMs": 55.60000000000218
+        },
+        "observedSteps": 688,
+        "droppedMs": "171.900",
+        "errors": []
+      }
+    ]
+  },
+  "settlementLive": false,
+  "publicGitHubPush": "pending explicit public source/model disclosure permission",
+  "sourceHashes": {
+    "apps/hmh-reboot/src/enemy-simulation.mjs": "f65fdffc02ff497d74e6e99f57c8d18b7ac730a6649cb06c7d7c5aa3e7bf7f9d",
+    "apps/hmh-reboot/src/world-design-layout.mjs": "c22ee92acf72f33c920bf650ede59961f30df1de3b25b3e9168a661b4a9ebd5f",
+    "apps/hmh-reboot/src/world-design-life.mjs": "326c0ca85757c57d643cb75fe050845cf120534773e303066ff81e6407d842dc",
+    "apps/hmh-reboot/src/world-decals.mjs": "20ff44f9c83074500b92813e49c3069236a4c92eba74846d6b63ee8d28a75c4c",
+    "apps/hmh-reboot/assets/source/terrain/ground-source.json": "d25613eb4743ab4a91ba832ca788032fb172bff6f36800400a30970b0d4ad23c",
+    "scripts/hmh-world-campfire-browser-smoke.mjs": "8a0342d93ec44009a58920771a655efdd7022bdb1131f2c0ffbb369bf8b88732",
+    ".tmp/normal-performance.mjs": "fcc9e9561ea9d93fe402b9733887096070a90ccc62b16250069b359296a5a49e"
+  }
+}
