@@ -41,3 +41,13 @@ docs/testing/hmh-native-roster/**/*.json -text whitespace=cr-at-eol
 apps/hmh-reboot/assets/source/models/native-enemies/**/source-receipt.json -text whitespace=cr-at-eol
 
 assets-source/hmh-barriers/*.blend -text
+
+# Preserve the exact new native producer receipts across host checkouts.
+apps/chikun/assets/source/native-provenance.json -text whitespace=cr-at-eol
+apps/chikun/assets/source/ground-sky/*.json -text whitespace=cr-at-eol
+apps/portal/assets/generated/chikun-flight-v3/**/*.json -text whitespace=cr-at-eol
+apps/portal/assets/generated/chikun-ground-*/**/*.json -text whitespace=cr-at-eol
+apps/portal/assets/generated/chikun-ragdoll-v1/**/*.json -text whitespace=cr-at-eol
+apps/portal/assets/generated/hmh-barriers/*.json -text whitespace=cr-at-eol
+apps/portal/assets/generated/hmh-silver-coin/*.json -text whitespace=cr-at-eol
+apps/portal/assets/audio/sfx/hmh-objective-cues.json -text whitespace=cr-at-eol

@@ -361,6 +361,32 @@ if (isMain) {
         console.error(JSON.stringify(diagnostic));
         throw error;
       }
+      // Pause through the real input handler in the same browser turn that
+      // publishes the requested tick. A later automation keypress can arrive
+      // several simulation frames after the last telemetry sample.
+      await page.evaluate(({ targetTick, openingAim }) => {
+        const stage = document.querySelector('#hmhRebootStage');
+        window.__hmhVisualPauseTick = null;
+        let openingAimApplied = false;
+        const observer = new MutationObserver(() => {
+          // Artwork readiness clears held input. Reapply the opening aim in
+          // this browser turn, before another frame can choose auto-aim.
+          if (openingAim && !openingAimApplied && stage.dataset.startupArt === 'ready') {
+            stage.querySelector('canvas').dispatchEvent(new PointerEvent('pointermove', {
+              clientX: openingAim.x, clientY: openingAim.y, buttons: 0, pointerType: 'mouse', bubbles: true,
+            }));
+            openingAimApplied = true;
+          }
+          const tick = Number(stage.dataset.simulationTick ?? -1);
+          if (tick < targetTick) return;
+          observer.disconnect();
+          window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true }));
+          window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', code: 'Escape', bubbles: true }));
+          window.__hmhVisualPauseTick = tick;
+        });
+        observer.observe(stage, { attributes: true, attributeFilter: ['data-simulation-tick', 'data-startup-art'] });
+      }, { targetTick: scene.tick, openingAim: scene.enemyCrops && scene.tick < 120 && scene.viewport.width > 600
+        ? { x: 24, y: scene.viewport.height * 0.62 } : null });
       // Keep the real opening actors alive for their crop check. Automatic
       // fire now defeats them before an idle capture; aim away using ordinary
       // mouse input, without injecting health, spawn or simulation state.
@@ -398,16 +424,12 @@ if (isMain) {
       if (scene.enemyCrops) await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.aimSource === 'manual');
       // evidenceSafe + telemetry publishes the authoritative tick, so captures
       // are pinned to simulation state rather than wall-clock timing.
-      await page.waitForFunction((targetTick) => {
-        const tick = Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick ?? Number.NaN);
-        return Number.isFinite(tick) && tick >= targetTick;
-      }, scene.tick, { timeout: 60_000 });
+      await page.waitForFunction(() => window.__hmhVisualPauseTick !== null, undefined, { timeout: 60_000 });
 
       // Freeze the frame before capturing. Waiting for a tick and then
       // screenshotting let the ticker keep running, so captures landed on an
       // arbitrary later tick and the tolerance had to absorb that drift.
       // Escape is the runtime's own pause path and stops the ticker.
-      await page.keyboard.press('Escape');
       if (aimAway) clearInterval(aimAway);
       await page.waitForTimeout(250);
       // Pausing raises the pause dialog, which would sit over the canvas and
@@ -417,6 +439,7 @@ if (isMain) {
         for (const node of document.querySelectorAll('.hmh-modal-layer')) node.style.display = 'none';
       });
       const observedTick = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick ?? -1));
+      if (observedTick !== scene.tick) throw new Error(`scene ${scene.id} missed its capture tick (${observedTick} != ${scene.tick})`);
       await page.waitForTimeout(200);
       const settledTick = await page.evaluate(() => Number(document.querySelector('#hmhRebootStage')?.dataset.simulationTick ?? -1));
       await writeFile(path.join(currentDir, `${scene.id}.runtime.json`), JSON.stringify(await page.locator('#hmhRebootStage').evaluate(stage => ({ ...stage.dataset })), null, 2));

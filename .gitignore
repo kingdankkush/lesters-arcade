@@ -80,3 +80,5 @@ contracts/out/
 
 .vercel
 .env*
+# Local Blender recovery files are retained outside the release source index.
+/assets-source/**/*.blend1

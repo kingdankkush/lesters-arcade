@@ -1,0 +1,14 @@
+✔ reboot visual gate owns desktop, mobile, combat, and every authored district material pass (0.6529ms)
+✔ reboot visual comparison rejects localized and broad regressions (0.7649ms)
+✔ the enemy-crop check catches a sprite re-light the 32x18 frame signature cannot see (14.9332ms)
+✔ the enemy-crop check tolerates sub-cell sprite placement jitter (3.0173ms)
+✔ enemy crops are cut from a chrome-free capture of the same frozen frame (5.7409ms)
+✔ every scene with roster enemies on camera declares the enemy-crop check (0.4154ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 171.6322
