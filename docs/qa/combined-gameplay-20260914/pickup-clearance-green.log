@@ -1,0 +1,33 @@
+✔ all six machinery sites and the boss have distinct stable reward ownership (0.6063ms)
+✔ locked court cannot grant its reward even when the player is inside (0.8094ms)
+✔ a repeat supply is available at its exact simulation tick with one instance and no repeat XP (0.3853ms)
+✔ full inventory and blocked reach leave a ready reward unconsumed (0.1925ms)
+✔ the boss vault stays locked until the boss death objective is recorded and cannot grant twice (0.1766ms)
+✔ new run resets cooldowns, collections, and objective completion (0.167ms)
+✔ each objective reward has a clear outward and return path through the opened gate (18.117ms)
+✔ full ammunition, health and grenade inventory preserve pickups until capacity exists (0.8713ms)
+✔ relay-cache reward is reachable on walkable ground (1.7476ms)
+✔ relay-armory reward is reachable on walkable ground (0.1998ms)
+✔ ravine-salvage reward is reachable on walkable ground (0.1549ms)
+✔ ravine-overlook-cache reward is reachable on walkable ground (0.0975ms)
+✔ crossing-fuel-depot reward is reachable on walkable ground (0.3964ms)
+✔ crossing-bank-cache reward is reachable on walkable ground (0.0922ms)
+✔ hashwood-shrine reward is reachable on walkable ground (0.1032ms)
+✔ mining-control-room reward is reachable on walkable ground (0.0698ms)
+✔ yard-extraction-console reward is reachable on walkable ground (0.1333ms)
+✔ yard-medbay-cache reward is reachable on walkable ground (0.1699ms)
+✔ all ten authored POIs map to deterministic collectible effects (1.2584ms)
+✔ collections are stable, single-use, and timed effects expire on fixed ticks (0.5428ms)
+✔ scheduled rare collectible is unavailable before its fixed tick and collectible exactly once after it (0.2206ms)
+✔ two scheduled weapon events remain independently unavailable and collectible (0.2316ms)
+✔ collectible events and expiries are identical at 60, 30, and 20 render schedules (15.4254ms)
+✔ Hashwood tour places the full hero and foot disc clear of landmark sprites (0.7919ms)
+✔ Hashwood tour keeps a readable view of the beacon without changing canonical spawn (0.5643ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 350.2448

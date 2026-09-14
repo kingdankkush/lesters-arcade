@@ -1,0 +1,41 @@
+✔ relay-cache reward is reachable on walkable ground (1.7111ms)
+✔ relay-armory reward is reachable on walkable ground (0.2033ms)
+✔ ravine-salvage reward is reachable on walkable ground (0.1598ms)
+✔ ravine-overlook-cache reward is reachable on walkable ground (0.1147ms)
+✖ crossing-fuel-depot reward is reachable on walkable ground (1.0673ms)
+✔ crossing-bank-cache reward is reachable on walkable ground (0.1307ms)
+✔ hashwood-shrine reward is reachable on walkable ground (0.2474ms)
+✔ mining-control-room reward is reachable on walkable ground (0.1046ms)
+✔ yard-extraction-console reward is reachable on walkable ground (0.0894ms)
+✔ yard-medbay-cache reward is reachable on walkable ground (0.1896ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 148.6479
+
+✖ failing tests:
+
+test at tests\hmh-pickup-clearance.test.mjs:10:2
+✖ crossing-fuel-depot reward is reachable on walkable ground (1.0673ms)
+  AssertionError [ERR_ASSERTION]: pickup overlaps crossing-east-wreckrow
+
+  12 !== 0
+
+      at TestContext.<anonymous> (file:///C:/Users/just_/Documents/Codex/2026-09-12/my/work/lesters-arcade/tests/hmh-pickup-clearance.test.mjs:12:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 12,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

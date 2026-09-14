@@ -265,7 +265,8 @@ const POINTS_OF_INTEREST = [
   ['relay-armory', 'frontier-relay', 1_550, 1_550, 'weapon'],
   ['ravine-salvage', 'rugpull-ravine', 2_250, 3_000, 'reward'],
   ['ravine-overlook-cache', 'rugpull-ravine', 3_200, 1_400, 'reward'],
-  ['crossing-fuel-depot', 'liquidity-crossing', 5_450, 3_000, 'hazard-reward'],
+  // Keep the pickup clear of the wreck row and fuel drums, with three walkable approaches.
+  ['crossing-fuel-depot', 'liquidity-crossing', 5_350, 3_025, 'hazard-reward'],
   ['crossing-bank-cache', 'liquidity-crossing', 5_300, 1_000, 'reward'],
   ['hashwood-shrine', 'hashwood', 6_700, 3_200, 'reward'],
   ['mining-control-room', 'mining-camp', 9_350, 1_600, 'upgrade'],
