@@ -23,6 +23,7 @@ import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
+import { mountCabinetMotionControl } from './src/cabinet-motion.mjs';
 import { HMH_HERO_PORTRAITS as HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-hero-portraits.mjs';
 import { restFrameIndex } from './src/hmh-hero-select-ui.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
@@ -1812,6 +1813,11 @@ try {
   });
 } catch { /* non-DOM env */ }
 const cartridges = getCartridgeSelectModel();
+mountCabinetMotionControl({
+  button: document.querySelector('#cabinetMotionToggle'),
+  grid: dom.officialCabinetGrid,
+  motionPreference: window.matchMedia('(prefers-reduced-motion: reduce)'),
+});
 let selectedGameId = 'lester-blaster';
 let connectedWallet = null;
 let connectedChainId = null;

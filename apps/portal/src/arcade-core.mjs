@@ -3,6 +3,7 @@ import { HMH_EXPANDED_PIXEL_PACK_MANIFEST } from '../assets/generated/hmh-expand
 import { HMH_ACHIEVEMENT_ATLAS } from '../assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.mjs';
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
+import { STACKED_CABINET_SPRITE } from '../assets/stacked-cabinet/stacked-cabinet-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
 import { buildAchievementProgress, normalizeAchievementUnlockDate } from './achievement-progress.mjs';
@@ -645,6 +646,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       playable: true, devPlayable: true, leaderboardEligible: true,
       description: 'Public beta: stack, spin, and seal falling ledger blocks to arcade music. Free practice and replay-verified Ranked results stay on this device. No fees, prizes or online ranking.',
       bannerArt: './assets/cabinet-stacked.svg',
+      desktopCabinetSprite: STACKED_CABINET_SPRITE,
     }),
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
     Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
@@ -2277,6 +2279,7 @@ export const ARCADE_GAMES = Object.freeze([
     tagline: 'Seal the blocks. Clear the ledger. Do not let the chain reorg.',
     systemRole: 'child-dapp-cartridge', rankedSeasonId: 'stacked-season-preview-1',
     cabinetVersion: STACKED_CABINET_VERSION, parentSystem: "Lester's Arcade",
+    desktopCabinetSprite: STACKED_CABINET_SPRITE,
     presentation: Object.freeze({
       medium: 'upright-cabinet', colorway: 'silver-neon-cyan',
       cabinetAsset: './assets/cabinet-stacked.svg', cartridgeAsset: './assets/cartridge-stacked.svg',

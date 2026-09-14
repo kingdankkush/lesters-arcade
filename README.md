@@ -10,9 +10,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 The release candidate removes the oval ghost marker and gives freestanding trees and patrol drones their own collision shapes. Chikun retains eighteen Blender-authored Superman flight clips, coat and crest wind, layered city scenery and the day/night cycle. The shared Arcade player chooses a random song for each new flight, including Free retries. Pause opens its music controls. High-refresh taps remain queued until the next simulation step.
 
-**Candidate cache marker:** `lesters-arcade-v41-chikun-open-air`. Publication checks are pending. [Chikun handoff](docs/handoffs/chikun-open-air-20260913.md).
+**Candidate cache marker:** `lesters-arcade-v42-chikun-open-air`. Publication checks are pending. [Chikun handoff](docs/handoffs/chikun-open-air-20260913.md).
 
-**Current production / rollback:** `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7`, source `0e858cde582f10be767c170de6f7f2588cf4e977`, includes the HMH motion/mobile update, Chikun Superman flight and STACKED beta. The candidate preserves that exact HMH source. [HMH handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md).
+**Current production / rollback:** `dpl_BGVoP3QSQ8ygroorkPPBrecAJH1w`, source `e7e28d57ba2964dfba419e4aa31804939ed142bc`, includes the HMH motion/mobile update, Chikun Superman flight and the new rotating STACKED cabinet. The candidate preserves this exact published source. [HMH handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md).
 
 All three public cabinets remain available. STACKED Free Mode is playable and its Ranked Game is device-local, with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md). `SETTLEMENT_LIVE=false`.
 

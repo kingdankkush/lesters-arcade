@@ -1,6 +1,6 @@
 # Chikun open-air flight polish — September 13, 2026
 
-The owner authorized the tested website update and public source/artwork publication. This branch preserves the deployed HMH motion/mobile source `0e858cde582f10be767c170de6f7f2588cf4e977` and STACKED beta. Production promotion and hosted verification remain pending until the release receipt is recorded.
+The owner authorized the tested website update and public source/artwork publication. This branch preserves the deployed HMH motion/mobile source `0e858cde582f10be767c170de6f7f2588cf4e977` and the subsequently published STACKED cabinet source `e7e28d57ba2964dfba419e4aa31804939ed142bc`. Production promotion and hosted verification remain pending until the release receipt is recorded.
 
 ## Player-facing changes
 
@@ -21,4 +21,4 @@ Native editable props: `apps/chikun/assets/source/open-air/`. The two runtime We
 
 Focused Chikun/music coverage: 62 passing tests, including v1 replay, v2 deterministic collision/evidence, drone coin stability, practice retry isolation and music lifecycle. The actual browser harness controls only its test render clock to verify a launch at 240 Hz and a longer varied course, two terminal results, randomized audible playback, and pause/music/resume. Ordinary browser runs separately measure real frame pacing; controlled-clock results are not performance evidence.
 
-Final release-gate, visual comparisons, desktop/mobile browser evidence and hosted byte checks will be linked in the release receipt. Browser mobile emulation does not claim physical iOS/Android device acceptance. The combined release uses cache marker `lesters-arcade-v41-chikun-open-air`.
+Final release-gate, visual comparisons, desktop/mobile browser evidence and hosted byte checks will be linked in the release receipt. Browser mobile emulation does not claim physical iOS/Android device acceptance. The combined release uses cache marker `lesters-arcade-v42-chikun-open-air`.

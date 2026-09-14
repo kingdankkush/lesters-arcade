@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { ARCADE_GAMES, LESTERS_ARCADE_V2_APP_SHELL } from '../apps/portal/src/arcade-core.mjs';
+import { parseAtlasFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
+
+test('STACKED registers the same six-view cabinet in both game catalogs', () => {
+  const cabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find(item => item.id === 'stacked');
+  const game = ARCADE_GAMES.find(item => item.id === 'stacked');
+  assert.ok(cabinet.desktopCabinetSprite, 'STACKED needs rotating cabinet art, not only a banner');
+  assert.equal(game.desktopCabinetSprite, cabinet.desktopCabinetSprite);
+  const sprite = cabinet.desktopCabinetSprite;
+  assert.equal(sprite.id, 'stacked-cabinet');
+  assert.equal(sprite.frames.length, 6);
+  assert.equal(sprite.frames.filter(frame => frame.rest).length, 1);
+  assert.equal(sprite.frames[0].rest, true);
+  assert.ok(Object.isFrozen(sprite) && Object.isFrozen(sprite.frames));
+  const regions = sprite.frames.map(frame => parseAtlasFrameRef(frame.src));
+  assert.ok(regions.every(Boolean));
+  assert.equal(new Set(regions.map(region => region.src)).size, 1, 'one image request for the full turntable');
+  assert.equal(new Set(sprite.frames.map(frame => frame.src)).size, 6);
+  const png = readFileSync(new URL('../apps/portal/' + regions[0].src, import.meta.url));
+  assert.equal(png.readUInt32BE(16), regions[0].atlasWidth);
+  assert.equal(png.readUInt32BE(20), regions[0].atlasHeight);
+  assert.ok(png.length < 1_500_000, 'keep the cabinet atlas below 1.5 MB');
+  assert.equal(cabinet.playable, true);
+  assert.equal(game.entryFeeMicroUsdc, 0);
+});
+
+test('cabinet motion control pauses, resumes, respects changing OS preferences and cleans up', async () => {
+  const { mountCabinetMotionControl } = await import('../apps/portal/src/cabinet-motion.mjs');
+  const buttonListeners = new Map(), preferenceListeners = new Map();
+  const button = { attrs: {}, addEventListener: (name, fn) => buttonListeners.set(name, fn), removeEventListener: name => buttonListeners.delete(name), setAttribute(name, value) { this.attrs[name] = value; } };
+  const grid = { dataset: {} };
+  const motionPreference = { matches: false, addEventListener: (name, fn) => preferenceListeners.set(name, fn), removeEventListener: name => preferenceListeners.delete(name) };
+  const unmount = mountCabinetMotionControl({ button, grid, motionPreference });
+  assert.equal(grid.dataset.cabinetMotion, 'running');
+  buttonListeners.get('click')();
+  assert.equal(grid.dataset.cabinetMotion, 'paused');
+  assert.equal(button.textContent, 'Resume cabinet rotation');
+  assert.equal(button.attrs['aria-pressed'], 'true');
+  buttonListeners.get('click')();
+  assert.equal(grid.dataset.cabinetMotion, 'running');
+  motionPreference.matches = true;
+  preferenceListeners.get('change')();
+  assert.equal(grid.dataset.cabinetMotion, 'paused');
+  assert.equal(button.disabled, true);
+  motionPreference.matches = false;
+  preferenceListeners.get('change')();
+  assert.equal(grid.dataset.cabinetMotion, 'running');
+  assert.equal(button.disabled, false);
+  unmount();
+  assert.equal(buttonListeners.size, 0);
+  assert.equal(preferenceListeners.size, 0);
+});

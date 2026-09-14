@@ -474,7 +474,7 @@ svg.arcade-icon {
   object-fit: contain;
   opacity: 0;
   image-rendering: auto;
-  animation: hmhCabinetFrame var(--cabinet-loop-duration) steps(1, end) infinite;
+  animation: var(--cabinet-frame-animation, hmhCabinetFrame) var(--cabinet-loop-duration) steps(1, end) infinite;
   animation-delay: var(--cabinet-frame-delay);
 }
 
@@ -495,6 +495,38 @@ svg.arcade-icon {
 @keyframes hmhHeroPortraitFrame {
   0%, 12.49% { opacity: 1; }
   12.5%, 100% { opacity: 0; }
+}
+
+/* The generated STACKED atlas has a pure-black matte. Screen blending merges
+   that matte into the dark cabinet card without a rectangular image backdrop. */
+.stacked-cabinet-rotator {
+  --cabinet-frame-animation: stackedCabinetFrame;
+  mix-blend-mode: screen;
+  filter: none;
+  animation-name: stackedCabinetFloat;
+}
+
+@keyframes stackedCabinetFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+@keyframes stackedCabinetFrame {
+  0%, 16.666% { opacity: 1; }
+  16.667%, 100% { opacity: 0; }
+}
+
+.cabinet-motion-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+
+.cabinet-motion-toolbar button { min-height: 44px; }
+
+.official-cabinet-grid[data-cabinet-motion="paused"] .hmh-cabinet-rotator,
+.official-cabinet-grid[data-cabinet-motion="paused"] .cabinet-rotation-frame {
+  animation-play-state: paused;
 }
 
 /* Reduced motion: still the float and the spin and show one frame. Turntables
