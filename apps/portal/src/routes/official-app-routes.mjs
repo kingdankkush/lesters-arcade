@@ -36,7 +36,7 @@ export function createOfficialAppRoutes({
   function renderArcadeFloor() {
     const step = getStep();
     const connectedWallet = getConnectedWallet();
-    applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, step === 'settings' ? 'options' : 'mainMenu');
+    if (!['cabinet-select', 'arcade-walk-in'].includes(step)) applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, step === 'settings' ? 'options' : 'mainMenu');
     dom.officialCabinetGrid.classList.toggle('profile-command-grid', step === 'profile');
     dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', step === 'leaderboards');
     const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'Guest practice';
@@ -44,7 +44,7 @@ export function createOfficialAppRoutes({
     const cabinetNames = playableCabinetNames();
     const titleByStep = {
       'arcade-walk-in': 'Entering the Arcade...',
-      'cabinet-select': 'Choose Your Cabinet',
+      'cabinet-select': 'Pick your cabinet.',
       profile: connectedWallet ? 'Wallet Profile' : 'Guest Practice Profile',
       leaderboards: 'Leaderboards',
       settings: 'Settings',
@@ -54,12 +54,12 @@ export function createOfficialAppRoutes({
         ? `${walletShort} is a simulated local identity, not a real wallet. Neon doors opening; cabinet row loading...`
         : `${walletShort} is active. Neon doors opening; cabinet row loading...`,
       'cabinet-select': connectedWallet
-        ? `Select a cabinet. ${humanList(cabinetNames)} ${cabinetNames.length === 1 ? 'is' : 'are'} playable now; future cabinets remain locked.`
-        : `Select a cabinet and play Free as a guest. ${humanList(cabinetNames)} ${cabinetNames.length === 1 ? 'is' : 'are'} playable now. Connect a wallet anytime to save progress and unlock Ranked.`,
+        ? 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Your next run starts here.'
+        : 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Choose a game and play Free.',
       profile: connectedWallet
         ? shellModel.profileRules.walletLockCopy
         : 'Guest stats are local to this browser. Permanent or cross-device history and verified Ranked publishing are not available yet.',
-      leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
+      leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time views of device-local Ranked preview records.',
       settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
     };
     dom.officialProfileEyebrow.textContent = simulatedWallet

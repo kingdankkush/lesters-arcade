@@ -15,6 +15,15 @@
       ]
     },
     {
+      "source": "/(portal-discovery.css|robots.txt|sitemap.xml|llms.txt|discover/.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/dist/(hmh-reboot|chikun|stacked)/(.*)",
       "headers": [
         {
@@ -53,8 +62,14 @@
     {
       "source": "/stacked/(.*)",
       "headers": [
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests" },
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     },
     {
@@ -82,9 +97,46 @@
           "value": "geolocation=(), microphone=(), camera=(), payment=()"
         }
       ]
+    },
+    {
+      "source": "/(profile|scores|leaderboards|settings|play/[^/]+/.*|games/[^/]+/.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
     }
   ],
   "rewrites": [
+    {
+      "source": "/games",
+      "destination": "/discover/games.html"
+    },
+    {
+      "source": "/games/hard-money-heroes",
+      "destination": "/discover/hard-money-heroes.html"
+    },
+    {
+      "source": "/play/hard-money-heroes",
+      "destination": "/discover/hard-money-heroes.html"
+    },
+    {
+      "source": "/games/chikun",
+      "destination": "/discover/chikun.html"
+    },
+    {
+      "source": "/play/chikun",
+      "destination": "/discover/chikun.html"
+    },
+    {
+      "source": "/games/stacked",
+      "destination": "/discover/stacked.html"
+    },
+    {
+      "source": "/play/stacked",
+      "destination": "/discover/stacked.html"
+    },
     {
       "source": "/",
       "destination": "/index.html"

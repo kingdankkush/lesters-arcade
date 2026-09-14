@@ -2190,8 +2190,8 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes("setOfficialView('cabinet-select')"), true);
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
-  assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=combined-gameplay-20260914'), true);
+  assert.equal(indexSource.includes('portal-game-previews'), true, 'homepage introduces every active game');
+  assert.equal(indexSource.includes('./dist/main.js?v=arcade-discovery-20260914'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2402,7 +2402,8 @@ test('Lester Arcade music player overlay is wired into the public UI without for
   assert.equal(styleSource.includes('.arcade-music-progress-fill'), true);
   assert.equal(styleSource.includes('[data-expanded="true"]'), true);
   assert.equal(styleSource.includes('[data-shuffle="true"]'), true);
-  assert.equal(indexSource.indexOf('id="arcadeMusicPlayer"') < indexSource.indexOf('id="officialWalletSplash"'), true, 'portal-owned jukebox stays inside the official app shell and ahead of routed views');
+  assert.equal(indexSource.indexOf('id="arcadeMusicPlayer"') > indexSource.indexOf('id="officialGameplay"'), true, 'portal-owned jukebox follows routed views so it never obstructs discovery');
+  assert.equal(indexSource.indexOf('id="arcadeMusicPlayer"') < indexSource.indexOf('<footer class="official-footer"'), true, 'jukebox remains in the common app shell');
   assert.equal(smokeScript.includes('arcadeMusicPlayer'), true);
   assert.equal(smokeScript.includes('arcadeMusicShuffleButton'), true);
   assert.equal(smokeScript.includes('Hard Money Heroes — Main Theme'), true);
@@ -3033,7 +3034,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('combined-gameplay-20260914'), true);
+  assert.equal(smokeScript.includes('arcade-discovery-20260914'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

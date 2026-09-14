@@ -1,0 +1,16 @@
+# Lester's Arcade
+
+Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, with optional wallet profiles and device-local Ranked previews.
+
+## Games
+- [Hard Money Heroes](https://lestersarcade.io/games/hard-money-heroes): Fight through the Crypto Wasteland in a top-down roguelite. Choose a hero, collect weapons, complete field objectives, and hold out against the horde.
+- [Chikun's Escape](https://lestersarcade.io/games/chikun): Run, jump, and fly through the Ground & Sky course. Time your taps, collect coins, and find a way through hazards as the pace picks up.
+- [STACKED](https://lestersarcade.io/games/stacked): Stack, spin, and seal falling ledger blocks to the arcade soundtrack. Chase cleaner clears while music-driven worlds react around the board.
+
+## Platform
+- [How it works](https://lestersarcade.io/#how-it-works): Free play, wallet profiles, and local Ranked previews.
+- [Browse games](https://lestersarcade.io/games)
+- [Support and policies](https://lestersarcade.io/trust.html)
+
+## Current scope
+Profiles and Ranked preview results stay in this browser. No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available. LitVM LiteForge is a testnet.

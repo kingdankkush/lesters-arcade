@@ -87,7 +87,7 @@ test('wallet splash renders the featured cabinet and connection state', () => {
   assert.equal(guest.dom.officialWalletCopy.textContent, 'Connect wallet to save progress.');
   assert.equal(guest.dom.officialConnectButton.textContent, 'Connect Wallet');
   assert.equal(guest.dom.splashFeaturedCabinet.children[0].variant, 'splash');
-  assert.equal(guest.calls.backgrounds[0][1], 'splash');
+  assert.equal(guest.calls.backgrounds.length, 0, 'brand homepage does not request game-specific background art');
 
   const connected = harness({ connectedWallet: '0x1234567890abcdef1234567890abcdef12345678' });
   connected.routes.renderWalletSplash();

@@ -44,7 +44,7 @@ export function buildLoadSpeedReport({ repoRoot = repoRootFromHere() } = {}) {
   const checks = Object.freeze([
     Object.freeze({ id: 'uses-dist-bundle', pass: indexHtml.includes('src="./dist/main.js'), detail: 'index.html loads the optimized esbuild bundle instead of raw source main.js' }),
     Object.freeze({ id: 'modulepreload-main', pass: indexHtml.includes('rel="modulepreload" href="./dist/main.js'), detail: 'browser can start fetching the module graph from the head' }),
-    Object.freeze({ id: 'keyart-preload', pass: indexHtml.includes('hard-money-heroes-keyart-bg.jpg') && indexHtml.includes('fetchpriority="high"'), detail: 'first-screen HMH key art is hinted as high-priority image' }),
+    Object.freeze({ id: 'keyart-preload', pass: indexHtml.includes('href="./assets/video/arcade-splash-poster.jpg" as="image" fetchpriority="high"'), detail: 'first-screen Lester’s Arcade film poster is hinted as a high-priority image' }),
     Object.freeze({ id: 'no-production-sourcemaps', pass: mapFiles.length <= HMH_LOAD_SPEED_BUDGETS.sourceMapMaxCount, detail: `${mapFiles.length} source maps emitted by default build` }),
     Object.freeze({ id: 'main-budget', pass: mainBytes > 0 && mainBytes <= HMH_LOAD_SPEED_BUDGETS.mainBundleMaxBytes, detail: `${human(mainBytes)} main bundle` }),
   ]);

@@ -25,6 +25,7 @@
 //   node build.mjs --sourcemap # opt into external maps for local profiling
 
 import { build } from 'esbuild';
+import { buildPortalPages } from './scripts/build-portal-pages.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, relative, resolve } from 'node:path';
 import { statSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
@@ -240,7 +241,8 @@ async function run() {
   console.log(`HMH initial JS + shared: ${human(hmhBudget.initialChildBytesWithSharedChunks)} (${hmhBudget.initialChildBytesWithSharedChunks.toLocaleString('en-US')} B) / ${human(hmhBudget.cap)} raw aggregate, entry + shared chunks + vendor`);
   console.log(`HMH headroom:       ${human(hmhBudget.remaining)} entry + vendor; ${human(hmhBudget.remainingWithSharedChunks)} including shared chunks`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
-  console.log(`Output dir:         apps/portal/dist/`);
+  buildPortalPages();
+  console.log(`Output dir:         apps/portal/dist/ (plus public discovery pages)`);
 }
 
 run().catch((err) => {

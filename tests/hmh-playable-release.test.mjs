@@ -4,20 +4,20 @@ import { readFileSync } from 'node:fs';
 import { SITE_VERSION, GAME_VERSION, isCurrentVersion } from '../apps/portal/src/version-tracking.mjs';
 
 const read = (name) => readFileSync(new URL(`../${name}`, import.meta.url), 'utf8');
-const token = 'combined-gameplay-20260914';
+const token = 'arcade-discovery-20260914';
 
 test('playable update gives all linked startup resources the same fresh cache token', () => {
   const html = read('apps/portal/index.html');
   const links = [...html.matchAll(/(?:href|src)="([^"?]+)\?v=([^"&]+)"/g)];
-  assert.equal(links.length, 7);
-  assert.deepEqual(new Set(links.map((m) => m[1])), new Set(['./src/design-tokens.css', './dist/main.js', './styles.css', './styles-arcade-polish.css']));
+  assert.equal(links.length, 8);
+  assert.deepEqual(new Set(links.map((m) => m[1])), new Set(['./src/design-tokens.css', './dist/main.js', './styles.css', './styles-arcade-polish.css', '/portal-discovery.css']));
   assert.ok(links.every((m) => m[2] === token));
   assert.doesNotMatch(html, /hmh-aaa-cycle-081-gameplan-defects/);
 });
 
 test('playable update invalidates the prior service-worker asset cache', () => {
   const sw = read('apps/portal/sw.js');
-  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v47-combined-gameplay';/);
+  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v48-discovery';/);
   assert.doesNotMatch(sw, /lesters-arcade-v32-hmh-gameplan-defects/);
   assert.doesNotMatch(sw, /lesters-arcade-v36-hmh-package/);
 });

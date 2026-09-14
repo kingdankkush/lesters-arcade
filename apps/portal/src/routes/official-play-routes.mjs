@@ -1,3 +1,4 @@
+import { gameFor } from '../portal-content.mjs';
 import {
   HERO_SELECT_STAT_MAX,
   activeCarouselIndex,
@@ -223,10 +224,15 @@ export function createOfficialPlayRoutes({
         : cabinet.desktopCabinetSprite;
       const isCabinetPlayable = cabinetPlayableInCurrentMode(cabinet);
       const isDevOnlyCabinet = !cabinet.playable && isCabinetPlayable;
-      const card = el('button', { className: `official-cabinet-card ${isCabinetPlayable ? 'playable' : 'locked'} ${isDevOnlyCabinet ? 'dev-cabinet' : ''} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
+      const card = el(isCabinetPlayable ? 'a' : 'button', { className: `official-cabinet-card ${isCabinetPlayable ? 'playable' : 'locked'} ${isDevOnlyCabinet ? 'dev-cabinet' : ''} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
       card.type = 'button';
       card.disabled = !isCabinetPlayable;
-      card.addEventListener('click', async () => {
+      const discovery = gameFor(cabinet.gameId);
+      card.dataset.gameSlug = discovery?.slug ?? cabinet.id;
+      if (isCabinetPlayable) card.setAttribute('href', '/play/' + (discovery?.slug ?? cabinet.id));
+      card.addEventListener('click', async (event) => {
+        if (event?.metaKey || event?.ctrlKey || event?.shiftKey || event?.altKey || event?.button > 0) return;
+        event?.preventDefault?.();
         if (!cabinetPlayableInCurrentMode(cabinet)) return;
         // Lazy-load the game's art and data manifests the first time the player
         // selects this cabinet. The heavy HMH bundles live in games/<id>/loader.mjs,
@@ -248,6 +254,7 @@ export function createOfficialPlayRoutes({
       });
       if (cabinetSprite) {
         const media = el('div', { className: 'cabinet-card-media' });
+        appendText(media, 'span', '0' + (LESTERS_ARCADE_V2_APP_SHELL.cabinets.indexOf(cabinet) + 1), 'cabinet-number');
         media.append(renderRotatingCabinetSprite(cabinetSprite, 'card'));
         card.append(media);
       } else if (cabinet.bannerArt) {
@@ -261,8 +268,10 @@ export function createOfficialPlayRoutes({
       const copy = el('div', { className: 'cabinet-card-copy' });
       appendText(copy, 'span', isCabinetPlayable ? (isDevOnlyCabinet ? 'DEV HARNESS' : 'PLAYABLE NOW') : 'COMING SOON', 'cabinet-status-label');
       copy.append(renderArcadeIcon(isCabinetPlayable ? 'star' : 'lock', isCabinetPlayable ? 'Playable' : 'Locked'));
-      appendText(copy, 'strong', cabinet.title);
-      appendText(copy, 'small', cabinet.description);
+      appendText(copy, 'h2', cabinet.title);
+      if (discovery) appendText(copy, 'span', discovery.genre, 'cabinet-genre');
+      appendText(copy, 'p', discovery?.description ?? cabinet.description);
+      if (isCabinetPlayable) appendText(copy, 'span', 'Choose game ↗', 'cabinet-entry');
       card.append(copy);
       dom.officialCabinetGrid.append(card);
     }

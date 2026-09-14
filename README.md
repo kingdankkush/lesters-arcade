@@ -1,3 +1,11 @@
+# Lester's Arcade — homepage and discovery candidate
+
+This checkout contains the September 14 homepage, cabinet browser, and search-discovery redesign. It is awaiting release certification and promotion. The live site remains on combined-gameplay source `bfcba824629c33f099af0084a398acdacfc358bd`, deployment `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`, cache `lesters-arcade-v47-combined-gameplay` until promotion is verified.
+
+The marker below is this candidate's production release target; it does not assert that promotion has happened.
+
+**Production cache marker:** `lesters-arcade-v48-discovery`
+
 # Lester's Arcade
 
 A retro Litecoin and LitVM arcade portal with deterministic child games and approval-gated Web3 publishing.

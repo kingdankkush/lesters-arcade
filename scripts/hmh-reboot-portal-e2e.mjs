@@ -363,12 +363,13 @@ if (isMain) {
           return bounds?.width && bounds?.height ? { left: bounds.left, top: bounds.top, right: bounds.right, bottom: bounds.bottom } : null;
         };
         const ad = rect('#adBannerHorizontal');
-        const cabinet = rect('.splash-featured-cabinet-mini');
-        const actions = rect('.splash-cta-row');
+        const cabinet = rect('.portal-hero-film');
+        const actions = rect('.portal-actions');
         const overlap = (a, b) => a && b ? Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)) : 0;
         return { ad, cabinet, actions, cabinetOverlap: overlap(ad, cabinet), actionsOverlap: overlap(ad, actions), scrollWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth };
       });
       assert.ok(splashGeometry.ad, 'splash partner strip must remain available');
+      assert.ok(splashGeometry.cabinet && splashGeometry.actions, 'real homepage media and actions must be measured');
       assert.equal(splashGeometry.cabinetOverlap, 0, `splash ad covers featured cabinet: ${JSON.stringify(splashGeometry)}`);
       assert.equal(splashGeometry.actionsOverlap, 0, `splash ad covers primary actions: ${JSON.stringify(splashGeometry)}`);
       assert.ok(splashGeometry.scrollWidth <= splashGeometry.viewportWidth + 1, `splash has horizontal overflow: ${JSON.stringify(splashGeometry)}`);

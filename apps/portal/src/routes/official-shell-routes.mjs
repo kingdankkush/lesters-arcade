@@ -44,9 +44,10 @@ export function createOfficialShellRoutes({
       }
     }
     for (const item of shell.nav) {
-      const button = el('button', { className: `official-nav-tab ${item.active ? 'active' : ''}` });
+      const button = el('a', { className: `official-nav-tab ${item.active ? 'active' : ''}` });
       button.type = 'button';
       button.dataset.route = item.href;
+      button.setAttribute('href', item.href);
       button.setAttribute('aria-current', item.active ? 'page' : 'false');
       button.disabled = false;
       if (!connectedWallet && item.id !== 'cabinets') {
@@ -54,7 +55,9 @@ export function createOfficialShellRoutes({
         button.title = 'Browse as guest — connect a wallet to save progress here';
       }
       button.append(renderArcadeIcon(iconById[item.id] ?? 'star', item.label), documentRef.createTextNode(item.label));
-      button.addEventListener('click', () => {
+      button.addEventListener('click', (event) => {
+        if (event?.metaKey || event?.ctrlKey || event?.shiftKey || event?.altKey || event?.button > 0) return;
+        event?.preventDefault?.();
         playSfxCue('menu-click');
         setView(item.step);
       });
@@ -82,14 +85,14 @@ export function createOfficialShellRoutes({
   function renderWalletSplash() {
     if (!dom.officialWalletSplash) return;
     const connectedWallet = getConnectedWallet();
-    applyHardMoneyHeroScreenBackground(dom.officialWalletSplash, 'splash');
+    // The brand homepage owns its own media; game-specific art stays in game views.
     const featuredCabinet = shellModel.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
     const featuredSprite = featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite();
     if (dom.splashFeaturedCabinet && featuredSprite) {
       dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
     }
     dom.officialWalletCopy.textContent = connectedWallet
-      ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
+      ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Your local arcade profile is connected.`
       : shellModel.profileRules.walletLockCopy;
     dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Connect Wallet';
   }

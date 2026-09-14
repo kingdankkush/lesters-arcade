@@ -20,6 +20,12 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/portal/src/portal-content.mjs',
+  'apps/portal/src/portal-discovery.mjs',
+  'apps/portal/src/cabinet-presentation.mjs',
+  'scripts/build-portal-pages.mjs',
+  'scripts/portal-discovery-browser-smoke.mjs',
+  'tests/portal-discovery.test.mjs',
   'apps/chikun/src/ground-world.mjs',
   'apps/chikun/src/ragdoll.mjs',
   'apps/chikun/src/replay-file.mjs',

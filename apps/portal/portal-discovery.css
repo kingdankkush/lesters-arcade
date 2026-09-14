@@ -1,0 +1,216 @@
+/* Brand and discovery chrome. Game canvases and hero selectors keep their own CSS. */
+:root { --portal-ink:#0a0e14; --portal-paper:#f6f3e9; --portal-muted:#bac3ce; --portal-rule:#343c47; --portal-gold:#f8d65a; --portal-panel:#101720; --portal-green:#a9e2b7; }
+html:not([data-ingame="true"]) body { background:var(--portal-ink); }
+html:not([data-ingame="true"]) .arcade-shell.official-shell { width:100%; max-width:none; margin:0; padding:0; }
+html:not([data-ingame="true"]) .crt-overlay { display:none; }
+html:not([data-ingame="true"]) #officialApp { padding:0; background:var(--portal-ink); color:var(--portal-paper); }
+html:not([data-ingame="true"]) #officialApp::before,
+html:not([data-ingame="true"]) #officialApp::after,
+html:not([data-ingame="true"]) .official-scanline { display:none; }
+#officialApp .official-nav { width:100%; min-height:100px; margin:0; padding:16px max(24px,calc((100vw - 1280px)/2)); border:0; border-bottom:1px solid var(--portal-rule); border-radius:0; box-shadow:none; background:var(--portal-ink); position:relative; top:0; flex-direction:row; align-items:center; justify-content:space-between; gap:24px; }
+#officialApp .official-nav::after { display:none; }
+#officialApp .portal-brand { display:block; flex:0 0 180px; margin-right:auto; line-height:0; }
+#officialApp .portal-brand img { width:180px; height:auto; }
+#officialApp .official-nav-tabs { gap:4px; }
+#officialApp .official-nav-tab { min-height:44px; padding:10px 14px; background:transparent; border:0; border-radius:4px; color:var(--portal-muted); font-size:14px; text-transform:none; letter-spacing:0; text-decoration:none; box-shadow:none; opacity:1; }
+#officialApp .official-nav-tab.active, #officialApp .official-nav-tab:hover { color:var(--portal-paper); background:var(--portal-panel); }
+#officialApp .official-nav-tab .arcade-svg-icon { width:16px; height:16px; }
+#officialApp .official-footer { padding:32px 24px; margin-top:0; border-color:var(--portal-rule); background:var(--portal-ink); color:var(--portal-muted); font-size:12px; }
+html:not([data-ingame="true"]) #officialApp #arcadeMusicPlayer:not([hidden]) { position:relative; inset:auto; align-self:center; width:min(600px,calc(100% - 40px)); max-width:none; margin:24px auto 40px; background:var(--portal-panel); border:1px solid var(--portal-rule); border-radius:4px; box-shadow:none; }
+#officialApp #arcadeMusicPlayer .arcade-music-button { min-width:44px; min-height:44px; }
+#officialApp #arcadeMusicPlayer[hidden] { display:none; }
+.portal-skip { position:fixed; top:8px; left:8px; padding:12px 20px; background:var(--portal-gold); color:var(--portal-ink); z-index:10001; transform:translateY(-160%); }
+.portal-skip:focus { transform:none; }
+#officialApp .portal-noscript { padding:24px; text-align:center; }
+#officialWalletSplash.portal-home { display:block; width:100%; max-width:none; min-height:0; padding:0; margin:0; border:0; border-radius:0; background:var(--portal-ink) !important; box-shadow:none; overflow:visible; }
+#officialWalletSplash[hidden] { display:none; }
+#officialWalletSplash::before, #officialWalletSplash::after { display:none; }
+#officialApp .portal-hero { max-width:1280px; margin:0 auto; padding:64px 0 56px; display:grid; grid-template-columns:1fr 1.04fr; align-items:center; gap:48px; }
+#officialApp .portal-kicker { color:var(--portal-gold); font:600 12px/1.5 var(--font-mono); letter-spacing:.12em; text-transform:uppercase; margin:0 0 20px; }
+.portal-open-dot { display:inline-block; width:7px; height:7px; background:var(--portal-green); border-radius:50%; margin-right:8px; vertical-align:middle; }
+#officialWalletSplash h1 { color:var(--portal-paper); font:900 clamp(44px,5.2vw,76px)/1.02 var(--font-display); letter-spacing:-.055em; text-transform:none; text-shadow:none; margin:0 0 28px; max-width:none; }
+#officialWalletSplash h1 em { color:var(--portal-gold); font-style:normal; }
+#officialApp .portal-lead { color:var(--portal-muted); font-size:18px; line-height:1.7; max-width:540px; margin:0 0 28px; }
+#officialApp .portal-actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
+#officialApp .portal-button { display:inline-flex; align-items:center; justify-content:center; min-height:50px; padding:14px 24px; color:var(--portal-ink); background:var(--portal-gold); border:1px solid var(--portal-gold); border-radius:4px; font:700 15px/1.3 var(--font-ui); text-transform:none; letter-spacing:0; text-decoration:none; cursor:pointer; box-shadow:none; transition:background .15s; }
+#officialApp .portal-button:hover { background:var(--portal-paper); border-color:var(--portal-paper); }
+#officialApp .portal-button-outline { background:transparent; color:var(--portal-paper); border-color:var(--portal-rule); }
+#officialApp .portal-button-outline:hover { color:var(--portal-ink); }
+#officialApp .portal-text-link { display:inline-flex; align-items:center; min-height:44px; padding:8px 0; color:var(--portal-paper); background:none; border:0; border-radius:0; font:600 14px/1.5 var(--font-ui); letter-spacing:0; text-transform:none; text-decoration:underline; text-underline-offset:5px; box-shadow:none; cursor:pointer; }
+#officialApp .portal-text-link:hover { color:var(--portal-gold); }
+#officialApp .portal-entry-note { font-size:13px; color:var(--portal-muted); margin:14px 0 8px; }
+#officialApp .portal-hero-film { margin:0; min-width:0; border:1px solid var(--portal-rule); border-bottom:4px solid var(--portal-gold); }
+#officialApp .portal-film-label { padding:12px 16px; color:var(--portal-muted); display:flex; justify-content:space-between; font:12px var(--font-mono); text-transform:uppercase; letter-spacing:.06em; }
+#officialWalletSplash .splash-marquee { margin:0; width:100%; max-width:none; border:0; border-radius:0; background:none; box-shadow:none; aspect-ratio:1.12; overflow:hidden; }
+#officialWalletSplash .splash-marquee .splash-marquee-art { width:100%; height:100%; max-height:none; border:0; border-radius:0; object-fit:cover; object-position:48% center; filter:none; }
+#officialApp .portal-hero-film figcaption, #officialApp .portal-jukebox-story figcaption { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 16px; color:var(--portal-muted); font:12px/1.4 var(--font-mono); }
+#officialApp .portal-media-toggle { min-height:44px; padding:8px; color:var(--portal-paper); background:transparent; border:0; font:600 12px var(--font-ui); text-decoration:underline; text-underline-offset:4px; cursor:pointer; box-shadow:none; }
+#officialApp .portal-ticker { display:flex; width:100%; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 32px; padding:16px 24px; border-block:1px solid var(--portal-rule); background:var(--portal-panel); }
+#officialApp .portal-ticker a { color:var(--portal-paper); font-size:14px; font-weight:700; text-decoration:none; padding:8px 0; }
+#officialApp .portal-ticker > span { color:var(--portal-gold); font:12px var(--font-mono); text-transform:uppercase; }
+#officialApp .portal-section { width:100%; max-width:1280px; margin:0 auto; padding:80px 0; border-bottom:1px solid var(--portal-rule); }
+#officialApp .portal-section-heading { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:32px; }
+#officialApp .portal-section h2 { color:var(--portal-paper); font:800 clamp(28px,3.1vw,42px)/1.12 var(--font-display); letter-spacing:-.035em; text-transform:none; text-shadow:none; margin:0 0 24px; }
+#officialApp .portal-section-heading h2 { margin:0; max-width:650px; }
+#officialApp .portal-section p { color:var(--portal-muted); line-height:1.7; }
+#officialApp .portal-section .portal-kicker { color:var(--portal-gold); line-height:1.5; }
+#officialApp .portal-game-previews { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+#officialApp .portal-game-preview { color:inherit; text-decoration:none; border-bottom:1px solid var(--portal-rule); transition:border-color .15s; }
+#officialApp .portal-game-preview:hover { border-color:var(--portal-gold); }
+#officialApp .portal-preview-art { aspect-ratio:16/10; overflow:hidden; background:var(--portal-panel); }
+#officialApp .portal-preview-art img { width:100%; height:100%; object-fit:cover; transition:transform .25s; }
+#officialApp .portal-game-preview:hover img { transform:scale(1.025); }
+#officialApp .portal-preview-caption { padding:24px 0 16px; }
+#officialApp .portal-preview-caption h3 { margin:10px 0 12px; font:800 23px/1.25 var(--font-display); letter-spacing:-.025em; }
+#officialApp .portal-preview-caption h3 span { float:right; font-weight:400; color:var(--portal-gold); }
+#officialApp .portal-preview-caption p { margin:0; font-size:15px; max-width:34ch; }
+#officialApp .portal-how { display:grid; grid-template-columns:1fr 1fr; gap:80px; }
+#officialApp .portal-how-intro { max-width:520px; }
+#officialApp .portal-how-intro img { display:block; width:100%; height:auto; margin-top:24px; }
+#officialApp .portal-steps { list-style:none; margin:0; padding:0; }
+#officialApp .portal-steps li { display:grid; grid-template-columns:40px 1fr; gap:16px; padding:28px 0; border-bottom:1px solid var(--portal-rule); }
+#officialApp .portal-steps li:first-child { padding-top:0; }
+#officialApp .portal-step-number { color:var(--portal-gold); font:14px var(--font-mono); padding-top:4px; }
+#officialApp .portal-steps h3 { margin:0 0 12px; font-size:22px; letter-spacing:-.02em; }
+#officialApp .portal-steps p { margin:0; }
+#officialApp .portal-scores-story { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+#officialApp .portal-score-art { position:relative; overflow:hidden; padding:48px 32px; min-height:360px; background:var(--portal-panel); border:1px solid var(--portal-rule); }
+#officialApp .portal-score-lines { display:grid; gap:20px; font:900 clamp(28px,3.5vw,48px)/1.2 var(--font-display); letter-spacing:-.035em; }
+#officialApp .portal-score-lines span { border-bottom:1px solid var(--portal-rule); padding-bottom:16px; }
+#officialApp .portal-score-lines span:nth-child(2) { color:var(--portal-gold); }
+#officialApp .portal-score-stamp { display:block; margin-top:24px; color:var(--portal-green); font:600 14px var(--font-mono); letter-spacing:.25em; }
+#officialApp .portal-note { color:var(--portal-muted); font-size:13px; line-height:1.7; }
+#officialApp .portal-jukebox-story { display:grid; grid-template-columns:1.15fr 1fr; align-items:center; gap:64px; }
+#officialApp .portal-jukebox-story figure { min-width:0; margin:0; background:var(--portal-panel); }
+#officialApp .portal-jukebox-story video { display:block; width:100%; aspect-ratio:1280/548; object-fit:cover; }
+#officialApp .portal-faq { display:grid; grid-template-columns:1fr 1.3fr; gap:80px; }
+#officialApp .portal-faq details { padding:20px 0; border-bottom:1px solid var(--portal-rule); }
+#officialApp .portal-faq details:first-child { padding-top:0; }
+#officialApp .portal-faq summary { cursor:pointer; font-size:18px; font-weight:600; line-height:1.5; padding:8px 0; }
+#officialApp .portal-faq details p { margin-bottom:4px; }
+#officialApp .portal-final-cta { width:100%; max-width:1280px; margin:0 auto; padding:56px 0; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+#officialApp .portal-final-cta p { font:800 clamp(28px,4vw,48px) var(--font-display); letter-spacing:-.04em; margin:0; }
+#officialApp .portal-partner { display:flex; width:100%; justify-content:space-between; flex-wrap:wrap; gap:16px; max-width:1280px; padding:24px 0; margin:0 auto 32px; border-top:1px solid var(--portal-rule); color:var(--portal-muted); font-size:14px; text-decoration:none; }
+#officialApp .portal-partner .portal-kicker { margin:0; }
+#officialApp[data-step="cabinet-select"] #officialArcadeFloor,
+#officialApp[data-step="arcade-walk-in"] #officialArcadeFloor { width:100%; max-width:1280px; min-height:0; margin:0 auto; padding:56px 0 48px; border:0; border-radius:0; background:var(--portal-ink) !important; box-shadow:none; }
+#officialApp[data-step="cabinet-select"] #officialArcadeFloor::before,
+#officialApp[data-step="arcade-walk-in"] #officialArcadeFloor::before { display:none; }
+#officialApp[data-step="cabinet-select"] .arcade-walk-in,
+#officialApp[data-step="arcade-walk-in"] .arcade-walk-in { background:none; padding:0; border:0; border-radius:0; backdrop-filter:none; }
+#officialApp[data-step="cabinet-select"] #officialProfileEyebrow,
+#officialApp[data-step="arcade-walk-in"] #officialProfileEyebrow { color:var(--portal-gold); font-size:12px; letter-spacing:.15em; }
+#officialApp[data-step="cabinet-select"] #officialProfileTitle,
+#officialApp[data-step="arcade-walk-in"] #officialProfileTitle { font:900 clamp(40px,5vw,68px)/1.1 var(--font-display); letter-spacing:-.05em; text-shadow:none; text-transform:none; margin:12px 0 20px; }
+#officialApp[data-step="cabinet-select"] #officialProfileCopy { color:var(--portal-muted); max-width:660px; line-height:1.7; font-size:17px; }
+#officialApp .cabinet-motion-toolbar { justify-content:space-between; align-items:center; gap:16px; padding:16px 0; margin:16px 0 24px; border-bottom:1px solid var(--portal-rule); }
+#officialApp .portal-catalog-note { margin:0; color:var(--portal-muted); font-size:13px; }
+#officialApp #cabinetMotionToggle { color:var(--portal-muted); background:transparent; border:1px solid var(--portal-rule); border-radius:4px; box-shadow:none; font-size:12px; text-transform:none; }
+#officialApp:not([data-step="cabinet-select"]):not([data-step="arcade-walk-in"]) .cabinet-motion-toolbar { display:none; }
+#officialApp[data-step="cabinet-select"] #officialCabinetGrid,
+#officialApp[data-step="arcade-walk-in"] #officialCabinetGrid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); align-items:stretch; gap:24px; padding:0; background:none; border:0; border-radius:0; backdrop-filter:none; }
+#officialApp #officialCabinetGrid .official-cabinet-card { position:relative; min-width:0; grid-column:span 2; min-height:0; margin:0; padding:0; border:1px solid var(--portal-rule); border-radius:4px; background:var(--portal-panel); box-shadow:none; color:var(--portal-paper); text-decoration:none; transform:none; transition:border-color .15s; overflow:hidden; }
+#officialApp #officialCabinetGrid .official-cabinet-card:hover { border-color:var(--portal-gold); box-shadow:none; transform:none; }
+#officialApp #officialCabinetGrid .official-cabinet-card.featured-cabinet-card { display:flex; flex-direction:column; gap:0; }
+#officialApp #officialCabinetGrid .cabinet-card-media { position:relative; height:340px; min-height:340px; width:100%; padding:32px 24px 24px; display:grid; place-items:center; overflow:hidden; border-bottom:1px solid var(--portal-rule); background:var(--portal-ink); }
+#officialApp #officialCabinetGrid .cabinet-number { position:absolute; left:20px; top:16px; color:var(--portal-muted); font:12px var(--font-mono); opacity:.8; }
+#officialApp #officialCabinetGrid .normalized-cabinet { width:270px; height:270px; max-width:none; aspect-ratio:1; margin:0; animation:none; filter:none; }
+#officialApp #officialCabinetGrid .normalized-cabinet .cabinet-rotation-frame { width:var(--cabinet-width); height:var(--cabinet-height); left:var(--cabinet-left); top:var(--cabinet-top); right:auto; bottom:auto; object-fit:fill; }
+#officialApp #officialCabinetGrid .cabinet-card-copy { display:flex; flex-direction:column; align-items:flex-start; gap:0; flex:1; padding:28px 24px; width:100%; background:none; }
+#officialApp #officialCabinetGrid .cabinet-card-copy .arcade-icon { display:none; }
+#officialApp #officialCabinetGrid .cabinet-status-label { color:var(--portal-green); font:600 11px/1.5 var(--font-mono); letter-spacing:.1em; margin-bottom:12px; }
+#officialApp #officialCabinetGrid .cabinet-card-copy h2 { margin:0 0 12px; color:var(--portal-paper); font:800 clamp(22px,2vw,28px)/1.15 var(--font-display); letter-spacing:-.025em; text-transform:none; text-shadow:none; }
+#officialApp #officialCabinetGrid .cabinet-genre { color:var(--portal-gold); font-size:13px; }
+#officialApp #officialCabinetGrid .cabinet-card-copy p { margin:16px 0 24px; color:var(--portal-muted); font:400 15px/1.65 var(--font-ui); text-transform:none; letter-spacing:0; }
+#officialApp #officialCabinetGrid .cabinet-entry { margin-top:auto; padding-top:16px; width:100%; border-top:1px solid var(--portal-rule); color:var(--portal-paper); font-size:14px; font-weight:700; }
+#officialApp #officialCabinetGrid .official-cabinet-card.locked { grid-column:span 3; min-height:190px; margin-top:16px; filter:none; opacity:.6; cursor:default; }
+#officialApp #officialCabinetGrid .official-cabinet-card.locked .cabinet-status-label { color:var(--portal-muted); }
+#officialApp #officialCabinetGrid .official-cabinet-card.locked .cabinet-card-copy { z-index:1; }
+#officialApp #officialCabinetGrid .official-cabinet-card.locked .cabinet-card-copy h2 { font-size:22px; }
+#officialApp #officialCabinetGrid .catalog-static-cabinet { display:block; width:270px; height:270px; background-repeat:no-repeat; }
+.catalog-static-cabinet.hard-money-heroes { background-image:url('/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png'); background-size:259.36px 283.68px; background-position:5.57px -12.66px; }
+.catalog-static-cabinet.chikun { background-image:url('/assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2'); background-size:283.46px 376.30px; background-position:-3.9px -41.81px; }
+.catalog-static-cabinet.stacked { background-image:url('/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png'); background-size:865.85px 577.20px; background-position:-23.68px -6.76px; mix-blend-mode:screen; }
+#officialApp .game-detail-story { padding:24px 8px; color:var(--portal-paper); display:grid; grid-template-columns:1fr 1.2fr; gap:32px; }
+#officialApp .game-detail-story h2 { font:800 28px/1.2 var(--font-display); text-transform:none; margin:0 0 16px; }
+#officialApp .game-detail-story p, #officialApp .game-detail-story dd { color:var(--portal-muted); line-height:1.7; }
+#officialApp .game-detail-story dl { margin:0; }
+#officialApp .game-detail-story dl div { border-bottom:1px solid var(--portal-rule); padding:0 0 16px; margin-bottom:16px; }
+#officialApp .game-detail-story dt { font-weight:700; margin-bottom:8px; }
+#officialApp .game-detail-story dd { margin:0; }
+#officialApp #officialModeTitle { font:900 clamp(28px,4vw,48px)/1.1 var(--font-display); margin:8px 0 16px; }
+#officialApp #officialModeSelect { width:calc(100% - 64px); max-width:1280px; margin:32px auto; padding:0; border:0; border-radius:0; background:var(--portal-ink) !important; box-shadow:none; }
+#officialApp #officialModeSelect::before { display:none; }
+#officialApp #officialModeSelect .mode-select-heading { padding:24px 0 8px; max-width:760px; background:none; border:0; backdrop-filter:none; }
+#officialApp #officialModeSelect #officialModeTitle { color:var(--portal-paper); text-shadow:none; text-transform:none; }
+#officialApp #officialModeSelect #officialModeEyebrow { color:var(--portal-gold); }
+#officialApp #officialModeSelect .official-mode-grid { padding:0; margin:24px 0; border:0; background:none; backdrop-filter:none; }
+#officialApp #officialModeSelect .mode-card { border:1px solid var(--portal-rule); border-radius:4px; background:var(--portal-panel); box-shadow:none; text-transform:none; letter-spacing:0; font-family:var(--font-ui); }
+#officialApp #officialModeSelect .mode-card:hover { transform:none; border-color:var(--portal-gold); }
+#officialApp #officialModeSelect .mode-card strong { text-transform:none; color:var(--portal-paper); text-shadow:none; }
+#officialApp #officialModeSelect .mode-card > span { font:400 15px/1.65 var(--font-ui); color:var(--portal-muted); }
+#officialApp #officialModeSelect .ranked-tooltip { margin:24px 0; padding:20px; background:var(--portal-panel); border:1px solid var(--portal-rule); border-radius:4px; }
+#officialApp #portalGameDetails { margin-top:32px; padding:24px 0; background:none; border:0; border-top:1px solid var(--portal-rule); border-radius:0; backdrop-filter:none; }
+#officialApp #portalGameDetails h2 { color:var(--portal-paper); text-shadow:none; }
+@media(max-width:1340px) {
+  #officialApp .portal-hero, #officialApp .portal-section, #officialApp .portal-final-cta, #officialApp .portal-partner,
+  #officialApp[data-step="cabinet-select"] #officialArcadeFloor, #officialApp[data-step="arcade-walk-in"] #officialArcadeFloor { margin-left:32px; margin-right:32px; width:auto; }
+}
+@media(max-width:1000px) {
+  #officialApp .portal-hero { gap:32px; padding-top:40px; }
+  #officialWalletSplash h1 { font-size:48px; }
+  #officialApp .portal-lead { font-size:16px; }
+  #officialApp .portal-how, #officialApp .portal-scores-story, #officialApp .portal-faq { gap:40px; }
+  #officialApp #officialCabinetGrid .normalized-cabinet { width:210px; height:210px; }
+  #officialApp #officialCabinetGrid .cabinet-card-media { height:280px; min-height:280px; padding:24px 12px; }
+  #officialApp #officialCabinetGrid .cabinet-card-copy { padding:24px 16px; }
+  #officialApp #officialCabinetGrid { gap:16px; }
+}
+@media(max-width:760px) {
+  #officialApp #officialModeSelect { width:calc(100% - 40px); }
+  #officialApp .official-nav { flex-wrap:wrap; gap:12px; padding:16px 20px; min-height:0; }
+  #officialApp .portal-brand, #officialApp .portal-brand img { width:150px; flex-basis:150px; }
+  #officialApp .official-nav-tabs { width:100%; justify-content:space-between; gap:0; }
+  #officialApp #officialNavTabs > .official-nav-tab { padding:8px; font-size:13px; flex:0 1 auto; width:auto; }
+  #officialApp .official-nav-account { margin:8px 0 0; width:100%; }
+  #officialApp .portal-hero, #officialApp .portal-section, #officialApp .portal-final-cta, #officialApp .portal-partner,
+  #officialApp[data-step="cabinet-select"] #officialArcadeFloor, #officialApp[data-step="arcade-walk-in"] #officialArcadeFloor { margin-left:20px; margin-right:20px; }
+  #officialApp .portal-hero { grid-template-columns:1fr; padding:36px 0 32px; gap:32px; }
+  #officialWalletSplash h1 { font-size:clamp(40px,9.4vw,64px); margin-bottom:20px; }
+  #officialApp .portal-lead { font-size:16px; line-height:1.65; margin-bottom:24px; }
+  #officialApp .portal-button { padding:12px 18px; font-size:14px; }
+  #officialWalletSplash .splash-marquee { aspect-ratio:16/11; }
+  #officialApp .portal-ticker { gap:4px 20px; justify-content:flex-start; padding:16px 20px; }
+  #officialApp .portal-ticker > span:first-child { width:100%; margin-bottom:8px; }
+  #officialApp .portal-ticker > span:not(:first-child) { display:none; }
+  #officialApp .portal-ticker a { font-size:12px; }
+  #officialApp .portal-section { padding:48px 0; }
+  #officialApp .portal-section-heading { align-items:start; flex-direction:column; gap:12px; }
+  #officialApp .portal-game-previews, #officialApp .portal-how, #officialApp .portal-scores-story, #officialApp .portal-jukebox-story, #officialApp .portal-faq { grid-template-columns:1fr; gap:32px; }
+  #officialApp .portal-game-previews { gap:32px; }
+  #officialApp .portal-preview-art { aspect-ratio:16/9; }
+  #officialApp .portal-preview-caption { padding:20px 0; }
+  #officialApp .portal-how-intro { max-width:none; }
+  #officialApp .portal-score-art { min-height:0; padding:32px 24px; }
+  #officialApp .portal-final-cta { padding:40px 0; flex-direction:column; align-items:start; }
+  #officialApp .portal-partner { flex-direction:column; gap:12px; }
+  #officialApp .cabinet-motion-toolbar { align-items:start; flex-direction:column; }
+  #officialApp[data-step="cabinet-select"] #officialCabinetGrid,
+  #officialApp[data-step="arcade-walk-in"] #officialCabinetGrid { grid-template-columns:1fr; gap:24px; }
+  #officialApp #officialCabinetGrid .official-cabinet-card, #officialApp #officialCabinetGrid .official-cabinet-card.locked { grid-column:auto; }
+  #officialApp #officialCabinetGrid .normalized-cabinet { width:250px; height:250px; }
+  #officialApp #officialCabinetGrid .cabinet-card-media { height:310px; min-height:310px; }
+  #officialApp #officialCabinetGrid .cabinet-card-copy { padding:24px; }
+  #officialApp .game-detail-story { grid-template-columns:1fr; gap:16px; }
+}
+@media(max-width:360px) {
+  #officialApp .official-nav-tab .arcade-svg-icon { display:none; }
+  #officialApp .portal-hero, #officialApp .portal-section, #officialApp .portal-final-cta, #officialApp .portal-partner,
+  #officialApp[data-step="cabinet-select"] #officialArcadeFloor { margin-left:16px; margin-right:16px; }
+  #officialApp .portal-actions { gap:8px; }
+  #officialApp .portal-button { padding-inline:12px; }
+  #officialApp #officialCabinetGrid .normalized-cabinet { width:225px; height:225px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  #officialApp .portal-game-preview img, #officialApp .portal-button { transition:none; transform:none; }
+}

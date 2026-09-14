@@ -260,7 +260,7 @@ try {
   await frame.locator('#resultExitButton').click();
   await page.locator('#officialArcadeFloor:not([hidden])').waitFor({ state: 'visible', timeout: 10_000 });
 
-  await page.getByRole('button', { name: 'Scores', exact: true }).click();
+  await page.getByRole('link', { name: 'Scores', exact: true }).click();
   const chikunScoreTab = page.locator('.leaderboard-game-tab').filter({ hasText: "Chikun's Escape" }).first();
   await chikunScoreTab.click();
   if (ranked) {
@@ -278,7 +278,7 @@ try {
     assert.match(scoreBoardText, /No unpublished local ranked scores/i);
   }
 
-  await page.getByRole('button', { name: 'Profile', exact: true }).click();
+  await page.getByRole('link', { name: 'Profile', exact: true }).click();
   const chikunProfileTab = page.locator('.profile-game-tabs .leaderboard-game-tab').filter({ hasText: "Chikun's Escape" });
   await chikunProfileTab.click();
   const profileText = (await page.locator('.game-stats-card').innerText()).replace(/\s+/g, ' ');

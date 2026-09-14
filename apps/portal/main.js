@@ -1,3 +1,5 @@
+import { cabinetFramePresentation } from './src/cabinet-presentation.mjs';
+import { installPortalDiscovery } from './src/portal-discovery.mjs';
 import { createChikunRunMusic } from './src/chikun-run-music.mjs';
 import { shouldInjectVercelWebAnalytics, injectVercelWebAnalytics } from './src/vercel-analytics.mjs';
 
@@ -2159,6 +2161,11 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
       });
       image.loading = 'eager';
       image.decoding = 'async';
+    }
+    const framing = cabinetFramePresentation(sprite?.id, index);
+    if (framing) {
+      rotator.classList.add('normalized-cabinet');
+      for (const [property, value] of Object.entries(framing)) image.style.setProperty('--cabinet-' + property, value + '%');
     }
     image.style.setProperty('--cabinet-frame-index', String(index));
     image.style.setProperty('--cabinet-frame-delay', `${frameDuration * index}ms`);
@@ -14591,7 +14598,12 @@ function render() {
 }
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
-dom.officialGuestEnterButton?.addEventListener('click', enterArcadeAsGuest);
+dom.officialGuestEnterButton?.addEventListener('click', (event) => {
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0) return;
+  event.preventDefault();
+  enterArcadeAsGuest();
+});
+installPortalDiscovery({ connectWallet: enterOfficialArcadeFromSplash });
 wireHmhFreeQuickplay({
   button: dom.officialHmhFreeQuickplayButton,
   status: dom.officialGuestQuickplayStatus,
