@@ -31,3 +31,10 @@ apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend filter=lfs diff=l
 apps/hmh-reboot/assets/source/blender/*-packed-source-inspection.json -text
 apps/hmh-reboot/assets/source/blender/*-gameplay-reproducibility.json -text
 apps/hmh-reboot/assets/source/terrain/ground-source.json -text
+
+# Native motion metadata and bake receipts retain their raw producer hashes.
+apps/portal/assets/generated/hmh-hero-motion/**/*.json -text whitespace=cr-at-eol
+apps/portal/assets/generated/hmh-native-roster/**/*.json -text whitespace=cr-at-eol
+docs/testing/hmh-hero-motion/**/*.json -text whitespace=cr-at-eol
+docs/testing/hmh-native-roster/**/*.json -text whitespace=cr-at-eol
+apps/hmh-reboot/assets/source/models/native-enemies/**/source-receipt.json -text whitespace=cr-at-eol

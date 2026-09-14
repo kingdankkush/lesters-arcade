@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -272,7 +273,7 @@ test('runtime renders and sounds timed-effect identity from the shared active-ef
   assert.match(main, /buildTimedEffectIdentity\(collectibleSnapshot/);
   assert.match(main, /timedEffectIdentity\.effects/);
   assert.match(main, /effectIdentity\.audioCue/);
-  assert.match(main, /dataset\.timedEffectSilhouettes/);
+  assert.match(runtimeTelemetrySource, /dataset\.timedEffectSilhouettes/);
   assert.match(audio, /time-dilation-activate/);
   assert.match(audio, /berserk-activate/);
 });
@@ -283,7 +284,7 @@ test('runtime projects timed-effect refresh and expiry through the shared HUD/ac
   assert.match(main, /powerupPresentation\.hudLabel/);
   assert.match(main, /powerupPresentation\.accessibleLabel/);
   assert.match(main, /collectibleRefreshPilotEnabled = evidenceSafeEnabled/);
-  assert.match(main, /collectibleRefreshCount = String\(powerupPresentation\.effects/);
+  assert.match(runtimeTelemetrySource, /collectibleRefreshCount = String\(powerupPresentation\.effects/);
 });
 
 test('canonical Hash Rail cache events stay bounded through third pickup', () => {

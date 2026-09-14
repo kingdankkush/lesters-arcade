@@ -8,7 +8,9 @@ const evidenceDir = path.resolve(process.env.STACKED_EVIDENCE_DIR || path.join(r
 await mkdir(evidenceDir, { recursive: true });
 const dependency = process.env.STACKED_PLAYWRIGHT_PATH || path.join(root, 'benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
 const { chromium } = await import(pathToFileURL(dependency).href);
-const { server, origin } = await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
+const { server, origin } = process.env.STACKED_ORIGIN
+  ? { server: { close(callback) { callback?.(); } }, origin: new URL(process.env.STACKED_ORIGIN).origin }
+  : await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--enable-webgl', '--enable-gpu', '--ignore-gpu-blocklist'] });
 const reports = [];
 try {
@@ -27,7 +29,7 @@ try {
     // The shared static server has no headers. Enforce the exact candidate CSP on the real document.
     const config = JSON.parse(await readFile(path.join(root, 'vercel.json'), 'utf8'));
     const csp = config.headers.find(rule => rule.source === '/stacked/(.*)').headers.find(header => header.key === 'Content-Security-Policy').value;
-    await page.route('**/stacked/index.html', async route => {
+    if (!process.env.STACKED_ORIGIN) await page.route('**/stacked/index.html', async route => {
       const response = await route.fetch();
       await route.fulfill({ response, headers: { ...response.headers(), 'content-security-policy': csp.replace('; upgrade-insecure-requests', '') } });
     });

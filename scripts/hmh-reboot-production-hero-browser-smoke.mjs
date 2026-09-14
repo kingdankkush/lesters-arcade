@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { measureHeroBody, assertHeroClearance } from './hmh-hero-browser-geometry.mjs';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 import { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_RUNTIME_SCALE } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
+import { HERO_MIN_VIEWPORT_RATIO } from '../apps/hmh-reboot/src/game-feel.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const actorFlag = process.argv.indexOf('--actor');
@@ -24,7 +25,10 @@ const metadataUrl = `${origin}/assets/generated/hmh-reboot-production-heroes/${a
 const metadataResponse = await fetch(metadataUrl);
 assert.equal(metadataResponse.status, 200, 'served hero metadata must exist');
 const metadata = await metadataResponse.json();
-const framesById = new Map(metadata.frames.map((frame) => [frame.id, frame]));
+const motionResponse = await fetch(`${origin}/assets/generated/hmh-hero-motion/${actorId}/${actorId}-motion.json`);
+assert.equal(motionResponse.status, 200, 'served hero motion metadata must exist');
+const motion = await motionResponse.json();
+const framesById = new Map([...metadata.frames, ...motion.frames].map((frame) => [frame.id, frame]));
 const textured = PRODUCTION_HERO_ASSETS[actorId].artSource === 'packed-textured-blend';
 
 function bodyMeasurement(state) {
@@ -45,7 +49,7 @@ function assertReadable(state) {
   // cameraZoom telemetry is rounded to three decimals. This tolerance covers
   // only that half-unit rounding, not a layout/size or changed-pixel waiver.
   const rounding = measured.worldHeight * 0.0005 / measured.viewportHeight;
-  assert.ok(measured.viewportRatio + rounding >= 0.12, `hero body is below 12% of viewport: ${JSON.stringify(measured)}`);
+  assert.ok(measured.viewportRatio + rounding >= HERO_MIN_VIEWPORT_RATIO, `hero body is below the current camera floor: ${JSON.stringify(measured)}`);
   return measured;
 }
 
@@ -59,7 +63,7 @@ function collectDiagnostics(page) {
   });
   page.on('requestfailed', (request) => failedRequests.push(`${request.url()} :: ${request.failure()?.errorText ?? 'unknown'}`));
   page.on('response', (response) => {
-    if (response.url().includes('hmh-reboot-production-heroes')) assetResponses.push({ url: response.url(), status: response.status() });
+    if (/hmh-reboot-production-heroes|hmh-hero-motion/.test(response.url())) assetResponses.push({ url: response.url(), status: response.status() });
   });
   return { errors, failedRequests, assetResponses };
 }
@@ -74,6 +78,10 @@ const readState = (page) => page.locator('#hmhRebootStage').evaluate((stage) => 
   actorX: Number(stage.dataset.actorX),
   actorY: Number(stage.dataset.actorY),
   lastWeaponFire: stage.dataset.lastWeaponFire,
+  heroMotionStatus: stage.dataset.heroMotionStatus,
+  heroMotionAction: stage.dataset.heroMotionAction,
+  heroMotionError: stage.dataset.heroMotionError,
+  reloadTicksRemaining: Number(stage.dataset.weaponReloadTicksRemaining),
   cameraZoom: Number(stage.dataset.cameraZoom),
   actorScreenX: Number(stage.dataset.actorScreenX),
   actorScreenY: Number(stage.dataset.actorScreenY),
@@ -92,7 +100,7 @@ async function assertFirstFrameClearance(page) {
   const body = measureHeroBody(state, framesById);
   await page.screenshot({ path: fileURLToPath(new URL(`${actorId}-${state.viewportWidth}x${state.viewportHeight}-initial.png`, evidenceDir)), fullPage: true });
   await writeFile(new URL(`${actorId}-${state.viewportWidth}x${state.viewportHeight}-initial.json`, evidenceDir), `${JSON.stringify({ state, body }, null, 2)}\n`);
-  assertHeroClearance(body, state.overlays, state);
+  assertHeroClearance(body, state.overlays, state, { minimumViewportRatio: HERO_MIN_VIEWPORT_RATIO });
 }
 
 async function ready(page) {
@@ -102,6 +110,7 @@ async function ready(page) {
     return stage?.dataset.actorArt === 'production-hero-atlas' && stage.dataset.actorArtActor === expectedActor;
   }, actorId);
   await page.waitForFunction(() => String(document.querySelector('#hmhRebootStage')?.dataset.actorArtFrameIds ?? '').split(',').filter(Boolean).length === 4);
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.heroMotionStatus === 'ready');
   assert.equal(await page.locator('html').getAttribute('data-debug-hud'), '0', 'visual proof must use the shipped HUD, not debug HUD relocation');
   await assertFirstFrameClearance(page);
   await page.locator('canvas').focus();
@@ -133,8 +142,17 @@ async function desktopEvidence(page, name) {
   const lowerFrames = new Set(movementSamples.flatMap((sample) => sample.frameIds.filter((id) => id.includes('__lower-body__run__'))));
   assert.ok(lowerFrames.size >= 3, `expected production run animation, received ${[...lowerFrames]}`);
   const lowerBodyDirections = new Set(movementSamples.flatMap((sample) => sample.frameIds.filter((id) => id.includes('__lower-body__run__')).map((id) => id.split('__')[3])));
-  assert.deepEqual([...lowerBodyDirections], ['south'], 'production lower body did not preserve south movement heading');
-  const torsoDirections = new Set(movementSamples.flatMap((sample) => sample.frameIds.filter((id) => id.includes('__torso-head__aim__')).map((id) => id.split('__')[3])));
+  const directionNames = ['east', 'south-east', 'south', 'south-west', 'west', 'north-west', 'north', 'north-east'];
+  for (const sample of movementSamples) {
+    const legs = sample.frameIds.find(id => id.includes('__lower-body__run__'));
+    if (!legs) continue;
+    const torso = sample.frameIds.find(id => id.includes('__torso-head__'));
+    const facing = directionNames.indexOf(torso.split('__')[3]);
+    const delta = ((facing - 2 + 12) % 8) - 4;
+    const expectedHips = Math.abs(delta) <= 1 ? 2 : (facing - Math.sign(delta) + 8) % 8;
+    assert.equal(legs.split('__')[3], directionNames[expectedHips], 'hips must preserve the authored waist limit while moving south');
+  }
+  const torsoDirections = new Set(movementSamples.flatMap((sample) => sample.frameIds.filter((id) => id.includes('__torso-head__')).map((id) => id.split('__')[3])));
   assert.ok(torsoDirections.size >= 1 && torsoDirections.size <= 2, `production torso aim sectors were missing or unstable: ${[...torsoDirections]}`);
   assert.ok([...torsoDirections].every((direction) => !direction.startsWith('south')), `production torso followed south movement instead of independent aim: ${[...torsoDirections]}`);
   assert.ok(movementSamples.at(-1).actorY > initial.actorY + 80, 'south movement did not advance the canonical actor');
@@ -157,6 +175,8 @@ async function desktopEvidence(page, name) {
   assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith(`${actorId}-production-pilot-atlas.json`) && response.status === 200));
   const expectedAtlasSuffix = textured ? '.webp' : '.png';
   assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith(`${actorId}-production-pilot-atlas${expectedAtlasSuffix}`) && response.status === 200));
+  assert.ok(diagnostics.assetResponses.some((response) => response.url.endsWith(`${actorId}-motion.webp`) && response.status === 200));
+  assert.ok(diagnostics.assetResponses.every(response => response.url.includes(`/${actorId}/`)), 'only the selected hero may load');
   return { initial, moving, lowerFrames: [...lowerFrames].sort(), torsoDirections: [...torsoDirections], fireSamples, bodyMeasurements, ...diagnostics };
 }
 
@@ -186,6 +206,37 @@ async function mobileEvidence(page, name) {
   return { state, controls, controlBoxes, bodyMeasurements, ...diagnostics };
 }
 
+async function gestureEvidence(page, name) {
+  const reloadSamples = [];
+  const canvas = await page.locator('canvas').boundingBox();
+  for (let sample = 0; sample < 160; sample += 1) {
+    await page.mouse.move(canvas.width * .8 + sample % 2, canvas.height * .4);
+    await page.waitForTimeout(40);
+    const state = await readState(page);
+    if (state.heroMotionAction === 'reload') reloadSamples.push(state);
+    if (reloadSamples.length && state.reloadTicksRemaining === 0) break;
+  }
+  assert.ok(reloadSamples.length >= 3, 'native reload gesture must play during an actual magazine reload');
+  assert.ok(reloadSamples.every(state => state.reloadTicksRemaining > 0));
+  const poses = new Set(reloadSamples.flatMap(state => state.frameIds.filter(id => id.includes('__torso-head__reload__'))));
+  assert.ok(poses.size >= 3, 'reload must visibly advance through the native frames');
+  reloadSamples.forEach(assertReadable);
+  // The existing roster preview disables automatic combat. It exercises the
+  // idle presentation without changing the player's animation or clock.
+  await page.goto(`${url}&rosterPreview=1`, { waitUntil: 'networkidle' });
+  await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.heroMotionAction === 'idle-check');
+  const idle = await readState(page);
+  assertReadable(idle);
+  assert.ok(idle.frameIds.some(id => id.includes('__torso-head__idle-check__')));
+  await page.screenshot({ path: fileURLToPath(new URL(`${actorId}-idle-gesture-${name}.png`, evidenceDir)), fullPage: true });
+  await page.locator('canvas').focus();
+  await page.keyboard.down('KeyS');
+  try {
+    await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.heroMotionAction !== 'idle-check');
+  } finally { await page.keyboard.up('KeyS'); }
+  return { reloadSamples, reloadPoses: [...poses], idle, interrupted: await readState(page) };
+}
+
 const allProfiles = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'ultrawide', width: 3440, height: 1440 },
@@ -196,7 +247,7 @@ const allProfiles = [
 const requestedProfiles = process.env.HMH_HERO_PROFILES?.split(',');
 if (requestedProfiles) assert.ok(requestedProfiles.length && requestedProfiles.every((name) => allProfiles.some((p) => p.name === name)) && new Set(requestedProfiles).size === requestedProfiles.length, 'profile selection must name distinct supported profiles');
 const profiles = requestedProfiles ? allProfiles.filter((p) => requestedProfiles.includes(p.name)) : allProfiles;
-const report = { url, actorId, expectedProfileCount: profiles.length, profiles: [] };
+const report = { url, actorId, minimumViewportRatio: HERO_MIN_VIEWPORT_RATIO, expectedProfileCount: profiles.length, profiles: [] };
 for (const profile of profiles) {
   // N-8: separate browser/GPU processes, not merely new pages or contexts.
   const browser = await launchBrowser();
@@ -206,6 +257,7 @@ for (const profile of profiles) {
     await cdp.send('Network.enable');
     await cdp.send('Network.setCacheDisabled', { cacheDisabled: true });
     const result = profile.touch ? await mobileEvidence(page, profile.name) : await desktopEvidence(page, profile.name);
+    if (!profile.touch && process.env.HMH_HERO_GESTURES === '1') result.gestures = await gestureEvidence(page, profile.name);
     report.profiles.push({ name: profile.name, ...result });
   } finally {
     await browser.close();

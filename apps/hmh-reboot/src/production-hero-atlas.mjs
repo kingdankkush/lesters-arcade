@@ -369,7 +369,11 @@ export function resolveProductionHeroPose(index, {
   let torsoState = 'aim';
   let weaponState = 'aim';
   let actionCadenceTick = tick;
-  if (action === 'interact') {
+  if (index.motionEnabled && (action === 'reload' || action === 'idle-check')) {
+    torsoState = action;
+    weaponState = action;
+    actionCadenceTick = resolvedActionTick;
+  } else if (action === 'interact') {
     // Reuse only the opening arm reach of the authored human animation.
     // Legs retain locomotion; the caller hides equipment for this gesture.
     torsoState = 'grenade';
@@ -419,6 +423,7 @@ export function measureProductionHeroBodyHeight(index) {
 export function createProductionHeroDisplay({
   index,
   atlasTexture,
+  motionTexture = null,
   ContainerClass,
   SpriteClass,
   TextureClass,
@@ -436,22 +441,42 @@ export function createProductionHeroDisplay({
     || atlasWidth !== atlasHeight) {
     throw new TypeError('production hero atlas dimensions must be positive integers, square and at most 2048x2048');
   }
-  for (const frame of index.frameByKey.values()) {
-    if (frame.frame.x < 0 || frame.frame.y < 0 || frame.frame.x + frame.frame.w > atlasWidth || frame.frame.y + frame.frame.h > atlasHeight) {
-      throw new RangeError(`production hero frame ${frame.id} is outside atlas ${atlasWidth}x${atlasHeight}`);
+  function validateSources(candidateIndex, candidateMotionTexture) {
+    if (candidateIndex.motionEnabled && (candidateMotionTexture?.source?.width !== candidateIndex.motionDimensions.width
+      || candidateMotionTexture?.source?.height !== candidateIndex.motionDimensions.height)) {
+      throw new RangeError('hero motion texture dimensions do not match its metadata');
+    }
+    for (const frame of candidateIndex.frameByKey.values()) {
+      const source = frame.motionPage ? candidateMotionTexture?.source : atlasTexture.source;
+      if (!source || frame.frame.x < 0 || frame.frame.y < 0 || frame.frame.x + frame.frame.w > source.width || frame.frame.y + frame.frame.h > source.height) {
+        throw new RangeError(`production hero frame ${frame.id} is outside atlas ${atlasWidth}x${atlasHeight}`);
+      }
     }
   }
+  validateSources(index, motionTexture);
+  let minimumBodyHeight = measureProductionHeroBodyHeight(index) * scale / PRODUCTION_HERO_RUNTIME_SCALE;
 
   const container = new ContainerClass();
   container.label = 'production-hero-atlas';
   container.scale.set(scale);
   const textureByFrameId = new Map();
   const spriteByLayer = new Map();
+  container.motionStatus = index.motionEnabled ? 'ready' : 'pending';
+  const attachMotionPage = ({ index: nextIndex, motionTexture: nextTexture }) => {
+    if (nextIndex.motionBaseIndex !== index) throw new TypeError('motion page must extend this hero base');
+    validateSources(nextIndex, nextTexture);
+    const nextBodyHeight = measureProductionHeroBodyHeight(nextIndex) * scale / PRODUCTION_HERO_RUNTIME_SCALE;
+    index = nextIndex;
+    motionTexture = nextTexture;
+    minimumBodyHeight = nextBodyHeight;
+    container.motionStatus = 'ready';
+  };
 
   function textureFor(frame) {
-    if (!textureByFrameId.has(frame.id)) {
-      textureByFrameId.set(frame.id, new TextureClass({
-        source: atlasTexture.source,
+    const key = `${frame.motionPage ? 'motion:' : ''}${frame.id}`;
+    if (!textureByFrameId.has(key)) {
+      textureByFrameId.set(key, new TextureClass({
+        source: frame.motionPage ? motionTexture.source : atlasTexture.source,
         frame: new RectangleClass(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h),
         ...(frame.orig ? {
           orig: new RectangleClass(0, 0, frame.orig.w, frame.orig.h),
@@ -459,7 +484,7 @@ export function createProductionHeroDisplay({
         } : {}),
       }));
     }
-    return textureByFrameId.get(frame.id);
+    return textureByFrameId.get(key);
   }
 
   for (const layer of index.layerOrder) {
@@ -474,7 +499,9 @@ export function createProductionHeroDisplay({
   }
 
   const applyPose = (renderState) => {
-    const frames = resolveProductionHeroPose(index, renderState);
+    const presentation = index.motionAnimator?.(renderState) ?? renderState;
+    const frames = resolveProductionHeroPose(index, presentation);
+    container.motionAction = presentation.action;
     for (const frame of frames) {
       const sprite = spriteByLayer.get(frame.layer);
       sprite.texture = textureFor(frame);
@@ -520,10 +547,11 @@ export function createProductionHeroDisplay({
     container,
     layerOrder: index.layerOrder,
     artSource: approvedArtSource(index.actorId),
-    minimumBodyHeight: measureProductionHeroBodyHeight(index) * scale / PRODUCTION_HERO_RUNTIME_SCALE,
+    get minimumBodyHeight() { return minimumBodyHeight; },
     applyPose,
     setLayerVisible,
     setTint,
+    attachMotionPage,
     setLayerOffset,
     hasNativeWeapon: index.hasNativeWeapon,
     hasNativeAction: index.hasNativeAction,

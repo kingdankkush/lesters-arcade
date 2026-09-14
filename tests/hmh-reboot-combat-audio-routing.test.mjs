@@ -185,8 +185,9 @@ test('S-2: status counts registry-gate refusals so a browser gate can assert zer
 
 test('S-2: the child exposes the refusal count beside audioVoices for the browser smokes', () => {
   const main = repoText('apps/hmh-reboot/src/main.mjs');
-  assert.match(main, /dataset\.audioVoices = String\(combatAudio\.status\(\)\.activeVoices\);/);
-  assert.match(main, /dataset\.audioUnknownCues = String\(combatAudio\.status\(\)\.unknownCues\);/);
+  const telemetry = repoText('apps/hmh-reboot/src/runtime-telemetry-writer.mjs');
+  assert.match(telemetry, /dataset\.audioVoices = String\(combatAudio\.status\(\)\.activeVoices\);/);
+  assert.match(telemetry, /dataset\.audioUnknownCues = String\(combatAudio\.status\(\)\.unknownCues\);/);
   // Pinned by other suites; must stay byte-identical.
   assert.match(main, /combatAudio\.setBusLevels\(settings\);/);
   assert.doesNotMatch(main, /sfxVolume: [0-9.]+/);

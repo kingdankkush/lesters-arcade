@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -20,9 +21,9 @@ test('mobile combat HUD names the selected weapon, magazine capacity, and action
   const runtime = repoText('apps/hmh-reboot/src/main.mjs');
   assert.match(runtime, /weaponStatus\?\.hudLabel/);
   assert.match(runtime, /weaponStatus\?\.accessibleLabel/);
-  assert.match(runtime, /(?:stageElement\.dataset|dataset)\.weaponClipSize/);
-  assert.match(runtime, /(?:stageElement\.dataset|dataset)\.weaponStatus/);
-  assert.match(runtime, /(?:stageElement\.dataset|dataset)\.weaponReloadTicksRemaining/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.weaponClipSize/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.weaponStatus/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.weaponReloadTicksRemaining/);
 });
 
 test('touch styles preserve a distinct readable weapon switch control', () => {

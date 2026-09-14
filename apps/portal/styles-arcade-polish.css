@@ -2003,7 +2003,9 @@
     align-items: stretch;
     gap: 14px;
     margin-inline: -12px;
-    padding: 4px 12px 18px;
+    /* 8 px below the cards clears the thin scrollbar; the old 18 px was
+       another 10 px against the mobile document height. */
+    padding: 4px 12px 8px;
     overflow-x: auto;
     overflow-y: visible;
     overscroll-behavior-inline: contain;
@@ -2011,28 +2013,36 @@
     scroll-snap-type: inline mandatory;
     scrollbar-width: thin;
   }
+  /* Phone card tightening. Cycle 013 wrote these against `.hero-card-inner`
+     and `.hero-card-bio`, names the roster renderer never emits, so phones
+     kept the desktop 22 px padding / 18 px gap for sixty cycles while the
+     document crept up to the 1800 px smoke pin. The rules now target the
+     classes official-play-routes.mjs actually renders; the audit in
+     tests/hmh-hero-select-ui.test.mjs holds this block to emitted names.
+     No bio line clamp: the smoke asserts every bio renders unclipped. */
   #officialCharacterRoster .hero-card {
     min-width: 0;
+    padding: 16px;
+    gap: 10px;
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
-  #officialCharacterRoster .hero-card-stage {
-    min-height: 168px;
-  }
-  #officialCharacterRoster .hero-card-inner {
-    padding: 16px;
-    gap: 10px;
-  }
-  #officialCharacterRoster .hero-card-bio {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-  }
+  /* No stage min-height here: the old 168 px floor was sized for the 1.4x
+     transform-scaled turntable and, by ID specificity, beat the <=420 px
+     `height: 132px` rule, leaving a 46 px dead band above the unscaled 108 px
+     portrait. 421-700 px keeps the 210 px desktop stage; narrow phones get
+     the 132 px stage the <=420 block always intended. */
   #officialCharacterRoster .hero-stats {
     gap: 7px;
     margin-top: 8px;
     padding-top: 10px;
+  }
+  /* Locked cards carry the unlock meter, so they set the carousel row height;
+     compact the meter on phones instead of letting it drive every card. */
+  #officialCharacterRoster .hero-unlock-progress {
+    margin-top: 6px;
+    padding: 8px 10px;
+    gap: 5px;
   }
   #officialCharacterRoster .hero-cta {
     margin-top: 10px;
@@ -2045,7 +2055,9 @@
     gap: 9px;
     /* The select view is a 22 px grid; the dots sit inside the hint's existing
        margin band instead of adding a row, so the carousel document height stays
-       under the 1800 px mobile pin (measured 1806 with a plain row). */
+       under the 1800 px mobile pin (measured 1806 with a plain row in Cycle 074;
+       the phone-card tightening above brought the 390x844 document back to
+       ~1769 px after the footer trust links pushed it to 1866). */
     margin: -26px 0 -4px;
   }
   .hero-carousel-dot {

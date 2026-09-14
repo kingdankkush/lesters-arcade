@@ -36,7 +36,7 @@ export function stepWorldDesign(state, { tick, player, queryGround, lineBlocked 
 }
 
 export function worldDesignActiveBlockers(state, blockers) {
-  return blockers.filter(b => !state.openGates.has(b.id));
+  return Object.freeze(blockers.filter(b => !state.openGates.has(b.id)));
 }
 
 export function worldDesignHazardPhase(state, site, tick) {

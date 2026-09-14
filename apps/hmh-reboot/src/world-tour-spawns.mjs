@@ -1,8 +1,13 @@
 import { WORLD_DESIGN_SITES } from './world-design-encounters.mjs';
+import { WORLD_DESTRUCTIBLES, WORLD_EXPLOSIVE_ZONES } from './world-destructibles.mjs';
 
 // Loaded only for an explicitly requested evidence tour.
 export function createWorldTourSpawns(authoredPointOfInterestPlacements) {
   const worldTourSpawns = Object.freeze({
+    ...Object.fromEntries(WORLD_DESTRUCTIBLES.map(d=>[`cover-${d.id}`,{x:d.anchor.x,y:d.anchor.y+110}])),
+    // The yard's south service wall blocks shots; approach its drums from
+    // the open north side. This changes only the explicit evidence tour.
+    ...Object.fromEntries(WORLD_EXPLOSIVE_ZONES.map(d=>[`fuel-${d.id}`,{x:d.anchor.x,y:d.anchor.y+(d.id==='yard-tanker-row'?-130:130)}])),
     ...Object.fromEntries(WORLD_DESIGN_SITES.map(s=>[`site-${s.id}`,{x:s.x,y:s.y+100}])),
     farmhouse: Object.freeze({x:650,y:1880}),
     reservoir: Object.freeze({x:5770,y:4150}),

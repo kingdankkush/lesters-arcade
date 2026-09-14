@@ -31,7 +31,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -43,7 +44,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -55,7 +57,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -67,7 +70,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -79,7 +83,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 185
+            "lengthMs": 185,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "ammo-pickup"
@@ -89,7 +94,26 @@
         "rms": 0.085522,
         "dcMean": -3.1e-05,
         "crestDb": 17.345,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.629974,
+          "rms": 0.085522,
+          "dcMean": -3.1e-05,
+          "crestDb": 17.344882,
+          "durationMs": 280.0,
+          "body15to75Rms": 0.08402,
+          "transientMinusBodyDb": 9.06403,
+          "tail30dbMs": 204.535147,
+          "lateEnergyFrac": 0.095718,
+          "centroidHz": 1029.408434,
+          "bands": {
+            "sub20_100": 0.00082,
+            "punch100_250": 0.002765,
+            "lowMid250_1k": 0.702042,
+            "presence1k_4k": 0.277239,
+            "air4k": 0.017116
+          }
+        }
       }
     },
     "hmh-berserk": {
@@ -115,7 +139,8 @@
             "sweep": 2.4,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 700
+            "lengthMs": 700,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -127,7 +152,8 @@
             "sweep": 1,
             "lowpassHz": 2800,
             "highpassHz": 0,
-            "lengthMs": 550
+            "lengthMs": 550,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -139,7 +165,8 @@
             "sweep": 1.3,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 325
+            "lengthMs": 325,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "berserk-activate"
@@ -149,7 +176,26 @@
         "rms": 0.193629,
         "dcMean": -5e-06,
         "crestDb": 11.407,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.719971,
+          "rms": 0.193629,
+          "dcMean": -5e-06,
+          "crestDb": 11.406881,
+          "durationMs": 600.0,
+          "body15to75Rms": 0.405633,
+          "transientMinusBodyDb": -2.380524,
+          "tail30dbMs": 537.777778,
+          "lateEnergyFrac": 0.25634,
+          "centroidHz": 227.988191,
+          "bands": {
+            "sub20_100": 0.77342,
+            "punch100_250": 0.156265,
+            "lowMid250_1k": 0.033283,
+            "presence1k_4k": 0.028477,
+            "air4k": 0.008441
+          }
+        }
       }
     },
     "hmh-boss-death": {
@@ -175,7 +221,8 @@
             "sweep": 0.48,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 1550
+            "lengthMs": 1550,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -187,7 +234,8 @@
             "sweep": 1,
             "lowpassHz": 1600,
             "highpassHz": 0,
-            "lengthMs": 800
+            "lengthMs": 800,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -199,7 +247,8 @@
             "sweep": 0.7,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 625
+            "lengthMs": 625,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -211,7 +260,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 400
+            "lengthMs": 400,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -223,7 +273,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -235,7 +286,8 @@
             "sweep": 1,
             "lowpassHz": 800,
             "highpassHz": 0,
-            "lengthMs": 525
+            "lengthMs": 525,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "boss-death"
@@ -245,7 +297,26 @@
         "rms": 0.175832,
         "dcMean": 1e-06,
         "crestDb": 12.94,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.779968,
+          "rms": 0.175832,
+          "dcMean": 1e-06,
+          "crestDb": 12.939568,
+          "durationMs": 1450.0,
+          "body15to75Rms": 0.234114,
+          "transientMinusBodyDb": -8.372845,
+          "tail30dbMs": 1394.829932,
+          "lateEnergyFrac": 0.853075,
+          "centroidHz": 285.927874,
+          "bands": {
+            "sub20_100": 0.643874,
+            "punch100_250": 0.039255,
+            "lowMid250_1k": 0.248526,
+            "presence1k_4k": 0.063339,
+            "air4k": 0.004485
+          }
+        }
       }
     },
     "hmh-boss-hit": {
@@ -271,7 +342,8 @@
             "sweep": 0.6,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 275
+            "lengthMs": 275,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -283,7 +355,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 130
+            "lengthMs": 130,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -295,7 +368,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -307,7 +381,8 @@
             "sweep": 1,
             "lowpassHz": 2900,
             "highpassHz": 0,
-            "lengthMs": 85
+            "lengthMs": 85,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "boss-hit"
@@ -317,7 +392,26 @@
         "rms": 0.12632,
         "dcMean": 3e-05,
         "crestDb": 14.872,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.699951,
+          "rms": 0.12632,
+          "dcMean": 3e-05,
+          "crestDb": 14.87188,
+          "durationMs": 230.0,
+          "body15to75Rms": 0.169886,
+          "transientMinusBodyDb": 5.217078,
+          "tail30dbMs": 215.510204,
+          "lateEnergyFrac": 0.01763,
+          "centroidHz": 736.388084,
+          "bands": {
+            "sub20_100": 0.092836,
+            "punch100_250": 0.041453,
+            "lowMid250_1k": 0.707501,
+            "presence1k_4k": 0.139997,
+            "air4k": 0.017487
+          }
+        }
       }
     },
     "hmh-boss-phase": {
@@ -343,7 +437,8 @@
             "sweep": 0.8,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 1250
+            "lengthMs": 1250,
+            "postSaturation": false
           },
           {
             "kind": "growl",
@@ -355,7 +450,8 @@
             "sweep": 0.7,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 925
+            "lengthMs": 925,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -367,7 +463,8 @@
             "sweep": 1,
             "lowpassHz": 1600,
             "highpassHz": 0,
-            "lengthMs": 950
+            "lengthMs": 950,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -379,7 +476,8 @@
             "sweep": 0.8,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 650
+            "lengthMs": 650,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "boss-phase"
@@ -389,7 +487,26 @@
         "rms": 0.150979,
         "dcMean": -0.0,
         "crestDb": 14.037,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.150979,
+          "dcMean": -0.0,
+          "crestDb": 14.037352,
+          "durationMs": 900.0,
+          "body15to75Rms": 0.28402,
+          "transientMinusBodyDb": -1.512858,
+          "tail30dbMs": 888.979592,
+          "lateEnergyFrac": 0.522195,
+          "centroidHz": 389.029506,
+          "bands": {
+            "sub20_100": 0.419773,
+            "punch100_250": 0.059208,
+            "lowMid250_1k": 0.412821,
+            "presence1k_4k": 0.103947,
+            "air4k": 0.003087
+          }
+        }
       }
     },
     "hmh-dash": {
@@ -415,7 +532,8 @@
             "sweep": 1,
             "lowpassHz": 4300,
             "highpassHz": 650,
-            "lengthMs": 270
+            "lengthMs": 270,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -427,7 +545,8 @@
             "sweep": 0.7,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 190
+            "lengthMs": 190,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "dash"
@@ -437,7 +556,26 @@
         "rms": 0.088327,
         "dcMean": -2e-06,
         "crestDb": 16.641,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.599976,
+          "rms": 0.088327,
+          "dcMean": -2e-06,
+          "crestDb": 16.640785,
+          "durationMs": 280.0,
+          "body15to75Rms": 0.148944,
+          "transientMinusBodyDb": 2.416762,
+          "tail30dbMs": 197.55102,
+          "lateEnergyFrac": 0.014253,
+          "centroidHz": 2941.55466,
+          "bands": {
+            "sub20_100": 0.031436,
+            "punch100_250": 0.272639,
+            "lowMid250_1k": 0.074371,
+            "presence1k_4k": 0.353658,
+            "air4k": 0.267667
+          }
+        }
       }
     },
     "hmh-enemy-death": {
@@ -463,7 +601,8 @@
             "sweep": 0.48,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 725
+            "lengthMs": 725,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -475,7 +614,8 @@
             "sweep": 1,
             "lowpassHz": 1700,
             "highpassHz": 0,
-            "lengthMs": 110
+            "lengthMs": 110,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -487,7 +627,8 @@
             "sweep": 1,
             "lowpassHz": 1100,
             "highpassHz": 0,
-            "lengthMs": 475
+            "lengthMs": 475,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -499,7 +640,8 @@
             "sweep": 0.65,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 240
+            "lengthMs": 240,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "enemy-death"
@@ -509,7 +651,26 @@
         "rms": 0.132189,
         "dcMean": -1e-05,
         "crestDb": 14.842,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.72995,
+          "rms": 0.132189,
+          "dcMean": -1e-05,
+          "crestDb": 14.841986,
+          "durationMs": 650.0,
+          "body15to75Rms": 0.272907,
+          "transientMinusBodyDb": 2.573557,
+          "tail30dbMs": 624.580499,
+          "lateEnergyFrac": 0.263976,
+          "centroidHz": 407.614503,
+          "bands": {
+            "sub20_100": 0.356071,
+            "punch100_250": 0.110056,
+            "lowMid250_1k": 0.429689,
+            "presence1k_4k": 0.10017,
+            "air4k": 0.003015
+          }
+        }
       }
     },
     "hmh-enemy-hit": {
@@ -535,7 +696,8 @@
             "sweep": 1,
             "lowpassHz": 6000,
             "highpassHz": 0,
-            "lengthMs": 65
+            "lengthMs": 65,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -547,7 +709,8 @@
             "sweep": 1,
             "lowpassHz": 800,
             "highpassHz": 0,
-            "lengthMs": 140
+            "lengthMs": 140,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -559,7 +722,8 @@
             "sweep": 0.74,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 125
+            "lengthMs": 125,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "enemy-hit"
@@ -569,7 +733,26 @@
         "rms": 0.148043,
         "dcMean": -1.5e-05,
         "crestDb": 13.494,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.699951,
+          "rms": 0.148043,
+          "dcMean": -1.5e-05,
+          "crestDb": 13.493619,
+          "durationMs": 180.0,
+          "body15to75Rms": 0.162143,
+          "transientMinusBodyDb": 8.078631,
+          "tail30dbMs": 98.77551,
+          "lateEnergyFrac": 1.3e-05,
+          "centroidHz": 530.942813,
+          "bands": {
+            "sub20_100": 0.064796,
+            "punch100_250": 0.807192,
+            "lowMid250_1k": 0.032933,
+            "presence1k_4k": 0.059275,
+            "air4k": 0.035436
+          }
+        }
       }
     },
     "hmh-enemy-melee-tell": {
@@ -595,7 +778,8 @@
             "sweep": 1.55,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 550
+            "lengthMs": 550,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -607,7 +791,8 @@
             "sweep": 1,
             "lowpassHz": 2100,
             "highpassHz": 0,
-            "lengthMs": 425
+            "lengthMs": 425,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "enemy-melee-tell"
@@ -617,7 +802,26 @@
         "rms": 0.101415,
         "dcMean": 0.0,
         "crestDb": 16.399,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.669952,
+          "rms": 0.101415,
+          "dcMean": 0.0,
+          "crestDb": 16.398808,
+          "durationMs": 500.0,
+          "body15to75Rms": 0.213659,
+          "transientMinusBodyDb": -10.297023,
+          "tail30dbMs": 430.022676,
+          "lateEnergyFrac": 0.174963,
+          "centroidHz": 552.429046,
+          "bands": {
+            "sub20_100": 0.150549,
+            "punch100_250": 0.147415,
+            "lowMid250_1k": 0.556616,
+            "presence1k_4k": 0.139148,
+            "air4k": 0.006221
+          }
+        }
       }
     },
     "hmh-enemy-ranged-tell": {
@@ -643,7 +847,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 125
+            "lengthMs": 125,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -655,7 +860,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -667,7 +873,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 90
+            "lengthMs": 90,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -679,7 +886,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -691,7 +899,8 @@
             "sweep": 1,
             "lowpassHz": 4200,
             "highpassHz": 700,
-            "lengthMs": 180
+            "lengthMs": 180,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "enemy-ranged-tell"
@@ -701,85 +910,122 @@
         "rms": 0.097,
         "dcMean": -3.5e-05,
         "crestDb": 16.522,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.649963,
+          "rms": 0.097,
+          "dcMean": -3.5e-05,
+          "crestDb": 16.522299,
+          "durationMs": 260.0,
+          "body15to75Rms": 0.110536,
+          "transientMinusBodyDb": 8.282863,
+          "tail30dbMs": 166.621315,
+          "lateEnergyFrac": 0.049979,
+          "centroidHz": 1990.732084,
+          "bands": {
+            "sub20_100": 4.1e-05,
+            "punch100_250": 0.000384,
+            "lowMid250_1k": 0.062352,
+            "presence1k_4k": 0.859696,
+            "air4k": 0.077525
+          }
+        }
       }
     },
     "hmh-fire-auto-miner": {
       "src": "./assets/audio/sfx/hmh-fire-auto-miner.wav",
-      "bytes": 15038,
+      "bytes": 10628,
       "format": "wav",
-      "durationMs": 170,
-      "sha256": "1276a84d49f85b7b62e83c99dfb0c0f333fca3533c6d0d2df4aded419c364725",
+      "durationMs": 120,
+      "sha256": "4665f1c25bac7b83af3775f7290b44c661b298b50e396bd95d99967600652478",
       "runtimeCue": "hmh-fire-auto-miner",
       "synth": {
         "seed": 172429585,
-        "durationMs": 170,
-        "drive": 1.7,
+        "durationMs": 120,
+        "drive": 1.1,
         "peak": 0.76,
         "layers": [
           {
             "kind": "noise",
-            "gain": 1.65,
-            "decayMs": 9,
+            "gain": 1.0,
+            "decayMs": 2.5,
             "startMs": 0,
-            "attackMs": 0.35,
+            "attackMs": 0.12,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 8800,
-            "highpassHz": 1400,
-            "lengthMs": 45
+            "lowpassHz": 9000,
+            "highpassHz": 1600,
+            "lengthMs": 24,
+            "postSaturation": true
           },
           {
             "kind": "noise",
-            "gain": 1.8,
-            "decayMs": 43,
+            "gain": 0.34,
+            "decayMs": 18.9,
             "startMs": 0,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 1700,
+            "lowpassHz": 1800,
             "highpassHz": 0,
-            "lengthMs": 215
+            "lengthMs": 94.5,
+            "postSaturation": false
           },
           {
             "kind": "tone",
-            "gain": 1.35,
-            "decayMs": 49.449999999999996,
+            "gain": 0.75,
+            "decayMs": 27,
             "startMs": 0,
             "attackMs": 0.35,
-            "hz": 158,
-            "sweep": 0.74,
+            "hz": 178,
+            "sweep": 0.92,
             "lowpassHz": 1100,
             "highpassHz": 0,
-            "lengthMs": 247.24999999999997
+            "lengthMs": 135,
+            "postSaturation": false
+          },
+          {
+            "kind": "sub",
+            "gain": 0.33,
+            "decayMs": 28.35,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 74,
+            "sweep": 0.94,
+            "lowpassHz": 400,
+            "highpassHz": 0,
+            "lengthMs": 141.75,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.35,
-            "decayMs": 34.4,
-            "startMs": 42,
+            "gain": 0.14,
+            "decayMs": 16.2,
+            "startMs": 35,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
             "lowpassHz": 3600,
             "highpassHz": 0,
-            "lengthMs": 172.0
+            "lengthMs": 81.0,
+            "postSaturation": false
           },
           {
             "kind": "metal",
-            "gain": 0.22,
-            "decayMs": 10,
+            "gain": 0.13,
+            "decayMs": 8,
             "startMs": 26,
             "attackMs": 0.35,
             "hz": 1900,
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 50
+            "lengthMs": 40,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.154,
+            "gain": 0.091,
             "decayMs": 3,
             "startMs": 26,
             "attackMs": 0.35,
@@ -787,16 +1033,36 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ]
       },
       "pcm": {
         "peak": 0.759949,
-        "rms": 0.276776,
-        "dcMean": 9e-05,
-        "crestDb": 8.773,
-        "clippedSamples": 0
+        "rms": 0.147793,
+        "dcMean": 6.7e-05,
+        "crestDb": 14.223,
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.147793,
+          "dcMean": 6.7e-05,
+          "crestDb": 14.222604,
+          "durationMs": 120.0,
+          "body15to75Rms": 0.130176,
+          "transientMinusBodyDb": 8.250852,
+          "tail30dbMs": 100.770975,
+          "lateEnergyFrac": 0.0,
+          "centroidHz": 313.711409,
+          "bands": {
+            "sub20_100": 0.127963,
+            "punch100_250": 0.823379,
+            "lowMid250_1k": 0.016738,
+            "presence1k_4k": 0.015297,
+            "air4k": 0.015196
+          }
+        }
       }
     },
     "hmh-fire-bear-market-burner": {
@@ -822,7 +1088,8 @@
             "sweep": 1,
             "lowpassHz": 2400,
             "highpassHz": 0,
-            "lengthMs": 320
+            "lengthMs": 320,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -834,7 +1101,8 @@
             "sweep": 1,
             "lowpassHz": 8200,
             "highpassHz": 2500,
-            "lengthMs": 200
+            "lengthMs": 200,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -846,7 +1114,8 @@
             "sweep": 1.3,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 310
+            "lengthMs": 310,
+            "postSaturation": false
           }
         ]
       },
@@ -855,85 +1124,122 @@
         "rms": 0.185001,
         "dcMean": -8.7e-05,
         "crestDb": 11.177,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.669952,
+          "rms": 0.185001,
+          "dcMean": -8.7e-05,
+          "crestDb": 11.177379,
+          "durationMs": 220.0,
+          "body15to75Rms": 0.275037,
+          "transientMinusBodyDb": 1.384206,
+          "tail30dbMs": 216.507937,
+          "lateEnergyFrac": 0.038489,
+          "centroidHz": 1058.575978,
+          "bands": {
+            "sub20_100": 0.605429,
+            "punch100_250": 0.040934,
+            "lowMid250_1k": 0.097082,
+            "presence1k_4k": 0.180085,
+            "air4k": 0.075372
+          }
+        }
       }
     },
     "hmh-fire-coin-blaster": {
       "src": "./assets/audio/sfx/hmh-fire-coin-blaster.wav",
-      "bytes": 21212,
+      "bytes": 16802,
       "format": "wav",
-      "durationMs": 240,
-      "sha256": "e2927bef30267221bb124b07a61ddae337e55862bb8857138a77bdc553b02604",
+      "durationMs": 190,
+      "sha256": "8b6d23b264d5f4a89f1006d1c031d7e35dd445180d7a90505741c2063877594c",
       "runtimeCue": "hmh-fire-coin-blaster",
       "synth": {
         "seed": 201437605,
-        "durationMs": 240,
-        "drive": 1.7,
+        "durationMs": 190,
+        "drive": 1.1,
         "peak": 0.76,
         "layers": [
           {
             "kind": "noise",
-            "gain": 1.8,
-            "decayMs": 9,
+            "gain": 1.9,
+            "decayMs": 2.5,
             "startMs": 0,
-            "attackMs": 0.35,
+            "attackMs": 0.12,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 8800,
-            "highpassHz": 1400,
-            "lengthMs": 45
+            "lowpassHz": 9000,
+            "highpassHz": 1600,
+            "lengthMs": 24,
+            "postSaturation": true
           },
           {
             "kind": "noise",
-            "gain": 1.8,
-            "decayMs": 54,
+            "gain": 0.34,
+            "decayMs": 22.4,
             "startMs": 0,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 1700,
+            "lowpassHz": 1800,
             "highpassHz": 0,
-            "lengthMs": 270
+            "lengthMs": 112.0,
+            "postSaturation": false
           },
           {
             "kind": "tone",
-            "gain": 1.35,
-            "decayMs": 62.099999999999994,
+            "gain": 0.75,
+            "decayMs": 32,
             "startMs": 0,
             "attackMs": 0.35,
-            "hz": 145,
-            "sweep": 0.74,
+            "hz": 165,
+            "sweep": 0.92,
             "lowpassHz": 1100,
             "highpassHz": 0,
-            "lengthMs": 310.5
+            "lengthMs": 160,
+            "postSaturation": false
+          },
+          {
+            "kind": "sub",
+            "gain": 0.33,
+            "decayMs": 33.6,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 66,
+            "sweep": 0.94,
+            "lowpassHz": 400,
+            "highpassHz": 0,
+            "lengthMs": 168.0,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.35,
-            "decayMs": 43.2,
-            "startMs": 42,
+            "gain": 0.14,
+            "decayMs": 19.2,
+            "startMs": 35,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
             "lowpassHz": 3600,
             "highpassHz": 0,
-            "lengthMs": 216.0
+            "lengthMs": 96.0,
+            "postSaturation": false
           },
           {
             "kind": "metal",
-            "gain": 0.22,
-            "decayMs": 10,
+            "gain": 0.13,
+            "decayMs": 8,
             "startMs": 26,
             "attackMs": 0.35,
             "hz": 1900,
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 50
+            "lengthMs": 40,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.154,
+            "gain": 0.091,
             "decayMs": 3,
             "startMs": 26,
             "attackMs": 0.35,
@@ -941,16 +1247,36 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ]
       },
       "pcm": {
         "peak": 0.759949,
-        "rms": 0.267841,
-        "dcMean": 8e-06,
-        "crestDb": 9.058,
-        "clippedSamples": 0
+        "rms": 0.105572,
+        "dcMean": -2e-05,
+        "crestDb": 17.145,
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.105572,
+          "dcMean": -2e-05,
+          "crestDb": 17.144749,
+          "durationMs": 190.0,
+          "body15to75Rms": 0.121445,
+          "transientMinusBodyDb": 7.854049,
+          "tail30dbMs": 117.732426,
+          "lateEnergyFrac": 0.000634,
+          "centroidHz": 508.853589,
+          "bands": {
+            "sub20_100": 0.10847,
+            "punch100_250": 0.820294,
+            "lowMid250_1k": 0.010487,
+            "presence1k_4k": 0.02521,
+            "air4k": 0.034089
+          }
+        }
       }
     },
     "hmh-fire-forked-standard": {
@@ -976,7 +1302,8 @@
             "sweep": 1,
             "lowpassHz": 6500,
             "highpassHz": 0,
-            "lengthMs": 100
+            "lengthMs": 100,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -988,7 +1315,8 @@
             "sweep": 0.7,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 325
+            "lengthMs": 325,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -1000,7 +1328,8 @@
             "sweep": 0.65,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 275
+            "lengthMs": 275,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1012,7 +1341,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 2500,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           }
         ]
       },
@@ -1021,156 +1351,229 @@
         "rms": 0.166939,
         "dcMean": -4.2e-05,
         "crestDb": 12.574,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.709961,
+          "rms": 0.166939,
+          "dcMean": -4.2e-05,
+          "crestDb": 12.573513,
+          "durationMs": 310.0,
+          "body15to75Rms": 0.288631,
+          "transientMinusBodyDb": 3.248926,
+          "tail30dbMs": 251.428571,
+          "lateEnergyFrac": 0.033359,
+          "centroidHz": 737.392949,
+          "bands": {
+            "sub20_100": 0.002726,
+            "punch100_250": 0.725028,
+            "lowMid250_1k": 0.130327,
+            "presence1k_4k": 0.105453,
+            "air4k": 0.036256
+          }
+        }
       }
     },
     "hmh-fire-hash-rail": {
       "src": "./assets/audio/sfx/hmh-fire-hash-rail.wav",
-      "bytes": 38852,
+      "bytes": 30914,
       "format": "wav",
-      "durationMs": 440,
-      "sha256": "2a2dc09cb887407f80a7f5e7278cea8ef32aebda651a52920d9423bcde5e86ba",
+      "durationMs": 350,
+      "sha256": "db0821fcf9efbbc1f2cd2b2668945e11536f2ae9125b6ad4944535d41f418fe3",
       "runtimeCue": "hmh-fire-hash-rail",
       "synth": {
         "seed": 2320964113,
-        "durationMs": 440,
-        "drive": 1.8,
+        "durationMs": 350,
+        "drive": 1.1,
         "peak": 0.76,
         "layers": [
           {
             "kind": "noise",
-            "gain": 2,
-            "decayMs": 12,
+            "gain": 3.2,
+            "decayMs": 3.5,
             "startMs": 0,
-            "attackMs": 0.35,
+            "attackMs": 0.12,
             "hz": 180,
             "sweep": 1,
             "lowpassHz": 9500,
-            "highpassHz": 1000,
-            "lengthMs": 60
+            "highpassHz": 1600,
+            "lengthMs": 24,
+            "postSaturation": true
+          },
+          {
+            "kind": "sub",
+            "gain": 0.66,
+            "decayMs": 62,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 71,
+            "sweep": 0.94,
+            "lowpassHz": 9500,
+            "highpassHz": 0,
+            "lengthMs": 310,
+            "postSaturation": false
           },
           {
             "kind": "tone",
-            "gain": 1.1,
-            "decayMs": 75,
+            "gain": 0.7,
+            "decayMs": 58,
             "startMs": 0,
             "attackMs": 0.35,
-            "hz": 94,
-            "sweep": 0.7,
+            "hz": 190,
+            "sweep": 0.88,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 375
+            "lengthMs": 290,
+            "postSaturation": false
           },
           {
             "kind": "metal",
-            "gain": 0.65,
-            "decayMs": 95,
+            "gain": 0.3,
+            "decayMs": 65,
             "startMs": 0,
             "attackMs": 0.35,
             "hz": 530,
             "sweep": 0.82,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 475
+            "lengthMs": 325,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.4,
-            "decayMs": 110,
+            "gain": 0.2,
+            "decayMs": 65,
             "startMs": 20,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
             "lowpassHz": 4700,
             "highpassHz": 0,
-            "lengthMs": 550
+            "lengthMs": 325,
+            "postSaturation": false
           }
         ]
       },
       "pcm": {
         "peak": 0.759949,
-        "rms": 0.190753,
-        "dcMean": -3.1e-05,
-        "crestDb": 12.006,
-        "clippedSamples": 0
+        "rms": 0.070936,
+        "dcMean": -2.8e-05,
+        "crestDb": 20.598,
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.070936,
+          "dcMean": -2.8e-05,
+          "crestDb": 20.598395,
+          "durationMs": 350.0,
+          "body15to75Rms": 0.125885,
+          "transientMinusBodyDb": 4.609229,
+          "tail30dbMs": 213.514739,
+          "lateEnergyFrac": 0.022476,
+          "centroidHz": 836.759149,
+          "bands": {
+            "sub20_100": 0.307736,
+            "punch100_250": 0.533222,
+            "lowMid250_1k": 0.043,
+            "presence1k_4k": 0.044146,
+            "air4k": 0.07091
+          }
+        }
       }
     },
     "hmh-fire-launcher-rig": {
       "src": "./assets/audio/sfx/hmh-fire-launcher-rig.wav",
-      "bytes": 45908,
+      "bytes": 40616,
       "format": "wav",
-      "durationMs": 520,
-      "sha256": "660956f00a938f310489ae6adbc7139e834436bd736d8704164a8ef266aad93b",
+      "durationMs": 460,
+      "sha256": "59da53fd28f9349586f44966e07e682cef5402f3d714a10ee32ed7a9fa1e8113",
       "runtimeCue": "hmh-fire-launcher-rig",
       "synth": {
         "seed": 437014034,
-        "durationMs": 520,
-        "drive": 1.7,
+        "durationMs": 460,
+        "drive": 1.1,
         "peak": 0.76,
         "layers": [
           {
             "kind": "noise",
-            "gain": 0.8,
-            "decayMs": 9,
+            "gain": 4.1,
+            "decayMs": 3.5,
             "startMs": 0,
-            "attackMs": 0.35,
+            "attackMs": 0.12,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 3200,
-            "highpassHz": 1400,
-            "lengthMs": 45
+            "lowpassHz": 9000,
+            "highpassHz": 1600,
+            "lengthMs": 24,
+            "postSaturation": true
           },
           {
             "kind": "noise",
-            "gain": 1.8,
-            "decayMs": 125,
+            "gain": 0.34,
+            "decayMs": 62.99999999999999,
             "startMs": 0,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 1700,
+            "lowpassHz": 1800,
             "highpassHz": 0,
-            "lengthMs": 625
+            "lengthMs": 314.99999999999994,
+            "postSaturation": false
           },
           {
             "kind": "tone",
-            "gain": 1.35,
-            "decayMs": 143.75,
+            "gain": 0.75,
+            "decayMs": 90,
             "startMs": 0,
             "attackMs": 0.35,
-            "hz": 66,
-            "sweep": 0.74,
+            "hz": 145,
+            "sweep": 0.92,
             "lowpassHz": 1100,
             "highpassHz": 0,
-            "lengthMs": 718.75
+            "lengthMs": 450,
+            "postSaturation": false
+          },
+          {
+            "kind": "sub",
+            "gain": 0.85,
+            "decayMs": 94.5,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 59,
+            "sweep": 0.94,
+            "lowpassHz": 400,
+            "highpassHz": 0,
+            "lengthMs": 472.5,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.35,
-            "decayMs": 100.0,
-            "startMs": 42,
+            "gain": 0.14,
+            "decayMs": 54.0,
+            "startMs": 35,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
             "lowpassHz": 3600,
             "highpassHz": 0,
-            "lengthMs": 500.0
+            "lengthMs": 270.0,
+            "postSaturation": false
           },
           {
             "kind": "metal",
-            "gain": 0.22,
-            "decayMs": 10,
+            "gain": 0.13,
+            "decayMs": 8,
             "startMs": 26,
             "attackMs": 0.35,
             "hz": 1900,
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 50
+            "lengthMs": 40,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.154,
+            "gain": 0.091,
             "decayMs": 3,
             "startMs": 26,
             "attackMs": 0.35,
@@ -1178,16 +1581,36 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ]
       },
       "pcm": {
         "peak": 0.759949,
-        "rms": 0.230406,
-        "dcMean": 0.000178,
-        "crestDb": 10.366,
-        "clippedSamples": 0
+        "rms": 0.069572,
+        "dcMean": 0.0,
+        "crestDb": 20.767,
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.069572,
+          "dcMean": 0.0,
+          "crestDb": 20.766997,
+          "durationMs": 460.0,
+          "body15to75Rms": 0.135574,
+          "transientMinusBodyDb": 3.263578,
+          "tail30dbMs": 351.201814,
+          "lateEnergyFrac": 0.097417,
+          "centroidHz": 662.792504,
+          "bands": {
+            "sub20_100": 0.407783,
+            "punch100_250": 0.49913,
+            "lowMid250_1k": 0.007346,
+            "presence1k_4k": 0.028387,
+            "air4k": 0.055759
+          }
+        }
       }
     },
     "hmh-fire-lightning-ledger": {
@@ -1213,7 +1636,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1800,
-            "lengthMs": 40
+            "lengthMs": 40,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -1225,7 +1649,8 @@
             "sweep": 1.14,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 135
+            "lengthMs": 135,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1237,7 +1662,8 @@
             "sweep": 0.6,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 200
+            "lengthMs": 200,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1249,7 +1675,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1000,
-            "lengthMs": 65
+            "lengthMs": 65,
+            "postSaturation": false
           }
         ]
       },
@@ -1258,85 +1685,122 @@
         "rms": 0.152438,
         "dcMean": -4.5e-05,
         "crestDb": 13.24,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.699951,
+          "rms": 0.152438,
+          "dcMean": -4.5e-05,
+          "crestDb": 13.239505,
+          "durationMs": 190.0,
+          "body15to75Rms": 0.197757,
+          "transientMinusBodyDb": 5.396339,
+          "tail30dbMs": 153.650794,
+          "lateEnergyFrac": 0.002695,
+          "centroidHz": 858.053225,
+          "bands": {
+            "sub20_100": 0.00927,
+            "punch100_250": 0.713086,
+            "lowMid250_1k": 0.140712,
+            "presence1k_4k": 0.083632,
+            "air4k": 0.053155
+          }
+        }
       }
     },
     "hmh-fire-scatter-shotgun": {
       "src": "./assets/audio/sfx/hmh-fire-scatter-shotgun.wav",
-      "bytes": 42380,
+      "bytes": 35324,
       "format": "wav",
-      "durationMs": 480,
-      "sha256": "dfb0d29c3f42ceb9d02f66440ac7c19cb0f08a135e0297d5e20c78372d4bc96a",
+      "durationMs": 400,
+      "sha256": "85d0a564acce7e8511f71e22c3c23e65e856a0847549d9e82a3a04db30cc7da1",
       "runtimeCue": "hmh-fire-scatter-shotgun",
       "synth": {
         "seed": 1548161588,
-        "durationMs": 480,
-        "drive": 1.7,
+        "durationMs": 400,
+        "drive": 1.1,
         "peak": 0.76,
         "layers": [
           {
             "kind": "noise",
-            "gain": 2.3,
-            "decayMs": 9,
+            "gain": 4.8,
+            "decayMs": 3.5,
             "startMs": 0,
-            "attackMs": 0.35,
+            "attackMs": 0.12,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 7200,
-            "highpassHz": 1400,
-            "lengthMs": 45
+            "lowpassHz": 9000,
+            "highpassHz": 1600,
+            "lengthMs": 24,
+            "postSaturation": true
           },
           {
             "kind": "noise",
-            "gain": 1.8,
-            "decayMs": 102,
+            "gain": 0.34,
+            "decayMs": 53.199999999999996,
             "startMs": 0,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
-            "lowpassHz": 1700,
+            "lowpassHz": 1800,
             "highpassHz": 0,
-            "lengthMs": 510
+            "lengthMs": 266.0,
+            "postSaturation": false
           },
           {
             "kind": "tone",
-            "gain": 1.35,
-            "decayMs": 117.3,
+            "gain": 0.75,
+            "decayMs": 76,
             "startMs": 0,
             "attackMs": 0.35,
-            "hz": 88,
-            "sweep": 0.74,
+            "hz": 170,
+            "sweep": 0.92,
             "lowpassHz": 1100,
             "highpassHz": 0,
-            "lengthMs": 586.5
+            "lengthMs": 380,
+            "postSaturation": false
+          },
+          {
+            "kind": "sub",
+            "gain": 0.85,
+            "decayMs": 79.8,
+            "startMs": 0,
+            "attackMs": 0.35,
+            "hz": 67,
+            "sweep": 0.94,
+            "lowpassHz": 400,
+            "highpassHz": 0,
+            "lengthMs": 399.0,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.35,
-            "decayMs": 81.60000000000001,
-            "startMs": 42,
+            "gain": 0.14,
+            "decayMs": 45.6,
+            "startMs": 35,
             "attackMs": 0.35,
             "hz": 180,
             "sweep": 1,
             "lowpassHz": 3600,
             "highpassHz": 0,
-            "lengthMs": 408.00000000000006
+            "lengthMs": 228.0,
+            "postSaturation": false
           },
           {
             "kind": "metal",
-            "gain": 0.22,
-            "decayMs": 10,
+            "gain": 0.13,
+            "decayMs": 8,
             "startMs": 26,
             "attackMs": 0.35,
             "hz": 1900,
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 50
+            "lengthMs": 40,
+            "postSaturation": false
           },
           {
             "kind": "noise",
-            "gain": 0.154,
+            "gain": 0.091,
             "decayMs": 3,
             "startMs": 26,
             "attackMs": 0.35,
@@ -1344,16 +1808,36 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ]
       },
       "pcm": {
         "peak": 0.759949,
-        "rms": 0.243584,
-        "dcMean": -1.6e-05,
-        "crestDb": 9.883,
-        "clippedSamples": 0
+        "rms": 0.066528,
+        "dcMean": -4e-06,
+        "crestDb": 21.156,
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.066528,
+          "dcMean": -4e-06,
+          "crestDb": 21.155572,
+          "durationMs": 400.0,
+          "body15to75Rms": 0.120818,
+          "transientMinusBodyDb": 4.965255,
+          "tail30dbMs": 271.38322,
+          "lateEnergyFrac": 0.056684,
+          "centroidHz": 1051.890267,
+          "bands": {
+            "sub20_100": 0.377585,
+            "punch100_250": 0.450905,
+            "lowMid250_1k": 0.009346,
+            "presence1k_4k": 0.058799,
+            "air4k": 0.102288
+          }
+        }
       }
     },
     "hmh-footstep-dirt": {
@@ -1379,7 +1863,8 @@
             "sweep": 1,
             "lowpassHz": 2100,
             "highpassHz": 0,
-            "lengthMs": 110
+            "lengthMs": 110,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1391,7 +1876,8 @@
             "sweep": 0.75,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 100
+            "lengthMs": 100,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1403,7 +1889,8 @@
             "sweep": 1,
             "lowpassHz": 3500,
             "highpassHz": 1000,
-            "lengthMs": 90
+            "lengthMs": 90,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "footstep-dirt"
@@ -1413,7 +1900,26 @@
         "rms": 0.093668,
         "dcMean": -1.1e-05,
         "crestDb": 15.836,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.579956,
+          "rms": 0.093668,
+          "dcMean": -1.1e-05,
+          "crestDb": 15.83611,
+          "durationMs": 140.0,
+          "body15to75Rms": 0.080764,
+          "transientMinusBodyDb": 10.590866,
+          "tail30dbMs": 77.823129,
+          "lateEnergyFrac": 0.0,
+          "centroidHz": 817.989119,
+          "bands": {
+            "sub20_100": 0.307386,
+            "punch100_250": 0.412156,
+            "lowMid250_1k": 0.071417,
+            "presence1k_4k": 0.153799,
+            "air4k": 0.05359
+          }
+        }
       }
     },
     "hmh-footstep-road": {
@@ -1439,7 +1945,8 @@
             "sweep": 0.8,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 110
+            "lengthMs": 110,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1451,7 +1958,8 @@
             "sweep": 1,
             "lowpassHz": 4800,
             "highpassHz": 0,
-            "lengthMs": 45
+            "lengthMs": 45,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -1463,7 +1971,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 40
+            "lengthMs": 40,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1475,7 +1984,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "footstep-road"
@@ -1485,7 +1995,26 @@
         "rms": 0.117128,
         "dcMean": 6e-06,
         "crestDb": 13.895,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.579956,
+          "rms": 0.117128,
+          "dcMean": 6e-06,
+          "crestDb": 13.8947,
+          "durationMs": 130.0,
+          "body15to75Rms": 0.094235,
+          "transientMinusBodyDb": 10.654711,
+          "tail30dbMs": 80.816327,
+          "lateEnergyFrac": 0.0,
+          "centroidHz": 295.454118,
+          "bands": {
+            "sub20_100": 0.041785,
+            "punch100_250": 0.901146,
+            "lowMid250_1k": 0.019673,
+            "presence1k_4k": 0.025228,
+            "air4k": 0.011608
+          }
+        }
       }
     },
     "hmh-grenade-boom": {
@@ -1511,7 +2040,8 @@
             "sweep": 1,
             "lowpassHz": 6500,
             "highpassHz": 0,
-            "lengthMs": 130
+            "lengthMs": 130,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1523,7 +2053,8 @@
             "sweep": 1,
             "lowpassHz": 1200,
             "highpassHz": 0,
-            "lengthMs": 725
+            "lengthMs": 725,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1535,7 +2066,8 @@
             "sweep": 0.62,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 800
+            "lengthMs": 800,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1547,7 +2079,8 @@
             "sweep": 1,
             "lowpassHz": 2800,
             "highpassHz": 0,
-            "lengthMs": 675
+            "lengthMs": 675,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -1559,7 +2092,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 275
+            "lengthMs": 275,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1571,7 +2105,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "grenade-boom"
@@ -1581,7 +2116,26 @@
         "rms": 0.195018,
         "dcMean": -0.0,
         "crestDb": 12.04,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.779968,
+          "rms": 0.195018,
+          "dcMean": -0.0,
+          "crestDb": 12.040031,
+          "durationMs": 1000.0,
+          "body15to75Rms": 0.445989,
+          "transientMinusBodyDb": -2.144095,
+          "tail30dbMs": 689.433107,
+          "lateEnergyFrac": 0.430403,
+          "centroidHz": 291.9951,
+          "bands": {
+            "sub20_100": 0.897031,
+            "punch100_250": 0.018274,
+            "lowMid250_1k": 0.024904,
+            "presence1k_4k": 0.042837,
+            "air4k": 0.016734
+          }
+        }
       }
     },
     "hmh-grenade-throw": {
@@ -1607,7 +2161,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 65
+            "lengthMs": 65,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1619,7 +2174,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1631,7 +2187,8 @@
             "sweep": 1,
             "lowpassHz": 4500,
             "highpassHz": 500,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "grenade"
@@ -1641,7 +2198,26 @@
         "rms": 0.079257,
         "dcMean": -1.6e-05,
         "crestDb": 18.142,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.639954,
+          "rms": 0.079257,
+          "dcMean": -1.6e-05,
+          "crestDb": 18.142267,
+          "durationMs": 320.0,
+          "body15to75Rms": 0.087604,
+          "transientMinusBodyDb": 8.757214,
+          "tail30dbMs": 271.38322,
+          "lateEnergyFrac": 0.125284,
+          "centroidHz": 3601.37933,
+          "bands": {
+            "sub20_100": 0.000275,
+            "punch100_250": 0.004323,
+            "lowMid250_1k": 0.063017,
+            "presence1k_4k": 0.65899,
+            "air4k": 0.273393
+          }
+        }
       }
     },
     "hmh-hash-rail-charge": {
@@ -1667,7 +2243,8 @@
             "sweep": 8,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 900
+            "lengthMs": 900,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -1679,7 +2256,8 @@
             "sweep": 2.7,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 1300
+            "lengthMs": 1300,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1691,7 +2269,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 2400,
-            "lengthMs": 1350
+            "lengthMs": 1350,
+            "postSaturation": false
           }
         ]
       },
@@ -1700,7 +2279,26 @@
         "rms": 0.184603,
         "dcMean": 0.0,
         "crestDb": 9.16,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.529968,
+          "rms": 0.184603,
+          "dcMean": 0.0,
+          "crestDb": 9.160205,
+          "durationMs": 920.0,
+          "body15to75Rms": 0.106625,
+          "transientMinusBodyDb": -24.010854,
+          "tail30dbMs": 898.956916,
+          "lateEnergyFrac": 0.914074,
+          "centroidHz": 257.781232,
+          "bands": {
+            "sub20_100": 0.286071,
+            "punch100_250": 0.561123,
+            "lowMid250_1k": 0.137589,
+            "presence1k_4k": 0.005273,
+            "air4k": 0.009944
+          }
+        }
       }
     },
     "hmh-health-pickup": {
@@ -1726,7 +2324,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1738,7 +2337,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1750,7 +2350,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1762,7 +2363,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1774,7 +2376,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1786,7 +2389,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "health-pickup"
@@ -1796,7 +2400,26 @@
         "rms": 0.157729,
         "dcMean": -2e-06,
         "crestDb": 11.604,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.599976,
+          "rms": 0.157729,
+          "dcMean": -2e-06,
+          "crestDb": 11.604436,
+          "durationMs": 460.0,
+          "body15to75Rms": 0.195294,
+          "transientMinusBodyDb": 3.869932,
+          "tail30dbMs": 357.188209,
+          "lateEnergyFrac": 0.409866,
+          "centroidHz": 759.231632,
+          "bands": {
+            "sub20_100": 3e-06,
+            "punch100_250": 7.6e-05,
+            "lowMid250_1k": 0.665335,
+            "presence1k_4k": 0.334562,
+            "air4k": 2.1e-05
+          }
+        }
       }
     },
     "hmh-level-up": {
@@ -1822,7 +2445,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1834,7 +2458,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1846,7 +2471,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1858,7 +2484,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1870,7 +2497,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1882,7 +2510,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1894,7 +2523,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -1906,7 +2536,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "level-up"
@@ -1916,7 +2547,26 @@
         "rms": 0.155162,
         "dcMean": -2e-06,
         "crestDb": 11.747,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.599976,
+          "rms": 0.155162,
+          "dcMean": -2e-06,
+          "crestDb": 11.746946,
+          "durationMs": 650.0,
+          "body15to75Rms": 0.197508,
+          "transientMinusBodyDb": 3.869934,
+          "tail30dbMs": 428.027211,
+          "lateEnergyFrac": 0.558593,
+          "centroidHz": 778.169461,
+          "bands": {
+            "sub20_100": 6e-06,
+            "punch100_250": 7e-05,
+            "lowMid250_1k": 0.720328,
+            "presence1k_4k": 0.279576,
+            "air4k": 1.8e-05
+          }
+        }
       }
     },
     "hmh-lightning-empty": {
@@ -1942,7 +2592,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1954,7 +2605,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -1966,7 +2618,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -1978,7 +2631,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ]
       },
@@ -1987,7 +2641,26 @@
         "rms": 0.063354,
         "dcMean": -4.5e-05,
         "crestDb": 19.082,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.569977,
+          "rms": 0.063354,
+          "dcMean": -4.5e-05,
+          "crestDb": 19.081639,
+          "durationMs": 190.0,
+          "body15to75Rms": 0.028926,
+          "transientMinusBodyDb": 17.901162,
+          "tail30dbMs": 109.750567,
+          "lateEnergyFrac": 0.000127,
+          "centroidHz": 1737.071393,
+          "bands": {
+            "sub20_100": 0.000112,
+            "punch100_250": 0.000321,
+            "lowMid250_1k": 0.135788,
+            "presence1k_4k": 0.828449,
+            "air4k": 0.03532
+          }
+        }
       }
     },
     "hmh-lightning-interrupt": {
@@ -2013,7 +2686,8 @@
             "sweep": 0.3,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 150
+            "lengthMs": 150,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2025,7 +2699,8 @@
             "sweep": 1,
             "lowpassHz": 4200,
             "highpassHz": 0,
-            "lengthMs": 100
+            "lengthMs": 100,
+            "postSaturation": false
           }
         ]
       },
@@ -2034,7 +2709,26 @@
         "rms": 0.070902,
         "dcMean": -3.4e-05,
         "crestDb": 18.255,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.579956,
+          "rms": 0.070902,
+          "dcMean": -3.4e-05,
+          "crestDb": 18.254764,
+          "durationMs": 190.0,
+          "body15to75Rms": 0.077563,
+          "transientMinusBodyDb": 9.041552,
+          "tail30dbMs": 106.75737,
+          "lateEnergyFrac": 0.000251,
+          "centroidHz": 1416.848722,
+          "bands": {
+            "sub20_100": 0.001702,
+            "punch100_250": 0.005448,
+            "lowMid250_1k": 0.542778,
+            "presence1k_4k": 0.394604,
+            "air4k": 0.055267
+          }
+        }
       }
     },
     "hmh-lightning-overheat": {
@@ -2060,7 +2754,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 135
+            "lengthMs": 135,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2072,7 +2767,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2084,7 +2780,8 @@
             "sweep": 1,
             "lowpassHz": 4700,
             "highpassHz": 1100,
-            "lengthMs": 550
+            "lengthMs": 550,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2096,7 +2793,8 @@
             "sweep": 0.55,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 525
+            "lengthMs": 525,
+            "postSaturation": false
           }
         ]
       },
@@ -2105,7 +2803,26 @@
         "rms": 0.111816,
         "dcMean": -1.6e-05,
         "crestDb": 15.288,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.649963,
+          "rms": 0.111816,
+          "dcMean": -1.6e-05,
+          "crestDb": 15.287671,
+          "durationMs": 520.0,
+          "body15to75Rms": 0.209392,
+          "transientMinusBodyDb": 3.57602,
+          "tail30dbMs": 405.079365,
+          "lateEnergyFrac": 0.176166,
+          "centroidHz": 1708.089697,
+          "bands": {
+            "sub20_100": 0.006149,
+            "punch100_250": 0.524672,
+            "lowMid250_1k": 0.110508,
+            "presence1k_4k": 0.217856,
+            "air4k": 0.140733
+          }
+        }
       }
     },
     "hmh-melee": {
@@ -2131,7 +2848,8 @@
             "sweep": 1,
             "lowpassHz": 8400,
             "highpassHz": 1700,
-            "lengthMs": 240
+            "lengthMs": 240,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2143,7 +2861,8 @@
             "sweep": 1,
             "lowpassHz": 1700,
             "highpassHz": 0,
-            "lengthMs": 90
+            "lengthMs": 90,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -2155,7 +2874,8 @@
             "sweep": 0.7,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 120
+            "lengthMs": 120,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "melee"
@@ -2165,7 +2885,26 @@
         "rms": 0.098471,
         "dcMean": -0.0,
         "crestDb": 16.12,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.629974,
+          "rms": 0.098471,
+          "dcMean": -0.0,
+          "crestDb": 16.120309,
+          "durationMs": 250.0,
+          "body15to75Rms": 0.175876,
+          "transientMinusBodyDb": -6.410957,
+          "tail30dbMs": 189.569161,
+          "lateEnergyFrac": 0.011913,
+          "centroidHz": 5937.073316,
+          "bands": {
+            "sub20_100": 0.001928,
+            "punch100_250": 0.002287,
+            "lowMid250_1k": 0.034532,
+            "presence1k_4k": 0.396073,
+            "air4k": 0.565056
+          }
+        }
       }
     },
     "hmh-pickup": {
@@ -2191,7 +2930,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2203,7 +2943,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2215,7 +2956,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2227,7 +2969,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "pickup"
@@ -2237,7 +2980,26 @@
         "rms": 0.172078,
         "dcMean": -5e-06,
         "crestDb": 10.848,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.599976,
+          "rms": 0.172078,
+          "dcMean": -5e-06,
+          "crestDb": 10.848167,
+          "durationMs": 300.0,
+          "body15to75Rms": 0.214899,
+          "transientMinusBodyDb": 3.67611,
+          "tail30dbMs": 289.342404,
+          "lateEnergyFrac": 0.121166,
+          "centroidHz": 1130.748689,
+          "bands": {
+            "sub20_100": 1.1e-05,
+            "punch100_250": 7e-06,
+            "lowMid250_1k": 0.485491,
+            "presence1k_4k": 0.514445,
+            "air4k": 4e-05
+          }
+        }
       }
     },
     "hmh-player-hit": {
@@ -2263,7 +3025,8 @@
             "sweep": 1,
             "lowpassHz": 3700,
             "highpassHz": 0,
-            "lengthMs": 130
+            "lengthMs": 130,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2275,7 +3038,8 @@
             "sweep": 0.78,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 335
+            "lengthMs": 335,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2287,7 +3051,8 @@
             "sweep": 1,
             "lowpassHz": 800,
             "highpassHz": 0,
-            "lengthMs": 200
+            "lengthMs": 200,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -2299,7 +3064,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 110
+            "lengthMs": 110,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2311,7 +3077,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "player-hit"
@@ -2321,7 +3088,26 @@
         "rms": 0.212955,
         "dcMean": -1.3e-05,
         "crestDb": 11.05,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.759949,
+          "rms": 0.212955,
+          "dcMean": -1.3e-05,
+          "crestDb": 11.049947,
+          "durationMs": 320.0,
+          "body15to75Rms": 0.373527,
+          "transientMinusBodyDb": 1.906432,
+          "tail30dbMs": 267.39229,
+          "lateEnergyFrac": 0.049275,
+          "centroidHz": 150.221224,
+          "bands": {
+            "sub20_100": 0.925001,
+            "punch100_250": 0.044239,
+            "lowMid250_1k": 0.015302,
+            "presence1k_4k": 0.00978,
+            "air4k": 0.005098
+          }
+        }
       }
     },
     "hmh-reload-complete": {
@@ -2347,7 +3133,8 @@
             "sweep": 0.84,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 135
+            "lengthMs": 135,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -2359,7 +3146,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 90
+            "lengthMs": 90,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2371,7 +3159,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2383,7 +3172,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 500,
-            "lengthMs": 65
+            "lengthMs": 65,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -2395,7 +3185,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2407,7 +3198,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "reload-complete"
@@ -2417,7 +3209,26 @@
         "rms": 0.139853,
         "dcMean": -3.8e-05,
         "crestDb": 14.233,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.719971,
+          "rms": 0.139853,
+          "dcMean": -3.8e-05,
+          "crestDb": 14.23289,
+          "durationMs": 240.0,
+          "body15to75Rms": 0.180093,
+          "transientMinusBodyDb": 7.353879,
+          "tail30dbMs": 122.721088,
+          "lateEnergyFrac": 0.000497,
+          "centroidHz": 839.499085,
+          "bands": {
+            "sub20_100": 0.013839,
+            "punch100_250": 0.67584,
+            "lowMid250_1k": 0.011002,
+            "presence1k_4k": 0.267577,
+            "air4k": 0.031556
+          }
+        }
       }
     },
     "hmh-time-dilation": {
@@ -2443,7 +3254,8 @@
             "sweep": 0.25,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 625
+            "lengthMs": 625,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2455,7 +3267,8 @@
             "sweep": 0.33,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 650
+            "lengthMs": 650,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2467,7 +3280,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 2000,
-            "lengthMs": 475
+            "lengthMs": 475,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "time-dilation-activate"
@@ -2477,7 +3291,26 @@
         "rms": 0.134388,
         "dcMean": -0.0,
         "crestDb": 13.691,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.649963,
+          "rms": 0.134388,
+          "dcMean": -0.0,
+          "crestDb": 13.69057,
+          "durationMs": 620.0,
+          "body15to75Rms": 0.302477,
+          "transientMinusBodyDb": -1.93945,
+          "tail30dbMs": 498.866213,
+          "lateEnergyFrac": 0.197863,
+          "centroidHz": 899.860278,
+          "bands": {
+            "sub20_100": 5e-06,
+            "punch100_250": 0.000232,
+            "lowMid250_1k": 0.858551,
+            "presence1k_4k": 0.120305,
+            "air4k": 0.020907
+          }
+        }
       }
     },
     "hmh-upgrade-offer": {
@@ -2503,7 +3336,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2515,7 +3349,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2527,7 +3362,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2539,7 +3375,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2551,7 +3388,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2563,7 +3401,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "upgrade-offer"
@@ -2573,7 +3412,26 @@
         "rms": 0.148645,
         "dcMean": -2e-06,
         "crestDb": 12.12,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.599976,
+          "rms": 0.148645,
+          "dcMean": -2e-06,
+          "crestDb": 12.119663,
+          "durationMs": 560.0,
+          "body15to75Rms": 0.207902,
+          "transientMinusBodyDb": 3.547702,
+          "tail30dbMs": 365.170068,
+          "lateEnergyFrac": 0.409433,
+          "centroidHz": 602.487495,
+          "bands": {
+            "sub20_100": 5.7e-05,
+            "punch100_250": 0.000824,
+            "lowMid250_1k": 0.978854,
+            "presence1k_4k": 0.020262,
+            "air4k": 0.0
+          }
+        }
       }
     },
     "hmh-upgrade-pick": {
@@ -2599,7 +3457,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2611,7 +3470,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2623,7 +3483,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2635,7 +3496,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2647,7 +3509,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 300
+            "lengthMs": 300,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2659,7 +3522,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 175
+            "lengthMs": 175,
+            "postSaturation": false
           }
         ],
         "runtimeCue": "upgrade-pick"
@@ -2669,7 +3533,26 @@
         "rms": 0.14857,
         "dcMean": -2e-06,
         "crestDb": 12.124,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.599976,
+          "rms": 0.14857,
+          "dcMean": -2e-06,
+          "crestDb": 12.124071,
+          "durationMs": 540.0,
+          "body15to75Rms": 0.202793,
+          "transientMinusBodyDb": 3.590322,
+          "tail30dbMs": 359.183673,
+          "lateEnergyFrac": 0.407515,
+          "centroidHz": 900.052673,
+          "bands": {
+            "sub20_100": 6e-06,
+            "punch100_250": 2.4e-05,
+            "lowMid250_1k": 0.661097,
+            "presence1k_4k": 0.338841,
+            "air4k": 2.8e-05
+          }
+        }
       }
     },
     "hmh-weapon-empty": {
@@ -2695,7 +3578,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 35
+            "lengthMs": 35,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2707,7 +3591,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2719,7 +3604,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 50
+            "lengthMs": 50,
+            "postSaturation": false
           }
         ]
       },
@@ -2728,7 +3614,26 @@
         "rms": 0.071359,
         "dcMean": -7.3e-05,
         "crestDb": 18.637,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.609955,
+          "rms": 0.071359,
+          "dcMean": -7.3e-05,
+          "crestDb": 18.637035,
+          "durationMs": 100.0,
+          "body15to75Rms": 0.016655,
+          "transientMinusBodyDb": 22.822716,
+          "tail30dbMs": 31.927438,
+          "lateEnergyFrac": 0.0,
+          "centroidHz": 1497.515441,
+          "bands": {
+            "sub20_100": 0.005759,
+            "punch100_250": 0.123117,
+            "lowMid250_1k": 0.268876,
+            "presence1k_4k": 0.56614,
+            "air4k": 0.036004
+          }
+        }
       }
     },
     "hmh-weapon-reload": {
@@ -2754,7 +3659,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 60
+            "lengthMs": 60,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2766,7 +3672,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2778,7 +3685,8 @@
             "sweep": 1,
             "lowpassHz": 5500,
             "highpassHz": 550,
-            "lengthMs": 215
+            "lengthMs": 215,
+            "postSaturation": false
           },
           {
             "kind": "metal",
@@ -2790,7 +3698,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 90
+            "lengthMs": 90,
+            "postSaturation": false
           },
           {
             "kind": "noise",
@@ -2802,7 +3711,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 1500,
-            "lengthMs": 15
+            "lengthMs": 15,
+            "postSaturation": false
           },
           {
             "kind": "tone",
@@ -2814,7 +3724,8 @@
             "sweep": 1,
             "lowpassHz": 9500,
             "highpassHz": 0,
-            "lengthMs": 110
+            "lengthMs": 110,
+            "postSaturation": false
           }
         ]
       },
@@ -2823,9 +3734,30 @@
         "rms": 0.087411,
         "dcMean": -1.4e-05,
         "crestDb": 18.07,
-        "clippedSamples": 0
+        "clippedSamples": 0,
+        "weight": {
+          "peak": 0.699951,
+          "rms": 0.087411,
+          "dcMean": -1.4e-05,
+          "crestDb": 18.069996,
+          "durationMs": 400.0,
+          "body15to75Rms": 0.072914,
+          "transientMinusBodyDb": 10.896692,
+          "tail30dbMs": 225.487528,
+          "lateEnergyFrac": 0.642408,
+          "centroidHz": 1560.347173,
+          "bands": {
+            "sub20_100": 0.017555,
+            "punch100_250": 0.418625,
+            "lowMid250_1k": 0.098868,
+            "presence1k_4k": 0.393786,
+            "air4k": 0.070749
+          }
+        }
       }
     }
   },
-  "reproducibleVerified": true
+  "reproducibleVerified": true,
+  "renderRevision": "pressure-crack-v3",
+  "pythonVersion": "3.12.14"
 }

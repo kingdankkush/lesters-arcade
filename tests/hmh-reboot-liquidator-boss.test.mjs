@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -420,9 +421,9 @@ test('runtime routes boss attacks and defeat through canonical combat and run-ev
   assert.match(source, /hits: roleCheckedCombatHitIntents/);
   assert.ok(source.indexOf('roleCheckedCombatHitIntents') < source.indexOf('lastCombatResolution = resolveCombatHits'));
   assert.ok(source.indexOf('lastCombatResolution = resolveCombatHits') < source.indexOf('applyLiquidatorDamage({ boss: liquidatorBoss'));
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.bossLastRoleCheck/);
-  assert.match(source, /dataset\.bossSafeSector/);
-  assert.match(source, /pending\.geometry\?\.sectorId/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.bossLastRoleCheck/);
+  assert.match(runtimeTelemetrySource, /dataset\.bossSafeSector/);
+  assert.match(runtimeTelemetrySource, /pending\.geometry\?\.sectorId/);
   assert.match(browserSmoke, /bossSafeSector === 'east-west'/);
   assert.match(browserSmoke, /bossSafeSector === 'north-south'/);
   assert.match(browserSmoke, /bossSafeZoneCount.*2/);

@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -214,8 +215,8 @@ test('the render pass drives the shadow pool and reports it, without touching si
   const placeSites = source.match(/contactShadowPool\?\.place\(/gu) ?? [];
   assert.ok(placeSites.length >= 3, `enemies, corpses and the boss each need a placement site, found ${placeSites.length}`);
   assert.match(source, /contactShadows: contactShadowPool/u, 'authored props must receive the shared pool');
-  assert.match(source, /dataset\.contactShadows/u);
-  assert.match(source, /dataset\.contactShadowsDropped/u);
+  assert.match(runtimeTelemetrySource, /dataset\.contactShadows/u);
+  assert.match(runtimeTelemetrySource, /dataset\.contactShadowsDropped/u);
   // Projection state lives on display containers and the pool, never on the
   // deterministic entities that serialize into replay and evidence.
   assert.doesNotMatch(source, /(?:enemy|actor|liquidatorBoss|death|grenade)\.contactShadow/u);

@@ -48,7 +48,7 @@ What shipped is the `0.6.0` vertical slice, not the creator's full original game
 - Work on `reboot/hmh-aaa-continuous` or a new branch from it.
 - Do not push ordinary work directly to `main`.
 - Do not rewrite or discard unrelated working-tree changes.
-- Do not promote a Vercel deployment without explicit approval for that exact deployment, except the owner's September 13 approval to promote the tested STACKED public beta without another prompt.
+- The owner's repeated September 13 requests authorize publication of the completed, tested HMH website update, preserving live Chikun and STACKED. The owner also approved the tested STACKED public beta without another prompt. Other publication scopes require their own authorization. Public disclosure of additional source files and editable models is a separate permission from website publication.
 - Do not deploy contracts, send transactions, change authority, or enable real settlement without a separate explicit HALT approval.
 - Do not expose private keys, API credentials, or verifier secrets.
 

@@ -1,6 +1,7 @@
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_EXPLORATION_PATHS } from './world-design-encounters.mjs';
 import { worldDesignHazardPhase } from './world-design-interactions.mjs';
 import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
+import { buildCoverBreakPresentation } from './cover-break-presentation.mjs';
 
 export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,camera,view,tick,particleBudget=0,reduceMotion=false}) {
   const fires=[],embers=[],budget=Math.min(12,Math.max(0,Math.floor(particleBudget)));
@@ -63,7 +64,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
   ground.label='world-interaction-ground'; overlay.label='world-interaction-prompts';
   let lastPrompt='';
   const lastWarned=new Map();
-  const render=({state,secretState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null})=>{
+  const render=({state,secretState,destructibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null})=>{
     ground.clear(); effects.clear(); prompt.visible=false;
     if(!state||!actor) return {visibleSites:0,particles:0,hazardTelegraphs:[]};
     const project=(x,y,z=0)=>worldToScreen({x,y,z},camera,view);
@@ -171,6 +172,23 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       effects.circle(p.x,p.y-18*camera.zoom,24*camera.zoom).fill({color:0x7bd98a,alpha:.16});
       hazardTelegraphs.push('hero-slow');
     }
+    const cover=buildCoverBreakPresentation({state:destructibleState,tick,project,zoom:camera.zoom,view,reduceMotion,particleBudget:Math.max(0,particleBudget-particles)});
+    for(const w of cover.warnings){
+      ground.circle(w.x,w.y,w.radius).fill({color:0xff9838,alpha:.07}).stroke({color:0xffc070,width:2*camera.zoom,alpha:.8});
+      ground.circle(w.x,w.y,w.radius*(reduceMotion?1:w.progress)).stroke({color:0xffb15e,width:3*camera.zoom,alpha:.6});
+      effects.moveTo(w.x,w.y-35*camera.zoom).lineTo(w.x,w.y-23*camera.zoom).stroke({color:0xffdc99,width:3*camera.zoom});
+      dot(w.x,w.y-17*camera.zoom,2*camera.zoom,0xffdc99,1);
+    }
+    for(const s of cover.supplies){
+      ground.ellipse(s.x,s.y,s.radius,s.radius*.45).stroke({color:s.color,width:2*camera.zoom,alpha:.8});
+      effects.moveTo(s.x-5*camera.zoom,s.y-38*camera.zoom).lineTo(s.x,s.y-32*camera.zoom).lineTo(s.x+5*camera.zoom,s.y-38*camera.zoom).stroke({color:s.color,width:2*camera.zoom,alpha:.9});
+    }
+    for(const d of cover.dust)ground.ellipse(d.x,d.y,d.radius,d.radius*.55).fill({color:0xab9271,alpha:d.alpha});
+    for(const c of cover.chips){
+      const dx=Math.cos(c.rotation)*c.size,dy=Math.sin(c.rotation)*c.size;
+      effects.poly([c.x-dx,c.y-dy,c.x+dy,c.y-dx,c.x+dx,c.y+dy,c.x-dy,c.y+dx]).fill({color:c.color,alpha:c.alpha});
+    }
+    particles+=cover.chips.length;
     const campfires=buildWorldDesignCampfires({placements:campfirePlacements,worldToScreen,queryGround,camera,view,tick,reduceMotion,particleBudget:Math.max(0,particleBudget-particles)});
     for(const f of campfires.fires) {
       ground.circle(f.x,f.y,f.radius).fill({color:0xff9845,alpha:f.alpha*.4});
@@ -178,8 +196,9 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       effects.circle(f.x,f.y-5*camera.zoom,5*camera.zoom).fill({color:0xffcf76,alpha:.6});
     }
     for(const e of campfires.embers)dot(e.x,e.y,e.radius,0xffc277,e.alpha);
-    if(secretState?.lastNotice && tick-secretState.lastNotice.tick<480) {
-      const text=secretState.lastNotice.text;
+    const notice=(destructibleState?.lastNotice?.tick??-1)>(secretState?.lastNotice?.tick??-1)?destructibleState.lastNotice:secretState?.lastNotice;
+    if(notice && tick-notice.tick<480) {
+      const text=notice.text;
       if(lastPrompt!==text){prompt.text=text;lastPrompt=text;}
       prompt.style.fontSize=view.width<600?11:13;
       prompt.style.wordWrap=true;prompt.style.wordWrapWidth=Math.min(430,view.width-48);

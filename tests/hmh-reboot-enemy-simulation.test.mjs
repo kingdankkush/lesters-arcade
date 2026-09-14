@@ -421,6 +421,7 @@ test('enemy state validates collision identity and accepts certified production 
 
 test('runtime integrates six production roles in deterministic movement, hurtbox, attack, then combat-authority order', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const telemetry = readFileSync(new URL('../apps/hmh-reboot/src/runtime-telemetry-writer.mjs', import.meta.url), 'utf8');
   const simulationSource = readFileSync(new URL('../apps/hmh-reboot/src/enemy-simulation.mjs', import.meta.url), 'utf8');
   const movement = source.indexOf('lastEnemyStep = stepEnemyPopulation');
   const hurtboxes = source.indexOf('const hurtTargets =');
@@ -433,17 +434,17 @@ test('runtime integrates six production roles in deterministic movement, hurtbox
   assert.match(source, /visualMode: 'normal'/);
   assert.match(source, /resolveEnemyAttackAgainstPlayer\(event/);
   assert.match(source, /fullAiCap:\s*runtimeEncounterSnapshot\(tick\)\.fullAiCap/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyArchetypes/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDecisions/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDecisionBudget/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDeferredDecisions/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemySafetySteps/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyRouteReplans/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyStuckRecoveries/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyFormationAdjusted/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyChokepointSeeking/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyChokepointHolding/);
-  assert.doesNotMatch(source, /wallet|settlement|contractAddress|localStorage/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyArchetypes/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyDecisions/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyDecisionBudget/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyDeferredDecisions/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemySafetySteps/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyRouteReplans/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyStuckRecoveries/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyFormationAdjusted/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyChokepointSeeking/);
+  assert.match(telemetry, /(?:stageElement\.dataset|dataset)\.enemyChokepointHolding/);
+  assert.doesNotMatch(simulationSource, /wallet|settlement|contractAddress|localStorage/);
   assert.doesNotMatch(simulationSource, /localeCompare/, 'authoritative ordering must use explicit lexical comparison');
 });
 

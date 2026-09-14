@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
@@ -95,5 +96,5 @@ test('runtime kill drawing consumes the tested live-settings resolver and expose
   for (const setting of ['reduceMotion', 'reduceFlash', 'gore']) assert.match(kill, new RegExp(`${setting}: settings\\.${setting}`));
   assert.match(kill, /burst\.shardCount/);
   assert.match(kill, /drawnKillFx/);
-  assert.match(source, /dataset\.killFxDrawn/);
+  assert.match(runtimeTelemetrySource, /dataset\.killFxDrawn/);
 });

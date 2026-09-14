@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -101,17 +102,17 @@ test('runtime projects production enemy and boss art without mutating combat aut
   assert.ok(source.includes('corpsePresentation(death, simulation?.tick ?? 0, corpseNowMs)'), 'tick and real-time expiry both reach the render consumer');
   assert.ok(source.includes('const corpseNowMs = performance.now()'));
   assert.ok(source.indexOf('queueEnemyDeathVisual(defeatedEnemy, tick)') < source.indexOf('retireEnemyFromPopulation(enemyPopulation, scoreEvent.enemyId'));
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyDeathVisuals/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyEliteVisuals/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.enemyDeathVisuals/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.enemyEliteVisuals/);
   assert.match(source, /enemy\.hitUntilTick = tick \+ 6/);
   assert.match(source, /bossDeathVisualUntilTick = tick \+ 45/);
   assert.match(source, /bossHitVisualUntilTick = tick \+ 6/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.bossVisualState/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.bossVisualState/);
   // Enemies and the boss now render from authored Blender roster atlases when
   // those resolve, and fall back to this vector projection otherwise, so the
   // art telemetry reports whichever actually rendered.
-  assert.match(source, /dataset\.enemyArt = enemyRosterIndexes\.size > 0 \? 'production-roster-atlas-v1' : 'production-vector-enemies-v1'/);
-  assert.match(source, /dataset\.bossArt = enemyRosterIndexes\.has\('the-liquidator'\) \? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1'/);
+  assert.match(runtimeTelemetrySource, /dataset\.enemyArt = enemyRosterIndexes\.size > 0 \? 'production-roster-atlas-v1' : 'production-vector-enemies-v1'/);
+  assert.match(runtimeTelemetrySource, /dataset\.bossArt = enemyRosterIndexes\.has\('the-liquidator'\) \? 'production-roster-atlas-v1' : 'production-vector-liquidator-v1'/);
   assert.doesNotMatch(source, /(?:enemyMarker|bossVisual)\.(?:damage|health|collision|score|wallet|settlement)\s*=/);
 });
 
@@ -169,5 +170,5 @@ test('the runtime plumbs the phase tick into roster poses and draws elite ground
   assert.match(source, /const eliteGroundLayer = new Graphics\(\)/);
   assert.match(source, /bossTelegraphs, eliteGroundLayer, enemyVisuals/, 'the elite ring draws above telegraphs and under bodies');
   assert.match(source, /eliteGroundLayer\.clear\(\)/);
-  assert.match(source, /(?:stageElement\.dataset|dataset)\.enemyEliteVisuals/);
+  assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.enemyEliteVisuals/);
 });

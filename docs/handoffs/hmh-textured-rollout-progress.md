@@ -1,5 +1,9 @@
 # Textured rollout: current continuation checkpoint
 
+## Active motion and mobile publication candidate — 2026-09-13
+
+The owner prioritizes publishing completed work after mobile playtesting and fixes. [Current candidate, measurements, release requirements and retained unfinished work](2026-09-13-hmh-motion-mobile-release.md). HMH changes are local until a verified release receipt is recorded. The candidate preserves the newer Chikun Superman flight and STACKED beta source `9d14b18c`, live at `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`. The September 11 and earlier live statements below are historical.
+
 ## Current verified quality release — 2026-09-11
 
 **Live:** https://lestersarcade.io. Source `67b9f4509bbd677f7c3235bf618c09d311045f4b`, production `dpl_GifxR3BD7XZ4Bd2m9PYvtT8kTwYi`, Preview `dpl_4JQXy8HwoRckgRB4HMtgDp1PSFQx`, retained rollback `dpl_GATXdjgxPReTbUCWNCk4217Ek8Qt`. Continue in the canonical checkout on `hermes/hmh-textured-rollout`.

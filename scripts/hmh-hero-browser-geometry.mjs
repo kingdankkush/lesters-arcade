@@ -24,10 +24,11 @@ export function measureHeroBody(state, framesById) {
   return { x, y, width: right - x, height: bottom - y, right, bottom, viewportRatio: (bottom - y) / state.viewportHeight };
 }
 
-export function assertHeroClearance(body, overlays, viewport) {
+export function assertHeroClearance(body, overlays, viewport, { minimumViewportRatio = 0.12 } = {}) {
   finite([body.x, body.y, body.right, body.bottom, body.viewportRatio]);
   positive([body.width, body.height, viewport.viewportWidth, viewport.viewportHeight]);
-  assert.ok(body.viewportRatio >= 0.12, 'hero body is below 12% of viewport');
+  assert.ok(Number.isFinite(minimumViewportRatio) && minimumViewportRatio > 0 && minimumViewportRatio < 1);
+  assert.ok(body.viewportRatio >= minimumViewportRatio, `hero body is below ${minimumViewportRatio * 100}% of viewport`);
   assert.ok(body.x >= 0 && body.y >= 0 && body.right <= viewport.viewportWidth && body.bottom <= viewport.viewportHeight, 'hero body is clipped by viewport');
   for (const box of overlays) {
     finite([box.x, box.y, box.width, box.height]);

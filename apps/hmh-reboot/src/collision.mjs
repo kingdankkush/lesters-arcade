@@ -4,6 +4,7 @@ const MAX_DEPENETRATION_PASSES = 6;
 const MAX_SLIDE_ITERATIONS = 6;
 
 import { clamp, finite } from './value-guards.mjs';
+import { blockerSweepMayOverlap, immutableBlockerIndex } from './blocker-bounds.mjs';
 
 function positive(value, name) {
   finite(value, name);
@@ -322,20 +323,28 @@ export function resolveSweptCircleMotion({
   const requested = { x: finite(delta?.x, 'delta.x'), y: finite(delta?.y, 'delta.y') };
   const position = { x: finite(start?.x, 'start.x'), y: finite(start?.y, 'start.y') };
   const z = finite(start?.z ?? 0, 'start.z');
-  const activeBlockers = blockers.filter((blocker) => blocker?.solid !== false && heightOverlaps(body, z, blocker)).sort((a, b) => a.id.localeCompare(b.id));
+  const spatialIndex=immutableBlockerIndex(blockers);
+  const activeBlockers = spatialIndex?.ordered ?? blockers.filter((blocker) => blocker?.solid !== false && heightOverlaps(body, z, blocker)).sort((a, b) => a.id.localeCompare(b.id));
   const depenetrations = [];
 
   clampPositionToBounds(position, body.radius, bounds);
 
   for (let pass = 0; pass < MAX_DEPENETRATION_PASSES; pass += 1) {
     let changed = false;
-    for (const blocker of activeBlockers) {
+    let candidates=spatialIndex?.query(position.x,position.y,0,0,body.radius)??activeBlockers;
+    for (let index=0;index<candidates.length;index++) {
+      const blocker=candidates[index];
+      if(blocker?.solid===false||!heightOverlaps(body,z,blocker))continue;
+      if(!blockerSweepMayOverlap(blocker.shape,position.x,position.y,0,0,body.radius))continue;
       const penetration = penetrationAgainst(position, body.radius, blocker);
       if (!penetration) continue;
       position.x += penetration.x;
       position.y += penetration.y;
       depenetrations.push(Object.freeze({ blockerId: blocker.id, x: penetration.x, y: penetration.y, normal: Object.freeze({ ...penetration.normal }) }));
       changed = true;
+      // A correction can enter another blocker. Resume the original ordered
+      // scan after this contact, preserving the original same-pass behavior.
+      if(candidates!==activeBlockers){candidates=activeBlockers;index=activeBlockers.indexOf(blocker);}
     }
     if (clampPositionToBounds(position, body.radius, bounds)) changed = true;
     if (!changed) break;
@@ -347,7 +356,9 @@ export function resolveSweptCircleMotion({
   for (let iteration = 0; iteration < MAX_SLIDE_ITERATIONS; iteration += 1) {
     if (Math.hypot(remaining.x, remaining.y) <= EPSILON) break;
     const hits = [];
-    for (const blocker of activeBlockers) {
+    for (const blocker of spatialIndex?.query(position.x,position.y,remaining.x,remaining.y,body.radius)??activeBlockers) {
+      if(blocker?.solid===false||!heightOverlaps(body,z,blocker))continue;
+      if(!blockerSweepMayOverlap(blocker.shape,position.x,position.y,remaining.x,remaining.y,body.radius))continue;
       const hit = sweepAgainstBlocker(position, remaining, body.radius, blocker);
       if (hit) hits.push({ ...hit, blockerId: blocker.id });
     }

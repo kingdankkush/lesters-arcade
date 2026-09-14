@@ -1,4 +1,5 @@
 import { WORLD_DESIGN_SECRET_PROPS } from '../apps/hmh-reboot/src/world-design-secrets.mjs';
+import { WORLD_DESTRUCTIBLE_PROPS } from '../apps/hmh-reboot/src/world-destructibles.mjs';
 import { WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -145,7 +146,7 @@ function assetLoadSubject(failure) {
     Map,Set,Object,app:{stage:{destroyed:false}},world:{parent:{}},dataset:{},performanceProfile:{id:'desktop'},
     tripoPropAppearance:new Map(),worldDesignBlockerIds:new Set(),authoredPropDisplay:null,authoredHeldWeaponDisplay:null,authoredPropLoadError:null,
     createAuthoredPropAtlasIndex:()=>({}),loadTripoPropAppearance:async()=>new Map(),loadWorldDesignAppearance:async()=>appearance,
-    WORLD_DESIGN_SECRET_PROPS,WORLD_DESIGN_SITE_PROPS,WORLD_DESIGN_ORCHARD,buildWorldDesignPlacements,extendWorldDesignLandmarks,LEVEL_ONE_WORLD,buildAuthoredTownPlacements:()=>[],authoredPropPlacements:[],
+    WORLD_DESTRUCTIBLE_PROPS,WORLD_DESIGN_SECRET_PROPS,WORLD_DESIGN_SITE_PROPS,WORLD_DESIGN_ORCHARD,buildWorldDesignPlacements,extendWorldDesignLandmarks,LEVEL_ONE_WORLD,buildAuthoredTownPlacements:()=>[],authoredPropPlacements:[],
     Container,Graphics,Sprite,Texture,Rectangle,worldDepthLayer:depth,Assets:{load:async()=>Texture.WHITE},
     authoredPropLayer:new Container(),heldWeaponLayer:new Container(),worldProduction:{layers:{townBlockers:{visible:true},landmarks:{visible:true}}},
     lightningLedgerEventPlacement:null,bearMarketBurnerEventPlacement:null,forkedStandardEventPlacement:null,

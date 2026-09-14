@@ -2552,6 +2552,8 @@ html[data-gameplay-paused="true"] .arcade-music-player:not([hidden]) {
 }
 
 .arcade-music-player[data-surface="pause-menu"] {
+  position: fixed;
+  margin: 0;
   right: auto;
   left: 10px;
   z-index: 10030;
@@ -2802,11 +2804,11 @@ html[data-gameplay-paused="true"] .arcade-music-player:not([hidden]) {
 
 @media (max-width: 720px) {
   .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] {
-    right: 20px;
-    top: 20px;
+    right: max(14px, env(safe-area-inset-right));
+    top: calc(max(14px, env(safe-area-inset-top)) + 52px);
     bottom: auto;
     left: auto;
-    transform: translateX(calc(100vw - 88px));
+    transform: none;
     width: 52px;
     height: 52px;
     padding: 3px;
@@ -2843,11 +2845,12 @@ html[data-gameplay-paused="true"] .arcade-music-player:not([hidden]) {
   }
 
   .arcade-music-player[data-surface="pause-menu"][data-expanded="true"] {
+    top: auto;
     right: 8px;
     bottom: 8px;
     left: 8px;
     width: auto;
-    max-height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 80px);
     overflow-y: auto;
   }
 

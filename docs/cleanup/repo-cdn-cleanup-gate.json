@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-01T04:37:02.474Z",
+  "generatedAt": "2026-09-13T22:29:37.228Z",
   "status": "approval-gated",
   "summary": {
-    "workingTreeBytes": 323015476,
-    "gitBytes": "2.08 GiB",
-    "assetBytes": 200409609,
+    "workingTreeBytes": 2208526897,
+    "gitBytes": "2.26 GiB",
+    "assetBytes": 259217032,
     "cdnCandidateCount": 33,
     "cdnCandidateBytes": 105940018,
-    "vaultExists": true,
+    "vaultExists": false,
     "vaultRemoteConfigured": false
   },
   "largestFiles": [
@@ -57,6 +57,36 @@
       "runtimeReferenced": false
     },
     {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png",
+      "sizeBytes": 4097130,
+      "runtimeReferenced": false
+    },
+    {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-atlas.webp",
+      "sizeBytes": 3981640,
+      "runtimeReferenced": false
+    },
+    {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.webp",
+      "sizeBytes": 3979950,
+      "runtimeReferenced": false
+    },
+    {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+      "sizeBytes": 3919100,
+      "runtimeReferenced": false
+    },
+    {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.webp",
+      "sizeBytes": 3915898,
+      "runtimeReferenced": false
+    },
+    {
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-contact-sheet.png",
+      "sizeBytes": 3749931,
+      "runtimeReferenced": false
+    },
+    {
       "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3",
       "sizeBytes": 3516073,
       "runtimeReferenced": false
@@ -77,38 +107,8 @@
       "runtimeReferenced": false
     },
     {
-      "path": "apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3275609,
-      "runtimeReferenced": false
-    },
-    {
-      "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
-      "sizeBytes": 3236543,
-      "runtimeReferenced": false
-    },
-    {
-      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-atlas.png",
-      "sizeBytes": 3227608,
-      "runtimeReferenced": false
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3160029,
-      "runtimeReferenced": false
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
-      "sizeBytes": 3140881,
-      "runtimeReferenced": false
-    },
-    {
-      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-atlas.png",
-      "sizeBytes": 3076541,
-      "runtimeReferenced": false
-    },
-    {
-      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.png",
-      "sizeBytes": 2998466,
+      "path": "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-contact-sheet.png",
+      "sizeBytes": 3275689,
       "runtimeReferenced": false
     }
   ],

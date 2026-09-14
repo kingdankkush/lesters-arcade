@@ -1,3 +1,4 @@
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -37,9 +38,9 @@ test('clearance cannot pass with missing body layers, a clipped body, a tiny her
 test('the actual projection publishes its final anchor and scale and the normal first frame is checked before input', async () => {
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   const smoke = await readFile(new URL('../scripts/hmh-reboot-production-hero-browser-smoke.mjs', import.meta.url), 'utf8');
-  assert.match(source, /dataset\.actorScreenX = String\(actorVisual\.x \+ world\.position\.x\)/);
-  assert.match(source, /dataset\.actorScreenY = String\(actorVisual\.y \+ world\.position\.y\)/);
-  assert.match(source, /dataset\.actorScreenScale = String\(actorVisual\.scale\.x\)/);
+  assert.match(runtimeTelemetrySource, /dataset\.actorScreenX = String\(actorVisual\.x \+ world\.position\.x\)/);
+  assert.match(runtimeTelemetrySource, /dataset\.actorScreenY = String\(actorVisual\.y \+ world\.position\.y\)/);
+  assert.match(runtimeTelemetrySource, /dataset\.actorScreenScale = String\(actorVisual\.scale\.x\)/);
   assert.match(smoke, /await assertFirstFrameClearance\(page\)/);
   assert.doesNotMatch(smoke, /hmhControlsHintDismiss.*click\(/);
 });

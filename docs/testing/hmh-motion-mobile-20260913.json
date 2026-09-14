@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "status": "local-browser-verified",
+  "physicalDeviceTested": false,
+  "profiles": [
+    {
+      "profileId": "desktop",
+      "cpu": 1,
+      "scenario": "pressure",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "timing": {
+        "frames": 1443,
+        "activeMs": 10074.199999999999,
+        "upgradePicks": 0,
+        "meanMs": 6.976576576576574,
+        "p50Ms": 6.900000000001455,
+        "p95Ms": 7,
+        "p99Ms": 7.100000000000364,
+        "maxMs": 19.100000000000364,
+        "longTasks": []
+      },
+      "errors": [],
+      "enemyCount": 126,
+      "simulationTicks": 605,
+      "droppedMs": 0.0,
+      "movement": {
+        "beforeX": 805.698,
+        "heldX": 2174.11,
+        "releasedX": 2185.747,
+        "afterX": 2204.582
+      }
+    },
+    {
+      "profileId": "landscape",
+      "cpu": 1,
+      "scenario": "pressure",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "timing": {
+        "frames": 1453,
+        "activeMs": 10157.6,
+        "upgradePicks": 1,
+        "meanMs": 6.986028905712313,
+        "p50Ms": 6.900000000001455,
+        "p95Ms": 7,
+        "p99Ms": 7.100000000000364,
+        "maxMs": 48.69999999999891,
+        "longTasks": []
+      },
+      "errors": [],
+      "enemyCount": 124,
+      "simulationTicks": 610,
+      "droppedMs": 0.0,
+      "movement": {
+        "beforeX": 805.699,
+        "heldX": 1676.008,
+        "releasedX": 1680.964,
+        "afterX": 1693.535
+      }
+    },
+    {
+      "profileId": "mobile",
+      "cpu": 1,
+      "scenario": "pressure",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timing": {
+        "frames": 1450,
+        "activeMs": 10136.8,
+        "upgradePicks": 1,
+        "meanMs": 6.986137931034481,
+        "p50Ms": 6.900000000001455,
+        "p95Ms": 7,
+        "p99Ms": 7.100000000000364,
+        "maxMs": 55.600000000000364,
+        "longTasks": []
+      },
+      "errors": [],
+      "enemyCount": 124,
+      "simulationTicks": 609,
+      "droppedMs": 0.0,
+      "movement": {
+        "beforeX": 805.665,
+        "heldX": 1672.282,
+        "releasedX": 1678.107,
+        "afterX": 1693.569
+      }
+    },
+    {
+      "profileId": "mobile",
+      "cpu": 4,
+      "scenario": "opening",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timing": {
+        "frames": 965,
+        "activeMs": 10449.400000000001,
+        "upgradePicks": 0,
+        "meanMs": 10.806735751295335,
+        "p50Ms": 13.799999999999272,
+        "p95Ms": 14,
+        "p99Ms": 20.799999999999272,
+        "maxMs": 27.799999999999272,
+        "longTasks": []
+      },
+      "errors": [],
+      "enemyCount": 3,
+      "simulationTicks": 627,
+      "droppedMs": 44.567,
+      "movement": {
+        "beforeX": 794.237,
+        "heldX": 1491.029,
+        "releasedX": 1498.108,
+        "afterX": 1498.108
+      }
+    },
+    {
+      "profileId": "mobile",
+      "cpu": 4,
+      "scenario": "pressure",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timing": {
+        "frames": 279,
+        "activeMs": 11366.299999999997,
+        "upgradePicks": 3,
+        "meanMs": 40.56523297491039,
+        "p50Ms": 41.600000000000364,
+        "p95Ms": 55.5,
+        "p99Ms": 62.599999999998545,
+        "maxMs": 97.29999999999927,
+        "longTasks": [
+          50,
+          72,
+          53,
+          52,
+          59,
+          54,
+          58,
+          53,
+          81,
+          61,
+          51,
+          53,
+          52,
+          102,
+          80,
+          57,
+          50,
+          73,
+          69,
+          59,
+          52
+        ]
+      },
+      "errors": [],
+      "enemyCount": 117,
+      "simulationTicks": 700,
+      "droppedMs": 350.567,
+      "movement": {
+        "beforeX": 805.863,
+        "heldX": 1697.279,
+        "releasedX": 1709.606,
+        "afterX": 1722.608
+      }
+    }
+  ],
+  "baseline": {
+    "profile": "mobile",
+    "cpu": 4,
+    "scenario": "pressure",
+    "enemyCount": 128,
+    "meanBrowserFrameMs": 123.2,
+    "p95Ms": 139,
+    "cpuProfilerEnabled": true
+  },
+  "comparisonLimit": "Baseline used the CPU profiler; final profiles did not. The independent CPU samples reduced collision self time from about 2 seconds to 0.16 seconds per 10-second profile. Browser frame intervals are not simulation frequency or a physical-device guarantee.",
+  "controls": "Four touch profiles passed real CDP movement, release, surface-only tracking and shortened viewport checks.",
+  "assets": {
+    "heroCount": 4,
+    "newHeroFramesEach": 496,
+    "newNativeEnemyCount": 6,
+    "nativeEnemyClips": [
+      "idle",
+      "run",
+      "tell",
+      "attack",
+      "hit",
+      "death"
+    ],
+    "selectedHeroDecodedBytes": 33554432,
+    "fullHeroTextureLibraryBytes": 26933668,
+    "activeEnemyTextureBytes": 15155687
+  },
+  "browserChecks": {
+    "portalDesktop": "pass",
+    "portalMobile": "pass",
+    "coverCaches": 8,
+    "nativeEnemyDesktop": "pass",
+    "nativeEnemyMobile": "pass",
+    "bossSafeSectorDesktop": "pass",
+    "bossSafeSectorMobile": "pass",
+    "weaponSoundDecodeAndPickupFire": "pass",
+    "chikunDesktopAndPhone": "pass",
+    "visualScenesReviewed": 12
+  },
+  "remaining": [
+    "Physical iOS and Android hardware acceptance",
+    "New held-weapon models, native long-gun actions and the full power-up family remain unfinished",
+    "Broader environmental sound and world polish remain unfinished",
+    "Strict repository working-tree budget is exceeded by source originals: 938 MiB versus 350 MiB. LFS source policy and per-asset runtime budgets pass; source Blender files are outside the deployed portal."
+  ]
+}

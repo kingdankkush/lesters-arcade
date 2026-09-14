@@ -12,6 +12,7 @@ const browser = await chromium.launch({
   headless: true,
   args: ['--autoplay-policy=no-user-gesture-required'],
 });
+try {
 const page = await browser.newPage();
 const failures = [];
 page.on('response', (response) => {
@@ -81,23 +82,20 @@ const stageState = () => game.locator('#hmhRebootStage').evaluate((stage) => ({
   audioVoices: Number(stage.dataset.audioVoices),
   audioUnknownCues: stage.dataset.audioUnknownCues,
 }));
-const holdKey = async (key, ms = 120) => {
-  await game.keyboard.down(key);
-  await game.waitForTimeout(ms);
-  await game.keyboard.up(key);
-};
 const fired = { 'coin-blaster': await stageState() };
-for (const [digit, weaponId] of [['Digit2', 'scatter-shotgun'], ['Digit3', 'auto-miner'], ['Digit4', 'launcher-rig']]) {
-  await holdKey(digit);
-  await holdKey('Space', 180);
+// Weapons now equip through pickups and fire automatically. Exercise those
+// actual paths instead of the retired digit/space selection controls.
+for (const [siteId, weaponId] of [['ravine-salvage', 'scatter-shotgun'], ['yard-extraction-console', 'launcher-rig'], ['mining-control-room', 'auto-miner']]) {
+  await game.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=collectible-${siteId}`, { waitUntil: 'networkidle' });
+  await game.waitForFunction((expected) => document.querySelector('#hmhRebootStage')?.dataset.weaponId === expected, weaponId, { timeout: 30_000 });
+  await game.mouse.move(1_050, 450);
   await game.waitForFunction((expected) => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === expected, weaponId, { timeout: 10_000 });
   fired[weaponId] = await stageState();
 }
-// Auto-miner at a 47 ms cooldown is the densest weapon cue stream; hold it and
+// Auto-miner at a 47 ms cooldown is the densest weapon cue stream; aim it and
 // watch the voice pool from inside the frame loop so the sample cannot miss the
 // short-lived voices between two dataset reads.
-await holdKey('Digit3');
-await game.keyboard.down('Space');
+await game.mouse.move(1_051, 450);
 const voiceWindow = await game.evaluate(() => new Promise((resolve) => {
   const stage = document.querySelector('#hmhRebootStage');
   let frames = 0;
@@ -110,7 +108,6 @@ const voiceWindow = await game.evaluate(() => new Promise((resolve) => {
   };
   requestAnimationFrame(tick);
 }));
-await game.keyboard.up('Space');
 await game.screenshot({ path: fileURLToPath(new URL('weapon-cues-routed.png', evidenceDir)) });
 const routed = { fired, voiceWindow, errors: gameErrors };
 
@@ -125,4 +122,6 @@ assert.deepEqual(gameErrors, []);
 await game.close();
 
 console.log(JSON.stringify({ status: 'PASS', httpFailures: failures, report, routed }, null, 2));
-await browser.close();
+} finally {
+  await browser.close();
+}

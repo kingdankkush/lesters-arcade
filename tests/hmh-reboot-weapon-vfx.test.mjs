@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
@@ -390,7 +391,7 @@ test('main.mjs wires the weapon VFX layer above combat visuals, emits surface-ty
     /dataset\.weaponVfxPoolPressure/u,
     /dataset\.weaponVfxDropped/u,
     /dataset\.lastImpactSurface/u,
-  ]) assert.match(source, pin);
+  ]) assert.match(pin.source.includes('dataset') ? runtimeTelemetrySource : source, pin);
   // Cover and ground impacts read only render-side lookups.
   assert.match(source, /BLOCKER_VISUAL_KIND/u);
   assert.match(source, /blockerVisualKind: BLOCKER_VISUAL_KIND\.get\(/u);

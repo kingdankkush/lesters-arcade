@@ -1,0 +1,83 @@
+{
+  "schema": "hmh-roadmap-package-evidence-v1",
+  "capturedAt": "2026-09-12T20:52:00Z",
+  "sourceCommit": "1a8d4f420767f32ef97ca7952b782dce284242f0",
+  "method": "Local static build of apps/portal served on an ephemeral port; each frame was taken when the runtime telemetry reported the state (worldHazardTelegraphs, collectibleActive/chip data-ending, weaponStatus reloading). Screenshots retained outside the repository; sha256 recorded.",
+  "pageErrors": {
+    "hazard": 0,
+    "powerup": 0,
+    "reload": 0
+  },
+  "captures": [
+    {
+      "name": "hazard-rockfall-warning",
+      "tick": "278",
+      "telegraphs": "[\"ravine-rockfall\"]",
+      "screenshot": "hazard-rockfall-warning.png",
+      "sha256": "74f08c10f7f2f9600b808af6e59c9e03ef78993df5164c28dca1af18e4bf769a"
+    },
+    {
+      "name": "hazard-rockfall-impact",
+      "tick": "319",
+      "telegraphs": "[\"ravine-rockfall:impact\"]",
+      "playerHealth": "100",
+      "screenshot": "hazard-rockfall-impact.png",
+      "sha256": "ef2f7feb2ed187d7f446a40fc0e65c0b93b9d845cbcb3327819630b719400022"
+    },
+    {
+      "name": "powerup-chip-active",
+      "tick": "129",
+      "chip": {
+        "text": "DILATION 9S",
+        "effect": "time-dilation",
+        "ending": "false",
+        "progress": "0.818"
+      },
+      "countdown": "DILATION 9S",
+      "screenshot": "powerup-chip-active.png",
+      "sha256": "477e8b0820e2f1b9e0c732db8a881d439f3fd8ff797dd5e5493e2f2df87eeef5"
+    },
+    {
+      "name": "powerup-chip-ending",
+      "tick": "506",
+      "chip": {
+        "text": "DILATION 2S",
+        "effect": "time-dilation",
+        "ending": "true",
+        "progress": "0.188"
+      },
+      "countdown": "DILATION 2S",
+      "screenshot": "powerup-chip-ending.png",
+      "sha256": "36ddb8d6cfca44b987b93a2f8e95e80f5bf52adb9e57b6b30410c55e4070dd9a"
+    },
+    {
+      "name": "reload-hud",
+      "tick": "103",
+      "card": {
+        "state": "reloading",
+        "reload": "0.125",
+        "ammoLow": "false",
+        "reserveLow": "false",
+        "flash": "false",
+        "ticks": "105"
+      },
+      "screenshot": "reload-hud.png",
+      "sha256": "785971844fef2ffcfe5e17bba2f96b58b73bf9eee7c2e67ad9cda0256f2640d1"
+    }
+  ],
+  "additional": [
+    {
+      "screenshot": "run-recap-desktop.png",
+      "sha256": "279c9f8116f900b67242aa77ac606e27877748cac74b66faa48917e61d557fc8"
+    },
+    {
+      "screenshot": "powerup-chip-ending-hud.png",
+      "sha256": "3c298f251b33c83c156e9d955a63ea96fc84534934bded3b29540519211a136f"
+    },
+    {
+      "screenshot": "reload-hud-card.png",
+      "sha256": "fbe79fb6fcbdefa50484358c6425ecd5b680b18c42c2ec5192b1dfa74cfc5c96"
+    }
+  ],
+  "runRecapSource": "scripts/hmh-reboot-portal-e2e.mjs --profile=mobile evidence 06-game-over-run-summary.png"
+}

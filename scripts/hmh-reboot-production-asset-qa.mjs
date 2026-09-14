@@ -16,6 +16,8 @@ import { AUTHORED_PROP_ASSET_IDS } from '../apps/hmh-reboot/src/authored-prop-at
 import { evaluateDeclaredSourcePayload } from './hmh-source-model-lfs-check.mjs';
 import { auditTripoProductionAssets } from './hmh-tripo-production-asset-qa.mjs';
 import { auditWorldDesignAssets } from './hmh-world-design-production-asset-qa.mjs';
+import { validateNativeRosterAsset } from './hmh-native-roster-qa.mjs';
+import { createHeroMotionIndex, HERO_MOTION_PAGE_MAX_BYTES, HERO_WITH_MOTION_MAX_BYTES } from '../apps/hmh-reboot/src/hero-motion-atlas.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
@@ -27,7 +29,10 @@ const requiredLayers = ['shadow', 'lower-body', 'torso-head', 'weapon'];
 const maxHeroAtlasBytes = PRODUCTION_HERO_MAX_TEXTURE_BYTES;
 const maxHeroAtlasTotalBytes = PRODUCTION_HERO_MAX_TEXTURE_TOTAL_BYTES;
 const maxRosterAtlasBytes = 2 * 1024 * 1024;
-const maxRosterAtlasTotalBytes = 10 * 1024 * 1024;
+// New native clips carry 280 poses (840 for the three boss phases). Keep the
+// legacy 2 MiB cap, and apply the native pipeline's 4 MiB cap to that class.
+const maxNativeRosterAtlasBytes = 4 * 1024 * 1024;
+const maxRosterAtlasTotalBytes = 16 * 1024 * 1024;
 const maxPropAtlasBytes = 512 * 1024;
 // Cycle 074: the selector ships one 384 px atlas per hero (8 frames each). The
 // Cycle 013 per-file cap is kept and applied per atlas; the whole select-screen
@@ -117,6 +122,35 @@ for (const asset of Object.values(PRODUCTION_HERO_ASSETS)) {
 }
 assert.equal(heroReports.length, 4, 'four production hero atlases are required');
 assert.equal(validateProductionHeroTextureTotalBytes(heroReports.map((hero) => hero.imageBytes)), heroAtlasTotalBytes);
+
+const motionMeasurements = JSON.parse(readFileSync(path.join(repoRoot, 'docs/testing/hmh-hero-motion/measurement.json'), 'utf8'));
+const heroMotionReports = heroReports.map(hero => {
+  const asset = PRODUCTION_HERO_ASSETS[hero.actorId];
+  const metadataPath = path.join(portalRoot, 'assets/generated/hmh-hero-motion', hero.actorId, `${hero.actorId}-motion.json`);
+  const imagePath = metadataPath.replace(/\.json$/, '.webp');
+  const metadata = JSON.parse(readFileSync(metadataPath, 'utf8'));
+  const baseMetadata = JSON.parse(readFileSync(portalPath(asset.metadataUrl), 'utf8'));
+  createHeroMotionIndex(createProductionHeroAtlasIndex(baseMetadata, asset), metadata);
+  const measurement = motionMeasurements.heroes.find(value => value.actorId === hero.actorId);
+  assert.equal(sha256File(metadataPath), measurement.metadataSha256, `${hero.actorId} motion metadata changed after baking`);
+  assert.equal(sha256File(imagePath), measurement.imageSha256, `${hero.actorId} motion texture changed after baking`);
+  assert.equal(metadata.sourceSha256, measurement.sourceSha256);
+  assert.equal(metadata.baseImageBytes, hero.imageBytes);
+  assert.equal(measurement.exporterSha256, sha256File(path.join(repoRoot, 'scripts/hmh-blender/export-hmh-hero-motion.py')));
+  for (const [key, limit] of Object.entries({maxChangedVisiblePixels:8,maxChannelDelta:2,maxTotalChannelDelta:32}))
+    assert.ok(measurement.repeatability[key] <= limit, `${hero.actorId} native motion reproducibility failed`);
+  const image = validateHeroImage(imagePath, metadataPath, `${hero.actorId} motion`);
+  assert.equal(image.frameCount, 496);
+  assert.equal(image.imageBytes, metadata.imageBytes);
+  assert.deepEqual(image.motionPosesByClip, measurement.uniquePosesByClip);
+  assert.ok(image.imageBytes <= HERO_MOTION_PAGE_MAX_BYTES);
+  assert.ok(image.imageBytes + hero.imageBytes <= HERO_WITH_MOTION_MAX_BYTES);
+  return { actorId: hero.actorId, ...image, metadataBytes: statSync(metadataPath).size,
+    selectedHeroTextureBytes: image.imageBytes + hero.imageBytes,
+    selectedHeroDecodedBytes: image.decodedRgbaBytes + hero.decodedRgbaBytes };
+});
+const heroWithMotionTotalBytes = heroAtlasTotalBytes + heroMotionReports.reduce((sum, hero) => sum + hero.imageBytes, 0);
+assert.ok(heroWithMotionTotalBytes <= 4 * HERO_WITH_MOTION_MAX_BYTES);
 
 const productionManifestPath = path.join(repoRoot, 'apps', 'hmh-reboot', 'assets', 'source', 'blender', 'hmh-production-heroes.json');
 const productionManifest = JSON.parse(readFileSync(productionManifestPath, 'utf8'));
@@ -218,7 +252,9 @@ for (const actorId of ENEMY_ROSTER_ACTORS) {
   const asset = enemyRosterAsset(actorId);
   const imagePath = portalPath(asset.imageUrl);
   const metadata = JSON.parse(readFileSync(portalPath(asset.metadataUrl), 'utf8'));
-  const { imageBytes, png, coverage } = validatePng(imagePath, actorId);
+  const native=actorId!=='bagholder-rusher';
+  const decoded=native?validateNativeRosterAsset({repoRoot,actorId,imagePath,metadataPath:portalPath(asset.metadataUrl),metadata}):null;
+  const { imageBytes, png, coverage } = decoded?{imageBytes:decoded.imageBytes,png:decoded,coverage:decoded}:validatePng(imagePath, actorId);
   const index = createEnemyRosterAtlasIndex(metadata, actorId);
   const sourceActor = enemySourceManifest.actors.find((actor) => actor.actorId === actorId);
   if (actorId === 'bagholder-rusher') {
@@ -226,8 +262,8 @@ for (const actorId of ENEMY_ROSTER_ACTORS) {
     validateNativeEnemyArtifact(sourceActor, metadata);
   }
   assert.equal(metadata.runtimeAuthority, 'projection-only', `${actorId} runtime authority`);
-  assert.equal(index.frameCount, actorId === 'the-liquidator' ? 456 : 152, `${actorId} frame count`);
-  assert.ok(imageBytes <= maxRosterAtlasBytes, `${actorId} atlas exceeds maxRosterAtlasBytes`);
+  assert.equal(index.frameCount, actorId === 'the-liquidator' ? 840 : native?280:152, `${actorId} frame count`);
+  assert.ok(imageBytes <= (native?maxNativeRosterAtlasBytes:maxRosterAtlasBytes), `${actorId} atlas exceeds its asset-class budget`);
   rosterAtlasTotalBytes += imageBytes;
   rosterReports.push({ actorId, imageBytes, width: png.width, height: png.height, frames: index.frameCount, phases: index.phases, transparentPixels: coverage.transparentPixels, opaquePixels: coverage.opaquePixels });
 }
@@ -252,7 +288,8 @@ assert.ok(rosterMetrics.reproducibilityPolicy?.observed?.maxTotalChannelDelta <=
 assert.equal('rgbCanonicalization' in (rosterMetrics.reproducibilityPolicy ?? {}), false, 'roster quantiser must be gone');
 assert.equal(rosterMetrics.reproducibilityPolicy?.metadataExactExceptDerivedPixelSha, true, 'roster metadata exactness');
 assert.equal(rosterMetrics.engine, 'BLENDER_EEVEE', 'roster engine');
-assert.equal(rosterMetrics.totalAtlasBytes, rosterAtlasTotalBytes, 'enemy roster byte ledger drifted');
+const nativeMetrics=JSON.parse(readFileSync(path.join(repoRoot,'docs/testing/hmh-native-roster/measurement.json')));
+assert.equal(nativeMetrics.totalImageBytes+rosterReports.find(r=>r.actorId==='bagholder-rusher').imageBytes,rosterAtlasTotalBytes,'active roster byte ledger drifted');
 
 const propImagePath = portalPath(AUTHORED_PROP_ATLAS_IMAGE_URL);
 const propMetadata = JSON.parse(readFileSync(portalPath(AUTHORED_PROP_ATLAS_METADATA_URL), 'utf8'));
@@ -282,8 +319,10 @@ const summary = {
   selectorAtlasBytes,
   rosterAtlasTotalBytes,
   propAtlasBytes: propPngReport.imageBytes,
-  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes, maxSelectorAtlasTotalBytes },
+  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxNativeRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes, maxSelectorAtlasTotalBytes },
   heroReports,
+  heroMotionReports,
+  heroWithMotionTotalBytes,
   selectorReport: { imageBytes: selectorAtlasBytes, frameSize: selectorFrameSize, frames: selectorMetadata.frameCount, pipelineId: selectorMetadata.pipelineId, atlases: selectorReports },
   rosterReports,
   propReport: { imageBytes: propPngReport.imageBytes, width: propPngReport.png.width, height: propPngReport.png.height, assets: propMetadata.assetCount },

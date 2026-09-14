@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "gas-bomber",
+  "identityForm": "zombie",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/bagholder-rusher-packed.blend",
+  "baseSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+  "sourceUnchanged": true,
+  "source": "gas-bomber.blend",
+  "sourceSha256": "620289a19cb8e5a025b2c614b90bc938e8db55e846924a92e41e7c679366c6f4",
+  "sourceBytes": 17584197,
+  "armature": "gas-bomber Native Rig",
+  "bones": 19,
+  "nativeBodyVertices": 62277,
+  "costumeMeshes": 1,
+  "gearMeshes": 24,
+  "clipActions": {
+    "idle": "HMH_gas-bomber_idle",
+    "run": "HMH_gas-bomber_run",
+    "tell": "HMH_gas-bomber_tell",
+    "attack": "HMH_gas-bomber_attack",
+    "hit": "HMH_gas-bomber_hit",
+    "death": "HMH_gas-bomber_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 1.7478000354766845,
+  "animationProfile": {
+    "kind": "gas-bomber-canister-lob-v1",
+    "damageResponse": "canister-protective-stagger-v1"
+  },
+  "builderSha256": "025ce0e983c561cc82aab2863e4bc199f88f971a961fecdffce5a90c08b5fb75",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "reviewedCandidateSha256": "a1031431b8581166ed321a905f8af64380b71b51b3d477e46a2a00abf3d60305",
+  "storageCompactorSha256": "84d30936601ea3a3873936d9ecadf718a9987c5becdf13744486c766a23c47a7",
+  "reviewedCandidateUnchanged": true
+}

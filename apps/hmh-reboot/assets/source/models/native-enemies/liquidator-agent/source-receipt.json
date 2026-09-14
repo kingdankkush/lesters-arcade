@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "editable-native-candidate",
+  "actorId": "liquidator-agent",
+  "identityForm": "human",
+  "boss": false,
+  "phaseVisuals": {},
+  "baseSource": "apps/hmh-reboot/assets/source/models/tripo-gameplay/Lit Commando - Layered Gameplay Pilot v2.blend",
+  "baseSha256": "0c930374daccb2b9458a8600fdf3150dc51f6b5d8b4a47edcd05d92905fc6284",
+  "sourceUnchanged": true,
+  "source": "liquidator-agent.blend",
+  "sourceSha256": "6a9ac0ba9ae273be91a08cc0f717b0b3190b169b53362075eb8081ac8e0645a6",
+  "sourceBytes": 75097085,
+  "armature": "liquidator-agent Native Rig",
+  "bones": 22,
+  "nativeBodyVertices": 255060,
+  "costumeMeshes": 0,
+  "gearMeshes": 18,
+  "clipActions": {
+    "idle": "HMH_liquidator-agent_idle",
+    "run": "HMH_liquidator-agent_run",
+    "tell": "HMH_liquidator-agent_tell",
+    "attack": "HMH_liquidator-agent_attack",
+    "hit": "HMH_liquidator-agent_hit",
+    "death": "HMH_liquidator-agent_death"
+  },
+  "runtimeAuthority": "projection-only",
+  "height": 2.0749999713897704,
+  "animationProfile": {
+    "kind": "suppression-rifle-burst-v1",
+    "damageResponse": "rifle-shoulder-recoil-v1"
+  },
+  "builderSha256": "025ce0e983c561cc82aab2863e4bc199f88f971a961fecdffce5a90c08b5fb75",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
+  "reviewedCandidateSha256": "e175fcfb415a84d4f03265da846f666c69a7a032cfa763787bbb98c5d4762502",
+  "storageCompactorSha256": "84d30936601ea3a3873936d9ecadf718a9987c5becdf13744486c766a23c47a7",
+  "reviewedCandidateUnchanged": true
+}

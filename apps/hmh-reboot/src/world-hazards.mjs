@@ -16,7 +16,7 @@ export const WORLD_HAZARD_RULES = freezeDeep({
 
 // Environmental attributions retire bodies without XP, official kills or a
 // run-summary weapon row; none of these ids may reach the weapon catalog.
-export const WORLD_ENVIRONMENT_WEAPON_IDS = new Set(['world-steam', 'world-rockfall', 'world-grid']);
+export const WORLD_ENVIRONMENT_WEAPON_IDS = new Set(['world-steam', 'world-rockfall', 'world-grid', 'world-fuel']);
 
 const HEIGHT_BAND = 8;
 

@@ -1,0 +1,160 @@
+{
+  "schema": "hmh-quality-release-v1",
+  "verifiedAt": "2026-09-12T21:08:00.000Z",
+  "sourceCommit": "1a8d4f420767f32ef97ca7952b782dce284242f0",
+  "canonicalBranch": "fable/hmh-roadmap-pass-20260911",
+  "baseBranch": "hermes/hmh-textured-rollout",
+  "baseCommit": "b0ee9046",
+  "precedingRelease": {
+    "sourceCommit": "cad94e7d684c450d28052de87821fc9afc5f281c",
+    "production": "dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg"
+  },
+  "publicUrl": "https://lestersarcade.io",
+  "production": {
+    "id": "dpl_H8HskA2fttzXpdVHc8GyAcXccd9g",
+    "url": "https://lesters-arcade-r4w9nitiu-justin-agent-projects.vercel.app",
+    "state": "READY",
+    "createdAt": "2026-09-12T21:00:12Z",
+    "promotedFrom": "dpl_5T7VRjDCzQSo6rVEtky7cLkLRGHT",
+    "aliases": [
+      "lestersarcade.io"
+    ],
+    "note": "The promote command was issued twice; dpl_6UCguQ6oQ7pFQaWjNFW7WnoLBy47 is an identical production build of the same preview that held the alias for about one minute before this deployment took it. Both were built from the same source."
+  },
+  "preview": {
+    "id": "dpl_5T7VRjDCzQSo6rVEtky7cLkLRGHT",
+    "url": "https://lesters-arcade-4qmus1ex0-justin-agent-projects.vercel.app",
+    "state": "READY",
+    "createdAt": "2026-09-12T20:55:52Z"
+  },
+  "rollback": {
+    "id": "dpl_E6U69q1pgn6LTw5LGdtgayXMJhyg",
+    "url": "https://lesters-arcade-mgh1j0kip-justin-agent-projects.vercel.app",
+    "sourceCommit": "cad94e7d684c450d28052de87821fc9afc5f281c"
+  },
+  "changes": [
+    "Reload presentation: weapon-layer dip and snap-back, HUD progress bar, ammo-low and reserve-low tints, completion pulse and muzzle glow (projection only; dry-fire click removed after review because the shipped input model has no manual trigger)",
+    "Enemy hit feedback: tint flash, knock offset, damage-scaled squash and armour/shield shards on landed hits (projection only; enemy soak hash unchanged); per-archetype tell, strike and recovery ticks measured from the real step function and pinned",
+    "Simulated Level 1 hazards: rockfall and liquidation grid pulses with warnings, spore-bed slow and conveyor push for hero and enemies; deterministic by construction; hazards stop at 1 HP on the boss so every boss defeat keeps the player-weapon authority path; environmental kills award no XP",
+    "Run recap on the game-over panel: cause of defeat, build (weapons with kills, augments with ranks), milestones and run row from an additive schema 6 run summary; Bosses metric reads the real count; v1-v5 records still validate",
+    "Power-up chips: per-effect colour, continuous drain, ending pulse, refresh pop and an expiry cue; briefing states that repeat pickups restart the timer",
+    "Evidence scripts corrected where they had drifted from the shipped game (boss-phase cue, level-up pause during the roster wait, collectible XP and enemy-count expectations, selector rest frame); the pickup's own XP award is now published as collectibleLastXp",
+    "Portal cache token hmh-package-20260912 and service-worker namespace lesters-arcade-v36-hmh-package"
+  ],
+  "slices": [
+    {
+      "key": "reload",
+      "branch": "fable/wf-reload-20260912",
+      "commit": "858440affe655c9a9055ce5362acb6c604ab2358",
+      "initialJsDeltaBytes": 1662,
+      "reviews": "determinism fix, correctness fix, scope fix; six must-fix findings resolved (dry-fire click removed with evidence, tests made behavioral, byte trims); verifier PASS with only the documented stale combat smoke"
+    },
+    {
+      "key": "enemy-feedback",
+      "branch": "fable/wf-enemy-feedback-20260912",
+      "commit": "abf23495",
+      "initialJsDeltaBytes": 1169,
+      "reviews": "determinism approve, correctness fix, scope fix; fixes made the smoke sample the accepted frame and executed the marker slice in tests; verifier gate PASS, boss smoke failure was the pre-existing cue assertion corrected in this release"
+    },
+    {
+      "key": "hazards",
+      "branch": "fable/wf-hazards-20260912",
+      "commit": "833398ff",
+      "initialJsDeltaBytes": 4595,
+      "reviews": "scope approve, determinism fix (boss killing blow bypassed the boss-defeat authority path: hazards now stop at 1 HP on the boss), correctness fix (grid telegraph footprint, reduce-flash); verifier gate PASS, performance smoke PASS, collectible smoke failure was the pre-existing XP expectation corrected in this release"
+    },
+    {
+      "key": "run-summary",
+      "branch": "fable/wf-run-summary-20260912",
+      "commit": "55a84d41718cb5da7e1a30b663c9104a756fa7d8",
+      "initialJsDeltaBytes": 2688,
+      "reviews": "determinism approve, correctness fix, scope fix; fix trimmed the sdk chunk to the re-allocated 2,700 B and extracted the game-over selection into a tested helper; verifier gate PASS, e2e game-over flow PASS on desktop and phone, other e2e failures reproduce on the base"
+    },
+    {
+      "key": "powerup-timers",
+      "branch": "fable/wf-powerup-timers-20260912",
+      "commit": "d72a410f",
+      "initialJsDeltaBytes": 1876,
+      "reviews": "determinism approve, scope approve, correctness fix (ending pulse on a refreshed chip); verifier gate PASS, collectible smoke failure was the pre-existing XP expectation corrected in this release"
+    }
+  ],
+  "verification": {
+    "local": {
+      "command": "npm run vercel:build",
+      "tests": 3451,
+      "passed": 3400,
+      "expectedRetirementFailures": 51,
+      "unexpectedFailures": 0,
+      "syntax": {
+        "javascriptModules": 520,
+        "pythonScripts": 86
+      },
+      "assets": "PASS",
+      "contractStructure": "PASS",
+      "build": "PASS",
+      "initialChildJsWithSharedChunksBytes": 1041489,
+      "headroomBytes": 7087
+    },
+    "cloud": {
+      "preview": {
+        "tests": 3451,
+        "passed": 3400,
+        "expectedRetirementFailures": 51,
+        "unexpectedFailures": 0,
+        "syntax": {
+          "javascriptModules": 520,
+          "pythonScripts": 86
+        },
+        "assets": "PASS",
+        "contractStructure": "PASS",
+        "build": "PASS",
+        "initialChildJsWithSharedChunksBytes": 1041489
+      },
+      "production": "Promoted from the verified preview; the production deployment reran the same vercel:build chain to Ready."
+    },
+    "preview": {
+      "method": "vercel curl through Deployment Protection",
+      "serviceWorkerVersion": "lesters-arcade-v36-hmh-package",
+      "loadingPanelMarkers": "briefing slots and chip data-effect attributes served",
+      "gameBundleMarkers": "world-rockfall, reload-presentation chunk reference and briefing tip label present"
+    },
+    "production": {
+      "origin": "https://lestersarcade.io",
+      "filesMatchingLocalBuild": [
+        "/index.html",
+        "/dist/main.js",
+        "/sw.js",
+        "/hmh-reboot/index.html",
+        "/hmh-reboot/styles.css",
+        "/dist/hmh-reboot/game.js"
+      ],
+      "gameBundleBytes": 441046,
+      "portalMainBytes": 1150736,
+      "serviceWorkerVersion": "lesters-arcade-v36-hmh-package",
+      "portalCacheToken": "hmh-package-20260912",
+      "cacheHeaders": "as configured in vercel.json (must-revalidate for mutable entries, immutable for hashed chunks)",
+      "smokePortalFlow": "PASS",
+      "smokePortalInteractions": "PASS (wallet-profile-free-ranked-exit)"
+    },
+    "browserSmokes": {
+      "onMergedLocalBuild": {
+        "hmh-reboot-performance-browser-smoke": "PASS (hazard tour)",
+        "hmh-reboot-enemy-boss-presentation-browser-smoke": "PASS desktop and mobile after the cue assertion correction",
+        "hmh-reboot-cockpit-browser-smoke": "PASS",
+        "hmh-reboot-collectible-browser-smoke": "PASS after the XP and enemy-count expectation corrections (one earlier run hit its pre-existing 5 s keyboard-pickup timing window)",
+        "hmh-reboot-hero-selector-browser-smoke": "rest-frame assertion corrected; then stops at its mobile height guard (1,866 px vs 1,800 px), identically on the untouched base with the same script: pre-existing, recorded",
+        "hmh-reboot-combat-browser-smoke": "roster wait corrected; later steps drive retired manual weapon keys and remain red: stale script, recorded",
+        "hmh-reboot-portal-e2e desktop": "5 of 7 flows pass including game-over-run-summary; pause-resume and mid-run-restart fail identically on the base",
+        "hmh-reboot-portal-e2e mobile": "guest-boot and game-over-run-summary pass; the other five fail identically on the base (the pause-menu music player intercepts the menu button)"
+      }
+    },
+    "evidence": "docs/qa/hmh-roadmap-package-evidence-20260912.json"
+  },
+  "scopeNotes": [
+    "Five slices built by a multi-agent package: read-only investigation, ranked scopes, per-slice implementer, three adversarial reviewers, fix round and release-gate verifier in isolated worktrees; merged and re-gated here.",
+    "Hazards are the only simulation change; they are pure functions of the integer tick and frozen anchors with no RNG. No HMH replay fixtures exist; encounter outcomes near the four hazard anchors differ from the preceding build by design.",
+    "Explosive zones, destructibles, the shake-intensity setting and the audio weight pass were deferred (see the reconciliation handoff).",
+    "Desktop and phone-size browser checks are scoped release checks, not physical-device or full AAA certification.",
+    "SETTLEMENT_LIVE remains false; Ranked entry pricing, platform fee and Mainnet items remain owner-gated."
+  ]
+}

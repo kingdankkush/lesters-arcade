@@ -188,7 +188,8 @@ export function startPortalStaticServer({ rootDir, host = '127.0.0.1', port = 0 
         createReadStream(filePath, { start, end }).pipe(response);
         return;
       }
-      response.writeHead(200, { 'content-type': contentType });
+      response.writeHead(200, { 'content-type': contentType, 'content-length': statSync(filePath).size,
+        ...(['.mp3', '.wav', '.mp4', '.webm'].includes(extension) ? {'accept-ranges': 'bytes'} : {}) });
       createReadStream(filePath).pipe(response);
     } catch (error) {
       response.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
@@ -227,7 +228,11 @@ if (isMain) {
   const evidencePath = (name) => fileURLToPath(new URL(`${name}.png`, evidenceDir));
 
   const { chromium } = await import('../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
-  const { server, origin } = await startPortalStaticServer({ rootDir: portalRoot });
+  // A hosted release must exercise the actual deployed bytes. No bundle or
+  // asset interception is installed when an explicit origin is supplied.
+  const { server, origin } = process.env.PORTAL_E2E_ORIGIN
+    ? { server: { close() {} }, origin: new URL(process.env.PORTAL_E2E_ORIGIN).origin }
+    : await startPortalStaticServer({ rootDir: portalRoot });
   const browser = await chromium.launch({
     executablePath: String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`,
     headless: true,
@@ -263,6 +268,12 @@ if (isMain) {
           const session = (await frame.locator('#hmhRebootSession').textContent({ timeout: 1_000 })).trim();
           if ((status === 'Portal session connected' || (allowTerminal && status === 'Run ended')) && (!differentFrom || session !== differentFrom)) {
             await frame.waitForSelector('#hmhRebootStage canvas', { timeout: 10_000 });
+            if (!allowTerminal) {
+              // Connection precedes artwork readiness and the player's explicit
+              // entry gesture. Exercise that real flow before measuring play.
+              await frame.locator('#hmhStartupEnter').click({ timeout: 60_000 });
+              await frame.locator('#hmhStartup').waitFor({state:'hidden', timeout:10_000});
+            }
             return { frame, session };
           }
           lastDetail = `status=${status} session=${session}`;
@@ -402,12 +413,19 @@ if (isMain) {
         const menu = rect('#combatMenuPanel');
         const overlapWidth = deck && menu ? Math.max(0, Math.min(deck.right, menu.right) - Math.max(deck.left, menu.left)) : 0;
         const overlapHeight = deck && menu ? Math.max(0, Math.min(deck.bottom, menu.bottom) - Math.max(deck.top, menu.top)) : 0;
-        return { deck, menu, overlapArea: overlapWidth * overlapHeight };
+        const icon = rect('#combatMenuIconButton');
+        const iconOverlap = Math.max(0, Math.min(deck.right, icon.right) - Math.max(deck.left, icon.left))
+          * Math.max(0, Math.min(deck.bottom, icon.bottom) - Math.max(deck.top, icon.top));
+        return { deck, menu, overlapArea: overlapWidth * overlapHeight, iconOverlap,
+          position: getComputedStyle(document.querySelector('#arcadeMusicPlayer')).position,
+          documentHeight: document.documentElement.scrollHeight };
       });
       if (browserProfile === 'desktop') {
         assert.equal(pauseSurfaceGeometry.overlapArea, 0, `pause soundtrack overlaps the primary pause menu: ${JSON.stringify(pauseSurfaceGeometry)}`);
       } else {
         assert.ok(pauseSurfaceGeometry.overlapArea > 0, 'mobile soundtrack should open as an explicit contained drawer over the pause surface');
+        assert.equal(pauseSurfaceGeometry.position, 'fixed', 'phone pause deck must not re-enter document flow');
+        assert.equal(pauseSurfaceGeometry.iconOverlap, 0, 'expanded phone deck must clear the pause icon');
       }
       assert.ok(controls.every((rect) => rect.left >= pauseSurfaceGeometry.deck.left && rect.right <= pauseSurfaceGeometry.deck.right && rect.top >= pauseSurfaceGeometry.deck.top && rect.bottom <= pauseSurfaceGeometry.deck.bottom), `pause soundtrack controls escape their deck: ${JSON.stringify({ controls, deck: pauseSurfaceGeometry.deck })}`);
       await page.locator('#arcadeMusicVolume').fill('42');
@@ -421,9 +439,14 @@ if (isMain) {
       await page.click('#arcadeMusicPlayButton');
       await page.waitForFunction(() => {
         const audio = document.querySelector('#arcadeMusicAudio');
-        return Boolean(audio && !audio.paused && Number.isFinite(audio.duration) && audio.duration > 0);
+        return Boolean(audio && !audio.paused && audio.readyState >= 3 && audio.seekable.length > 0
+          && Number.isFinite(audio.duration) && audio.duration > 0);
       }, undefined, { timeout: 15_000 });
       await page.locator('#arcadeMusicSeek').fill('500');
+      await page.waitForFunction(() => {
+        const audio = document.querySelector('#arcadeMusicAudio');
+        return audio && !audio.seeking && Math.abs(audio.currentTime - audio.duration * .5) < 1;
+      }, undefined, {timeout: 10_000});
       const playback = await page.evaluate(() => {
         const audio = document.querySelector('#arcadeMusicAudio');
         return { paused: audio?.paused, duration: audio?.duration, currentTime: audio?.currentTime, currentSrc: audio?.currentSrc };
@@ -441,6 +464,9 @@ if (isMain) {
         await page.waitForSelector('#arcadeMusicPlayer[data-expanded="false"]', { timeout: 10_000 });
         const launcher = await page.locator('#arcadeMusicPlayer').boundingBox();
         assert.ok(launcher && launcher.width <= 64 && launcher.height <= 64 && launcher.x >= viewport.width - 80 && launcher.y <= 80, `collapsed mobile soundtrack launcher is too large or blocks the pause title: ${JSON.stringify(launcher)}`);
+        const icon = await page.locator('#combatMenuIconButton').boundingBox();
+        assert.ok(icon && launcher.y >= icon.y + icon.height, 'phone soundtrack launcher must clear the pause icon');
+        assert.equal(await page.evaluate(() => document.documentElement.scrollHeight), pauseSurfaceGeometry.documentHeight, 'opening the phone soundtrack must not shift the page');
         await page.screenshot({ path: evidencePath('03b-paused-soundtrack-launcher'), fullPage: false });
       }
       if (browserProfile === 'mobile') await page.click('#combatMenuActionGrid [data-action="resume"]');
