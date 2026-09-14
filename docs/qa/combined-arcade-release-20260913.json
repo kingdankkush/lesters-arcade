@@ -350,7 +350,7 @@
     },
     "hmh-matched-comparison.json": {
       "path": "docs/qa/combined-arcade-20260913/hmh-matched-comparison.json",
-      "sha256": "1f0d3c1620a5af69154c607fb12e3150a0f822577af5498f86382ba59a41f587"
+      "sha256": "f39b76540b34f9d8f7453ec611a61c766e31aa37d179ecccbe4cbc3a99a0ec1e"
     },
     "hmh-mobile-performance.json": {
       "path": "docs/qa/combined-arcade-20260913/hmh-mobile-performance.json",
@@ -362,7 +362,7 @@
     },
     "hosting-challenge-sanitized.json": {
       "path": "docs/qa/combined-arcade-20260913/hosting-challenge-sanitized.json",
-      "sha256": "909297154cc044b75ca9fcd6e1d20516458025305ac1d386c80b9f06486d5cd3"
+      "sha256": "b9c1b27a5140521044173de4802f1c154b497a6596bae4268d65b28b0ed2785c"
     },
     "music-control-event-race.json": {
       "path": "docs/qa/combined-arcade-20260913/music-control-event-race.json",
