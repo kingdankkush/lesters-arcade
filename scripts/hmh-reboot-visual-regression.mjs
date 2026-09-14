@@ -364,6 +364,11 @@ if (isMain) {
       // Keep the real opening actors alive for their crop check. Automatic
       // fire now defeats them before an idle capture; aim away using ordinary
       // mouse input, without injecting health, spawn or simulation state.
+      // The idle opening capture must establish aim before the first repeat;
+      // the later combat capture retains its existing attack sequence.
+      if (scene.enemyCrops && scene.tick < 120 && scene.viewport.width > 600) {
+        await page.mouse.move(24, scene.viewport.height * 0.62);
+      }
       const aimAway = scene.enemyCrops && scene.viewport.width > 600 ? setInterval(() => {
         // This point remains above the touch-stick band on portrait phones.
         void page.mouse.move(24, scene.viewport.height * 0.62).catch(() => {});
