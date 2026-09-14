@@ -1,0 +1,738 @@
+{
+  "status": "PASS",
+  "date": "2026-09-13",
+  "sourceCommit": "9d14b18c20c3cfe7ba1fe88789a6f61feb9c9da3",
+  "branch": "codex/chikun-superman-flight",
+  "site": "https://lestersarcade.io",
+  "preview": {
+    "id": "dpl_7kHg4Ni15yiaWiTxx2Ebibk3BkaX",
+    "url": "https://lesters-arcade-jvqiew7pj-justin-agent-projects.vercel.app",
+    "status": "PASS"
+  },
+  "production": {
+    "id": "dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd",
+    "url": "https://lesters-arcade-duo0drfkj-justin-agent-projects.vercel.app",
+    "status": "READY_AND_PUBLICLY_VERIFIED"
+  },
+  "rollback": {
+    "id": "dpl_3GBNYfeQrHjoGUEm91QD41WuAj83",
+    "url": "https://lesters-arcade-ff358a4c6-justin-agent-projects.vercel.app",
+    "source": "98204a1c36c682a70adbb986fb6941289eed8501"
+  },
+  "cacheMarker": "lesters-arcade-v39-chikun-stacked",
+  "character": {
+    "pose": "horizontal rightward Superman flight",
+    "clips": 18,
+    "nativeFrames": 432,
+    "framesPerSecond": 30,
+    "atlasBytes": 2049014,
+    "blendMilliseconds": 120,
+    "source": "owner Tripo surface and colors",
+    "native": {
+      "status": "PASS",
+      "animations": [
+        "accelerate",
+        "barrel_roll",
+        "brake",
+        "climb",
+        "collect",
+        "crest",
+        "cruise",
+        "descend",
+        "dive",
+        "dodge_high",
+        "dodge_low",
+        "fall",
+        "impact",
+        "ready",
+        "recover",
+        "squeeze",
+        "takeoff",
+        "tumble"
+      ],
+      "joints": 15,
+      "renderedFrames": 432,
+      "proneFramesWiderThanTall": 96,
+      "allFramesInsideCanvas": true,
+      "nativeGLBSha256": "57b8bb58432f486405319796919993db15d80a8e7b9b2e4c816bc619b43d17be",
+      "nativeBytes": 2348300
+    }
+  },
+  "previewCloudGates": {
+    "status": "PASS",
+    "tests": 3641,
+    "passed": 3590,
+    "unchangedDocumentedRetirementExceptions": 51,
+    "javascriptSyntaxFiles": 592,
+    "pythonSyntaxFiles": 88,
+    "assets": "PASS",
+    "contractsStructure": "PASS",
+    "build": "PASS"
+  },
+  "browser": {
+    "desktop-local": {
+      "status": "PASS",
+      "mode": "free",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "score": 144,
+      "frameTiming": {
+        "frames": 93,
+        "p95Ms": 7
+      },
+      "scoreBoard": "isolated",
+      "profile": "isolated",
+      "evidence": "desktop-local"
+    },
+    "touch-local": {
+      "status": "PASS",
+      "mode": "ranked",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "score": 141,
+      "frameTiming": {
+        "frames": 91,
+        "p95Ms": 7.099999999999909
+      },
+      "scoreBoard": "recorded",
+      "profile": "recorded",
+      "evidence": "touch-local"
+    },
+    "replay-combined": {
+      "status": "PASS",
+      "mode": "ranked",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "score": 146,
+      "frameTiming": {
+        "frames": 91,
+        "p95Ms": 7.100000000000023
+      },
+      "scoreBoard": "recorded",
+      "profile": "recorded",
+      "evidence": "replay-combined"
+    },
+    "landscape-combined": {
+      "status": "PASS",
+      "mode": "free",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "score": 146,
+      "frameTiming": {
+        "frames": 94,
+        "p95Ms": 7
+      },
+      "scoreBoard": "isolated",
+      "profile": "isolated",
+      "evidence": "landscape-combined"
+    },
+    "preview-flow": {
+      "status": "PASS",
+      "mode": "free",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "score": 143,
+      "frameTiming": {
+        "frames": 93,
+        "p95Ms": 7.099999999999909
+      },
+      "scoreBoard": "isolated",
+      "profile": "isolated",
+      "evidence": "preview-flow"
+    },
+    "throttled-phone": {
+      "status": "PASS",
+      "mode": "free",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "score": 196,
+      "frameTiming": {
+        "frames": 48,
+        "p95Ms": 20.899999999999636
+      },
+      "scoreBoard": "isolated",
+      "profile": "isolated",
+      "evidence": "throttled-phone"
+    },
+    "long-local": {
+      "status": "PASS",
+      "score": 1359,
+      "forks": 4,
+      "coins": 4,
+      "seconds": 22.054,
+      "flaps": 20,
+      "issues": [],
+      "evidence": "long-local"
+    },
+    "preview-assets": {
+      "status": "PASS",
+      "origin": "https://lesters-arcade-jvqiew7pj-justin-agent-projects.vercel.app",
+      "checked": "2026-09-13T22:18:05.208Z",
+      "assets": [
+        {
+          "path": "/assets/generated/chikun-flight-v2/ready.webp",
+          "bytes": 113568,
+          "sha256": "d80c00e19d266294ae3c507e8e8a170d963f6b9eb64521790f3107b354b4317d"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/takeoff.webp",
+          "bytes": 113802,
+          "sha256": "61449474344d68728fdca91622def3203928186a57e9e81d7ee920ab8dc4e529"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/cruise.webp",
+          "bytes": 110608,
+          "sha256": "567a840b382ae48f711547be36892b1bca9dec24d36a19ab0667e24bd433bc8f"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/accelerate.webp",
+          "bytes": 110980,
+          "sha256": "065198d3e5e4e9a6577bc7fa6e2e3b33cec3112e7c9d7c5950b6f4c4a4c8a4ee"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/climb.webp",
+          "bytes": 108416,
+          "sha256": "aff4af932a4c0eb9d494b37cebcdfd3a3a0827664b41ec2abd191851b5aee96a"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/crest.webp",
+          "bytes": 113190,
+          "sha256": "2447d82d0ffcae6837168dd81fff04998b69e08bec0b17f74899b94ff34f5689"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/descend.webp",
+          "bytes": 113634,
+          "sha256": "dc15169cf4490523a93c3c317ed7b67f0c603a25443e66277bfda6618596616e"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/dive.webp",
+          "bytes": 114254,
+          "sha256": "5077243d940251c0af2a23490c341c0af0a3fec49c9ef16351c18128b0ac355f"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/brake.webp",
+          "bytes": 118056,
+          "sha256": "e92675b93a54808cdd3903feb45ff49ba859118b4fc0c39eee3db8bb213bf35c"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/recover.webp",
+          "bytes": 116114,
+          "sha256": "3304a2e37d7cd3a67475c670d683745974c26ea9cc84672e6e0745a06de2e3c5"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/squeeze.webp",
+          "bytes": 106176,
+          "sha256": "f3b5882b8b887a43799f12cda765adbfcb86be01b71855edb0769b5a1da381bd"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/dodge_high.webp",
+          "bytes": 118908,
+          "sha256": "18c1dab62123c2bf972a78f20e43a147fe5c3af4942d83c43c52cb294ec8d2db"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/dodge_low.webp",
+          "bytes": 111862,
+          "sha256": "feadf21c877fe8d426305d3e60c509cd2ed16fa5a61a37451deea6f61b9c37d9"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/collect.webp",
+          "bytes": 110826,
+          "sha256": "ad7269f2af13144870322d0c94a37747014bb6f97e9a4d5644ba8be6e32306fa"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/barrel_roll.webp",
+          "bytes": 120192,
+          "sha256": "931a08a3793808c0598b119d1278efea086d0e119a15b85161a79f5d325f1e6a"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/impact.webp",
+          "bytes": 115122,
+          "sha256": "90b7fdbae3e1169e4977a8fa794cc669fcc9590f2181248a466d5dedf0cc01ab"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/tumble.webp",
+          "bytes": 118464,
+          "sha256": "42f8b677eba4759219e0b9db4215077cc27bb72871bd2e8e91203dde71e10eb6"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/fall.webp",
+          "bytes": 114842,
+          "sha256": "7b168ecf097b193d212f781cb4197860eaf33dcb2ba049ae028d9e7e5a03c3ee"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/air.wav",
+          "bytes": 384044,
+          "sha256": "b716ace75279210d6a17379d6d88bc6638c8cb3a4cea1dfcefbbc1b3672e8112"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/coin.wav",
+          "bytes": 22124,
+          "sha256": "49809760d566708150688b24e4247b1718345228f3f6f3bd4cd363fbb1fda8b6"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/flap.wav",
+          "bytes": 10124,
+          "sha256": "8912486fe048a117747b719abc1cf8d3a08af970fae546c664648296fd5beb4b"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/impact.wav",
+          "bytes": 38444,
+          "sha256": "1e90cbf778216f4e8e570bab4504099d0a4e109719de880bcbca611f4c3f13d0"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/launch.wav",
+          "bytes": 36044,
+          "sha256": "0bef515180725db6792d72a2ac82f25c519f484863f0465ab2b11cffd2e05aff"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/near.wav",
+          "bytes": 20204,
+          "sha256": "2fbff0a09339184e30f27e500ae32dca2b08c0cb1193011f8a3ea7cf6baef4f6"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/pass.wav",
+          "bytes": 17804,
+          "sha256": "61824bc67d200669e5968a4dac00e1dca8dbf4f0dcd21429e33424fe9f81a14b"
+        },
+        {
+          "path": "/assets/generated/chikun-flight-v2/audio/streak.wav",
+          "bytes": 43244,
+          "sha256": "4b17773f0006f9184ed043c1b66812bc947c61080f8f1e61ddd243a97b237545"
+        }
+      ],
+      "views": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "clips": 18,
+          "overflow": false
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "clips": 18,
+          "overflow": false
+        }
+      ],
+      "reducedMotion": "PASS",
+      "issues": []
+    },
+    "stacked-preservation": [
+      {
+        "name": "desktop",
+        "baselineTick": "61",
+        "dimensions": {
+          "width": 1400,
+          "height": 840,
+          "scrollWidth": 1400,
+          "scrollHeight": 840,
+          "audio": "true"
+        },
+        "result": "Replay verified locally. Free Mode did not write to your profile, achievements or score boards.",
+        "errors": [],
+        "warnings": [
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.",
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+        ]
+      },
+      {
+        "name": "mobile",
+        "baselineTick": "61",
+        "dimensions": {
+          "width": 348,
+          "height": 724,
+          "scrollWidth": 348,
+          "scrollHeight": 724,
+          "audio": "true"
+        },
+        "result": "Replay verified locally. Free Mode did not write to your profile, achievements or score boards.",
+        "errors": [],
+        "warnings": [
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.",
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+        ]
+      },
+      {
+        "name": "small-mobile",
+        "baselineTick": "61",
+        "dimensions": {
+          "width": 278,
+          "height": 620,
+          "scrollWidth": 278,
+          "scrollHeight": 620,
+          "audio": "true"
+        },
+        "result": "Replay verified locally. Free Mode did not write to your profile, achievements or score boards.",
+        "errors": [],
+        "warnings": [
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.",
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+        ]
+      },
+      {
+        "name": "tablet",
+        "baselineTick": "61",
+        "dimensions": {
+          "width": 712,
+          "height": 864,
+          "scrollWidth": 712,
+          "scrollHeight": 864,
+          "audio": "true"
+        },
+        "result": "Replay verified locally. Free Mode did not write to your profile, achievements or score boards.",
+        "errors": [],
+        "warnings": [
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.",
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+        ]
+      },
+      {
+        "name": "small-desktop",
+        "baselineTick": "61",
+        "dimensions": {
+          "width": 984,
+          "height": 608,
+          "scrollWidth": 984,
+          "scrollHeight": 608,
+          "audio": "true"
+        },
+        "result": "Replay verified locally. Free Mode did not write to your profile, achievements or score boards.",
+        "errors": [],
+        "warnings": [
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.",
+          "An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing."
+        ]
+      }
+    ]
+  },
+  "hmhVisual": {
+    "scenes": 12,
+    "runtimeErrors": [],
+    "baselineAccepted": false,
+    "comparisons": [
+      {
+        "scene": "frontier-relay-desktop",
+        "status": "changed",
+        "meanDelta": 26.352,
+        "changedCells": 559
+      },
+      {
+        "scene": "frontier-relay-mobile",
+        "status": "changed",
+        "meanDelta": 19.672,
+        "changedCells": 541
+      },
+      {
+        "scene": "combat-engaged-desktop",
+        "status": "changed",
+        "meanDelta": 25.28,
+        "changedCells": 545
+      },
+      {
+        "scene": "ravine-overlook-desktop",
+        "status": "changed",
+        "meanDelta": 10.729,
+        "changedCells": 440
+      },
+      {
+        "scene": "mining-camp-desktop",
+        "status": "changed",
+        "meanDelta": 9.78,
+        "changedCells": 452
+      },
+      {
+        "scene": "liquidity-bridge-desktop",
+        "status": "changed",
+        "meanDelta": 11.964,
+        "changedCells": 496
+      },
+      {
+        "scene": "hashwood-foliage-desktop",
+        "status": "changed",
+        "meanDelta": 17.047,
+        "changedCells": 524
+      },
+      {
+        "scene": "liquidation-yard-desktop",
+        "status": "changed",
+        "meanDelta": 50.007,
+        "changedCells": 558
+      },
+      {
+        "scene": "liquidation-market-desktop",
+        "status": "changed",
+        "meanDelta": 43.269,
+        "changedCells": 518
+      },
+      {
+        "scene": "liquidation-residential-desktop",
+        "status": "changed",
+        "meanDelta": 29.413,
+        "changedCells": 535
+      },
+      {
+        "scene": "hashwood-camp-desktop",
+        "status": "changed",
+        "meanDelta": 13.759,
+        "changedCells": 513
+      },
+      {
+        "scene": "crossing-water-desktop",
+        "status": "changed",
+        "meanDelta": 6.576,
+        "changedCells": 321
+      }
+    ],
+    "hmhBundleMatchesStackedProduction": true,
+    "hmhBundleSha256": "79d7fd15c69211cc9ce2da06da451ce4dd8b3c70b2d271671f2ae2c3cf71516b"
+  },
+  "limitations": [
+    "Phone checks use Chrome touch/DPR and CPU emulation, not physical hardware.",
+    "Historical HMH visual baselines differ in 12 scenes with no runtime errors; unchanged HMH bundle matches the retained live STACKED baseline; no baselines accepted.",
+    "Game character uses blended Blender-rendered frames; native editable rig and GLB are included.",
+    "Obstacle variety preserves the canonical marked hazard rectangles; no new collision mechanics."
+  ],
+  "settlementEnabled": false,
+  "verifiedAt": "2026-09-13T22:26:13.332735+00:00",
+  "productionCloudGates": {
+    "status": "PASS",
+    "tests": 3641,
+    "passed": 3590,
+    "unchangedDocumentedRetirementExceptions": 51,
+    "javascriptSyntaxFiles": 592,
+    "pythonSyntaxFiles": 88,
+    "assets": "PASS",
+    "contractsStructure": "PASS",
+    "build": "PASS"
+  },
+  "productionAssets": {
+    "status": "PASS",
+    "origin": "https://lestersarcade.io",
+    "checked": "2026-09-13T22:23:57.746Z",
+    "assets": [
+      {
+        "path": "/assets/generated/chikun-flight-v2/ready.webp",
+        "bytes": 113568,
+        "sha256": "d80c00e19d266294ae3c507e8e8a170d963f6b9eb64521790f3107b354b4317d"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/takeoff.webp",
+        "bytes": 113802,
+        "sha256": "61449474344d68728fdca91622def3203928186a57e9e81d7ee920ab8dc4e529"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/cruise.webp",
+        "bytes": 110608,
+        "sha256": "567a840b382ae48f711547be36892b1bca9dec24d36a19ab0667e24bd433bc8f"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/accelerate.webp",
+        "bytes": 110980,
+        "sha256": "065198d3e5e4e9a6577bc7fa6e2e3b33cec3112e7c9d7c5950b6f4c4a4c8a4ee"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/climb.webp",
+        "bytes": 108416,
+        "sha256": "aff4af932a4c0eb9d494b37cebcdfd3a3a0827664b41ec2abd191851b5aee96a"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/crest.webp",
+        "bytes": 113190,
+        "sha256": "2447d82d0ffcae6837168dd81fff04998b69e08bec0b17f74899b94ff34f5689"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/descend.webp",
+        "bytes": 113634,
+        "sha256": "dc15169cf4490523a93c3c317ed7b67f0c603a25443e66277bfda6618596616e"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/dive.webp",
+        "bytes": 114254,
+        "sha256": "5077243d940251c0af2a23490c341c0af0a3fec49c9ef16351c18128b0ac355f"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/brake.webp",
+        "bytes": 118056,
+        "sha256": "e92675b93a54808cdd3903feb45ff49ba859118b4fc0c39eee3db8bb213bf35c"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/recover.webp",
+        "bytes": 116114,
+        "sha256": "3304a2e37d7cd3a67475c670d683745974c26ea9cc84672e6e0745a06de2e3c5"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/squeeze.webp",
+        "bytes": 106176,
+        "sha256": "f3b5882b8b887a43799f12cda765adbfcb86be01b71855edb0769b5a1da381bd"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/dodge_high.webp",
+        "bytes": 118908,
+        "sha256": "18c1dab62123c2bf972a78f20e43a147fe5c3af4942d83c43c52cb294ec8d2db"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/dodge_low.webp",
+        "bytes": 111862,
+        "sha256": "feadf21c877fe8d426305d3e60c509cd2ed16fa5a61a37451deea6f61b9c37d9"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/collect.webp",
+        "bytes": 110826,
+        "sha256": "ad7269f2af13144870322d0c94a37747014bb6f97e9a4d5644ba8be6e32306fa"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/barrel_roll.webp",
+        "bytes": 120192,
+        "sha256": "931a08a3793808c0598b119d1278efea086d0e119a15b85161a79f5d325f1e6a"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/impact.webp",
+        "bytes": 115122,
+        "sha256": "90b7fdbae3e1169e4977a8fa794cc669fcc9590f2181248a466d5dedf0cc01ab"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/tumble.webp",
+        "bytes": 118464,
+        "sha256": "42f8b677eba4759219e0b9db4215077cc27bb72871bd2e8e91203dde71e10eb6"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/fall.webp",
+        "bytes": 114842,
+        "sha256": "7b168ecf097b193d212f781cb4197860eaf33dcb2ba049ae028d9e7e5a03c3ee"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/air.wav",
+        "bytes": 384044,
+        "sha256": "b716ace75279210d6a17379d6d88bc6638c8cb3a4cea1dfcefbbc1b3672e8112"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/coin.wav",
+        "bytes": 22124,
+        "sha256": "49809760d566708150688b24e4247b1718345228f3f6f3bd4cd363fbb1fda8b6"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/flap.wav",
+        "bytes": 10124,
+        "sha256": "8912486fe048a117747b719abc1cf8d3a08af970fae546c664648296fd5beb4b"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/impact.wav",
+        "bytes": 38444,
+        "sha256": "1e90cbf778216f4e8e570bab4504099d0a4e109719de880bcbca611f4c3f13d0"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/launch.wav",
+        "bytes": 36044,
+        "sha256": "0bef515180725db6792d72a2ac82f25c519f484863f0465ab2b11cffd2e05aff"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/near.wav",
+        "bytes": 20204,
+        "sha256": "2fbff0a09339184e30f27e500ae32dca2b08c0cb1193011f8a3ea7cf6baef4f6"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/pass.wav",
+        "bytes": 17804,
+        "sha256": "61824bc67d200669e5968a4dac00e1dca8dbf4f0dcd21429e33424fe9f81a14b"
+      },
+      {
+        "path": "/assets/generated/chikun-flight-v2/audio/streak.wav",
+        "bytes": 43244,
+        "sha256": "4b17773f0006f9184ed043c1b66812bc947c61080f8f1e61ddd243a97b237545"
+      }
+    ],
+    "views": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "clips": 18,
+        "overflow": false
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "clips": 18,
+        "overflow": false
+      }
+    ],
+    "reducedMotion": "PASS",
+    "issues": []
+  },
+  "publicFlows": {
+    "guest-live": {
+      "status": "PASS",
+      "mode": "guest-free",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "score": 145,
+      "frameTiming": {
+        "frames": 92,
+        "p95Ms": 7
+      },
+      "profile": "isolated",
+      "walletRequested": false,
+      "issues": []
+    },
+    "touch-live": {
+      "status": "PASS",
+      "mode": "ranked",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "score": 152,
+      "frameTiming": {
+        "frames": 92,
+        "p95Ms": 7
+      },
+      "profile": "recorded",
+      "scoreBoard": "recorded"
+    },
+    "replay-live": {
+      "status": "PASS",
+      "mode": "ranked",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "score": 146,
+      "frameTiming": {
+        "frames": 90,
+        "p95Ms": 7.100000000000136
+      },
+      "profile": "recorded",
+      "scoreBoard": "recorded",
+      "verifiedActions": [
+        "play",
+        "pause",
+        "seek to 80 percent",
+        "score unchanged",
+        "Fly Again starts fresh run",
+        "exit"
+      ]
+    }
+  },
+  "browserWalletNote": "Ranked browser tests use a synthetic provider and local browser records; no real transactions, fees, prizes or settlement."
+}

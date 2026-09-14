@@ -474,7 +474,7 @@ svg.arcade-icon {
   object-fit: contain;
   opacity: 0;
   image-rendering: auto;
-  animation: hmhCabinetFrame var(--cabinet-loop-duration) steps(1, end) infinite;
+  animation: var(--cabinet-frame-animation, hmhCabinetFrame) var(--cabinet-loop-duration) steps(1, end) infinite;
   animation-delay: var(--cabinet-frame-delay);
 }
 
@@ -495,6 +495,38 @@ svg.arcade-icon {
 @keyframes hmhHeroPortraitFrame {
   0%, 12.49% { opacity: 1; }
   12.5%, 100% { opacity: 0; }
+}
+
+/* The generated STACKED atlas has a pure-black matte. Screen blending merges
+   that matte into the dark cabinet card without a rectangular image backdrop. */
+.stacked-cabinet-rotator {
+  --cabinet-frame-animation: stackedCabinetFrame;
+  mix-blend-mode: screen;
+  filter: none;
+  animation-name: stackedCabinetFloat;
+}
+
+@keyframes stackedCabinetFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+@keyframes stackedCabinetFrame {
+  0%, 16.666% { opacity: 1; }
+  16.667%, 100% { opacity: 0; }
+}
+
+.cabinet-motion-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+
+.cabinet-motion-toolbar button { min-height: 44px; }
+
+.official-cabinet-grid[data-cabinet-motion="paused"] .hmh-cabinet-rotator,
+.official-cabinet-grid[data-cabinet-motion="paused"] .cabinet-rotation-frame {
+  animation-play-state: paused;
 }
 
 /* Reduced motion: still the float and the spin and show one frame. Turntables
@@ -5431,3 +5463,32 @@ html[data-embedded-cabinet] #touchControls { display: none !important; }
   border-color: rgba(45, 255, 92, 0.7);
   background: #030712;
 }
+
+/* Chikun uses clean native sprite edges; keep Arcade CRT decoration off its playfield. */
+html[data-embedded-cabinet="chikun"] .crt-overlay,
+html[data-embedded-cabinet="chikun"] .official-scanline { display: none; }
+
+@media(max-width:720px) {
+  html[data-embedded-cabinet="chikun"] .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] { transform:none; }
+}
+
+.gameplay-view[data-game-id="chikun"] .official-combat-mount { display:grid;place-items:center;border-color:#58748270;box-shadow:none; }
+
+/* Let the child fit either a wide flight window or a true portrait camera. */
+html[data-embedded-cabinet="chikun"] .official-app,
+html[data-embedded-cabinet="chikun"] .gameplay-view { padding:0!important;border:0;border-radius:0; }
+html[data-embedded-cabinet="chikun"] .official-combat-mount {
+  width:100%;height:100dvh;min-height:0;max-height:none;aspect-ratio:auto;
+  padding:0;border:0;border-radius:0;display:grid;place-items:center;
+}
+html[data-embedded-cabinet="chikun"] .chikun-game-frame {
+  width:100%;height:100%;min-height:0;max-height:none;aspect-ratio:auto;
+}
+html[data-embedded-cabinet="chikun"] .official-app {
+  position:fixed;inset:0;width:100vw;height:100dvh;min-height:0;max-width:none;
+  display:block;overflow:hidden;
+}
+html[data-embedded-cabinet="chikun"] .gameplay-view {
+  width:100%;height:100%;min-height:0;display:block;
+}
+html[data-embedded-cabinet="chikun"] .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] { display:none!important; }

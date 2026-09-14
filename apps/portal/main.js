@@ -1,3 +1,4 @@
+import { createChikunRunMusic } from './src/chikun-run-music.mjs';
 import { shouldInjectVercelWebAnalytics, injectVercelWebAnalytics } from './src/vercel-analytics.mjs';
 
 if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname: window.location.hostname })) {
@@ -22,6 +23,7 @@ import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
+import { mountCabinetMotionControl } from './src/cabinet-motion.mjs';
 import { HMH_HERO_PORTRAITS as HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-hero-portraits.mjs';
 import { restFrameIndex } from './src/hmh-hero-select-ui.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
@@ -1291,11 +1293,12 @@ function setArcadeMusicContext(context = 'arcade', { reset = false } = {}) {
 }
 
 async function startArcadeMusicForGame(gameId = 'hard-money-heroes') {
+  const previousTrackId=currentArcadeMusicTrack()?.id;
   setArcadeMusicContext(gameId, { reset: true });
   // Begin each run on a random song from the game's queue instead of always
   // opening on the first track (the Hard Money Heroes main theme).
   if (arcadeMusic.queue.length > 1) {
-    arcadeMusic.currentTrackIndex = chooseArcadeMusicStartIndex({ queueLength: arcadeMusic.queue.length });
+    arcadeMusic.currentTrackIndex = chooseArcadeMusicStartIndex({ queueLength: arcadeMusic.queue.length, previousIndex: arcadeMusic.queue.findIndex(track=>track.id===previousTrackId) });
     loadArcadeMusicTrack();
     renderArcadeMusicPlayer();
   }
@@ -1810,6 +1813,11 @@ try {
   });
 } catch { /* non-DOM env */ }
 const cartridges = getCartridgeSelectModel();
+mountCabinetMotionControl({
+  button: document.querySelector('#cabinetMotionToggle'),
+  grid: dom.officialCabinetGrid,
+  motionPreference: window.matchMedia('(prefers-reduced-motion: reduce)'),
+});
 let selectedGameId = 'lester-blaster';
 let connectedWallet = null;
 let connectedChainId = null;
@@ -1840,6 +1848,7 @@ let hmhRebootActive = false;
 // on restart and teardown so a Free recap can never surface on a Ranked screen.
 let lastHmhRunSummary = null;
 let chikunHost = null;
+let chikunRunMusic = null;
 let stackedHost = null;
 let stackedMountGeneration = 0;
 function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; }
@@ -3635,6 +3644,12 @@ function syncCombatOverlay() {
   renderArcadeMusicPlayer();
   const menuOwnsFocus = !combat.pendingBegin && Boolean(combat.paused || combat.gameOver || combat.levelUpPaused);
   document.body.classList.toggle('hide-rotate-hint', menuOwnsFocus);
+  // Chikun owns its pause UI and result lifecycle. Shared music controls must
+  // not create the legacy combat menu over the child iframe.
+  if (chikunActive) {
+    if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
+    return;
+  }
   // Auto-submit a finished ranked run to LitVM the moment the game-over state
   // is reached (no manual "Submit Official Score" step). One wallet confirmation
   // fires automatically. Guarded by gameOverSubmitted so it runs exactly once.
@@ -5046,6 +5061,9 @@ function mountHmhRebootSession() {
 }
 
 function destroyChikunSession() {
+  chikunRunMusic?.dispose();
+  chikunRunMusic = null;
+  delete document.documentElement.dataset.gameplayPaused;
   chikunHost?.destroy();
   chikunHost = null;
   chikunLifecycle = null;
@@ -5092,6 +5110,7 @@ function mountChikunSession() {
       }
     },
   });
+  chikunRunMusic = createChikunRunMusic(startArcadeMusicForGame);
   chikunHost = createChikunHost({
     mount: dom.officialCombatMount,
     expectedOrigin: window.location.origin,
@@ -5106,12 +5125,22 @@ function mountChikunSession() {
         : 'Free practice connected. No profile, leaderboard, settlement, or chain write can occur.';
     },
     onState: (message) => {
+      if (message.payload.status === 'running' && message.payload.survivalTicks === 0) {
+        chikunLifecycle?.beginPracticeRun();
+      }
+      chikunRunMusic?.observe(message.payload);
       combat.paused = Boolean(message.payload.paused);
-      combat.active = message.payload.status === 'running' || message.payload.status === 'paused';
-      combat.gameOver = message.payload.status === 'game-over';
+      if (message.payload.status) {
+        combat.active = message.payload.status === 'running' || message.payload.status === 'paused';
+        combat.gameOver = message.payload.status === 'game-over';
+      }
+      if(combat.paused) document.documentElement.dataset.gameplayPaused='true';
+      else delete document.documentElement.dataset.gameplayPaused;
+      renderArcadeMusicPlayer();
       if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Resume' : 'Pause';
     },
     onResult: (message) => {
+      chikunRunMusic?.observe({status: 'game-over'});
       const result = chikunLifecycle?.handleResult(message.payload);
       if (!result?.ok) {
         console.error('[Chikun lifecycle]', result?.error ?? result?.reason ?? 'Unknown result failure');
@@ -5120,6 +5149,12 @@ function mountChikunSession() {
     },
     onRestartRequest: () => { void restartChikunSession(); },
     onExitRequest: () => exitToArcade(),
+    onMusicRequest: () => {
+      if(!combat.paused)return;
+      arcadeMusic.expanded=true;
+      renderArcadeMusicPlayer();
+      dom.arcadeMusicPlayButton?.focus();
+    },
     onError: (error) => {
       console.error('[Chikun bridge]', error);
       if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Chikun runtime error: ${error.message}`;

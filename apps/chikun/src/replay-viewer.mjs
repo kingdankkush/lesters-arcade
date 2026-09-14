@@ -23,12 +23,14 @@ export function createChikunReplayPlayback(evidence) {
   let runtime = createChikunRuntime({
     seed: canonical.seed,
     maxTicks: frozenEvidence.maxTicks,
+    evidenceVersion: frozenEvidence.version,
   });
 
   const reset = () => {
     runtime = createChikunRuntime({
       seed: canonical.seed,
       maxTicks: frozenEvidence.maxTicks,
+    evidenceVersion: frozenEvidence.version,
     });
     return runtime.snapshot();
   };

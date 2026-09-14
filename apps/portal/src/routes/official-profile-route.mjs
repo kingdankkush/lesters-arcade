@@ -491,7 +491,7 @@ export function createOfficialProfileRoute({
         ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
         ['Longest Flight', formatSeconds(gp.longestRunSeconds ?? 0)],
         ['Coins', chikunTotals.coins.toLocaleString()],
-        ['Forks Cleared', chikunTotals.forks.toLocaleString()],
+        ['Obstacles Cleared', chikunTotals.forks.toLocaleString()],
         ['Near Misses', chikunTotals.nearMisses.toLocaleString()],
         ['Best Combo', chikunTotals.bestCombo.toLocaleString()],
         ['Flaps', chikunTotals.flaps.toLocaleString()],

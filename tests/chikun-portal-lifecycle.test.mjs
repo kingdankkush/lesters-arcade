@@ -97,3 +97,18 @@ test('tampered Ranked evidence fails closed before profile or leaderboard mutati
   assert.equal(state.leaderboards.chikun.length, 0);
   assert.equal(state.profiles[WALLET.toLowerCase()], undefined);
 });
+
+test('Free retries verify a fresh result while duplicate results and Ranked resets stay closed',()=>{
+ const state=createInitialArcadeState(),free=session('free',914),ranked=session('paid',915);
+ const lifecycle=createChikunPortalLifecycle({state,session:free,recordScoreRef:()=>{throw new Error('practice never writes');}});
+ const payload=resultPayload(free);
+ assert.equal(lifecycle.handleResult(payload).ok,true);
+ assert.equal(lifecycle.handleResult(payload).reason,'already-finalized');
+ assert.equal(lifecycle.beginPracticeRun(),true);
+ assert.equal(lifecycle.handleResult(payload).ok,true);
+ assert.equal(state.leaderboards.chikun.length,0);
+ const locked=createChikunPortalLifecycle({state,session:ranked,recordScoreRef:recordScore});
+ locked.handleResult(resultPayload(ranked));
+ assert.equal(locked.beginPracticeRun(),false);
+ assert.equal(locked.handleResult(resultPayload(ranked)).reason,'already-finalized');
+});

@@ -1,12 +1,14 @@
+import { buildChikunObstacle, obstacleClearance } from './chikun-obstacles.mjs';
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
-export const CHIKUN_CABINET_VERSION = '0.5.0';
-export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v3';
+export const CHIKUN_CABINET_VERSION = '0.6.0';
+export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v4';
 export const CHIKUN_FIXED_STEP_HZ = 60;
 export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
 const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
-const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
+export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v2';
+const LEGACY_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
 
 export const CHIKUN_VERTICAL_SLICE_CONFIG = Object.freeze({
   gameId: 'chikun',
@@ -82,10 +84,11 @@ function normalizeFlapSteps(taps, maxTicks) {
   return Object.freeze(flapSteps);
 }
 
-function buildChikunEvidence({ seed, taps, maxTicks }) {
+function buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion = CHIKUN_EVIDENCE_VERSION }) {
+  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION].includes(evidenceVersion)) throw new Error("Unsupported Chikun evidence version");
   const normalizedMaxTicks = normalizeMaxTicks(maxTicks);
   return Object.freeze({
-    version: CHIKUN_EVIDENCE_VERSION,
+    version: evidenceVersion,
     seed: normalizeSeed(seed),
     fixedStepHz: CHIKUN_FIXED_STEP_HZ,
     maxTicks: normalizedMaxTicks,
@@ -145,22 +148,22 @@ function forkGeometry(seed, index, tick) {
   };
 }
 
-function relevantForks(seed, tick) {
+function relevantForks(seed, tick, evidenceVersion = CHIKUN_EVIDENCE_VERSION) {
   const cfg = CHIKUN_VERTICAL_SLICE_CONFIG;
   const hazard = cfg.hazards[0];
   const traveled = traveledPixelsAtTick(tick);
-  const firstIndex = Math.max(0, Math.floor((traveled - cfg.canvas.width - hazard.firstOffsetPixels - hazard.width) / hazard.spacingPixels));
+  const firstIndex = Math.max(0, Math.floor((traveled - cfg.canvas.width - hazard.firstOffsetPixels - 320) / hazard.spacingPixels));
   const forks = [];
   for (let index = firstIndex; index < firstIndex + 5; index += 1) {
-    const fork = forkGeometry(seed, index, tick);
-    if (fork.x > -hazard.width && fork.x < cfg.canvas.width + hazard.spacingPixels) forks.push(fork);
+    const fork = evidenceVersion === LEGACY_EVIDENCE_VERSION ? forkGeometry(seed, index, tick) : buildChikunObstacle({seed,index,tick,x:cfg.canvas.width + hazard.firstOffsetPixels + index * hazard.spacingPixels - traveled,safeGapHeight:buildChikunDifficulty(tick).safeGapHeight});
+    if (fork.x > -fork.width && fork.x < cfg.canvas.width + hazard.spacingPixels) forks.push(fork);
   }
   return forks;
 }
 
 function freezeSnapshot(state) {
   const cfg = CHIKUN_VERTICAL_SLICE_CONFIG;
-  const forks = relevantForks(state.seed, state.tick).map((fork) => Object.freeze({
+  const forks = relevantForks(state.seed, state.tick, state.evidenceVersion).map((fork) => Object.freeze({
     ...fork,
     coin: Object.freeze({ ...fork.coin, collected: state.collectedCoins.has(fork.index) }),
     passed: state.passedForks.has(fork.index),
@@ -195,7 +198,7 @@ function buildRuntimeResult(state) {
   if (state.coinsCollected >= 3) achievements.push('chikun-stack-three');
   if (state.forksPassed >= 5) achievements.push('chikun-fork-runner');
   if (state.nearMisses >= 3) achievements.push('chikun-thread-needle');
-  const evidence = buildChikunEvidence({ seed: state.seed, taps: state.flapSteps, maxTicks: state.maxTicks });
+  const evidence = buildChikunEvidence({ seed: state.seed, taps: state.flapSteps, maxTicks: state.maxTicks, evidenceVersion: state.evidenceVersion });
   const finalState = Object.freeze({
     step: state.tick,
     y: Number(state.y.toFixed(6)),
@@ -228,10 +231,13 @@ function buildRuntimeResult(state) {
   });
 }
 
-export function createChikunRuntime({ seed = 1, maxTicks = 60 } = {}) {
+export function createChikunRuntime({ seed = 1, maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
+  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION].includes(evidenceVersion)) throw new Error("Unsupported Chikun evidence version");
   const cfg = CHIKUN_VERTICAL_SLICE_CONFIG;
   const state = {
     seed: normalizeSeed(seed),
+    evidenceVersion,
+    closest: new Map(),
     maxTicks: normalizeMaxTicks(maxTicks),
     tick: 0,
     y: cfg.chikun.startY,
@@ -278,11 +284,14 @@ export function createChikunRuntime({ seed = 1, maxTicks = 60 } = {}) {
       return freezeSnapshot(state);
     }
 
-    for (const fork of relevantForks(state.seed, state.tick)) {
+    for (const fork of relevantForks(state.seed, state.tick, state.evidenceVersion)) {
       const overlapsX = cfg.chikun.x + cfg.chikun.hitRadius > fork.x
         && cfg.chikun.x - cfg.chikun.hitRadius < fork.x + fork.width;
-      if (overlapsX && (state.y - cfg.chikun.hitRadius < fork.gapTop || state.y + cfg.chikun.hitRadius > fork.gapBottom)) {
-        finalize('fork');
+      const clearance = fork.shapes ? obstacleClearance(fork,cfg.chikun.x,state.y,cfg.chikun.hitRadius) : Infinity;
+      if (fork.shapes && overlapsX) state.closest.set(fork.index,Math.min(state.closest.get(fork.index)??Infinity,clearance));
+      const hit = fork.shapes ? clearance < 0 : overlapsX && (state.y - cfg.chikun.hitRadius < fork.gapTop || state.y + cfg.chikun.hitRadius > fork.gapBottom);
+      if (hit) {
+        finalize(fork.kind==='tree'||fork.kind==='drone'?fork.kind:'fork');
         return freezeSnapshot(state);
       }
       if (!state.collectedCoins.has(fork.index)) {
@@ -302,7 +311,9 @@ export function createChikunRuntime({ seed = 1, maxTicks = 60 } = {}) {
         state.score += cfg.rules.score.forkPassValue;
         const topClearance = state.y - cfg.chikun.hitRadius - fork.gapTop;
         const bottomClearance = fork.gapBottom - (state.y + cfg.chikun.hitRadius);
-        if (Math.min(topClearance, bottomClearance) <= cfg.rules.difficulty.nearMissClearance) {
+        const closest = fork.shapes ? state.closest.get(fork.index)??Infinity : Math.min(topClearance,bottomClearance);
+        state.closest.delete(fork.index);
+        if (closest <= cfg.rules.difficulty.nearMissClearance) {
           state.nearMisses += 1;
           state.score += cfg.rules.score.nearMissValue;
         }
@@ -322,10 +333,10 @@ export function createChikunRuntime({ seed = 1, maxTicks = 60 } = {}) {
   });
 }
 
-export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
-  const evidence = buildChikunEvidence({ seed, taps, maxTicks });
+export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
+  const evidence = buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion });
   const tapSet = new Set(evidence.flapSteps);
-  const runtime = createChikunRuntime({ seed: evidence.seed, maxTicks: evidence.maxTicks });
+  const runtime = createChikunRuntime({ seed: evidence.seed, maxTicks: evidence.maxTicks, evidenceVersion: evidence.version });
   while (!runtime.terminal) {
     const tick = runtime.snapshot().tick;
     runtime.step({ flap: tapSet.has(tick) });
@@ -335,7 +346,7 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
 
 export function replayChikunRun(evidence = {}) {
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) throw new Error('Chikun replay evidence must be an object');
-  if (evidence.version !== CHIKUN_EVIDENCE_VERSION) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
+  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION].includes(evidence.version)) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
   if (evidence.fixedStepHz !== CHIKUN_FIXED_STEP_HZ) throw new Error(`Chikun evidence fixedStepHz must be ${CHIKUN_FIXED_STEP_HZ}`);
   const maxTicks = Math.floor(Number(evidence.maxTicks));
   if (!Number.isFinite(maxTicks) || maxTicks < 1 || maxTicks > CHIKUN_MAX_RUN_TICKS) throw new Error('Chikun evidence maxTicks is outside the supported run budget');
@@ -347,7 +358,7 @@ export function replayChikunRun(evidence = {}) {
     if (value <= previousStep) throw new Error('Chikun evidence flapSteps must be strictly increasing');
     previousStep = value;
   }
-  return simulateChikunRun({ seed: evidence.seed, taps: evidence.flapSteps, maxTicks });
+  return simulateChikunRun({ seed: evidence.seed, taps: evidence.flapSteps, maxTicks, evidenceVersion: evidence.version });
 }
 
 function sameJson(left, right) {
@@ -383,6 +394,7 @@ export function verifyChikunReplayClaim({ expectedSeed, expectedBuildHash, expec
   if (replayClaim.seed !== expectedSeed || replayClaim.buildHash !== expectedBuildHash || replayClaim.seasonId !== expectedSeasonId) {
     throw new Error('Chikun replay claim does not match the parent session binding');
   }
+  if (replayClaim.evidence?.version !== CHIKUN_EVIDENCE_VERSION) throw new Error("Chikun course evidence version does not match the current cabinet");
   const replayed = replayChikunRun(replayClaim.evidence);
   if (replayed.seed !== expectedSeed) throw new Error('Chikun replay seed does not match the parent session seed');
   if (!sameJson(replayClaim.finalState, replayed.finalState)) throw new Error('Chikun replay finalState does not match canonical replay');

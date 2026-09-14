@@ -20,6 +20,11 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/chikun-open-air-browser-smoke.mjs',
+  'apps/portal/src/chikun-run-music.mjs',
+  'tests/chikun-music.test.mjs',
+  'apps/portal/src/chikun-obstacles.mjs',
+  'tests/chikun-open-air.test.mjs',
   'scripts/hmh-world-campfire-browser-smoke.mjs',
   'tests/hmh-native-canopy-composition.test.mjs',
   'tests/hmh-terrain-edge-fade.test.mjs',
@@ -47,8 +52,14 @@ const NODE_CHECK_FILES = [
   'tests/hmh-sfx-weight.test.mjs',
   'tests/hmh-world-destructibles.test.mjs',
   'tests/hmh-world-explosives.test.mjs',
+  'apps/portal/assets/stacked-cabinet/stacked-cabinet-manifest.mjs',
+  'apps/portal/src/cabinet-motion.mjs',
+  'tests/stacked-cabinet-art.test.mjs',
+  'scripts/stacked-cabinet-browser-smoke.mjs',
   'apps/chikun/src/character.mjs',
   'apps/chikun/src/world.mjs',
+  'apps/chikun/src/viewport.mjs',
+  'tests/chikun-viewport.test.mjs',
   'apps/chikun/src/audio.mjs',
   'apps/chikun/src/flight-room.mjs',
   'tests/chikun-facelift.test.mjs',
@@ -643,6 +654,8 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/build-chikun-open-air-props.py',
+  'scripts/pack-chikun-open-air-props.py',
   'scripts/adopt-hmh-hero-motion.py',
   'scripts/adopt-hmh-native-roster.py',
   'scripts/build-hmh-hero-motion.py',

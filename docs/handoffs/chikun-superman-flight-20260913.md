@@ -19,3 +19,13 @@ Native inspection confirms eighteen GLB animations, one fifteen-joint skin, 432 
 Previous production retained for rollback: `dpl_TFj74rNbMiBdu2p5JbrL9UQNqNFi`, `https://lesters-arcade-apyh3lp3o-justin-agent-projects.vercel.app`, runtime source `d7a5ad691b2fe3f34f4453b5bc39429ec2648042`.
 
 The concurrent STACKED beta production source `98204a1c36c682a70adbb986fb6941289eed8501` is merged before promotion, preserving all three public cabinets. Shared cache conflicts are resolved with a new v39 namespace, all STACKED offline resources, and Chikun v2 poster. No STACKED gameplay changes were authored in this revision.
+
+## Published and verified
+
+Live production is `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd` at `https://lestersarcade.io`, exact runtime source `9d14b18c20c3cfe7ba1fe88789a6f61feb9c9da3`. Both preview and production passed 3,641 release tests with 3,590 passes and exactly 51 unchanged documented retirement exceptions, plus assets, syntax (592 JavaScript / 88 Python), contract structure and build gates.
+
+Public guest Free Mode, touch Ranked Mode, replay play/pause/seek and restart passed. All eighteen animations, eight audio cues, core portal/STACKED/Chikun bundles, responsive Flight Room controls, and reduced motion were verified against the public domain. Desktop and touch p95 frame intervals were about 7 ms on the test host. Four-times CPU slowdown at phone size measured 20.9 ms p95. A screenshot-guided 22-second flight cleared four obstacles and collected four coins using ordinary input.
+
+STACKED's five-size browser play test also passed. HMH's twelve historical screenshot comparisons still differ, with zero runtime errors; its bundle matches the retained STACKED production byte for byte. No unrelated baselines were accepted. The final rollback is `dpl_3GBNYfeQrHjoGUEm91QD41WuAj83`, source `98204a1c36c682a70adbb986fb6941289eed8501`.
+
+See [the final receipt](../qa/chikun-superman-release-20260913.json) for machine-readable evidence. The native source package and screenshots are also saved in the task's `outputs/superman-flight` directory.

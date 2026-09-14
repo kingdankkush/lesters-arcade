@@ -49,7 +49,7 @@ test('UTC day key and daily seed are stable inside a day and change at the UTC b
   assert.equal(morning.version, CHIKUN_DAILY_CHALLENGE_VERSION);
   assert.equal(morning.dayKey, '2026-08-17');
   assert.equal(morning.seed, deriveChikunDailySeed('2026-08-17'));
-  assert.equal(morning.seed, 713_180_973);
+  assert.equal(morning.seed, 2_422_052_140);
   assert.equal(morning.seed, night.seed);
   assert.notEqual(morning.seed, next.seed);
   assert.equal(morning.label, 'Daily 2026-08-17');

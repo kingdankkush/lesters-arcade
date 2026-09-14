@@ -43,7 +43,7 @@ test('share text reports mode and mastery stats without wallet or session data',
   const text = buildChikunShareText({ score: 1_234, forksPassed: 12, nearMisses: 4, bestCombo: 3, survivalTime: 42.5 }, 'ranked');
   assert.match(text, /Chikun's Escape/i);
   assert.match(text, /1,234 points/i);
-  assert.match(text, /12 forks/i);
+  assert.match(text, /12 obstacles/i);
   assert.match(text, /4 near misses/i);
   assert.match(text, /Replay Verified/i);
   assert.doesNotMatch(text, /0x[a-f0-9]{40}/i);

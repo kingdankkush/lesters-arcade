@@ -27,7 +27,7 @@ export function selectChikunAnimation(snapshot={}, options={}) {
   if(flapAge<.24) return 'accelerate';
   if(eventAge<.42 && CHIKUN_CLIPS[event]) return event;
   const bird=snapshot.chikun??{},v=bird.velocityY??0;
-  const opening=snapshot.forks?.find(f=>!f.passed && f.x+(f.width??0)>bird.x-45 && f.x-bird.x<110);
+  const opening=snapshot.forks?.find(f=>(!f.kind || f.kind==='gate') && !f.passed && f.x+(f.width??0)>bird.x-45 && f.x-bird.x<110);
   if(opening) return 'squeeze';
   if(v<-1.2)return 'climb';
   if(v<-.25)return 'crest';
@@ -88,7 +88,7 @@ export function createChikunCharacter({characterId='chikun-original'}={}) {
       else return false;
       mixCtx.globalAlpha=1;mixCtx.globalCompositeOperation='source-over';hasComposite=true;
       const hero=options.phase==='ready'||options.phase==='waiting';
-      const size=options.previewClip?440:hero?340:166,x=hero?300:snapshot.chikun.x,y=hero?380:snapshot.chikun.y;
+      const size=options.previewClip?440:hero?(options.menuPosition?.size??340):166,x=hero?(options.menuPosition?.x??300):snapshot.chikun.x,y=hero?(options.menuPosition?.y??380):snapshot.chikun.y;
       const target=hero||reduced?0:clamp((snapshot.chikun.velocityY??0)*.018,-.08,.11);
       tilt+=(target-tilt)*(1-Math.exp(-delta*15));
       ctx.save();ctx.translate(x,y);ctx.rotate(tilt);ctx.drawImage(composite,-size/2,-size/2,size,size);ctx.restore();
