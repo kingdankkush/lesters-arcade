@@ -41,9 +41,9 @@ test('desktop and mobile performance profiles are immutable, bounded, and determ
   assert.equal(desktop.antialias, true);
   assert.equal(desktop.particlesPerHazard, 10);
   assert.equal(mobile.id, 'mobile');
-  assert.equal(mobile.resolution, 1.25);
+  assert.equal(mobile.resolution, 1);
   assert.equal(mobile.antialias, false);
-  assert.equal(mobile.particlesPerHazard, 6);
+  assert.equal(mobile.particlesPerHazard, 4);
   assert.ok(mobile.worldCullMargin <= desktop.worldCullMargin);
   assert.ok(Object.values(RUNTIME_PERFORMANCE_PROFILES).every(Object.isFrozen));
 });

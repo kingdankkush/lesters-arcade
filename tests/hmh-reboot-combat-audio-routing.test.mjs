@@ -198,3 +198,10 @@ test('S-2: the registry gate itself is kept -- routing is the fix, not a wider g
   assert.match(source, /if \(!samplePath \|\| !HMH_SFX_CUE_REGISTRY\[cue\]\)/);
   assert.match(source, /import \{ HMH_WEAPON_SFX \} from '\.\/weapon-audio\.mjs';/);
 });
+
+test('production gameplay audio excludes footsteps, movement and status jingles but keeps combat and pickups',async()=>{
+ const audio=fresh({gameplayOnly:true});await audio.unlock();
+ for(const cue of ['footstep-dirt','footstep-road','dash','land','level-up','combo-milestone','upgrade-offer','low-health','game-over','menu-click'])assert.equal(audio.play(cue,{now:1000}).reason,'presentation-cue-disabled',cue);
+ for(const [i,cue]of ['weapon-fire','reload-complete','enemy-hit','pickup','silver-collect'].entries())assert.equal(audio.play(cue,{now:2000+i*500}).played,true,cue);
+ audio.destroy();
+});

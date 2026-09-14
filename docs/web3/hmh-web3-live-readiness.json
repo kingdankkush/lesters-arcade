@@ -30,7 +30,6 @@
       "status": "BLOCKED",
       "evidence": [],
       "blockers": [
-        "GameRegistry cabinet approval path is not live-gated.",
         "SplitConfig/economy settings are not production-approved.",
         "Legal/brand/economy approval is required before real-value launch."
       ]

@@ -20,6 +20,16 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/hmh-reboot/src/road-presentation.mjs',
+  'apps/portal/src/chikun-ground-v3-course.mjs',
+  'apps/portal/src/chikun-ground-v3-runtime.mjs',
+  'apps/stacked/src/render/aquatic-forms.mjs',
+  'tests/hmh-separation-distance-cache.test.mjs',
+  'tests/hmh-mobile-worlds.test.mjs',
+  'tests/chikun-flight-passages.test.mjs',
+  'tests/chikun-flight-pilot.test.mjs',
+  'tests/stacked-aquatic-upgrade.test.mjs',
+  'scripts/hmh-mobile-performance-profile.mjs',
   'apps/portal/src/portal-content.mjs',
   'apps/portal/src/portal-discovery.mjs',
   'apps/portal/src/cabinet-presentation.mjs',

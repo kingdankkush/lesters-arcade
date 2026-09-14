@@ -1,3 +1,5 @@
+import { roundedRoadNodes } from './road-presentation.mjs';
+const ROAD_NODE_CACHE=new WeakMap();
 import { WORLD_DESIGN_GROUND_PATHS } from './world-design-layout.mjs';
 import { exposedWaterEdges, clipHorizontalWaterLine } from './world-design-water.mjs';
 import { freezeDeep } from './value-guards.mjs';
@@ -290,12 +292,16 @@ function screenBoundsVisible(points, view, margin) {
     && Math.max(...ys) >= -margin && Math.min(...ys) <= view.height + margin;
 }
 
-function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = false) {
+function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = false, view = null) {
   const zoom = points.zoom;
   const road=layers.routes,cues=layers.details;
+  const visible=(a,b)=>!view||Math.max(a.x,b.x)>=-route.width*zoom&&Math.min(a.x,b.x)<=view.width+route.width*zoom&&Math.max(a.y,b.y)>=-route.width*zoom&&Math.min(a.y,b.y)<=view.height+route.width*zoom;
   const trace = (layer=road) => {
-    layer.moveTo(points[0].x, points[0].y);
-    for (const point of points.slice(1)) layer.lineTo(point.x, point.y);
+    let joined=false;
+    for(let i=1;i<points.length;i++){
+      const a=points[i-1],b=points[i];if(!visible(a,b)){joined=false;continue;}
+      if(!joined)layer.moveTo(a.x,a.y);layer.lineTo(b.x,b.y);joined=true;
+    }
   };
   // Roads used to be a flat slab between two hard black outline strokes and a
   // dark verge, which read as a map overlay with a border rather than ground.
@@ -309,8 +315,7 @@ function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = fals
   if (roadMask) {
     // Same geometry into the mask, so the tiled surface clips exactly to the
     // travelled width.
-    roadMask.moveTo(points[0].x, points[0].y);
-    for (const point of points.slice(1)) roadMask.lineTo(point.x, point.y);
+    trace(roadMask);
     roadMask.stroke({ color: 0xffffff, width: route.width * zoom, cap: 'round', join: 'round' });
   }
   // Centre wear band: lighter where traffic polishes the surface.
@@ -325,6 +330,7 @@ function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = fals
   for (let index = 1; index < points.length; index += 1) {
     const from = points[index - 1];
     const to = points[index];
+    if(!visible(from,to))continue;
     const dx = to.x - from.x;
     const dy = to.y - from.y;
     const length = Math.hypot(dx, dy);
@@ -336,7 +342,7 @@ function drawRoute(layers, points, route, kit, roadMask = null, roadTiled = fals
     for (let travelled = stride * 0.5; travelled + dashLength < length; travelled += stride) {
       cues.moveTo(from.x + stepX * travelled, from.y + stepY * travelled)
         .lineTo(from.x + stepX * (travelled + dashLength), from.y + stepY * (travelled + dashLength))
-        .stroke({ color: 0xc7bb8b, width: Math.max(1, 2.4 * zoom), alpha: 0.14 });
+        .stroke({ color: 0xc7bb8b, width: Math.max(1, 2.4 * zoom), alpha: 0.36 });
     }
   }
 }
@@ -1077,7 +1083,8 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   }
 
   for (const route of [...world.routes,...WORLD_DESIGN_GROUND_PATHS]) {
-    const routeNodes = route.points ?? route.nodeIds.map((id) => world.routeGraph.nodes.find((candidate) => candidate.id === id));
+    let routeNodes=ROAD_NODE_CACHE.get(route);
+    if(!routeNodes){routeNodes=roundedRoadNodes(route.points??route.nodeIds.map(id=>world.routeGraph.nodes.find(n=>n.id===id)),route.width);ROAD_NODE_CACHE.set(route,routeNodes);}
     const routePoints = routeNodes.map((node) => {
       const ground = queryGround(node.x,node.y);
       return project({x:node.x,y:node.y,z:ground.groundZ});
@@ -1086,7 +1093,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     if (!screenBoundsVisible(routePoints, view, performanceProfile.worldCullMargin)) continue;
     const firstNode = routeNodes[0];
     const paved = route.kind === 'main' || route.kind === 'street';
-    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], paved ? roadMaskGraphic : pathMaskGraphic, paved ? roadTiled : pathTiled);
+    drawRoute(layers, routePoints, route, DISTRICT_PRODUCTION_MATERIALS[districtAt(firstNode.x).id], paved ? roadMaskGraphic : pathMaskGraphic, paved ? roadTiled : pathTiled, view);
     if (!stripPlacer || !shoulderTexture) continue;
     // Both verges of every segment. The strip's inner edge sits just inside the
     // travelled width so the surface tile covers the join.

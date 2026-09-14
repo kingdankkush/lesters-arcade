@@ -1,0 +1,197 @@
+{
+  "syntheticPresentationFixture": true,
+  "reports": [
+    {
+      "name": "desktop",
+      "scenes": [
+        {
+          "mode": "living",
+          "particles": 648,
+          "phase": "burst"
+        },
+        {
+          "mode": "aurora",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "orbit",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "spectrum",
+          "particles": 192,
+          "phase": "burst"
+        }
+      ],
+      "differences": [
+        {
+          "comparable": true,
+          "meanDelta": 1.3142361111111112,
+          "maxDelta": 22,
+          "changedCells": 99
+        },
+        {
+          "comparable": true,
+          "meanDelta": 0.9461805555555556,
+          "maxDelta": 20,
+          "changedCells": 86
+        },
+        {
+          "comparable": true,
+          "meanDelta": 1.953125,
+          "maxDelta": 18,
+          "changedCells": 109
+        }
+      ],
+      "allSixZones": true,
+      "reducedMotionPixelIdentical": true,
+      "errors": []
+    },
+    {
+      "name": "phone",
+      "scenes": [
+        {
+          "mode": "living",
+          "particles": 648,
+          "phase": "burst"
+        },
+        {
+          "mode": "aurora",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "orbit",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "spectrum",
+          "particles": 192,
+          "phase": "burst"
+        }
+      ],
+      "differences": [
+        {
+          "comparable": true,
+          "meanDelta": 2.984375,
+          "maxDelta": 42,
+          "changedCells": 142
+        },
+        {
+          "comparable": true,
+          "meanDelta": 2.296875,
+          "maxDelta": 45,
+          "changedCells": 106
+        },
+        {
+          "comparable": true,
+          "meanDelta": 2.5746527777777777,
+          "maxDelta": 25,
+          "changedCells": 144
+        }
+      ],
+      "allSixZones": true,
+      "reducedMotionPixelIdentical": true,
+      "errors": []
+    },
+    {
+      "name": "small-phone",
+      "scenes": [
+        {
+          "mode": "living",
+          "particles": 648,
+          "phase": "burst"
+        },
+        {
+          "mode": "aurora",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "orbit",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "spectrum",
+          "particles": 192,
+          "phase": "burst"
+        }
+      ],
+      "differences": [
+        {
+          "comparable": true,
+          "meanDelta": 2.9791666666666665,
+          "maxDelta": 46,
+          "changedCells": 127
+        },
+        {
+          "comparable": true,
+          "meanDelta": 2.265625,
+          "maxDelta": 49,
+          "changedCells": 96
+        },
+        {
+          "comparable": true,
+          "meanDelta": 2.5086805555555554,
+          "maxDelta": 25,
+          "changedCells": 145
+        }
+      ],
+      "allSixZones": true,
+      "reducedMotionPixelIdentical": true,
+      "errors": []
+    },
+    {
+      "name": "landscape",
+      "scenes": [
+        {
+          "mode": "living",
+          "particles": 648,
+          "phase": "burst"
+        },
+        {
+          "mode": "aurora",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "orbit",
+          "particles": 192,
+          "phase": "burst"
+        },
+        {
+          "mode": "spectrum",
+          "particles": 192,
+          "phase": "burst"
+        }
+      ],
+      "differences": [
+        {
+          "comparable": true,
+          "meanDelta": 0.9513888888888888,
+          "maxDelta": 18,
+          "changedCells": 80
+        },
+        {
+          "comparable": true,
+          "meanDelta": 0.6822916666666666,
+          "maxDelta": 12,
+          "changedCells": 61
+        },
+        {
+          "comparable": true,
+          "meanDelta": 1.5486111111111112,
+          "maxDelta": 20,
+          "changedCells": 90
+        }
+      ],
+      "allSixZones": true,
+      "reducedMotionPixelIdentical": true,
+      "errors": []
+    }
+  ]
+}

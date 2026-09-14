@@ -5,12 +5,13 @@ const COLORS = { I:0x32d9ff,J:0x5688ff,L:0xffa447,O:0xffd84d,S:0x60e889,T:0xb66c
 const intensityFor = settings => settings.accessibility.reduceMotion ? 0 : Math.max(0, Math.min(1, settings.video.effectsIntensity ?? .7));
 
 export function createGameplayParticles({ geometry, mobile = false }) {
-  const capacity = mobile ? 128 : 192;
+  const capacity = mobile ? 256 : 384;
   const fields = Object.fromEntries(['x','y','vx','vy','born','life','size','spin'].map(key => [key,new Float32Array(capacity)]));
   const color = new Uint32Array(capacity), alive = new Uint8Array(capacity);
-  const state = { ...fields, color, alive, capacity, count:0, emitted:0, lastEvent:'', clearTier:0, rows:new Int8Array(4).fill(-1), clearAt:-10000, combo:0 };
+  const state = { ...fields, color, alive, capacity, count:0, emitted:0, lastEvent:'', clearTier:0, rows:new Int8Array(4).fill(-1), clearAt:-10000, combo:0, glows:Array.from({length:4},()=>({active:false,born:-10000,cells:[],color:0xffffff,serial:0})) };
+  let glowCursor=0,glowSerial=0;
   let cursor=0, lastTick=-1, lastMove=-1000, lastDrop=-1000;
-  const reset = () => { alive.fill(0); state.count=0; state.clearTier=0; state.rows.fill(-1); state.lastEvent=''; lastTick=-1; lastMove=lastDrop=-1000; };
+  const reset = () => { for(const g of state.glows)g.active=false; alive.fill(0); state.count=0; state.clearTier=0; state.rows.fill(-1); state.lastEvent=''; lastTick=-1; lastMove=lastDrop=-1000; };
   const emit = (x,y,vx,vy,life,size,tint,now,spin=0) => {
     const i=cursor; cursor=(cursor+1)%capacity;
     if(!alive[i]) state.count++;
@@ -49,6 +50,7 @@ export function createGameplayParticles({ geometry, mobile = false }) {
       const placement=locateCommittedLock(before,after,geometry);
       const cells=visible(placement?.cells??landing(before));
       state.lastEvent='lock';
+      Object.assign(state.glows[glowCursor],{active:true,born:now,cells:cells.map(c=>[...c]),color:tint,serial:++glowSerial});glowCursor=(glowCursor+1)%state.glows.length;
       burst(cells,Math.ceil(12*scale),105,tint,now,'lock',strength);
       if(after.hardDropCells>before.hardDropCells && a) {
         const top=(19-a.y)*32+16, bottom=cells.length?(19-cells[0][1])*32+16:top;
@@ -69,12 +71,12 @@ export function createGameplayParticles({ geometry, mobile = false }) {
         const rows=placement?.rows??candidates.slice(0,tier).map(row=>row.y).sort((a,b)=>a-b);
         for(let i=0;i<tier;i++) state.rows[i]=rows[i]??Math.min(19,i);
         state.lastEvent=['','single','double','triple','halving'][tier];
-        const count=Math.ceil(([0,16,32,54,80][tier]+state.combo*4)*scale);
+        const count=Math.ceil(([0,48,96,160,224][tier]+state.combo*6)*scale);
         for(let i=0;i<count;i++) {
           const row=state.rows[i%tier], x=((i*.61803398875)%1)*316+2;
           const speed=45+tier*28+(i%7)*9, sign=x<160?-1:1;
-          emit(x,(19-row)*32+16,sign*speed,-35-Math.sin(i*2.4)*speed*.55,420+tier*75+(i%4)*25,
-            1.8+tier*.35,i%4===0?0xe8fcff:tint,now,i*1.3);
+          emit(x,(19-row)*32+16,sign*speed,-35-Math.sin(i*2.4)*speed*.55,520+tier*95+(i%4)*35,
+            1.8+tier*.35,i%7===0?0xe8fcff:Object.values(COLORS)[Math.max(0,(before.board[row*10+Math.min(9,Math.floor(x/32))]||((i%7)+1))-1)]??tint,now,i*1.3);
         }
       }
     } else if(a&&b&&before.piecesSpawned===after.piecesSpawned&&before.holdsUsed===after.holdsUsed) {
@@ -87,7 +89,8 @@ export function createGameplayParticles({ geometry, mobile = false }) {
   const update = (now, settings) => {
     if(!intensityFor(settings)) { reset(); return state; }
     for(let i=0;i<capacity;i++) if(alive[i]&&now-fields.born[i]>=fields.life[i]) { alive[i]=0; state.count--; }
-    if(now-state.clearAt>850) state.clearTier=0;
+    for(const g of state.glows)if(now-g.born>=1000)g.active=false;
+    if(now-state.clearAt>950) state.clearTier=0;
     return state;
   };
   return { state,step,update,reset };
@@ -99,7 +102,8 @@ export function createBoardParticles({ board, Graphics, geometry, mobile }) {
   const context=shard.context;
   const visuals=Array.from({length:particles.state.capacity},(_,i)=>i?shard.clone():shard);
   const bands=Array.from({length:4},()=>new Graphics().rect(0,0,1,1).fill(0xffffff));
-  for(const node of [...visuals,...bands]) { node.visible=false; board.layers.effectLayer.addChild(node); }
+  const glows=particles.state.glows.map(()=>new Graphics());
+  for(const node of [...visuals,...bands,...glows]) { node.visible=false; board.layers.effectLayer.addChild(node); }
   return {
     ...particles,
     draw(now,settings) {
@@ -113,6 +117,22 @@ export function createBoardParticles({ board, Graphics, geometry, mobile }) {
         node.scale.set(s.size[i]*(1+fade),s.size[i]*.7);
         node.tint=s.color[i]; node.alpha=fade*fade*.85*intensityFor(settings);
       }
+      for(let i=0;i<glows.length;i++) {
+        const node=glows[i],g=s.glows[i];node.visible=g.active;if(!g.active)continue;
+        if(node.__serial!==g.serial) {
+          node.clear();
+          for(const [x,y] of g.cells) {
+            const px=x*32,py=(19-y)*32;
+            const edges=[[-1,0,px,py,px,py+32],[1,0,px+32,py,px+32,py+32],[0,1,px,py,px+32,py],[0,-1,px,py+32,px+32,py+32]];
+            for(const [dx,dy,ax,ay,bx,by]of edges)if(!g.cells.some(([cx,cy])=>cx===x+dx&&cy===y+dy)) {
+              node.moveTo(ax,ay).lineTo(bx,by).stroke({color:g.color,width:9,alpha:.18});
+              node.moveTo(ax,ay).lineTo(bx,by).stroke({color:g.color,width:3,alpha:.9});
+            }
+          }
+          node.__serial=g.serial;
+        }
+        node.position.set(offset,0);node.alpha=Math.max(0,1-(now-g.born)/1000)*intensityFor(settings);
+      }
       const age=(now-s.clearAt)/1000;
       for(let i=0;i<4;i++) {
         const band=bands[i]; band.visible=i<s.clearTier&&age>=0&&age<.5&&!settings.accessibility.reduceMotion;
@@ -125,6 +145,6 @@ export function createBoardParticles({ board, Graphics, geometry, mobile }) {
       }
       return s;
     },
-    destroy() { for(const node of [...visuals,...bands]) node.destroy(); context.destroy(); particles.reset(); },
+    destroy() { for(const node of [...visuals,...bands,...glows]) node.destroy(); context.destroy(); particles.reset(); },
   };
 }

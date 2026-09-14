@@ -4,7 +4,7 @@ export const BOARD_LAYER_ORDER = Object.freeze(['wellFrame','stackLayer','garbag
 const COLORS = Object.freeze({ I:0x32d9ff, J:0x5688ff, L:0xffa447, O:0xffd84d, S:0x60e889, T:0xb66cff, Z:0xff6078, garbage:0x718092 });
 const LOCKED_KIND_BY_ID = Object.freeze([null,'I','J','L','O','S','T','Z','garbage']);
 const WELL_X = Object.freeze({ wide: 96, tall: 0 });
-const MARKS = Object.freeze({ I:[3,4,5], J:[0,3,4,5], L:[2,3,4,5], O:[0,2,6,8], S:[1,2,3,4], T:[1,3,4,5], Z:[0,1,4,5], garbage:[0,2,4,6,8] });
+const MARKS = Object.freeze({ I:[3,4,5], J:[0,3,4,5], L:[2,3,4,5], O:[0,1,2,3,5,6,7,8], S:[1,2,3,4], T:[1,3,4,5], Z:[0,1,4,5], garbage:[0,2,4,6,8] });
 
 export function boardCellToAuthored({ x, y, frame }) {
   return Object.freeze({ x: WELL_X[frame] + x * CELL_PX, y: (BOARD_VISIBLE_ROWS - 1 - y) * CELL_PX, visible: y >= 0 && y < BOARD_VISIBLE_ROWS && x >= 0 && x < 10 });
@@ -18,8 +18,13 @@ function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterne
     graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: COLORS[kind] ?? 0xa8bdca, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
     graphic.rect(4, 3, Math.max(2,size-6), 2).fill({color:0xffffff,alpha:alpha*.2});
     if (patterned) {
-      const unit = size / 9, start = size / 2 - unit * 2;
-      for (const cell of MARKS[kind] ?? []) graphic.rect(start+(cell%3)*unit*1.45,start+Math.floor(cell/3)*unit*1.45,unit,unit).fill({color:0x071321,alpha:alpha*.72});
+      const unit=size/7,start=size/2-unit*1.5;
+      const cells=MARKS[kind]??[];
+      for(const cell of cells) {
+        const px=start+(cell%3)*unit,py=start+Math.floor(cell/3)*unit;
+        if(cells.includes(cell+1)&&cell%3<2)graphic.rect(px,py,unit+1,1.5).fill({color:0x071321,alpha:alpha*.7});
+        if(cells.includes(cell+3))graphic.rect(px,py,1.5,unit+1).fill({color:0x071321,alpha:alpha*.7});
+      }
     }
     graphic.__appearance = key;
   }

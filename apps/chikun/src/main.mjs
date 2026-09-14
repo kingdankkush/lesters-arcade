@@ -722,7 +722,7 @@ function handleParentMessage(event) {
     prepareRun();
     phase = 'ready';
     startOverlay.classList.remove('is-hidden');
-    send('game:ready', { runtimeVersion: '0.7.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
+    send('game:ready', { runtimeVersion: '0.8.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
     sendState('ready');
     setLive(`Ready for ${mode === 'ranked' ? 'Ranked' : 'Free'} Mode.`);
   } else if (message.type === 'portal:pause') togglePause('portal', true);
@@ -867,7 +867,7 @@ document.querySelector('#replayFile').addEventListener('change',async event=>{
   if(file.size>REPLAY_FILE_LIMIT)throw new Error('Replay file must be smaller than 64 KB.');
   const imported=importChikunReplay(await file.text());stopReplayViewer();lastCompletedResult=imported;ragdoll?.dispose();ragdoll=null;
   renderReplayTimeline(imported.evidence);resultScore.textContent=String(imported.score);resultStats.replaceChildren();document.querySelector('#runObjectives').textContent='';
-  resultEyebrow.textContent=imported.evidence.version==='chikun-flap-evidence-v3'?'Imported replay · Ground & Sky':'Imported historical flight';
+  resultEyebrow.textContent=['chikun-flap-evidence-v3','chikun-flap-evidence-v4'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
   resultCopy.textContent='Playback only. This replay does not write a score, best, achievement or profile record.';startReplayViewer();
  }catch(error){setLive(error.message);resultCopy.textContent=error.message;}
 });

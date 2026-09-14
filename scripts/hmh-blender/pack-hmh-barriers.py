@@ -10,11 +10,11 @@ for row in data['frames']:
     assert a.getbbox() and a.getbbox()[0]>1 and a.getbbox()[1]>1 and a.getbbox()[2]<255 and a.getbbox()[3]<255,row['file']+' clipped'
     row['nativeABPixelExact']=True;row['nativeRgbaSha256']=hashlib.sha256(a.tobytes()).hexdigest()
 for tier,size in [('desktop',256),('mobile',128)]:
-    sheet=Image.new('RGBA',(size*4,size*7));frames=[]
+    sheet=Image.new('RGBA',(size*7,size*8));frames=[]
     for i,row in enumerate(data['frames']):
         im=Image.open(RAW/'A'/row['file']).convert('RGBA')
         if size!=256:im=im.resize((size,size),Image.Resampling.LANCZOS)
-        x=i%4*size;y=i//4*size;sheet.paste(im,(x,y))
+        x=i%7*size;y=i//7*size;sheet.paste(im,(x,y))
         frames.append({'assetId':row['assetId'],'frame':{'x':x,'y':y,'w':size,'h':size},'anchor':row['anchor'],'runtimeScale':8/size,'projectionY':row['projectionY']})
     target=OUT/f'barriers-{tier}.webp';sheet.save(target,lossless=True,method=6,exact=True)
     assert Image.open(target).convert('RGBA').tobytes()==sheet.tobytes()

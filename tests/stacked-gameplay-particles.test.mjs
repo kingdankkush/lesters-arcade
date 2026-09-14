@@ -45,7 +45,7 @@ test('clear tiers grow from single through HALVING and combos add a bounded cele
     particles.step(before,{...before,tick:2,lines,piecesLocked:1,piecesSpawned:2},0,settings);
     counts.push(particles.state.emitted);
     assert.equal(particles.state.clearTier,lines);
-    assert.ok(particles.state.count<=128);
+    assert.ok(particles.state.count<=256);
     assert.ok(particles.state.rows.slice(0,lines).every((row,i)=>row===i));
   }
   assert.ok(counts.every((count,i)=>i===0||count>counts[i-1]));
@@ -57,7 +57,7 @@ test('bounded pools expire, reset on rewind and suppress particles for reduced m
   const particles=createGameplayParticles({geometry,mobile:true});
   let before=fixture();
   for(let i=0;i<2000;i++) { const after={...before,tick:before.tick+1,lines:before.lines+4,piecesLocked:before.piecesLocked+1}; particles.step(before,after,i,settings); before=after; }
-  assert.ok(particles.state.count<=128);
+  assert.ok(particles.state.count<=256);
   particles.update(4000,settings);
   assert.equal(particles.state.count,0);
   particles.step(before,fixture(),5000,settings);

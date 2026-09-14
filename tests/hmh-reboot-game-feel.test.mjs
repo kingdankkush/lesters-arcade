@@ -337,7 +337,7 @@ test('pickup sparkles are seeded, tiered, and halve under reduce-flash', () => {
 test('the runtime writes the framing zoom immediately before the pinned camera follow, outside the director block', async () => {
   const source = await readFile(mainUrl, 'utf8');
   assert.match(source, /resolveEncounterFramingZoom\(\{/);
-  assert.match(source, /camera\.zoom = resolveReadableGameplayZoom\(\{\s*viewportHeight: viewport\(\)\.height,\s*bodyHeight: productionHeroDisplay\?\.minimumBodyHeight \?\? prototypeMinimumBodyHeight,\s*framingZoom: framing\.zoom,\s*\}\);\s*followCameraTarget\(camera, \{\s*\.\.\.renderActor,/);
+  assert.match(source, /camera\.zoom = resolveReadableGameplayZoom\(\{\s*viewportHeight: viewport\(\)\.height,\s*bodyHeight: productionHeroDisplay\?\.minimumBodyHeight \?\? prototypeMinimumBodyHeight,\s*framingZoom: framing\.zoom,\s*mobile: touchUiEnabled,\s*\}\);\s*followCameraTarget\(camera, \{\s*\.\.\.renderActor,/);
   assert.match(source, /dataset\.cameraZoom\s*=/);
   assert.match(source, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0,\r?\n\s*\}\);\r?\n\s*camera\.zoom = resolveReadableGameplayZoom\(/);
   const directorBlock = source.slice(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled'), source.indexOf('lastBossStep = liquidatorBoss.active'));

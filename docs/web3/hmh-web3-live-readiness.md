@@ -9,4 +9,4 @@
 | deterministic-replay-verifier | PASS | sample replayHash 5456483eed6a… recomputes deterministically | — |
 | chain-read-leaderboards | PASS | fallback=local-cache | — |
 | official-profile-durability | PASS | local profile persistence + optional player-signed profile write/read | — |
-| on-chain-registry-economy | BLOCKED | — | GameRegistry cabinet approval path is not live-gated.; SplitConfig/economy settings are not production-approved.; Legal/brand/economy approval is required before real-value launch. |
+| on-chain-registry-economy | BLOCKED | — | SplitConfig/economy settings are not production-approved.; Legal/brand/economy approval is required before real-value launch. |

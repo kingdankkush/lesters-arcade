@@ -141,7 +141,7 @@ export function getLeaderboard(state, gameId, cadence, {
   // but filtered from the live boards so each deploy starts with fresh leaderboards.
   // Scores without a version field (e.g. seeded test data) are treated as current.
   const versionFiltered = filterToCurrentVersion
-    ? rows.filter((row) => (!row.version || isCurrentVersion(row.version)) && (gameId !== 'chikun' || row.runStats?.evidenceVersion === 'chikun-flap-evidence-v3'))
+    ? rows.filter((row) => (!row.version || isCurrentVersion(row.version)) && (gameId !== 'chikun' || row.runStats?.evidenceVersion === 'chikun-flap-evidence-v4'))
     : rows;
 
   // Partition first: an unsettled PB must not erase a lower verified score.

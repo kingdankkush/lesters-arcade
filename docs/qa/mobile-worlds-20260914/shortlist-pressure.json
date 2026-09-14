@@ -1,0 +1,514 @@
+{
+  "schema": "hmh-active-performance-v2",
+  "deviceAcceptance": false,
+  "origin": "http://127.0.0.1:53110",
+  "profileId": "mobile",
+  "cpu": 4,
+  "recordCpu": true,
+  "telemetry": false,
+  "sampleMs": 20000,
+  "scenario": "pressure",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "timing": {
+    "frames": 569,
+    "activeMs": 21954.899999999998,
+    "upgradePicks": 5,
+    "meanMs": 37.57170474516691,
+    "p50Ms": 34.79999999999927,
+    "p95Ms": 48.70000000000073,
+    "p99Ms": 69.5,
+    "maxMs": 131.90000000000146,
+    "longTasks": [
+      52,
+      55,
+      52,
+      53,
+      50,
+      50,
+      106,
+      56,
+      54,
+      52,
+      53,
+      52,
+      50,
+      56,
+      53,
+      64,
+      54,
+      98,
+      56
+    ]
+  },
+  "simulationSteps": 1304,
+  "simulationDroppedMs": 282.6,
+  "heapBefore": {
+    "usedSize": 30076332,
+    "totalSize": 126337024,
+    "embedderHeapUsedSize": 4527984,
+    "backingStorageSize": 3729369
+  },
+  "heapAfter": {
+    "usedSize": 80600340,
+    "totalSize": 188100608,
+    "embedderHeapUsedSize": 8596584,
+    "backingStorageSize": 4214720
+  },
+  "before": {
+    "nativeBarrierStatus": "ready",
+    "bootFirstFrame": "true",
+    "nativePropStatus": "ready",
+    "nativePropBindings": "48",
+    "worldDesignStatus": "ready",
+    "worldDesignBindings": "17",
+    "nativeBarrierCount": "206",
+    "authoredPropStatus": "ready",
+    "authoredPropCount": "910",
+    "navGridBootMs": "1212.3",
+    "navGridReady": "true",
+    "entryId": "evidence",
+    "startupArt": "ready",
+    "captionCriticalAudio": "false",
+    "settingMusic": "true",
+    "settingScreenShake": "false",
+    "settingReduceMotion": "false",
+    "settingReduceFlash": "false",
+    "worldDecalsVisible": "2",
+    "simulationFrameSteps": "3",
+    "simulationStepsTotal": "318",
+    "simulationState": "active",
+    "simulationCatchUpSaturationFrames": "8",
+    "simulationDroppedMs": "192.233",
+    "cameraShake": "0",
+    "cameraZoom": "1.584",
+    "observedSimulationSteps": 318,
+    "score": "0",
+    "level": "1",
+    "xp": "0"
+  },
+  "held": {
+    "nativeBarrierStatus": "ready",
+    "bootFirstFrame": "true",
+    "nativePropStatus": "ready",
+    "nativePropBindings": "48",
+    "worldDesignStatus": "ready",
+    "worldDesignBindings": "17",
+    "nativeBarrierCount": "206",
+    "authoredPropStatus": "ready",
+    "authoredPropCount": "910",
+    "navGridBootMs": "1212.3",
+    "navGridReady": "true",
+    "entryId": "evidence",
+    "startupArt": "ready",
+    "captionCriticalAudio": "false",
+    "settingMusic": "true",
+    "settingScreenShake": "false",
+    "settingReduceMotion": "false",
+    "settingReduceFlash": "false",
+    "worldDecalsVisible": "4",
+    "simulationFrameSteps": "2",
+    "simulationStepsTotal": "670",
+    "simulationState": "active",
+    "simulationCatchUpSaturationFrames": "11",
+    "simulationDroppedMs": "260.300",
+    "cameraShake": "0",
+    "cameraZoom": "1.584",
+    "silverVisible": "0",
+    "observedSimulationSteps": 670,
+    "score": "175",
+    "level": "1",
+    "xp": "140"
+  },
+  "release": {
+    "nativeBarrierStatus": "ready",
+    "bootFirstFrame": "true",
+    "nativePropStatus": "ready",
+    "nativePropBindings": "48",
+    "worldDesignStatus": "ready",
+    "worldDesignBindings": "17",
+    "nativeBarrierCount": "206",
+    "authoredPropStatus": "ready",
+    "authoredPropCount": "910",
+    "navGridBootMs": "1212.3",
+    "navGridReady": "true",
+    "entryId": "evidence",
+    "startupArt": "ready",
+    "captionCriticalAudio": "false",
+    "settingMusic": "true",
+    "settingScreenShake": "false",
+    "settingReduceMotion": "false",
+    "settingReduceFlash": "false",
+    "worldDecalsVisible": "4",
+    "simulationFrameSteps": "2",
+    "simulationStepsTotal": "712",
+    "simulationState": "active",
+    "simulationCatchUpSaturationFrames": "11",
+    "simulationDroppedMs": "260.300",
+    "cameraShake": "0",
+    "cameraZoom": "1.584",
+    "silverVisible": "0",
+    "observedSimulationSteps": 712,
+    "score": "175",
+    "level": "1",
+    "xp": "140"
+  },
+  "after": {
+    "nativeBarrierStatus": "ready",
+    "bootFirstFrame": "true",
+    "nativePropStatus": "ready",
+    "nativePropBindings": "48",
+    "worldDesignStatus": "ready",
+    "worldDesignBindings": "17",
+    "nativeBarrierCount": "206",
+    "authoredPropStatus": "ready",
+    "authoredPropCount": "910",
+    "navGridBootMs": "1212.3",
+    "navGridReady": "true",
+    "entryId": "evidence",
+    "startupArt": "ready",
+    "captionCriticalAudio": "false",
+    "settingMusic": "true",
+    "settingScreenShake": "false",
+    "settingReduceMotion": "false",
+    "settingReduceFlash": "false",
+    "worldDecalsVisible": "4",
+    "simulationFrameSteps": "2",
+    "simulationStepsTotal": "1622",
+    "simulationState": "active",
+    "simulationCatchUpSaturationFrames": "24",
+    "simulationDroppedMs": "474.833",
+    "cameraShake": "0",
+    "cameraZoom": "1.584",
+    "silverVisible": "10",
+    "observedSimulationSteps": 1622,
+    "score": "4,150",
+    "level": "6",
+    "xp": "600"
+  },
+  "errors": [],
+  "hottest": [
+    {
+      "functionName": "(program)",
+      "scriptId": "0",
+      "url": "",
+      "lineNumber": -1,
+      "columnNumber": -1,
+      "selfMs": 4171.672
+    },
+    {
+      "functionName": "Ne",
+      "scriptId": "11",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-73F6CUOP.js",
+      "lineNumber": 0,
+      "columnNumber": 13994,
+      "selfMs": 1327.957
+    },
+    {
+      "functionName": "gn",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 0,
+      "columnNumber": 272366,
+      "selfMs": 788.998
+    },
+    {
+      "functionName": "",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 8,
+      "columnNumber": 12393,
+      "selfMs": 677.155
+    },
+    {
+      "functionName": "nt",
+      "scriptId": "11",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-73F6CUOP.js",
+      "lineNumber": 0,
+      "columnNumber": 16026,
+      "selfMs": 656.997
+    },
+    {
+      "functionName": "(garbage collector)",
+      "scriptId": "0",
+      "url": "",
+      "lineNumber": -1,
+      "columnNumber": -1,
+      "selfMs": 433.955
+    },
+    {
+      "functionName": "",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 8,
+      "columnNumber": 47415,
+      "selfMs": 381.073
+    },
+    {
+      "functionName": "",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 25846,
+      "selfMs": 296.54
+    },
+    {
+      "functionName": "Te",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 8054,
+      "selfMs": 284.701
+    },
+    {
+      "functionName": "update",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 0,
+      "columnNumber": 227374,
+      "selfMs": 273.349
+    },
+    {
+      "functionName": "Ae",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 14586,
+      "selfMs": 247.631
+    },
+    {
+      "functionName": "Yg",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 19949,
+      "selfMs": 243.7
+    },
+    {
+      "functionName": "query",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 1410,
+      "selfMs": 232.964
+    },
+    {
+      "functionName": "packAttributes",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 277,
+      "columnNumber": 10918,
+      "selfMs": 208.051
+    },
+    {
+      "functionName": "_e",
+      "scriptId": "11",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-73F6CUOP.js",
+      "lineNumber": 0,
+      "columnNumber": 5920,
+      "selfMs": 207.036
+    },
+    {
+      "functionName": "de",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 12697,
+      "selfMs": 191.378
+    },
+    {
+      "functionName": "break",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 277,
+      "columnNumber": 2217,
+      "selfMs": 170.771
+    },
+    {
+      "functionName": "bufferSubData",
+      "scriptId": "0",
+      "url": "",
+      "lineNumber": -1,
+      "columnNumber": -1,
+      "selfMs": 155.217
+    },
+    {
+      "functionName": "",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 0,
+      "columnNumber": 276712,
+      "selfMs": 140.237
+    },
+    {
+      "functionName": "br",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 19445,
+      "selfMs": 140.207
+    },
+    {
+      "functionName": "de",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 12697,
+      "selfMs": 139.494
+    },
+    {
+      "functionName": "Ve",
+      "scriptId": "16",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-E2SSXUKR.js",
+      "lineNumber": 0,
+      "columnNumber": 26252,
+      "selfMs": 133.443
+    },
+    {
+      "functionName": "de",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 12697,
+      "selfMs": 132.139
+    },
+    {
+      "functionName": "(idle)",
+      "scriptId": "0",
+      "url": "",
+      "lineNumber": -1,
+      "columnNumber": -1,
+      "selfMs": 130.531
+    },
+    {
+      "functionName": "jc",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 0,
+      "columnNumber": 27489,
+      "selfMs": 129.919
+    },
+    {
+      "functionName": "a_",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 24816,
+      "selfMs": 127.959
+    },
+    {
+      "functionName": "query",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 1410,
+      "selfMs": 125.552
+    },
+    {
+      "functionName": "de",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 12697,
+      "selfMs": 118.034
+    },
+    {
+      "functionName": "play",
+      "scriptId": "46",
+      "url": "http://127.0.0.1:53110/dist/chunks/combat-audio-FH3SSSU4.js",
+      "lineNumber": 0,
+      "columnNumber": 3148,
+      "selfMs": 117.763
+    },
+    {
+      "functionName": "",
+      "scriptId": "12",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-RTHIOZVQ.js",
+      "lineNumber": 0,
+      "columnNumber": 13596,
+      "selfMs": 117.082
+    },
+    {
+      "functionName": "",
+      "scriptId": "13",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-DLKSOBBD.js",
+      "lineNumber": 0,
+      "columnNumber": 2275,
+      "selfMs": 114.023
+    },
+    {
+      "functionName": "collectRenderables",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 868,
+      "columnNumber": 22454,
+      "selfMs": 110.017
+    },
+    {
+      "functionName": "a_",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 24816,
+      "selfMs": 108.783
+    },
+    {
+      "functionName": "build",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 17736,
+      "selfMs": 104.681
+    },
+    {
+      "functionName": "as",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 51084,
+      "selfMs": 99.169
+    },
+    {
+      "functionName": "_f",
+      "scriptId": "6",
+      "url": "http://127.0.0.1:53110/dist/hmh-reboot/game.js",
+      "lineNumber": 0,
+      "columnNumber": 175298,
+      "selfMs": 98.56
+    },
+    {
+      "functionName": "",
+      "scriptId": "16",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-E2SSXUKR.js",
+      "lineNumber": 0,
+      "columnNumber": 30358,
+      "selfMs": 95.149
+    },
+    {
+      "functionName": "br",
+      "scriptId": "5",
+      "url": "http://127.0.0.1:53110/dist/chunks/hmh-pixi.js",
+      "lineNumber": 748,
+      "columnNumber": 19445,
+      "selfMs": 94.549
+    },
+    {
+      "functionName": "rt",
+      "scriptId": "11",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-73F6CUOP.js",
+      "lineNumber": 0,
+      "columnNumber": 13152,
+      "selfMs": 93.545
+    },
+    {
+      "functionName": "n",
+      "scriptId": "21",
+      "url": "http://127.0.0.1:53110/dist/chunks/chunk-6QJT5C2R.js",
+      "lineNumber": 0,
+      "columnNumber": 152,
+      "selfMs": 91.469
+    }
+  ]
+}

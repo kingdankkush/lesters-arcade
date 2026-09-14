@@ -1,0 +1,44 @@
+[
+  {
+    "name": "desktop",
+    "cpuSlowdown": 1,
+    "seconds": 12.00199999999851,
+    "frames": 1728,
+    "fps": 143.97600399935132,
+    "frameP95": 7.099999999999909,
+    "frameP99": 7.100000000000364,
+    "callbackP95": 2.2999999970197678,
+    "callbackP99": 2.7999999970197678,
+    "longTasks": 0,
+    "ticks": 720,
+    "audio": "true"
+  },
+  {
+    "name": "mobile-stress",
+    "cpuSlowdown": 4,
+    "seconds": 12.0012,
+    "frames": 1431,
+    "fps": 119.23807619238076,
+    "frameP95": 13.900000000001455,
+    "frameP99": 14,
+    "callbackP95": 7.5999999940395355,
+    "callbackP99": 10.199999995529652,
+    "longTasks": 0,
+    "ticks": 721,
+    "audio": "true"
+  },
+  {
+    "name": "mobile-minimal",
+    "cpuSlowdown": 4,
+    "seconds": 12.000099999995529,
+    "frames": 1711,
+    "fps": 142.58214514884355,
+    "frameP95": 7.099999999999909,
+    "frameP99": 13.699999999999818,
+    "callbackP95": 3.600000001490116,
+    "callbackP99": 5.0999999940395355,
+    "longTasks": 0,
+    "ticks": 721,
+    "audio": "true"
+  }
+]

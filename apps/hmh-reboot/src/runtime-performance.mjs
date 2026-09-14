@@ -32,12 +32,12 @@ export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
   }),
   mobile: Object.freeze({
     id: 'mobile',
-    resolutionCap: 1.25,
+    resolutionCap: 1,
     antialias: false,
-    particlesPerHazard: 6,
+    particlesPerHazard: 4,
     worldCullMargin: 128,
     enemyCullMargin: 160,
-    maxAnimatedEnemies: 64,
+    maxAnimatedEnemies: 32,
   }),
   reducedMotion: Object.freeze({
     id: 'reduced-motion',

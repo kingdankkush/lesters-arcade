@@ -5,8 +5,8 @@ import { createLivingField } from '../apps/stacked/src/render/living-field.mjs';
 const input = (now, extra = {}) => ({ now, width: 1400, height: 1000, lines: 0, reducedMotion: false, reducedEffects: false, level: 0.2, bass: 0.3, high: 0.1, ...extra });
 test('medusa membranes never draw accidental bridges between separate tendrils', () => {
   const state = createLivingField().update(input(0));
-  for (const index of [0, 24, 32, 40, 48, 96, 144]) assert.equal(state.connected[index], 0);
-  for (const index of [1, 23, 25, 31, 33, 39, 41, 47, 49]) assert.equal(state.connected[index], 1);
+  for (const index of [0, 36, 48, 60, 72, 144, 216]) assert.equal(state.connected[index], 0);
+  for (const index of [1, 35, 37, 47, 49, 59, 61, 71, 73]) assert.equal(state.connected[index], 1);
 });
 test('living visualizer swims with stable bounded buffers and audio response', () => {
   const field = createLivingField();
@@ -17,7 +17,7 @@ test('living visualizer swims with stable bounded buffers and audio response', (
   assert.equal(moved.x, positions, 'reuse the particle buffer');
   assert.notDeepEqual(Array.from(moved.x.slice(0, moved.count)), before);
   assert.equal(moved.phase, 'swimming');
-  assert.ok(moved.count <= 192);
+  assert.ok(moved.count <= 648);
   assert.ok(Array.from(moved.x).every(Number.isFinite));
   const quiet = createLivingField().update(input(1000, { bass: 0, level: 0, high: 0 }));
   assert.notDeepEqual(Array.from(moved.x), Array.from(quiet.x), 'music changes the forms');

@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T22:29:37.228Z",
+  "generatedAt": "2026-09-14T17:39:38.408Z",
   "status": "approval-gated",
   "summary": {
-    "workingTreeBytes": 2208526897,
-    "gitBytes": "2.26 GiB",
-    "assetBytes": 259217032,
+    "workingTreeBytes": 2691460020,
+    "gitBytes": "2.28 GiB",
+    "assetBytes": 266267047,
     "cdnCandidateCount": 33,
     "cdnCandidateBytes": 105940018,
     "vaultExists": false,

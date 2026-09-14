@@ -32,5 +32,5 @@ test('both historical recording versions retain exact scores and final states',(
 });
 test('new jump/flight evidence replays exact results',()=>{
  const run=simulateChikunRun({seed:22,taps:[42,54,88,125,167,202,245],maxTicks:1200});
- assert.equal(run.evidence.version,'chikun-flap-evidence-v3');assert.deepEqual(replayChikunRun(run.evidence),run);
+ assert.equal(run.evidence.version,'chikun-flap-evidence-v4');assert.deepEqual(replayChikunRun(run.evidence),run);
 });

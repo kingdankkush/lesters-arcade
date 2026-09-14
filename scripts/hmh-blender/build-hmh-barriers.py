@@ -5,11 +5,11 @@ from mathutils import Vector
 from bpy_extras.object_utils import world_to_camera_view
 
 ROOT=Path(__file__).resolve().parents[2]
-SOURCE=ROOT/'assets-source/hmh-barriers/barrier-library.blend'
+SOURCE=ROOT/'assets-source/hmh-barriers/barrier-library-v2.blend'
 RAW=ROOT/'work/barrier-frames'
 SOURCE.parent.mkdir(parents=True,exist_ok=True);RAW.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.read_factory_settings(use_empty=True)
-scene=bpy.context.scene;scene.render.engine='BLENDER_EEVEE'
+scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=32;scene.cycles.use_denoising=False;scene.cycles.use_adaptive_sampling=False;scene.cycles.seed=0;scene.cycles.max_bounces=4
 scene.render.resolution_x=256;scene.render.resolution_y=256;scene.render.resolution_percentage=100
 scene.render.film_transparent=True;scene.render.image_settings.file_format='PNG';scene.render.dither_intensity=0
 scene.view_settings.view_transform='AgX';scene.world=bpy.data.worlds.new('Overcast quarry daylight');scene.world.color=(.22,.24,.27)
@@ -27,7 +27,7 @@ wood=[mat('Weathered oak '+str(i),(.19+i*.045,.105+i*.023,.044+i*.016)) for i in
 steel=mat('Galvanized steel',(.36,.43,.48),.75,.36);rust=mat('Oxidized joints',(.24,.085,.033),.35)
 blue=mat('Litecoin enamel',(.04,.25,.48),.15,.32);silver=mat('Silver lettering',(.75,.80,.83),.6,.3)
 sandstone=[mat('Quarry strata '+str(i),(.25+i*.035,.12+i*.024,.07+i*.018)) for i in range(5)]
-kinds=['stone-wall','concrete-wall','concrete-barrier','wood-fence','steel-fence','rock-formation','boulders']
+kinds=['stone-wall','concrete-wall','concrete-barrier','wood-fence','steel-fence','rock-formation','boulders','bridge-rail']
 roots={};collections={};active=None;root=None
 def own(ob,material):
     for c in list(ob.users_collection):c.objects.unlink(ob)
@@ -82,6 +82,10 @@ for k in kinds:
             x=-1.65+i*.55;top=3.6+(i%3)*.08
             box('Uneven oak paling',(x,-.25,top/2),(.49,.34,top),wood[i%4],.04)
             for z in [1,2.75]:box('Iron nail',(x,-.435,z),(.065,.025,.065),rust,.01)
+    elif k=='bridge-rail':
+        for x in [-1.8,1.8]:box('Bridge timber upright',(x,0,.95),(.35,.8,1.9),wood[1],.04)
+        for z in [.55,1.65]:box('Bridge safety rail',(0,0,z),(4,.3,.28),wood[2],.035)
+        for x in [-1.8,1.8]:box('Iron bridge bolt',(x,-.42,1.65),(.12,.06,.12),steel,.02)
     elif k=='steel-fence':
         for x in [-1.85,1.85]:rod('Galvanized post',(x,0,0),(x,0,4),.14,steel)
         for z in [.3,3.7]:rod('Welded frame',(-1.85,0,z),(1.85,0,z),.10,steel)
@@ -105,9 +109,9 @@ for repeat in ['A','B']:
     bpy.ops.wm.open_mainfile(filepath=str(SOURCE));scene=bpy.context.scene
     for k in kinds:
         for other in kinds:bpy.data.collections[other].hide_render=other!=k
-        for direction in range(4):
+        for direction in range(7):
             # The boulder choke follows the authored 240-by-60 diagonal.
-            yaw=math.atan2(1,4) if k=='boulders' and direction==0 else direction*math.pi/4
+            yaw=math.atan2(1,4) if k=='boulders' and direction==0 else [0,math.pi/4,math.pi/2,3*math.pi/4,math.pi-math.atan2(1,8),math.atan2(3,5),math.atan2(18,25)][direction]
             bpy.data.objects[k+'-root'].rotation_euler.z=-yaw
             folder=RAW/repeat;folder.mkdir(exist_ok=True)
             scene.render.filepath=str(folder/f'{k}-{direction}.png');bpy.ops.render.render(write_still=True)
@@ -115,5 +119,5 @@ for repeat in ['A','B']:
                 ground=world_to_camera_view(scene,scene.camera,Vector((0,0,0)))
                 rows.append({'assetId':f'hmh-barrier-{k}-{direction}','kind':k,'direction':direction,'yawRadians':yaw,'file':f'{k}-{direction}.png','anchor':{'x':ground.x,'y':1-ground.y},'runtimeScale':8/256,'projectionY':math.sqrt(2)})
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-(RAW/'source.json').write_text(json.dumps({'schema':'hmh-barriers/v1','source':str(SOURCE.relative_to(ROOT)).replace('\\','/'),'sourceSha256':sha(SOURCE),'recipeSha256':sha(Path(__file__)),'blenderVersion':bpy.app.version_string,'frames':rows},indent=2)+'\n')
+(RAW/'source.json').write_text(json.dumps({'schema':'hmh-barriers/v2','source':str(SOURCE.relative_to(ROOT)).replace('\\','/'),'sourceSha256':sha(SOURCE),'recipeSha256':sha(Path(__file__)),'blenderVersion':bpy.app.version_string,'frames':rows},indent=2)+'\n')
 print('NATIVE_BARRIERS_RENDERED',flush=True)

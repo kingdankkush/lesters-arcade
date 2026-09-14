@@ -1,10 +1,14 @@
+# Mobile worlds release candidate — verification in progress
+
+This checkout contains HMH mobile crowd optimization, wider framing and native barrier/road presentation, Chikun 0.8.0 mixed flight passages, and STACKED mobile aquatic music visuals and gameplay effects. Production remains the discovery deployment below until promotion is verified. The cache marker records the candidate intended for promotion.
+
 # Lester's Arcade — homepage and discovery, verified live
 
 The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https://lestersarcade.io/games) are live. Existing films and artwork introduce the arcade, Free play, wallets, profiles and device-local leaderboards. All three active cabinets have equal visible height across all rotation frames, with dedicated game guides and clearer play entry. Search metadata, static page content, structured data, sitemap and a factual AI reference are included.
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v48-discovery`
+**Production cache marker:** `lesters-arcade-v49-mobile-worlds`
 
 # Lester's Arcade
 
@@ -72,7 +76,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.7.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.8.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
 | STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 

@@ -11,7 +11,7 @@ export function defaultStackedSettings(reducedMotion = false) {
     controls: { keyboardBindings: Object.fromEntries(STACKED_ACTIONS.map(key => [key, { primary: STACKED_DEFAULT_BINDINGS[key][0], secondary: STACKED_DEFAULT_BINDINGS[key][1] }])), touchLayout: 'buttons', touchOpacity: 0.7, touchLeftHanded: false, touchSensitivity: 1 },
     video: { qualityTier: 'auto', reducedEffects: false, audioReactive: true, ghostPiece: true, gridLines: true, visualizer: 'journey', effectsIntensity: 0.7 },
     audio: { musicEnabled: true, sfxEnabled: true, sfxVolume: 0.35 },
-    accessibility: { reduceMotion: reducedMotion, reduceFlash: true, colorblindPieces: true, hudScale: 1 },
+    accessibility: { reduceMotion: reducedMotion, reduceFlash: true, colorblindPieces: false, hudScale: 1 },
   };
 }
 export function readStackedSettings(storage, reducedMotion = false) {

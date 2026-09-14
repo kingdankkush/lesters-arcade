@@ -26,7 +26,7 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if(nextMobile!==mobile) {
       mobile=nextMobile;
       atmosphere?.destroy(); atmosphere=null;
-      if(!mobile) atmosphere=createStackedAtmosphere({layer:tree.layers.layerParticleFar,Graphics});
+      atmosphere=createStackedAtmosphere({layer:tree.layers.layerParticleFar,Graphics,mobile});
       particles?.destroy(); particles=createBoardParticles({board,Graphics,geometry,mobile});
       stageElement.dataset.mobileGameplay=String(mobile);
       stageElement.dataset.particleCapacity=String(particles.state.capacity);
@@ -69,6 +69,9 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       stageElement.dataset.gameplayParticles=String(sparks.count);
       stageElement.dataset.particleEvent=sparks.lastEvent;
       stageElement.dataset.clearTier=String(sparks.clearTier);
+      stageElement.dataset.lockGlows=String(sparks.glows.filter(g=>g.active).length);
+      stageElement.dataset.visualizerParticles=String(info.particles);
+      stageElement.dataset.visualizerOrganisms=String(info.organisms);
       stageElement.dataset.particlesEmitted=String(sparks.emitted);
       accents.draw(response, info.color, settings);
       present(snapshot); return info;

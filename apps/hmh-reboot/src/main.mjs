@@ -14,7 +14,7 @@ import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprit
 import { deterministicUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } from './world-design-interactions.mjs';
-import { createWorldDesignLife, prepareWorldDesignEnemyPose, worldDesignFootstep } from './world-design-life.mjs';
+import { createWorldDesignLife, prepareWorldDesignEnemyPose } from './world-design-life.mjs';
 import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
@@ -242,7 +242,6 @@ import {
   revealLevelOneAt,
 } from './level-one-world.mjs';
 import {
-  clearWorldProductionLayers,
   createWorldProductionLayers,
   renderWorldProductionArt,
 } from './world-production-art.mjs';
@@ -1209,6 +1208,7 @@ async function boot() {
   // preparation, before accepting a run, instead of delaying the first paint.
   const { createCombatAudio } = await import('./combat-audio.mjs');
   const combatAudio = createCombatAudio({
+    gameplayOnly: true,
     standalone: window.parent === window,
     musicEnabled: settings.musicEnabled,
     maxVoices: 16,
@@ -1481,7 +1481,6 @@ async function boot() {
   const renderWorld = (renderState = renderActor ?? actor) => {
     const view = viewport();
     backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 });
-    clearWorldProductionLayers(worldProduction);
     worldDecalLayer.clear();
     contactShadowPool?.begin();
     weaponVfxPool?.begin();
@@ -3383,10 +3382,6 @@ async function boot() {
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
-      if (actor.locomotion === 'moving' && tick % 12 === 0) {
-        const footstep=worldDesignFootstep(LEVEL_ONE_WORLD,lastGround,actor);
-        combatAudio.play(footstep.cue, { volume:footstep.volume, playbackRate:footstep.rate });
-      }
       worldDesignFrame=stepWorldDesign(worldDesignState,{tick,player:actor,queryGround,lineBlocked:(a,b)=>{
         const sweep=resolveSweptCircleMotion({body:playerBody,start:{x:a.x,y:a.y,z:a.groundZ},delta:{x:b.x-a.x,y:b.y-a.y},blockers:WORLD_BLOCKERS,bounds:WORLD_BOUNDS});
         return sweep.contacts.length>0 || sweep.depenetrations.length>0;
@@ -4887,6 +4882,7 @@ async function boot() {
       viewportHeight: viewport().height,
       bodyHeight: productionHeroDisplay?.minimumBodyHeight ?? prototypeMinimumBodyHeight,
       framingZoom: framing.zoom,
+      mobile: touchUiEnabled,
     });
     followCameraTarget(camera, {
       ...renderActor,

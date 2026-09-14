@@ -1,6 +1,6 @@
 # Repo CDN cleanup gate
 
-Generated: 2026-09-13T22:29:37.228Z
+Generated: 2026-09-14T17:39:38.408Z
 Status: **approval-gated**
 
 ## Verdict
@@ -9,9 +9,9 @@ Status: **approval-gated**
 
 ## Current metrics
 
-- Working tree bytes: 2.1 GB
-- Portal asset bytes: 247 MB
-- Git pack size: 2.26 GiB
+- Working tree bytes: 2.5 GB
+- Portal asset bytes: 254 MB
+- Git pack size: 2.28 GiB
 - CDN candidate media: 33 files / 101 MB
 - Vault exists: no
 - Vault remote configured: no

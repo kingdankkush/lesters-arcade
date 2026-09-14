@@ -1,0 +1,46 @@
+[
+  {
+    "name": "contract-structure-check",
+    "exit": 0
+  },
+  {
+    "name": "docs-link-check",
+    "exit": 0
+  },
+  {
+    "name": "cabinet-status-doc-drift-check",
+    "exit": 0
+  },
+  {
+    "name": "verify-generated-assets",
+    "exit": 0
+  },
+  {
+    "name": "hmh-security-audit-sweep",
+    "exit": 0
+  },
+  {
+    "name": "hmh-web3-settlement-audit",
+    "exit": 0
+  },
+  {
+    "name": "hmh-web3-live-readiness",
+    "exit": 0
+  },
+  {
+    "name": "repo-health",
+    "exit": 1
+  },
+  {
+    "name": "repo-cdn-cleanup-gate",
+    "exit": 0
+  },
+  {
+    "name": "hmh-reboot-production-asset-qa",
+    "exit": 0
+  },
+  {
+    "name": "syntax-check",
+    "exit": 0
+  }
+]

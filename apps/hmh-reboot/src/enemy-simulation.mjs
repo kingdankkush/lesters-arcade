@@ -469,31 +469,46 @@ export function computeEnemySeparation(enemies, {
     grid.set(key, bucket);
   }
   const cellReach = Math.ceil(neighborRadius / cellSize);
+  const neighborhoodByCell=new Map();
+  for(const [key,bucket]of grid){
+    const cellX=Math.floor(bucket[0].x/cellSize),cellY=Math.floor(bucket[0].y/cellSize),neighbors=[];
+    for(let y=-cellReach;y<=cellReach;y++)for(let x=-cellReach;x<=cellReach;x++){
+      const candidates=grid.get(cellKey(cellX+x,cellY+y));if(candidates)neighbors.push(...candidates);
+    }
+    neighborhoodByCell.set(key,neighbors);
+  }
   const deltas = new Map();
   let maxNeighborsObserved = 0;
   let broadphaseCandidateChecks = 0;
   for (const enemy of ordered) {
     const cellX = Math.floor(enemy.x / cellSize);
     const cellY = Math.floor(enemy.y / cellSize);
-    const localCandidates = [];
-    for (let offsetY = -cellReach; offsetY <= cellReach; offsetY += 1) {
-      for (let offsetX = -cellReach; offsetX <= cellReach; offsetX += 1) {
-        for (const other of grid.get(cellKey(cellX + offsetX, cellY + offsetY)) ?? []) {
-          if (other !== enemy) localCandidates.push(other);
-        }
-      }
+    const localCandidates=neighborhoodByCell.get(cellKey(cellX,cellY));
+    broadphaseCandidateChecks += localCandidates.length-1;
+    // Rank inexpensive squared distances first. Only the nearest candidates
+    // need the exact Math.hypot used by canonical overlap correction. Include
+    // the rounding neighborhood at the cut so ties retain exact ID ordering.
+    const radiusSquared=neighborRadius*neighborRadius;
+    const candidates=[];
+    for(const other of localCandidates){
+      if(other===enemy)continue;
+      const dx=enemy.x-other.x,dy=enemy.y-other.y;
+      if(Math.abs(dx)>neighborRadius||Math.abs(dy)>neighborRadius)continue;
+      const squared=dx*dx+dy*dy;
+      if(squared>radiusSquared*(1+Number.EPSILON*8))continue;
+      candidates.push({other,dx,dy,squared});
     }
-    broadphaseCandidateChecks += localCandidates.length;
-    const neighbors = localCandidates
-      .map((other) => ({
-        other,
-        dx: enemy.x - other.x,
-        dy: enemy.y - other.y,
-        distance: Math.hypot(enemy.x - other.x, enemy.y - other.y),
-      }))
-      .filter((candidate) => candidate.distance <= neighborRadius)
-      .sort((a, b) => a.distance - b.distance || lexical(a.other.id, b.other.id))
-      .slice(0, maxNeighbors);
+    const uncertain=candidates.some(c=>!Number.isFinite(c.squared))||!Number.isFinite(radiusSquared);
+    if(!uncertain)candidates.sort((a,b)=>a.squared-b.squared||lexical(a.other.id,b.other.id));
+    const cutoff=candidates[Math.min(maxNeighbors,candidates.length)-1]?.squared??0;
+    const neighbors=[];
+    for(const c of candidates){
+      if(!uncertain&&c.squared>cutoff*(1+Number.EPSILON*8))break;
+      c.distance=Math.hypot(c.dx,c.dy);
+      if(c.distance<=neighborRadius)neighbors.push(c);
+    }
+    neighbors.sort((a,b)=>a.distance-b.distance||lexical(a.other.id,b.other.id));
+    if(neighbors.length>maxNeighbors)neighbors.length=maxNeighbors;
     maxNeighborsObserved = Math.max(maxNeighborsObserved, neighbors.length);
     let x = 0;
     let y = 0;

@@ -20,7 +20,7 @@ try{
   const scenes=[];
   for(const event of ['move','rotate','drop','lock',1,2,3,4]){
    const state=await page.evaluate(event=>window.particleQa.scene(event),event);
-   assert.ok(Number(state.gameplayParticles)>0);if(mobile)assert.equal(state.visualizerMode,'gameplay');
+   assert.ok(Number(state.gameplayParticles)>0);if(mobile)assert.equal(state.visualizerMode,'living');
    await page.screenshot({path:path.join(out,`${name}-${event}.png`)});scenes.push({event,...state});
   }
   const combo=await page.evaluate(()=>window.particleQa.scene(4,{combo:6}));assert.equal(combo.clearTier,'4');

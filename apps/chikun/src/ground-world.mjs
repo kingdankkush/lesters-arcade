@@ -33,9 +33,41 @@ function shapeFallback(ctx,o){
 }
 export function drawGroundObstacle(ctx,o,tick=0,reduced=false){
  const img=art.get(o.variant),x=o.x,w=o.width;
- if(o.family==='gap'){
+ if(o.family==='forest'){
+  const varieties=['oak','maple','willow','cherry'];
+  for(let i=0;i<o.shapes.length;i++){
+   const s=o.shapes[i],tree=art.get(varieties[(o.index+i)%varieties.length]);
+   // Dense overlapping foliage closes the ground route with an organic edge.
+   for(let row=0;row<Math.ceil(s.height/31);row++)for(let col=0;col<5;col++){
+    const px=s.x+14+col*(s.width-28)/4,py=Math.min(676,s.y+25+row*31);
+    ctx.fillStyle=['#284b39','#315941','#3b6243'][(row+col+i)%3];ctx.beginPath();ctx.ellipse(px,py,21,27,0,0,TAU);ctx.fill();
+   }
+   if(tree)ctx.drawImage(tree,s.x-8,s.y,s.width+16,s.height);
+   ctx.fillStyle='#3f693f';for(let j=0;j<4;j++){ctx.beginPath();ctx.ellipse(s.x+j*s.width/3,663,30,33,0,0,TAU);ctx.fill();}
+  }
+ }else if(o.family==='town'){
+  const faces=['#a88366','#687d80','#936f60'];
+  for(let i=0;i<o.shapes.length;i++){
+   const s=o.shapes[i];ctx.fillStyle=faces[i%3];ctx.fillRect(s.x,s.y,s.width,s.height);
+   ctx.fillStyle='#354950';ctx.fillRect(s.x,s.y,s.width,13);ctx.fillRect(s.x+s.width-9,s.y+13,9,s.height-13);
+   ctx.strokeStyle='#d2b89c55';ctx.lineWidth=1;for(let row=22;row<s.height;row+=22){ctx.beginPath();ctx.moveTo(s.x,s.y+row);ctx.lineTo(s.x+s.width-10,s.y+row);ctx.stroke();}
+   for(let row=34;row<s.height-50;row+=52)for(let col=18;col<s.width-25;col+=40){ctx.fillStyle='#243e4d';ctx.fillRect(s.x+col,s.y+row,25,34);ctx.fillStyle='#e4cf91';ctx.fillRect(s.x+col+3,s.y+row+3,18,25);ctx.fillStyle='#687578';ctx.fillRect(s.x+col+11,s.y+row,3,33);}
+   ctx.fillStyle='#233b42';ctx.fillRect(s.x+s.width*.38,637,30,53);
+   ctx.fillStyle='#d8bf89';ctx.fillRect(s.x+14,606,s.width-32,17);ctx.fillStyle='#344b50';ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillText(['LITE CAFE','ARCADE','POST'][i%3],s.x+s.width/2,618);
+  }
+ }else if(o.kind==='canopy'){
+  const gradient=ctx.createLinearGradient(0,0,0,o.height);gradient.addColorStop(0,'#223d3b');gradient.addColorStop(1,'#426642');ctx.fillStyle=gradient;ctx.fillRect(x,0,w,o.height-24);
+  for(let i=0;i<9;i++){ctx.fillStyle=i%2?'#395a39':'#557543';ctx.beginPath();ctx.ellipse(x+18+i*(w-36)/8,o.height-34,25,34,0,0,TAU);ctx.fill();}
+  ctx.strokeStyle='#779365';ctx.lineWidth=3;for(let i=0;i<7;i++){const px=x+24+i*(w-48)/6;ctx.beginPath();ctx.moveTo(px,120);ctx.bezierCurveTo(px+18,270,px-12,420,px+Math.sin(reduced?i:tick*.023+i)*7,o.height-8);ctx.stroke();}
+  ctx.fillStyle='#e1cf98';ctx.font='700 12px system-ui';ctx.textAlign='center';ctx.fillText('LOW PASSAGE',x+w/2,o.height+21);
+ }else if(o.family==='gap'){
   const water=o.kind==='waterfall';ctx.fillStyle=water?'#195164':'#142d35';ctx.fillRect(x,690,w,30);
-  if(water){ctx.fillStyle='#73c2c9';ctx.fillRect(x+6,691,w-12,29);ctx.strokeStyle='#cce6db';ctx.lineWidth=2;for(let i=0;i<12;i++){const px=x+10+i*(w-20)/12;const shift=reduced?0:(tick*1.5+i*6)%32;ctx.beginPath();ctx.moveTo(px,682+shift);ctx.lineTo(px,696+shift);ctx.stroke();}}
+  if(water){
+   const top=690-o.height;ctx.fillStyle='#31525a';ctx.fillRect(x+24,top,w-48,720-top);
+   const gradient=ctx.createLinearGradient(0,top,0,720);gradient.addColorStop(0,'#afdce0');gradient.addColorStop(.16,'#5ea9ba');gradient.addColorStop(1,'#245b76');ctx.fillStyle=gradient;ctx.fillRect(x+28,top+2,w-56,718-top);
+   ctx.strokeStyle='#d7eff0a8';ctx.lineWidth=2;for(let i=0;i<32;i++){const px=x+32+i*(w-64)/31,shift=reduced?0:(tick*3+i*19)%155;ctx.beginPath();ctx.moveTo(px,top+shift);ctx.lineTo(px,Math.min(720,top+shift+40+i%5*9));ctx.stroke();}
+   ctx.fillStyle='#c5e9e5';for(let i=0;i<24;i++){ctx.beginPath();ctx.ellipse(x+30+i*(w-60)/23,top+3,12,4+(i%3),0,0,TAU);ctx.fill();}
+  }
   for(const lip of [x-8,x+w]){ctx.fillStyle='#b7ad87';ctx.fillRect(lip,687,8,11);ctx.fillStyle='#534739';ctx.fillRect(lip,698,8,22);}
   ctx.fillStyle='#dfbe82';ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillText(water?'WATERFALL':'GAP',x+w/2,710);
  }else if(o.kind==='storm'){

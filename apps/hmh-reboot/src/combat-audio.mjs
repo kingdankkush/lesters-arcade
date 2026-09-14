@@ -75,6 +75,7 @@ function clampMaxVoices(value) {
 export function createCombatAudio({
   AudioCtor = globalThis.Audio,
   maxVoices = 16,
+  gameplayOnly = false,
   standalone = false,
   musicEnabled = true,
 } = {}) {
@@ -129,6 +130,7 @@ export function createCombatAudio({
   };
 
   const play = (cue, { now = globalThis.performance?.now?.() ?? Date.now(), volume = 0.1, playbackRate = 1 } = {}) => {
+    if(gameplayOnly && /^(footstep-|dash$|land$|combo-|level-up$|upgrade-|powerup-expire$|pause$|resume$|low-health$|game-over$|menu-click$)/.test(cue))return Object.freeze({played:false,reason:'presentation-cue-disabled'});
     if (paused && !PAUSED_CUE_ALLOWLIST.has(cue)) return Object.freeze({ played: false, reason: 'paused' });
     const samplePath = SAMPLE_PATHS[cue];
     if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) {

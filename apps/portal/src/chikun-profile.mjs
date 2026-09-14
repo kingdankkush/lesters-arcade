@@ -15,7 +15,7 @@ export function buildChikunProfile(sessions,wallet){
  const owner=String(wallet??'').trim().toLowerCase();
  const runs=Object.values(sessions??{}).filter(r=>r.gameId==='chikun'&&String(r.wallet??'').trim().toLowerCase()===owner&&r.runStats&&(['paid','ranked'].includes(r.mode)||r.leaderboardEligible===true));
  const unique=new Map(runs.map(r=>[r.sessionId,r]));
- const current=[...unique.values()].filter(r=>chikunCourseVersion(r)==='chikun-flap-evidence-v3');
+ const current=[...unique.values()].filter(r=>chikunCourseVersion(r)==='chikun-flap-evidence-v4');
  const sums={coins:null,forks:null,nearMisses:null,bestCombo:null,flaps:null,awards:0};const earned=new Map();
  let bestScore=null,longest=null;
  for(const run of current){

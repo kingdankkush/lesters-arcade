@@ -1,4 +1,4 @@
-import { createLivingField } from './living-field.mjs';
+import { createLivingField, LIVING_FIELD_CAPACITY } from './living-field.mjs';
 import { createMusicMotion } from './music-motion.mjs';
 import { createMusicWorld, MUSIC_WORLD_NAMES, JOURNEY_WORLDS } from './music-worlds.mjs';
 
@@ -12,17 +12,17 @@ export const STACKED_EPOCHS = Object.freeze([
 ]);
 const boundaries = [0, 10800, 25200, 43200, 64800, 90000];
 const mixColor = (a, b, t) => [16, 8, 0].reduce((n, shift) => n | Math.round(((a >> shift) & 255) * (1 - t) + ((b >> shift) & 255) * t) << shift, 0);
-export function createStackedAtmosphere({ layer, Graphics }) {
+export function createStackedAtmosphere({ layer, Graphics, mobile=false }) {
   // Shared immutable geometry avoids rebuilding/triangulating every particle
   // and membrane every frame. Only transforms, tint and alpha change.
   const dot = new Graphics().circle(0, 0, 3).fill({ color: 0xffffff, alpha: 0.045 })
     .circle(0, 0, 1.8).fill({ color: 0xffffff, alpha: 0.13 }).circle(0, 0, 0.8).fill(0xffffff);
   const filament = new Graphics().rect(0, -0.5, 1, 1).fill(0xffffff);
   const dotContext = dot.context, filamentContext = filament.context;
-  const points = Array.from({ length: 192 }, (_, i) => i ? dot.clone() : dot);
-  const links = Array.from({ length: 192 }, (_, i) => i ? filament.clone() : filament);
+  const points = Array.from({ length: mobile ? 432 : LIVING_FIELD_CAPACITY }, (_, i) => i ? dot.clone() : dot);
+  const links = Array.from({ length: mobile ? 432 : LIVING_FIELD_CAPACITY }, (_, i) => i ? filament.clone() : filament);
   layer.addChild(...links, ...points);
-  const field = createLivingField();
+  const field = createLivingField({mobile});
   const motion = createMusicMotion(), world = createMusicWorld();
   let mode = '', changedAt = 0;
   return {
@@ -39,7 +39,7 @@ export function createStackedAtmosphere({ layer, Graphics }) {
       const nextMode = chosen === 'journey' ? JOURNEY_WORLDS[zoneIndex] : MUSIC_WORLD_NAMES[chosen] ? chosen : 'living';
       if (mode !== nextMode) { mode = nextMode; changedAt = time; }
       const fade = reduced ? 1 : Math.min(1, 0.25 + (time - changedAt) * 2.5);
-      const living = field.update({ now: time * 1000, width, height, lines, reducedMotion: reduced, reducedEffects: settings.video.reducedEffects, level, bass, high });
+      const living = field.update({ now: time * 1000, width, height, lines, reducedMotion: reduced, reducedEffects: settings.video.reducedEffects, level, bass, high, beat });
       const shapes = mode === 'living' ? living : world.update({ mode, time, width, height, minimal: settings.video.reducedEffects, reducedMotion: reduced, bass, high, level, beat, ...feedback, generation: living.generation });
       const count = intensity > 0 ? shapes.count : 0;
       // Membranes dissolve with the particles, then reappear as new organisms.
@@ -56,7 +56,7 @@ export function createStackedAtmosphere({ layer, Graphics }) {
           link.position.set(shapes.x[i - 1], shapes.y[i - 1]);
           link.scale.set(distance, mode === 'spectrum' ? (settings.video.reducedEffects ? 5 : 3) : mode === 'aurora' ? 3.2 : 1.4); link.rotation = Math.atan2(dy, dx);
           link.tint = i % 5 ? color : zone.accent;
-          link.alpha = intensity * fade * (mode === 'living' ? living.cohesion : shapes.weight[i]) * (0.28 + level * 0.18);
+          link.alpha = intensity * fade * (mode === 'living' ? living.cohesion : shapes.weight[i]) * (0.42 + level * 0.22);
         }
         const size = 1.4 + (i % 3) * 0.55 + (reduced ? 0 : high * 1.4 + (1 - living.cohesion) * 1.2);
         point.position.set(shapes.x[i], shapes.y[i]); point.scale.set(mode === 'living' ? size : mode === 'orbit' ? 1.4 + (shapes.weight[i] * 0.8) : 0.7);

@@ -119,7 +119,7 @@ test('the atmosphere table covers exactly the Level 1 districts with capped, fro
 
 test('the atmosphere budget is derived from the existing particle tiers and never adds a profile field', () => {
   assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.desktop), { fog: 10, motes: 30 });
-  assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.mobile), { fog: 6, motes: 18 });
+  assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.mobile), { fog: 4, motes: 12 });
   assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.reducedMotion), { fog: 0, motes: 0 });
   for (const profile of Object.values(RUNTIME_PERFORMANCE_PROFILES)) {
     const budget = resolveAtmosphereBudget(profile);

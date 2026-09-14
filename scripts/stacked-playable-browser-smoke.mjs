@@ -63,15 +63,17 @@ try {
     await frame.locator('#motionToggle').uncheck();
     await frame.locator('#flashToggle').uncheck();
     if(mobile) await frame.locator('#leftHandToggle').check();
-    for (const mode of mobile ? [] : ['aurora', 'spectrum', 'orbit']) {
+    for (const mode of ['aurora', 'spectrum', 'orbit']) {
       await frame.locator('#visualizerSelect').selectOption(mode);
       await frame.waitForFunction(mode => document.querySelector('#stackedStage').dataset.visualizerMode === mode, mode);
     }
     if(mobile) {
-      assert.equal(await frame.locator('#visualizerSelect').isVisible(),false);
-      assert.equal(await frame.locator('#stackedStage').getAttribute('data-visualizer-mode'),'gameplay');
-      assert.equal(await frame.locator('#stackedStage').getAttribute('data-rendered-particles'),'0');
-      assert.equal(await frame.locator('#stackedStage').getAttribute('data-particle-capacity'),'128');
+      await frame.locator('#visualizerSelect').selectOption('living');
+      await frame.waitForFunction(()=>document.querySelector('#stackedStage').dataset.visualizerMode==='living');
+      assert.equal(await frame.locator('#visualizerSelect').isVisible(),true);
+      assert.equal(await frame.locator('#stackedStage').getAttribute('data-visualizer-mode'),'living');
+      assert.equal(await frame.locator('#stackedStage').getAttribute('data-rendered-particles'),'432');
+      assert.equal(await frame.locator('#stackedStage').getAttribute('data-particle-capacity'),'256');
     }
     await frame.locator('#intensityRange').fill('55');
     await frame.locator('#intensityRange').dispatchEvent('change');
@@ -100,6 +102,7 @@ try {
     }
     await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(evidenceDir, name + '-playable.png') });
+    await frame.waitForFunction(()=>document.querySelector('#stackedStage').dataset.audioAvailable==='true',null,{timeout:15000});
     const dimensions = await frame.evaluate(() => ({ width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth, scrollHeight: document.documentElement.scrollHeight, audio: document.querySelector('#stackedStage').dataset.audioAvailable }));
     assert.ok(dimensions.scrollWidth <= dimensions.width + 1, 'no horizontal overflow');
     assert.ok(dimensions.scrollHeight <= dimensions.height + 1, 'no vertical overflow');
@@ -123,7 +126,7 @@ try {
     const restarted = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await restarted.waitForSelector('#stackedStage[data-assets-ready="true"]');
     assert.equal(await restarted.locator('#effectsToggle').isChecked(), true, 'preferences persist across a fresh run');
-    assert.equal(await restarted.locator('#visualizerSelect').inputValue(), mobile ? 'journey' : 'orbit');
+    assert.equal(await restarted.locator('#visualizerSelect').inputValue(), mobile ? 'living' : 'orbit');
     assert.equal(await restarted.locator('#intensityRange').inputValue(), '55');
     assert.equal(await restarted.locator('#volumeRange').inputValue(), '20');
     assert.equal(await restarted.locator('#flashToggle').isChecked(),false);

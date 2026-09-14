@@ -52,7 +52,7 @@ function syncPreferences() {
   $('volumeRange').value = String(Math.round(settings.audio.sfxVolume * 100));
   $('intensityValue').textContent = $('intensityRange').value + '%';
   $('volumeValue').textContent = $('volumeRange').value + '%';
-  $('visualizerHint').textContent = {journey:'Follow the six zones. Every clear reshapes your world.',living:'Swimming organisms scatter on clears, then form a new generation.',aurora:'Bass moves the curtains. Clears send a wave through the light.',orbit:'Beats expand the orbits. Combos widen the constellation.',spectrum:'Low and high notes shape the towers. Drops and clears push them outward.'}[$('visualizerSelect').value];
+  $('visualizerHint').textContent = {journey:'Follow the six zones. Every clear reshapes your world.',living:'Nine ocean creatures swim to your music, scatter on clears, then take a new form.',aurora:'Bass moves the curtains. Clears send a wave through the light.',orbit:'Beats expand the orbits. Combos widen the constellation.',spectrum:'Low and high notes shape the towers. Drops and clears push them outward.'}[$('visualizerSelect').value];
   if (!settings.audio.sfxEnabled) sfx.stop();
 }
 function pause() {
@@ -149,9 +149,9 @@ function frame(now) {
   if (run && renderer) {
     const info = renderer.frame(run.snapshot, now, settings);
     if ($('epochLabel').textContent !== info.name) $('epochLabel').textContent = info.name;
-    const audioCopy = renderer.mobile ? 'GAMEPLAY EFFECTS' : info.visualizerName.toUpperCase() + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
+    const audioCopy = info.visualizerName.toUpperCase() + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
     if ($('audioLabel').textContent !== audioCopy) $('audioLabel').textContent = audioCopy;
-    if (!renderer.mobile && !overlay.hidden && $('preferencePanel').open) preview.draw(now, settings, info);
+    if (!overlay.hidden && $('preferencePanel').open) preview.draw(now, settings, info);
     if (stage.dataset.feedback && stage.dataset.feedback !== lastFeedback) { lastFeedback = stage.dataset.feedback; status.textContent = lastFeedback; }
     if (!stage.dataset.feedback) lastFeedback = '';
     stage.dataset.simulationTick = String(run.snapshot.tick); stage.dataset.runScore = String(run.snapshot.score);

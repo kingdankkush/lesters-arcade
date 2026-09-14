@@ -12,7 +12,6 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
   iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin'); iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad');
   const channel = new MessageChannel();
   let sampler=null;
-  const visualizersEnabled=()=>!matchMedia('(pointer: coarse)').matches && iframe.clientWidth>600;
   let sequence = 0, childSequence = 0, ready = false, disposed = false, audioRaf = 0, lastAudio = 0, worker = null, cancelVerification = null;
   const chunks = [];
   const send = (type, payload = {}) => {
@@ -37,7 +36,7 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
   const readyTimer = setTimeout(() => { if (!ready) { fail(new Error('STACKED did not finish loading. Return to the arcade and try again.')); destroy(); } }, 20000);
   const sample = now => {
     if (disposed) return;
-    if (ready && !document.hidden && visualizersEnabled() && settings.video.audioReactive && now - lastAudio >= 1000 / 30) {
+    if (ready && !document.hidden && settings.video.audioReactive && now - lastAudio >= 1000 / 30) {
       if(!sampler) { sampler=createStackedAudioSampler(music); sampler.resume(); }
       const audio = sampler.sample(now); if (audio) send('portal:audio-frame', { audio }); lastAudio = now;
     }

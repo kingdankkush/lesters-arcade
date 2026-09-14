@@ -1,16 +1,17 @@
 const ROOT='/assets/generated/hmh-barriers/';
 const HASH=/^[a-f0-9]{64}$/;
-const KINDS=['stone-wall','concrete-wall','concrete-barrier','wood-fence','steel-fence','rock-formation','boulders'];
+const KINDS=['stone-wall','concrete-wall','concrete-barrier','wood-fence','steel-fence','rock-formation','boulders','bridge-rail'];
+const ANGLES=[0,Math.PI/4,Math.PI/2,3*Math.PI/4,Math.PI-Math.atan2(1,8),Math.atan2(3,5),Math.atan2(18,25)];
 
 export function createNativeBarrierAppearance(metadata,texture,tier='desktop') {
   const page=metadata?.tiers?.[tier],frames=page?.frames,assets=new Map();
-  if(metadata?.schema!=='hmh-barriers/v1'||!HASH.test(metadata.sourceSha256)||metadata.frames?.length!==28||!metadata.frames.every(f=>f.nativeABPixelExact===true&&HASH.test(f.nativeRgbaSha256))
-    ||!page||!HASH.test(page.sha256)||frames?.length!==28||page.width>2048||page.height>2048
+  if(metadata?.schema!=='hmh-barriers/v2'||!HASH.test(metadata.sourceSha256)||metadata.frames?.length!==56||!metadata.frames.every(f=>f.nativeABPixelExact===true&&HASH.test(f.nativeRgbaSha256))
+    ||!page||!HASH.test(page.sha256)||frames?.length!==56||page.width>2048||page.height>2048
     ||texture?.source?.pixelWidth!==page.width||texture?.source?.pixelHeight!==page.height)throw new TypeError('Native barrier page or provenance invalid');
   const size=tier==='mobile'?128:256;
   for(const [i,frame]of frames.entries()) {
-    const expected=`hmh-barrier-${KINDS[Math.floor(i/4)]}-${i%4}`,r=frame.frame;
-    if(frame.assetId!==expected||r?.x!==i%4*size||r.y!==Math.floor(i/4)*size||r.w!==size||r.h!==size
+    const expected=`hmh-barrier-${KINDS[Math.floor(i/7)]}-${i%7}`,r=frame.frame;
+    if(frame.assetId!==expected||r?.x!==i%7*size||r.y!==Math.floor(i/7)*size||r.w!==size||r.h!==size
       ||frame.runtimeScale!==8/size||Math.abs(frame.projectionY-Math.SQRT2)>1e-6||![frame.anchor?.x,frame.anchor?.y].every(v=>Number.isFinite(v)&&v>0&&v<1))throw new TypeError('Native barrier frame invalid');
     assets.set(expected,{sourceAssetId:expected,texture,frame:{...frame,category:'environment'}});
   }
@@ -25,7 +26,7 @@ export async function loadNativeBarrierAppearance(loadTexture,{mobile=false,fetc
   return createNativeBarrierAppearance(metadata,await loadTexture(ROOT+page.image),tier);
 }
 function kindFor(b) {
-  if(b.id.startsWith('world-perimeter-')||b.shape.type!=='capsule')return null;
+  if(b.shape.type!=='capsule')return null;
   if(b.id==='ravine-boulder-choke')return 'boulders';
   if(b.visualKind==='cliff')return 'rock-formation';
   if(b.visualKind==='bridge-rail')return b.id.startsWith('crossing-footbridge-')?null:'steel-fence';
@@ -42,12 +43,12 @@ export function buildNativeBarrierPlacements(world,assets) {
   for(const b of world.blockers) {
     const kind=kindFor(b);if(!kind)continue;
     const {a,b:end,radius}=b.shape,dx=end.x-a.x,dy=end.y-a.y,length=Math.hypot(dx,dy);
-    const angle=(Math.atan2(dy,dx)+Math.PI)%Math.PI,direction=kind==='boulders'?0:Math.round(angle/(Math.PI/4))%4;
-    const nativeAngle=kind==='boulders'?Math.atan2(1,4):direction*Math.PI/4;
-    if(Math.abs(Math.sin(angle-nativeAngle))>1e-6||length<2*radius)continue;
+    const angle=(Math.atan2(dy,dx)+Math.PI)%Math.PI,direction=kind==='boulders'?0:ANGLES.findIndex(a=>Math.abs(Math.sin(angle-a))<1e-6);
+    const nativeAngle=kind==='boulders'?Math.atan2(1,4):ANGLES[direction];
+    if(direction<0||Math.abs(Math.sin(angle-nativeAngle))>1e-6||length<2*radius)continue;
     const assetId=`hmh-barrier-${kind}-${direction}`;if(!assets.has(assetId))continue;
     const count=Math.max(2,Math.ceil((length+2*radius)/(3.68*radius)));
-    if(placements.length+count>512)throw new RangeError('Native barrier placement budget exceeded');
+    if(placements.length+count>1024)throw new RangeError('Native barrier placement budget exceeded');
     for(let i=0;i<count;i++){
       const t=(radius+(length-2*radius)*i/(count-1))/length;
       placements.push(Object.freeze({id:`native-barrier:${b.id}:${i}`,collisionBlockerId:b.id,assetId,x:a.x+dx*t,y:a.y+dy*t,scale:radius,category:'environment'}));

@@ -1,0 +1,118 @@
+{
+  "physicalDeviceAcceptance": false,
+  "measurements": [
+    {
+      "name": "baseline-pressure",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "cpu": 4,
+      "recordCpu": true,
+      "scenario": "pressure",
+      "meanMs": 42.68266932270917,
+      "p95Ms": 62.5,
+      "p99Ms": 83.30000000000291,
+      "simulationDroppedMs": 463.966,
+      "simulationSteps": 1303,
+      "errors": []
+    },
+    {
+      "name": "shortlist-pressure",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "cpu": 4,
+      "recordCpu": true,
+      "scenario": "pressure",
+      "meanMs": 37.57170474516691,
+      "p95Ms": 48.70000000000073,
+      "p99Ms": 69.5,
+      "simulationDroppedMs": 282.6,
+      "simulationSteps": 1304,
+      "errors": []
+    },
+    {
+      "name": "opening-live",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "cpu": 4,
+      "recordCpu": false,
+      "scenario": "opening",
+      "meanMs": 28.049071618037107,
+      "p95Ms": 41.79999999999927,
+      "p99Ms": 55.60000000000218,
+      "simulationDroppedMs": 145.566,
+      "simulationSteps": 1281,
+      "errors": []
+    },
+    {
+      "name": "opening-candidate",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "cpu": 4,
+      "recordCpu": false,
+      "scenario": "opening",
+      "meanMs": 19.551361502347415,
+      "p95Ms": 34.70000000000073,
+      "p99Ms": 41.70000000000073,
+      "simulationDroppedMs": 77.30000000000001,
+      "simulationSteps": 1260,
+      "errors": []
+    },
+    {
+      "name": "final-pressure",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "cpu": 4,
+      "recordCpu": true,
+      "scenario": "pressure",
+      "meanMs": 100.48936170212764,
+      "p95Ms": 152.90000000000146,
+      "p99Ms": 208.40000000000146,
+      "simulationDroppedMs": 5836.700000000001,
+      "simulationSteps": 930,
+      "errors": []
+    },
+    {
+      "name": "final-pressure-repeat",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "cpu": 4,
+      "recordCpu": true,
+      "scenario": "pressure",
+      "meanMs": 46.002553191489355,
+      "p95Ms": 97.29999999999927,
+      "p99Ms": 111.30000000000291,
+      "simulationDroppedMs": 2569.334,
+      "simulationSteps": 1181,
+      "errors": []
+    },
+    {
+      "name": "xs-max-opening",
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "cpu": 4,
+      "recordCpu": false,
+      "scenario": "opening",
+      "meanMs": 10.363331640426619,
+      "p95Ms": 14,
+      "p99Ms": 20.700000000000728,
+      "simulationDroppedMs": 18.1,
+      "simulationSteps": 1234,
+      "errors": []
+    }
+  ],
+  "interpretation": "Opening runs improve with lower early populations and render cost. The artificial 128-enemy stress test remains uneven and is not a 60fps certification. CPU-profiler runs showed substantial variability; the original slow outlier is retained. Different viewport samples are not direct A/B comparisons."
+}

@@ -192,7 +192,7 @@ test('rejected placement does not burn schedule or IDs; success inserts exact ca
   assert.deepEqual({ inserted: rejected.inserted, reason: rejected.reason, next: state.schedule.nextSpawnTick, ordinal: state.spawnOrdinal, count: population.active.length }, { inserted: false, reason: 'no-valid-spawn', next: 0, ordinal: 0, count: 0 });
   const inserted = stepAt({ state, population });
   assert.equal(inserted.inserted, true);
-  assert.deepEqual({ id: population.active[0].id, archetypeId: population.active[0].archetypeId, next: state.schedule.nextSpawnTick, ordinal: state.spawnOrdinal, count: population.active.length }, { id: 'encounter-000000', archetypeId: 'bagholder-rusher', next: 120, ordinal: 1, count: 1 });
+  assert.deepEqual({ id: population.active[0].id, archetypeId: population.active[0].archetypeId, next: state.schedule.nextSpawnTick, ordinal: state.spawnOrdinal, count: population.active.length }, { id: 'encounter-000000', archetypeId: 'bagholder-rusher', next: 150, ordinal: 1, count: 1 });
   assert.equal(stepAt({ state, population, tick: 1 }).reason, 'not-due');
 });
 
@@ -201,8 +201,8 @@ test('successful insertion replenishes one bounded burst for the next fixed inte
   const population = createEnemyPopulation();
   assert.equal(stepAt({ state, population, tick: 0 }).inserted, true);
   assert.equal(state.schedule.burstRemaining, 1);
-  assert.equal(stepAt({ state, population, tick: 119 }).reason, 'not-due');
-  const second = stepAt({ state, population, tick: 120 });
+  assert.equal(stepAt({ state, population, tick: 149 }).reason, 'not-due');
+  const second = stepAt({ state, population, tick: 150 });
   assert.equal(second.inserted, true);
   assert.deepEqual(population.active.map((enemy) => enemy.id), ['encounter-000000', 'encounter-000001']);
   assert.equal(state.schedule.burstRemaining, 1);
@@ -360,3 +360,5 @@ test('runtime director bounds never read camera.zoom, the viewport, or the rende
   assert.doesNotMatch(block, /camera\.x/);
   assert.doesNotMatch(block, /camera\.y/);
 });
+
+test('early populations are bounded before late encounter complexity ramps up',()=>{assert.equal(getEncounterSnapshot(0).bodyCap,20);assert.equal(getEncounterBand(0).spawnIntervalTicks,150);assert.equal(getEncounterSnapshot(3600).bodyCap,48);assert.ok(getEncounterSnapshot(18000).bodyCap>48);});

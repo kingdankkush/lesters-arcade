@@ -32,13 +32,13 @@ export const ENCOUNTER_FRAMING = F({
 });
 
 export const HERO_MIN_VIEWPORT_RATIO = 0.10;
-export function resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framingZoom = 1 }) {
+export function resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framingZoom = 1, mobile = false }) {
   if (!Number.isFinite(framingZoom) || framingZoom < ENCOUNTER_FRAMING.zoomOut || framingZoom > 1) throw new RangeError('invalid encounter framing zoom');
   if (!Number.isFinite(viewportHeight) || viewportHeight <= 0 || !Number.isFinite(bodyHeight) || bodyHeight <= 0) return framingZoom;
   // Reserve the existing crowd pullback while keeping actual body pixels at
   // least ten percent of the viewport. This scales the entire scene, not
   // the hero alone, preserving art/ground/weapon/enemy projection parity.
-  return Math.max(0.9, viewportHeight * HERO_MIN_VIEWPORT_RATIO / (bodyHeight * ENCOUNTER_FRAMING.zoomOut)) * framingZoom;
+  return Math.max(0.9, viewportHeight * HERO_MIN_VIEWPORT_RATIO / (bodyHeight * ENCOUNTER_FRAMING.zoomOut)) * framingZoom * (mobile ? .8 : 1);
 }
 
 export const DASH_FEEL = F({

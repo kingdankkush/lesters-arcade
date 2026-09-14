@@ -1,14 +1,15 @@
 import { createChikunRuntime as createLegacyRuntime } from './chikun-flight-legacy.mjs';
+import { createGroundRuntime as createGroundV3Runtime } from './chikun-ground-v3-runtime.mjs';
 import { createGroundRuntime, groundDifficulty } from './chikun-ground-runtime.mjs';
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
-export const CHIKUN_CABINET_VERSION = '0.7.0';
-export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v5';
+export const CHIKUN_CABINET_VERSION = '0.8.0';
+export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v6';
 export const CHIKUN_FIXED_STEP_HZ = 60;
 export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
 const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
-export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v3';
+export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v4';
 const LEGACY_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
 
 export const CHIKUN_VERTICAL_SLICE_CONFIG = Object.freeze({
@@ -86,7 +87,7 @@ function normalizeFlapSteps(taps, maxTicks) {
 }
 
 function buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion = CHIKUN_EVIDENCE_VERSION }) {
-  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION, "chikun-flap-evidence-v2"].includes(evidenceVersion)) throw new Error("Unsupported Chikun evidence version");
+  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION, "chikun-flap-evidence-v2", "chikun-flap-evidence-v3"].includes(evidenceVersion)) throw new Error("Unsupported Chikun evidence version");
   const normalizedMaxTicks = normalizeMaxTicks(maxTicks);
   return Object.freeze({
     version: evidenceVersion,
@@ -100,6 +101,7 @@ function buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion = CHIKUN_EV
 export const buildChikunDifficulty = groundDifficulty;
 export function createChikunRuntime({ seed = 1, maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
  if (evidenceVersion === CHIKUN_EVIDENCE_VERSION) return createGroundRuntime({seed,maxTicks});
+ if (evidenceVersion === 'chikun-flap-evidence-v3') return createGroundV3Runtime({seed,maxTicks});
  if (['chikun-flap-evidence-v1','chikun-flap-evidence-v2'].includes(evidenceVersion)) return createLegacyRuntime({seed,maxTicks,evidenceVersion});
  throw new Error('Unsupported Chikun evidence version');
 }
@@ -117,7 +119,7 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60, evidence
 
 export function replayChikunRun(evidence = {}) {
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) throw new Error('Chikun replay evidence must be an object');
-  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION, "chikun-flap-evidence-v2"].includes(evidence.version)) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
+  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION, "chikun-flap-evidence-v2", "chikun-flap-evidence-v3"].includes(evidence.version)) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
   if (evidence.fixedStepHz !== CHIKUN_FIXED_STEP_HZ) throw new Error(`Chikun evidence fixedStepHz must be ${CHIKUN_FIXED_STEP_HZ}`);
   const maxTicks = Math.floor(Number(evidence.maxTicks));
   if (!Number.isFinite(maxTicks) || maxTicks < 1 || maxTicks > CHIKUN_MAX_RUN_TICKS) throw new Error('Chikun evidence maxTicks is outside the supported run budget');
