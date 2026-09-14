@@ -1,0 +1,356 @@
+PASS guest-boot
+PASS guest-free-run
+PASS pause-resume
+PASS mid-run-restart
+PASS settings-persistence-reload
+PASS guest-exit-to-splash
+PASS game-over-run-summary
+{
+  "schema": "hmh-reboot-portal-e2e-flows-v1",
+  "origin": "https://lestersarcade.io",
+  "browserProfile": "desktop",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "implementedFlows": [
+    "guest-boot",
+    "guest-free-run",
+    "pause-resume",
+    "mid-run-restart",
+    "settings-persistence-reload",
+    "guest-exit-to-splash",
+    "game-over-run-summary"
+  ],
+  "deferredFlows": [
+    {
+      "id": "ranked-preview",
+      "reason": "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated."
+    },
+    {
+      "id": "wallet-connect-reconnect",
+      "reason": "Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove."
+    },
+    {
+      "id": "service-worker-offline-update",
+      "reason": "Service worker, offline shell, and stale-cache flows need dedicated SW lifecycle control; currently exercised by the release browser certification harness."
+    }
+  ],
+  "results": [
+    {
+      "id": "guest-boot",
+      "ok": true,
+      "detail": {
+        "splash": true,
+        "splashGeometry": {
+          "ad": {
+            "left": 360,
+            "top": 856.078125,
+            "right": 1080,
+            "bottom": 922.359375
+          },
+          "cabinet": {
+            "left": 510,
+            "top": 740.078125,
+            "right": 930,
+            "bottom": 830.078125
+          },
+          "actions": {
+            "left": 360,
+            "top": 196,
+            "right": 1080,
+            "bottom": 322
+          },
+          "cabinetOverlap": 0,
+          "actionsOverlap": 0,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440
+        }
+      }
+    },
+    {
+      "id": "guest-free-run",
+      "ok": true,
+      "detail": {
+        "profile": "Guest",
+        "heroSelector": {
+          "scrollY": 97,
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "documentHeight": 1393,
+          "selector": {
+            "x": 20,
+            "y": 0,
+            "width": 1400,
+            "height": 1201.4375,
+            "top": 0,
+            "right": 1420,
+            "bottom": 1201.4375,
+            "left": 20
+          },
+          "roster": {
+            "x": 21,
+            "y": 202.1875,
+            "width": 1398,
+            "height": 990.25,
+            "top": 202.1875,
+            "right": 1419,
+            "bottom": 1192.4375,
+            "left": 21,
+            "clientWidth": 1398,
+            "scrollWidth": 1398,
+            "overflowX": "visible",
+            "gridAutoFlow": "row"
+          },
+          "reducedMotion": false,
+          "focusedCharacterId": "lit-commando",
+          "dots": {
+            "count": 4,
+            "activeIndex": 1,
+            "visible": false
+          },
+          "cards": [
+            {
+              "id": "lit-commando",
+              "active": true,
+              "locked": false,
+              "ariaPressed": "true",
+              "compareRole": "reference",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                1
+              ],
+              "layoutTop": 201,
+              "rect": {
+                "x": 21,
+                "y": 202.1875,
+                "width": 333,
+                "height": 990.25,
+                "top": 202.1875,
+                "right": 354,
+                "bottom": 1192.4375,
+                "left": 21
+              },
+              "alphaPixels": [
+                64584,
+                65031,
+                64319,
+                65031,
+                64584,
+                62380,
+                58226,
+                62380
+              ]
+            },
+            {
+              "id": "lit-valkyrie",
+              "active": true,
+              "locked": false,
+              "ariaPressed": "false",
+              "compareRole": "challenger",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                1
+              ],
+              "layoutTop": 201,
+              "rect": {
+                "x": 376,
+                "y": 198.1875,
+                "width": 333,
+                "height": 990.25,
+                "top": 198.1875,
+                "right": 709,
+                "bottom": 1188.4375,
+                "left": 376
+              },
+              "alphaPixels": [
+                57428,
+                55827,
+                53376,
+                55827,
+                57428,
+                58064,
+                57445,
+                58064
+              ]
+            },
+            {
+              "id": "lester-original",
+              "active": false,
+              "locked": true,
+              "ariaPressed": "false",
+              "compareRole": "challenger",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                1
+              ],
+              "layoutTop": 201,
+              "rect": {
+                "x": 731,
+                "y": 202.1875,
+                "width": 333,
+                "height": 990.25,
+                "top": 202.1875,
+                "right": 1064,
+                "bottom": 1192.4375,
+                "left": 731
+              },
+              "alphaPixels": [
+                69913,
+                69008,
+                66242,
+                69008,
+                69913,
+                69382,
+                68146,
+                69382
+              ]
+            },
+            {
+              "id": "lilly",
+              "active": false,
+              "locked": true,
+              "ariaPressed": "false",
+              "compareRole": "challenger",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                1
+              ],
+              "layoutTop": 201,
+              "rect": {
+                "x": 1086,
+                "y": 202.1875,
+                "width": 333,
+                "height": 990.25,
+                "top": 202.1875,
+                "right": 1419,
+                "bottom": 1192.4375,
+                "left": 1086
+              },
+              "alphaPixels": [
+                59533,
+                59921,
+                59077,
+                59921,
+                59533,
+                57928,
+                54793,
+                57928
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pause-resume",
+      "ok": true,
+      "detail": {
+        "pausedSurfaces": [
+          "#combatMenuPanel",
+          "#hmhPausePanel",
+          "#arcadeMusicPlayer"
+        ],
+        "soundtrack": {
+          "controls": 8,
+          "geometry": {
+            "deck": {
+              "left": 10,
+              "top": 350,
+              "right": 330,
+              "bottom": 876
+            },
+            "menu": {
+              "left": 340,
+              "top": 184.3125,
+              "right": 1100,
+              "bottom": 715.6875
+            },
+            "overlapArea": 0,
+            "iconOverlap": 0,
+            "position": "fixed",
+            "documentHeight": 908
+          },
+          "volume": {
+            "setting": 0.42,
+            "audio": 0.231
+          },
+          "playback": {
+            "paused": false,
+            "duration": 109.799979,
+            "currentTime": 54.899989,
+            "currentSrc": "https://lestersarcade.io/assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3"
+          },
+          "titleBefore": "Final Ledger II — The Lost Keys",
+          "titleAfter": "Mega Lit — Hashrate Heights"
+        }
+      }
+    },
+    {
+      "id": "mid-run-restart",
+      "ok": true,
+      "detail": {
+        "sessionBefore": "Resumed by portal.",
+        "sessionAfter": "FREE // lit-commando // seed 3899919070"
+      }
+    },
+    {
+      "id": "settings-persistence-reload",
+      "ok": true,
+      "detail": {
+        "gore": false,
+        "saveVersion": 3
+      }
+    },
+    {
+      "id": "guest-exit-to-splash",
+      "ok": true,
+      "detail": {
+        "returnedTo": "wallet-splash"
+      }
+    },
+    {
+      "id": "game-over-run-summary",
+      "ok": true,
+      "detail": {
+        "sessionId": "lester-blaster-free-7ae19d66-09ff-4904-8735-8cdbd049c4c4",
+        "summaryCount": 1,
+        "score": 0,
+        "kills": 0,
+        "terminalReason": "defeated",
+        "schemaVersion": 6,
+        "defeat": {
+          "kind": "enemy",
+          "causeId": "enemy-bagholder-rusher",
+          "tick": 2,
+          "damage": 101
+        },
+        "recapVisible": true
+      }
+    }
+  ],
+  "consoleErrors": []
+}
+Portal E2E passed for all implemented flows.

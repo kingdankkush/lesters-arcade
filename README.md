@@ -6,9 +6,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Combined gameplay update — release candidate
+## Combined gameplay update — verified live
 
-HMH adds seven objective-owned rewards, pause-aware supply restocks, native silver collectibles and barriers, clearer weapon names, earned hero recruitment and interaction sounds. Chikun 0.7.0 adds grounded running, jumps, flight/landing transitions, varied ground/air hazards, impact ragdolls and replay save/open. STACKED adds desktop music worlds, bounded mobile gameplay particles, richer practice medals, accessibility preferences and factual local profile counters. Startup limits remain unchanged. Validation and publication evidence will be recorded in the September 14 release receipt. The preceding verified production is retained below until this candidate is promoted.
+HMH adds seven objective-owned rewards, pause-aware supply restocks, native silver collectibles and barriers, clearer weapon names, earned hero recruitment and interaction sounds. Chikun 0.7.0 adds grounded running, jumps, flight/landing transitions, varied ground/air hazards, impact ragdolls and replay save/open. STACKED adds desktop music worlds, bounded mobile gameplay particles, richer practice medals, accessibility preferences and factual local profile counters. Startup limits remain unchanged. Source `bfcba824629c33f099af0084a398acdacfc358bd`; deployment `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. All 202 private/public file hashes and the cloud/browser release checks passed. [Release receipt](docs/qa/combined-gameplay-release-20260914.json). Retained rollback: `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`. Physical-device acceptance and the broader roadmap remain open.
 
 **Production cache marker:** `lesters-arcade-v47-combined-gameplay`
 

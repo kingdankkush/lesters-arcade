@@ -1,0 +1,5 @@
+
+> lesters-arcade@0.3.1 docs:cabinets
+> node scripts/cabinet-status-doc-drift-check.mjs
+
+Cabinet status documentation matches 4 manifests across 3 docs. Playable: chikun@0.7.0, hard-money-heroes@1.0.0, stacked@0.2.0.

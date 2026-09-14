@@ -1,0 +1,287 @@
+{
+  "status": "PASS",
+  "mode": "free",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "score": 463,
+  "startUi": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "controls": [
+      {
+        "tag": "P",
+        "id": "modeLabel",
+        "left": 71.9375,
+        "right": 318.046875,
+        "top": 358.5625,
+        "bottom": 376.5625,
+        "width": 246.109375,
+        "height": 18
+      },
+      {
+        "tag": "H1",
+        "id": "",
+        "left": 115.5625,
+        "right": 274.421875,
+        "top": 390.5625,
+        "bottom": 487.65625,
+        "width": 158.859375,
+        "height": 97.09375
+      },
+      {
+        "tag": "P",
+        "id": "modeCopy",
+        "left": 50,
+        "right": 340,
+        "top": 497.65625,
+        "bottom": 556.15625,
+        "width": 290,
+        "height": 58.5
+      },
+      {
+        "tag": "P",
+        "id": "",
+        "left": 32.546875,
+        "right": 357.4375,
+        "top": 576.15625,
+        "bottom": 625.65625,
+        "width": 324.890625,
+        "height": 49.5
+      },
+      {
+        "tag": "BUTTON",
+        "id": "startButton",
+        "left": 24,
+        "right": 366,
+        "top": 635.65625,
+        "bottom": 687.65625,
+        "width": 342,
+        "height": 52
+      },
+      {
+        "tag": "P",
+        "id": "assetStatus",
+        "left": 137.78125,
+        "right": 252.203125,
+        "top": 697.65625,
+        "bottom": 711.65625,
+        "width": 114.421875,
+        "height": 14
+      },
+      {
+        "tag": "SMALL",
+        "id": "",
+        "left": 34.5,
+        "right": 355.484375,
+        "top": 729.65625,
+        "bottom": 744.65625,
+        "width": 320.984375,
+        "height": 15
+      }
+    ]
+  },
+  "pauseControls": [
+    {
+      "id": "resumeButton",
+      "left": 19.578125,
+      "right": 370.40625,
+      "top": 331.40625,
+      "bottom": 381.40625,
+      "width": 350.828125,
+      "height": 50,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    {
+      "id": "pauseMuteButton",
+      "left": 19.578125,
+      "right": 188.984375,
+      "top": 393.40625,
+      "bottom": 443.40625,
+      "width": 169.40625,
+      "height": 50,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    {
+      "id": "goreButton",
+      "left": 200.984375,
+      "right": 370.40625,
+      "top": 393.40625,
+      "bottom": 443.40625,
+      "width": 169.421875,
+      "height": 50,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    {
+      "id": "pauseMusicButton",
+      "left": 19.578125,
+      "right": 188.984375,
+      "top": 455.40625,
+      "bottom": 505.40625,
+      "width": 169.40625,
+      "height": 50,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    {
+      "id": "pauseFullscreenButton",
+      "left": 200.984375,
+      "right": 370.40625,
+      "top": 455.40625,
+      "bottom": 505.40625,
+      "width": 169.421875,
+      "height": 50,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    {
+      "id": "pauseExitButton",
+      "left": 19.578125,
+      "right": 188.984375,
+      "top": 517.40625,
+      "bottom": 567.40625,
+      "width": 169.40625,
+      "height": 50,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    }
+  ],
+  "frameTiming": {
+    "frames": 93,
+    "p95Ms": 7
+  },
+  "cabinetArt": [
+    {
+      "src": "./assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2",
+      "width": 400,
+      "height": 531
+    },
+    {
+      "src": "./assets/generated/chikun-cabinet/chikun-cabinet-front-right.png?v=transparent-v2",
+      "width": 400,
+      "height": 531
+    },
+    {
+      "src": "./assets/generated/chikun-cabinet/chikun-cabinet-right.png?v=transparent-v2",
+      "width": 400,
+      "height": 531
+    },
+    {
+      "src": "./assets/generated/chikun-cabinet/chikun-cabinet-back.png?v=transparent-v2",
+      "width": 400,
+      "height": 531
+    },
+    {
+      "src": "./assets/generated/chikun-cabinet/chikun-cabinet-left.png?v=transparent-v2",
+      "width": 400,
+      "height": 531
+    },
+    {
+      "src": "./assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png?v=transparent-v2",
+      "width": 400,
+      "height": 531
+    }
+  ],
+  "modeArt": [
+    {
+      "src": "./assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "src": "./assets/generated/chikun-mode-select/chikuns-escape-ranked-mode.webp",
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "controlRects": [
+    {
+      "id": "pauseButton",
+      "left": 334,
+      "right": 378,
+      "top": 85.328125,
+      "bottom": 129.328125,
+      "width": 44,
+      "height": 44,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    }
+  ],
+  "upgradeHud": {
+    "combo": "0",
+    "nearMisses": "0",
+    "visible": true,
+    "left": 12,
+    "right": 160.140625,
+    "viewportWidth": 390
+  },
+  "resultUi": {
+    "bars": 24,
+    "playheads": 1,
+    "timelineLabel": "1 flaps across this run. Click to scrub the replay.",
+    "timelineVisible": true,
+    "shareVisible": true,
+    "shareRight": 190,
+    "viewportWidth": 390,
+    "viewportHeight": 844,
+    "actionRects": [
+      {
+        "id": "restartButton",
+        "left": 16,
+        "right": 190,
+        "top": 575.984375,
+        "bottom": 619.984375
+      },
+      {
+        "id": "watchReplayButton",
+        "left": 200,
+        "right": 374,
+        "top": 575.984375,
+        "bottom": 619.984375
+      },
+      {
+        "id": "shareRunButton",
+        "left": 16,
+        "right": 190,
+        "top": 629.984375,
+        "bottom": 673.984375
+      },
+      {
+        "id": "exportReplayButton",
+        "left": 200,
+        "right": 374,
+        "top": 629.984375,
+        "bottom": 673.984375
+      },
+      {
+        "id": "importReplayButton",
+        "left": 16,
+        "right": 190,
+        "top": 683.984375,
+        "bottom": 727.984375
+      },
+      {
+        "id": "resultExitButton",
+        "left": 200,
+        "right": 374,
+        "top": 683.984375,
+        "bottom": 727.984375
+      }
+    ]
+  },
+  "sharedPayload": {
+    "title": "Chikun's Escape",
+    "text": "I scored 463 points in Chikun's Escape: 0 obstacles, 0 near misses, 0 best combo, 6.1s flight. Daily 2026-09-14 at lestersarcade.io",
+    "url": "https://lestersarcade.io"
+  },
+  "scoreBoard": "isolated",
+  "profile": "isolated",
+  "gameplayScreenshot": "C:\\Users\\just_\\Documents\\Codex\\2026-09-12\\my\\work\\lesters-arcade\\work\\qa\\release\\chikun-free-gameplay.png",
+  "screenshot": "C:\\Users\\just_\\Documents\\Codex\\2026-09-12\\my\\work\\lesters-arcade\\work\\qa\\release\\chikun-free-mobile.png"
+}

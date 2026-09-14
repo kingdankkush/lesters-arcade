@@ -1,0 +1,1624 @@
+{
+  "origin": "https://lesters-arcade-gujzr4oqd-justin-agent-projects.vercel.app",
+  "complete": true,
+  "expected": 202,
+  "exit": 0,
+  "results": [
+    {
+      "file": "assets/audio/sfx/hmh-objective-complete.wav",
+      "status": 200,
+      "bytes": 29150,
+      "expectedSha256": "5eb634544e5ba345ed305178a42a1a115c440b4cebd12666ac90a3f3efee143c",
+      "sha256": "5eb634544e5ba345ed305178a42a1a115c440b4cebd12666ac90a3f3efee143c",
+      "matches": true
+    },
+    {
+      "file": "assets/audio/sfx/hmh-objective-cues.json",
+      "status": 200,
+      "bytes": 1017,
+      "expectedSha256": "dbf5fdbf7aa59ac82420f74a7c31801b6b31efe3db61f18083c35b1baad830e2",
+      "sha256": "dbf5fdbf7aa59ac82420f74a7c31801b6b31efe3db61f18083c35b1baad830e2",
+      "matches": true
+    },
+    {
+      "file": "assets/audio/sfx/hmh-silver-collect.wav",
+      "status": 200,
+      "bytes": 8424,
+      "expectedSha256": "5da3f1fcc57af9c1448e7b84192d4aef172a6f3908533d2d6eb3adbc64704942",
+      "sha256": "5da3f1fcc57af9c1448e7b84192d4aef172a6f3908533d2d6eb3adbc64704942",
+      "matches": true
+    },
+    {
+      "file": "assets/audio/sfx/hmh-supply-ready.wav",
+      "status": 200,
+      "bytes": 15038,
+      "expectedSha256": "77f2bd8e34db540bf65c4c645291e9687008744d952b9b2174af4899a91d1757",
+      "sha256": "77f2bd8e34db540bf65c4c645291e9687008744d952b9b2174af4899a91d1757",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/accelerate.webp",
+      "status": 200,
+      "bytes": 100358,
+      "expectedSha256": "eb3b8d8c4b733afd40ac23e5b74bb19b4909355049a34eca4bbcccef376a1541",
+      "sha256": "eb3b8d8c4b733afd40ac23e5b74bb19b4909355049a34eca4bbcccef376a1541",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/air.wav",
+      "status": 200,
+      "bytes": 384044,
+      "expectedSha256": "b716ace75279210d6a17379d6d88bc6638c8cb3a4cea1dfcefbbc1b3672e8112",
+      "sha256": "b716ace75279210d6a17379d6d88bc6638c8cb3a4cea1dfcefbbc1b3672e8112",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/coin.wav",
+      "status": 200,
+      "bytes": 22124,
+      "expectedSha256": "49809760d566708150688b24e4247b1718345228f3f6f3bd4cd363fbb1fda8b6",
+      "sha256": "49809760d566708150688b24e4247b1718345228f3f6f3bd4cd363fbb1fda8b6",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/flap.wav",
+      "status": 200,
+      "bytes": 10124,
+      "expectedSha256": "8912486fe048a117747b719abc1cf8d3a08af970fae546c664648296fd5beb4b",
+      "sha256": "8912486fe048a117747b719abc1cf8d3a08af970fae546c664648296fd5beb4b",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/impact.wav",
+      "status": 200,
+      "bytes": 38444,
+      "expectedSha256": "1e90cbf778216f4e8e570bab4504099d0a4e109719de880bcbca611f4c3f13d0",
+      "sha256": "1e90cbf778216f4e8e570bab4504099d0a4e109719de880bcbca611f4c3f13d0",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/launch.wav",
+      "status": 200,
+      "bytes": 36044,
+      "expectedSha256": "0bef515180725db6792d72a2ac82f25c519f484863f0465ab2b11cffd2e05aff",
+      "sha256": "0bef515180725db6792d72a2ac82f25c519f484863f0465ab2b11cffd2e05aff",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/manifest.json",
+      "status": 200,
+      "bytes": 856,
+      "expectedSha256": "3e01ece147a29297f9cc73acccd63cfae982eb5f9bdf7e1d621cf7aa93e88098",
+      "sha256": "3e01ece147a29297f9cc73acccd63cfae982eb5f9bdf7e1d621cf7aa93e88098",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/near.wav",
+      "status": 200,
+      "bytes": 20204,
+      "expectedSha256": "2fbff0a09339184e30f27e500ae32dca2b08c0cb1193011f8a3ea7cf6baef4f6",
+      "sha256": "2fbff0a09339184e30f27e500ae32dca2b08c0cb1193011f8a3ea7cf6baef4f6",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/pass.wav",
+      "status": 200,
+      "bytes": 17804,
+      "expectedSha256": "61824bc67d200669e5968a4dac00e1dca8dbf4f0dcd21429e33424fe9f81a14b",
+      "sha256": "61824bc67d200669e5968a4dac00e1dca8dbf4f0dcd21429e33424fe9f81a14b",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/audio/streak.wav",
+      "status": 200,
+      "bytes": 43244,
+      "expectedSha256": "4b17773f0006f9184ed043c1b66812bc947c61080f8f1e61ddd243a97b237545",
+      "sha256": "4b17773f0006f9184ed043c1b66812bc947c61080f8f1e61ddd243a97b237545",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/barrel_roll.webp",
+      "status": 200,
+      "bytes": 108626,
+      "expectedSha256": "f7f92b5070c121710cb86e86d7e11b8fb3d00ba11c344ad407e30e86619520f1",
+      "sha256": "f7f92b5070c121710cb86e86d7e11b8fb3d00ba11c344ad407e30e86619520f1",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/brake.webp",
+      "status": 200,
+      "bytes": 106826,
+      "expectedSha256": "7ab608c3756cd4c1480de3d0dfa666e038da02872fd12861e9058764aacdf6ed",
+      "sha256": "7ab608c3756cd4c1480de3d0dfa666e038da02872fd12861e9058764aacdf6ed",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/character.json",
+      "status": 200,
+      "bytes": 6738,
+      "expectedSha256": "4e2ab72f5e51c97d25c7ac08355061c4c0042347a4a6bc22dd34fab254ac3d9d",
+      "sha256": "4e2ab72f5e51c97d25c7ac08355061c4c0042347a4a6bc22dd34fab254ac3d9d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/climb.webp",
+      "status": 200,
+      "bytes": 97320,
+      "expectedSha256": "b8d443e09e8dc2d37bea8b98958221bb8996f24a6986dfb05448388166f54255",
+      "sha256": "b8d443e09e8dc2d37bea8b98958221bb8996f24a6986dfb05448388166f54255",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/collect.webp",
+      "status": 200,
+      "bytes": 99656,
+      "expectedSha256": "27994e857fe27c41c4b8f8625b117e7d4a49164ae8adc907d4840dc64267bb17",
+      "sha256": "27994e857fe27c41c4b8f8625b117e7d4a49164ae8adc907d4840dc64267bb17",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/corkscrew.webp",
+      "status": 200,
+      "bytes": 109284,
+      "expectedSha256": "6418eb58ad4dff0c583d2f356008f36f2dc9cd2291d29fc47d6833a5a79d4c5d",
+      "sha256": "6418eb58ad4dff0c583d2f356008f36f2dc9cd2291d29fc47d6833a5a79d4c5d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/crest.webp",
+      "status": 200,
+      "bytes": 103182,
+      "expectedSha256": "92ca1da8622a0ea0f06cdeda456002fbaa0994a45be5a32ba507c9890ff493e5",
+      "sha256": "92ca1da8622a0ea0f06cdeda456002fbaa0994a45be5a32ba507c9890ff493e5",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/cruise.webp",
+      "status": 200,
+      "bytes": 100796,
+      "expectedSha256": "7b28f271baba77e7f76e258d3423e05a3c2eb45bb83bd08817b81f3e3b602446",
+      "sha256": "7b28f271baba77e7f76e258d3423e05a3c2eb45bb83bd08817b81f3e3b602446",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/descend.webp",
+      "status": 200,
+      "bytes": 103114,
+      "expectedSha256": "76acb9c5742cbd3272eb455b52133b6855ad693bb39ca7bb11869930b93f2f0c",
+      "sha256": "76acb9c5742cbd3272eb455b52133b6855ad693bb39ca7bb11869930b93f2f0c",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/dive.webp",
+      "status": 200,
+      "bytes": 104706,
+      "expectedSha256": "ca963e460fd4518c5ed06ad04eb4bfb8a291a2ac2e02b80ca726eadd1b2912e5",
+      "sha256": "ca963e460fd4518c5ed06ad04eb4bfb8a291a2ac2e02b80ca726eadd1b2912e5",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/dodge_high.webp",
+      "status": 200,
+      "bytes": 109184,
+      "expectedSha256": "b54471780da0fa5fd71445900153a2bc36712115fc59cd61a8936a96c656be79",
+      "sha256": "b54471780da0fa5fd71445900153a2bc36712115fc59cd61a8936a96c656be79",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/dodge_low.webp",
+      "status": 200,
+      "bytes": 100386,
+      "expectedSha256": "018dc8947b208e4e1060921ff0319cf5e986e40c0caedbe587c524f13e61ffd5",
+      "sha256": "018dc8947b208e4e1060921ff0319cf5e986e40c0caedbe587c524f13e61ffd5",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/fall.webp",
+      "status": 200,
+      "bytes": 107312,
+      "expectedSha256": "4c60f409d459c52b8099530440486380464e1d4bd86a50339deaa705fe8d6c6b",
+      "sha256": "4c60f409d459c52b8099530440486380464e1d4bd86a50339deaa705fe8d6c6b",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/impact.webp",
+      "status": 200,
+      "bytes": 104372,
+      "expectedSha256": "0837bd5b6ae99680010a4023a201e354a233be105f02ac1c820faaa0da000100",
+      "sha256": "0837bd5b6ae99680010a4023a201e354a233be105f02ac1c820faaa0da000100",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/poster.webp",
+      "status": 200,
+      "bytes": 5396,
+      "expectedSha256": "17dadab4ec19621c1dfc0d9cd9fedd8c61a3ff3c9b15d13efbb1bea8d76c5f03",
+      "sha256": "17dadab4ec19621c1dfc0d9cd9fedd8c61a3ff3c9b15d13efbb1bea8d76c5f03",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/ready.webp",
+      "status": 200,
+      "bytes": 103408,
+      "expectedSha256": "34941ca9a1dccef434ed18e4d06e633c1e9b6e3308b2d9461a67ff1757847404",
+      "sha256": "34941ca9a1dccef434ed18e4d06e633c1e9b6e3308b2d9461a67ff1757847404",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/recover.webp",
+      "status": 200,
+      "bytes": 105208,
+      "expectedSha256": "3c1dd2ecad667a4077aaef299eca888784ae3a0758f3bed5efacc0a5142da07f",
+      "sha256": "3c1dd2ecad667a4077aaef299eca888784ae3a0758f3bed5efacc0a5142da07f",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/reverse_roll.webp",
+      "status": 200,
+      "bytes": 108850,
+      "expectedSha256": "dade050f0a4f42b82f6c04b535c4bdf1b15803008c291f5be4f71fcfc9aa04b9",
+      "sha256": "dade050f0a4f42b82f6c04b535c4bdf1b15803008c291f5be4f71fcfc9aa04b9",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/squeeze.webp",
+      "status": 200,
+      "bytes": 95284,
+      "expectedSha256": "fc57e5ef7bbd348a51469ca7505cc067f117c96329b12637017586124c340556",
+      "sha256": "fc57e5ef7bbd348a51469ca7505cc067f117c96329b12637017586124c340556",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/takeoff.webp",
+      "status": 200,
+      "bytes": 103290,
+      "expectedSha256": "1f9a3a5295ce1f66d47721f7d0f89c925af8611e9a2eee9af79c118bd0284e5d",
+      "sha256": "1f9a3a5295ce1f66d47721f7d0f89c925af8611e9a2eee9af79c118bd0284e5d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/tumble.webp",
+      "status": 200,
+      "bytes": 109810,
+      "expectedSha256": "665963cb9a20545c14d38cf0e7fc22416034fedb24a73708ebfd6f344a6a5ec5",
+      "sha256": "665963cb9a20545c14d38cf0e7fc22416034fedb24a73708ebfd6f344a6a5ec5",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-flight-v3/victory_twirl.webp",
+      "status": 200,
+      "bytes": 109022,
+      "expectedSha256": "88f52ef3f803bfe74e9985abb16dff82ef3e2cdf359446f485cc898c8f90a0a9",
+      "sha256": "88f52ef3f803bfe74e9985abb16dff82ef3e2cdf359446f485cc898c8f90a0a9",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/drone.wav",
+      "status": 200,
+      "bytes": 26444,
+      "expectedSha256": "af947ae537a1f3ab4b6c2777b097df664a58c86a3fc9488cf5f34b1f2c68572c",
+      "sha256": "af947ae537a1f3ab4b6c2777b097df664a58c86a3fc9488cf5f34b1f2c68572c",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/forest.wav",
+      "status": 200,
+      "bytes": 192044,
+      "expectedSha256": "dd6ce8cedc09915e74d25905c4ef6577703dfb0a614b4392116c01e4bb2565fa",
+      "sha256": "dd6ce8cedc09915e74d25905c4ef6577703dfb0a614b4392116c01e4bb2565fa",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/gore.wav",
+      "status": 200,
+      "bytes": 15404,
+      "expectedSha256": "d3d0d9e21c97cfd348da552b66aae40845b78e819c6a8f1051c77b59ae2fe144",
+      "sha256": "d3d0d9e21c97cfd348da552b66aae40845b78e819c6a8f1051c77b59ae2fe144",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/industry.wav",
+      "status": 200,
+      "bytes": 192044,
+      "expectedSha256": "3a5550b797eae0ec9f1ee6f440fed8488e4564cc5f90cd0a850aeff54c9cce7d",
+      "sha256": "3a5550b797eae0ec9f1ee6f440fed8488e4564cc5f90cd0a850aeff54c9cce7d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/jump.wav",
+      "status": 200,
+      "bytes": 11564,
+      "expectedSha256": "f63c49ecdadf3b5f798c5b3d44ab783ec87cd02e8fb1ef8aa1eb1404cb1781c4",
+      "sha256": "f63c49ecdadf3b5f798c5b3d44ab783ec87cd02e8fb1ef8aa1eb1404cb1781c4",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/land.wav",
+      "status": 200,
+      "bytes": 12524,
+      "expectedSha256": "4dfbf2f261f8c25296a44e4e25be339ab77844a2319168bd9c81c2fceca9cc1a",
+      "sha256": "4dfbf2f261f8c25296a44e4e25be339ab77844a2319168bd9c81c2fceca9cc1a",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/manifest.json",
+      "status": 200,
+      "bytes": 2754,
+      "expectedSha256": "4a42ed189d427380f993a78f20b02d7aa8054c151fe50137e3c53f38c192ac2e",
+      "sha256": "4a42ed189d427380f993a78f20b02d7aa8054c151fe50137e3c53f38c192ac2e",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/menu.wav",
+      "status": 200,
+      "bytes": 4364,
+      "expectedSha256": "2b4e08ca262c099722453e3891fcc8817d0170364b3a55f263c75294a35ccc37",
+      "sha256": "2b4e08ca262c099722453e3891fcc8817d0170364b3a55f263c75294a35ccc37",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/splash.wav",
+      "status": 200,
+      "bytes": 31244,
+      "expectedSha256": "3fe07c763ccb6e8f4f8b14474fd1fa007571abc12345a697943551560fa71c96",
+      "sha256": "3fe07c763ccb6e8f4f8b14474fd1fa007571abc12345a697943551560fa71c96",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/step.wav",
+      "status": 200,
+      "bytes": 4604,
+      "expectedSha256": "dba0a774034481e3db0a8ef76cf4fe47a1d915d511b53003da0bb9682299d0de",
+      "sha256": "dba0a774034481e3db0a8ef76cf4fe47a1d915d511b53003da0bb9682299d0de",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/water.wav",
+      "status": 200,
+      "bytes": 192044,
+      "expectedSha256": "fa414af76e659414fefad96200424c21ad7ec45212dfcc312cd3611465e4a6a4",
+      "sha256": "fa414af76e659414fefad96200424c21ad7ec45212dfcc312cd3611465e4a6a4",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-audio-v1/wood.wav",
+      "status": 200,
+      "bytes": 20204,
+      "expectedSha256": "523e2125508c0909e5328187475361760a745db276a780ddffea30cea0c258d1",
+      "sha256": "523e2125508c0909e5328187475361760a745db276a780ddffea30cea0c258d1",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/character.json",
+      "status": 200,
+      "bytes": 23179,
+      "expectedSha256": "bda161b5cc9d7b245373b2dbcbb4263efa74d19ba98878c08386c36d1a36bf64",
+      "sha256": "bda161b5cc9d7b245373b2dbcbb4263efa74d19ba98878c08386c36d1a36bf64",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/ground_impact.webp",
+      "status": 200,
+      "bytes": 101334,
+      "expectedSha256": "885faa1e5535127716cb15d7fd1f85a8d36f0579e7afcf7525869b2afa69fb9c",
+      "sha256": "885faa1e5535127716cb15d7fd1f85a8d36f0579e7afcf7525869b2afa69fb9c",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/high_jump.webp",
+      "status": 200,
+      "bytes": 97696,
+      "expectedSha256": "626f2fe29613e17ae6d635c5a7a3160a1feeedf9891334aead83c0974cefa5dc",
+      "sha256": "626f2fe29613e17ae6d635c5a7a3160a1feeedf9891334aead83c0974cefa5dc",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/hurdle_jump.webp",
+      "status": 200,
+      "bytes": 95576,
+      "expectedSha256": "c9089d2467742dc26d57205b3bddfe197cbe8fb5a4a4e372901d36a3d82dbd96",
+      "sha256": "c9089d2467742dc26d57205b3bddfe197cbe8fb5a4a4e372901d36a3d82dbd96",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/jump.webp",
+      "status": 200,
+      "bytes": 95048,
+      "expectedSha256": "b4ec902107663da1737c64bcac0aadd07d7a1d89e194a36a389f5318aac4951c",
+      "sha256": "b4ec902107663da1737c64bcac0aadd07d7a1d89e194a36a389f5318aac4951c",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/jump_flight.webp",
+      "status": 200,
+      "bytes": 94902,
+      "expectedSha256": "54c3c8cd6b8f6003b8d8cf862b2e21e3f74350731104671ba7983cdf5a16db4c",
+      "sha256": "54c3c8cd6b8f6003b8d8cf862b2e21e3f74350731104671ba7983cdf5a16db4c",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/land.webp",
+      "status": 200,
+      "bytes": 83870,
+      "expectedSha256": "c5c4dae95520a04c4e6a2c9bbd8586f17c595f8f21921ec661755a0445b0c08b",
+      "sha256": "c5c4dae95520a04c4e6a2c9bbd8586f17c595f8f21921ec661755a0445b0c08b",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/land_roll.webp",
+      "status": 200,
+      "bytes": 88412,
+      "expectedSha256": "e5de7be081cc8efd12aaca4221a2485b0001b66bb5bbbebbc699a87d5066a84f",
+      "sha256": "e5de7be081cc8efd12aaca4221a2485b0001b66bb5bbbebbc699a87d5066a84f",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/land_slide.webp",
+      "status": 200,
+      "bytes": 88538,
+      "expectedSha256": "53269829801779819fdc5b01a76e2033aae42d8784cb705e2363027a6f978cfd",
+      "sha256": "53269829801779819fdc5b01a76e2033aae42d8784cb705e2363027a6f978cfd",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/run.webp",
+      "status": 200,
+      "bytes": 83438,
+      "expectedSha256": "6f05d90338ac912cd92594323ad664ae92c570a555e8c200ceec79e1e773e1a6",
+      "sha256": "6f05d90338ac912cd92594323ad664ae92c570a555e8c200ceec79e1e773e1a6",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-motion-v1/walk.webp",
+      "status": 200,
+      "bytes": 74882,
+      "expectedSha256": "3fe01cbe7d4182a8de4ae7339fe3546ce44a6d18d86d4c32378000d05511cd56",
+      "sha256": "3fe01cbe7d4182a8de4ae7339fe3546ce44a6d18d86d4c32378000d05511cd56",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/cherry.webp",
+      "status": 200,
+      "bytes": 24246,
+      "expectedSha256": "28e3d7d3b98dba69fc10252f1eb977af6ccfa35297a8d08c6c16a0c1215030ea",
+      "sha256": "28e3d7d3b98dba69fc10252f1eb977af6ccfa35297a8d08c6c16a0c1215030ea",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/crate.webp",
+      "status": 200,
+      "bytes": 2560,
+      "expectedSha256": "93368ef65101ebb3f8d9b75c3869cd77e7be0bef1df500f5f47992bd5443cc18",
+      "sha256": "93368ef65101ebb3f8d9b75c3869cd77e7be0bef1df500f5f47992bd5443cc18",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/eagle.webp",
+      "status": 200,
+      "bytes": 2994,
+      "expectedSha256": "0e1f293a5879233f0dcdec277715d55fd1317ff2bf7e0f0c1f35c850803c80d7",
+      "sha256": "0e1f293a5879233f0dcdec277715d55fd1317ff2bf7e0f0c1f35c850803c80d7",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/hawk.webp",
+      "status": 200,
+      "bytes": 3338,
+      "expectedSha256": "12e29a90f8970af91baaee8a9aa0fe9353bea24d694e0c14cb8cc1a8db20c54f",
+      "sha256": "12e29a90f8970af91baaee8a9aa0fe9353bea24d694e0c14cb8cc1a8db20c54f",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/hurdle.webp",
+      "status": 200,
+      "bytes": 3290,
+      "expectedSha256": "d80ce9d71f77b748f85fc87f29d33b8963451cb00bbbca2dd6cfce61b7c16e2f",
+      "sha256": "d80ce9d71f77b748f85fc87f29d33b8963451cb00bbbca2dd6cfce61b7c16e2f",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/log.webp",
+      "status": 200,
+      "bytes": 2112,
+      "expectedSha256": "5c2f5eb90dc1e622fc0d0294e7621224ffee02385312a18f0de3fa2ed0260c0d",
+      "sha256": "5c2f5eb90dc1e622fc0d0294e7621224ffee02385312a18f0de3fa2ed0260c0d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/manifest.json",
+      "status": 200,
+      "bytes": 3122,
+      "expectedSha256": "c236414e1e3ef431bccf7159dbe3afb66e0961cca8aaf90fff5686d175784172",
+      "sha256": "c236414e1e3ef431bccf7159dbe3afb66e0961cca8aaf90fff5686d175784172",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/maple.webp",
+      "status": 200,
+      "bytes": 26532,
+      "expectedSha256": "43d0e8003d2e50fc272927009b4d6aeea3d4c720899e500bb19ecfed720c4d82",
+      "sha256": "43d0e8003d2e50fc272927009b4d6aeea3d4c720899e500bb19ecfed720c4d82",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/oak.webp",
+      "status": 200,
+      "bytes": 24540,
+      "expectedSha256": "d1696ceb7ab6a28c5c5c59920ab56f1454f3cf0f0790719994ee2b7077d42ea4",
+      "sha256": "d1696ceb7ab6a28c5c5c59920ab56f1454f3cf0f0790719994ee2b7077d42ea4",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/pelican.webp",
+      "status": 200,
+      "bytes": 3186,
+      "expectedSha256": "e6927c0e0cde2644382c5c19aa15ffc007459f98a26c0dfb4a28eb7d35046f4d",
+      "sha256": "e6927c0e0cde2644382c5c19aa15ffc007459f98a26c0dfb4a28eb7d35046f4d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/plane.webp",
+      "status": 200,
+      "bytes": 6254,
+      "expectedSha256": "22a4f3de35bb1d15327fb6217efeda9fe841502fd5c4c56681882bc356ed278a",
+      "sha256": "22a4f3de35bb1d15327fb6217efeda9fe841502fd5c4c56681882bc356ed278a",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/rock.webp",
+      "status": 200,
+      "bytes": 2188,
+      "expectedSha256": "b6277ad71469c4a2a47bba8f33f3bd48fe6a83df4a102360ac764ebc287a5038",
+      "sha256": "b6277ad71469c4a2a47bba8f33f3bd48fe6a83df4a102360ac764ebc287a5038",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/shiba.webp",
+      "status": 200,
+      "bytes": 5210,
+      "expectedSha256": "b32baa53f85298c345957bd81535fc3996208df2dd7235a66984ae7c949a3966",
+      "sha256": "b32baa53f85298c345957bd81535fc3996208df2dd7235a66984ae7c949a3966",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/thorn.webp",
+      "status": 200,
+      "bytes": 8266,
+      "expectedSha256": "a82bdad60050b02da3b94a02c00c408db2205e0eae037bf59627c9cd86a86295",
+      "sha256": "a82bdad60050b02da3b94a02c00c408db2205e0eae037bf59627c9cd86a86295",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ground-props-v1/willow.webp",
+      "status": 200,
+      "bytes": 28036,
+      "expectedSha256": "bae9fa1ab9b106322783b924870c9690b1283d78c363a2ec017aaea81afc9247",
+      "sha256": "bae9fa1ab9b106322783b924870c9690b1283d78c363a2ec017aaea81afc9247",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/armL.webp",
+      "status": 200,
+      "bytes": 1010,
+      "expectedSha256": "140427c8704bc257b4fdd1b5880990dcf04a22ff2c12bc5a5c35e4bb25aef825",
+      "sha256": "140427c8704bc257b4fdd1b5880990dcf04a22ff2c12bc5a5c35e4bb25aef825",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/armR.webp",
+      "status": 200,
+      "bytes": 852,
+      "expectedSha256": "b10ae2aabc2b6e3703b8c5f21066301f4e5daf880e4b92bc7f5e7ae2a360e46d",
+      "sha256": "b10ae2aabc2b6e3703b8c5f21066301f4e5daf880e4b92bc7f5e7ae2a360e46d",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/head.webp",
+      "status": 200,
+      "bytes": 1762,
+      "expectedSha256": "d632e29b8236a6a862182b3794b8dcd11ff96236639b9f10054d8be5922de450",
+      "sha256": "d632e29b8236a6a862182b3794b8dcd11ff96236639b9f10054d8be5922de450",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/legL.webp",
+      "status": 200,
+      "bytes": 1714,
+      "expectedSha256": "93432c4e6c0a47526a5f280cad6cb6dc799f42135f827fd779280563afec68e5",
+      "sha256": "93432c4e6c0a47526a5f280cad6cb6dc799f42135f827fd779280563afec68e5",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/legR.webp",
+      "status": 200,
+      "bytes": 1352,
+      "expectedSha256": "2303c5f36ed9416904861b53dacf8b5c3cbc8bc9fa20b3b0d57e8280a2bac691",
+      "sha256": "2303c5f36ed9416904861b53dacf8b5c3cbc8bc9fa20b3b0d57e8280a2bac691",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/manifest.json",
+      "status": 200,
+      "bytes": 1362,
+      "expectedSha256": "70ef6049c8c2d8b5c1864b5e1613bfa58962e5c76f8af60d0297b53df40777e2",
+      "sha256": "70ef6049c8c2d8b5c1864b5e1613bfa58962e5c76f8af60d0297b53df40777e2",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/chikun-ragdoll-v1/torso.webp",
+      "status": 200,
+      "bytes": 2216,
+      "expectedSha256": "483b25910d1e80fc0dba8af756d73cc6071a58435fe3fd69b651611a363ee149",
+      "sha256": "483b25910d1e80fc0dba8af756d73cc6071a58435fe3fd69b651611a363ee149",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/hmh-barriers/barriers-desktop.webp",
+      "status": 200,
+      "bytes": 252892,
+      "expectedSha256": "d99a5d8412e4d17d11d4cf80723b1a8452834e10f76e2d3f37e7a3b735082521",
+      "sha256": "d99a5d8412e4d17d11d4cf80723b1a8452834e10f76e2d3f37e7a3b735082521",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/hmh-barriers/barriers-mobile.webp",
+      "status": 200,
+      "bytes": 102830,
+      "expectedSha256": "f9ff0605de4aa0339ce48d0569f3e1da1884fa07e46e1390b5375ddc6f64eb4c",
+      "sha256": "f9ff0605de4aa0339ce48d0569f3e1da1884fa07e46e1390b5375ddc6f64eb4c",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/hmh-barriers/manifest.json",
+      "status": 200,
+      "bytes": 35420,
+      "expectedSha256": "cc2e532322762d74e72f715841ad8615754583726a16a83a3c83c557b5d2856a",
+      "sha256": "cc2e532322762d74e72f715841ad8615754583726a16a83a3c83c557b5d2856a",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-runtime.mjs",
+      "status": 200,
+      "bytes": 45563,
+      "expectedSha256": "def88f0cf265aebc3894ea821df767b730a0c2b0c2ff91a4d4bb8e9365c9b0ef",
+      "sha256": "def88f0cf265aebc3894ea821df767b730a0c2b0c2ff91a4d4bb8e9365c9b0ef",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/hmh-silver-coin/manifest.json",
+      "status": 200,
+      "bytes": 596,
+      "expectedSha256": "31de682998c1e797c6b5ed726be492c775acb547180dd71c529bb21c97895109",
+      "sha256": "31de682998c1e797c6b5ed726be492c775acb547180dd71c529bb21c97895109",
+      "matches": true
+    },
+    {
+      "file": "assets/generated/hmh-silver-coin/silver-coin.png",
+      "status": 200,
+      "bytes": 81858,
+      "expectedSha256": "b77be4cc1266295a8005b0acce4c6945be8ab8db5157c3d58721c6b0413613f0",
+      "sha256": "b77be4cc1266295a8005b0acce4c6945be8ab8db5157c3d58721c6b0413613f0",
+      "matches": true
+    },
+    {
+      "file": "chikun/flight-room.html",
+      "status": 200,
+      "bytes": 1458,
+      "expectedSha256": "ac485b0dea80d75253ea474444f715acc7fede5078b17df78bf46c33ce1db248",
+      "sha256": "ac485b0dea80d75253ea474444f715acc7fede5078b17df78bf46c33ce1db248",
+      "matches": true
+    },
+    {
+      "file": "chikun/game.css",
+      "status": 200,
+      "bytes": 18977,
+      "expectedSha256": "02e265baee16bc4b14c51cd2a93602c38fc45eba0c1d3ec720d0422932a1ab7f",
+      "sha256": "02e265baee16bc4b14c51cd2a93602c38fc45eba0c1d3ec720d0422932a1ab7f",
+      "matches": true
+    },
+    {
+      "file": "chikun/index.html",
+      "status": 200,
+      "bytes": 5216,
+      "expectedSha256": "068f8416a65fddd40a6695c76d3bff19b9ebcbfe5e94bdf2ea3182eb73ed960e",
+      "sha256": "068f8416a65fddd40a6695c76d3bff19b9ebcbfe5e94bdf2ea3182eb73ed960e",
+      "matches": true
+    },
+    {
+      "file": "dist/chikun/flight-room.js",
+      "status": 200,
+      "bytes": 1896,
+      "expectedSha256": "ea761bb9007014a044fe416cad32742d8b8712c44240333223dc6ef51abaa3dd",
+      "sha256": "ea761bb9007014a044fe416cad32742d8b8712c44240333223dc6ef51abaa3dd",
+      "matches": true
+    },
+    {
+      "file": "dist/chikun/game.js",
+      "status": 200,
+      "bytes": 35164,
+      "expectedSha256": "5474248452bfe31e778a66755138d4af1a8b8f7f03703a78d441df994135d74f",
+      "sha256": "5474248452bfe31e778a66755138d4af1a8b8f7f03703a78d441df994135d74f",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/authored-prop-display-WAHREARQ.js",
+      "status": 200,
+      "bytes": 7431,
+      "expectedSha256": "0b456f4ffcc6cbc980ae7b798a1610424af484d3723ee3daf6311f447c24d090",
+      "sha256": "0b456f4ffcc6cbc980ae7b798a1610424af484d3723ee3daf6311f447c24d090",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-2WGYLO4P.js",
+      "status": 200,
+      "bytes": 655,
+      "expectedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-65PUOXRU.js",
+      "status": 200,
+      "bytes": 2528,
+      "expectedSha256": "c322626c6f8b34b8df9d3c892352e718f271a08c41052c1a3128f2369b61e8b6",
+      "sha256": "c322626c6f8b34b8df9d3c892352e718f271a08c41052c1a3128f2369b61e8b6",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-6QJT5C2R.js",
+      "status": 200,
+      "bytes": 300,
+      "expectedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+      "sha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-7NGCRQWP.js",
+      "status": 200,
+      "bytes": 27895,
+      "expectedSha256": "7ce3ac141227b4cd4404ad68eeeb6d09bd3e4d53d6012b2f744098078e1ae0ef",
+      "sha256": "7ce3ac141227b4cd4404ad68eeeb6d09bd3e4d53d6012b2f744098078e1ae0ef",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-7NWTWVEF.js",
+      "status": 200,
+      "bytes": 4574,
+      "expectedSha256": "074e27f2f9fcc691328cdcf91c909d8c2b62fdfcf1cfe3fe8fc382dbe91e4ecc",
+      "sha256": "074e27f2f9fcc691328cdcf91c909d8c2b62fdfcf1cfe3fe8fc382dbe91e4ecc",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-BESZ7SNT.js",
+      "status": 200,
+      "bytes": 71639,
+      "expectedSha256": "d41bcfda755856f29cbe9da2a6f61b4f94d9ca6c5651ca4bd5e56755f916ea6a",
+      "sha256": "d41bcfda755856f29cbe9da2a6f61b4f94d9ca6c5651ca4bd5e56755f916ea6a",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-DLKSOBBD.js",
+      "status": 200,
+      "bytes": 4099,
+      "expectedSha256": "dabdfe8eee90513e03b92c04e5f6e4413773c15bddddebc50b2c739f4bb6bc06",
+      "sha256": "dabdfe8eee90513e03b92c04e5f6e4413773c15bddddebc50b2c739f4bb6bc06",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-E2SSXUKR.js",
+      "status": 200,
+      "bytes": 38268,
+      "expectedSha256": "c7a56d36432bc2a7272f26f6f47ac3053507981cab805af2779a4fcf3a8a01c3",
+      "sha256": "c7a56d36432bc2a7272f26f6f47ac3053507981cab805af2779a4fcf3a8a01c3",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-EJUDHLWX.js",
+      "status": 200,
+      "bytes": 36830,
+      "expectedSha256": "b25025cff9efb77291f20b3784535574c32ddb39e9c11fade2da2c1108f41d13",
+      "sha256": "b25025cff9efb77291f20b3784535574c32ddb39e9c11fade2da2c1108f41d13",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-ESDQIMBA.js",
+      "status": 200,
+      "bytes": 965,
+      "expectedSha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6",
+      "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-EWFYKRSV.js",
+      "status": 200,
+      "bytes": 2196,
+      "expectedSha256": "fed6defc8fff580884a7718c9eecdb02f84d94c6db706e8071c8821e4fdefe5b",
+      "sha256": "fed6defc8fff580884a7718c9eecdb02f84d94c6db706e8071c8821e4fdefe5b",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-FH4FMBET.js",
+      "status": 200,
+      "bytes": 4692,
+      "expectedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+      "sha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-GAYH257E.js",
+      "status": 200,
+      "bytes": 19559,
+      "expectedSha256": "2f253c04dc130792e42fb0c4e64517da819deb740aea2231625f6e297b4d50a0",
+      "sha256": "2f253c04dc130792e42fb0c4e64517da819deb740aea2231625f6e297b4d50a0",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-GHEKACED.js",
+      "status": 200,
+      "bytes": 16157,
+      "expectedSha256": "b08dceba59d478695e5a534b23bda4a350d68f5e7291c4c3fff68338f5925337",
+      "sha256": "b08dceba59d478695e5a534b23bda4a350d68f5e7291c4c3fff68338f5925337",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-GP4GWRAK.js",
+      "status": 200,
+      "bytes": 12197,
+      "expectedSha256": "10381ac41c43fa8a652adeb098a9a4dc84e7b423568b3b31ab259303941ea41d",
+      "sha256": "10381ac41c43fa8a652adeb098a9a4dc84e7b423568b3b31ab259303941ea41d",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-H4RK7ZF6.js",
+      "status": 200,
+      "bytes": 2602,
+      "expectedSha256": "9d197da2aa6b63e131846ca0901257b0bf3ff69a69c7c11efd6552bc2303513a",
+      "sha256": "9d197da2aa6b63e131846ca0901257b0bf3ff69a69c7c11efd6552bc2303513a",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-HRT7TI5W.js",
+      "status": 200,
+      "bytes": 1590,
+      "expectedSha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee",
+      "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-IIQTF2BL.js",
+      "status": 200,
+      "bytes": 1712,
+      "expectedSha256": "97246b64c68eeed75087677932fc799e7f15279d2d2f4ee6a5c37452138cbb59",
+      "sha256": "97246b64c68eeed75087677932fc799e7f15279d2d2f4ee6a5c37452138cbb59",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-IVGNLNMU.js",
+      "status": 200,
+      "bytes": 3340,
+      "expectedSha256": "ff46b04db54776e13790e1e1e116609635037b86f3e9c5c1f3ac59728b11fd79",
+      "sha256": "ff46b04db54776e13790e1e1e116609635037b86f3e9c5c1f3ac59728b11fd79",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-KMBN3SGT.js",
+      "status": 200,
+      "bytes": 3109,
+      "expectedSha256": "2e606a4647d8a5c67eb867223065caa556de3cc25dbf18237df207baed526290",
+      "sha256": "2e606a4647d8a5c67eb867223065caa556de3cc25dbf18237df207baed526290",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-MOUHHPKB.js",
+      "status": 200,
+      "bytes": 2511,
+      "expectedSha256": "5851d9c1b155ac5a13c87a5feaba0f353088e1f16e59c26ae3b8f54f3d57c7c2",
+      "sha256": "5851d9c1b155ac5a13c87a5feaba0f353088e1f16e59c26ae3b8f54f3d57c7c2",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-N2HXYKBX.js",
+      "status": 200,
+      "bytes": 13043,
+      "expectedSha256": "0b982a161539546c19b1afd656dd60e5132b901e1c367b10f0dae0b3b8ec808a",
+      "sha256": "0b982a161539546c19b1afd656dd60e5132b901e1c367b10f0dae0b3b8ec808a",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-OQ2RPGL4.js",
+      "status": 200,
+      "bytes": 23992,
+      "expectedSha256": "da62f7d2d78cf56e2ff07c62944b122eca373c165dc69f9e1bca2e302eb30581",
+      "sha256": "da62f7d2d78cf56e2ff07c62944b122eca373c165dc69f9e1bca2e302eb30581",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-OQWCW7H2.js",
+      "status": 200,
+      "bytes": 524,
+      "expectedSha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6",
+      "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-RKHKQZGQ.js",
+      "status": 200,
+      "bytes": 12796,
+      "expectedSha256": "a7092c1936cdcc4547206d9fc387dfe18a23ffcdc5933a47c587411d94927660",
+      "sha256": "a7092c1936cdcc4547206d9fc387dfe18a23ffcdc5933a47c587411d94927660",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-RTHIOZVQ.js",
+      "status": 200,
+      "bytes": 17440,
+      "expectedSha256": "d93b3fe9a7d11baff907113ce952a6ebf77bca8ca485b0f9b30bc74eb7b2d6a7",
+      "sha256": "d93b3fe9a7d11baff907113ce952a6ebf77bca8ca485b0f9b30bc74eb7b2d6a7",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-VSG3JNSZ.js",
+      "status": 200,
+      "bytes": 392452,
+      "expectedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+      "sha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-XB24W4G6.js",
+      "status": 200,
+      "bytes": 2430,
+      "expectedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+      "sha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-Y6L2BVYC.js",
+      "status": 200,
+      "bytes": 827181,
+      "expectedSha256": "faf20e4298c6631844964937aa8f6af2b7447aa5aae84f46202eb46926625ba9",
+      "sha256": "faf20e4298c6631844964937aa8f6af2b7447aa5aae84f46202eb46926625ba9",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-YFNAS4ZQ.js",
+      "status": 200,
+      "bytes": 3396,
+      "expectedSha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914",
+      "sha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/chunk-YOZ4KAFN.js",
+      "status": 200,
+      "bytes": 31143,
+      "expectedSha256": "9f5052fc4bab36c0b7cfc079c28bda7ae3eafa5055bfad71427c5ea02956641d",
+      "sha256": "9f5052fc4bab36c0b7cfc079c28bda7ae3eafa5055bfad71427c5ea02956641d",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/combat-audio-FH3SSSU4.js",
+      "status": 200,
+      "bytes": 5421,
+      "expectedSha256": "8292f47673fbf8bb073a1bd21c1e8fd55abfb1ed193e8c4a29e8c0417d2ad023",
+      "sha256": "8292f47673fbf8bb073a1bd21c1e8fd55abfb1ed193e8c4a29e8c0417d2ad023",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/debug-grid-overlay-GIIHKGMQ.js",
+      "status": 200,
+      "bytes": 1070,
+      "expectedSha256": "c8004d194967b15c82a3c7d467728afb576cfda60e7460786939e1ee83a2e676",
+      "sha256": "c8004d194967b15c82a3c7d467728afb576cfda60e7460786939e1ee83a2e676",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/encounter-endurance-pilot-LYLRWWFY.js",
+      "status": 200,
+      "bytes": 2127,
+      "expectedSha256": "eb9427e6c9090a3edff8e98e8ddf7760669f989d9ad033d82499749eb8fbbfe0",
+      "sha256": "eb9427e6c9090a3edff8e98e8ddf7760669f989d9ad033d82499749eb8fbbfe0",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/enemy-hit-feedback-DOEDTOHH.js",
+      "status": 200,
+      "bytes": 1421,
+      "expectedSha256": "d5ff16d0233a88c3bde8aa014ac3c60c380b72d236d6d0fb8e11760885c8d17f",
+      "sha256": "d5ff16d0233a88c3bde8aa014ac3c60c380b72d236d6d0fb8e11760885c8d17f",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/ethers.min-STJTETNS.js",
+      "status": 200,
+      "bytes": 4388,
+      "expectedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+      "sha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/free-medals-BH2FCB7F.js",
+      "status": 200,
+      "bytes": 3156,
+      "expectedSha256": "2435f3502906330bd6e88b6212b7299f5e83106b703f7c272191970d59a3d0b7",
+      "sha256": "2435f3502906330bd6e88b6212b7299f5e83106b703f7c272191970d59a3d0b7",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/gore-presentation-7QBPCINM.js",
+      "status": 200,
+      "bytes": 1825,
+      "expectedSha256": "79517a3007c5caf8015499f969a444dad8d75f4cee489f0e1c4be50d8ce7cdec",
+      "sha256": "79517a3007c5caf8015499f969a444dad8d75f4cee489f0e1c4be50d8ce7cdec",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hero-motion-atlas-ENAXIIBL.js",
+      "status": 200,
+      "bytes": 4280,
+      "expectedSha256": "9d887740df60884baa2c340a41a488aa1b13522a6fbcf50fd0b72be4d9ddecc3",
+      "sha256": "9d887740df60884baa2c340a41a488aa1b13522a6fbcf50fd0b72be4d9ddecc3",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+      "status": 200,
+      "bytes": 1929726,
+      "expectedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+      "sha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-complete-animations-CJX6INFR.js",
+      "status": 200,
+      "bytes": 49984,
+      "expectedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+      "sha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+      "status": 200,
+      "bytes": 743684,
+      "expectedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+      "sha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+      "status": 200,
+      "bytes": 3012,
+      "expectedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+      "sha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+      "status": 200,
+      "bytes": 48573,
+      "expectedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+      "sha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+      "status": 200,
+      "bytes": 50980,
+      "expectedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+      "sha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+      "status": 200,
+      "bytes": 40469,
+      "expectedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+      "sha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+      "status": 200,
+      "bytes": 2815,
+      "expectedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+      "sha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+      "status": 200,
+      "bytes": 35033,
+      "expectedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+      "sha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-level-environment-FD3WFZKW.js",
+      "status": 200,
+      "bytes": 35802,
+      "expectedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+      "sha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+      "status": 200,
+      "bytes": 4148,
+      "expectedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+      "sha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-pixi.js",
+      "status": 200,
+      "bytes": 465746,
+      "expectedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+      "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+      "status": 200,
+      "bytes": 111173,
+      "expectedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+      "sha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+      "status": 200,
+      "bytes": 15049,
+      "expectedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+      "sha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+      "status": 200,
+      "bytes": 4031,
+      "expectedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+      "sha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+      "status": 200,
+      "bytes": 4305,
+      "expectedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+      "sha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/litvm-chain-client-H3N7CTSP.js",
+      "status": 200,
+      "bytes": 585,
+      "expectedSha256": "f3b0ab75e25e46db5c304a5623a220dd9ad2ed09b89af2e892db0f879c9ea00f",
+      "sha256": "f3b0ab75e25e46db5c304a5623a220dd9ad2ed09b89af2e892db0f879c9ea00f",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/loader-4UBPIGR3.js",
+      "status": 200,
+      "bytes": 125,
+      "expectedSha256": "50a2b46c2c5fd79be0c19d57b2e565e1c6b76a3b150ae884220697b54e006fd8",
+      "sha256": "50a2b46c2c5fd79be0c19d57b2e565e1c6b76a3b150ae884220697b54e006fd8",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+      "status": 200,
+      "bytes": 3509,
+      "expectedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+      "sha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/native-barriers-TOL36KFD.js",
+      "status": 200,
+      "bytes": 3100,
+      "expectedSha256": "1ed59eac053bdf8a04cac9974372e28a87f667c9c9db92262f38736a1ef6dd73",
+      "sha256": "1ed59eac053bdf8a04cac9974372e28a87f667c9c9db92262f38736a1ef6dd73",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/pickup-indicators-UR2QWLO2.js",
+      "status": 200,
+      "bytes": 1340,
+      "expectedSha256": "7f0f1ca5fd5568e889a17805e22aeb05ba8e5f0481a7313306af96dd03b0e72f",
+      "sha256": "7f0f1ca5fd5568e889a17805e22aeb05ba8e5f0481a7313306af96dd03b0e72f",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/production-hero-atlas-EGWJJO2H.js",
+      "status": 200,
+      "bytes": 15718,
+      "expectedSha256": "aa55ef40dcc81e1ccebc2fc323f09512853664a04ba192dbeb76935e6c1ee8b8",
+      "sha256": "aa55ef40dcc81e1ccebc2fc323f09512853664a04ba192dbeb76935e6c1ee8b8",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/reload-presentation-6YBKJ64P.js",
+      "status": 200,
+      "bytes": 768,
+      "expectedSha256": "b82d39bfc2bf16749f8e5d57c91f965794c71ef9702e7ab647b6b550e7db26da",
+      "sha256": "b82d39bfc2bf16749f8e5d57c91f965794c71ef9702e7ab647b6b550e7db26da",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/renderer-NLOOFNZ6.js",
+      "status": 200,
+      "bytes": 19537,
+      "expectedSha256": "0ba09f01adefbde1cd9254918be982095c1797af8cf6eccffddc66cbbb056648",
+      "sha256": "0ba09f01adefbde1cd9254918be982095c1797af8cf6eccffddc66cbbb056648",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/runtime-manifest-7IN2B6KL.js",
+      "status": 200,
+      "bytes": 4238,
+      "expectedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+      "sha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/runtime-telemetry-writer-23FSULZ4.js",
+      "status": 200,
+      "bytes": 11313,
+      "expectedSha256": "b0f0596fe80b31b856da8df4646c7403dec1d3867f9537627d73e0e85e3c6f22",
+      "sha256": "b0f0596fe80b31b856da8df4646c7403dec1d3867f9537627d73e0e85e3c6f22",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/silver-drop-presentation-MA62KFHK.js",
+      "status": 200,
+      "bytes": 1173,
+      "expectedSha256": "d0f1c0567c13c7e49b488daccb61dc73206b8128620a47a05e3322ada4ca8557",
+      "sha256": "d0f1c0567c13c7e49b488daccb61dc73206b8128620a47a05e3322ada4ca8557",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/stacked-host-RLYQINTE.js",
+      "status": 200,
+      "bytes": 7271,
+      "expectedSha256": "4532271ff53fed56d450cb258006702409ca74c3d74259ba7d764612d225d4fc",
+      "sha256": "4532271ff53fed56d450cb258006702409ca74c3d74259ba7d764612d225d4fc",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/stacked-persistence-5PMOXWS3.js",
+      "status": 200,
+      "bytes": 1085,
+      "expectedSha256": "1b280ba35e928e0d575da0f4c73302b2abb5b05a7a406924379725da00f9144c",
+      "sha256": "1b280ba35e928e0d575da0f4c73302b2abb5b05a7a406924379725da00f9144c",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/world-design-field-map-JZIMAAHN.js",
+      "status": 200,
+      "bytes": 3801,
+      "expectedSha256": "8491b671e79bd2083d118afa5c67ced850c2a7eb78b43f7f38f83a56f0ee3aba",
+      "sha256": "8491b671e79bd2083d118afa5c67ced850c2a7eb78b43f7f38f83a56f0ee3aba",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/world-ground-fallback-6LTSHLSB.js",
+      "status": 200,
+      "bytes": 3923,
+      "expectedSha256": "5e6e501b2f0ff3cf4ca6de66f5389729e9950318205af0dbe3c88ca47d2385d1",
+      "sha256": "5e6e501b2f0ff3cf4ca6de66f5389729e9950318205af0dbe3c88ca47d2385d1",
+      "matches": true
+    },
+    {
+      "file": "dist/chunks/world-tour-spawns-7XARRG7N.js",
+      "status": 200,
+      "bytes": 2339,
+      "expectedSha256": "81beb738b4427a34ae1130eac9fbf01979b7733d724ab45ccd1ec8df101f246a",
+      "sha256": "81beb738b4427a34ae1130eac9fbf01979b7733d724ab45ccd1ec8df101f246a",
+      "matches": true
+    },
+    {
+      "file": "dist/hmh-reboot/game.js",
+      "status": 200,
+      "bytes": 352058,
+      "expectedSha256": "79ad21ffc0b6f25891f206c3e93079c1aac294b448c56fe6ba052d6813e94af8",
+      "sha256": "79ad21ffc0b6f25891f206c3e93079c1aac294b448c56fe6ba052d6813e94af8",
+      "matches": true
+    },
+    {
+      "file": "dist/hmh-reboot/world-art.js",
+      "status": 200,
+      "bytes": 741,
+      "expectedSha256": "8b4d33e30810d9f69947f0070eecf9aa37d9359f2f0994df821d8ad6862183e0",
+      "sha256": "8b4d33e30810d9f69947f0070eecf9aa37d9359f2f0994df821d8ad6862183e0",
+      "matches": true
+    },
+    {
+      "file": "dist/main.js",
+      "status": 200,
+      "bytes": 1154309,
+      "expectedSha256": "4380a69a5ce01aa0d7c5863464c999e22e38eab02f82700638f8c10ca41dc291",
+      "sha256": "4380a69a5ce01aa0d7c5863464c999e22e38eab02f82700638f8c10ca41dc291",
+      "matches": true
+    },
+    {
+      "file": "dist/stacked/atmosphere.js",
+      "status": 200,
+      "bytes": 211,
+      "expectedSha256": "236c40ec24da8bbf055f60e05bca01447da1f3eb6d7ee8bd068128e9f3368b37",
+      "sha256": "236c40ec24da8bbf055f60e05bca01447da1f3eb6d7ee8bd068128e9f3368b37",
+      "matches": true
+    },
+    {
+      "file": "dist/stacked/game.js",
+      "status": 200,
+      "bytes": 25343,
+      "expectedSha256": "86720d7b05275685961fa25082392fe8454df53ddeaf2ae546b654b0749ea2c5",
+      "sha256": "86720d7b05275685961fa25082392fe8454df53ddeaf2ae546b654b0749ea2c5",
+      "matches": true
+    },
+    {
+      "file": "dist/stacked/living-field.js",
+      "status": 200,
+      "bytes": 111,
+      "expectedSha256": "0d3e66f3c6dd3c9ac27f788ffa1580dace3475933221bd043d8f89dfdd2da5aa",
+      "sha256": "0d3e66f3c6dd3c9ac27f788ffa1580dace3475933221bd043d8f89dfdd2da5aa",
+      "matches": true
+    },
+    {
+      "file": "dist/stacked/stacked-pixi-v1.js",
+      "status": 200,
+      "bytes": 496615,
+      "expectedSha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3",
+      "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3",
+      "matches": true
+    },
+    {
+      "file": "dist/stacked/verify-worker.js",
+      "status": 200,
+      "bytes": 2077,
+      "expectedSha256": "42e97bda2b697dad407ab11b942b4de912812f03d76dc01078ed952bd02c81ca",
+      "sha256": "42e97bda2b697dad407ab11b942b4de912812f03d76dc01078ed952bd02c81ca",
+      "matches": true
+    },
+    {
+      "file": "games/chikun/game.manifest.json",
+      "status": 200,
+      "bytes": 608,
+      "expectedSha256": "e22fb0694b9a6fbece183f426001078e9955c239e7ad38ea655fdb177f2f0508",
+      "sha256": "e22fb0694b9a6fbece183f426001078e9955c239e7ad38ea655fdb177f2f0508",
+      "matches": true
+    },
+    {
+      "file": "hmh-reboot/index.html",
+      "status": 200,
+      "bytes": 16703,
+      "expectedSha256": "a117872e3d1f7319f57070ba9ca16179e19dbe0b7b75f5e4fe69e223d7276d98",
+      "sha256": "a117872e3d1f7319f57070ba9ca16179e19dbe0b7b75f5e4fe69e223d7276d98",
+      "matches": true
+    },
+    {
+      "file": "index.html",
+      "status": 200,
+      "bytes": 25716,
+      "expectedSha256": "3aad329151b6d1f7e093f181711d048e79b246ab857b05baadd97d1f46366240",
+      "sha256": "3aad329151b6d1f7e093f181711d048e79b246ab857b05baadd97d1f46366240",
+      "matches": true
+    },
+    {
+      "file": "main.js",
+      "status": 200,
+      "bytes": 672734,
+      "expectedSha256": "6c68769530bb4a5fecbf452d6991ff851100d8d710818c3b86868a2786fca7fa",
+      "sha256": "6c68769530bb4a5fecbf452d6991ff851100d8d710818c3b86868a2786fca7fa",
+      "matches": true
+    },
+    {
+      "file": "src/arcade-core.mjs",
+      "status": 200,
+      "bytes": 359475,
+      "expectedSha256": "b348ad8018c8954e3efcc400bb5f779ecbe254da319176292827911d881b3cdd",
+      "sha256": "b348ad8018c8954e3efcc400bb5f779ecbe254da319176292827911d881b3cdd",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-bridge-protocol.mjs",
+      "status": 200,
+      "bytes": 11638,
+      "expectedSha256": "080fe6a1c95bd20e6882f53a3bd8ac0530e90ec496d9e7b9cbf1b90abc910169",
+      "sha256": "080fe6a1c95bd20e6882f53a3bd8ac0530e90ec496d9e7b9cbf1b90abc910169",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-cabinet.mjs",
+      "status": 200,
+      "bytes": 13610,
+      "expectedSha256": "1cedec33abe4837ab8e9d719adaa2449934b8f1f2a9e3ad157d6ade40d89f104",
+      "sha256": "1cedec33abe4837ab8e9d719adaa2449934b8f1f2a9e3ad157d6ade40d89f104",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-daily-challenge.mjs",
+      "status": 200,
+      "bytes": 7011,
+      "expectedSha256": "5a39a7025008cc585d199ec5d63cb6a8785f9a7fadd55b2a07b56d34ba6e9d7c",
+      "sha256": "5a39a7025008cc585d199ec5d63cb6a8785f9a7fadd55b2a07b56d34ba6e9d7c",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-flight-legacy.mjs",
+      "status": 200,
+      "bytes": 22571,
+      "expectedSha256": "cc6f661c465dbebfa50814330ceb8c812b5ac7d81435252dfebd92bc83acf163",
+      "sha256": "cc6f661c465dbebfa50814330ceb8c812b5ac7d81435252dfebd92bc83acf163",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-ground-course.mjs",
+      "status": 200,
+      "bytes": 4512,
+      "expectedSha256": "589a99f72cfa4d770e4b1218c076455afcefeb163bf04eceb2471affc5252e05",
+      "sha256": "589a99f72cfa4d770e4b1218c076455afcefeb163bf04eceb2471affc5252e05",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-ground-runtime.mjs",
+      "status": 200,
+      "bytes": 5514,
+      "expectedSha256": "ce331eb9929ffe4761f07261641c99d877faade2d81c09dcf60a9a3d0b0c75ed",
+      "sha256": "ce331eb9929ffe4761f07261641c99d877faade2d81c09dcf60a9a3d0b0c75ed",
+      "matches": true
+    },
+    {
+      "file": "src/chikun-profile.mjs",
+      "status": 200,
+      "bytes": 2660,
+      "expectedSha256": "a5efc4773ed44ff819ab67a7c0373a24af21e71c5618c754ebbe02c4da960c86",
+      "sha256": "a5efc4773ed44ff819ab67a7c0373a24af21e71c5618c754ebbe02c4da960c86",
+      "matches": true
+    },
+    {
+      "file": "src/hmh-audio-system.mjs",
+      "status": 200,
+      "bytes": 25785,
+      "expectedSha256": "20f3d74822950fc84b63ab865553f849a6a0171398f218b3f1efe4ded974e8a1",
+      "sha256": "20f3d74822950fc84b63ab865553f849a6a0171398f218b3f1efe4ded974e8a1",
+      "matches": true
+    },
+    {
+      "file": "src/hmh-character-config.mjs",
+      "status": 200,
+      "bytes": 16652,
+      "expectedSha256": "e14619673426ec923bf3dc0e65c5a1b7789ad5722fe666ad658a5653514c9758",
+      "sha256": "e14619673426ec923bf3dc0e65c5a1b7789ad5722fe666ad658a5653514c9758",
+      "matches": true
+    },
+    {
+      "file": "src/hmh-run-history.mjs",
+      "status": 200,
+      "bytes": 12181,
+      "expectedSha256": "515c75d10efb8cacc8be4afc122add84e37afde44cee950d441228b43a7da79f",
+      "sha256": "515c75d10efb8cacc8be4afc122add84e37afde44cee950d441228b43a7da79f",
+      "matches": true
+    },
+    {
+      "file": "src/hmh-run-recap.mjs",
+      "status": 200,
+      "bytes": 9377,
+      "expectedSha256": "19508a5f5828c4a2a10d6b09fcac9fef9bcadc6ebd4b707bc32d172ae3a747c3",
+      "sha256": "19508a5f5828c4a2a10d6b09fcac9fef9bcadc6ebd4b707bc32d172ae3a747c3",
+      "matches": true
+    },
+    {
+      "file": "src/hmh-upgrade-menu-ui.mjs",
+      "status": 200,
+      "bytes": 19529,
+      "expectedSha256": "d562112249895e9c10ffd2856a7e60bccc02b6ba8102e28a47aa885b88b6a9d0",
+      "sha256": "d562112249895e9c10ffd2856a7e60bccc02b6ba8102e28a47aa885b88b6a9d0",
+      "matches": true
+    },
+    {
+      "file": "src/leaderboard-engine.mjs",
+      "status": 200,
+      "bytes": 7726,
+      "expectedSha256": "13ea64415bff9026fd13b132ddcc14b902de785e84efe92840127c6ee6ab102b",
+      "sha256": "13ea64415bff9026fd13b132ddcc14b902de785e84efe92840127c6ee6ab102b",
+      "matches": true
+    },
+    {
+      "file": "src/routes/official-leaderboard-route.mjs",
+      "status": 200,
+      "bytes": 20853,
+      "expectedSha256": "267642aeb276aaf7f9d364d34820276bb5fc1fb2bc5e01d608297469e4594922",
+      "sha256": "267642aeb276aaf7f9d364d34820276bb5fc1fb2bc5e01d608297469e4594922",
+      "matches": true
+    },
+    {
+      "file": "src/routes/official-profile-route.mjs",
+      "status": 200,
+      "bytes": 47404,
+      "expectedSha256": "eab6ce8ba199412607e1e176064d48b8e1708ec00a79ba8cccb9355592c6df09",
+      "sha256": "eab6ce8ba199412607e1e176064d48b8e1708ec00a79ba8cccb9355592c6df09",
+      "matches": true
+    },
+    {
+      "file": "src/stacked-bridge-protocol.mjs",
+      "status": 200,
+      "bytes": 10445,
+      "expectedSha256": "eda9f516d501de3086211c2a4014b9319b23f6b287eed388d3c64f13fdcd8d9e",
+      "sha256": "eda9f516d501de3086211c2a4014b9319b23f6b287eed388d3c64f13fdcd8d9e",
+      "matches": true
+    },
+    {
+      "file": "src/stacked-host.mjs",
+      "status": 200,
+      "bytes": 7282,
+      "expectedSha256": "cb318c37de6ddd0975beb55d7f916fed7b84f3acfdf2697ab018441748fc9e8d",
+      "sha256": "cb318c37de6ddd0975beb55d7f916fed7b84f3acfdf2697ab018441748fc9e8d",
+      "matches": true
+    },
+    {
+      "file": "src/stacked-persistence.mjs",
+      "status": 200,
+      "bytes": 1735,
+      "expectedSha256": "4a6d0929934e4ff433d1bd3a5989fef98b685a260d4f0b432c62a2bde80f58f2",
+      "sha256": "4a6d0929934e4ff433d1bd3a5989fef98b685a260d4f0b432c62a2bde80f58f2",
+      "matches": true
+    },
+    {
+      "file": "src/stacked-player-settings.mjs",
+      "status": 200,
+      "bytes": 3440,
+      "expectedSha256": "8f781517117dd3e3da9e100f59fcf46fa0b8560a9fc94058ec9688d2649c16bd",
+      "sha256": "8f781517117dd3e3da9e100f59fcf46fa0b8560a9fc94058ec9688d2649c16bd",
+      "matches": true
+    },
+    {
+      "file": "src/stacked-portal-lifecycle.mjs",
+      "status": 200,
+      "bytes": 2086,
+      "expectedSha256": "3730a2ed4bf91ba2219922644f191603ff6684f96380940109ee4f648caef3a5",
+      "sha256": "3730a2ed4bf91ba2219922644f191603ff6684f96380940109ee4f648caef3a5",
+      "matches": true
+    },
+    {
+      "file": "src/stacked-profile.mjs",
+      "status": 200,
+      "bytes": 1281,
+      "expectedSha256": "fa674bb1be2d4cf50b503ea9142214c1707faa589bde760baf6e1b1e7a261376",
+      "sha256": "fa674bb1be2d4cf50b503ea9142214c1707faa589bde760baf6e1b1e7a261376",
+      "matches": true
+    },
+    {
+      "file": "stacked/game.css",
+      "status": 200,
+      "bytes": 6833,
+      "expectedSha256": "0d8a77a1fd1bc15c7c16e62ded6b10a872ae65cd375e5981f7530580fcde04da",
+      "sha256": "0d8a77a1fd1bc15c7c16e62ded6b10a872ae65cd375e5981f7530580fcde04da",
+      "matches": true
+    },
+    {
+      "file": "stacked/index.html",
+      "status": 200,
+      "bytes": 4993,
+      "expectedSha256": "f6dcf97de218269b26297e2696e5c077f0b370a2735582469161b3a0648777a0",
+      "sha256": "f6dcf97de218269b26297e2696e5c077f0b370a2735582469161b3a0648777a0",
+      "matches": true
+    },
+    {
+      "file": "styles.css",
+      "status": 200,
+      "bytes": 155880,
+      "expectedSha256": "bc84a7d8ad948ad46eaecc0253aa73177e0ecc793462d01b0c7201bb91388c1d",
+      "sha256": "bc84a7d8ad948ad46eaecc0253aa73177e0ecc793462d01b0c7201bb91388c1d",
+      "matches": true
+    },
+    {
+      "file": "sw.js",
+      "status": 200,
+      "bytes": 4678,
+      "expectedSha256": "b565fb03390ca4def687c70045a0c77c3933f7fbaab42bdd41a0425be48bff53",
+      "sha256": "b565fb03390ca4def687c70045a0c77c3933f7fbaab42bdd41a0425be48bff53",
+      "matches": true
+    }
+  ]
+}

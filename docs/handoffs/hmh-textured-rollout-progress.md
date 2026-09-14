@@ -1,5 +1,14 @@
 # Textured rollout: current continuation checkpoint
 
+## Combined gameplay release — verified live, September 14, 2026
+
+Live at https://lestersarcade.io. Source `bfcba824629c33f099af0084a398acdacfc358bd`; deployment `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`; cache `lesters-arcade-v47-combined-gameplay`. Continue on `codex/combined-gameplay-release-20260914` in this checkout. Retained rollback: `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`.
+
+HMH objective rewards, restocks, silver drops, native barriers and startup improvements are integrated with Chikun Ground & Sky 0.7.0 and STACKED mobile effects/music worlds. All 202 private and public file hashes match; the cloud release gate passes 3738 tests with exactly 51 unchanged retirement exceptions. Desktop, emulated touch, replay, visual, audio-control and returning-cache checks pass. Physical-device/human acceptance and the broader content/backend roadmap remain open. `SETTLEMENT_LIVE=false`; no public GitHub source/model push was made.
+
+[Release receipt](../qa/combined-gameplay-release-20260914.json) · [Reconciled HMH work](HMH-remaining-work-2026-09-14.md). Earlier deployment statements below are historical.
+
+
 ## Combined arcade release — live, September 13, 2026
 
 The tested combined release is live at https://lestersarcade.io, source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`, deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`, cache `lesters-arcade-v44-music-controls`. It preserves HMH world polish and adds the completed STACKED cabinet/living visualizers and Chikun open-air/portrait/input/music changes. All 163 public file hashes and public browser/cache flows passed. See `docs/qa/combined-arcade-release-20260913.json` and the three independent `docs/handoffs/*REMAINING-WORK-2026-09-13.md` handoffs. Older release claims below are historical. Physical-device and financial-service acceptance remain open.

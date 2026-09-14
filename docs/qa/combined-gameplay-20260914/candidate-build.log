@@ -1,0 +1,122 @@
+Vercel CLI 59.16.0 (Node.js 24.17.0)
+Fetching deployment "lesters-arcade-gujzr4oqd-justin-agent-projects.vercel.app" in justin-agent-projects
+2026-09-14T14:36:03.529Z  Running build in Washington, D.C., USA (East) – iad1 (Enhanced Build Machine)
+2026-09-14T14:36:03.530Z  Build machine configuration: 8 cores, 16 GB
+2026-09-14T14:36:03.559Z  Retrieving list of deployment files...
+2026-09-14T14:36:04.101Z  Downloading 3794 deployment files...
+2026-09-14T14:36:43.793Z  Restored build cache from previous deployment (8eDzR4Jpyu9MksF8jxKEkkY3AtSc)
+2026-09-14T14:36:44.025Z  Running "vercel build"
+2026-09-14T14:36:44.036Z  Vercel CLI 59.11.7
+2026-09-14T14:36:44.732Z  Running "install" command: `npm install && uv pip install --python "$(command -v python)" --target .vercel-python --no-cache -r requirements-vercel.txt`...
+2026-09-14T14:36:45.522Z
+2026-09-14T14:36:45.522Z  up to date, audited 35 packages in 662ms
+2026-09-14T14:36:45.522Z
+2026-09-14T14:36:45.522Z  5 packages are looking for funding
+2026-09-14T14:36:45.522Z  run `npm fund` for details
+2026-09-14T14:36:45.523Z
+2026-09-14T14:36:45.523Z  found 0 vulnerabilities
+2026-09-14T14:36:45.524Z  npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+2026-09-14T14:36:45.524Z  npm warn allow-scripts   esbuild@0.28.1 (postinstall: node install.js)
+2026-09-14T14:36:45.524Z  npm warn allow-scripts
+2026-09-14T14:36:45.524Z  npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+2026-09-14T14:36:45.665Z  Using CPython 3.12.14 interpreter at: /uv/python/bin/python
+2026-09-14T14:36:45.713Z  Resolved 1 package in 47ms
+2026-09-14T14:36:45.715Z  Downloading pillow (6.3MiB)
+2026-09-14T14:36:45.778Z  Downloaded pillow
+2026-09-14T14:36:45.779Z  Prepared 1 package in 65ms
+2026-09-14T14:36:45.780Z  warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+2026-09-14T14:36:45.780Z  If the cache and target directories are on different filesystems, hardlinking may not be supported.
+2026-09-14T14:36:45.780Z  If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+2026-09-14T14:36:45.804Z  Installed 1 package in 25ms
+2026-09-14T14:36:45.804Z  + pillow==11.3.0
+2026-09-14T14:36:45.990Z
+2026-09-14T14:36:45.990Z  > lesters-arcade@0.3.1 vercel:build
+2026-09-14T14:36:45.990Z  > npm run assets:hmh:curated-level-kit-runtime && npm run assets:verify && npm run test:release && npm run check && npm run contracts:check && npm run build
+2026-09-14T14:36:45.990Z
+2026-09-14T14:36:46.080Z
+2026-09-14T14:36:46.080Z  > lesters-arcade@0.3.1 assets:hmh:curated-level-kit-runtime
+2026-09-14T14:36:46.081Z  > node scripts/build-hmh-curated-level-kit-runtime.mjs
+2026-09-14T14:36:46.081Z
+2026-09-14T14:36:46.147Z  {
+2026-09-14T14:36:46.147Z  "outPath": "/vercel/path0/apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-runtime.mjs",
+2026-09-14T14:36:46.147Z  "referencedKeys": 74,
+2026-09-14T14:36:46.147Z  "assets": 74,
+2026-09-14T14:36:46.147Z  "missing": []
+2026-09-14T14:36:46.147Z  }
+2026-09-14T14:36:46.258Z
+2026-09-14T14:36:46.258Z  > lesters-arcade@0.3.1 assets:verify
+2026-09-14T14:36:46.258Z  > node scripts/verify-generated-assets.mjs
+2026-09-14T14:36:46.258Z
+2026-09-14T14:36:46.303Z  Generated sliced asset verification passed: 76 PNGs (lester=16, enemies=16, icons=16, badges=16, level1Parallax=4); production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames/4320ms loop; arcade playlist=26 MP3s/71MB.
+2026-09-14T14:36:46.404Z
+2026-09-14T14:36:46.405Z  > lesters-arcade@0.3.1 test:release
+2026-09-14T14:36:46.405Z  > node scripts/hmh-reboot-test-retirement-gate.mjs
+2026-09-14T14:36:46.405Z
+2026-09-14T14:41:05.315Z  HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=3789 passed=3738 expected_failures=51
+2026-09-14T14:41:05.418Z
+2026-09-14T14:41:05.418Z  > lesters-arcade@0.3.1 check
+2026-09-14T14:41:05.418Z  > node scripts/syntax-check.mjs
+2026-09-14T14:41:05.418Z
+2026-09-14T14:41:21.885Z  Syntax check passed: 677 JS modules + 113 Python scripts.
+2026-09-14T14:41:21.982Z
+2026-09-14T14:41:21.982Z  > lesters-arcade@0.3.1 contracts:check
+2026-09-14T14:41:21.982Z  > node scripts/contract-structure-check.mjs
+2026-09-14T14:41:21.983Z
+2026-09-14T14:41:22.013Z  Lester's Arcade contract structure check passed.
+2026-09-14T14:41:22.111Z
+2026-09-14T14:41:22.112Z  > lesters-arcade@0.3.1 build
+2026-09-14T14:41:22.112Z  > node build.mjs
+2026-09-14T14:41:22.112Z
+2026-09-14T14:41:22.376Z
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/hmh-animated-roster-LWW4EAQC.js              1.8mb ⚠️
+2026-09-14T14:41:22.377Z  apps/portal/dist/main.js                                             1.1mb ⚠️
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/chunk-Y6L2BVYC.js                          807.8kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/hmh-curated-level-art-ILZ4JAAC.js          726.3kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/chunk-VSG3JNSZ.js                          383.3kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/hmh-reboot/game.js                                343.8kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/hmh-production-art-pass-2QVH2BRN.js        108.6kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/chunk-BESZ7SNT.js                           70.0kb
+2026-09-14T14:41:22.377Z  ...ist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js   49.8kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/hmh-complete-animations-CJX6INFR.js         48.8kb
+2026-09-14T14:41:22.377Z  ...portal/dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js   47.4kb
+2026-09-14T14:41:22.377Z  ...tal/dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js   39.5kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/chunk-E2SSXUKR.js                           37.4kb
+2026-09-14T14:41:22.377Z  apps/portal/dist/chunks/chunk-EJUDHLWX.js                           36.0kb
+2026-09-14T14:41:22.378Z  apps/portal/dist/chunks/hmh-level-environment-FD3WFZKW.js           35.0kb
+2026-09-14T14:41:22.378Z  apps/portal/dist/chikun/game.js                                     34.3kb
+2026-09-14T14:41:22.378Z  apps/portal/dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js   34.2kb
+2026-09-14T14:41:22.378Z  apps/portal/dist/chunks/chunk-YOZ4KAFN.js                           30.4kb
+2026-09-14T14:41:22.378Z  apps/portal/dist/chunks/chunk-7NGCRQWP.js                           27.2kb
+2026-09-14T14:41:22.378Z  apps/portal/dist/stacked/game.js                                    24.7kb
+2026-09-14T14:41:22.378Z  ...and 60 more output files...
+2026-09-14T14:41:22.378Z
+2026-09-14T14:41:22.378Z  ⚡ Done in 211ms
+2026-09-14T14:41:22.503Z
+2026-09-14T14:41:22.503Z  apps/portal/dist/chunks/hmh-pixi.js  454.8kb
+2026-09-14T14:41:22.503Z
+2026-09-14T14:41:22.503Z  ⚡ Done in 123ms
+2026-09-14T14:41:22.633Z
+2026-09-14T14:41:22.633Z  === Bundle report ===
+2026-09-14T14:41:22.634Z  STACKED initial JS: 567749 B (entry 25343, vendor 496615, shared 45791)
+2026-09-14T14:41:22.634Z  Source main.js:     657.0 KB
+2026-09-14T14:41:22.634Z  Bundled main.js:    1.10 MB  (+71.6% vs source entry; imports included)
+2026-09-14T14:41:22.634Z  HMH reboot source:  261.8 KB
+2026-09-14T14:41:22.634Z  HMH reboot entry:   343.8 KB  (+31.3% vs child source)
+2026-09-14T14:41:22.648Z  HMH entry cap:      352,058 / 480,000 B; 127,942 B remaining
+2026-09-14T14:41:22.648Z  Chikun source:      40.9 KB
+2026-09-14T14:41:22.648Z  Chikun entry:       34.3 KB  (-16.1% vs child source)
+2026-09-14T14:41:22.648Z  HMH Pixi vendor:    454.8 KB  (stable preloaded module)
+2026-09-14T14:41:22.648Z  HMH shared chunks:  212.5 KB (217,612 B) across 16 hoisted chunk(s) game.js imports statically
+2026-09-14T14:41:22.648Z  HMH initial JS:     798.6 KB (817,804 B) / 1.00 MB raw aggregate, entry + vendor
+2026-09-14T14:41:22.648Z  HMH initial JS + shared: 1011.1 KB (1,035,416 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor
+2026-09-14T14:41:22.648Z  HMH headroom:       225.4 KB entry + vendor; 12.9 KB including shared chunks
+2026-09-14T14:41:22.648Z  Total emitted JS:   6.97 MB across 82 files
+2026-09-14T14:41:22.648Z  Output dir:         apps/portal/dist/
+2026-09-14T14:41:23.845Z  Build Completed in /vercel/output [5m]
+2026-09-14T14:41:23.865Z  Deploying outputs...
+2026-09-14T14:41:26.025Z  Deployment completed
+2026-09-14T14:41:26.037Z  Creating build cache...
+2026-09-14T14:41:29.456Z  Created build cache: 3s
+2026-09-14T14:41:29.456Z  Uploading build cache [36.00 MB]
+2026-09-14T14:41:30.252Z  Build cache uploaded: 796.000ms
+status	● Ready

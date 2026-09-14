@@ -1,0 +1,147 @@
+{
+  "id": "dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU",
+  "name": "lesters-arcade",
+  "url": "lesters-arcade-gujzr4oqd-justin-agent-projects.vercel.app",
+  "target": "production",
+  "readyState": "READY",
+  "createdAt": 1789396562918,
+  "aliases": [
+    "lesters-arcade-justin-agent-projects.vercel.app"
+  ],
+  "builds": [
+    {
+      "id": "bld_63yoaxeca",
+      "deploymentId": "dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU",
+      "entrypoint": ".",
+      "readyState": "READY",
+      "readyStateAt": 1789396562438,
+      "createdAt": 1789396562438,
+      "createdIn": "sfo1",
+      "use": "@vercel/vc-build",
+      "config": {
+        "installCommand": "npm install && uv pip install --python \"$(command -v python)\" --target .vercel-python --no-cache -r requirements-vercel.txt",
+        "buildCommand": "PYTHONPATH=\"$PWD/.vercel-python\" npm run vercel:build",
+        "outputDirectory": "apps/portal",
+        "nodeVersion": "24.x",
+        "projectCreatedAt": 1780723193329,
+        "vercelConfig": {
+          "$schema": "https://openapi.vercel.sh/vercel.json",
+          "framework": null,
+          "installCommand": "npm install && uv pip install --python \"$(command -v python)\" --target .vercel-python --no-cache -r requirements-vercel.txt",
+          "buildCommand": "PYTHONPATH=\"$PWD/.vercel-python\" npm run vercel:build",
+          "outputDirectory": "apps/portal",
+          "headers": [
+            {
+              "source": "/dist/chunks/(.*)",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=31536000, immutable"
+                }
+              ]
+            },
+            {
+              "source": "/dist/(hmh-reboot|chikun|stacked)/(.*)",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/(dist/main.js|assets/.*|styles.css|styles-arcade-polish.css|src/design-tokens.css)",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+                }
+              ]
+            },
+            {
+              "source": "/hmh-reboot/(.*)",
+              "headers": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self'; img-src 'self' data: blob: https://lestersarcade.io; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https://liteforge.rpc.caldera.xyz wss://liteforge.rpc.caldera.xyz https://liteforge.explorer.caldera.xyz https://liteforge.hub.caldera.xyz https://testnet.litvm.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+                }
+              ]
+            },
+            {
+              "source": "/chikun/(.*)",
+              "headers": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+                }
+              ]
+            },
+            {
+              "source": "/stacked/(.*)",
+              "headers": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/((?!(?:hmh-reboot|chikun|stacked)/).*)",
+              "headers": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://lestersarcade.io; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https://liteforge.rpc.caldera.xyz wss://liteforge.rpc.caldera.xyz https://liteforge.explorer.caldera.xyz https://liteforge.hub.caldera.xyz https://testnet.litvm.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+                }
+              ]
+            },
+            {
+              "source": "/(.*)",
+              "headers": [
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "strict-origin-when-cross-origin"
+                },
+                {
+                  "key": "Permissions-Policy",
+                  "value": "geolocation=(), microphone=(), camera=(), payment=()"
+                }
+              ]
+            }
+          ],
+          "rewrites": [
+            {
+              "source": "/",
+              "destination": "/index.html"
+            },
+            {
+              "source": "/games/:path*",
+              "destination": "/index.html"
+            },
+            {
+              "source": "/play/:path*",
+              "destination": "/index.html"
+            },
+            {
+              "source": "/(profile|scores|leaderboards|settings)",
+              "destination": "/index.html"
+            }
+          ],
+          "name": "lesters-arcade",
+          "version": 2
+        }
+      },
+      "middleware": [],
+      "output": [],
+      "fingerprint": null
+    }
+  ],
+  "contextName": "justin-agent-projects"
+}

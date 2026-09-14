@@ -1,0 +1,6 @@
+{"siteId":"relay-power","mobile":false,"beforeY":3640,"collectedY":3346.12,"reward":"Shotgun","errors":[]}
+{"siteId":"ravine-winch","mobile":false,"beforeY":2910,"collectedY":2614.257,"reward":"Railgun","errors":[]}
+{"siteId":"yard-warehouse","mobile":false,"beforeY":4010,"collectedY":3716.116,"reward":"Flamethrower","errors":[]}
+{"siteId":"relay-power","mobile":true,"beforeY":3640,"collectedY":3345.648,"reward":"Shotgun","errors":[]}
+{"siteId":"ravine-winch","mobile":true,"beforeY":2910,"collectedY":2614.503,"reward":"Railgun","errors":[]}
+{"siteId":"yard-warehouse","mobile":true,"beforeY":4010,"collectedY":3716.398,"reward":"Flamethrower","errors":[]}

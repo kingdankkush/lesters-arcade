@@ -1,0 +1,5 @@
+
+> lesters-arcade@0.3.1 docs:production
+> node scripts/production-doc-drift-check.mjs
+
+Production documentation marker matches live service worker: lesters-arcade-v47-combined-gameplay

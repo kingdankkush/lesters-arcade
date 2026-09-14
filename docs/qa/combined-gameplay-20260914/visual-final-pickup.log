@@ -1,0 +1,166 @@
+{
+  "schema": "hmh-reboot-visual-signature-v1",
+  "tolerance": 2.5,
+  "accepted": false,
+  "baselineDir": "docs/testing/VISUAL_BASELINES/hmh-reboot",
+  "currentDir": ".hermes/evidence/hmh-reboot-visual/current",
+  "reducedMotionEvidence": {
+    "sceneId": "frontier-relay-desktop",
+    "landmarkVisible": 7,
+    "animatedSignals": 0,
+    "atmosphereSprites": 0
+  },
+  "results": [
+    {
+      "sceneId": "frontier-relay-desktop",
+      "observedTick": 90,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "enemyCrops": {
+        "status": "unchanged",
+        "count": 1,
+        "crops": [
+          {
+            "archetypeId": "bagholder-rusher",
+            "meanLumaDelta": 0,
+            "maxCellDelta": 0,
+            "status": "unchanged"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "sceneId": "frontier-relay-mobile",
+      "observedTick": 240,
+      "status": "unchanged",
+      "meanDelta": 0.009,
+      "maxDelta": 1,
+      "changedCells": 0,
+      "enemyCrops": {
+        "status": "unchanged",
+        "count": 2,
+        "crops": [
+          {
+            "archetypeId": "bagholder-rusher",
+            "meanLumaDelta": 0.03,
+            "maxCellDelta": 1,
+            "status": "unchanged"
+          },
+          {
+            "archetypeId": "forkrunner",
+            "meanLumaDelta": 0,
+            "maxCellDelta": 0,
+            "status": "unchanged"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "sceneId": "combat-engaged-desktop",
+      "observedTick": 420,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "enemyCrops": {
+        "status": "unchanged",
+        "count": 1,
+        "crops": [
+          {
+            "archetypeId": "bagholder-rusher",
+            "meanLumaDelta": 0,
+            "maxCellDelta": 0,
+            "status": "unchanged"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "sceneId": "ravine-overlook-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "mining-camp-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "liquidity-bridge-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "hashwood-foliage-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "liquidation-yard-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "liquidation-market-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "liquidation-residential-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "hashwood-camp-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    },
+    {
+      "sceneId": "crossing-water-desktop",
+      "observedTick": 180,
+      "status": "unchanged",
+      "meanDelta": 0,
+      "maxDelta": 0,
+      "changedCells": 0,
+      "errors": []
+    }
+  ]
+}
+Visual regression passed for 12 scenes.

@@ -1,0 +1,195 @@
+{
+  "status": "LIVE_VERIFIED",
+  "publishedAt": "2026-09-14T14:45:52.022Z",
+  "production": "https://lestersarcade.io",
+  "source": "bfcba824629c33f099af0084a398acdacfc358bd",
+  "branch": "codex/combined-gameplay-release-20260914",
+  "deployment": "dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU",
+  "immutableUrl": "https://lesters-arcade-gujzr4oqd-justin-agent-projects.vercel.app",
+  "cache": "lesters-arcade-v47-combined-gameplay",
+  "rollback": {
+    "deployment": "dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS",
+    "url": "https://lesters-arcade-inlluldkc-justin-agent-projects.vercel.app",
+    "source": "dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25"
+  },
+  "verification": {
+    "cloud": {
+      "tests": 3789,
+      "passed": 3738,
+      "unchangedRetiredFailures": 51
+    },
+    "servedFiles": {
+      "private": 202,
+      "public": 202,
+      "allExactSha256": true
+    },
+    "localBrowser": [
+      {
+        "name": "visual-accepted",
+        "exit": 0,
+        "seconds": 65.485
+      },
+      {
+        "name": "visual-verified",
+        "exit": 0,
+        "seconds": 67.149
+      },
+      {
+        "name": "objectives-final",
+        "exit": 0,
+        "seconds": 46.763
+      },
+      {
+        "name": "portal-desktop-final",
+        "exit": 0,
+        "seconds": 15.269
+      },
+      {
+        "name": "portal-mobile-final",
+        "exit": 0,
+        "seconds": 14.834
+      },
+      {
+        "name": "mobile-controls-final",
+        "exit": 0,
+        "seconds": 31.33
+      },
+      {
+        "name": "collectibles-final",
+        "exit": 0,
+        "seconds": 52.417
+      },
+      {
+        "name": "stacked-final",
+        "exit": 0,
+        "seconds": 33.249
+      },
+      {
+        "name": "music-final",
+        "exit": 0,
+        "seconds": 5.731
+      },
+      {
+        "name": "stacked-particles-final",
+        "exit": 0,
+        "seconds": 10.001
+      },
+      {
+        "name": "stacked-worlds-final",
+        "exit": 0,
+        "seconds": 5.483
+      },
+      {
+        "name": "chikun-ground-final",
+        "exit": 0,
+        "seconds": 10.242
+      },
+      {
+        "name": "chikun-final",
+        "exit": 0,
+        "seconds": 16.035
+      },
+      {
+        "name": "visual-final-pickup",
+        "exit": 0,
+        "seconds": 40.769
+      }
+    ],
+    "freeMode": [
+      {
+        "name": "desktop",
+        "exit": 0
+      },
+      {
+        "name": "mobile",
+        "exit": 0
+      }
+    ],
+    "publicBrowser": [
+      {
+        "name": "hmh-desktop",
+        "exit": 0,
+        "seconds": 25.28
+      },
+      {
+        "name": "hmh-mobile",
+        "exit": 0,
+        "seconds": 17.941
+      },
+      {
+        "name": "stacked",
+        "exit": 0,
+        "seconds": 52.198
+      },
+      {
+        "name": "chikun-desktop",
+        "exit": 0,
+        "seconds": 24.687
+      },
+      {
+        "name": "chikun-mobile",
+        "exit": 0,
+        "seconds": 24.398
+      },
+      {
+        "name": "cache",
+        "exit": 0,
+        "seconds": 7.48
+      },
+      {
+        "name": "music",
+        "exit": 0,
+        "seconds": 11.269
+      }
+    ],
+    "cache": {
+      "keys": [
+        "hmh-verification-unrelated-cache",
+        "lesters-arcade-v47-combined-gameplay"
+      ],
+      "controlled": true,
+      "sha256": "79ad21ffc0b6f25891f206c3e93079c1aac294b448c56fe6ba052d6813e94af8",
+      "sourceModels": [
+        {
+          "path": "/apps/hmh-reboot/assets/source/terrain/hmh-world-ground-materials.blend",
+          "status": 404
+        },
+        {
+          "path": "/assets-source/hmh-barriers/barrier-library.blend",
+          "status": 404
+        },
+        {
+          "path": "/assets-source/hmh-silver-coin/silver-litecoin.blend",
+          "status": 404
+        }
+      ]
+    },
+    "physicalDeviceCertification": false
+  },
+  "changes": {
+    "hmh": [
+      "Seven objective-owned rewards and deterministic supply restocks",
+      "Silver collectible drops, native barriers, interaction audio, clearer map/weapon/hero/recap presentation",
+      "Selected-art startup split, resource disposal and reachable fuel-depot reward"
+    ],
+    "chikun": [
+      "Ground running, jumping, flight, landing and varied hazards",
+      "Native motion, original audio, coins and bounded impact ragdolls",
+      "Versioned replay save/open and current-course local profile records"
+    ],
+    "stacked": [
+      "Desktop music worlds and bounded mobile gameplay particles",
+      "Expanded practice medals and local progress facts",
+      "Left-handed, reduced-flash, colorblind and audio/intensity preferences"
+    ]
+  },
+  "remaining": [
+    "Physical phone and first-time human acceptance",
+    "Full-run performance and broader HMH world/art/audio roadmap",
+    "Shared database/authentication, durable trusted verification and cross-device services",
+    "Repository source-storage target remains exceeded",
+    "Separate authorization for financial activation and source/model publication"
+  ],
+  "settlementLive": false,
+  "publicGitPush": false
+}

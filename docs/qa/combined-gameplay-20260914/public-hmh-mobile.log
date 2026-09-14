@@ -1,0 +1,356 @@
+PASS guest-boot
+PASS guest-free-run
+PASS pause-resume
+PASS mid-run-restart
+PASS settings-persistence-reload
+PASS guest-exit-to-splash
+PASS game-over-run-summary
+{
+  "schema": "hmh-reboot-portal-e2e-flows-v1",
+  "origin": "https://lestersarcade.io",
+  "browserProfile": "mobile",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "implementedFlows": [
+    "guest-boot",
+    "guest-free-run",
+    "pause-resume",
+    "mid-run-restart",
+    "settings-persistence-reload",
+    "guest-exit-to-splash",
+    "game-over-run-summary"
+  ],
+  "deferredFlows": [
+    {
+      "id": "ranked-preview",
+      "reason": "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated."
+    },
+    {
+      "id": "wallet-connect-reconnect",
+      "reason": "Wallet connect falls back to the mock wallet without an injected provider, which is not representative of the reconnect path this flow must prove."
+    },
+    {
+      "id": "service-worker-offline-update",
+      "reason": "Service worker, offline shell, and stale-cache flows need dedicated SW lifecycle control; currently exercised by the release browser certification harness."
+    }
+  ],
+  "results": [
+    {
+      "id": "guest-boot",
+      "ok": true,
+      "detail": {
+        "splash": true,
+        "splashGeometry": {
+          "ad": {
+            "left": 17,
+            "top": 1596.796875,
+            "right": 355,
+            "bottom": 1660.796875
+          },
+          "cabinet": {
+            "left": 17,
+            "top": 1230.671875,
+            "right": 355,
+            "bottom": 1570.796875
+          },
+          "actions": {
+            "left": 17,
+            "top": 510.296875,
+            "right": 355,
+            "bottom": 728.296875
+          },
+          "cabinetOverlap": 0,
+          "actionsOverlap": 0,
+          "scrollWidth": 390,
+          "viewportWidth": 390
+        }
+      }
+    },
+    {
+      "id": "guest-free-run",
+      "ok": true,
+      "detail": {
+        "profile": "Guest",
+        "heroSelector": {
+          "scrollY": 440,
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "documentHeight": 1783,
+          "selector": {
+            "x": 16,
+            "y": 0,
+            "width": 340,
+            "height": 1177.625,
+            "top": 0,
+            "right": 356,
+            "bottom": 1177.625,
+            "left": 16
+          },
+          "roster": {
+            "x": 5,
+            "y": 298.375,
+            "width": 362,
+            "height": 870.25,
+            "top": 298.375,
+            "right": 367,
+            "bottom": 1168.625,
+            "left": 5,
+            "clientWidth": 362,
+            "scrollWidth": 1408,
+            "overflowX": "auto",
+            "gridAutoFlow": "column"
+          },
+          "reducedMotion": false,
+          "focusedCharacterId": "lit-commando",
+          "dots": {
+            "count": 4,
+            "activeIndex": 0,
+            "visible": true
+          },
+          "cards": [
+            {
+              "id": "lit-commando",
+              "active": true,
+              "locked": false,
+              "ariaPressed": "true",
+              "compareRole": "reference",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                0
+              ],
+              "layoutTop": 301,
+              "rect": {
+                "x": 17,
+                "y": 298.375,
+                "width": 335.390625,
+                "height": 858.25,
+                "top": 298.375,
+                "right": 352.390625,
+                "bottom": 1156.625,
+                "left": 17
+              },
+              "alphaPixels": [
+                64584,
+                65031,
+                64319,
+                65031,
+                64584,
+                62380,
+                58226,
+                62380
+              ]
+            },
+            {
+              "id": "lit-valkyrie",
+              "active": true,
+              "locked": false,
+              "ariaPressed": "false",
+              "compareRole": "challenger",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                0
+              ],
+              "layoutTop": 301,
+              "rect": {
+                "x": 366.390625,
+                "y": 302.375,
+                "width": 335.390625,
+                "height": 858.25,
+                "top": 302.375,
+                "right": 701.78125,
+                "bottom": 1160.625,
+                "left": 366.390625
+              },
+              "alphaPixels": [
+                57428,
+                55827,
+                53376,
+                55827,
+                57428,
+                58064,
+                57445,
+                58064
+              ]
+            },
+            {
+              "id": "lester-original",
+              "active": false,
+              "locked": true,
+              "ariaPressed": "false",
+              "compareRole": "challenger",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                0
+              ],
+              "layoutTop": 301,
+              "rect": {
+                "x": 715.78125,
+                "y": 302.375,
+                "width": 335.390625,
+                "height": 858.25,
+                "top": 302.375,
+                "right": 1051.171875,
+                "bottom": 1160.625,
+                "left": 715.78125
+              },
+              "alphaPixels": [
+                69913,
+                69008,
+                66242,
+                69008,
+                69913,
+                69382,
+                68146,
+                69382
+              ]
+            },
+            {
+              "id": "lilly",
+              "active": false,
+              "locked": true,
+              "ariaPressed": "false",
+              "compareRole": "challenger",
+              "comparisonChips": 4,
+              "frameSize": [
+                384,
+                384
+              ],
+              "restFrameIndex": 0,
+              "visibleFrameIndexes": [
+                0
+              ],
+              "layoutTop": 301,
+              "rect": {
+                "x": 1065.171875,
+                "y": 302.375,
+                "width": 335.390625,
+                "height": 858.25,
+                "top": 302.375,
+                "right": 1400.5625,
+                "bottom": 1160.625,
+                "left": 1065.171875
+              },
+              "alphaPixels": [
+                59533,
+                59921,
+                59077,
+                59921,
+                59533,
+                57928,
+                54793,
+                57928
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pause-resume",
+      "ok": true,
+      "detail": {
+        "pausedSurfaces": [
+          "#combatMenuPanel",
+          "#hmhPausePanel",
+          "#arcadeMusicPlayer"
+        ],
+        "soundtrack": {
+          "controls": 8,
+          "geometry": {
+            "deck": {
+              "left": 8,
+              "top": 421.203125,
+              "right": 382,
+              "bottom": 836
+            },
+            "menu": {
+              "left": 14,
+              "top": 14,
+              "right": 376,
+              "bottom": 830
+            },
+            "overlapArea": 147984.46875,
+            "iconOverlap": 0,
+            "position": "fixed",
+            "documentHeight": 890
+          },
+          "volume": {
+            "setting": 0.42,
+            "audio": 0.231
+          },
+          "playback": {
+            "paused": false,
+            "duration": 217.239979,
+            "currentTime": 108.621164,
+            "currentSrc": "https://lestersarcade.io/assets/audio/playlist/adventure-16-bit-arcade-music.mp3"
+          },
+          "titleBefore": "Block Reward Quest",
+          "titleAfter": "CastleLitvania — Crypt of the Cold Wallet"
+        }
+      }
+    },
+    {
+      "id": "mid-run-restart",
+      "ok": true,
+      "detail": {
+        "sessionBefore": "Resumed by portal.",
+        "sessionAfter": "FREE // lit-commando // seed 2511653641"
+      }
+    },
+    {
+      "id": "settings-persistence-reload",
+      "ok": true,
+      "detail": {
+        "gore": false,
+        "saveVersion": 3
+      }
+    },
+    {
+      "id": "guest-exit-to-splash",
+      "ok": true,
+      "detail": {
+        "returnedTo": "wallet-splash"
+      }
+    },
+    {
+      "id": "game-over-run-summary",
+      "ok": true,
+      "detail": {
+        "sessionId": "lester-blaster-free-7d97e7bd-fc98-49b2-8bde-99fc00f74282",
+        "summaryCount": 1,
+        "score": 0,
+        "kills": 0,
+        "terminalReason": "defeated",
+        "schemaVersion": 6,
+        "defeat": {
+          "kind": "enemy",
+          "causeId": "enemy-bagholder-rusher",
+          "tick": 2,
+          "damage": 101
+        },
+        "recapVisible": true
+      }
+    }
+  ],
+  "consoleErrors": []
+}
+Portal E2E passed for all implemented flows.

@@ -1,0 +1,5 @@
+PASS iphone-13-portrait realTouch=216.08px surfaceTracking=173.31px
+PASS pixel-7-portrait realTouch=221.59px surfaceTracking=123.23px
+PASS iphone-se-portrait realTouch=215.67px surfaceTracking=127.65px
+PASS iphone-13-landscape realTouch=221.35px surfaceTracking=122.15px
+HMH_REBOOT_MOBILE_CONTROLS PASS devices=4 failures=0
