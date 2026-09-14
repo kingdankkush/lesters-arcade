@@ -6,7 +6,15 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## HMH world polish — live
+## Combined arcade release candidate
+
+The combined candidate preserves the live HMH world polish and adds STACKED’s rotating cabinet and music-reactive living visualizers, plus Chikun 0.6.0 open-air obstacles, portrait/fullscreen presentation, high-refresh input and shared music fixes. Publication and hosted verification are pending. The production cache marker below is the target marker for this release wave.
+
+**Production cache marker:** `lesters-arcade-v43-combined-arcade`
+
+Independent completion handoffs: [Hard Money Heroes](docs/handoffs/HARD-MONEY-HEROES-REMAINING-WORK-2026-09-13.md), [STACKED](docs/handoffs/STACKED-REMAINING-WORK-2026-09-13.md), and [Chikun's Escape](docs/handoffs/CHIKUN-ESCAPE-REMAINING-WORK-2026-09-13.md). Each separates completed foundations, remaining tasks, acceptance evidence and separately authorized Web3 activation.
+
+## HMH world polish — live predecessor
 
 Finer forest and concrete materials, smoother terrain edges, varied canopy composition, industrial ground wear and animated campfire flames are live. Source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`; deployment `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7`. All 151 public file hashes and the HMH, STACKED and Chikun browser flows passed. [Release receipt](docs/qa/hmh-world-polish-release-20260913.json) · [Changes and remaining work](docs/handoffs/2026-09-13-hmh-world-polish-release.md). Immediate rollback: `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7`.
 
@@ -50,7 +58,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.6.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
 | STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 

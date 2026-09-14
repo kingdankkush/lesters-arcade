@@ -1,0 +1,117 @@
+# Chikun's Escape — remaining work and independent development handoff
+
+Prepared September 13, 2026. This is the completion plan for the actual public vertical slice, with current completed flight upgrades separated from future content and services. It can be worked on independently, while shared portal changes must preserve Hard Money Heroes and STACKED. Earlier handoff checkboxes are historical requirements to reconcile, not proof a feature is absent.
+
+## Release and starting point
+
+<!-- RELEASE_FACTS_START -->
+Combined release certification is in progress. The public predecessor is deployment `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7` at https://lestersarcade.io. The candidate preserves its HMH world polish and incorporates completed Chikun 0.6.0 open-air/portrait/input/music work and STACKED cabinet/visualizers. Candidate-only features must not be described as live until this block is replaced by the final receipt.
+<!-- RELEASE_FACTS_END -->
+
+- Integrated repository: `C:/Users/just_/Documents/Codex/2026-09-12/my/work/lesters-arcade`.
+- Integration branch: `codex/arcade-combined-release-20260913`. Start future development from its final release and verify live state.
+- Completed Chikun source imported from clean commit `c40149bd94b0c40252868c79afd9f59df0de997f`, including portrait/fullscreen `67512035bd0cf44da4fb514d67bcbf4b5fd82329` and prior open-air/input/music changes.
+- Game ID `chikun`; current vertical slice `0.6.0`, runtime `canvas-runtime-v4`, new evidence `chikun-flap-evidence-v2`, bridge `chikun-bridge/v1`.
+- Child source: `apps/chikun/src/`; shared deterministic simulation, obstacles, daily challenge, host and verification: `apps/portal/src/chikun-*.mjs`; public shell: `apps/portal/chikun/`.
+- Native character/prop source: `apps/chikun/assets/source/`; shared obstacle geometry: `apps/chikun/assets/obstacle-shapes.json`; delivered atlases: `apps/portal/assets/generated/chikun-flight-v2/` and `chikun-open-air-v1/`.
+- Native Blender art is rendered into atlas frames for Canvas 2D. Do not infer a live skeletal 3D renderer from the editable models.
+- Preserve parent-owned seed, identity, canonical results/replay, profiles, wallet operations and settlement. Child presentation/viewport/audio must not alter simulation authority.
+
+## Completed work — do not rebuild
+
+1. Playable one-button flight, Free and Ranked-eligible parent flows, canonical replay verification, parent-owned daily UTC course, local daily-best comparison and a seek-safe animated replay viewer.
+2. Native horizontal Superman character with eighteen actions, fifteen bones and 432 frames; existing character motion sheets total 2,049,014 bytes. Smooth 120 ms pose blending, coat/crest wind and a Flight Room animation viewer already exist.
+3. Layered city/mountain scenery, day/night progression, native scenery, flight sounds and environmental presentation.
+4. Freestanding Blender trees and animated patrol drones alternating with industrial gates. Air above trees and above/below drones is genuinely navigable. Collision uses shared crown circles, trunk/body capsules and gate rectangles rather than opaque sprite bounds. Two new WebP sheets total 81,124 bytes.
+5. Removed the oval daily ghost marker, dashed target line and circular flight particles. Local daily-best comparisons remain; do not restore removed visual clutter as “missing” features. Slim wind streaks and restrained score feedback remain.
+6. Launch/flap input is latched until a fixed simulation step at high render rates; stale input is flushed on pause, repeated keydown and secondary pointers do not add flaps.
+7. Shared arcade music starts a random nonrepeating next song on a new flight; pause/resume preserves track and saved settings. Child Music opens the shared player; pause targets are at least 44 px. Free retries verify fresh results; Ranked finalization remains idempotent.
+8. True 9:16 portrait and 16:9 landscape frames with uniform sprite scale, full vertical collision lane, approaching-obstacle cue in portrait, full-width layout and desktop fullscreen. Rotation changes the view, not physics or replay.
+9. Exact historical v1 replay support remains, while new Ranked evidence cannot downgrade to v1. Daily/local storage is versioned for the new geometry.
+
+This is the published vertical slice, not the creator's entire original game. Do not restore the vaulted React/Supabase application as a shortcut. Historical creator-art commercial/modification/hosting/redistribution rights still need a documented reconciliation; native newly authored art and older creator assets should be inventoried separately. `devWallet` is null and the revenue split is unconfigured with zero entry fee. Do not enable paid entry on the assumption that the public cabinet already authorizes it.
+
+## Priority and acceptance convention
+
+P0 = measured defect/integrity/device prerequisite. P1 = requested production polish/completion. P2 = optional content proposals. “Partial” means useful implementation exists but final acceptance is unfinished; “Verify” means reproduce against current code; “Proposed” is a design option rather than an implemented promise.
+
+Recommended sequence: physical flight/control/performance acceptance → obstacle/course readability → character/world/audio polish → complete local profile/replay surfaces → shared durable services → separately approved Web3 and optional content. Keep each improvement versioned and publish tested coherent slices.
+
+## P0: flight feel, mobile performance and integrity
+
+- [ ] **CH-P01 — Partial: real-device flight acceptance.** Test actual iOS Safari and low/mid-range Android plus desktop, 60/90/120 Hz where available. Cover tap/Space launch, high refresh, orientation, browser bars, fullscreen, interruptions and retry. Acceptance: input never disappears between fixed steps, no accidental double flap and no touch-scroll interference.
+- [ ] **CH-P02 — Partial: sustained frame pacing.** Measure ordinary active flights, later dense scenery, repeated restart and replay on real clocks. Record p50/p95/p99, long tasks, simulation ticks, memory and input latency. Scale decorative parallax/wind/shadows where measured, not physics, obstacles or score. Acceptance: sustained device evidence with bounded texture/particle allocation and no increasing restart cost.
+- [ ] **CH-P03 — Partial: portrait fairness/readability.** The portrait camera intentionally shows less horizontal distance while preserving the whole vertical lane. Measure warning time and usability of the approaching-obstacle cue; compare with landscape at the same simulation state. Acceptance: players can understand upcoming shapes, no hidden unavoidable collision and no stretch/zoom change to the canonical hitbox.
+- [ ] **CH-P04 — Partial: obstacle collision acceptance.** Exercise top/bottom/transparent corners of crowns, trunks, drones and gates, including near-miss and coin paths. Confirm child and parent use identical geometry/animation-independent collision. Acceptance: deterministic boundary cases and actual screenshots at contact, no collision with transparent artwork or impossible coin path.
+- [ ] **CH-P05 — Partial: lifecycle and input recovery.** Test held Space across menu transitions, pointer release outside canvas, second finger, focus loss, device lock, back navigation and repeated fullscreen. Acceptance: no stale flap, stuck phase, duplicated result/music player or lost preference after return.
+- [ ] **CH-P06 — Partial: v1/v2 replay and storage migration.** Retain exact old replay behavior while enforcing current runtime/evidence identity for new Ranked sessions. Test versioned daily-best rollover, legacy replay playback, invalid streams and duplicate/cross-session submission. Acceptance: old recordings are labelled historical; none can overwrite current geometry's ranked/daily records.
+- [ ] **CH-P07 — Partial: cold load and failure handling.** Verify character/prop sheet readiness, failed image/audio fetch, slow network, offline warm launch, cache upgrade and retry. Acceptance: no invisible obstacles/hero at play start, truthful progress/error states and no unnecessary blocking download of HMH or STACKED assets.
+
+## P1: character models, animation and visual effects
+
+- [ ] **CH-V01 — Partial: final Superman model/rig audit.** Compare face, crest, clothing, body proportions, hand/foot placement, cape/coat and silhouette to the accepted character identity. Fix skin weights, intersections and material consistency in the existing model. Acceptance: all eighteen actions reviewed in Flight Room and ordinary gameplay on desktop/phone with repeatable native source/atlas output.
+- [ ] **CH-V02 — Partial: animation transition quality.** Review launch, flap, glide, rise/fall, danger, near miss, score, impact, defeat and recovery transitions. Tune anticipation/follow-through without moving canonical position or delaying a flap. Acceptance: no directional snap, pose popping or ghosting at different refresh rates, and correct reduced-motion behavior.
+- [ ] **CH-V03 — Partial: contact and scale.** Align character art/ground shadows and obstacle visuals to their documented reference frames and hit shapes. Acceptance: player understands the hit boundary, while optional debug geometry stays out of normal product UI.
+- [ ] **CH-V04 — Partial: readable effects.** Refine wind streaks, coin/score feedback, damage/impact and milestone celebration with bounded particles and low flash. Preserve the removal of ghost oval/target line/circular clutter. Acceptance: effects never conceal the next obstacle or look like a collectible/hazard themselves.
+- [ ] **CH-V05 — Partial: native tree/drone art polish.** Improve tree variety, bark/crowns, drone motion/lighting and gate weathering while keeping shared canonical collision geometry stable. Any shape-changing gameplay update must change both deterministic simulation and evidence version as required. Acceptance: art/collision match at each density and no excessive atlas growth.
+
+## P1/P2: course design and game world
+
+- [ ] **CH-W01 — Partial: obstacle vocabulary and learning curve.** Audit gate/tree/drone sequencing, spacing, safe paths and coin trails over many seeds/difficulties. Introduce new obstacle patterns gradually. Acceptance: no impossible sequence, readable options above/below open-air obstacles and balanced survival/coin risk.
+- [ ] **CH-W02 — Partial: scenery composition.** Improve city blocks, mountain layers, foreground vegetation, industrial landmarks and day/night color transitions. Use depth/parallax consistently and keep the collision lane uncluttered. Acceptance: sufficient contrast at every time-of-day and quality setting without reducing navigation information.
+- [ ] **CH-W03 — Proposed content: distinct route regions.** Develop themed city rooftops, forests, farmland, coastline/river and mining/industrial airspace as coherent art sets, subject to content scope. Separate decorative region transitions from obstacle/difficulty rules. Acceptance: deterministic seeds and clear transitions, with streamed/paged art that stays within measured texture budgets.
+- [ ] **CH-W04 — Proposed content: milestones and objectives.** Add clearly labelled optional goals such as clean-flight streaks, coin trails or region milestones after deciding their score/progress impact. Avoid unexpected required taps beyond the one-button flight concept. Acceptance: understandable rewards, deterministic attribution and no Free-to-Ranked leakage.
+- [ ] **CH-W05 — Partial: daily challenge quality.** Keep the UTC course parent-owned, communicate reset time and current-version identity, and handle rollover during an active flight. Acceptance: equal seeds across time zones, local best belongs to the right course/version and the UI never implies global competition before services exist.
+- [ ] **CH-W06 — Proposed: cosmetic unlocks.** Consider earned flight trails, outfits or backdrop variants only after an inventory and profile rule are defined. Acceptance: gameplay silhouettes/readability preserved, unlocks tied to real recorded conditions and no implied token/NFT ownership.
+
+## P1: sound design and music
+
+- [ ] **CH-S01 — Partial: flight and interaction coverage.** Audit launch/flap/glide/wind, near miss, coin, milestone, impact/defeat, retry, pause and menu cues. Native flight sounds exist; complete missing distinctions and variants rather than replacing everything. Acceptance: cues audible at the actual action, restrained repetition and no sound from rejected input.
+- [ ] **CH-S02 — Partial: world ambience.** Add/tune city air, tree/wind rustle, distant industry/drone pass and water/coast beds where those regions exist. Use bounded proximity/distance cues and seamless transitions. Acceptance: useful depth without obscuring gameplay, no loop clicks or emitter leaks.
+- [ ] **CH-S03 — Partial: shared music lifecycle.** Preserve random nonrepeating launch selection and current track on pause/resume. Verify Music from child/start/pause, next/previous, mute/volume, stalled track, audio unlock, route exit and phone interruption. Acceptance: only one active player and no old HMH menu overlay while Chikun is active.
+- [ ] **CH-S04 — Open acceptance: final mix and provenance.** Measure peaks/loudness/voice counts, duck useful cues against music, and listen on real phone speakers/headphones/desktop. Record source/license and native generation receipts. Acceptance: no clipping, double playback, sudden volume changes or persistent silence after backgrounding.
+
+## P1: menus, accessibility and game flow
+
+- [ ] **CH-U01 — Partial: first-run onboarding.** Clarify single-input flight, open-air obstacle choices, coin risk and Free/local Ranked meaning with a short skippable guide. Acceptance: a new player understands trees/drones are not full-height gates and can retry without navigating back through the arcade.
+- [ ] **CH-U02 — Partial: responsive menus/fullscreen.** Review portrait/landscape start/pause/results panels, fullscreen enter/exit, safe areas and 44 px controls. Test increased text scale and landscape phones. Acceptance: no clipped action, hidden score, overlapping music control or unexpected physics change on resize.
+- [ ] **CH-U03 — Partial: results clarity.** Present canonical score, coins, distance/survival, obstacle progress, near misses and local daily/personal best only where recorded. Make death cause and replay/retry/back actions clear. Acceptance: second and later Free retries show fresh correct results, and each Ranked result finalizes exactly once.
+- [ ] **CH-U04 — Partial: accessibility.** Finish keyboard/menu focus, semantic button labels, color-independent score/hazard feedback, reduced motion/flash and independent sound/music controls. Acceptance: menus operable without pointer precision; visual information remains sufficient when muted.
+- [ ] **CH-U05 — Partial: replay viewer usability.** Improve transport controls, speed, time/score labels, seek precision and small-screen layout using the existing seek-safe implementation. Acceptance: repeated seek/play/pause never changes official results or starts unwanted live input; legacy/current course identity is clear.
+
+## P1: User Profile and Scores / Leaderboards
+
+Shared parent local persistence already stores profiles, usernames/avatars, history and cadence rows. Chikun's local daily-best and replay data are additional projections, not online service records. The parent must remain the only source of canonical session completion.
+
+- [ ] **CH-D01 — Partial: full Chikun profile module.** Reconcile best score, coins, obstacles passed, near misses, best combo, difficulty and survival against the current schema; show per-game history and supported achievements. Acceptance: result/history/profile agree, missing older fields remain unknown and HMH/STACKED stats cannot leak in.
+- [ ] **CH-D02 — Partial: local achievement/progress UX.** Audit actual definitions/resolvers and finish missing progress, dates and requirements from real recorded values. Separate daily comparisons and Free accomplishments from Ranked progress. Acceptance: game scoping, duplicate protection and no fabricated badge/NFT status.
+- [ ] **CH-D03 — Partial: local score-source clarity.** Verify daily and cadence filters, best-per-wallet ordering, legacy geometry separation and House/demo/local labels. Acceptance: current local records cannot be mistaken for a verified global leaderboard and new v2 scores do not silently mix with incompatible v1 competition.
+- [ ] **CH-D04 — Open shared service: durable account/profile sync.** Add authenticated parent service/storage for wallet-bound identity, names/avatars/preferences, paginated history and per-game aggregates. Define local migration, retention, export/deletion and account recovery. Acceptance: the same authorized account sees consistent data on two devices; no cross-account leakage or silent data loss.
+- [ ] **CH-D05 — Open shared service: trusted global leaderboard.** Implement server replay verification, idempotent ingestion, season/course/runtime/evidence version partitioning, pagination, anti-abuse and moderation. Acceptance: forged scores, wrong seed, duplicate sessions and v1 downgrade attempts rejected; a second device reads a confirmed result with provenance.
+- [ ] **CH-D06 — Partial/proposed: replay sharing.** Define retention, bounded export/import and explicit opt-in for sharing another player's run. Use a projection-only viewer; do not reintroduce the removed ghost marker by default. Acceptance: malformed streams fail safely, privacy is clear and imported replay cannot write a score.
+- [ ] **CH-D07 — Open: support and analytics.** Capture consent-aware entry/start/death/retry funnel and actionable error reports with minimal data. Acceptance: no credentials/wallet secrets in logs, useful crash/replay dispute support and truthful offline/server-down states.
+
+## Web3, asset rights and third-party functionality
+
+`SETTLEMENT_LIVE=false`; no paid entry or settlement is enabled. The public vertical slice's parent replay makes local results verifiable, but it is not a trusted server attestation or confirmed blockchain result. Legacy contract bytecode is not proof the current hardened score ABI is deployed.
+
+- [ ] **CH-B01 — Open documentation dependency: rights inventory.** Separate original creator assets, owner-approved references and newly authored native models/audio. Obtain/record required commercial use, modification, hosting and redistribution rights for any retained creator material. Acceptance: every delivered asset has a clear source/permission record; no blanket claim that one approval covers unrelated assets.
+- [ ] **CH-B02 — Open configuration: creator onboarding.** Resolve verified creator/developer identity, `devWallet`, intended revenue split and applicable terms before any monetized integration. `devWallet=null` and zero fee are current truth. Acceptance: signed-off configuration and tested display/accounting; no inferred wallet or recipient.
+- [ ] **CH-B03 — Open shared implementation: trusted verification service.** Implement canonical replay/shape-version validation and signed attestations bound to wallet, game, runtime, seed, session, season, chain, nonce and expiry. Keep signing keys server-side. Acceptance: tampered/replayed/downgraded evidence rejected, bounded verification and idempotent retry.
+- [ ] **CH-B04 — Partial source/open end-to-end: real provider/contract flow.** Test approved wallet connect/reject/reconnect/network/account-change cases, hardened contract compatibility and profile/score readback in an explicitly approved environment. Acceptance: real receipt and readback match the canonical result; no child wallet operations.
+- [ ] **CH-B05 — Gated: payments and settlement.** Prepare paid-session binding, fee/split disclosure, failure/replacement/refund policy and monitored settlement only after economic decisions. Contract deployment, transactions, authority changes and activation need explicit separate approval. Acceptance after approval: end-to-end confirmed payment/result, no duplicate charge or payout and clear failure handling.
+- [ ] **CH-B06 — Proposed/gated: achievement tokens and epochs.** Decide whether wallet-bound achievements are useful before implementing tokens. Partition local/Testnet/Mainnet and geometry/runtime eras; preserve archives. Acceptance: genuine authorized mint/readback, no transferability claim contrary to contract and no marketing a local badge as an NFT.
+
+## QA, publication and completion checklist
+
+- [ ] **CH-Q01 — Open: physical and first-time playtest record.** Capture full flights and retry loops on real phones and desktop, with collision fairness, portrait warning comprehension, visual identity, sound and control findings. Automated emulation remains distinct from physical acceptance.
+- [ ] **CH-Q02 — Per slice: deterministic tests.** Run Chikun replay, obstacle, viewport, input, music, lifecycle and Free/Ranked isolation tests. Cover both historical v1 playback and current v2 rejection rules. Check schema/message bounds and exact result equality under visual/audio changes.
+- [ ] **CH-Q03 — Per slice: actual browser visuals/flows.** Use `scripts/chikun-open-air-browser-smoke.mjs` for high-refresh fixed-step input, varied obstacles, two results and shared-music lifecycle; inspect desktop/portrait screenshots. That test controls its render clock and is not frame-rate evidence. Run separate ordinary-clock performance and existing Ranked/Free browser flow tests.
+- [ ] **CH-Q04 — Per asset slice: native evidence.** Retain `.blend`, rig/actions, shared geometry, bake/pack scripts, producer receipts and runtime SHA-256 manifests. Reproduce outputs and inspect full-resolution frames; track encoded and decoded bytes. Do not ship editable source in the public portal output.
+- [ ] **CH-Q05 — Per release: all-game certification.** Run baseline-aware full tests, syntax/build/assets/contracts/docs checks and HMH/STACKED browser flows for shared portal changes. Preserve the exact 51 existing retired-test exceptions; no new failure allowance. Commit only reviewed complete source and docs.
+- [ ] **CH-Q06 — Per release: verify live deployment.** Deploy the combined candidate privately, verify cloud readiness and served hashes, recheck current production before promotion, then test public desktop/mobile flows and returning-cache update. Record source, exact deployment, rollback and limitations. Do not promote an old standalone Chikun build over newer HMH/STACKED work.
+- [ ] **CH-Q07 — After acceptance: release media/help.** Capture actual portrait/landscape open-air play, Superman action clips and sound samples; update help, credits, rights and support information. Do not describe optional regions, global boards or real Web3 as shipped before they are verified.
+
+Useful focused references: `docs/handoffs/chikun-open-air-20260913.md`, `chikun-superman-flight-20260913.md`, `docs/THIRD_PARTY_GAME_ONBOARDING.md`, current release receipts and current cabinet manifest. Older “ghost racing” descriptions refer to a prior presentation; the removed oval/target marker is not a regression to restore.
+
+The website release is authorized. Public editable source/art disclosure must follow the applicable asset-specific permission; unrelated HMH sources are not covered by a Chikun-specific approval. Real funds, contracts, authority and settlement remain separate decisions.
