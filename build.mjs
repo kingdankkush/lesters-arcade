@@ -132,6 +132,10 @@ async function run() {
       'hmh-reboot/world-art': hmhWorldArtEntry,
       'chikun/game': chikunEntry,
       'stacked/game': stackedEntry,
+      // Independently cacheable visual math; the static shared chunk remains
+      // included in STACKED's unchanged aggregate initial-JS budget below.
+      'stacked/living-field': resolve(__dirname, 'apps/stacked/src/render/living-field.mjs'),
+      'stacked/atmosphere': resolve(__dirname, 'apps/stacked/src/render/atmosphere.mjs'),
       'stacked/verify-worker': resolve(__dirname, 'apps/stacked/src/verify-worker.mjs'),
       'chikun/flight-room': resolve(__dirname, 'apps/chikun/src/flight-room.mjs'),
     },

@@ -29,7 +29,7 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if (hasPresented) app.render();
   };
   const present = snapshot => { if(disposed)throw new Error('renderer is disposed'); const stats=board.present(snapshot); stageElement.dataset.renderedCells=String(stats.lockedVisible+stats.activeVisuals+stats.ghostVisuals); hasPresented=true; app.render(); return stats; };
-  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); board.destroy(); tree.stackedRoot.destroy({children:true}); };
+  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
   app.renderer.on('resize',resize);
   resize();
   return Object.freeze({
@@ -37,7 +37,9 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     audio: (frame, now) => atmosphere.audio(frame, now),
     frame(snapshot, now, settings) {
       const fit = fitRootToViewport({ widthPx: app.canvas.width / app.renderer.resolution, heightPx: app.canvas.height / app.renderer.resolution });
-      const info = atmosphere.draw({ now, tick: snapshot.tick, width: fit.logicalWidth, height: fit.logicalHeight, settings });
+      const info = atmosphere.draw({ now, tick: snapshot.tick, lines: snapshot.lines, width: fit.logicalWidth, height: fit.logicalHeight, settings });
+      stageElement.dataset.visualizerPhase = info.phase;
+      stageElement.dataset.visualizerGeneration = String(info.generation);
       board.layers.ghostLayer.visible = settings.video.ghostPiece;
       board.setGridLines(settings.video.gridLines);
       board.layers.effectLayer.visible = !settings.accessibility.reduceMotion && !settings.video.reducedEffects;
