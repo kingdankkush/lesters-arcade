@@ -8,7 +8,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 ## Chikun open-air flight update
 
-The release candidate removes the oval ghost marker and gives freestanding trees and patrol drones their own collision shapes. Chikun retains eighteen Blender-authored Superman flight clips, coat and crest wind, layered city scenery and the day/night cycle. The shared Arcade player chooses a random song for each new flight, including Free retries. Pause opens its music controls. High-refresh taps remain queued until the next simulation step.
+The release candidate removes the oval ghost marker and gives freestanding trees and patrol drones their own collision shapes. Chikun retains eighteen Blender-authored Superman flight clips, coat and crest wind, layered city scenery and the day/night cycle. The shared Arcade player chooses a random song for each new flight, including Free retries. Pause opens its music controls. High-refresh taps remain queued until the next simulation step. The game supports a true 9:16 portrait camera, 16:9 landscape, full-width desktop play and fullscreen. Rotating a phone preserves the run.
 
 **Candidate cache marker:** `lesters-arcade-v42-chikun-open-air`. Publication checks are pending. [Chikun handoff](docs/handoffs/chikun-open-air-20260913.md).
 

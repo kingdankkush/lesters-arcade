@@ -54,6 +54,8 @@ const NODE_CHECK_FILES = [
   'scripts/stacked-cabinet-browser-smoke.mjs',
   'apps/chikun/src/character.mjs',
   'apps/chikun/src/world.mjs',
+  'apps/chikun/src/viewport.mjs',
+  'tests/chikun-viewport.test.mjs',
   'apps/chikun/src/audio.mjs',
   'apps/chikun/src/flight-room.mjs',
   'tests/chikun-facelift.test.mjs',

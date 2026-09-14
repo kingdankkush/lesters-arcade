@@ -1,6 +1,7 @@
 import { createChikunCharacter } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
+import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
 import {
   CHIKUN_FIXED_STEP_HZ,
   buildChikunReplayClaim,
@@ -27,6 +28,18 @@ import {
 const canvas = document.querySelector('#chikunCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
 const shell = document.querySelector('#gameShell');
+let flightViewport = buildChikunViewport(1280, 720);
+function resizeFlightViewport() {
+  const rect = canvas.getBoundingClientRect();
+  flightViewport = buildChikunViewport(rect.width, rect.height, window.devicePixelRatio || 1);
+  if (canvas.width !== flightViewport.pixelWidth) canvas.width = flightViewport.pixelWidth;
+  if (canvas.height !== flightViewport.pixelHeight) canvas.height = flightViewport.pixelHeight;
+  shell.dataset.orientation = flightViewport.portrait ? 'portrait' : 'landscape';
+}
+const flightResizeObserver = new ResizeObserver(resizeFlightViewport);
+flightResizeObserver.observe(document.querySelector('#gameFrame'));
+window.addEventListener('resize', resizeFlightViewport);
+resizeFlightViewport();
 const scoreValue = document.querySelector('#scoreValue');
 const coinValue = document.querySelector('#coinValue');
 const forkValue = document.querySelector('#forkValue');
@@ -489,7 +502,7 @@ function queueFlap(event) {
 }
 
 function drawSky(snapshot) {
-  flightWorld.draw(ctx, snapshot, { reduced: reduceMotion(), mode, idleTime });
+  flightWorld.draw(ctx, snapshot, { reduced: reduceMotion(), mode, idleTime, view: flightViewport });
 }
 
 function drawFork(fork) {
@@ -497,7 +510,8 @@ function drawFork(fork) {
 }
 
 function drawChikun(snapshot) {
-  if (flightCharacter.draw(ctx, snapshot, renderDt, { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) })) return;
+  const menuPosition = flightViewport.portrait ? {x: flightViewport.left + flightViewport.width / 2, y: 258, size: 280} : null;
+  if (flightCharacter.draw(ctx, snapshot, renderDt, { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) })) return;
   const bird = snapshot.chikun;
   const sprite = bird.velocityY > 1.6 ? fallSprite : coastSprite;
   const ready = sprite.complete && sprite.naturalWidth > 0;
@@ -528,7 +542,7 @@ function drawVfx(snapshot) {
     const age = vfxFrame - activeFlash.bornFrame;
     if (age < activeFlash.lifeTicks) {
       ctx.fillStyle = `rgba(255,255,255,${Math.max(0, activeFlash.alpha * (1 - age / activeFlash.lifeTicks))})`;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(flightViewport.left, 0, flightViewport.width, flightViewport.height);
     } else activeFlash = null;
   }
 }
@@ -537,6 +551,8 @@ function draw(snapshot = latestSnapshot) {
   shell.dataset.phase = phase;
   vfxFrame += renderDt * 60;
   ctx.save();
+  ctx.scale(flightViewport.density, flightViewport.density);
+  ctx.translate(-flightViewport.left, 0);
   if (activeShake && !reduceMotion()) {
     const age = vfxFrame - activeShake.bornFrame;
     if (age < activeShake.lifeTicks) {
@@ -550,6 +566,15 @@ function draw(snapshot = latestSnapshot) {
     drawChikun(snapshot);
   }
   drawVfx(snapshot);
+  const approaching = phase === 'running' ? upcomingChikunObstacle(snapshot?.forks ?? [], flightViewport) : null;
+  if (approaching) {
+    const x = flightViewport.left + flightViewport.width - 12;
+    const y = Math.max(118, Math.min(620, approaching.gapCenter));
+    ctx.fillStyle = '#102a3bce'; ctx.fillRect(x - 84, y - 20, 84, 36);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#f1dfb8'; ctx.font = '700 10px system-ui';
+    ctx.fillText(approaching.kind.toUpperCase() + ' AHEAD', x - 7, y - 5);
+    ctx.fillStyle = '#bcd9d7'; ctx.font = '10px system-ui'; ctx.fillText('‹  OPEN AIR', x - 7, y + 8);
+  }
   ctx.restore();
 }
 
@@ -664,6 +689,8 @@ function handleParentMessage(event) {
     activeAudioVoices.clear();
     flightCharacter.dispose();
     flightWorld.dispose();
+    flightResizeObserver.disconnect();
+    window.removeEventListener('resize', resizeFlightViewport);
     flightAudio.dispose();
     audioContext?.close?.();
     audioContext = null;

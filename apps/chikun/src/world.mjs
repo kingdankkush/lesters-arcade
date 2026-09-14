@@ -93,7 +93,7 @@ export function createChikunWorld() {
     }
   }
   return {
-    draw(ctx,snapshot,{reduced=false,mode='free',idleTime=0}={}) {
+    draw(ctx,snapshot,{reduced=false,mode='free',idleTime=0,view={left:0,width:1280}}={}) {
       const tick=snapshot?.tick??0;const t=reduced?0:tick/60+(tick===0?idleTime*.3:0);const sky=chikunSkyState(t,reduced);
       const g=ctx.createLinearGradient(0,0,0,720);g.addColorStop(0,rgb(sky.top));g.addColorStop(.65,rgb(sky.horizon));g.addColorStop(1,rgb(mix([85,139,154],[15,35,62],sky.night)));ctx.fillStyle=g;ctx.fillRect(0,0,1280,720);
       // Stars fade in before the sun reaches the horizon.
@@ -102,9 +102,9 @@ export function createChikunWorld() {
         ctx.fillStyle=rgb([217,236,242],sky.night*(.35+.4*noise(i)));
         const size=i%11===0?2:1;ctx.fillRect(x,y,size,size);
       }
-      const sx=955+Math.sin(sky.phase*TAU)*135,sy=390-sky.altitude*217;
+      const sx=view.left+view.width*(.746+Math.sin(sky.phase*TAU)*.105),sy=390-sky.altitude*217;
       if(sky.day>.001){glow(ctx,sx,sy,230,[255,207,138],.32*sky.day);glow(ctx,sx,sy,105,[255,224,174],.3*sky.day);ctx.fillStyle=rgb([255,241,203],sky.day);ctx.beginPath();ctx.arc(sx,sy,34,0,TAU);ctx.fill();}
-      const mx=970-Math.sin(sky.phase*TAU)*140,my=390+sky.altitude*225;
+      const mx=view.left+view.width*(.758-Math.sin(sky.phase*TAU)*.109),my=390+sky.altitude*225;
       if(sky.night>.001){glow(ctx,mx,my,170,[125,199,226],.18*sky.night);ctx.fillStyle=rgb([211,228,225],sky.night);ctx.beginPath();ctx.arc(mx,my,27,0,TAU);ctx.fill();ctx.fillStyle=rgb([122,159,179],.24*sky.night);for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(mx-13+noise(i+12)*28,my-13+noise(i+29)*28,3+noise(i+90)*4,0,TAU);ctx.fill();}}
       // Stretched translucent cloud banks preserve open space around the flight lane.
       for(let i=0;i<8;i++){

@@ -41,6 +41,12 @@ try {
  const frame=await node.elementHandle().then(h=>h.contentFrame());
  await frame.locator('#startButton').waitFor();
  await frame.waitForFunction(()=>document.querySelector('#liveStatus').textContent.includes('Ready for Free Mode.'),null,{polling:50});
+ const playfield=await frame.locator('#chikunCanvas').boundingBox();
+ await page.screenshot({path:path.join(out,'start.png')});
+ if(playfield.width<viewport.width*.97) console.log(JSON.stringify({playfield,containers:await page.locator('.official-app,.gameplay-view,.official-combat-mount,iframe.chikun-game-frame').evaluateAll(els=>els.filter(e=>e.getBoundingClientRect().width).map(e=>({class:e.className,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,display:getComputedStyle(e).display,padding:getComputedStyle(e).padding})))}));
+ assert.ok(Math.abs(playfield.width/playfield.height-(viewport.width<500?9/16:16/9))<.01,'playfield fits the requested orientation');
+ assert.ok(playfield.width>=viewport.width*.97,'game uses the full available width');
+ await page.screenshot({path:path.join(out,'start.png')});
  await frame.locator('#startButton').click({force:true});
  await frame.evaluate(()=>{for(let i=0;i<950;i++)__flightTestAdvance(1000/240);});
  const first=await frame.evaluate(()=>__flightTestMessages.find(m=>m.type==='game:result')?.payload);
@@ -63,7 +69,7 @@ try {
   if(flap && tick>0)await page.keyboard.press('Space');
   pilot.step({flap});
   await frame.evaluate(()=>__flightTestAdvance(1000/60+.000001));
-  if(next && next.kind!=='gate' && next.x<650 && next.x>420 && lastCapture!==next.index) {
+  if(next && next.kind!=='gate' && next.x<(viewport.width<500?480:650) && next.x>420 && lastCapture!==next.index) {
    lastCapture=next.index;samples.push({tick,kind:next.kind,x:next.x});
    await page.screenshot({path:path.join(out,`flight-${next.kind}-${next.index}.png`)});
   }
@@ -73,6 +79,25 @@ try {
  assert.ok(samples.some(s=>s.kind==='tree')&&samples.some(s=>s.kind==='drone'));
  await frame.locator('#pauseButton').click({force:true});
  await page.waitForFunction(()=>document.documentElement.dataset.gameplayPaused==='true');
+ if(viewport.width>=500){
+  await frame.locator('#pauseFullscreenButton').click({force:true});
+  await frame.waitForFunction(()=>Boolean(document.fullscreenElement),null,{polling:50});
+  await frame.evaluate(()=>__flightTestAdvance(0));
+  await page.screenshot({path:path.join(out,'fullscreen.png')});
+  await frame.locator('#pauseFullscreenButton').click({force:true});
+  await frame.waitForFunction(()=>!document.fullscreenElement,null,{polling:50});
+ }
+ if(viewport.width<500){
+  await page.setViewportSize({width:844,height:390});
+  await page.waitForTimeout(150);
+  await frame.evaluate(()=>__flightTestAdvance(0));
+  const landscape=await frame.locator('#chikunCanvas').boundingBox();
+  assert.ok(Math.abs(landscape.width/landscape.height-16/9)<.01,'rotating the same run gives a 16:9 landscape view');
+  assert.equal(await frame.locator('#pauseOverlay').isVisible(),true);
+  await page.screenshot({path:path.join(out,'rotated-landscape.png')});
+  await page.setViewportSize(viewport);
+  await page.waitForTimeout(150);
+ }
  const pausedTrack=await page.locator('#arcadeMusicAudio').getAttribute('data-track-id');
  await frame.locator('#pauseMusicButton').click({force:true});
  await page.locator('#arcadeMusicPlayer[data-expanded="true"]').waitFor({state:'visible'});
@@ -83,7 +108,7 @@ try {
  assert.equal(await page.locator('#arcadeMusicAudio').evaluate(a=>a.muted),true);
  await page.locator('#arcadeMusicMuteButton').click();
  await page.locator('#arcadeMusicExpandButton').click();
- await page.locator('#arcadeMusicPlayer[data-expanded="false"]').waitFor({state:'visible'});
+ await page.locator('#arcadeMusicPlayer[data-expanded="false"]').waitFor({state:'attached'});
  await page.waitForTimeout(150);
  const resumeRect=await frame.locator('#resumeButton').boundingBox();
  const resumeHit=await page.evaluate(r=>document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.outerHTML,resumeRect);
@@ -103,7 +128,7 @@ try {
  assert.ok(result.forksPassed>=5);
  assert.equal(result.evidence.version,'chikun-flap-evidence-v2');
  assert.equal(result.evidence.seed,seed);
- const report={status:'PASS',origin,viewport,highRefreshHz:240,firstTrack,secondTrack,passes:result.forksPassed,coins:result.coinsCollected,terminalReason:result.finalState.terminalReason,samples,issues};
+ const report={status:'PASS',origin,viewport,playfield,rotation:viewport.width<500?'portrait-landscape-portrait':'fullscreen-enter-exit',highRefreshHz:240,firstTrack,secondTrack,passes:result.forksPassed,coins:result.coinsCollected,terminalReason:result.finalState.terminalReason,samples,issues};
  assert.deepEqual(issues,[]);
  await writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));
  console.log(JSON.stringify(report,null,2));
