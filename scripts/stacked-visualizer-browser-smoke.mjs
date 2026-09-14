@@ -8,7 +8,7 @@ import { startPortalStaticServer } from './hmh-reboot-portal-e2e.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const out = path.join(root, 'outputs/living-visualizer-browser');
 await mkdir(out, { recursive: true });
-await build({ entryPoints: [path.join(root, 'scripts/stacked-visualizer-qa-entry.mjs')], outfile: path.join(root, 'apps/portal/.tmp/visualizer-qa.js'), bundle: true, format: 'esm', external: ['pixi.js'], platform: 'browser' });
+const fixture = await build({ entryPoints: [path.join(root, 'scripts/stacked-visualizer-qa-entry.mjs')], write: false, bundle: true, format: 'esm', external: ['pixi.js'], platform: 'browser' });
 const { server, origin } = await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const reports = [];
@@ -16,6 +16,7 @@ try {
   for (const [name, width, height] of [['desktop',1440,900],['mobile',390,680],['small-mobile',320,600]]) {
     const page = await browser.newPage({ viewport: { width, height } });
     const errors = []; page.on('pageerror', error => errors.push(error.message));
+    await page.route('**/.tmp/visualizer-qa.js', route => route.fulfill({ contentType: 'text/javascript', body: fixture.outputFiles[0].text }));
     await page.route('**/visualizer-qa.html', route => route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><style>html,body,#stackedStage{width:100%;height:100%;margin:0;overflow:hidden;background:radial-gradient(ellipse at center,#132535,#03080f);color:#eef8ff;font-family:system-ui}canvas{display:block}p{position:absolute;top:0;left:12px;font-size:10px;color:#8faebf}</style><script type="importmap">{"imports":{"pixi.js":"/dist/stacked/stacked-pixi-v1.js"}}</script></head><body><div id="stackedStage"></div><p>LOCAL VISUAL QA · SYNTHETIC LINE-CLEAR EVENTS</p><script type="module" src="/.tmp/visualizer-qa.js"></script></body></html>` }));
     await page.goto(origin + '/visualizer-qa.html');
     await page.waitForFunction(() => window.visualizerQa).catch(error => { throw new Error(`${error.message}: ${errors.join('; ')}`); });
