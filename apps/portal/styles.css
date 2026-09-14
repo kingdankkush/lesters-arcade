@@ -5428,3 +5428,13 @@ html[data-embedded-cabinet] #touchControls { display: none !important; }
   border-color: rgba(45, 255, 92, 0.7);
   background: #030712;
 }
+
+/* Chikun uses clean native sprite edges; keep Arcade CRT decoration off its playfield. */
+html[data-embedded-cabinet="chikun"] .crt-overlay,
+html[data-embedded-cabinet="chikun"] .official-scanline { display: none; }
+
+@media(max-width:720px) {
+  html[data-embedded-cabinet="chikun"] .arcade-music-player[data-surface="pause-menu"][data-expanded="false"] { transform:none; }
+}
+
+.gameplay-view[data-game-id="chikun"] .official-combat-mount { display:grid;place-items:center;border-color:#58748270;box-shadow:none; }

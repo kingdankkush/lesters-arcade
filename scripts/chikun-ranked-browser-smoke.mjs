@@ -272,7 +272,7 @@ try {
   assert.match(scoreBoardText, /CHIKUN'S ESCAPE/i);
   if (ranked) {
     assert.match(scoreBoardText, /COINS/i);
-    assert.match(scoreBoardText, /FORKS/i);
+    assert.match(scoreBoardText, /CLEARED/i);
     assert.match(scoreBoardText, /NEAR MISS/i);
   } else {
     assert.match(scoreBoardText, /No unpublished local ranked scores/i);

@@ -16,6 +16,7 @@ export function createChikunHost({
   onResult = () => {},
   onRestartRequest = () => {},
   onExitRequest = () => {},
+  onMusicRequest = () => {},
   onError = () => {},
   readyTimeoutMs = 8000,
   setTimeoutRef = globalThis.setTimeout,
@@ -68,6 +69,7 @@ export function createChikunHost({
     else if (message.type === 'game:result') onResult(message);
     else if (message.type === 'game:restart-request') onRestartRequest(message);
     else if (message.type === 'game:exit-request') onExitRequest(message);
+    else if (message.type === 'game:music-request') onMusicRequest(message);
     else if (message.type === 'game:error') fail(new Error(`${message.payload.code}: ${message.payload.message}`));
     else fail(new Error(`unsupported Chikun child message type: ${message.type}`));
   };

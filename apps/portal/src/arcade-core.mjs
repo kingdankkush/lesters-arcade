@@ -1178,11 +1178,16 @@ export function chooseArcadeMusicNextIndex({
 // begins on a random song from its queue instead of always the first track.
 export function chooseArcadeMusicStartIndex({
   queueLength = 0,
+  previousIndex = -1,
   random = Math.random,
 } = {}) {
   const safeLength = Math.max(0, Number.isFinite(queueLength) ? Math.floor(queueLength) : 0);
   if (safeLength <= 0) return 0;
   const randomValue = Math.max(0, Math.min(0.999999, Number(random?.()) || 0));
+  if(safeLength>1 && Number.isInteger(previousIndex) && previousIndex>=0 && previousIndex<safeLength) {
+    const candidate=Math.floor(randomValue*(safeLength-1));
+    return candidate>=previousIndex?candidate+1:candidate;
+  }
   return Math.floor(randomValue * safeLength);
 }
 
@@ -2239,7 +2244,7 @@ export const ARCADE_GAMES = Object.freeze([
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
     livesPaid: 3,
     livesFree: Infinity,
-    tagline: 'Tap to flap. Dodge the forks. Stack the silver.',
+    tagline: 'Tap to fly. Dodge trees and drones. Stack the silver.',
     systemRole: 'child-dapp-cartridge',
     rankedSeasonId: 'chikun-season-preview-1',
     cabinetVersion: CHIKUN_CABINET_VERSION,

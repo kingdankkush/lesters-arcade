@@ -1,0 +1,40 @@
+{
+  "version": "chikun-open-air-v1",
+  "source": "Blender 5.1 native geometry",
+  "shapeRecipe": "apps/chikun/assets/obstacle-shapes.json",
+  "assets": [
+    {
+      "name": "tree",
+      "file": "tree.webp",
+      "frames": 1,
+      "width": 512,
+      "height": 768,
+      "columns": 1,
+      "fps": 0,
+      "bytes": 47350,
+      "sha256": "a87ff0abb237355631d03f9ddcae3b3f0773d0d3e753f948e2eb9e6cfbc5c62d"
+    },
+    {
+      "name": "drone",
+      "file": "drone.webp",
+      "frames": 8,
+      "width": 256,
+      "height": 128,
+      "columns": 4,
+      "fps": 24,
+      "bytes": 33774,
+      "sha256": "5e7e4971a0465fb30144512543f2dff6b1379c19f86889098991dc06d5c39a10"
+    }
+  ],
+  "runtimeBytes": 81124,
+  "sourceFiles": [
+    {
+      "file": "Chikun-City-Tree.blend",
+      "sha256": "d1b540e2eda9d487a3f7d4c00fcdf1a894e9564ea258ea0bb0e77f67f921ae38"
+    },
+    {
+      "file": "Chikun-Patrol-Drone.blend",
+      "sha256": "736bb729da5338643b05d5b6be8fd5c4d97a8ef3fc5e38b103c837ea92002f15"
+    }
+  ]
+}

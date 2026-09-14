@@ -17,7 +17,7 @@ test('playable update gives all linked startup resources the same fresh cache to
 
 test('playable update invalidates the prior service-worker asset cache', () => {
   const sw = read('apps/portal/sw.js');
-  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v39-chikun-stacked';/);
+  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v40-chikun-open-air';/);
   assert.doesNotMatch(sw, /lesters-arcade-v32-hmh-gameplan-defects/);
   assert.doesNotMatch(sw, /lesters-arcade-v36-hmh-package/);
 });

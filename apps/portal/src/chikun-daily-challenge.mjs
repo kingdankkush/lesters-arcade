@@ -1,7 +1,7 @@
 import { createChikunRuntime, replayChikunRun } from './chikun-cabinet.mjs';
 
-export const CHIKUN_DAILY_CHALLENGE_VERSION = 'chikun-daily-v1';
-export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v1';
+export const CHIKUN_DAILY_CHALLENGE_VERSION = 'chikun-daily-v2';
+export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v2';
 const MAX_GHOST_SAMPLES = 720;
 const MS_PER_DAY = 86_400_000;
 
@@ -81,6 +81,7 @@ export function buildChikunGhostTrack(evidence) {
   const runtime = createChikunRuntime({
     seed: replayed.seed,
     maxTicks: replayed.evidence.maxTicks,
+    evidenceVersion: replayed.evidence.version,
   });
   const stride = Math.max(1, Math.ceil(Math.max(1, replayed.survivalTicks) / MAX_GHOST_SAMPLES));
   const samples = [];

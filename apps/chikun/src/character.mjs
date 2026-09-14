@@ -27,7 +27,7 @@ export function selectChikunAnimation(snapshot={}, options={}) {
   if(flapAge<.24) return 'accelerate';
   if(eventAge<.42 && CHIKUN_CLIPS[event]) return event;
   const bird=snapshot.chikun??{},v=bird.velocityY??0;
-  const opening=snapshot.forks?.find(f=>!f.passed && f.x+(f.width??0)>bird.x-45 && f.x-bird.x<110);
+  const opening=snapshot.forks?.find(f=>(!f.kind || f.kind==='gate') && !f.passed && f.x+(f.width??0)>bird.x-45 && f.x-bird.x<110);
   if(opening) return 'squeeze';
   if(v<-1.2)return 'climb';
   if(v<-.25)return 'crest';

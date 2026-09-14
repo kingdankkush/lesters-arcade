@@ -268,7 +268,7 @@ export function createOfficialLeaderboardRoute({
       ['score', 'SCORE', 'score'],
       ['kills', chikunBoard ? 'COINS' : 'KILLS', 'kills'],
       ['survive', 'SURVIVED', 'survive'],
-      ['level', chikunBoard ? 'FORKS' : 'LVL', 'level'],
+      ['level', chikunBoard ? 'CLEARED' : 'LVL', 'level'],
       ['combo', chikunBoard ? 'FLAPS' : 'COMBO', 'combo'],
       ['powerups', chikunBoard ? 'AWARDS' : 'PWR', 'powerups'],
       ['trust', 'TRUST', 'trust'],

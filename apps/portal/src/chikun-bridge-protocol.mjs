@@ -84,7 +84,7 @@ function validateState(payload) {
 function validateEvidence(value) {
   const error = exactKeys(value, ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapSteps'], 'evidence');
   if (error) return error;
-  if (value.version !== 'chikun-flap-evidence-v1') return 'evidence version is invalid';
+  if (!['chikun-flap-evidence-v1','chikun-flap-evidence-v2'].includes(value.version)) return 'evidence version is invalid';
   if (!integer(value.seed, 0, 0xffff_ffff) || value.fixedStepHz !== 60 || !integer(value.maxTicks, 1, 216_000)) return 'evidence metadata is invalid';
   if (!Array.isArray(value.flapSteps) || value.flapSteps.length > 4096) return 'evidence flapSteps are invalid';
   let previous = -1;
@@ -101,7 +101,7 @@ function validateFinalState(value) {
   if (!integer(value.step, 0, 216_000) || !finite(value.y, -10_000, 10_000) || !finite(value.velocity, -1_000, 1_000)) return 'finalState motion values are invalid';
   for (const field of ['score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks']) if (!integer(value[field], 0, 1_000_000_000)) return `finalState ${field} is invalid`;
   if (!finite(value.survivalTime, 0, 3_600) || typeof value.crashed !== 'boolean') return 'finalState terminal values are invalid';
-  if (!['run-complete', 'ceiling', 'ground', 'fork'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
+  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
   return '';
 }
 
@@ -164,7 +164,7 @@ export function validateChikunChildMessage(input) {
   if (input.type === 'game:ready') error = validateReady(input.payload);
   else if (input.type === 'game:state') error = validateState(input.payload);
   else if (input.type === 'game:result') error = validateResult(input.payload);
-  else if (input.type === 'game:restart-request' || input.type === 'game:exit-request') error = validateEmpty(input.payload, input.type);
+  else if (input.type === 'game:restart-request' || input.type === 'game:exit-request' || input.type === 'game:music-request') error = validateEmpty(input.payload, input.type);
   else if (input.type === 'game:pause') {
     error = exactKeys(input.payload, ['paused', 'source'], 'game:pause payload');
     if (!error && (typeof input.payload.paused !== 'boolean' || !['portal', 'visibility', 'user'].includes(input.payload.source))) error = 'game:pause payload is invalid';

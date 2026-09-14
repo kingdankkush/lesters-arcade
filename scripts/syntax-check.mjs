@@ -20,6 +20,11 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/chikun-open-air-browser-smoke.mjs',
+  'apps/portal/src/chikun-run-music.mjs',
+  'tests/chikun-music.test.mjs',
+  'apps/portal/src/chikun-obstacles.mjs',
+  'tests/chikun-open-air.test.mjs',
   'apps/chikun/src/character.mjs',
   'apps/chikun/src/world.mjs',
   'apps/chikun/src/audio.mjs',
@@ -616,6 +621,8 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/build-chikun-open-air-props.py',
+  'scripts/pack-chikun-open-air-props.py',
   'scripts/build-chikun-character.py',
   'scripts/pack-chikun-flight.py',
   "scripts/build-hmh-terrain-tiles.py",

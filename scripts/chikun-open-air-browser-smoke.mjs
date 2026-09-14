@@ -1,0 +1,99 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {createChikunRuntime} from '../apps/portal/src/chikun-cabinet.mjs';
+import {buildChikunDailyChallenge} from '../apps/portal/src/chikun-daily-challenge.mjs';
+const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_PACKAGE_PATH||'playwright');
+const origin=process.env.CHIKUN_PORTAL_ORIGIN||'http://127.0.0.1:8794';
+const out=path.resolve(process.env.CHIKUN_QA_OUTPUT||'../open-air-browser');
+await mkdir(out,{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROME_EXECUTABLE_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+const viewport=process.env.CHIKUN_VIEWPORT==='mobile'?{width:390,height:844}:{width:1440,height:1000};
+const context=await browser.newContext({viewport,hasTouch:viewport.width<500,deviceScaleFactor:viewport.width<500?2:1,serviceWorkers:'block',...(process.env.CHIKUN_BROWSER_STORAGE_STATE?{storageState:process.env.CHIKUN_BROWSER_STORAGE_STATE,extraHTTPHeaders:{'x-vercel-skip-toolbar':'1'}}:{})});
+const page=await context.newPage();
+const issues=[];
+page.on('pageerror',e=>issues.push(e.message));
+// Exercise the actual child loop at 240 Hz. Only this test controls its clock;
+// production has no test hooks, changed physics, or supplied score results.
+function installFlightClock(){
+ if(!location.pathname.includes('/chikun/'))return;
+ let time=1000,serial=0;const callbacks=new Map();
+ window.requestAnimationFrame=cb=>{callbacks.set(++serial,cb);return serial;};
+ window.cancelAnimationFrame=id=>callbacks.delete(id);
+ performance.now=()=>time;
+ window.__flightTestAdvance=(delta)=>{time+=delta;const batch=[...callbacks.values()];callbacks.clear();batch.forEach(cb=>cb(time));};
+ window.__flightTestMessages=[];
+ const post=MessagePort.prototype.postMessage;
+ MessagePort.prototype.postMessage=function(message,...args){if(message?.protocol==='chikun-bridge/v1')window.__flightTestMessages.push(structuredClone(message));return post.call(this,message,...args);};
+}
+await page.route('**/dist/chikun/game.js', async route=>{
+ const response=await route.fetch();
+ await route.fulfill({response,body:'('+installFlightClock.toString()+')();\n'+await response.text()});
+});
+try {
+ await page.goto(origin,{waitUntil:'networkidle'});
+ await page.locator('#officialGuestEnterButton').click();
+ await page.locator('.official-cabinet-card.playable').filter({hasText:"Chikun's Escape"}).click();
+ await page.locator('#officialFreeModeButton').click();
+ const node=page.locator('iframe.chikun-game-frame');await node.waitFor();
+ const frame=await node.elementHandle().then(h=>h.contentFrame());
+ await frame.locator('#startButton').waitFor();
+ await frame.waitForFunction(()=>document.querySelector('#liveStatus').textContent.includes('Ready for Free Mode.'),null,{polling:50});
+ await frame.locator('#startButton').click({force:true});
+ await frame.evaluate(()=>{for(let i=0;i<950;i++)__flightTestAdvance(1000/240);});
+ const first=await frame.evaluate(()=>__flightTestMessages.find(m=>m.type==='game:result')?.payload);
+ assert.ok(first,'first flight must finish');
+ assert.ok(first.evidence.flapSteps.includes(0),'a launch tap must survive multiple 240 Hz frames before the first 60 Hz simulation step');
+ await page.waitForFunction(()=>{const a=document.querySelector('#arcadeMusicAudio');return !a.paused && a.currentTime>0;},null,{timeout:15000});
+ const firstTrack=await page.locator('#arcadeMusicAudio').getAttribute('data-track-id');
+ await frame.locator('#restartButton').click({force:true});
+ await page.waitForFunction(previous=>{const a=document.querySelector('#arcadeMusicAudio');return a.dataset.trackId!==previous&&!a.paused&&a.currentTime>0;},firstTrack,{timeout:15000}).catch(async error=>{console.log(JSON.stringify({audio:await page.locator('#arcadeMusicAudio').evaluate(a=>({track:a.dataset.trackId,paused:a.paused,time:a.currentTime,error:a.error?.message,src:a.currentSrc})),messages:await frame.evaluate(()=>__flightTestMessages.slice(-4)),issues}));throw error;});
+ const secondTrack=await page.locator('#arcadeMusicAudio').getAttribute('data-track-id');
+ const seed=buildChikunDailyChallenge().seed;
+ const pilot=createChikunRuntime({seed,maxTicks:216000});
+ const samples=[];
+ let lastCapture=-1;
+ for(let tick=0;tick<2100&&!pilot.terminal;tick++) {
+  const snap=pilot.snapshot();
+  const next=snap.forks.find(f=>!f.passed && f.x+f.width>snap.chikun.x-snap.chikun.radius);
+  const target=next?.gapCenter??360;
+  const flap=tick===0||snap.chikun.y>target+38||(snap.chikun.velocityY>3.8&&snap.chikun.y>target+26);
+  if(flap && tick>0)await page.keyboard.press('Space');
+  pilot.step({flap});
+  await frame.evaluate(()=>__flightTestAdvance(1000/60+.000001));
+  if(next && next.kind!=='gate' && next.x<650 && next.x>420 && lastCapture!==next.index) {
+   lastCapture=next.index;samples.push({tick,kind:next.kind,x:next.x});
+   await page.screenshot({path:path.join(out,`flight-${next.kind}-${next.index}.png`)});
+  }
+ }
+ const state=await frame.evaluate(()=>__flightTestMessages.filter(m=>m.type==='game:state').at(-1)?.payload);
+ assert.ok(state.forksPassed>=5,`flight should clear a varied course: ${JSON.stringify(state)}`);
+ assert.ok(samples.some(s=>s.kind==='tree')&&samples.some(s=>s.kind==='drone'));
+ await frame.locator('#pauseButton').click({force:true});
+ await page.waitForFunction(()=>document.documentElement.dataset.gameplayPaused==='true');
+ const pausedTrack=await page.locator('#arcadeMusicAudio').getAttribute('data-track-id');
+ await frame.locator('#pauseMusicButton').click({force:true});
+ await page.locator('#arcadeMusicPlayer[data-expanded="true"]').waitFor({state:'visible'});
+ const bounds=await page.locator('#arcadeMusicPlayer').boundingBox();
+ assert.ok(bounds.x>=0&&bounds.x+bounds.width<=viewport.width+1,'music player fits the viewport');
+ await page.screenshot({path:path.join(out,'pause-music.png')});
+ await page.locator('#arcadeMusicMuteButton').click();
+ assert.equal(await page.locator('#arcadeMusicAudio').evaluate(a=>a.muted),true);
+ await page.locator('#arcadeMusicMuteButton').click();
+ await page.locator('#arcadeMusicExpandButton').click();
+ await frame.locator('#resumeButton').click({force:true});
+ assert.equal(await frame.locator('#pauseOverlay').evaluate(el=>el.classList.contains('is-hidden')),true,'resume closes the pause menu');
+ assert.equal(await page.locator('#arcadeMusicAudio').getAttribute('data-track-id'),pausedTrack,'resume preserves the selected song');
+ await frame.evaluate(()=>{for(let i=0;i<700;i++)__flightTestAdvance(1000/60+.000001);});
+ const completed=await frame.evaluate(()=>__flightTestMessages.filter(m=>m.type==='game:result'));
+ assert.equal(completed.length,2,'the second flight must produce its own terminal result');
+ const result=completed.at(-1).payload;
+ assert.ok(result.forksPassed>=5);
+ assert.equal(result.evidence.version,'chikun-flap-evidence-v2');
+ assert.equal(result.evidence.seed,seed);
+ const report={status:'PASS',origin,viewport,highRefreshHz:240,firstTrack,secondTrack,passes:result.forksPassed,coins:result.coinsCollected,terminalReason:result.finalState.terminalReason,samples,issues};
+ assert.deepEqual(issues,[]);
+ await writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));
+ console.log(JSON.stringify(report,null,2));
+}finally{await browser.close();}

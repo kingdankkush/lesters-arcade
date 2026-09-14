@@ -8,9 +8,9 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 ## Chikun Superman flight and STACKED beta
 
-Chikun's Escape is live with eighteen Blender-authored moves based on horizontal Superman flight, smooth pose transitions, coat and crest wind, trees and drone-guarded airspace. The layered city, mountains, day/night cycle and original flight sounds remain. [Play Chikun](https://lestersarcade.io/play/chikun) or explore his moves in the [Flight Room](https://lestersarcade.io/chikun/flight-room.html).
+Chikun's Escape is live with eighteen Blender-authored moves based on horizontal Superman flight, smooth pose transitions, coat and crest wind, freestanding trees, patrol drones, and industrial gates. The layered city, mountains, day/night cycle and original flight sounds remain. [Play Chikun](https://lestersarcade.io/play/chikun) or explore his moves in the [Flight Room](https://lestersarcade.io/chikun/flight-room.html).
 
-**Production cache marker:** `lesters-arcade-v39-chikun-stacked`
+**Candidate cache marker:** `lesters-arcade-v40-chikun-open-air` (publication verification pending).
 
 **Verified live:** deployment `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`, runtime source `9d14b18c20c3cfe7ba1fe88789a6f61feb9c9da3`, branch `codex/chikun-superman-flight`. The [release receipt](docs/qa/chikun-superman-release-20260913.json) records both passing cloud builds, public guest/touch/replay flows, exact asset checks, performance measurements and limitations. The [handoff](docs/handoffs/chikun-superman-flight-20260913.md) documents the editable native assets and presentation pipeline.
 
@@ -40,7 +40,7 @@ The [preceding release receipt](docs/qa/hmh-quality-release-20260911.json) retai
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.5.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, same-seed ghost racing, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.6.0`) | Third-party one-button arcade shipped through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, local daily-best comparisons, a seek-safe animated replay viewer, fail-closed mode configuration, and cabinet art. Asset rights, `devWallet`, and revenue split remain open — see below |
 | STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
@@ -104,8 +104,8 @@ Chikun launched publicly in [`54aab311`](https://github.com/kingdankkush/Lesters
 
 Shipped since the public launch, integrated 2026-08-19:
 
-- **Parent-owned daily course.** The parent issues one UTC daily seed, so every Free run on a given day races the same forks and a remount does not reroll the course. Ranked session seeds stay unique and parent-issued. This is a shared course, not an official Daily Seed leaderboard; official boards remain an owner product decision.
-- **Same-seed ghost.** A translucent projection of the player's best local flight on that seed. Projection only: it has no collision, no score contribution, and no Ranked write.
+- **Parent-owned daily course.** The parent issues one UTC daily seed, so every Free run on a given day races the same obstacles and a remount does not reroll the course. Ranked session seeds stay unique and parent-issued. This is a shared course, not an official Daily Seed leaderboard; official boards remain an owner product decision.
+- **Daily best.** A local score comparison against the player's best flight on that daily course. The former oval ghost marker has been removed. Comparisons have no collision, score contribution, or Ranked write.
 - **Seek-safe animated replay viewer.** `Watch Replay` on the result screen plays the just-submitted flap log back on the live canvas at 60 Hz, with a scrubbable timeline, 15-tick arrow-key nudges, and space/tap pause. Reduced motion parks on the crash frame rather than autoplaying. The canonical score is already final and the viewer cannot change it.
 
 Current canonical files:
@@ -128,7 +128,7 @@ Current canonical files:
 
 The historical full React/Supabase source handoff was vaulted out of the active tree and remains inspectable in commit [`51def63a`](https://github.com/kingdankkush/Lesters-Arcade/commit/51def63af5ebbc84bab3b0dd51273d5c805b47b5) and [PR #2](https://github.com/kingdankkush/Lesters-Arcade/pull/2). It must not be restored without reconciling current parent authority, deterministic replay, security, persistence, and bundle constraints.
 
-What shipped is the `0.5.0` vertical slice, not the creator's full original game. These remain open and must not be described as settled:
+What shipped is the `0.6.0` vertical slice, not the creator's full original game. These remain open and must not be described as settled:
 
 - Public approval and written commercial-use, modification, hosting, and redistribution rights for the creator's source art are pending (`docs/THIRD_PARTY_GAME_ONBOARDING.md`).
 - `devWallet` is `null` in both `game-registry.mjs` and `game.manifest.json`, so third-party revenue routing is unwired.
@@ -201,7 +201,7 @@ Cycle 075 is live and verified. Runtime implementation `d53ed420`, deployed sour
 - Local responsive, touch, performance, visual, cockpit and enemy/boss gates passed. Hosted actual kill feedback and public network checks passed; the full host ledger has 2,512 passed and the same 51 accepted legacy failures.
 - Completed source-reference foundations are not active art replacements. New Commando/grenade source experiments remain unapproved local WIP; all other hero/weapon art gates remain open.
 - Tripo reference upload and use of the owner's existing subscription credits are authorized. No confirmed Tripo job or credit spend is recorded. Additional purchases, contracts, real funds and settlement remain separately gated.
-- Chikun remains `0.5.0`, public playable and Ranked-eligible; its existing rights/dev-wallet/revenue boundaries above are unchanged.
+- Chikun remains `0.6.0`, public playable and Ranked-eligible; its existing rights/dev-wallet/revenue boundaries above are unchanged.
 
 Verified identities, evidence and remaining work are recorded in the [release handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 ---

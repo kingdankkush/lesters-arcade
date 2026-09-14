@@ -111,13 +111,13 @@ Current canonical state:
 | --- | --- | --- |
 | `apps/portal/games/chikun/game.manifest.json` | `status` | `playable` |
 | `apps/portal/games/chikun/game.manifest.json` | `rankedEligible` | `true` |
-| `apps/portal/games/chikun/game.manifest.json` | `version` / `runtimeVersion` | `0.5.0` / `canvas-runtime-v3` |
+| `apps/portal/games/chikun/game.manifest.json` | `version` / `runtimeVersion` | `0.6.0` / `canvas-runtime-v4` |
 | `apps/portal/src/arcade-core.mjs` | cabinet `status` / `playable` / `leaderboardEligible` | `playable` / `true` / `true` |
 | `apps/portal/src/game-registry.mjs` | `status` | `live` |
 
 Public users see a clickable cabinet, the Free and Ranked mode select, and a Chikun leaderboard filter. No query flag is required. `?devCabinets=1` still exists in `apps/portal/main.js`, but it now only unlocks cabinets whose cartridge sets `devPlayable` without `playable`; it is not Chikun's gate.
 
-Shipped since the public flip: parent-owned UTC daily seed with same-seed ghost projection, and a seek-safe animated replay viewer on the result screen. Both are presentation-only and cannot alter a canonical score.
+Shipped since the public flip: parent-owned UTC daily seed with local daily-best comparisons, and a seek-safe animated replay viewer on the result screen. Both are presentation-only and cannot alter a canonical score.
 
 What is still open on Chikun is commercial, not technical: `devWallet` is `null` in both the manifest and the registry, so asset rights, the creator wallet, and the revenue split remain unresolved. Those are owner decisions, not launch gates that were skipped.
 
@@ -132,8 +132,8 @@ What is still open on Chikun is commercial, not technical: `devWallet` is `null`
 - [x] Emit the parent SDK session/score/game-over path without direct wallet access
 - [x] Pass the third-party security and public cabinet regression gates
 - [x] Flip `status` to `playable` and `rankedEligible` to `true` after the public-launch gates passed (Cycle 057)
-- [x] Port the playable game into the sandboxed cabinet runtime at `0.5.0` / `canvas-runtime-v3`
-- [x] Ship the daily UTC seed, same-seed ghost, and seek-safe animated replay viewer
+- [x] Port the playable game into the sandboxed cabinet runtime at `0.6.0` / `canvas-runtime-v4`
+- [x] Ship the daily UTC seed, local daily-best comparisons, and seek-safe animated replay viewer
 - [x] Visually certify both declared aspect families in production — desktop child framing covers 16:9 and 390×844 mobile covers 9:16; Ranked/Free flows, 44 px controls, and frame p95 `7–7.1 ms` passed on 2026-08-20
 - [ ] Replace temporary mode-selection art and complete production gameplay art
 - [ ] Complete Louie/Justin QA and resolve asset rights, creator wallet (`devWallet` is still `null`), and revenue split

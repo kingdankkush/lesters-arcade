@@ -1,3 +1,4 @@
+import { createChikunRunMusic } from './src/chikun-run-music.mjs';
 import { shouldInjectVercelWebAnalytics, injectVercelWebAnalytics } from './src/vercel-analytics.mjs';
 
 if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname: window.location.hostname })) {
@@ -1291,11 +1292,12 @@ function setArcadeMusicContext(context = 'arcade', { reset = false } = {}) {
 }
 
 async function startArcadeMusicForGame(gameId = 'hard-money-heroes') {
+  const previousTrackId=currentArcadeMusicTrack()?.id;
   setArcadeMusicContext(gameId, { reset: true });
   // Begin each run on a random song from the game's queue instead of always
   // opening on the first track (the Hard Money Heroes main theme).
   if (arcadeMusic.queue.length > 1) {
-    arcadeMusic.currentTrackIndex = chooseArcadeMusicStartIndex({ queueLength: arcadeMusic.queue.length });
+    arcadeMusic.currentTrackIndex = chooseArcadeMusicStartIndex({ queueLength: arcadeMusic.queue.length, previousIndex: arcadeMusic.queue.findIndex(track=>track.id===previousTrackId) });
     loadArcadeMusicTrack();
     renderArcadeMusicPlayer();
   }
@@ -1840,6 +1842,7 @@ let hmhRebootActive = false;
 // on restart and teardown so a Free recap can never surface on a Ranked screen.
 let lastHmhRunSummary = null;
 let chikunHost = null;
+let chikunRunMusic = null;
 let stackedHost = null;
 let stackedMountGeneration = 0;
 function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; }
@@ -5041,6 +5044,9 @@ function mountHmhRebootSession() {
 }
 
 function destroyChikunSession() {
+  chikunRunMusic?.dispose();
+  chikunRunMusic = null;
+  delete document.documentElement.dataset.gameplayPaused;
   chikunHost?.destroy();
   chikunHost = null;
   chikunLifecycle = null;
@@ -5087,6 +5093,7 @@ function mountChikunSession() {
       }
     },
   });
+  chikunRunMusic = createChikunRunMusic(startArcadeMusicForGame);
   chikunHost = createChikunHost({
     mount: dom.officialCombatMount,
     expectedOrigin: window.location.origin,
@@ -5101,12 +5108,19 @@ function mountChikunSession() {
         : 'Free practice connected. No profile, leaderboard, settlement, or chain write can occur.';
     },
     onState: (message) => {
+      chikunRunMusic?.observe(message.payload);
       combat.paused = Boolean(message.payload.paused);
-      combat.active = message.payload.status === 'running' || message.payload.status === 'paused';
-      combat.gameOver = message.payload.status === 'game-over';
+      if (message.payload.status) {
+        combat.active = message.payload.status === 'running' || message.payload.status === 'paused';
+        combat.gameOver = message.payload.status === 'game-over';
+      }
+      if(combat.paused) document.documentElement.dataset.gameplayPaused='true';
+      else delete document.documentElement.dataset.gameplayPaused;
+      renderArcadeMusicPlayer();
       if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Resume' : 'Pause';
     },
     onResult: (message) => {
+      chikunRunMusic?.observe({status: 'game-over'});
       const result = chikunLifecycle?.handleResult(message.payload);
       if (!result?.ok) {
         console.error('[Chikun lifecycle]', result?.error ?? result?.reason ?? 'Unknown result failure');
@@ -5115,6 +5129,12 @@ function mountChikunSession() {
     },
     onRestartRequest: () => { void restartChikunSession(); },
     onExitRequest: () => exitToArcade(),
+    onMusicRequest: () => {
+      if(!combat.paused)return;
+      arcadeMusic.expanded=true;
+      renderArcadeMusicPlayer();
+      dom.arcadeMusicPlayButton?.focus();
+    },
     onError: (error) => {
       console.error('[Chikun bridge]', error);
       if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Chikun runtime error: ${error.message}`;
