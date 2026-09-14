@@ -1,6 +1,6 @@
 # Lester's Arcade discovery redesign
 
-Candidate branch: `codex/arcade-home-catalog-20260914`. Publication is pending the complete release gate and live verification.
+Published branch: `codex/arcade-home-catalog-20260914`. Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8` is verified live as `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. [Release receipt](arcade-discovery-release-20260914.json).
 
 The homepage now introduces all three active games, explains Free play and the wallet/profile flow, describes device-local scoreboards, and offers a shared jukebox and FAQ. Existing Lester/Lilly films, the brand logo, arcade illustration, and game key art supply the visual identity. Film downloads are deferred until needed; reduced-motion visitors receive still posters and explicit playback controls.
 

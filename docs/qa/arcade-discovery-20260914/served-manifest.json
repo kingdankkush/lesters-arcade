@@ -1,0 +1,542 @@
+{
+  "source": "6fe83eb693bda5c36cb77f995b88d244515365f8",
+  "marker": "lesters-arcade-v48-discovery",
+  "createdAt": "2026-09-14T16:10:16.069Z",
+  "files": [
+    {
+      "file": "assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-runtime.mjs",
+      "bytes": 45697,
+      "sha256": "5f86af816abdb66ec01d65546e2e8361e5309f3df9023f44c6bb6ae6cd783fe3"
+    },
+    {
+      "file": "discover/chikun.html",
+      "bytes": 36050,
+      "sha256": "eae02017f51040c13fe7e629651b5cf57fc8c5ae193867dd7744c01f1cf1c8ac"
+    },
+    {
+      "file": "discover/games.html",
+      "bytes": 38637,
+      "sha256": "f66206cef90e1fd07cfb1a802b1b9527d9b7c5d6122d4f44fd71f6106cccbb80"
+    },
+    {
+      "file": "discover/hard-money-heroes.html",
+      "bytes": 36260,
+      "sha256": "0ac39446f99cd5745edcfa01e8da41e78c7525ed2e88b414dd06d6f411750d0c"
+    },
+    {
+      "file": "discover/stacked.html",
+      "bytes": 35886,
+      "sha256": "b062a4f963745222f4bd516eb8532b72525345e0fa5862ab8e51e43200d33a27"
+    },
+    {
+      "file": "dist/chikun/flight-room.js",
+      "bytes": 1896,
+      "sha256": "ea761bb9007014a044fe416cad32742d8b8712c44240333223dc6ef51abaa3dd"
+    },
+    {
+      "file": "dist/chikun/game.js",
+      "bytes": 35164,
+      "sha256": "5474248452bfe31e778a66755138d4af1a8b8f7f03703a78d441df994135d74f"
+    },
+    {
+      "file": "dist/chunks/authored-prop-display-WAHREARQ.js",
+      "bytes": 7431,
+      "sha256": "0b456f4ffcc6cbc980ae7b798a1610424af484d3723ee3daf6311f447c24d090"
+    },
+    {
+      "file": "dist/chunks/chunk-2WGYLO4P.js",
+      "bytes": 655,
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+    },
+    {
+      "file": "dist/chunks/chunk-65PUOXRU.js",
+      "bytes": 2528,
+      "sha256": "c322626c6f8b34b8df9d3c892352e718f271a08c41052c1a3128f2369b61e8b6"
+    },
+    {
+      "file": "dist/chunks/chunk-6QJT5C2R.js",
+      "bytes": 300,
+      "sha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655"
+    },
+    {
+      "file": "dist/chunks/chunk-6TZM54AG.js",
+      "bytes": 827300,
+      "sha256": "9e0b85e2555e78dfb8f99e2839c518cdcb8f838b89e07398d68051f3c832ab45"
+    },
+    {
+      "file": "dist/chunks/chunk-7NGCRQWP.js",
+      "bytes": 27895,
+      "sha256": "7ce3ac141227b4cd4404ad68eeeb6d09bd3e4d53d6012b2f744098078e1ae0ef"
+    },
+    {
+      "file": "dist/chunks/chunk-7NWTWVEF.js",
+      "bytes": 4574,
+      "sha256": "074e27f2f9fcc691328cdcf91c909d8c2b62fdfcf1cfe3fe8fc382dbe91e4ecc"
+    },
+    {
+      "file": "dist/chunks/chunk-BESZ7SNT.js",
+      "bytes": 71639,
+      "sha256": "d41bcfda755856f29cbe9da2a6f61b4f94d9ca6c5651ca4bd5e56755f916ea6a"
+    },
+    {
+      "file": "dist/chunks/chunk-C3AB25BV.js",
+      "bytes": 13043,
+      "sha256": "91c07e01d67a6e86b749ff566d8f06e9fa67fba0e712d25ce2cba74c273870d7"
+    },
+    {
+      "file": "dist/chunks/chunk-DLKSOBBD.js",
+      "bytes": 4099,
+      "sha256": "dabdfe8eee90513e03b92c04e5f6e4413773c15bddddebc50b2c739f4bb6bc06"
+    },
+    {
+      "file": "dist/chunks/chunk-E2SSXUKR.js",
+      "bytes": 38268,
+      "sha256": "c7a56d36432bc2a7272f26f6f47ac3053507981cab805af2779a4fcf3a8a01c3"
+    },
+    {
+      "file": "dist/chunks/chunk-EJUDHLWX.js",
+      "bytes": 36830,
+      "sha256": "b25025cff9efb77291f20b3784535574c32ddb39e9c11fade2da2c1108f41d13"
+    },
+    {
+      "file": "dist/chunks/chunk-ESDQIMBA.js",
+      "bytes": 965,
+      "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+    },
+    {
+      "file": "dist/chunks/chunk-EWFYKRSV.js",
+      "bytes": 2196,
+      "sha256": "fed6defc8fff580884a7718c9eecdb02f84d94c6db706e8071c8821e4fdefe5b"
+    },
+    {
+      "file": "dist/chunks/chunk-FH4FMBET.js",
+      "bytes": 4692,
+      "sha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0"
+    },
+    {
+      "file": "dist/chunks/chunk-GAYH257E.js",
+      "bytes": 19559,
+      "sha256": "2f253c04dc130792e42fb0c4e64517da819deb740aea2231625f6e297b4d50a0"
+    },
+    {
+      "file": "dist/chunks/chunk-GHEKACED.js",
+      "bytes": 16157,
+      "sha256": "b08dceba59d478695e5a534b23bda4a350d68f5e7291c4c3fff68338f5925337"
+    },
+    {
+      "file": "dist/chunks/chunk-GP4GWRAK.js",
+      "bytes": 12197,
+      "sha256": "10381ac41c43fa8a652adeb098a9a4dc84e7b423568b3b31ab259303941ea41d"
+    },
+    {
+      "file": "dist/chunks/chunk-H4RK7ZF6.js",
+      "bytes": 2602,
+      "sha256": "9d197da2aa6b63e131846ca0901257b0bf3ff69a69c7c11efd6552bc2303513a"
+    },
+    {
+      "file": "dist/chunks/chunk-HRT7TI5W.js",
+      "bytes": 1590,
+      "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+    },
+    {
+      "file": "dist/chunks/chunk-IIQTF2BL.js",
+      "bytes": 1712,
+      "sha256": "97246b64c68eeed75087677932fc799e7f15279d2d2f4ee6a5c37452138cbb59"
+    },
+    {
+      "file": "dist/chunks/chunk-IVGNLNMU.js",
+      "bytes": 3340,
+      "sha256": "ff46b04db54776e13790e1e1e116609635037b86f3e9c5c1f3ac59728b11fd79"
+    },
+    {
+      "file": "dist/chunks/chunk-KMBN3SGT.js",
+      "bytes": 3109,
+      "sha256": "2e606a4647d8a5c67eb867223065caa556de3cc25dbf18237df207baed526290"
+    },
+    {
+      "file": "dist/chunks/chunk-MOUHHPKB.js",
+      "bytes": 2511,
+      "sha256": "5851d9c1b155ac5a13c87a5feaba0f353088e1f16e59c26ae3b8f54f3d57c7c2"
+    },
+    {
+      "file": "dist/chunks/chunk-OQ2RPGL4.js",
+      "bytes": 23992,
+      "sha256": "da62f7d2d78cf56e2ff07c62944b122eca373c165dc69f9e1bca2e302eb30581"
+    },
+    {
+      "file": "dist/chunks/chunk-OQWCW7H2.js",
+      "bytes": 524,
+      "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+    },
+    {
+      "file": "dist/chunks/chunk-RKHKQZGQ.js",
+      "bytes": 12796,
+      "sha256": "a7092c1936cdcc4547206d9fc387dfe18a23ffcdc5933a47c587411d94927660"
+    },
+    {
+      "file": "dist/chunks/chunk-RTHIOZVQ.js",
+      "bytes": 17440,
+      "sha256": "d93b3fe9a7d11baff907113ce952a6ebf77bca8ca485b0f9b30bc74eb7b2d6a7"
+    },
+    {
+      "file": "dist/chunks/chunk-VSG3JNSZ.js",
+      "bytes": 392452,
+      "sha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677"
+    },
+    {
+      "file": "dist/chunks/chunk-XB24W4G6.js",
+      "bytes": 2430,
+      "sha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57"
+    },
+    {
+      "file": "dist/chunks/chunk-YFNAS4ZQ.js",
+      "bytes": 3396,
+      "sha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914"
+    },
+    {
+      "file": "dist/chunks/chunk-YOZ4KAFN.js",
+      "bytes": 31143,
+      "sha256": "9f5052fc4bab36c0b7cfc079c28bda7ae3eafa5055bfad71427c5ea02956641d"
+    },
+    {
+      "file": "dist/chunks/combat-audio-FH3SSSU4.js",
+      "bytes": 5421,
+      "sha256": "8292f47673fbf8bb073a1bd21c1e8fd55abfb1ed193e8c4a29e8c0417d2ad023"
+    },
+    {
+      "file": "dist/chunks/debug-grid-overlay-GIIHKGMQ.js",
+      "bytes": 1070,
+      "sha256": "c8004d194967b15c82a3c7d467728afb576cfda60e7460786939e1ee83a2e676"
+    },
+    {
+      "file": "dist/chunks/encounter-endurance-pilot-LYLRWWFY.js",
+      "bytes": 2127,
+      "sha256": "eb9427e6c9090a3edff8e98e8ddf7760669f989d9ad033d82499749eb8fbbfe0"
+    },
+    {
+      "file": "dist/chunks/enemy-hit-feedback-DOEDTOHH.js",
+      "bytes": 1421,
+      "sha256": "d5ff16d0233a88c3bde8aa014ac3c60c380b72d236d6d0fb8e11760885c8d17f"
+    },
+    {
+      "file": "dist/chunks/ethers.min-STJTETNS.js",
+      "bytes": 4388,
+      "sha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53"
+    },
+    {
+      "file": "dist/chunks/free-medals-BH2FCB7F.js",
+      "bytes": 3156,
+      "sha256": "2435f3502906330bd6e88b6212b7299f5e83106b703f7c272191970d59a3d0b7"
+    },
+    {
+      "file": "dist/chunks/gore-presentation-7QBPCINM.js",
+      "bytes": 1825,
+      "sha256": "79517a3007c5caf8015499f969a444dad8d75f4cee489f0e1c4be50d8ce7cdec"
+    },
+    {
+      "file": "dist/chunks/hero-motion-atlas-ENAXIIBL.js",
+      "bytes": 4280,
+      "sha256": "9d887740df60884baa2c340a41a488aa1b13522a6fbcf50fd0b72be4d9ddecc3"
+    },
+    {
+      "file": "dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+      "bytes": 1929726,
+      "sha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469"
+    },
+    {
+      "file": "dist/chunks/hmh-complete-animations-CJX6INFR.js",
+      "bytes": 49984,
+      "sha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e"
+    },
+    {
+      "file": "dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+      "bytes": 743684,
+      "sha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e"
+    },
+    {
+      "file": "dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+      "bytes": 3012,
+      "sha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4"
+    },
+    {
+      "file": "dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+      "bytes": 48573,
+      "sha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07"
+    },
+    {
+      "file": "dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+      "bytes": 50980,
+      "sha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d"
+    },
+    {
+      "file": "dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+      "bytes": 40469,
+      "sha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d"
+    },
+    {
+      "file": "dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+      "bytes": 2815,
+      "sha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594"
+    },
+    {
+      "file": "dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+      "bytes": 35033,
+      "sha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995"
+    },
+    {
+      "file": "dist/chunks/hmh-level-environment-FD3WFZKW.js",
+      "bytes": 35802,
+      "sha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f"
+    },
+    {
+      "file": "dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+      "bytes": 4148,
+      "sha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882"
+    },
+    {
+      "file": "dist/chunks/hmh-pixi.js",
+      "bytes": 465746,
+      "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c"
+    },
+    {
+      "file": "dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+      "bytes": 111173,
+      "sha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170"
+    },
+    {
+      "file": "dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+      "bytes": 15049,
+      "sha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178"
+    },
+    {
+      "file": "dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+      "bytes": 4031,
+      "sha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d"
+    },
+    {
+      "file": "dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+      "bytes": 4305,
+      "sha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4"
+    },
+    {
+      "file": "dist/chunks/litvm-chain-client-JLCL53NF.js",
+      "bytes": 585,
+      "sha256": "bd369a1a4c6512b772533565b7109c066371d05dd54fe4777e7ef1ea4164c625"
+    },
+    {
+      "file": "dist/chunks/loader-4UBPIGR3.js",
+      "bytes": 125,
+      "sha256": "50a2b46c2c5fd79be0c19d57b2e565e1c6b76a3b150ae884220697b54e006fd8"
+    },
+    {
+      "file": "dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+      "bytes": 3509,
+      "sha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021"
+    },
+    {
+      "file": "dist/chunks/native-barriers-TOL36KFD.js",
+      "bytes": 3100,
+      "sha256": "1ed59eac053bdf8a04cac9974372e28a87f667c9c9db92262f38736a1ef6dd73"
+    },
+    {
+      "file": "dist/chunks/pickup-indicators-UR2QWLO2.js",
+      "bytes": 1340,
+      "sha256": "7f0f1ca5fd5568e889a17805e22aeb05ba8e5f0481a7313306af96dd03b0e72f"
+    },
+    {
+      "file": "dist/chunks/production-hero-atlas-EGWJJO2H.js",
+      "bytes": 15718,
+      "sha256": "aa55ef40dcc81e1ccebc2fc323f09512853664a04ba192dbeb76935e6c1ee8b8"
+    },
+    {
+      "file": "dist/chunks/reload-presentation-6YBKJ64P.js",
+      "bytes": 768,
+      "sha256": "b82d39bfc2bf16749f8e5d57c91f965794c71ef9702e7ab647b6b550e7db26da"
+    },
+    {
+      "file": "dist/chunks/renderer-NLOOFNZ6.js",
+      "bytes": 19537,
+      "sha256": "0ba09f01adefbde1cd9254918be982095c1797af8cf6eccffddc66cbbb056648"
+    },
+    {
+      "file": "dist/chunks/runtime-manifest-7IN2B6KL.js",
+      "bytes": 4238,
+      "sha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06"
+    },
+    {
+      "file": "dist/chunks/runtime-telemetry-writer-23FSULZ4.js",
+      "bytes": 11313,
+      "sha256": "b0f0596fe80b31b856da8df4646c7403dec1d3867f9537627d73e0e85e3c6f22"
+    },
+    {
+      "file": "dist/chunks/silver-drop-presentation-MA62KFHK.js",
+      "bytes": 1173,
+      "sha256": "d0f1c0567c13c7e49b488daccb61dc73206b8128620a47a05e3322ada4ca8557"
+    },
+    {
+      "file": "dist/chunks/stacked-host-RLYQINTE.js",
+      "bytes": 7271,
+      "sha256": "4532271ff53fed56d450cb258006702409ca74c3d74259ba7d764612d225d4fc"
+    },
+    {
+      "file": "dist/chunks/stacked-persistence-3KP6MA36.js",
+      "bytes": 1085,
+      "sha256": "f82ac37058545af2a0a5d7e2cb52565012af15fae42bf5d30afdb6385b9aa8fa"
+    },
+    {
+      "file": "dist/chunks/world-design-field-map-JZIMAAHN.js",
+      "bytes": 3801,
+      "sha256": "8491b671e79bd2083d118afa5c67ced850c2a7eb78b43f7f38f83a56f0ee3aba"
+    },
+    {
+      "file": "dist/chunks/world-ground-fallback-6LTSHLSB.js",
+      "bytes": 3923,
+      "sha256": "5e6e501b2f0ff3cf4ca6de66f5389729e9950318205af0dbe3c88ca47d2385d1"
+    },
+    {
+      "file": "dist/chunks/world-tour-spawns-7XARRG7N.js",
+      "bytes": 2339,
+      "sha256": "81beb738b4427a34ae1130eac9fbf01979b7733d724ab45ccd1ec8df101f246a"
+    },
+    {
+      "file": "dist/hmh-reboot/game.js",
+      "bytes": 352058,
+      "sha256": "79ad21ffc0b6f25891f206c3e93079c1aac294b448c56fe6ba052d6813e94af8"
+    },
+    {
+      "file": "dist/hmh-reboot/world-art.js",
+      "bytes": 741,
+      "sha256": "8b4d33e30810d9f69947f0070eecf9aa37d9359f2f0994df821d8ad6862183e0"
+    },
+    {
+      "file": "dist/main.js",
+      "bytes": 1164680,
+      "sha256": "73d5960b18818ea1a6190ac1bb00315bf309f57c3c4c9935384ca499fe88e9d7"
+    },
+    {
+      "file": "dist/stacked/atmosphere.js",
+      "bytes": 211,
+      "sha256": "236c40ec24da8bbf055f60e05bca01447da1f3eb6d7ee8bd068128e9f3368b37"
+    },
+    {
+      "file": "dist/stacked/game.js",
+      "bytes": 25343,
+      "sha256": "86720d7b05275685961fa25082392fe8454df53ddeaf2ae546b654b0749ea2c5"
+    },
+    {
+      "file": "dist/stacked/living-field.js",
+      "bytes": 111,
+      "sha256": "0d3e66f3c6dd3c9ac27f788ffa1580dace3475933221bd043d8f89dfdd2da5aa"
+    },
+    {
+      "file": "dist/stacked/stacked-pixi-v1.js",
+      "bytes": 496615,
+      "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3"
+    },
+    {
+      "file": "dist/stacked/verify-worker.js",
+      "bytes": 2077,
+      "sha256": "42e97bda2b697dad407ab11b942b4de912812f03d76dc01078ed952bd02c81ca"
+    },
+    {
+      "file": "index.html",
+      "bytes": 36030,
+      "sha256": "f403ac9b49bced8d3146094110bce87489babffad431f161b2994fad7a3f1b8f"
+    },
+    {
+      "file": "llms.txt",
+      "bytes": 1281,
+      "sha256": "725c309fc864cabca38533a0d9a4fd3d7b06860a2386f9e2ba3ad9f9e5966b3b"
+    },
+    {
+      "file": "main.js",
+      "bytes": 673365,
+      "sha256": "ec836e055eb253e1075ae4d5eb21582666fd8188339b6eb59fa34b64580b1934"
+    },
+    {
+      "file": "portal-discovery.css",
+      "bytes": 24848,
+      "sha256": "b71f16f0817787c3824a28f1fcd18bf2999e71d6cca0a20e15d22d850dd482f1"
+    },
+    {
+      "file": "robots.txt",
+      "bytes": 46,
+      "sha256": "7ec1aa694ac2caa6d2d01b3f834e0df445c62708eaa3b9fae5aa22eab6054859"
+    },
+    {
+      "file": "sitemap.xml",
+      "bytes": 461,
+      "sha256": "f82d57b64b6201c89a717afe9577306a76a05f12309bedc8608f2f9313801642"
+    },
+    {
+      "file": "src/cabinet-presentation.mjs",
+      "bytes": 1260,
+      "sha256": "7bbad7356f7d9c210b9219a7a5504cdd48b1cc7cbf52923a9e4bdc1d7a1ada62"
+    },
+    {
+      "file": "src/portal-content.mjs",
+      "bytes": 8451,
+      "sha256": "8ac2c163a834eed391bb3d316abe5157eab892057691e0bee94eca6ebbadc658"
+    },
+    {
+      "file": "src/portal-discovery.mjs",
+      "bytes": 5615,
+      "sha256": "1db27fca3a3382e5d4b5c8de94ba96d48bad6b7d0bd577df09fa5427d6aa1bda"
+    },
+    {
+      "file": "src/routes/official-app-routes.mjs",
+      "bytes": 4484,
+      "sha256": "8e4310b8077859396e0b4921a87243a06470076a6bc6229ffc89f6990de480bd"
+    },
+    {
+      "file": "src/routes/official-play-routes.mjs",
+      "bytes": 20426,
+      "sha256": "6426fa479a2127b0a3f1588ae5cc6311753db752d51744f3d4d983c84207d291"
+    },
+    {
+      "file": "src/routes/official-shell-routes.mjs",
+      "bytes": 5152,
+      "sha256": "475edbb4a4317d29f64c035ee8cf3dfe1573e5df13496c47be53886e1cc5c691"
+    },
+    {
+      "file": "sw.js",
+      "bytes": 4670,
+      "sha256": "c2bee73cc636acbfd7e9d5ba0c6c8ba8b3befb2503939f25562df4243551c76b"
+    },
+    {
+      "file": "games",
+      "bytes": 38637,
+      "sha256": "f66206cef90e1fd07cfb1a802b1b9527d9b7c5d6122d4f44fd71f6106cccbb80"
+    },
+    {
+      "file": "games/hard-money-heroes",
+      "bytes": 36260,
+      "sha256": "0ac39446f99cd5745edcfa01e8da41e78c7525ed2e88b414dd06d6f411750d0c"
+    },
+    {
+      "file": "play/hard-money-heroes",
+      "bytes": 36260,
+      "sha256": "0ac39446f99cd5745edcfa01e8da41e78c7525ed2e88b414dd06d6f411750d0c"
+    },
+    {
+      "file": "games/chikun",
+      "bytes": 36050,
+      "sha256": "eae02017f51040c13fe7e629651b5cf57fc8c5ae193867dd7744c01f1cf1c8ac"
+    },
+    {
+      "file": "play/chikun",
+      "bytes": 36050,
+      "sha256": "eae02017f51040c13fe7e629651b5cf57fc8c5ae193867dd7744c01f1cf1c8ac"
+    },
+    {
+      "file": "games/stacked",
+      "bytes": 35886,
+      "sha256": "b062a4f963745222f4bd516eb8532b72525345e0fa5862ab8e51e43200d33a27"
+    },
+    {
+      "file": "play/stacked",
+      "bytes": 35886,
+      "sha256": "b062a4f963745222f4bd516eb8532b72525345e0fa5862ab8e51e43200d33a27"
+    }
+  ]
+}

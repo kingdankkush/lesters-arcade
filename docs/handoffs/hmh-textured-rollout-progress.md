@@ -1,5 +1,13 @@
 # Textured rollout: current continuation checkpoint
 
+## Arcade homepage and discovery — verified live, September 14, 2026
+
+Live at https://lestersarcade.io. Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`; cache `lesters-arcade-v48-discovery`. Continue on `codex/arcade-home-catalog-20260914` in this checkout. Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`.
+
+The portal has an authored homepage using existing films and artwork, clearer wallet/profile/local-score explanations, equal cabinet framing for all three games, detailed game guides and static search-readable pages. Twenty discovery checks, seven axe scans and all game browser flows pass locally and publicly. All 107 private/public served-file and route hashes match; cloud certification passes 3,742 tests with exactly 51 unchanged retirement exceptions. Returning clients move from v47 to v48.
+
+[Release receipt](../qa/arcade-discovery-release-20260914.json) · [Design and verification](../qa/arcade-discovery-design-20260914.md). Existing game upgrades remain included. Physical-device acceptance and the broader game/backend roadmap remain open. `SETTLEMENT_LIVE=false`; no public source/model push. Earlier checkpoints below are historical.
+
 ## Combined gameplay release — verified live, September 14, 2026
 
 Live at https://lestersarcade.io. Source `bfcba824629c33f099af0084a398acdacfc358bd`; deployment `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`; cache `lesters-arcade-v47-combined-gameplay`. Continue on `codex/combined-gameplay-release-20260914` in this checkout. Retained rollback: `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`.

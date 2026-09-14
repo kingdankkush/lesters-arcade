@@ -1,0 +1,22 @@
+{
+  "keys": [
+    "hmh-verification-unrelated-cache",
+    "lesters-arcade-v48-discovery"
+  ],
+  "controlled": true,
+  "sha256": "73d5960b18818ea1a6190ac1bb00315bf309f57c3c4c9935384ca499fe88e9d7",
+  "sourceModels": [
+    {
+      "path": "/apps/hmh-reboot/assets/source/terrain/hmh-world-ground-materials.blend",
+      "status": 404
+    },
+    {
+      "path": "/assets-source/hmh-barriers/barrier-library.blend",
+      "status": 404
+    },
+    {
+      "path": "/assets-source/hmh-silver-coin/silver-litecoin.blend",
+      "status": 404
+    }
+  ]
+}

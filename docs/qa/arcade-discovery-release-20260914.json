@@ -1,0 +1,153 @@
+{
+  "status": "LIVE_VERIFIED",
+  "verifiedAt": "2026-09-14T16:21:20.074Z",
+  "production": "https://lestersarcade.io",
+  "source": "6fe83eb693bda5c36cb77f995b88d244515365f8",
+  "branch": "codex/arcade-home-catalog-20260914",
+  "deployment": "dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ",
+  "immutableUrl": "https://lesters-arcade-cb2on7ll3-justin-agent-projects.vercel.app",
+  "cache": "lesters-arcade-v48-discovery",
+  "rollback": {
+    "deployment": "dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU",
+    "url": "https://lesters-arcade-gujzr4oqd-justin-agent-projects.vercel.app",
+    "source": "bfcba824629c33f099af0084a398acdacfc358bd",
+    "cache": "lesters-arcade-v47-combined-gameplay"
+  },
+  "scope": [
+    "Asset-led homepage and platform explanations",
+    "Responsive cabinet catalog with equal visual height across all 18 rotation frames",
+    "Three game guides with instructions and retained Free/Ranked controls",
+    "Static discovery HTML, canonical metadata, structured data, sitemap and factual llms.txt",
+    "Accessible navigation, controlled decorative films and in-flow shared jukebox"
+  ],
+  "verification": {
+    "releaseGate": {
+      "tests": 3793,
+      "passed": 3742,
+      "unchangedRetiredFailures": 51,
+      "unexpectedFailures": 0
+    },
+    "servedFilesAndRoutes": {
+      "private": 107,
+      "public": 107,
+      "allExactSha256": true
+    },
+    "discoveryBrowser": {
+      "local": 20,
+      "public": 20,
+      "viewports": [
+        320,
+        390,
+        768,
+        1024,
+        1440
+      ],
+      "axeScansPerEnvironment": 7,
+      "axeViolations": 0
+    },
+    "localGames": [
+      {
+        "id": "hmh-visual",
+        "exit": 0,
+        "seconds": 42.017
+      },
+      {
+        "id": "hmh-desktop",
+        "exit": 0,
+        "seconds": 13.635
+      },
+      {
+        "id": "hmh-mobile",
+        "exit": 0,
+        "seconds": 13.493
+      },
+      {
+        "id": "stacked",
+        "exit": 0,
+        "seconds": 33.735
+      },
+      {
+        "id": "chikun-ranked",
+        "exit": 0,
+        "seconds": 30.938
+      },
+      {
+        "id": "chikun-free-desktop",
+        "exit": 0,
+        "seconds": 30.847
+      },
+      {
+        "id": "chikun-free-mobile",
+        "exit": 0,
+        "seconds": 30.587
+      },
+      {
+        "id": "music",
+        "exit": 0,
+        "seconds": 5.972
+      }
+    ],
+    "publicGames": [
+      {
+        "id": "hmh-desktop",
+        "exit": 0,
+        "seconds": 35.509
+      },
+      {
+        "id": "hmh-mobile",
+        "exit": 0,
+        "seconds": 26.06
+      },
+      {
+        "id": "stacked",
+        "exit": 0,
+        "seconds": 81.401
+      },
+      {
+        "id": "chikun-desktop",
+        "exit": 0,
+        "seconds": 26.058
+      },
+      {
+        "id": "chikun-mobile",
+        "exit": 0,
+        "seconds": 22.497
+      },
+      {
+        "id": "music",
+        "exit": 0,
+        "seconds": 7.499
+      }
+    ],
+    "returningCache": {
+      "keys": [
+        "hmh-verification-unrelated-cache",
+        "lesters-arcade-v48-discovery"
+      ],
+      "controlled": true,
+      "sha256": "73d5960b18818ea1a6190ac1bb00315bf309f57c3c4c9935384ca499fe88e9d7",
+      "sourceModels": [
+        {
+          "path": "/apps/hmh-reboot/assets/source/terrain/hmh-world-ground-materials.blend",
+          "status": 404
+        },
+        {
+          "path": "/assets-source/hmh-barriers/barrier-library.blend",
+          "status": 404
+        },
+        {
+          "path": "/assets-source/hmh-silver-coin/silver-litecoin.blend",
+          "status": 404
+        }
+      ]
+    },
+    "evidenceDirectory": "docs/qa/arcade-discovery-20260914"
+  },
+  "boundaries": {
+    "settlementLive": false,
+    "publicSourceOrModelPush": false,
+    "crawlerPermissionsChanged": false,
+    "physicalDeviceAcceptance": "Not performed; phone checks use browser emulation",
+    "remainingRoadmap": "Broader game-content/backend tasks remain tracked in the existing handoffs"
+  }
+}

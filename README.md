@@ -1,8 +1,8 @@
-# Lester's Arcade — homepage and discovery candidate
+# Lester's Arcade — homepage and discovery, verified live
 
-This checkout contains the September 14 homepage, cabinet browser, and search-discovery redesign. It is awaiting release certification and promotion. The live site remains on combined-gameplay source `bfcba824629c33f099af0084a398acdacfc358bd`, deployment `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`, cache `lesters-arcade-v47-combined-gameplay` until promotion is verified.
+The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https://lestersarcade.io/games) are live. Existing films and artwork introduce the arcade, Free play, wallets, profiles and device-local leaderboards. All three active cabinets have equal visible height across all rotation frames, with dedicated game guides and clearer play entry. Search metadata, static page content, structured data, sitemap and a factual AI reference are included.
 
-The marker below is this candidate's production release target; it does not assert that promotion has happened.
+Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
 **Production cache marker:** `lesters-arcade-v48-discovery`
 
@@ -14,11 +14,11 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## Combined gameplay update — verified live
+## Combined gameplay update — live predecessor
 
 HMH adds seven objective-owned rewards, pause-aware supply restocks, native silver collectibles and barriers, clearer weapon names, earned hero recruitment and interaction sounds. Chikun 0.7.0 adds grounded running, jumps, flight/landing transitions, varied ground/air hazards, impact ragdolls and replay save/open. STACKED adds desktop music worlds, bounded mobile gameplay particles, richer practice medals, accessibility preferences and factual local profile counters. Startup limits remain unchanged. Source `bfcba824629c33f099af0084a398acdacfc358bd`; deployment `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. All 202 private/public file hashes and the cloud/browser release checks passed. [Release receipt](docs/qa/combined-gameplay-release-20260914.json). Retained rollback: `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`. Physical-device acceptance and the broader roadmap remain open.
 
-**Production cache marker:** `lesters-arcade-v47-combined-gameplay`
+Preceding cache marker: `lesters-arcade-v47-combined-gameplay`.
 
 ## Preceding combined arcade release — verified live
 
