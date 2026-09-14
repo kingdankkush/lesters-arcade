@@ -33,6 +33,8 @@ This is the published vertical slice, not the creator's entire original game. Do
 
 ## Priority and acceptance convention
 
+Independent game tasks still share one portal and deployment. Assign a single owner for shared account, profile, verification and leaderboard APIs; the other game tasks consume that same versioned contract. Do not create three competing persistence/auth services or overwrite shared files from an older checkout. Integrate completed work from every game before publishing the shared site.
+
 P0 = measured defect/integrity/device prerequisite. P1 = requested production polish/completion. P2 = optional content proposals. “Partial” means useful implementation exists but final acceptance is unfinished; “Verify” means reproduce against current code; “Proposed” is a design option rather than an implemented promise.
 
 Recommended sequence: physical flight/control/performance acceptance → obstacle/course readability → character/world/audio polish → complete local profile/replay surfaces → shared durable services → separately approved Web3 and optional content. Keep each improvement versioned and publish tested coherent slices.
@@ -101,6 +103,7 @@ Shared parent local persistence already stores profiles, usernames/avatars, hist
 - [ ] **CH-B04 — Partial source/open end-to-end: real provider/contract flow.** Test approved wallet connect/reject/reconnect/network/account-change cases, hardened contract compatibility and profile/score readback in an explicitly approved environment. Acceptance: real receipt and readback match the canonical result; no child wallet operations.
 - [ ] **CH-B05 — Gated: payments and settlement.** Prepare paid-session binding, fee/split disclosure, failure/replacement/refund policy and monitored settlement only after economic decisions. Contract deployment, transactions, authority changes and activation need explicit separate approval. Acceptance after approval: end-to-end confirmed payment/result, no duplicate charge or payout and clear failure handling.
 - [ ] **CH-B06 — Proposed/gated: achievement tokens and epochs.** Decide whether wallet-bound achievements are useful before implementing tokens. Partition local/Testnet/Mainnet and geometry/runtime eras; preserve archives. Acceptance: genuine authorized mint/readback, no transferability claim contrary to contract and no marketing a local badge as an NFT.
+- [ ] **CH-B07 — Open platform hardening: untrusted creator-code isolation.** Audit iframe origin, sandbox and CSP before expanding third-party onboarding. The current same-origin scripted child arrangement is not a strong security boundary against arbitrary hostile creator JavaScript. Use an appropriately isolated origin and minimal capabilities for untrusted games, with strict message origin/session/schema validation and server verification. Acceptance: a hostile test child cannot access parent storage, wallet objects or canonical state, while normal game/replay/music flows still work.
 
 ## QA, publication and completion checklist
 

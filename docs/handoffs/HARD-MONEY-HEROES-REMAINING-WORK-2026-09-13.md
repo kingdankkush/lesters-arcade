@@ -28,6 +28,8 @@ Combined release certification is in progress. The verified public predecessor i
 
 ## How to use the task list
 
+Independent game tasks still share one portal and deployment. Assign a single owner for shared account, profile, verification and leaderboard APIs; the other game tasks consume that same versioned contract. Do not create three competing persistence/auth services or overwrite shared files from an older checkout. Every release must integrate the latest completed work from all games and recheck the live deployment before promotion.
+
 P0 = measurable defect, integrity or release prerequisite. P1 = requested completion work. P2 = further polish/content. “Partial” means useful implementation exists but the stated outcome is unfinished. “Verify” means an older issue must be reproduced before changing anything. “Proposed” identifies a recommended implementation or future feature rather than a shipped requirement. Each unchecked item needs source, behavior and acceptance evidence before closure.
 
 Recommended order: establish performance headroom → one complete objective/reward route → weapon/pickup presentation → biome/world expansion → roster and boss polish → audio/device acceptance → durable profile/leaderboard services → separately approved Web3 activation. Preserve completed work while taking bounded slices through testing and publication.
@@ -99,7 +101,7 @@ Current source facts:
 
 ## P1: menus, profiles, scores and service functionality
 
-- [ ] **HMH-U01 — Partial: concise entry and briefing.** Refine cabinet → mode → hero → briefing → play; show actual asset readiness and skippable repeat-run briefing. Preserve three-click entry where intended. Acceptance: no fake progress, unwanted wait, clipped controls or stale keyboard-only hints on touch.
+- [ ] **HMH-U01 — Partial: concise entry and briefing.** Refine cabinet → mode → hero → briefing → play; show actual asset readiness and skippable repeat-run briefing. Preserve three-click entry where intended. Reconcile old cabinet copy that still describes HMH as isometric with the current top-down 2.5D direction, and clearly qualify device-local profile/score persistence. Acceptance: no fake progress, unwanted wait, clipped controls, misleading feature claim or stale keyboard-only hints on touch.
 - [ ] **HMH-U02 — Partial: readable HUD/settings.** Finish narrow-screen arsenal, unowned-slot handling, buff timers, minimap/objectives, left-handed layout and usable sensitivity/rebinding settings. Verify every setting has a real consumer and persists parent-side. Acceptance: no hero obstruction or inaccessible pause/restart/music controls on the smallest supported display.
 - [ ] **HMH-U03 — Partial: results and accessibility.** Review death recap, cause, build, achievements, retry and back navigation; keyboard focus, gamepad navigation, color-independent tells, reduced motion/flash and text scaling. Acceptance: no duplicate finalization or unintentional action when closing a modal.
 - [ ] **HMH-U04 — Partial: complete factual run history.** Local detailed stats already exist; add missing chronological upgrade/build events only after bounded schema design. Preserve absent historical values as unknown. Acceptance: result/profile/history agreement, migration tests and no fabricated past build history.

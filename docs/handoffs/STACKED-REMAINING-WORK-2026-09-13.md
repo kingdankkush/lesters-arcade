@@ -29,6 +29,8 @@ The beta launch is authorized. Final physical-device, competitive fairness, arti
 
 ## Priorities and acceptance convention
 
+Independent game tasks still share one portal and deployment. Assign a single owner for shared account, profile, verification and leaderboard APIs; the other game tasks consume that same versioned contract. Do not create three competing persistence/auth services or overwrite shared files from an older checkout. Integrate completed work from every game before publishing the shared site.
+
 P0 = defect/integrity/performance prerequisite. P1 = production completion and requested polish. P2 = separately scoped future content. “Partial” means implemented but incompletely accepted; “Verify” means reproduce before modifying; “Proposed” means a recommendation rather than a shipped requirement. Checkboxes close only with source and actual-runtime evidence.
 
 Recommended order: sustained device/input acceptance → visual/audio polish → complete profile/score surfaces → durable shared services → optional modes → separately authorized Web3. A performance optimization must not change piece timing, RNG, scoring or the ranked result.

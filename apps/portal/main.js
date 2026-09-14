@@ -1179,7 +1179,8 @@ function renderArcadeMusicPlayer() {
     setButtonIcon(dom.arcadeMusicExpandButton, model.expanded ? 'chevron-up' : 'chevron-down');
     dom.arcadeMusicExpandButton.setAttribute('aria-label', model.expanded ? 'Collapse arcade music player' : 'Expand arcade music player');
   }
-  if (dom.arcadeMusicQueueList) {
+  const queueKey = `${model.context}:${model.trackId}`;
+  if (dom.arcadeMusicQueueList && dom.arcadeMusicQueueList.dataset.queueKey !== queueKey) {
     // Show full queue with click-to-play, no redundant numbering (tracks have their own order)
     dom.arcadeMusicQueueList.replaceChildren(...model.queue.map((queueTrack, index) => {
       const item = el('li', {
@@ -1226,6 +1227,7 @@ function renderArcadeMusicPlayer() {
       });
       return item;
     }));
+    dom.arcadeMusicQueueList.dataset.queueKey = queueKey;
   }
 }
 
@@ -2097,6 +2099,12 @@ function renderArcadeIcon(iconId, label = '') {
 
 function setButtonIcon(button, iconId) {
   if (!button) return;
+  const semanticId = ARCADE_ICON_ALIASES[iconId] ?? iconId ?? 'star';
+  const current = button.firstElementChild;
+  // Audio time updates must retain unchanged SVGs: replacing an external <use>
+  // repeatedly can refetch its sprite and churn the DOM during every game.
+  if (button.childNodes.length === 1 && current?.matches('svg.arcade-svg-icon')
+    && current.querySelector('use')?.getAttribute('href') === `${ARCADE_ICON_SPRITE}#${semanticId}`) return;
   button.replaceChildren(renderArcadeIcon(iconId));
 }
 

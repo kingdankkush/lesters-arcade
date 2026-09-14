@@ -10,7 +10,7 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 The combined candidate preserves the live HMH world polish and adds STACKED’s rotating cabinet and music-reactive living visualizers, plus Chikun 0.6.0 open-air obstacles, portrait/fullscreen presentation, high-refresh input and shared music fixes. Publication and hosted verification are pending. The production cache marker below is the target marker for this release wave.
 
-**Production cache marker:** `lesters-arcade-v43-combined-arcade`
+**Production cache marker:** `lesters-arcade-v44-music-controls`
 
 Independent completion handoffs: [Hard Money Heroes](docs/handoffs/HARD-MONEY-HEROES-REMAINING-WORK-2026-09-13.md), [STACKED](docs/handoffs/STACKED-REMAINING-WORK-2026-09-13.md), and [Chikun's Escape](docs/handoffs/CHIKUN-ESCAPE-REMAINING-WORK-2026-09-13.md). Each separates completed foundations, remaining tasks, acceptance evidence and separately authorized Web3 activation.
 
