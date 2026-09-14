@@ -1,0 +1,8 @@
+{
+  "controlled": true,
+  "caches": [
+    "unrelated-release-check",
+    "lesters-arcade-v50-chikun-audio"
+  ],
+  "sha256": "021b4a8dddc32c0f703def913881b0cba478be331ab570c42ce741bd49120921"
+}

@@ -1,5 +1,13 @@
 # Textured rollout: current continuation checkpoint
 
+## Chikun collision and audio fixes — verified live, September 14, 2026
+
+Live at https://lestersarcade.io. Runtime source `a0e6b2a5866f13c5cf3ee2a78070e9281d679b71`; deployment `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`; cache `lesters-arcade-v50-chikun-audio`; site/game version `1.5.1`. Continue on `codex/mobile-worlds-aquatic-20260914` in this checkout. Retained rollback: `dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF`.
+
+This includes the already-published homepage, catalog, HMH mobile/barrier/road improvements, Chikun mixed flight passages and STACKED mobile aquatic effects. Chikun no longer loads or loops the white-noise flight ambience. The bridge now recognizes town, forest and canopy terminal reasons, so collisions show results instead of closing the cabinet with a protocol error.
+
+Hosted certification: 3,811 tests, 3,760 passing, exactly 51 unchanged retired exceptions; syntax, asset checks, contract structure and build pass. All 98 public files/routes match the tested output. Local and public desktop/414×896 touch-layout browsers exercised town, forest and canopy collisions, exact replay, repeated starts and real action audio with no looping sources or page errors. V49-to-v50 cache refresh passed. These are emulated device checks, not physical iPhone acceptance. [Release receipt](../qa/chikun-fixes-release-20260914.json). Earlier checkpoints below are historical; financial activation and source/model disclosure remain outside this website release.
+
 ## Arcade homepage and discovery — verified live, September 14, 2026
 
 Live at https://lestersarcade.io. Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`; cache `lesters-arcade-v48-discovery`. Continue on `codex/arcade-home-catalog-20260914` in this checkout. Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`.

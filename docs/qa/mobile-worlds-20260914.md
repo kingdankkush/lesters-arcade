@@ -1,6 +1,6 @@
 # Mobile worlds gameplay update
 
-Candidate on codex/mobile-worlds-aquatic-20260914. Publication is pending the fresh hosted release gate and public verification.
+Published from `df69c850097254e626792b16ac03de7d485ef285` as deployment `dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF`. These updates are retained in the subsequent live Chikun collision/audio repair, source `a0e6b2a5866f13c5cf3ee2a78070e9281d679b71`, deployment `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`, cache `lesters-arcade-v50-chikun-audio`. See the [current release receipt](chikun-fixes-release-20260914.json).
 
 ## Changes
 

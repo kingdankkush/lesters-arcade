@@ -1,0 +1,399 @@
+{
+  "origin": "https://lestersarcade.io",
+  "cache": "lesters-arcade-v50-chikun-audio",
+  "checks": 98,
+  "reports": [
+    {
+      "route": "/dist/chikun/game.js",
+      "sha256": "021b4a8dddc32c0f703def913881b0cba478be331ab570c42ce741bd49120921"
+    },
+    {
+      "route": "/dist/chunks/chunk-65PUOXRU.js",
+      "sha256": "c322626c6f8b34b8df9d3c892352e718f271a08c41052c1a3128f2369b61e8b6"
+    },
+    {
+      "route": "/dist/chunks/chunk-2WGYLO4P.js",
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+    },
+    {
+      "route": "/dist/chunks/chunk-6QJT5C2R.js",
+      "sha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655"
+    },
+    {
+      "route": "/dist/chunks/chunk-2OAFQ5LL.js",
+      "sha256": "2b57c236f4c3701dc115c5b2c8d02ec5191b4f6fd9ad0235e76288d503eb6d9c"
+    },
+    {
+      "route": "/dist/chunks/authored-prop-display-ZD5USJZW.js",
+      "sha256": "f42a028d64ca82f373f6448fcacdf0257b3aa748e2f701dfd01c5f0b0c327619"
+    },
+    {
+      "route": "/dist/chunks/chunk-D32BQVI2.js",
+      "sha256": "990e327f4edab462c06bf627081ed703d3229e9509cfc82aeb7316f05d5add44"
+    },
+    {
+      "route": "/dist/chikun/flight-room.js",
+      "sha256": "22ac2b593f1c415b19a5fb2cbe4f2047318cfecd4ba415f05dcf58d572b7431a"
+    },
+    {
+      "route": "/dist/chunks/chunk-EJUDHLWX.js",
+      "sha256": "b25025cff9efb77291f20b3784535574c32ddb39e9c11fade2da2c1108f41d13"
+    },
+    {
+      "route": "/dist/chunks/chunk-EEIZGT5Y.js",
+      "sha256": "a9b403891630a4d1f8f97716d5aec05eabbfbd1227b3dc5132a7120851f4007b"
+    },
+    {
+      "route": "/dist/chunks/chunk-7NWTWVEF.js",
+      "sha256": "074e27f2f9fcc691328cdcf91c909d8c2b62fdfcf1cfe3fe8fc382dbe91e4ecc"
+    },
+    {
+      "route": "/dist/chunks/chunk-GAYH257E.js",
+      "sha256": "2f253c04dc130792e42fb0c4e64517da819deb740aea2231625f6e297b4d50a0"
+    },
+    {
+      "route": "/dist/chunks/chunk-DLKSOBBD.js",
+      "sha256": "dabdfe8eee90513e03b92c04e5f6e4413773c15bddddebc50b2c739f4bb6bc06"
+    },
+    {
+      "route": "/dist/chunks/chunk-ESDQIMBA.js",
+      "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+    },
+    {
+      "route": "/dist/chunks/chunk-FH4FMBET.js",
+      "sha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0"
+    },
+    {
+      "route": "/dist/chunks/chunk-HRT7TI5W.js",
+      "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+    },
+    {
+      "route": "/dist/chunks/chunk-HDTCHFCJ.js",
+      "sha256": "bc549573f9cd94584f973134e34b0e0ef34f1e13a2c8fc48d3d8834db3d7dd55"
+    },
+    {
+      "route": "/dist/chunks/chunk-IIQTF2BL.js",
+      "sha256": "97246b64c68eeed75087677932fc799e7f15279d2d2f4ee6a5c37452138cbb59"
+    },
+    {
+      "route": "/dist/chunks/chunk-OQ2RPGL4.js",
+      "sha256": "da62f7d2d78cf56e2ff07c62944b122eca373c165dc69f9e1bca2e302eb30581"
+    },
+    {
+      "route": "/dist/chunks/chunk-KMBN3SGT.js",
+      "sha256": "2e606a4647d8a5c67eb867223065caa556de3cc25dbf18237df207baed526290"
+    },
+    {
+      "route": "/dist/chunks/chunk-Q3ZFKSNB.js",
+      "sha256": "504812b7a267b847901f50983f760da7fac66e973fc23cbe0d3c227f6d552d7a"
+    },
+    {
+      "route": "/dist/chunks/chunk-ISJHDIYG.js",
+      "sha256": "6229ace5e77064ecf4cf89872c89b562d954e53dd15b141a35f302f20ce0da5c"
+    },
+    {
+      "route": "/dist/chunks/chunk-LKI5VNIO.js",
+      "sha256": "c2fe2b6e2c117403b211282ee6d5b5469fedd98c6da9de5610e720cb7bbe267d"
+    },
+    {
+      "route": "/dist/chunks/chunk-OQWCW7H2.js",
+      "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+    },
+    {
+      "route": "/dist/chunks/chunk-SCJDJGEO.js",
+      "sha256": "a28e8b035388c6babc4b82474185807096d18ce0070b1fb729c7ba273d60afe4"
+    },
+    {
+      "route": "/dist/chunks/chunk-VMEYLS3X.js",
+      "sha256": "43650cfe48995d1e779c7010ad7ba23c4e2604f93b3b0c73c1a738ef738cf44e"
+    },
+    {
+      "route": "/dist/chunks/chunk-P3LXPU4Z.js",
+      "sha256": "45ed16b015789c0a8a8d23bf18938eea6b0ccdaaca072585cac9d94d68b2feb7"
+    },
+    {
+      "route": "/dist/chunks/chunk-RTHIOZVQ.js",
+      "sha256": "d93b3fe9a7d11baff907113ce952a6ebf77bca8ca485b0f9b30bc74eb7b2d6a7"
+    },
+    {
+      "route": "/dist/chunks/chunk-WAOPJA5Y.js",
+      "sha256": "82958d574ebb3d90525bef5ca81283e1069e0b1c216ff2e32202d373917d9988"
+    },
+    {
+      "route": "/dist/chunks/chunk-WSLA44S3.js",
+      "sha256": "9e7b430b5ec8f965ba85509f981ffd6021041e92ecea33cc44be89d0ae494e0c"
+    },
+    {
+      "route": "/dist/chunks/chunk-YFNAS4ZQ.js",
+      "sha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914"
+    },
+    {
+      "route": "/dist/chunks/chunk-VSG3JNSZ.js",
+      "sha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677"
+    },
+    {
+      "route": "/dist/chunks/chunk-XCYM7O7D.js",
+      "sha256": "37a5e58b52f6fa2a29bae7b5f6132d276fdc223d1fcd43393429e789bcd1dc11"
+    },
+    {
+      "route": "/dist/chunks/chunk-XB24W4G6.js",
+      "sha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57"
+    },
+    {
+      "route": "/dist/chunks/combat-audio-XX6MV55D.js",
+      "sha256": "af9acbd77fe67db100ad94cfe14975a6a176645818c5ec84f78723c1bee7827d"
+    },
+    {
+      "route": "/dist/chunks/debug-grid-overlay-GIIHKGMQ.js",
+      "sha256": "c8004d194967b15c82a3c7d467728afb576cfda60e7460786939e1ee83a2e676"
+    },
+    {
+      "route": "/dist/chunks/enemy-hit-feedback-DOEDTOHH.js",
+      "sha256": "d5ff16d0233a88c3bde8aa014ac3c60c380b72d236d6d0fb8e11760885c8d17f"
+    },
+    {
+      "route": "/dist/chunks/encounter-endurance-pilot-FG2CBZTF.js",
+      "sha256": "4dba1a65f404d0227e0209671fb76f2d83689c15ba7abde104d4f8471abee95c"
+    },
+    {
+      "route": "/dist/chunks/ethers.min-STJTETNS.js",
+      "sha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53"
+    },
+    {
+      "route": "/dist/chunks/free-medals-BH2FCB7F.js",
+      "sha256": "2435f3502906330bd6e88b6212b7299f5e83106b703f7c272191970d59a3d0b7"
+    },
+    {
+      "route": "/dist/chunks/gore-presentation-7QBPCINM.js",
+      "sha256": "79517a3007c5caf8015499f969a444dad8d75f4cee489f0e1c4be50d8ce7cdec"
+    },
+    {
+      "route": "/dist/chunks/hero-motion-atlas-ENAXIIBL.js",
+      "sha256": "9d887740df60884baa2c340a41a488aa1b13522a6fbcf50fd0b72be4d9ddecc3"
+    },
+    {
+      "route": "/dist/chunks/hmh-complete-animations-CJX6INFR.js",
+      "sha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e"
+    },
+    {
+      "route": "/dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+      "sha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4"
+    },
+    {
+      "route": "/dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+      "sha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07"
+    },
+    {
+      "route": "/dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+      "sha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469"
+    },
+    {
+      "route": "/dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+      "sha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d"
+    },
+    {
+      "route": "/dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+      "sha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e"
+    },
+    {
+      "route": "/dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+      "sha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594"
+    },
+    {
+      "route": "/dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+      "sha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d"
+    },
+    {
+      "route": "/dist/chunks/hmh-pixi.js",
+      "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c"
+    },
+    {
+      "route": "/dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+      "sha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882"
+    },
+    {
+      "route": "/dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+      "sha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995"
+    },
+    {
+      "route": "/dist/chunks/hmh-level-environment-FD3WFZKW.js",
+      "sha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f"
+    },
+    {
+      "route": "/dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+      "sha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178"
+    },
+    {
+      "route": "/dist/chunks/loader-CSMYL3MB.js",
+      "sha256": "d934650ee1f0525f98812962ce1c8a34998542edc8d175d235222529c2a49399"
+    },
+    {
+      "route": "/dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+      "sha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170"
+    },
+    {
+      "route": "/dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+      "sha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d"
+    },
+    {
+      "route": "/dist/chunks/litvm-chain-client-XKDYBZHJ.js",
+      "sha256": "a95e2b1c3e85d7be21699f37ecd0c63502b3947f63a501ddbd0d61e6667194d2"
+    },
+    {
+      "route": "/dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+      "sha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4"
+    },
+    {
+      "route": "/dist/chunks/native-barriers-5QREBHF5.js",
+      "sha256": "66527a8f0b9aeaba542dbf157bb6d962a2a4c3370a95c7a59a3cddbe10f1711b"
+    },
+    {
+      "route": "/dist/chunks/pickup-indicators-UR2QWLO2.js",
+      "sha256": "7f0f1ca5fd5568e889a17805e22aeb05ba8e5f0481a7313306af96dd03b0e72f"
+    },
+    {
+      "route": "/dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+      "sha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021"
+    },
+    {
+      "route": "/dist/chunks/production-hero-atlas-EGWJJO2H.js",
+      "sha256": "aa55ef40dcc81e1ccebc2fc323f09512853664a04ba192dbeb76935e6c1ee8b8"
+    },
+    {
+      "route": "/dist/chunks/renderer-W7ZKM3SE.js",
+      "sha256": "6718b4cfc981fe54d3fef4616b59968826962ee23754805f79ab5c2fd53032b4"
+    },
+    {
+      "route": "/dist/chunks/reload-presentation-6YBKJ64P.js",
+      "sha256": "b82d39bfc2bf16749f8e5d57c91f965794c71ef9702e7ab647b6b550e7db26da"
+    },
+    {
+      "route": "/dist/chunks/runtime-manifest-7IN2B6KL.js",
+      "sha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06"
+    },
+    {
+      "route": "/dist/chunks/runtime-telemetry-writer-23FSULZ4.js",
+      "sha256": "b0f0596fe80b31b856da8df4646c7403dec1d3867f9537627d73e0e85e3c6f22"
+    },
+    {
+      "route": "/dist/chunks/silver-drop-presentation-MA62KFHK.js",
+      "sha256": "d0f1c0567c13c7e49b488daccb61dc73206b8128620a47a05e3322ada4ca8557"
+    },
+    {
+      "route": "/dist/chunks/stacked-host-TDZQ3ZHJ.js",
+      "sha256": "a1e240ee3665a9f3b71409e8b3f12b8e4b9f22b1f70404aa586e89c31903c9a3"
+    },
+    {
+      "route": "/dist/chunks/stacked-persistence-2EYO4TJR.js",
+      "sha256": "b6c7793aebd6917998852bc109f0aa4d8f4599a043ab932ed24ca4b17024852a"
+    },
+    {
+      "route": "/dist/chunks/world-ground-fallback-6LTSHLSB.js",
+      "sha256": "5e6e501b2f0ff3cf4ca6de66f5389729e9950318205af0dbe3c88ca47d2385d1"
+    },
+    {
+      "route": "/dist/chunks/world-design-field-map-JZIMAAHN.js",
+      "sha256": "8491b671e79bd2083d118afa5c67ced850c2a7eb78b43f7f38f83a56f0ee3aba"
+    },
+    {
+      "route": "/dist/chunks/world-tour-spawns-7XARRG7N.js",
+      "sha256": "81beb738b4427a34ae1130eac9fbf01979b7733d724ab45ccd1ec8df101f246a"
+    },
+    {
+      "route": "/dist/hmh-reboot/world-art.js",
+      "sha256": "abf7df38945e4b027fb94fa0bf35a3972ed248168b804928d9d8e544ff37c1f3"
+    },
+    {
+      "route": "/dist/hmh-reboot/game.js",
+      "sha256": "bc3b2837eeb48cac4fdffe48324c71400020a1528383fe039fe02216ef007556"
+    },
+    {
+      "route": "/dist/stacked/stacked-pixi-v1.js",
+      "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3"
+    },
+    {
+      "route": "/dist/stacked/game.js",
+      "sha256": "bb26e792d4978274aed287abf2a7f16920bffc728ae72838044cebc538bf36bd"
+    },
+    {
+      "route": "/dist/stacked/verify-worker.js",
+      "sha256": "42e97bda2b697dad407ab11b942b4de912812f03d76dc01078ed952bd02c81ca"
+    },
+    {
+      "route": "/dist/stacked/atmosphere.js",
+      "sha256": "a89be8effaffb44078af7a4b367866cf36417154f79ba0c3e6561a46b8276a57"
+    },
+    {
+      "route": "/dist/main.js",
+      "sha256": "b56c8d10f026adcecbe6ec820b6aa15ecd64dda803e971bcc384659e202aee50"
+    },
+    {
+      "route": "/sw.js",
+      "sha256": "5764698b978f7f0818c58a1ea89eb4b8cc19a8cb39103ce4b514b6bfb92ceafb"
+    },
+    {
+      "route": "/dist/stacked/living-field.js",
+      "sha256": "2df87e3e2b8e8f60bc84db942a3b0122f20400ff8f22868f3d4433617c3b9605"
+    },
+    {
+      "route": "/index.html",
+      "sha256": "f403ac9b49bced8d3146094110bce87489babffad431f161b2994fad7a3f1b8f"
+    },
+    {
+      "route": "/chikun/index.html",
+      "sha256": "068f8416a65fddd40a6695c76d3bff19b9ebcbfe5e94bdf2ea3182eb73ed960e"
+    },
+    {
+      "route": "/chikun/game.css",
+      "sha256": "02e265baee16bc4b14c51cd2a93602c38fc45eba0c1d3ec720d0422932a1ab7f"
+    },
+    {
+      "route": "/stacked/index.html",
+      "sha256": "709eb016c6dc0fe095ef5095dd2494f47ef412d63d72bad747c47f63d54cda00"
+    },
+    {
+      "route": "/hmh-reboot/index.html",
+      "sha256": "a117872e3d1f7319f57070ba9ca16179e19dbe0b7b75f5e4fe69e223d7276d98"
+    },
+    {
+      "route": "/styles.css",
+      "sha256": "bc84a7d8ad948ad46eaecc0253aa73177e0ecc793462d01b0c7201bb91388c1d"
+    },
+    {
+      "route": "/portal-discovery.css",
+      "sha256": "b71f16f0817787c3824a28f1fcd18bf2999e71d6cca0a20e15d22d850dd482f1"
+    },
+    {
+      "route": "/",
+      "sha256": "f403ac9b49bced8d3146094110bce87489babffad431f161b2994fad7a3f1b8f"
+    },
+    {
+      "route": "/sitemap.xml",
+      "sha256": "f82d57b64b6201c89a717afe9577306a76a05f12309bedc8608f2f9313801642"
+    },
+    {
+      "route": "/robots.txt",
+      "sha256": "7ec1aa694ac2caa6d2d01b3f834e0df445c62708eaa3b9fae5aa22eab6054859"
+    },
+    {
+      "route": "/llms.txt",
+      "sha256": "725c309fc864cabca38533a0d9a4fd3d7b06860a2386f9e2ba3ad9f9e5966b3b"
+    },
+    {
+      "route": "/games",
+      "sha256": "f66206cef90e1fd07cfb1a802b1b9527d9b7c5d6122d4f44fd71f6106cccbb80"
+    },
+    {
+      "route": "/games/chikun",
+      "sha256": "eae02017f51040c13fe7e629651b5cf57fc8c5ae193867dd7744c01f1cf1c8ac"
+    },
+    {
+      "route": "/games/stacked",
+      "sha256": "b062a4f963745222f4bd516eb8532b72525345e0fa5862ab8e51e43200d33a27"
+    },
+    {
+      "route": "/games/hard-money-heroes",
+      "sha256": "0ac39446f99cd5745edcfa01e8da41e78c7525ed2e88b414dd06d6f411750d0c"
+    }
+  ]
+}

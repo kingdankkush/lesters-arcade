@@ -1,0 +1,77 @@
+{
+  "origin": "https://lestersarcade.io",
+  "reports": [
+    {
+      "name": "desktop",
+      "seed": 3961521451,
+      "results": [
+        {
+          "kind": "town",
+          "tick": 2377,
+          "score": 2951,
+          "replayMatches": true
+        },
+        {
+          "kind": "forest",
+          "tick": 1033,
+          "score": 1227,
+          "replayMatches": true
+        },
+        {
+          "kind": "canopy",
+          "tick": 1369,
+          "score": 1573,
+          "replayMatches": true
+        }
+      ],
+      "actionSources": 91,
+      "loopingSources": 0,
+      "audioRequests": [
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/flap.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/launch.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/coin.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/near.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/pass.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/streak.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/impact.wav"
+      ],
+      "errors": []
+    },
+    {
+      "name": "iphone",
+      "seed": 3961521451,
+      "results": [
+        {
+          "kind": "town",
+          "tick": 2377,
+          "score": 2951,
+          "replayMatches": true
+        },
+        {
+          "kind": "forest",
+          "tick": 1033,
+          "score": 1227,
+          "replayMatches": true
+        },
+        {
+          "kind": "canopy",
+          "tick": 1369,
+          "score": 1573,
+          "replayMatches": true
+        }
+      ],
+      "actionSources": 76,
+      "loopingSources": 0,
+      "audioRequests": [
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/flap.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/launch.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/coin.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/near.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/pass.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/streak.wav",
+        "https://lestersarcade.io/assets/generated/chikun-flight-v2/audio/impact.wav"
+      ],
+      "errors": []
+    }
+  ]
+}

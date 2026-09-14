@@ -1,0 +1,26 @@
+{
+  "status": "verified-live",
+  "date": "2026-09-14",
+  "production": "https://lestersarcade.io",
+  "deployment": "dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B",
+  "immutableUrl": "https://lesters-arcade-5wkiqov4p-justin-agent-projects.vercel.app",
+  "source": "a0e6b2a5866f13c5cf3ee2a78070e9281d679b71",
+  "branch": "codex/mobile-worlds-aquatic-20260914",
+  "siteVersion": "1.5.1",
+  "gameVersion": "1.5.1",
+  "cache": "lesters-arcade-v50-chikun-audio",
+  "rollback": "dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF",
+  "changes": [
+    "Removed the repeating air.wav flight ambience; seven intentional action cues remain.",
+    "Accepted town, forest and canopy collision terminal reasons in the parent/child bridge.",
+    "Added collision result labels and regression coverage.",
+    "Retained all previously published homepage, game browser, HMH mobile/world, Chikun passage and STACKED aquatic/effect improvements."
+  ],
+  "redBeforeFix": ["white-noise cue exclusion", "town collision bridge validation"],
+  "hostedGate": { "tests": 3811, "passed": 3760, "unchangedRetiredExceptions": 51, "unexpectedFailures": 0, "syntaxJs": 696, "syntaxPython": 113, "assets": "pass", "contractStructure": "pass", "build": "pass" },
+  "localVerificationLimit": "The sandboxed full suite failed on restricted Python/build subprocess access and retired assets. The production build succeeded with elevated access, focused regressions passed locally, and the complete unchanged hosted release gate passed. No exceptions or budgets were loosened.",
+  "publicChecks": { "matchingFilesAndRoutes": 98, "details": "chikun-fixes-20260914/public-hashes.json", "browser": "chikun-fixes-20260914/public-browser.json", "cache": "chikun-fixes-20260914/public-cache.json" },
+  "gameplay": { "profiles": ["1440x1000 desktop", "414x896 emulated touch phone"], "collisionReasons": ["town", "forest", "canopy"], "results": "match canonical replay", "retry": "pass after each collision", "runtimeErrors": 0, "loopingAudioSources": 0, "airRequests": 0, "actionAudioPlayed": true },
+  "physicalDeviceAcceptance": "not performed",
+  "settlementLive": false
+}

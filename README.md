@@ -1,8 +1,10 @@
-# Mobile worlds release candidate — verification in progress
+# Lester's Arcade — completed updates verified live
 
-This checkout contains HMH mobile crowd optimization, wider framing and native barrier/road presentation, Chikun 0.8.0 mixed flight passages, and STACKED mobile aquatic music visuals and gameplay effects. Production remains the discovery deployment below until promotion is verified. The cache marker records the candidate intended for promotion.
+The homepage and game browser redesign, HMH mobile optimization and world presentation, Chikun mixed flight passages, and STACKED mobile aquatic music visuals are live at https://lestersarcade.io. Chikun's repeating white-noise ambience is removed, and town, forest and canopy collisions now produce normal results and allow another run.
 
-# Lester's Arcade — homepage and discovery, verified live
+Runtime source `a0e6b2a5866f13c5cf3ee2a78070e9281d679b71`; deployment `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`; site/game version `1.5.1`. The hosted gate passes 3,760 of 3,811 tests with exactly 51 unchanged retired exceptions. All 98 public file and route hashes match. Public desktop and 414×896 touch-layout checks cover all three collision types, exact replay results, retries and action audio with zero looping sources or runtime errors. Returning-cache migration from v49 to v50 passes. [Release receipt](docs/qa/chikun-fixes-release-20260914.json). Retained rollback: `dpl_14Wqtwjo1XZbCb6ne13cgovTd7hF`. Continue on `codex/mobile-worlds-aquatic-20260914`. Physical-device acceptance and the broader roadmap remain open.
+
+## Homepage and discovery — preceding release
 
 The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https://lestersarcade.io/games) are live. Existing films and artwork introduce the arcade, Free play, wallets, profiles and device-local leaderboards. All three active cabinets have equal visible height across all rotation frames, with dedicated game guides and clearer play entry. Search metadata, static page content, structured data, sitemap and a factual AI reference are included.
 
