@@ -12,7 +12,7 @@ This combined candidate adds four hero motion pages, the six remaining native en
 
 STACKED remains playable through the normal cabinet selector. Ranked Game is device-local and replay-verified, with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md). Physical-device acceptance and further polish remain open for all games.
 
-**Production cache marker:** `lesters-arcade-v40-hmh-fluid-mobile`
+**Production cache marker:** `lesters-arcade-v41-stacked-cabinet`
 
 ## Chikun Superman flight
 
