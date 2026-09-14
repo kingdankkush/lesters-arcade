@@ -48,10 +48,12 @@ try {
   assert.equal(sample.retainedNodes, true);
   assert.equal(report.repeatedIconRequests, 0, 'unchanged playback must not refetch the icon sprite');
   await page.locator('#arcadeMusicPlayButton').click();
-  await page.waitForFunction(() => document.querySelector('#arcadeMusicAudio').paused);
+  await page.waitForFunction(() => document.querySelector('#arcadeMusicAudio').paused
+    && document.querySelector('#arcadeMusicPlayButton use').getAttribute('href').endsWith('#play'), null, {timeout: 2000});
   assert.match(await page.locator('#arcadeMusicPlayButton use').getAttribute('href'), /#play$/);
   await page.locator('#arcadeMusicPlayButton').click();
-  await page.waitForFunction(() => !document.querySelector('#arcadeMusicAudio').paused);
+  await page.waitForFunction(() => !document.querySelector('#arcadeMusicAudio').paused
+    && document.querySelector('#arcadeMusicPlayButton use').getAttribute('href').endsWith('#pause'), null, {timeout: 2000});
   assert.match(await page.locator('#arcadeMusicPlayButton use').getAttribute('href'), /#pause$/);
   await page.locator('#arcadeMusicMuteButton').click();
   assert.equal(await page.locator('#arcadeMusicAudio').evaluate(audio => audio.muted), true);
