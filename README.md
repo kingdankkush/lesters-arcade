@@ -6,17 +6,17 @@ A retro Litecoin and LitVM arcade portal with deterministic child games and appr
 
 **Production:** https://lestersarcade.io
 
-## HMH motion and mobile release — live
+## HMH world polish — live
 
-This live update adds four hero motion pages, the six remaining native enemy animation atlases, breakable supply caches, fuel chain reactions, refined weapon sounds and a collision optimization for crowded mobile play. It preserves the live Chikun Superman flight update (`9d14b18c`) and STACKED public beta (`98204a1c`). The owner requested publication after testing. See the [HMH release handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md) for measured performance, verification and unfinished polish. Production `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7` serves runtime source `0e858cde582f10be767c170de6f7f2588cf4e977`. All 122 public file hashes, desktop/mobile portal flows, five STACKED layouts, Chikun desktop/mobile and cache migration passed. [Release receipt](docs/qa/hmh-motion-mobile-release-20260913.json). Immediate rollback: `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`.
-
-STACKED remains playable through the normal cabinet selector. Ranked Game is device-local and replay-verified, with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md). Physical-device acceptance and further polish remain open for all games.
-
-## HMH world polish — staged release
-
-The next tested upgrade refines forest and concrete materials, canopy composition, ground wear and animated campfires. See the [world polish handoff](docs/handoffs/2026-09-13-hmh-world-polish-release.md). The marker below is staged for promotion; the verified public deployment above remains v40 until the new release receipt confirms promotion.
+Finer forest and concrete materials, smoother terrain edges, varied canopy composition, industrial ground wear and animated campfire flames are live. Source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`; deployment `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7`. All 151 public file hashes and the HMH, STACKED and Chikun browser flows passed. [Release receipt](docs/qa/hmh-world-polish-release-20260913.json) · [Changes and remaining work](docs/handoffs/2026-09-13-hmh-world-polish-release.md). Immediate rollback: `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7`.
 
 **Production cache marker:** `lesters-arcade-v41-hmh-world-polish`
+
+## Previous HMH motion and mobile release
+
+The previous update added four hero motion pages, the six remaining native enemy animation atlases, breakable supply caches, fuel chain reactions, refined weapon sounds and a collision optimization for crowded mobile play. It preserves the live Chikun Superman flight update (`9d14b18c`) and STACKED public beta (`98204a1c`). The owner requested publication after testing. See the [HMH release handoff](docs/handoffs/2026-09-13-hmh-motion-mobile-release.md) for measured performance, verification and unfinished polish. Previous deployment `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7` served runtime source `0e858cde582f10be767c170de6f7f2588cf4e977`. All 122 public file hashes, desktop/mobile portal flows, five STACKED layouts, Chikun desktop/mobile and cache migration passed. [Release receipt](docs/qa/hmh-motion-mobile-release-20260913.json). Immediate rollback: `dpl_6XGH4jJa5NRDT7u33cpsxpMHSHHd`.
+
+STACKED remains playable through the normal cabinet selector. Ranked Game is device-local and replay-verified, with no fees, prizes or online ranking. See [STACKED status](docs/stacked/STATUS.md). Physical-device acceptance and further polish remain open for all games.
 
 ## Chikun Superman flight
 

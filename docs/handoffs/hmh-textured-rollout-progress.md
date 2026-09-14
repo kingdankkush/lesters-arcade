@@ -1,8 +1,8 @@
 # Textured rollout: current continuation checkpoint
 
-## World polish candidate — 2026-09-13
+## Published world polish — 2026-09-13
 
-The next package adds finer native ground materials, transparent terrain edges, varied canopy composition, industrial ground wear and tapered campfire flames. See [implementation and remaining work](2026-09-13-hmh-world-polish-release.md). Desktop/mobile camp approach, reduced-motion flames, all 12 visual scenes, portal desktop/mobile and five STACKED layouts have been exercised. Final release checks and alternating comparison against public v40 precede promotion. This paragraph is a candidate checkpoint, not a live claim.
+The next package adds finer native ground materials, transparent terrain edges, varied canopy composition, industrial ground wear and tapered campfire flames. See [implementation and remaining work](2026-09-13-hmh-world-polish-release.md). Desktop/mobile camp approach, reduced-motion flames, all 12 visual scenes, portal desktop/mobile and five STACKED layouts have been exercised. Live at https://lestersarcade.io: source `a3b2b0299b5617636f144fcb3936bac4a87e19d6`, deployment `dpl_F4d723CFGYcZDANn1rNU6Avz3cV7`, cache `lesters-arcade-v41-hmh-world-polish`. All 151 public file hashes, HMH desktop/mobile portal flows, five STACKED layouts, Chikun desktop/mobile and cache migration passed. Immediate rollback: `dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7`. [Release receipt](../qa/hmh-world-polish-release-20260913.json).
 
 Diagnostics-off active gameplay is now measured separately from paused upgrades. A neighbor-selection experiment was reverted after worse browser timings, despite an isolated computation speedup. Canonical enemy simulation remains the v40 source. Physical-device performance acceptance and the broader art/world/audio roadmap remain open.
 

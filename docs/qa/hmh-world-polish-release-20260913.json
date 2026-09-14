@@ -1,6 +1,6 @@
 {
   "schema": "hmh-world-polish-release-v1",
-  "status": "local-certified-awaiting-deployment",
+  "status": "live-verified",
   "cache": "lesters-arcade-v41-hmh-world-polish",
   "preservedRuntimeSource": "0e858cde582f10be767c170de6f7f2588cf4e977",
   "checks": {
@@ -789,10 +789,6 @@
     "alternatingLiveComparison": [
       {
         "evidence": ".tmp/world-comparison/candidate-v41-1/report.json",
-        "profile": "mobile",
-        "cpuSlowdown": 4,
-        "telemetry": false,
-        "cpuProfiler": false,
         "timing": {
           "frames": 304,
           "activeMs": 11143.999999999996,
@@ -809,10 +805,6 @@
       },
       {
         "evidence": ".tmp/world-comparison/candidate-v41-2/report.json",
-        "profile": "mobile",
-        "cpuSlowdown": 4,
-        "telemetry": false,
-        "cpuProfiler": false,
         "timing": {
           "frames": 312,
           "activeMs": 11144.099999999999,
@@ -829,10 +821,6 @@
       },
       {
         "evidence": ".tmp/world-comparison/candidate-v41-3/report.json",
-        "profile": "mobile",
-        "cpuSlowdown": 4,
-        "telemetry": false,
-        "cpuProfiler": false,
         "timing": {
           "frames": 327,
           "activeMs": 11109.4,
@@ -849,10 +837,6 @@
       },
       {
         "evidence": ".tmp/world-comparison/live-v40-1/report.json",
-        "profile": "mobile",
-        "cpuSlowdown": 4,
-        "telemetry": false,
-        "cpuProfiler": false,
         "timing": {
           "frames": 315,
           "activeMs": 11109.400000000003,
@@ -869,10 +853,6 @@
       },
       {
         "evidence": ".tmp/world-comparison/live-v40-2/report.json",
-        "profile": "mobile",
-        "cpuSlowdown": 4,
-        "telemetry": false,
-        "cpuProfiler": false,
         "timing": {
           "frames": 313,
           "activeMs": 11074.599999999999,
@@ -889,10 +869,6 @@
       },
       {
         "evidence": ".tmp/world-comparison/live-v40-3/report.json",
-        "profile": "mobile",
-        "cpuSlowdown": 4,
-        "telemetry": false,
-        "cpuProfiler": false,
         "timing": {
           "frames": 316,
           "activeMs": 11144.400000000001,
@@ -919,5 +895,1428 @@
     "apps/hmh-reboot/assets/source/terrain/ground-source.json": "d25613eb4743ab4a91ba832ca788032fb172bff6f36800400a30970b0d4ad23c",
     "scripts/hmh-world-campfire-browser-smoke.mjs": "8a0342d93ec44009a58920771a655efdd7022bdb1131f2c0ffbb369bf8b88732",
     ".tmp/normal-performance.mjs": "fcc9e9561ea9d93fe402b9733887096070a90ccc62b16250069b359296a5a49e"
+  },
+  "production": {
+    "origin": "https://lestersarcade.io",
+    "exit": 0,
+    "candidate": "https://lesters-arcade-azps4fei0-justin-agent-projects.vercel.app",
+    "source": "a3b2b0299b5617636f144fcb3936bac4a87e19d6",
+    "id": "dpl_F4d723CFGYcZDANn1rNU6Avz3cV7",
+    "rollback": "dpl_8GPLKXJspe9EwDyUensJ7VaayKJ7"
+  },
+  "publicChecks": {
+    "running": null,
+    "results": [
+      {
+        "name": "http",
+        "exit": 0,
+        "seconds": 12.03
+      },
+      {
+        "name": "portal-desktop",
+        "exit": 0,
+        "seconds": 18.47
+      },
+      {
+        "name": "portal-mobile",
+        "exit": 0,
+        "seconds": 17.08
+      },
+      {
+        "name": "stacked",
+        "exit": 0,
+        "seconds": 39.24
+      },
+      {
+        "name": "chikun-desktop",
+        "exit": 0,
+        "seconds": 13.33
+      },
+      {
+        "name": "chikun-mobile",
+        "exit": 0,
+        "seconds": 14.44
+      },
+      {
+        "name": "cache",
+        "exit": 0,
+        "seconds": 18.93
+      }
+    ]
+  },
+  "hostedFiles": {
+    "origin": "https://lestersarcade.io",
+    "files": 151,
+    "failed": [],
+    "results": [
+      {
+        "file": "index.html",
+        "status": 200,
+        "bytes": 25488,
+        "sha256": "c83edab8eaa3675738a1a7d297ef518b712e16a902b5df41273e7d29901b2f42",
+        "expectedSha256": "c83edab8eaa3675738a1a7d297ef518b712e16a902b5df41273e7d29901b2f42",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "sw.js",
+        "status": 200,
+        "bytes": 4677,
+        "sha256": "e09db61d7e2c79a168032b12fc7c0d2e2ab7fc8ce06e47c89424e092c0a833de",
+        "expectedSha256": "e09db61d7e2c79a168032b12fc7c0d2e2ab7fc8ce06e47c89424e092c0a833de",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "hmh-reboot/index.html",
+        "status": 200,
+        "bytes": 16550,
+        "sha256": "48e6c94beec16cbf114073e3e103f0cf8dc1149a5b13a156b08a52129b800459",
+        "expectedSha256": "48e6c94beec16cbf114073e3e103f0cf8dc1149a5b13a156b08a52129b800459",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "hmh-reboot/styles.css",
+        "status": 200,
+        "bytes": 60828,
+        "sha256": "0ab89348aee5bbfe2aac99b215f5c56214a945a3f0ae2e643649621d6d954a05",
+        "expectedSha256": "0ab89348aee5bbfe2aac99b215f5c56214a945a3f0ae2e643649621d6d954a05",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "chikun/index.html",
+        "status": 200,
+        "bytes": 3799,
+        "sha256": "7496b0085e032596206cd536a9c796d4ced9e241a8fd6893b905ca14c527d5c4",
+        "expectedSha256": "7496b0085e032596206cd536a9c796d4ced9e241a8fd6893b905ca14c527d5c4",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "chikun/flight-room.html",
+        "status": 200,
+        "bytes": 1371,
+        "sha256": "367a3c0cabb09500aecfd3419336f17f8ff63d308f318be6ab29a27d3f17cd21",
+        "expectedSha256": "367a3c0cabb09500aecfd3419336f17f8ff63d308f318be6ab29a27d3f17cd21",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "dist/chikun/game.js",
+        "status": 200,
+        "bytes": 21072,
+        "sha256": "6c9b035c7a532ea5f8e98b8d70ab48879614399528506261c1e0ac64d1b35280",
+        "expectedSha256": "6c9b035c7a532ea5f8e98b8d70ab48879614399528506261c1e0ac64d1b35280",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "stacked/index.html",
+        "status": 200,
+        "bytes": 3435,
+        "sha256": "a359130ed842d6028d9c812d68d490d736141c810e81436e8ce084971d1c6baa",
+        "expectedSha256": "a359130ed842d6028d9c812d68d490d736141c810e81436e8ce084971d1c6baa",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "dist/chikun/flight-room.js",
+        "status": 200,
+        "bytes": 1733,
+        "sha256": "2d3a91bd1eb1ccf5e356f36733f915437cd8571e00d15af583cd70482cdcc4d8",
+        "expectedSha256": "2d3a91bd1eb1ccf5e356f36733f915437cd8571e00d15af583cd70482cdcc4d8",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "dist/chunks/chunk-2WGYLO4P.js",
+        "status": 200,
+        "bytes": 655,
+        "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+        "expectedSha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-6QJT5C2R.js",
+        "status": 200,
+        "bytes": 300,
+        "sha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+        "expectedSha256": "4012e043e40adc72e135d3ca07efc827267f5d7eafcf2a6c4e445ae34749d655",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-7Z5TIC4S.js",
+        "status": 200,
+        "bytes": 45320,
+        "sha256": "c774745b21b583ce3d996202876de708c8b55b23d02df93b2dc3a752c8eb22c2",
+        "expectedSha256": "c774745b21b583ce3d996202876de708c8b55b23d02df93b2dc3a752c8eb22c2",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-CT2SWMC3.js",
+        "status": 200,
+        "bytes": 18484,
+        "sha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+        "expectedSha256": "226e92a8fbf21da32473e14ddf87273fbb0b913f539924b629cc0ed1f55fced6",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-DTH5RMRF.js",
+        "status": 200,
+        "bytes": 19104,
+        "sha256": "5994a5c08aa73ab303c680a81bf4604704bc5a9b41fe3e4489b15cfef5bdefa8",
+        "expectedSha256": "5994a5c08aa73ab303c680a81bf4604704bc5a9b41fe3e4489b15cfef5bdefa8",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-DLKSOBBD.js",
+        "status": 200,
+        "bytes": 4099,
+        "sha256": "dabdfe8eee90513e03b92c04e5f6e4413773c15bddddebc50b2c739f4bb6bc06",
+        "expectedSha256": "dabdfe8eee90513e03b92c04e5f6e4413773c15bddddebc50b2c739f4bb6bc06",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-EJUDHLWX.js",
+        "status": 200,
+        "bytes": 36830,
+        "sha256": "b25025cff9efb77291f20b3784535574c32ddb39e9c11fade2da2c1108f41d13",
+        "expectedSha256": "b25025cff9efb77291f20b3784535574c32ddb39e9c11fade2da2c1108f41d13",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-ESDQIMBA.js",
+        "status": 200,
+        "bytes": 965,
+        "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6",
+        "expectedSha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-FH4FMBET.js",
+        "status": 200,
+        "bytes": 4692,
+        "sha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+        "expectedSha256": "0c7dff85f7e978a15e63c8e704f9ef9e6aa754b166a0d4f5854e49d5510484c0",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-H4RK7ZF6.js",
+        "status": 200,
+        "bytes": 2602,
+        "sha256": "9d197da2aa6b63e131846ca0901257b0bf3ff69a69c7c11efd6552bc2303513a",
+        "expectedSha256": "9d197da2aa6b63e131846ca0901257b0bf3ff69a69c7c11efd6552bc2303513a",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-KFUOMTJ4.js",
+        "status": 200,
+        "bytes": 26173,
+        "sha256": "b4eb44399b47d8c6a31ba4391ab8e179e49e9976da15d30d826064611ae2c78c",
+        "expectedSha256": "b4eb44399b47d8c6a31ba4391ab8e179e49e9976da15d30d826064611ae2c78c",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-OQWCW7H2.js",
+        "status": 200,
+        "bytes": 524,
+        "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6",
+        "expectedSha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-RVRKWLMF.js",
+        "status": 200,
+        "bytes": 11857,
+        "sha256": "9e2e546430fb26412d4c3983b64ad68c6d89bce762f72564d26e3bd1e57a4adf",
+        "expectedSha256": "9e2e546430fb26412d4c3983b64ad68c6d89bce762f72564d26e3bd1e57a4adf",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-LGIRIS7V.js",
+        "status": 200,
+        "bytes": 825888,
+        "sha256": "e55799ff47d60316e189627afefa370f9b5eb6b946ba3fdce700d4a3baf3d292",
+        "expectedSha256": "e55799ff47d60316e189627afefa370f9b5eb6b946ba3fdce700d4a3baf3d292",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-WPEY4QJZ.js",
+        "status": 200,
+        "bytes": 13043,
+        "sha256": "b9e41c5b130395f8bb6fa6b4c86b3696a383e0ad56a6212e2d3a652d5acc04a3",
+        "expectedSha256": "b9e41c5b130395f8bb6fa6b4c86b3696a383e0ad56a6212e2d3a652d5acc04a3",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-XB24W4G6.js",
+        "status": 200,
+        "bytes": 2430,
+        "sha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+        "expectedSha256": "f357177fd3ab132c38ba38017d46e5e5f5bce7818bb099d942741057e4174e57",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-XDSRZEJ7.js",
+        "status": 200,
+        "bytes": 16810,
+        "sha256": "4c90d55418e48a8c5765e9e1cbc46e315010ecd0b37d76113c4cf7484af7d1b5",
+        "expectedSha256": "4c90d55418e48a8c5765e9e1cbc46e315010ecd0b37d76113c4cf7484af7d1b5",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-VSG3JNSZ.js",
+        "status": 200,
+        "bytes": 392452,
+        "sha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+        "expectedSha256": "e4ee88a74b791909f80154980e8b33a81c0d68de1bf307b25e13274f1218e677",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-YFNAS4ZQ.js",
+        "status": 200,
+        "bytes": 3396,
+        "sha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914",
+        "expectedSha256": "5222309515ecb7048637d5e5aea3830b88b49688273b03b92a0c163aafc0d914",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-YWMZYE3Q.js",
+        "status": 200,
+        "bytes": 1110,
+        "sha256": "95179314074e0017002874140df86c9a3b0cbe5a3689a6e1f596057561aa54d4",
+        "expectedSha256": "95179314074e0017002874140df86c9a3b0cbe5a3689a6e1f596057561aa54d4",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-ZRGYLZT3.js",
+        "status": 200,
+        "bytes": 42778,
+        "sha256": "432c93a4d69a9a58ba87e8fd6674cef49b7b1623fa9effee434f1d1f5f5c9484",
+        "expectedSha256": "432c93a4d69a9a58ba87e8fd6674cef49b7b1623fa9effee434f1d1f5f5c9484",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/chunk-ZZIAFSA2.js",
+        "status": 200,
+        "bytes": 10713,
+        "sha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+        "expectedSha256": "998dba553cb6570c422c9a9c9b72d1aff2a213e9716e0f321f1cf2c84b84a362",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/combat-audio-GHVBFHBR.js",
+        "status": 200,
+        "bytes": 5231,
+        "sha256": "31ffd7f2a823ac15baea78aa8c001b4bee393df2acf5646cef57ff3d03fe2529",
+        "expectedSha256": "31ffd7f2a823ac15baea78aa8c001b4bee393df2acf5646cef57ff3d03fe2529",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/debug-grid-overlay-GIIHKGMQ.js",
+        "status": 200,
+        "bytes": 1070,
+        "sha256": "c8004d194967b15c82a3c7d467728afb576cfda60e7460786939e1ee83a2e676",
+        "expectedSha256": "c8004d194967b15c82a3c7d467728afb576cfda60e7460786939e1ee83a2e676",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/encounter-endurance-pilot-RNHEFFGI.js",
+        "status": 200,
+        "bytes": 2099,
+        "sha256": "f39cfb3479c38c7d3a9787f705d0bf159c657bb93adc22442e79f8ad89ff6640",
+        "expectedSha256": "f39cfb3479c38c7d3a9787f705d0bf159c657bb93adc22442e79f8ad89ff6640",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/enemy-hit-feedback-DOEDTOHH.js",
+        "status": 200,
+        "bytes": 1421,
+        "sha256": "d5ff16d0233a88c3bde8aa014ac3c60c380b72d236d6d0fb8e11760885c8d17f",
+        "expectedSha256": "d5ff16d0233a88c3bde8aa014ac3c60c380b72d236d6d0fb8e11760885c8d17f",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/ethers.min-STJTETNS.js",
+        "status": 200,
+        "bytes": 4388,
+        "sha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+        "expectedSha256": "505dde64782cfcaae625b316c6fed2fa866951e787f6e58041e248040b927b53",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/gore-presentation-7QBPCINM.js",
+        "status": 200,
+        "bytes": 1825,
+        "sha256": "79517a3007c5caf8015499f969a444dad8d75f4cee489f0e1c4be50d8ce7cdec",
+        "expectedSha256": "79517a3007c5caf8015499f969a444dad8d75f4cee489f0e1c4be50d8ce7cdec",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/free-medals-KVM4UNHA.js",
+        "status": 200,
+        "bytes": 1998,
+        "sha256": "d1f40322a318aa65ec4603fa21d848d20cc12e9384ecd7e73c68aa9575dbaf8a",
+        "expectedSha256": "d1f40322a318aa65ec4603fa21d848d20cc12e9384ecd7e73c68aa9575dbaf8a",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hero-motion-atlas-ENAXIIBL.js",
+        "status": 200,
+        "bytes": 4280,
+        "sha256": "9d887740df60884baa2c340a41a488aa1b13522a6fbcf50fd0b72be4d9ddecc3",
+        "expectedSha256": "9d887740df60884baa2c340a41a488aa1b13522a6fbcf50fd0b72be4d9ddecc3",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-complete-animations-CJX6INFR.js",
+        "status": 200,
+        "bytes": 49984,
+        "sha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+        "expectedSha256": "9bac658f454534adea1373a47ead4baa01fb4a34762e64684bc7b3e6be5ac13e",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-enemies-wave-JRG2C7CD.js",
+        "status": 200,
+        "bytes": 3012,
+        "sha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+        "expectedSha256": "f1692099908a96fa23daf5a0b6763155a3b54b3f5f0e34940712e1f745679ae4",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-curated-level-art-ILZ4JAAC.js",
+        "status": 200,
+        "bytes": 743684,
+        "sha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+        "expectedSha256": "b57735f163edbe3144dc4c8dd7322c2d6934126eb4ac8f584779b1a0ac1bb35e",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-environment-pixellab-wave-2-I4W24ZT7.js",
+        "status": 200,
+        "bytes": 48573,
+        "sha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+        "expectedSha256": "a013f722af3f31265b0036a5bf1ca4949e339b2a4d1b4927a432368d4350ee07",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-animated-roster-LWW4EAQC.js",
+        "status": 200,
+        "bytes": 1929726,
+        "sha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+        "expectedSha256": "f39d5a9abdccdf466b7df2f6a3d674513619058d8cef87d5d3299f5fb2841469",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-final-animation-completion-manifest-ZNKMKYKD.js",
+        "status": 200,
+        "bytes": 50980,
+        "sha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+        "expectedSha256": "d80ca8b2710d233d93ceb409e997ceeb44fd35dc38b091bc2748cad4370bd96d",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-fx-powerups-wave-VKI3J6EM.js",
+        "status": 200,
+        "bytes": 2815,
+        "sha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+        "expectedSha256": "340fc4f0ef11813533b1337362c557c569210547e2241b4efe823e8fa3507594",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-final-boss-animations-manifest-MRKUTK72.js",
+        "status": 200,
+        "bytes": 40469,
+        "sha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+        "expectedSha256": "b1b594ae76a637500fe11e970017b22e49ec257ba6b0491d147d6f9bd4da221d",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-isometric-pixellab-wave-1-L2RR25XZ.js",
+        "status": 200,
+        "bytes": 35033,
+        "sha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+        "expectedSha256": "854ee753f14489ba9cc4b4da96aaf1ab444a9babbd29b9605ea58c38c1a9d995",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-level-environment-FD3WFZKW.js",
+        "status": 200,
+        "bytes": 35802,
+        "sha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+        "expectedSha256": "9cc822972dee0c91bdc755d2c9bf76476bd683aacd0e6083494aeea7a02d472f",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-pickup-icons-manifest-EX3BTXRD.js",
+        "status": 200,
+        "bytes": 4148,
+        "sha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+        "expectedSha256": "88229653ca6c98870628c3906aa8166cea372cab7770b044e6bd1bf29dbfd882",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-vfx-ui-chrome-manifest-7CNAIBVD.js",
+        "status": 200,
+        "bytes": 15049,
+        "sha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+        "expectedSha256": "0fad9ae23f7af78d3d9809bf1a4193e7823f89f979e79d0db66ce02241cd0178",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-production-art-pass-2QVH2BRN.js",
+        "status": 200,
+        "bytes": 111173,
+        "sha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+        "expectedSha256": "64587aab844f1ba641b7d374263a76a0888c859a829d43cc84ee56f730617170",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-wo110-boss-redo-manifest-ESQ42ECY.js",
+        "status": 200,
+        "bytes": 4031,
+        "sha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+        "expectedSha256": "252142d576f1cfd3a59f76f22b2e708bfb32485307ed8d95cfe4fb8fbd155a0d",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-wo117-polish-pack-manifest-JRH6G77C.js",
+        "status": 200,
+        "bytes": 4305,
+        "sha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+        "expectedSha256": "f6e274121102a364dd2344aa3ea95c47a88d65e03f7c70f0e066b996908a88e4",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/litvm-chain-client-72UAWTJT.js",
+        "status": 200,
+        "bytes": 557,
+        "sha256": "e38ea1308adf4dd9167ae770a0222995c83bae0b0dda22f39c81c7269775df93",
+        "expectedSha256": "e38ea1308adf4dd9167ae770a0222995c83bae0b0dda22f39c81c7269775df93",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/hmh-pixi.js",
+        "status": 200,
+        "bytes": 465746,
+        "sha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+        "expectedSha256": "5da86a3125f1f0d35c88edbbfb6a454aada982908aef710771105f96eecc1c2c",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/loader-L6P76OXQ.js",
+        "status": 200,
+        "bytes": 125,
+        "sha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+        "expectedSha256": "371bb28f97f7f92a1a6cba61ef41b9107b4f38bf28b5a19e604720326a8660ff",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/reload-presentation-6YBKJ64P.js",
+        "status": 200,
+        "bytes": 768,
+        "sha256": "b82d39bfc2bf16749f8e5d57c91f965794c71ef9702e7ab647b6b550e7db26da",
+        "expectedSha256": "b82d39bfc2bf16749f8e5d57c91f965794c71ef9702e7ab647b6b550e7db26da",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/pickup-indicators-Y75C35PV.js",
+        "status": 200,
+        "bytes": 1306,
+        "sha256": "fb5d7b942e3d414afbea0ee9877105f4826e6552c95596290f6f6b4e61d88d5e",
+        "expectedSha256": "fb5d7b942e3d414afbea0ee9877105f4826e6552c95596290f6f6b4e61d88d5e",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/runtime-manifest-7IN2B6KL.js",
+        "status": 200,
+        "bytes": 4238,
+        "sha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+        "expectedSha256": "ce02bd32854e432139a1bb9781aa73d6bbc674e88265abcfae614e15c5dc2b06",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/mannequin-atlas-6Y4ZRSDY.js",
+        "status": 200,
+        "bytes": 3509,
+        "sha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+        "expectedSha256": "b76709d6585b76640310db4f588d7ce6be00509d9e7484e5923eabc4ef2aa021",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/stacked-host-GWPVW5YQ.js",
+        "status": 200,
+        "bytes": 7163,
+        "sha256": "f0b9a8df62b7d70953df2f727d4e64963bf13bba4e58bb0b09b75ed7b4b2418c",
+        "expectedSha256": "f0b9a8df62b7d70953df2f727d4e64963bf13bba4e58bb0b09b75ed7b4b2418c",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/runtime-telemetry-writer-23FSULZ4.js",
+        "status": 200,
+        "bytes": 11313,
+        "sha256": "b0f0596fe80b31b856da8df4646c7403dec1d3867f9537627d73e0e85e3c6f22",
+        "expectedSha256": "b0f0596fe80b31b856da8df4646c7403dec1d3867f9537627d73e0e85e3c6f22",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/stacked-persistence-SYXSHWN2.js",
+        "status": 200,
+        "bytes": 1050,
+        "sha256": "5c02bc73ce4f7645eacc1014e9342ff522d92a5f1dbf547dde7b3542da068054",
+        "expectedSha256": "5c02bc73ce4f7645eacc1014e9342ff522d92a5f1dbf547dde7b3542da068054",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/world-design-field-map-J65ML4PU.js",
+        "status": 200,
+        "bytes": 2714,
+        "sha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+        "expectedSha256": "bd267d5733ef3840e486c6abccc4eda4728ccc9182b19a942bf04da8bc4c5c95",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/world-tour-spawns-7XARRG7N.js",
+        "status": 200,
+        "bytes": 2339,
+        "sha256": "81beb738b4427a34ae1130eac9fbf01979b7733d724ab45ccd1ec8df101f246a",
+        "expectedSha256": "81beb738b4427a34ae1130eac9fbf01979b7733d724ab45ccd1ec8df101f246a",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/chunks/world-ground-fallback-6LTSHLSB.js",
+        "status": 200,
+        "bytes": 3923,
+        "sha256": "5e6e501b2f0ff3cf4ca6de66f5389729e9950318205af0dbe3c88ca47d2385d1",
+        "expectedSha256": "5e6e501b2f0ff3cf4ca6de66f5389729e9950318205af0dbe3c88ca47d2385d1",
+        "matches": true,
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "file": "dist/hmh-reboot/game.js",
+        "status": 200,
+        "bytes": 440394,
+        "sha256": "a0f421e372cef525fc5edf6645bb70dd9184dbcc5ec4602b5ac51b585316c92d",
+        "expectedSha256": "a0f421e372cef525fc5edf6645bb70dd9184dbcc5ec4602b5ac51b585316c92d",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "dist/stacked/game.js",
+        "status": 200,
+        "bytes": 28143,
+        "sha256": "c2a73cf67aa41f0a1d7a9cbdbd231b868a052fe42c6f37e13b67826c12e3156a",
+        "expectedSha256": "c2a73cf67aa41f0a1d7a9cbdbd231b868a052fe42c6f37e13b67826c12e3156a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "dist/hmh-reboot/world-art.js",
+        "status": 200,
+        "bytes": 705,
+        "sha256": "08f1ad76b7c358bafd035a2f3648fa9a5a8c41e3b78e256832fad0f1402505ba",
+        "expectedSha256": "08f1ad76b7c358bafd035a2f3648fa9a5a8c41e3b78e256832fad0f1402505ba",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/bridge-deck-fringe.png",
+        "status": 200,
+        "bytes": 114737,
+        "sha256": "a4e7e181cb78d1daacbbe44158042a4990d91783559fe9aef25d1ad5bd406bf7",
+        "expectedSha256": "a4e7e181cb78d1daacbbe44158042a4990d91783559fe9aef25d1ad5bd406bf7",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "dist/stacked/verify-worker.js",
+        "status": 200,
+        "bytes": 2036,
+        "sha256": "f465ca724520805cd98effcad4d65500f8e9e8cddada38b4458110412ee14b7a",
+        "expectedSha256": "f465ca724520805cd98effcad4d65500f8e9e8cddada38b4458110412ee14b7a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "dist/main.js",
+        "status": 200,
+        "bytes": 1150102,
+        "sha256": "cd43440e303e0de8a1ea4eb9b01fad5f255e544db468a6137d70bb8fb35e4898",
+        "expectedSha256": "cd43440e303e0de8a1ea4eb9b01fad5f255e544db468a6137d70bb8fb35e4898",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+        "status": 200,
+        "bytes": 134625,
+        "sha256": "1868f656e82c8813647106a7fda181e4e7eb5eeba962b0b82e5c1871eee69804",
+        "expectedSha256": "1868f656e82c8813647106a7fda181e4e7eb5eeba962b0b82e5c1871eee69804",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/bridge-deck.png",
+        "status": 200,
+        "bytes": 312048,
+        "sha256": "d75c041aac66072ab27da6c87b3c066914813a00273735cdd849a49497decd19",
+        "expectedSha256": "d75c041aac66072ab27da6c87b3c066914813a00273735cdd849a49497decd19",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+        "status": 200,
+        "bytes": 103281,
+        "sha256": "c1a6cd6c31b74d45d35cd36deafe85febc1bdd0574a30fb65ccb5093d7495e86",
+        "expectedSha256": "c1a6cd6c31b74d45d35cd36deafe85febc1bdd0574a30fb65ccb5093d7495e86",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "dist/stacked/stacked-pixi-v1.js",
+        "status": 200,
+        "bytes": 496615,
+        "sha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3",
+        "expectedSha256": "6c9a15983644f0883e50c0723874e3e6e88f8cd8968f881253d15143c1732db3",
+        "matches": true,
+        "cacheControl": "public, max-age=0, must-revalidate"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/industrial-slab-fringe.png",
+        "status": 200,
+        "bytes": 94313,
+        "sha256": "755d3c562e00456a0da6f457620208f6003fac8c60171c6fac31dc29d78445e4",
+        "expectedSha256": "755d3c562e00456a0da6f457620208f6003fac8c60171c6fac31dc29d78445e4",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/hmh-terrain-tiles.json",
+        "status": 200,
+        "bytes": 12459,
+        "sha256": "996220acf9e48386feb665bd82ca9efbc24c9f18a305a44dc9d5ae10be0c37f1",
+        "expectedSha256": "996220acf9e48386feb665bd82ca9efbc24c9f18a305a44dc9d5ae10be0c37f1",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/crushed-ore.png",
+        "status": 200,
+        "bytes": 402124,
+        "sha256": "e2afbec101ba9d73dc7894ecefcbefbe367f2effbc933b86918546a0e839e341",
+        "expectedSha256": "e2afbec101ba9d73dc7894ecefcbefbe367f2effbc933b86918546a0e839e341",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/ledge-top-fringe.png",
+        "status": 200,
+        "bytes": 130294,
+        "sha256": "5de25624bafb923448901b6a0939e42e8b1538f71341ff4f3a4621110aa2c840",
+        "expectedSha256": "5de25624bafb923448901b6a0939e42e8b1538f71341ff4f3a4621110aa2c840",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/forest-floor.png",
+        "status": 200,
+        "bytes": 288659,
+        "sha256": "4a9b88fcd7ffed224581d516e8cae4624977910e18fba04da9498196834322c7",
+        "expectedSha256": "4a9b88fcd7ffed224581d516e8cae4624977910e18fba04da9498196834322c7",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/industrial-slab.png",
+        "status": 200,
+        "bytes": 265995,
+        "sha256": "6bdd4b3ae67de6f223b3137ebda976f2f4bcf4a305c8a116715ea86f43e5da53",
+        "expectedSha256": "6bdd4b3ae67de6f223b3137ebda976f2f4bcf4a305c8a116715ea86f43e5da53",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+        "status": 200,
+        "bytes": 107487,
+        "sha256": "fb4014da4d04c50f07371b0b79457e4c6f26dad7a500f55468a4aad2ebb270ae",
+        "expectedSha256": "fb4014da4d04c50f07371b0b79457e4c6f26dad7a500f55468a4aad2ebb270ae",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/red-rock-fringe.png",
+        "status": 200,
+        "bytes": 107699,
+        "sha256": "43195619522405bcc988faaae5e4088d047d3836265e07c751273983a5c3c798",
+        "expectedSha256": "43195619522405bcc988faaae5e4088d047d3836265e07c751273983a5c3c798",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/red-rock.png",
+        "status": 200,
+        "bytes": 301412,
+        "sha256": "a2fee70c03f934c33705f958cfd551fd35dad039a0cd9bdaf73f4a00a84709d4",
+        "expectedSha256": "a2fee70c03f934c33705f958cfd551fd35dad039a0cd9bdaf73f4a00a84709d4",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/road-fringe.png",
+        "status": 200,
+        "bytes": 93228,
+        "sha256": "aa8e6d39343fbb6c4a4fecb56e50a67e50a2b715a933f6b3df0674ab16e696fa",
+        "expectedSha256": "aa8e6d39343fbb6c4a4fecb56e50a67e50a2b715a933f6b3df0674ab16e696fa",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/packed-earth.png",
+        "status": 200,
+        "bytes": 303004,
+        "sha256": "0092bd6aef75a7bb9239a8ea9838fab01954e4365ad2448407f5003543a7e66f",
+        "expectedSha256": "0092bd6aef75a7bb9239a8ea9838fab01954e4365ad2448407f5003543a7e66f",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/road.png",
+        "status": 200,
+        "bytes": 240811,
+        "sha256": "e14a32d0e371774eabcc7e87604f1ed6a3ad8d463ff7b0f253c75a4aebfbc27f",
+        "expectedSha256": "e14a32d0e371774eabcc7e87604f1ed6a3ad8d463ff7b0f253c75a4aebfbc27f",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/road-shoulder.png",
+        "status": 200,
+        "bytes": 101527,
+        "sha256": "3b6b6bc7d4440faca919941ac19d03f3c46bc81883aeca8939ea75d73de5404a",
+        "expectedSha256": "3b6b6bc7d4440faca919941ac19d03f3c46bc81883aeca8939ea75d73de5404a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/ledge-top.png",
+        "status": 200,
+        "bytes": 384781,
+        "sha256": "e68c96b57c7e3c738801f32f82087100eb7373f9edd32a2b706e7ef82fd623a2",
+        "expectedSha256": "e68c96b57c7e3c738801f32f82087100eb7373f9edd32a2b706e7ef82fd623a2",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/rock-face.png",
+        "status": 200,
+        "bytes": 74402,
+        "sha256": "587c237d4cec472d7ffb70d9a3cfadc548f07727dee5faf445a0b9fca65452b0",
+        "expectedSha256": "587c237d4cec472d7ffb70d9a3cfadc548f07727dee5faf445a0b9fca65452b0",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/shallow-water-fringe.png",
+        "status": 200,
+        "bytes": 90289,
+        "sha256": "9125339b23351499b8af51cdef0e1366ae69c8aed6f11e197493cc056220d1a6",
+        "expectedSha256": "9125339b23351499b8af51cdef0e1366ae69c8aed6f11e197493cc056220d1a6",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/scree-skirt.png",
+        "status": 200,
+        "bytes": 132140,
+        "sha256": "8e3f811456ccc3159537deaaeb64f1e6a2595d9a533f8f335203114ffb80e1f7",
+        "expectedSha256": "8e3f811456ccc3159537deaaeb64f1e6a2595d9a533f8f335203114ffb80e1f7",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/shallows-band.png",
+        "status": 200,
+        "bytes": 91260,
+        "sha256": "9db94ea2665797a04d1b334138cdd94cf67af1288ddd9465457767269968973c",
+        "expectedSha256": "9db94ea2665797a04d1b334138cdd94cf67af1288ddd9465457767269968973c",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/shore-band.png",
+        "status": 200,
+        "bytes": 87562,
+        "sha256": "c1d255535c0e5a86534fd0093d897cea6b809a2811005e3115d4619bc5f1b1f4",
+        "expectedSha256": "c1d255535c0e5a86534fd0093d897cea6b809a2811005e3115d4619bc5f1b1f4",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/water-fringe.png",
+        "status": 200,
+        "bytes": 89142,
+        "sha256": "3bb4dfced81b49e4173dd29cccccc22f77de7456e7eeb3226f8e32a71eec1680",
+        "expectedSha256": "3bb4dfced81b49e4173dd29cccccc22f77de7456e7eeb3226f8e32a71eec1680",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/shallow-water.png",
+        "status": 200,
+        "bytes": 224354,
+        "sha256": "41814aecdd011fd57b1db172f5db4db17049ca5d76cc52657c9ba5d678cdc051",
+        "expectedSha256": "41814aecdd011fd57b1db172f5db4db17049ca5d76cc52657c9ba5d678cdc051",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+        "status": 200,
+        "bytes": 96914,
+        "sha256": "d998fa1548edaf6358446b9ac424f368871100c8850d444fa2d675ed6ffcdab9",
+        "expectedSha256": "d998fa1548edaf6358446b9ac424f368871100c8850d444fa2d675ed6ffcdab9",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/wet-bank.png",
+        "status": 200,
+        "bytes": 254589,
+        "sha256": "3c7cc03003952cc18f35c0589958cc0084d79ca39f435c23d7555364ef74c9e3",
+        "expectedSha256": "3c7cc03003952cc18f35c0589958cc0084d79ca39f435c23d7555364ef74c9e3",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-terrain-tiles/water.png",
+        "status": 200,
+        "bytes": 222278,
+        "sha256": "458f60b7f80470922c1a0cbbb22bac0b6d88395d6b7df8d310d3975eb0af8c76",
+        "expectedSha256": "458f60b7f80470922c1a0cbbb22bac0b6d88395d6b7df8d310d3975eb0af8c76",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-world-decals/hmh-world-decals.json",
+        "status": 200,
+        "bytes": 73381,
+        "sha256": "58d3f98d9e8ddd56f39d423b1c94f827f9c1b228568086e50b913b8e7bdc3436",
+        "expectedSha256": "58d3f98d9e8ddd56f39d423b1c94f827f9c1b228568086e50b913b8e7bdc3436",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lester-original/lester-original-motion.json",
+        "status": 200,
+        "bytes": 537963,
+        "sha256": "4f1cc1bdcea6be3f5a1c64ee534077a124505d2d117b02228a425319bda3379f",
+        "expectedSha256": "4f1cc1bdcea6be3f5a1c64ee534077a124505d2d117b02228a425319bda3379f",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lilly/lilly-motion.json",
+        "status": 200,
+        "bytes": 533329,
+        "sha256": "e2a42a022d1d871bfa7e5c61cb61d095c6cb6c8d3e28340758806a1f5c6f80ec",
+        "expectedSha256": "e2a42a022d1d871bfa7e5c61cb61d095c6cb6c8d3e28340758806a1f5c6f80ec",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.json",
+        "status": 200,
+        "bytes": 536784,
+        "sha256": "d91c6983c548292ee2dc861fa6951bed6f17d4b25f28aee4f508d2d779296496",
+        "expectedSha256": "d91c6983c548292ee2dc861fa6951bed6f17d4b25f28aee4f508d2d779296496",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lester-original/lester-original-motion.webp",
+        "status": 200,
+        "bytes": 2791198,
+        "sha256": "83d9556476855d5ff618e32690b52621770540b64a33aaa5995892cd008f7e0e",
+        "expectedSha256": "83d9556476855d5ff618e32690b52621770540b64a33aaa5995892cd008f7e0e",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lit-valkyrie/lit-valkyrie-motion.json",
+        "status": 200,
+        "bytes": 536831,
+        "sha256": "78a5edcc717cfb83f457c0cecbf3df3d2b5d9acd282ec42507409f332917be3d",
+        "expectedSha256": "78a5edcc717cfb83f457c0cecbf3df3d2b5d9acd282ec42507409f332917be3d",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/forkrunner/forkrunner-native-roster.json",
+        "status": 200,
+        "bytes": 239667,
+        "sha256": "c96e6c295105458a38fccc588666eaf6ed76984b4c8731fcd1fa8472cefce526",
+        "expectedSha256": "c96e6c295105458a38fccc588666eaf6ed76984b4c8731fcd1fa8472cefce526",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lit-valkyrie/lit-valkyrie-motion.webp",
+        "status": 200,
+        "bytes": 2748946,
+        "sha256": "79a1e1adba29e8adab04a4b7929883ec6b2c2b38599dc0f189cc4fa8b04eab83",
+        "expectedSha256": "79a1e1adba29e8adab04a4b7929883ec6b2c2b38599dc0f189cc4fa8b04eab83",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp",
+        "status": 200,
+        "bytes": 2841738,
+        "sha256": "54c4e2c0a96cf01863c9f018e6785186d87b5f52a0b2801440a3190cf79536d7",
+        "expectedSha256": "54c4e2c0a96cf01863c9f018e6785186d87b5f52a0b2801440a3190cf79536d7",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/gas-bomber/gas-bomber-native-roster.json",
+        "status": 200,
+        "bytes": 240241,
+        "sha256": "501397006a4ef4d4430b8ffd35b1d518ee1bf4c223c2090cc7467645e0cacf56",
+        "expectedSha256": "501397006a4ef4d4430b8ffd35b1d518ee1bf4c223c2090cc7467645e0cacf56",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/liquidator-agent/liquidator-agent-native-roster.json",
+        "status": 200,
+        "bytes": 242288,
+        "sha256": "d0d62001dd878e90ecf674270193ca1ecfc5863879ceb5fb3132708b46a5dc7a",
+        "expectedSha256": "d0d62001dd878e90ecf674270193ca1ecfc5863879ceb5fb3132708b46a5dc7a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/forkrunner/forkrunner-native-roster.webp",
+        "status": 200,
+        "bytes": 1839298,
+        "sha256": "6355bcb5cc06c1f0a514a60c280b447f5b568d792a357ef0cf2a80dbec0e757e",
+        "expectedSha256": "6355bcb5cc06c1f0a514a60c280b447f5b568d792a357ef0cf2a80dbec0e757e",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-hero-motion/lilly/lilly-motion.webp",
+        "status": 200,
+        "bytes": 2755198,
+        "sha256": "151f2c6d0136df8ddf88d048f9d0ef0b9ae36cbcb01a921feee6684e179b890d",
+        "expectedSha256": "151f2c6d0136df8ddf88d048f9d0ef0b9ae36cbcb01a921feee6684e179b890d",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/the-liquidator/the-liquidator-native-roster.json",
+        "status": 200,
+        "bytes": 740245,
+        "sha256": "80227f8faa21bf2b18ff69c177166dc50504e24a24b3b7fdadb4e675fb752bb8",
+        "expectedSha256": "80227f8faa21bf2b18ff69c177166dc50504e24a24b3b7fdadb4e675fb752bb8",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/liquidator-agent/liquidator-agent-native-roster.webp",
+        "status": 200,
+        "bytes": 1705000,
+        "sha256": "42527f95328dc92b012d57d599c0ebdc99b3d061073436fbcf6d082985de3d36",
+        "expectedSha256": "42527f95328dc92b012d57d599c0ebdc99b3d061073436fbcf6d082985de3d36",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/validator-cultist/validator-cultist-native-roster.json",
+        "status": 200,
+        "bytes": 242526,
+        "sha256": "84c7a455430e8ce9d4932d222ca56deb472281c5f73d8237faae6b0295cb99f2",
+        "expectedSha256": "84c7a455430e8ce9d4932d222ca56deb472281c5f73d8237faae6b0295cb99f2",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/whale-enforcer/whale-enforcer-native-roster.json",
+        "status": 200,
+        "bytes": 241022,
+        "sha256": "d4f7485ac8d5616f6fba3b1a78f21cd5d9b09df2bd33c7f0f7251c06c62b12b7",
+        "expectedSha256": "d4f7485ac8d5616f6fba3b1a78f21cd5d9b09df2bd33c7f0f7251c06c62b12b7",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/gas-bomber/gas-bomber-native-roster.webp",
+        "status": 200,
+        "bytes": 2151274,
+        "sha256": "f5873d58b5d26113538d3951e3b2ec07bbb1e94cd14d6e0faaeed092b2c21bf5",
+        "expectedSha256": "f5873d58b5d26113538d3951e3b2ec07bbb1e94cd14d6e0faaeed092b2c21bf5",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/validator-cultist/validator-cultist-native-roster.webp",
+        "status": 200,
+        "bytes": 2299388,
+        "sha256": "3766174768fef47c6808762aa9ed858319285bafff110f6a2d8178aeaf2297e3",
+        "expectedSha256": "3766174768fef47c6808762aa9ed858319285bafff110f6a2d8178aeaf2297e3",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/accelerate.webp",
+        "status": 200,
+        "bytes": 110980,
+        "sha256": "065198d3e5e4e9a6577bc7fa6e2e3b33cec3112e7c9d7c5950b6f4c4a4c8a4ee",
+        "expectedSha256": "065198d3e5e4e9a6577bc7fa6e2e3b33cec3112e7c9d7c5950b6f4c4a4c8a4ee",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/coin.wav",
+        "status": 200,
+        "bytes": 22124,
+        "sha256": "49809760d566708150688b24e4247b1718345228f3f6f3bd4cd363fbb1fda8b6",
+        "expectedSha256": "49809760d566708150688b24e4247b1718345228f3f6f3bd4cd363fbb1fda8b6",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/air.wav",
+        "status": 200,
+        "bytes": 384044,
+        "sha256": "b716ace75279210d6a17379d6d88bc6638c8cb3a4cea1dfcefbbc1b3672e8112",
+        "expectedSha256": "b716ace75279210d6a17379d6d88bc6638c8cb3a4cea1dfcefbbc1b3672e8112",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/impact.wav",
+        "status": 200,
+        "bytes": 38444,
+        "sha256": "1e90cbf778216f4e8e570bab4504099d0a4e109719de880bcbca611f4c3f13d0",
+        "expectedSha256": "1e90cbf778216f4e8e570bab4504099d0a4e109719de880bcbca611f4c3f13d0",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/whale-enforcer/whale-enforcer-native-roster.webp",
+        "status": 200,
+        "bytes": 2267200,
+        "sha256": "2e2a7a4d61ac51fc2408a3501ac789b4b7753a822a477f7cb4d2d06061cd5e20",
+        "expectedSha256": "2e2a7a4d61ac51fc2408a3501ac789b4b7753a822a477f7cb4d2d06061cd5e20",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/flap.wav",
+        "status": 200,
+        "bytes": 10124,
+        "sha256": "8912486fe048a117747b719abc1cf8d3a08af970fae546c664648296fd5beb4b",
+        "expectedSha256": "8912486fe048a117747b719abc1cf8d3a08af970fae546c664648296fd5beb4b",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/launch.wav",
+        "status": 200,
+        "bytes": 36044,
+        "sha256": "0bef515180725db6792d72a2ac82f25c519f484863f0465ab2b11cffd2e05aff",
+        "expectedSha256": "0bef515180725db6792d72a2ac82f25c519f484863f0465ab2b11cffd2e05aff",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/manifest.json",
+        "status": 200,
+        "bytes": 807,
+        "sha256": "eb3b7c1d0c56e651109420734b848f5ec9b2ee31c14f890f274a2504ab3ccf8a",
+        "expectedSha256": "eb3b7c1d0c56e651109420734b848f5ec9b2ee31c14f890f274a2504ab3ccf8a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/near.wav",
+        "status": 200,
+        "bytes": 20204,
+        "sha256": "2fbff0a09339184e30f27e500ae32dca2b08c0cb1193011f8a3ea7cf6baef4f6",
+        "expectedSha256": "2fbff0a09339184e30f27e500ae32dca2b08c0cb1193011f8a3ea7cf6baef4f6",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/pass.wav",
+        "status": 200,
+        "bytes": 17804,
+        "sha256": "61824bc67d200669e5968a4dac00e1dca8dbf4f0dcd21429e33424fe9f81a14b",
+        "expectedSha256": "61824bc67d200669e5968a4dac00e1dca8dbf4f0dcd21429e33424fe9f81a14b",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/audio/streak.wav",
+        "status": 200,
+        "bytes": 43244,
+        "sha256": "4b17773f0006f9184ed043c1b66812bc947c61080f8f1e61ddd243a97b237545",
+        "expectedSha256": "4b17773f0006f9184ed043c1b66812bc947c61080f8f1e61ddd243a97b237545",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/barrel_roll.webp",
+        "status": 200,
+        "bytes": 120192,
+        "sha256": "931a08a3793808c0598b119d1278efea086d0e119a15b85161a79f5d325f1e6a",
+        "expectedSha256": "931a08a3793808c0598b119d1278efea086d0e119a15b85161a79f5d325f1e6a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/brake.webp",
+        "status": 200,
+        "bytes": 118056,
+        "sha256": "e92675b93a54808cdd3903feb45ff49ba859118b4fc0c39eee3db8bb213bf35c",
+        "expectedSha256": "e92675b93a54808cdd3903feb45ff49ba859118b4fc0c39eee3db8bb213bf35c",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/character.json",
+        "status": 200,
+        "bytes": 5472,
+        "sha256": "97b20c421fa343d4f443614228f785e5404cba6857e4a3d8d5b8d6745f99b147",
+        "expectedSha256": "97b20c421fa343d4f443614228f785e5404cba6857e4a3d8d5b8d6745f99b147",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/collect.webp",
+        "status": 200,
+        "bytes": 110826,
+        "sha256": "ad7269f2af13144870322d0c94a37747014bb6f97e9a4d5644ba8be6e32306fa",
+        "expectedSha256": "ad7269f2af13144870322d0c94a37747014bb6f97e9a4d5644ba8be6e32306fa",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/climb.webp",
+        "status": 200,
+        "bytes": 108416,
+        "sha256": "aff4af932a4c0eb9d494b37cebcdfd3a3a0827664b41ec2abd191851b5aee96a",
+        "expectedSha256": "aff4af932a4c0eb9d494b37cebcdfd3a3a0827664b41ec2abd191851b5aee96a",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/hmh-native-roster/the-liquidator/the-liquidator-native-roster.webp",
+        "status": 200,
+        "bytes": 3271236,
+        "sha256": "90d8fef901649e2caf0a41020a5aae3e7727b06c59a460011a7435e461862416",
+        "expectedSha256": "90d8fef901649e2caf0a41020a5aae3e7727b06c59a460011a7435e461862416",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/crest.webp",
+        "status": 200,
+        "bytes": 113190,
+        "sha256": "2447d82d0ffcae6837168dd81fff04998b69e08bec0b17f74899b94ff34f5689",
+        "expectedSha256": "2447d82d0ffcae6837168dd81fff04998b69e08bec0b17f74899b94ff34f5689",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/descend.webp",
+        "status": 200,
+        "bytes": 113634,
+        "sha256": "dc15169cf4490523a93c3c317ed7b67f0c603a25443e66277bfda6618596616e",
+        "expectedSha256": "dc15169cf4490523a93c3c317ed7b67f0c603a25443e66277bfda6618596616e",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/cruise.webp",
+        "status": 200,
+        "bytes": 110608,
+        "sha256": "567a840b382ae48f711547be36892b1bca9dec24d36a19ab0667e24bd433bc8f",
+        "expectedSha256": "567a840b382ae48f711547be36892b1bca9dec24d36a19ab0667e24bd433bc8f",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/dive.webp",
+        "status": 200,
+        "bytes": 114254,
+        "sha256": "5077243d940251c0af2a23490c341c0af0a3fec49c9ef16351c18128b0ac355f",
+        "expectedSha256": "5077243d940251c0af2a23490c341c0af0a3fec49c9ef16351c18128b0ac355f",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/dodge_high.webp",
+        "status": 200,
+        "bytes": 118908,
+        "sha256": "18c1dab62123c2bf972a78f20e43a147fe5c3af4942d83c43c52cb294ec8d2db",
+        "expectedSha256": "18c1dab62123c2bf972a78f20e43a147fe5c3af4942d83c43c52cb294ec8d2db",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/dodge_low.webp",
+        "status": 200,
+        "bytes": 111862,
+        "sha256": "feadf21c877fe8d426305d3e60c509cd2ed16fa5a61a37451deea6f61b9c37d9",
+        "expectedSha256": "feadf21c877fe8d426305d3e60c509cd2ed16fa5a61a37451deea6f61b9c37d9",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/poster.webp",
+        "status": 200,
+        "bytes": 5998,
+        "sha256": "b8076cb42db287e0886ba0488c846698a31ff64a468f4656fe4137b1cf1d9278",
+        "expectedSha256": "b8076cb42db287e0886ba0488c846698a31ff64a468f4656fe4137b1cf1d9278",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/impact.webp",
+        "status": 200,
+        "bytes": 115122,
+        "sha256": "90b7fdbae3e1169e4977a8fa794cc669fcc9590f2181248a466d5dedf0cc01ab",
+        "expectedSha256": "90b7fdbae3e1169e4977a8fa794cc669fcc9590f2181248a466d5dedf0cc01ab",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/fall.webp",
+        "status": 200,
+        "bytes": 114842,
+        "sha256": "7b168ecf097b193d212f781cb4197860eaf33dcb2ba049ae028d9e7e5a03c3ee",
+        "expectedSha256": "7b168ecf097b193d212f781cb4197860eaf33dcb2ba049ae028d9e7e5a03c3ee",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/ready.webp",
+        "status": 200,
+        "bytes": 113568,
+        "sha256": "d80c00e19d266294ae3c507e8e8a170d963f6b9eb64521790f3107b354b4317d",
+        "expectedSha256": "d80c00e19d266294ae3c507e8e8a170d963f6b9eb64521790f3107b354b4317d",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/recover.webp",
+        "status": 200,
+        "bytes": 116114,
+        "sha256": "3304a2e37d7cd3a67475c670d683745974c26ea9cc84672e6e0745a06de2e3c5",
+        "expectedSha256": "3304a2e37d7cd3a67475c670d683745974c26ea9cc84672e6e0745a06de2e3c5",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/takeoff.webp",
+        "status": 200,
+        "bytes": 113802,
+        "sha256": "61449474344d68728fdca91622def3203928186a57e9e81d7ee920ab8dc4e529",
+        "expectedSha256": "61449474344d68728fdca91622def3203928186a57e9e81d7ee920ab8dc4e529",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/squeeze.webp",
+        "status": 200,
+        "bytes": 106176,
+        "sha256": "f3b5882b8b887a43799f12cda765adbfcb86be01b71855edb0769b5a1da381bd",
+        "expectedSha256": "f3b5882b8b887a43799f12cda765adbfcb86be01b71855edb0769b5a1da381bd",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      },
+      {
+        "file": "assets/generated/chikun-flight-v2/tumble.webp",
+        "status": 200,
+        "bytes": 118464,
+        "sha256": "42f8b677eba4759219e0b9db4215077cc27bb72871bd2e8e91203dde71e10eb6",
+        "expectedSha256": "42f8b677eba4759219e0b9db4215077cc27bb72871bd2e8e91203dde71e10eb6",
+        "matches": true,
+        "cacheControl": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+      }
+    ]
+  },
+  "serviceWorker": {
+    "keys": [
+      "hmh-verification-unrelated-cache",
+      "lesters-arcade-v41-hmh-world-polish"
+    ],
+    "controlled": true,
+    "sha256": "a0f421e372cef525fc5edf6645bb70dd9184dbcc5ec4602b5ac51b585316c92d",
+    "sourceModelPublicStatus": 404
   }
 }
