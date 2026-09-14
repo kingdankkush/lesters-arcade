@@ -283,10 +283,14 @@ try {
   await chikunProfileTab.click();
   const profileText = (await page.locator('.game-stats-card').innerText()).replace(/\s+/g, ' ');
   if (ranked) {
-    assert.match(profileText, /LONGEST FLIGHT/i);
+    assert.match(profileText, /LONGEST RUN/i);
+    assert.match(profileText, /BEST SCORE.*GROUND & SKY/i);
+    assert.match(profileText, /CURRENT RUNS/i);
+    assert.match(profileText, /HISTORICAL RUNS/i);
     assert.match(profileText, /NEAR MISSES/i);
     assert.match(profileText, /BEST COMBO/i);
-    assert.match(profileText, /REPLAY VERIFIED/i);
+    assert.match(profileText, /Device-local.*SCORE SOURCE/i);
+    assert.match(profileText, /parent replays the child input evidence/i);
     assert.match(profileText, new RegExp(String(score)));
   } else {
     assert.match(profileText, /No runs recorded for Chikun's Escape yet/i);

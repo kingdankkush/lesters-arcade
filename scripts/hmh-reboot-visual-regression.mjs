@@ -343,6 +343,24 @@ if (isMain) {
   try {
     for (const scene of VISUAL_SCENES) {
       const page = await browser.newPage({ viewport: { ...scene.viewport }, deviceScaleFactor: 1, hasTouch: scene.viewport.width <= 600 });
+      // Drive animation frames at a repeatable presentation cadence. Startup
+      // frames use 1 ms until artwork readiness, so input can be applied after
+      // its deliberate reset and before the first 60 Hz simulation step.
+      // This fixture is for visual comparison, never performance measurement.
+      await page.addInitScript(() => {
+        const nativeFrame = window.requestAnimationFrame.bind(window);
+        let now = 1000;
+        let previousFrame = -1;
+        performance.now = () => now;
+        window.requestAnimationFrame = (callback) => nativeFrame((frame) => {
+          if (frame !== previousFrame) {
+            const ready = document.querySelector('#hmhRebootStage')?.dataset.startupArt === 'ready';
+            now += ready ? (window.__hmhVisualCaptureArmed ? 17 : 0) : 1;
+            previousFrame = frame;
+          }
+          callback(now);
+        });
+      });
       const errors = [];
       page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
       page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
@@ -368,7 +386,7 @@ if (isMain) {
         const stage = document.querySelector('#hmhRebootStage');
         window.__hmhVisualPauseTick = null;
         let openingAimApplied = false;
-        const observer = new MutationObserver(() => {
+        const inspect = () => {
           // Artwork readiness clears held input. Reapply the opening aim in
           // this browser turn, before another frame can choose auto-aim.
           if ((openingAim || openingTouch) && !openingAimApplied && stage.dataset.startupArt === 'ready') {
@@ -387,22 +405,24 @@ if (isMain) {
             }
             openingAimApplied = true;
           }
+          if (stage.dataset.startupArt === 'ready') window.__hmhVisualCaptureArmed = true;
           const tick = Number(stage.dataset.simulationTick ?? -1);
           if (tick < targetTick) return;
           observer.disconnect();
           window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true }));
           window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', code: 'Escape', bubbles: true }));
           window.__hmhVisualPauseTick = tick;
-        });
+        };
+        const observer = new MutationObserver(inspect);
         observer.observe(stage, { attributes: true, attributeFilter: ['data-simulation-tick', 'data-startup-art'] });
-      }, { targetTick: scene.tick, openingAim: scene.enemyCrops && scene.tick < 120 && scene.viewport.width > 600
+        inspect();
+      }, { targetTick: scene.tick, openingAim: scene.enemyCrops && scene.viewport.width > 600
         ? { x: 24, y: scene.viewport.height * 0.62 } : null,
         openingTouch: scene.enemyCrops && scene.viewport.width <= 600 });
       // Keep the real opening actors alive for their crop check. Automatic
       // fire now defeats them before an idle capture; aim away using ordinary
       // mouse input, without injecting health, spawn or simulation state.
-      // The idle opening capture must establish aim before the first repeat;
-      // the later combat capture retains its existing attack sequence.
+      // Opening and combat captures establish the same aim at readiness.
       if (scene.enemyCrops && scene.tick < 120 && scene.viewport.width > 600) {
         await page.mouse.move(24, scene.viewport.height * 0.62);
       }
