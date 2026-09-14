@@ -364,17 +364,27 @@ if (isMain) {
       // Pause through the real input handler in the same browser turn that
       // publishes the requested tick. A later automation keypress can arrive
       // several simulation frames after the last telemetry sample.
-      await page.evaluate(({ targetTick, openingAim }) => {
+      await page.evaluate(({ targetTick, openingAim, openingTouch }) => {
         const stage = document.querySelector('#hmhRebootStage');
         window.__hmhVisualPauseTick = null;
         let openingAimApplied = false;
         const observer = new MutationObserver(() => {
           // Artwork readiness clears held input. Reapply the opening aim in
           // this browser turn, before another frame can choose auto-aim.
-          if (openingAim && !openingAimApplied && stage.dataset.startupArt === 'ready') {
-            stage.querySelector('canvas').dispatchEvent(new PointerEvent('pointermove', {
-              clientX: openingAim.x, clientY: openingAim.y, buttons: 0, pointerType: 'mouse', bubbles: true,
-            }));
+          if ((openingAim || openingTouch) && !openingAimApplied && stage.dataset.startupArt === 'ready') {
+            if (openingTouch) {
+              const stick = document.querySelector('[data-hmh-control="aim"]');
+              const box = stick.getBoundingClientRect();
+              const pointer = { pointerId: 91, pointerType: 'touch', bubbles: true,
+                clientX: box.x + box.width / 2, clientY: box.y + box.height / 2 };
+              stick.dispatchEvent(new PointerEvent('pointerdown', pointer));
+              window.dispatchEvent(new PointerEvent('pointermove', { ...pointer,
+                clientX: pointer.clientX - 45, clientY: pointer.clientY + 35 }));
+            } else {
+              stage.querySelector('canvas').dispatchEvent(new PointerEvent('pointermove', {
+                clientX: openingAim.x, clientY: openingAim.y, buttons: 0, pointerType: 'mouse', bubbles: true,
+              }));
+            }
             openingAimApplied = true;
           }
           const tick = Number(stage.dataset.simulationTick ?? -1);
@@ -386,7 +396,8 @@ if (isMain) {
         });
         observer.observe(stage, { attributes: true, attributeFilter: ['data-simulation-tick', 'data-startup-art'] });
       }, { targetTick: scene.tick, openingAim: scene.enemyCrops && scene.tick < 120 && scene.viewport.width > 600
-        ? { x: 24, y: scene.viewport.height * 0.62 } : null });
+        ? { x: 24, y: scene.viewport.height * 0.62 } : null,
+        openingTouch: scene.enemyCrops && scene.viewport.width <= 600 });
       // Keep the real opening actors alive for their crop check. Automatic
       // fire now defeats them before an idle capture; aim away using ordinary
       // mouse input, without injecting health, spawn or simulation state.
@@ -400,15 +411,9 @@ if (isMain) {
         void page.mouse.move(24, scene.viewport.height * 0.62).catch(() => {});
       }, 50) : null;
       aimAway?.unref();
-      if (scene.enemyCrops && scene.viewport.width <= 600) {
-        const stick = page.locator('[data-hmh-control="aim"]');
-        await stick.waitFor({ state: 'visible' });
-        const box = await stick.boundingBox();
-        const touch = await page.context().newCDPSession(page);
-        const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2, id: 1 };
-        await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [centre] });
-        await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...centre, x: centre.x - 45, y: centre.y + 35 }] });
-      }
+      // The phone crop fixture holds its aim through the same pointer handlers
+      // at artwork readiness. Actual multi-touch behavior is covered separately
+      // by the mobile-controls browser smoke.
       // The hero atlas swaps in asynchronously. Without waiting for it the
       // capture is a race between the prototype and the production actor —
       // exactly the magnitude the per-cell bound is tuned to fail on.
