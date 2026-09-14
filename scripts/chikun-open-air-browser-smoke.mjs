@@ -14,6 +14,7 @@ const context=await browser.newContext({viewport,hasTouch:viewport.width<500,dev
 const page=await context.newPage();
 const issues=[];
 page.on('pageerror',e=>issues.push(e.message));
+page.on('console',message=>{if(message.type()==='error')issues.push(message.text());});
 // Exercise the actual child loop at 240 Hz. Only this test controls its clock;
 // production has no test hooks, changed physics, or supplied score results.
 function installFlightClock(){
@@ -82,7 +83,17 @@ try {
  assert.equal(await page.locator('#arcadeMusicAudio').evaluate(a=>a.muted),true);
  await page.locator('#arcadeMusicMuteButton').click();
  await page.locator('#arcadeMusicExpandButton').click();
+ await page.locator('#arcadeMusicPlayer[data-expanded="false"]').waitFor({state:'visible'});
+ await page.waitForTimeout(150);
+ const resumeRect=await frame.locator('#resumeButton').boundingBox();
+ const resumeHit=await page.evaluate(r=>document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.outerHTML,resumeRect);
+ assert.equal(await page.locator('#combatMenuPanel').isVisible(),false,'shared music must not open the legacy combat menu over Chikun');
  await frame.locator('#resumeButton').click({force:true});
+ await page.waitForTimeout(50);
+ if(!await frame.locator('#pauseOverlay').evaluate(el=>el.classList.contains('is-hidden'))) {
+   await page.screenshot({path:path.join(out,'resume-failure.png')});
+   console.log(JSON.stringify({resumeRect,resumeHit,messages:await frame.evaluate(()=>__flightTestMessages.slice(-8)),issues}));
+ }
  assert.equal(await frame.locator('#pauseOverlay').evaluate(el=>el.classList.contains('is-hidden')),true,'resume closes the pause menu');
  assert.equal(await page.locator('#arcadeMusicAudio').getAttribute('data-track-id'),pausedTrack,'resume preserves the selected song');
  await frame.evaluate(()=>{for(let i=0;i<700;i++)__flightTestAdvance(1000/60+.000001);});

@@ -70,6 +70,12 @@ export function createChikunPortalLifecycle({
 
   return Object.freeze({
     handleResult,
+    beginPracticeRun() {
+      if (session.leaderboardEligible || !finalized) return false;
+      finalized = false;
+      finalResult = null;
+      return true;
+    },
     get finalized() { return finalized; },
     get result() { return finalResult; },
   });

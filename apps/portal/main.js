@@ -3638,6 +3638,12 @@ function syncCombatOverlay() {
   renderArcadeMusicPlayer();
   const menuOwnsFocus = !combat.pendingBegin && Boolean(combat.paused || combat.gameOver || combat.levelUpPaused);
   document.body.classList.toggle('hide-rotate-hint', menuOwnsFocus);
+  // Chikun owns its pause UI and result lifecycle. Shared music controls must
+  // not create the legacy combat menu over the child iframe.
+  if (chikunActive) {
+    if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
+    return;
+  }
   // Auto-submit a finished ranked run to LitVM the moment the game-over state
   // is reached (no manual "Submit Official Score" step). One wallet confirmation
   // fires automatically. Guarded by gameOverSubmitted so it runs exactly once.
@@ -5113,6 +5119,9 @@ function mountChikunSession() {
         : 'Free practice connected. No profile, leaderboard, settlement, or chain write can occur.';
     },
     onState: (message) => {
+      if (message.payload.status === 'running' && message.payload.survivalTicks === 0) {
+        chikunLifecycle?.beginPracticeRun();
+      }
       chikunRunMusic?.observe(message.payload);
       combat.paused = Boolean(message.payload.paused);
       if (message.payload.status) {
