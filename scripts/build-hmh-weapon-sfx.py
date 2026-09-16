@@ -59,15 +59,35 @@ def metal(gain, at, hz=1500, decay=12):
             layer('noise', gain * .7, 3, at=at, high=1500)]
 
 
-def shot(seed, duration, hz, decay, *, crack=4.2, sub=66, heavy=False):
-    return dict(seed=seed, durationMs=duration, drive=1.1, peak=.76, layers=[
+# Reference character (owner-supplied Doom-era packs, 2026-09-16, used as a
+# measuring stick only; nothing is sampled): a gunshot keeps a low-mid body
+# for 250-450 ms after the crack, an explosion carries 35-40% of its energy
+# below 250 Hz, and pump/reload mechanics are short, bright (6-7 kHz
+# centroid) metal clicks. `tail` adds that body, `room` a soft reflected
+# tail, `pump` a two-stage rack after the shot.
+def rack(at, gain=.55):
+    return [*metal(gain, at, hz=2300, decay=9), layer('noise', gain * .9, 14, at=at, high=1800, low=8000),
+            *metal(gain * .8, at + 95, hz=1500, decay=10), layer('noise', gain * .7, 12, at=at + 95, high=1200, low=7000)]
+
+
+def shot(seed, duration, hz, decay, *, crack=4.2, sub=66, heavy=False, tail=0, room=0, pump=None):
+    layers = [
         layer('noise', crack, 3.5 if heavy else 2.5, low=9000, high=1600,attack=.12,length=24,post=True),
         layer('noise', .34, decay*.7, low=1800),
         layer('tone', .75, decay, hz=hz, sweep=.92, low=1100),
         layer('sub', .85 if heavy else .33, decay*1.05, hz=sub, sweep=.94, low=400),
         layer('noise', .14, decay * .6, at=35, low=3600),
         *metal(.13, 26, hz=1900, decay=8),
-    ])
+    ]
+    if tail:
+        layers += [layer('noise', .7, tail, at=40, attack=6, low=900),
+                   layer('sub', 1.4 if heavy else .6, tail * .9, at=30, attack=8, hz=sub * .75, sweep=.9, low=220),
+                   layer('tone', .5 if heavy else .25, tail * .7, at=30, attack=6, hz=hz * .6, sweep=.85, low=700)]
+    if room:
+        layers.append(layer('noise', room, max(tail, decay * 2), at=90, attack=30, low=2600, high=300))
+    if pump:
+        layers += rack(pump)
+    return dict(seed=seed, durationMs=duration, drive=1.1, peak=.76, layers=layers)
 
 
 def cue(seed, duration, layers, *, peak=.68, drive=1.25, runtime=None):
@@ -88,14 +108,17 @@ def reward(seed, notes, runtime, *, duration=460):
 CUES = {
     # Immediate crack, low-mid pressure that survives laptop speakers, then
     # a brief reflected tail. The fired event never starts with a charge-up.
-    'hmh-fire-coin-blaster': shot(0x0C01B1A5, 190, 165, 32,crack=1.9),
-    'hmh-fire-scatter-shotgun': shot(0x5C471234, 400, 170, 76, crack=4.8,sub=67,heavy=True),
-    'hmh-fire-auto-miner': shot(0x0A471111, 120, 178, 27, crack=1.0,sub=74),
-    'hmh-fire-launcher-rig': shot(0x1A0C4E12, 460, 145, 90, crack=4.1,sub=59,heavy=True),
-    'hmh-fire-hash-rail': cue(0x8A571A11, 350, [
+    'hmh-fire-coin-blaster': shot(0x0C01B1A5, 360, 165, 55, crack=1.6, tail=120, room=.12),
+    # Shotgun: heavy boom, long body, then the pump rack at 330 ms (well inside
+    # its 0.95/s fire cycle) so every shell has a mechanical follow-through.
+    'hmh-fire-scatter-shotgun': shot(0x5C471234, 980, 150, 150, crack=2.8, sub=62, heavy=True, tail=320, room=.3, pump=330),
+    'hmh-fire-auto-miner': shot(0x0A471111, 150, 178, 30, crack=1.1, sub=74, tail=30),
+    'hmh-fire-launcher-rig': shot(0x1A0C4E12, 900, 140, 160, crack=2.6, sub=56, heavy=True, tail=340, room=.26),
+    'hmh-fire-hash-rail': cue(0x8A571A11, 520, [
         layer('noise', 3.2, 3.5, high=1600,attack=.12,length=24,post=True),
-        layer('sub', .66, 62, hz=71, sweep=.94),layer('tone', .70, 58, hz=190,sweep=.88),
+        layer('sub', 1.1, 90, hz=71, sweep=.94),layer('tone', .70, 58, hz=190,sweep=.88),
         layer('metal', .3, 65, hz=530, sweep=.82), layer('noise', .2, 65, at=20, low=4700),
+        layer('noise', .5, 150, at=40, attack=6, low=1500), layer('metal', .18, 120, at=60, hz=820, sweep=.7),
     ], peak=.76, drive=1.1),
     'hmh-fire-lightning-ledger': cue(0x11E6E220, 190, [
         layer('noise', 1.4, 8, high=1800), layer('metal', .8, 27, hz=670, sweep=1.14),
@@ -127,21 +150,27 @@ CUES = {
     ], peak=.53),
     # Start unlatches/withdraws the magazine; completion has its own real
     # runtime event so it cannot announce readiness before ammo returns.
-    'hmh-weapon-reload': cue(0x2E10AD77, 400, [
+    # Reload: release, withdraw, insert, chamber. Four bright mechanical
+    # stages over 640 ms (the reload itself takes 1.5 s; completion has its
+    # own cue), in the register of the reference pump open/load/close clicks.
+    'hmh-weapon-reload': cue(0x2E10AD77, 640, [
         *metal(.75, 0, hz=1850),
         layer('noise', .38, 43, at=45, low=5500, high=550, attack=8),
-        *metal(.5, 148, hz=970, decay=18), layer('tone', .4, 22, at=148, hz=165),
+        *metal(.5, 250, hz=970, decay=18), layer('tone', .4, 22, at=250, hz=165),
+        layer('noise', .3, 30, at=300, low=6000, high=800, attack=6),
+        *rack(430, gain=.5),
     ], peak=.70, drive=1.4),
-    'hmh-reload-complete': cue(0x2E10AD78, 240, [
+    'hmh-reload-complete': cue(0x2E10AD78, 320, [
         layer('tone', .8, 27, hz=175, sweep=.84), *metal(1, 0, hz=1100, decay=18),
         layer('noise', .5, 13, at=52, high=500), *metal(.75, 86, hz=2050),
+        *metal(.4, 170, hz=1400, decay=9), layer('noise', .3, 10, at=170, high=1500, low=7500),
     ], peak=.72, drive=1.7, runtime='reload-complete'),
     'hmh-weapon-empty': cue(0x3D2C0000, 100, [
         *metal(.7, 0, hz=1650, decay=7), layer('tone', .25, 10, hz=265),
     ], peak=.61),
-    'hmh-enemy-hit': cue(0xE1E11117, 180, [
+    'hmh-enemy-hit': cue(0xE1E11117, 220, [
         layer('noise', 1, 13, low=6000), layer('noise', .75, 28, low=800),
-        layer('tone', .8, 25, hz=128, sweep=.74),
+        layer('tone', .8, 25, hz=128, sweep=.74), layer('tone', .45, 32, hz=92, sweep=.8, low=500),
     ], peak=.70, drive=1.8, runtime='enemy-hit'),
     'hmh-player-hit': cue(0xDA1A6E, 320, [
         layer('noise', .9, 26, low=3700), layer('tone', 1.1, 67, hz=90, sweep=.78),
@@ -154,10 +183,13 @@ CUES = {
     'hmh-grenade-throw': cue(0x6A3A01, 320, [
         *metal(.6, 0, hz=1850, decay=13), layer('noise', .6, 60, at=48, attack=24, low=4500, high=500),
     ], peak=.64, runtime='grenade'),
-    'hmh-grenade-boom': cue(0x6A3A02, 1000, [
-        layer('noise', 2, 26, low=6500), layer('noise', 2, 145, low=1200),
-        layer('tone', 1.5, 160, hz=66, sweep=.62), layer('noise', .6, 135, at=100, low=2800),
-        *metal(.22, 180, hz=2350, decay=55),
+    # Explosion: bigger sub floor and a rumble tail in the reference 35-40%
+    # low-band register, plus late debris ticks.
+    'hmh-grenade-boom': cue(0x6A3A02, 1500, [
+        layer('noise', 2, 26, low=6500), layer('noise', 2, 190, low=1100),
+        layer('tone', 2.0, 230, hz=58, sweep=.6), layer('sub', 1.6, 260, hz=44, sweep=.7, low=200),
+        layer('noise', .6, 200, at=120, low=2400), layer('noise', .35, 380, at=200, attack=40, low=900),
+        *metal(.22, 180, hz=2350, decay=55), *metal(.14, 420, hz=1900, decay=30), *metal(.1, 560, hz=2600, decay=24),
     ], peak=.78, drive=2, runtime='grenade-boom'),
     'hmh-pickup': reward(0xB1C001, [880, 1320], 'pickup', duration=300),
     'hmh-health-pickup': reward(0xB1C002, [523.25, 659.25, 1046.5], 'health-pickup'),
@@ -177,10 +209,14 @@ CUES = {
     'hmh-upgrade-pick': reward(0xB1C007, [587.33, 880, 1174.66], 'upgrade-pick', duration=540),
     'hmh-level-up': reward(0xB1C008, [523.25, 659.25, 783.99, 1046.5], 'level-up', duration=650),
     # Original throat-like oscillators, air and impact layers. No sampled voices.
-    'hmh-enemy-death': cue(0xDEAD01, 650, [
+    # Death: the throat layer plus an original wet gib burst (low noise pop,
+    # a fast downward sweep and two later splats). No sampled gore.
+    'hmh-enemy-death': cue(0xDEAD01, 760, [
         layer('growl', 1.2, 145, hz=105, sweep=.48, attack=5),
         layer('noise', .8, 22, low=1700), layer('noise', .28, 95, at=140, low=1100),
         layer('tone', .6, 48, hz=94, sweep=.65),
+        layer('noise', 1.0, 60, at=20, attack=3, low=700), layer('tone', .5, 45, at=25, hz=210, sweep=.35, low=900),
+        layer('noise', .4, 30, at=120, low=500), layer('noise', .3, 25, at=210, low=600),
     ], peak=.73, drive=1.9, runtime='enemy-death'),
     'hmh-enemy-melee-tell': cue(0xDEAD02, 500, [
         layer('growl', 1.1, 110, hz=115, sweep=1.55, attack=14),
@@ -315,7 +351,7 @@ def build(verify):
     manifest = dict(pipelineId=PIPELINE_ID, license='synthesised-in-repo', runtimeAuthority='projection-only',
                     sampleRate=SAMPLE_RATE, channels=1, bitDepth=16, peakCeiling=PEAK_CEILING,
                     notes='Original layered action sounds. No external recordings. Regenerate with npm run assets:hmh:weapon-sfx.',
-                    cues=cues, reproducibleVerified=verify,renderRevision='pressure-crack-v3',pythonVersion=platform.python_version())
+                    cues=cues, reproducibleVerified=verify,renderRevision='pressure-body-v4',pythonVersion=platform.python_version())
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')
     return manifest
 
