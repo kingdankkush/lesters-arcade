@@ -43,6 +43,17 @@ Working branch `fable/master-list-20260916`, cut from `codex/mobile-worlds-aquat
 - Done: authored atlas re-rendered with Blender 5.1.2 at 256/512 px frames into a 2048 px page with `pixelDensity: 2`; runtimeScale divided by the density so footprints and the Tripo scale reference are unchanged.
 - Not done (needs the external Tripo source root or an owner call): Tripo props at 512 px frames (56 GLBs are not in the repo), `occupancy` 0.78 → 0.95, mobile barrier tier at 256 px, mobile `resolutionCap` 1 → 2 (GPU fill-rate trade, needs device evidence), a density gate in `hmh-tripo-production-asset-qa.mjs`.
 
+## Slice 6 — STACKED piece presentation (ST-N03) — committed `7c4c749b`
+
+- `apps/stacked/src/render/piece-presentation.mjs`: pooled typed-array layer (288/192 slots) for the lock thud (inner well layers settle ≤ 4 px), hold/save mote streak, level-transition shimmer band, ledger-rise dust, perfect-clear sparkles, top-out crumble with a held dim, and a ~0.5 Hz danger pulse. Bands stay inside the well at ≤ 0.12 alpha (0.07 with reduceFlash); reduceMotion zeroes everything like the spark layer. Wired in `renderer.mjs` (`dataset.pieceFx*`), covered by `tests/stacked-piece-presentation.test.mjs`; the playable smoke passes on all six profiles.
+- Not done: sub-tick interpolation of piece movement (the renderer receives no accumulator alpha), visualizer facelift (ST-N01), menu/UI overhaul (ST-N02).
+
+## Slice 7 — HMH action SFX body pass (HMH-S01, HMH-S04 partial) — committed
+
+- The owner supplied two Doom-mod sound packs (`3P Sound Pack.zip`, `dD_Weapon_Sounds.zip`). They are compiled from other mods and id Software assets with no commercial licence, so **nothing from them is copied into the repo**. Their WAV lumps were measured (RMS, sub-250 Hz share, spectral centroid, 10% decay) and used as targets for the in-repo synthesiser (`scripts/build-hmh-weapon-sfx.py`, render revision `pressure-body-v4`).
+- Result: gunshots carry a low-mid body and room tail, the shotgun has a two-stage pump rack, the reload has four mechanical stages, the explosion a sub floor and debris, enemy death an original wet gib layer. Cue bytes 1.57 MB / 1.75 MB budget; reproducible; the weapon-SFX browser smoke plays every cue with zero unknown cues.
+- Remaining audio work: per-weapon reload variants, boss/actor voices (HMH-S02), biome beds (S03), a listening pass on real speakers (S05).
+
 ## Not yet done in this session (see master list)
 
 X-02/X-05/X-07 (backend, profiles sync, global boards), X-08 art/mint policy, contract deployment (owner key), HMH-N03 weapon models, CH-N01/N02, ST-N01..N03. Physical-device acceptance remains owner/tester work.
