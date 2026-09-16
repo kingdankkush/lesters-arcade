@@ -1,6 +1,6 @@
 {
-  "sourcePath": "contracts/src/SessionLedger.sol",
-  "contractName": "ISessionGameRegistry",
+  "sourcePath": "contracts/src/interfaces/IGameRegistry.sol",
+  "contractName": "IGameRegistry",
   "abi": [
     {
       "inputs": [
@@ -51,7 +51,7 @@
             },
             {
               "internalType": "uint256",
-              "name": "entryFeeMicroUsdc",
+              "name": "entryFeeWei",
               "type": "uint256"
             },
             {
@@ -75,7 +75,7 @@
               "type": "uint256"
             }
           ],
-          "internalType": "struct ISessionGameRegistry.Game",
+          "internalType": "struct IGameRegistry.Game",
           "name": "",
           "type": "tuple"
         }
@@ -86,6 +86,9 @@
   ],
   "evm": {
     "bytecode": {
+      "object": ""
+    },
+    "deployedBytecode": {
       "object": ""
     }
   }

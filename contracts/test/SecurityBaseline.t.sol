@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {PaymentRouter} from "../src/PaymentRouter.sol";
-import {ArcadePaymentRouter} from "../src/ArcadePaymentRouter.sol";
-import {SessionLedger} from "../src/SessionLedger.sol";
 import {GameRegistry} from "../src/GameRegistry.sol";
+import {ArcadeRankedEntry} from "../src/ArcadeRankedEntry.sol";
+import {AchievementRegistry} from "../src/AchievementRegistry.sol";
 import {ScoreSubmissionRegistry} from "../src/ScoreSubmissionRegistry.sol";
 import {PlayerProfileRegistry} from "../src/PlayerProfileRegistry.sol";
-import {AchievementRegistry} from "../src/AchievementRegistry.sol";
-import {TournamentPool} from "../src/TournamentPool.sol";
 
 interface Vm {
     function addr(uint256 privateKey) external returns (address);
@@ -17,330 +14,410 @@ interface Vm {
     function stopPrank() external;
     function expectRevert() external;
     function expectRevert(bytes calldata revertData) external;
+    function expectRevert(bytes4 revertData) external;
     function sign(uint256 privateKey, bytes32 digest) external returns (uint8 v, bytes32 r, bytes32 s);
     function deal(address account, uint256 newBalance) external;
+    function warp(uint256 newTimestamp) external;
 }
 
-contract MockERC20 {
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
-
-    function mint(address to, uint256 amount) external {
-        balanceOf[to] += amount;
-    }
-
-    function approve(address spender, uint256 amount) external returns (bool) {
-        allowance[msg.sender][spender] = amount;
-        return true;
-    }
-
-    function transfer(address to, uint256 amount) external returns (bool) {
-        require(balanceOf[msg.sender] >= amount, "BALANCE");
-        balanceOf[msg.sender] -= amount;
-        balanceOf[to] += amount;
-        return true;
-    }
-
-    function transferFrom(address from, address to, uint256 amount) external returns (bool) {
-        require(balanceOf[from] >= amount, "BALANCE");
-        require(allowance[from][msg.sender] >= amount, "ALLOWANCE");
-        allowance[from][msg.sender] -= amount;
-        balanceOf[from] -= amount;
-        balanceOf[to] += amount;
-        return true;
-    }
-}
-
+/// @notice Forge security baseline for the 2026-09 native-fee / EIP-712 / soulbound contract set.
+/// @dev    Run with `forge test` (foundry). Not runnable in the solc-js-only CI image.
 contract SecurityBaselineTest {
     Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     uint256 private constant PLAYER_PK = 0xA11CE;
-    uint256 private constant DEV_SIGNER_PK = 0xD00D;
+    uint256 private constant VERIFIER_PK = 0xD00D;
+    uint256 private constant DEV_WALLET_PK = 0xDE7;
+    uint256 private constant ENTRY_FEE = 0.1 ether;
+
     address private operator = address(0x1111);
     address private attacker = address(0xBEEF);
-    bytes32 private gameId = keccak256(abi.encodePacked("hard-money-heroes"));
+    address private relayer = address(0x5E1A);
+    address private platformVault = address(0x2000);
+    bytes32 private gameId = keccak256(abi.encodePacked("lester-blaster"));
+    bytes32 private achievementFirstBlood = keccak256("first-blood");
 
-    MockERC20 private token;
     GameRegistry private registry;
+    ArcadeRankedEntry private entry;
+    AchievementRegistry private achievements;
+    ScoreSubmissionRegistry private scores;
+    address private player;
+    address private verifier;
+    address private devWallet;
 
     receive() external payable {}
 
     function setUp() public {
-        token = new MockERC20();
+        player = vm.addr(PLAYER_PK);
+        verifier = vm.addr(VERIFIER_PK);
+        devWallet = vm.addr(DEV_WALLET_PK);
+
         registry = new GameRegistry(operator);
-        vm.prank(operator);
-        registry.registerGame(
-            "hard-money-heroes", "Hard Money Heroes", vm.addr(DEV_SIGNER_PK), 6000, 2000, 1000, 1000, 0
-        );
-        vm.prank(vm.addr(DEV_SIGNER_PK));
+        entry = new ArcadeRankedEntry(address(registry), operator);
+        achievements = new AchievementRegistry(operator, "https://lestersarcade.io/achievements/");
+        scores = new ScoreSubmissionRegistry(address(registry), address(entry), address(achievements), verifier, operator);
+
+        vm.startPrank(operator);
+        registry.registerGame("lester-blaster", "Hard Money Heroes", devWallet, 7500, 2500, 0, 0, ENTRY_FEE);
+        entry.setPlatformVaults(platformVault, address(0), address(0));
+        achievements.setMinter(address(scores), true);
+        achievements.defineAchievement(achievementFirstBlood, gameId, "First Blood", "combat", "first-blood.json");
+        scores.setRelayer(relayer, true);
+        vm.stopPrank();
+
+        vm.prank(devWallet);
         registry.confirmDevWallet(gameId);
         vm.prank(operator);
         registry.setPlayable(gameId, true);
+
+        vm.deal(player, 10 ether);
     }
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+
+    function _run(bytes32 sessionId, bytes32[] memory unlocked)
+        private
+        view
+        returns (ScoreSubmissionRegistry.VerifiedRun memory)
+    {
+        return ScoreSubmissionRegistry.VerifiedRun({
+            sessionId: sessionId,
+            gameId: gameId,
+            player: player,
+            score: 12345,
+            kills: 12,
+            maxCombo: 7,
+            survivalSeconds: 90,
+            bossId: keccak256("rug-pull-baron"),
+            envelopeHash: keccak256("canonical-envelope"),
+            runtimeId: keccak256("hmh-runtime-1"),
+            seasonId: keccak256("season-1"),
+            deadline: uint64(block.timestamp + 1 hours),
+            achievementsHash: keccak256(abi.encodePacked(unlocked))
+        });
+    }
+
+    function _sign(uint256 pk, ScoreSubmissionRegistry.VerifiedRun memory run) private returns (bytes memory) {
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(pk, scores.attestationDigest(run));
+        return abi.encodePacked(r, s, v);
+    }
+
+    function _openPaid(bytes32 sessionId) private {
+        vm.prank(player);
+        entry.openSession{value: ENTRY_FEE}(sessionId, gameId);
+    }
+
+    // ------------------------------------------------------------------
+    // GameRegistry
+    // ------------------------------------------------------------------
 
     function testGameCannotBecomePlayableBeforeDevWalletConfirms() public {
         GameRegistry fresh = new GameRegistry(operator);
         bytes32 freshGameId = keccak256(abi.encodePacked("fresh-game"));
 
         vm.prank(operator);
-        fresh.registerGame("fresh-game", "Fresh Game", vm.addr(DEV_SIGNER_PK), 6000, 2000, 1000, 1000, 0);
+        fresh.registerGame("fresh-game", "Fresh Game", devWallet, 7500, 2500, 0, 0, ENTRY_FEE);
 
         vm.prank(operator);
         vm.expectRevert(bytes("Dev wallet unconfirmed"));
         fresh.setPlayable(freshGameId, true);
     }
 
-    function testUnauthorizedSetDefaultVaultsReverts() public {
-        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
-
+    function testOnlyOperatorCanSetEntryFee() public {
         vm.prank(attacker);
-        vm.expectRevert();
-        router.setDefaultVaults(address(0x1), address(0x2), address(0x3), address(0x4));
+        vm.expectRevert(bytes("Only platform operator"));
+        registry.setEntryFee(gameId, 1);
+
+        vm.prank(operator);
+        registry.setEntryFee(gameId, 2 * ENTRY_FEE);
+        assert(registry.getGame(gameId).entryFeeWei == 2 * ENTRY_FEE);
     }
 
-    function testArcadePaymentRouterEntryFeeDisabledByDefault() public {
-        ArcadePaymentRouter router = new ArcadePaymentRouter(address(registry), operator, address(token));
-        address player = vm.addr(PLAYER_PK);
-        token.mint(player, 100);
+    // ------------------------------------------------------------------
+    // ArcadeRankedEntry
+    // ------------------------------------------------------------------
 
-        vm.startPrank(player);
-        token.approve(address(router), 100);
+    function testNativeFeeExactAmountOpensSessionAndRoutesSplit() public {
+        bytes32 sessionId = keccak256("paid-1");
+        uint256 devBefore = devWallet.balance;
+        uint256 platformBefore = platformVault.balance;
+
+        _openPaid(sessionId);
+
+        assert(entry.isPaid(sessionId, player, gameId));
+        assert(!entry.isPaid(sessionId, attacker, gameId));
+        assert(devWallet.balance == devBefore + 0.075 ether);
+        assert(platformVault.balance == platformBefore + 0.025 ether);
+        assert(address(entry).balance == 0);
+        ArcadeRankedEntry.PaidSession memory paid = entry.getPaidSession(sessionId);
+        assert(paid.amountWei == ENTRY_FEE && paid.player == player);
+    }
+
+    function testWrongNativeAmountReverts() public {
+        vm.prank(player);
+        vm.expectRevert(bytes("WRONG_ENTRY_FEE"));
+        entry.openSession{value: ENTRY_FEE / 2}(keccak256("under"), gameId);
+
+        vm.prank(player);
+        vm.expectRevert(bytes("WRONG_ENTRY_FEE"));
+        entry.openSession{value: ENTRY_FEE * 2}(keccak256("over"), gameId);
+
+        vm.prank(player);
+        vm.expectRevert(bytes("WRONG_ENTRY_FEE"));
+        entry.openSession(keccak256("zero"), gameId);
+    }
+
+    function testSessionReuseReverts() public {
+        bytes32 sessionId = keccak256("reuse");
+        _openPaid(sessionId);
+
+        vm.prank(player);
+        vm.expectRevert(bytes("SESSION_EXISTS"));
+        entry.openSession{value: ENTRY_FEE}(sessionId, gameId);
+
+        vm.prank(attacker);
+        vm.deal(attacker, 1 ether);
+        vm.prank(attacker);
+        vm.expectRevert(bytes("SESSION_EXISTS"));
+        entry.openSession{value: ENTRY_FEE}(sessionId, gameId);
+    }
+
+    function testEntryFeeDisabledRequiresZeroValue() public {
+        vm.prank(operator);
+        entry.setEntryFeeEnabled(false);
+
+        vm.prank(player);
         vm.expectRevert(bytes("ENTRY_FEE_DISABLED"));
-        router.startPaidSession(keccak256(abi.encodePacked("paid-session")), gameId, 100);
-        vm.stopPrank();
+        entry.openSession{value: ENTRY_FEE}(keccak256("free-paid"), gameId);
+
+        vm.prank(player);
+        entry.openSession(keccak256("free"), gameId);
+        assert(entry.isPaid(keccak256("free"), player, gameId));
     }
 
-    function testNonPlayerCannotCloseSessionEvenWithValidSignature() public {
-        address player = vm.addr(PLAYER_PK);
-        SessionLedger ledger = new SessionLedger(address(registry), address(0xCAFE), address(token));
-        token.mint(player, 100);
-
-        vm.startPrank(player);
-        token.approve(address(ledger), 100);
-        bytes32 sessionId = ledger.openSession(gameId, 100);
-        vm.stopPrank();
-
-        SessionLedger.Session memory sess = ledger.getSession(sessionId);
-        bytes32 structHash = keccak256(
-            abi.encode(
-                ledger.SESSION_TYPEHASH(),
-                sess.gameId,
-                sess.player,
-                sess.openedAt,
-                uint256(12345),
-                uint256(12),
-                uint256(90)
-            )
-        );
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", ledger.DOMAIN_SEPARATOR(), structHash));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(DEV_SIGNER_PK, digest);
-
+    function testUnauthorizedVaultChangeReverts() public {
         vm.prank(attacker);
-        vm.expectRevert(bytes("Not the session owner"));
-        ledger.closeSession(sessionId, 12345, 12, 90, v, r, s);
+        vm.expectRevert(bytes("Only platform operator"));
+        entry.setPlatformVaults(attacker, attacker, attacker);
     }
 
-    function testPlayerCannotCloseSessionWithRandomSigner() public {
-        address player = vm.addr(PLAYER_PK);
-        SessionLedger ledger = new SessionLedger(address(registry), address(0xCAFE), address(token));
-        token.mint(player, 100);
+    // ------------------------------------------------------------------
+    // ScoreSubmissionRegistry
+    // ------------------------------------------------------------------
 
-        vm.startPrank(player);
-        token.approve(address(ledger), 100);
-        bytes32 sessionId = ledger.openSession(gameId, 100);
-        vm.stopPrank();
-
-        SessionLedger.Session memory sess = ledger.getSession(sessionId);
-        bytes32 structHash = keccak256(
-            abi.encode(
-                ledger.SESSION_TYPEHASH(),
-                sess.gameId,
-                sess.player,
-                sess.openedAt,
-                uint256(12345),
-                uint256(12),
-                uint256(90)
-            )
-        );
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", ledger.DOMAIN_SEPARATOR(), structHash));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(0xBAD5A11, digest);
+    function testVerifiedSubmissionRecordsScoreAndMintsSoulboundAchievement() public {
+        bytes32 sessionId = keccak256("verified-1");
+        _openPaid(sessionId);
+        bytes32[] memory unlocked = new bytes32[](1);
+        unlocked[0] = achievementFirstBlood;
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, unlocked);
+        bytes memory sig = _sign(VERIFIER_PK, run);
 
         vm.prank(player);
-        vm.expectRevert(bytes("Unauthorized signer"));
-        ledger.closeSession(sessionId, 12345, 12, 90, v, r, s);
+        scores.submitVerifiedSession(run, unlocked, sig);
+
+        ScoreSubmissionRegistry.ScoreRecord memory record = scores.getSession(sessionId);
+        assert(record.verified && record.exists && record.player == player);
+        assert(scores.sessionEnvelopeHash(sessionId) == run.envelopeHash);
+        assert(scores.bestScore(gameId, player) == 12345);
+        assert(scores.bestSeasonScore(gameId, run.seasonId, player) == 12345);
+        assert(achievements.hasUnlocked(player, achievementFirstBlood));
+        assert(achievements.ownerOf(achievements.tokenIdFor(player, achievementFirstBlood)) == player);
+        assert(scores.getSessionAchievements(sessionId).length == 1);
     }
 
-    function testScoreSubmissionRejectsOutOfBoundsScore() public {
-        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), vm.addr(DEV_SIGNER_PK));
-        bytes32[] memory achievements = new bytes32[](0);
-
-        vm.expectRevert();
-        scores.submitSession(
-            keccak256(abi.encodePacked("session-1")),
-            gameId,
-            type(uint256).max,
-            type(uint64).max,
-            type(uint64).max,
-            type(uint64).max,
-            bytes32(0),
-            achievements
-        );
-    }
-
-    function testScoreSubmissionRejectsUnplayableGameAndTooManyAchievements() public {
-        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), vm.addr(DEV_SIGNER_PK));
-        bytes32[] memory achievements = new bytes32[](33);
-
-        vm.expectRevert(bytes("TOO_MANY_ACHIEVEMENTS"));
-        scores.submitSession(
-            keccak256(abi.encodePacked("session-too-many")), gameId, 100, 1, 1, 60, bytes32(0), achievements
-        );
-
-        bytes32 missingGameId = keccak256(abi.encodePacked("missing-game"));
+    function testUnpaidSessionCannotSubmitWhenFeeIsSet() public {
         bytes32[] memory none = new bytes32[](0);
-        vm.expectRevert(bytes("GAME_NOT_PLAYABLE"));
-        scores.submitSession(
-            keccak256(abi.encodePacked("session-missing")), missingGameId, 100, 1, 1, 60, bytes32(0), none
-        );
-    }
-
-    function testVerifierAttestationMarksSessionVerifiedAndBindsEnvelope() public {
-        address verifier = vm.addr(DEV_SIGNER_PK);
-        address player = vm.addr(PLAYER_PK);
-        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), verifier);
-        bytes32[] memory achievements = new bytes32[](1);
-        achievements[0] = keccak256("first-blood");
-        ScoreSubmissionRegistry.VerifiedRun memory run = ScoreSubmissionRegistry.VerifiedRun({
-            sessionId: keccak256("verified-session"), gameId: gameId, score: 12345, kills: 12, maxCombo: 7,
-            survivalSeconds: 90, bossId: keccak256("rug-pull-baron"),
-            envelopeHash: keccak256("canonical-envelope"), deadline: uint64(block.timestamp + 1 hours)
-        });
-        bytes32 digest = scores.attestationDigest(run, player, keccak256(abi.encode(achievements)));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(DEV_SIGNER_PK, digest);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(keccak256("unpaid"), none);
+        bytes memory sig = _sign(VERIFIER_PK, run);
 
         vm.prank(player);
-        scores.submitVerifiedSession(run, achievements, v, r, s);
-
-        ScoreSubmissionRegistry.ScoreRecord memory record = scores.getSession(run.sessionId);
-        require(record.verified, "session must be verified");
-        require(record.player == player, "attestation must bind player");
-        require(scores.sessionEnvelopeHash(run.sessionId) == run.envelopeHash, "envelope hash mismatch");
+        vm.expectRevert(bytes("SESSION_NOT_PAID"));
+        scores.submitVerifiedSession(run, none, sig);
     }
 
-    function testVerifierAttestationRejectsWrongSigner() public {
-        address player = vm.addr(PLAYER_PK);
-        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), vm.addr(DEV_SIGNER_PK));
-        bytes32[] memory achievements = new bytes32[](0);
-        ScoreSubmissionRegistry.VerifiedRun memory run = ScoreSubmissionRegistry.VerifiedRun({
-            sessionId: keccak256("forged-session"), gameId: gameId, score: 100, kills: 1, maxCombo: 1,
-            survivalSeconds: 10, bossId: bytes32(0), envelopeHash: keccak256("forged-envelope"),
-            deadline: uint64(block.timestamp + 1 hours)
-        });
-        bytes32 digest = scores.attestationDigest(run, player, keccak256(abi.encode(achievements)));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(0xBAD5A11, digest);
+    function testBadSignerReverts() public {
+        bytes32 sessionId = keccak256("forged");
+        _openPaid(sessionId);
+        bytes32[] memory none = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, none);
+        bytes memory sig = _sign(0xBAD5A11, run);
 
         vm.prank(player);
         vm.expectRevert(bytes("INVALID_ATTESTATION"));
-        scores.submitVerifiedSession(run, achievements, v, r, s);
+        scores.submitVerifiedSession(run, none, sig);
     }
 
-    function testPaymentRouterSessionLedgerCanOnlyBeSetOnce() public {
-        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
-        address firstLedger = address(0xCAFE);
-        address secondLedger = address(0xB0B0);
+    function testExpiredDeadlineReverts() public {
+        bytes32 sessionId = keccak256("expired");
+        _openPaid(sessionId);
+        bytes32[] memory none = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, none);
+        bytes memory sig = _sign(VERIFIER_PK, run);
 
-        vm.prank(operator);
-        router.setSessionLedger(firstLedger);
-
-        vm.prank(operator);
-        vm.expectRevert(bytes("ALREADY_SET"));
-        router.setSessionLedger(secondLedger);
+        vm.warp(run.deadline + 1);
+        vm.prank(player);
+        vm.expectRevert(bytes("ATTESTATION_EXPIRED"));
+        scores.submitVerifiedSession(run, none, sig);
     }
 
-    function testPaymentRouterOperatorTransferRequiresPendingOperatorAccept() public {
-        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
-        address nextOperator = address(0x2222);
+    function testAchievementsHashMismatchReverts() public {
+        bytes32 sessionId = keccak256("hash-mismatch");
+        _openPaid(sessionId);
+        bytes32[] memory attested = new bytes32[](1);
+        attested[0] = achievementFirstBlood;
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, attested);
+        bytes memory sig = _sign(VERIFIER_PK, run);
 
-        vm.prank(operator);
-        router.transferOperator(nextOperator);
+        bytes32[] memory tampered = new bytes32[](2);
+        tampered[0] = achievementFirstBlood;
+        tampered[1] = keccak256("not-attested");
+
+        vm.prank(player);
+        vm.expectRevert(bytes("ACHIEVEMENTS_HASH_MISMATCH"));
+        scores.submitVerifiedSession(run, tampered, sig);
+    }
+
+    function testTamperedScoreRevertsAsInvalidAttestation() public {
+        bytes32 sessionId = keccak256("tampered-score");
+        _openPaid(sessionId);
+        bytes32[] memory none = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, none);
+        bytes memory sig = _sign(VERIFIER_PK, run);
+        run.score = 999_999;
+
+        vm.prank(player);
+        vm.expectRevert(bytes("INVALID_ATTESTATION"));
+        scores.submitVerifiedSession(run, none, sig);
+    }
+
+    function testRelayerCanSubmitForPlayerButStrangerCannot() public {
+        bytes32 sessionId = keccak256("relayed");
+        _openPaid(sessionId);
+        bytes32[] memory none = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, none);
+        bytes memory sig = _sign(VERIFIER_PK, run);
 
         vm.prank(attacker);
-        vm.expectRevert(bytes("Only pending operator"));
-        router.acceptOperator();
+        vm.expectRevert(bytes("NOT_PLAYER_OR_RELAYER"));
+        scores.submitVerifiedSession(run, none, sig);
 
-        vm.prank(nextOperator);
-        router.acceptOperator();
-
-        assert(router.operator() == nextOperator);
-        assert(router.pendingOperator() == address(0));
+        vm.prank(relayer);
+        scores.submitVerifiedSession(run, none, sig);
+        assert(scores.getSession(sessionId).player == player);
+        assert(scores.playerSessionCount(player) == 1);
     }
 
-    function testSessionLedgerSettleBeforeCloseReverts() public {
-        address player = vm.addr(PLAYER_PK);
-        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
-        SessionLedger ledger = new SessionLedger(address(registry), address(router), address(token));
+    function testSessionCannotBeSettledTwice() public {
+        bytes32 sessionId = keccak256("double-settle");
+        _openPaid(sessionId);
+        bytes32[] memory none = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, none);
+        bytes memory sig = _sign(VERIFIER_PK, run);
+
+        vm.prank(player);
+        scores.submitVerifiedSession(run, none, sig);
+
+        vm.prank(player);
+        vm.expectRevert(bytes("SESSION_EXISTS"));
+        scores.submitVerifiedSession(run, none, sig);
+    }
+
+    function testOutOfBoundsScoreRejectedEvenWhenAttested() public {
+        bytes32 sessionId = keccak256("oob");
+        _openPaid(sessionId);
+        bytes32[] memory none = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = _run(sessionId, none);
+        run.score = scores.MAX_SCORE() + 1;
+        bytes memory sig = _sign(VERIFIER_PK, run);
+
+        vm.prank(player);
+        vm.expectRevert(bytes("SCORE_OUT_OF_BOUNDS"));
+        scores.submitVerifiedSession(run, none, sig);
+    }
+
+    // ------------------------------------------------------------------
+    // AchievementRegistry (soulbound)
+    // ------------------------------------------------------------------
+
+    function testSoulboundTransferReverts() public {
+        vm.prank(address(scores));
+        assert(achievements.mintFor(player, achievementFirstBlood, keccak256("s")));
+        uint256 tokenId = achievements.tokenIdFor(player, achievementFirstBlood);
+        assert(achievements.locked(tokenId));
+        assert(achievements.supportsInterface(0xb45a3c0e));
+
+        vm.prank(player);
+        vm.expectRevert(AchievementRegistry.Soulbound.selector);
+        achievements.transferFrom(player, attacker, tokenId);
+
+        vm.prank(player);
+        vm.expectRevert(AchievementRegistry.Soulbound.selector);
+        achievements.safeTransferFrom(player, attacker, tokenId);
+    }
+
+    function testDoubleMintReturnsFalseWithoutRevert() public {
+        vm.startPrank(address(scores));
+        assert(achievements.mintFor(player, achievementFirstBlood, keccak256("s1")));
+        assert(!achievements.mintFor(player, achievementFirstBlood, keccak256("s2")));
+        assert(!achievements.mintFor(player, keccak256("undefined-achievement"), keccak256("s3")));
+        vm.stopPrank();
+        assert(achievements.balanceOf(player) == 1);
+    }
+
+    function testOnlyMinterCanMint() public {
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Only minter"));
+        achievements.mintFor(attacker, achievementFirstBlood, keccak256("x"));
+    }
+
+    function testRevokeBurnsAndClearsUnlock() public {
+        vm.prank(address(scores));
+        achievements.mintFor(player, achievementFirstBlood, keccak256("s"));
+        uint256 tokenId = achievements.tokenIdFor(player, achievementFirstBlood);
+
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Only platform operator"));
+        achievements.revoke(tokenId, "nope");
+
         vm.prank(operator);
-        router.setSessionLedger(address(ledger));
+        achievements.revoke(tokenId, "fraudulent run");
 
-        token.mint(player, 100);
-        vm.startPrank(player);
-        token.approve(address(ledger), 100);
-        bytes32 sessionId = ledger.openSession(gameId, 100);
-        vm.expectRevert(bytes("Not closed yet"));
-        ledger.settle(sessionId);
-        vm.stopPrank();
+        assert(!achievements.hasUnlocked(player, achievementFirstBlood));
+        assert(achievements.balanceOf(player) == 0);
+        vm.expectRevert();
+        achievements.ownerOf(tokenId);
     }
 
-    function testSessionLedgerSettleAtomicallyRoutesVaultBalancesAndLeavesRouterEmpty() public {
-        address player = vm.addr(PLAYER_PK);
-        address devVault = vm.addr(DEV_SIGNER_PK);
-        address platformVault = address(0x2000);
-        address liquidityVault = address(0x3000);
-        address treasuryVault = address(0x4000);
-        uint256 entryFee = 1000;
+    function testOwnerCanBurnOwnToken() public {
+        vm.prank(address(scores));
+        achievements.mintFor(player, achievementFirstBlood, keccak256("s"));
+        uint256 tokenId = achievements.tokenIdFor(player, achievementFirstBlood);
 
-        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
-        SessionLedger ledger = new SessionLedger(address(registry), address(router), address(token));
-        vm.startPrank(operator);
-        router.setSessionLedger(address(ledger));
-        router.setDefaultVaults(devVault, platformVault, liquidityVault, treasuryVault);
-        vm.stopPrank();
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Only token owner"));
+        achievements.burn(tokenId);
 
-        token.mint(player, entryFee);
-        vm.startPrank(player);
-        token.approve(address(ledger), entryFee);
-        bytes32 sessionId = ledger.openSession(gameId, entryFee);
-        vm.stopPrank();
+        vm.prank(player);
+        achievements.burn(tokenId);
+        assert(!achievements.hasUnlocked(player, achievementFirstBlood));
+    }
 
-        SessionLedger.Session memory sess = ledger.getSession(sessionId);
-        bytes32 structHash = keccak256(
-            abi.encode(
-                ledger.SESSION_TYPEHASH(),
-                sess.gameId,
-                sess.player,
-                sess.openedAt,
-                uint256(98765),
-                uint256(44),
-                uint256(180)
-            )
+    function testTokenUriComposesBaseAndPath() public {
+        vm.prank(address(scores));
+        achievements.mintFor(player, achievementFirstBlood, keccak256("s"));
+        uint256 tokenId = achievements.tokenIdFor(player, achievementFirstBlood);
+        assert(
+            keccak256(bytes(achievements.tokenURI(tokenId)))
+                == keccak256(bytes("https://lestersarcade.io/achievements/first-blood.json"))
         );
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", ledger.DOMAIN_SEPARATOR(), structHash));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(DEV_SIGNER_PK, digest);
-
-        vm.startPrank(player);
-        ledger.closeSession(sessionId, 98765, 44, 180, v, r, s);
-        ledger.settle(sessionId);
-        vm.expectRevert(bytes("Already settled"));
-        ledger.settle(sessionId);
-        vm.stopPrank();
-
-        assert(token.balanceOf(devVault) == 600);
-        assert(token.balanceOf(platformVault) == 200);
-        assert(token.balanceOf(liquidityVault) == 100);
-        assert(token.balanceOf(treasuryVault) == 100);
-        assert(token.balanceOf(address(router)) == 0);
-        assert(token.balanceOf(address(ledger)) == 0);
     }
+
+    // ------------------------------------------------------------------
+    // PlayerProfileRegistry (unchanged contract)
+    // ------------------------------------------------------------------
 
     function testPlayerProfileRegistryNormalizesHandles() public {
         PlayerProfileRegistry profiles = new PlayerProfileRegistry();
@@ -366,26 +443,5 @@ contract SecurityBaselineTest {
 
         vm.expectRevert(bytes("Invalid handle char"));
         profiles.registerProfile("bad/slash", "avatar://bad");
-    }
-
-    function testAchievementRegistryRejectsZeroLedger() public {
-        vm.expectRevert(bytes("Invalid ledger"));
-        new AchievementRegistry(address(0));
-    }
-
-    function testTournamentPrizePoolCanBeWithdrawnByOwner() public {
-        TournamentPool pool = new TournamentPool();
-        bytes32 tournamentId = keccak256(abi.encodePacked("daily-open"));
-        pool.createTournament(tournamentId, gameId, "Daily Open", 1, 2);
-
-        vm.deal(address(this), 1 ether);
-        pool.fundTournament{value: 1 ether}(tournamentId);
-
-        uint256 beforeBalance = address(this).balance;
-        pool.withdrawTournamentPrize(tournamentId, payable(address(this)), 0.4 ether);
-
-        assert(address(this).balance == beforeBalance + 0.4 ether);
-        (,,,,, uint256 prizePool,) = pool.tournaments(tournamentId);
-        assert(prizePool == 0.6 ether);
     }
 }

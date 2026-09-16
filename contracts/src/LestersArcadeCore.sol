@@ -1,47 +1,51 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {PlayerProfileRegistry} from "./PlayerProfileRegistry.sol";
-import {GameRegistry} from "./GameRegistry.sol";
-import {ArcadePaymentRouter} from "./ArcadePaymentRouter.sol";
-import {ScoreSubmissionRegistry} from "./ScoreSubmissionRegistry.sol";
-import {AchievementRegistry} from "./AchievementRegistry.sol";
-import {TournamentPool} from "./TournamentPool.sol";
-
 /// @title LestersArcadeCore
-/// @notice Convenience composition wrapper for the Lester's Arcade MVP contract modules.
+/// @notice Immutable address book for one deployed Lester's Arcade contract set (2026-09 native-fee design).
+/// @dev    Not part of the hardened deployment; the deploy script records addresses in
+///         contracts/deployment-record.hardened.json instead. Kept as an optional on-chain
+///         composition record that a front end can read a whole suite from with one call.
 contract LestersArcadeCore {
-    PlayerProfileRegistry public immutable playerProfiles;
-    GameRegistry public immutable gameRegistry;
-    ArcadePaymentRouter public immutable paymentRouter;
-    ScoreSubmissionRegistry public immutable scoreSubmissions;
-    AchievementRegistry public immutable achievements;
-    TournamentPool public immutable tournaments;
+    address public immutable playerProfiles;
+    address public immutable gameRegistry;
+    address public immutable rankedEntry;
+    address public immutable scoreSubmissions;
+    address public immutable achievements;
 
     event ArcadeCoreDeployed(
         address playerProfiles,
         address gameRegistry,
-        address paymentRouter,
+        address rankedEntry,
         address scoreSubmissions,
-        address achievements,
-        address tournaments
+        address achievements
     );
 
-    constructor(address trustedVerifier) {
-        playerProfiles = new PlayerProfileRegistry();
-        gameRegistry = new GameRegistry(trustedVerifier);
-        paymentRouter = new ArcadePaymentRouter(address(gameRegistry), trustedVerifier, trustedVerifier);
-        scoreSubmissions = new ScoreSubmissionRegistry(address(gameRegistry), trustedVerifier);
-        achievements = new AchievementRegistry(trustedVerifier);
-        tournaments = new TournamentPool();
+    constructor(
+        address _playerProfiles,
+        address _gameRegistry,
+        address _rankedEntry,
+        address _scoreSubmissions,
+        address _achievements
+    ) {
+        require(_playerProfiles != address(0), "Invalid profiles");
+        require(_gameRegistry != address(0), "Invalid registry");
+        require(_rankedEntry != address(0), "Invalid ranked entry");
+        require(_scoreSubmissions != address(0), "Invalid scores");
+        require(_achievements != address(0), "Invalid achievements");
+        playerProfiles = _playerProfiles;
+        gameRegistry = _gameRegistry;
+        rankedEntry = _rankedEntry;
+        scoreSubmissions = _scoreSubmissions;
+        achievements = _achievements;
+        emit ArcadeCoreDeployed(_playerProfiles, _gameRegistry, _rankedEntry, _scoreSubmissions, _achievements);
+    }
 
-        emit ArcadeCoreDeployed(
-            address(playerProfiles),
-            address(gameRegistry),
-            address(paymentRouter),
-            address(scoreSubmissions),
-            address(achievements),
-            address(tournaments)
-        );
+    function addresses()
+        external
+        view
+        returns (address profiles, address registry, address entry, address scores, address achievementRegistry)
+    {
+        return (playerProfiles, gameRegistry, rankedEntry, scoreSubmissions, achievements);
     }
 }

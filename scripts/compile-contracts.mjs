@@ -4,17 +4,18 @@ import { fileURLToPath } from 'node:url';
 import solc from 'solc';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
+// 2026-09-16 native-fee / EIP-712 / soulbound contract set. The June 2026 ERC-20 design lives in
+// contracts/archive/2026-06-legacy and is intentionally NOT compiled.
 const contractFiles = [
   'contracts/src/PlayerProfileRegistry.sol',
   'contracts/src/GameRegistry.sol',
-  'contracts/src/ArcadePaymentRouter.sol',
-  'contracts/src/ScoreSubmissionRegistry.sol',
-  'contracts/src/SessionLedger.sol',
-  'contracts/src/PaymentRouter.sol',
+  'contracts/src/ArcadeRankedEntry.sol',
   'contracts/src/AchievementRegistry.sol',
-  'contracts/src/TournamentPool.sol',
+  'contracts/src/ScoreSubmissionRegistry.sol',
   'contracts/src/LestersArcadeCore.sol',
-  'contracts/src/interfaces/IERC20.sol',
+  'contracts/src/interfaces/IGameRegistry.sol',
+  'contracts/src/interfaces/IArcadeRankedEntry.sol',
+  'contracts/src/interfaces/IAchievementMinter.sol',
 ];
 
 const sources = Object.fromEntries(
@@ -34,7 +35,7 @@ const input = {
     },
     outputSelection: {
       '*': {
-        '*': ['abi', 'evm.bytecode.object'],
+        '*': ['abi', 'evm.bytecode.object', 'evm.deployedBytecode.object'],
       },
     },
   },
@@ -75,12 +76,22 @@ const artifactDir = join(root, 'contracts/artifacts');
 mkdirSync(artifactDir, { recursive: true });
 
 let artifactCount = 0;
+const summary = [];
 for (const [sourcePath, contracts] of Object.entries(output.contracts ?? {})) {
+  // Only persist artifacts for our own sources; OpenZeppelin dependencies are compiled in but not emitted.
+  if (!sourcePath.startsWith('contracts/src/')) continue;
   for (const [contractName, artifact] of Object.entries(contracts)) {
     const target = join(artifactDir, `${contractName}.json`);
     writeFileSync(target, JSON.stringify({ sourcePath, contractName, ...artifact }, null, 2));
     artifactCount += 1;
+    const bytecodeBytes = (artifact.evm?.bytecode?.object ?? '').length / 2;
+    const deployedBytes = (artifact.evm?.deployedBytecode?.object ?? '').length / 2;
+    summary.push({ contractName, sourcePath, initCodeBytes: bytecodeBytes, runtimeBytes: deployedBytes });
   }
 }
 
+for (const row of summary) {
+  const kind = row.initCodeBytes === 0 ? 'interface/abstract' : `init ${row.initCodeBytes} B, runtime ${row.runtimeBytes} B`;
+  console.log(`  ${row.contractName.padEnd(26)} ${kind}`);
+}
 console.log(`Compiled ${artifactCount} Lester's Arcade contract artifact(s).`);

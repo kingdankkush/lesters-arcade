@@ -1,0 +1,43 @@
+{
+  "sourcePath": "contracts/src/interfaces/IAchievementMinter.sol",
+  "contractName": "IAchievementMinter",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "achievementId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "sessionId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "mintFor",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "minted",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "evm": {
+    "bytecode": {
+      "object": ""
+    },
+    "deployedBytecode": {
+      "object": ""
+    }
+  }
+}

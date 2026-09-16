@@ -1,205 +1,129 @@
-# Lester's Arcade Smart Contract Architecture
+# Lester's Arcade Smart Contract Architecture (2026-09-16)
 
 ## Overview
 
-The Lester's Arcade smart contract system is designed for deployment on LitVM (Litecoin Virtual Machine) and implements a Web3-enabled arcade platform where players can:
+Lester's Arcade runs on **LitVM LiteForge testnet** (chainId 4441, Arbitrum Orbit/Nitro, native token
+**zkLTC**, 18 decimals). Free Mode never touches the chain. **Ranked Mode** is a paid, verified, on-chain
+mode:
 
-- Register profiles linked to their wallet
-- Play free or ranked modes across multiple arcade cabinets
-- Submit scores with cryptographic attestations
-- Earn on-chain achievements
-- Compete in tournaments
+1. the player pays **0.1 zkLTC in the native token** when the ranked session opens,
+2. that fee is split instantly to the cabinet developer and platform vaults (it funds the settlement
+   of the run on chain),
+3. after the run, a **trusted verifier** signs an EIP-712 attestation of the run,
+4. the player (or an approved relayer) submits the attestation; the score is recorded and any attested
+   achievements are minted as **soulbound ERC-721** tokens bound to the wallet.
 
-## Core Contracts
+The June 2026 ERC-20/USDC design (`ArcadePaymentRouter`, `PaymentRouter`, `SessionLedger`,
+`TournamentPool`) is retired and archived under `contracts/archive/2026-06-legacy/`.
 
-### 1. PlayerProfileRegistry.sol
+## Contracts
 
-**Purpose**: Manages wallet-to-profile mappings for all players.
+### GameRegistry
 
-**Key Features**:
-- One profile per wallet (1:1 mapping)
-- Stores display name, avatar URL, and aggregate stats
-- Emits `ProfileCreated` event when new players join
-- Allows profile updates (name/avatar changes)
+Registry of cabinets keyed by `gameId = keccak256(abi.encodePacked(slug))` (`ethers.id(slug)`).
 
-**Integration**: Used by GameRegistry to validate player eligibility for ranked modes.
+- Operator-only `registerGame(slug, title, devWallet, devBps, platformBps, liquidityBps, treasuryBps, entryFeeWei)`;
+  split must total 10 000 bps.
+- The dev wallet must call `confirmDevWallet(gameId)` before the operator can `setPlayable(gameId, true)`.
+- `setEntryFee(gameId, entryFeeWei)` and `updateFeeSplit(...)` adjust economics without redeploying.
+- `getGame(gameId)` returns the `Game` struct that both `ArcadeRankedEntry` and `ScoreSubmissionRegistry` read.
+- 2-step operator transfer (`transferOperator` / `acceptOperator`); `trustedVerifier` field kept for
+  discovery.
 
-### 2. GameRegistry.sol
+### ArcadeRankedEntry (native fee)
 
-**Purpose**: Central registry of all arcade cabinets (games) available on the platform.
+- `openSession(bytes32 sessionId, bytes32 gameId) payable nonReentrant`
+  - `sessionId` must be non-zero and unused.
+  - game must exist, be playable and have a confirmed dev wallet.
+  - `entryFeeEnabled` (default true): `msg.value == game.entryFeeWei` exactly; otherwise `msg.value == 0`.
+  - records `PaidSession{player, gameId, amountWei, openedAt, exists}`.
+  - routes `msg.value` by bps: platform/liquidity/treasury shares to the operator-set vaults, remainder
+    (dev share + rounding dust + any share whose vault is `address(0)`) to the game's dev wallet. Payouts
+    use `call{value:}` and revert `PAYOUT_FAILED` if any recipient rejects.
+  - emits `RankedSessionOpened(sessionId, player, gameId, amountWei)` and
+    `RevenueRouted(sessionId, devAmount, platformAmount, liquidityAmount, treasuryAmount)`.
+- `isPaid(sessionId, player, gameId)`: the binding the score registry enforces.
+- The contract never holds a balance; there is no escrow, refund or withdrawal surface.
 
-**Key Features**:
-- Operator-only registration (controlled by platform owner)
-- Stores game metadata, wallet address, and revenue split configuration
-- Revenue splits defined in basis points (bps): **dev/platform/liquidity/treasury**
-- Default split: 60/20/10/10 (must total 10,000 bps)
-- Tracks which cabinets are currently playable
+### ScoreSubmissionRegistry (EIP-712, verified-only)
 
-**Integration**: SessionLedger queries GameRegistry to validate cabinet existence and retrieve revenue split for fee distribution.
+- Inherits OpenZeppelin `EIP712("Lester's Arcade Ranked Settlement", "2")` and `ReentrancyGuard`.
+- `VerifiedRun` (13 fields): `sessionId, gameId, player, score, kills, maxCombo, survivalSeconds, bossId,
+  envelopeHash, runtimeId, seasonId, deadline, achievementsHash`.
+- `attestationDigest(run)` = `_hashTypedDataV4(keccak256(abi.encode(VERIFIED_RUN_TYPEHASH, ...fields)))`.
+  The verifier signs this digest (ethers `signTypedData` with the same domain/types produces the same
+  signature).
+- `submitVerifiedSession(run, achievements, signature)`:
+  1. `msg.sender == run.player || relayers[msg.sender]`
+  2. `block.timestamp <= run.deadline`, `envelopeHash != 0`, `sessionId != 0` and unused
+  3. `achievements.length <= 32` and `keccak256(abi.encodePacked(achievements)) == run.achievementsHash`
+  4. game exists and playable; if `entryFeeWei > 0` then `ArcadeRankedEntry.isPaid(sessionId, player, gameId)`
+  5. bounds: `MAX_SCORE 10 000 000 000`, `MAX_KILLS 100 000`, `MAX_COMBO 10 000`, `MAX_SURVIVAL_SECONDS 24h`
+  6. `ECDSA.recover(attestationDigest(run), signature) == trustedVerifier`
+  7. store `ScoreRecord` (verified = true), index by player and globally, bind `sessionEnvelopeHash`,
+     update `bestScore[gameId][player]` and `bestSeasonScore[gameId][seasonId][player]`
+  8. `AchievementRegistry.mintFor(player, id, sessionId)` for each attested id (false results ignored)
+  9. emit `ScoreSubmitted(...)` and `SessionSubmitted(sessionId, true)`.
+- Operator surface: `setTrustedVerifier`, `setRelayer`, `setRankedEntry`, `setAchievementRegistry`,
+  2-step operator transfer.
+- Views: `getSession`, `getSessionAchievements`, `playerSessionCount`, `getPlayerSessions(offset, limit)`,
+  `totalSessions`, `getRecentSessions(offset, limit)`, `bestScore`, `bestSeasonScore`, `domainSeparator`.
 
-### 3. SessionLedger.sol
+### AchievementRegistry (soulbound ERC-721)
 
-**Purpose**: Tracks ranked (paid) game sessions on-chain and handles entry fee collection.
+- OpenZeppelin 5 `ERC721("Lester's Arcade Achievements", "LAACH")`.
+- `defineAchievement(id, gameId, title, category, tokenUriPath)` (operator, idempotent update).
+- `setMinter(address, bool)` (operator). The score registry is the only minter after deploy.
+- `mintFor(player, achievementId, sessionId) onlyMinter returns (bool)`: `false` when undefined or already
+  held, else mints `tokenId = uint256(keccak256(abi.encode(player, achievementId)))`, records
+  `unlockedAt`, `tokenAchievement`, emits `Locked(tokenId)` (ERC-5192) and
+  `AchievementUnlocked(wallet, achievementId, sessionId, tokenId)`.
+- `_update` override reverts `Soulbound()` for any transfer between two non-zero addresses; mint and burn
+  pass. `burn(tokenId)` by the owner; `revoke(tokenId, reason)` by the operator (emits `AchievementRevoked`).
+- ERC-5192: `locked(tokenId)` is `true` for existing tokens (reverts for nonexistent);
+  `supportsInterface(0xb45a3c0e)` is true.
+- `tokenURI = baseTokenUri + achievement.tokenUriPath`.
 
-**Key Features**:
-- `openSession()`: Collects entry fee (default 250,000 microUSDC = $0.25) from player
-- Stores session state: cabinet, score, kills, survival time, timestamp
-- `closeSession()`: Marks session complete
-- `disburseSession()`: Distributes entry fee according to GameRegistry's revenue split
-- Emits `SessionOpened` for leaderboard tracking
+### PlayerProfileRegistry
 
-**Integration**: Calls PaymentRouter to split fees after session completion.
+Unchanged: wallet-owned display name / avatar with normalised, unique handles.
 
-### 4. AchievementRegistry.sol
+### LestersArcadeCore
 
-**Purpose**: Mints and tracks on-chain achievements earned by players.
+Optional immutable address book (`playerProfiles, gameRegistry, rankedEntry, scoreSubmissions,
+achievements`). Excluded from the hardened deployment.
 
-**Key Features**:
-- `unlockFor()`: Awards achievement to a specific wallet address
-- `unlockAchievement()`: Generic unlock trigger
-- Each achievement has metadata: name, description, rarity
-- Achievements are non-transferable (soulbound tokens)
-- Emits `AchievementUnlocked` event
+## Trust model
 
-**Integration**: Called by SessionLedger when players meet achievement criteria (e.g., "First Ranked Win", "Beat Boss #3").
+| Key | Holder | Power |
+|-----|--------|-------|
+| Deployer | Owner | Creates the contracts; must equal operator and developerWallet for the atomic testnet deploy. |
+| Operator | Owner (2-step transferable per contract) | Registers games, sets fees/splits/vaults, defines achievements, sets minters/relayers/verifier, revokes tokens. |
+| Trusted verifier | Verifier service (custody: owner decision) | Signs `VerifiedRun` attestations. Compromise = ability to forge scores until `setTrustedVerifier` rotates it. |
+| Dev wallet | Cabinet developer | Confirms itself; receives the dev share of every entry fee. |
+| Relayer (optional) | Platform backend | May submit a player's attested run on their behalf (`run.player` still credited). |
 
-### 5. PaymentRouter.sol
+## Deployment order
 
-**Purpose**: Distributes collected fees to multiple recipients according to revenue splits.
+1. `GameRegistry(operator)`
+2. `PlayerProfileRegistry()`
+3. `AchievementRegistry(operator, achievementBaseTokenUri)`
+4. `ArcadeRankedEntry(gameRegistry, operator)`
+5. `ScoreSubmissionRegistry(gameRegistry, rankedEntry, achievementRegistry, verifier, operator)`
+6. `AchievementRegistry.setMinter(scoreSubmissionRegistry, true)`
+7. `ArcadeRankedEntry.setPlatformVaults(platformVault, liquidityVault, treasuryVault)`
+8. per game: `registerGame(...)`, `confirmDevWallet(gameId)`, `setPlayable(gameId, true)`
 
-**Key Features**:
-- `splitAndDisburse()`: Takes total fee and splits based on basis points
-- Queries GameRegistry for cabinet-specific splits
-- Transfers tokens to: dev wallet, platform treasury, liquidity pool, community treasury
-- Uses IERC20 interface for token transfers
-
-**Integration**: Called by SessionLedger after ranked session completion.
-
-### 6. interfaces/IERC20.sol
-
-**Purpose**: Standard ERC20 token interface for USDC integration.
-
-**Key Features**:
-- `transfer()`, `transferFrom()`, `approve()`, `balanceOf()`
-- Standard interface for LitVM-native USDC or any ERC20-compatible token
-
-## Architecture Flow
-
-### Free Mode (No Blockchain Interaction)
-
-```
-Player → Select Cabinet → Play Free Mode → High Score (local only)
-```
-
-No smart contract calls. Scores stored in browser localStorage.
-
-### Ranked Mode (On-Chain)
-
-```
-1. Player connects wallet (MetaMask/LitVM Wallet)
-2. PlayerProfileRegistry registers profile (if new)
-3. Player selects cabinet and Ranked mode
-4. SessionLedger.openSession() collects entry fee
-5. Player plays game, generates cryptographic attestation
-6. Cabinet server signs attestation with trustedVerifier key
-7. SessionLedger.closeSession() validates signature, stores score
-8. SessionLedger.disburseSession() → PaymentRouter.splitAndDisburse()
-9. AchievementRegistry.unlockFor() awards any earned achievements
-10. Leaderboard updates (off-chain indexer + on-chain events)
-```
-
-## Security Model
-
-### Trusted Verifier Pattern
-
-Each cabinet has a `trustedVerifier` key held by the cabinet's backend server. This key signs score attestations, preventing players from submitting fake scores.
-
-### Operator Controls
-
-- **GameRegistry**: Only platform operator can register new cabinets
-- **AchievementRegistry**: Operator defines achievement metadata
-- **PlayerProfileRegistry**: Players control their own profiles (no operator override)
-
-### Session Fee Flow
-
-```
-Entry Fee ($0.25)
-  ↓
-SessionLedger (escrow)
-  ↓
-PaymentRouter.splitAndDisburse()
-  ↓
-├─ Dev Wallet (60%) → Cabinet developer
-├─ Platform (20%) → Lester's Arcade operator
-├─ Liquidity (10%) → DEX liquidity pool
-└─ Treasury (10%) → Community DAO treasury
-```
-
-## Future Contracts (Not Yet Implemented)
-
-### TournamentPool.sol
-- Manages tournament creation and prize distribution
-- Players pool entry fees, winner takes all (or split)
-- Operator creates tournaments with specific cabinets and rules
-
-### LestersArcadeCore.sol
-- Facade contract that aggregates all other contracts
-- Single entry point for frontend integrations
-- Batch operations (e.g., open session + register profile in one tx)
-
-### ScoreSubmissionRegistry.sol
-- Advanced score validation with zero-knowledge proofs
-- Prevents replay attacks on signed attestations
-- Rate limiting to prevent spam submissions
+`scripts/deploy-contracts.mjs` predicts all five addresses from the deployer's pending nonce
+(`getCreateAddress`), writes an unsigned manifest in dry-run mode, and in broadcast mode requires
+`--broadcast`, `LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`, a signer matching the
+configured deployer and an unchanged pending nonce, then verifies every address and wiring by read-back
+before writing `contracts/deployment-record.hardened.json`.
 
 ## Testing
 
-Run contract structure validation:
-
-```bash
-npm run contracts:check
-```
-
-This verifies:
-- All required contracts exist
-- All required functions/events are present
-- Pragma version is ^0.8.24
-- All contracts compile without errors
-
-## Deployment Order
-
-1. **IERC20 interface** (no deployment needed, just import)
-2. **PlayerProfileRegistry** (no dependencies)
-3. **GameRegistry** (no dependencies)
-4. **AchievementRegistry** (depends on nothing, but called by SessionLedger)
-5. **PaymentRouter** (depends on GameRegistry for splits)
-6. **SessionLedger** (depends on GameRegistry, PaymentRouter, AchievementRegistry)
-
-## LitVM Compatibility
-
-These contracts are designed for LitVM, a Litecoin-based EVM. Key considerations:
-
-- **Block time**: ~2.5 minutes (vs Ethereum's 12 seconds)
-- **Gas costs**: Significantly lower than Ethereum mainnet
-- **Token**: LTC-wrapped USDC (or native LitVM token)
-- **Wallet**: MetaMask configured with LitVM RPC endpoint
-
-## Revenue Model
-
-The platform's sustainability comes from:
-
-1. **Ranked mode entry fees**: $0.25 per session
-2. **Platform share**: 20% of all fees
-3. **Scale**: 1,000 ranked sessions/day = $50/day platform revenue
-
-At 10,000 sessions/day: **$500/day = $15,000/month**
-
-## Upgrade Strategy
-
-Contracts use the **proxy pattern** for upgradeability:
-
-- **Logic contracts**: Contain business logic, can be upgraded
-- **Proxy contracts**: Hold state, delegate calls to logic
-- **Admin key**: Platform operator can upgrade logic contracts
-
-This allows bug fixes and feature additions without migrating state.
+- `npm run contracts:compile` (solc-js 0.8.35, optimizer 200 runs) must produce 0 errors.
+- `npm run contracts:check` pins the file set, key signals, and that legacy files are archived.
+- `contracts/test/SecurityBaseline.t.sol` is a foundry suite (`forge test`) covering exact-fee entry, wrong
+  amounts, session reuse, unpaid submission, bad signer, expired deadline, achievements-hash mismatch, relayer
+  submission, soulbound transfer, double mint, revoke/burn. Foundry is not installed in CI; run locally.

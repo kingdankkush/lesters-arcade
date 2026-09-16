@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 /// @title GameRegistry
 /// @author Lester's Arcade Core
 /// @notice Cabinet registry for Lester's Arcade. Only approved and confirmed games can participate in shared identity + ranked sessions.
+/// @dev Entry fees are denominated in wei of the chain's native token (zkLTC on LitVM LiteForge, 18 decimals).
 contract GameRegistry {
     struct Game {
         bytes32 gameId;
@@ -13,7 +14,7 @@ contract GameRegistry {
         uint16 platformBps;
         uint16 liquidityBps;
         uint16 treasuryBps;
-        uint256 entryFeeMicroUsdc;
+        uint256 entryFeeWei;
         bool devWalletConfirmed;
         bool playable;
         bool exists;
@@ -32,6 +33,7 @@ contract GameRegistry {
     event DevWalletConfirmed(bytes32 indexed gameId, address indexed devWallet);
     event GameStatusChanged(bytes32 indexed gameId, bool playable);
     event FeeSplitUpdated(bytes32 indexed gameId, uint16 dev, uint16 platform, uint16 liquidity, uint16 treasury);
+    event EntryFeeUpdated(bytes32 indexed gameId, uint256 entryFeeWei);
     event TrustedVerifierUpdated(address indexed trustedVerifier);
     event OperatorTransferStarted(address indexed currentOperator, address indexed pendingOperator);
     event OperatorTransferred(address indexed previousOperator, address indexed newOperator);
@@ -55,7 +57,7 @@ contract GameRegistry {
         uint16 platformBps,
         uint16 liquidityBps,
         uint16 treasuryBps,
-        uint256 entryFeeMicroUsdc
+        uint256 entryFeeWei
     ) external onlyOperator {
         bytes32 gameId = keccak256(abi.encodePacked(idString));
         require(!games[gameId].exists, "Already registered");
@@ -70,7 +72,7 @@ contract GameRegistry {
             platformBps: platformBps,
             liquidityBps: liquidityBps,
             treasuryBps: treasuryBps,
-            entryFeeMicroUsdc: entryFeeMicroUsdc,
+            entryFeeWei: entryFeeWei,
             devWalletConfirmed: false,
             playable: false,
             exists: true,
@@ -113,6 +115,14 @@ contract GameRegistry {
         g.liquidityBps = liquidityBps;
         g.treasuryBps = treasuryBps;
         emit FeeSplitUpdated(gameId, devBps, platformBps, liquidityBps, treasuryBps);
+    }
+
+    /// @notice Set the native-token (zkLTC, 18 decimals) Ranked entry fee for a game.
+    /// @dev ArcadeRankedEntry.openSession requires msg.value == entryFeeWei exactly.
+    function setEntryFee(bytes32 gameId, uint256 entryFeeWei) external onlyOperator {
+        require(games[gameId].exists, "Not registered");
+        games[gameId].entryFeeWei = entryFeeWei;
+        emit EntryFeeUpdated(gameId, entryFeeWei);
     }
 
     function setTrustedVerifier(address verifier) external onlyOperator {

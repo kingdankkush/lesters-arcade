@@ -1,6 +1,17 @@
-// Hardened free-ranked LitVM testnet deployment.
+// Hardened native-fee ranked LitVM testnet deployment (2026-09-16 contract set).
 // Dry-run is the default. Broadcasting requires BOTH --broadcast and the exact
 // LITVM_DEPLOY_CONFIRM value below. Never logs credential material.
+//
+// Deploy order (one nonce each):
+//   0 GameRegistry(operator)
+//   1 PlayerProfileRegistry()
+//   2 AchievementRegistry(operator, achievementBaseTokenUri)
+//   3 ArcadeRankedEntry(gameRegistry, operator)
+//   4 ScoreSubmissionRegistry(gameRegistry, rankedEntry, achievementRegistry, verifier, operator)
+// Post-deploy:
+//   5 AchievementRegistry.setMinter(scoreSubmissionRegistry, true)
+//   6 ArcadeRankedEntry.setPlatformVaults(platformVault, liquidityVault, treasuryVault)
+//   7.. per game: GameRegistry.registerGame(...) / confirmDevWallet(gameId) / setPlayable(gameId, true)
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
@@ -9,7 +20,7 @@ import { ethers } from 'ethers';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const config = JSON.parse(readFileSync(join(root, 'contracts', 'deploy-config.testnet.json'), 'utf8'));
-const BROADCAST_CONFIRM = 'DEPLOY_HARDENED_FREE_RANKED_4441';
+const BROADCAST_CONFIRM = 'DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441';
 const broadcast = process.argv.includes('--broadcast');
 const archivePath = join(root, 'docs', 'web3', 'archives', 'litvm-score-registry-2026-06-22-legacy-13.json');
 const manifestPath = join(root, 'docs', 'web3', 'hardened-ranked-deployment-manifest.json');
@@ -36,10 +47,20 @@ const archive = JSON.parse(readFileSync(archivePath, 'utf8'));
 if (archive.recordCount !== config.oldDeployment.expectedScoreRows) {
   throw new Error(`Legacy archive count ${archive.recordCount} does not match expected ${config.oldDeployment.expectedScoreRows}.`);
 }
+if (!Array.isArray(config.games) || config.games.length === 0) throw new Error('deploy-config.testnet.json must list at least one game.');
+for (const game of config.games) {
+  if (typeof game.entryFeeWei !== 'string' || !/^\d+$/.test(game.entryFeeWei)) throw new Error(`Game ${game.slug} entryFeeWei must be a decimal wei string.`);
+  if (game.devBps + game.platformBps + game.liquidityBps + game.treasuryBps !== 10_000) throw new Error(`Game ${game.slug} split must total 10000 bps.`);
+}
+for (const key of ['platformVault', 'liquidityVault', 'treasuryVault', 'achievementBaseTokenUri']) {
+  if (!config[key]) throw new Error(`deploy-config.testnet.json missing ${key}.`);
+}
 
 const artifacts = Object.freeze({
   GameRegistry: loadArtifact('GameRegistry'),
   PlayerProfileRegistry: loadArtifact('PlayerProfileRegistry'),
+  AchievementRegistry: loadArtifact('AchievementRegistry'),
+  ArcadeRankedEntry: loadArtifact('ArcadeRankedEntry'),
   ScoreSubmissionRegistry: loadArtifact('ScoreSubmissionRegistry'),
 });
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL || config.rpcUrl, config.chainId);
@@ -49,18 +70,20 @@ const pendingNonce = await provider.getTransactionCount(config.deployer, 'pendin
 const predicted = Object.freeze({
   gameRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce }),
   playerProfileRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 1 }),
-  scoreSubmissionRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 2 }),
+  achievementRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 2 }),
+  arcadeRankedEntry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 3 }),
+  scoreSubmissionRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 4 }),
 });
 
-const unsignedFactories = {
-  GameRegistry: new ethers.ContractFactory(artifacts.GameRegistry.abi, artifacts.GameRegistry.bytecode),
-  PlayerProfileRegistry: new ethers.ContractFactory(artifacts.PlayerProfileRegistry.abi, artifacts.PlayerProfileRegistry.bytecode),
-  ScoreSubmissionRegistry: new ethers.ContractFactory(artifacts.ScoreSubmissionRegistry.abi, artifacts.ScoreSubmissionRegistry.bytecode),
-};
+const unsignedFactories = Object.fromEntries(
+  Object.entries(artifacts).map(([name, artifact]) => [name, new ethers.ContractFactory(artifact.abi, artifact.bytecode)]),
+);
 const deployTransactions = [
   { name: 'GameRegistry', nonce: pendingNonce, predictedAddress: predicted.gameRegistry, transaction: await unsignedFactories.GameRegistry.getDeployTransaction(config.operator) },
   { name: 'PlayerProfileRegistry', nonce: pendingNonce + 1, predictedAddress: predicted.playerProfileRegistry, transaction: await unsignedFactories.PlayerProfileRegistry.getDeployTransaction() },
-  { name: 'ScoreSubmissionRegistry', nonce: pendingNonce + 2, predictedAddress: predicted.scoreSubmissionRegistry, transaction: await unsignedFactories.ScoreSubmissionRegistry.getDeployTransaction(predicted.gameRegistry, config.verifier) },
+  { name: 'AchievementRegistry', nonce: pendingNonce + 2, predictedAddress: predicted.achievementRegistry, transaction: await unsignedFactories.AchievementRegistry.getDeployTransaction(config.operator, config.achievementBaseTokenUri) },
+  { name: 'ArcadeRankedEntry', nonce: pendingNonce + 3, predictedAddress: predicted.arcadeRankedEntry, transaction: await unsignedFactories.ArcadeRankedEntry.getDeployTransaction(predicted.gameRegistry, config.operator) },
+  { name: 'ScoreSubmissionRegistry', nonce: pendingNonce + 4, predictedAddress: predicted.scoreSubmissionRegistry, transaction: await unsignedFactories.ScoreSubmissionRegistry.getDeployTransaction(predicted.gameRegistry, predicted.arcadeRankedEntry, predicted.achievementRegistry, config.verifier, config.operator) },
 ];
 const contractRows = [];
 for (const row of deployTransactions) {
@@ -76,27 +99,46 @@ for (const row of deployTransactions) {
     gasEstimate,
   });
 }
+
 const registryInterface = new ethers.Interface(artifacts.GameRegistry.abi);
-const gameId = ethers.id(config.game.slug);
-const postDeployTransactions = [
-  { nonce: pendingNonce + 3, method: 'registerGame', args: [config.game.slug, config.game.title, config.developerWallet, config.game.devBps, config.game.platformBps, config.game.liquidityBps, config.game.treasuryBps, config.game.entryFeeMicroUsdc] },
-  { nonce: pendingNonce + 4, method: 'confirmDevWallet', args: [gameId] },
-  { nonce: pendingNonce + 5, method: 'setPlayable', args: [gameId, true] },
-].map((row) => {
-  const data = registryInterface.encodeFunctionData(row.method, row.args);
-  return { ...row, to: predicted.gameRegistry, data, calldataHash: ethers.keccak256(data) };
+const achievementInterface = new ethers.Interface(artifacts.AchievementRegistry.abi);
+const rankedEntryInterface = new ethers.Interface(artifacts.ArcadeRankedEntry.abi);
+const games = config.games.map((game) => ({ ...game, gameId: ethers.id(game.slug) }));
+
+const postDeployPlan = [
+  { contract: 'AchievementRegistry', to: predicted.achievementRegistry, iface: achievementInterface, method: 'setMinter', args: [predicted.scoreSubmissionRegistry, true] },
+  { contract: 'ArcadeRankedEntry', to: predicted.arcadeRankedEntry, iface: rankedEntryInterface, method: 'setPlatformVaults', args: [config.platformVault, config.liquidityVault, config.treasuryVault] },
+];
+for (const game of games) {
+  postDeployPlan.push(
+    { contract: 'GameRegistry', to: predicted.gameRegistry, iface: registryInterface, method: 'registerGame', gameSlug: game.slug, args: [game.slug, game.title, config.developerWallet, game.devBps, game.platformBps, game.liquidityBps, game.treasuryBps, game.entryFeeWei] },
+    { contract: 'GameRegistry', to: predicted.gameRegistry, iface: registryInterface, method: 'confirmDevWallet', gameSlug: game.slug, args: [game.gameId] },
+    { contract: 'GameRegistry', to: predicted.gameRegistry, iface: registryInterface, method: 'setPlayable', gameSlug: game.slug, args: [game.gameId, true] },
+  );
+}
+const postDeployTransactions = postDeployPlan.map((row, index) => {
+  const data = row.iface.encodeFunctionData(row.method, row.args);
+  const { iface, ...rest } = row;
+  return { nonce: pendingNonce + deployTransactions.length + index, ...rest, data, calldataHash: ethers.keccak256(data) };
 });
+
 const manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   status: 'UNSIGNED_DRY_RUN',
+  design: 'native-fee-ranked-eip712-soulbound-2026-09-16',
   network: config.network,
   chainId: config.chainId,
+  nativeToken: config.nativeToken,
   deployer: config.deployer,
   observedPendingNonce: pendingNonce,
+  operator: config.operator,
   trustedVerifier: config.verifier,
+  vaults: { platformVault: config.platformVault, liquidityVault: config.liquidityVault, treasuryVault: config.treasuryVault },
+  achievementBaseTokenUri: config.achievementBaseTokenUri,
+  games: games.map((game) => ({ slug: game.slug, title: game.title, gameId: game.gameId, entryFeeWei: game.entryFeeWei, devBps: game.devBps, platformBps: game.platformBps, liquidityBps: game.liquidityBps, treasuryBps: game.treasuryBps })),
   contracts: contractRows,
   postDeployTransactions,
-  excluded: ['PaymentRouter', 'ArcadePaymentRouter', 'SessionLedger', 'AchievementRegistry', 'TournamentPool', 'LestersArcadeCore'],
+  excluded: ['PaymentRouter', 'ArcadePaymentRouter', 'SessionLedger', 'TournamentPool', 'LestersArcadeCore'],
   legacyArchive: { path: 'docs/web3/archives/litvm-score-registry-2026-06-22-legacy-13.json', totalSessions: archive.recordCount, checksum: archive.sha256 },
   broadcastGuard: BROADCAST_CONFIRM,
 };
@@ -127,29 +169,61 @@ async function deploy(name, args) {
 
 const gameRegistry = await deploy('GameRegistry', [config.operator]);
 const profiles = await deploy('PlayerProfileRegistry', []);
-const scores = await deploy('ScoreSubmissionRegistry', [await gameRegistry.getAddress(), config.verifier]);
-await (await gameRegistry.registerGame(config.game.slug, config.game.title, config.developerWallet, config.game.devBps, config.game.platformBps, config.game.liquidityBps, config.game.treasuryBps, config.game.entryFeeMicroUsdc)).wait();
-await (await gameRegistry.confirmDevWallet(gameId)).wait();
-await (await gameRegistry.setPlayable(gameId, true)).wait();
+const achievements = await deploy('AchievementRegistry', [config.operator, config.achievementBaseTokenUri]);
+const rankedEntry = await deploy('ArcadeRankedEntry', [await gameRegistry.getAddress(), config.operator]);
+const scores = await deploy('ScoreSubmissionRegistry', [
+  await gameRegistry.getAddress(),
+  await rankedEntry.getAddress(),
+  await achievements.getAddress(),
+  config.verifier,
+  config.operator,
+]);
 
-const registered = await gameRegistry.getGame(gameId);
-if (!registered.exists || !registered.playable || registered.devWallet.toLowerCase() !== config.developerWallet.toLowerCase()) throw new Error('Post-deploy GameRegistry read-back failed.');
-if ((await scores.gameRegistry()).toLowerCase() !== (await gameRegistry.getAddress()).toLowerCase()) throw new Error('Score registry wiring mismatch.');
-if ((await scores.trustedVerifier()).toLowerCase() !== config.verifier.toLowerCase()) throw new Error('Verifier wiring mismatch.');
+await (await achievements.setMinter(await scores.getAddress(), true)).wait();
+await (await rankedEntry.setPlatformVaults(config.platformVault, config.liquidityVault, config.treasuryVault)).wait();
+for (const game of games) {
+  await (await gameRegistry.registerGame(game.slug, game.title, config.developerWallet, game.devBps, game.platformBps, game.liquidityBps, game.treasuryBps, game.entryFeeWei)).wait();
+  await (await gameRegistry.confirmDevWallet(game.gameId)).wait();
+  await (await gameRegistry.setPlayable(game.gameId, true)).wait();
+}
+
+// Read-back verification: every predicted address and wiring must match before a record is written.
+const same = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
+for (const [key, contract] of Object.entries({ gameRegistry, playerProfileRegistry: profiles, achievementRegistry: achievements, arcadeRankedEntry: rankedEntry, scoreSubmissionRegistry: scores })) {
+  if (!same(await contract.getAddress(), predicted[key])) throw new Error(`${key} deployed at an unpredicted address; manifest invalid.`);
+}
+for (const game of games) {
+  const registered = await gameRegistry.getGame(game.gameId);
+  if (!registered.exists || !registered.playable || !registered.devWalletConfirmed || !same(registered.devWallet, config.developerWallet)) throw new Error(`Post-deploy GameRegistry read-back failed for ${game.slug}.`);
+  if (registered.entryFeeWei.toString() !== game.entryFeeWei) throw new Error(`Entry fee mismatch for ${game.slug}.`);
+}
+if (!same(await scores.gameRegistry(), await gameRegistry.getAddress())) throw new Error('Score registry wiring mismatch.');
+if (!same(await scores.rankedEntry(), await rankedEntry.getAddress())) throw new Error('Ranked entry wiring mismatch.');
+if (!same(await scores.achievementRegistry(), await achievements.getAddress())) throw new Error('Achievement registry wiring mismatch.');
+if (!same(await scores.trustedVerifier(), config.verifier)) throw new Error('Verifier wiring mismatch.');
+if (!(await achievements.minters(await scores.getAddress()))) throw new Error('Score registry is not an achievement minter.');
+if (!same(await rankedEntry.gameRegistry(), await gameRegistry.getAddress())) throw new Error('Ranked entry registry wiring mismatch.');
+if (!same(await rankedEntry.platformVault(), config.platformVault)) throw new Error('Platform vault wiring mismatch.');
+if (!(await rankedEntry.entryFeeEnabled())) throw new Error('Entry fee must be enabled after deploy.');
 
 const record = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   network: config.network,
   chainId: config.chainId,
+  nativeToken: config.nativeToken,
   deployedAt: new Date().toISOString(),
   deployer: signer.address,
-  mode: 'free-ranked-verified',
+  mode: 'native-fee-ranked-verified',
   addresses: {
     gameRegistry: await gameRegistry.getAddress(),
     playerProfileRegistry: await profiles.getAddress(),
+    achievementRegistry: await achievements.getAddress(),
+    arcadeRankedEntry: await rankedEntry.getAddress(),
     scoreSubmissionRegistry: await scores.getAddress(),
   },
-  gameId,
+  trustedVerifier: config.verifier,
+  vaults: manifest.vaults,
+  games: manifest.games,
   oldDeployment: config.oldDeployment,
 };
 writeFileSync(join(root, 'contracts', 'deployment-record.hardened.json'), `${JSON.stringify(record, null, 2)}\n`);

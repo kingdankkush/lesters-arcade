@@ -1,20 +1,46 @@
 {
+  "_note": "Deployment requires the owner's deployer key and explicit approval; nothing here is deployed.",
   "network": "LitVM LiteForge Testnet",
   "chainId": 4441,
   "rpcUrl": "https://liteforge.rpc.caldera.xyz/http",
+  "nativeToken": { "symbol": "zkLTC", "decimals": 18 },
   "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "operator": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "verifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "developerWallet": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "game": {
-    "slug": "lester-blaster",
-    "title": "Hard Money Heroes",
-    "devBps": 7500,
-    "platformBps": 2500,
-    "liquidityBps": 0,
-    "treasuryBps": 0,
-    "entryFeeMicroUsdc": 0
-  },
+  "platformVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "liquidityVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "treasuryVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "achievementBaseTokenUri": "https://lestersarcade.io/achievements/",
+  "games": [
+    {
+      "slug": "lester-blaster",
+      "title": "Hard Money Heroes",
+      "devBps": 7500,
+      "platformBps": 2500,
+      "liquidityBps": 0,
+      "treasuryBps": 0,
+      "entryFeeWei": "100000000000000000"
+    },
+    {
+      "slug": "chikun",
+      "title": "Chikun's Escape",
+      "devBps": 7500,
+      "platformBps": 2500,
+      "liquidityBps": 0,
+      "treasuryBps": 0,
+      "entryFeeWei": "100000000000000000"
+    },
+    {
+      "slug": "stacked",
+      "title": "STACKED",
+      "devBps": 7500,
+      "platformBps": 2500,
+      "liquidityBps": 0,
+      "treasuryBps": 0,
+      "entryFeeWei": "100000000000000000"
+    }
+  ],
   "oldDeployment": {
     "deployedAt": "2026-06-22",
     "gameRegistry": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",

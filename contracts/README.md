@@ -1,145 +1,78 @@
-# Lester's Arcade Smart Contract Architecture
+# Lester's Arcade smart contracts (2026-09-16 native-fee design)
 
-This directory contains the Solidity contracts that power the LitVM-integrated backend for Lester's Arcade. These contracts handle player identity, game registry, ranked session tracking, achievement minting, and payment splitting.
+Solidity contracts for Lester's Arcade Ranked Mode on **LitVM LiteForge testnet** (chainId 4441, native
+token **zkLTC**, 18 decimals, Arbitrum Orbit/Nitro). This set replaces the June 2026 ERC-20/USDC design,
+which is archived read-only under [`archive/2026-06-legacy/`](archive/2026-06-legacy/README.md).
 
-## Contracts Overview
+Owner direction (2026-09-16): Ranked Mode charges **0.1 zkLTC in the native token at entry**; that fee funds
+on-chain settlement of the run (score + session data); achievements are **soulbound NFTs** bound to the wallet;
+the June contracts are outdated and must be replaced and redeployed.
 
-### Core Identity & Registry
+## What is deployed today vs. not
 
-- **`PlayerProfileRegistry.sol`** — Master identity registry mapping wallet addresses to display names, avatars, and player stats. One wallet → one profile.
+| Contract | Status on chain 4441 |
+|----------|----------------------|
+| June 2026 set (`deployment-record.json`) | Deployed 2026-06-22. **Outdated.** Archived read-only; scores there are never imported as verified. |
+| 2026-09 set in `src/` (this README) | **Compiled, not deployed.** `deploy-config.testnet.json` and `scripts/deploy-contracts.mjs` describe the deployment; running it requires the owner's deployer key and explicit approval. |
 
-- **`GameRegistry.sol`** — Cabinet registry for approved games. Platform operator approves cabinets that integrate the submitRun adapter. Stores per-game fee splits (dev/platform/liquidity/treasury bps).
+## Contracts (`src/`)
 
-### Session & Scoring
+| Contract | Role |
+|----------|------|
+| `GameRegistry.sol` | Cabinet registry. `gameId = keccak256(slug)`. Stores dev wallet, fee split (dev/platform/liquidity/treasury bps = 10 000) and **`entryFeeWei`** (native). Operator 2-step transfer, `registerGame`, `confirmDevWallet` (by the dev wallet), `setPlayable`, `updateFeeSplit`, **`setEntryFee`**, `setTrustedVerifier`. |
+| `ArcadeRankedEntry.sol` | **Native-token entry desk.** `openSession(sessionId, gameId)` is `payable`; `msg.value` must equal the game's `entryFeeWei` exactly (or 0 when `entryFeeEnabled == false`). The value is routed immediately by the game's bps to devWallet / platformVault / liquidityVault / treasuryVault; rounding dust and any share whose vault is unset go to the dev wallet. Nothing is escrowed. `isPaid(sessionId, player, gameId)` is what the score registry checks. |
+| `ScoreSubmissionRegistry.sol` | **Verified-only ranked ledger.** `submitVerifiedSession(VerifiedRun run, bytes32[] achievements, bytes signature)` accepts an **EIP-712** attestation (domain `Lester's Arcade Ranked Settlement` v`2`) signed by `trustedVerifier`. Requires the paid session when the game's fee > 0, bounds-checks the run, stores the record, updates `bestScore` / `bestSeasonScore`, and mints attested achievements. Caller must be `run.player` or an operator-allowed relayer. No unverified path exists. |
+| `AchievementRegistry.sol` | **Soulbound ERC-721** (OpenZeppelin 5) + ERC-5192 `locked()`. Operator defines achievements; allowed minters (the score registry) call `mintFor(player, achievementId, sessionId)`, which returns `false` instead of reverting when already held / undefined. `tokenId = uint256(keccak256(abi.encode(player, achievementId)))`. Transfers between wallets revert `Soulbound()`; owner `burn`, operator `revoke`. |
+| `PlayerProfileRegistry.sol` | Unchanged. Wallet → handle/avatar profile. |
+| `LestersArcadeCore.sol` | Optional immutable address book for a deployed set. Not part of the deployment. |
+| `interfaces/` | `IGameRegistry` (Game struct + `getGame`), `IArcadeRankedEntry` (`isPaid`), `IAchievementMinter` (`mintFor`). |
 
-- **`SessionLedger.sol`** — Tracks ranked paid-run sessions on LitVM. Players pay entry fee at session open, fee held in escrow until session close. Uses EIP-712 signatures from cabinet adapters to verify score commits.
-
-### Achievements & Rewards
-
-- **`AchievementRegistry.sol`** — Cross-game achievement tracking. Parent arcade defines milestones (first boss kill, 100 games played, etc.), cabinets call `submitGameRun()` which triggers `unlockFor()`. Each achievement mints a soulbound NFT.
-
-### Payment & Settlement
-
-- **`PaymentRouter.sol`** — Splits entry fee payments according to per-game fee splits. Reads splits from GameRegistry, distributes to dev/platform/liquidity/treasury vaults.
-
-### Interfaces
-
-- **`interfaces/IERC20.sol`** — Standard ERC20 interface for entry token (USDC on LitVM).
-
-## Architecture Flow
+## Ranked flow
 
 ```
-Player connects wallet
-    ↓
-PlayerProfileRegistry.registerProfile(wallet, name, avatar)
-    ↓
-Player selects cabinet (Hard Money Heroes)
-    ↓
-GameRegistry.getGame(gameId) → validates cabinet is approved + playable
-    ↓
-SessionLedger.openSession(gameId, entryFee) → pulls USDC from player, holds in escrow
-    ↓
-Player plays game in browser (off-chain)
-    ↓
-Game over → cabinet adapter signs session summary with EIP-712
-    ↓
-SessionLedger.closeSession(sessionId, score, kills, survivalSeconds, signature)
-    → recovers signer, validates signature matches game's registered adapter
-    → emits SessionClosed(score, kills, survivalSeconds)
-    ↓
-AchievementRegistry.unlockFor() called for any milestones reached
-    ↓
-SessionLedger.settleSession() → transfers entry fee to PaymentRouter
-    ↓
-PaymentRouter.splitAndRoute() → reads fee split from GameRegistry
-    → routes to dev/platform/liquidity/treasury vaults
-    ↓
-Session marked as settled on-chain
+GameRegistry.getGame(gameId)               -> entryFeeWei = 0.1 zkLTC, playable, devWalletConfirmed
+ArcadeRankedEntry.openSession{value: fee}   -> RankedSessionOpened + RevenueRouted (fee split instantly)
+play (off chain) -> verifier service signs VerifiedRun (EIP-712)
+ScoreSubmissionRegistry.submitVerifiedSession(run, achievements, signature)
+    -> isPaid(sessionId, player, gameId) must be true (fee > 0)
+    -> ECDSA.recover(attestationDigest(run), signature) == trustedVerifier
+    -> ScoreSubmitted + SessionSubmitted; bestScore / bestSeasonScore updated
+    -> AchievementRegistry.mintFor(player, id, sessionId) per attested achievement (soulbound token)
 ```
 
-## Fee Split Model
+## Fee split (testnet config)
 
-Each game registers a fee split in basis points (bps, out of 10,000):
+All three registered games: `devBps 7500 / platformBps 2500 / liquidityBps 0 / treasuryBps 0`,
+`entryFeeWei 100000000000000000` (0.1 zkLTC). Vaults default to the operator address on testnet.
 
-| Share         | BPS  | %   | Recipient                          |
-|---------------|------|-----|------------------------------------|
-| **dev**       | 6000 | 60% | Game developer wallet              |
-| **platform**  | 2000 | 20% | Lester's Arcade operator           |
-| **liquidity** | 1000 | 10% | Liquidity pool (DEX/staking)       |
-| **treasury**  | 1000 | 10% | Community treasury (DAO governance)|
+| slug | title |
+|------|-------|
+| `lester-blaster` | Hard Money Heroes |
+| `chikun` | Chikun's Escape |
+| `stacked` | STACKED |
 
-**Total: 10,000 bps (100%)**
-
-Splits are enforced on-chain by `PaymentRouter.splitAndRoute()`. The router reads the game's split from `GameRegistry.getGame(gameId)` at settlement time, so splits can be updated without touching PaymentRouter logic.
-
-## Gas Reserve Model
-
-The platform's 20% share acts as a **gas bank**: it funds future on-chain writes for profile updates, achievement unlocks, and session settlements. This makes the system self-sustaining without requiring separate gas funding from the operator.
-
-## Security Considerations
-
-- **EIP-712 signatures** — SessionLedger requires cabinet adapters to sign score commits. The signer must match `GameRegistry.getGame(gameId).devWallet` (currently a TODO in the skeleton).
-- **Operator access control** — GameRegistry and AchievementRegistry restrict administrative functions (register game, define achievement) to a single operator address. Production should upgrade to role-based access (OpenZeppelin AccessControl).
-- **Reentrancy guard** — PaymentRouter should add `ReentrancyGuard` before production deployment to prevent reentrancy attacks during token transfers.
-- **Token whitelist** — Entry token is hardcoded to USDC on LitVM. Multi-token support would require a more flexible design.
-
-## Deployment Sequence
-
-1. Deploy `PlayerProfileRegistry`
-2. Deploy `GameRegistry`
-3. Deploy `AchievementRegistry` (requires SessionLedger address)
-4. Deploy `SessionLedger` (requires GameRegistry + AchievementRegistry addresses)
-5. Deploy `PaymentRouter` (requires GameRegistry + SessionLedger addresses)
-6. Configure vault addresses in `PaymentRouter.setDefaultVaults()`
-7. Register initial cabinets in `GameRegistry.registerCabinet()`
-8. Define initial achievements in `AchievementRegistry`
-
-## Integration with Frontend
-
-The frontend uses `ethers.js` or `viem` to interact with these contracts:
-
-```javascript
-import { ethers } from 'ethers';
-
-const provider = new ethers.BrowserProvider(window.ethereum);
-const signer = await provider.getSigner();
-
-// PlayerProfileRegistry
-const profileRegistry = new ethers.Contract(
-  '0x...', // PlayerProfileRegistry address
-  PlayerProfileRegistryABI,
-  signer
-);
-
-await profileRegistry.registerProfile('lester', 'https://ipfs.io/avatar.png');
-
-// SessionLedger
-const sessionLedger = new ethers.Contract(
-  '0x...', // SessionLedger address
-  SessionLedgerABI,
-  signer
-);
-
-await sessionLedger.openSession(gameId, entryFee, { value: entryFee });
-```
-
-## Testing
-
-Run the contract structure check:
+## Tooling
 
 ```bash
-npm run check:contracts
+npm run contracts:compile   # solc-js 0.8.35 -> contracts/artifacts/*.json (OZ deps compiled, not emitted)
+npm run contracts:check     # structure pins for the 2026-09 set; asserts legacy files are archived
+npm run contracts:test      # forge test (foundry required; not available in the Vercel/CI image)
+npm run contracts:deploy    # DRY RUN by default -> docs/web3/hardened-ranked-deployment-manifest.json
 ```
 
-This validates that all contracts are present and have the expected exported symbols (functions like `registerProfile`, `openSession`, etc.).
+Node gates: `node --test tests/contracts-security-abi.test.mjs tests/deploy-contracts-security.test.mjs tests/contract-abi-alignment.test.mjs`.
 
-## Future Extensions
+## Security notes
 
-- **ERC1155 achievement NFTs** — Current AchievementRegistry mints ERC721-like tokens. ERC1155 would allow batching for gas efficiency.
-- **Tournament contracts** — Separate contract for tournament prize pools, bracket management, and winner payouts.
-- **DAO governance** — Treasury vault could be a DAO contract with voting on split updates and platform parameters.
-- **Multi-chain bridges** — Bridge achievement NFTs and player stats to Ethereum mainnet or other L2s for broader visibility.
+- **No caller-controlled token, amount or split** (WO-118): `openSession` takes only `(sessionId, gameId)`; the
+  fee and the split come from `GameRegistry`, vault addresses from the operator.
+- **Exact-amount native fee**: over/under payment reverts `WRONG_ENTRY_FEE`; session ids are single-use.
+- **Verified-only scores**: the unverified `submitSession` is gone. Attestations carry `player`, `deadline`,
+  `envelopeHash`, `runtimeId`, `seasonId` and `achievementsHash`; OpenZeppelin `ECDSA.recover` rejects
+  malleable signatures.
+- **Reentrancy**: `openSession` and `submitVerifiedSession` are `nonReentrant`; achievement minting uses
+  `_mint` (no `onERC721Received` callback).
+- **Operator keys**: every admin surface is 2-step transferable; the verifier key can be rotated with
+  `ScoreSubmissionRegistry.setTrustedVerifier`.
 
-## Contact
-
-For questions about integrating with these contracts or deploying to LitVM testnet, contact the Lester's Arcade core team.
+Full change record and portal call sequence: [`docs/web3/contract-overhaul-20260916.md`](../docs/web3/contract-overhaul-20260916.md).

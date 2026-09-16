@@ -10,19 +10,25 @@ const ethers = await import('../apps/portal/vendor/ethers.min.js');
 test('browser verified-session calldata is byte-equal to the compiled Solidity ABI', () => {
   const browser = new ethers.Interface(SCORE_REGISTRY_ABI);
   const compiled = new ethers.Interface(artifact.abi);
+  // Hardened 2026-09-16 shape: thirteen-field VerifiedRun plus a bytes
+  // signature (EIP-712 by the trusted verifier), no v/r/s split.
   const run = {
     sessionId: `0x${'11'.repeat(32)}`,
     gameId: `0x${'22'.repeat(32)}`,
+    player: `0x${'ab'.repeat(20)}`,
     score: 12345n,
     kills: 12n,
     maxCombo: 7n,
     survivalSeconds: 90n,
     bossId: `0x${'33'.repeat(32)}`,
     envelopeHash: `0x${'44'.repeat(32)}`,
+    runtimeId: `0x${'88'.repeat(32)}`,
+    seasonId: `0x${'99'.repeat(32)}`,
     deadline: 2_000_000_000n,
+    achievementsHash: `0x${'aa'.repeat(32)}`,
   };
   const achievements = [`0x${'55'.repeat(32)}`];
-  const args = [run, achievements, 27, `0x${'66'.repeat(32)}`, `0x${'77'.repeat(32)}`];
+  const args = [run, achievements, `0x${'66'.repeat(32)}${'77'.repeat(32)}1b`];
 
   assert.equal(
     browser.encodeFunctionData('submitVerifiedSession', args),

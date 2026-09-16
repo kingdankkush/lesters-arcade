@@ -1,34 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-interface IScoreGameRegistry {
-    struct Game {
-        bytes32 gameId;
-        string title;
-        address devWallet;
-        uint16 devBps;
-        uint16 platformBps;
-        uint16 liquidityBps;
-        uint16 treasuryBps;
-        uint256 entryFeeMicroUsdc;
-        bool devWalletConfirmed;
-        bool playable;
-        bool exists;
-        uint256 registeredAt;
-    }
-
-    function getGame(bytes32 gameId) external view returns (Game memory);
-}
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IGameRegistry} from "./interfaces/IGameRegistry.sol";
+import {IArcadeRankedEntry} from "./interfaces/IArcadeRankedEntry.sol";
+import {IAchievementMinter} from "./interfaces/IAchievementMinter.sol";
 
 /// @title ScoreSubmissionRegistry
-/// @notice Permissionless, player-signed ranked-run ledger for Lester's Arcade on LitVM LiteForge.
-contract ScoreSubmissionRegistry {
+/// @author Lester's Arcade Core
+/// @notice Verified-only ranked-run ledger for Lester's Arcade on LitVM LiteForge. Every record is
+///         backed by an EIP-712 attestation signed by the trusted verifier key; there is no
+///         unverified submission path. Paid games require a matching ArcadeRankedEntry session, and
+///         achievements attested in the run are minted as soulbound tokens during settlement.
+/// @dev    EIP-712 domain: name "Lester's Arcade Ranked Settlement", version "2", chainId, this contract.
+contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
     uint256 public constant MAX_SCORE = 10_000_000_000;
     uint64 public constant MAX_KILLS = 100_000;
     uint64 public constant MAX_COMBO = 10_000;
     uint64 public constant MAX_SURVIVAL_SECONDS = 24 hours;
     uint256 public constant MAX_ACHIEVEMENTS_PER_SESSION = 32;
-    uint256 private constant SECP256K1_HALF_ORDER = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0;
+
+    bytes32 public constant VERIFIED_RUN_TYPEHASH = keccak256(
+        "VerifiedRun(bytes32 sessionId,bytes32 gameId,address player,uint256 score,uint64 kills,uint64 maxCombo,uint64 survivalSeconds,bytes32 bossId,bytes32 envelopeHash,bytes32 runtimeId,bytes32 seasonId,uint64 deadline,bytes32 achievementsHash)"
+    );
+
+    struct VerifiedRun {
+        bytes32 sessionId;
+        bytes32 gameId;
+        address player;
+        uint256 score;
+        uint64 kills;
+        uint64 maxCombo;
+        uint64 survivalSeconds;
+        bytes32 bossId;
+        bytes32 envelopeHash;
+        bytes32 runtimeId;
+        bytes32 seasonId;
+        uint64 deadline;
+        bytes32 achievementsHash;
+    }
 
     struct ScoreRecord {
         bytes32 sessionId;
@@ -39,30 +51,27 @@ contract ScoreSubmissionRegistry {
         uint64 maxCombo;
         uint64 survivalSeconds;
         bytes32 bossId;
+        bytes32 runtimeId;
+        bytes32 seasonId;
         uint64 submittedAt;
         bool verified;
         bool exists;
     }
 
-    struct VerifiedRun {
-        bytes32 sessionId;
-        bytes32 gameId;
-        uint256 score;
-        uint64 kills;
-        uint64 maxCombo;
-        uint64 survivalSeconds;
-        bytes32 bossId;
-        bytes32 envelopeHash;
-        uint64 deadline;
-    }
-
     address public immutable gameRegistry;
-    address public immutable trustedVerifier;
+    address public rankedEntry;
+    address public achievementRegistry;
+    address public trustedVerifier;
+    address public operator;
+    address public pendingOperator;
 
+    mapping(address => bool) public relayers;
     mapping(bytes32 => ScoreRecord) public scoresBySession;
+    mapping(bytes32 => bytes32) public sessionEnvelopeHash;
+    mapping(bytes32 => mapping(address => uint256)) public bestScore;
+    mapping(bytes32 => mapping(bytes32 => mapping(address => uint256))) public bestSeasonScore;
     mapping(address => bytes32[]) private _playerSessions;
     mapping(bytes32 => bytes32[]) private _sessionAchievements;
-    mapping(bytes32 => bytes32) public sessionEnvelopeHash;
     bytes32[] private _allSessions;
 
     event ScoreSubmitted(
@@ -74,115 +83,217 @@ contract ScoreSubmissionRegistry {
         uint64 maxCombo,
         uint64 survivalSeconds,
         bytes32 bossId,
-        bool verified
+        bytes32 runtimeId,
+        bytes32 seasonId
     );
     event SessionSubmitted(bytes32 indexed sessionId, bool verified);
-    event AchievementUnlocked(address indexed player, bytes32 indexed achievementId, bytes32 indexed sessionId);
+    event TrustedVerifierUpdated(address indexed trustedVerifier);
+    event RelayerUpdated(address indexed relayer, bool allowed);
+    event RankedEntryUpdated(address indexed rankedEntry);
+    event AchievementRegistryUpdated(address indexed achievementRegistry);
+    event OperatorTransferStarted(address indexed currentOperator, address indexed pendingOperator);
+    event OperatorTransferred(address indexed previousOperator, address indexed newOperator);
 
-    constructor(address _gameRegistry, address _trustedVerifier) {
+    modifier onlyOperator() {
+        require(msg.sender == operator, "Only platform operator");
+        _;
+    }
+
+    constructor(
+        address _gameRegistry,
+        address _rankedEntry,
+        address _achievementRegistry,
+        address _trustedVerifier,
+        address _operator
+    ) EIP712("Lester's Arcade Ranked Settlement", "2") {
         require(_gameRegistry != address(0), "Invalid registry");
         require(_trustedVerifier != address(0), "Invalid verifier");
+        require(_operator != address(0), "Invalid operator");
         gameRegistry = _gameRegistry;
+        rankedEntry = _rankedEntry;
+        achievementRegistry = _achievementRegistry;
         trustedVerifier = _trustedVerifier;
+        operator = _operator;
     }
 
-    function attestationDigest(VerifiedRun calldata run, address player, bytes32 achievementsHash)
-        public view returns (bytes32)
+    // ---------------------------------------------------------------------
+    // Operator administration
+    // ---------------------------------------------------------------------
+
+    function setTrustedVerifier(address verifier) external onlyOperator {
+        require(verifier != address(0), "Invalid verifier");
+        trustedVerifier = verifier;
+        emit TrustedVerifierUpdated(verifier);
+    }
+
+    function setRelayer(address relayer, bool allowed) external onlyOperator {
+        require(relayer != address(0), "Invalid relayer");
+        relayers[relayer] = allowed;
+        emit RelayerUpdated(relayer, allowed);
+    }
+
+    /// @dev address(0) disables the paid-session check entirely (free ranked mode).
+    function setRankedEntry(address _rankedEntry) external onlyOperator {
+        rankedEntry = _rankedEntry;
+        emit RankedEntryUpdated(_rankedEntry);
+    }
+
+    /// @dev address(0) disables achievement minting (scores still settle).
+    function setAchievementRegistry(address _achievementRegistry) external onlyOperator {
+        achievementRegistry = _achievementRegistry;
+        emit AchievementRegistryUpdated(_achievementRegistry);
+    }
+
+    function transferOperator(address newOperator) external onlyOperator {
+        require(newOperator != address(0), "Invalid operator");
+        pendingOperator = newOperator;
+        emit OperatorTransferStarted(operator, newOperator);
+    }
+
+    function acceptOperator() external {
+        require(msg.sender == pendingOperator, "Only pending operator");
+        address previous = operator;
+        operator = pendingOperator;
+        pendingOperator = address(0);
+        emit OperatorTransferred(previous, operator);
+    }
+
+    // ---------------------------------------------------------------------
+    // Attestation
+    // ---------------------------------------------------------------------
+
+    /// @notice EIP-712 digest the trusted verifier signs for `run`.
+    function attestationDigest(VerifiedRun calldata run) public view returns (bytes32) {
+        // abi.encode of static-typed words is plain concatenation, so splitting the encode in two
+        // keeps the compiler off "stack too deep" while producing the canonical EIP-712 struct hash.
+        bytes memory head = abi.encode(
+            VERIFIED_RUN_TYPEHASH,
+            run.sessionId,
+            run.gameId,
+            run.player,
+            run.score,
+            run.kills,
+            run.maxCombo,
+            run.survivalSeconds
+        );
+        bytes memory tail = abi.encode(
+            run.bossId,
+            run.envelopeHash,
+            run.runtimeId,
+            run.seasonId,
+            run.deadline,
+            run.achievementsHash
+        );
+        return _hashTypedDataV4(keccak256(bytes.concat(head, tail)));
+    }
+
+    /// @notice Canonical hash of an achievements list as committed in VerifiedRun.achievementsHash.
+    function achievementsHashOf(bytes32[] calldata achievements) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(achievements));
+    }
+
+    // ---------------------------------------------------------------------
+    // Settlement
+    // ---------------------------------------------------------------------
+
+    /// @notice Settle a verifier-attested ranked run on chain.
+    /// @param run          The attested run. `run.player` is the wallet credited with the score.
+    /// @param achievements Achievement ids unlocked by this run; must hash to run.achievementsHash.
+    /// @param signature    65-byte ECDSA signature by `trustedVerifier` over attestationDigest(run).
+    function submitVerifiedSession(VerifiedRun calldata run, bytes32[] calldata achievements, bytes calldata signature)
+        external
+        nonReentrant
     {
-        bytes32 runHash = keccak256(abi.encode(run));
-        bytes32 payload = keccak256(abi.encode(address(this), block.chainid, player, achievementsHash, runHash));
-        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", payload));
-    }
-
-    function submitVerifiedSession(
-        VerifiedRun calldata run,
-        bytes32[] calldata achievements,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
+        require(msg.sender == run.player || relayers[msg.sender], "NOT_PLAYER_OR_RELAYER");
         require(block.timestamp <= run.deadline, "ATTESTATION_EXPIRED");
         require(run.envelopeHash != bytes32(0), "EMPTY_ENVELOPE_HASH");
-        bytes32 digest = attestationDigest(run, msg.sender, keccak256(abi.encode(achievements)));
-        require(_recover(digest, v, r, s) == trustedVerifier, "INVALID_ATTESTATION");
-        sessionEnvelopeHash[run.sessionId] = run.envelopeHash;
-        _submitSession(
-            run.sessionId, run.gameId, run.score, run.kills, run.maxCombo,
-            run.survivalSeconds, run.bossId, achievements, true
-        );
-    }
-
-    function _recover(bytes32 digest, uint8 v, bytes32 r, bytes32 s) private pure returns (address) {
-        require(v == 27 || v == 28, "INVALID_SIGNATURE_V");
-        require(uint256(s) <= SECP256K1_HALF_ORDER, "INVALID_SIGNATURE_S");
-        address signer = ecrecover(digest, v, r, s);
-        require(signer != address(0), "INVALID_SIGNATURE");
-        return signer;
-    }
-
-    function submitSession(
-        bytes32 sessionId,
-        bytes32 gameId,
-        uint256 score,
-        uint64 kills,
-        uint64 maxCombo,
-        uint64 survivalSeconds,
-        bytes32 bossId,
-        bytes32[] calldata achievements
-    ) external {
-        _submitSession(sessionId, gameId, score, kills, maxCombo, survivalSeconds, bossId, achievements, false);
-    }
-
-    function _submitSession(
-        bytes32 sessionId,
-        bytes32 gameId,
-        uint256 score,
-        uint64 kills,
-        uint64 maxCombo,
-        uint64 survivalSeconds,
-        bytes32 bossId,
-        bytes32[] calldata achievements,
-        bool verified
-    ) internal {
-        require(sessionId != bytes32(0), "EMPTY_SESSION_ID");
-        require(gameId != bytes32(0), "EMPTY_GAME_ID");
-        require(!scoresBySession[sessionId].exists, "SESSION_EXISTS");
-        IScoreGameRegistry.Game memory game = IScoreGameRegistry(gameRegistry).getGame(gameId);
-        require(game.exists && game.playable, "GAME_NOT_PLAYABLE");
-        require(score <= MAX_SCORE, "SCORE_OUT_OF_BOUNDS");
-        require(kills <= MAX_KILLS, "KILLS_OUT_OF_BOUNDS");
-        require(maxCombo <= MAX_COMBO, "COMBO_OUT_OF_BOUNDS");
-        require(survivalSeconds <= MAX_SURVIVAL_SECONDS, "SURVIVAL_OUT_OF_BOUNDS");
+        require(run.sessionId != bytes32(0), "EMPTY_SESSION_ID");
+        require(run.gameId != bytes32(0), "EMPTY_GAME_ID");
+        require(run.player != address(0), "EMPTY_PLAYER");
+        require(!scoresBySession[run.sessionId].exists, "SESSION_EXISTS");
         require(achievements.length <= MAX_ACHIEVEMENTS_PER_SESSION, "TOO_MANY_ACHIEVEMENTS");
+        require(keccak256(abi.encodePacked(achievements)) == run.achievementsHash, "ACHIEVEMENTS_HASH_MISMATCH");
 
-        scoresBySession[sessionId] = ScoreRecord({
-            sessionId: sessionId,
-            player: msg.sender,
-            gameId: gameId,
-            score: score,
-            kills: kills,
-            maxCombo: maxCombo,
-            survivalSeconds: survivalSeconds,
-            bossId: bossId,
+        IGameRegistry.Game memory game = IGameRegistry(gameRegistry).getGame(run.gameId);
+        require(game.exists && game.playable, "GAME_NOT_PLAYABLE");
+        if (game.entryFeeWei > 0) {
+            require(rankedEntry != address(0), "RANKED_ENTRY_UNSET");
+            require(IArcadeRankedEntry(rankedEntry).isPaid(run.sessionId, run.player, run.gameId), "SESSION_NOT_PAID");
+        }
+
+        require(run.score <= MAX_SCORE, "SCORE_OUT_OF_BOUNDS");
+        require(run.kills <= MAX_KILLS, "KILLS_OUT_OF_BOUNDS");
+        require(run.maxCombo <= MAX_COMBO, "COMBO_OUT_OF_BOUNDS");
+        require(run.survivalSeconds <= MAX_SURVIVAL_SECONDS, "SURVIVAL_OUT_OF_BOUNDS");
+
+        // ECDSA.recover reverts on malformed / high-s signatures (OpenZeppelin malleability guard).
+        require(ECDSA.recover(attestationDigest(run), signature) == trustedVerifier, "INVALID_ATTESTATION");
+
+        _record(run);
+        _mintAchievements(run.player, run.sessionId, achievements);
+    }
+
+    function _record(VerifiedRun calldata run) private {
+        scoresBySession[run.sessionId] = ScoreRecord({
+            sessionId: run.sessionId,
+            player: run.player,
+            gameId: run.gameId,
+            score: run.score,
+            kills: run.kills,
+            maxCombo: run.maxCombo,
+            survivalSeconds: run.survivalSeconds,
+            bossId: run.bossId,
+            runtimeId: run.runtimeId,
+            seasonId: run.seasonId,
             submittedAt: uint64(block.timestamp),
-            verified: verified,
+            verified: true,
             exists: true
         });
+        sessionEnvelopeHash[run.sessionId] = run.envelopeHash;
+        _playerSessions[run.player].push(run.sessionId);
+        _allSessions.push(run.sessionId);
 
-        _playerSessions[msg.sender].push(sessionId);
-        _allSessions.push(sessionId);
+        if (run.score > bestScore[run.gameId][run.player]) {
+            bestScore[run.gameId][run.player] = run.score;
+        }
+        if (run.score > bestSeasonScore[run.gameId][run.seasonId][run.player]) {
+            bestSeasonScore[run.gameId][run.seasonId][run.player] = run.score;
+        }
 
-        emit ScoreSubmitted(sessionId, msg.sender, gameId, score, kills, maxCombo, survivalSeconds, bossId, verified);
-        emit SessionSubmitted(sessionId, verified);
+        emit ScoreSubmitted(
+            run.sessionId,
+            run.player,
+            run.gameId,
+            run.score,
+            run.kills,
+            run.maxCombo,
+            run.survivalSeconds,
+            run.bossId,
+            run.runtimeId,
+            run.seasonId
+        );
+        emit SessionSubmitted(run.sessionId, true);
+    }
 
+    function _mintAchievements(address player, bytes32 sessionId, bytes32[] calldata achievements) private {
         uint256 len = achievements.length;
+        if (len == 0) return;
+        address minter = achievementRegistry;
+        bytes32[] storage recorded = _sessionAchievements[sessionId];
         for (uint256 i = 0; i < len; i++) {
             bytes32 achievementId = achievements[i];
             if (achievementId == bytes32(0)) continue;
-            _sessionAchievements[sessionId].push(achievementId);
-            emit AchievementUnlocked(msg.sender, achievementId, sessionId);
+            recorded.push(achievementId);
+            if (minter != address(0)) {
+                // Returns false (no revert) for undefined or already-held achievements.
+                IAchievementMinter(minter).mintFor(player, achievementId, sessionId);
+            }
         }
     }
+
+    // ---------------------------------------------------------------------
+    // Views
+    // ---------------------------------------------------------------------
 
     function getSession(bytes32 sessionId) external view returns (ScoreRecord memory) {
         return scoresBySession[sessionId];
@@ -216,11 +327,7 @@ contract ScoreSubmissionRegistry {
         return _allSessions.length;
     }
 
-    function getRecentSessions(uint256 offset, uint256 limit)
-        external
-        view
-        returns (ScoreRecord[] memory page)
-    {
+    function getRecentSessions(uint256 offset, uint256 limit) external view returns (ScoreRecord[] memory page) {
         uint256 total = _allSessions.length;
         if (offset >= total) return new ScoreRecord[](0);
         uint256 end = offset + limit;
@@ -229,5 +336,10 @@ contract ScoreSubmissionRegistry {
         for (uint256 i = offset; i < end; i++) {
             page[i - offset] = scoresBySession[_allSessions[i]];
         }
+    }
+
+    /// @notice EIP-712 domain separator (exposed for off-chain signers and tests).
+    function domainSeparator() external view returns (bytes32) {
+        return _domainSeparatorV4();
     }
 }
