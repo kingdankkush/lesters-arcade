@@ -2,6 +2,10 @@
 
 Hard Money Heroes now has one manual weapon control: **Q** (or **E**), the right bumper, or the touch **SWAP** button cycles the weapons you carry, and **Tab** or tapping the armed-weapon card in the cockpit opens a weapon wheel that freezes the run while you pick. The pistol is always one press away, so a rare gun can be held back for the Liquidator. The Railgun is now a lane weapon: one slug passes through up to six bodies (seven with Deep Proof, eight as the Settler Rail), remembers what it already hit, and stops only on cover, range, or its body budget. Bosses take the same high hit without dying to it.
 
+All three games now share an end-of-run share row (X, Facebook, Discord copy and the native share sheet) with score and session stats. Hard Money Heroes' authored props render at twice their previous pixel density so they stop upscaling at gameplay zoom.
+
+Web3 groundwork (owner direction 2026-09-16): Ranked Mode is priced at 0.1 zkLTC in the LitVM native token, wallet login now verifies the signed challenge and Ranked refuses an unsigned session, the settlement plan pays a native entry before the run and settles through an EIP-712 verifier attestation, and `/api/attest` signs attestations once `VERIFIER_PRIVATE_KEY` is configured. The June contracts are replaced in source by a native-fee, soulbound-achievement set (`docs/web3/contract-overhaul-20260916.md`). `SETTLEMENT_LIVE` remains false and nothing is deployed: the fee is disclosed, never charged, until the owner deploys the hardened contracts and enables settlement.
+
 Deployment facts for this wave are recorded below once the candidate is promoted; until then the previous section is the live truth.
 
 # Lester's Arcade — completed updates verified live
