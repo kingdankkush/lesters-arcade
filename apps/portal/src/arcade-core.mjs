@@ -72,7 +72,23 @@ export {
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL_PACK_MANIFEST;
 
-export const DEFAULT_ENTRY_FEE_MICRO_USDC = 0; // Ranked is free on testnet — only zkLTC gas for settlement
+export const DEFAULT_ENTRY_FEE_MICRO_USDC = 0; // legacy USDC field, never charged; kept for old save records
+
+// Owner direction 2026-09-16: Ranked Mode charges 0.1 zkLTC (the LitVM native
+// token) at entry. That fee funds settlement of the score and session data on
+// LitVM. Stored as a decimal wei string so it survives JSON persistence. It is
+// only collected on chain once SETTLEMENT_LIVE is true and the hardened
+// ArcadeRankedEntry contract is deployed; the preview discloses it, nothing more.
+export const RANKED_ENTRY_FEE_WEI = '100000000000000000';
+export const RANKED_ENTRY_FEE_ZKLTC = '0.1';
+export const RANKED_PAYMENT_TOKEN = 'zkLTC';
+
+export function formatZkLtcWei(wei) {
+  const value = BigInt(String(wei ?? '0').replace(/[^0-9]/g, '') || '0');
+  const whole = value / 1_000_000_000_000_000_000n;
+  const fraction = (value % 1_000_000_000_000_000_000n).toString().padStart(18, '0').replace(/0+$/, '');
+  return `${whole}${fraction ? `.${fraction}` : ''} ${RANKED_PAYMENT_TOKEN}`;
+}
 
 // Ranked $0.25 fee split. Cost-first intent: a settlement reserve covers the
 // on-chain gas to write the player's score/achievements/username; the dev bucket
@@ -2157,6 +2173,7 @@ export const ARCADE_GAMES = Object.freeze([
     status: 'playable',
     developer: 'Lester\'s Arcade Core Team',
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
+    entryFeeWei: RANKED_ENTRY_FEE_WEI,
     livesPaid: 3,
     livesFree: Infinity,
     tagline: 'Fight through Litecoin City After Dark with sparks-only defaults and optional pre-run gore.',
@@ -2179,6 +2196,7 @@ export const ARCADE_GAMES = Object.freeze([
     status: 'coming-soon',
     developer: 'Future cabinet builder',
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
+    entryFeeWei: RANKED_ENTRY_FEE_WEI,
     livesPaid: 3,
     livesFree: Infinity,
     tagline: 'Neo-noir Litecoin pinball with multiball bonus rounds.',
@@ -2200,6 +2218,7 @@ export const ARCADE_GAMES = Object.freeze([
     status: 'coming-soon',
     developer: 'Future cabinet builder',
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
+    entryFeeWei: RANKED_ENTRY_FEE_WEI,
     livesPaid: 3,
     livesFree: Infinity,
     tagline: 'Punch through rug-pull gangs and boss-rush crypto villains.',
@@ -2221,6 +2240,7 @@ export const ARCADE_GAMES = Object.freeze([
     status: 'coming-soon',
     developer: 'Future cabinet builder',
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
+    entryFeeWei: RANKED_ENTRY_FEE_WEI,
     livesPaid: 3,
     livesFree: Infinity,
     tagline: 'Jump, dash, and collect silver power crystals across LitVM sectors.',
@@ -2244,6 +2264,7 @@ export const ARCADE_GAMES = Object.freeze([
     devPlayable: true,
     developer: 'Louie / LitVM Port Team',
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
+    entryFeeWei: RANKED_ENTRY_FEE_WEI,
     livesPaid: 3,
     livesFree: Infinity,
     tagline: 'Tap to fly. Dodge trees and drones. Stack the silver.',
@@ -2275,7 +2296,7 @@ export const ARCADE_GAMES = Object.freeze([
     id: 'stacked', title: 'STACKED', cabinet: 'BLOCK CABINET 05',
     genre: 'Falling-block ledger stacker puzzle', status: 'playable',
     publicPlayable: true, devPlayable: true, developer: "Lester's Arcade Core Team",
-    entryFeeMicroUsdc: 0, livesPaid: 1, livesFree: Infinity,
+    entryFeeMicroUsdc: 0, entryFeeWei: RANKED_ENTRY_FEE_WEI, livesPaid: 1, livesFree: Infinity,
     tagline: 'Seal the blocks. Clear the ledger. Do not let the chain reorg.',
     systemRole: 'child-dapp-cartridge', rankedSeasonId: 'stacked-season-preview-1',
     cabinetVersion: STACKED_CABINET_VERSION, parentSystem: "Lester's Arcade",
@@ -3886,7 +3907,7 @@ export function buildOfficialRunStatusModel({ gameTitle = 'Hard Money Heroes', c
       state: currentSession.isPaid ? 'ranked-armed' : 'free-armed',
       heading: `${gameTitle} ${currentSession.isPaid ? 'Ranked Testnet' : 'Free Practice'} run armed`,
       details: currentSession.isPaid
-        ? `${formatMicroUsdc(currentSession.entryFeeMicroUsdc)} testnet credit reserved. Syncing a result will update official leaderboard, achievements, transaction history, and parent progress.`
+        ? `Ranked entry ${formatZkLtcWei(currentSession.entryFeeWei)} settles this run on LitVM once verified settlement is live. Syncing a result will update official leaderboard, achievements, transaction history, and parent progress.`
         : 'Free practice run armed. Completing it stays untracked: no progress, achievements, high scores, or transactions.',
     });
   }
@@ -5137,6 +5158,7 @@ export function getCartridgeSelectModel() {
       developer: game.developer,
       tagline: game.tagline,
       entryFeeMicroUsdc: game.entryFeeMicroUsdc,
+      entryFeeWei: game.entryFeeWei ?? '0',
       systemRole: game.systemRole,
       parentSystem: game.parentSystem,
       presentation: { ...game.presentation },
@@ -5292,7 +5314,7 @@ export function startPlaySession({
   wallet,
   gameId,
   mode = 'free',
-  paymentToken = 'USDC',
+  paymentToken = RANKED_PAYMENT_TOKEN,
   urlSessionId = null,
   sequenceNumber = null,
   sessionNonce = null,
@@ -5354,6 +5376,8 @@ export function startPlaySession({
     leaderboardEligible: isPaid,
     lives: isPaid ? game.livesPaid : game.livesFree,
     entryFeeMicroUsdc: isPaid ? game.entryFeeMicroUsdc : 0,
+    // Native entry fee (decimal wei string). Charged on chain only when live.
+    entryFeeWei: isPaid ? String(game.entryFeeWei ?? '0') : '0',
     revenueSplit: isPaid ? calculateRevenueSplit(game.entryFeeMicroUsdc) : null,
     parentWriteScopes: isPaid ? [...LESTER_ARCADE_WALLET_RAILS.permissions.writeScopes] : [],
     startedAt: nowIso(),
@@ -5756,7 +5780,10 @@ export function recordScore(state, session, score, runStats = {}) {
       username: profile.usernameSet ? profile.handle : null,
       profileChanged: false,
       entryFeeMicroUnits: session.entryFeeMicroUsdc ?? 0,
-      paymentToken: session.paymentToken ?? 'USDC',
+      entryFeeWei: String(session.entryFeeWei ?? '0'),
+      paymentToken: session.paymentToken ?? RANKED_PAYMENT_TOKEN,
+      runtimeId: `${game.id}:${session.version?.gameVersion ?? ''}`,
+      seasonId: session.seasonId ?? null,
     },
   };
 }

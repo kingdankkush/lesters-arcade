@@ -17,7 +17,7 @@
 // Per AGENTS.md, no real chain write happens without explicit approval, so the
 // live path is opt-in and inert until contracts are deployed and the flag is on.
 
-import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, calculateRevenueSplit } from './arcade-core.mjs';
+import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, RANKED_PAYMENT_TOKEN, calculateRevenueSplit } from './arcade-core.mjs';
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
@@ -35,11 +35,16 @@ export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
   achievementRegistry: '0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53',
   arcadePaymentRouter: '0x7c999E9570D44090b9279dbAbE33B361e94bf78B',
   lestersArcadeCore: '0x609CBED352699003dec2381a79EFe5090B56F1D2',
+  // Hardened native-fee entry contract (ArcadeRankedEntry). Undeployed: the
+  // address is filled from contracts/deployment-record.hardened.json after the
+  // owner-approved redeploy. Null keeps every fee path fail-closed.
+  arcadeRankedEntry: null,
 });
 
 // Per-write zkLTC gas budget (testnet estimates, in wei-equivalent units of the
 // 18-decimal native token). These are what the Paid Mode fee is sized to cover.
 export const ZKLTC_SETTLEMENT_GAS = Object.freeze({
+  rankedEntry: 90_000n,
   scoreSubmit: 120_000n,
   achievementUnlock: 90_000n,
   profileUpdate: 70_000n,
@@ -97,7 +102,11 @@ export function buildSettlementPlan({
   username = null,
   profileChanged = false,
   entryFeeMicroUnits = 0,
-  paymentToken = 'USDC',
+  entryFeeWei = '0',
+  paymentToken = RANKED_PAYMENT_TOKEN,
+  runtimeId = null,
+  seasonId = null,
+  envelopeHash = null,
   splitBps = DEFAULT_REVENUE_SPLIT_BPS,
   settlementGasMicroUnits = null,
   devWalletAddress = DEV_WALLET.address,
@@ -107,6 +116,21 @@ export function buildSettlementPlan({
   }
 
   const calls = [];
+
+  // Native 0.1 zkLTC entry (owner direction 2026-09-16). The fee is paid to
+  // ArcadeRankedEntry.openSession(sessionId, gameId) with msg.value at Ranked
+  // entry, before the run; the contract derives the split from GameRegistry
+  // and records the paid session the score contract later requires.
+  const feeWei = BigInt(String(entryFeeWei ?? '0').replace(/[^0-9]/g, '') || '0');
+  if (feeWei > 0n) {
+    calls.push(Object.freeze({
+      contract: 'arcadeRankedEntry',
+      method: 'openSession',
+      args: Object.freeze({ sessionId, gameId }),
+      valueWei: feeWei.toString(),
+      gas: ZKLTC_SETTLEMENT_GAS.rankedEntry,
+    }));
+  }
 
   // Profile write. The deployed PlayerProfileRegistry exposes an idempotent
   // `setProfile(displayName, avatarUri)` (create-or-update) — this is what the
@@ -122,26 +146,30 @@ export function buildSettlementPlan({
     }));
   }
 
-  // Score + achievements are ONE call. The deployed ScoreSubmissionRegistry
-  // exposes `submitSession(sessionId, gameId, score, kills, maxCombo,
-  // survivalSeconds, bossId, achievements[])` and folds achievement unlocks
-  // into that same transaction. AchievementRegistry.unlockFor is `onlyLedger`,
-  // so a player wallet cannot call it directly — achievements MUST ride inside
-  // submitSession. Previous plan emitted a nonexistent `submitScore` plus
-  // impossible per-achievement `unlockAchievement` calls; both are removed.
+  // Score + achievements are ONE call. The hardened ScoreSubmissionRegistry
+  // exposes `submitVerifiedSession(VerifiedRun run, bytes32[] achievements,
+  // bytes signature)`; the trusted verifier's EIP-712 signature is fetched
+  // from /api/attest at settle time and is never part of the plan. Soulbound
+  // achievement mints happen inside that same transaction (the score contract
+  // is the AchievementRegistry minter), so there are no standalone unlock calls.
   const achievementIds = (unlockedAchievements ?? []).filter(Boolean);
   calls.push(Object.freeze({
     contract: 'scoreSubmissionRegistry',
-    method: 'submitSession',
+    method: 'submitVerifiedSession',
     args: Object.freeze({
       sessionId,
       gameId,
+      player: wallet,
       score,
       kills: Math.max(0, Math.round(Number(kills) || 0)),
       maxCombo: Math.max(0, Math.round(Number(maxCombo) || 0)),
       survivalSeconds: Math.max(0, Math.round(Number(survivalSeconds) || 0)),
       bossId: bossId ?? null,
+      envelopeHash: envelopeHash ?? null,
+      runtimeId: runtimeId ?? null,
+      seasonId: seasonId ?? null,
       achievements: Object.freeze([...achievementIds]),
+      attestation: 'trusted-verifier (fetched at settle time)',
     }),
     gas: ZKLTC_SETTLEMENT_GAS.scoreSubmit
       + ZKLTC_SETTLEMENT_GAS.achievementUnlock * BigInt(achievementIds.length),
@@ -152,26 +180,10 @@ export function buildSettlementPlan({
     profileChanged: Boolean(profileChanged && username),
   });
 
-  // Ranked is currently free on testnet. If/when paid entry is re-enabled, the
-  // hardened ArcadePaymentRouter derives token, split bps, and vaults from
-  // trusted operator/registry state. The client-side plan can only name the
-  // session, game, and amount; it cannot supply caller-controlled routing.
-  let revenueSplit = null;
-  let routeCall = null;
-  if (Number.isInteger(entryFeeMicroUnits) && entryFeeMicroUnits > 0) {
-    revenueSplit = calculateRevenueSplit(entryFeeMicroUnits, splitBps, { settlementGasMicroUnits });
-    routeCall = Object.freeze({
-      contract: 'arcadePaymentRouter',
-      method: 'startPaidSession',
-      args: Object.freeze({
-        sessionId,
-        gameId,
-        amount: entryFeeMicroUnits,
-      }),
-      gas: ZKLTC_SETTLEMENT_GAS.profileUpdate,
-    });
-    calls.push(routeCall);
-  }
+  // Accounting preview of the split. The contract derives the real split from
+  // GameRegistry bps; the client can only name the session, game and value.
+  const previewUnits = feeWei > 0n ? Number(feeWei / 1_000_000_000_000n) : (Number.isInteger(entryFeeMicroUnits) ? entryFeeMicroUnits : 0);
+  const revenueSplit = previewUnits > 0 ? calculateRevenueSplit(previewUnits, splitBps, { settlementGasMicroUnits }) : null;
 
   return {
     wallet,
@@ -190,6 +202,7 @@ export function buildSettlementPlan({
     feePurpose: 'Paid Mode fee covers settlement gas to write scores/achievements/username to LitVM; the remainder goes to the dev wallet (future game dev + community), with tournament and community slices.',
     paymentToken,
     entryFeeMicroUnits,
+    entryFeeWei: feeWei.toString(),
     revenueSplit,
     devWallet: devWalletAddress,
     gas,
@@ -254,7 +267,7 @@ export async function settleRun(plan, {
       score: plan.score,
       cadenceKeys: { ...plan.cadenceKeys },
       receipts,
-      primaryTxHash: receipts.find((r) => r.method === 'submitSession')?.txHash ?? receipts[0]?.txHash ?? null,
+      primaryTxHash: receipts.find((r) => r.method === 'submitVerifiedSession')?.txHash ?? receipts[0]?.txHash ?? null,
       settledAt: new Date().toISOString(),
     };
   }
@@ -268,7 +281,7 @@ export async function settleRun(plan, {
     simulated: true,
   }));
 
-  const primarySimulatedTxHash = receipts.find((r) => r.method === 'submitSession')?.simulatedTxHash
+  const primarySimulatedTxHash = receipts.find((r) => r.method === 'submitVerifiedSession')?.simulatedTxHash
     ?? receipts[0]?.simulatedTxHash
     ?? null;
 

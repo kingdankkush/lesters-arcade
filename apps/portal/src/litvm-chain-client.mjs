@@ -19,6 +19,7 @@
 import { LITVM_LITEFORGE_NETWORK } from './arcade-core.mjs';
 import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from './settlement.mjs';
 import { classifyWalletError } from './wallet-auth.mjs';
+import { attestationDomain, buildVerifiedRun, deserializeVerifiedRun, isAttestationValid } from './verifier-attestation.mjs';
 
 // Lazy-load the vendored ethers ESM bundle so the heavy lib only loads when a
 // chain call actually happens (keeps first paint fast). Cached after first use.
@@ -33,20 +34,43 @@ export function loadEthers() {
 // Minimal ABIs — only the methods the runtime calls. Must match the deployed
 // contracts in contracts/src/ScoreSubmissionRegistry.sol + PlayerProfileRegistry.sol.
 export const GAME_REGISTRY_ABI = [
-  'function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeMicroUsdc,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))',
+  'function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeWei,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))',
 ];
 
+// Native 0.1 zkLTC entry (ArcadeRankedEntry). `openSession` is payable; the
+// contract derives the split from GameRegistry and records the paid session.
+export const RANKED_ENTRY_ABI = [
+  'function openSession(bytes32 sessionId, bytes32 gameId) external payable',
+  'function isPaid(bytes32 sessionId, address player, bytes32 gameId) external view returns (bool)',
+  'function getPaidSession(bytes32 sessionId) external view returns (tuple(address player, bytes32 gameId, uint256 amountWei, uint64 openedAt, bool exists))',
+  'function entryFeeEnabled() view returns (bool)',
+];
+
+export const ACHIEVEMENT_REGISTRY_ABI = [
+  'function hasUnlocked(address wallet, bytes32 achievementId) external view returns (bool)',
+  'function unlockedAt(address wallet, bytes32 achievementId) external view returns (uint256)',
+  'function tokenIdFor(address wallet, bytes32 achievementId) external pure returns (uint256)',
+];
+
+const SCORE_RECORD = 'tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 runtimeId, bytes32 seasonId, uint64 submittedAt, bool verified, bool exists)';
+const VERIFIED_RUN = '(bytes32 sessionId, bytes32 gameId, address player, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 envelopeHash, bytes32 runtimeId, bytes32 seasonId, uint64 deadline, bytes32 achievementsHash)';
+
+// Hardened ScoreSubmissionRegistry (2026-09-16 overhaul): EIP-712 verifier
+// attestation, no unverified submit path, soulbound achievement mints inside
+// the same transaction.
 export const SCORE_REGISTRY_ABI = [
   'function gameRegistry() view returns(address)',
   'function trustedVerifier() view returns(address)',
-  'function submitSession(bytes32 sessionId, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32[] achievements) external',
-  'function submitVerifiedSession((bytes32 sessionId, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 envelopeHash, uint64 deadline) run, bytes32[] achievements, uint8 v, bytes32 r, bytes32 s) external',
-  'function getSession(bytes32 sessionId) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists))',
+  'function rankedEntry() view returns(address)',
+  `function submitVerifiedSession(${VERIFIED_RUN} run, bytes32[] achievements, bytes signature) external`,
+  `function attestationDigest(${VERIFIED_RUN} run) view returns (bytes32)`,
+  `function getSession(bytes32 sessionId) external view returns (${SCORE_RECORD})`,
   'function getSessionAchievements(bytes32 sessionId) external view returns (bytes32[])',
   'function playerSessionCount(address player) external view returns (uint256)',
-  'function getPlayerSessions(address player, uint256 offset, uint256 limit) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists)[])',
+  `function getPlayerSessions(address player, uint256 offset, uint256 limit) external view returns (${SCORE_RECORD}[])`,
   'function totalSessions() external view returns (uint256)',
-  'function getRecentSessions(uint256 offset, uint256 limit) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists)[])',
+  `function getRecentSessions(uint256 offset, uint256 limit) external view returns (${SCORE_RECORD}[])`,
+  'function bestScore(bytes32 gameId, address player) view returns (uint256)',
 ];
 
 export const PROFILE_REGISTRY_ABI = [
@@ -117,8 +141,8 @@ async function readRankedContractGate(ethers, provider, gameId) {
     }
     const verifier = await scores.trustedVerifier(overrides);
     if (verifier === ethers.ZeroAddress) return deny('missing-verifier', 'The score contract has no configured verifier.');
-    // A fixed-size tuple probe detects the legacy ten-field ABI even when there
-    // are no score rows. Never decode a legacy row as verified or fall back to it.
+    // A fixed-size tuple probe detects the legacy ten/eleven-field ABI even when
+    // there are no score rows. Never decode a legacy row as verified or fall back to it.
     try {
       await scores.getSession(ethers.ZeroHash, overrides);
     } catch (error) {
@@ -127,13 +151,71 @@ async function readRankedContractGate(ethers, provider, gameId) {
       }
       throw error;
     }
-    return { ok: true, reason: null, error: null, blockNumber, gameId32 };
+    // Native entry fee: a game with a fee needs the ArcadeRankedEntry contract
+    // the score contract is wired to; without it nothing can be paid or settled.
+    const entryFeeWei = BigInt(game.entryFeeWei ?? 0n);
+    let rankedEntryAddress = null;
+    if (entryFeeWei > 0n) {
+      rankedEntryAddress = LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry;
+      if (!rankedEntryAddress) return deny('missing-ranked-entry', 'The native entry-fee contract is not deployed at a configured address.');
+      if (await provider.getCode(rankedEntryAddress, blockNumber) === '0x') return deny('missing-contract-code', 'Ranked contracts are not deployed at the configured addresses.');
+      const wiredEntry = await scores.rankedEntry(overrides);
+      if (wiredEntry.toLowerCase() !== rankedEntryAddress.toLowerCase()) return deny('ranked-entry-mismatch', 'The score contract is bound to a different entry-fee contract.');
+    }
+    return { ok: true, reason: null, error: null, blockNumber, gameId32, entryFeeWei, rankedEntryAddress, trustedVerifier: verifier };
   } catch {
     return deny('contract-read-failed', 'Ranked contract approval and compatibility could not be verified. Try again later.');
   }
 }
 
+// --- WRITE: pay the native 0.1 zkLTC Ranked entry (player-signed, 1 tx) -----
+// Sends exactly the game's registered entryFeeWei to ArcadeRankedEntry.openSession.
+// The contract records the paid session the score contract later checks.
+export async function openRankedSession(walletProvider, { sessionId, sessionKey = null, gameId } = {}) {
+  if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No entry fee was requested.');
+  if (!walletProvider?.request) throw new Error('A connected wallet is required to pay the Ranked entry.');
+  if (!sessionId || !gameId) throw new Error('sessionId and gameId are required.');
+  const ethers = await loadEthers();
+  const browserProvider = new ethers.BrowserProvider(walletProvider);
+  const net = await browserProvider.getNetwork();
+  if (Number(net.chainId) !== LITVM_LITEFORGE_NETWORK.chainId) {
+    throw new Error(`Wrong network: wallet is on chain ${net.chainId}, expected ${LITVM_LITEFORGE_NETWORK.chainId} (${LITVM_LITEFORGE_NETWORK.name}).`);
+  }
+  const gate = await readRankedContractGate(ethers, browserProvider, gameId);
+  if (!gate.ok) throw new Error(gate.error);
+  if (gate.entryFeeWei === 0n || !gate.rankedEntryAddress) return { txHash: null, paid: false, amountWei: 0n, sessionId32: isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId) };
+  const signer = await browserProvider.getSigner();
+  const entry = new ethers.Contract(gate.rankedEntryAddress, RANKED_ENTRY_ABI, signer);
+  const sessionId32 = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
+  const tx = await entry.openSession(sessionId32, gate.gameId32, { value: gate.entryFeeWei });
+  const receipt = await tx.wait();
+  return { txHash: tx.hash, receipt, paid: true, amountWei: gate.entryFeeWei, sessionId32 };
+}
+
+// --- attestation: ask the trusted verifier (/api/attest) to sign the run -----
+// Same origin, JSON in, EIP-712 signature out. Fails closed on any non-200.
+export async function requestVerifierAttestation(payload, { fetchImpl = globalThis.fetch, endpoint = '/api/attest' } = {}) {
+  if (typeof fetchImpl !== 'function') throw new Error('The attestation service is unavailable in this environment.');
+  const response = await fetchImpl(endpoint, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  let body = null;
+  try { body = await response.json(); } catch { body = null; }
+  if (!response.ok || !body?.ok) {
+    const error = body?.error ?? `attestation-http-${response.status}`;
+    throw new Error(error === 'verifier-not-configured'
+      ? 'The trusted verifier is not configured yet, so this run cannot be published on-chain.'
+      : `The trusted verifier declined this run (${error}).`);
+  }
+  return body;
+}
+
 // --- WRITE: submit a completed ranked run (player-signed, 1 tx) -------------
+// The run struct is rebuilt locally from the same inputs the verifier signed and
+// the signature is checked against the on-chain trustedVerifier BEFORE the
+// wallet is asked to confirm, so a bad attestation never costs gas.
 export async function submitRankedSession(walletProvider, {
   sessionId,
   sessionKey = null,
@@ -146,6 +228,8 @@ export async function submitRankedSession(walletProvider, {
   survivalSeconds = 0,
   bossId = null,
   achievements = [],
+  runtimeId = null,
+  seasonId = null,
 } = {}) {
   if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No transaction was requested.');
   if (!walletProvider?.request) throw new Error('A connected wallet is required to submit on-chain.');
@@ -166,29 +250,24 @@ export async function submitRankedSession(walletProvider, {
   const gate = await readRankedContractGate(ethers, browserProvider, gameId);
   if (!gate.ok) throw new Error(gate.error);
   const signer = await browserProvider.getSigner();
+  const player = await signer.getAddress();
   const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, signer);
 
   const sessionId32 = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
-  const gameId32 = await toBytes32Id(gameId);
-  const bossId32 = bossId ? await toBytes32Id(bossId) : ethers.ZeroHash;
-  const achievements32 = [];
-  for (const a of achievements) {
-    if (a) achievements32.push(await toBytes32Id(a));
+  const built = attestation.run
+    ? { run: deserializeVerifiedRun(attestation.run), achievements32: attestation.achievements32 ?? [] }
+    : buildVerifiedRun(ethers, {
+      sessionId32, gameId, player, score, kills, maxCombo, survivalSeconds, bossId,
+      envelopeHash, runtimeId, seasonId, deadline: attestation.deadline, achievements,
+    });
+  if (built.run.sessionId !== sessionId32 || built.run.player.toLowerCase() !== player.toLowerCase()) {
+    throw new Error('The verifier attestation does not match this session and wallet.');
   }
-
-  const signature = ethers.Signature.from(attestation.signature);
-  const run = {
-    sessionId: sessionId32,
-    gameId: gameId32,
-    score: BigInt(Math.max(0, Math.round(Number(score) || 0))),
-    kills: BigInt(Math.max(0, Math.round(Number(kills) || 0))),
-    maxCombo: BigInt(Math.max(0, Math.round(Number(maxCombo) || 0))),
-    survivalSeconds: BigInt(Math.max(0, Math.round(Number(survivalSeconds) || 0))),
-    bossId: bossId32,
-    envelopeHash: envelopeHash.toLowerCase(),
-    deadline: BigInt(attestation.deadline),
-  };
-  const tx = await contract.submitVerifiedSession(run, achievements32, signature.v, signature.r, signature.s);
+  const domain = attestationDomain({ chainId: LITVM_LITEFORGE_NETWORK.chainId, verifyingContract: scoreContractAddress() });
+  if (!isAttestationValid(ethers, { domain, run: built.run, signature: attestation.signature, trustedVerifier: gate.trustedVerifier })) {
+    throw new Error('The verifier attestation is invalid or expired; the run was not published.');
+  }
+  const tx = await contract.submitVerifiedSession(built.run, [...built.achievements32], attestation.signature);
   const receipt = await tx.wait();
   return { txHash: tx.hash, receipt, sessionId32 };
 }
@@ -222,6 +301,8 @@ function normalizeRecord(r) {
     maxCombo: Number(r.maxCombo),
     survivalSeconds: Number(r.survivalSeconds),
     bossId32: r.bossId,
+    runtimeId32: r.runtimeId ?? null,
+    seasonId32: r.seasonId ?? null,
     submittedAt: Number(r.submittedAt),
     verified: Boolean(r.verified),
     onChain: true,
@@ -288,6 +369,26 @@ export async function fetchProfile(wallet, { walletProvider = null } = {}) {
   }
 }
 
+// --- READ: which achievement tokens a wallet holds (soulbound, one per id) ---
+export async function fetchPlayerAchievements(wallet, achievementIds = [], { walletProvider = null } = {}) {
+  const address = LITVM_CONTRACT_ADDRESSES.achievementRegistry;
+  if (!wallet || !address || achievementIds.length === 0) return { ok: false, unlocked: [], error: 'achievement registry unavailable' };
+  try {
+    const ethers = await loadEthers();
+    const provider = pickReadProvider(ethers, walletProvider);
+    const contract = new ethers.Contract(address, ACHIEVEMENT_REGISTRY_ABI, provider);
+    const unlocked = [];
+    for (const id of achievementIds) {
+      const id32 = isBytes32Hex(id) ? id : ethers.id(String(id));
+      // eslint-disable-next-line no-await-in-loop
+      if (await contract.hasUnlocked(wallet, id32)) unlocked.push(String(id));
+    }
+    return { ok: true, unlocked };
+  } catch (err) {
+    return { ok: false, unlocked: [], error: err?.message || String(err) };
+  }
+}
+
 export function explorerTxUrl(txHash) {
   if (!txHash) return null;
   return `${LITVM_LITEFORGE_NETWORK.explorerUrl}/tx/${txHash}`;
@@ -333,8 +434,9 @@ export async function checkRankedReadiness(walletProvider, { gameId, minGasWei =
       return result;
     }
 
-    // Estimated worst-case gas for a single submitSession write. The actual
-    // observed gas was ~300k; we pad to 400k * gasPrice for headroom.
+    // Estimated worst-case gas for entry + submitVerifiedSession. The actual
+    // observed submit gas was ~300k; we pad to 400k * gasPrice for headroom and
+    // add the native entry fee the game registers.
     const gasUnits = 400_000n;
     let gasPriceWei = 1_000_000_000n; // 1 gwei fallback
     if (minGasWei === null) {

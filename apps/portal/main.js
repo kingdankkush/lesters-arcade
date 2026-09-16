@@ -21,7 +21,9 @@ import { mountHmhChallengeUi } from './src/hmh-challenge-ui.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from './src/arcade-music-transport.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
-import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
+import { buildSiweChallenge, isValidLogin, createProviderRegistry, classifyWalletError } from './src/wallet-auth.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, formatZkLtcWei } from './src/arcade-core.mjs';
+import { createCanonicalSessionIdentity } from './src/session-integrity.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
@@ -285,7 +287,7 @@ import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
 import { CURRENT_RANKED_SEASON_ID, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
-import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
+import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness, loadEthers, openRankedSession, requestVerifierAttestation } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance, summarizeVisibleLeaderboardProvenance } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
@@ -1696,6 +1698,7 @@ const dom = {
   officialRankedModeCopy: document.querySelector('#officialRankedModeCopy'),
   officialModeBackButton: document.querySelector('#officialModeBackButton'),
   rankedEntryModal: document.querySelector('#rankedEntryModal'),
+  rankedEntryFee: document.querySelector('#rankedEntryFee'),
   rankedEntryWallet: document.querySelector('#rankedEntryWallet'),
   rankedEntryNetwork: document.querySelector('#rankedEntryNetwork'),
   rankedEntryBalance: document.querySelector('#rankedEntryBalance'),
@@ -3007,11 +3010,33 @@ async function settleRankedRun(settlementInput, runStats = {}) {
       dom.combatStatus.textContent = 'Publishing your run to LitVM… confirm the transaction in your wallet to pay the zkLTC gas.';
     }
     try {
+      // Trusted verifier attestation (owner direction 2026-09-16): the same
+      // origin /api/attest signs the EIP-712 VerifiedRun the contract checks.
+      // The client re-verifies that signature against the on-chain verifier
+      // before the wallet is asked to spend gas.
+      let attestation = settlementInput.verifierAttestation ?? null;
+      if (!attestation) {
+        attestation = await requestVerifierAttestation({
+          gameId: settlementInput.gameId,
+          sessionId32: settlementInput.sessionKey,
+          player: settlementInput.wallet,
+          score: settlementInput.score,
+          kills: runStats.kills ?? 0,
+          maxCombo: runStats.maxCombo ?? 0,
+          survivalSeconds: runStats.survivalSeconds ?? 0,
+          bossId: runStats.bossId ?? null,
+          envelope: settlementInput.sessionEvidence,
+          runtimeId: settlementInput.runtimeId ?? null,
+          seasonId: settlementInput.seasonId ?? null,
+          achievements: settlementInput.unlockedAchievements ?? [],
+          level: settlementInput.campaignLevelNumber ?? 1,
+        });
+      }
       const { txHash } = await submitRankedSession(provider, {
         sessionId: settlementInput.sessionId,
         sessionKey: settlementInput.sessionKey,
         envelopeHash: settlementInput.sessionEvidence.envelopeHash,
-        attestation: settlementInput.verifierAttestation ?? null,
+        attestation,
         gameId: settlementInput.gameId,
         score: settlementInput.score,
         kills: runStats.kills ?? 0,
@@ -3019,6 +3044,8 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         survivalSeconds: runStats.survivalSeconds ?? 0,
         bossId: runStats.bossId ?? null,
         achievements: settlementInput.unlockedAchievements ?? [],
+        runtimeId: settlementInput.runtimeId ?? null,
+        seasonId: settlementInput.seasonId ?? null,
       });
       const settlement = {
         mode: 'live',
@@ -3028,7 +3055,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         sessionId: settlementInput.sessionId,
         score: settlementInput.score,
         cadenceKeys: { ...(settlementInput.cadenceKeys || {}) },
-        receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitSession', txHash }],
+        receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitVerifiedSession', txHash }],
         primaryTxHash: txHash,
         settledAt: new Date().toISOString(),
         integrity,
@@ -5379,9 +5406,7 @@ async function startOfficialMode(mode) {
       }
       playSfxCue('wallet-connect', 0.055);
     }
-    // The wallet already proved control of the address via the SIWE signature at
-    // connect time, so we do NOT ask for another signature here. A mock wallet
-    // (offline QA) can't rank because it can't sign / hold zkLTC.
+    // A mock wallet (offline QA) can't rank because it can't sign / hold zkLTC.
     if (walletConnector !== 'injected-evm') {
       if (dom.officialRankedTooltip) {
         dom.officialRankedTooltip.dataset.state = 'needs-wallet';
@@ -5391,14 +5416,35 @@ async function startOfficialMode(mode) {
       }
       return;
     }
-    // Pre-flight: confirm the wallet is on LitVM 4441 AND holds enough zkLTC to
-    // publish the score at game over. This front-loads the gas requirement so a
-    // player never finishes a run and then can't settle it.
-    const ready = await requestRankedEntry();
-    if (!ready) return; // user cancelled, wrong chain unresolved, or unfunded
+    // Ranked requires the wallet to have signed the login challenge this
+    // session (owner direction 2026-09-16). A declined signature at connect
+    // time is re-prompted here, once, before anything Ranked happens.
+    if (!walletAuthenticated) {
+      const ok = await authenticateWalletSiwe(detectEthereumProvider(), connectedWallet);
+      if (!ok) {
+        if (dom.officialRankedTooltip) {
+          dom.officialRankedTooltip.dataset.state = 'needs-wallet';
+          dom.officialRankedTooltip.replaceChildren();
+          appendText(dom.officialRankedTooltip, 'strong', 'Sign in with your wallet to play Ranked');
+          appendText(dom.officialRankedTooltip, 'span', 'Ranked runs are bound to a signed wallet login. The signature is free and off-chain; it authorises no transaction. Free Mode is always available.');
+        }
+        return;
+      }
+    }
+    // The canonical Ranked session is created BEFORE the entry pre-flight so
+    // the 0.1 zkLTC entry (when live) is paid against the same session id the
+    // score is later settled under.
+    const pendingRanked = beginTrackedSession({ mode: 'ranked' });
+    // Pre-flight: confirm the wallet is on LitVM 4441, holds enough zkLTC for
+    // the entry fee plus settlement gas, and (when live) pay the entry.
+    const ready = await requestRankedEntry(pendingRanked);
+    if (!ready) return; // user cancelled, wrong chain unresolved, unfunded, or payment failed
+    officialSelectedMode = mode;
+    await startMode('paid', { session: pendingRanked });
+  } else {
+    officialSelectedMode = mode;
+    await startMode('free');
   }
-  officialSelectedMode = mode;
-  await startMode(mode === 'ranked' ? 'paid' : 'free');
   if (connectedWallet && state.profiles[connectedWallet] && selectedGameId === 'lester-blaster') {
     combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
   }
@@ -5410,11 +5456,13 @@ async function startOfficialMode(mode) {
 // Parent-owned Ranked prerequisite modal. Read-only contract/chain/gas checks
 // are not entry payment or verifier-service acceptance. Local preview remains
 // network-free while SETTLEMENT_LIVE is false.
-function requestRankedEntry() {
+function requestRankedEntry(pendingSession = null) {
   return new Promise((resolve) => {
     const modal = dom.rankedEntryModal;
     if (!modal) { resolve(!SETTLEMENT_LIVE); return; }
     const requestedGameId = selectedGameId;
+    const entryFeeWei = String(pendingSession?.entryFeeWei ?? '0');
+    if (dom.rankedEntryFee) dom.rankedEntryFee.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(entryFeeWei);
     let closed = false;
     let checkSequence = 0;
     const provider = detectEthereumProvider();
@@ -5438,11 +5486,35 @@ function requestRankedEntry() {
       dom.rankedEntryCancel.removeEventListener('click', onCancel);
     };
     const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
-    const onApprove = () => {
+    const onApprove = async () => {
       if (closed || dom.rankedEntryApprove.disabled) return;
       playSfxCue('wallet-connect', 0.05);
-      cleanup();
-      resolve(requestedGameId === selectedGameId);
+      if (!SETTLEMENT_LIVE || entryFeeWei === '0' || !pendingSession) {
+        cleanup();
+        resolve(requestedGameId === selectedGameId);
+        return;
+      }
+      // Live: pay the native entry against the canonical session id. The
+      // modal stays open until the wallet confirms or the player cancels.
+      dom.rankedEntryApprove.disabled = true;
+      dom.rankedEntryApprove.textContent = `Paying ${formatZkLtcWei(entryFeeWei)}…`;
+      try {
+        const identity = { ...pendingSession.canonicalContext, chainId: LITVM_LITEFORGE_NETWORK.chainId, scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry, seasonId: CURRENT_RANKED_SEASON_ID, seed: pendingSession.seed ?? 0, nonce: pendingSession.sessionNonce };
+        const canonical = await createCanonicalSessionIdentity(identity);
+        const paid = await openRankedSession(provider, { sessionId: pendingSession.sessionId, sessionKey: canonical.sessionKey, gameId: requestedGameId });
+        pendingSession.entryReceipt = { txHash: paid.txHash, amountWei: String(paid.amountWei ?? '0'), sessionId32: paid.sessionId32 };
+        dom.rankedEntryStatus.dataset.state = 'ok';
+        dom.rankedEntryStatus.textContent = paid.txHash ? `✓ Entry paid. ${explorerTxUrl(paid.txHash)}` : '✓ No entry fee required for this game.';
+        dom.rankedEntryApprove.textContent = 'Start Ranked Run';
+        cleanup();
+        resolve(requestedGameId === selectedGameId);
+      } catch (error) {
+        const classified = classifyWalletError(error);
+        dom.rankedEntryStatus.dataset.state = classified.userCancelled ? '' : 'error';
+        dom.rankedEntryStatus.textContent = classified.userCancelled ? 'Entry payment cancelled. Start Ranked Run to try again.' : `Entry payment failed: ${classified.message}`;
+        dom.rankedEntryApprove.textContent = 'Start Ranked Run';
+        dom.rankedEntryApprove.disabled = false;
+      }
     };
     dom.rankedEntryApprove.addEventListener('click', onApprove);
     dom.rankedEntryCancel.addEventListener('click', onCancel);
@@ -5450,7 +5522,7 @@ function requestRankedEntry() {
     if (!SETTLEMENT_LIVE) {
       if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = 'Not required';
       dom.rankedEntryStatus.dataset.state = 'ok';
-      dom.rankedEntryStatus.textContent = '✓ Local Ranked Testnet preview. Canonical evidence is saved locally; no chain transaction will occur.';
+      dom.rankedEntryStatus.textContent = `✓ Local Ranked Testnet preview. The ${RANKED_ENTRY_FEE_ZKLTC} zkLTC entry is not charged until verified settlement is live; canonical evidence is saved locally and no chain transaction will occur.`;
       dom.rankedEntryApprove.disabled = false;
       return;
     }
@@ -5809,7 +5881,11 @@ async function authenticateWalletSiwe(provider, address) {
     const challenge = buildSiweChallenge({ domain, address, chainId });
     walletAuthChallenge = challenge;
     const signature = await provider.request({ method: 'personal_sign', params: [challenge.message, address] });
-    const ok = isValidLogin({ challenge, signature, signingAddress: address });
+    // Real recovery (owner direction 2026-09-16): the signature must recover to
+    // the challenged address, not merely be well-formed. ethers is lazy-loaded;
+    // if it cannot load the login fails closed.
+    const ethers = await loadEthers();
+    const ok = isValidLogin({ challenge, signature, signingAddress: address, recoverAddress: (message, sig) => ethers.verifyMessage(message, sig) });
     walletAuthenticated = ok;
     return ok;
   } catch (err) {
@@ -6077,6 +6153,7 @@ async function connectWallet() {
     if (firstAccount) {
       connectedWallet = firstAccount.toLowerCase();
       walletConnector = 'injected-evm';
+      bindWalletProviderEvents(provider);
       debugRuntimeLog('[Wallet] Connected:', connectedWallet);
       // Chain guard is best-effort: a decline must NOT drop the connection.
       // Skip chain switching during connect — the ranked modal handles it.
@@ -6131,7 +6208,7 @@ function beginTrackedSession({ mode }) {
   });
 }
 
-async function startMode(mode) {
+async function startMode(mode, { session = null } = {}) {
   // Guest-first: Free mode plays without a wallet (sessions fall back to the
   // mock/guest wallet). Paid/ranked is wallet-bound and already prompts connect
   // upstream in startOfficialMode, but guard here too for any other caller.
@@ -6141,7 +6218,7 @@ async function startMode(mode) {
   const game = selectedGame();
   if (game.status !== 'playable' && !(DEV_CABINETS_ENABLED && game.devPlayable)) return;
 
-  currentSession = beginTrackedSession({ mode });
+  currentSession = session ?? beginTrackedSession({ mode });
   lastCompletedSession = null;
   lastRunResult = null;
   // Ranked sessions get a session URL; free stays on the game page.
@@ -14854,28 +14931,38 @@ window.addEventListener('resize', () => {
   }
 });
 
-const injectedProvider = detectEthereumProvider();
-if (injectedProvider?.on) {
-  injectedProvider.on('chainChanged', (chainId) => {
+// Wallet provider events are bound to whichever provider actually connected
+// (a wallet announced after load included), once per provider. An account
+// change drops the SIWE authentication: the new account has not signed.
+const boundWalletProviders = new WeakSet();
+function bindWalletProviderEvents(provider) {
+  if (!provider?.on || boundWalletProviders.has(provider)) return;
+  boundWalletProviders.add(provider);
+  provider.on('chainChanged', (chainId) => {
     if (walletConnector === 'injected-evm') {
       connectedChainId = chainId;
       render();
     }
   });
-  injectedProvider.on('accountsChanged', (accounts = []) => {
+  provider.on('accountsChanged', (accounts = []) => {
     const nextWallet = Array.isArray(accounts) ? accounts[0] : null;
     if (nextWallet) {
+      const changed = connectedWallet !== nextWallet.toLowerCase();
       connectedWallet = nextWallet.toLowerCase();
       walletConnector = 'injected-evm';
+      if (changed) { walletAuthenticated = false; walletAuthChallenge = null; }
       connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
     } else if (walletConnector === 'injected-evm') {
       connectedWallet = null;
       connectedChainId = null;
       walletConnector = 'none';
+      walletAuthenticated = false;
+      walletAuthChallenge = null;
     }
     render();
   });
 }
+bindWalletProviderEvents(detectEthereumProvider());
 
 // ----- Responsive device detection + mobile/tablet touch controls -----
 const deviceState = { profile: null, touchKeys: new Set() };

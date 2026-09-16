@@ -14,11 +14,14 @@ const deployment = JSON.parse(readFileSync(new URL('../contracts/deployment-reco
 const registryAddress = deployment.addresses.gameRegistry;
 const gameId = 'lester-blaster';
 const gameId32 = ethers.id(gameId);
-const gameAbi = new ethers.Interface(['function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeMicroUsdc,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))']);
+const gameAbi = new ethers.Interface(['function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeWei,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))']);
 const wiringAbi = new ethers.Interface(['function gameRegistry() view returns(address)', 'function trustedVerifier() view returns(address)']);
 const scoreAbi = new ethers.Interface(SCORE_REGISTRY_ABI);
+// June 2026 legacy row (ten fields, no verified flag) and the eleven-field
+// pre-overhaul row are both incompatible with the hardened thirteen-field ABI.
 const legacyAbi = new ethers.Interface(['function getSession(bytes32) view returns ((bytes32 sessionId,address player,bytes32 gameId,uint256 score,uint64 kills,uint64 maxCombo,uint64 survivalSeconds,bytes32 bossId,uint64 submittedAt,bool exists))']);
-const session = [ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, 0n, false, false];
+const session = [ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, ethers.ZeroHash, ethers.ZeroHash, 0n, false, false];
+const legacySession = [ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, 0n, false];
 function fixture(options = {}) {
   const calls = [];
   const game = [gameId32, 'Hard Money Heroes', wallet, 7500, 2500, 0, 0, 0n, true, true, true, 1n];
@@ -43,7 +46,8 @@ function fixture(options = {}) {
       const wiring = wiringAbi.parseTransaction({ data: tx.data });
       if (wiring) return wiringAbi.encodeFunctionResult(wiring.name, [wiring.name === 'gameRegistry' ? (options.wiredRegistry ?? registryAddress) : (options.verifier ?? verifier)]);
       const call = scoreAbi.parseTransaction({ data: tx.data });
-      if (call?.name === 'getSession') return options.legacy ? legacyAbi.encodeFunctionResult('getSession', [session.filter((_, i) => i !== 9)]) : scoreAbi.encodeFunctionResult('getSession', [session]);
+      if (call?.name === 'getSession') return options.legacy ? legacyAbi.encodeFunctionResult('getSession', [legacySession]) : scoreAbi.encodeFunctionResult('getSession', [session]);
+      if (call?.name === 'rankedEntry') return scoreAbi.encodeFunctionResult('rankedEntry', [options.wiredEntry ?? ethers.ZeroAddress]);
     }
     throw new Error(`Unexpected fixture RPC method: ${method}`);
   } };

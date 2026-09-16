@@ -79,16 +79,32 @@ export function buildSiweChallenge({
   return Object.freeze({ domain, address: String(address).toLowerCase(), chainId, nonce, issuedAt, uri, message });
 }
 
-// A login is valid when we got a non-empty signature back for the SAME address
-// we challenged. (Full cryptographic ecrecover happens server/contract-side in
-// the on-chain phase; client-side we bind signature->address + require the
-// wallet to have signed our exact challenge string.)
-export function isValidLogin({ challenge, signature, signingAddress } = {}) {
+// A login is valid when the signature is well-formed, the connecting address is
+// the address we challenged, and (when a recoverer is supplied) the address
+// recovered from the signature over our exact challenge message is that same
+// address. `recoverAddress(message, signature)` is injected (ethers
+// verifyMessage in the runtime) so this module stays pure.
+export function isValidLogin({ challenge, signature, signingAddress, recoverAddress = null } = {}) {
   if (!challenge || typeof challenge.message !== 'string') return false;
   if (typeof signature !== 'string' || !/^0x[0-9a-fA-F]+$/.test(signature) || signature.length < 132) return false;
   // The wallet that signed must be the wallet we challenged.
   if (String(signingAddress).toLowerCase() !== challenge.address) return false;
+  if (typeof recoverAddress === 'function') {
+    try {
+      const recovered = recoverAddress(challenge.message, signature);
+      if (String(recovered ?? '').toLowerCase() !== challenge.address) return false;
+    } catch {
+      return false;
+    }
+  }
   return true;
+}
+
+// A challenge older than this is stale: the wallet must sign a fresh one.
+export const SIWE_CHALLENGE_TTL_MS = 10 * 60 * 1000;
+export function isChallengeFresh(challenge, nowMs = Date.now()) {
+  const issued = Date.parse(challenge?.issuedAt ?? '');
+  return Number.isFinite(issued) && nowMs - issued <= SIWE_CHALLENGE_TTL_MS && nowMs >= issued - 60_000;
 }
 
 // --- EIP-6963 multi-wallet discovery ---------------------------------------

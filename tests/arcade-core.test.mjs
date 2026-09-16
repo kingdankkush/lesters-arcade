@@ -505,7 +505,9 @@ test('paid mode session uses free-entry (testnet) economics and leaderboard elig
   assert.equal(session.isPaid, true);
   assert.equal(session.leaderboardEligible, true);
   assert.equal(session.lives, 3);
-  assert.equal(session.entryFeeMicroUsdc, 0); // free on testnet
+  assert.equal(session.entryFeeMicroUsdc, 0); // legacy USDC field is never charged
+  assert.equal(session.entryFeeWei, '100000000000000000', '0.1 zkLTC native entry (owner direction 2026-09-16)');
+  assert.equal(session.paymentToken, 'zkLTC');
 });
 
 test('revenue split reserves settlement gas and routes the rest (dev wallet biggest share)', () => {
@@ -541,16 +543,16 @@ test('settlement plan routes the dev share to the dev wallet', async () => {
     gameId: 'lester-blaster',
     sessionId: 'sess-dev-1',
     score: 1000,
-    entryFeeMicroUnits: 250_000,
+    entryFeeWei: '250000000000000000',
     paymentToken: 'zkLTC',
     devWalletAddress: '0x' + 'd'.repeat(40),
   });
-  const route = plan.calls.find((c) => c.method === 'startPaidSession');
-  assert.ok(route, 'plan should include a startPaidSession routing call');
-  // Hardened ArcadePaymentRouter derives the dev wallet/splits from GameRegistry;
-  // the client plan may not inject routing destinations anymore.
-  assert.deepEqual(Object.keys(route.args).sort(), ['amount', 'gameId', 'sessionId']);
-  assert.equal(route.args.amount, 250_000);
+  const route = plan.calls.find((c) => c.method === 'openSession');
+  assert.ok(route, 'plan should include the native openSession entry call');
+  // ArcadeRankedEntry derives the dev wallet/splits from GameRegistry; the
+  // client plan may only name the session, game and value.
+  assert.deepEqual(Object.keys(route.args).sort(), ['gameId', 'sessionId']);
+  assert.equal(route.valueWei, '250000000000000000');
   assert.equal(plan.revenueSplit.dev, 137_500);
   assert.equal(plan.devWallet, '0x' + 'd'.repeat(40));
 });

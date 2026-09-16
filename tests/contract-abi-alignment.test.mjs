@@ -10,6 +10,11 @@
 // sources for their external/public function names and asserts the frontend
 // only ever names methods that are really there.
 //
+// 2026-09-16: contract set replaced by the native-fee design (ArcadeRankedEntry.openSession,
+// ScoreSubmissionRegistry.submitVerifiedSession(run, achievements, signature), soulbound
+// AchievementRegistry.mintFor). The unverified submitSession and the ERC-20
+// ArcadePaymentRouter.startPaidSession no longer exist and are pinned as dead below.
+//
 // Handoff ref: docs/plans/2026-07-01-*-high-end-llm-handoff.md §6.1 Q2, §6.2 P0.
 
 import test from 'node:test';
@@ -37,7 +42,39 @@ function solFunctionNames(source) {
   // Solidity generates externally callable getters for public state variables.
   const getters = /\b(?:address(?:\s+payable)?|u?int\d*|bool|string|bytes\d*)\s+public\s+(?:(?:immutable|constant)\s+)?([A-Za-z_]\w*)\s*(?:=|;)/g;
   while ((m = getters.exec(source)) !== null) names.add(m[1]);
+  // Public mappings also generate getters: `mapping(...) public name;`
+  const mappingGetters = /mapping\([^;]*\)\s+public\s+([A-Za-z_]\w*)\s*;/g;
+  while ((m = mappingGetters.exec(source)) !== null) names.add(m[1]);
   return names;
+}
+
+// Split the first `name(...)` argument list in `text` at top-level commas only (nested tuples
+// stay intact). Linear walk; no regex backtracking.
+function topLevelParams(text) {
+  const start = text.indexOf('(');
+  assert.ok(start >= 0, `no parameter list in: ${text}`);
+  const params = [];
+  let depth = 0;
+  let current = '';
+  for (let i = start; i < text.length; i += 1) {
+    const ch = text[i];
+    if (ch === '(') {
+      depth += 1;
+      if (depth === 1) continue;
+    } else if (ch === ')') {
+      depth -= 1;
+      if (depth === 0) {
+        if (current.trim()) params.push(current.trim());
+        return params;
+      }
+    } else if (ch === ',' && depth === 1) {
+      params.push(current.trim());
+      current = '';
+      continue;
+    }
+    current += ch;
+  }
+  throw new Error(`unbalanced parameter list in: ${text}`);
 }
 
 // Map the settlement plan's `contract` id -> deployed Solidity source name.
@@ -45,14 +82,17 @@ const CONTRACT_SOURCE_BY_ID = {
   playerProfileRegistry: 'PlayerProfileRegistry',
   scoreSubmissionRegistry: 'ScoreSubmissionRegistry',
   achievementRegistry: 'AchievementRegistry',
-  arcadePaymentRouter: 'ArcadePaymentRouter',
+  arcadeRankedEntry: 'ArcadeRankedEntry',
+  gameRegistry: 'GameRegistry',
 };
 
-test('every settlement-plan call names a method that exists on its Solidity contract', () => {
+const NATIVE_ENTRY_FEE_WEI = '100000000000000000'; // 0.1 zkLTC
+
+function samplePlan(overrides = {}) {
   // Exercise all plan branches: profile change + achievements + paid entry fee.
-  const plan = buildSettlementPlan({
+  return buildSettlementPlan({
     wallet: '0x' + '1'.repeat(40),
-    gameId: 'hard-money-heroes',
+    gameId: 'lester-blaster',
     sessionId: 'sess-abi-gate',
     score: 4242,
     kills: 30,
@@ -62,9 +102,13 @@ test('every settlement-plan call names a method that exists on its Solidity cont
     unlockedAchievements: ['clear-level-1', 'beat-rug-pull-baron'],
     username: 'AbiGate',
     profileChanged: true,
-    entryFeeMicroUnits: 250_000,
-    paymentToken: 'zkLTC',
+    entryFeeWei: NATIVE_ENTRY_FEE_WEI,
+    ...overrides,
   });
+}
+
+test('every settlement-plan call names a method that exists on its Solidity contract', () => {
+  const plan = samplePlan();
 
   const fnCache = new Map();
   for (const call of plan.calls) {
@@ -80,18 +124,9 @@ test('every settlement-plan call names a method that exists on its Solidity cont
 });
 
 test('the plan never names methods that were removed as non-existent', () => {
-  const plan = buildSettlementPlan({
-    wallet: '0x' + '1'.repeat(40),
-    gameId: 'hard-money-heroes',
-    sessionId: 'sess-abi-gate-2',
-    score: 100,
-    unlockedAchievements: ['a', 'b'],
-    username: 'X',
-    profileChanged: true,
-    entryFeeMicroUnits: 100_000,
-  });
+  const plan = samplePlan({ sessionId: 'sess-abi-gate-2', unlockedAchievements: ['a', 'b'], username: 'X' });
   const methods = new Set(plan.calls.map((c) => c.method));
-  for (const dead of ['submitScore', 'unlockAchievement', 'routeRevenueSplit', 'updateProfile']) {
+  for (const dead of ['submitScore', 'unlockAchievement', 'routeRevenueSplit', 'updateProfile', 'submitSession', 'startPaidSession', 'unlockFor']) {
     assert.ok(!methods.has(dead), `${dead} is not a deployed method and must not appear in the plan`);
   }
 });
@@ -116,26 +151,35 @@ test('litvm-chain-client ABI method names exist in their Solidity sources', () =
   }
 });
 
-test('the live submitSession ABI arg count matches the Solidity signature', () => {
-  // Guard against arg drift: submitSession takes exactly 8 params in the source.
+test('the unverified submitSession path no longer exists in the Solidity source', () => {
   const src = solSource('ScoreSubmissionRegistry');
-  const sig = src.match(/function\s+submitSession\s*\(([^)]*)\)/s);
-  assert.ok(sig, 'submitSession signature not found in ScoreSubmissionRegistry.sol');
-  const params = sig[1].split(',').map((s) => s.trim()).filter(Boolean);
-  assert.equal(params.length, 8, `submitSession should take 8 params, source has ${params.length}`);
+  assert.equal(/function\s+submitSession\s*\(/.test(src), false, 'submitSession must be removed; only verifier-attested runs settle');
+  assert.equal(SCORE_REGISTRY_ABI.some((f) => /function\s+submitSession\s*\(/.test(f)), false, 'SCORE_REGISTRY_ABI must not advertise submitSession');
+});
 
-  const abiFrag = SCORE_REGISTRY_ABI.find((f) => f.includes('function submitSession'));
-  assert.ok(abiFrag, 'submitSession missing from SCORE_REGISTRY_ABI');
-  const abiParams = abiFrag.match(/\(([^)]*)\)/)[1].split(',').map((s) => s.trim()).filter(Boolean);
-  assert.equal(abiParams.length, 8, `SCORE_REGISTRY_ABI submitSession should take 8 params, has ${abiParams.length}`);
+test('the live submitVerifiedSession ABI arg count matches the Solidity signature', () => {
+  // Guard against arg drift: submitVerifiedSession(run, achievements, signature) takes exactly 3 params.
+  const src = solSource('ScoreSubmissionRegistry');
+  const sig = src.match(/function\s+submitVerifiedSession\s*\(([^)]*)\)/s);
+  assert.ok(sig, 'submitVerifiedSession signature not found in ScoreSubmissionRegistry.sol');
+  const params = sig[1].split(',').map((s) => s.trim()).filter(Boolean);
+  assert.equal(params.length, 3, `submitVerifiedSession should take 3 params, source has ${params.length}`);
+
+  const abiFrag = SCORE_REGISTRY_ABI.find((f) => f.includes('function submitVerifiedSession'));
+  assert.ok(abiFrag, 'submitVerifiedSession missing from SCORE_REGISTRY_ABI');
+  // Count only top-level params: the VerifiedRun tuple's 13 fields sit one paren level deeper.
+  const abiParams = topLevelParams(abiFrag.slice(abiFrag.indexOf('submitVerifiedSession')));
+  assert.equal(abiParams.length, 3, `SCORE_REGISTRY_ABI submitVerifiedSession should take 3 params, has ${abiParams.length}`);
+  assert.match(abiFrag, /bytes\s+signature/, 'signature is a 65-byte blob, not v/r/s');
 });
 
 test('ABI alignment recognizes generated public getters, not private state', () => {
   const names = solFunctionNames(`
     address public immutable gameRegistry;
     uint256 public constant MAX_SCORE = 42;
+    mapping(bytes32 => mapping(address => uint256)) public bestScore;
     address private owner;
-    function submitSession() external {}
+    function submitVerifiedSession() external {}
   `);
-  assert.deepEqual([...names].sort(), ['MAX_SCORE', 'gameRegistry', 'submitSession']);
+  assert.deepEqual([...names].sort(), ['MAX_SCORE', 'bestScore', 'gameRegistry', 'submitVerifiedSession']);
 });

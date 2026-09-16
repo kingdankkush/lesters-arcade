@@ -13,7 +13,7 @@ test('WO-38 Web3 settlement audit passes wallet to settlement to leaderboard che
   assert.equal(audit.summary.status, 'PASS', JSON.stringify(audit.checks, null, 2));
   assert.equal(audit.network.chainId, 4441);
   assert.ok(audit.plan.methods.includes('setProfile'));
-  assert.ok(audit.plan.methods.includes('submitSession'));
+  assert.ok(audit.plan.methods.includes('submitVerifiedSession'));
 });
 
 test('WO-38 profile and ranked writes both enforce the LitVM chain guard', () => {

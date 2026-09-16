@@ -33,7 +33,7 @@ export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {})
     entryFeeMicroUnits: 0,
   });
   const checks = Object.freeze([
-    Object.freeze({ id: 'safe-ranked-live-gate', pass: Object.values(LITVM_CONTRACT_ADDRESSES).every((address) => /^0x[a-fA-F0-9]{40}$/.test(address)) && (!SETTLEMENT_LIVE || chainClient.includes('trusted verifier attestation is required')), detail: `addresses populated; settlement live=${SETTLEMENT_LIVE}; unverified writes remain gated` }),
+    Object.freeze({ id: 'safe-ranked-live-gate', pass: Object.values(LITVM_CONTRACT_ADDRESSES).every((address) => address === null || /^0x[a-fA-F0-9]{40}$/.test(address)) && (!SETTLEMENT_LIVE || (Object.values(LITVM_CONTRACT_ADDRESSES).every(Boolean) && chainClient.includes('trusted verifier attestation is required'))), detail: `legacy addresses populated; hardened entry address ${LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry ?? 'pending deploy'}; settlement live=${SETTLEMENT_LIVE}; unverified writes remain gated` }),
     Object.freeze({ id: 'score-abi-verified-session', pass: SCORE_REGISTRY_ABI.some((sig) => sig.includes('submitVerifiedSession(')), detail: 'score client exposes verifier-attested submission ABI' }),
     Object.freeze({ id: 'profile-abi-set-profile', pass: PROFILE_REGISTRY_ABI.some((sig) => sig.includes('setProfile(string displayName, string avatarUri)')), detail: 'profile client calls deployed setProfile ABI' }),
     Object.freeze({ id: 'ranked-submit-chain-guard', pass: chainClient.includes('submitRankedSession') && chainClient.includes('Wrong network: wallet is on chain') && chainClient.includes('expected ${LITVM_LITEFORGE_NETWORK.chainId}'), detail: 'ranked score write blocks wrong chain before signer transaction' }),
@@ -41,7 +41,7 @@ export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {})
     Object.freeze({ id: 'ranked-readiness-preflight', pass: main.includes('checkRankedReadiness') && main.includes('rankedEntryApprove'), detail: 'ranked entry performs pre-flight network/funds readiness before run start' }),
     Object.freeze({ id: 'gameover-submit-only', pass: main.includes('submitRankedSession(provider') && main.includes('retryPublishGameOver') && main.includes('combat.gameOverSubmitted'), detail: 'on-chain score publish is attached to game-over submission path' }),
     Object.freeze({ id: 'leaderboard-readback', pass: main.includes('fetchGlobalLeaderboard') && main.includes('recordCadenceScore'), detail: 'leaderboard path reads chain records and maintains cadence boards' }),
-    Object.freeze({ id: 'settlement-plan-methods-match-abi', pass: plan.calls.some((call) => call.method === 'setProfile') && plan.calls.some((call) => call.method === 'submitSession') && !plan.calls.some((call) => call.method === 'submitScore' || call.method === 'unlockAchievement'), detail: `plan methods: ${plan.calls.map((call) => call.method).join(', ')}` }),
+    Object.freeze({ id: 'settlement-plan-methods-match-abi', pass: plan.calls.some((call) => call.method === 'setProfile') && plan.calls.some((call) => call.method === 'submitVerifiedSession') && !plan.calls.some((call) => call.method === 'submitScore' || call.method === 'submitSession' || call.method === 'unlockAchievement'), detail: `plan methods: ${plan.calls.map((call) => call.method).join(', ')}` }),
   ]);
   return Object.freeze({
     version: 'wo-38-web3-settlement-audit-v1',
