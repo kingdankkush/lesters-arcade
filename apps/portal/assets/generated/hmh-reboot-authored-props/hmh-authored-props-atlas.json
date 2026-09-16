@@ -5,10 +5,11 @@
   "runtimeAuthority": "projection-only",
   "image": "./hmh-authored-props-atlas.png",
   "cameraPitchDegrees": 55,
+  "pixelDensity": 2.0,
   "assetCount": 107,
   "atlasSize": {
-    "width": 1024,
-    "height": 1024
+    "width": 2048,
+    "height": 2048
   },
   "categories": [
     "pickup",
@@ -24,28 +25,29 @@
       "shape": "minigun",
       "itemUrl": "./items/auto-miner.png",
       "districts": [],
-      "runtimeScale": 0.6,
+      "runtimeScale": 0.3,
+      "authoredRuntimeScale": 0.6,
       "frame": {
-        "x": 726,
-        "y": 713,
-        "w": 57,
-        "h": 22
+        "x": 718,
+        "y": 1382,
+        "w": 112,
+        "h": 44
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 18,
-        "y": 18
+        "x": 35,
+        "y": 40
       },
       "anchor": {
-        "x": 0.315789,
-        "y": 0.818182
+        "x": 0.3125,
+        "y": 0.909091
       },
-      "opaquePixels": 890,
-      "massCentroidY": 0.433547,
-      "sourcePixelSha256": "edb11478753011e7a556a90808e72d68225edd0821f68820e1e296e61e062e27",
+      "opaquePixels": 3417,
+      "massCentroidY": 0.429113,
+      "sourcePixelSha256": "0c0b79bcff2e52a8d67dedf83956934fb7154ddf1980b82ae2abebb56e860a00",
       "rotated": false,
       "trimmed": true
     },
@@ -58,12 +60,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.35,
+      "runtimeScale": 0.675,
+      "authoredRuntimeScale": 1.35,
       "frame": {
-        "x": 368,
-        "y": 358,
-        "w": 133,
-        "h": 94
+        "x": 822,
+        "y": 705,
+        "w": 263,
+        "h": 187
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -85,16 +88,16 @@
         }
       ],
       "pivot": {
-        "x": 72,
-        "y": 90
+        "x": 143,
+        "y": 183
       },
       "anchor": {
-        "x": 0.541353,
-        "y": 0.957447
+        "x": 0.543726,
+        "y": 0.97861
       },
-      "opaquePixels": 8196,
-      "massCentroidY": 0.503638,
-      "sourcePixelSha256": "67999d8e3838408e5e6a216b59d61f342db90ce8fda81911ae070085f8cd9ba4",
+      "opaquePixels": 32280,
+      "massCentroidY": 0.503412,
+      "sourcePixelSha256": "37eb927da969b61f392f9e20378dc6b567d56c452cefc6128ba3c4325ba6b13e",
       "rotated": false,
       "trimmed": true
     },
@@ -105,28 +108,29 @@
       "shape": "balanced-boulder",
       "itemUrl": "./items/balanced-boulder.png",
       "districts": [],
-      "runtimeScale": 0.92,
+      "runtimeScale": 0.46,
+      "authoredRuntimeScale": 0.92,
       "frame": {
-        "x": 148,
-        "y": 548,
-        "w": 53,
-        "h": 60
+        "x": 229,
+        "y": 1077,
+        "w": 104,
+        "h": 118
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 30,
-        "y": 56
+        "x": 58,
+        "y": 114
       },
       "anchor": {
-        "x": 0.566038,
-        "y": 0.933333
+        "x": 0.557692,
+        "y": 0.966102
       },
-      "opaquePixels": 2011,
-      "massCentroidY": 0.491087,
-      "sourcePixelSha256": "e5f347b7781638dbec88c087f4b8d80947e06a2cf130ba9b8b7fb7b151b7bf8e",
+      "opaquePixels": 7671,
+      "massCentroidY": 0.480097,
+      "sourcePixelSha256": "3d45aff7c59a55d734b13725ce2cab40450c1e58dd982eff012c0da51670413d",
       "rotated": false,
       "trimmed": true
     },
@@ -137,28 +141,29 @@
       "shape": "flame-projector",
       "itemUrl": "./items/bear-market-burner.png",
       "districts": [],
-      "runtimeScale": 0.67,
+      "runtimeScale": 0.335,
+      "authoredRuntimeScale": 0.67,
       "frame": {
-        "x": 267,
-        "y": 713,
-        "w": 83,
-        "h": 31
+        "x": 1754,
+        "y": 1306,
+        "w": 166,
+        "h": 61
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 35,
-        "y": 27
+        "x": 70,
+        "y": 57
       },
       "anchor": {
         "x": 0.421687,
-        "y": 0.870968
+        "y": 0.934426
       },
-      "opaquePixels": 1612,
-      "massCentroidY": 0.50519,
-      "sourcePixelSha256": "1e19710029f0396387d9c671c9fefdaa6db601baf129fc6450c4986ba1cce9c7",
+      "opaquePixels": 6158,
+      "massCentroidY": 0.5016,
+      "sourcePixelSha256": "91b79f72e11cd6a9bf2b9170dd026f64e3d0f2fc79f90ce4ddbaeb95f9f095d2",
       "rotated": false,
       "trimmed": true
     },
@@ -169,28 +174,29 @@
       "shape": "burner-cache",
       "itemUrl": "./items/bear-market-burner-cache.png",
       "districts": [],
-      "runtimeScale": 0.92,
+      "runtimeScale": 0.46,
+      "authoredRuntimeScale": 0.92,
       "frame": {
-        "x": 354,
-        "y": 668,
-        "w": 50,
-        "h": 37
+        "x": 3,
+        "y": 1306,
+        "w": 98,
+        "h": 73
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 25,
-        "y": 33
+        "x": 49,
+        "y": 69
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.891892
+        "y": 0.945205
       },
-      "opaquePixels": 1541,
-      "massCentroidY": 0.537638,
-      "sourcePixelSha256": "8ab22ebb0a8a6d47742092e2030329c4df259182001db92e907fe6d9da1751a4",
+      "opaquePixels": 5889,
+      "massCentroidY": 0.541263,
+      "sourcePixelSha256": "0d96d529d261f597842549bb1cdd54794e37af031fe86b12b4bbecd355f5da0c",
       "rotated": false,
       "trimmed": true
     },
@@ -201,28 +207,29 @@
       "shape": "bedroll-cluster",
       "itemUrl": "./items/bedroll-cluster.png",
       "districts": [],
-      "runtimeScale": 0.78,
+      "runtimeScale": 0.39,
+      "authoredRuntimeScale": 0.78,
       "frame": {
-        "x": 715,
-        "y": 613,
-        "w": 57,
-        "h": 44
+        "x": 985,
+        "y": 1202,
+        "w": 114,
+        "h": 88
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 26,
-        "y": 40
+        "x": 52,
+        "y": 84
       },
       "anchor": {
         "x": 0.45614,
-        "y": 0.909091
+        "y": 0.954545
       },
-      "opaquePixels": 1514,
-      "massCentroidY": 0.605404,
-      "sourcePixelSha256": "5e13cb2165ac8636a9c098186dfd3740ba62a0e4624f1b334357eef69447a8b3",
+      "opaquePixels": 5877,
+      "massCentroidY": 0.607341,
+      "sourcePixelSha256": "135d15877a767ce775c3f4db73efa6a2de71511668d3f757807fcbd94ea08220",
       "rotated": false,
       "trimmed": true
     },
@@ -233,28 +240,29 @@
       "shape": "candle",
       "itemUrl": "./items/berserk-candle.png",
       "districts": [],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 307,
-        "y": 668,
-        "w": 44,
-        "h": 38
+        "x": 1932,
+        "y": 1202,
+        "w": 88,
+        "h": 76
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 22,
-        "y": 34
+        "x": 44,
+        "y": 72
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.894737
+        "y": 0.947368
       },
-      "opaquePixels": 736,
-      "massCentroidY": 0.64762,
-      "sourcePixelSha256": "a64f37c8f22b4e8b30e54ce4f217d91ce03d08b3efa6dfe19434699e56220e75",
+      "opaquePixels": 2856,
+      "massCentroidY": 0.651643,
+      "sourcePixelSha256": "ec9e633e91c74c957846dc59188a540c77687ed98a1aa17470778df1d798ed20",
       "rotated": false,
       "trimmed": true
     },
@@ -265,28 +273,29 @@
       "shape": "birch-cluster",
       "itemUrl": "./items/birch-cluster.png",
       "districts": [],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 210,
-        "y": 206,
-        "w": 75,
-        "h": 125
+        "x": 407,
+        "y": 405,
+        "w": 149,
+        "h": 249
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 34,
-        "y": 121
+        "x": 67,
+        "y": 245
       },
       "anchor": {
-        "x": 0.453333,
-        "y": 0.968
+        "x": 0.449664,
+        "y": 0.983936
       },
-      "opaquePixels": 4933,
-      "massCentroidY": 0.445834,
-      "sourcePixelSha256": "474455104a7e7ecbe7feec05374df9949c0464e28dd5ddd3fe436dfe93cf4a0b",
+      "opaquePixels": 18790,
+      "massCentroidY": 0.437363,
+      "sourcePixelSha256": "48cb04ac6e70a1895234cf5a124b7f80a124f21fc7dbab2c938c13b7e1d167ad",
       "rotated": false,
       "trimmed": true
     },
@@ -297,28 +306,29 @@
       "shape": "rate-chip",
       "itemUrl": "./items/block-reward.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 456,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 467,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "946b697b239f2065ca7a7da6cc0720e0e93cd8d59168552b1c53a3557b02f49d",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "7df8c51af30dd7f4bdfee010a3e27525453833ec86dc74cde9948cbb319288e3",
       "rotated": false,
       "trimmed": true
     },
@@ -329,28 +339,29 @@
       "shape": "life-token",
       "itemUrl": "./items/bonus-life.png",
       "districts": [],
-      "runtimeScale": 0.78,
+      "runtimeScale": 0.39,
+      "authoredRuntimeScale": 0.78,
       "frame": {
-        "x": 841,
-        "y": 713,
-        "w": 28,
-        "h": 21
+        "x": 940,
+        "y": 1382,
+        "w": 52,
+        "h": 40
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 14,
-        "y": 17
+        "x": 26,
+        "y": 36
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.809524
+        "y": 0.9
       },
-      "opaquePixels": 545,
-      "massCentroidY": 0.51945,
-      "sourcePixelSha256": "704542774a5ff8afc2566e270923522fd9ae80f8d3bc2507872cca774e2a108d",
+      "opaquePixels": 2010,
+      "massCentroidY": 0.507769,
+      "sourcePixelSha256": "38fdba23106413f69b0c61a30508da3e303b620e97b702bccd5a64059b39981f",
       "rotated": false,
       "trimmed": true
     },
@@ -363,28 +374,29 @@
       "districts": [
         "liquidity-crossing"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 505,
-        "y": 668,
-        "w": 26,
-        "h": 34
+        "x": 199,
+        "y": 1306,
+        "w": 52,
+        "h": 68
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 13,
-        "y": 30
+        "x": 26,
+        "y": 64
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.941176
       },
-      "opaquePixels": 640,
-      "massCentroidY": 0.520786,
-      "sourcePixelSha256": "d0accb87755aa087969212d0a0f15b9e124b915fc5164635c87c844e89daf14c",
+      "opaquePixels": 2482,
+      "massCentroidY": 0.52786,
+      "sourcePixelSha256": "b23e415f4c4d1d16a4a8011fa5e7a153b4b62937057e7518222e9670b1f9f7ae",
       "rotated": false,
       "trimmed": true
     },
@@ -395,28 +407,29 @@
       "shape": "bridge-pier",
       "itemUrl": "./items/bridge-pier.png",
       "districts": [],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 422,
-        "y": 468,
-        "w": 61,
-        "h": 73
+        "x": 694,
+        "y": 921,
+        "w": 119,
+        "h": 146
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 31,
-        "y": 69
+        "x": 61,
+        "y": 142
       },
       "anchor": {
-        "x": 0.508197,
-        "y": 0.945205
+        "x": 0.512605,
+        "y": 0.972603
       },
-      "opaquePixels": 4106,
-      "massCentroidY": 0.485377,
-      "sourcePixelSha256": "45e371f69241f7a4611f9af2e7cbef15d661cf32412cd02c7f2ea51d0f47403a",
+      "opaquePixels": 15950,
+      "massCentroidY": 0.489201,
+      "sourcePixelSha256": "70037f66295e482ba0502583ec0fffdc87de628f9e0561224f077ecd95814b09",
       "rotated": false,
       "trimmed": true
     },
@@ -427,28 +440,29 @@
       "shape": "bridge-truss",
       "itemUrl": "./items/bridge-truss.png",
       "districts": [],
-      "runtimeScale": 1.0,
+      "runtimeScale": 0.5,
+      "authoredRuntimeScale": 1.0,
       "frame": {
-        "x": 755,
-        "y": 548,
-        "w": 72,
-        "h": 53
+        "x": 1302,
+        "y": 1077,
+        "w": 144,
+        "h": 105
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 36,
-        "y": 49
+        "x": 72,
+        "y": 101
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.924528
+        "y": 0.961905
       },
-      "opaquePixels": 2783,
-      "massCentroidY": 0.428087,
-      "sourcePixelSha256": "354f03d91b9bddf9d5d032c318f58da7f0eea48bb89df96e4756de4a3e5b47ad",
+      "opaquePixels": 10559,
+      "massCentroidY": 0.422705,
+      "sourcePixelSha256": "6019b201905e1ac99fb047f0382db064d264db3f1fd62bea8104a42dd0167a5f",
       "rotated": false,
       "trimmed": true
     },
@@ -459,28 +473,29 @@
       "shape": "bridge-warning-sign",
       "itemUrl": "./items/bridge-warning-sign.png",
       "districts": [],
-      "runtimeScale": 0.88,
+      "runtimeScale": 0.44,
+      "authoredRuntimeScale": 0.88,
       "frame": {
-        "x": 664,
-        "y": 468,
-        "w": 45,
-        "h": 67
+        "x": 1276,
+        "y": 921,
+        "w": 89,
+        "h": 133
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 63
+        "x": 46,
+        "y": 129
       },
       "anchor": {
-        "x": 0.511111,
-        "y": 0.940299
+        "x": 0.516854,
+        "y": 0.969925
       },
-      "opaquePixels": 1685,
-      "massCentroidY": 0.331769,
-      "sourcePixelSha256": "8e96d26d9635ceb1558f9302e2a26e5d01a2944e2025840333cceceff62bee67",
+      "opaquePixels": 6442,
+      "massCentroidY": 0.322871,
+      "sourcePixelSha256": "968ca6c3836eda43eeb2a56f66aa51b1f54a176b5874e3f282c0e490a31952db",
       "rotated": false,
       "trimmed": true
     },
@@ -491,28 +506,29 @@
       "shape": "burned-snag",
       "itemUrl": "./items/burned-snag.png",
       "districts": [],
-      "runtimeScale": 0.92,
+      "runtimeScale": 0.46,
+      "authoredRuntimeScale": 0.92,
       "frame": {
-        "x": 216,
-        "y": 358,
-        "w": 56,
-        "h": 102
+        "x": 416,
+        "y": 705,
+        "w": 110,
+        "h": 204
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 30,
-        "y": 98
+        "x": 58,
+        "y": 200
       },
       "anchor": {
-        "x": 0.535714,
-        "y": 0.960784
+        "x": 0.527273,
+        "y": 0.980392
       },
-      "opaquePixels": 2150,
-      "massCentroidY": 0.53499,
-      "sourcePixelSha256": "344a57191b6198126616ecb950fc11921924e897bf21369d541e2242057b2a7b",
+      "opaquePixels": 7947,
+      "massCentroidY": 0.539102,
+      "sourcePixelSha256": "cadc8812d2ff94bfba6048f7fac9415b1ce49445d737d28585e255d9eaa9a5fa",
       "rotated": false,
       "trimmed": true
     },
@@ -523,28 +539,29 @@
       "shape": "campfire-ring",
       "itemUrl": "./items/campfire-ring.png",
       "districts": [],
-      "runtimeScale": 0.8,
+      "runtimeScale": 0.4,
+      "authoredRuntimeScale": 0.8,
       "frame": {
-        "x": 538,
-        "y": 613,
-        "w": 59,
-        "h": 46
+        "x": 645,
+        "y": 1202,
+        "w": 114,
+        "h": 92
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 29,
-        "y": 42
+        "x": 56,
+        "y": 88
       },
       "anchor": {
-        "x": 0.491525,
-        "y": 0.913043
+        "x": 0.491228,
+        "y": 0.956522
       },
-      "opaquePixels": 1249,
-      "massCentroidY": 0.68848,
-      "sourcePixelSha256": "421bf0b8f744d8dc3f1f725993db8a318ee33ff0528d45817ec04fac0c8acf2b",
+      "opaquePixels": 4840,
+      "massCentroidY": 0.690378,
+      "sourcePixelSha256": "9aaa11785a2de3855353740e271c2a96e2f475e1097f6dfc7ec3c94737f26491",
       "rotated": false,
       "trimmed": true
     },
@@ -555,28 +572,29 @@
       "shape": "canopy-edge-tree",
       "itemUrl": "./items/canopy-edge-tree.png",
       "districts": [],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
-        "x": 902,
-        "y": 358,
-        "w": 54,
-        "h": 82
+        "x": 1764,
+        "y": 705,
+        "w": 106,
+        "h": 163
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 17,
-        "y": 78
+        "x": 33,
+        "y": 159
       },
       "anchor": {
-        "x": 0.314815,
-        "y": 0.95122
+        "x": 0.311321,
+        "y": 0.97546
       },
-      "opaquePixels": 2734,
-      "massCentroidY": 0.457987,
-      "sourcePixelSha256": "38b93fa90378953cd6bd4bd1165a8979360598934fac7ac727c2d233b073d42d",
+      "opaquePixels": 10588,
+      "massCentroidY": 0.453546,
+      "sourcePixelSha256": "2317cabfefcb94d829783609351088b3153db7b0edf9943953608086ceb01575",
       "rotated": false,
       "trimmed": true
     },
@@ -587,28 +605,29 @@
       "shape": "cargo-container",
       "itemUrl": "./items/cargo-container.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 740,
-        "y": 358,
-        "w": 159,
-        "h": 85
+        "x": 1446,
+        "y": 705,
+        "w": 315,
+        "h": 169
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 70,
-        "y": 81
+        "x": 139,
+        "y": 165
       },
       "anchor": {
-        "x": 0.440252,
-        "y": 0.952941
+        "x": 0.44127,
+        "y": 0.976331
       },
-      "opaquePixels": 9840,
-      "massCentroidY": 0.602042,
-      "sourcePixelSha256": "7071efe08b2bc04db4710730f35c1cfe25dd676cc4681c76986b549792159f63",
+      "opaquePixels": 38883,
+      "massCentroidY": 0.600898,
+      "sourcePixelSha256": "8d539d94503dd27526beefa426aa1cb50fba36a313ca645136513922fac872c3",
       "rotated": false,
       "trimmed": true
     },
@@ -619,28 +638,29 @@
       "shape": "fence",
       "itemUrl": "./items/chain-fence.png",
       "districts": [],
-      "runtimeScale": 0.68,
+      "runtimeScale": 0.34,
+      "authoredRuntimeScale": 0.68,
       "frame": {
-        "x": 3,
-        "y": 613,
-        "w": 136,
-        "h": 52
+        "x": 1622,
+        "y": 1077,
+        "w": 270,
+        "h": 104
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 68,
-        "y": 48
+        "x": 135,
+        "y": 100
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.923077
+        "y": 0.961538
       },
-      "opaquePixels": 5450,
-      "massCentroidY": 0.579809,
-      "sourcePixelSha256": "6c82a2e1535bcaaf9417b1df8f289a22a547e175bb79be8b66e561c1ed97c219",
+      "opaquePixels": 20847,
+      "massCentroidY": 0.586006,
+      "sourcePixelSha256": "b9ffa2a3301b7002e3f9e15d517d7f6c5b41ceee0f53947febd40f7f4f2e534f",
       "rotated": false,
       "trimmed": true
     },
@@ -653,12 +673,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 56,
-        "y": 468,
-        "w": 150,
-        "h": 76
+        "x": 106,
+        "y": 921,
+        "w": 298,
+        "h": 152
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -680,16 +701,16 @@
         }
       ],
       "pivot": {
-        "x": 75,
-        "y": 72
+        "x": 149,
+        "y": 148
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.947368
+        "y": 0.973684
       },
-      "opaquePixels": 3028,
-      "massCentroidY": 0.537199,
-      "sourcePixelSha256": "76825b96ec6e10db2fb4ece2fcb872a6dd4b3715da60737202dd7ced054b84da",
+      "opaquePixels": 10436,
+      "massCentroidY": 0.533796,
+      "sourcePixelSha256": "7a77fa82263f26067be1a41f5d194777ebe1d13737229b3e0869012c81217c46",
       "rotated": false,
       "trimmed": true
     },
@@ -700,28 +721,29 @@
       "shape": "cliff-face",
       "itemUrl": "./items/cliff-face.png",
       "districts": [],
-      "runtimeScale": 1.25,
+      "runtimeScale": 0.625,
+      "authoredRuntimeScale": 1.25,
       "frame": {
-        "x": 291,
-        "y": 468,
-        "w": 66,
-        "h": 75
+        "x": 561,
+        "y": 921,
+        "w": 130,
+        "h": 149
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 33,
-        "y": 71
+        "x": 65,
+        "y": 145
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.946667
+        "y": 0.973154
       },
-      "opaquePixels": 4641,
-      "massCentroidY": 0.531156,
-      "sourcePixelSha256": "d32d456b3c830add5ece46dfbee11412ba6b5850f5105a65ff91455a575b3743",
+      "opaquePixels": 18175,
+      "massCentroidY": 0.530587,
+      "sourcePixelSha256": "4d3d39d2839ad9b1c7761c06230cb389915ca0ff223ca0772cc42f863e9122cd",
       "rotated": false,
       "trimmed": true
     },
@@ -732,28 +754,29 @@
       "shape": "pistol",
       "itemUrl": "./items/coin-blaster.png",
       "districts": [],
-      "runtimeScale": 0.52,
+      "runtimeScale": 0.26,
+      "authoredRuntimeScale": 0.52,
       "frame": {
-        "x": 676,
-        "y": 713,
-        "w": 47,
-        "h": 23
+        "x": 624,
+        "y": 1382,
+        "w": 91,
+        "h": 45
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 14,
-        "y": 19
+        "x": 26,
+        "y": 41
       },
       "anchor": {
-        "x": 0.297872,
-        "y": 0.826087
+        "x": 0.285714,
+        "y": 0.911111
       },
-      "opaquePixels": 531,
-      "massCentroidY": 0.324859,
-      "sourcePixelSha256": "471cb91aeb9e09f253f6d2d5174c8eb96e5966dc880f7cb2ad9abc0dbfc925a7",
+      "opaquePixels": 1826,
+      "massCentroidY": 0.315195,
+      "sourcePixelSha256": "d71f356af2f49e78ac67a87a248cbca72eb3be8d940a7fb0be85c1055e5e9472",
       "rotated": false,
       "trimmed": true
     },
@@ -764,28 +787,29 @@
       "shape": "grenade-chip",
       "itemUrl": "./items/cold-storage.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 534,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 562,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "191a6ce5b85b2980ececf15c8773c6f6bff3c55d3578a4c3f0bf647dd4c46b95",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "e3a32a0aa0073496e4c6bc0908e5d94f7a5e58cdabc8fda8786aea8b04a479e7",
       "rotated": false,
       "trimmed": true
     },
@@ -796,28 +820,29 @@
       "shape": "damage-chip",
       "itemUrl": "./items/compound-interest.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 583,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 657,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "606d5a39528c1ccdc284fe12bbe315bf8729d634f1daa00943d82a35566d5618",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "7e25c2ef6c0f84414f751098c23cd013ceea5a79e7b1196cf323c4c7c7ca9143",
       "rotated": false,
       "trimmed": true
     },
@@ -830,12 +855,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.1,
+      "runtimeScale": 0.55,
+      "authoredRuntimeScale": 1.1,
       "frame": {
-        "x": 712,
-        "y": 468,
-        "w": 128,
-        "h": 65
+        "x": 1368,
+        "y": 921,
+        "w": 256,
+        "h": 130
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -857,16 +883,16 @@
         }
       ],
       "pivot": {
-        "x": 64,
-        "y": 61
+        "x": 128,
+        "y": 126
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.938462
+        "y": 0.969231
       },
-      "opaquePixels": 4991,
-      "massCentroidY": 0.484234,
-      "sourcePixelSha256": "5bc877431cc4939909828a43eb20cd8361f2db835e1232994a915fb0f76e59bb",
+      "opaquePixels": 19397,
+      "massCentroidY": 0.488074,
+      "sourcePixelSha256": "374209553d91ea03793dab9f9c745c198d77c36d7e7ab7048191ff5c540b4e0b",
       "rotated": false,
       "trimmed": true
     },
@@ -880,28 +906,29 @@
         "hashwood",
         "mining-camp"
       ],
-      "runtimeScale": 1.1,
+      "runtimeScale": 0.55,
+      "authoredRuntimeScale": 1.1,
       "frame": {
-        "x": 220,
-        "y": 713,
-        "w": 44,
-        "h": 32
+        "x": 1664,
+        "y": 1306,
+        "w": 87,
+        "h": 64
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 22,
-        "y": 28
+        "x": 44,
+        "y": 60
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.875
+        "x": 0.505747,
+        "y": 0.9375
       },
-      "opaquePixels": 748,
-      "massCentroidY": 0.672632,
-      "sourcePixelSha256": "bc4434b8e8ca77caecc8bec8b8ea2f39047fb1f0ead85958b6416795765986cd",
+      "opaquePixels": 2859,
+      "massCentroidY": 0.677743,
+      "sourcePixelSha256": "b97418b27edbb2983e2298dfd3a22faa74dd8f9ce9f0865a4b21d5031821970f",
       "rotated": false,
       "trimmed": true
     },
@@ -912,28 +939,29 @@
       "shape": "dead-pine",
       "itemUrl": "./items/dead-pine.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 104,
-        "y": 358,
-        "w": 50,
-        "h": 105
+        "x": 202,
+        "y": 705,
+        "w": 98,
+        "h": 209
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 17,
-        "y": 101
+        "x": 33,
+        "y": 205
       },
       "anchor": {
-        "x": 0.34,
-        "y": 0.961905
+        "x": 0.336735,
+        "y": 0.980861
       },
-      "opaquePixels": 2200,
-      "massCentroidY": 0.576141,
-      "sourcePixelSha256": "adb70cde2e3b59acaeadb46a7801d3b08566d85ccee894af74265a3be1d2d17c",
+      "opaquePixels": 8460,
+      "massCentroidY": 0.575601,
+      "sourcePixelSha256": "4d106ed97711406183c45969eabb923a64ae1dc7f37f9ed2fcc241e4ac43a24a",
       "rotated": false,
       "trimmed": true
     },
@@ -944,28 +972,29 @@
       "shape": "health-chip",
       "itemUrl": "./items/diamond-hands.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 632,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 752,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "b02a8145ca5d51cd8f5431219f0b9ca91f9eec75b288af9836143df80e88177f",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "9ebfcbd9e137a6ed8f02ec3f9d747d149b3059e5be9f556ae7d338f072f0995c",
       "rotated": false,
       "trimmed": true
     },
@@ -976,28 +1005,29 @@
       "shape": "dock-post",
       "itemUrl": "./items/dock-post.png",
       "districts": [],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
         "x": 3,
-        "y": 468,
-        "w": 50,
-        "h": 77
+        "y": 921,
+        "w": 100,
+        "h": 153
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 26,
-        "y": 73
+        "x": 52,
+        "y": 149
       },
       "anchor": {
         "x": 0.52,
-        "y": 0.948052
+        "y": 0.973856
       },
-      "opaquePixels": 1718,
-      "massCentroidY": 0.587839,
-      "sourcePixelSha256": "e03d29350dbe3645582d76aece5d6c8f731a319e5a3eb9705f0673020d663efe",
+      "opaquePixels": 6507,
+      "massCentroidY": 0.58837,
+      "sourcePixelSha256": "96111f691cf7aacb40c3a7d6c9671adf891a2dba03e3d4d67ebde328ba656700",
       "rotated": false,
       "trimmed": true
     },
@@ -1008,28 +1038,29 @@
       "shape": "driftwood-log",
       "itemUrl": "./items/driftwood-log.png",
       "districts": [],
-      "runtimeScale": 0.75,
+      "runtimeScale": 0.375,
+      "authoredRuntimeScale": 0.75,
       "frame": {
-        "x": 263,
-        "y": 613,
-        "w": 160,
-        "h": 48
+        "x": 101,
+        "y": 1202,
+        "w": 319,
+        "h": 95
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 78,
-        "y": 44
+        "x": 155,
+        "y": 91
       },
       "anchor": {
-        "x": 0.4875,
-        "y": 0.916667
+        "x": 0.485893,
+        "y": 0.957895
       },
-      "opaquePixels": 3425,
-      "massCentroidY": 0.706228,
-      "sourcePixelSha256": "f34c996cc00db0da8ecacfc7fabc286a20e388e9921303bda0bec21a9b550cff",
+      "opaquePixels": 13013,
+      "massCentroidY": 0.708155,
+      "sourcePixelSha256": "5e06fa971a5297fed51a7c0940c60e3ef9681336c30d6b17efc23f4459478a82",
       "rotated": false,
       "trimmed": true
     },
@@ -1040,28 +1071,29 @@
       "shape": "faction-banner",
       "itemUrl": "./items/faction-banner.png",
       "districts": [],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 693,
-        "y": 358,
-        "w": 44,
-        "h": 91
+        "x": 1357,
+        "y": 705,
+        "w": 86,
+        "h": 181
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 22,
-        "y": 87
+        "x": 43,
+        "y": 177
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.956044
+        "y": 0.977901
       },
-      "opaquePixels": 2520,
-      "massCentroidY": 0.406759,
-      "sourcePixelSha256": "251dc16b6602ff8ba01d5f770848cc0ee74fd89b859e760dcd84dc4cc534514c",
+      "opaquePixels": 9721,
+      "massCentroidY": 0.407581,
+      "sourcePixelSha256": "ffaa5b54d18feed227fda84cbaba89afeb8232813b528db83092c7b27df89187",
       "rotated": false,
       "trimmed": true
     },
@@ -1072,28 +1104,29 @@
       "shape": "fallen-trunk",
       "itemUrl": "./items/fallen-trunk.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 617,
-        "y": 548,
-        "w": 72,
-        "h": 55
+        "x": 1034,
+        "y": 1077,
+        "w": 144,
+        "h": 110
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 49,
-        "y": 51
+        "x": 98,
+        "y": 106
       },
       "anchor": {
         "x": 0.680556,
-        "y": 0.927273
+        "y": 0.963636
       },
-      "opaquePixels": 2186,
-      "massCentroidY": 0.621023,
-      "sourcePixelSha256": "50564a672ecd7a9b2dca1ef5ae362bb9c90804838772745562651a0d190d5dda",
+      "opaquePixels": 8425,
+      "massCentroidY": 0.624944,
+      "sourcePixelSha256": "04eed7f3d8f235e3ebc22a1b78fd779c4de8d375e63a3daa1beee132cdf8e909",
       "rotated": false,
       "trimmed": true
     },
@@ -1104,28 +1137,29 @@
       "shape": "fern-cluster",
       "itemUrl": "./items/fern-cluster.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 360,
-        "y": 468,
-        "w": 59,
-        "h": 74
+        "x": 816,
+        "y": 921,
+        "w": 115,
+        "h": 146
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 29,
-        "y": 70
+        "x": 57,
+        "y": 142
       },
       "anchor": {
-        "x": 0.491525,
-        "y": 0.945946
+        "x": 0.495652,
+        "y": 0.972603
       },
-      "opaquePixels": 1361,
-      "massCentroidY": 0.626121,
-      "sourcePixelSha256": "215c80d859f281a92943119ad701f22be69c16524892a8e338e930080fcf7054",
+      "opaquePixels": 4543,
+      "massCentroidY": 0.63628,
+      "sourcePixelSha256": "706dcb702a65f277b1f000a384c21b4593cb37230c070331aa876f94c1f64a88",
       "rotated": false,
       "trimmed": true
     },
@@ -1136,28 +1170,29 @@
       "shape": "flowering-weeds",
       "itemUrl": "./items/flowering-weeds.png",
       "districts": [],
-      "runtimeScale": 0.8,
+      "runtimeScale": 0.4,
+      "authoredRuntimeScale": 0.8,
       "frame": {
-        "x": 426,
-        "y": 613,
-        "w": 31,
-        "h": 48
+        "x": 423,
+        "y": 1202,
+        "w": 69,
+        "h": 95
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 15,
-        "y": 44
+        "x": 29,
+        "y": 91
       },
       "anchor": {
-        "x": 0.483871,
-        "y": 0.916667
+        "x": 0.42029,
+        "y": 0.957895
       },
-      "opaquePixels": 796,
-      "massCentroidY": 0.590078,
-      "sourcePixelSha256": "5bdef3df51a778656cb7aa9565882ddcec5db16f21860313b123d8aab363066d",
+      "opaquePixels": 2778,
+      "massCentroidY": 0.582862,
+      "sourcePixelSha256": "e8d2f099a79265bf7deac7e4af513109d2b667b687e71a81b4272d0d4516caaf",
       "rotated": false,
       "trimmed": true
     },
@@ -1170,28 +1205,29 @@
       "districts": [
         "rugpull-ravine"
       ],
-      "runtimeScale": 1.8,
+      "runtimeScale": 0.9,
+      "authoredRuntimeScale": 1.8,
       "frame": {
-        "x": 116,
+        "x": 223,
         "y": 3,
-        "w": 155,
-        "h": 198
+        "w": 308,
+        "h": 396
       },
       "moduleFamily": "landmark-setpiece",
       "landmarkId": "rugpull-ravine",
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 77,
-        "y": 194
+        "x": 153,
+        "y": 392
       },
       "anchor": {
-        "x": 0.496774,
-        "y": 0.979798
+        "x": 0.496753,
+        "y": 0.989899
       },
-      "opaquePixels": 16999,
-      "massCentroidY": 0.62631,
-      "sourcePixelSha256": "7048281e0c96a6e598b261710e4e96c7ed83999718ca991a401fe8bcc055b0ce",
+      "opaquePixels": 66704,
+      "massCentroidY": 0.628111,
+      "sourcePixelSha256": "57275cd8c68a6fb6bc0787f452c369fcdd92bb317f75947ae0fed1017863132b",
       "rotated": false,
       "trimmed": true
     },
@@ -1202,28 +1238,29 @@
       "shape": "forked-spear",
       "itemUrl": "./items/forked-standard.png",
       "districts": [],
-      "runtimeScale": 0.76,
+      "runtimeScale": 0.38,
+      "authoredRuntimeScale": 0.76,
       "frame": {
-        "x": 872,
-        "y": 713,
-        "w": 108,
-        "h": 20
+        "x": 1129,
+        "y": 1382,
+        "w": 215,
+        "h": 36
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 44,
-        "y": 19
+        "x": 87,
+        "y": 35
       },
       "anchor": {
-        "x": 0.407407,
-        "y": 0.95
+        "x": 0.404651,
+        "y": 0.972222
       },
-      "opaquePixels": 1039,
-      "massCentroidY": 0.577022,
-      "sourcePixelSha256": "5757a671cecd31b55cd329e0e183ce219cf292968818d488e2f3b2ed7e96b814",
+      "opaquePixels": 3532,
+      "massCentroidY": 0.618322,
+      "sourcePixelSha256": "1e799716ce04fc616c914dde8b2f21d4bb126876f2d15bc513b55aaa51ae8cb0",
       "rotated": false,
       "trimmed": true
     },
@@ -1234,28 +1271,29 @@
       "shape": "standard-cache",
       "itemUrl": "./items/forked-standard-cache.png",
       "districts": [],
-      "runtimeScale": 0.96,
+      "runtimeScale": 0.48,
+      "authoredRuntimeScale": 0.96,
       "frame": {
-        "x": 168,
-        "y": 668,
-        "w": 30,
-        "h": 40
+        "x": 1669,
+        "y": 1202,
+        "w": 57,
+        "h": 80
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 15,
-        "y": 36
+        "x": 29,
+        "y": 76
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.9
+        "x": 0.508772,
+        "y": 0.95
       },
-      "opaquePixels": 724,
-      "massCentroidY": 0.633872,
-      "sourcePixelSha256": "9dff536d56a3f995657e001c3b42f1a14f1ef9966e2890c700233b79e0c0bbe0",
+      "opaquePixels": 2573,
+      "massCentroidY": 0.649928,
+      "sourcePixelSha256": "9696e47db430cce8a243d17e8653f8ef8ccb5207cf4f5a4b0a981d22135bdaab",
       "rotated": false,
       "trimmed": true
     },
@@ -1269,28 +1307,29 @@
         "liquidation-yard",
         "frontier-relay"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 681,
-        "y": 668,
-        "w": 38,
-        "h": 34
+        "x": 254,
+        "y": 1306,
+        "w": 76,
+        "h": 68
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 19,
-        "y": 30
+        "x": 38,
+        "y": 64
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.941176
       },
-      "opaquePixels": 1128,
-      "massCentroidY": 0.522727,
-      "sourcePixelSha256": "be25d7a41965469746fc6a0442aef53db0ebe590ea4a7d1d6d96ad2955b515ec",
+      "opaquePixels": 4424,
+      "massCentroidY": 0.527928,
+      "sourcePixelSha256": "58e8bd27d290777cf4bccc5ff72e2ed5a4ecb37baf714820c17219332ef1d56b",
       "rotated": false,
       "trimmed": true
     },
@@ -1303,12 +1342,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 288,
-        "y": 206,
-        "w": 138,
-        "h": 122
+        "x": 559,
+        "y": 405,
+        "w": 272,
+        "h": 244
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -1330,16 +1370,16 @@
         }
       ],
       "pivot": {
-        "x": 69,
-        "y": 118
+        "x": 136,
+        "y": 240
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.967213
+        "y": 0.983607
       },
-      "opaquePixels": 6700,
-      "massCentroidY": 0.444507,
-      "sourcePixelSha256": "5789b9f3e98705eed65e4cfda4bfadac3404c6d052f59e2aae672ab4c061339a",
+      "opaquePixels": 24230,
+      "massCentroidY": 0.436577,
+      "sourcePixelSha256": "85e360cbc648bb07c25bc087f1b3b47a8965fdb13e91ba73a479477c8590a199",
       "rotated": false,
       "trimmed": true
     },
@@ -1350,28 +1390,29 @@
       "shape": "dash-chip",
       "itemUrl": "./items/gas-optimization.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 722,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 847,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "2f7bb87e62788a7950f6bfb912524a67dbb5735e17820018b4ea2d3a99ef4904",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "733fc0d10b6b94914579bc2bb65a57969d21d5f3614345b8933bee09e8f64a88",
       "rotated": false,
       "trimmed": true
     },
@@ -1382,28 +1423,29 @@
       "shape": "boulder",
       "itemUrl": "./items/granite-boulder.png",
       "districts": [],
-      "runtimeScale": 0.6,
+      "runtimeScale": 0.3,
+      "authoredRuntimeScale": 0.6,
       "frame": {
-        "x": 830,
-        "y": 548,
-        "w": 86,
-        "h": 53
+        "x": 1449,
+        "y": 1077,
+        "w": 170,
+        "h": 105
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 44,
-        "y": 49
+        "x": 87,
+        "y": 101
       },
       "anchor": {
-        "x": 0.511628,
-        "y": 0.924528
+        "x": 0.511765,
+        "y": 0.961905
       },
-      "opaquePixels": 1896,
-      "massCentroidY": 0.607007,
-      "sourcePixelSha256": "eeb9f76d5e07d74a3e5187daf8e179af77d91ccf0cc6f260d6e785ddb726217e",
+      "opaquePixels": 7316,
+      "massCentroidY": 0.604751,
+      "sourcePixelSha256": "e0b0f85003c2ba9c00d2051c2495e0c0af735744a74b49091a92119f0a83ae5e",
       "rotated": false,
       "trimmed": true
     },
@@ -1414,28 +1456,29 @@
       "shape": "grass-tuft",
       "itemUrl": "./items/grass-tuft.png",
       "districts": [],
-      "runtimeScale": 0.78,
+      "runtimeScale": 0.39,
+      "authoredRuntimeScale": 0.78,
       "frame": {
-        "x": 420,
-        "y": 548,
-        "w": 38,
-        "h": 57
+        "x": 648,
+        "y": 1077,
+        "w": 76,
+        "h": 113
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 19,
-        "y": 53
+        "x": 38,
+        "y": 109
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.929825
+        "y": 0.964602
       },
-      "opaquePixels": 717,
-      "massCentroidY": 0.74858,
-      "sourcePixelSha256": "a340f4c11b8e70be582540628f563c0ae0df452f0283478f1bf829ef5e9fc6e1",
+      "opaquePixels": 2488,
+      "massCentroidY": 0.75393,
+      "sourcePixelSha256": "25a3fc8f7c71642863fe1ff7e49dd485f4a073b358f281cd193dd7f8757f8e55",
       "rotated": false,
       "trimmed": true
     },
@@ -1446,28 +1489,29 @@
       "shape": "handrail-post",
       "itemUrl": "./items/handrail-post.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 486,
-        "y": 468,
-        "w": 66,
-        "h": 72
+        "x": 1044,
+        "y": 921,
+        "w": 130,
+        "h": 143
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 33,
-        "y": 68
+        "x": 65,
+        "y": 139
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.944444
+        "y": 0.972028
       },
-      "opaquePixels": 1893,
-      "massCentroidY": 0.489944,
-      "sourcePixelSha256": "beeb4f2e1ffc4a6cbaa3870cbd4abdd1a24cb35e2cf86031fe1ae17ee89d5a51",
+      "opaquePixels": 7073,
+      "massCentroidY": 0.487734,
+      "sourcePixelSha256": "46ba20c3a8b9d7580cf66dea5dc3d7a8e9ca54d4103956f9af65819e92a25e41",
       "rotated": false,
       "trimmed": true
     },
@@ -1478,28 +1522,29 @@
       "shape": "hanging-vines",
       "itemUrl": "./items/hanging-vines.png",
       "districts": [],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 358,
-        "y": 548,
-        "w": 59,
-        "h": 58
+        "x": 528,
+        "y": 1077,
+        "w": 117,
+        "h": 115
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 29,
-        "y": 54
+        "x": 57,
+        "y": 111
       },
       "anchor": {
-        "x": 0.491525,
-        "y": 0.931034
+        "x": 0.487179,
+        "y": 0.965217
       },
-      "opaquePixels": 1926,
-      "massCentroidY": 0.460677,
-      "sourcePixelSha256": "0a1591d87fe6869e36d5120b81cd822bfb399bbcdb1984f71d1431bb4788ce1f",
+      "opaquePixels": 6838,
+      "massCentroidY": 0.466409,
+      "sourcePixelSha256": "5bed050f6be0523239c8ef652adb9e1c178923ed31999b0d9ca4edc537ab8067",
       "rotated": false,
       "trimmed": true
     },
@@ -1510,28 +1555,29 @@
       "shape": "damage-chip",
       "itemUrl": "./items/hard-fork-rounds.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 771,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 942,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "75073d57e7ed8223559f3cf76b9d2e975d55d56e37e80361bec43c84c8ae4d16",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "a60099c088199465cf0ff68d9b4577e56e30fb569ea7f7819fdbe05533873dce",
       "rotated": false,
       "trimmed": true
     },
@@ -1542,28 +1588,29 @@
       "shape": "health-chip",
       "itemUrl": "./items/hardened-wallet.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 820,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 1037,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "ec8a0bd2355a386cdc7dc60a8ed3e538be570ca590ba70c1914801ff997a5594",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "178b1aaf66eb24c8818e5f6a4b2cff0fff6a0860b8dc47c9560fc5d1a5e235b9",
       "rotated": false,
       "trimmed": true
     },
@@ -1574,28 +1621,29 @@
       "shape": "railgun",
       "itemUrl": "./items/hash-rail.png",
       "districts": [],
-      "runtimeScale": 0.68,
+      "runtimeScale": 0.34,
+      "authoredRuntimeScale": 0.68,
       "frame": {
-        "x": 538,
-        "y": 713,
-        "w": 91,
-        "h": 27
+        "x": 358,
+        "y": 1382,
+        "w": 180,
+        "h": 54
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 33,
-        "y": 23
+        "x": 65,
+        "y": 50
       },
       "anchor": {
-        "x": 0.362637,
-        "y": 0.851852
+        "x": 0.361111,
+        "y": 0.925926
       },
-      "opaquePixels": 1193,
-      "massCentroidY": 0.415372,
-      "sourcePixelSha256": "095790eaca8ce6292c59689b8967afcb488185c978a1ab4fc43e493d40e8b240",
+      "opaquePixels": 4228,
+      "massCentroidY": 0.41779,
+      "sourcePixelSha256": "59172d5228e2d11b27aa8b995ec76c40968d076ade7fd5198b44e6bcfa92c76a",
       "rotated": false,
       "trimmed": true
     },
@@ -1606,28 +1654,29 @@
       "shape": "hash-rail-core",
       "itemUrl": "./items/hash-rail-core.png",
       "districts": [],
-      "runtimeScale": 0.86,
+      "runtimeScale": 0.43,
+      "authoredRuntimeScale": 0.86,
       "frame": {
-        "x": 407,
-        "y": 668,
-        "w": 46,
-        "h": 36
+        "x": 104,
+        "y": 1306,
+        "w": 92,
+        "h": 72
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 32
+        "x": 46,
+        "y": 68
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.888889
+        "y": 0.944444
       },
-      "opaquePixels": 1176,
-      "massCentroidY": 0.573348,
-      "sourcePixelSha256": "b197f6cff2f5fef341b1b5e6559f683bc44968cead094d625bd43d1c608ab65a",
+      "opaquePixels": 4403,
+      "massCentroidY": 0.574653,
+      "sourcePixelSha256": "fc4b8fea361c4005b6a2a34e9902fa315ea4e3bc87e4942254ab256db3dbbee8",
       "rotated": false,
       "trimmed": true
     },
@@ -1640,28 +1689,29 @@
       "districts": [
         "hashwood"
       ],
-      "runtimeScale": 1.8,
+      "runtimeScale": 0.9,
+      "authoredRuntimeScale": 1.8,
       "frame": {
-        "x": 274,
+        "x": 534,
         "y": 3,
-        "w": 202,
-        "h": 180
+        "w": 404,
+        "h": 359
       },
       "moduleFamily": "landmark-setpiece",
       "landmarkId": "hashwood",
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 100,
-        "y": 176
+        "x": 200,
+        "y": 355
       },
       "anchor": {
         "x": 0.49505,
-        "y": 0.977778
+        "y": 0.988858
       },
-      "opaquePixels": 21591,
-      "massCentroidY": 0.63641,
-      "sourcePixelSha256": "ca3cf1604cc40732a3813b6c3841fb3803282cbe11bdb3b4427cd45a74b29344",
+      "opaquePixels": 85293,
+      "massCentroidY": 0.638139,
+      "sourcePixelSha256": "7c0804ab20daa3ce8b8566005a7a4383cff8cc2970ccaf9946db94f1cf1aee40",
       "rotated": false,
       "trimmed": true
     },
@@ -1672,28 +1722,29 @@
       "shape": "pine-tree",
       "itemUrl": "./items/hashwood-pine.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 603,
-        "y": 206,
-        "w": 114,
-        "h": 113
+        "x": 1175,
+        "y": 405,
+        "w": 225,
+        "h": 225
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 56,
-        "y": 109
+        "x": 110,
+        "y": 221
       },
       "anchor": {
-        "x": 0.491228,
-        "y": 0.964602
+        "x": 0.488889,
+        "y": 0.982222
       },
-      "opaquePixels": 7122,
-      "massCentroidY": 0.661311,
-      "sourcePixelSha256": "2e57f670b875d508f7191d85693662ffdde26fcccea7bac30224701ceed6e97d",
+      "opaquePixels": 28046,
+      "massCentroidY": 0.661462,
+      "sourcePixelSha256": "424bc8da64ebb8bda60ce1fcbf1ddc88bcf495e15810aeec0446ed799f7b6dce",
       "rotated": false,
       "trimmed": true
     },
@@ -1706,28 +1757,29 @@
       "districts": [
         "hashwood"
       ],
-      "runtimeScale": 1.1,
+      "runtimeScale": 0.55,
+      "authoredRuntimeScale": 1.1,
       "frame": {
-        "x": 435,
-        "y": 713,
-        "w": 38,
-        "h": 29
+        "x": 162,
+        "y": 1382,
+        "w": 74,
+        "h": 57
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 19,
-        "y": 25
+        "x": 37,
+        "y": 53
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.862069
+        "y": 0.929825
       },
-      "opaquePixels": 983,
-      "massCentroidY": 0.549738,
-      "sourcePixelSha256": "05efe7ee15e74a2aab63df492c7ea764d2bf681e3e4c8730f57d413751f04356",
+      "opaquePixels": 3796,
+      "massCentroidY": 0.545396,
+      "sourcePixelSha256": "71e6d0c5615f9ecdfa7ce3fbcff07c4678f8864ae3b78515a8fa4a24946c1bae",
       "rotated": false,
       "trimmed": true
     },
@@ -1738,28 +1790,29 @@
       "shape": "broadleaf-tree",
       "itemUrl": "./items/hashwood-tree.png",
       "districts": [],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 275,
-        "y": 358,
-        "w": 90,
-        "h": 102
+        "x": 529,
+        "y": 705,
+        "w": 179,
+        "h": 204
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 46,
-        "y": 98
+        "x": 91,
+        "y": 200
       },
       "anchor": {
-        "x": 0.511111,
-        "y": 0.960784
+        "x": 0.50838,
+        "y": 0.980392
       },
-      "opaquePixels": 5311,
-      "massCentroidY": 0.471789,
-      "sourcePixelSha256": "4b7c09e28559004ed9905a50d32d3f83a2e69514a2a4a58d075e71b448ed0ad2",
+      "opaquePixels": 20495,
+      "massCentroidY": 0.472181,
+      "sourcePixelSha256": "cbbee6f5a31becca601d355d12a0cb659e70ad42018f56609696e8ceae98f038",
       "rotated": false,
       "trimmed": true
     },
@@ -1770,28 +1823,29 @@
       "shape": "dash-chip",
       "itemUrl": "./items/hot-wallet.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 869,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 1132,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "42d8bc2ad6a45b41b0285bc08f06f808d0a7aa1afa7e86331910d2e0aafc6f30",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "1fa27ac16a4712e62da7750938079c21343972bc9d9178c2c9f427f58d4e4738",
       "rotated": false,
       "trimmed": true
     },
@@ -1802,28 +1856,29 @@
       "shape": "launcher",
       "itemUrl": "./items/launcher-rig.png",
       "districts": [],
-      "runtimeScale": 0.62,
+      "runtimeScale": 0.31,
+      "authoredRuntimeScale": 0.62,
       "frame": {
-        "x": 476,
-        "y": 713,
-        "w": 59,
-        "h": 29
+        "x": 239,
+        "y": 1382,
+        "w": 116,
+        "h": 57
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 25
+        "x": 45,
+        "y": 53
       },
       "anchor": {
-        "x": 0.389831,
-        "y": 0.862069
+        "x": 0.387931,
+        "y": 0.929825
       },
-      "opaquePixels": 1242,
-      "massCentroidY": 0.479124,
-      "sourcePixelSha256": "628cd8564f3b6c607d121672c7a3830356836a5c5566d237119bdb5b7324aa85",
+      "opaquePixels": 4802,
+      "massCentroidY": 0.468744,
+      "sourcePixelSha256": "f8cdbe1712dff6491500d36a88cd2b57791f6bdcbcf394c56a761a4db08f88e6",
       "rotated": false,
       "trimmed": true
     },
@@ -1834,28 +1889,29 @@
       "shape": "dash-chip",
       "itemUrl": "./items/layer-two.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 918,
-        "y": 668,
-        "w": 46,
-        "h": 34
+        "x": 1227,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "53d294441bec10458ae53095bba4cf9bd95004685341fe1e6b48b660c5b8014b",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "698fc9e1b4cadc0d9b23037a4ae1254902d9c2ad766cfd606956cc1aa3e9c868",
       "rotated": false,
       "trimmed": true
     },
@@ -1866,28 +1922,29 @@
       "shape": "arc-rifle",
       "itemUrl": "./items/lightning-ledger.png",
       "districts": [],
-      "runtimeScale": 0.64,
+      "runtimeScale": 0.32,
+      "authoredRuntimeScale": 0.64,
       "frame": {
-        "x": 353,
-        "y": 713,
-        "w": 79,
-        "h": 30
+        "x": 3,
+        "y": 1382,
+        "w": 156,
+        "h": 60
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 30,
-        "y": 26
+        "x": 58,
+        "y": 56
       },
       "anchor": {
-        "x": 0.379747,
-        "y": 0.866667
+        "x": 0.371795,
+        "y": 0.933333
       },
-      "opaquePixels": 1048,
-      "massCentroidY": 0.513852,
-      "sourcePixelSha256": "1cfaae4de47d34ac20c66a8afa75f69c22dd6a9e619fbee96b727bac40934f2d",
+      "opaquePixels": 3693,
+      "massCentroidY": 0.516488,
+      "sourcePixelSha256": "6f37ffe5a941c39b2413c93c9188b4f447284a71af036d5f623de49906ebdd83",
       "rotated": false,
       "trimmed": true
     },
@@ -1898,28 +1955,29 @@
       "shape": "ledger-cache",
       "itemUrl": "./items/lightning-ledger-cache.png",
       "districts": [],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 967,
-        "y": 668,
-        "w": 28,
-        "h": 34
+        "x": 1322,
+        "y": 1306,
+        "w": 54,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 14,
-        "y": 30
+        "x": 27,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 680,
-      "massCentroidY": 0.618449,
-      "sourcePixelSha256": "351f3547853dd632748f3a0635f5480b4cd9378752865291f3295ae4c4e4fa7f",
+      "opaquePixels": 2467,
+      "massCentroidY": 0.627999,
+      "sourcePixelSha256": "0d2a18e218f3a86e55f206cc25472a30e36b5c520c503c8c0efea807d29a4757",
       "rotated": false,
       "trimmed": true
     },
@@ -1930,28 +1988,29 @@
       "shape": "lily-pads",
       "itemUrl": "./items/lily-pads.png",
       "districts": [],
-      "runtimeScale": 0.72,
+      "runtimeScale": 0.36,
+      "authoredRuntimeScale": 0.72,
       "frame": {
         "x": 3,
-        "y": 358,
-        "w": 98,
-        "h": 107
+        "y": 705,
+        "w": 196,
+        "h": 213
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 52,
-        "y": 103
+        "x": 104,
+        "y": 209
       },
       "anchor": {
         "x": 0.530612,
-        "y": 0.962617
+        "y": 0.981221
       },
-      "opaquePixels": 2472,
-      "massCentroidY": 0.711619,
-      "sourcePixelSha256": "99468be0ee1f3ac4d47ebd934243672aa3e7a4391252e5e12748130b9a5f56f4",
+      "opaquePixels": 9006,
+      "massCentroidY": 0.721313,
+      "sourcePixelSha256": "43cc8dd290af4d208e595b699541cb86ed88235470c553dd757b8d310406cf06",
       "rotated": false,
       "trimmed": true
     },
@@ -1964,28 +2023,29 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.4,
+      "runtimeScale": 0.7,
+      "authoredRuntimeScale": 1.4,
       "frame": {
-        "x": 101,
-        "y": 750,
-        "w": 24,
-        "h": 15
+        "x": 1400,
+        "y": 1382,
+        "w": 46,
+        "h": 29
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 12,
-        "y": 11
+        "x": 23,
+        "y": 25
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.733333
+        "y": 0.862069
       },
-      "opaquePixels": 358,
-      "massCentroidY": 0.502793,
-      "sourcePixelSha256": "e9b7c7a74f526523f74d29e84c5bf42cada5543b094f6066b33ff39d1571251b",
+      "opaquePixels": 1326,
+      "massCentroidY": 0.502855,
+      "sourcePixelSha256": "28ad77b0e2c3a3e3a3811f9cc46c03123f6df8ca400012865fc213b70f40aa26",
       "rotated": false,
       "trimmed": true
     },
@@ -1998,28 +2058,29 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.85,
+      "runtimeScale": 0.925,
+      "authoredRuntimeScale": 1.85,
       "frame": {
         "x": 3,
         "y": 3,
-        "w": 110,
-        "h": 200
+        "w": 217,
+        "h": 399
       },
       "moduleFamily": "landmark-setpiece",
       "landmarkId": "liquidation-yard",
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 55,
-        "y": 196
+        "x": 109,
+        "y": 395
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.98
+        "x": 0.502304,
+        "y": 0.989975
       },
-      "opaquePixels": 6963,
-      "massCentroidY": 0.501478,
-      "sourcePixelSha256": "af0b632f0c70cfacd5d8e53458f856ebf622144297fd3408a23ec24930b88a84",
+      "opaquePixels": 26113,
+      "massCentroidY": 0.498356,
+      "sourcePixelSha256": "ec93de17c51406923ee390437352c63bed62634fe4315b9abb65a9422e6f4815",
       "rotated": false,
       "trimmed": true
     },
@@ -2033,28 +2094,29 @@
         "mining-camp",
         "liquidation-yard"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 3,
-        "y": 713,
-        "w": 38,
-        "h": 34
+        "x": 333,
+        "y": 1306,
+        "w": 76,
+        "h": 68
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 19,
-        "y": 30
+        "x": 38,
+        "y": 64
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.941176
       },
-      "opaquePixels": 1128,
-      "massCentroidY": 0.522727,
-      "sourcePixelSha256": "004a2234418726e561592be98cde8ae793352d77d580c8f66136ac4e174c8df2",
+      "opaquePixels": 4424,
+      "massCentroidY": 0.527928,
+      "sourcePixelSha256": "e4ba883a47d04af66f44c8f8a0a381e5766accb5ea3dc607dcbfcc515842162e",
       "rotated": false,
       "trimmed": true
     },
@@ -2067,12 +2129,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 0.75,
+      "runtimeScale": 0.375,
+      "authoredRuntimeScale": 0.75,
       "frame": {
-        "x": 959,
-        "y": 358,
-        "w": 56,
-        "h": 82
+        "x": 1873,
+        "y": 705,
+        "w": 110,
+        "h": 162
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -2111,16 +2174,16 @@
         }
       ],
       "pivot": {
-        "x": 29,
-        "y": 78
+        "x": 57,
+        "y": 158
       },
       "anchor": {
-        "x": 0.517857,
-        "y": 0.95122
+        "x": 0.518182,
+        "y": 0.975309
       },
-      "opaquePixels": 2866,
-      "massCentroidY": 0.354966,
-      "sourcePixelSha256": "0ee7a2ff52ad60db396108b17b44bad5f60417b5236382309cc18b44fcd10f98",
+      "opaquePixels": 10896,
+      "massCentroidY": 0.342433,
+      "sourcePixelSha256": "af5cfe8016f028f42f57be9b6635dc330bebbe3bb0319568d7b7473bba5f1e00",
       "rotated": false,
       "trimmed": true
     },
@@ -2133,12 +2196,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.0,
+      "runtimeScale": 0.5,
+      "authoredRuntimeScale": 1.0,
       "frame": {
-        "x": 720,
-        "y": 206,
-        "w": 116,
-        "h": 111
+        "x": 1403,
+        "y": 405,
+        "w": 230,
+        "h": 221
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -2159,16 +2223,16 @@
         }
       ],
       "pivot": {
-        "x": 58,
-        "y": 107
+        "x": 115,
+        "y": 217
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.963964
+        "y": 0.9819
       },
-      "opaquePixels": 5499,
-      "massCentroidY": 0.478849,
-      "sourcePixelSha256": "20fff56cb29efc94d25c688695045e3c752fbce80942af06e3ff73fc5be4e03b",
+      "opaquePixels": 21030,
+      "massCentroidY": 0.477491,
+      "sourcePixelSha256": "1fb02a1129cd0b3bcfcfe86fe2db997619d17aff11294b7b03ea7e1f194f9c54",
       "rotated": false,
       "trimmed": true
     },
@@ -2179,28 +2243,29 @@
       "shape": "shack",
       "itemUrl": "./items/miners-shack.png",
       "districts": [],
-      "runtimeScale": 1.25,
+      "runtimeScale": 0.625,
+      "authoredRuntimeScale": 1.25,
       "frame": {
-        "x": 556,
-        "y": 358,
-        "w": 134,
-        "h": 93
+        "x": 1088,
+        "y": 705,
+        "w": 266,
+        "h": 186
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 67,
-        "y": 89
+        "x": 133,
+        "y": 182
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.956989
+        "y": 0.978495
       },
-      "opaquePixels": 10264,
-      "massCentroidY": 0.574631,
-      "sourcePixelSha256": "1f37b8cf73269fcfecbba4c7e08c0f3fb845983b1a4faa53ff230735903b2a32",
+      "opaquePixels": 40718,
+      "massCentroidY": 0.57512,
+      "sourcePixelSha256": "07049fb9a162790f08bd5a580473cd7fd6812ed025ef2b13f7470f3e650a0e84",
       "rotated": false,
       "trimmed": true
     },
@@ -2213,28 +2278,29 @@
       "districts": [
         "mining-camp"
       ],
-      "runtimeScale": 1.8,
+      "runtimeScale": 0.9,
+      "authoredRuntimeScale": 1.8,
       "frame": {
-        "x": 884,
+        "x": 1738,
         "y": 3,
-        "w": 130,
-        "h": 154
+        "w": 260,
+        "h": 306
       },
       "moduleFamily": "landmark-setpiece",
       "landmarkId": "mining-camp",
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 65,
-        "y": 150
+        "x": 130,
+        "y": 302
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.974026
+        "y": 0.986928
       },
-      "opaquePixels": 8685,
-      "massCentroidY": 0.436563,
-      "sourcePixelSha256": "89bfc62fe8ddaa74fab314ec1e6a045d33ab067a28f1510b668fd027d8e4b023",
+      "opaquePixels": 32534,
+      "massCentroidY": 0.431038,
+      "sourcePixelSha256": "87bcee27bf3b69c7ad9affa8d3e4a5567a2cdc3ae5b568343ce481654cefd398",
       "rotated": false,
       "trimmed": true
     },
@@ -2245,28 +2311,29 @@
       "shape": "moss-boulder",
       "itemUrl": "./items/moss-boulder.png",
       "districts": [],
-      "runtimeScale": 0.62,
+      "runtimeScale": 0.31,
+      "authoredRuntimeScale": 0.62,
       "frame": {
-        "x": 87,
-        "y": 548,
-        "w": 58,
-        "h": 61
+        "x": 3,
+        "y": 1077,
+        "w": 115,
+        "h": 122
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 21,
-        "y": 57
+        "x": 42,
+        "y": 118
       },
       "anchor": {
-        "x": 0.362069,
-        "y": 0.934426
+        "x": 0.365217,
+        "y": 0.967213
       },
-      "opaquePixels": 1683,
-      "massCentroidY": 0.550842,
-      "sourcePixelSha256": "bf4c27f7746df7616d0380e0a7bd22525759c97cba655e1ad1a3d453ab2f873a",
+      "opaquePixels": 6387,
+      "massCentroidY": 0.552464,
+      "sourcePixelSha256": "491faa487fdad2c813479fa71ab8afb7f807ff2107a50f0d116706d585cda475",
       "rotated": false,
       "trimmed": true
     },
@@ -2277,28 +2344,29 @@
       "shape": "nuke",
       "itemUrl": "./items/nuke-liquidation.png",
       "districts": [],
-      "runtimeScale": 0.88,
+      "runtimeScale": 0.44,
+      "authoredRuntimeScale": 0.88,
       "frame": {
-        "x": 201,
-        "y": 668,
-        "w": 44,
-        "h": 40
+        "x": 1729,
+        "y": 1202,
+        "w": 86,
+        "h": 80
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 22,
-        "y": 36
+        "x": 43,
+        "y": 76
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.9
+        "y": 0.95
       },
-      "opaquePixels": 1213,
-      "massCentroidY": 0.621684,
-      "sourcePixelSha256": "25694254bf41744106b81dc7b10112e7c667a249f5bb24eb6759ce9ccd9e57d2",
+      "opaquePixels": 4690,
+      "massCentroidY": 0.625894,
+      "sourcePixelSha256": "95243e448edce92fcec051c3d94aaf58c4621ff552d8d181a4bbecb97ace7ce8",
       "rotated": false,
       "trimmed": true
     },
@@ -2311,28 +2379,29 @@
       "districts": [
         "mining-camp"
       ],
-      "runtimeScale": 1.15,
+      "runtimeScale": 0.575,
+      "authoredRuntimeScale": 1.15,
       "frame": {
-        "x": 632,
-        "y": 713,
-        "w": 41,
-        "h": 26
+        "x": 541,
+        "y": 1382,
+        "w": 80,
+        "h": 51
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 19,
-        "y": 22
+        "x": 37,
+        "y": 47
       },
       "anchor": {
-        "x": 0.463415,
-        "y": 0.846154
+        "x": 0.4625,
+        "y": 0.921569
       },
-      "opaquePixels": 863,
-      "massCentroidY": 0.47467,
-      "sourcePixelSha256": "647e192b59c1b26bcbebc97ea751f7891883bbdaeecc216c3d8d3968ccd0926e",
+      "opaquePixels": 3321,
+      "massCentroidY": 0.472876,
+      "sourcePixelSha256": "4b5dc3249c0e4b0d8e69df162dc22d4688e7693710a54c27b34ebe654d25bacd",
       "rotated": false,
       "trimmed": true
     },
@@ -2343,28 +2412,29 @@
       "shape": "ore-conveyor",
       "itemUrl": "./items/ore-conveyor.png",
       "districts": [],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
-        "x": 461,
-        "y": 548,
-        "w": 153,
-        "h": 57
+        "x": 727,
+        "y": 1077,
+        "w": 304,
+        "h": 113
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 67,
-        "y": 53
+        "x": 133,
+        "y": 109
       },
       "anchor": {
-        "x": 0.437908,
-        "y": 0.929825
+        "x": 0.4375,
+        "y": 0.964602
       },
-      "opaquePixels": 4098,
-      "massCentroidY": 0.605409,
-      "sourcePixelSha256": "8f2423b37182d0cf52a3e0b801b3b3a3bc4e1941ebd06e9013badc2044ee8428",
+      "opaquePixels": 15856,
+      "massCentroidY": 0.60324,
+      "sourcePixelSha256": "a35e18fbf9d0df22bddad8ac156172b09a17d2cd4f754628767d249227b6ae3e",
       "rotated": false,
       "trimmed": true
     },
@@ -2375,28 +2445,29 @@
       "shape": "ore-vein-rock",
       "itemUrl": "./items/ore-vein-rock.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 600,
-        "y": 613,
-        "w": 58,
-        "h": 46
+        "x": 762,
+        "y": 1202,
+        "w": 115,
+        "h": 92
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 29,
-        "y": 42
+        "x": 57,
+        "y": 88
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.913043
+        "x": 0.495652,
+        "y": 0.956522
       },
-      "opaquePixels": 2017,
-      "massCentroidY": 0.587143,
-      "sourcePixelSha256": "686b63d92f1abc0e91533705e51e6919d86dd312cac560dfd2f372d364929abe",
+      "opaquePixels": 7879,
+      "massCentroidY": 0.590082,
+      "sourcePixelSha256": "d7333de4d3ec50b4d63a6868d08d184c3462a94a40f5b0a35f3709fd60aa622a",
       "rotated": false,
       "trimmed": true
     },
@@ -2407,28 +2478,29 @@
       "shape": "plank-deck-broken",
       "itemUrl": "./items/plank-deck-broken.png",
       "districts": [],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 661,
-        "y": 613,
-        "w": 51,
-        "h": 46
+        "x": 880,
+        "y": 1202,
+        "w": 102,
+        "h": 92
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 25,
-        "y": 42
+        "x": 50,
+        "y": 88
       },
       "anchor": {
         "x": 0.490196,
-        "y": 0.913043
+        "y": 0.956522
       },
-      "opaquePixels": 1937,
-      "massCentroidY": 0.570378,
-      "sourcePixelSha256": "cfc85e04a50c7a026fefbe33056c3734e97da83c5cc1ec711ea88b4e78372fbc",
+      "opaquePixels": 7412,
+      "massCentroidY": 0.576201,
+      "sourcePixelSha256": "3db2c154f58ea34b7449a8bb579fb64af67005a6d757e9dbd9fe37173ca1dd15",
       "rotated": false,
       "trimmed": true
     },
@@ -2441,12 +2513,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
-        "x": 429,
-        "y": 206,
-        "w": 114,
-        "h": 120
+        "x": 834,
+        "y": 405,
+        "w": 228,
+        "h": 238
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -2467,16 +2540,16 @@
         }
       ],
       "pivot": {
-        "x": 57,
-        "y": 116
+        "x": 114,
+        "y": 234
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.966667
+        "y": 0.983193
       },
-      "opaquePixels": 6534,
-      "massCentroidY": 0.551722,
-      "sourcePixelSha256": "50b6936a652bae56e98c2fa02ec53ec26763e4641c10ced14981fa811a073264",
+      "opaquePixels": 25075,
+      "massCentroidY": 0.54917,
+      "sourcePixelSha256": "347db2a9582bebe06b4fef1ec40f53fe311a1356d81b66f9357070d1b389a0e2",
       "rotated": false,
       "trimmed": true
     },
@@ -2487,28 +2560,29 @@
       "shape": "rate-chip",
       "itemUrl": "./items/precision-ledger.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 44,
-        "y": 713,
-        "w": 46,
-        "h": 34
+        "x": 1379,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "3e068e4468b3fdb2fa63dde24c47cfdf7a6e5da0a5cff7c96ce058ed1d4c95d2",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "5e434cd3043a30c6b856d4a15dd52334681ddfaad9e43e5ac91e53b241d49ddf",
       "rotated": false,
       "trimmed": true
     },
@@ -2521,28 +2595,29 @@
       "districts": [
         "liquidity-crossing"
       ],
-      "runtimeScale": 1.7,
+      "runtimeScale": 0.85,
+      "authoredRuntimeScale": 1.7,
       "frame": {
-        "x": 703,
+        "x": 1379,
         "y": 3,
-        "w": 178,
-        "h": 158
+        "w": 356,
+        "h": 316
       },
       "moduleFamily": "landmark-setpiece",
       "landmarkId": "liquidity-crossing",
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 89,
-        "y": 154
+        "x": 178,
+        "y": 312
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.974684
+        "y": 0.987342
       },
-      "opaquePixels": 17182,
-      "massCentroidY": 0.513902,
-      "sourcePixelSha256": "306b8eb38ced1d101b58b127204b44b9942e498bd4da03d9be3865708e984900",
+      "opaquePixels": 66142,
+      "massCentroidY": 0.514439,
+      "sourcePixelSha256": "a98854174d755c8ae9d2965cc1a6b5879961e2601237f24fc20005f1bf35c8ff",
       "rotated": false,
       "trimmed": true
     },
@@ -2553,28 +2628,29 @@
       "shape": "damage-chip",
       "itemUrl": "./items/proof-of-work.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 93,
-        "y": 713,
-        "w": 46,
-        "h": 34
+        "x": 1474,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "393516a95d0fb2265cf246632d377dd2ebcb92777523c2a481c577974807bac7",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "4f3e180bbac41fc51a5b25da6597fa16ebdbef9daf72799bba1d05258154595f",
       "rotated": false,
       "trimmed": true
     },
@@ -2587,28 +2663,29 @@
       "districts": [
         "liquidity-crossing"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 874,
-        "y": 613,
-        "w": 28,
-        "h": 42
+        "x": 1292,
+        "y": 1202,
+        "w": 52,
+        "h": 84
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 14,
-        "y": 38
+        "x": 26,
+        "y": 80
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.904762
+        "y": 0.952381
       },
-      "opaquePixels": 1078,
-      "massCentroidY": 0.536223,
-      "sourcePixelSha256": "461cd2acfd10e3ff706b6e3ca0182478dde553d35723143a914227987d539034",
+      "opaquePixels": 4053,
+      "massCentroidY": 0.533866,
+      "sourcePixelSha256": "5c3e97acb54f91bfb1093aa5f00708e829ca9913b3b7350d02926630ec3336ff",
       "rotated": false,
       "trimmed": true
     },
@@ -2619,28 +2696,29 @@
       "shape": "reed-cluster",
       "itemUrl": "./items/reed-cluster.png",
       "districts": [],
-      "runtimeScale": 0.7,
+      "runtimeScale": 0.35,
+      "authoredRuntimeScale": 0.7,
       "frame": {
-        "x": 555,
-        "y": 468,
-        "w": 54,
-        "h": 72
+        "x": 934,
+        "y": 921,
+        "w": 107,
+        "h": 144
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 27,
-        "y": 68
+        "x": 53,
+        "y": 140
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.944444
+        "x": 0.495327,
+        "y": 0.972222
       },
-      "opaquePixels": 1468,
-      "massCentroidY": 0.686831,
-      "sourcePixelSha256": "f3dde0ac45d99eebe11381098f24af02086419e4a254fa232c41cbba3630b261",
+      "opaquePixels": 5067,
+      "massCentroidY": 0.694534,
+      "sourcePixelSha256": "2605a2b2d6a824aa7ba82937a3c67e5fc2768d864a1c1a608967db57e7ec1b66",
       "rotated": false,
       "trimmed": true
     },
@@ -2653,28 +2731,29 @@
       "districts": [
         "frontier-relay"
       ],
-      "runtimeScale": 1.4,
+      "runtimeScale": 0.7,
+      "authoredRuntimeScale": 1.4,
       "frame": {
-        "x": 128,
-        "y": 750,
-        "w": 24,
-        "h": 15
+        "x": 1449,
+        "y": 1382,
+        "w": 46,
+        "h": 29
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 12,
-        "y": 11
+        "x": 23,
+        "y": 25
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.733333
+        "y": 0.862069
       },
-      "opaquePixels": 358,
-      "massCentroidY": 0.502793,
-      "sourcePixelSha256": "bfe0489bd62358e22a9b6773bfc9e841a86df218b7be15fe9cc3b49b89c72da8",
+      "opaquePixels": 1326,
+      "massCentroidY": 0.502855,
+      "sourcePixelSha256": "19db65ad5cbc98024c042b2d33293c343a147f8b0c17eadde7eb8121b22b983e",
       "rotated": false,
       "trimmed": true
     },
@@ -2687,28 +2766,29 @@
       "districts": [
         "frontier-relay"
       ],
-      "runtimeScale": 1.75,
+      "runtimeScale": 0.875,
+      "authoredRuntimeScale": 1.75,
       "frame": {
-        "x": 479,
+        "x": 941,
         "y": 3,
-        "w": 118,
-        "h": 173
+        "w": 236,
+        "h": 345
       },
       "moduleFamily": "landmark-setpiece",
       "landmarkId": "frontier-relay",
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 59,
-        "y": 169
+        "x": 118,
+        "y": 341
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.976879
+        "y": 0.988406
       },
-      "opaquePixels": 8356,
-      "massCentroidY": 0.51199,
-      "sourcePixelSha256": "3965e6ebd301bbca792dc07f0ee5773a7b3f497251d739e9e1b9f797a43e9c22",
+      "opaquePixels": 30939,
+      "massCentroidY": 0.509271,
+      "sourcePixelSha256": "682bad85141388b5986f3bdf1ddc9cd91502af6bc3bc0606189fbef37cff4daf",
       "rotated": false,
       "trimmed": true
     },
@@ -2719,28 +2799,29 @@
       "shape": "rock-shelf",
       "itemUrl": "./items/rock-shelf.png",
       "districts": [],
-      "runtimeScale": 0.88,
+      "runtimeScale": 0.44,
+      "authoredRuntimeScale": 0.88,
       "frame": {
-        "x": 142,
-        "y": 613,
-        "w": 67,
-        "h": 51
+        "x": 1895,
+        "y": 1077,
+        "w": 132,
+        "h": 101
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 39,
-        "y": 47
+        "x": 78,
+        "y": 97
       },
       "anchor": {
-        "x": 0.58209,
-        "y": 0.921569
+        "x": 0.590909,
+        "y": 0.960396
       },
-      "opaquePixels": 2383,
-      "massCentroidY": 0.58261,
-      "sourcePixelSha256": "3023539886e26c5d3a9cccf0dceda8414172f4f8f8d7fec33cb1661de817b595",
+      "opaquePixels": 9303,
+      "massCentroidY": 0.581168,
+      "sourcePixelSha256": "3ea755a507fda91919466fbad5628a20512f9a20f547cc9003161ab321fddc32",
       "rotated": false,
       "trimmed": true
     },
@@ -2751,28 +2832,29 @@
       "shape": "rock-spire",
       "itemUrl": "./items/rock-spire.png",
       "districts": [],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
-        "x": 504,
-        "y": 358,
-        "w": 49,
-        "h": 94
+        "x": 711,
+        "y": 705,
+        "w": 108,
+        "h": 189
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 16,
-        "y": 90
+        "x": 43,
+        "y": 185
       },
       "anchor": {
-        "x": 0.326531,
-        "y": 0.957447
+        "x": 0.398148,
+        "y": 0.978836
       },
-      "opaquePixels": 2065,
-      "massCentroidY": 0.668916,
-      "sourcePixelSha256": "9988eff6491cbb7f61b22ece6efdf4436d5bcaacf6b11f69f430829135a3e8b5",
+      "opaquePixels": 7913,
+      "massCentroidY": 0.674296,
+      "sourcePixelSha256": "db637ca3475a672bdba340adffd0bdc19ecec2aa35c0db3faa1251b2b4e8b177",
       "rotated": false,
       "trimmed": true
     },
@@ -2783,28 +2865,29 @@
       "shape": "rope-bridge-anchor",
       "itemUrl": "./items/rope-bridge-anchor.png",
       "districts": [],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
-        "x": 3,
-        "y": 548,
-        "w": 81,
-        "h": 62
+        "x": 1884,
+        "y": 921,
+        "w": 160,
+        "h": 123
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 31,
-        "y": 58
+        "x": 61,
+        "y": 119
       },
       "anchor": {
-        "x": 0.382716,
-        "y": 0.935484
+        "x": 0.38125,
+        "y": 0.96748
       },
-      "opaquePixels": 2318,
-      "massCentroidY": 0.580143,
-      "sourcePixelSha256": "3e85b6a4fbede1f4dcd140c4e9264fab9a4a930ad28da163c272f93f8c842135",
+      "opaquePixels": 8684,
+      "massCentroidY": 0.582063,
+      "sourcePixelSha256": "1f9a217da5e0af5b6217bbca48bf5b336679d38c21c0652f726a64471b33aed4",
       "rotated": false,
       "trimmed": true
     },
@@ -2817,28 +2900,29 @@
       "districts": [
         "rugpull-ravine"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 786,
-        "y": 713,
-        "w": 52,
-        "h": 22
+        "x": 833,
+        "y": 1382,
+        "w": 104,
+        "h": 42
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 26,
-        "y": 18
+        "x": 52,
+        "y": 38
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.818182
+        "y": 0.904762
       },
-      "opaquePixels": 619,
-      "massCentroidY": 0.590738,
-      "sourcePixelSha256": "b3884f60216ef5dffcecbadd6c8e9a650ad5fe1576c89cf7d190821721dd0c60",
+      "opaquePixels": 2220,
+      "massCentroidY": 0.571688,
+      "sourcePixelSha256": "7f8ff3797c1b3b6a441ddedd9a97585aac88fdb92749213da9733b3463f8b6ba",
       "rotated": false,
       "trimmed": true
     },
@@ -2851,12 +2935,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.3,
+      "runtimeScale": 0.65,
+      "authoredRuntimeScale": 1.3,
       "frame": {
-        "x": 106,
-        "y": 206,
-        "w": 101,
-        "h": 148
+        "x": 204,
+        "y": 405,
+        "w": 200,
+        "h": 295
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -2888,16 +2973,16 @@
         }
       ],
       "pivot": {
-        "x": 48,
-        "y": 144
+        "x": 95,
+        "y": 291
       },
       "anchor": {
-        "x": 0.475248,
-        "y": 0.972973
+        "x": 0.475,
+        "y": 0.986441
       },
-      "opaquePixels": 10223,
-      "massCentroidY": 0.542438,
-      "sourcePixelSha256": "50e0635332acad66bef5c2185792d4a8c97d753fe8e805934343df32a713d579",
+      "opaquePixels": 39834,
+      "massCentroidY": 0.542869,
+      "sourcePixelSha256": "849a1372d3f7775e948c4a7b750efddaba1112d85896e309f2aaba286eb0d2db",
       "rotated": false,
       "trimmed": true
     },
@@ -2908,28 +2993,29 @@
       "shape": "ruined-wall",
       "itemUrl": "./items/ruined-wall.png",
       "districts": [],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 843,
-        "y": 468,
-        "w": 128,
-        "h": 65
+        "x": 1627,
+        "y": 921,
+        "w": 254,
+        "h": 129
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 64,
-        "y": 61
+        "x": 127,
+        "y": 125
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.938462
+        "y": 0.968992
       },
-      "opaquePixels": 5509,
-      "massCentroidY": 0.622949,
-      "sourcePixelSha256": "c3ec66ce017bddddb9d2fca8dd1f04a958b6dc15b1bcb4d027df5cc1f1505c11",
+      "opaquePixels": 21614,
+      "massCentroidY": 0.622437,
+      "sourcePixelSha256": "065662e955d9cdb3a0a9b3d27506fd52b5dafdfe11bbf63174e47b1c24f8c637",
       "rotated": false,
       "trimmed": true
     },
@@ -2943,28 +3029,29 @@
         "frontier-relay",
         "rugpull-ravine"
       ],
-      "runtimeScale": 1.25,
+      "runtimeScale": 0.625,
+      "authoredRuntimeScale": 1.25,
       "frame": {
-        "x": 72,
-        "y": 750,
-        "w": 26,
-        "h": 18
+        "x": 1347,
+        "y": 1382,
+        "w": 50,
+        "h": 35
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 13,
-        "y": 14
+        "x": 25,
+        "y": 31
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.777778
+        "y": 0.885714
       },
-      "opaquePixels": 464,
-      "massCentroidY": 0.50431,
-      "sourcePixelSha256": "b87027a20b23594decd7b155e3b3d8989a44e4274c4651b1c78e6a90834e2195",
+      "opaquePixels": 1742,
+      "massCentroidY": 0.502262,
+      "sourcePixelSha256": "ecc04e7322398b2382c5029ef7a3cb83bc7b67df13c6f81f55d3940e1352acb3",
       "rotated": false,
       "trimmed": true
     },
@@ -2975,28 +3062,29 @@
       "shape": "sandbag-nest",
       "itemUrl": "./items/sandbag-nest.png",
       "districts": [],
-      "runtimeScale": 0.88,
+      "runtimeScale": 0.44,
+      "authoredRuntimeScale": 0.88,
       "frame": {
-        "x": 775,
-        "y": 613,
-        "w": 57,
-        "h": 44
+        "x": 1177,
+        "y": 1202,
+        "w": 112,
+        "h": 87
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 29,
-        "y": 40
+        "x": 56,
+        "y": 83
       },
       "anchor": {
-        "x": 0.508772,
-        "y": 0.909091
+        "x": 0.5,
+        "y": 0.954023
       },
-      "opaquePixels": 2045,
-      "massCentroidY": 0.546608,
-      "sourcePixelSha256": "613d3730d6d16d032a5b2c8f266722132d984ea9dbd125488bfd4df6cd428912",
+      "opaquePixels": 7912,
+      "massCentroidY": 0.542718,
+      "sourcePixelSha256": "0fb6ae932af866cf4b955a5b9368ea9101eedbcc3af507ca959c4fffc44775c3",
       "rotated": false,
       "trimmed": true
     },
@@ -3007,28 +3095,29 @@
       "shape": "sapling-thicket",
       "itemUrl": "./items/sapling-thicket.png",
       "districts": [],
-      "runtimeScale": 0.8,
+      "runtimeScale": 0.4,
+      "authoredRuntimeScale": 0.8,
       "frame": {
-        "x": 612,
-        "y": 468,
-        "w": 49,
-        "h": 71
+        "x": 1177,
+        "y": 921,
+        "w": 96,
+        "h": 141
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 24,
-        "y": 67
+        "x": 47,
+        "y": 137
       },
       "anchor": {
-        "x": 0.489796,
-        "y": 0.943662
+        "x": 0.489583,
+        "y": 0.971631
       },
-      "opaquePixels": 2223,
-      "massCentroidY": 0.635171,
-      "sourcePixelSha256": "196d8a7e41a02144bb00915f3ea6bfd93baac1ab815e578e1403f27fa25e6706",
+      "opaquePixels": 8594,
+      "massCentroidY": 0.637858,
+      "sourcePixelSha256": "e02147b5a5c6202f20df7dc10fc6a97bb403674cb2548741bc0dd399f3338323",
       "rotated": false,
       "trimmed": true
     },
@@ -3039,28 +3128,29 @@
       "shape": "shotgun",
       "itemUrl": "./items/scatter-shotgun.png",
       "districts": [],
-      "runtimeScale": 0.58,
+      "runtimeScale": 0.29,
+      "authoredRuntimeScale": 0.58,
       "frame": {
-        "x": 3,
-        "y": 750,
-        "w": 66,
-        "h": 20
+        "x": 995,
+        "y": 1382,
+        "w": 131,
+        "h": 37
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 27,
-        "y": 19
+        "x": 53,
+        "y": 36
       },
       "anchor": {
-        "x": 0.409091,
-        "y": 0.95
+        "x": 0.40458,
+        "y": 0.972973
       },
-      "opaquePixels": 735,
-      "massCentroidY": 0.409094,
-      "sourcePixelSha256": "575043506862f3d762c7ca0e70606b68c3b71386bc6f12cf79c840cabb4cd885",
+      "opaquePixels": 2751,
+      "massCentroidY": 0.423068,
+      "sourcePixelSha256": "be989eb18e678a6fc0a1458ef9594188a491458f422eaa43004c3458b84ae493",
       "rotated": false,
       "trimmed": true
     },
@@ -3071,28 +3161,29 @@
       "shape": "scrap-barricade",
       "itemUrl": "./items/scrap-barricade.png",
       "districts": [],
-      "runtimeScale": 0.92,
+      "runtimeScale": 0.46,
+      "authoredRuntimeScale": 0.92,
       "frame": {
-        "x": 692,
-        "y": 548,
-        "w": 60,
-        "h": 55
+        "x": 1181,
+        "y": 1077,
+        "w": 118,
+        "h": 110
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 29,
-        "y": 51
+        "x": 56,
+        "y": 106
       },
       "anchor": {
-        "x": 0.483333,
-        "y": 0.927273
+        "x": 0.474576,
+        "y": 0.963636
       },
-      "opaquePixels": 2481,
-      "massCentroidY": 0.563736,
-      "sourcePixelSha256": "262c62a3f4c2adbfe31e00d947d0f021c8aba24368f6142a3cdcb835cfa2612d",
+      "opaquePixels": 9618,
+      "massCentroidY": 0.569063,
+      "sourcePixelSha256": "445a6ddd4a3d32e66f7e6eb8714e2b3e3cfdf85f7f1b6388eafd9832b09aa1aa",
       "rotated": false,
       "trimmed": true
     },
@@ -3103,28 +3194,29 @@
       "shape": "scree-pile",
       "itemUrl": "./items/scree-pile.png",
       "districts": [],
-      "runtimeScale": 0.8,
+      "runtimeScale": 0.4,
+      "authoredRuntimeScale": 0.8,
       "frame": {
-        "x": 248,
-        "y": 668,
-        "w": 56,
-        "h": 40
+        "x": 1818,
+        "y": 1202,
+        "w": 111,
+        "h": 79
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 24,
-        "y": 36
+        "x": 48,
+        "y": 75
       },
       "anchor": {
-        "x": 0.428571,
-        "y": 0.9
+        "x": 0.432432,
+        "y": 0.949367
       },
-      "opaquePixels": 1155,
-      "massCentroidY": 0.674614,
-      "sourcePixelSha256": "cce6b95c61588f53cbbe0b2c26986d6c33f6efb02d68b752cca79871eb798b6b",
+      "opaquePixels": 4437,
+      "massCentroidY": 0.674861,
+      "sourcePixelSha256": "e6e7ca17360e5509916d067ec5803acbd7dce64459a3037f4cfe850621c29716",
       "rotated": false,
       "trimmed": true
     },
@@ -3135,28 +3227,29 @@
       "shape": "scrub-bush",
       "itemUrl": "./items/scrub-bush.png",
       "districts": [],
-      "runtimeScale": 0.95,
+      "runtimeScale": 0.475,
+      "authoredRuntimeScale": 0.95,
       "frame": {
-        "x": 212,
-        "y": 613,
-        "w": 48,
-        "h": 51
+        "x": 3,
+        "y": 1202,
+        "w": 95,
+        "h": 101
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 24,
-        "y": 47
+        "x": 48,
+        "y": 97
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.921569
+        "x": 0.505263,
+        "y": 0.960396
       },
-      "opaquePixels": 1415,
-      "massCentroidY": 0.638629,
-      "sourcePixelSha256": "abf4b0eed57a3b10d8636bf2eb39d4e8bb8ef8f2e06fcf88bb86575e8720903a",
+      "opaquePixels": 5387,
+      "massCentroidY": 0.64387,
+      "sourcePixelSha256": "a7094cf5e0f24f8325bf750c5a787176bec60be4463c6d4402aff74b256d4687",
       "rotated": false,
       "trimmed": true
     },
@@ -3169,12 +3262,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 0.9,
+      "runtimeScale": 0.45,
+      "authoredRuntimeScale": 0.9,
       "frame": {
-        "x": 260,
-        "y": 548,
-        "w": 95,
-        "h": 59
+        "x": 336,
+        "y": 1077,
+        "w": 189,
+        "h": 116
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -3204,16 +3298,16 @@
         }
       ],
       "pivot": {
-        "x": 48,
-        "y": 55
+        "x": 95,
+        "y": 112
       },
       "anchor": {
-        "x": 0.505263,
-        "y": 0.932203
+        "x": 0.502646,
+        "y": 0.965517
       },
-      "opaquePixels": 2322,
-      "massCentroidY": 0.569055,
-      "sourcePixelSha256": "8b651db19094f2319ac1f9169f9d35df9395aab1f739675a66916ba0e1523865",
+      "opaquePixels": 8869,
+      "massCentroidY": 0.561292,
+      "sourcePixelSha256": "8638b413908d6dfbf9a3365f0e0c33d3e3242aab07ea2e95f5dc077f49b66424",
       "rotated": false,
       "trimmed": true
     },
@@ -3224,28 +3318,29 @@
       "shape": "stepping-stones",
       "itemUrl": "./items/stepping-stones.png",
       "districts": [],
-      "runtimeScale": 0.88,
+      "runtimeScale": 0.44,
+      "authoredRuntimeScale": 0.88,
       "frame": {
-        "x": 209,
-        "y": 468,
-        "w": 32,
-        "h": 76
+        "x": 495,
+        "y": 921,
+        "w": 63,
+        "h": 151
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 16,
-        "y": 72
+        "x": 31,
+        "y": 147
       },
       "anchor": {
-        "x": 0.5,
-        "y": 0.947368
+        "x": 0.492063,
+        "y": 0.97351
       },
-      "opaquePixels": 1654,
-      "massCentroidY": 0.547126,
-      "sourcePixelSha256": "eb90a0e0742f3a803b613960d9eb516351c174c5486a9fd2e2cac2d3758f1096",
+      "opaquePixels": 6372,
+      "massCentroidY": 0.54577,
+      "sourcePixelSha256": "1c066b89c1f4dfcc792c85f762d3909c396226cf3a0aeae5975ce50c2e0bb038",
       "rotated": false,
       "trimmed": true
     },
@@ -3258,12 +3353,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 0.8,
+      "runtimeScale": 0.4,
+      "authoredRuntimeScale": 0.8,
       "frame": {
-        "x": 546,
-        "y": 206,
-        "w": 54,
-        "h": 120
+        "x": 1065,
+        "y": 405,
+        "w": 107,
+        "h": 238
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -3302,16 +3398,16 @@
         }
       ],
       "pivot": {
-        "x": 5,
-        "y": 116
+        "x": 9,
+        "y": 234
       },
       "anchor": {
-        "x": 0.092593,
-        "y": 0.966667
+        "x": 0.084112,
+        "y": 0.983193
       },
-      "opaquePixels": 1354,
-      "massCentroidY": 0.397056,
-      "sourcePixelSha256": "4432f6e9e29deb44e048677c3ca5ce097bbe5eb88ab76bb89c470024a6d220f4",
+      "opaquePixels": 5131,
+      "massCentroidY": 0.401671,
+      "sourcePixelSha256": "009c265f70479fdb913d8cffea761f6319b4f466546fe54b5e9a70ea8528c96c",
       "rotated": false,
       "trimmed": true
     },
@@ -3322,28 +3418,29 @@
       "shape": "submerged-log",
       "itemUrl": "./items/submerged-log.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 460,
-        "y": 613,
-        "w": 75,
-        "h": 47
+        "x": 495,
+        "y": 1202,
+        "w": 147,
+        "h": 93
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 42,
-        "y": 43
+        "x": 82,
+        "y": 89
       },
       "anchor": {
-        "x": 0.56,
-        "y": 0.914894
+        "x": 0.557823,
+        "y": 0.956989
       },
-      "opaquePixels": 1431,
-      "massCentroidY": 0.721706,
-      "sourcePixelSha256": "8528992abc17fb5e42ee9416401f5ff5fabb3c7ef2f8d9936059bf1490511b50",
+      "opaquePixels": 5471,
+      "massCentroidY": 0.724234,
+      "sourcePixelSha256": "fdcd2c3ec9f89cfe3ef0998aa99bb7773430f16d0ae129b4ec8289e50cecd5ba",
       "rotated": false,
       "trimmed": true
     },
@@ -3354,28 +3451,29 @@
       "shape": "thorn-bramble",
       "itemUrl": "./items/thorn-bramble.png",
       "districts": [],
-      "runtimeScale": 0.92,
+      "runtimeScale": 0.46,
+      "authoredRuntimeScale": 0.92,
       "frame": {
-        "x": 204,
-        "y": 548,
-        "w": 53,
-        "h": 60
+        "x": 121,
+        "y": 1077,
+        "w": 105,
+        "h": 120
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 28,
-        "y": 56
+        "x": 56,
+        "y": 116
       },
       "anchor": {
-        "x": 0.528302,
-        "y": 0.933333
+        "x": 0.533333,
+        "y": 0.966667
       },
-      "opaquePixels": 1655,
-      "massCentroidY": 0.613109,
-      "sourcePixelSha256": "4553364a87f2f5db79434ca40d9b2a7249f5013cc570299f84394caa2e9d40b9",
+      "opaquePixels": 6102,
+      "massCentroidY": 0.614964,
+      "sourcePixelSha256": "cd5b925fac3f4aee3f058d41ceae0d824fed1833a5e73a8ffc250e2dcc6a01fe",
       "rotated": false,
       "trimmed": true
     },
@@ -3386,28 +3484,29 @@
       "shape": "hourglass",
       "itemUrl": "./items/time-dilation.png",
       "districts": [],
-      "runtimeScale": 0.86,
+      "runtimeScale": 0.43,
+      "authoredRuntimeScale": 0.86,
       "frame": {
-        "x": 135,
-        "y": 668,
-        "w": 30,
-        "h": 41
+        "x": 1606,
+        "y": 1202,
+        "w": 60,
+        "h": 81
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 15,
-        "y": 37
+        "x": 30,
+        "y": 77
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.902439
+        "y": 0.950617
       },
-      "opaquePixels": 767,
-      "massCentroidY": 0.432595,
-      "sourcePixelSha256": "a2f932247e7ee96281811884ed7f329b4a2086d66f20723c4af38177ee17c245",
+      "opaquePixels": 2895,
+      "massCentroidY": 0.42696,
+      "sourcePixelSha256": "61574b90f234d44f47f1e3eae3688c55d32dc76cb6a897987e510f09ef7126c5",
       "rotated": false,
       "trimmed": true
     },
@@ -3420,12 +3519,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.15,
+      "runtimeScale": 0.575,
+      "authoredRuntimeScale": 1.15,
       "frame": {
-        "x": 839,
-        "y": 206,
-        "w": 123,
-        "h": 108
+        "x": 1636,
+        "y": 405,
+        "w": 243,
+        "h": 215
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -3446,16 +3546,16 @@
         }
       ],
       "pivot": {
-        "x": 55,
-        "y": 104
+        "x": 109,
+        "y": 211
       },
       "anchor": {
-        "x": 0.447154,
-        "y": 0.962963
+        "x": 0.44856,
+        "y": 0.981395
       },
-      "opaquePixels": 5719,
-      "massCentroidY": 0.348131,
-      "sourcePixelSha256": "1793458e183898c6e3c5a17183889be6729d3b33402e0e59335841f8cb646a58",
+      "opaquePixels": 21211,
+      "massCentroidY": 0.337531,
+      "sourcePixelSha256": "475114d3e60ba297ff307edeb62d30889ca329a036942034a516aec48ad14cfd",
       "rotated": false,
       "trimmed": true
     },
@@ -3466,28 +3566,29 @@
       "shape": "reload-chip",
       "itemUrl": "./items/validator-training.png",
       "districts": [],
-      "runtimeScale": 0.44,
+      "runtimeScale": 0.22,
+      "authoredRuntimeScale": 0.44,
       "frame": {
-        "x": 142,
-        "y": 713,
-        "w": 46,
-        "h": 34
+        "x": 1569,
+        "y": 1306,
+        "w": 92,
+        "h": 67
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 23,
-        "y": 30
+        "x": 46,
+        "y": 63
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.940299
       },
-      "opaquePixels": 1246,
-      "massCentroidY": 0.555961,
-      "sourcePixelSha256": "47bdd416953d5eb975d17560960c28eac1f530b07af2865019acb128a6eebcee",
+      "opaquePixels": 4878,
+      "massCentroidY": 0.553263,
+      "sourcePixelSha256": "3544bc371c5710fb1ee8bec4eb546d3588f5e3e659af6f7c8752b88a25e0132a",
       "rotated": false,
       "trimmed": true
     },
@@ -3501,28 +3602,29 @@
         "rugpull-ravine",
         "liquidation-yard"
       ],
-      "runtimeScale": 1.05,
+      "runtimeScale": 0.525,
+      "authoredRuntimeScale": 1.05,
       "frame": {
-        "x": 191,
-        "y": 713,
-        "w": 26,
-        "h": 34
+        "x": 412,
+        "y": 1306,
+        "w": 52,
+        "h": 68
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 13,
-        "y": 30
+        "x": 26,
+        "y": 64
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.882353
+        "y": 0.941176
       },
-      "opaquePixels": 640,
-      "massCentroidY": 0.520786,
-      "sourcePixelSha256": "4705382b9c18bcca3df1a425cb2507aeca86f041d8a6b5ab72f8193b3ad6959c",
+      "opaquePixels": 2482,
+      "massCentroidY": 0.52786,
+      "sourcePixelSha256": "c5b851d86318d8712d75a50d5f1196477ec0c595756a836eb1b1890e0e4d3997",
       "rotated": false,
       "trimmed": true
     },
@@ -3533,28 +3635,29 @@
       "shape": "watch-platform",
       "itemUrl": "./items/watch-platform.png",
       "districts": [],
-      "runtimeScale": 1.15,
+      "runtimeScale": 0.575,
+      "authoredRuntimeScale": 1.15,
       "frame": {
-        "x": 157,
-        "y": 358,
-        "w": 56,
-        "h": 104
+        "x": 303,
+        "y": 705,
+        "w": 110,
+        "h": 208
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 27,
-        "y": 100
+        "x": 54,
+        "y": 204
       },
       "anchor": {
-        "x": 0.482143,
-        "y": 0.961538
+        "x": 0.490909,
+        "y": 0.980769
       },
-      "opaquePixels": 3337,
-      "massCentroidY": 0.453343,
-      "sourcePixelSha256": "e45946eb38615bcdc0a26d77605b40014607b5f3cb0632a87b72005237ae8d14",
+      "opaquePixels": 12700,
+      "massCentroidY": 0.448488,
+      "sourcePixelSha256": "6c399ce93838056140bb1b6f2bca529e10f16e0786e0dca63b30c13a5ab18307",
       "rotated": false,
       "trimmed": true
     },
@@ -3565,28 +3668,29 @@
       "shape": "watchtower",
       "itemUrl": "./items/watchtower.png",
       "districts": [],
-      "runtimeScale": 1.1,
+      "runtimeScale": 0.55,
+      "authoredRuntimeScale": 1.1,
       "frame": {
         "x": 3,
-        "y": 206,
-        "w": 100,
-        "h": 149
+        "y": 405,
+        "w": 198,
+        "h": 297
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 50,
-        "y": 145
+        "x": 99,
+        "y": 293
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.973154
+        "y": 0.986532
       },
-      "opaquePixels": 11117,
-      "massCentroidY": 0.456033,
-      "sourcePixelSha256": "18d964608f82061ac85391e63880d9e64c69ca3a4e523991c6b6419b1cabef3b",
+      "opaquePixels": 43020,
+      "massCentroidY": 0.448878,
+      "sourcePixelSha256": "4cf7c9a4278e08f029ec3e5ecf0ff5395ca1e3c099142540d522021da7298703",
       "rotated": false,
       "trimmed": true
     },
@@ -3597,28 +3701,29 @@
       "shape": "water-grass",
       "itemUrl": "./items/water-grass.png",
       "districts": [],
-      "runtimeScale": 0.82,
+      "runtimeScale": 0.41,
+      "authoredRuntimeScale": 0.82,
       "frame": {
-        "x": 244,
-        "y": 468,
-        "w": 44,
-        "h": 76
+        "x": 407,
+        "y": 921,
+        "w": 85,
+        "h": 152
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 19,
-        "y": 72
+        "x": 36,
+        "y": 148
       },
       "anchor": {
-        "x": 0.431818,
-        "y": 0.947368
+        "x": 0.423529,
+        "y": 0.973684
       },
-      "opaquePixels": 1145,
-      "massCentroidY": 0.617304,
-      "sourcePixelSha256": "b098438013d0a29daf4c3e65198e699fb6fe9adbdcb79f766dfa50feccbb50b0",
+      "opaquePixels": 3795,
+      "massCentroidY": 0.633896,
+      "sourcePixelSha256": "d83aa366f3a21848579752bd7b09c985c25a357e35c81c552d86ea11f889c29b",
       "rotated": false,
       "trimmed": true
     },
@@ -3631,12 +3736,13 @@
       "districts": [
         "liquidation-yard"
       ],
-      "runtimeScale": 1.2,
+      "runtimeScale": 0.6,
+      "authoredRuntimeScale": 1.2,
       "frame": {
-        "x": 600,
+        "x": 1180,
         "y": 3,
-        "w": 100,
-        "h": 159
+        "w": 196,
+        "h": 318
       },
       "moduleFamily": "town-kit-v1",
       "landmarkId": null,
@@ -3658,16 +3764,16 @@
         }
       ],
       "pivot": {
-        "x": 50,
-        "y": 155
+        "x": 98,
+        "y": 314
       },
       "anchor": {
         "x": 0.5,
-        "y": 0.974843
+        "y": 0.987421
       },
-      "opaquePixels": 10778,
-      "massCentroidY": 0.410583,
-      "sourcePixelSha256": "5a61ade02e80f057e6d39c49cd6108bdd02515151f69739faa5e039cab5d6b7d",
+      "opaquePixels": 42098,
+      "massCentroidY": 0.407038,
+      "sourcePixelSha256": "67cedf5c887a890b3a7fc1232031c7bdab9a0cdc33141e0bb8eb4feb4c92632d",
       "rotated": false,
       "trimmed": true
     },
@@ -3678,28 +3784,29 @@
       "shape": "wetland-hummock",
       "itemUrl": "./items/wetland-hummock.png",
       "districts": [],
-      "runtimeScale": 0.85,
+      "runtimeScale": 0.425,
+      "authoredRuntimeScale": 0.85,
       "frame": {
-        "x": 835,
-        "y": 613,
-        "w": 36,
-        "h": 44
+        "x": 1102,
+        "y": 1202,
+        "w": 72,
+        "h": 88
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 17,
-        "y": 40
+        "x": 34,
+        "y": 84
       },
       "anchor": {
         "x": 0.472222,
-        "y": 0.909091
+        "y": 0.954545
       },
-      "opaquePixels": 773,
-      "massCentroidY": 0.683715,
-      "sourcePixelSha256": "6a100a7833c91766e9c3071c24fce776a7d18f8e22359d27bc617aeec52bcb80",
+      "opaquePixels": 2802,
+      "massCentroidY": 0.692756,
+      "sourcePixelSha256": "210ba1371198666d1b396ffaa3dd9306080ff2d15161c7a90a07b4d5d8bd2b01",
       "rotated": false,
       "trimmed": true
     },
@@ -3710,28 +3817,29 @@
       "shape": "wrecked-car",
       "itemUrl": "./items/wrecked-sedan.png",
       "districts": [],
-      "runtimeScale": 0.78,
+      "runtimeScale": 0.39,
+      "authoredRuntimeScale": 0.78,
       "frame": {
-        "x": 3,
-        "y": 668,
-        "w": 129,
-        "h": 42
+        "x": 1347,
+        "y": 1202,
+        "w": 256,
+        "h": 84
       },
       "moduleFamily": null,
       "landmarkId": null,
       "collisionProxy": null,
       "townPlacements": [],
       "pivot": {
-        "x": 57,
-        "y": 38
+        "x": 113,
+        "y": 80
       },
       "anchor": {
-        "x": 0.44186,
-        "y": 0.904762
+        "x": 0.441406,
+        "y": 0.952381
       },
-      "opaquePixels": 2910,
-      "massCentroidY": 0.642184,
-      "sourcePixelSha256": "6c3ab67ac87564ab96197794d7c8af8449e2891709bb797f7558f5da406b2d0b",
+      "opaquePixels": 11012,
+      "massCentroidY": 0.645424,
+      "sourcePixelSha256": "73a9f92d68bd7d007813f4e81c059b51708a9a2cfbf514736ee5fe689d3a1767",
       "rotated": false,
       "trimmed": true
     }

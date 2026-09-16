@@ -66,6 +66,16 @@ test('authored prop metadata is complete, projection-only, and provenance-bearin
   }
   for (const frame of metadata.frames) assert.match(frame.sourcePixelSha256, /^[0-9a-f]{64}$/u);
   assert.throws(() => authoredPropItemUrl('../fake-prop'), /bad prop/);
+  // HMH-N02 (2026-09-16): frames render at twice the authored world density so
+  // props stop upscaling at gameplay zoom. World footprints are unchanged: the
+  // atlas runtimeScale is the authored scale divided by the density.
+  assert.equal(metadata.pixelDensity, 2);
+  assert.ok(metadata.atlasSize.width <= 2048 && metadata.atlasSize.height <= 2048);
+  for (const frame of metadata.frames) {
+    assert.ok(Math.abs(frame.runtimeScale * metadata.pixelDensity - frame.authoredRuntimeScale) < 1e-9, `${frame.assetId} runtimeScale must be authored / density`);
+  }
+  const fence = index.frameFor('chain-fence');
+  assert.ok(fence.frame.w * fence.runtimeScale >= 80 && fence.frame.w * fence.runtimeScale <= 100, 'chain-fence world pitch stays near the authored 92');
 });
 
 test('authored prop atlas rejects count, path, bounds, hash, and town schema drift', async () => {

@@ -59,7 +59,7 @@ test('every undergrowth asset is declared in the Blender manifest', () => {
     }
     // Foliage silhouettes need the detail frame; 128px loses the blade edges
     // that make undergrowth read as undergrowth rather than a green blob.
-    assert.deepEqual(asset.frameSize, [256, 256], `${id} needs the 256px detail frame`);
+    assert.deepEqual(asset.frameSize, [512, 512], `${id} needs the 512px detail frame (2x density, HMH-N02)`);
     assert.ok(asset.runtimeScale > 0 && asset.runtimeScale <= 1.2, `${id} runtimeScale out of range`);
   }
 });

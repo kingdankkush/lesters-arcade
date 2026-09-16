@@ -62,7 +62,7 @@ test('every camp asset is declared in the Blender manifest', () => {
     for (const key of ['primary', 'secondary', 'accent']) {
       assert.match(asset.palette[key], /^#[0-9a-f]{6}$/, `${id} palette.${key}`);
     }
-    assert.deepEqual(asset.frameSize, [256, 256], `${id} needs the 256px detail frame`);
+    assert.deepEqual(asset.frameSize, [512, 512], `${id} needs the 512px detail frame (2x density, HMH-N02)`);
   }
 });
 

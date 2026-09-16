@@ -31,7 +31,7 @@ test('A6 owns a complete modular town kit with shared scale and proxy metadata',
     assert.equal(asset.category, 'world-prop');
     assert.equal(asset.moduleFamily, 'town-kit-v1');
     assert.ok(asset.districts.includes('liquidation-yard'));
-    assert.deepEqual(asset.frameSize, [256, 256]);
+    assert.deepEqual(asset.frameSize, [512, 512]);
     assert.ok(asset.runtimeScale >= 0.7 && asset.runtimeScale <= 1.4, `${assetId} scale is unbounded`);
     assert.ok(['box', 'circle'].includes(asset.collisionProxy?.type), `${assetId} lacks a supported proxy`);
     assert.ok(asset.collisionProxy.width > 0 && asset.collisionProxy.depth > 0, `${assetId} proxy is invalid`);

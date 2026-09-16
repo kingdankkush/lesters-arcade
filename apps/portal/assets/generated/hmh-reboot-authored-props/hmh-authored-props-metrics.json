@@ -9,14 +9,15 @@
   "duplicateFrames": 0,
   "emptyFrames": 0,
   "transparentCornerFailures": 0,
-  "reproducibleVerified": true,
+  "reproducibleVerified": false,
   "atlasSize": {
-    "width": 1024,
-    "height": 1024
+    "width": 2048,
+    "height": 2048
   },
+  "pixelDensity": 2.0,
   "sourceBlendSha256": "e8e7ac1b4a919ebadf144e6aa0f4ad4f730abfe95670a99d256bb4134821052c",
-  "manifestSha256": "c9a388c1b64b6f06c86ac1e5beb80b5f0e30bcde53ea92b8f3fa82153052ca47",
-  "atlasSha256": "e4e545197831553631a4d1447b10189ec736a0e56ffef741953a0ef423901927",
-  "metadataSha256": "743f2dff3879852db2392638f4fcba4a8687acb23918ae4adac13a179372f451",
-  "contactSheetSha256": "eaa0dfabd5025554bea25fabb634fd55802c2641e3170f27c86ce22e6726eeca"
+  "manifestSha256": "7e26f6eb041da6854b7417e20d8e4e831ebf0e812d1c2490b0af36731dfb8f67",
+  "atlasSha256": "ed7d11219b3dfc4d2ee2a9d705e10e74c9df79581d407cb2427558c344a37107",
+  "metadataSha256": "6247166b53cc26e371448fd5652e68ddde8c9f465e0c1ac8b378ae650e745447",
+  "contactSheetSha256": "de19ef7a1251176137107ca0493d2d49eeba651bc0712ca29877b5ffabd8aa88"
 }

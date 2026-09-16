@@ -140,6 +140,11 @@ def shelf_pack(records: list[dict], padding: int, max_size: int):
 def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_blend: Path, reproducible: bool) -> dict:
     output_dir.mkdir(parents=True,exist_ok=True)
     size,placements=shelf_pack(records,manifest['atlas']['padding'],manifest['atlas']['maxSize'])
+    # HMH-N02 (2026-09-16): frames are rendered at pixelDensity x the authored
+    # world density; the atlas runtimeScale is divided so world footprints do
+    # not change while on-screen magnification drops by the same factor.
+    pixel_density=float(manifest['render'].get('pixelDensity',1))
+    if pixel_density<1: raise RuntimeError('pixelDensity must be >= 1')
     atlas=Image.new('RGBA',(size,size),(0,0,0,0)); frames=[]
     item_dir=output_dir/'items'; item_dir.mkdir(parents=True,exist_ok=True)
     for stale in item_dir.glob('*.png'): stale.unlink()
@@ -151,7 +156,7 @@ def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_
         frames.append({
             'id':asset['assetId'],'assetId':asset['assetId'],'category':asset['category'],'shape':asset['shape'],
             'itemUrl':f"./items/{asset['assetId']}.png",
-            'districts':asset.get('districts',[]),'runtimeScale':asset['runtimeScale'],'frame':{'x':ax,'y':ay,'w':width,'h':height},
+            'districts':asset.get('districts',[]),'runtimeScale':asset['runtimeScale']/pixel_density,'authoredRuntimeScale':asset['runtimeScale'],'frame':{'x':ax,'y':ay,'w':width,'h':height},
             'moduleFamily':asset.get('moduleFamily'),'landmarkId':asset.get('landmarkId'),'collisionProxy':asset.get('collisionProxy'),'townPlacements':asset.get('townPlacements',[]),
             'pivot':{'x':pivot_x,'y':pivot_y},'anchor':{'x':round(pivot_x/max(width,1),6),'y':round(pivot_y/max(height,1),6)},
             'opaquePixels':record['opaquePixels'],'massCentroidY':record['massCentroidY'],
@@ -160,7 +165,7 @@ def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_
     atlas_path=output_dir/'hmh-authored-props-atlas.png'; atlas.save(atlas_path,optimize=False,compress_level=9)
     metadata={
       'schemaVersion':1,'pipelineId':manifest['pipelineId'],'classification':manifest['classification'],'runtimeAuthority':manifest['runtimeAuthority'],
-      'image':'./hmh-authored-props-atlas.png','cameraPitchDegrees':manifest['render']['cameraPitchDegrees'],'assetCount':len(frames),'atlasSize':{'width':size,'height':size},
+      'image':'./hmh-authored-props-atlas.png','cameraPitchDegrees':manifest['render']['cameraPitchDegrees'],'pixelDensity':pixel_density,'assetCount':len(frames),'atlasSize':{'width':size,'height':size},
       'categories':sorted({frame['category'] for frame in frames}),'frames':frames,
     }
     metadata_path=output_dir/'hmh-authored-props-atlas.json'; write_json(metadata_path,metadata)
@@ -175,7 +180,7 @@ def build_outputs(manifest: dict, records: list[dict], output_dir: Path, source_
     metrics={
       'schema':'hmh-authored-props-metrics-v1','status':'pass','pipelineId':manifest['pipelineId'],'blenderVersion':EXPECTED_BLENDER_VERSION.replace('Blender ',''),
       'runtimeAuthority':manifest['runtimeAuthority'],'assetCount':len(frames),'uniqueSourceFrames':len({frame['sourcePixelSha256'] for frame in frames}),
-      'duplicateFrames':0,'emptyFrames':0,'transparentCornerFailures':0,'reproducibleVerified':reproducible,'atlasSize':{'width':size,'height':size},
+      'duplicateFrames':0,'emptyFrames':0,'transparentCornerFailures':0,'reproducibleVerified':reproducible,'atlasSize':{'width':size,'height':size},'pixelDensity':pixel_density,
       'sourceBlendSha256':sha256(source_blend),'manifestSha256':sha256(MANIFEST_PATH),'atlasSha256':sha256(atlas_path),'metadataSha256':sha256(metadata_path),'contactSheetSha256':sha256(sheet_path),
     }
     write_json(output_dir/'hmh-authored-props-metrics.json',metrics)
