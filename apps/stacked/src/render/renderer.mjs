@@ -6,10 +6,11 @@ import { createStackedAtmosphere, STACKED_EPOCHS } from './atmosphere.mjs';
 import { createGameplayFeedback } from './gameplay-feedback.mjs';
 import { createBoardFeedback } from './board-feedback.mjs';
 import { createBoardParticles, mobilePresentation } from './gameplay-particles.mjs';
+import { createBoardPiecePresentation } from './piece-presentation.mjs';
 
 export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
-  let atmosphere=null, particles=null, mobile=null;
+  let atmosphere=null, particles=null, pieceFx=null, mobile=null;
   const board = createStackedBoardView({ index: 0, cells: 10, rows: 24, frame: 'wide', geometry, Container, Graphics, Text, onFrameReleased });
   tree.boardSlots[0].addChild(board.root);
   const feedback = createGameplayFeedback(), accents = createBoardFeedback({board, Graphics, Text});
@@ -28,8 +29,11 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       atmosphere?.destroy(); atmosphere=null;
       atmosphere=createStackedAtmosphere({layer:tree.layers.layerParticleFar,Graphics,mobile});
       particles?.destroy(); particles=createBoardParticles({board,Graphics,geometry,mobile});
+      // ST-N03 piece presentation (hold, level, ledger, perfect, top-out, danger, lock thud).
+      pieceFx?.destroy(); pieceFx=createBoardPiecePresentation({board,Graphics,mobile});
       stageElement.dataset.mobileGameplay=String(mobile);
       stageElement.dataset.particleCapacity=String(particles.state.capacity);
+      stageElement.dataset.pieceFxCapacity=String(pieceFx.state.capacity);
     }
     const fit=fitRootToViewport({ widthPx:app.canvas.width/app.renderer.resolution, heightPx:app.canvas.height/app.renderer.resolution });
     applyRootFit(tree.stackedRoot,fit);
@@ -42,14 +46,14 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if (hasPresented) app.render();
   };
   const present = snapshot => { if(disposed)throw new Error('renderer is disposed'); const stats=board.present(snapshot); stageElement.dataset.renderedCells=String(stats.lockedVisible+stats.activeVisuals+stats.ghostVisuals); hasPresented=true; app.render(); return stats; };
-  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere?.destroy(); particles?.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
+  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere?.destroy(); particles?.destroy(); pieceFx?.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
   app.renderer.on('resize',resize);
   resize();
   return Object.freeze({
     present, resize, destroy, board, tree,
-    resetEffects:()=>particles.reset(),
+    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); },
     audio: (frame, now) => atmosphere?.audio(frame, now),
-    gameplay(before, snapshot, now, settings) { feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); },
+    gameplay(before, snapshot, now, settings) { feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); },
     get mobile() { return mobile; },
     frame(snapshot, now, settings) {
       const fit = fitRootToViewport({ widthPx: app.canvas.width / app.renderer.resolution, heightPx: app.canvas.height / app.renderer.resolution });
@@ -73,6 +77,10 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       stageElement.dataset.visualizerParticles=String(info.particles);
       stageElement.dataset.visualizerOrganisms=String(info.organisms);
       stageElement.dataset.particlesEmitted=String(sparks.emitted);
+      const fx=pieceFx?pieceFx.draw(now,settings,response.danger):{count:0,lastEvent:'',shake:0};
+      stageElement.dataset.pieceFx=String(fx.count);
+      stageElement.dataset.pieceFxEvent=fx.lastEvent;
+      stageElement.dataset.pieceFxShake=fx.shake.toFixed(2);
       accents.draw(response, info.color, settings);
       present(snapshot); return info;
     },

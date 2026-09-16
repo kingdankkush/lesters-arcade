@@ -57,6 +57,7 @@ const NODE_CHECK_FILES = [
   'tests/hmh-ranked-recruitment.test.mjs',
   'scripts/hmh-objective-rewards-browser.mjs',
   'apps/stacked/src/render/gameplay-particles.mjs',
+  'apps/stacked/src/render/piece-presentation.mjs',
   'apps/stacked/src/render/lock-projection.mjs',
   'apps/portal/src/stacked-profile.mjs',
   'scripts/stacked-particles-qa-entry.mjs',

@@ -29,6 +29,12 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     detectEthereumProvider: () => ({ request() { throw new Error('No real wallet in modal tests'); } }),
     checkRankedReadiness: async (provider, options) => { calls.push({ provider, options }); return pending ? pending : { ok: true, onChain: true, hasFunds: true, balanceEth: '1', error: null, ...status }; },
     playSfxCue() {}, requestLiteForgeNetwork: async () => false,
+    // 2026-09-16 native entry fee wiring (disclosed in the modal; paid only when live).
+    RANKED_ENTRY_FEE_ZKLTC: '0.1', formatZkLtcWei: (wei) => `${Number(BigInt(wei) / 1_000_000_000_000_000n) / 1000} zkLTC`,
+    LITVM_CONTRACT_ADDRESSES: { scoreSubmissionRegistry: `0x${'ab'.repeat(20)}` }, CURRENT_RANKED_SEASON_ID: 'fixture-season',
+    createCanonicalSessionIdentity: async () => ({ sessionKey: `0x${'cd'.repeat(32)}` }),
+    openRankedSession: async () => { throw new Error('No entry payment in modal tests'); }, explorerTxUrl: (hash) => `https://example.invalid/tx/${hash}`,
+    classifyWalletError: (error) => ({ userCancelled: false, message: String(error?.message ?? error) }),
     el: (tag, options = {}) => Object.assign(element(), { tag }, options),
     appendText: (parent, tag, text) => { const child = Object.assign(element(), { tag, textContent: text }); parent.append(child); return child; },
   };

@@ -9,7 +9,7 @@
   "duplicateFrames": 0,
   "emptyFrames": 0,
   "transparentCornerFailures": 0,
-  "reproducibleVerified": false,
+  "reproducibleVerified": true,
   "atlasSize": {
     "width": 2048,
     "height": 2048

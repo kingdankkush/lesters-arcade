@@ -33,7 +33,9 @@ const maxRosterAtlasBytes = 2 * 1024 * 1024;
 // legacy 2 MiB cap, and apply the native pipeline's 4 MiB cap to that class.
 const maxNativeRosterAtlasBytes = 4 * 1024 * 1024;
 const maxRosterAtlasTotalBytes = 16 * 1024 * 1024;
-const maxPropAtlasBytes = 512 * 1024;
+// HMH-N02 (2026-09-16): the authored prop atlas renders at 2x pixel density
+// into a 2048 px page (638 KB PNG). Image asset, outside the JS budget.
+const maxPropAtlasBytes = 1024 * 1024;
 // Cycle 074: the selector ships one 384 px atlas per hero (8 frames each). The
 // Cycle 013 per-file cap is kept and applied per atlas; the whole select-screen
 // payload is bounded separately. Recorded in CYCLE-074 (498,000 -> ~1.6 MB).

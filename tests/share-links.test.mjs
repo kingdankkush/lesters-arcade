@@ -118,7 +118,7 @@ test('all three cabinets mount the share row and the child hosts allow popups, s
   ]);
   assert.match(portalMain, /createShareRow\(\{\s*title: 'Hard Money Heroes'/);
   assert.match(portalMain, /buildHmhShareText\(\{/);
-  assert.doesNotMatch(portalMain, /\.innerHTML =/, 'the portal stays innerHTML-free');
+  assert.doesNotMatch(portalMain, /\.innerHTML\s=/, 'the portal stays innerHTML-free');
   assert.match(chikunMain, /createShareRow\(\{/);
   assert.match(stackedMain, /buildStackedShareText\(\{/);
   assert.match(chikunHtml, /id="shareRow"/);

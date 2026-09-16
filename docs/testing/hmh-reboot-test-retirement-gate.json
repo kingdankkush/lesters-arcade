@@ -3,17 +3,22 @@
   "gate": "hmh-reboot-test-retirement",
   "status": "FAIL",
   "counts": {
-    "tests": 3821,
-    "failed": 52,
-    "passed": 3769,
+    "tests": 3837,
+    "failed": 57,
+    "passed": 3780,
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "topLevel": 3754,
+    "topLevel": 3770,
     "suites": 8
   },
   "expectedFailureCount": 51,
   "errors": [
-    "unexpected failure: tests/production-doc-drift-check.test.mjs :: repository README production marker matches the current service worker marker"
+    "unexpected failure: tests/hmh-chain-hydration-provenance.test.mjs :: the real player-session reader excludes unverified decoded tuples",
+    "unexpected failure: tests/hmh-curated-level-kit-inventory.test.mjs :: curated runtime inventory exactly matches the real recursive portal source directory",
+    "unexpected failure: tests/hmh-reboot-water-props.test.mjs :: every water asset is declared in the Blender manifest",
+    "unexpected failure: tests/hmh-security-audit-sweep.test.mjs :: WO-39 security audit sweep passes static checks without findings",
+    "unexpected failure: tests/hmh-tripo-production-asset-qa.test.mjs :: unified production QA actually includes the native package report",
+    "unexpected failure: tests/ranked-entry-preflight.test.mjs :: local preview preserves no-network behavior and its truthful local wording"
   ]
 }
