@@ -9,7 +9,8 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
   const sessionId = session.urlSessionId ?? session.sessionId;
   const iframe = document.createElement('iframe');
   iframe.className = 'stacked-game-frame'; iframe.title = "STACKED — Lester's Arcade"; iframe.src = '/stacked/index.html';
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin'); iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad');
+  // Popups escape the sandbox for the results share row (x.com/Facebook intents, rel=noopener); web-share/clipboard feed the native and Discord paths.
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox'); iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad; web-share; clipboard-write');
   const channel = new MessageChannel();
   let sampler=null;
   let sequence = 0, childSequence = 0, ready = false, disposed = false, audioRaf = 0, lastAudio = 0, worker = null, cancelVerification = null;

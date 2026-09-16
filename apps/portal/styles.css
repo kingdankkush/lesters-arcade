@@ -1172,6 +1172,32 @@ svg.arcade-icon {
   gap: 8px;
 }
 
+/* End-of-run share row (2026-09-16): native share, X, Facebook, Discord copy. */
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.share-row-label {
+  flex: 0 0 100%;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.share-row .share-button {
+  min-height: 44px;
+  padding: 8px 14px;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+.share-row .share-button[data-share="x"] { border-color: rgba(255, 255, 255, 0.5); }
+.share-row .share-button[data-share="facebook"] { border-color: rgba(66, 103, 178, 0.8); }
+.share-row .share-button[data-share="discord"] { border-color: rgba(88, 101, 242, 0.8); }
+
 /* Death recap (cause, build, milestones) below the metric grid. Lives inside
    the game-over panel's scroll container so Run It Back stays reachable. */
 .hmh-run-recap {

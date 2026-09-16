@@ -20,6 +20,7 @@ import {
 } from '../../portal/src/chikun-bridge-protocol.mjs';
 import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
 import { buildChikunReplayTimeline, buildChikunShareText } from './presentation.mjs';
+import { buildShareLinks, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
 import { createChikunReplayPlayback, replayPlayheadRatio } from './replay-viewer.mjs';
 import {
   chikunDailyChallengeForSeed,
@@ -509,6 +510,7 @@ function finishRun() {
   document.querySelector('#runObjectives').textContent=awards.map(a=>a.title+': '+(a.unlocked?'✓':Math.min(a.value??0,a.target)+'/'+a.target)).join(' · ');
   renderReplayTimeline(result.evidence);
   stopReplayViewer();
+  renderShareRow(result);
   restartButton.disabled = false;
   restartButton.textContent = 'Run Again';
   if (watchReplayButton) watchReplayButton.textContent = 'Watch Replay';
@@ -796,6 +798,29 @@ pauseFullscreenButton.addEventListener('click', toggleFullscreen);
 document.addEventListener('fullscreenchange', syncFullscreenControl);
 exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
+// X / Facebook / Discord targets beside the native Share Run button (owner
+// direction 2026-09-16). Same text as the native share, same public link.
+let shareRow = null;
+function renderShareRow(result) {
+  const mount = document.querySelector('#shareRow');
+  if (!mount) return;
+  const links = buildShareLinks({
+    text: buildChikunShareText(result, mode, dailyChallenge?.label ?? ''),
+    url: shareUrlFor('chikun'),
+    hashtags: ['LestersArcade', 'ChikunsEscape'],
+  });
+  if (shareRow) { shareRow.refresh(links); return; }
+  shareRow = createShareRow({
+    documentRef: document,
+    navigatorRef: { clipboard: navigator.clipboard },
+    title: "Chikun's Escape",
+    links,
+    className: 'share-row',
+    buttonClassName: 'secondary-button share-button',
+    onStatus: setLive,
+  });
+  mount.replaceChildren(shareRow);
+}
 shareRunButton.addEventListener('click', async () => {
   if (!lastCompletedResult) return;
   const text = buildChikunShareText(lastCompletedResult, mode, dailyChallenge?.label ?? '');

@@ -4,6 +4,7 @@ import { createStackedPlaySession } from './play-session.mjs';
 import { createStackedInput } from './input.mjs';
 import { connectStackedChild } from './child-bridge.mjs';
 import { buildStackedRunSummary } from './run-summary.mjs';
+import { buildShareLinks, buildStackedShareText, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
 import { chunkStackedEvidence } from '../../portal/src/stacked-evidence-transport.mjs';
 import { STACKED_CAPABILITIES } from '../../portal/src/stacked-contracts.mjs';
 import { createStackedPauseClock } from './pause-clock.mjs';
@@ -73,6 +74,21 @@ function resume() {
   pauseClock.complete(performance.now());
   started = true; run.resume(); input.clear(); overlay.hidden = true; lastTime = performance.now(); accumulator = 0; state();
 }
+// X / Facebook / Discord copy and native share for the finished run (owner
+// direction 2026-09-16). Presentation only; nothing here touches the result.
+let shareRow = null;
+function renderShareRow(s) {
+  const mount = $('shareRow');
+  if (!mount) return;
+  const links = buildShareLinks({
+    text: buildStackedShareText({ score: s.score, lines: s.lines, level: s.level, tick: s.tick, quadClears: s.quadClears, maxCombo: s.maxCombo, ranked: init.mode === 'ranked', assisted: run.assisted }),
+    url: shareUrlFor('stacked'),
+    hashtags: ['LestersArcade', 'STACKED'],
+  });
+  if (shareRow) { shareRow.refresh(links); mount.hidden = false; return; }
+  shareRow = createShareRow({ documentRef: document, title: 'STACKED', links, className: 'share-row', buttonClassName: 'share-button', onStatus: (message) => { $('overlayCopy').textContent = message; } });
+  mount.replaceChildren(shareRow); mount.hidden = false;
+}
 async function finish() {
   if (submitted) return; submitted = true; input.clear(); state();
   const s = run.snapshot;
@@ -83,6 +99,7 @@ async function finish() {
   $('resultCause').textContent = {'block-out':'The next piece had no room to enter. Try keeping the center of the stack low.','lock-out':'A piece locked above the rim. Use your landing guide and hold to make space.','garbage-out':'The rising ledger pushed the stack over the rim. Clear lower rows to leave room.','tick-ceiling':'You reached the end of the ledger.'}[s.terminalReason] ?? 'The stack reached the top. Clear space early and keep a landing route open.';
   $('continueButton').hidden = true; $('restartButton').hidden = false; $('restartButton').textContent = init.mode === 'ranked' ? 'Choose a new Ranked run' : 'Play again';
   $('restartButton').disabled = !run.assisted; overlay.hidden = false; $('restartButton').focus();
+  renderShareRow(s);
   if (init.mode === 'free') {
     $('freeMedalShelf').hidden = false;
     $('freeMedalSummary').textContent = run.assisted ? 'Assisted practice does not earn medals.' : 'Opening your practice shelf…';

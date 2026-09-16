@@ -27,6 +27,7 @@
   <section id="gameOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayCopy">
     <div class="panel"><span class="eyebrow">STACK · CLEAR · SURVIVE</span><h2 id="overlayTitle">Welcome to STACKED</h2><p id="overlayCopy">Loading your cabinet…</p><p id="resultStats"></p><p id="resultCause"></p>
     <div class="result-actions"><button id="continueButton" type="button">Start game</button><button id="restartButton" type="button" hidden>Play again</button><button id="overlayExitButton" type="button">Back to arcade</button></div>
+    <div id="shareRow" class="share-row-mount" aria-label="Share this run" hidden></div>
     <section id="freeMedalShelf" aria-labelledby="freeMedalTitle" hidden><h3 id="freeMedalTitle">Free Mode medal shelf</h3><p id="practiceBest"></p><p id="freeMedalSummary" role="status"></p><details><summary>View all 16 medals &amp; progress</summary><ul id="freeMedalList"></ul></details><p>Practice-only. No profile badges or Ranked progress.</p></section>
     <details id="preferencePanel" open><summary>Effects &amp; sound</summary>
       <div class="world-picker"><label for="visualizerSelect">Your music world</label><select id="visualizerSelect" aria-describedby="visualizerHint"><option value="journey">Journey · follow the zones</option><option value="living">Living field</option><option value="aurora">Aurora</option><option value="orbit">Orbit</option><option value="spectrum">Spectrum</option></select>

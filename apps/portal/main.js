@@ -11,6 +11,7 @@ import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
 import { buildHmhRunRecapModel, selectGameOverRecapFields } from './src/hmh-run-recap.mjs';
+import { buildHmhShareText, buildShareLinks, createShareRow, shareUrlFor } from './src/share-links.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
 import { recordStackedScore } from './src/arcade-core.mjs';
 import { readStackedSettings } from './src/stacked-player-settings.mjs';
@@ -2721,6 +2722,32 @@ function renderGameOverSummary() {
   dom.combatGameOverSummary.append(metricGrid);
   const recap = currentHmhRunRecap();
   if (recap) dom.combatGameOverSummary.append(renderHmhRunRecap(recap));
+
+  // Share row (owner direction 2026-09-16): X, Facebook, Discord copy and the
+  // native share sheet where the browser has one. Built from the same summary
+  // the recap shows; posting is always the player's own click.
+  if (!win) {
+    const shareText = buildHmhShareText({
+      score: combat.score,
+      kills: combat.kills,
+      level: (hmhRebootActive ? combat.runLevel : combat.roguelikeRun?.level) ?? 1,
+      elapsedSeconds: combat.elapsedGameSeconds ?? 0,
+      maxCombo: combat.maxCombo ?? 0,
+      killedBy: recap?.defeat?.label ?? combat.killedBy ?? '',
+      bossDefeated: Boolean(combat.bossDefeated),
+      ranked: (currentSession?.mode ?? officialSelectedMode ?? 'free') !== 'free',
+    });
+    const shareLabel = el('span', { className: 'share-row-label', textContent: 'Share this run' });
+    const shareRow = createShareRow({
+      title: 'Hard Money Heroes',
+      links: buildShareLinks({ text: shareText, url: shareUrlFor('hmh-reboot'), hashtags: ['LestersArcade', 'HardMoneyHeroes'] }),
+      className: 'share-row game-over-share-row',
+      buttonClassName: 'combat-menu-action share-button',
+      onStatus: (message) => { shareLabel.textContent = message; },
+    });
+    shareRow.prepend(shareLabel);
+    dom.combatGameOverSummary.append(shareRow);
+  }
 
   const loopNote = el('p', { className: 'game-over-one-more-run-copy' });
   loopNote.textContent = `${summary.oneMoreRun.copy} ${summary.streak.copy} ${summary.settlement.copy}`;

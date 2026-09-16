@@ -92,8 +92,11 @@ export function createChikunHost({
     iframe.src = `${origin}/chikun/index.html`;
     iframe.loading = 'eager';
     iframe.referrerPolicy = 'same-origin';
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-    iframe.setAttribute('allow', 'fullscreen; web-share');
+    // allow-popups(-to-escape-sandbox): the results share row opens x.com and
+    // Facebook intent pages in a new tab (rel=noopener); clipboard-write feeds
+    // the Discord copy. First-party runtime only; manifests stay scripts-only.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+    iframe.setAttribute('allow', 'fullscreen; web-share; clipboard-write');
     iframe.setAttribute('allowfullscreen', '');
     iframe.dataset.runtime = 'chikun';
     mount.replaceChildren(iframe);
