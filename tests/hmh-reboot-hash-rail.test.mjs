@@ -31,7 +31,7 @@ test('W8 Hash Rail is a bounded deterministic piercing weapon', () => {
     clipSize: 3,
     reserve: 15,
     chargeTicks: 72,
-    policy: { type: 'pierce', maxTargets: 2 },
+    policy: { type: 'pierce', maxTargets: 6 },
   });
   const state = createWeaponLoadout({ weaponIds: ['coin-blaster', 'hash-rail'], seed: 71 });
   const pickup = grantWeaponPickup(state, { tick: 1, weaponId: 'hash-rail', select: true });
@@ -47,10 +47,10 @@ test('W8 Hash Rail is a bounded deterministic piercing weapon', () => {
   const fired = stepWeaponLoadout(state, { tick: restarted + 73, fire: false, direction: releaseDirection });
   assert.equal(fired.events[0].weaponId, 'hash-rail');
   assert.deepEqual(fired.events[0].shots[0].direction, releaseDirection);
-  assert.equal(fired.events[0].shots[0].policy.maxTargets, 2);
+  assert.equal(fired.events[0].shots[0].policy.maxTargets, 6);
   assert.equal(state.weapons['hash-rail'].ammoInClip, 2);
   const deepProof = applyWeaponProgression('hash-rail', { branches: { damage: 3 } });
-  assert.equal(deepProof.projectilePolicy.maxTargets, 3, 'Deep Proof must add one bounded body instead of reducing base penetration');
+  assert.equal(deepProof.projectilePolicy.maxTargets, 7, 'Deep Proof must add one bounded body instead of reducing base penetration');
   assert.equal(deepProof.projectileTag, 'deep-proof');
 });
 

@@ -7,20 +7,23 @@ import { createAimState, resolveAimIntent } from '../apps/hmh-reboot/src/aim.mjs
 import { createWorldDesignState, stepWorldDesign } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
 import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 
-test('only movement, aim, grenade and the menu are exposed; old gestures never emit extra actions',()=>{
-  assert.deepEqual(TOUCH_CONTROL_SPEC.buttons.map(b=>b.action),['grenade','pause']);
-  assert.deepEqual(actionHelpRows().map(r=>r.id),['moveUp','moveDown','moveLeft','moveRight','grenade','pause']);
-  assert.doesNotMatch(touchControlsHintText(),/double.tap|swap|power|melee/i);
+test('only movement, aim, grenade, swap and the menu are exposed; old gestures never emit extra actions',()=>{
+  assert.deepEqual(TOUCH_CONTROL_SPEC.buttons.map(b=>b.action),['grenade','weaponNext','pause']);
+  assert.deepEqual(actionHelpRows().map(r=>r.id),['moveUp','moveDown','moveLeft','moveRight','grenade','weaponNext','pause']);
+  assert.doesNotMatch(touchControlsHintText(),/double.tap|power|melee/i);
+  assert.match(touchControlsHintText(),/SWAP/);
   let now=0;const touch=new TouchControlState({now:()=>now});
   for(const role of ['move','aim']) for(let i=0;i<4;i++) {
     touch.beginStick(1,role,{x:0,y:0});now+=30;touch.endPointer(1);now+=30;
     assert.equal(touch.snapshot().dash,false);assert.equal(touch.snapshot().melee,false);
   }
   const old=keyboardActionRecord(new Set(['Space','KeyE','ShiftLeft','KeyQ','Digit2']),DEFAULT_KEYBOARD_BINDINGS);
-  for(const key of ['fire','melee','dash','weaponNext']) assert.equal(old[key],false);
+  for(const key of ['fire','melee','dash']) assert.equal(old[key],false);
+  assert.equal(old.weaponNext,true,'Q is the keyboard swap');
   assert.equal(old.weaponSlot,0);
   const pad=mapGamepadSnapshot({buttons:Array.from({length:16},()=>({pressed:true})),axes:[0,0,0,0]});
-  for(const key of ['fire','melee','dash','weaponNext']) assert.equal(pad.actions[key],false);
+  for(const key of ['fire','melee','dash']) assert.equal(pad.actions[key],false);
+  assert.equal(pad.actions.weaponNext,true,'right bumper is the gamepad swap');
   assert.equal(pad.actions.grenade,true);
 });
 

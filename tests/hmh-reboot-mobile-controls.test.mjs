@@ -22,12 +22,12 @@ import {
 
 const PHONE = { width: 390, height: 844 };
 
-test('the compact mobile layout exposes movement, aim, grenade and pause', () => {
+test('the compact mobile layout exposes movement, aim, grenade, swap and pause', () => {
   const layout = computeTouchControlLayout(PHONE);
   assert.ok(layout.moveStick, 'movement stick is required');
   assert.ok(layout.aimStick, 'aim stick is required');
   const buttons = Object.keys(layout.buttons).sort();
-  assert.deepEqual(buttons, ['pause', 'power'], 'only grenade and pause are buttons');
+  assert.deepEqual(buttons, ['pause', 'power', 'swap'], 'grenade, swap and pause are the only buttons');
 });
 
 test('every control sits fully inside the visible viewport', () => {

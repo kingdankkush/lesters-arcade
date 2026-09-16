@@ -110,7 +110,7 @@ test('Cycle 031 consumes a fail-closed Lit Valkyrie Rambo detail kit and records
   assert.match(builderSource, /Lit Valkyrie reference hair has/);
 });
 
-test('production hero mobile evidence follows the movement/aim/grenade plus pause contract', () => {
-  assert.match(browserSmokeSource, /assert\.deepEqual\(controlIds, \['aim', 'move', 'pause', 'power'\]\)/);
+test('production hero mobile evidence follows the movement/aim/grenade/swap plus pause contract', () => {
+  assert.match(browserSmokeSource, /assert\.deepEqual\(controlIds, \['aim', 'move', 'pause', 'power', 'swap'\]\)/);
   assert.doesNotMatch(browserSmokeSource, /assert\.equal\(controls, (5|8)\)/);
 });

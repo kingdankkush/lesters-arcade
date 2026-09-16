@@ -169,7 +169,7 @@ async function assertTouchGeometry(page, profile) {
   // Cycle 036 restores weapon access without returning to the crowded eight-control layout.
   assert.deepEqual(
     controls.map((control) => control.name).sort(),
-    ['aim', 'move', 'pause', 'power', 'weapon'],
+    ['aim', 'move', 'pause', 'power', 'swap'],
     `${profile.name} touch control set`,
   );
   for (const control of controls) {

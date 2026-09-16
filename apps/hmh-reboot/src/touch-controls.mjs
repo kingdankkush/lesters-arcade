@@ -11,6 +11,7 @@ export const TOUCH_CONTROL_SPEC = Object.freeze({
   ]),
   buttons: Object.freeze([
     Object.freeze({ control: 'power', label: 'GRENADE', action: 'grenade', help: 'grenade' }),
+    Object.freeze({ control: 'swap', label: 'SWAP', action: 'weaponNext', help: 'swap weapon' }),
     Object.freeze({ control: 'pause', label: 'II', action: 'pause', help: 'pause button' }),
   ]),
 });
@@ -21,7 +22,7 @@ export function isTouchUiEnabled({ coarsePointer = false, width = Number.POSITIV
 }
 
 export function touchControlsHintText() {
-  return 'MOVE · AIM to override auto-aim · GRENADE · Pause button';
+  return 'MOVE · AIM to override auto-aim · GRENADE · SWAP weapon · Pause button';
 }
 
 export function createTouchOnboardingGate(enabled) {
@@ -56,7 +57,7 @@ export function computeStickVector(origin, current, {
   return { x: dx / distance * magnitude, y: dy / distance * magnitude };
 }
 
-const ACTIONS = new Set(['grenade', 'pause']);
+const ACTIONS = new Set(['grenade', 'pause', 'weaponNext']);
 
 export class TouchControlState {
   constructor({ stickRadius = 72, deadZone = 0.12, sensitivity = 1 } = {}) {
@@ -225,7 +226,7 @@ export function createTouchControlAdapter({
     listen(element, 'lostpointercapture', cancelOwnedPointer);
   }
 
-  // Grenade is the only combat button; the menu remains accessible.
+  // Grenade and swap are the only combat buttons; the menu remains accessible.
   for (const { control, label, action } of TOUCH_CONTROL_SPEC.buttons) {
     const element = makeControl(control, label, `hmh-touch-button hmh-touch-button--${control}`);
     listen(element, 'pointerdown', (event) => {

@@ -6,6 +6,7 @@ const entries = [
   ['moveLeft', 'Move left', 'KeyA', 'Left stick left', 'Move stick left', 'Move west.'],
   ['moveRight', 'Move right', 'KeyD', 'Left stick right', 'Move stick right', 'Move east.'],
   ['grenade', 'Grenade', 'KeyF', 'Left bumper', 'GRENADE', 'Throw a hand grenade.'],
+  ['weaponNext', 'Swap weapon', 'KeyQ', 'Right bumper', 'SWAP', 'Cycle to the next weapon you carry.'],
   ['pause', 'Pause', 'Escape', 'Menu', 'Pause button', 'Open or close the run menu.'],
 ];
 
@@ -19,6 +20,7 @@ export const HMH_ACTION_IDS = Object.freeze(Object.keys(HMH_ACTION_MAP));
 const DEFAULT_ALTERNATES = freezeDeep({
   moveUp: ['ArrowUp'], moveDown: ['ArrowDown'], moveLeft: ['ArrowLeft'], moveRight: ['ArrowRight'],
   grenade: ['KeyG'],
+  weaponNext: ['KeyE'],
 });
 
 const ALLOWED_KEY_CODES = new Set([
@@ -79,9 +81,11 @@ export function keyboardMovement(keys, bindings) {
 }
 
 export function keyboardActionRecord(keys, bindings) {
-  // Preserve the simulation snapshot shape while retiring manual combat extras.
+  // Fire, melee and dash stay automatic; the swap edge is the one manual
+  // weapon control (owner direction 2026-09-16).
   return {
-    fire: false, melee: false, dash: false, weaponSlot: 0, weaponNext: false,
+    fire: false, melee: false, dash: false, weaponSlot: 0,
+    weaponNext: keyboardActionPressed(keys, bindings, 'weaponNext'),
     grenade: keyboardActionPressed(keys, bindings, 'grenade'),
     pause: keyboardActionPressed(keys, bindings, 'pause'),
   };

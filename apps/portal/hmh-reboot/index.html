@@ -29,7 +29,7 @@
           <div class="hmh-startup-tips">
             <article><span class="hmh-startup-number">01</span><h2>Stay moving</h2><p><b data-briefing-move>W / A / S / D</b> move. Aim with the mouse. Your hero fires, dodges and handles nearby interactions automatically.</p><p class="hmh-startup-touch">On touch: move with the left stick. Use AIM to focus fire; release it to return to automatic targeting.</p></article>
             <article><span class="hmh-startup-number">02</span><h2>Follow the glow</h2><p><b>Cyan marks weapons.</b> Green marks health. Gold marks power-ups. Walk close to collect them.</p><p>Time Dilation boosts movement. Berserk doubles damage for a short time. Grab the same candle again to restart its timer.</p></article>
-            <article><span class="hmh-startup-number">03</span><h2>Build your arsenal</h2><p>Find the <b>shotgun</b> for crowds and the <b>Auto-Miner</b> for sustained fire. Throw a grenade with <b data-briefing-grenade>F</b>, right click or the touch button.</p><p>Pause for the field map and your controls. Routes, machinery and hidden caches reward exploration.</p></article>
+            <article><span class="hmh-startup-number">03</span><h2>Build your arsenal</h2><p>Find the <b>shotgun</b> for crowds and the <b>Auto-Miner</b> for sustained fire. Throw a grenade with <b data-briefing-grenade>F</b>, right click or the touch button.</p><p>Swap weapons with <b>Q</b> or the SWAP button; press <b>Tab</b> or tap the armed weapon to open the wheel and save a rare gun for the boss.</p><p>Pause for the field map and your controls. Routes, machinery and hidden caches reward exploration.</p></article>
           </div>
           <div class="hmh-startup-progress" role="progressbar" aria-label="Loading level assets" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
           <p id="hmhStartupCopy" role="status">Loading your hero and the Frontier…</p>
@@ -88,7 +88,10 @@
           </div>
         </div>
         <div class="hmh-hud-row hmh-hud-row--loadout">
-          <div id="hmhHudWeapon" class="hmh-hud-weapon" data-weapon="coin-blaster" data-mode="pips" data-state="ready" aria-hidden="true">
+          <!-- The armed-weapon card is the one interactive cockpit child: it opens
+               the weapon wheel (owner direction 2026-09-16). It re-enables pointer
+               events on itself only; the rail stays non-interactive. -->
+          <div id="hmhHudWeapon" class="hmh-hud-weapon" data-weapon="coin-blaster" data-mode="pips" data-state="ready" role="button" tabindex="0" aria-label="Armed weapon. Open the weapon wheel" title="Weapon wheel (Tab)">
             <span id="hmhHudReloadRing" class="hmh-hud-ring" data-active="false"><b class="hmh-hud-ring-core"></b></span>
             <span class="hmh-hud-weapon-body">
               <strong id="hmhHudWeaponName">Pistol</strong>
@@ -109,7 +112,7 @@
               <b data-slot="6" data-owned="false" data-active="false">BURN</b>
               <b data-slot="7" data-owned="false" data-active="false">STD</b>
             </div>
-            <span class="hmh-hud-slots-cycle">Auto equip</span>
+            <span class="hmh-hud-slots-cycle">Q swap · Tab wheel</span>
           </div>
           <div class="hmh-hud-utility">
             <span class="hmh-hud-frag" aria-hidden="true">
@@ -226,6 +229,14 @@
             <span id="hmhUpgradeQueue" class="hmh-upgrade-queue">1 pending</span>
           </header>
           <div id="hmhUpgradeChoices" class="hmh-upgrade-choices" role="list"></div>
+        </div>
+      </section>
+
+      <section id="hmhWeaponWheel" class="hmh-modal-layer hmh-weapon-wheel-layer" role="dialog" aria-modal="true" aria-labelledby="hmhWeaponWheelTitle" hidden data-open="false">
+        <div class="hmh-weapon-wheel">
+          <h1 id="hmhWeaponWheelTitle" class="hmh-weapon-wheel-title">Choose a weapon</h1>
+          <div id="hmhWeaponWheelRing" class="hmh-weapon-wheel-ring"></div>
+          <p class="hmh-weapon-wheel-hint">Tap a weapon · <kbd>1</kbd>–<kbd>8</kbd> pick · <kbd>Esc</kbd> close</p>
         </div>
       </section>
 

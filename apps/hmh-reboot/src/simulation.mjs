@@ -100,8 +100,22 @@ export class DeterministicSimulation {
     this.state = 'active';
   }
 
+  // A modal in-run menu (the weapon wheel) freezes ticks exactly like the
+  // upgrade panel but is distinct from it so the two cannot be confused.
+  enterMenu() {
+    if (this.state !== 'active') throw new Error(`Cannot enter menu from ${this.state}`);
+    this.state = 'menu';
+    this.resetAccumulator();
+  }
+
+  leaveMenu() {
+    if (this.state !== 'menu') throw new Error(`Cannot leave menu from ${this.state}`);
+    this.state = 'active';
+    this.resetAccumulator();
+  }
+
   pause() {
-    if (this.state !== 'active' && this.state !== 'upgrade') throw new Error(`Cannot pause simulation from ${this.state}`);
+    if (this.state !== 'active' && this.state !== 'upgrade' && this.state !== 'menu') throw new Error(`Cannot pause simulation from ${this.state}`);
     this.resumeState = this.state;
     this.state = 'paused';
     this.resetAccumulator();

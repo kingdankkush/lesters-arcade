@@ -77,7 +77,7 @@ test('touch controls support simultaneous independent movement and aim plus ever
   assert.deepEqual({ fire: actions.fire, melee: actions.melee, grenade: actions.grenade, dash: actions.dash, pause: actions.pause }, {
     fire: false, melee: false, grenade: true, dash: false, pause: true,
   });
-  assert.equal(actions.weaponNext, false);
+  assert.equal(actions.weaponNext, true, 'the SWAP touch button is a buffered edge');
   assert.equal(metadata.lastActiveDevice, 'touch');
 });
 

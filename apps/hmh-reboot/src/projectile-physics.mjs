@@ -113,7 +113,13 @@ export function createHurtTarget({
   });
 }
 
-export function createProjectileState({ id, ownerId, previous, current, heightTransition = null, radius = 0, damage, policy = { type: 'stop' } } = {}) {
+function validateExcludedTargets(value) {
+  if (value === null || value === undefined) return Object.freeze([]);
+  if (!Array.isArray(value) || value.some((id) => typeof id !== 'string' || !id)) throw new TypeError('projectile excludeTargetIds must be an array of target ids');
+  return Object.freeze([...new Set(value)].sort());
+}
+
+export function createProjectileState({ id, ownerId, previous, current, heightTransition = null, radius = 0, damage, policy = { type: 'stop' }, excludeTargetIds = null } = {}) {
   if (typeof id !== 'string' || !id) throw new TypeError('projectile id must be a non-empty string');
   if (typeof ownerId !== 'string' || !ownerId) throw new TypeError('projectile ownerId must be a non-empty string');
   return Object.freeze({
@@ -125,6 +131,9 @@ export function createProjectileState({ id, ownerId, previous, current, heightTr
     radius: nonNegative(radius, 'projectile.radius'),
     damage: positive(damage, 'projectile.damage'),
     policy: validatePolicy(policy),
+    // Bodies a piercing slug already passed through on earlier ticks. They
+    // stay out of every later segment so one enemy is never hit twice.
+    excludeTargetIds: validateExcludedTargets(excludeTargetIds),
   });
 }
 
@@ -569,9 +578,11 @@ export function resolveProjectilePath({ projectile, targets = [], blockers = [],
   const queriedTargets = broadphase
     ? broadphase.query(projectile).map((candidate) => targetById.get(candidate.id)).filter(Boolean)
     : queryProjectileCandidates({ projectile, targets });
+  const excluded = projectile.excludeTargetIds.length ? new Set(projectile.excludeTargetIds) : null;
+  const candidateTargets = excluded ? queriedTargets.filter((target) => !excluded.has(target.id)) : queriedTargets;
   const activeTargets = ['splash', 'ricochet'].includes(projectile.policy.type)
-    ? targets.filter((target) => target.active && target.health > 0).sort((a, b) => a.id.localeCompare(b.id))
-    : queriedTargets;
+    ? targets.filter((target) => target.active && target.health > 0 && !excluded?.has(target.id)).sort((a, b) => a.id.localeCompare(b.id))
+    : candidateTargets;
   let resolution;
   if (projectile.policy.type === 'splash') resolution = resolveSplashPolicy(projectile, activeTargets, blockers);
   else if (projectile.policy.type === 'ricochet') resolution = resolveRicochetPolicy(projectile, activeTargets, blockers);

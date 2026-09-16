@@ -15,7 +15,7 @@ import { InputState } from '../apps/hmh-reboot/src/input.mjs';
 
 test('M3 one canonical action map names keyboard, gamepad, touch, and help text', () => {
   assert.deepEqual(Object.keys(HMH_ACTION_MAP), [
-    'moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'pause',
+    'moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause',
   ]);
   for (const action of Object.values(HMH_ACTION_MAP)) {
     assert.ok(action.label);

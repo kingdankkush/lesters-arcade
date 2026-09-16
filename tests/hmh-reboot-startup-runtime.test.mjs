@@ -54,6 +54,7 @@ function runtime({ paused = true } = {}) {
       start() { this.running = true; events.push(['ticker-start']); },
     } },
     combatAudio: { pause() {}, resume() {}, play() {} }, cockpit: { setPaused() {} },
+    weaponWheel: null, closeWeaponWheel() { events.push(['wheel-close']); },
     document: { getElementById: () => null }, setStatus() {}, bridge: null,
     loadGroundFallback: async () => events.push(['load-basic-ground']),
   });

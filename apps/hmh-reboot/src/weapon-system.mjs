@@ -144,7 +144,9 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     pelletCount: 1,
     recoil: 38,
     pickupReserveAmmo: 15,
-    policy: { type: 'pierce', maxTargets: 2 },
+    // Owner direction 2026-09-16: the rail is a lane weapon. One slug keeps
+    // going through a crowd; bosses take the same high hit without dying to it.
+    policy: { type: 'pierce', maxTargets: 6 },
   },
   'lightning-ledger': {
     id: 'lightning-ledger',
@@ -308,7 +310,7 @@ export const progressionByWeapon = (ranks = {}) => ({
 const SPECIAL_EFFECTS = freezeDeep({
   // Rounds punch through a target and keep going.
   'armor-piercing': { policy: { type: 'pierce', maxTargets: 3 } },
-  'deep-proof': { policy: { type: 'pierce', maxTargets: 3 }, projectileTag: 'deep-proof' },
+  'deep-proof': { policy: { type: 'pierce', maxTargets: 7 }, projectileTag: 'deep-proof' },
   ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
   // Shells detonate on impact.
   explosive: { policy: { type: 'splash', radius: 58 } },
@@ -484,7 +486,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
 
   // The evolution keeps priority over a capstone policy: it is the rarer award.
   const projectilePolicy = evolutionId === 'settler-rail'
-    ? freezeDeep({ type: 'pierce', maxTargets: 3 })
+    ? freezeDeep({ type: 'pierce', maxTargets: 8 })
     : specialPolicy ?? definition.policy;
   return freezeDeep({
     weaponId,
@@ -686,6 +688,41 @@ export function selectWeapon(state, weaponId, { tick } = {}) {
   state.activeWeaponId = weaponId;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick, interrupted });
+}
+
+// The next owned weapon after the active one in the runtime's display order,
+// or null when nothing else is carried. Pure: the wheel and the SWAP edge
+// both go through here so they can never disagree.
+export function nextOwnedWeaponId(state, order) {
+  if (!Array.isArray(order) || order.length === 0) throw new TypeError('weapon order must be a non-empty array');
+  const start = order.indexOf(state.activeWeaponId);
+  for (let offset = 1; offset <= order.length; offset += 1) {
+    const candidate = order[(start + offset) % order.length];
+    if (candidate !== state.activeWeaponId && state.weapons?.[candidate]?.owned) return candidate;
+  }
+  return null;
+}
+
+// A player-driven switch applied inside the tick before `stepWeaponLoadout`.
+// Same rules and event as `selectWeapon`, but like `grantWeaponPickup` it
+// must precede the step for its tick rather than consume the tick itself.
+export function switchWeapon(state, weaponId, { tick } = {}) {
+  validTick(tick);
+  if (tick <= state.lastTick) throw new TypeError('weapon switch must precede the current weapon step');
+  const id = String(weaponId);
+  if (!state.weapons?.[id]) throw new TypeError(`unknown weapon ${id}`);
+  if (!state.weapons[id].owned) throw new TypeError(`weapon ${id} is unowned`);
+  if (id === state.activeWeaponId) return null;
+  const previousWeaponId = state.activeWeaponId;
+  const previousWeapon = state.weapons[previousWeaponId];
+  const interrupted = previousWeapon.channelState?.active
+    ? stepLightningLedger(previousWeapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
+    : null;
+  previousWeapon.chargeStartedTick = null;
+  previousWeapon.chargeReadyAnnounced = false;
+  state.activeWeaponId = id;
+  state.switchReadyTick = tick + state.switchTicks;
+  return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId: id, readyTick: state.switchReadyTick, interrupted, manual: true });
 }
 
 export function grantWeaponPickup(state, { tick, weaponId, select = false, progressionByWeapon = {} } = {}) {

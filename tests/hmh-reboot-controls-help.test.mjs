@@ -78,6 +78,7 @@ test('the documented bindings match the real input map', async () => {
 test('canonical help names grenade and omits automatic combat actions',()=>{
   const help=Object.fromEntries(actionHelpRows().map(row=>[row.id,row.touch]));
   assert.equal(help.grenade,'GRENADE');
-  for(const id of ['fire','melee','dash','weaponNext']) assert.equal(help[id],undefined);
-  assert.deepEqual(TOUCH_CONTROL_SPEC.buttons.map(b=>b.action),['grenade','pause']);
+  assert.equal(help.weaponNext,'SWAP','the one manual weapon control (owner direction 2026-09-16)');
+  for(const id of ['fire','melee','dash']) assert.equal(help[id],undefined);
+  assert.deepEqual(TOUCH_CONTROL_SPEC.buttons.map(b=>b.action),['grenade','weaponNext','pause']);
 });

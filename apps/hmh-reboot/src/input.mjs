@@ -19,7 +19,9 @@ const ACTION_DEFAULTS = Object.freeze({
 
 export const POINTER_AIM_IDLE_MS = 1000;
 export const ACTION_BUFFER_MS = 100;
-const BUFFERED_ACTIONS = Object.freeze(['grenade']);
+const BUFFERED_ACTIONS = Object.freeze(['grenade', 'weaponNext']);
+// A wheel pick waits for the next admitted tick, not a wall-clock window.
+const WEAPON_SLOT_REQUEST_MAX = 8;
 
 import { finite } from './value-guards.mjs';
 
@@ -70,7 +72,7 @@ export function mapGamepadSnapshot(gamepad, { deadzone = 0.2, sensitivity = 1, r
       dash: false,
       pause: buttonPressed(buttons, 9),
       weaponSlot: 0,
-      weaponNext: false,
+      weaponNext: buttonPressed(buttons, 5),
     },
   });
 }
@@ -81,7 +83,7 @@ function hasDirection(direction) {
 }
 
 function actionRecord(value = {}) {
-  return {fire:false,melee:false,dash:false,weaponSlot:0,weaponNext:false,
+  return {fire:false,melee:false,dash:false,weaponSlot:0,weaponNext:bool(value.weaponNext),
     grenade:bool(value.grenade),pause:bool(value.pause)};
 }
 
@@ -102,7 +104,17 @@ export class InputState {
     this.resetReason = null;
     this.sequence = 0;
     this.pendingActions = new Map();
+    this.pendingWeaponSlot = 0;
     this.lastBufferedSnapshot = null;
+  }
+
+  // A weapon-wheel pick is a one-tick direct selection (1-based slot in the
+  // runtime's weapon order). It survives frames that admit no tick and is
+  // consumed with the snapshot that carried it, exactly like a buffered edge.
+  requestWeaponSlot(slot, atMs) {
+    if (!Number.isInteger(slot) || slot < 1 || slot > WEAPON_SLOT_REQUEST_MAX) throw new TypeError('weapon slot request must be an integer from 1 to 8');
+    this.markDevice(this.lastActiveDevice === 'none' ? 'keyboard-mouse' : this.lastActiveDevice, atMs);
+    this.pendingWeaponSlot = slot;
   }
 
   setKeyboardBindings(bindings, { rankedActive = false } = {}) {
@@ -196,6 +208,7 @@ export class InputState {
     this.lastInputAtMs = at;
     this.resetReason = String(reason);
     this.pendingActions.clear();
+    this.pendingWeaponSlot = 0;
     this.lastBufferedSnapshot = null;
   }
 
@@ -206,6 +219,7 @@ export class InputState {
     for (const [action, bufferedAt] of this.lastBufferedSnapshot.entries) {
       if (this.pendingActions.get(action) === bufferedAt) this.pendingActions.delete(action);
     }
+    if (this.lastBufferedSnapshot.weaponSlot === this.pendingWeaponSlot) this.pendingWeaponSlot = 0;
     const consumed = this.lastBufferedSnapshot.entries.length;
     this.lastBufferedSnapshot = null;
     return consumed;
@@ -252,6 +266,7 @@ export class InputState {
       melee: false,
       grenade: sources.some((source) => source.grenade),
       dash: false,
+      weaponNext: false,
     };
     const actions = {
       move: { ...move },
@@ -263,11 +278,13 @@ export class InputState {
       grenade: buffered.has('grenade') || heldActions.grenade,
       dash: false,
       pause: sources.some((source) => source.pause),
-      weaponSlot: 0,
-      weaponNext: false,
+      // Both weapon controls are edges: one admitted tick sees them, held
+      // input never repeats them.
+      weaponSlot: this.pendingWeaponSlot,
+      weaponNext: buffered.has('weaponNext'),
     };
     this.sequence += 1;
-    this.lastBufferedSnapshot = { sequence: this.sequence, entries: bufferedEntries };
+    this.lastBufferedSnapshot = { sequence: this.sequence, entries: bufferedEntries, weaponSlot: this.pendingWeaponSlot };
     return freezeDeep({
       sequence: this.sequence,
       actions,
@@ -297,7 +314,7 @@ export function computeTouchControlLayout({ width, height, safeInsets = {}, left
   const shortEdge = Math.min(viewportWidth, viewportHeight);
   const scale = finite(controlScale, 'touch control scale');
   if (scale < 0.75 || scale > 1.5) throw new TypeError('touch control scale must be in [0.75, 1.5]');
-  // Two sticks, one grenade button, and the run menu.
+  // Two sticks, grenade and swap buttons, and the run menu.
   const baseRadius = Math.max(38, Math.min(72, shortEdge * 0.15));
   const radius = Math.min(baseRadius * scale, (viewportWidth - safe.left - safe.right) / 4.68);
   const margin = Math.max(14, radius * 0.34);
@@ -346,13 +363,19 @@ export function computeTouchControlLayout({ width, height, safeInsets = {}, left
     safe.left + buttonRadius,
     Math.min(gutterCentre, exclusionLeft - MINIMAP_CLEARANCE - buttonRadius, viewportWidth - buttonRadius),
   );
+  // Swap sits beside grenade on the same thumb row: the same reach as the
+  // grenade button, never above it where a short portrait screen would put it
+  // under the minimap.
+  const swapX = Math.max(buttonRadius, powerX - buttonRadius * 2 - margin);
+  const swapMirrorX = Math.min(viewportWidth - buttonRadius, weaponX + buttonRadius * 2 + margin);
   const buttons = {
     power: { x: powerX, y: powerY, radius: buttonRadius },
+    swap: { x: swapX, y: powerY, radius: buttonRadius },
     pause: { x: pauseX, y: moveStick.y, radius: buttonRadius },
   };
   const layoutSticks = leftHanded ? { moveStick: aimStick, aimStick: moveStick } : { moveStick, aimStick };
   const layoutButtons = leftHanded
-    ? { power: { ...buttons.power, x: weaponX }, pause: buttons.pause }
+    ? { power: { ...buttons.power, x: weaponX }, swap: { ...buttons.swap, x: swapMirrorX }, pause: buttons.pause }
     : buttons;
   return freezeDeep({ viewport: { width: viewportWidth, height: viewportHeight }, safeInsets: safe, ...layoutSticks, buttons: layoutButtons });
 }

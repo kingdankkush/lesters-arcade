@@ -252,10 +252,12 @@ import {
   getActiveWeaponState,
   getWeaponReadabilityStatus,
   grantWeaponPickup,
+  nextOwnedWeaponId,
   refillWeaponLoadout,
   progressionByWeapon as buildProgressionByWeapon,
   selectWeapon,
   stepWeaponLoadout,
+  switchWeapon,
 } from './weapon-system.mjs';
 import {
   createActorSpatialState,
@@ -3653,6 +3655,9 @@ async function boot() {
           flightCeilingZ: shot.flightCeilingZ,
         });
         const current = flight.current;
+        // A piercing slug carries the bodies it already passed through and
+        // only its remaining body budget into the next segment.
+        const pierced = shot.pierceHitIds?.length ?? 0;
         const state = createProjectileState({
           id: shot.id,
           ownerId: 'player',
@@ -3661,7 +3666,8 @@ async function boot() {
           heightTransition: flight.heightTransition,
           radius: shot.radius,
           damage: shot.damage,
-          policy: shot.policy,
+          policy: pierced > 0 ? { ...shot.policy, maxTargets: Math.max(1, shot.policy.maxTargets - pierced) } : shot.policy,
+          excludeTargetIds: pierced > 0 ? shot.pierceHitIds : null,
         });
         return {
           ...shot,
@@ -3729,9 +3735,21 @@ async function boot() {
             });
           }
         }
-        const terminalIds = new Set(batch.resolutions
-          .filter((resolution) => resolution.hits.length > 0 || resolution.coverHit)
-          .map((resolution) => resolution.projectileId));
+        const terminalIds = new Set();
+        for (const resolution of batch.resolutions) {
+          if (resolution.coverHit) { terminalIds.add(resolution.projectileId); continue; }
+          if (resolution.hits.length === 0) continue;
+          const shot = shotById.get(resolution.projectileId);
+          // Owner direction 2026-09-16: a piercing slug keeps flying past the
+          // bodies it passed through, remembering them so a later segment can
+          // never hit the same enemy twice. It ends on cover, range, or when
+          // its body budget is spent.
+          if (shot?.pierceHitIds && shot.policy?.type === 'pierce') {
+            for (const hit of resolution.hits) if (!shot.pierceHitIds.includes(hit.targetId)) shot.pierceHitIds.push(hit.targetId);
+            if (shot.pierceHitIds.length < shot.policy.maxTargets) continue;
+          }
+          terminalIds.add(resolution.projectileId);
+        }
         // Range-expired shots land on the ground they were flying over, classed
         // by the same pure ground query the render pass uses. Bounded: under
         // ring pressure the ground puff is the first thing dropped, and the
@@ -3776,6 +3794,22 @@ async function boot() {
         ...(liquidatorBoss.active && liquidatorBoss.health > 0 ? [liquidatorBoss] : []),
       ];
 
+      // Owner direction 2026-09-16: SWAP cycles the carried weapons and a
+      // wheel pick selects one directly. Both are one-tick edges resolved
+      // before the weapon step so the switch lockout starts on this tick and
+      // the pistol is always one press away for boss reserves.
+      const requestedSlot = Number.isInteger(tickInput.weaponSlot) ? tickInput.weaponSlot : 0;
+      const requestedWeaponId = requestedSlot > 0
+        ? (WEAPON_ORDER[requestedSlot - 1] ?? null)
+        : tickInput.weaponNext === true ? nextOwnedWeaponId(weaponLoadout, WEAPON_ORDER) : null;
+      if (requestedWeaponId && weaponLoadout.weapons[requestedWeaponId]?.owned && requestedWeaponId !== weaponLoadout.activeWeaponId) {
+        const switched = switchWeapon(weaponLoadout, requestedWeaponId, { tick });
+        if (switched) {
+          recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
+          combatAudio.play('menu-click', { volume: 0.07 });
+          setAccessibleCombatStatus(`${HMH_WEAPON_DEFINITIONS[requestedWeaponId].displayName} armed.`);
+        }
+      }
       // Pickups equip themselves; exhausted weapons use the existing fallback.
       const weaponFrame = stepWeaponLoadout(weaponLoadout, {
           tick,
@@ -4029,6 +4063,7 @@ async function boot() {
             radius: shot.radius,
             damage: shot.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
             policy: shot.policy,
+            pierceHitIds: shot.policy?.type === 'pierce' ? [] : null,
             projectileTag: shot.projectileTag ?? null,
             shock: shot.shock,
             knockbackMultiplier: shot.knockbackMultiplier,
@@ -4630,10 +4665,76 @@ async function boot() {
     };
   };
 
+  // Weapon wheel (owner direction 2026-09-16). The wheel is a lazy
+  // presentation chunk; while it is open the simulation holds in 'menu' and a
+  // pick becomes a one-tick weaponSlot request, never a direct loadout write.
+  let weaponWheel = null;
+  let weaponWheelLoading = null;
+  const weaponWheelViews = () => {
+    const ranks = runProgression ? getRunProgressionSnapshot(runProgression).ranks : null;
+    const progressionByWeapon = ranks ? buildProgressionByWeapon(ranks) : {};
+    return WEAPON_ORDER.map((weaponId, index) => {
+      const weapon = weaponLoadout?.weapons?.[weaponId];
+      return {
+        slot: index + 1,
+        weaponId,
+        name: HMH_WEAPON_DEFINITIONS[weaponId].displayName,
+        code: hud?.shortCodeFor(weaponId) ?? weaponId,
+        owned: weapon?.owned === true,
+        active: weaponLoadout?.activeWeaponId === weaponId,
+        ammoInClip: weapon?.ammoInClip ?? 0,
+        clipSize: applyWeaponProgression(weaponId, progressionByWeapon[weaponId]).clipSize,
+        reserveAmmo: weapon ? weapon.reserveAmmo : 0,
+      };
+    });
+  };
+  const closeWeaponWheel = (pickedSlot = 0) => {
+    if (!weaponWheel?.isOpen()) return;
+    weaponWheel.close();
+    if (simulation?.state === 'menu') simulation.leaveMenu();
+    if (pickedSlot > 0 && input && simulation?.state === 'active') input.requestWeaponSlot(pickedSlot, performance.now());
+    dataset.weaponWheel = 'closed';
+  };
+  const openWeaponWheel = () => {
+    if (!simulation || simulation.state !== 'active' || !weaponLoadout) return;
+    if (!weaponWheel) {
+      weaponWheelLoading ??= import('./weapon-wheel.mjs').then((module) => {
+        weaponWheel = module.createWeaponWheel({
+          documentRef: document,
+          windowRef: window,
+          onPick: (slot) => closeWeaponWheel(slot),
+          onClose: () => closeWeaponWheel(0),
+        });
+      }).catch(() => { dataset.weaponWheel = 'unavailable'; });
+      void weaponWheelLoading.then(() => { if (weaponWheel) openWeaponWheel(); });
+      return;
+    }
+    if (weaponWheel.isOpen()) return;
+    simulation.enterMenu();
+    weaponWheel.open(weaponWheelViews());
+    combatAudio.play('menu-click', { volume: 0.06 });
+    dataset.weaponWheel = 'open';
+  };
+  const toggleWeaponWheel = () => {
+    if (weaponWheel?.isOpen()) closeWeaponWheel(0);
+    else openWeaponWheel();
+  };
+  const hudWeaponCard = document.getElementById('hmhHudWeapon');
+  if (hudWeaponCard) {
+    hudWeaponCard.addEventListener('click', (event) => { event.preventDefault(); toggleWeaponWheel(); });
+    hudWeaponCard.addEventListener('keydown', (event) => {
+      if (event.code !== 'Enter' && event.code !== 'Space') return;
+      event.preventDefault();
+      toggleWeaponWheel();
+    });
+  }
+
   const pauseRuntime = (source) => {
+    if (weaponWheel?.isOpen()) closeWeaponWheel(0);
     if (!simulation || (simulation.state !== 'active' && simulation.state !== 'upgrade')) return;
     world.position.set(0, 0);
     simulation.pause();
+    dataset.simulationState = simulation.state;
     // Keep checking artwork while a visibility/portal pause freezes gameplay.
     // Otherwise a backgrounded phone can return to a loading panel forever.
     if (!startupGate) app.ticker.stop();
@@ -4659,6 +4760,7 @@ async function boot() {
   const resumeRuntime = (source = 'portal') => {
     if (simulation?.state !== 'paused') return;
     simulation.resume();
+    dataset.simulationState = simulation.state;
     if (simulation.state === 'active' || startupGate) app.ticker.start();
     else app.ticker.stop();
     if (simulation.state === 'active') combatAudio.resume();
@@ -4814,7 +4916,11 @@ async function boot() {
       if (simulation.state !== 'active') app.ticker.stop();
       else combatAudio.resume();
     }
-    if (!simulation || simulation.state !== 'active' || !actor || !camera) return;
+    if (!simulation || simulation.state !== 'active' || !actor || !camera) {
+      // Keep the state mirror truthful while a menu/upgrade hold skips the frame.
+      if (simulation && dataset.simulationState !== simulation.state) dataset.simulationState = simulation.state;
+      return;
+    }
     if (!pressureArtRequested && simulation.tick >= 16200) {
       pressureArtRequested = true;
       for (const id of ['whale-enforcer', 'gas-bomber', 'validator-cultist']) requestEnemyRosterAtlas(id);
@@ -4928,8 +5034,17 @@ async function boot() {
   });
 
   const handleExitKey = (event) => {
+    // The open wheel handles Tab/Escape itself (capture phase) and marks the
+    // event; without this guard Tab would close and immediately reopen it.
+    if (event.defaultPrevented) return;
+    if (event.code === 'Tab' && !event.repeat && !input?.gameplayKeys.has('Tab') && simulation && (simulation.state === 'active' || simulation.state === 'menu')) {
+      event.preventDefault();
+      toggleWeaponWheel();
+      return;
+    }
     if (event.key !== 'Escape' || event.repeat) return;
     event.preventDefault();
+    if (weaponWheel?.isOpen()) { closeWeaponWheel(0); return; }
     if (event.shiftKey && bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
     else if (simulation?.state === 'paused') resumeRuntime('user');
     else pauseRuntime('user');

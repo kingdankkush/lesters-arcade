@@ -1,3 +1,9 @@
+# Lester's Arcade — weapon swap, weapon wheel and railgun lane (release candidate)
+
+Hard Money Heroes now has one manual weapon control: **Q** (or **E**), the right bumper, or the touch **SWAP** button cycles the weapons you carry, and **Tab** or tapping the armed-weapon card in the cockpit opens a weapon wheel that freezes the run while you pick. The pistol is always one press away, so a rare gun can be held back for the Liquidator. The Railgun is now a lane weapon: one slug passes through up to six bodies (seven with Deep Proof, eight as the Settler Rail), remembers what it already hit, and stops only on cover, range, or its body budget. Bosses take the same high hit without dying to it.
+
+Deployment facts for this wave are recorded below once the candidate is promoted; until then the previous section is the live truth.
+
 # Lester's Arcade — completed updates verified live
 
 The homepage and game browser redesign, HMH mobile optimization and world presentation, Chikun mixed flight passages, and STACKED mobile aquatic music visuals are live at https://lestersarcade.io. Chikun's repeating white-noise ambience is removed, and town, forest and canopy collisions now produce normal results and allow another run.
@@ -10,7 +16,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v50-chikun-audio`
+**Production cache marker:** `lesters-arcade-v51-weapon-wheel`
 
 # Lester's Arcade
 

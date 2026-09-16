@@ -260,7 +260,7 @@ test('K-3 live pause help retains mouse and alternate bindings after controls re
   assert.match(help('grenade'), /right click/i);
   ui.setSettings({ keyboardBindings: HMH_PLAYER_SETTINGS_DEFAULTS.controls.keyboardBindings });
   assert.match(help('grenade'), /(?:^| · )G(?: · |$)/);
-  assert.equal(elements.get('hmhControlsCard').querySelectorAll('button').length, 6);
+  assert.equal(elements.get('hmhControlsCard').querySelectorAll('button').length, 7, 'movement, grenade, swap and pause rows');
   ui.destroy();
 });
 

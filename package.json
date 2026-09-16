@@ -36,6 +36,7 @@
     "smoke:hmh:production-hero:lester": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs --actor lester-original",
     "smoke:hmh:production-hero:lilly": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs --actor lilly",
     "smoke:hmh:cockpit": "node scripts/hmh-reboot-cockpit-browser-smoke.mjs",
+    "smoke:hmh:weapon-wheel": "node scripts/hmh-reboot-weapon-wheel-browser-smoke.mjs",
     "smoke:hmh:collectibles": "node scripts/hmh-reboot-collectible-browser-smoke.mjs",
     "smoke:hmh:enemy-details": "node scripts/hmh-reboot-enemy-detail-browser-smoke.mjs",
     "smoke:hmh:performance": "node scripts/hmh-reboot-performance-browser-smoke.mjs",

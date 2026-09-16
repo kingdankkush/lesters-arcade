@@ -206,6 +206,11 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 
 /* ---- U-3 weapon card ----------------------------------------------------- */
 .hmh-hud-weapon { display: flex; gap: 9px; align-items: center; min-width: 252px; padding: 4px 11px 4px 4px; border-right: 1px solid rgba(143,243,255,0.14); }
+/* The armed-weapon card opens the weapon wheel: the only interactive cockpit
+   child, so it alone takes pointer events back from the rail. */
+.hmh-hud-weapon { pointer-events: auto; cursor: pointer; border-radius: 12px; transition: background-color 120ms ease-out; }
+.hmh-hud-weapon:hover, .hmh-hud-weapon:focus-visible { background: rgba(25, 247, 255, 0.08); outline: none; }
+.hmh-hud-weapon:focus-visible { box-shadow: inset 0 0 0 1px var(--accent); }
 .hmh-hud-ring {
   display: grid;
   place-items: center;
@@ -563,6 +568,34 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-touch-button--weapon { border-color: rgba(73,221,255,0.82); background: rgba(12,70,91,0.52); box-shadow: inset 0 1px rgba(255,255,255,0.14), 0 0 18px rgba(73,221,255,0.24), 0 8px 24px rgba(0,0,0,0.25); }
 .hmh-touch-button--weapon:active { background: rgba(18,96,122,0.62); }
 .hmh-touch-button--pause { border-color: rgba(255,255,255,0.4); opacity: 0.72; }
+.hmh-touch-button--swap { border-color: rgba(73,221,255,0.82); background: rgba(12,70,91,0.52); box-shadow: inset 0 1px rgba(255,255,255,0.14), 0 0 18px rgba(73,221,255,0.24), 0 8px 24px rgba(0,0,0,0.25); }
+.hmh-touch-button--swap:active { background: rgba(18,96,122,0.62); }
+
+/* ---- Weapon wheel (2026-09-16) ------------------------------------------ */
+.hmh-weapon-wheel-layer { z-index: 28; background: rgba(1, 7, 12, 0.5); backdrop-filter: blur(3px); }
+.hmh-weapon-wheel { display: grid; gap: 10px; justify-items: center; pointer-events: none; }
+.hmh-weapon-wheel-title { margin: 0; color: #effbff; font-size: clamp(0.9rem, 2.4vw, 1.2rem); letter-spacing: 0.04em; text-transform: uppercase; text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
+.hmh-weapon-wheel-hint { margin: 0; color: var(--ink-muted); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.hmh-weapon-wheel-hint kbd { padding: 1px 5px; border: 1px solid rgba(143,243,255,0.3); border-radius: 4px; color: var(--cyan); font-family: var(--font-mono); font-size: 0.6rem; }
+.hmh-weapon-wheel-ring { position: relative; width: calc(var(--wheel-radius, 140px) * 2 + var(--slot-width, 112px)); height: calc(var(--wheel-radius, 140px) * 2 + 60px); pointer-events: auto; }
+.hmh-weapon-wheel-ring::before { content: ""; position: absolute; top: 30px; bottom: 30px; left: calc(var(--slot-width, 112px) / 2); right: calc(var(--slot-width, 112px) / 2); border: 1px solid rgba(143,243,255,0.22); border-radius: 50%; box-shadow: 0 0 40px rgba(25,247,255,0.12), inset 0 0 40px rgba(25,247,255,0.06); }
+.hmh-weapon-wheel-slot { position: absolute; top: 50%; left: 50%; display: grid; gap: 1px; justify-items: center; width: var(--slot-width, 112px); padding: 7px 6px 6px; margin: 0; border: 1px solid rgba(143,243,255,0.28); border-radius: 12px; color: #dff8ff; background: rgba(8, 30, 46, 0.9); box-shadow: 0 8px 22px rgba(0,0,0,0.35); font: inherit; cursor: pointer; transform: translate(calc(-50% + var(--slot-x, 0px)), calc(-50% + var(--slot-y, 0px))); transition: transform 120ms ease-out, box-shadow 120ms ease-out; -webkit-tap-highlight-color: transparent; }
+.hmh-weapon-wheel-slot:hover:not(:disabled), .hmh-weapon-wheel-slot:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--accent), 0 0 18px rgba(25,247,255,0.35); transform: translate(calc(-50% + var(--slot-x, 0px)), calc(-50% + var(--slot-y, 0px))) scale(1.06); }
+.hmh-weapon-wheel-slot[data-active="true"] { color: var(--text-inverse); background: linear-gradient(180deg, #dcfcff, var(--accent)); border-color: transparent; }
+.hmh-weapon-wheel-slot:disabled { color: #5f7a8c; background: rgba(6, 18, 28, 0.72); border-color: rgba(143,243,255,0.1); cursor: default; }
+.hmh-weapon-wheel-code { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 900; letter-spacing: 0.05em; color: var(--cyan); }
+.hmh-weapon-wheel-slot[data-active="true"] .hmh-weapon-wheel-code { color: var(--text-inverse); }
+.hmh-weapon-wheel-name { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.01em; white-space: nowrap; }
+.hmh-weapon-wheel-ammo { font-family: var(--font-mono); font-size: 0.54rem; letter-spacing: 0.03em; opacity: 0.85; white-space: nowrap; }
+.hmh-weapon-wheel-key { position: absolute; top: -6px; right: -6px; min-width: 15px; padding: 0 3px; border-radius: 5px; color: var(--text-inverse); background: var(--warning); font-size: 0.48rem; font-style: normal; font-weight: 900; line-height: 15px; text-align: center; }
+.hmh-weapon-wheel-slot:disabled .hmh-weapon-wheel-key { display: none; }
+@media (hover: none) and (pointer: coarse), (max-width: 900px) {
+  .hmh-weapon-wheel-slot { padding: 6px 4px 5px; }
+  .hmh-weapon-wheel-name { font-size: 0.6rem; }
+  .hmh-weapon-wheel-key { display: none; }
+  .hmh-weapon-wheel-hint { display: none; }
+}
+.hmh-reboot-stage[data-setting-reduce-motion="true"] ~ .hmh-weapon-wheel-layer .hmh-weapon-wheel-slot { transition: none; }
 .hmh-touch-stick:active .hmh-touch-stick__knob { background: rgba(73,221,255,0.52); box-shadow: 0 0 24px rgba(73,221,255,0.5); }
 
 @media (hover: none) and (pointer: coarse), (max-width: 900px) {

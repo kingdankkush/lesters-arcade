@@ -16,5 +16,5 @@ test('release browser certification serves canonical production assets from trac
   assert.match(source, /portalAssetsRootPath/);
   assert.match(source, /https:\/\/lestersarcade\.io\/assets\/\*\*/);
   assert.match(source, /relativePath\.includes\('\.\.'\)/);
-  assert.match(source, /\['aim', 'move', 'pause', 'power', 'weapon'\]/);
+  assert.match(source, /\['aim', 'move', 'pause', 'power', 'swap'\]/);
 });

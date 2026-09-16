@@ -185,7 +185,7 @@ async function mobileEvidence(page, name) {
   await ready(page);
   const state = await readState(page);
   const controlIds = await page.locator('[data-hmh-control]').evaluateAll(elements => elements.map(element => element.dataset.hmhControl).sort());
-  assert.deepEqual(controlIds, ['aim', 'move', 'pause', 'power']);
+  assert.deepEqual(controlIds, ['aim', 'move', 'pause', 'power', 'swap']);
   const controls = controlIds.length;
   assert.equal(state.frameIds.length, 4);
   assert.equal(state.actorArt, 'production-hero-atlas');

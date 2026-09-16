@@ -1,17 +1,19 @@
 {
   "schemaVersion": 1,
   "gate": "hmh-reboot-test-retirement",
-  "status": "PASS",
+  "status": "FAIL",
   "counts": {
-    "tests": 3808,
-    "failed": 51,
-    "passed": 3757,
+    "tests": 3821,
+    "failed": 52,
+    "passed": 3769,
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "topLevel": 3741,
+    "topLevel": 3754,
     "suites": 8
   },
   "expectedFailureCount": 51,
-  "errors": []
+  "errors": [
+    "unexpected failure: tests/production-doc-drift-check.test.mjs :: repository README production marker matches the current service worker marker"
+  ]
 }
