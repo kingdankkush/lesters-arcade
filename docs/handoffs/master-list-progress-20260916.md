@@ -108,6 +108,11 @@ Working branch `fable/master-list-20260916`, cut from `codex/mobile-worlds-aquat
 
 - `main.mjs` now applies the rail lane falloff per segment, grants score for silver, announces pickups / activated sites / secrets through the lazy banner, passes direction and dismember flags into the gore pool, and zooms with the desktop wheel. `HOSTED_PROFILE_SYNC = false` (settlement.mjs) keeps the portal from calling `/api/session` and `/api/profile` until the owner flips it with the Vercel secrets. Version 1.7.0, cache marker `lesters-arcade-v52-owner-round`.
 
+## Release 1.7.0 — verified live 2026-09-17
+
+- Gate `npm run vercel:build`: 3,943 tests, 3,892 pass, 51 unchanged retired exceptions; HMH initial JS headroom 2.1 KB. Promoted production `dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu` (source `69144aad`); 102/102 public files match; `/api/attest`, `/api/session`, `/api/profile`, `/api/settle` fail closed (503); live smokes pass for the weapon wheel, held weapons, Chikun Ranked and STACKED. Receipt: `docs/qa/master-list-release-20260917.json`. Rollback `dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq`.
+- Follow-up: the Chikun regions browser smoke passes locally but its Playwright route interception races the frame load on the live alias.
+
 ## Not yet done in this session (see master list)
 
 X-08 art (owner), contract deployment and Vercel secrets plus the `HOSTED_PROFILE_SYNC` / `SETTLEMENT_LIVE` flips (owner key), Tripo props (no API access on the build machine), HMH interactive-area hero animations and world dressing (next art slices), STACKED portal-side persistence of scene prefs, Chikun ragdoll sever rules per new hit family. Physical-device acceptance remains owner/tester work.
