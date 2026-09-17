@@ -248,6 +248,8 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/world-obstacles.mjs",
   "apps/portal/src/scene-templates.mjs",
   "apps/portal/src/leaderboard-seed.mjs",
+  "apps/portal/src/leaderboard-view.mjs",
+  "tests/leaderboard-view.test.mjs",
   "apps/portal/src/persistence.mjs",
   "apps/portal/src/arcade-router.mjs",
   "apps/portal/src/hmh-campaign-levels.mjs",
