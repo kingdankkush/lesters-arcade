@@ -410,3 +410,20 @@ test('the HUD dash ring exposes a one-shot ready flash and the CSS honours both 
   assert.match(css, /\.hmh-reboot-stage\[data-setting-reduce-motion="true"\] ~ [^{]*\.hmh-upgrade-layer:not\(\[hidden\]\)[^{]*\{[^}]*animation: none/);
   assert.match(css, /prefers-reduced-motion/);
 });
+
+test('desktop wheel zoom steps in to +10% and out to -30% of the default and never past either bound', () => {
+  const zoom = gameFeel.createUserZoom();
+  assert.equal(zoom.factor, 1);
+  assert.equal(zoom.wheel(-100), 1.05, 'wheel up zooms in one step');
+  assert.equal(zoom.wheel(-100), 1.1);
+  assert.equal(zoom.wheel(-100), 1.1, 'capped at +10%');
+  for (let i = 0; i < 12; i++) zoom.wheel(100);
+  assert.equal(zoom.factor, 0.7, 'capped at -30%');
+  assert.equal(zoom.wheel(0), 0.7);
+  assert.equal(zoom.wheel(Number.NaN), 0.7);
+  assert.equal(zoom.reset(), 1);
+  assert.equal(zoom.set(0.5), 0.7);
+  assert.equal(zoom.set('x'), 1);
+  assert.deepEqual(gameFeel.USER_ZOOM, { min: 0.7, max: 1.1, step: 0.05 });
+  assert.throws(() => gameFeel.createUserZoom({ min: 0 }), /bounds/);
+});

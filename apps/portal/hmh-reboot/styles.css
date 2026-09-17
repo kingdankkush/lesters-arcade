@@ -954,3 +954,31 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 @media(max-width:600px) { .hmh-startup { padding:24px 20px; align-items:start; } .hmh-startup-brief { grid-template-columns:1fr; gap:6px; margin-top:10px; font-size:12px; } .hmh-startup-brief div { display:block; } .hmh-startup-brief dt { display:inline; margin-right:8px; } .hmh-startup-brief dd { display:inline; } .hmh-startup-tips { grid-template-columns:1fr; gap:12px; margin:18px 0; } .hmh-startup-tips article p { margin:5px 0; } .hmh-startup-tips h2 { display:inline; margin-left:12px; font-size:16px; } .hmh-startup-route { gap:6px; font-size:8px; } }
 @media(max-height:600px) and (min-width:601px) { .hmh-startup { padding:16px 24px; align-items:start; } .hmh-startup-brief { margin-top:8px; gap:4px 24px; } .hmh-startup-card h1 { font-size:30px; margin:8px 0; } .hmh-startup-story { display:none; } .hmh-startup-tips { margin:14px 0; padding-top:12px; } }
 @media(prefers-reduced-motion:reduce) { .hmh-startup-progress span { transition:none; } }
+
+/* Pickup / interaction banner (owner direction 2026-09-16): one bold line that
+   names what the player just got or did, holds ~1.2 s, then fades. */
+.hmh-pickup-banner {
+  position: absolute; left: 50%; top: clamp(84px, 17%, 148px); z-index: 6;
+  transform: translate(-50%, -6px); pointer-events: none; text-align: center;
+  max-width: min(92vw, 520px); padding: 6px 14px; opacity: 0;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.hmh-pickup-banner[data-state="shown"] { opacity: 1; transform: translate(-50%, 0); }
+.hmh-pickup-banner[data-state="fading"] { opacity: 0; transform: translate(-50%, -12px); transition-duration: .4s; }
+.hmh-pickup-banner strong {
+  display: block; font-weight: 900; font-size: clamp(15px, 2.6vw, 22px); line-height: 1.1; letter-spacing: .08em;
+  color: #fff3c4; text-shadow: 0 2px 0 #3a1400, 0 0 14px rgba(255, 208, 96, .55), 0 0 2px #000;
+}
+.hmh-pickup-banner span { display: block; margin-top: 2px; font-size: clamp(11px, 1.6vw, 13px); color: #d8f7ff; opacity: .92; text-shadow: 0 1px 0 #000; }
+.hmh-pickup-banner span:empty { display: none; }
+.hmh-pickup-banner[data-kind="weapon"] strong { color: #ffd75e; }
+.hmh-pickup-banner[data-kind="heal"] strong { color: #83f28f; text-shadow: 0 2px 0 #0b2a12, 0 0 14px rgba(131, 242, 143, .5); }
+.hmh-pickup-banner[data-kind="ammo"] strong { color: #9fe9ff; text-shadow: 0 2px 0 #0a2030, 0 0 14px rgba(159, 233, 255, .5); }
+.hmh-pickup-banner[data-kind="grenade"] strong { color: #ffb36b; }
+.hmh-pickup-banner[data-kind="nuke"] strong { color: #ff6b86; text-shadow: 0 2px 0 #300010, 0 0 16px rgba(255, 107, 134, .6); }
+.hmh-pickup-banner[data-kind="power"] strong { color: #d9a3ff; text-shadow: 0 2px 0 #20083a, 0 0 14px rgba(217, 163, 255, .55); }
+.hmh-pickup-banner[data-kind="objective"] strong,
+.hmh-pickup-banner[data-kind="world"] strong,
+.hmh-pickup-banner[data-kind="secret"] strong { color: #ffe27a; }
+@media (max-width: 600px) { .hmh-pickup-banner { top: clamp(76px, 15%, 120px); } }
+@media (prefers-reduced-motion: reduce) { .hmh-pickup-banner { transition: none; transform: translate(-50%, 0); } }

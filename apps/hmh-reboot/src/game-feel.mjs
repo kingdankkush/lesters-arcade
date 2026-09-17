@@ -41,6 +41,28 @@ export function resolveReadableGameplayZoom({ viewportHeight, bodyHeight, framin
   return Math.max(0.9, viewportHeight * HERO_MIN_VIEWPORT_RATIO / (bodyHeight * ENCOUNTER_FRAMING.zoomOut)) * framingZoom * (mobile ? .8 : 1);
 }
 
+// Owner direction 2026-09-16: on desktop the mouse wheel zooms the camera in
+// by up to 10% and out by up to 30% from the readable default. Touch devices
+// keep the default (frame rate first on phones). Pure state, no listeners.
+export const USER_ZOOM = F({ min: 0.7, max: 1.1, step: 0.05 });
+
+export function createUserZoom({ min = USER_ZOOM.min, max = USER_ZOOM.max, step = USER_ZOOM.step } = {}) {
+  if (!(min > 0) || !(max >= 1) || !(min <= 1) || !(step > 0)) throw new RangeError('invalid user zoom bounds');
+  let factor = 1;
+  const clamp = (value) => Math.min(max, Math.max(min, Math.round(value * 1000) / 1000));
+  return Object.freeze({
+    get factor() { return factor; },
+    // Wheel up (negative deltaY) zooms in; one notch is one step.
+    wheel(deltaY) {
+      if (!Number.isFinite(deltaY) || deltaY === 0) return factor;
+      factor = clamp(factor + (deltaY < 0 ? step : -step));
+      return factor;
+    },
+    set(value) { factor = Number.isFinite(value) ? clamp(value) : 1; return factor; },
+    reset() { factor = 1; return factor; },
+  });
+}
+
 export const DASH_FEEL = F({
   landingLifeTicks: 10,
   landingRadiusPx: 18,
