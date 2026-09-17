@@ -9,7 +9,7 @@ export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v6';
 export const CHIKUN_FIXED_STEP_HZ = 60;
 export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
 const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
-export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v4';
+export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v5';
 const LEGACY_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
 
 export const CHIKUN_VERTICAL_SLICE_CONFIG = Object.freeze({

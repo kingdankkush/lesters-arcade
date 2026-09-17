@@ -86,7 +86,7 @@ test('obstacle placement is deterministic across the loop boundary and a full-la
  assert.equal(snapshot.terminal,true);assert.equal(snapshot.terminalReason,'run-complete');
  assert.equal(snapshot.region,'Farmland','the lap ended back in farmland');
  const result=run.result();
- assert.equal(result.evidence.version,'chikun-flap-evidence-v4');
+ assert.equal(result.evidence.version,'chikun-flap-evidence-v5');
  assert.deepEqual(replayChikunRun(result.evidence),result);
  assert.ok(result.forksPassed>=REGION_LOOP_SLOTS&&result.score>10000);
 });

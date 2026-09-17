@@ -1,6 +1,6 @@
 import {courseObstacles,groundPickups,distanceAtTick,speedAtTick,courseRegion,courseTerrain,GROUND_Y} from './chikun-ground-course.mjs';
 import {obstacleClearance} from './chikun-obstacles.mjs';
-export const GROUND_EVIDENCE='chikun-flap-evidence-v4';
+export const GROUND_EVIDENCE='chikun-flap-evidence-v5';
 export function groundDifficulty(tick=0){return Object.freeze({level:Math.floor(tick/7200)+1,speedMultiplier:speedAtTick(tick),scrollPixelsPerTick:2.4*speedAtTick(tick),safeGapHeight:320});}
 export function createGroundRuntime({seed=1,maxTicks=60}={}){
  seed=Math.floor(Number(seed)||0)>>>0;maxTicks=Math.max(1,Math.min(216000,Math.floor(Number(maxTicks)||60)));

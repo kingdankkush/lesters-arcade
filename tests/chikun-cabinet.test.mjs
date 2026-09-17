@@ -82,7 +82,7 @@ test('Chikun deterministic core normalizes bounded flap evidence and replays the
   assert.equal(CHIKUN_FIXED_STEP_HZ, 60);
   assert.equal(result.seed, 55);
   assert.equal(result.fixedStepHz, CHIKUN_FIXED_STEP_HZ);
-  assert.equal(result.evidence.version, 'chikun-flap-evidence-v4');
+  assert.equal(result.evidence.version, 'chikun-flap-evidence-v5');
   assert.deepEqual(result.evidence.flapSteps, [0, 4, 11, 18, 27]);
   assert.equal(Object.isFrozen(result.evidence), true);
   assert.equal(Object.isFrozen(result.evidence.flapSteps), true);

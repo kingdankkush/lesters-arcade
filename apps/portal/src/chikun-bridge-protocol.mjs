@@ -84,7 +84,7 @@ function validateState(payload) {
 function validateEvidence(value) {
   const error = exactKeys(value, ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapSteps'], 'evidence');
   if (error) return error;
-  if (!['chikun-flap-evidence-v1','chikun-flap-evidence-v2','chikun-flap-evidence-v3','chikun-flap-evidence-v4'].includes(value.version)) return 'evidence version is invalid';
+  if (!['chikun-flap-evidence-v1','chikun-flap-evidence-v2','chikun-flap-evidence-v3','chikun-flap-evidence-v5'].includes(value.version)) return 'evidence version is invalid';
   if (!integer(value.seed, 0, 0xffff_ffff) || value.fixedStepHz !== 60 || !integer(value.maxTicks, 1, 216_000)) return 'evidence metadata is invalid';
   if (!Array.isArray(value.flapSteps) || value.flapSteps.length > 4096) return 'evidence flapSteps are invalid';
   let previous = -1;

@@ -91,7 +91,7 @@ test('Chikun parent bridge accepts building and canopy collision results', () =>
       terminalReason,
     };
     const evidence = {
-      version: 'chikun-flap-evidence-v4',
+      version: 'chikun-flap-evidence-v5',
       seed: 1,
       fixedStepHz: 60,
       maxTicks: 3600,

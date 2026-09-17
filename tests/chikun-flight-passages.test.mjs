@@ -34,5 +34,5 @@ test('passages keep a full transition interval and coins do not lure runners int
 });
 test('v3 recordings remain exact while new course results use v4 evidence',()=>{
  const old=JSON.parse(readFileSync(new URL('./fixtures/chikun-v3-replays.json',import.meta.url)));for(const r of old)assert.deepEqual(replayChikunRun(r.evidence),r);
- const now=simulateChikunRun({seed:19,taps:[100,120,142,164,186,208,230,252,274,296],maxTicks:1300});assert.equal(now.evidence.version,'chikun-flap-evidence-v4');assert.deepEqual(replayChikunRun(now.evidence),now);
+ const now=simulateChikunRun({seed:19,taps:[100,120,142,164,186,208,230,252,274,296],maxTicks:1300});assert.equal(now.evidence.version,'chikun-flap-evidence-v5');assert.deepEqual(replayChikunRun(now.evidence),now);
 });
