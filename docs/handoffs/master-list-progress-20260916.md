@@ -60,6 +60,36 @@ Working branch `fable/master-list-20260916`, cut from `codex/mobile-worlds-aquat
 - Web3: fee recipients in `contracts/deploy-config.testnet.json` point at the owner wallet `0x07cec6Fc…8B26` for every game and vault; `docs/web3/contract-overhaul-20260916.md` ends with the eight-step deploy/enable runbook. No deployer key exists on the build machine and Vercel secret writes are not permitted from the session, so contract deployment, verifier secrets and `SETTLEMENT_LIVE` remain the key holder's steps.
 - HMH: `createAdaptiveResolution` (runtime-performance.mjs) steps a fast phone from resolution 1 to 1.5 after a sustained fast window and back down for good on slow frames; emulated mobile profile stepped up with p95 7 ms.
 
+## Slice 9 — STACKED facelift (ST-N01/N02) — committed `0399ab73`
+
+- `apps/stacked/src/render/world-forms.mjs` plus atmosphere / visualizer-preview rework, results and settings shell in `index.html` / `game.css`; tests `stacked-world-forms`, `stacked-shell-ui`.
+
+## Slice 10 — Chikun contextual animation (CH-N02) — committed `f62c7ae7`
+
+- `apps/chikun/src/character.mjs` rewrite: `chikunBlendSeconds`, virtual `flare` clip, procedural springs; ragdoll handoff 0.22 s; tests chikun-facelift / chikun-polish.
+
+## Slice 11 — contracts round 2 and per-game achievements — committed `bc145698`, `75f305ec`
+
+- `ArcadeRankedEntry.quoteEntry` (flat fee + operator-set settlement gas reserve forwarded to `relayerVault`), `achievementRegistryByGame`, per-collection name/symbol, deploy script registers three collections, deferred activation when deployer ≠ developer. Portal `LITVM_CONTRACT_ADDRESSES.achievementRegistries` per game; audit flattens nested maps. Still **not deployed** (owner key).
+
+## Slice 12 — hosted services and browser wiring (X-02, X-05) — committed `1ed6d307`, `b59ba268`, `6ee91b7e`, `d727ead1`, `5fcdf51b`
+
+- `api/session.mjs` (SIWE → HMAC session token, needs `SESSION_SECRET`), `api/profile.mjs` (GET public / PUT with token; Neon HTTP SQL via `apps/portal/src/server-neon.mjs`, needs `NEON_DATABASE_URL`), `api/settle.mjs` (attest then relay with `RELAYER_PRIVATE_KEY` / `RPC_URL`; 409 already settled, 503 relayer not allowed). Fee model: `RANKED_SETTLEMENT_GAS_RESERVE_WEI` (0.02 placeholder), `rankedEntryTotalWei()`, split 1500/8500 bps.
+- Browser: `apps/portal/src/profile-sync-client.mjs` (`createProfileSync`, `buildProfileDocument`, `mergeRemoteProfile`); `main.js` posts the SIWE signature to `/api/session`, pulls the wallet's profile on connect and account change, pushes after every local persist while a session exists, asks `/api/settle` first at live settlement (relayed tx hash finishes without a wallet confirmation, otherwise the attestation is submitted from the wallet), flushes and drops the session on sign-out. Ranked modal shows fee, settlement reserve and total (live quote from `quoteEntry`). All best-effort: a 503 keeps the portal local-only.
+- Evidence: `tests/server-session-profile.test.mjs`, `tests/profile-sync-client.test.mjs`, `tests/ranked-entry-preflight.test.mjs`; Chikun Ranked browser smoke passes against the wired portal.
+
+## Slice 13 — HMH destinations and the Scores page — committed `5298e43e`, `a5a606c4`
+
+- Three gated destinations (Liquidity Haven ammo refill 120 s, Litecoin Sanctuary +30 health with the Scrypt Cache grenade, Liquidation Trap berserk 180 s behind a steam hazard), objective cap 8, digests re-pinned, 6/6 browser evidence, initial JS 1,042,652 B.
+- Global Scores page: `apps/portal/src/leaderboard-view.mjs` + rewritten route: per-game banners (roving tabs, `/scores?game=`), cadence/standing tabs, name or wallet search, sortable headers, jump-to-my-rank, podium, per-game tables that collapse to cards on phones, truthful wipe/reset notice. 12 new tests; portal e2e, interactions and Chikun smokes pass.
+
+## Slice 14 — owner question-round answers applied to HMH (see `owner-decisions-20260916.md`) — committed `134c8d12`, `eb3ff424`
+
+- Rail lane falloff: `createProjectileState({ damageScale })`, `laneDamageScale()` with `falloff: { farScale: 0.35 }` on Hash Rail, Deep Proof and the pistol's Settler Rail evolution.
+- Silver coins count toward score: `grantRunSilver()` (10 per coin × score multiplier, no XP), `silverCollected` in the snapshot.
+- `pickup-banner.mjs` (tick-driven bold banner for pickups and world interactions, coalescing queue) with styles in the HMH host stylesheet; `gore-presentation.mjs` physics droplets on directional flesh hits and dismembering kills with tumbling limbs (`shouldDismember`); `createUserZoom()` for desktop wheel zoom 0.7–1.1.
+- Runtime wiring in `apps/hmh-reboot/src/main.mjs` is prepared (scratchpad `wire-hmh-main.py`) and lands after the held-weapons slice releases that file.
+
 ## Not yet done in this session (see master list)
 
-X-02/X-05/X-07 (backend, profiles sync, global boards), X-08 art/mint policy, contract deployment (owner key), HMH-N03 weapon models, CH-N01/N02, ST-N01..N03. Physical-device acceptance remains owner/tester work.
+X-08 art (owner), contract deployment and Vercel secrets (owner key), HMH-N03 weapon models (in flight), HMH main.mjs wiring of slice 14, Chikun looping seven-region world and character-to-sheet (in flight), STACKED reactive board and menu redesign (in flight). Physical-device acceptance remains owner/tester work.
