@@ -1,9 +1,16 @@
 // Native Blender clips are presentation only. Canonical flight never reads this module.
-export const GROUND_CLIPS = Object.freeze(['walk','run','jump','hurdle_jump','high_jump','jump_flight','land','land_roll','land_slide','ground_impact']);
-const names = [...GROUND_CLIPS,'ready','takeoff','cruise','accelerate','climb','crest','descend','dive','brake','recover','squeeze','dodge_high','dodge_low','collect','barrel_roll','impact','tumble','fall','reverse_roll','corkscrew','victory_twirl'];
+export const GROUND_CLIPS = Object.freeze(['walk','run','jump','hurdle_jump','high_jump','jump_flight','land','land_roll','land_slide','ground_impact','idle']);
+// One-shot hits per obstacle family (2026-09-16 sheet pass); the prone 'impact' stays the generic fallback.
+export const CHIKUN_HIT_CLIPS = Object.freeze(['hit_tree','hit_storm','hit_drone','hit_bird','hit_wall']);
+export const CHIKUN_HIT_FAMILIES = Object.freeze({
+  tree:'hit_tree',willow:'hit_tree',cherry:'hit_tree',maple:'hit_tree',oak:'hit_tree',forest:'hit_tree',canopy:'hit_tree',
+  storm:'hit_storm',drone:'hit_drone',plane:'hit_drone',hawk:'hit_bird',eagle:'hit_bird',pelican:'hit_bird',
+  pipe:'hit_wall',town:'hit_wall',crate:'hit_wall',hurdle:'hit_wall',
+});
+const names = [...GROUND_CLIPS,'ready','takeoff','cruise','accelerate','climb','crest','descend','dive','brake','recover','squeeze','dodge_high','dodge_low','collect','barrel_roll','impact','tumble','fall','reverse_roll','corkscrew','victory_twirl','steep_climb','steep_dive',...CHIKUN_HIT_CLIPS];
 export const CHIKUN_FLOURISHES = Object.freeze(['barrel_roll','reverse_roll','corkscrew','victory_twirl']);
 export const milestoneFlourish = cleared => CHIKUN_FLOURISHES[Math.max(0,Math.floor(cleared/5)-1)%CHIKUN_FLOURISHES.length];
-const loops = new Set(['ready','cruise','climb','descend','dive','squeeze','walk','run']);
+const loops = new Set(['ready','cruise','climb','descend','dive','squeeze','walk','run','idle','steep_climb','steep_dive']);
 export const CHIKUN_CLIPS = Object.freeze({
   ...Object.fromEntries(names.map(name => [name,Object.freeze({name,frames:24,fps:30,loop:loops.has(name),sheet:name})])),
   // The landing approach is jump_flight played backwards (prone to upright), so no extra atlas is shipped.
@@ -12,6 +19,16 @@ export const CHIKUN_CLIPS = Object.freeze({
 export const CHIKUN_CHARACTERS = Object.freeze({ 'chikun-original': Object.freeze({id:'chikun-original',name:'Chikun',base:'/assets/generated/chikun-flight-v3/',frameSize:192,columns:4}) });
 // Ground speed multiplier at which the gait changes from a brisk walk to a sprint.
 export const CHIKUN_RUN_SPEED = 1.15;
+// Vertical speed (px per tick, negative is up) past which the flight pitch reads as steep.
+// A flap sets -4.8 and decays by .12 per tick; free fall tops out at 7.
+export const CHIKUN_STEEP_CLIMB_VELOCITY = -2.4;
+export const CHIKUN_STEEP_DIVE_VELOCITY = 5.6;
+// The clip a collision plays before the ragdoll takes over. Grounded hits always stagger.
+export function chikunHitClip(snapshot={}) {
+  const bird=snapshot.chikun??{},motion=bird.locomotion;
+  if(motion && (bird.y??0)>610 && motion!=='flight') return 'ground_impact';
+  return CHIKUN_HIT_FAMILIES[snapshot.impact?.kind??snapshot.terminalReason] ?? 'impact';
+}
 const FLAP_CLIPS = new Set(['accelerate','brake','recover']);
 const LAUNCH_CLIPS = new Set(['jump','hurdle_jump','high_jump','jump_flight','takeoff']);
 const REACTION_CLIPS = new Set(['collect','dodge_high','dodge_low']);
@@ -19,13 +36,14 @@ const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
 // Per-transition crossfade lengths. A hit reads on the frame it happens, control
 // edges stay crisp, and ground contact or a gait change settles more slowly.
 export function chikunBlendSeconds(from='',to='') {
-  if(to==='impact'||to==='ground_impact'||to==='tumble') return 0;
+  if(to==='impact'||to==='ground_impact'||to==='tumble'||CHIKUN_HIT_CLIPS.includes(to)) return 0;
   if(FLAP_CLIPS.has(to)||LAUNCH_CLIPS.has(to)) return .06;
   if(REACTION_CLIPS.has(to)||CHIKUN_FLOURISHES.includes(to)) return .09;
   if(to.startsWith('land')) return .18;
   if(to==='flare') return .14;
   if((from==='walk'&&to==='run')||(from==='run'&&to==='walk')) return .24;
   if(to==='fall') return .2;
+  if(to==='idle') return .2;
   return .12;
 }
 export function sampleChikunFrame(name,seconds=0) {
@@ -49,13 +67,17 @@ export function selectChikunAnimation(snapshot={}, options={}) {
   const {phase='running',terminalAge=0,flapAge=Infinity,flapVelocity=0,event='',eventAge=Infinity}=options;
   const bird=snapshot.chikun??{},v=bird.velocityY??0,tick=snapshot.tick??0,motion=bird.locomotion;
   const speed=snapshot.difficulty?.speedMultiplier??1,gait=speed<CHIKUN_RUN_SPEED?'walk':'run';
-  if (phase==='ready' || phase==='waiting') return motion ? 'walk' : 'ready';
+  // On the ground before the run starts he waits hands-in-pockets; the legacy sky mode hovers.
+  if (phase==='ready' || phase==='waiting') return motion ? 'idle' : 'ready';
   if (snapshot.terminal) {
     if(snapshot.terminalReason==='run-complete') return terminalAge<.8?'victory_twirl':'collect';
     // A pit or waterfall swallows Chikun without a hit: tumble straight into the drop.
     if(motion && !snapshot.impact) return terminalAge<.7 ? 'tumble' : 'fall';
+    const hit=chikunHitClip(snapshot);
     // Standing hits stagger back on the ground instead of the prone flight impact.
-    if(motion && (bird.y??0)>610 && motion!=='flight') return 'ground_impact';
+    if(hit==='ground_impact') return hit;
+    // A family hit is a full .8 s one-shot into the drop; the generic impact keeps its tumble beat.
+    if(hit!=='impact') return terminalAge<.8 ? hit : 'fall';
     return terminalAge<.24 ? 'impact' : terminalAge<.95 ? 'tumble' : 'fall';
   }
   const motionAge=(tick-(bird.motionTick??0))/60,forks=snapshot.forks??[];
@@ -97,10 +119,13 @@ export function selectChikunAnimation(snapshot={}, options={}) {
   }
   // Altitude bands: soaring high floats through a longer descend; skimming low commits to the dive sooner.
   const high=(bird.y??360)<220,low=(bird.y??360)>540;
+  if(v<CHIKUN_STEEP_CLIMB_VELOCITY)return 'steep_climb';
   if(v<-1.2)return 'climb';
   if(v<-.25)return 'crest';
   if(v<.8)return 'cruise';
   if(v<(high?4.6:low?2.6:3.8))return 'descend';
+  // A long free fall past the dive band commits to the streamlined plunge.
+  if(v>=CHIKUN_STEEP_DIVE_VELOCITY && (bird.y??360)<600)return 'steep_dive';
   return 'dive';
 }
 // Damped spring for squash, lean and recoil. Sub-stepped so a long frame cannot overshoot.
@@ -148,7 +173,7 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
   function impulse(from,to) {
     if(to.startsWith('land')){squash.x=.06+.09*clamp(airVelocity/7,0,1);squash.v=0;}
     else if(LAUNCH_CLIPS.has(to)&&to!=='takeoff'){squash.x=-.09;squash.v=0;}
-    else if(to==='impact'||to==='ground_impact'){squash.x=.16;squash.v=0;recoil.x=-14;recoil.v=0;}
+    else if(to==='impact'||to==='ground_impact'||CHIKUN_HIT_CLIPS.includes(to)){squash.x=to==='hit_wall'?.24:.16;squash.v=0;recoil.x=-14;recoil.v=0;}
     else if(to==='dodge_high'){lean.x=-.16;lean.v=0;}
     else if(to==='dodge_low'){lean.x=.16;lean.v=0;}
     else if(from==='walk'&&to==='run'){squash.x=-.04;}
@@ -184,7 +209,8 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       if(hasComposite && blend<1){mixCtx.globalAlpha=1-blend;mixCtx.drawImage(outgoing,0,0);}
       let seconds=age;
       const motionAge=(tick-(bird.motionTick??0))/60,speed=snapshot.difficulty?.speedMultiplier??1;
-      if(GROUND_CLIPS.includes(current)){seconds=['run','walk'].includes(current)?tick/60*speed:motionAge*(current==='jump_flight'?2.22:current.startsWith('land')?1.33:.85);}
+      if(GROUND_CLIPS.includes(current)){seconds=['run','walk'].includes(current)?tick/60*speed:current==='idle'?age:motionAge*(current==='jump_flight'?2.22:current.startsWith('land')?1.33:.85);}
+      if(CHIKUN_HIT_CLIPS.includes(current))seconds=options.terminalAge??0;
       if(current==='flare')seconds=clamp(1-chikunTicksToGround(bird)/16,0,1)*11/30;
       if(current==='brake')seconds=flapAge/.15*.4;
       if(current==='recover')seconds=(flapAge-.15)/.13*.8;

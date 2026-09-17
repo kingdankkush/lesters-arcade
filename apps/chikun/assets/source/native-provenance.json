@@ -1,33 +1,69 @@
 {
-  "schema": "chikun-native-character-v3",
+  "schema": "chikun-native-character-v4",
   "flightPose": "prone-superman-right",
-  "source_sha256": "a0896f51ea8de4ff2243476a2d77daae0761a4acc074e968ea695a22b911b8fc",
-  "source_vertices": 243502,
-  "source_triangles": 487027,
+  "characterSheet": "owner attachment 2026-09-16",
+  "source": "Chikun-Ground-Sky-Rig.blend",
+  "source_sha256": "2a7935abc1bb1af5eea0ddb6ba2710cdcae5acf16711f3ae0ef8f8c1b02ca018",
+  "source_vertices": 31413,
+  "source_triangles": 62830,
+  "vertices": 31413,
   "triangles": 62830,
-  "surfaceRepair": {
-    "openEdgesBefore": 955,
-    "openEdgesAfter": 0,
-    "method": "independently capped and triangulated sleeve, torso and cuff seams; original paint and skin weights retained"
-  },
   "bones": [
     "root",
     "spine",
     "head",
     "crest",
+    "brow.L",
+    "brow.R",
+    "beak",
     "arm.L",
     "hand.L",
     "arm.R",
     "hand.R",
+    "coat.L",
+    "coat.R",
+    "coat.back",
     "leg.L",
     "boot.L",
     "leg.R",
-    "boot.R",
-    "coat.L",
-    "coat.R",
-    "coat.back"
+    "boot.R"
   ],
+  "expressionBones": [
+    "brow.L",
+    "brow.R",
+    "beak"
+  ],
+  "expressions": [
+    "gritted",
+    "shouting",
+    "side_eye",
+    "smug",
+    "stern",
+    "surprised"
+  ],
+  "palette": {
+    "feather": "#f4f1ea",
+    "crest": "#c8102e",
+    "lining": "#a60f26",
+    "eye": "#6ff5b0",
+    "pupil": "#0b1412",
+    "beak": "#f28c28",
+    "coat": "#141416",
+    "shirt": "#0c0c0e"
+  },
+  "paintRegions": {
+    "keep": 16406,
+    "feather": 5529,
+    "lining": 2871,
+    "crest": 5609,
+    "eye": 210,
+    "pupil": 84,
+    "shirt": 390,
+    "beak": 314
+  },
   "vertex_color_attribute": "Color",
+  "glow_attribute": "Glow",
+  "character": "chikun-original",
   "frameSize": 256,
   "columns": 4,
   "rows": 6,
@@ -37,149 +73,352 @@
       "frames": 24,
       "fps": 30,
       "loop": true,
-      "sheet": "ready.webp"
+      "sheet": "ready.webp",
+      "expression": "side_eye",
+      "family": "flight"
     },
     {
       "name": "takeoff",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "takeoff.webp"
+      "sheet": "takeoff.webp",
+      "expression": "surprised",
+      "family": "flight"
     },
     {
       "name": "cruise",
       "frames": 24,
       "fps": 30,
       "loop": true,
-      "sheet": "cruise.webp"
+      "sheet": "cruise.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "accelerate",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "accelerate.webp"
+      "sheet": "accelerate.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "climb",
       "frames": 24,
       "fps": 30,
       "loop": true,
-      "sheet": "climb.webp"
+      "sheet": "climb.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "crest",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "crest.webp"
+      "sheet": "crest.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "descend",
       "frames": 24,
       "fps": 30,
       "loop": true,
-      "sheet": "descend.webp"
+      "sheet": "descend.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "dive",
       "frames": 24,
       "fps": 30,
       "loop": true,
-      "sheet": "dive.webp"
+      "sheet": "dive.webp",
+      "expression": "gritted",
+      "family": "flight"
     },
     {
       "name": "brake",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "brake.webp"
+      "sheet": "brake.webp",
+      "expression": "surprised",
+      "family": "flight"
     },
     {
       "name": "recover",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "recover.webp"
+      "sheet": "recover.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "squeeze",
       "frames": 24,
       "fps": 30,
       "loop": true,
-      "sheet": "squeeze.webp"
+      "sheet": "squeeze.webp",
+      "expression": "gritted",
+      "family": "flight"
     },
     {
       "name": "dodge_high",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "dodge_high.webp"
+      "sheet": "dodge_high.webp",
+      "expression": "surprised",
+      "family": "flight"
     },
     {
       "name": "dodge_low",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "dodge_low.webp"
+      "sheet": "dodge_low.webp",
+      "expression": "surprised",
+      "family": "flight"
     },
     {
       "name": "collect",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "collect.webp"
+      "sheet": "collect.webp",
+      "expression": "smug",
+      "family": "flight"
     },
     {
       "name": "barrel_roll",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "barrel_roll.webp"
+      "sheet": "barrel_roll.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "impact",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "impact.webp"
+      "sheet": "impact.webp",
+      "expression": "shouting",
+      "family": "flight"
     },
     {
       "name": "tumble",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "tumble.webp"
+      "sheet": "tumble.webp",
+      "expression": "surprised",
+      "family": "flight"
     },
     {
       "name": "fall",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "fall.webp"
+      "sheet": "fall.webp",
+      "expression": "surprised",
+      "family": "flight"
     },
     {
       "name": "reverse_roll",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "reverse_roll.webp"
+      "sheet": "reverse_roll.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "corkscrew",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "corkscrew.webp"
+      "sheet": "corkscrew.webp",
+      "expression": "stern",
+      "family": "flight"
     },
     {
       "name": "victory_twirl",
       "frames": 24,
       "fps": 30,
       "loop": false,
-      "sheet": "victory_twirl.webp"
+      "sheet": "victory_twirl.webp",
+      "expression": "smug",
+      "family": "flight"
+    },
+    {
+      "name": "steep_climb",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "steep_climb.webp",
+      "expression": "stern",
+      "family": "flight"
+    },
+    {
+      "name": "steep_dive",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "steep_dive.webp",
+      "expression": "gritted",
+      "family": "flight"
+    },
+    {
+      "name": "hit_tree",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "hit_tree.webp",
+      "expression": "shouting",
+      "family": "flight"
+    },
+    {
+      "name": "hit_storm",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "hit_storm.webp",
+      "expression": "shouting",
+      "family": "flight"
+    },
+    {
+      "name": "hit_drone",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "hit_drone.webp",
+      "expression": "shouting",
+      "family": "flight"
+    },
+    {
+      "name": "hit_bird",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "hit_bird.webp",
+      "expression": "shouting",
+      "family": "flight"
+    },
+    {
+      "name": "hit_wall",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "hit_wall.webp",
+      "expression": "shouting",
+      "family": "flight"
+    },
+    {
+      "name": "walk",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "walk.webp",
+      "expression": "stern",
+      "family": "ground"
+    },
+    {
+      "name": "run",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "run.webp",
+      "expression": "gritted",
+      "family": "ground"
+    },
+    {
+      "name": "jump",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "jump.webp",
+      "expression": "stern",
+      "family": "ground"
+    },
+    {
+      "name": "hurdle_jump",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "hurdle_jump.webp",
+      "expression": "stern",
+      "family": "ground"
+    },
+    {
+      "name": "high_jump",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "high_jump.webp",
+      "expression": "gritted",
+      "family": "ground"
+    },
+    {
+      "name": "jump_flight",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "jump_flight.webp",
+      "expression": "surprised",
+      "family": "ground"
+    },
+    {
+      "name": "land",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "land.webp",
+      "expression": "smug",
+      "family": "ground"
+    },
+    {
+      "name": "land_roll",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "land_roll.webp",
+      "expression": "smug",
+      "family": "ground"
+    },
+    {
+      "name": "land_slide",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "land_slide.webp",
+      "expression": "smug",
+      "family": "ground"
+    },
+    {
+      "name": "ground_impact",
+      "frames": 24,
+      "fps": 30,
+      "loop": false,
+      "sheet": "ground_impact.webp",
+      "expression": "shouting",
+      "family": "ground"
+    },
+    {
+      "name": "idle",
+      "frames": 24,
+      "fps": 30,
+      "loop": true,
+      "sheet": "idle.webp",
+      "expression": "side_eye",
+      "family": "ground"
     }
   ],
-  "character": "chikun-original",
-  "notes": "Owner mesh and colors, closed surface, rightward prone Superman flight. 21 motion states including four full-turn flourishes, 30fps projection. No separate UV texture was present in source."
+  "notes": "Owner Tripo surface regraded to the 2026-09-16 sheet, emissive mint eyes, three expression bones on the native rig. 39 clips: 21 flight, 7 sheet flight additions (steep climb / dive, five obstacle-family hits), 10 ground, idle."
 }

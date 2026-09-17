@@ -33,7 +33,7 @@ test('character downloads report complete failure and recover with an explicit r
     assert.equal(character.complete,false);
     fail=false;
     assert.equal(await character.retry(),true);
-    assert.equal(character.loaded,31);
+    assert.equal(character.loaded,39);
     assert.equal(character.complete,true);
     character.dispose();
   } finally {Object.assign(globalThis,originals);}
