@@ -1,4 +1,5 @@
 import { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_RUNTIME_SCALE, productionHeroAsset } from './production-hero-assets.mjs';
+import { HELD_WEAPON_PIPELINE_ID, resolveHeldWeaponFrame } from './held-weapon-atlas.mjs';
 export { PRODUCTION_HERO_ASSETS, PRODUCTION_HERO_ATLAS_IMAGE_URL, PRODUCTION_HERO_ATLAS_METADATA_URL, PRODUCTION_HERO_RUNTIME_SCALE, productionHeroAsset } from './production-hero-assets.mjs';
 export const PRODUCTION_HERO_MAX_TEXTURE_BYTES = 4 * 1024 * 1024;
 export const PRODUCTION_HERO_MAX_TEXTURE_TOTAL_BYTES = 16 * 1024 * 1024;
@@ -463,18 +464,62 @@ export function createProductionHeroDisplay({
     container.addChild(sprite);
   }
 
+  // HMH-N03 held-weapon pages: one lazy page per carried weapon, rendered in
+  // this hero's own scene with the weapon skinned to the pistol bone. When
+  // the active weapon has a page, its frame stands in for the native weapon
+  // layer frame (same clip state, direction and ground pivot); states the
+  // page does not carry (melee, grenade, death) fall through to the native
+  // knife / grenade / pistol so those authored clips stay intact.
+  const heldPages = new Map();
+  const attachHeldWeaponPage = ({ weaponId, index: heldIndex, textures } = {}) => {
+    if (heldIndex?.pipelineId !== HELD_WEAPON_PIPELINE_ID || heldIndex.actorId !== index.actorId) throw new TypeError('held weapon page must belong to this hero');
+    const page = heldIndex.pageFor(weaponId);
+    if (!page || !Array.isArray(textures) || textures.length !== page.pages.length
+      || textures.some((texture, i) => texture?.source?.width !== page.pages[i].dimensions.width || texture.source.height !== page.pages[i].dimensions.height)) throw new RangeError('held weapon page texture does not match its metadata');
+    heldPages.set(weaponId, Object.freeze({ index: heldIndex, textures: Object.freeze([...textures]), page }));
+  };
+  const heldTextureFor = (held, frame) => {
+    const key = `held:${frame.id}`;
+    if (!textureByFrameId.has(key)) {
+      textureByFrameId.set(key, new TextureClass({
+        source: held.textures[frame.page].source,
+        frame: new RectangleClass(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h),
+        orig: new RectangleClass(0, 0, frame.orig.w, frame.orig.h),
+        trim: new RectangleClass(frame.trim.x, frame.trim.y, frame.trim.w, frame.trim.h),
+      }));
+    }
+    return textureByFrameId.get(key);
+  };
+
   const applyPose = (renderState) => {
     const presentation = index.motionAnimator?.(renderState) ?? renderState;
     const frames = resolveProductionHeroPose(index, presentation);
     container.motionAction = presentation.action;
+    const held = heldPages.get(presentation.weaponId);
+    const native = frames.find((frame) => frame.layer === 'weapon');
+    const heldFrame = held ? resolveHeldWeaponFrame(held.index, {
+      weaponId: presentation.weaponId, state: native.state, direction: native.direction, frameIndex: native.frameIndex,
+      frameCount: clipFor(index, 'weapon', native.state, native.direction).frameCount,
+    }) : null;
     for (const frame of frames) {
       const sprite = spriteByLayer.get(frame.layer);
+      if (heldFrame && frame === native) {
+        sprite.texture = heldTextureFor(held, heldFrame);
+        sprite.anchor.set(heldFrame.anchor.x, heldFrame.anchor.y);
+        sprite.scale.set(held.index.spriteScale);
+        continue;
+      }
       sprite.texture = textureFor(frame);
       sprite.anchor.set(frame.anchor.x, frame.anchor.y);
       sprite.scale.set(160 / (frame.sourceSize?.h ?? 160));
     }
-    container.frameIds = frames.map((frame) => frame.id).join(',');
-    return frames;
+    const shown = heldFrame ? frames.map((frame) => (frame === native ? heldFrame : frame)) : frames;
+    container.frameIds = shown.map((frame) => frame.id).join(',');
+    container.heldWeaponFrameId = heldFrame?.id ?? '';
+    // Muzzle offset from the ground pivot in body units (container-local), so
+    // the runtime can spawn the flash where this frame's barrel actually ends.
+    container.heldWeaponMuzzle = heldFrame ? Object.freeze({ x: heldFrame.muzzle.x * held.index.spriteScale, y: heldFrame.muzzle.y * held.index.spriteScale }) : null;
+    return shown;
   };
 
   const setLayerVisible = (layer, visible) => {
@@ -518,8 +563,16 @@ export function createProductionHeroDisplay({
     setTint,
     attachMotionPage,
     setLayerOffset,
-    hasNativeWeapon: index.hasNativeWeapon,
+    attachHeldWeaponPage,
+    hasHeldWeapon: (weaponId) => heldPages.has(weaponId),
+    // A weapon rendered inside this hero's own scene, native pistol or held
+    // page, owns the weapon layer; the external prop overlay stays hidden.
+    hasNativeWeapon: (weaponId) => index.hasNativeWeapon(weaponId) || heldPages.has(weaponId),
     hasNativeAction: index.hasNativeAction,
+    // The body recoil clip the runtime may play when this weapon fires:
+    // 'pistol-fire' for the native pistol and for pages that declare it,
+    // null for the channel weapons whose beam has no kick.
+    fireAction: (weaponId) => (index.hasNativeWeapon(weaponId) ? 'pistol-fire' : heldPages.get(weaponId)?.page.fireAction ?? null),
   });
 }
 

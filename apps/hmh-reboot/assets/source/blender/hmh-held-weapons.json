@@ -1,0 +1,169 @@
+{
+  "schema": "hmh-held-weapons-v1",
+  "pipelineId": "hmh-reboot-held-weapons-v1",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "notes": "HMH-N03 (2026-09-16). The Coin Blaster pistol is a textured mesh skinned to the pistol_prop bone of each production hero rig and rendered by the hero pipeline per direction and clip frame. This pipeline gives every other carried weapon the same treatment: repository-owned Blender models authored in a shared grip frame are appended into each hero's packed source scene, skinned to the same bone with the pistol's own principal frame, and rendered through the hero's camera, lights and clip actions into one lazy page per hero and weapon. No downloaded pixels, no runtime authority; the hero scenes are opened read-only and never saved.",
+  "heroManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+  "scene": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/blender/hmh-held-weapons.blend",
+    "collection": "HMH_Held_Weapons",
+    "generator": "scripts/hmh-blender/create-hmh-held-weapons.py",
+    "exporter": "scripts/hmh-blender/export-hmh-held-weapons.py",
+    "blenderVersion": "5.1.2",
+    "weaponBone": "pistol_prop",
+    "pistolFrame": "principal axes of the hero's own coin-blaster mesh in weapon_socket rest space; origin at its grip anchor (vertex 69695 of the shared pistol mesh, mirrored onto the Commando's copy by relative position)"
+  },
+  "render": {
+    "coverage": 1.5,
+    "pixelDensity": 2,
+    "alphaThreshold": 8,
+    "note": "Same camera pitch, azimuth, lights and colour management as the hero atlas. Each hero renders at its own atlas frame size (256, 224 or 216 px) times coverage x pixelDensity: ortho_scale is widened by `coverage` so a rifle pointing away from the body stays inside the frame, and the resolution is raised by coverage x pixelDensity so each frame pixel is exactly 1/pixelDensity of that hero's atlas pixel. The page ground pivot is the hero's declared sourcePivot mapped through the same transform, so a held frame lands exactly where the hero's own weapon layer lands."
+  },
+  "gripFrame": {
+    "origin": "trigger-hand palm point on the grip",
+    "forward": "+X toward the muzzle",
+    "left": "+Y",
+    "up": "+Z",
+    "units": "metres at hero scale",
+    "boreHeight": 0.1
+  },
+  "pistolGripAnchorAboutMean": [
+    -0.0556,
+    0.0,
+    -0.0343
+  ],
+  "pistolGripAnchorNote": "Grip anchor of the shared coin-blaster mesh expressed in its own principal frame relative to its vertex mean (forward, left, up). Taken from hmh_grip_anchor_vertex 69695 of the compact hero sources with the sideways component zeroed; the exporter re-checks it against that vertex where present.",
+  "clips": {
+    "aim": {
+      "frames": 6,
+      "fps": 6,
+      "native": "aim"
+    },
+    "pistol-fire": {
+      "frames": 3,
+      "fps": 15,
+      "native": "pistol-fire"
+    },
+    "dash": {
+      "frames": 4,
+      "fps": 15,
+      "loop": false,
+      "native": "dash"
+    },
+    "reload": {
+      "frames": 8,
+      "fps": 16,
+      "loop": false,
+      "native": "aim",
+      "gesture": "reload"
+    },
+    "idle-check": {
+      "frames": 8,
+      "fps": 4,
+      "loop": false,
+      "native": "aim",
+      "gesture": "idle-check"
+    }
+  },
+  "weapons": [
+    {
+      "weaponId": "scatter-shotgun",
+      "shape": "pump-shotgun",
+      "lengthMeters": 0.812,
+      "accent": "#ff8c5a",
+      "muzzle": [
+        0.605,
+        0.0,
+        0.116
+      ],
+      "fireAction": "pistol-fire"
+    },
+    {
+      "weaponId": "auto-miner",
+      "shape": "rotary-cannon",
+      "lengthMeters": 0.715,
+      "accent": "#83f28f",
+      "muzzle": [
+        0.525,
+        0.0,
+        0.1
+      ],
+      "fireAction": "pistol-fire"
+    },
+    {
+      "weaponId": "launcher-rig",
+      "shape": "revolver-launcher",
+      "lengthMeters": 0.742,
+      "accent": "#c497ff",
+      "muzzle": [
+        0.522,
+        0.0,
+        0.1
+      ],
+      "fireAction": "pistol-fire"
+    },
+    {
+      "weaponId": "hash-rail",
+      "shape": "railgun",
+      "lengthMeters": 1.017,
+      "accent": "#8ff3ff",
+      "muzzle": [
+        0.78,
+        0.0,
+        0.106
+      ],
+      "fireAction": "pistol-fire"
+    },
+    {
+      "weaponId": "lightning-ledger",
+      "shape": "arc-rifle",
+      "lengthMeters": 0.794,
+      "accent": "#7df9ff",
+      "muzzle": [
+        0.56,
+        0.0,
+        0.1
+      ],
+      "fireAction": null
+    },
+    {
+      "weaponId": "bear-market-burner",
+      "shape": "flame-projector",
+      "lengthMeters": 0.881,
+      "accent": "#ff7a2f",
+      "muzzle": [
+        0.605,
+        0.0,
+        0.1
+      ],
+      "fireAction": null
+    },
+    {
+      "weaponId": "forked-standard",
+      "shape": "war-fork",
+      "lengthMeters": 1.636,
+      "accent": "#d7fbff",
+      "muzzle": [
+        1.16,
+        0.0,
+        0.008
+      ],
+      "fireAction": "pistol-fire"
+    }
+  ],
+  "atlas": {
+    "outputDirectory": "apps/portal/assets/generated/hmh-held-weapons",
+    "padding": 2,
+    "maxSize": 2048,
+    "maxBytesPerPage": 1572864,
+    "maxBytesPerHero": 8388608,
+    "budgetNote": "Lossless exact WebP like the hero atlases. 232 frames at twice the hero density cost 0.8-1.1 MB per weapon page; pages are fetched lazily one weapon at a time on first equip, so the per-hero total is a ceiling, not an initial transfer."
+  },
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 160,
+    "maxChannelDelta": 4,
+    "maxTotalChannelDelta": 512
+  },
+  "reproducibilityNote": "Per-frame bound on two cold Eevee passes, premultiplied RGBA, the hero pipeline's mode (bounded-premultiplied-rgba-v1). The hero body budget is 8 / 2 / 32; thin bright metal at twice the hero density (the six rotary barrels of the auto-miner in the dash clip) drifts by up to ~110 pixels at <= 4 levels per channel between passes, sequential or concurrent (measured 2026-09-16: Commando 110 / 4 / 314, Lilly 86 / 3 / 191). That is sub-visible shading noise, not geometry, so this pipeline carries its own wider bound; pass A is blessed."
+}

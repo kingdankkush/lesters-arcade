@@ -18,6 +18,7 @@ import { auditTripoProductionAssets } from './hmh-tripo-production-asset-qa.mjs'
 import { auditWorldDesignAssets } from './hmh-world-design-production-asset-qa.mjs';
 import { validateNativeRosterAsset } from './hmh-native-roster-qa.mjs';
 import { createHeroMotionIndex, HERO_MOTION_PAGE_MAX_BYTES, HERO_WITH_MOTION_MAX_BYTES } from '../apps/hmh-reboot/src/hero-motion-atlas.mjs';
+import { HELD_WEAPON_IDS, HELD_WEAPON_HERO_MAX_BYTES, HELD_WEAPON_PAGE_MAX_BYTES, createHeldWeaponIndex } from '../apps/hmh-reboot/src/held-weapon-atlas.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const portalRoot = path.join(repoRoot, 'apps', 'portal');
@@ -78,6 +79,20 @@ function validateHeroImage(imagePath, metadataPath, label) {
   assert.ok(report.transparentPixels > 0, `${label} atlas lacks transparency`);
   assert.ok(report.opaquePixels > 0, `${label} atlas is blank`);
   assert.equal(report.illegalDuplicateGroups, 0, `${label} duplicates animated frames`);
+  return report;
+}
+
+function validateHeldWeaponPage(imagePath, metadataPath, weaponId, pageIndex, label) {
+  const result = spawnSync(process.env.PYTHON ?? 'python', [
+    path.join(repoRoot, 'scripts', 'hmh-held-weapon-page-report.py'),
+    '--image', imagePath, '--metadata', metadataPath, '--weapon', weaponId, '--page', String(pageIndex),
+  ], { cwd: repoRoot, encoding: 'utf8', timeout: 120_000 });
+  assert.equal(result.status, 0, `${label} page decode failed:
+${result.stderr}
+${result.stdout}`);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.encoding, 'WEBP', `${label} page encoding`);
+  assert.ok(report.transparentPixels > 0 && report.opaquePixels > 0, `${label} page is blank or opaque`);
   return report;
 }
 
@@ -293,6 +308,51 @@ assert.equal(rosterMetrics.engine, 'BLENDER_EEVEE', 'roster engine');
 const nativeMetrics=JSON.parse(readFileSync(path.join(repoRoot,'docs/testing/hmh-native-roster/measurement.json')));
 assert.equal(nativeMetrics.totalImageBytes+rosterReports.find(r=>r.actorId==='bagholder-rusher').imageBytes,rosterAtlasTotalBytes,'active roster byte ledger drifted');
 
+// HMH-N03 (2026-09-16): one lazy lossless WebP page set per hero for the seven
+// non-pistol weapons, rendered in the hero's own scene. 1.5 MiB per page and
+// 8 MiB per hero are ceilings on lazily fetched per-equip pages, not initial
+// transfer; the manifest carries the same numbers and the runtime index
+// enforces them. Every page must decode to its declared size and hash, and
+// the exporter / weapon scene that produced it must be the committed ones.
+const heldManifest = JSON.parse(readFileSync(path.join(repoRoot, 'apps/hmh-reboot/assets/source/blender/hmh-held-weapons.json'), 'utf8'));
+assert.equal(heldManifest.atlas.maxBytesPerPage, HELD_WEAPON_PAGE_MAX_BYTES, 'held-weapon page budget drifted between manifest and runtime');
+assert.equal(heldManifest.atlas.maxBytesPerHero, HELD_WEAPON_HERO_MAX_BYTES, 'held-weapon hero budget drifted between manifest and runtime');
+const heldExporterSha = sha256File(path.join(repoRoot, heldManifest.scene.exporter));
+const heldSceneSha = sha256File(path.join(repoRoot, heldManifest.scene.sourceBlend));
+const heldWeaponReports = [];
+let heldWeaponTotalBytes = 0;
+for (const asset of Object.values(PRODUCTION_HERO_ASSETS)) {
+  const dir = path.join(portalRoot, 'assets', 'generated', 'hmh-held-weapons', asset.actorId);
+  const metadataPath = path.join(dir, `${asset.actorId}-held-weapons.json`);
+  const metadata = JSON.parse(readFileSync(metadataPath, 'utf8'));
+  const index = createHeldWeaponIndex(metadata, { actorId: asset.actorId });
+  assert.equal(metadata.exporterSha256, heldExporterSha, `${asset.actorId} held-weapon pages were rendered by a different exporter`);
+  assert.equal(metadata.weaponSceneSha256, heldSceneSha, `${asset.actorId} held-weapon pages were rendered from a different weapon scene`);
+  assert.equal(metadata.sourceSha256, productionManifest.pilots.find((pilot) => pilot.actorId === asset.actorId).sourceModel.sourceSha256, `${asset.actorId} held-weapon pages came from another hero source`);
+  const pages = [];
+  for (const weaponId of HELD_WEAPON_IDS) {
+    for (const image of index.pageFor(weaponId).pages) {
+      const imagePath = path.join(dir, image.image.replace(/^\.\//u, ''));
+      const bytes = statSync(imagePath).size;
+      assert.equal(bytes, image.imageBytes, `${asset.actorId}/${weaponId} page bytes drift`);
+      assert.equal(sha256File(imagePath), image.imageSha256, `${asset.actorId}/${weaponId} page sha drift`);
+      assert.ok(bytes <= HELD_WEAPON_PAGE_MAX_BYTES, `${asset.actorId}/${weaponId} page exceeds maxHeldWeaponPageBytes`);
+      const decoded = validateHeldWeaponPage(imagePath, metadataPath, weaponId, index.pageFor(weaponId).pages.indexOf(image), `${asset.actorId} held ${weaponId}`);
+      assert.equal(decoded.width, image.dimensions.width, `${asset.actorId}/${weaponId} decoded width`);
+      assert.equal(decoded.height, image.dimensions.height, `${asset.actorId}/${weaponId} decoded height`);
+      pages.push({ weaponId, image: image.image, imageBytes: bytes, width: decoded.width, height: decoded.height, frames: decoded.frameCount, uniqueFrames: decoded.uniqueFrames });
+    }
+  }
+  assert.ok(index.totalImageBytes <= HELD_WEAPON_HERO_MAX_BYTES, `${asset.actorId} held-weapon pages exceed maxHeldWeaponHeroBytes`);
+  const metrics = JSON.parse(readFileSync(path.join(dir, `${asset.actorId}-held-weapons-metrics.json`), 'utf8'));
+  assert.equal(metrics.status, 'pass', `${asset.actorId} held-weapon metrics status`);
+  assert.equal(metrics.frameCount, HELD_WEAPON_IDS.length * 8 * 29, `${asset.actorId} held-weapon frame count`);
+  assert.equal(sha256File(metadataPath), metrics.metadataSha256, `${asset.actorId} held-weapon metadata drift`);
+  assert.equal(sha256File(path.join(dir, `${asset.actorId}-held-weapons-contact-sheet.png`)), metrics.contactSheetSha256, `${asset.actorId} held-weapon contact sheet drift`);
+  heldWeaponTotalBytes += index.totalImageBytes;
+  heldWeaponReports.push({ actorId: asset.actorId, totalImageBytes: index.totalImageBytes, metadataBytes: statSync(metadataPath).size, frames: metrics.frameCount, pixelDensity: index.pixelDensity, pages });
+}
+
 const propImagePath = portalPath(AUTHORED_PROP_ATLAS_IMAGE_URL);
 const propMetadata = JSON.parse(readFileSync(portalPath(AUTHORED_PROP_ATLAS_METADATA_URL), 'utf8'));
 const propPngReport = validatePng(propImagePath, 'hmh-authored-props');
@@ -321,7 +381,9 @@ const summary = {
   selectorAtlasBytes,
   rosterAtlasTotalBytes,
   propAtlasBytes: propPngReport.imageBytes,
-  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxNativeRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes, maxSelectorAtlasTotalBytes },
+  heldWeaponTotalBytes,
+  budgets: { maxHeroAtlasBytes, maxHeroAtlasTotalBytes, maxRosterAtlasBytes, maxNativeRosterAtlasBytes, maxRosterAtlasTotalBytes, maxPropAtlasBytes, maxSelectorAtlasBytes, maxSelectorAtlasTotalBytes, maxHeldWeaponPageBytes: HELD_WEAPON_PAGE_MAX_BYTES, maxHeldWeaponHeroBytes: HELD_WEAPON_HERO_MAX_BYTES },
+  heldWeaponReports,
   heroReports,
   heroMotionReports,
   heroWithMotionTotalBytes,

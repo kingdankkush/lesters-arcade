@@ -1,0 +1,149 @@
+{
+  "schema": "hmh-held-weapons-metrics-v1",
+  "status": "pass",
+  "pipelineId": "hmh-reboot-held-weapons-v1",
+  "actorId": "lit-valkyrie",
+  "blenderVersion": "5.1.2",
+  "runtimeAuthority": "projection-only",
+  "frameCount": 1624,
+  "uniqueFrameCount": 1603,
+  "weaponCount": 7,
+  "frameSize": [
+    768,
+    768
+  ],
+  "pivotPixels": [
+    384,
+    538
+  ],
+  "originPixels": [
+    384.0,
+    536.511
+  ],
+  "orthoScale": 4.125,
+  "heroOrthoScale": 2.75,
+  "reproducibility": "single-pass",
+  "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 160,
+    "maxChannelDelta": 4,
+    "maxTotalChannelDelta": 512
+  },
+  "reproducibilityObserved": null,
+  "sourceBlendSha256": "f090f2e2a387f8ee3c2666bed1af22344f6ec82b1695bc62f1d18f1cfb8268ec",
+  "sourceBlendBytes": 61129265,
+  "weaponSceneSha256": "eace9bcdc6776ffaa666d1821b78780afd69a83a258ebb6d32942026d41001d7",
+  "manifestSha256": "62f9e1d2712fed0dcd3820d2f9ac8b7f92a448c5404123cae07e1e604e6e7ee2",
+  "totalImageBytes": 7865154,
+  "pages": {
+    "scatter-shotgun": {
+      "imageBytes": 898500,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-scatter-shotgun.webp",
+          "imageBytes": 898500,
+          "imageSha256": "da189ceb936114106986696ce75c26133dce853d54c16eee4b31ead5b1205c9a",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "auto-miner": {
+      "imageBytes": 1190014,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-auto-miner.webp",
+          "imageBytes": 1190014,
+          "imageSha256": "27ad5885799081fa60bc7883ee215cc2788679532d10faee15de8c88c4b22977",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "launcher-rig": {
+      "imageBytes": 1066362,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-launcher-rig.webp",
+          "imageBytes": 1066362,
+          "imageSha256": "fb66cc43f1e3d5a554320d5a71408a017559b2f0159e4e8da2fc0f03475fa771",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "hash-rail": {
+      "imageBytes": 1223512,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-hash-rail.webp",
+          "imageBytes": 1223512,
+          "imageSha256": "3a1c4b87e1cba0704983343cc743c92190d070db205ddfe7bd0150d7889f315c",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "lightning-ledger": {
+      "imageBytes": 1054310,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-lightning-ledger.webp",
+          "imageBytes": 1054310,
+          "imageSha256": "165d8f7d6c1cf8e7219115ec33c9e07270175e93ba3f5e59e9e05b71a5e64fc2",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "bear-market-burner": {
+      "imageBytes": 1202572,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-bear-market-burner.webp",
+          "imageBytes": 1202572,
+          "imageSha256": "dd296b63ac60aa44724d9a4e5d6c249dee4a4301a8e4e95275e2dbf0d3f748ca",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "forked-standard": {
+      "imageBytes": 1229884,
+      "pages": [
+        {
+          "image": "./lit-valkyrie-forked-standard.webp",
+          "imageBytes": 897552,
+          "imageSha256": "8ea523bd093ec674e484d4871297ece14ca82fe038f07cf72456c0efd01cdb38",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        },
+        {
+          "image": "./lit-valkyrie-forked-standard-1.webp",
+          "imageBytes": 332332,
+          "imageSha256": "55ad1f493b006882d45284ea6429f4bdce975994bb88e592a1ecc92b1ad0df19",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    }
+  },
+  "metadataSha256": "494de7b6d9ae6721e169175b2978f117e1e0b75c1bc1273a74a8c8b0c2c8297a",
+  "contactSheetSha256": "8f9d885adbbbbf08a1c7bd64a71c76c72f39e85dd7674f28ab11b98c9b7cc4e2"
+}

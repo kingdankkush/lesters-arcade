@@ -1,0 +1,140 @@
+{
+  "schema": "hmh-held-weapons-metrics-v1",
+  "status": "pass",
+  "pipelineId": "hmh-reboot-held-weapons-v1",
+  "actorId": "lester-original",
+  "blenderVersion": "5.1.2",
+  "runtimeAuthority": "projection-only",
+  "frameCount": 1624,
+  "uniqueFrameCount": 1599,
+  "weaponCount": 7,
+  "frameSize": [
+    672,
+    672
+  ],
+  "pivotPixels": [
+    368,
+    522
+  ],
+  "originPixels": [
+    336.0,
+    469.448
+  ],
+  "orthoScale": 4.125,
+  "heroOrthoScale": 2.75,
+  "reproducibility": "single-pass",
+  "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 160,
+    "maxChannelDelta": 4,
+    "maxTotalChannelDelta": 512
+  },
+  "reproducibilityObserved": null,
+  "sourceBlendSha256": "ed1278ea131927f9849fb62f265512a8547186fb9b9c06b08da78fb438eacc96",
+  "sourceBlendBytes": 60247717,
+  "weaponSceneSha256": "eace9bcdc6776ffaa666d1821b78780afd69a83a258ebb6d32942026d41001d7",
+  "manifestSha256": "62f9e1d2712fed0dcd3820d2f9ac8b7f92a448c5404123cae07e1e604e6e7ee2",
+  "totalImageBytes": 6461774,
+  "pages": {
+    "scatter-shotgun": {
+      "imageBytes": 747378,
+      "pages": [
+        {
+          "image": "./lester-original-scatter-shotgun.webp",
+          "imageBytes": 747378,
+          "imageSha256": "902dfa3e8780f4d0acaae019f5c717d8380361421c6053d2d25527986b2c8c7d",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "auto-miner": {
+      "imageBytes": 964558,
+      "pages": [
+        {
+          "image": "./lester-original-auto-miner.webp",
+          "imageBytes": 964558,
+          "imageSha256": "da01b4e95c97c69fdb6057a421b024b5b8c0ed77b9cf47d1b95ee0bfbee7d9e3",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "launcher-rig": {
+      "imageBytes": 864314,
+      "pages": [
+        {
+          "image": "./lester-original-launcher-rig.webp",
+          "imageBytes": 864314,
+          "imageSha256": "e150f6c406f65a98d85b0ba42e75a306bc16b03cfacd37e3ca51a9640cf608df",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "hash-rail": {
+      "imageBytes": 994310,
+      "pages": [
+        {
+          "image": "./lester-original-hash-rail.webp",
+          "imageBytes": 994310,
+          "imageSha256": "1647253d3df3bbde7ed908443e5620f24e03f93dcd3c60303fefa3117dd61db3",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "lightning-ledger": {
+      "imageBytes": 859298,
+      "pages": [
+        {
+          "image": "./lester-original-lightning-ledger.webp",
+          "imageBytes": 859298,
+          "imageSha256": "16f8e5d2a24a38699d6dcde5a6ac738910cb7d273166810d0a51606f55a7f64e",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "bear-market-burner": {
+      "imageBytes": 997698,
+      "pages": [
+        {
+          "image": "./lester-original-bear-market-burner.webp",
+          "imageBytes": 997698,
+          "imageSha256": "c098fda62564cac9b77e18b88a47ef205cc03b492b2ce4dfb7a59a6e59df5ece",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "forked-standard": {
+      "imageBytes": 1034218,
+      "pages": [
+        {
+          "image": "./lester-original-forked-standard.webp",
+          "imageBytes": 1034218,
+          "imageSha256": "893740b7307083d0056fcfd5ccdbabcd9c26340f3ba8398ad0b1db0ec7f83681",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    }
+  },
+  "metadataSha256": "8b2f5989f849e5a1fc1b8b738c2b053f6853196cd825878e7c34675ffac7aa77",
+  "contactSheetSha256": "17e430068079da30b5478a007588ce47eb950a7edabdcfd4e712accb8a4085ed"
+}

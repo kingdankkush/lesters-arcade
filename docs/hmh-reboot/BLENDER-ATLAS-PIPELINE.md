@@ -256,6 +256,84 @@ Consumers: `apps/portal/main.js` (`heroRotationSprite`, `displayScale` 1.4 into
 the 180 px card box) and `scripts/hmh-reboot-production-asset-qa.mjs`, which
 applies the same per-atlas and total caps. The HMH child never imports it.
 
+## Held-weapon pages (HMH-N03)
+
+The Coin Blaster pistol reaches the hero's hand as a textured mesh skinned
+1.0 to the `pistol_prop` bone of each production hero rig and rendered per
+direction and clip frame by the production hero pipeline (`weapon` layer,
+`nativeWeaponIds: ["coin-blaster"]`). Until 2026-09-16 every other weapon
+was a flat 256 px prop crop from `hmh-authored-props` rotated toward the aim
+by `createAuthoredHeldWeaponDisplay`. The held-weapon pipeline gives the
+other seven weapons the pistol's treatment.
+
+- Manifest: `apps/hmh-reboot/assets/source/blender/hmh-held-weapons.json`
+- Weapon scene: `apps/hmh-reboot/assets/source/blender/hmh-held-weapons.blend`
+  built by `scripts/hmh-blender/create-hmh-held-weapons.py` (seven low-poly
+  models authored in one grip frame: origin at the trigger hand's palm point,
+  +X along the bore, +Z up, metres at hero scale, bore at z = 0.10 like the
+  pistol; silver / Litecoin-blue palette with dark polymer furniture and one
+  emissive identity accent per weapon)
+- Exporter: `scripts/hmh-blender/export-hmh-held-weapons.py`, run inside each
+  hero's packed source `.blend` (read-only, never saved). It appends the
+  weapon meshes, parents them to the hero rig, skins them 1.0 to
+  `pistol_prop`, and places them with the *pistol's own principal frame*: the
+  bore direction is fitted on the pistol's slide vertices in `weapon_socket`
+  rest space, the grip anchor is vertex 69695 of the shared pistol mesh
+  (`pistolGripAnchorAboutMean`, re-checked where the vertex is tagged). The
+  weapons then take the exact camera, lights, colour management, clip actions
+  and reload / idle-check IK gestures the shipped pistol frames take.
+- Runner: `scripts/run-hmh-held-weapons-pipeline.py`
+  (`npm run assets:hmh:held-weapons`, `--verify-reproducible` renders every
+  hero twice from cold and applies the hero budget
+  {8 changed visible pixels, 2 per channel, 32 total}).
+
+Frames: 7 weapons x 8 directions x 29 poses per hero = 1624
+(`aim` 6, `pistol-fire` 3, `dash` 4, `reload` 8, `idle-check` 8). Melee,
+grenade and death keep the hero's native knife / grenade / pistol clips.
+Each frame renders at the hero's own atlas frame size x coverage 1.5 x
+pixelDensity 2 (768 px for the 256 px heroes, 672 for Lester, 648 for Lilly)
+through the hero camera with `ortho_scale` widened by the coverage, so one
+page pixel is exactly half a hero atlas pixel and a rifle pointing away from
+the body stays inside the frame. The page ground pivot is the hero's declared
+`sourcePivot` mapped through that transform, so a page frame anchors exactly
+where the hero's own weapon-layer frame anchors.
+
+Outputs under `apps/portal/assets/generated/hmh-held-weapons/<actor>/`:
+
+- `<actor>-<weapon>.webp` (plus `-1.webp` when a polearm needs a second
+  2048 page), lossless exact WebP, at most 1.5 MiB per page and 8 MiB per
+  hero (ceilings on lazily fetched per-equip pages, never an initial transfer);
+- `<actor>-held-weapons.json`: compact schema-2 style frames (`frame`, `orig`,
+  `trim`, `spriteSourceSize`, `pivot`, `anchor`, `page`) plus, per frame, the
+  projected `grip` and `muzzle` points relative to the ground pivot in page
+  pixels; the pistol principal frame; and a per-direction `calibration`
+  block holding the native pistol's projected box so tests can prove every
+  weapon's grip lands inside the pistol silhouette;
+- `<actor>-held-weapons-metrics.json` and a review contact sheet (the native
+  Coin Blaster row, then aim frame 0 of every held weapon in every direction,
+  over the shipped hero base frames).
+
+Runtime (`apps/hmh-reboot/src/held-weapon-atlas.mjs`, dynamic import only):
+`createHeldWeaponLoader` fetches a hero's metadata once and each weapon's
+page on first equip, then `createProductionHeroDisplay.attachHeldWeaponPage`
+makes that weapon native to the hero (`hasNativeWeapon` true, the external
+prop overlay hidden). `applyPose` substitutes the page frame for the native
+weapon-layer frame by state / direction / proportional frame index, reports
+`heldWeaponFrameId` and a body-unit `heldWeaponMuzzle` the muzzle flash
+spawns from, and `fireAction` lets the body recoil clip play for every page
+that declares it (the channel weapons declare none). A page that fails to
+load leaves the authored overlay in charge of that weapon for the session.
+
+```bash
+npm run assets:hmh:held-weapons
+node --test tests/hmh-reboot-held-weapon-atlas.test.mjs
+HMH_REBOOT_ORIGIN=http://127.0.0.1:8802 npm run smoke:hmh:held-weapons
+```
+
+Known limits: the hero arm poses are the pistol's (one hand on the grip, the
+support fist raised), so long guns are carried one-handed and stocks are kept
+compact; death keeps the native pistol frame whatever is equipped.
+
 ## External model sources
 
 Cycle 072 added a second, additive source path beside the procedural builders: a

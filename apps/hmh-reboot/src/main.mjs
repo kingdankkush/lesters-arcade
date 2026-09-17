@@ -652,6 +652,13 @@ async function boot() {
         display.container.motionStatus = 'fallback';
         display.container.motionError = String(error?.message ?? error);
       });
+    // HMH-N03: held-weapon pages arrive per weapon on first equip.
+    import('./held-weapon-atlas.mjs')
+      .then(({ createHeldWeaponLoader }) => { if (!display.container.destroyed) display.container.heldWeapons = createHeldWeaponLoader({ selection, display, Assets }); })
+      .catch(error => {
+        display.container.heldWeaponStatus = 'fallback';
+        display.container.heldWeaponError = String(error?.message ?? error);
+      });
     return display;
   };
   let mannequinDisplay = null;
@@ -2362,7 +2369,7 @@ async function boot() {
       }
       if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
       if (productionHeroDisplay && motion) {
-        const pistolFireAge = lastWeaponFire?.weaponId === 'coin-blaster' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
+        const pistolFireAge = lastWeaponFire && productionHeroDisplay.fireAction(lastWeaponFire.weaponId) === 'pistol-fire' ? visualTick - lastWeaponFire.tick : Number.POSITIVE_INFINITY;
         const playerHitAge = lastPlayerHit ? visualTick - lastPlayerHit.tick : Number.POSITIVE_INFINITY;
         const meleeAge = lastMeleeAttack ? visualTick - lastMeleeAttack.tick : Number.POSITIVE_INFINITY;
         const grenadeAge = lastGrenadeThrow ? visualTick - lastGrenadeThrow.tick : Number.POSITIVE_INFINITY;
@@ -2398,7 +2405,10 @@ async function boot() {
                 : productionAction === 'pistol-fire'
                   ? pistolFireAge
                   : productionAction === 'hurt' ? playerHitAge : productionAction === 'interact' ? interactionAge : visualTick;
+        const activeWeaponId = weaponLoadout ? getActiveWeaponState(weaponLoadout).id : null;
+        productionHeroDisplay.container.heldWeapons?.request(activeWeaponId);
         productionHeroDisplay.applyPose({
+          weaponId: activeWeaponId,
           simulationTick: visualTick,
           actionTick: productionActionTick,
           locomotion: dashing ? 'moving' : motion.locomotion,
@@ -2413,7 +2423,6 @@ async function boot() {
         // grenade action layers. Other heroes keep the accepted external prop
         // overlay path, and all heroes retain the existing full-body action
         // ownership. Exactly one weapon layer is visible at a time.
-        const activeWeaponId = weaponLoadout ? getActiveWeaponState(weaponLoadout).id : null;
         const actionOwnsWeaponLayer = ['melee', 'grenade', 'death', 'interact'].includes(productionAction)
           || productionHeroDisplay.hasNativeAction(productionAction);
         const nativeWeaponOwnsLayer = productionHeroDisplay.hasNativeWeapon(activeWeaponId);
@@ -4000,12 +4009,19 @@ async function boot() {
         // launcher felt identical. Projection-only, and the existing
         // screenShake/reduceMotion settings still gate whether it is drawn.
         triggerCameraShake(tick, weaponRecoilShake(event.weaponId));
+        // A held-weapon page reports where this frame's barrel ends; the
+        // native pistol and the overlay keep the fixed chest-height offset.
+        const heldMuzzle = productionHeroDisplay?.container.heldWeaponMuzzle;
         pushCombatVisualEvent({
           type: 'muzzle',
           tick,
           weaponId: event.weaponId,
           direction: { x: aimIntent.direction.x, y: aimIntent.direction.y },
-          point: {
+          point: heldMuzzle ? {
+            x: actor.x + heldMuzzle.x * PRODUCTION_HERO_RUNTIME_SCALE,
+            y: actor.y,
+            z: actor.groundZ - heldMuzzle.y * PRODUCTION_HERO_RUNTIME_SCALE,
+          } : {
             x: actor.x + aimIntent.direction.x * 28,
             y: actor.y + aimIntent.direction.y * 28,
             z: actor.groundZ + 34,

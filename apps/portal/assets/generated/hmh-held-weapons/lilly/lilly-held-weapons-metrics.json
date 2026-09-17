@@ -1,0 +1,145 @@
+{
+  "schema": "hmh-held-weapons-metrics-v1",
+  "status": "pass",
+  "pipelineId": "hmh-reboot-held-weapons-v1",
+  "actorId": "lilly",
+  "blenderVersion": "5.1.2",
+  "runtimeAuthority": "projection-only",
+  "frameCount": 1624,
+  "uniqueFrameCount": 1588,
+  "weaponCount": 7,
+  "frameSize": [
+    648,
+    648
+  ],
+  "pivotPixels": [
+    364,
+    518
+  ],
+  "originPixels": [
+    324.0,
+    452.682
+  ],
+  "orthoScale": 4.125,
+  "heroOrthoScale": 2.75,
+  "reproducibility": "pass",
+  "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 160,
+    "maxChannelDelta": 4,
+    "maxTotalChannelDelta": 512
+  },
+  "reproducibilityObserved": {
+    "maxChangedVisiblePixels": 86,
+    "maxChannelDelta": 3,
+    "maxTotalChannelDelta": 191,
+    "worstFrameId": "lilly__auto-miner__dash__north-west__002"
+  },
+  "sourceBlendSha256": "5f9152e713f7c4f79e96d1f1a4415dd1fb96a2685d3d14f22a65e895c8e7d6b2",
+  "sourceBlendBytes": 59988395,
+  "weaponSceneSha256": "eace9bcdc6776ffaa666d1821b78780afd69a83a258ebb6d32942026d41001d7",
+  "manifestSha256": "62f9e1d2712fed0dcd3820d2f9ac8b7f92a448c5404123cae07e1e604e6e7ee2",
+  "totalImageBytes": 6146830,
+  "pages": {
+    "scatter-shotgun": {
+      "imageBytes": 710312,
+      "pages": [
+        {
+          "image": "./lilly-scatter-shotgun.webp",
+          "imageBytes": 710312,
+          "imageSha256": "7e085fb8ef5448c305fd36941d193759b3a536fad359cb21245890def5e1bd54",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "auto-miner": {
+      "imageBytes": 917434,
+      "pages": [
+        {
+          "image": "./lilly-auto-miner.webp",
+          "imageBytes": 917434,
+          "imageSha256": "d09c250cf5eb057d1922d68ba4fbca066a06e524ab8a682b72ea76eeeed088ed",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "launcher-rig": {
+      "imageBytes": 836942,
+      "pages": [
+        {
+          "image": "./lilly-launcher-rig.webp",
+          "imageBytes": 836942,
+          "imageSha256": "3b602eb9066bb380724aed3aab8d91bf6981b2f1b4e2f4374c6fab9f3e15d8d1",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "hash-rail": {
+      "imageBytes": 957306,
+      "pages": [
+        {
+          "image": "./lilly-hash-rail.webp",
+          "imageBytes": 957306,
+          "imageSha256": "05b04fe44c8dee2ece90213f197adbd36826781801fb1f0c376ac7428dd81f21",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "lightning-ledger": {
+      "imageBytes": 798056,
+      "pages": [
+        {
+          "image": "./lilly-lightning-ledger.webp",
+          "imageBytes": 798056,
+          "imageSha256": "8c04cc358b8fa1f96f34d904fa229f2e4807979abc9b6fd97d325820b58342e7",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "bear-market-burner": {
+      "imageBytes": 944962,
+      "pages": [
+        {
+          "image": "./lilly-bear-market-burner.webp",
+          "imageBytes": 944962,
+          "imageSha256": "6ea746896c0846846a86586910435b354c705489b0b2a950296bcd59f2ae0d2a",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "forked-standard": {
+      "imageBytes": 981818,
+      "pages": [
+        {
+          "image": "./lilly-forked-standard.webp",
+          "imageBytes": 981818,
+          "imageSha256": "2f388465003ca814c86e530be6ef250f367c8ae4af792ab2e70071347fcb38f6",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    }
+  },
+  "metadataSha256": "a5a61db159d4ff6cf1937bd0996056d2f632cb22681e39ece33d5a306b1f8b94",
+  "contactSheetSha256": "bbc9f9cc13ad690e614799340006be2abfce3d21a8fc91beaf3052f8ceedf800"
+}

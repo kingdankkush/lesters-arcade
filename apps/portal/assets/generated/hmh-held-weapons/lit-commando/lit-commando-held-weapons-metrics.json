@@ -1,0 +1,154 @@
+{
+  "schema": "hmh-held-weapons-metrics-v1",
+  "status": "pass",
+  "pipelineId": "hmh-reboot-held-weapons-v1",
+  "actorId": "lit-commando",
+  "blenderVersion": "5.1.2",
+  "runtimeAuthority": "projection-only",
+  "frameCount": 1624,
+  "uniqueFrameCount": 1557,
+  "weaponCount": 7,
+  "frameSize": [
+    768,
+    768
+  ],
+  "pivotPixels": [
+    384,
+    538
+  ],
+  "originPixels": [
+    384.0,
+    536.511
+  ],
+  "orthoScale": 4.125,
+  "heroOrthoScale": 2.75,
+  "reproducibility": "pass",
+  "reproducibilityMode": "bounded-premultiplied-rgba-v1",
+  "reproducibilityBudget": {
+    "maxChangedVisiblePixels": 160,
+    "maxChannelDelta": 4,
+    "maxTotalChannelDelta": 512
+  },
+  "reproducibilityObserved": {
+    "maxChangedVisiblePixels": 110,
+    "maxChannelDelta": 4,
+    "maxTotalChannelDelta": 314,
+    "worstFrameId": "lit-commando__auto-miner__dash__north__001"
+  },
+  "sourceBlendSha256": "0c930374daccb2b9458a8600fdf3150dc51f6b5d8b4a47edcd05d92905fc6284",
+  "sourceBlendBytes": 90056914,
+  "weaponSceneSha256": "eace9bcdc6776ffaa666d1821b78780afd69a83a258ebb6d32942026d41001d7",
+  "manifestSha256": "62f9e1d2712fed0dcd3820d2f9ac8b7f92a448c5404123cae07e1e604e6e7ee2",
+  "totalImageBytes": 7085582,
+  "pages": {
+    "scatter-shotgun": {
+      "imageBytes": 820548,
+      "pages": [
+        {
+          "image": "./lit-commando-scatter-shotgun.webp",
+          "imageBytes": 820548,
+          "imageSha256": "bca1908cdee19e6edce95b9747c208a838f44997dbf29cd23ac887356905c02c",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "auto-miner": {
+      "imageBytes": 1085600,
+      "pages": [
+        {
+          "image": "./lit-commando-auto-miner.webp",
+          "imageBytes": 1085600,
+          "imageSha256": "b08d82106ec176267c8981062a88f36323245094dbefc97a62d32fa223a6817d",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "launcher-rig": {
+      "imageBytes": 971706,
+      "pages": [
+        {
+          "image": "./lit-commando-launcher-rig.webp",
+          "imageBytes": 971706,
+          "imageSha256": "52770b42f6d61afe203d689de6a61f719264d00da36fb431f434d3bc0131fcd9",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "hash-rail": {
+      "imageBytes": 1093010,
+      "pages": [
+        {
+          "image": "./lit-commando-hash-rail.webp",
+          "imageBytes": 1093010,
+          "imageSha256": "97fdaf00961de8101b3a4f17f91a115dd363919be46aadfaeafc4a863708b6ab",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "lightning-ledger": {
+      "imageBytes": 963104,
+      "pages": [
+        {
+          "image": "./lit-commando-lightning-ledger.webp",
+          "imageBytes": 963104,
+          "imageSha256": "91c3b1bee1fe29aa5e3bbf70548cd59b8e71dfa58c30715fd18d3fd8d7c3cc90",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "bear-market-burner": {
+      "imageBytes": 1067202,
+      "pages": [
+        {
+          "image": "./lit-commando-bear-market-burner.webp",
+          "imageBytes": 1067202,
+          "imageSha256": "eaab3ac88ea0260f7712b7a92bbedc7876f2459377b5b603431d5c0d9eda69ca",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        }
+      ]
+    },
+    "forked-standard": {
+      "imageBytes": 1084412,
+      "pages": [
+        {
+          "image": "./lit-commando-forked-standard.webp",
+          "imageBytes": 809576,
+          "imageSha256": "7f30f26b5a80f179d1f55713c9b18cdb62d9ea88f1c430403bf6464f9e0a53e2",
+          "dimensions": {
+            "width": 2048,
+            "height": 2048
+          }
+        },
+        {
+          "image": "./lit-commando-forked-standard-1.webp",
+          "imageBytes": 274836,
+          "imageSha256": "bad342a109c552a6159878cb1e881ab06d62e271066b770266d36375a1e8b7cd",
+          "dimensions": {
+            "width": 1024,
+            "height": 1024
+          }
+        }
+      ]
+    }
+  },
+  "metadataSha256": "58f91d2604769feb6cb59e146c1acdce24c503826000fb81b9e2420555d30a65",
+  "contactSheetSha256": "5ccf7bf1a8a12349fbb2bb0a66afecbf3b3f70d42dd7110514adade789cdcd9c"
+}

@@ -27,7 +27,7 @@ All eleven full sheets were opened for native visual inspection; the three grena
 - `weapon-system.mjs` owns eight current firearm/special-weapon IDs. New reference filenames do not authorize persisted IDs, new stats, pickup economy, or simulation changes.
 - `melee.mjs` already declares `litecoin-knife`. Do not implement a duplicate melee system.
 - `grenades.mjs` declares `satoshi-frag`; instances use `hand` or `launcher` mode. Three visual references do not establish three gameplay types.
-- `authored-prop-atlas.mjs` already owns the external held-weapon display. It currently places a centered sprite along the screen-space aim vector, not at an exported per-frame hand grip.
+- `authored-prop-atlas.mjs` still owns the external held-weapon overlay as the fallback. Since HMH-N03 (2026-09-16) the seven non-pistol weapons ship as per-hero held-weapon pages (`held-weapon-atlas.mjs`, `docs/hmh-reboot/BLENDER-ATLAS-PIPELINE.md`, "Held-weapon pages") rendered in each hero's scene skinned to the pistol bone with per-frame grip and muzzle metadata; the overlay only shows while a page has not loaded.
 - `main.mjs` hides the external firearm during melee, grenade and death actions. Grenade bodies currently render through the existing vector/VFX path. Replace only the visual body after a model atlas is accepted, preserving arc, shadow, fuse and blast feedback.
 - Tests are in the repository-root `tests/`, including `hmh-reboot-authored-prop-atlas.test.mjs`, `hmh-reboot-grenades.test.mjs`, `hmh-reboot-grenade-feedback.test.mjs` and `hmh-reboot-grenade-vfx.test.mjs`. The delegated claim that these tests do not exist is false.
 

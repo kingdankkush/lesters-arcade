@@ -123,6 +123,9 @@ export function writeRuntimeTelemetry({
   dataset.heroMotionStatus = productionHeroDisplay?.container.motionStatus ?? 'pending';
   dataset.heroMotionAction = productionHeroDisplay?.container.motionAction ?? '';
   dataset.heroMotionError = productionHeroDisplay?.container.motionError ?? '';
+  dataset.heldWeaponStatus = productionHeroDisplay?.container.heldWeaponStatus ?? '';
+  dataset.heldWeaponFrameId = productionHeroDisplay?.container.heldWeaponFrameId ?? '';
+  dataset.heldWeaponError = productionHeroDisplay?.container.heldWeaponError ?? '';
   dataset.actorArtLayers = productionHeroDisplay?.layerOrder.join(',') ?? mannequinDisplay?.layerOrder.join(',') ?? 'graybox';
   dataset.actorArtFrameIds = actorVisual.frameIds ?? '';
   // Projection-only evidence uses the actual rendered anchor, including shake.
