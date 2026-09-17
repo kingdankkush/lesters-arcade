@@ -22,7 +22,7 @@ import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlay
 import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from './src/arcade-music-transport.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry, classifyWalletError } from './src/wallet-auth.mjs';
-import { RANKED_ENTRY_FEE_ZKLTC, formatZkLtcWei } from './src/arcade-core.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei, formatZkLtcWei } from './src/arcade-core.mjs';
 import { createCanonicalSessionIdentity } from './src/session-integrity.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
@@ -1700,6 +1700,8 @@ const dom = {
   officialModeBackButton: document.querySelector('#officialModeBackButton'),
   rankedEntryModal: document.querySelector('#rankedEntryModal'),
   rankedEntryFee: document.querySelector('#rankedEntryFee'),
+  rankedEntryReserve: document.querySelector('#rankedEntryReserve'),
+  rankedEntryTotal: document.querySelector('#rankedEntryTotal'),
   rankedEntryWallet: document.querySelector('#rankedEntryWallet'),
   rankedEntryNetwork: document.querySelector('#rankedEntryNetwork'),
   rankedEntryBalance: document.querySelector('#rankedEntryBalance'),
@@ -5527,6 +5529,16 @@ function requestRankedEntry(pendingSession = null) {
     const requestedGameId = selectedGameId;
     const entryFeeWei = String(pendingSession?.entryFeeWei ?? '0');
     if (dom.rankedEntryFee) dom.rankedEntryFee.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(entryFeeWei);
+    // Fee + settlement gas reserve (owner decision 2026-09-16). The reserve
+    // shown before the chain answers is the documented placeholder; the live
+    // pre-flight replaces both rows with the contract's quoteEntry.
+    let entryTotalWei = entryFeeWei === '0' ? '0' : rankedEntryTotalWei(entryFeeWei);
+    const renderEntryTotals = (reserveWei, totalWei) => {
+      entryTotalWei = String(totalWei);
+      if (dom.rankedEntryReserve) dom.rankedEntryReserve.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(String(reserveWei));
+      if (dom.rankedEntryTotal) dom.rankedEntryTotal.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(entryTotalWei);
+    };
+    renderEntryTotals(RANKED_SETTLEMENT_GAS_RESERVE_WEI, entryTotalWei);
     let closed = false;
     let checkSequence = 0;
     const provider = detectEthereumProvider();
@@ -5561,7 +5573,7 @@ function requestRankedEntry(pendingSession = null) {
       // Live: pay the native entry against the canonical session id. The
       // modal stays open until the wallet confirms or the player cancels.
       dom.rankedEntryApprove.disabled = true;
-      dom.rankedEntryApprove.textContent = `Paying ${formatZkLtcWei(entryFeeWei)}…`;
+      dom.rankedEntryApprove.textContent = `Paying ${formatZkLtcWei(entryTotalWei)}…`;
       try {
         const identity = { ...pendingSession.canonicalContext, chainId: LITVM_LITEFORGE_NETWORK.chainId, scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry, seasonId: CURRENT_RANKED_SEASON_ID, seed: pendingSession.seed ?? 0, nonce: pendingSession.sessionNonce };
         const canonical = await createCanonicalSessionIdentity(identity);
@@ -5623,7 +5635,8 @@ function requestRankedEntry(pendingSession = null) {
         dom.rankedEntryStatus.textContent = r.error;
         return;
       }
-      // Right chain → show balance.
+      // Right chain → show the contract's exact quote and the balance.
+      if (r.contractGate?.entryTotalWei !== undefined) renderEntryTotals(r.contractGate.settlementGasReserveWei ?? 0n, r.contractGate.entryTotalWei);
       const bal = Number(r.balanceEth || '0');
       if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = `${bal.toFixed(4)} zkLTC`;
       if (!r.hasFunds) {

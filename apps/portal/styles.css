@@ -4061,6 +4061,9 @@ body.suggest-landscape:has(#levelUpOverlay:not([hidden]))::after {
 .wallet-confirm-overlay[hidden] {
   display: none !important;
 }
+/* Fee + settlement reserve total (owner decision 2026-09-16). */
+.ranked-entry-row-total { border-color: rgba(255, 226, 122, 0.35); }
+.ranked-entry-row-total strong { color: #ffe27a; }
 
 /* ================= HMH tactical pause + upgrade draft v4 ================= */
 .combat-menu-panel[data-state="paused"] {
