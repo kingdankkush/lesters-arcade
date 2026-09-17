@@ -39,6 +39,9 @@ export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
   // address is filled from contracts/deployment-record.hardened.json after the
   // owner-approved redeploy. Null keeps every fee path fail-closed.
   arcadeRankedEntry: null,
+  // Per-game soulbound achievement collections (hardened set, one per game);
+  // filled from contracts/deployment-record.hardened.json after the redeploy.
+  achievementRegistries: Object.freeze({ 'lester-blaster': null, chikun: null, stacked: null }),
 });
 
 // Per-write zkLTC gas budget (testnet estimates, in wei-equivalent units of the

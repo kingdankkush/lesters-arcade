@@ -381,8 +381,10 @@ export async function fetchProfile(wallet, { walletProvider = null } = {}) {
 }
 
 // --- READ: which achievement tokens a wallet holds (soulbound, one per id) ---
-export async function fetchPlayerAchievements(wallet, achievementIds = [], { walletProvider = null } = {}) {
-  const address = LITVM_CONTRACT_ADDRESSES.achievementRegistry;
+export async function fetchPlayerAchievements(wallet, achievementIds = [], { walletProvider = null, gameId = null } = {}) {
+  // One soulbound collection per game (owner decision 2026-09-16); the legacy
+  // single registry is only a fallback for the archived June rows.
+  const address = (gameId && LITVM_CONTRACT_ADDRESSES.achievementRegistries?.[gameId]) || LITVM_CONTRACT_ADDRESSES.achievementRegistry;
   if (!wallet || !address || achievementIds.length === 0) return { ok: false, unlocked: [], error: 'achievement registry unavailable' };
   try {
     const ethers = await loadEthers();

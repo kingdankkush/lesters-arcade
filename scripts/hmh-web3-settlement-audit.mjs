@@ -14,6 +14,9 @@ function source(repoRoot, rel) {
   return readFileSync(path.join(repoRoot, rel), 'utf8');
 }
 
+// Per-game achievement collections nest under one key; flatten for the address checks.
+const flattenAddresses = (map) => Object.values(map).flatMap((value) => (value && typeof value === 'object' ? Object.values(value) : [value]));
+
 export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {}) {
   const chainClient = source(repoRoot, 'apps/portal/src/litvm-chain-client.mjs');
   const main = source(repoRoot, 'apps/portal/main.js');
@@ -33,7 +36,7 @@ export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {})
     entryFeeMicroUnits: 0,
   });
   const checks = Object.freeze([
-    Object.freeze({ id: 'safe-ranked-live-gate', pass: Object.values(LITVM_CONTRACT_ADDRESSES).every((address) => address === null || /^0x[a-fA-F0-9]{40}$/.test(address)) && (!SETTLEMENT_LIVE || (Object.values(LITVM_CONTRACT_ADDRESSES).every(Boolean) && chainClient.includes('trusted verifier attestation is required'))), detail: `legacy addresses populated; hardened entry address ${LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry ?? 'pending deploy'}; settlement live=${SETTLEMENT_LIVE}; unverified writes remain gated` }),
+    Object.freeze({ id: 'safe-ranked-live-gate', pass: flattenAddresses(LITVM_CONTRACT_ADDRESSES).every((address) => address === null || /^0x[a-fA-F0-9]{40}$/.test(address)) && (!SETTLEMENT_LIVE || (flattenAddresses(LITVM_CONTRACT_ADDRESSES).every(Boolean) && chainClient.includes('trusted verifier attestation is required'))), detail: `legacy addresses populated; hardened entry address ${LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry ?? 'pending deploy'}; settlement live=${SETTLEMENT_LIVE}; unverified writes remain gated` }),
     Object.freeze({ id: 'score-abi-verified-session', pass: SCORE_REGISTRY_ABI.some((sig) => sig.includes('submitVerifiedSession(')), detail: 'score client exposes verifier-attested submission ABI' }),
     Object.freeze({ id: 'profile-abi-set-profile', pass: PROFILE_REGISTRY_ABI.some((sig) => sig.includes('setProfile(string displayName, string avatarUri)')), detail: 'profile client calls deployed setProfile ABI' }),
     Object.freeze({ id: 'ranked-submit-chain-guard', pass: chainClient.includes('submitRankedSession') && chainClient.includes('Wrong network: wallet is on chain') && chainClient.includes('expected ${LITVM_LITEFORGE_NETWORK.chainId}'), detail: 'ranked score write blocks wrong chain before signer transaction' }),
