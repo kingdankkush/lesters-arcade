@@ -116,3 +116,51 @@ export function compactExpiredEventsInPlace(events, currentTick, maxAgeTicks) {
   events.length = writeIndex;
   return events;
 }
+
+// Adaptive canvas resolution (HMH-N02 / P02, 2026-09-16). Phones start at the
+// profile's safe resolution (1) and step up to `max` only after a sustained
+// window of fast frames; they step back down the moment frames slow. Pure:
+// feed it frame deltas, act on the returned change. Hysteresis and a
+// cooldown keep it from oscillating.
+export const ADAPTIVE_RESOLUTION_DEFAULTS = Object.freeze({
+  windowFrames: 240,        // ~4 s at 60 Hz before any decision
+  raiseP95Ms: 19,           // step up only when p95 frame time is comfortably under 60 Hz
+  lowerP95Ms: 30,           // step down when p95 drifts toward 30 Hz
+  cooldownFrames: 600,      // ~10 s between changes
+  maxRaises: 1,             // one step up per session; a step down is final
+});
+
+export function createAdaptiveResolution({ base, max, step = 0.5, options = {} } = {}) {
+  const settings = { ...ADAPTIVE_RESOLUTION_DEFAULTS, ...options };
+  if (!(base > 0) || !(max >= base)) throw new TypeError('adaptive resolution needs 0 < base <= max');
+  const samples = new Float32Array(settings.windowFrames);
+  let count = 0, cooldown = 0, current = base, raises = 0, lockedDown = false;
+  const p95 = () => {
+    const sorted = Array.from(samples.subarray(0, count)).sort((a, b) => a - b);
+    return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] ?? 0;
+  };
+  return Object.freeze({
+    get resolution() { return current; },
+    get lockedDown() { return lockedDown; },
+    // Returns the new resolution when it changes, otherwise null.
+    sample(deltaMs) {
+      if (!Number.isFinite(deltaMs) || deltaMs <= 0) return null;
+      if (cooldown > 0) { cooldown -= 1; return null; }
+      samples[count % settings.windowFrames] = Math.min(250, deltaMs);
+      count += 1;
+      if (count < settings.windowFrames) return null;
+      const frameP95 = p95();
+      count = 0;
+      if (current > base && frameP95 >= settings.lowerP95Ms) {
+        current = base; lockedDown = true; cooldown = settings.cooldownFrames;
+        return current;
+      }
+      if (!lockedDown && current < max && raises < settings.maxRaises && frameP95 <= settings.raiseP95Ms) {
+        current = Math.min(max, current + step); raises += 1; cooldown = settings.cooldownFrames;
+        return current;
+      }
+      return null;
+    },
+    reset() { count = 0; cooldown = 0; },
+  });
+}

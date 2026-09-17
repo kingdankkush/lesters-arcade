@@ -148,7 +148,8 @@ try {
   });
   const mobile = await measure({
     name: 'mobile', viewport: { width: 390, height: 844 }, deviceScaleFactor: 3,
-    isMobile: true, expectedProfile: 'mobile', resolutionCap: 1.25, animatedCap: 64, particleCap: 30,
+    // Adaptive sharpness may step a fast mobile session up to 1.5 (2026-09-16).
+    isMobile: true, expectedProfile: 'mobile', resolutionCap: 1.5, animatedCap: 64, particleCap: 30,
   });
   console.log(JSON.stringify({ bundleBytes: bundle.size, bundleMaxBytes: BUNDLE_MAX_BYTES, desktop, mobile }, null, 2));
 } finally {

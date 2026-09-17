@@ -196,6 +196,7 @@ import {
   isScreenPointVisible,
   selectAnimatedEnemyIds,
   selectRuntimePerformanceProfile,
+  createAdaptiveResolution,
 } from './runtime-performance.mjs';
 import { createTouchControlAdapter, createTouchOnboardingGate, isTouchUiEnabled } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid, measureMinimumPrototypeBodyHeight } from './prototype-actor-art.mjs';
@@ -443,6 +444,14 @@ async function boot() {
     powerPreference: 'high-performance',
   });
   app.ticker.stop();
+  // Adaptive sharpness (2026-09-16): a phone starts at the safe resolution and
+  // earns one step up to 1.5 after ~4 s of fast frames; slow frames step it
+  // back down for the rest of the session. Desktop keeps its profile value.
+  const adaptiveResolution = createAdaptiveResolution({
+    base: performanceProfile.resolution,
+    max: performanceProfile.id === 'mobile' ? Math.min(1.5, Math.max(performanceProfile.resolution, window.devicePixelRatio || 1)) : performanceProfile.resolution,
+  });
+  dataset.adaptiveResolution = String(adaptiveResolution.resolution);
   app.canvas.tabIndex = 0;
   app.canvas.setAttribute('aria-label', 'Hard Money Heroes gameplay canvas');
   stageElement.replaceChildren(app.canvas);
@@ -4952,6 +4961,12 @@ async function boot() {
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
     if (debugGridEnabled) dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions, snapshot.heldActions);
+    const nextResolution = adaptiveResolution.sample(ticker.deltaMS);
+    if (nextResolution !== null && app.renderer.resolution !== nextResolution) {
+      app.renderer.resolution = nextResolution;
+      app.resize?.();
+      dataset.adaptiveResolution = String(nextResolution);
+    }
     if (frame.steps >= simulation.maxCatchUpSteps) catchUpSaturationFrames += 1;
     const simulationLoss = simulation.getLossMetrics();
     dataset.simulationFrameSteps = String(frame.steps);
